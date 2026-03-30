@@ -52,7 +52,7 @@ export function AiInsightBanner() {
 
   return (
     <Link href="/analytics/ai-report" className="block">
-      <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 via-primary/5 to-white p-4 mb-6 hover:shadow-md hover:border-[#5E81F4]/30 transition-all group cursor-pointer">
+      <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 via-primary/5 to-white p-4 mb-6 hover:shadow-md hover:border-primary/30 transition-all group cursor-pointer">
         <div className="flex items-center gap-3">
           <div className="flex-shrink-0 rounded-lg bg-gradient-to-br from-[#5E81F4] to-[#8B5CF6] p-2">
             <Sparkles className="h-4 w-4 text-white" />
@@ -78,7 +78,7 @@ export function AiInsightBanner() {
               </>
             )}
           </div>
-          <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-[#5E81F4] group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+          <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0" />
         </div>
         <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-gradient-to-br from-blue-100/50 to-indigo-100/50" />
       </div>

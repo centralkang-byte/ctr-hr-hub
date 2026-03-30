@@ -39,7 +39,7 @@ export default function AttritionDonutChart({
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">위험 분포</h3>
+      <h3 className="text-lg font-semibold text-foreground mb-4">위험 분포</h3>
       <div className="flex items-center gap-6">
         <div className="relative w-48 h-48">
           <ResponsiveContainer width="100%" height="100%">
@@ -75,7 +75,7 @@ export default function AttritionDonutChart({
           </ResponsiveContainer>
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="text-center">
-              <p className="text-2xl font-bold text-[#1A1A1A]">{totalCount}</p>
+              <p className="text-2xl font-bold text-foreground">{totalCount}</p>
               <p className="text-xs text-[#666]">전체</p>
             </div>
           </div>
@@ -88,7 +88,7 @@ export default function AttritionDonutChart({
                 style={{ backgroundColor: d.color }}
               />
               <span className="text-sm text-[#333]">{d.label}</span>
-              <span className="text-sm font-medium text-[#1A1A1A]">{d.count}명</span>
+              <span className="text-sm font-medium text-foreground">{d.count}명</span>
               <span className="text-xs text-[#999]">({d.percentage.toFixed(1)}%)</span>
             </div>
           ))}

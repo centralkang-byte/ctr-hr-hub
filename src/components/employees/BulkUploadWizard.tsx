@@ -164,13 +164,13 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
               아래 버튼으로 템플릿을 다운로드한 후, 발령 데이터를 입력하세요.
             </p>
 
-            <div className="rounded-lg border border-[#E8E8E8] bg-[#FAFAFA] p-4">
+            <div className="rounded-lg border border-border bg-background p-4">
               <p className="text-xs text-[#999] mb-2">필수 컬럼</p>
               <div className="flex flex-wrap gap-2">
                 {['사번', DEPT_COL, GRADE_COL, '발효일'].map((col) => (
                   <span
                     key={col}
-                    className="rounded-full bg-[#EDF1FE] text-[#047857] text-xs px-2.5 py-0.5 font-medium"
+                    className="rounded-full bg-primary/10 text-emerald-700 text-xs px-2.5 py-0.5 font-medium"
                   >
                     {col}
                   </span>
@@ -180,7 +180,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
                 {['변경유형', '사유'].map((col) => (
                   <span
                     key={col}
-                    className="rounded-full bg-[#F3F4F6] text-[#666] text-xs px-2.5 py-0.5"
+                    className="rounded-full bg-gray-100 text-[#666] text-xs px-2.5 py-0.5"
                   >
                     {col} (선택)
                   </span>
@@ -218,7 +218,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
               onDrop={handleDrop}
               onDragOver={(e) => e.preventDefault()}
               onClick={() => fileInputRef.current?.click()}
-              className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#D4D4D4] bg-[#FAFAFA] py-12 cursor-pointer hover:border-[#5E81F4] hover:bg-[#EDF1FE]/30 transition-colors"
+              className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-background py-12 cursor-pointer hover:border-primary hover:bg-primary/10/30 transition-colors"
             >
               <Upload className="h-10 w-10 text-[#999] mb-3" />
               <p className="text-sm font-medium text-[#555]">
@@ -249,15 +249,15 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
               <p className="text-sm text-[#555]">
                 총 <strong>{preview.length}건</strong> 확인됨
                 {errors.length > 0 && (
-                  <span className="ml-2 text-[#B91C1C]">오류 {errors.length}건</span>
+                  <span className="ml-2 text-red-700">오류 {errors.length}건</span>
                 )}
               </p>
             </div>
 
             {/* Preview table */}
-            <div className="max-h-64 overflow-auto rounded-lg border border-[#E8E8E8]">
+            <div className="max-h-64 overflow-auto rounded-lg border border-border">
               <table className="w-full text-xs">
-                <thead className="sticky top-0 bg-[#FAFAFA]">
+                <thead className="sticky top-0 bg-background">
                   <tr>
                     <th className="px-3 py-2 text-left text-[#666]">행</th>
                     <th className="px-3 py-2 text-left text-[#666]">사번</th>
@@ -273,8 +273,8 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
                       key={row.rowNum}
                       className={
                         errorRows.has(row.rowNum ?? 0)
-                          ? 'bg-[#FEE2E2]'
-                          : 'hover:bg-[#FAFAFA]'
+                          ? 'bg-red-100'
+                          : 'hover:bg-background'
                       }
                     >
                       <td className="px-3 py-2 text-[#999]">{row.rowNum}</td>
@@ -288,12 +288,12 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
                       </td>
                       <td className="px-3 py-2">
                         {errorRows.has(row.rowNum ?? 0) ? (
-                          <span className="text-[#B91C1C] flex items-center gap-1">
+                          <span className="text-red-700 flex items-center gap-1">
                             <AlertTriangle className="h-3 w-3" />
                             오류
                           </span>
                         ) : (
-                          <span className="text-[#047857]">✓</span>
+                          <span className="text-emerald-700">✓</span>
                         )}
                       </td>
                     </tr>
@@ -304,14 +304,14 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
 
             {/* Error list */}
             {errors.length > 0 && (
-              <div className="rounded-lg border border-[#FECACA] bg-[#FEE2E2] p-3 space-y-1">
+              <div className="rounded-lg border border-red-200 bg-red-100 p-3 space-y-1">
                 {errors.slice(0, 5).map((e) => (
-                  <p key={e.row} className="text-xs text-[#B91C1C]">
+                  <p key={e.row} className="text-xs text-red-700">
                     행 {e.row}: {e.message}
                   </p>
                 ))}
                 {errors.length > 5 && (
-                  <p className="text-xs text-[#B91C1C]">외 {errors.length - 5}건 오류</p>
+                  <p className="text-xs text-red-700">외 {errors.length - 5}건 오류</p>
                 )}
               </div>
             )}
@@ -340,8 +340,8 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
         {/* ── Step 4: Success ── */}
         {step === 4 && (
           <div className="flex flex-col items-center py-8 space-y-4">
-            <CheckCircle2 className="h-14 w-14 text-[#059669]" />
-            <p className="text-lg font-bold text-[#1A1A1A]">업로드 완료</p>
+            <CheckCircle2 className="h-14 w-14 text-emerald-600" />
+            <p className="text-lg font-bold text-foreground">업로드 완료</p>
             <p className="text-sm text-[#555]">
               총 {preview.length}건의 발령이 성공적으로 등록되었습니다.
             </p>

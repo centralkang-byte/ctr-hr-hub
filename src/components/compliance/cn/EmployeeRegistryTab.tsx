@@ -135,7 +135,7 @@ export default function EmployeeRegistryTab() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-base font-semibold text-[#1A1A1A]">
+          <h2 className="text-base font-semibold text-foreground">
             직원 명부 <span className="text-[#999] font-normal text-sm">(花名册)</span>
           </h2>
           <p className="text-xs text-[#666] mt-0.5">
@@ -144,7 +144,7 @@ export default function EmployeeRegistryTab() {
         </div>
         <div className="flex items-center gap-2">
           {registryData && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EDF1FE] text-[#4B6DE0] border border-[#EDF1FE]">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary/90 border border-primary/20">
               <Users className="w-3 h-3" />
               총 {registryData.meta.totalCount.toLocaleString()}명
             </span>
@@ -167,12 +167,12 @@ export default function EmployeeRegistryTab() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder={'이름, 사번 검색...'}
-          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] placeholder:text-[#999] w-56"
+          className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary placeholder:text-[#999] w-56"
         />
         <select
           value={departmentFilter}
           onChange={(e) => setDepartmentFilter(e.target.value)}
-          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+          className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
         >
           <option value="">전체 부서</option>
           {departments.map((dept) => (
@@ -218,7 +218,7 @@ export default function EmployeeRegistryTab() {
                       {row.employeeNo}
                     </td>
                     <td className="px-4 py-3">
-                      <div className="font-medium text-[#1A1A1A]">{row.name}</div>
+                      <div className="font-medium text-foreground">{row.name}</div>
                       {row.nameEn && (
                         <div className="text-xs text-[#999]">{row.nameEn}</div>
                       )}
@@ -239,10 +239,10 @@ export default function EmployeeRegistryTab() {
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           row.status === 'ACTIVE'
-                            ? 'bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]'
+                            ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
                             : row.status === 'ON_LEAVE'
-                              ? 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]'
-                              : 'bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]'
+                              ? 'bg-amber-100 text-amber-700 border border-amber-300'
+                              : 'bg-background text-[#555] border border-border'
                         }`}
                       >
                         {STATUS_LABELS[row.status] ?? row.status}

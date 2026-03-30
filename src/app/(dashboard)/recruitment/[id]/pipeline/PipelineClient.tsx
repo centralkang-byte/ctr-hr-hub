@@ -59,14 +59,14 @@ const STAGE_BORDER_COLORS: Record<string, string> = {
 }
 
 const STAGE_HEADER_BG: Record<string, string> = {
-  APPLIED: 'bg-[#F5F5F5]',
-  SCREENING: 'bg-[#E3F2FD]',
-  INTERVIEW_1: 'bg-[#E3F2FD]',
-  INTERVIEW_2: 'bg-[#E3F2FD]',
-  FINAL: 'bg-[#FFF3E0]',
-  OFFER: 'bg-[#EDF1FE]',
-  HIRED: 'bg-[#EDF1FE]',
-  REJECTED: 'bg-[#FFEBEE]',
+  APPLIED: 'bg-muted',
+  SCREENING: 'bg-blue-50',
+  INTERVIEW_1: 'bg-blue-50',
+  INTERVIEW_2: 'bg-blue-50',
+  FINAL: 'bg-orange-50',
+  OFFER: 'bg-primary/10',
+  HIRED: 'bg-primary/10',
+  REJECTED: 'bg-red-50',
 }
 
 // ─── Types ──────────────────────────────────────────────
@@ -318,14 +318,14 @@ export default function PipelineClient({ user, postingId }: Props) {
   const getAiScoreBadge = (score: number | null) => {
     if (score === null || score === undefined) {
       return (
-        <span className="inline-block px-2 py-0.5 text-xs bg-[#F5F5F5] text-[#999] rounded">
+        <span className="inline-block px-2 py-0.5 text-xs bg-muted text-[#999] rounded">
           -
         </span>
       )
     }
-    let bgClass = 'bg-[#FFEBEE] text-[#C62828]'
-    if (score >= 80) bgClass = 'bg-[#EDF1FE] text-[#1B5E20]'
-    else if (score >= 50) bgClass = 'bg-[#FFF3E0] text-[#E65100]'
+    let bgClass = 'bg-red-50 text-red-800'
+    if (score >= 80) bgClass = 'bg-primary/10 text-green-900'
+    else if (score >= 50) bgClass = 'bg-orange-50 text-orange-800'
     return (
       <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${bgClass}`}>
         AI {score}
@@ -337,9 +337,9 @@ export default function PipelineClient({ user, postingId }: Props) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex items-center gap-2 text-sm text-[#999]">
-          <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#5E81F4] rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin" />
           {t('loadingData')}
         </div>
       </div>
@@ -347,18 +347,18 @@ export default function PipelineClient({ user, postingId }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] p-6">
+    <div className="min-h-screen bg-background p-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => router.push(`/recruitment/${postingId}`)}
-          className="p-2 rounded-lg border border-[#E8E8E8] hover:bg-white transition-colors duration-150"
+          className="p-2 rounded-lg border border-border hover:bg-white transition-colors duration-150"
         >
           <ChevronLeft className="w-4 h-4 text-[#666]" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#E3F2FD] rounded-lg flex items-center justify-center">
-            <GitBranch className="w-5 h-5 text-[#2196F3]" />
+          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+            <GitBranch className="w-5 h-5 text-blue-500" />
           </div>
           <div>
             <h1
@@ -388,8 +388,8 @@ export default function PipelineClient({ user, postingId }: Props) {
                 onDragOver={(e) => handleDragOver(e, stage)}
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, stage)}
-                className={`flex-1 min-w-[200px] bg-[#FAFAFA] border border-[#E8E8E8] rounded-xl flex flex-col transition-all duration-150 ${
-                  isOver ? 'ring-2 ring-[#2196F3] bg-[#F0F7FF]' : ''
+                className={`flex-1 min-w-[200px] bg-background border border-border rounded-xl flex flex-col transition-all duration-150 ${
+                  isOver ? 'ring-2 ring-blue-500 bg-blue-50' : ''
                 }`}
                 style={{ borderTopWidth: 3, borderTopColor: borderColor }}
               >
@@ -413,7 +413,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                       draggable
                       onDragStart={(e) => handleDragStart(e, app.id)}
                       onDragEnd={handleDragEnd}
-                      className={`bg-white border border-[#E8E8E8] rounded-lg p-3 cursor-grab active:cursor-grabbing transition-opacity duration-150 ${
+                      className={`bg-white border border-border rounded-lg p-3 cursor-grab active:cursor-grabbing transition-opacity duration-150 ${
                         draggingId === app.id ? 'opacity-50' : 'opacity-100'
                       } hover:border-[#CCC]`}
                     >
@@ -444,7 +444,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               setRejectionModal({ open: false, applicationId: '', reason: '' })
             }
           />
-          <div className="relative bg-white border border-[#E8E8E8] rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
+          <div className="relative bg-white border border-border rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2
                 className="text-lg font-bold text-[#333]"
@@ -456,7 +456,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                 onClick={() =>
                   setRejectionModal({ open: false, applicationId: '', reason: '' })
                 }
-                className="p-1 rounded-lg hover:bg-[#F5F5F5] transition-colors duration-150"
+                className="p-1 rounded-lg hover:bg-muted transition-colors duration-150"
               >
                 <X className="w-5 h-5 text-[#999]" />
               </button>
@@ -468,21 +468,21 @@ export default function PipelineClient({ user, postingId }: Props) {
               }
               placeholder={t('rejectionReasonPlaceholder')}
               rows={4}
-              className="w-full px-4 py-3 text-sm border border-[#E8E8E8] rounded-lg resize-none focus:outline-none focus:border-[#F44336] transition-colors duration-150"
+              className="w-full px-4 py-3 text-sm border border-border rounded-lg resize-none focus:outline-none focus:border-red-500 transition-colors duration-150"
             />
             <div className="flex items-center justify-end gap-2 mt-4">
               <button
                 onClick={() =>
                   setRejectionModal({ open: false, applicationId: '', reason: '' })
                 }
-                className="px-4 py-2 text-sm font-medium text-[#666] border border-[#E8E8E8] rounded-lg hover:bg-[#FAFAFA] transition-colors duration-150"
+                className="px-4 py-2 text-sm font-medium text-[#666] border border-border rounded-lg hover:bg-background transition-colors duration-150"
               >
                 {t('cancelButton')}
               </button>
               <button
                 onClick={guardedRejectionSubmit}
                 disabled={!rejectionModal.reason.trim() || modalSubmitting}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#F44336] hover:bg-[#D32F2F] text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-red-500 hover:bg-red-700 text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
               >
                 {modalSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 {t('confirmButton')}
@@ -505,7 +505,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               })
             }
           />
-          <div className="relative bg-white border border-[#E8E8E8] rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
+          <div className="relative bg-white border border-border rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2
                 className="text-lg font-bold text-[#333]"
@@ -521,7 +521,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                     form: { offeredSalary: '', offeredDate: '', expectedStartDate: '' },
                   })
                 }
-                className="p-1 rounded-lg hover:bg-[#F5F5F5] transition-colors duration-150"
+                className="p-1 rounded-lg hover:bg-muted transition-colors duration-150"
               >
                 <X className="w-5 h-5 text-[#999]" />
               </button>
@@ -542,7 +542,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                     }))
                   }
                   placeholder={t('offeredSalaryPlaceholder')}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary transition-colors duration-150"
                 />
               </div>
               {/* 제안일 */}
@@ -559,7 +559,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                       form: { ...prev.form, offeredDate: e.target.value },
                     }))
                   }
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary transition-colors duration-150"
                 />
               </div>
               {/* 입사 예정일 */}
@@ -576,7 +576,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                       form: { ...prev.form, expectedStartDate: e.target.value },
                     }))
                   }
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary transition-colors duration-150"
                 />
               </div>
             </div>
@@ -589,7 +589,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                     form: { offeredSalary: '', offeredDate: '', expectedStartDate: '' },
                   })
                 }
-                className="px-4 py-2 text-sm font-medium text-[#666] border border-[#E8E8E8] rounded-lg hover:bg-[#FAFAFA] transition-colors duration-150"
+                className="px-4 py-2 text-sm font-medium text-[#666] border border-border rounded-lg hover:bg-background transition-colors duration-150"
               >
                 {t('cancelButton')}
               </button>

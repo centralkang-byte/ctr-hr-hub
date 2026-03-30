@@ -141,9 +141,9 @@ function SettlementDetailModal({
     <div className={MODAL_STYLES.container}>
       <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl mx-4 max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8E8E8]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div>
-            <h2 className="text-lg font-semibold text-[#1A1A1A]">
+            <h2 className="text-lg font-semibold text-foreground">
               {settlement.employeeName} — {settlement.year}년 연말정산
             </h2>
             <p className="text-sm text-[#666] mt-0.5">
@@ -153,7 +153,7 @@ function SettlementDetailModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-[#F5F5F5] text-[#666]"
+            className="p-2 rounded-lg hover:bg-muted text-[#666]"
           >
             <X className="h-5 w-5" />
           </button>
@@ -170,18 +170,18 @@ function SettlementDetailModal({
               </span>
             )}
             {settlement.confirmedAt && (
-              <span className="text-xs text-[#059669]">
+              <span className="text-xs text-emerald-600">
                 확정일: {formatDate(settlement.confirmedAt)}
               </span>
             )}
           </div>
 
           {/* Calculation Breakdown */}
-          <div className="rounded-xl border border-[#E8E8E8] overflow-hidden">
-            <div className="bg-[#FAFAFA] px-4 py-2 text-xs font-semibold text-[#666] uppercase tracking-wider">
+          <div className="rounded-xl border border-border overflow-hidden">
+            <div className="bg-background px-4 py-2 text-xs font-semibold text-[#666] uppercase tracking-wider">
               {'소득세 계산 요약'}
             </div>
-            <div className="divide-y divide-[#F5F5F5]">
+            <div className="divide-y divide-border">
               {[
                 { label: '① 총급여', value: settlement.totalSalary },
                 { label: '⑤ 과세표준', value: settlement.totalSalary },
@@ -190,7 +190,7 @@ function SettlementDetailModal({
               ].map((row) => (
                 <div key={row.label} className="flex items-center justify-between px-4 py-2.5">
                   <span className="text-sm text-[#555]">{row.label}</span>
-                  <span className="text-sm font-medium text-[#1A1A1A]">
+                  <span className="text-sm font-medium text-foreground">
                     {formatKRW(row.value)}
                   </span>
                 </div>
@@ -202,17 +202,17 @@ function SettlementDetailModal({
           <div
             className={`rounded-xl p-5 text-center ${
               isRefund
-                ? 'bg-[#D1FAE5] border border-[#A7F3D0]'
-                : 'bg-[#FEF3C7] border border-[#FCD34D]'
+                ? 'bg-emerald-100 border border-emerald-200'
+                : 'bg-amber-100 border border-amber-300'
             }`}
           >
             <p
-              className={`text-sm font-semibold mb-1 ${isRefund ? 'text-[#047857]' : 'text-[#B45309]'}`}
+              className={`text-sm font-semibold mb-1 ${isRefund ? 'text-emerald-700' : 'text-amber-700'}`}
             >
               {isRefund ? '환급액' : '추가납부액'}
             </p>
             <p
-              className={`text-3xl font-bold ${isRefund ? 'text-[#059669]' : 'text-[#D97706]'}`}
+              className={`text-3xl font-bold ${isRefund ? 'text-emerald-600' : 'text-amber-600'}`}
             >
               {formatKRW(Math.abs(finalNum))}
             </p>
@@ -223,7 +223,7 @@ function SettlementDetailModal({
 
           {/* Receipt status */}
           {settlement.withholdingReceipt && (
-            <div className="flex items-center gap-2 text-sm text-[#059669]">
+            <div className="flex items-center gap-2 text-sm text-emerald-600">
               <CheckCircle2 className="h-4 w-4" />
               <span>
                 원천징수영수증 발행완료 ({formatDate(settlement.withholdingReceipt.issuedAt)})
@@ -233,11 +233,11 @@ function SettlementDetailModal({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-[#E8E8E8] flex items-center justify-between gap-3">
+        <div className="px-6 py-4 border-t border-border flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm text-[#555] hover:bg-[#F5F5F5] rounded-lg"
+            className="px-4 py-2 text-sm text-[#555] hover:bg-muted rounded-lg"
           >
             {'닫기'}
           </button>
@@ -247,7 +247,7 @@ function SettlementDetailModal({
                 type="button"
                 onClick={() => onIssueReceipt(settlement.id)}
                 disabled={issuingReceipt}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] rounded-lg disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-white border border-border hover:bg-background text-[#333] rounded-lg disabled:opacity-50"
               >
                 <Download className="h-4 w-4" />
                 {issuingReceipt ? '발행 중...' : '영수증 발행'}
@@ -464,8 +464,8 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <FileText className="h-6 w-6 text-[#5E81F4]" />
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">
+          <FileText className="h-6 w-6 text-primary" />
+          <h1 className="text-2xl font-bold text-foreground">
             {year}년 연말정산 관리
           </h1>
         </div>
@@ -474,7 +474,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
           <select
             value={year}
             onChange={(e) => setYear(parseInt(e.target.value, 10))}
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] outline-none"
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary outline-none"
           >
             {YEAR_OPTIONS.map((y) => (
               <option key={y} value={y}>
@@ -502,13 +502,13 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
 
       {/* Error banner */}
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-[#FEE2E2] border border-[#FECACA] rounded-lg text-sm text-[#B91C1C]">
+        <div className="flex items-center gap-2 p-3 bg-red-100 border border-red-200 rounded-lg text-sm text-red-700">
           <AlertCircle className="h-4 w-4 flex-shrink-0" />
           <span>{error}</span>
           <button
             type="button"
             onClick={() => setError(null)}
-            className="ml-auto p-1 hover:bg-[#FECACA] rounded"
+            className="ml-auto p-1 hover:bg-red-200 rounded"
           >
             <X className="h-3 w-3" />
           </button>
@@ -519,17 +519,17 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {[
           { key: 'not_started', label: t('kr_kebafb8ec'), icon: Users, color: 'text-[#666]' },
-          { key: 'in_progress', label: t('inProgress'), icon: Clock, color: 'text-[#B45309]' },
-          { key: 'submitted', label: t('submitted'), icon: Send, color: 'text-[#4B6DE0]' },
-          { key: 'hr_review', label: t('hrReviewing'), icon: Eye, color: 'text-[#C2410C]' },
-          { key: 'confirmed', label: t('confirmed'), icon: CheckCircle2, color: 'text-[#059669]' },
+          { key: 'in_progress', label: t('inProgress'), icon: Clock, color: 'text-amber-700' },
+          { key: 'submitted', label: t('submitted'), icon: Send, color: 'text-primary/90' },
+          { key: 'hr_review', label: t('hrReviewing'), icon: Eye, color: 'text-orange-700' },
+          { key: 'confirmed', label: t('confirmed'), icon: CheckCircle2, color: 'text-emerald-600' },
         ].map(({ key, label, icon: Icon, color }) => (
           <div key={key} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className={`flex items-center gap-1.5 text-xs ${color} mb-1`}>
               <Icon className="h-3.5 w-3.5" />
               <span>{label}</span>
             </div>
-            <p className="text-2xl font-bold text-[#1A1A1A]">
+            <p className="text-2xl font-bold text-foreground">
               {summary[key as keyof StatusSummary]}
             </p>
           </div>
@@ -538,10 +538,10 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
         {/* Progress bar card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">{t('all_kec9984eb')}</p>
-          <p className="text-2xl font-bold text-[#5E81F4]">{completionPct}%</p>
-          <div className="mt-2 h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">
+          <p className="text-2xl font-bold text-primary">{completionPct}%</p>
+          <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
             <div
-              className="h-full bg-[#5E81F4] rounded-full transition-all duration-500"
+              className="h-full bg-primary rounded-full transition-all duration-500"
               style={{ width: `${completionPct}%` }}
             />
           </div>
@@ -549,7 +549,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
       </div>
 
       {/* Status filter tabs */}
-      <div className="flex border-b border-[#E8E8E8]">
+      <div className="flex border-b border-border">
         {STATUS_TABS.map((tab) => (
           <button
             key={tab.key}
@@ -557,7 +557,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
             onClick={() => setStatusFilter(tab.key)}
             className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               statusFilter === tab.key
-                ? 'border-[#5E81F4] text-[#5E81F4]'
+                ? 'border-primary text-primary'
                 : 'border-transparent text-[#666] hover:text-[#333]'
             }`}
           >
@@ -566,8 +566,8 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
               <span
                 className={`text-xs px-1.5 py-0.5 rounded-full ${
                   statusFilter === tab.key
-                    ? 'bg-[#EDF1FE] text-[#5E81F4]'
-                    : 'bg-[#F5F5F5] text-[#666]'
+                    ? 'bg-primary/10 text-primary'
+                    : 'bg-muted text-[#666]'
                 }`}
               >
                 {tab.count}
@@ -585,7 +585,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
               <th className={TABLE_STYLES.headerCell}>
                 <input
                   type="checkbox"
-                  className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
+                  className="w-4 h-4 rounded border-border text-primary"
                   checked={
                     selectedIds.size > 0 &&
                     filteredSettlements.every((s) => selectedIds.has(s.id))
@@ -637,26 +637,26 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                     <td className={TABLE_STYLES.cell} onClick={(e) => e.stopPropagation()}>
                       <input
                         type="checkbox"
-                        className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
+                        className="w-4 h-4 rounded border-border text-primary"
                         checked={selectedIds.has(s.id)}
                         onChange={() => toggleSelect(s.id)}
                       />
                     </td>
                     <td className={TABLE_STYLES.cell}>
                       <div className="flex flex-col">
-                        <span className="font-medium text-[#1A1A1A]">
+                        <span className="font-medium text-foreground">
                           {s.employeeName}
                         </span>
                         <span className="text-xs text-[#999]">{s.employeeNo}</span>
                       </div>
                     </td>
                     <td className={TABLE_STYLES.cell}>{s.department}</td>
-                    <td className={cn(TABLE_STYLES.cell, "text-[#1A1A1A] font-medium")}>
+                    <td className={cn(TABLE_STYLES.cell, "text-foreground font-medium")}>
                       {formatKRW(s.totalSalary)}
                     </td>
                     <td className={TABLE_STYLES.cell}>
                       <span
-                        className={cn("font-semibold", isRefund ? 'text-[#059669]' : 'text-[#D97706]')}
+                        className={cn("font-semibold", isRefund ? 'text-emerald-600' : 'text-amber-600')}
                       >
                         {isRefund ? '+' : '-'} {formatKRW(Math.abs(finalNum))}
                       </span>
@@ -672,7 +672,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                         <button
                           type="button"
                           onClick={() => setSelectedSettlement(s)}
-                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-[#555] hover:bg-[#F5F5F5] rounded-lg"
+                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-[#555] hover:bg-muted rounded-lg"
                         >
                           <Eye className="h-3.5 w-3.5" />
                           {t('kr_keab280ed')}
@@ -693,7 +693,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                             type="button"
                             onClick={() => handleIssueReceipt(s.id)}
                             disabled={issuingReceipt}
-                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-[#4B6DE0] bg-[#E0E7FF] hover:bg-[#C7D2FE] rounded-lg disabled:opacity-50"
+                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-primary/90 bg-indigo-100 hover:bg-indigo-200 rounded-lg disabled:opacity-50"
                           >
                             <Download className="h-3.5 w-3.5" />
                             {t('kr_kec9881ec')}
@@ -712,7 +712,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
 
       {/* Bulk action bar */}
       {selectedIds.size > 0 && (
-        <div className="mt-4 px-4 py-3 border border-[#E8E8E8] rounded-lg bg-[#F8FAFC] flex items-center justify-between">
+        <div className="mt-4 px-4 py-3 border border-border rounded-lg bg-slate-50 flex items-center justify-between">
           <span className="text-sm text-[#555]">
             {selectedIds.size}건 선택됨
           </span>

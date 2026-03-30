@@ -173,7 +173,7 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
                   <th className={cn(TABLE_STYLES.headerCell, 'text-center')}>{t('kr_kec8381ec')}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#F0F0F3]">
+              <tbody className="divide-y divide-border">
                 {predictions.data.map((emp: { employeeId: string; name: string; department: string; position: string; score: number; level: string; factors: { factor: string; contribution: number; detail: string }[] }) => (
                   <React.Fragment key={emp.employeeId}>
                     <tr className={TABLE_STYLES.row}>
@@ -196,7 +196,7 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
                           <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-medium ${
                             emp.level === 'HIGH' ? 'bg-red-50 text-red-600' :
                             emp.level === 'MEDIUM' ? 'bg-amber-50 text-amber-600' :
-                            'bg-emerald-50 text-[#047857]'
+                            'bg-emerald-50 text-emerald-700'
                           }`}>
                             {emp.level === 'HIGH' ? '고위험' : emp.level === 'MEDIUM' ? t('caution') : '안전'}
                           </span>
@@ -206,7 +206,7 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
                         <div className="flex justify-center">
                           <button
                             onClick={() => setExpandedRow(expandedRow === emp.employeeId ? null : emp.employeeId)}
-                            className="p-1.5 rounded hover:bg-[#E0E7FF] text-[#8181A5] transition-colors"
+                            className="p-1.5 rounded hover:bg-indigo-100 text-muted-foreground transition-colors"
                           >
                             {expandedRow === emp.employeeId ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                           </button>
@@ -215,16 +215,16 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
                     </tr>
                     {expandedRow === emp.employeeId && emp.factors.length > 0 && (
                       <tr>
-                        <td colSpan={6} className="px-5 py-4 bg-[#F8F9FA] border-b border-[#F0F0F3] shadow-inner">
+                        <td colSpan={6} className="px-5 py-4 bg-muted/50 border-b border-border shadow-inner">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {emp.factors.map((f: { factor: string; contribution: number; detail: string }, i: number) => (
                               <div key={i} className="flex items-start gap-2 text-xs">
-                                <span className="px-1.5 py-0.5 rounded bg-white border border-[#E8E8F0] text-[#1C1D21] font-medium flex-shrink-0">
+                                <span className="px-1.5 py-0.5 rounded bg-white border border-border text-foreground font-medium flex-shrink-0">
                                   +{f.contribution}
                                 </span>
                                 <div>
-                                  <span className="font-medium text-[#1C1D21]">{f.factor}:</span>{' '}
-                                  <span className="text-[#8181A5]">{f.detail}</span>
+                                  <span className="font-medium text-foreground">{f.factor}:</span>{' '}
+                                  <span className="text-muted-foreground">{f.detail}</span>
                                 </div>
                               </div>
                             ))}
@@ -263,7 +263,7 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
                   <span className="text-sm text-gray-700">{r.reason}</span>
                   <div className="flex items-center gap-2">
                     <div className="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-[#5E81F4] rounded-full" style={{ width: `${r.percentage}%` }} />
+                      <div className="h-full bg-primary rounded-full" style={{ width: `${r.percentage}%` }} />
                     </div>
                     <span className="text-xs text-gray-500">{r.percentage}%</span>
                   </div>

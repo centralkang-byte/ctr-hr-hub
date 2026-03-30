@@ -41,7 +41,7 @@ export function SettingsPageLayout({
       {/* 헤더 영역 */}
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-[#1A1A1A]">{title}</h2>
+          <h2 className="text-xl font-semibold text-foreground">{title}</h2>
           <p className="mt-1 text-sm text-[#666]">{description}</p>
         </div>
 
@@ -51,7 +51,7 @@ export function SettingsPageLayout({
       </div>
 
       {/* 법인 선택 + 오버라이드 뱃지 */}
-      <div className="mb-6 flex flex-wrap items-center gap-4 rounded-xl border border-[#E8E8E8] bg-[#FAFAFA] px-4 py-3">
+      <div className="mb-6 flex flex-wrap items-center gap-4 rounded-xl border border-border bg-background px-4 py-3">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-[#555]">법인:</span>
           <CompanySelector
@@ -60,7 +60,7 @@ export function SettingsPageLayout({
           />
         </div>
 
-        <div className="h-4 w-px bg-[#E8E8E8]" />
+        <div className="h-4 w-px bg-border" />
 
         <GlobalOverrideBadge
           isOverride={isOverride}

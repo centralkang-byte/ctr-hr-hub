@@ -175,14 +175,14 @@ export default function PayrollImportClient({ user, companies }: {
 
   const statusBadge = (status: string) => {
     const map: Record<string, string> = {
-      uploaded: 'bg-[#FEF3C7] text-[#B45309]',
-      processing: 'bg-[#E0E7FF] text-[#4B6DE0]',
-      confirmed: 'bg-[#D1FAE5] text-[#047857]',
-      failed: 'bg-[#FEE2E2] text-[#B91C1C]',
+      uploaded: 'bg-amber-100 text-amber-700',
+      processing: 'bg-indigo-100 text-primary/90',
+      confirmed: 'bg-emerald-100 text-emerald-700',
+      failed: 'bg-red-100 text-red-700',
     }
     const label: Record<string, string> = { uploaded: '업로드됨', processing: '처리중', confirmed: t('confirmed'), failed: t('failed') }
     return (
-      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${map[status] ?? 'bg-[#F5F5F5] text-[#666]'}`}>
+      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${map[status] ?? 'bg-muted text-[#666]'}`}>
         {label[status] ?? status}
       </span>
     )
@@ -192,11 +192,11 @@ export default function PayrollImportClient({ user, companies }: {
     <div className="p-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-9 h-9 bg-[#EDF1FE] rounded-lg flex items-center justify-center">
-          <Upload className="w-5 h-5 text-[#5E81F4]" />
+        <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center">
+          <Upload className="w-5 h-5 text-primary" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('importTitle')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('importTitle')}</h1>
           <p className="text-sm text-[#666]">{t('kr_ked95b4ec_company_keab889ec_ke')}</p>
         </div>
       </div>
@@ -212,8 +212,8 @@ export default function PayrollImportClient({ user, companies }: {
               onClick={() => setSelectedCompany(co)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 selectedCompany?.id === co.id
-                  ? 'bg-[#5E81F4] text-white'
-                  : 'bg-white border border-[#D4D4D4] text-[#555] hover:bg-[#FAFAFA]'
+                  ? 'bg-primary text-white'
+                  : 'bg-white border border-border text-[#555] hover:bg-background'
               }`}
             >
               {co.code} ({co.currency})
@@ -223,7 +223,7 @@ export default function PayrollImportClient({ user, companies }: {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-[#E8E8E8] mb-6">
+      <div className="flex border-b border-border mb-6">
         {([['upload', '파일 업로드', Upload], ['mapping', '컬럼 매핑 설정', Settings2], ['history', '업로드 이력', Clock]] as const).map(
           ([key, label, Icon]) => (
             <button
@@ -231,7 +231,7 @@ export default function PayrollImportClient({ user, companies }: {
               onClick={() => setTab(key)}
               className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
                 tab === key
-                  ? 'border-[#5E81F4] text-[#5E81F4]'
+                  ? 'border-primary text-primary'
                   : 'border-transparent text-[#666] hover:text-[#333]'
               }`}
             >
@@ -247,13 +247,13 @@ export default function PayrollImportClient({ user, companies }: {
         <div className="max-w-2xl space-y-6">
           {/* Mapping selector */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-sm font-semibold text-[#1A1A1A] mb-3">{t('kr_kecbbaceb_keba7a4ed_kec84a0ed')}</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('kr_kecbbaceb_keba7a4ed_kec84a0ed')}</h3>
             {loadingMappings ? (
               <div className="text-sm text-[#999]">{tCommon('loading')}</div>
             ) : mappings.length === 0 ? (
               <div className="text-sm text-[#999]">
                 선택한 법인에 매핑 설정이 없습니다.{' '}
-                <button onClick={() => setTab('mapping')} className="text-[#5E81F4] underline">
+                <button onClick={() => setTab('mapping')} className="text-primary underline">
                   {t('kr_keba7a4ed_add')}
                 </button>
               </div>
@@ -266,8 +266,8 @@ export default function PayrollImportClient({ user, companies }: {
                     onClick={() => setSelectedMapping(m)}
                     className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
                       selectedMapping?.id === m.id
-                        ? 'border-[#5E81F4] bg-[#EDF1FE] text-[#4B6DE0]'
-                        : 'border-[#D4D4D4] text-[#555] hover:bg-[#FAFAFA]'
+                        ? 'border-primary bg-primary/10 text-primary/90'
+                        : 'border-border text-[#555] hover:bg-background'
                     }`}
                   >
                     {m.name} {m.isDefault && <span className="text-xs ml-1 text-[#999]">{t('kr_keab8b0eb')}</span>}
@@ -279,19 +279,19 @@ export default function PayrollImportClient({ user, companies }: {
 
           {/* Period */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-sm font-semibold text-[#1A1A1A] mb-3">{t('kr_keab889ec_keca780ea_month')}</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('kr_keab889ec_keca780ea_month')}</h3>
             <div className="flex gap-3">
               <select
                 value={uploadYear}
                 onChange={e => setUploadYear(Number(e.target.value))}
-                className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
+                className="px-3 py-2 border border-border rounded-lg text-sm"
               >
                 {[2024, 2025, 2026].map(y => <option key={y}>{y}</option>)}
               </select>
               <select
                 value={uploadMonth}
                 onChange={e => setUploadMonth(Number(e.target.value))}
-                className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
+                className="px-3 py-2 border border-border rounded-lg text-sm"
               >
                 {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
                   <option key={m} value={m}>{m}월</option>
@@ -302,13 +302,13 @@ export default function PayrollImportClient({ user, companies }: {
 
           {/* File Drop */}
           <div
-            className="bg-white rounded-xl border-2 border-dashed border-[#D4D4D4] p-10 text-center cursor-pointer hover:border-[#5E81F4] hover:bg-[#EDF1FE]/20 transition-colors"
+            className="bg-white rounded-xl border-2 border-dashed border-border p-10 text-center cursor-pointer hover:border-primary hover:bg-primary/10/20 transition-colors"
             onClick={() => fileRef.current?.click()}
           >
             <FileSpreadsheet className="w-12 h-12 text-[#CCC] mx-auto mb-3" />
             {selectedFile ? (
               <div>
-                <p className="text-sm font-semibold text-[#1A1A1A]">{selectedFile.name}</p>
+                <p className="text-sm font-semibold text-foreground">{selectedFile.name}</p>
                 <p className="text-xs text-[#999] mt-1">{(selectedFile.size / 1024).toFixed(1)} KB</p>
               </div>
             ) : (
@@ -330,7 +330,7 @@ export default function PayrollImportClient({ user, companies }: {
           </button>
 
           {!selectedMapping && (
-            <div className="flex items-center gap-2 text-sm text-[#B45309] bg-[#FEF3C7] p-3 rounded-lg">
+            <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-100 p-3 rounded-lg">
               <AlertCircle className="w-4 h-4 shrink-0" />
               {t('kr_kecbbaceb_keba7a4ed_keba8bcec_')}
             </div>
@@ -342,12 +342,12 @@ export default function PayrollImportClient({ user, companies }: {
       {tab === 'mapping' && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-[#1A1A1A]">
+            <h3 className="text-sm font-semibold text-foreground">
               {selectedCompany?.code} 컬럼 매핑 목록
             </h3>
             <button
               onClick={startNewMapping}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#5E81F4] text-white rounded-lg text-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-lg text-sm"
             >
               <Plus className="w-4 h-4" /> {t('kr_kec8388_keba7a4ed_add')}
             </button>
@@ -380,7 +380,7 @@ export default function PayrollImportClient({ user, companies }: {
                       <td className={cn(TABLE_STYLES.cellMuted, "font-mono tabular-nums")}>{m.currency}</td>
                       <td className={TABLE_STYLES.cell}>
                         {m.isDefault && (
-                          <CheckCircle2 className="w-4 h-4 text-[#059669]" />
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                         )}
                       </td>
                     </tr>
@@ -392,8 +392,8 @@ export default function PayrollImportClient({ user, companies }: {
 
           {/* New Mapping Editor */}
           {editingMapping && (
-            <div className="bg-white rounded-xl border border-[#5E81F4] p-5 space-y-4">
-              <h4 className="text-sm font-semibold text-[#1A1A1A]">{t('kr_kec8388_keba7a4ed_settings')}</h4>
+            <div className="bg-white rounded-xl border border-primary p-5 space-y-4">
+              <h4 className="text-sm font-semibold text-foreground">{t('kr_kec8388_keba7a4ed_settings')}</h4>
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="text-xs text-[#666] mb-1 block">{t('kr_keba7a4ed')}</label>
@@ -401,7 +401,7 @@ export default function PayrollImportClient({ user, companies }: {
                     value={editingMapping.name ?? ''}
                     onChange={e => setEditingMapping(prev => ({ ...prev, name: e.target.value }))}
                     placeholder="예: 기본 급여 양식"
-                    className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
+                    className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   />
                 </div>
                 <div>
@@ -409,7 +409,7 @@ export default function PayrollImportClient({ user, companies }: {
                   <select
                     value={editingMapping.fileType ?? 'xlsx'}
                     onChange={e => setEditingMapping(prev => ({ ...prev, fileType: e.target.value }))}
-                    className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
+                    className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   >
                     <option value="xlsx">XLSX</option>
                     <option value="csv">CSV</option>
@@ -422,7 +422,7 @@ export default function PayrollImportClient({ user, companies }: {
                     min={1}
                     value={editingMapping.headerRow ?? 1}
                     onChange={e => setEditingMapping(prev => ({ ...prev, headerRow: Number(e.target.value) }))}
-                    className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
+                    className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   />
                 </div>
               </div>
@@ -434,7 +434,7 @@ export default function PayrollImportClient({ user, companies }: {
                     <div key={field.key} className="flex items-center gap-2">
                       <span className="text-xs text-[#555] w-28 shrink-0">
                         {field.label}
-                        {field.required && <span className="text-[#DC2626] ml-0.5">*</span>}
+                        {field.required && <span className="text-red-600 ml-0.5">*</span>}
                       </span>
                       <ChevronRight className="w-3 h-3 text-[#CCC] shrink-0" />
                       <input
@@ -444,7 +444,7 @@ export default function PayrollImportClient({ user, companies }: {
                           mappings: { ...(prev?.mappings as Record<string, string> ?? {}), [field.key]: e.target.value }
                         }))}
                         placeholder="파일 헤더명"
-                        className="flex-1 px-2.5 py-1.5 border border-[#D4D4D4] rounded text-xs"
+                        className="flex-1 px-2.5 py-1.5 border border-border rounded text-xs"
                       />
                     </div>
                   ))}
@@ -457,21 +457,21 @@ export default function PayrollImportClient({ user, companies }: {
                     type="checkbox"
                     checked={editingMapping.isDefault ?? false}
                     onChange={e => setEditingMapping(prev => ({ ...prev, isDefault: e.target.checked }))}
-                    className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
+                    className="w-4 h-4 rounded border-border text-primary"
                   />
                   {t('kr_keab8b0eb_keba7a4ed_settings')}
                 </label>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setEditingMapping(null)}
-                    className="px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA]"
+                    className="px-3 py-1.5 border border-border rounded-lg text-sm text-[#555] hover:bg-background"
                   >
                     {t('cancel')}
                   </button>
                   <button
                     onClick={saveMapping}
                     disabled={savingMapping || !editingMapping.name}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#5E81F4] text-white rounded-lg text-sm disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-lg text-sm disabled:opacity-50"
                   >
                     <Save className="w-4 h-4" />
                     {savingMapping ? tCommon('loading') : tCommon('save')}
@@ -530,7 +530,7 @@ export default function PayrollImportClient({ user, companies }: {
       {/* Toast */}
       {toast && (
         <div className={`fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg text-sm font-medium text-white z-50
-          ${toast.type === 'success' ? 'bg-[#059669]' : 'bg-[#DC2626]'}`}>
+          ${toast.type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`}>
           {toast.msg}
         </div>
       )}

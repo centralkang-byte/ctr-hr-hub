@@ -84,7 +84,7 @@ export function LeaveTypesTab({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     )
   }
@@ -98,8 +98,8 @@ export function LeaveTypesTab({
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{'휴가 유형'}</h3>
-          <p className="text-sm text-[#8181A5]">
+          <h3 className="text-base font-semibold text-foreground">{'휴가 유형'}</h3>
+          <p className="text-sm text-muted-foreground">
             글로벌 표준 유형 {globalTypes.length}개{companyTypes.length > 0 ? ` + 법인 커스텀 ${companyTypes.length}개` : ''}
           </p>
         </div>
@@ -124,26 +124,26 @@ export function LeaveTypesTab({
               <th className={TABLE_STYLES.headerCell}>{'범위'}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#F0F0F3]">
+          <tbody className="divide-y divide-border">
             {typeDefs.map((type) => (
               <tr
                 key={type.id}
                 onClick={() => setSelectedType(type)}
                 className={TABLE_STYLES.rowClickable}
               >
-                <td className="px-4 py-3 text-sm font-mono tabular-nums text-[#5E81F4]">{type.code}</td>
+                <td className="px-4 py-3 text-sm font-mono tabular-nums text-primary">{type.code}</td>
                 <td className="px-4 py-3">
-                  <div className="text-sm font-medium text-[#1C1D21]">{type.name}</div>
-                  {type.nameEn && <div className="text-xs text-[#8181A5]">{type.nameEn}</div>}
+                  <div className="text-sm font-medium text-foreground">{type.name}</div>
+                  {type.nameEn && <div className="text-xs text-muted-foreground">{type.nameEn}</div>}
                 </td>
                 <td className="px-4 py-3 text-center">
                   {type.category ? (
                     <span className="inline-flex rounded-full bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-700">
                       {CATEGORY_LABELS[type.category] ?? type.category}
                     </span>
-                  ) : <span className="text-xs text-[#8181A5]">—</span>}
+                  ) : <span className="text-xs text-muted-foreground">—</span>}
                 </td>
-                <td className="px-4 py-3 text-center text-sm text-[#1C1D21]">
+                <td className="px-4 py-3 text-center text-sm text-foreground">
                   {COUNTING_METHOD_LABELS[type.countingMethod] ?? type.countingMethod}
                 </td>
                 <td className="px-4 py-3 text-center">
@@ -152,7 +152,7 @@ export function LeaveTypesTab({
                 <td className="px-4 py-3 text-center">
                   <BoolBadge value={type.allowHalfDay} />
                 </td>
-                <td className="px-4 py-3 text-center text-sm text-[#1C1D21]">
+                <td className="px-4 py-3 text-center text-sm text-foreground">
                   {type.maxConsecutiveDays ? `${type.maxConsecutiveDays}일` : '—'}
                 </td>
                 <td className="px-4 py-3 text-center">
@@ -171,10 +171,10 @@ export function LeaveTypesTab({
       </div>
 
       {typeDefs.length === 0 && (
-        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <Briefcase className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" />
-          <p className="text-sm font-medium text-[#1C1D21]">{'등록된 휴가 유형이 없습니다'}</p>
-          <p className="mt-1 text-xs text-[#8181A5]">
+        <div className="rounded-xl border border-dashed border-border py-12 text-center">
+          <Briefcase className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
+          <p className="text-sm font-medium text-foreground">{'등록된 휴가 유형이 없습니다'}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
             {'시드 데이터를 실행하거나 유형을 직접 추가하세요'}
           </p>
         </div>
@@ -222,8 +222,8 @@ function LeaveTypeDetailPanel({
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
       <div className="relative w-full max-w-md bg-white p-6 shadow-lg animate-in slide-in-from-right duration-200">
         <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-[#1C1D21]">{'휴가 유형 상세'}</h3>
-          <button type="button" onClick={onClose} className="text-[#8181A5] hover:text-[#1C1D21]">
+          <h3 className="text-lg font-semibold text-foreground">{'휴가 유형 상세'}</h3>
+          <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -242,8 +242,8 @@ function LeaveTypeDetailPanel({
           <DetailRow label="표시 순서" value={String(type.displayOrder)} />
 
           {/* 규정 상세 */}
-          <div className="border-t border-[#F0F0F3] pt-4">
-            <h4 className="mb-3 text-sm font-semibold text-[#1C1D21]">{'규정 상세'}</h4>
+          <div className="border-t border-border pt-4">
+            <h4 className="mb-3 text-sm font-semibold text-foreground">{'규정 상세'}</h4>
             <div className="space-y-3">
               <DetailRow
                 label="카테고리"
@@ -292,9 +292,9 @@ function LeaveTypeDetailPanel({
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex items-center justify-between rounded-xl border border-[#F0F0F3] px-4 py-3">
-      <span className="text-sm text-[#8181A5]">{label}</span>
-      <span className="text-sm font-medium text-[#1C1D21]">{value}</span>
+    <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="text-sm font-medium text-foreground">{value}</span>
     </div>
   )
 }

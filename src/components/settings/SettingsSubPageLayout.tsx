@@ -38,19 +38,19 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
   const resolvedChildren = typeof children === 'function' ? children(companyId) : children
 
   return (
-    <div className="min-h-screen bg-[#F5F5FA]">
+    <div className="min-h-screen bg-muted">
       <div className="p-6">
         {/* Breadcrumb */}
         <nav className="mb-4 flex items-center gap-1.5 text-sm">
-          <Link href="/settings" className="text-[#8181A5] transition-colors hover:text-[#5E81F4]">
+          <Link href="/settings" className="text-muted-foreground transition-colors hover:text-primary">
             설정
           </Link>
-          <ChevronRight className="h-3.5 w-3.5 text-[#8181A5]" />
-          <span className="text-[#8181A5]">{config.label}</span>
+          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+          <span className="text-muted-foreground">{config.label}</span>
           {currentTab && (
             <>
-              <ChevronRight className="h-3.5 w-3.5 text-[#8181A5]" />
-              <span className="font-medium text-[#1C1D21]">{currentTab.label}</span>
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="font-medium text-foreground">{currentTab.label}</span>
             </>
           )}
         </nav>
@@ -58,21 +58,21 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
         {/* Header + Company Selector */}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#5E81F4]/10">
-              <Icon className="h-5 w-5 text-[#5E81F4]" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+              <Icon className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-[#1C1D21]">{config.label}</h1>
-              <p className="text-xs text-[#8181A5]">{config.labelEn}</p>
+              <h1 className="text-xl font-bold text-foreground">{config.label}</h1>
+              <p className="text-xs text-muted-foreground">{config.labelEn}</p>
             </div>
           </div>
           <CompanySettingSelector value={companyId} onChange={setCompanyId} />
         </div>
 
         {/* Main Area: Side Tabs + Content */}
-        <div className="flex gap-0 rounded-xl border border-[#F0F0F3] bg-white shadow-sm">
+        <div className="flex gap-0 rounded-xl border border-border bg-white shadow-sm">
           {/* Side Tabs — Desktop */}
-          <nav className="hidden w-[220px] shrink-0 border-r border-[#F0F0F3] lg:block">
+          <nav className="hidden w-[220px] shrink-0 border-r border-border lg:block">
             <div className="p-2">
               {config.tabs.map((tab) => (
                 <button
@@ -82,13 +82,13 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
                   className={cn(
                     'flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm transition-colors',
                     activeTab === tab.slug
-                      ? 'bg-[#5E81F4]/8 font-medium text-[#5E81F4] border-l-2 border-[#5E81F4]'
-                      : 'text-[#1C1D21]/70 hover:bg-[#F5F5FA] hover:text-[#1C1D21]',
+                      ? 'bg-primary/8 font-medium text-primary border-l-2 border-primary'
+                      : 'text-foreground/70 hover:bg-muted hover:text-foreground',
                   )}
                 >
                   <span className="flex-1">{tab.label}</span>
                   {tab.isGlobalOnly && (
-                    <Lock className="h-3.5 w-3.5 text-[#8181A5]" />
+                    <Lock className="h-3.5 w-3.5 text-muted-foreground" />
                   )}
                 </button>
               ))}
@@ -96,11 +96,11 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
           </nav>
 
           {/* Side Tabs — Mobile */}
-          <div className="block border-b border-[#F0F0F3] p-3 lg:hidden">
+          <div className="block border-b border-border p-3 lg:hidden">
             <select
               value={activeTab}
               onChange={(e) => handleTabChange(e.target.value)}
-              className="w-full rounded-lg border border-[#F0F0F3] bg-[#F5F5FA] px-3 py-2 text-sm text-[#1C1D21]"
+              className="w-full rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground"
             >
               {config.tabs.map((tab) => (
                 <option key={tab.slug} value={tab.slug}>

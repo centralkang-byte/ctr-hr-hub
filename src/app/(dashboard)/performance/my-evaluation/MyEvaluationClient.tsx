@@ -41,10 +41,10 @@ function StarRating({ value, onChange, disabled }: { value: number; onChange: (v
             {[1, 2, 3, 4, 5].map((i) => (
                 <button key={i} disabled={disabled} onClick={() => onChange(i)}
                     className={`transition-colors ${disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-110'}`}>
-                    <Star className={`h-6 w-6 ${i <= value ? 'fill-[#F59E0B] text-[#F59E0B]' : 'text-[#D1D5DB]'}`} />
+                    <Star className={`h-6 w-6 ${i <= value ? 'fill-amber-500 text-amber-500' : 'text-gray-300'}`} />
                 </button>
             ))}
-            <span className="ml-2 text-sm font-medium text-[#8181A5]">{value}/5</span>
+            <span className="ml-2 text-sm font-medium text-muted-foreground">{value}/5</span>
         </div>
     )
 }
@@ -226,10 +226,10 @@ export default function MyEvaluationClient({user }: {
         return (
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
-                    <Star className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('kr_kec9584ec_selfeval_keab8b0ea_k')}</h2>
-                    <p className="text-sm text-[#8181A5]">{t('selfEval_keb8a94_eval_open_keb8ba8ea_keca784ed')}</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">
+                    <Star className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                    <h2 className="mb-2 text-lg font-semibold text-foreground">{t('kr_kec9584ec_selfeval_keab8b0ea_k')}</h2>
+                    <p className="text-sm text-muted-foreground">{t('selfEval_keb8a94_eval_open_keb8ba8ea_keca784ed')}</p>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-primary hover:underline">
                         <ArrowLeft className="h-4 w-4" /> {t('kr_keb8f8cec')}
                     </a>
                 </div>
@@ -238,30 +238,30 @@ export default function MyEvaluationClient({user }: {
     }
 
     return (
-        <div className="min-h-screen bg-[#F5F5FA] p-6">
+        <div className="min-h-screen bg-muted p-6">
             <div className="mx-auto max-w-4xl">
                 {/* Header */}
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#1C1D21]">{t('selfEvalTitle')}</h1>
-                        <p className="mt-1 text-sm text-[#8181A5]">{t('kr_mbo_kec9785ec_bei_kec97adeb_ke')}</p>
+                        <h1 className="text-2xl font-bold text-foreground">{t('selfEvalTitle')}</h1>
+                        <p className="mt-1 text-sm text-muted-foreground">{t('kr_mbo_kec9785ec_bei_kec97adeb_ke')}</p>
                     </div>
                     <div className="flex items-center gap-3">
                         {/* Saving indicator (GEMINI FIX #2) */}
                         {saveStatus === 'saving' && (
-                            <span className="flex items-center gap-1.5 text-xs text-[#8181A5]"><Loader2 className="h-3.5 w-3.5 animate-spin" /> {t('save_keca491')}</span>
+                            <span className="flex items-center gap-1.5 text-xs text-muted-foreground"><Loader2 className="h-3.5 w-3.5 animate-spin" /> {t('save_keca491')}</span>
                         )}
                         {saveStatus === 'saved' && (
-                            <span className="flex items-center gap-1.5 text-xs text-[#059669]"><CheckCircle2 className="h-3.5 w-3.5" /> {t('save_keb90a8')}</span>
+                            <span className="flex items-center gap-1.5 text-xs text-emerald-600"><CheckCircle2 className="h-3.5 w-3.5" /> {t('save_keb90a8')}</span>
                         )}
                         {saveStatus === 'error' && (
-                            <span className="flex items-center gap-1.5 text-xs text-[#C62828]">
+                            <span className="flex items-center gap-1.5 text-xs text-red-800">
                                 <XCircle className="h-3.5 w-3.5" /> {t('saveFailed')}
                                 <button onClick={() => handleSave('DRAFT')} className="font-medium underline">{tCommon('retry')}</button>
                             </span>
                         )}
                         <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                            className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm text-[#1C1D21] focus:border-[#5E81F4] focus:outline-none">
+                            className="rounded-lg border border-border bg-white px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
                             {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
@@ -270,33 +270,33 @@ export default function MyEvaluationClient({user }: {
 
                 {/* Submitted banner */}
                 {isSubmitted && (
-                    <div className="mb-6 flex items-center gap-2 rounded-xl border border-[#A7F3D0] bg-[#D1FAE5] p-4">
-                        <CheckCircle2 className="h-5 w-5 text-[#059669]" />
-                        <span className="text-sm font-medium text-[#047857]">{t('selfEval_keab080_keca09cec_kec8898ec_kec8898_kec9786ec')}</span>
+                    <div className="mb-6 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-100 p-4">
+                        <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                        <span className="text-sm font-medium text-emerald-700">{t('selfEval_keab080_keca09cec_kec8898ec_kec8898_kec9786ec')}</span>
                     </div>
                 )}
 
                 {/* Score summary */}
                 <div className="mb-6 grid grid-cols-3 gap-4">
-                    <div className="rounded-xl border border-[#F0F0F3] bg-white p-4 text-center">
-                        <p className="text-xs text-[#8181A5]">MBO ({mboWeight}%)</p>
-                        <p className="mt-1 text-2xl font-bold text-[#1C1D21]">{mboAvg.toFixed(1)}</p>
-                        <p className="text-xs text-[#8181A5]">/ 5.0</p>
+                    <div className="rounded-xl border border-border bg-white p-4 text-center">
+                        <p className="text-xs text-muted-foreground">MBO ({mboWeight}%)</p>
+                        <p className="mt-1 text-2xl font-bold text-foreground">{mboAvg.toFixed(1)}</p>
+                        <p className="text-xs text-muted-foreground">/ 5.0</p>
                     </div>
-                    <div className="rounded-xl border border-[#F0F0F3] bg-white p-4 text-center">
-                        <p className="text-xs text-[#8181A5]">BEI ({beiWeight}%)</p>
-                        <p className="mt-1 text-2xl font-bold text-[#1C1D21]">{beiAvg.toFixed(1)}</p>
-                        <p className="text-xs text-[#8181A5]">/ 5.0</p>
+                    <div className="rounded-xl border border-border bg-white p-4 text-center">
+                        <p className="text-xs text-muted-foreground">BEI ({beiWeight}%)</p>
+                        <p className="mt-1 text-2xl font-bold text-foreground">{beiAvg.toFixed(1)}</p>
+                        <p className="text-xs text-muted-foreground">/ 5.0</p>
                     </div>
-                    <div className="rounded-xl border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4 text-center">
-                        <p className="text-xs text-[#5E81F4]">{t('kr_keca285ed_score')}</p>
-                        <p className="mt-1 text-2xl font-bold text-[#5E81F4]">{totalScore.toFixed(2)}</p>
-                        <p className="text-xs text-[#8181A5]">/ 5.0</p>
+                    <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-center">
+                        <p className="text-xs text-primary">{t('kr_keca285ed_score')}</p>
+                        <p className="mt-1 text-2xl font-bold text-primary">{totalScore.toFixed(2)}</p>
+                        <p className="text-xs text-muted-foreground">/ 5.0</p>
                     </div>
                 </div>
 
                 {error && (
-                    <div className="mb-4 rounded-lg border border-[#FFEBEE] bg-[#FFEBEE] p-3 text-sm text-[#C62828]">
+                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
                         {error} <button onClick={fetchEvalData} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
@@ -304,39 +304,39 @@ export default function MyEvaluationClient({user }: {
                 {loading ? (
                     <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse rounded-xl border border-[#F0F0F3] bg-white p-5">
-                                <div className="mb-3 h-4 w-2/3 rounded bg-[#F0F0F3]" />
-                                <div className="h-6 w-32 rounded bg-[#F0F0F3]" />
+                            <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-5">
+                                <div className="mb-3 h-4 w-2/3 rounded bg-border" />
+                                <div className="h-6 w-32 rounded bg-border" />
                             </div>
                         ))}
                     </div>
                 ) : (
                     <>
                         {/* Tabs */}
-                        <div className="mb-6 flex border-b border-[#F0F0F3]">
+                        <div className="mb-6 flex border-b border-border">
                             <button onClick={() => setActiveTab('mbo')}
-                                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'mbo' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#8181A5] hover:text-[#1C1D21]'}`}>
+                                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'mbo' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
                                 {t('kr_mbo_kec9785ec')}
                             </button>
                             <button onClick={() => setActiveTab('bei')}
-                                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'bei' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#8181A5] hover:text-[#1C1D21]'}`}>
+                                className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'bei' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
                                 {t('kr_bei_kec97adeb')}
                             </button>
                         </div>
 
                         {/* MBO Tab */}
                         {activeTab === 'mbo' && (
-                            <div className="rounded-xl border border-[#F0F0F3] bg-white">
-                                <div className="border-b border-[#F0F0F3] px-5 py-4">
-                                    <h2 className="text-base font-semibold text-[#1C1D21]">MBO 자기평가 (가중치 합계: {goals.reduce((s, g) => s + Number(g.weight), 0)}%)</h2>
+                            <div className="rounded-xl border border-border bg-white">
+                                <div className="border-b border-border px-5 py-4">
+                                    <h2 className="text-base font-semibold text-foreground">MBO 자기평가 (가중치 합계: {goals.reduce((s, g) => s + Number(g.weight), 0)}%)</h2>
                                 </div>
-                                <div className="divide-y divide-[#F0F0F3]">
+                                <div className="divide-y divide-border">
                                     {goals.map((goal) => (
                                         <div key={goal.id} className="px-5 py-4 space-y-3">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <p className="text-sm font-medium text-[#1C1D21]">{goal.title}</p>
-                                                    <p className="text-xs text-[#8181A5]">가중치: {goal.weight}%</p>
+                                                    <p className="text-sm font-medium text-foreground">{goal.title}</p>
+                                                    <p className="text-xs text-muted-foreground">가중치: {goal.weight}%</p>
                                                 </div>
                                                 <StarRating value={evalData?.goalScores[goal.id]?.score ?? 3}
                                                     onChange={(v) => updateGoalScore(goal.id, 'score', v)} disabled={isSubmitted} />
@@ -345,29 +345,29 @@ export default function MyEvaluationClient({user }: {
                                                 value={evalData?.goalScores[goal.id]?.comment ?? ''}
                                                 onChange={(e) => updateGoalScore(goal.id, 'comment', e.target.value)}
                                                 placeholder="달성 내용을 기술하세요..."
-                                                className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none disabled:bg-[#F5F5FA]" />
+                                                className="w-full resize-none rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:bg-muted" />
                                         </div>
                                     ))}
                                 </div>
-                                <div className="border-t border-[#F0F0F3] px-5 py-3 text-right">
-                                    <span className="text-sm text-[#8181A5]">{t('kr_mbo_kecb49dec')} </span>
-                                    <span className="text-sm font-bold text-[#1C1D21]">{mboAvg.toFixed(1)} / 5.0</span>
+                                <div className="border-t border-border px-5 py-3 text-right">
+                                    <span className="text-sm text-muted-foreground">{t('kr_mbo_kecb49dec')} </span>
+                                    <span className="text-sm font-bold text-foreground">{mboAvg.toFixed(1)} / 5.0</span>
                                 </div>
                             </div>
                         )}
 
                         {/* BEI Tab */}
                         {activeTab === 'bei' && (
-                            <div className="rounded-xl border border-[#F0F0F3] bg-white">
-                                <div className="border-b border-[#F0F0F3] px-5 py-4">
-                                    <h2 className="text-base font-semibold text-[#1C1D21]">{t('kr_bei_kec97adeb_ctr_ked95b5ec')}</h2>
+                            <div className="rounded-xl border border-border bg-white">
+                                <div className="border-b border-border px-5 py-4">
+                                    <h2 className="text-base font-semibold text-foreground">{t('kr_bei_kec97adeb_ctr_ked95b5ec')}</h2>
                                 </div>
-                                <div className="divide-y divide-[#F0F0F3]">
+                                <div className="divide-y divide-border">
                                     {BEI_ITEMS.map((bei) => (
                                         <div key={bei.key} className="px-5 py-4 space-y-3">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <p className="text-sm font-medium text-[#1C1D21]">{bei.label} ({bei.labelEn})</p>
+                                                    <p className="text-sm font-medium text-foreground">{bei.label} ({bei.labelEn})</p>
                                                 </div>
                                                 <StarRating value={evalData?.beiScores[bei.key]?.score ?? 3}
                                                     onChange={(v) => updateBeiScore(bei.key, 'score', v)} disabled={isSubmitted} />
@@ -376,13 +376,13 @@ export default function MyEvaluationClient({user }: {
                                                 value={evalData?.beiScores[bei.key]?.comment ?? ''}
                                                 onChange={(e) => updateBeiScore(bei.key, 'comment', e.target.value)}
                                                 placeholder="근거를 기술하세요..."
-                                                className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none disabled:bg-[#F5F5FA]" />
+                                                className="w-full resize-none rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:bg-muted" />
                                         </div>
                                     ))}
                                 </div>
-                                <div className="border-t border-[#F0F0F3] px-5 py-3 text-right">
-                                    <span className="text-sm text-[#8181A5]">{t('kr_bei_kecb49dec')} </span>
-                                    <span className="text-sm font-bold text-[#1C1D21]">{beiAvg.toFixed(1)} / 5.0</span>
+                                <div className="border-t border-border px-5 py-3 text-right">
+                                    <span className="text-sm text-muted-foreground">{t('kr_bei_kecb49dec')} </span>
+                                    <span className="text-sm font-bold text-foreground">{beiAvg.toFixed(1)} / 5.0</span>
                                 </div>
                             </div>
                         )}
@@ -391,11 +391,11 @@ export default function MyEvaluationClient({user }: {
                         {!isSubmitted && (
                             <div className="mt-6 flex items-center justify-end gap-3">
                                 <button onClick={() => handleSave('DRAFT')} disabled={submitting}
-                                    className="inline-flex items-center gap-2 rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21] hover:bg-[#F5F5FA] disabled:opacity-40 transition-colors">
+                                    className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-40 transition-colors">
                                     <Save className="h-4 w-4" /> {t('kr_kec9e84ec')}
                                 </button>
                                 <button onClick={() => handleSave('SUBMITTED')} disabled={submitting}
-                                    className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40 transition-colors">
+                                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40 transition-colors">
                                     <Send className="h-4 w-4" /> {submitting ? tCommon('loading') : tCommon('submit')}
                                 </button>
                             </div>

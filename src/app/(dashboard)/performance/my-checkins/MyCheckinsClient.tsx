@@ -97,10 +97,10 @@ export default function MyCheckinsClient({user }: {
         return (
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
-                    <ClipboardCheck className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('kr_kecb2b4ed_keab8b0ea_kec9584eb')}</h2>
-                    <p className="text-sm text-[#8181A5]">{t('kr_kecb2b4ed_check_in_keb8ba8ea_k')}</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">
+                    <ClipboardCheck className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                    <h2 className="mb-2 text-lg font-semibold text-foreground">{t('kr_kecb2b4ed_keab8b0ea_kec9584eb')}</h2>
+                    <p className="text-sm text-muted-foreground">{t('kr_kecb2b4ed_check_in_keb8ba8ea_k')}</p>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-primary hover:underline">
                         <ArrowLeft className="h-4 w-4" /> {t('kr_keb8f8cec')}
                     </a>
                 </div>
@@ -118,16 +118,16 @@ export default function MyCheckinsClient({user }: {
     const isMandatory = checkinStatus?.checkInMode === 'MANDATORY'
 
     return (
-        <div className="min-h-screen bg-[#F5F5FA] p-6">
+        <div className="min-h-screen bg-muted p-6">
             <div className="mx-auto max-w-4xl">
                 {/* Header */}
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#1C1D21]">{t('kr_keb8298ec_kecb2b4ed_my_check_i')}</h1>
-                        <p className="mt-1 text-sm text-[#8181A5]">{t('kr_keca491ea_keca090ea_ked86b5ed_')}</p>
+                        <h1 className="text-2xl font-bold text-foreground">{t('kr_keb8298ec_kecb2b4ed_my_check_i')}</h1>
+                        <p className="mt-1 text-sm text-muted-foreground">{t('kr_keca491ea_keca090ea_ked86b5ed_')}</p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                        className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm text-[#1C1D21] focus:border-[#5E81F4] focus:outline-none">
+                        className="rounded-lg border border-border bg-white px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
                         {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
@@ -135,17 +135,17 @@ export default function MyCheckinsClient({user }: {
 
                 {/* Status banner */}
                 {checkinStatus && (
-                    <div className={`mb-6 rounded-xl border p-4 ${allComplete ? 'border-[#A7F3D0] bg-[#D1FAE5]' : isMandatory ? 'border-[#FDE68A] bg-[#FEF3C7]' : 'border-[#F0F0F3] bg-white'}`}>
+                    <div className={`mb-6 rounded-xl border p-4 ${allComplete ? 'border-emerald-200 bg-emerald-100' : isMandatory ? 'border-amber-200 bg-amber-100' : 'border-border bg-white'}`}>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 {allComplete ? (
-                                    <><CheckCircle2 className="h-5 w-5 text-[#059669]" /><span className="font-medium text-[#047857]">{t('kr_kecb2b4ed_complete')}</span></>
+                                    <><CheckCircle2 className="h-5 w-5 text-emerald-600" /><span className="font-medium text-emerald-700">{t('kr_kecb2b4ed_complete')}</span></>
                                 ) : (
-                                    <><Clock className="h-5 w-5 text-[#D97706]" /><span className="font-medium text-[#92400E]">{isMandatory ? '필수' : '권장'} 체크인 진행 중</span></>
+                                    <><Clock className="h-5 w-5 text-amber-600" /><span className="font-medium text-amber-800">{isMandatory ? '필수' : '권장'} 체크인 진행 중</span></>
                                 )}
                             </div>
                             {checkinStatus.deadline && (
-                                <span className="text-sm text-[#8181A5]">마감: {checkinStatus.deadline.slice(0, 10)}</span>
+                                <span className="text-sm text-muted-foreground">마감: {checkinStatus.deadline.slice(0, 10)}</span>
                             )}
                         </div>
                     </div>
@@ -153,7 +153,7 @@ export default function MyCheckinsClient({user }: {
 
                 {/* Error */}
                 {error && (
-                    <div className="mb-4 rounded-lg border border-[#FFEBEE] bg-[#FFEBEE] p-3 text-sm text-[#C62828]">
+                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
                         {error} <button onClick={fetchData} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
@@ -161,9 +161,9 @@ export default function MyCheckinsClient({user }: {
                 {loading ? (
                     <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse rounded-xl border border-[#F0F0F3] bg-white p-5">
-                                <div className="mb-3 h-4 w-1/2 rounded bg-[#F0F0F3]" />
-                                <div className="h-3 w-1/3 rounded bg-[#F0F0F3]" />
+                            <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-5">
+                                <div className="mb-3 h-4 w-1/2 rounded bg-border" />
+                                <div className="h-3 w-1/3 rounded bg-border" />
                             </div>
                         ))}
                     </div>
@@ -171,22 +171,22 @@ export default function MyCheckinsClient({user }: {
                     <>
                         {/* Check-in conditions */}
                         {conditions.length > 0 && (
-                            <div className="mb-6 rounded-xl border border-[#F0F0F3] bg-white">
-                                <div className="border-b border-[#F0F0F3] px-5 py-4">
-                                    <h2 className="text-base font-semibold text-[#1C1D21]">{t('kr_kecb2b4ed_keca1b0ea')}</h2>
+                            <div className="mb-6 rounded-xl border border-border bg-white">
+                                <div className="border-b border-border px-5 py-4">
+                                    <h2 className="text-base font-semibold text-foreground">{t('kr_kecb2b4ed_keca1b0ea')}</h2>
                                 </div>
-                                <div className="divide-y divide-[#F0F0F3]">
+                                <div className="divide-y divide-border">
                                     {conditions.map((c, i) => (
                                         <div key={i} className="flex items-center justify-between px-5 py-4">
                                             <div className="flex items-center gap-3">
                                                 {c.done ? (
-                                                    <CheckCircle2 className="h-5 w-5 text-[#059669]" />
+                                                    <CheckCircle2 className="h-5 w-5 text-emerald-600" />
                                                 ) : (
-                                                    <Circle className="h-5 w-5 text-[#8181A5]" />
+                                                    <Circle className="h-5 w-5 text-muted-foreground" />
                                                 )}
-                                                <span className={`text-sm font-medium ${c.done ? 'text-[#047857]' : 'text-[#1C1D21]'}`}>{c.label}</span>
+                                                <span className={`text-sm font-medium ${c.done ? 'text-emerald-700' : 'text-foreground'}`}>{c.label}</span>
                                             </div>
-                                            <span className={`text-sm ${c.done ? 'text-[#059669]' : 'text-[#8181A5]'}`}>{c.detail}</span>
+                                            <span className={`text-sm ${c.done ? 'text-emerald-600' : 'text-muted-foreground'}`}>{c.detail}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -194,47 +194,47 @@ export default function MyCheckinsClient({user }: {
                         )}
 
                         {/* Goals progress update */}
-                        <div className="rounded-xl border border-[#F0F0F3] bg-white">
-                            <div className="border-b border-[#F0F0F3] px-5 py-4">
-                                <h2 className="text-base font-semibold text-[#1C1D21]">{t('goals_keca784ed_kec9785eb')}</h2>
+                        <div className="rounded-xl border border-border bg-white">
+                            <div className="border-b border-border px-5 py-4">
+                                <h2 className="text-base font-semibold text-foreground">{t('goals_keca784ed_kec9785eb')}</h2>
                             </div>
                             {goals.length === 0 ? (
-                                <div className="p-8 text-center text-sm text-[#8181A5]">{t('register_keb909c_kebaaa9ed_kec9786ec')}</div>
+                                <div className="p-8 text-center text-sm text-muted-foreground">{t('register_keb909c_kebaaa9ed_kec9786ec')}</div>
                             ) : (
-                                <div className="divide-y divide-[#F0F0F3]">
+                                <div className="divide-y divide-border">
                                     {goals.map((goal) => (
                                         <div key={goal.id} className="px-5 py-4">
                                             <div className="mb-3 flex items-center justify-between">
                                                 <div>
-                                                    <h3 className="text-sm font-semibold text-[#1C1D21]">{goal.title}</h3>
-                                                    <span className="text-xs text-[#8181A5]">가중치: {goal.weight}%</span>
+                                                    <h3 className="text-sm font-semibold text-foreground">{goal.title}</h3>
+                                                    <span className="text-xs text-muted-foreground">가중치: {goal.weight}%</span>
                                                 </div>
-                                                <span className="text-sm font-medium text-[#5E81F4]">{Number(goal.achievementScore ?? 0)}%</span>
+                                                <span className="text-sm font-medium text-primary">{Number(goal.achievementScore ?? 0)}%</span>
                                             </div>
                                             {/* Progress bar */}
-                                            <div className="mb-3 h-2 rounded-full bg-[#F0F0F3]">
-                                                <div className="h-2 rounded-full bg-[#5E81F4] transition-all" style={{ width: `${Math.min(Number(goal.achievementScore ?? 0), 100)}%` }} />
+                                            <div className="mb-3 h-2 rounded-full bg-border">
+                                                <div className="h-2 rounded-full bg-primary transition-all" style={{ width: `${Math.min(Number(goal.achievementScore ?? 0), 100)}%` }} />
                                             </div>
                                             {/* Inline edit (only during CHECK_IN) */}
                                             {isCheckInPeriod && (
                                                 <div className="flex items-end gap-3">
                                                     <div className="flex-1">
-                                                        <label className="mb-1 block text-xs text-[#8181A5]">{t('kr_kec8388_keca784ed')}</label>
+                                                        <label className="mb-1 block text-xs text-muted-foreground">{t('kr_kec8388_keca784ed')}</label>
                                                         <input type="number" min={0} max={100}
                                                             value={progressInputs[goal.id] ?? 0}
                                                             onChange={(e) => setProgressInputs((p) => ({ ...p, [goal.id]: Number(e.target.value) }))}
-                                                            className="w-24 rounded-lg border border-[#F0F0F3] px-3 py-1.5 text-sm focus:border-[#5E81F4] focus:outline-none" />
+                                                            className="w-24 rounded-lg border border-border px-3 py-1.5 text-sm focus:border-primary focus:outline-none" />
                                                     </div>
                                                     <div className="flex-[2]">
-                                                        <label className="mb-1 block text-xs text-[#8181A5]">{t('kr_keba994eb_kec84a0ed')}</label>
+                                                        <label className="mb-1 block text-xs text-muted-foreground">{t('kr_keba994eb_kec84a0ed')}</label>
                                                         <input type="text" value={memos[goal.id] ?? ''}
                                                             onChange={(e) => setMemos((p) => ({ ...p, [goal.id]: e.target.value }))}
                                                             placeholder={tCommon('enterNote')}
-                                                            className="w-full rounded-lg border border-[#F0F0F3] px-3 py-1.5 text-sm focus:border-[#5E81F4] focus:outline-none" />
+                                                            className="w-full rounded-lg border border-border px-3 py-1.5 text-sm focus:border-primary focus:outline-none" />
                                                     </div>
                                                     <button onClick={() => handleSaveProgress(goal.id)}
                                                         disabled={saving === goal.id}
-                                                        className="rounded-lg bg-[#5E81F4] px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40 hover:bg-[#4A6FE0] transition-colors">
+                                                        className="rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40 hover:bg-primary/90 transition-colors">
                                                         {saving === goal.id ? tCommon('loading') : tCommon('save')}
                                                     </button>
                                                 </div>

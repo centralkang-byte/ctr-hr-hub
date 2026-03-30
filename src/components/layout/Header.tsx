@@ -119,14 +119,14 @@ export function Header({ user, companies, onMenuClick }: HeaderProps) {
   }, [])
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b border-[#F0F0F3] bg-white px-4 md:px-6">
+    <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-white px-4 md:px-6">
       {/* ─── Left: Hamburger (mobile) + Breadcrumb ─── */}
       <div className="flex items-center gap-2">
         {/* Hamburger — mobile only */}
         {onMenuClick && (
           <button
             onClick={onMenuClick}
-            className="p-2 -ml-1 rounded-lg text-[#8181A5] hover:bg-[#F5F5FA] transition-colors md:hidden"
+            className="p-2 -ml-1 rounded-lg text-muted-foreground hover:bg-muted transition-colors md:hidden"
             aria-label="Open menu"
           >
             <Menu size={22} />
@@ -134,7 +134,7 @@ export function Header({ user, companies, onMenuClick }: HeaderProps) {
         )}
 
         {/* App title — mobile only */}
-        <span className="text-sm font-bold text-[#1C1D21] md:hidden">CTR HR Hub</span>
+        <span className="text-sm font-bold text-foreground md:hidden">CTR HR Hub</span>
 
         {/* Breadcrumb — desktop only */}
         <nav className="hidden md:flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -178,7 +178,7 @@ export function Header({ user, companies, onMenuClick }: HeaderProps) {
           type="button"
           aria-label={tHeader('directory')}
           title={tHeader('directory')}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ctr-gray-500 hover:bg-[#F5F5FA] transition-colors"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ctr-gray-500 hover:bg-muted transition-colors"
           onClick={() => router.push('/directory')}
         >
           <Users className="h-5 w-5" />
@@ -192,7 +192,7 @@ export function Header({ user, companies, onMenuClick }: HeaderProps) {
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-[#F5F5FA]"
+              className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-muted"
             >
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="bg-ctr-primary-light text-xs text-ctr-primary">

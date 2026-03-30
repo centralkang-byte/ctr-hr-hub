@@ -116,14 +116,14 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('adminResults')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('adminResults')}</h1>
           <p className="text-sm text-[#666] mt-1">{t('kr_keca084ec_kec84b1ea_keab2b0ea_')}</p>
         </div>
         <div className="flex items-center gap-3">
           <select
             value={selectedDeptId}
             onChange={(e) => { setSelectedDeptId(e.target.value); setPage(1) }}
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
           >
             <option value="">{t('all_department')}</option>
             {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
@@ -131,7 +131,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
           <select
             value={selectedCycleId}
             onChange={(e) => { setSelectedCycleId(e.target.value); setPage(1) }}
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
           >
             {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
@@ -139,17 +139,17 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* Block distribution */}
-      <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
-        <h2 className="text-base font-semibold text-[#1A1A1A] flex items-center gap-2 mb-3">
+      <div className="rounded-xl border border-border bg-white p-5">
+        <h2 className="text-base font-semibold text-foreground flex items-center gap-2 mb-3">
           <BarChart3 className="w-4 h-4 text-[#666]" />
           {t('kr_kebb894eb_kebb684ed')}
         </h2>
         <div className="flex items-end gap-2">
           {Object.entries(blockDist).sort().map(([block, count]) => (
             <div key={block} className="flex flex-col items-center">
-              <span className="text-sm font-bold text-[#1A1A1A]">{count}</span>
+              <span className="text-sm font-bold text-foreground">{count}</span>
               <div
-                className="w-12 bg-[#5E81F4] rounded-t-lg mt-1"
+                className="w-12 bg-primary rounded-t-lg mt-1"
                 style={{ height: `${Math.max(count * 20, 8)}px` }}
               />
               <span className="text-xs text-[#666] mt-1">{block}</span>
@@ -195,7 +195,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
                 <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{r.finalResult.performanceScore?.toFixed(1) ?? '-'}</td>
                 <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{r.finalResult.competencyScore?.toFixed(1) ?? '-'}</td>
                 <td className={cn(TABLE_STYLES.cell, "text-center")}>
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.finalResult.calibrated ? 'bg-[#E0E7FF] text-[#4B6DE0]' : 'bg-[#EDF1FE] text-[#4B6DE0]'}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.finalResult.calibrated ? 'bg-indigo-100 text-primary/90' : 'bg-primary/10 text-primary/90'}`}>
                     {r.finalResult.emsBlock ?? '-'}
                   </span>
                 </td>
@@ -211,7 +211,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm text-[#666] disabled:opacity-50 hover:bg-[#FAFAFA]"
+            className="px-3 py-1.5 border border-border rounded-lg text-sm text-[#666] disabled:opacity-50 hover:bg-background"
           >
             {t('prev')}
           </button>
@@ -219,20 +219,20 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
-            className="px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm text-[#666] disabled:opacity-50 hover:bg-[#FAFAFA]"
+            className="px-3 py-1.5 border border-border rounded-lg text-sm text-[#666] disabled:opacity-50 hover:bg-background"
           >
             {t('next')}
           </button>
         </div>
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#333] hover:bg-[#FAFAFA]">
+          <button className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-[#333] hover:bg-background">
             <Download className="w-4 h-4" />
             {t('kr_kec9791ec_keb8ba4ec')}
           </button>
           {cycles.find((c) => c.id === selectedCycleId)?.status === 'CALIBRATION' && (
             <button
               onClick={handleFinalize}
-              className="flex items-center gap-2 px-4 py-2 bg-[#059669] hover:bg-[#047857] text-white rounded-lg text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium"
             >
               <Lock className="w-4 h-4" />
               {t('kr_kec84b1ea_confirmed')}

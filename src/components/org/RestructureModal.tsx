@@ -89,12 +89,12 @@ const CHANGE_TYPE_LABELS: Record<ChangeType, string> = {
 }
 
 const CHANGE_TYPE_COLORS: Record<ChangeType, string> = {
-  create: 'bg-[#D1FAE5] text-[#047857]',
-  move: 'bg-[#DBEAFE] text-[#1D4ED8]',
-  merge: 'bg-[#E0E7FF] text-[#4B6DE0]',
-  rename: 'bg-[#FEF3C7] text-[#B45309]',
-  close: 'bg-[#FEE2E2] text-[#B91C1C]',
-  transfer_employee: 'bg-[#F3E8FF] text-[#7C3AED]',
+  create: 'bg-emerald-100 text-emerald-700',
+  move: 'bg-blue-100 text-blue-700',
+  merge: 'bg-indigo-100 text-primary/90',
+  rename: 'bg-amber-100 text-amber-700',
+  close: 'bg-red-100 text-red-700',
+  transfer_employee: 'bg-purple-50 text-violet-600',
 }
 
 function generateId() {
@@ -122,14 +122,14 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
   ))
 
   return (
-    <div className="border border-[#E8E8E8] rounded-xl p-4 space-y-3 bg-white">
+    <div className="border border-border rounded-xl p-4 space-y-3 bg-white">
       {/* Header */}
       <div className="flex items-center gap-2">
         <span className="text-xs font-semibold text-[#999] w-5">{idx + 1}.</span>
         <select
           value={change.type}
           onChange={(e) => update({ type: e.target.value as ChangeType })}
-          className="text-sm border border-[#D4D4D4] rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+          className="text-sm border border-border rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-primary/10"
         >
           {(Object.keys(CHANGE_TYPE_LABELS) as ChangeType[]).map((t) => (
             <option key={t} value={t}>{CHANGE_TYPE_LABELS[t]}</option>
@@ -140,7 +140,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
         </span>
         <button
           onClick={onRemove}
-          className="ml-auto p-1 text-[#999] hover:text-[#EF4444] transition-colors"
+          className="ml-auto p-1 text-[#999] hover:text-red-500 transition-colors"
           title="삭제"
         >
           <Trash2 size={14} />
@@ -156,7 +156,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
               value={change.newDeptName ?? ''}
               onChange={(e) => update({ newDeptName: e.target.value })}
               placeholder={'신설 부서명'}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
+              className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
             />
           </div>
           <div>
@@ -165,7 +165,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
               value={change.newDeptCode ?? ''}
               onChange={(e) => update({ newDeptCode: e.target.value })}
               placeholder="예: DEPT-NEW"
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
+              className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
             />
           </div>
           <div className="col-span-2">
@@ -173,7 +173,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             <select
               value={change.newDeptParentId ?? ''}
               onChange={(e) => update({ newDeptParentId: e.target.value || null })}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
             >
               <option value="">— 최상위 부서 —</option>
               {deptOptions}
@@ -189,7 +189,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             <select
               value={change.deptId ?? ''}
               onChange={(e) => update({ deptId: e.target.value })}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
             >
               <option value="">— 선택 —</option>
               {deptOptions}
@@ -202,7 +202,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
               <select
                 value={change.targetParentId ?? ''}
                 onChange={(e) => update({ targetParentId: e.target.value || null })}
-                className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+                className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
               >
                 <option value="">— 최상위 —</option>
                 {deptOptions}
@@ -219,7 +219,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             <select
               value={change.sourceDeptId ?? ''}
               onChange={(e) => update({ sourceDeptId: e.target.value })}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
             >
               <option value="">— 선택 —</option>
               {deptOptions}
@@ -232,7 +232,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
               <select
                 value={change.targetDeptId ?? ''}
                 onChange={(e) => update({ targetDeptId: e.target.value })}
-                className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+                className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
               >
                 <option value="">— 선택 —</option>
                 {deptOptions}
@@ -249,7 +249,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             <select
               value={change.renameDeptId ?? ''}
               onChange={(e) => update({ renameDeptId: e.target.value })}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
             >
               <option value="">— 선택 —</option>
               {deptOptions}
@@ -261,7 +261,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
               value={change.newName ?? ''}
               onChange={(e) => update({ newName: e.target.value })}
               placeholder={'변경될 이름'}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
+              className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
             />
           </div>
           <div className="col-span-2">
@@ -270,7 +270,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
               value={change.newNameEn ?? ''}
               onChange={(e) => update({ newNameEn: e.target.value })}
               placeholder="English name"
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
+              className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
             />
           </div>
         </div>
@@ -282,13 +282,13 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
           <select
             value={change.closeDeptId ?? ''}
             onChange={(e) => update({ closeDeptId: e.target.value })}
-            className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+            className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
           >
             <option value="">— 선택 —</option>
             {deptOptions}
           </select>
           {change.closeDeptId && (
-            <p className="mt-1.5 text-xs text-[#EF4444] flex items-center gap-1">
+            <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
               <span>⚠</span> 폐지 시 소속 인원은 상위 부서로 자동 이동됩니다.
             </p>
           )}
@@ -302,7 +302,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             <select
               value={change.employeeId ?? ''}
               onChange={(e) => update({ employeeId: e.target.value })}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
             >
               <option value="">— 직원 선택 —</option>
               {employees.map((emp) => {
@@ -320,7 +320,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             <select
               value={change.fromDeptId ?? ''}
               onChange={(e) => update({ fromDeptId: e.target.value })}
-              className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
             >
               <option value="">— 선택 —</option>
               {deptOptions}
@@ -333,7 +333,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
               <select
                 value={change.toDeptId ?? ''}
                 onChange={(e) => update({ toDeptId: e.target.value })}
-                className="w-full px-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+                className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
               >
                 <option value="">— 선택 —</option>
                 {deptOptions}
@@ -357,16 +357,16 @@ function StepIndicator({ step }: { step: Step }) {
     { key: 'confirm', label: '③ 확인 및 저장' },
   ]
   return (
-    <div className="flex items-center gap-1 px-6 py-3 border-b border-[#E8E8E8] bg-[#FAFAFA]">
+    <div className="flex items-center gap-1 px-6 py-3 border-b border-border bg-background">
       {steps.map((s, i) => (
         <div key={s.key} className="flex items-center gap-1">
           {i > 0 && <ChevronRight size={14} className="text-[#999]" />}
           <span
             className={`text-xs font-medium px-2 py-0.5 rounded ${
               s.key === step
-                ? 'bg-[#5E81F4] text-white'
+                ? 'bg-primary text-white'
                 : steps.findIndex((x) => x.key === step) > i
-                ? 'text-[#5E81F4]'
+                ? 'text-primary'
                 : 'text-[#999]'
             }`}
           >
@@ -477,14 +477,14 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
     <div className={MODAL_STYLES.container}>
       <div className="bg-white rounded-xl shadow-lg w-full max-w-3xl max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8E8E8] shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
           <div className="flex items-center gap-2">
-            <GitBranch size={18} className="text-[#5E81F4]" />
-            <h2 className="text-base font-bold text-[#1A1A1A]">조직 개편 계획</h2>
+            <GitBranch size={18} className="text-primary" />
+            <h2 className="text-base font-bold text-foreground">조직 개편 계획</h2>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-[#999] hover:text-[#333] rounded-lg hover:bg-[#F5F5F5] transition-colors"
+            className="p-1.5 text-[#999] hover:text-[#333] rounded-lg hover:bg-muted transition-colors"
           >
             <X size={18} />
           </button>
@@ -505,7 +505,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
                     value={plan.title}
                     onChange={(e) => setPlan((p) => ({ ...p, title: e.target.value }))}
                     placeholder="예: 2026년 상반기 조직 개편"
-                    className="w-full px-3 py-2 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -524,7 +524,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
                       value={plan.description}
                       onChange={(e) => setPlan((p) => ({ ...p, description: e.target.value }))}
                       placeholder={'개편 배경 및 목적'}
-                      className="w-full px-3 py-2 text-sm border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
+                      className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
                     />
                   </div>
                 </div>
@@ -533,7 +533,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
               {/* Changes list */}
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-[#1A1A1A]">
+                  <h3 className="text-sm font-semibold text-foreground">
                     변경 사항 ({plan.changes.length}건)
                   </h3>
                 </div>
@@ -585,17 +585,17 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
 
           {step === 'confirm' && (
             <div className="p-6 space-y-4">
-              <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-4 space-y-2">
-                <p className="text-sm font-semibold text-[#15803D]">계획 요약</p>
-                <p className="text-sm text-[#1A1A1A]">{plan.title}</p>
+              <div className="bg-green-50 border border-green-200 rounded-xl p-4 space-y-2">
+                <p className="text-sm font-semibold text-green-700">계획 요약</p>
+                <p className="text-sm text-foreground">{plan.title}</p>
                 <p className="text-xs text-[#555]">
                   발효일: {plan.effectiveDate.toLocaleDateString('ko-KR')} &nbsp;·&nbsp; 변경 {plan.changes.length}건
                 </p>
               </div>
 
-              <div className="bg-[#FEF3C7] border border-[#FCD34D] rounded-xl p-4">
-                <p className="text-xs font-medium text-[#92400E] mb-1">⚠ 즉시 적용 시 주의사항</p>
-                <ul className="text-xs text-[#B45309] space-y-1 list-disc list-inside">
+              <div className="bg-amber-100 border border-amber-300 rounded-xl p-4">
+                <p className="text-xs font-medium text-amber-800 mb-1">⚠ 즉시 적용 시 주의사항</p>
+                <ul className="text-xs text-amber-700 space-y-1 list-disc list-inside">
                   <li>부서 이동/통합/폐지 시 소속 인원의 Assignment가 자동 업데이트됩니다.</li>
                   <li>이 작업은 되돌리기 어려울 수 있습니다.</li>
                   <li>발효일 이후로 변경 사항이 반영됩니다.</li>
@@ -603,7 +603,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
               </div>
 
               {error && (
-                <p className="text-sm text-[#EF4444] bg-[#FEE2E2] border border-[#FECACA] rounded-lg px-3 py-2">
+                <p className="text-sm text-red-500 bg-red-100 border border-red-200 rounded-lg px-3 py-2">
                   {error}
                 </p>
               )}
@@ -612,10 +612,10 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-[#E8E8E8] bg-[#FAFAFA] shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-background shrink-0">
           <button
             onClick={step === 'edit' ? onClose : () => setStep(step === 'diff' ? 'edit' : 'diff')}
-            className="px-4 py-2 text-sm border border-[#D4D4D4] rounded-lg bg-white hover:bg-[#F5F5F5] text-[#333] transition-colors"
+            className="px-4 py-2 text-sm border border-border rounded-lg bg-white hover:bg-muted text-[#333] transition-colors"
           >
             {step === 'edit' ? '취소' : '이전'}
           </button>
@@ -625,7 +625,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
               <button
                 onClick={handleSaveDraft}
                 disabled={saving}
-                className="px-4 py-2 text-sm border border-[#D4D4D4] rounded-lg bg-white hover:bg-[#F5F5F5] text-[#333] transition-colors disabled:opacity-50"
+                className="px-4 py-2 text-sm border border-border rounded-lg bg-white hover:bg-muted text-[#333] transition-colors disabled:opacity-50"
               >
                 초안 저장
               </button>

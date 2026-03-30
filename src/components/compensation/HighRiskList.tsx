@@ -42,10 +42,10 @@ interface HighRiskListProps {
 }
 
 const RISK_BADGE_CLASSES: Record<string, string> = {
-  CRITICAL: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]',
-  HIGH: 'bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]',
-  MEDIUM: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]',
-  LOW: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]',
+  CRITICAL: 'bg-red-100 text-red-700 border-red-200',
+  HIGH: 'bg-orange-50 text-orange-700 border-orange-200',
+  MEDIUM: 'bg-amber-100 text-amber-700 border-amber-300',
+  LOW: 'bg-emerald-100 text-emerald-700 border-emerald-200',
 }
 
 const RISK_LABELS: Record<string, string> = {
@@ -86,11 +86,11 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-[#E8E8E8]">
-      <div className="p-4 border-b border-[#E8E8E8]">
-        <h3 className="text-lg font-semibold text-[#1A1A1A]">고위험 직원 목록</h3>
+    <div className="bg-white rounded-xl border border-border">
+      <div className="p-4 border-b border-border">
+        <h3 className="text-lg font-semibold text-foreground">고위험 직원 목록</h3>
       </div>
-      <div className="divide-y divide-[#F5F5F5]">
+      <div className="divide-y divide-border">
         {employees.map((emp) => {
           const isExpanded = expandedId === emp.employeeId
           const topFactors = [...emp.factors]
@@ -101,7 +101,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
           return (
             <div key={emp.employeeId}>
               <button
-                className="w-full px-4 py-3 flex items-center justify-between hover:bg-[#FAFAFA] text-left"
+                className="w-full px-4 py-3 flex items-center justify-between hover:bg-background text-left"
                 onClick={() => setExpandedId(isExpanded ? null : emp.employeeId)}
               >
                 <div className="flex items-center gap-4">
@@ -114,7 +114,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <p className="text-lg font-bold text-[#1A1A1A]">{emp.score}</p>
+                    <p className="text-lg font-bold text-foreground">{emp.score}</p>
                     <Badge
                       className={`text-xs ${RISK_BADGE_CLASSES[emp.riskLevel] ?? ''}`}
                     >
@@ -125,7 +125,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                     {topFactors.map((f) => (
                       <span
                         key={f.factor}
-                        className="text-xs bg-[#F5F5F5] text-[#555] px-2 py-0.5 rounded"
+                        className="text-xs bg-muted text-[#555] px-2 py-0.5 rounded"
                       >
                         {f.description}
                       </span>
@@ -140,7 +140,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
               </button>
 
               {isExpanded && (
-                <div className="px-4 pb-4 bg-[#FAFAFA]">
+                <div className="px-4 pb-4 bg-background">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                     <div>
                       <h4 className="text-sm font-medium text-[#333] mb-2">6요인 레이더</h4>
@@ -157,7 +157,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                             size="sm"
                             onClick={() => handleLoadAi(emp.employeeId)}
                             disabled={aiLoadingId === emp.employeeId}
-                            className="text-[#5E81F4] hover:text-[#4B6DE0] text-xs"
+                            className="text-primary hover:text-primary/90 text-xs"
                           >
                             {aiLoadingId === emp.employeeId ? (
                               <Loader2 className="h-3 w-3 animate-spin mr-1" />
@@ -189,7 +189,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                               <p className="text-xs font-medium text-[#555] mb-1">핵심 이탈 동인</p>
                               <ul className="space-y-1">
                                 {ai.risk_drivers.map((d, i) => (
-                                  <li key={i} className="text-xs text-[#C2410C] bg-[#FFF7ED] px-2 py-1 rounded">
+                                  <li key={i} className="text-xs text-orange-700 bg-orange-50 px-2 py-1 rounded">
                                     {d}
                                   </li>
                                 ))}
@@ -221,7 +221,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                                     key={i}
                                     className="flex items-start gap-2 text-sm text-[#555]"
                                   >
-                                    <span className="inline-block w-5 h-5 rounded bg-[#EDF1FE] text-[#4B6DE0] text-xs font-medium text-center leading-5 flex-shrink-0">
+                                    <span className="inline-block w-5 h-5 rounded bg-primary/10 text-primary/90 text-xs font-medium text-center leading-5 flex-shrink-0">
                                       {i + 1}
                                     </span>
                                     {action}
@@ -240,7 +240,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                                   key={i}
                                   className="flex items-start gap-2 text-sm text-[#555]"
                                 >
-                                  <span className="inline-block w-5 h-5 rounded bg-[#EDF1FE] text-[#4B6DE0] text-xs font-medium text-center leading-5 flex-shrink-0">
+                                  <span className="inline-block w-5 h-5 rounded bg-primary/10 text-primary/90 text-xs font-medium text-center leading-5 flex-shrink-0">
                                     {i + 1}
                                   </span>
                                   {action}

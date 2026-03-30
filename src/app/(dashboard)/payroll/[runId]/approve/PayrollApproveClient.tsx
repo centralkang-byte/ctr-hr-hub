@@ -62,9 +62,9 @@ interface ApprovalStatus {
 }
 
 const STEP_STATUS_CONFIG = {
-    APPROVED: { icon: <CheckCircle2 className="h-5 w-5 text-[#059669]" />, bg: 'bg-[#D1FAE5]', label: '승인' },
-    REJECTED: { icon: <XCircle className="h-5 w-5 text-[#DC2626]" />, bg: 'bg-[#FEE2E2]', label: '반려' },
-    PENDING: { icon: <Clock className="h-5 w-5 text-[#F59E0B]" />, bg: 'bg-[#FEF3C7]', label: '🟡 대기' },
+    APPROVED: { icon: <CheckCircle2 className="h-5 w-5 text-emerald-600" />, bg: 'bg-emerald-100', label: '승인' },
+    REJECTED: { icon: <XCircle className="h-5 w-5 text-red-600" />, bg: 'bg-red-100', label: '반려' },
+    PENDING: { icon: <Clock className="h-5 w-5 text-amber-500" />, bg: 'bg-amber-100', label: '🟡 대기' },
 }
 
 const fmt = (n: number | string | null | undefined) => {
@@ -90,7 +90,7 @@ function ApprovalProgressBar({ chain, currentStep }: { chain: ApprovalChainStep[
                     return (
                         <div key={step.stepNumber} className="flex items-center flex-1 min-w-0">
                             <div className="flex flex-col items-center flex-1 min-w-0">
-                                <div className={`flex h-10 w-10 items-center justify-center rounded-full ${cfg.bg} ${isActive ? 'ring-2 ring-offset-1 ring-[#F59E0B]' : ''}`}>
+                                <div className={`flex h-10 w-10 items-center justify-center rounded-full ${cfg.bg} ${isActive ? 'ring-2 ring-offset-1 ring-amber-500' : ''}`}>
                                     {cfg.icon}
                                 </div>
                                 <p className="mt-1.5 text-[11px] font-medium text-[#333] text-center truncate max-w-20">
@@ -102,7 +102,7 @@ function ApprovalProgressBar({ chain, currentStep }: { chain: ApprovalChainStep[
                                 )}
                             </div>
                             {idx < chain.length - 1 && (
-                                <ChevronRight className="h-4 w-4 text-[#D4D4D4] flex-shrink-0 mx-1" />
+                                <ChevronRight className="h-4 w-4 text-border flex-shrink-0 mx-1" />
                             )}
                         </div>
                     )
@@ -194,7 +194,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
     if (loading || !run || !approval) {
         return (
             <div className="p-4 flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-[#5E81F4]" />
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
         )
     }
@@ -213,22 +213,22 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                     <ArrowLeft className="h-5 w-5" />
                 </button>
                 <div>
-                    <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-[-0.02em]">{t('kr_keab889ec_keab2b0ec')}</h1>
+                    <h1 className="text-2xl font-bold text-foreground tracking-[-0.02em]">{t('kr_keab889ec_keab2b0ec')}</h1>
                     <p className="text-sm text-[#666] mt-0.5">{run.name} · {run.yearMonth}</p>
                 </div>
                 <div className="ml-auto">
                     {isComplete && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#D1FAE5] text-[#047857] text-sm font-semibold">
+                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold">
                             <CheckCheck className="h-4 w-4" /> {t('approve_complete')}
                         </span>
                     )}
                     {isRejected && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#FEE2E2] text-[#B91C1C] text-sm font-semibold">
+                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-red-100 text-red-700 text-sm font-semibold">
                             <XCircle className="h-4 w-4" /> {t('reject_keb90a8')}
                         </span>
                     )}
                     {isPending && !isComplete && !isRejected && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#FEF3C7] text-[#B45309] text-sm font-semibold">
+                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-100 text-amber-700 text-sm font-semibold">
                             <Clock className="h-4 w-4" /> {t('kr_keab2b0ec_keb8c80ea')}
                         </span>
                     )}
@@ -241,9 +241,9 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             {/* Run Summary */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
-                    { label: t('kr_keb8c80ec_kec9db8ec'), value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-[#4B6DE0]" /> },
-                    { label: t('netPay'), value: fmt(Number(run.totalNet ?? 0)), icon: <DollarSign className="h-4 w-4 text-[#059669]" /> },
-                    { label: t('kr_kec9db4ec_ked95adeb'), value: run.allAnomaliesResolved ? '없음 ✅' : '있음 ⚠️', icon: <AlertTriangle className="h-4 w-4 text-[#F59E0B]" /> },
+                    { label: t('kr_keb8c80ec_kec9db8ec'), value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-primary/90" /> },
+                    { label: t('netPay'), value: fmt(Number(run.totalNet ?? 0)), icon: <DollarSign className="h-4 w-4 text-emerald-600" /> },
+                    { label: t('kr_kec9db4ec_ked95adeb'), value: run.allAnomaliesResolved ? '없음 ✅' : '있음 ⚠️', icon: <AlertTriangle className="h-4 w-4 text-amber-500" /> },
                     { label: t('adjustments'), value: `${run.adjustmentCount ?? 0}건`, icon: <CheckCircle2 className="h-4 w-4 text-[#999]" /> },
                 ].map((kpi) => (
                     <div key={kpi.label} className={CARD_STYLES.padded}>
@@ -251,14 +251,14 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                             <p className="text-xs text-[#666]">{kpi.label}</p>
                             {kpi.icon}
                         </div>
-                        <p className="text-sm font-bold text-[#1A1A1A] leading-tight">{kpi.value}</p>
+                        <p className="text-sm font-bold text-foreground leading-tight">{kpi.value}</p>
                     </div>
                 ))}
             </div>
 
             {/* HR Notes */}
             {run.notes && (
-                <div className="bg-[#FAFAFA] rounded-xl border border-[#E8E8E8] p-4">
+                <div className="bg-background rounded-xl border border-border p-4">
                     <p className="text-xs font-semibold text-[#999] mb-1">{t('kr_hr_keba994eb')}</p>
                     <p className="text-sm text-[#555]">{run.notes}</p>
                 </div>
@@ -273,15 +273,15 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                             <div key={step.stepNumber} className="flex items-start gap-3">
                                 <div className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full ${STEP_STATUS_CONFIG[step.status].bg}`}>
                                     {step.status === 'APPROVED' ? (
-                                        <CheckCircle2 className="h-3.5 w-3.5 text-[#059669]" />
+                                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
                                     ) : (
-                                        <XCircle className="h-3.5 w-3.5 text-[#DC2626]" />
+                                        <XCircle className="h-3.5 w-3.5 text-red-600" />
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
-                                        <p className="text-sm font-medium text-[#1A1A1A]">{step.approverName ?? step.roleRequired}</p>
-                                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${step.status === 'APPROVED' ? 'bg-[#D1FAE5] text-[#047857]' : 'bg-[#FEE2E2] text-[#B91C1C]'}`}>
+                                        <p className="text-sm font-medium text-foreground">{step.approverName ?? step.roleRequired}</p>
+                                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
                                             {STEP_STATUS_CONFIG[step.status].label}
                                         </span>
                                         <span className="text-xs text-[#999]">{fmtDate(step.decidedAt)}</span>
@@ -305,20 +305,20 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                         onChange={(e) => setComment(e.target.value)}
                         placeholder={tCommon('placeholderApprovalComment')}
                         rows={3}
-                        className="w-full px-3 py-2.5 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 resize-none"
+                        className="w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
                     />
                     <div className="flex items-center gap-3">
                         <button
                             onClick={handleApprove}
                             disabled={submitting}
-                            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[#059669] hover:bg-[#047857] text-white font-semibold text-sm disabled:opacity-50"
+                            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm disabled:opacity-50"
                         >
                             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                             승인
                         </button>
                         <button
                             onClick={() => setShowReject(true)}
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-[#DC2626] text-[#DC2626] font-semibold text-sm hover:bg-[#FEF2F2]"
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-red-600 text-red-600 font-semibold text-sm hover:bg-red-50"
                         >
                             <XCircle className="h-4 w-4" />
                             {t('reject')}
@@ -331,7 +331,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             <div className="text-center">
                 <button
                     onClick={() => router.push(`/payroll/${runId}/review`)}
-                    className="text-sm text-[#5E81F4] hover:underline"
+                    className="text-sm text-primary hover:underline"
                 >
                     {t('kr_kec8381ec_keab280ed_keb82b4ec_')}
                 </button>
@@ -341,8 +341,8 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             {showReject && (
                 <div className={MODAL_STYLES.container}>
                     <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
-                        <div className="p-5 border-b border-[#E8E8E8] flex items-center justify-between">
-                            <h3 className="font-bold text-lg text-[#1A1A1A]">{t('reject_kec82acec_kec9e85eb')}</h3>
+                        <div className="p-5 border-b border-border flex items-center justify-between">
+                            <h3 className="font-bold text-lg text-foreground">{t('reject_kec82acec_kec9e85eb')}</h3>
                             <button onClick={() => setShowReject(false)} className="text-[#999] hover:text-[#333]">
                                 <X className="h-5 w-5" />
                             </button>
@@ -354,20 +354,20 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                                 onChange={(e) => setRejectComment(e.target.value)}
                                 placeholder={tCommon('placeholderRejectReasonRequiredAlt')}
                                 rows={4}
-                                className="w-full px-3 py-2.5 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#DC2626] focus:ring-2 focus:ring-[#DC2626]/10 resize-none"
+                                className="w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:border-red-600 focus:ring-2 focus:ring-red-600/10 resize-none"
                             />
                         </div>
-                        <div className="p-5 border-t border-[#E8E8E8] flex justify-end gap-2">
+                        <div className="p-5 border-t border-border flex justify-end gap-2">
                             <button
                                 onClick={() => setShowReject(false)}
-                                className="px-4 py-2 rounded-lg border border-[#D4D4D4] text-sm text-[#555] hover:bg-[#F5F5F5]"
+                                className="px-4 py-2 rounded-lg border border-border text-sm text-[#555] hover:bg-muted"
                             >
                                 {t('cancel')}
                             </button>
                             <button
                                 onClick={handleReject}
                                 disabled={!rejectComment.trim() || submitting}
-                                className="px-5 py-2 rounded-lg bg-[#DC2626] hover:bg-[#B91C1C] text-white text-sm font-semibold disabled:opacity-50"
+                                className="px-5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold disabled:opacity-50"
                             >
                                 {submitting ? '처리중...' : '반려 확인'}
                             </button>

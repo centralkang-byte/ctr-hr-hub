@@ -45,8 +45,8 @@ function KPICard({ label, value, diff, variant }: {
     variant === 'cost' ? 'bg-red-50 text-red-600' : 'bg-primary/5 text-primary'
   return (
     <div className={CARD_STYLES.padded}>
-      <p className="text-xs text-[#8181A5] mb-1">{label}</p>
-      <p className="text-xl font-bold text-[#1C1D21]">{value}</p>
+      <p className="text-xs text-muted-foreground mb-1">{label}</p>
+      <p className="text-xl font-bold text-foreground">{value}</p>
       {diff && <span className={`text-xs px-2 py-0.5 rounded-full mt-1 inline-block ${badgeColor}`}>{diff}</span>}
     </div>
   )
@@ -137,11 +137,11 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
       {/* ── 입력 영역 ── */}
       <div className={CARD_STYLES.padded}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-[#1C1D21]">{t('simDiffTitle')}</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t('simDiffTitle')}</h3>
           <select
             value={selectedCompanyId}
             onChange={(e) => setSelectedCompanyId(e.target.value)}
-            className="text-sm border border-[#E2E8F0] rounded-md px-3 py-1.5 bg-white"
+            className="text-sm border border-slate-200 rounded-md px-3 py-1.5 bg-white"
           >
             {companies.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
@@ -150,12 +150,12 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
         </div>
 
         {isLoadingGrades ? (
-          <div className="flex items-center justify-center py-8 text-[#8181A5]">
+          <div className="flex items-center justify-center py-8 text-muted-foreground">
             <Loader2 className="w-5 h-5 animate-spin mr-2" />
             {t('simLoadingGrades')}
           </div>
         ) : grades.length === 0 ? (
-          <p className="text-sm text-[#8181A5] py-4">{t('simNoGrades')}</p>
+          <p className="text-sm text-muted-foreground py-4">{t('simNoGrades')}</p>
         ) : (
           <>
             <div className={TABLE_STYLES.wrapper}>
@@ -180,7 +180,7 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
                           step={0.5}
                           value={rates[g.code] ?? 3}
                           onChange={(e) => updateRate(g.code, Number(e.target.value))}
-                          className="w-20 text-right border border-[#E2E8F0] rounded px-2 py-1 text-sm font-mono"
+                          className="w-20 text-right border border-slate-200 rounded px-2 py-1 text-sm font-mono"
                         />
                       </td>
                     </tr>
@@ -190,19 +190,19 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
             </div>
 
             <div className="flex items-center justify-between mt-4">
-              <label className="flex items-center gap-2 text-sm text-[#64748B]">
+              <label className="flex items-center gap-2 text-sm text-slate-500">
                 <input
                   type="checkbox"
                   checked={capAtBandMax}
                   onChange={(e) => setCapAtBandMax(e.target.checked)}
-                  className="rounded border-[#E2E8F0]"
+                  className="rounded border-slate-200"
                 />
                 {t('simDiffCapAtBandMax')}
               </label>
               <button
                 onClick={runSimulation}
                 disabled={isLoading}
-                className="flex items-center gap-2 px-4 py-2 bg-[#4F46E5] text-white rounded-lg text-sm font-medium hover:bg-[#4338CA] disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
               >
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calculator className="w-4 h-4" />}
                 {t('simRunButton')}
@@ -248,7 +248,7 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
                 parameters: { companyId: selectedCompanyId, rates, capAtBandMax },
                 results: result as unknown as Record<string, unknown>,
               })}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#5E81F4] border border-[#5E81F4]/30 rounded-lg hover:bg-[#5E81F4]/5">
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/5">
                 <Save className="w-3.5 h-3.5" /> {t('simSaveScenario')}
               </button>
             </div>
@@ -279,7 +279,7 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
           {/* ── 직급별 비교 차트 ── */}
           {chartData.length > 0 && (
             <div className={CARD_STYLES.padded}>
-              <h3 className="text-sm font-semibold text-[#1C1D21] mb-4">{t('simDiffChartTitle')}</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-4">{t('simDiffChartTitle')}</h3>
               <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={chartData} barGap={4}>
                   <CartesianGrid {...CHART_THEME.grid} />
@@ -296,7 +296,7 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
 
           {/* ── 직급별 상세 테이블 ── */}
           <div className={CARD_STYLES.padded}>
-            <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">{t('simDetailTitle')}</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('simDetailTitle')}</h3>
             <div className={TABLE_STYLES.wrapper}>
               <table className={TABLE_STYLES.table}>
                 <thead>
@@ -319,7 +319,7 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(g.simulatedGross)}</td>
                       <td className={cn(
                         TABLE_STYLES.cell, 'text-right tabular-nums font-mono',
-                        g.difference > 0 ? 'text-primary' : g.difference < 0 ? 'text-red-600' : 'text-[#8181A5]'
+                        g.difference > 0 ? 'text-primary' : g.difference < 0 ? 'text-red-600' : 'text-muted-foreground'
                       )}>
                         {signedKRW(g.difference)}
                       </td>

@@ -301,10 +301,10 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
             title="이번 달 팀 휴가 신청이 없습니다"
             description="팀원의 휴가 신청이 있으면 여기에 표시됩니다."
           />
-          <div className="bg-white border border-[#E8E8E8] rounded-xl divide-y divide-[#F0F0F3]">
+          <div className="bg-white border border-border rounded-xl divide-y divide-border">
             {members.map((member) => (
               <div key={member.employeeId} className="flex items-center justify-between px-4 py-3">
-                <span className="text-sm font-medium text-[#1A1A1A]">{member.name}</span>
+                <span className="text-sm font-medium text-foreground">{member.name}</span>
                 <span className="text-xs text-[#999]">휴가 없음</span>
               </div>
             ))}
@@ -312,8 +312,8 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
         </div>
       ) : (
         members.map((member) => (
-          <div key={member.employeeId} className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h3 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em] mb-4">{member.name}</h3>
+          <div key={member.employeeId} className="bg-white border border-border rounded-xl p-6">
+            <h3 className="text-base font-bold text-foreground tracking-[-0.02em] mb-4">{member.name}</h3>
                 <div className="space-y-3">
                   {member.requests.map((req) => {
                     const optimisticStatus = optimisticMap[req.id]
@@ -328,12 +328,12 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                     )
 
                     const rowBorderBg = optimisticStatus === 'APPROVED'
-                      ? 'border-[#A7F3D0] bg-[#D1FAE5]/30'
+                      ? 'border-emerald-200 bg-emerald-100/30'
                       : optimisticStatus === 'REJECTED'
-                      ? 'border-[#FECACA] bg-[#FEE2E2]/30'
+                      ? 'border-red-200 bg-red-100/30'
                       : isPending
-                      ? 'border-[#FFE0B2] bg-[#FFF3E0]/30'
-                      : 'border-[#E8E8E8]'
+                      ? 'border-orange-200 bg-orange-50/30'
+                      : 'border-border'
 
                     return (
                       <div
@@ -343,11 +343,11 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                       >
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-[#1A1A1A]">
+                            <span className="text-sm font-medium text-foreground">
                               {formatDate(req.startDate)} ~{' '}
                               {formatDate(req.endDate)}
                             </span>
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-medium border border-[#E8E8E8] text-[#666]">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-medium border border-border text-[#666]">
                               {LEAVE_TYPE_LABEL[req.leaveType] ?? req.leaveType}
                             </span>
                             <span
@@ -363,7 +363,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                               {req.days}{'일수'}
                             </span>
                             {isPending && absenceCount > 0 && (
-                              <span className="text-xs text-[#F59E0B] font-medium">
+                              <span className="text-xs text-amber-500 font-medium">
                                 해당 기간 팀 부재: {absenceCount}명
                               </span>
                             )}
@@ -373,14 +373,14 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                         {isPending && (
                           <div className="flex items-center gap-2">
                             <button
-                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-[#5E81F4] text-[#5E81F4] hover:bg-[#EDF1FE] flex items-center"
+                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-primary text-primary hover:bg-primary/10 flex items-center"
                               onClick={() => handleApprove(req.id)}
                             >
                               <Check className="mr-1 h-4 w-4" />
                               {'승인'}
                             </button>
                             <button
-                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-[#F44336] text-[#F44336] hover:bg-[#FFEBEE] flex items-center"
+                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-red-500 text-red-500 hover:bg-red-50 flex items-center"
                               onClick={() => openRejectDialog(req.id)}
                             >
                               <X className="mr-1 h-4 w-4" />

@@ -20,10 +20,10 @@ interface Dpia {
 
 function RiskBadge({ level }: { level: string }) {
   const map: Record<string, string> = {
-    low: 'bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]',
-    medium: 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]',
-    high: 'bg-[#FFF7ED] text-[#C2410C] border border-[#FED7AA]',
-    critical: 'bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]',
+    low: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+    medium: 'bg-amber-100 text-amber-700 border border-amber-300',
+    high: 'bg-orange-50 text-orange-700 border border-orange-200',
+    critical: 'bg-red-100 text-red-700 border border-red-200',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[level] ?? map.medium}`}>
@@ -34,10 +34,10 @@ function RiskBadge({ level }: { level: string }) {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    draft: 'bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]',
-    in_review: 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]',
-    approved: 'bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]',
-    rejected: 'bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]',
+    draft: 'bg-background text-[#555] border border-border',
+    in_review: 'bg-amber-100 text-amber-700 border border-amber-300',
+    approved: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+    rejected: 'bg-red-100 text-red-700 border border-red-200',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? map.draft}`}>
@@ -73,7 +73,7 @@ export default function DpiaTabContent() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('gdpr.dpia')}</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t('gdpr.dpia')}</h2>
         <button
           onClick={() => { setSelected(null); setShowForm(true) }}
           className={`inline-flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm`}
@@ -104,7 +104,7 @@ export default function DpiaTabContent() {
                 {dpias.map((d) => (
                   <tr key={d.id} className={TABLE_STYLES.row}>
                     <td className="px-4 py-3 text-sm">
-                      <div className="font-medium text-[#1A1A1A]">{d.title}</div>
+                      <div className="font-medium text-foreground">{d.title}</div>
                       {d.description && (
                         <div className="text-xs text-[#999] mt-0.5 max-w-[280px] truncate">{d.description}</div>
                       )}
@@ -122,7 +122,7 @@ export default function DpiaTabContent() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => { setSelected(d); setShowForm(true) }}
-                          className="text-[#666] hover:text-[#5E81F4]"
+                          className="text-[#666] hover:text-primary"
                           title={d.status === 'draft' || d.status === 'in_review' ? tc('edit') : tc('view')}
                         >
                           {d.status === 'draft' || d.status === 'in_review' ? (

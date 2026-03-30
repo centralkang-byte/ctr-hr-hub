@@ -152,8 +152,8 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <MessageSquare className="w-6 h-6 text-[#5E81F4]" />
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">
+          <MessageSquare className="w-6 h-6 text-primary" />
+          <h1 className="text-2xl font-bold text-foreground">
             {isManager ? '1:1 미팅' : '내 1:1 미팅'}
           </h1>
         </div>
@@ -168,14 +168,14 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* Status Filter Tabs */}
-      <div className="flex border-b border-[#E8E8E8]">
+      <div className="flex border-b border-border">
         {['ALL', 'SCHEDULED', 'COMPLETED'].map((s) => (
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
               statusFilter === s
-                ? 'border-[#5E81F4] text-[#5E81F4]'
+                ? 'border-primary text-primary'
                 : 'border-transparent text-[#666] hover:text-[#333]'
             }`}
           >
@@ -191,8 +191,8 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
           {/* Scheduled Meetings */}
           {(statusFilter === 'ALL' || statusFilter === 'SCHEDULED') && scheduled.length > 0 && (
             <div>
-              <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#5E81F4]" /> {t('kr_kec9888ec_1_1')}
+              <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-primary" /> {t('kr_kec9888ec_1_1')}
               </h2>
               <div className="space-y-3">
                 {scheduled.map((m) => (
@@ -206,7 +206,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                             <p className="text-xs text-[#666]">
                               {new Date(m.scheduledAt).toLocaleDateString('ko-KR')} {new Date(m.scheduledAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
                               {' · '}
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#EDF1FE] text-[#4B6DE0]">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary/90">
                                 {MEETING_TYPE_LABELS[m.meetingType] ?? m.meetingType}
                               </span>
                             </p>
@@ -216,7 +216,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                       {isManager && (
                         <button
                           onClick={() => router.push(`/performance/one-on-one/${m.id}`)}
-                          className="text-sm font-medium text-[#5E81F4] hover:text-[#4B6DE0]"
+                          className="text-sm font-medium text-primary hover:text-primary/90"
                         >
                           {t('kr_keab8b0eb')}
                         </button>
@@ -234,8 +234,8 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
           {/* Completed Meetings */}
           {(statusFilter === 'ALL' || statusFilter === 'COMPLETED') && completed.length > 0 && (
             <div>
-              <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-[#059669]" /> {t('complete_keb909c_1_1')}
+              <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600" /> {t('complete_keb909c_1_1')}
               </h2>
               <div className={TABLE_STYLES.wrapper}>
                 <table className={TABLE_STYLES.table}>
@@ -267,16 +267,16 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                             {new Date(m.completedAt ?? m.scheduledAt).toLocaleDateString('ko-KR')}
                           </td>
                           <td className={TABLE_STYLES.cell}>
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-background text-[#555] border border-border">
                               {MEETING_TYPE_LABELS[m.meetingType] ?? m.meetingType}
                             </span>
                           </td>
                           {isManager && (
                             <td className={TABLE_STYLES.cell}>
                               {pendingActions > 0 ? (
-                                <span className="text-[#EF4444] font-medium">{pendingActions}건</span>
+                                <span className="text-red-500 font-medium">{pendingActions}건</span>
                               ) : (
-                                <span className="text-[#059669]">{t('kr_0keab1b4')}</span>
+                                <span className="text-emerald-600">{t('kr_0keab1b4')}</span>
                               )}
                             </td>
                           )}
@@ -291,7 +291,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
 
           {meetings.length === 0 && (
             <div className="text-center py-12 text-[#999]">
-              <MessageSquare className="w-12 h-12 mx-auto mb-3 text-[#D4D4D4]" />
+              <MessageSquare className="w-12 h-12 mx-auto mb-3 text-border" />
               <EmptyState />
             </div>
           )}
@@ -302,8 +302,8 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
               {/* Frequency Chart */}
               {chartData.length > 0 && (
                 <div>
-                  <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-                    <Users className="w-5 h-5 text-[#8B5CF6]" /> {t('kr_1_1_kebb988eb_keb8c80ec')}
+                  <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <Users className="w-5 h-5 text-violet-500" /> {t('kr_1_1_kebb988eb_keb8c80ec')}
                   </h2>
                   <div className={CARD_STYLES.padded}>
                     <div className="h-64">
@@ -321,7 +321,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                     </div>
                     {/* Overdue warning */}
                     {dashboard.teamMembers.filter((m) => m.overdue).length > 0 && (
-                      <div className="mt-3 flex items-center gap-2 text-sm text-[#EF4444]">
+                      <div className="mt-3 flex items-center gap-2 text-sm text-red-500">
                         <AlertTriangle className="w-4 h-4" />
                         <span>
                           30일+ 미실시:{' '}
@@ -336,14 +336,14 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
               {/* Pending Action Items */}
               {dashboard.pendingActionItems.length > 0 && (
                 <div>
-                  <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-[#F59E0B]" /> {t('kr_kebafb8ec_kec95a1ec_kec9584ec')}
+                  <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-amber-500" /> {t('kr_kebafb8ec_kec95a1ec_kec9584ec')}
                   </h2>
                   <div className={`${CARD_STYLES.kpi} space-y-2`}>
                     {dashboard.pendingActionItems.map((a, i) => (
-                      <div key={i} className="flex items-center gap-3 py-2 border-b border-[#F5F5F5] last:border-0">
-                        <div className="w-4 h-4 rounded border border-[#D4D4D4]" />
-                        <span className="text-sm text-[#1A1A1A] font-medium">{a.employeeName}:</span>
+                      <div key={i} className="flex items-center gap-3 py-2 border-b border-border last:border-0">
+                        <div className="w-4 h-4 rounded border border-border" />
+                        <span className="text-sm text-foreground font-medium">{a.employeeName}:</span>
                         <span className="text-sm text-[#555]">&quot;{a.item}&quot;</span>
                         {a.dueDate && (
                           <span className="text-xs text-[#999] ml-auto">(기한: {a.dueDate})</span>
@@ -362,8 +362,8 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
       {showCreateModal && (
         <div className={MODAL_STYLES.container}>
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
-            <div className="p-6 border-b border-[#E8E8E8]">
-              <h3 className="text-lg font-semibold text-[#1A1A1A]">{t('kr_kec8388_1_1_kec9888ec')}</h3>
+            <div className="p-6 border-b border-border">
+              <h3 className="text-lg font-semibold text-foreground">{t('kr_kec8388_1_1_kec9888ec')}</h3>
             </div>
             <div className="p-6 space-y-4">
               <div>
@@ -371,7 +371,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                 <select
                   value={newMeeting.employeeId}
                   onChange={(e) => setNewMeeting({ ...newMeeting, employeeId: e.target.value })}
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
                 >
                   <option value="">{t('kr_kec84a0ed')}</option>
                   {teamMembers.map((m) => (
@@ -385,7 +385,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                   type="datetime-local"
                   value={newMeeting.scheduledAt}
                   onChange={(e) => setNewMeeting({ ...newMeeting, scheduledAt: e.target.value })}
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
                 />
               </div>
               <div>
@@ -397,8 +397,8 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                       onClick={() => setNewMeeting({ ...newMeeting, meetingType: key })}
                       className={`px-3 py-2 rounded-lg text-sm border ${
                         newMeeting.meetingType === key
-                          ? 'bg-[#5E81F4] text-white border-[#5E81F4]'
-                          : 'bg-white text-[#555] border-[#D4D4D4] hover:bg-[#FAFAFA]'
+                          ? 'bg-primary text-white border-primary'
+                          : 'bg-white text-[#555] border-border hover:bg-background'
                       }`}
                     >
                       {label}
@@ -413,14 +413,14 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                   onChange={(e) => setNewMeeting({ ...newMeeting, agenda: e.target.value })}
                   placeholder="논의할 내용을 입력하세요"
                   rows={3}
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
                 />
               </div>
             </div>
-            <div className="p-6 border-t border-[#E8E8E8] flex justify-end gap-3">
+            <div className="p-6 border-t border-border flex justify-end gap-3">
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#333] hover:bg-[#FAFAFA]"
+                className="px-4 py-2 border border-border rounded-lg text-sm text-[#333] hover:bg-background"
               >
                 {t('cancel')}
               </button>

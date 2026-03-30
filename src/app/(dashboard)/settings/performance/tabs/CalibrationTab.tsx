@@ -36,14 +36,14 @@ export function CalibrationTab({
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{t('calibration')}</h3>
-          <p className="text-sm text-[#8181A5]">{t('kr_keb93b1ea_keca1b0ec_ked9a8cec_')}</p>
+          <h3 className="text-base font-semibold text-foreground">{t('calibration')}</h3>
+          <p className="text-sm text-muted-foreground">{t('kr_keb93b1ea_keca1b0ec_ked9a8cec_')}</p>
         </div>
         {isOverridden && (
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
@@ -52,8 +52,8 @@ export function CalibrationTab({
 
       <SettingFieldWithOverride label="캘리브레이션 필수" description="평가 프로세스에서 캘리브레이션 단계를 필수로 할지" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={settings.required} onChange={(e) => setSettings((p) => ({ ...p, required: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
-          <span className="text-[#1C1D21]">{t('calibration_required')}</span>
+          <input type="checkbox" checked={settings.required} onChange={(e) => setSettings((p) => ({ ...p, required: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
+          <span className="text-foreground">{t('calibration_required')}</span>
         </label>
       </SettingFieldWithOverride>
 
@@ -68,14 +68,14 @@ export function CalibrationTab({
       <SettingFieldWithOverride label="최소 참여 인원" description="캘리브레이션 대상 최소 인원 수" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.minParticipants} onChange={(e) => setSettings((p) => ({ ...p, minParticipants: Number(e.target.value) }))} className="w-20" />
-          <span className="text-sm text-[#8181A5]">{t('persons_kec9db4ec')}</span>
+          <span className="text-sm text-muted-foreground">{t('persons_kec9db4ec')}</span>
         </div>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="관리자 직접 변경 허용" description="캘리브레이션 없이 관리자가 등급 직접 변경 가능" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={settings.allowManagerOverride} onChange={(e) => setSettings((p) => ({ ...p, allowManagerOverride: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
-          <span className="text-[#1C1D21]">{t('kr_keca781ec_kebb380ea_ked9788ec')}</span>
+          <input type="checkbox" checked={settings.allowManagerOverride} onChange={(e) => setSettings((p) => ({ ...p, allowManagerOverride: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
+          <span className="text-foreground">{t('kr_keca781ec_kebb380ea_ked9788ec')}</span>
         </label>
       </SettingFieldWithOverride>
 

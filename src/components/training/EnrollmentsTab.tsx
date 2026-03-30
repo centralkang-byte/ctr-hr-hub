@@ -89,7 +89,7 @@ export default function EnrollmentsTab() {
         <div className="flex items-center gap-2">
           <span>{row.course.title}</span>
           {row.course.isMandatory && (
-            <Badge className="bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA] text-[10px]">필수</Badge>
+            <Badge className="bg-red-100 text-red-700 border-red-200 text-[10px]">필수</Badge>
           )}
         </div>
       ),
@@ -131,7 +131,7 @@ export default function EnrollmentsTab() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-[#059669]"
+              className="text-emerald-600"
               onClick={() => handleStatusChange(row, 'ENROLLMENT_COMPLETED')}
             >
               완료
@@ -139,7 +139,7 @@ export default function EnrollmentsTab() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-[#EF4444]"
+              className="text-red-500"
               onClick={() => handleStatusChange(row, 'DROPPED')}
             >
               탈락

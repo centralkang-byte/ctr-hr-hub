@@ -103,8 +103,8 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
   if (loading) {
     return (
       <div className="space-y-6 p-8">
-        <div className="h-10 w-64 bg-[#F5F5FA] rounded animate-pulse" />
-        <div className="h-60 w-full bg-[#F5F5FA] rounded-xl animate-pulse" />
+        <div className="h-10 w-64 bg-muted rounded animate-pulse" />
+        <div className="h-60 w-full bg-muted rounded-xl animate-pulse" />
       </div>
     )
   }
@@ -117,12 +117,12 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex flex-col items-center gap-4 py-12">
             <div className="text-5xl">{'\u{2705}'}</div>
-            <h2 className="text-xl font-semibold text-[#5E81F4]">{t('checkinComplete')}</h2>
-            <p className="text-sm text-[#8181A5]">
+            <h2 className="text-xl font-semibold text-primary">{t('checkinComplete')}</h2>
+            <p className="text-sm text-muted-foreground">
               {t('checkinWeekSubmitted', { week: checkinWeek, name: user.name })}
             </p>
             <button
-              className="px-4 py-2 text-sm font-medium rounded-lg border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA] transition-colors"
+              className="px-4 py-2 text-sm font-medium rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
               onClick={() => {
                 setSubmitted(false)
                 setMood('')
@@ -148,17 +148,17 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
       />
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em] mb-6">
+        <h3 className="text-base font-bold text-foreground tracking-[-0.02em] mb-6">
           {t('weekCheckin', { week: checkinWeek })}
         </h3>
         <div className="space-y-8">
           {/* ─── Week selector ─── */}
           <div>
-            <label className="block text-sm font-medium text-[#1C1D21] mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               {t('checkinWeekLabel')}
             </label>
             <select
-              className="w-32 rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-32 rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
               value={checkinWeek}
               onChange={(e) => setCheckinWeek(Number(e.target.value))}
             >
@@ -175,7 +175,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
 
           {/* ─── Mood selector ─── */}
           <div>
-            <label className="block text-sm font-medium text-[#1C1D21] mb-3">
+            <label className="block text-sm font-medium text-foreground mb-3">
               {t('moodQuestion')}
             </label>
             <div className="flex gap-3 flex-wrap">
@@ -186,24 +186,24 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
                   onClick={() => setMood(m.value)}
                   className={`flex flex-col items-center gap-1 rounded-xl border-2 px-4 py-3 transition-all ${
                     mood === m.value
-                      ? 'border-[#5E81F4] bg-[#DCFCE7]'
-                      : 'border-transparent hover:border-[#F0F0F3] hover:bg-[#FAFAFA]'
+                      ? 'border-primary bg-green-100'
+                      : 'border-transparent hover:border-border hover:bg-background'
                   }`}
                 >
                   <span className="text-3xl">{m.emoji}</span>
-                  <span className="text-xs font-medium text-[#8181A5]">{t(m.labelKey)}</span>
+                  <span className="text-xs font-medium text-muted-foreground">{t(m.labelKey)}</span>
                 </button>
               ))}
             </div>
             {!mood && (
-              <p className="mt-1 text-xs text-[#8181A5]">{t('selectMood')}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t('selectMood')}</p>
             )}
           </div>
 
           {/* ─── Energy slider ─── */}
           <div>
-            <label className="block text-sm font-medium text-[#1C1D21] mb-2">
-              {t('energyLevel')} <span className="text-[#5E81F4] font-semibold">{energy}/5</span>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              {t('energyLevel')} <span className="text-primary font-semibold">{energy}/5</span>
             </label>
             <input
               type="range"
@@ -214,7 +214,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
               onChange={(e) => setEnergy(Number(e.target.value))}
               className="w-full max-w-xs accent-[#5E81F4]"
             />
-            <div className="flex justify-between max-w-xs text-xs text-[#8181A5] mt-1">
+            <div className="flex justify-between max-w-xs text-xs text-muted-foreground mt-1">
               {SLIDER_LABELS.map((l) => (
                 <span key={l}>{l}</span>
               ))}
@@ -223,8 +223,8 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
 
           {/* ─── Belonging slider ─── */}
           <div>
-            <label className="block text-sm font-medium text-[#1C1D21] mb-2">
-              {t('belongingLevel')} <span className="text-[#5E81F4] font-semibold">{belonging}/5</span>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              {t('belongingLevel')} <span className="text-primary font-semibold">{belonging}/5</span>
             </label>
             <input
               type="range"
@@ -235,7 +235,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
               onChange={(e) => setBelonging(Number(e.target.value))}
               className="w-full max-w-xs accent-[#5E81F4]"
             />
-            <div className="flex justify-between max-w-xs text-xs text-[#8181A5] mt-1">
+            <div className="flex justify-between max-w-xs text-xs text-muted-foreground mt-1">
               {SLIDER_LABELS.map((l) => (
                 <span key={l}>{l}</span>
               ))}
@@ -244,11 +244,11 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
 
           {/* ─── Comment ─── */}
           <div>
-            <label className="block text-sm font-medium text-[#1C1D21] mb-2">
-              {t('additionalComment')} <span className="text-xs text-[#8181A5]">{t('optional')}</span>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              {t('additionalComment')} <span className="text-xs text-muted-foreground">{t('optional')}</span>
             </label>
             <textarea
-              className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm placeholder:text-[#8181A5] min-h-[80px] resize-y focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm placeholder:text-muted-foreground min-h-[80px] resize-y focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
               placeholder={t('commentPlaceholder')}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
@@ -261,7 +261,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
             <button
               onClick={handleSubmit}
               disabled={!mood || submitting}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-[#5E81F4] hover:bg-[#4B6DE0] text-white disabled:opacity-50 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-primary hover:bg-primary/90 text-white disabled:opacity-50 transition-colors"
             >
               <Send className="h-4 w-4" />
               {submitting ? t('submitting') : t('submitCheckin')}

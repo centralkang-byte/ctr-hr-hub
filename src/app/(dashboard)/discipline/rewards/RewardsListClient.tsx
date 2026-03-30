@@ -20,21 +20,21 @@ import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 // ─── Badge Styles ────────────────────────────────────────
 
 const REWARD_TYPE_BADGE_STYLES: Record<string, string> = {
-  COMMENDATION: 'bg-[#EDF1FE] text-[#2E7D32]',
-  BONUS_AWARD: 'bg-[#E3F2FD] text-[#1565C0]',
-  CTR_VALUE_AWARD: 'bg-[#F3E5F5] text-[#7B1FA2]',
-  LONG_SERVICE: 'bg-[#FFF3E0] text-[#E65100]',
-  INNOVATION: 'bg-[#EDF1FE] text-[#5E81F4]',
-  SAFETY_AWARD: 'bg-[#E3F2FD] text-[#2196F3]',
-  PROMOTION_RECOMMENDATION: 'bg-[#EDF1FE] text-[#2E7D32]',
-  OTHER: 'bg-[#F5F5F5] text-[#999]',
+  COMMENDATION: 'bg-primary/10 text-green-700',
+  BONUS_AWARD: 'bg-blue-50 text-blue-800',
+  CTR_VALUE_AWARD: 'bg-purple-50 text-purple-800',
+  LONG_SERVICE: 'bg-orange-50 text-orange-800',
+  INNOVATION: 'bg-primary/10 text-primary',
+  SAFETY_AWARD: 'bg-blue-50 text-blue-500',
+  PROMOTION_RECOMMENDATION: 'bg-primary/10 text-green-700',
+  OTHER: 'bg-muted text-[#999]',
 }
 
 const CTR_VALUE_BADGE_STYLES: Record<string, string> = {
-  CHALLENGE: 'bg-[#FFEBEE] text-[#C62828]',
-  TRUST: 'bg-[#E3F2FD] text-[#1565C0]',
-  RESPONSIBILITY: 'bg-[#FFF3E0] text-[#E65100]',
-  RESPECT: 'bg-[#F3E5F5] text-[#7B1FA2]',
+  CHALLENGE: 'bg-red-50 text-red-800',
+  TRUST: 'bg-blue-50 text-blue-800',
+  RESPONSIBILITY: 'bg-orange-50 text-orange-800',
+  RESPECT: 'bg-purple-50 text-purple-800',
 }
 
 // ─── Types ───────────────────────────────────────────────
@@ -112,15 +112,15 @@ export default function RewardsListClient({ user }: Props) {
   void user
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] p-6">
+    <div className="min-h-screen bg-background p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#EDF1FE] rounded-lg flex items-center justify-center">
-            <Award className="w-5 h-5 text-[#5E81F4]" />
+          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+            <Award className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
+            <h1 className="text-xl font-bold text-foreground tracking-[-0.02em]">
               {t('title')}
             </h1>
             <p className="text-sm text-[#999]">{tCommon('total')} {total}{tCommon('items')}</p>
@@ -129,7 +129,7 @@ export default function RewardsListClient({ user }: Props) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => router.push('/discipline')}
-            className="px-4 py-2 text-sm font-medium border border-[#E8E8E8] text-[#1A1A1A] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
+            className="px-4 py-2 text-sm font-medium border border-border text-foreground hover:bg-background rounded-lg transition-colors duration-150"
           >
             {t('disciplineManagement')}
           </button>
@@ -144,7 +144,7 @@ export default function RewardsListClient({ user }: Props) {
       </div>
 
       {/* Filters */}
-      <div className="bg-white border border-[#E8E8E8] rounded-xl p-4 mb-6">
+      <div className="bg-white border border-border rounded-xl p-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[240px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
@@ -153,7 +153,7 @@ export default function RewardsListClient({ user }: Props) {
               placeholder={t('searchPlaceholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -161,7 +161,7 @@ export default function RewardsListClient({ user }: Props) {
             <select
               value={typeFilter}
               onChange={(e) => { setTypeFilter(e.target.value); setPage(1) }}
-              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 bg-white"
+              className="px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-white"
             >
               <option value="">{t('typeAll')}</option>
               {REWARD_TYPE_KEYS.map((key) => (
@@ -185,12 +185,12 @@ export default function RewardsListClient({ user }: Props) {
               <th className={TABLE_STYLES.headerCellRight}>{tCommon('amount')}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#F0F0F3]">
+          <tbody className="divide-y divide-border">
             {loading ? (
               <tr>
                 <td colSpan={6} className="px-4 py-12 text-center text-sm text-[#999]">
                   <div className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#5E81F4] rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin" />
                     {t('loadingData')}
                   </div>
                 </td>
@@ -208,7 +208,7 @@ export default function RewardsListClient({ user }: Props) {
                   onClick={() => router.push(`/discipline/rewards/${row.id}`)}
                   className={TABLE_STYLES.rowClickable}
                 >
-                  <td className="px-4 py-3 text-sm text-[#1A1A1A] font-medium">
+                  <td className="px-4 py-3 text-sm text-foreground font-medium">
                     {row.employee.name}
                   </td>
                   <td className="px-4 py-3 text-sm text-[#666]">
@@ -216,23 +216,23 @@ export default function RewardsListClient({ user }: Props) {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5">
-                      <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${REWARD_TYPE_BADGE_STYLES[row.rewardType] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
+                      <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${REWARD_TYPE_BADGE_STYLES[row.rewardType] ?? 'bg-muted text-[#999]'}`}>
                         {t(`rewardTypeLabels.${row.rewardType}`, { defaultValue: row.rewardType })}
                       </span>
                       {row.rewardType === 'CTR_VALUE_AWARD' && row.ctrValue && (
-                        <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${CTR_VALUE_BADGE_STYLES[row.ctrValue] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
+                        <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${CTR_VALUE_BADGE_STYLES[row.ctrValue] ?? 'bg-muted text-[#999]'}`}>
                           {t(`ctrValueLabels.${row.ctrValue}`, { defaultValue: row.ctrValue })}
                         </span>
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#1A1A1A]">
+                  <td className="px-4 py-3 text-sm text-foreground">
                     {row.title}
                   </td>
                   <td className="px-4 py-3 text-sm text-[#666]">
                     {format(new Date(row.awardedDate), 'yyyy-MM-dd')}
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#1A1A1A] text-right">
+                  <td className="px-4 py-3 text-sm text-foreground text-right">
                     {row.amount !== null && row.amount !== undefined
                       ? t('amountValue', { amount: Number(row.amount).toLocaleString() })
                       : '-'}
@@ -245,7 +245,7 @@ export default function RewardsListClient({ user }: Props) {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#E8E8E8]">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-border">
             <p className="text-xs text-[#999]">
               {t('paginationInfo', { total, start: (page - 1) * LIMIT + 1, end: Math.min(page * LIMIT, total) })}
             </p>
@@ -253,17 +253,17 @@ export default function RewardsListClient({ user }: Props) {
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="p-1.5 rounded-lg border border-[#E8E8E8] hover:bg-[#FAFAFA] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg border border-border hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronLeft className="w-4 h-4 text-[#666]" />
               </button>
-              <span className="px-3 text-sm text-[#1A1A1A]">
+              <span className="px-3 text-sm text-foreground">
                 {page} / {totalPages}
               </span>
               <button
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="p-1.5 rounded-lg border border-[#E8E8E8] hover:bg-[#FAFAFA] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg border border-border hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronRight className="w-4 h-4 text-[#666]" />
               </button>

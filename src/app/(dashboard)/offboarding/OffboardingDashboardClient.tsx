@@ -114,11 +114,11 @@ const RESIGN_TYPE_VARIANTS: Record<string, BadgeVariant> = {
 }
 
 const ASSIGNEE_COLORS: Record<string, string> = {
-  EMPLOYEE: 'bg-[#F5F5FA] text-[#1C1D21]',
-  MANAGER: 'bg-[#EDF1FE] text-[#4B6DE0]',
+  EMPLOYEE: 'bg-muted text-foreground',
+  MANAGER: 'bg-primary/10 text-primary/90',
   HR: 'bg-green-100 text-green-700',
-  IT: 'bg-[#F3E8FF] text-[#7E22CE]',
-  FINANCE: 'bg-[#FFEDD5] text-[#C2410C]',
+  IT: 'bg-purple-50 text-purple-700',
+  FINANCE: 'bg-orange-100 text-orange-700',
 }
 
 const LIMIT_OPTIONS = [10, 20, 50]
@@ -245,7 +245,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
         const pct = total > 0 ? (completed / total) * 100 : 0
         return (
           <div className="flex items-center gap-2">
-            <div className="flex-1 bg-[#E8E8E8] rounded-full h-2">
+            <div className="flex-1 bg-border rounded-full h-2">
               <div
                 className="bg-ctr-primary h-2 rounded-full transition-all"
                 style={{ width: `${pct}%` }}
@@ -267,18 +267,18 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
         return (
           <div className="flex items-center gap-1.5">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F87171] opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#EF4444]" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
             </span>
-            <span className="text-sm font-semibold text-[#DC2626]">D-{Math.max(daysUntil, 0)}</span>
+            <span className="text-sm font-semibold text-red-600">D-{Math.max(daysUntil, 0)}</span>
           </div>
         )
       }
       if (isD7) {
         return (
           <div className="flex items-center gap-1.5">
-            <span className="inline-flex rounded-full h-2.5 w-2.5 bg-[#EAB308]" />
-            <span className="text-sm font-medium text-[#A16207]">D-{daysUntil}</span>
+            <span className="inline-flex rounded-full h-2.5 w-2.5 bg-yellow-500" />
+            <span className="text-sm font-medium text-amber-700">D-{daysUntil}</span>
           </div>
         )
       }
@@ -408,9 +408,9 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                     <TableRow
                       className={
                         row.isD3
-                          ? 'bg-[#FEE2E2]'
+                          ? 'bg-red-100'
                           : row.isD7
-                            ? 'bg-[#FEFCE8]'
+                            ? 'bg-yellow-50'
                             : ''
                       }
                     >
@@ -479,7 +479,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                         ) : row.isD7 ? (
                           <Badge
                             variant="outline"
-                            className="border-[#EAB308] text-[#A16207]"
+                            className="border-yellow-500 text-amber-700"
                           >
                             <AlertTriangle className="mr-1 h-3 w-3" />
                             {t('caution')}
@@ -498,7 +498,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                           <Button
                             size="sm"
                             variant="outline"
-                            className="text-xs text-[#DC2626] border-[#FCA5A5] hover:bg-[#FEE2E2]"
+                            className="text-xs text-red-600 border-red-300 hover:bg-red-100"
                             onClick={() => setCancelTarget(row)}
                           >
                             {t('cancelOffboarding')}
@@ -512,7 +512,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                       <TableRow key={`${row.id}-tasks`}>
                         <TableCell
                           colSpan={headerCols.length}
-                          className="bg-[#FAFAFA] p-0"
+                          className="bg-background p-0"
                         >
                           <div className="p-4">
                             <h4 className="text-sm font-semibold mb-3">
@@ -536,7 +536,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                                     </TableCell>
                                     <TableCell>
                                       <span
-                                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ASSIGNEE_COLORS[tsk.task.assigneeType] ?? 'bg-[#F5F5FA] text-[#1C1D21]'}`}
+                                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ASSIGNEE_COLORS[tsk.task.assigneeType] ?? 'bg-muted text-foreground'}`}
                                       >
                                         {ASSIGNEE_LABELS[tsk.task.assigneeType] ??
                                           tsk.task.assigneeType}

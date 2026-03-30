@@ -73,10 +73,10 @@ export default function ComplianceClient({ user }: { user: SessionUser }) {
   }, [])
 
   const kpiCards = [
-    { label: t('gdpr.consents'), value: stats?.activeConsents ?? 0, icon: Shield, color: 'text-[#059669]' },
-    { label: t('gdpr.requests'), value: stats?.pendingRequests ?? 0, icon: FileSearch, color: 'text-[#D97706]' },
-    { label: t('gdpr.retention'), value: stats?.retentionPolicies ?? 0, icon: Database, color: 'text-[#5E81F4]' },
-    { label: t('gdpr.dpia'), value: stats?.dpiaRecords ?? 0, icon: FileSearch, color: 'text-[#5E81F4]' },
+    { label: t('gdpr.consents'), value: stats?.activeConsents ?? 0, icon: Shield, color: 'text-emerald-600' },
+    { label: t('gdpr.requests'), value: stats?.pendingRequests ?? 0, icon: FileSearch, color: 'text-amber-600' },
+    { label: t('gdpr.retention'), value: stats?.retentionPolicies ?? 0, icon: Database, color: 'text-primary' },
+    { label: t('gdpr.dpia'), value: stats?.dpiaRecords ?? 0, icon: FileSearch, color: 'text-primary' },
   ]
 
   const navCards = [
@@ -85,28 +85,28 @@ export default function ComplianceClient({ user }: { user: SessionUser }) {
       description: 'GDPR compliance management — consents, requests, DPIA',
       href: '/compliance/gdpr',
       icon: Shield,
-      color: 'bg-[#D1FAE5] text-[#059669]',
+      color: 'bg-emerald-100 text-emerald-600',
     },
     {
       title: t('gdpr.piiAudit'),
       description: t('gdpr.piiAuditDesc'),
       href: '/compliance/pii-audit',
       icon: Eye,
-      color: 'bg-[#EDF1FE] text-[#5E81F4]',
+      color: 'bg-primary/10 text-primary',
     },
     {
       title: t('gdpr.retention'),
       description: t('gdpr.retentionDesc'),
       href: '/compliance/data-retention',
       icon: Database,
-      color: 'bg-[#FAF5FF] text-[#9333EA]',
+      color: 'bg-purple-50 text-purple-600',
     },
     {
       title: t('gdpr.dpia'),
       description: t('gdpr.dpiaDesc'),
       href: '/compliance/dpia',
       icon: FileSearch,
-      color: 'bg-[#E0E7FF] text-[#5E81F4]',
+      color: 'bg-indigo-100 text-primary',
     },
   ]
 
@@ -138,8 +138,8 @@ export default function ComplianceClient({ user }: { user: SessionUser }) {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <ShieldCheck className="h-7 w-7 text-[#5E81F4]" />
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('title')}</h1>
+        <ShieldCheck className="h-7 w-7 text-primary" />
+        <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
       </div>
 
       {/* GDPR KPI Cards */}
@@ -152,7 +152,7 @@ export default function ComplianceClient({ user }: { user: SessionUser }) {
               </div>
               <div>
                 <p className="text-xs text-[#666]">{card.label}</p>
-                <p className="text-2xl font-bold text-[#1A1A1A]">
+                <p className="text-2xl font-bold text-foreground">
                   {loading ? '—' : card.value}
                 </p>
               </div>
@@ -163,7 +163,7 @@ export default function ComplianceClient({ user }: { user: SessionUser }) {
 
       {/* GDPR Navigation */}
       <div>
-        <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3">{t('gdpr.title')}</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-3">{t('gdpr.title')}</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {navCards.map((card) => (
             <Link
@@ -174,9 +174,9 @@ export default function ComplianceClient({ user }: { user: SessionUser }) {
               <div className={`inline-flex rounded-lg p-2 ${card.color} mb-3`}>
                 <card.icon className="h-5 w-5" />
               </div>
-              <h3 className="text-sm font-semibold text-[#1A1A1A] mb-1">{card.title}</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-1">{card.title}</h3>
               <p className="text-xs text-[#666] mb-3">{card.description}</p>
-              <div className="flex items-center text-xs font-medium text-[#5E81F4] group-hover:text-[#4B6DE0]">
+              <div className="flex items-center text-xs font-medium text-primary group-hover:text-primary/90">
                 <ArrowRight className="h-3.5 w-3.5" />
               </div>
             </Link>
@@ -186,7 +186,7 @@ export default function ComplianceClient({ user }: { user: SessionUser }) {
 
       {/* Country-specific Compliance */}
       <div>
-        <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3">Country-specific Compliance</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-3">Country-specific Compliance</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {countryCards.map((card) => (
             <Link
@@ -196,10 +196,10 @@ export default function ComplianceClient({ user }: { user: SessionUser }) {
             >
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-2xl">{card.flag}</span>
-                <h3 className="text-sm font-semibold text-[#1A1A1A]">{card.title}</h3>
+                <h3 className="text-sm font-semibold text-foreground">{card.title}</h3>
               </div>
               <p className="text-xs text-[#666] mb-3">{card.description}</p>
-              <div className="flex items-center text-xs font-medium text-[#5E81F4] group-hover:text-[#4B6DE0]">
+              <div className="flex items-center text-xs font-medium text-primary group-hover:text-primary/90">
                 <ArrowRight className="h-3.5 w-3.5" />
               </div>
             </Link>

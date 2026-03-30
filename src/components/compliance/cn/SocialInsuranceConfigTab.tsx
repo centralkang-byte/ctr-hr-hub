@@ -74,7 +74,7 @@ export default function SocialInsuranceConfigTab() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-base font-semibold text-[#1A1A1A]">사회보험 요율 설정</h2>
+          <h2 className="text-base font-semibold text-foreground">사회보험 요율 설정</h2>
           <p className="text-xs text-[#666] mt-0.5">五险一金 요율 및 기수를 관리합니다</p>
         </div>
         <button
@@ -115,7 +115,7 @@ export default function SocialInsuranceConfigTab() {
                   key={config.id}
                   className={TABLE_STYLES.row}
                 >
-                  <td className="px-4 py-3 font-medium text-[#1A1A1A]">
+                  <td className="px-4 py-3 font-medium text-foreground">
                     {INSURANCE_TYPE_LABELS[config.insuranceType] ?? config.insuranceType}
                   </td>
                   <td className="px-4 py-3 text-[#333]">{config.city}</td>
@@ -138,8 +138,8 @@ export default function SocialInsuranceConfigTab() {
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         !config.deletedAt
-                          ? 'bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]'
-                          : 'bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]'
+                          ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                          : 'bg-background text-[#555] border border-border'
                       }`}
                     >
                       {!config.deletedAt ? '활성' : '비활성'}
@@ -148,7 +148,7 @@ export default function SocialInsuranceConfigTab() {
                   <td className="px-4 py-3 text-center">
                     <button
                       onClick={() => handleEdit(config)}
-                      className="p-1.5 text-[#999] hover:text-[#5E81F4] hover:bg-[#EDF1FE] rounded-lg transition-colors"
+                      className="p-1.5 text-[#999] hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
                       title="수정"
                     >
                       <Pencil className="w-4 h-4" />

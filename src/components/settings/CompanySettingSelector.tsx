@@ -50,50 +50,50 @@ export function CompanySettingSelector({ value, onChange, className = '' }: Comp
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-2 rounded-lg border border-[#F0F0F3] bg-white px-4 py-2.5 text-sm transition-colors hover:border-[#5E81F4]/40 focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/20"
+        className="flex items-center gap-2 rounded-lg border border-border bg-white px-4 py-2.5 text-sm transition-colors hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20"
       >
         {value ? (
-          <Building2 className="h-4 w-4 text-[#5E81F4]" />
+          <Building2 className="h-4 w-4 text-primary" />
         ) : (
-          <Globe className="h-4 w-4 text-[#8181A5]" />
+          <Globe className="h-4 w-4 text-muted-foreground" />
         )}
-        <span className="font-medium text-[#1C1D21]">
+        <span className="font-medium text-foreground">
           {selected ? `${selected.code} — ${selected.name}` : '글로벌 (기본값)'}
         </span>
-        <ChevronDown className={`ml-1 h-4 w-4 text-[#8181A5] transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`ml-1 h-4 w-4 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-30 mt-1 w-72 overflow-hidden rounded-xl border border-[#F0F0F3] bg-white shadow-lg animate-in fade-in-0 zoom-in-95 duration-150">
+        <div className="absolute left-0 top-full z-30 mt-1 w-72 overflow-hidden rounded-xl border border-border bg-white shadow-lg animate-in fade-in-0 zoom-in-95 duration-150">
           {/* Global option */}
           <button
             type="button"
             onClick={() => { onChange(null); setOpen(false) }}
-            className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm hover:bg-[#F5F5FA] ${
-              !value ? 'bg-[#5E81F4]/5 text-[#5E81F4]' : 'text-[#1C1D21]'
+            className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm hover:bg-muted ${
+              !value ? 'bg-primary/5 text-primary' : 'text-foreground'
             }`}
           >
             <Globe className="h-4 w-4" />
             <div>
               <p className="font-medium">글로벌 (기본값)</p>
-              <p className="text-xs text-[#8181A5]">모든 법인에 적용되는 기본 설정</p>
+              <p className="text-xs text-muted-foreground">모든 법인에 적용되는 기본 설정</p>
             </div>
           </button>
-          <div className="border-t border-[#F0F0F3]" />
+          <div className="border-t border-border" />
           {/* Companies */}
           {companies.map((company) => (
             <button
               key={company.id}
               type="button"
               onClick={() => { onChange(company.id); setOpen(false) }}
-              className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm hover:bg-[#F5F5FA] ${
-                company.id === value ? 'bg-[#5E81F4]/5 text-[#5E81F4]' : 'text-[#1C1D21]'
+              className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm hover:bg-muted ${
+                company.id === value ? 'bg-primary/5 text-primary' : 'text-foreground'
               }`}
             >
-              <Building2 className="h-4 w-4 text-[#8181A5]" />
+              <Building2 className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">{company.code}</span>
-              <span className="text-[#8181A5]">{company.name}</span>
-              <span className="ml-auto text-xs text-[#8181A5]">{company.currency}</span>
+              <span className="text-muted-foreground">{company.name}</span>
+              <span className="ml-auto text-xs text-muted-foreground">{company.currency}</span>
             </button>
           ))}
         </div>

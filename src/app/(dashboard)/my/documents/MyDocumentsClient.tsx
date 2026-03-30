@@ -166,7 +166,7 @@ export function MyDocumentsClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 border-b border-[#E8E8E8] dark:border-slate-700">
+      <div className="flex gap-1 mb-6 border-b border-border dark:border-slate-700">
         {TABS.map((tab) => {
           const Icon = tab.icon
           const isActive = activeTab === tab.key
@@ -177,14 +177,14 @@ export function MyDocumentsClient({ user }: { user: SessionUser }) {
               className={cn(
                 'flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors',
                 isActive
-                  ? 'border-[#5E81F4] text-[#5E81F4]'
+                  ? 'border-primary text-primary'
                   : 'border-transparent text-[#999] hover:text-[#666] dark:text-slate-400 dark:hover:text-slate-300',
               )}
             >
               <Icon className="w-4 h-4" />
               {tab.label}
               {tab.key === 'certificates' && certRequests.length > 0 && (
-                <span className="ml-1 text-xs bg-[#5E81F4] text-white rounded-full px-1.5 py-0.5">
+                <span className="ml-1 text-xs bg-primary text-white rounded-full px-1.5 py-0.5">
                   {certRequests.length}
                 </span>
               )}
@@ -233,16 +233,16 @@ function DocumentsTab({
       {documents.map((doc) => (
         <div
           key={doc.id}
-          className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-lg border border-[#E8E8E8] dark:border-slate-700"
+          className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-lg border border-border dark:border-slate-700"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[#F0F3FF] dark:bg-slate-700 flex items-center justify-center">
-              <FileText className="w-5 h-5 text-[#5E81F4]" />
+            <div className="w-10 h-10 rounded-lg bg-primary/5 dark:bg-slate-700 flex items-center justify-center">
+              <FileText className="w-5 h-5 text-primary" />
             </div>
             <div>
               <p className="font-medium text-[#222] dark:text-white">{doc.title}</p>
               <div className="flex items-center gap-2 text-xs text-[#999] dark:text-slate-400">
-                <span className="px-1.5 py-0.5 rounded bg-[#F5F5F5] dark:bg-slate-700">
+                <span className="px-1.5 py-0.5 rounded bg-muted dark:bg-slate-700">
                   {DOC_TYPE_LABELS[doc.docType] ?? doc.docType}
                 </span>
                 <span>{new Date(doc.createdAt).toLocaleDateString('ko-KR')}</span>
@@ -252,9 +252,9 @@ function DocumentsTab({
           </div>
           <button
             onClick={() => onDownload(doc.id)}
-            className="p-2 rounded-lg hover:bg-[#F5F5F5] dark:hover:bg-slate-700 transition-colors"
+            className="p-2 rounded-lg hover:bg-muted dark:hover:bg-slate-700 transition-colors"
           >
-            <Download className="w-5 h-5 text-[#5E81F4]" />
+            <Download className="w-5 h-5 text-primary" />
           </button>
         </div>
       ))}
@@ -311,7 +311,7 @@ function CertificatesTab({
                 <select
                   value={requestType}
                   onChange={(e) => onTypeChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-[#E8E8E8] dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#222] dark:text-white"
+                  className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#222] dark:text-white"
                 >
                   {Object.entries(CERT_TYPE_LABELS).map(([key, label]) => (
                     <option key={key} value={key}>{label}</option>
@@ -326,7 +326,7 @@ function CertificatesTab({
                   onChange={(e) => onPurposeChange(e.target.value)}
                   placeholder="예: 은행 대출 신청용"
                   rows={3}
-                  className="w-full px-3 py-2 border border-[#E8E8E8] dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#222] dark:text-white resize-none"
+                  className="w-full px-3 py-2 border border-border dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#222] dark:text-white resize-none"
                 />
               </div>
             </div>
@@ -361,11 +361,11 @@ function CertificatesTab({
             return (
               <div
                 key={req.id}
-                className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-lg border border-[#E8E8E8] dark:border-slate-700"
+                className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-lg border border-border dark:border-slate-700"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-[#F0F3FF] dark:bg-slate-700 flex items-center justify-center">
-                    <FilePlus className="w-5 h-5 text-[#5E81F4]" />
+                  <div className="w-10 h-10 rounded-lg bg-primary/5 dark:bg-slate-700 flex items-center justify-center">
+                    <FilePlus className="w-5 h-5 text-primary" />
                   </div>
                   <div>
                     <p className="font-medium text-[#222] dark:text-white">
@@ -385,10 +385,10 @@ function CertificatesTab({
                   {req.status === 'ISSUED' && req.issuedFileKey && (
                     <button
                       onClick={() => onDownload(req.id)}
-                      className="p-2 rounded-lg hover:bg-[#F5F5F5] dark:hover:bg-slate-700 transition-colors"
+                      className="p-2 rounded-lg hover:bg-muted dark:hover:bg-slate-700 transition-colors"
                       title="다운로드"
                     >
-                      <Download className="w-5 h-5 text-[#5E81F4]" />
+                      <Download className="w-5 h-5 text-primary" />
                     </button>
                   )}
                 </div>

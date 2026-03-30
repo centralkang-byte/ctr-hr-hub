@@ -34,14 +34,14 @@ export function LocaleTab({
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_kec96b8ec_ked8380ec')}</h3>
-          <p className="text-sm text-[#8181A5]">{t('company_kebb384_keab8b0eb_kec96b8ec_kebb08f_ked8380ec_settings')}</p>
+          <h3 className="text-base font-semibold text-foreground">{t('kr_kec96b8ec_ked8380ec')}</h3>
+          <p className="text-sm text-muted-foreground">{t('company_kebb384_keab8b0eb_kec96b8ec_kebb08f_ked8380ec_settings')}</p>
         </div>
         {isOverridden && (
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
@@ -67,7 +67,7 @@ export function LocaleTab({
 
       <SettingFieldWithOverride label="지원 언어" status="global" companySelected={!!companyId}>
         <div className="flex flex-wrap gap-2">{settings.supportedLocales.map((l) => (
-          <span key={l} className="rounded-full bg-[#5E81F4]/10 px-3 py-1 text-sm font-medium text-[#5E81F4]">{LOCALE_LABELS[l] ?? l}</span>
+          <span key={l} className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{LOCALE_LABELS[l] ?? l}</span>
         ))}</div>
       </SettingFieldWithOverride>
 

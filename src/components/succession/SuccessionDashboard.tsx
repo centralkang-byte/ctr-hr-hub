@@ -71,45 +71,45 @@ export default function SuccessionDashboard() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[#EDF1FE] flex items-center justify-center">
-              <Crown className="h-5 w-5 text-[#5E81F4]" />
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Crown className="h-5 w-5 text-primary" />
             </div>
             <div>
               <p className="text-xs text-[#666]">전체 핵심직책</p>
-              <p className="text-2xl font-bold text-[#1A1A1A]">{data.totalPlans}</p>
+              <p className="text-2xl font-bold text-foreground">{data.totalPlans}</p>
             </div>
           </div>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[#D1FAE5] flex items-center justify-center">
-              <Shield className="h-5 w-5 text-[#059669]" />
+            <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+              <Shield className="h-5 w-5 text-emerald-600" />
             </div>
             <div>
               <p className="text-xs text-[#666]">활성 계획</p>
-              <p className="text-2xl font-bold text-[#1A1A1A]">{data.activePlans}</p>
+              <p className="text-2xl font-bold text-foreground">{data.activePlans}</p>
             </div>
           </div>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[#FEE2E2] flex items-center justify-center">
-              <AlertTriangle className="h-5 w-5 text-[#DC2626]" />
+            <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center">
+              <AlertTriangle className="h-5 w-5 text-red-600" />
             </div>
             <div>
               <p className="text-xs text-[#666]">후보 없는 직책</p>
-              <p className="text-2xl font-bold text-[#DC2626]">{data.plansWithoutCandidates}</p>
+              <p className="text-2xl font-bold text-red-600">{data.plansWithoutCandidates}</p>
             </div>
           </div>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[#FEF3C7] flex items-center justify-center">
-              <Users className="h-5 w-5 text-[#D97706]" />
+            <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+              <Users className="h-5 w-5 text-amber-600" />
             </div>
             <div>
               <p className="text-xs text-[#666]">전체 후보자</p>
-              <p className="text-2xl font-bold text-[#1A1A1A]">{totalCandidates}</p>
+              <p className="text-2xl font-bold text-foreground">{totalCandidates}</p>
             </div>
           </div>
         </div>
@@ -118,7 +118,7 @@ export default function SuccessionDashboard() {
       {/* ─── Readiness Distribution ─── */}
       {pieData.length > 0 && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">준비도 분포</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">준비도 분포</h3>
           <div className="flex items-center gap-6">
             <div className="relative w-48 h-48">
               <ResponsiveContainer>

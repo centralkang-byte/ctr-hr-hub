@@ -114,10 +114,10 @@ export function DigestPreview() {
               ].map(({ label, value }) => (
                 <div
                   key={label}
-                  className="rounded-lg border border-[#E8E8E8] p-3 text-center"
+                  className="rounded-lg border border-border p-3 text-center"
                 >
                   <p className="text-xs text-[#666]">{label}</p>
-                  <p className="text-xl font-bold text-[#1A1A1A]">{value}</p>
+                  <p className="text-xl font-bold text-foreground">{value}</p>
                 </div>
               ))}
             </div>

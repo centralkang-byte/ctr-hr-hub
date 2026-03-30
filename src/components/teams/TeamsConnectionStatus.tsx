@@ -68,7 +68,7 @@ export function TeamsConnectionStatus({
         <CardTitle className="flex items-center gap-2 text-lg">
           연결 상태
           {connected ? (
-            <Badge className="bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]">
+            <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">
               <CheckCircle2 className="mr-1 h-3 w-3" />
               연결됨
             </Badge>
@@ -82,7 +82,7 @@ export function TeamsConnectionStatus({
       </CardHeader>
       <CardContent className="space-y-4">
         {connected && (
-          <div className="rounded-xl border border-[#E8E8E8] p-4 space-y-2">
+          <div className="rounded-xl border border-border p-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-[#666]">Tenant ID</span>
               <span className="font-mono tabular-nums text-xs">{config.tenantId}</span>
@@ -100,8 +100,8 @@ export function TeamsConnectionStatus({
           <div
             className={`rounded-lg border p-3 text-sm ${
               testResult.success
-                ? 'border-[#A7F3D0] bg-[#D1FAE5] text-[#047857]'
-                : 'border-[#FECACA] bg-[#FEE2E2] text-[#B91C1C]'
+                ? 'border-emerald-200 bg-emerald-100 text-emerald-700'
+                : 'border-red-200 bg-red-100 text-red-700'
             }`}
           >
             {testResult.success
@@ -121,7 +121,7 @@ export function TeamsConnectionStatus({
           </Button>
 
           {connected && (
-            <Button variant="outline" onClick={onDisconnect} className="text-[#DC2626] hover:bg-[#FEE2E2]">
+            <Button variant="outline" onClick={onDisconnect} className="text-red-600 hover:bg-red-100">
               <Unplug className="mr-2 h-4 w-4" />
               연결 해제
             </Button>

@@ -56,11 +56,11 @@ interface BenefitClaim {
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  pending: { label: '승인대기', color: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]', icon: <Clock className="w-3 h-3" /> },
-  approved: { label: '승인', color: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]', icon: <CheckCircle2 className="w-3 h-3" /> },
-  rejected: { label: '반려', color: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]', icon: <XCircle className="w-3 h-3" /> },
-  paid: { label: '지급완료', color: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]', icon: <CheckCircle2 className="w-3 h-3" /> },
-  cancelled: { label: '취소', color: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]', icon: null },
+  pending: { label: '승인대기', color: 'bg-amber-100 text-amber-700 border-amber-300', icon: <Clock className="w-3 h-3" /> },
+  approved: { label: '승인', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: <CheckCircle2 className="w-3 h-3" /> },
+  rejected: { label: '반려', color: 'bg-red-100 text-red-700 border-red-200', icon: <XCircle className="w-3 h-3" /> },
+  paid: { label: '지급완료', color: 'bg-primary/10 text-primary/90 border-primary/20', icon: <CheckCircle2 className="w-3 h-3" /> },
+  cancelled: { label: '취소', color: 'bg-background text-[#555] border-border', icon: null },
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -135,14 +135,14 @@ function ClaimModal({ plans, onClose, onSubmit }: {
   return (
     <div className={MODAL_STYLES.container}>
       <div className={`${MODAL_STYLES.content.md}`}>
-        <div className="flex items-center justify-between p-5 border-b border-[#E8E8E8]">
-          <h2 className="text-lg font-semibold text-[#1A1A1A]">{'benefit.apply'}</h2>
+        <div className="flex items-center justify-between p-5 border-b border-border">
+          <h2 className="text-lg font-semibold text-foreground">{'benefit.apply'}</h2>
           <button onClick={onClose} className="text-[#999] hover:text-[#555] text-xl leading-none">✕</button>
         </div>
 
         <form onSubmit={guardedSubmit} className="p-5 space-y-4">
           {error && (
-            <div className="flex items-center gap-2 p-3 bg-[#FEE2E2] rounded-lg text-sm text-[#B91C1C]">
+            <div className="flex items-center gap-2 p-3 bg-red-100 rounded-lg text-sm text-red-700">
               <AlertTriangle className="w-4 h-4 shrink-0" />
               {error}
             </div>
@@ -153,7 +153,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
             <select
               value={selectedPlanId}
               onChange={(e) => setSelectedPlanId(e.target.value)}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
             >
               <option value="">항목을 선택하세요</option>
               {plans.map((p) => (
@@ -181,7 +181,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
                 onChange={(e) => setClaimAmount(e.target.value)}
                 readOnly={selectedPlan?.benefitType === 'fixed_amount'}
                 placeholder="0"
-                className="flex-1 px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 read-only:bg-[#FAFAFA]"
+                className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 read-only:bg-background"
               />
             </div>
             {selectedPlan?.maxAmount && (
@@ -197,7 +197,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
               type="date"
               value={eventDate}
               onChange={(e) => setEventDate(e.target.value)}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
             />
           </div>
 
@@ -208,15 +208,15 @@ function ClaimModal({ plans, onClose, onSubmit }: {
               value={eventDetail}
               onChange={(e) => setEventDetail(e.target.value)}
               placeholder="예: 본인 결혼"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
             />
           </div>
 
           <div>
             <label className="text-sm font-medium text-[#333] mb-1 block">
-              증빙 서류 {selectedPlan?.requiresProof && <span className="text-[#EF4444]">*</span>}
+              증빙 서류 {selectedPlan?.requiresProof && <span className="text-red-500">*</span>}
             </label>
-            <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-[#D4D4D4] rounded-lg cursor-pointer hover:bg-[#FAFAFA] text-sm text-[#666]">
+            <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-border rounded-lg cursor-pointer hover:bg-background text-sm text-[#666]">
               <Upload className="w-4 h-4" />
               파일 첨부
               <input type="file" multiple onChange={handleFileChange} className="hidden" />
@@ -230,7 +230,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
                     <button
                       type="button"
                       onClick={() => setProofFiles((prev) => prev.filter((_, j) => j !== i))}
-                      className="text-[#EF4444] hover:underline ml-auto"
+                      className="text-red-500 hover:underline ml-auto"
                     >
                       삭제
                     </button>
@@ -241,11 +241,11 @@ function ClaimModal({ plans, onClose, onSubmit }: {
           </div>
         </form>
 
-        <div className="flex justify-end gap-3 p-5 border-t border-[#E8E8E8]">
+        <div className="flex justify-end gap-3 p-5 border-t border-border">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] rounded-lg text-sm font-medium"
+            className="px-4 py-2 bg-white border border-border hover:bg-background text-[#333] rounded-lg text-sm font-medium"
           >
             {'취소'}
           </button>
@@ -305,7 +305,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-6 h-6 animate-spin text-[#5E81F4]" />
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
       </div>
     )
   }
@@ -315,7 +315,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
       <div className="flex items-center justify-between">
         <div>
           <nav className="text-xs text-[#999] mb-1">나의 공간</nav>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{'나의 복리후생'}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{'나의 복리후생'}</h1>
         </div>
         <button
           onClick={() => setShowModal(true)}
@@ -327,7 +327,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-4 bg-[#FEE2E2] rounded-xl text-sm text-[#B91C1C]">
+        <div className="flex items-center gap-2 p-4 bg-red-100 rounded-xl text-sm text-red-700">
           <AlertTriangle className="w-4 h-4" />
           {error}
         </div>
@@ -335,7 +335,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
 
       {summary.length > 0 && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-base font-semibold text-[#1A1A1A] mb-4">📊 {year}{tCommon('unit.year')} {'사용 현황'}</h2>
+          <h2 className="text-base font-semibold text-foreground mb-4">📊 {year}{tCommon('unit.year')} {'사용 현황'}</h2>
           <div className="space-y-4">
             {summary.map((item) => {
               const total = item.maxAmount ?? 0
@@ -351,15 +351,15 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
                     </span>
                   </div>
                   {total > 0 && (
-                    <div className="w-full bg-[#F5F5F5] rounded-full h-2 overflow-hidden">
+                    <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                       <div className="h-full flex">
-                        <div className="bg-[#5E81F4] transition-all" style={{ width: `${usedPct}%` }} />
-                        <div className="bg-[#FCD34D] transition-all" style={{ width: `${pendingPct}%` }} />
+                        <div className="bg-primary transition-all" style={{ width: `${usedPct}%` }} />
+                        <div className="bg-amber-300 transition-all" style={{ width: `${pendingPct}%` }} />
                       </div>
                     </div>
                   )}
                   {item.pending > 0 && (
-                    <p className="text-xs text-[#B45309] mt-1">
+                    <p className="text-xs text-amber-700 mt-1">
                       대기중: {formatCurrency(item.pending, item.currency)}
                     </p>
                   )}
@@ -370,9 +370,9 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-[#E8E8E8]">
-        <div className="p-5 border-b border-[#E8E8E8]">
-          <h2 className="text-base font-semibold text-[#1A1A1A]">{'신청 내역'}</h2>
+      <div className="bg-white rounded-xl border border-border">
+        <div className="p-5 border-b border-border">
+          <h2 className="text-base font-semibold text-foreground">{'신청 내역'}</h2>
         </div>
         {claims.length === 0 ? (
           <EmptyState
@@ -382,13 +382,13 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
             action={{ label: '복리후생 신청', onClick: () => setShowModal(true) }}
           />
         ) : (
-          <div className="divide-y divide-[#F5F5F5]">
+          <div className="divide-y divide-border">
             {claims.map((claim) => {
               const s = STATUS_LABELS[claim.status] ?? { label: claim.status, color: '', icon: null }
               return (
-                <div key={claim.id} className="flex items-center gap-4 px-5 py-4 hover:bg-[#FAFAFA]">
+                <div key={claim.id} className="flex items-center gap-4 px-5 py-4 hover:bg-background">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-[#1A1A1A]">{claim.benefitPlan.name}</p>
+                    <p className="text-sm font-medium text-foreground">{claim.benefitPlan.name}</p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <p className="text-xs text-[#666]">
                         {format(new Date(claim.createdAt), 'MM/dd', { locale: ko })}
@@ -399,7 +399,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-semibold text-[#1A1A1A]">
+                    <p className="text-sm font-semibold text-foreground">
                       {formatCurrency(claim.claimAmount, claim.benefitPlan.currency)}
                     </p>
                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border mt-1 ${s.color}`}>

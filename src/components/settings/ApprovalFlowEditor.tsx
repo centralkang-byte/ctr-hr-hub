@@ -53,10 +53,10 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
       {flow.steps.map((step, index) => (
         <div
           key={step.id}
-          className="flex items-center gap-3 rounded-xl border border-[#E8E8E8] bg-white px-4 py-3"
+          className="flex items-center gap-3 rounded-xl border border-border bg-white px-4 py-3"
         >
           {/* 순서 */}
-          <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-[#5E81F4] text-xs font-bold text-white">
+          <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
             {index + 1}
           </div>
 
@@ -68,7 +68,7 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
               value={step.approverRole ?? ''}
               onChange={(e) => updateStep(index, { approverRole: e.target.value as ApproverRole })}
               disabled={disabled}
-              className="w-full appearance-none rounded-lg border border-[#D4D4D4] bg-white px-3 py-2 text-sm text-[#333] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/20 disabled:bg-[#FAFAFA] disabled:text-[#999]"
+              className="w-full appearance-none rounded-lg border border-border bg-white px-3 py-2 text-sm text-[#333] focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-background disabled:text-[#999]"
             >
               {APPROVER_ROLES.map((r) => (
                 <option key={r.value} value={r.value}>{r.label}</option>
@@ -88,7 +88,7 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
                 autoApproveDays: e.target.value ? parseInt(e.target.value) : null
               })}
               disabled={disabled}
-              className="w-24 rounded-lg border border-[#D4D4D4] px-2 py-2 text-sm text-[#333] placeholder:text-[#999] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/20 disabled:bg-[#FAFAFA]"
+              className="w-24 rounded-lg border border-border px-2 py-2 text-sm text-[#333] placeholder:text-[#999] focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-background"
             />
             <span className="text-xs text-[#999]">일 후 자동</span>
           </div>
@@ -98,7 +98,7 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
             <button
               type="button"
               onClick={() => removeStep(index)}
-              className="flex-shrink-0 rounded-lg p-1.5 text-[#999] hover:bg-[#FEE2E2] hover:text-[#DC2626]"
+              className="flex-shrink-0 rounded-lg p-1.5 text-[#999] hover:bg-red-100 hover:text-red-600"
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -110,7 +110,7 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
         <button
           type="button"
           onClick={addStep}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-[#D4D4D4] py-2.5 text-sm text-[#666] hover:border-[#5E81F4] hover:text-[#5E81F4]"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border py-2.5 text-sm text-[#666] hover:border-primary hover:text-primary"
         >
           <Plus className="h-4 w-4" />
           단계 추가

@@ -154,16 +154,16 @@ export function OrgStudioClient({ user }: OrgStudioClientProps) {
   }
 
   return (
-    <div className="flex h-[calc(100vh-64px)] flex-col bg-[#F5F5FA]">
+    <div className="flex h-[calc(100vh-64px)] flex-col bg-muted">
       {/* Page Header */}
-      <div className="flex items-center justify-between border-b border-[#F0F0F3] bg-white px-6 py-4">
+      <div className="flex items-center justify-between border-b border-border bg-white px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#5E81F4]/10">
-            <GitBranch size={18} className="text-[#5E81F4]" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
+            <GitBranch size={18} className="text-primary" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-[#1C1D21]">Org Studio</h1>
-            <p className="text-xs text-[#8181A5]">
+            <h1 className="text-lg font-bold text-foreground">Org Studio</h1>
+            <p className="text-xs text-muted-foreground">
               조직 개편 시뮬레이터 — 드래그하여 부서를 재배치하세요
             </p>
           </div>
@@ -171,24 +171,24 @@ export function OrgStudioClient({ user }: OrgStudioClientProps) {
 
         <div className="flex items-center gap-3">
           {/* Simulation mode badge */}
-          <div className="flex items-center gap-1.5 rounded-lg bg-[#5E81F4]/10 px-3 py-1.5">
-            <Info size={13} className="text-[#5E81F4]" />
-            <span className="text-xs font-medium text-[#5E81F4]">
+          <div className="flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5">
+            <Info size={13} className="text-primary" />
+            <span className="text-xs font-medium text-primary">
               시뮬레이션 모드 — 저장 전까지 실제 반영 안 됨
             </span>
           </div>
 
           {/* Save status feedback */}
           {saveState === 'success' && (
-            <div className="flex items-center gap-1.5 rounded-lg bg-[#D1FAE5] px-3 py-1.5">
-              <CheckCircle2 size={13} className="text-[#047857]" />
-              <span className="text-xs font-medium text-[#047857]">초안으로 저장됨</span>
+            <div className="flex items-center gap-1.5 rounded-lg bg-emerald-100 px-3 py-1.5">
+              <CheckCircle2 size={13} className="text-emerald-700" />
+              <span className="text-xs font-medium text-emerald-700">초안으로 저장됨</span>
             </div>
           )}
           {saveState === 'error' && saveError && (
-            <div className="flex items-center gap-1.5 rounded-lg bg-[#FEE2E2] px-3 py-1.5">
-              <AlertCircle size={13} className="text-[#B91C1C]" />
-              <span className="text-xs font-medium text-[#B91C1C]">{saveError}</span>
+            <div className="flex items-center gap-1.5 rounded-lg bg-red-100 px-3 py-1.5">
+              <AlertCircle size={13} className="text-red-700" />
+              <span className="text-xs font-medium text-red-700">{saveError}</span>
             </div>
           )}
 
@@ -199,8 +199,8 @@ export function OrgStudioClient({ user }: OrgStudioClientProps) {
             className={[
               'inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-colors',
               hasMoves && saveState !== 'saving'
-                ? 'bg-[#5E81F4] text-white hover:bg-[#4B6DE0]'
-                : 'cursor-not-allowed bg-[#E8E8E8] text-[#999]',
+                ? 'bg-primary text-white hover:bg-primary/90'
+                : 'cursor-not-allowed bg-border text-[#999]',
             ].join(' ')}
           >
             {saveState === 'saving' ? (
@@ -240,7 +240,7 @@ export function OrgStudioClient({ user }: OrgStudioClientProps) {
         </div>
 
         {/* Right: Impact Analysis Panel (30%) */}
-        <div className="flex-[3] overflow-y-auto border-l border-[#F0F0F3] bg-white">
+        <div className="flex-[3] overflow-y-auto border-l border-border bg-white">
           <ImpactAnalysisPanel diff={diff} selectedNode={selectedNode} baseline={baseline} />
         </div>
       </div>

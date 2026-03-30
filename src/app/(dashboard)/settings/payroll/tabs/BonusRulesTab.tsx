@@ -97,14 +97,14 @@ export function BonusRulesTab({
 
   const hasChanges = JSON.stringify(settings) !== JSON.stringify(original)
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{'성과급 규칙'}</h3>
-          <p className="text-sm text-[#8181A5]">{'등급별 성과급 배율 설정'}</p>
+          <h3 className="text-base font-semibold text-foreground">{'성과급 규칙'}</h3>
+          <p className="text-sm text-muted-foreground">{'등급별 성과급 배율 설정'}</p>
         </div>
         {isOverridden && (
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
@@ -128,7 +128,7 @@ export function BonusRulesTab({
           </tr></thead>
           <tbody>{settings.gradeMultipliers.map((g, i) => (
             <tr key={g.grade} className={TABLE_STYLES.row}>
-              <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{g.grade}</td>
+              <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{g.grade}</td>
               <td className={TABLE_STYLES.cell}>{g.label}</td>
               <td className={`${TABLE_STYLES.cell} text-right`}><Input type="number" value={g.multiplier} onChange={(e) => { const next = structuredClone(settings); next.gradeMultipliers[i].multiplier = Number(e.target.value); setSettings(next) }} className="ml-auto w-24 text-right" /></td>
             </tr>

@@ -159,8 +159,8 @@ export function GradeTitleMappingTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">직급-호칭 매핑</h3>
-          <p className="text-sm text-[#8181A5]">
+          <h3 className="text-base font-semibold text-foreground">직급-호칭 매핑</h3>
+          <p className="text-sm text-muted-foreground">
             {mappings.length}개 매핑
             {Object.entries(groupCounts).map(([type, count]) => (
               ` · ${GRADE_TYPE_PREFIX[type] ?? type}: ${count}개`
@@ -186,7 +186,7 @@ export function GradeTitleMappingTab({ companyId }: Props) {
       </div>
 
       {showAdd && (
-        <div className="rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4 space-y-3">
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
           <p className="text-sm font-medium">새 직급-호칭 추가</p>
           <div className="grid grid-cols-4 gap-2">
             <Select value={addForm.gradeType} onValueChange={v => setAddForm(p => ({ ...p, gradeType: v }))}>
@@ -197,8 +197,8 @@ export function GradeTitleMappingTab({ companyId }: Props) {
                 <SelectItem value="EXECUTIVE">E (경영)</SelectItem>
               </SelectContent>
             </Select>
-            <div className="flex items-center text-sm text-[#8181A5]">
-              코드: <span className="ml-1 font-mono font-medium text-[#5E81F4]">{getNextGradeCode(addForm.gradeType)}</span> (자동)
+            <div className="flex items-center text-sm text-muted-foreground">
+              코드: <span className="ml-1 font-mono font-medium text-primary">{getNextGradeCode(addForm.gradeType)}</span> (자동)
             </div>
             <Input placeholder="호칭명 (예: 매니저)" value={addForm.titleName} onChange={e => setAddForm(p => ({ ...p, titleName: e.target.value }))} />
             <Input placeholder="호칭 영문명" value={addForm.titleNameEn} onChange={e => setAddForm(p => ({ ...p, titleNameEn: e.target.value }))} />
@@ -223,9 +223,9 @@ export function GradeTitleMappingTab({ companyId }: Props) {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={5} className="py-8 text-center text-sm text-[#8181A5]">로딩 중...</td></tr>
+              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">로딩 중...</td></tr>
             ) : mappings.length === 0 ? (
-              <tr><td colSpan={5} className="py-8 text-center text-sm text-[#8181A5]">등록된 매핑이 없습니다. 직급-호칭을 추가하세요.</td></tr>
+              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">등록된 매핑이 없습니다. 직급-호칭을 추가하세요.</td></tr>
             ) : mappings.map((m) => (
               <tr key={m.id} className={TABLE_STYLES.row}>
                 <td className={TABLE_STYLES.cell}>
@@ -233,13 +233,13 @@ export function GradeTitleMappingTab({ companyId }: Props) {
                     {GRADE_TYPE_LABELS[m.jobGrade.gradeType] ?? m.jobGrade.gradeType}
                   </span>
                 </td>
-                <td className={`${TABLE_STYLES.cell} font-mono font-medium text-[#5E81F4]`}>{m.jobGrade.code}</td>
+                <td className={`${TABLE_STYLES.cell} font-mono font-medium text-primary`}>{m.jobGrade.code}</td>
                 <td className={TABLE_STYLES.cell}>
                   {editingId === m.id ? (
                     <Input className="h-7 text-sm" value={editForm.titleName} onChange={e => setEditForm(p => ({ ...p, titleName: e.target.value }))} />
                   ) : m.employeeTitle.name}
                 </td>
-                <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>
+                <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>
                   {editingId === m.id ? (
                     <Input className="h-7 text-sm" value={editForm.titleNameEn} onChange={e => setEditForm(p => ({ ...p, titleNameEn: e.target.value }))} />
                   ) : m.employeeTitle.nameEn ?? '—'}

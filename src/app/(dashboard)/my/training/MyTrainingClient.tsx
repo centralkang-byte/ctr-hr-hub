@@ -90,8 +90,8 @@ const FORMAT_LABELS: Record<string, string> = {
 }
 
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
-  ENROLLED: { label: '수강대기', className: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
-  IN_PROGRESS: { label: '수강중', className: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
+  ENROLLED: { label: '수강대기', className: 'bg-amber-100 text-amber-700 border-amber-300' },
+  IN_PROGRESS: { label: '수강중', className: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
 }
 
 function formatDate(dateStr?: string | null) {
@@ -175,10 +175,10 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
   if (loading) {
     return (
       <div className="p-6 space-y-6">
-        <div className="h-8 bg-[#F5F5F5] rounded w-48 animate-pulse" />
+        <div className="h-8 bg-muted rounded w-48 animate-pulse" />
         <div className="grid gap-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-24 bg-[#F5F5F5] rounded-xl animate-pulse" />
+            <div key={i} className="h-24 bg-muted rounded-xl animate-pulse" />
           ))}
         </div>
       </div>
@@ -192,23 +192,23 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
       {/* ─── 헤더 ─── */}
       <div>
         <nav className="text-xs text-[#999] mb-1">나의 공간</nav>
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">내 교육 현황</h1>
+        <h1 className="text-2xl font-bold text-foreground">내 교육 현황</h1>
       </div>
 
       {/* ─── 만료 임박 경고 ─── */}
       {expiringSoon.length > 0 && (
-        <div className="bg-[#FFF7ED] border border-[#FED7AA] rounded-xl p-4">
+        <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
-            <AlertTriangle className="h-4 w-4 text-[#C2410C]" />
-            <span className="text-sm font-semibold text-[#C2410C]">이수 만료 임박 ({expiringSoon.length}건)</span>
+            <AlertTriangle className="h-4 w-4 text-orange-700" />
+            <span className="text-sm font-semibold text-orange-700">이수 만료 임박 ({expiringSoon.length}건)</span>
           </div>
           <div className="space-y-1.5">
             {expiringSoon.map((item) => {
               const days = daysUntil(item.expiresAt)
               return (
                 <div key={item.enrollmentId} className="flex items-center justify-between text-sm">
-                  <span className="text-[#1A1A1A]">{item.course.title}</span>
-                  <span className="text-[#C2410C] font-medium">
+                  <span className="text-foreground">{item.course.title}</span>
+                  <span className="text-orange-700 font-medium">
                     {days !== null ? `${days}일 후 만료` : '-'}
                   </span>
                 </div>
@@ -222,38 +222,38 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className={`${CARD_STYLES.kpi} text-center`}>
           <p className="text-xs text-[#666] mb-1">미이수 필수</p>
-          <p className="text-3xl font-bold text-[#EF4444]">{requiredPending.length}</p>
+          <p className="text-3xl font-bold text-red-500">{requiredPending.length}</p>
         </div>
         <div className={`${CARD_STYLES.kpi} text-center`}>
           <p className="text-xs text-[#666] mb-1">신청 필요</p>
-          <p className="text-3xl font-bold text-[#B45309]">{jobRequired.length}</p>
+          <p className="text-3xl font-bold text-amber-700">{jobRequired.length}</p>
         </div>
         <div className={`${CARD_STYLES.kpi} text-center`}>
           <p className="text-xs text-[#666] mb-1">추천 과정</p>
-          <p className="text-3xl font-bold text-[#4B6DE0]">{recommended.length}</p>
+          <p className="text-3xl font-bold text-primary/90">{recommended.length}</p>
         </div>
         <div className={`${CARD_STYLES.kpi} text-center`}>
           <p className="text-xs text-[#666] mb-1">이수 완료</p>
-          <p className="text-3xl font-bold text-[#047857]">{history.length}</p>
+          <p className="text-3xl font-bold text-emerald-700">{history.length}</p>
         </div>
       </div>
 
       {/* ─── 진행 중인 필수 교육 ─── */}
       {requiredPending.length > 0 && (
         <section>
-          <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-[#EF4444]" />
+          <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-red-500" />
             미이수 필수 교육
           </h2>
           <div className="space-y-3">
             {requiredPending.map((item) => {
-              const statusInfo = STATUS_LABELS[item.status] ?? { label: item.status, className: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' }
+              const statusInfo = STATUS_LABELS[item.status] ?? { label: item.status, className: 'bg-background text-[#555] border-border' }
               return (
                 <div key={item.enrollmentId} className={CARD_STYLES.padded}>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className="font-semibold text-[#1A1A1A] text-sm">{item.course.title}</span>
+                        <span className="font-semibold text-foreground text-sm">{item.course.title}</span>
                         <Badge className={`text-[10px] px-1.5 py-0 ${statusInfo.className}`}>{statusInfo.label}</Badge>
                         <Badge variant="outline" className="text-[10px] px-1.5 py-0">필수</Badge>
                       </div>
@@ -262,7 +262,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
                         {item.course.durationHours && <span>{item.course.durationHours}h</span>}
                         {item.course.format && <span>{FORMAT_LABELS[item.course.format] ?? item.course.format}</span>}
                         {item.expiresAt && (
-                          <span className="text-[#EF4444]">마감: {formatDate(item.expiresAt)}</span>
+                          <span className="text-red-500">마감: {formatDate(item.expiresAt)}</span>
                         )}
                       </div>
                     </div>
@@ -273,7 +273,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
                         </Button>
                       )}
                       {item.status === 'IN_PROGRESS' && (
-                        <Button size="sm" className="bg-[#059669] hover:bg-[#047857]" onClick={() => handleComplete(item.enrollmentId)}>
+                        <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => handleComplete(item.enrollmentId)}>
                           이수 완료
                         </Button>
                       )}
@@ -289,8 +289,8 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
       {/* ─── 미등록 직무 필수 과정 ─── */}
       {jobRequired.length > 0 && (
         <section>
-          <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-[#B45309]" />
+          <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+            <BookOpen className="h-5 w-5 text-amber-700" />
             신청 필요 과정
           </h2>
           <div className="space-y-3">
@@ -299,8 +299,8 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <span className="font-semibold text-[#1A1A1A] text-sm">{course.title}</span>
-                      <Badge className="text-[10px] px-1.5 py-0 bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]">필수</Badge>
+                      <span className="font-semibold text-foreground text-sm">{course.title}</span>
+                      <Badge className="text-[10px] px-1.5 py-0 bg-red-100 text-red-700 border-red-200">필수</Badge>
                     </div>
                     <div className="flex items-center gap-3 text-xs text-[#666] flex-wrap">
                       <span>{CATEGORY_LABELS[course.category] ?? course.category}</span>
@@ -326,8 +326,8 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
       {/* ─── AI 추천 과정 ─── */}
       {recommended.length > 0 && (
         <section>
-          <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-[#4B6DE0]" />
+          <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary/90" />
             스킬 갭 기반 추천 과정
           </h2>
           <div className="space-y-3">
@@ -336,8 +336,8 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <span className="font-semibold text-[#1A1A1A] text-sm">{course.title}</span>
-                      <Badge className="text-[10px] px-1.5 py-0 bg-[#E0E7FF] text-[#4B6DE0] border-[#C7D2FE]">추천</Badge>
+                      <span className="font-semibold text-foreground text-sm">{course.title}</span>
+                      <Badge className="text-[10px] px-1.5 py-0 bg-indigo-100 text-primary/90 border-indigo-200">추천</Badge>
                     </div>
                     <div className="flex items-center gap-3 text-xs text-[#666] flex-wrap">
                       <span>{CATEGORY_LABELS[course.category] ?? course.category}</span>
@@ -363,13 +363,13 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
 
       {/* ─── 이수 이력 ─── */}
       <section>
-        <h2 className="text-lg font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-          <CheckCircle2 className="h-5 w-5 text-[#047857]" />
+        <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+          <CheckCircle2 className="h-5 w-5 text-emerald-700" />
           이수 이력
           <span className="text-sm font-normal text-[#999]">(최근 20건)</span>
         </h2>
         {history.length === 0 ? (
-          <div className="bg-white rounded-xl border border-[#E8E8E8] p-8 text-center text-sm text-[#999]">
+          <div className="bg-white rounded-xl border border-border p-8 text-center text-sm text-[#999]">
             이수 이력이 없습니다.
           </div>
         ) : (
@@ -389,9 +389,9 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
                   <tr key={item.enrollmentId} className={TABLE_STYLES.row}>
                     <td className={TABLE_STYLES.cell}>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-[#1A1A1A]">{item.course.title}</span>
+                        <span className="font-medium text-foreground">{item.course.title}</span>
                         {item.course.isMandatory && (
-                          <Badge className="text-[10px] px-1.5 py-0 bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]">필수</Badge>
+                          <Badge className="text-[10px] px-1.5 py-0 bg-red-100 text-red-700 border-red-200">필수</Badge>
                         )}
                       </div>
                     </td>
@@ -413,8 +413,8 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
 
       {/* ─── 빈 상태 ─── */}
       {requiredPending.length === 0 && jobRequired.length === 0 && recommended.length === 0 && history.length === 0 && (
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-12 text-center">
-          <Clock className="h-10 w-10 text-[#D4D4D4] mx-auto mb-3" />
+        <div className="bg-white rounded-xl border border-border p-12 text-center">
+          <Clock className="h-10 w-10 text-border mx-auto mb-3" />
           <EmptyState />
         </div>
       )}

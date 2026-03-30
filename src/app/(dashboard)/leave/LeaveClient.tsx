@@ -96,10 +96,10 @@ interface LeavePolicyLocal {
 // ─── Status badge styles ────────────────────────────────────
 
 const statusBadgeClass: Record<string, string> = {
-  PENDING: 'bg-[#FFF3E0] text-[#FF9800]',
-  APPROVED: 'bg-[#EDF1FE] text-[#2E7D32]',
-  REJECTED: 'bg-[#FFEBEE] text-[#F44336]',
-  CANCELLED: 'bg-[#F5F5F5] text-[#666]',
+  PENDING: 'bg-orange-50 text-orange-500',
+  APPROVED: 'bg-primary/10 text-green-700',
+  REJECTED: 'bg-red-50 text-red-500',
+  CANCELLED: 'bg-muted text-[#666]',
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -431,7 +431,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       key: 'status',
       header: te('status'),
       render: (row: LeaveRequestLocal) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${statusBadgeClass[row.status] ?? 'bg-[#F5F5F5] text-[#666]'}`}>
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${statusBadgeClass[row.status] ?? 'bg-muted text-[#666]'}`}>
           {statusLabel[row.status] ?? row.status}
         </span>
       ),
@@ -515,18 +515,18 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                     return (
                       <div
                         key={b.id}
-                        className="min-w-[200px] flex-shrink-0 bg-white border border-[#E8E8E8] rounded-xl p-5"
+                        className="min-w-[200px] flex-shrink-0 bg-white border border-border rounded-xl p-5"
                       >
                         <p className="text-xs text-[#999] font-medium mb-2">
                           {b.leaveTypeDef?.name ?? b.policy?.name ?? '-'}
                         </p>
                         <div className="flex items-end gap-1">
-                          <p className={`text-2xl font-bold tracking-[-0.02em] ${remaining > 0 ? 'text-[#5E81F4]' : 'text-[#999]'}`}>
+                          <p className={`text-2xl font-bold tracking-[-0.02em] ${remaining > 0 ? 'text-primary' : 'text-[#999]'}`}>
                             {remaining}
                           </p>
                           <p className="text-sm text-[#999] mb-0.5">/ {total} {t('fullDay')}</p>
                         </div>
-                        <div className="mt-2 h-1.5 rounded-full bg-[#E8E8E8] overflow-hidden">
+                        <div className="mt-2 h-1.5 rounded-full bg-border overflow-hidden">
                           <div
                             className="h-full rounded-full bg-gradient-to-r from-[#5E81F4] to-[#00BFA5]"
                             style={{ width: `${Math.min(usagePct, 100)}%` }}
@@ -559,8 +559,8 @@ export function LeaveClient({ user }: { user: SessionUser }) {
             onClick={() => setStatusFilter(f.value)}
             className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
               statusFilter === f.value
-                ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
-                : 'bg-white text-[#666] border-[#E0E0E0] hover:bg-[#F5F5F5]'
+                ? 'bg-foreground text-white border-foreground'
+                : 'bg-white text-[#666] border-border hover:bg-muted'
             }`}
           >
             {f.label}
@@ -618,20 +618,20 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
             {/* ─── Balance preview ─── */}
             {selectedBalance && selectedRemaining !== null && (
-              <div className="rounded-lg border border-[#E8E8E8] bg-[#FAFAFA] px-4 py-3">
+              <div className="rounded-lg border border-border bg-background px-4 py-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-[#666]">
                     현재 잔여:{' '}
-                    <strong className="text-[#1A1A1A]">{selectedRemaining}{t('fullDay')}</strong>
+                    <strong className="text-foreground">{selectedRemaining}{t('fullDay')}</strong>
                   </span>
                   {requestedDaysNum > 0 && projectedRemaining !== null && (
                     <span
                       className={`text-sm font-semibold ${
                         projectedRemaining < 0
-                          ? 'text-[#EF4444]'
+                          ? 'text-red-500'
                           : projectedRemaining <= 3
-                          ? 'text-[#F59E0B]'
-                          : 'text-[#5E81F4]'
+                          ? 'text-amber-500'
+                          : 'text-primary'
                       }`}
                     >
                       신청: {requestedDaysNum}{t('fullDay')} | 잔여: {projectedRemaining}{t('fullDay')}
@@ -639,7 +639,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                   )}
                 </div>
                 {projectedRemaining !== null && projectedRemaining < 0 && (
-                  <p className="mt-1 text-xs text-[#EF4444]">잔여 휴가가 부족합니다.</p>
+                  <p className="mt-1 text-xs text-red-500">잔여 휴가가 부족합니다.</p>
                 )}
               </div>
             )}
@@ -662,8 +662,8 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                       onClick={() => handlePresetChange(preset.id as any)}
                       className={`px-3 py-2 text-sm font-medium rounded-md border transition-colors ${
                         presetType === preset.id
-                          ? 'bg-[#1A1A1A] text-white border-[#1A1A1A]'
-                          : 'bg-white text-[#666] border-[#E0E0E0] hover:bg-[#F5F5F5]'
+                          ? 'bg-foreground text-white border-foreground'
+                          : 'bg-white text-[#666] border-border hover:bg-muted'
                       }`}
                     >
                       {preset.label}
@@ -687,7 +687,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                         variant={"outline"}
                         className={cn(
                           "w-full justify-start text-left font-normal border-input bg-white",
-                          !field.value && "text-[#8181A5]"
+                          !field.value && "text-muted-foreground"
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
@@ -736,7 +736,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                           variant={"outline"}
                           className={cn(
                             "w-full justify-start text-left font-normal border-input bg-white",
-                            !field.value && "text-[#8181A5]"
+                            !field.value && "text-muted-foreground"
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />

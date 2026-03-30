@@ -205,11 +205,11 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
       />
 
       {/* ── Info Banner ── */}
-      <div className="flex items-start gap-3 rounded-xl border border-[#C7D2FE] bg-[#EDF1FE] p-4">
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
-        <div className="text-xs text-[#5E81F4]">
+      <div className="flex items-start gap-3 rounded-xl border border-indigo-200 bg-primary/10 p-4">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+        <div className="text-xs text-primary">
           <p className="font-medium">승인 위임 안내</p>
-          <p className="mt-1 text-[#8181A5]">
+          <p className="mt-1 text-muted-foreground">
             출장, 휴가 등 부재 시 다른 매니저에게 승인 권한을 위임할 수 있습니다.
             수임자는 위임 기간 동안 귀하의 팀 휴가 승인/반려를 처리할 수 있습니다.
             최대 30일까지 설정 가능합니다.
@@ -220,22 +220,22 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
       {view === 'list' ? (
         <>
           {/* ── Active Delegations (Given) ── */}
-          <Card className="border-[#F0F0F3]">
+          <Card className="border-border">
             <CardHeader className="flex-row items-center justify-between pb-3">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-[#5E81F4]" />
-                <CardTitle className="text-base font-bold text-[#1C1D21]">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+                <CardTitle className="text-base font-bold text-foreground">
                   내가 설정한 위임
                 </CardTitle>
                 {activeDelegated.length > 0 && (
-                  <Badge className="bg-[#5E81F4] text-white text-[10px] px-1.5 rounded-full">
+                  <Badge className="bg-primary text-white text-[10px] px-1.5 rounded-full">
                     {activeDelegated.length}
                   </Badge>
                 )}
               </div>
               <Button
                 size="sm"
-                className="gap-1.5 bg-[#5E81F4] text-white hover:bg-[#4A6FD4]"
+                className="gap-1.5 bg-primary text-white hover:bg-primary/80"
                 onClick={() => { resetForm(); setView('create') }}
               >
                 <Plus className="h-3.5 w-3.5" />
@@ -245,7 +245,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-[#8181A5]" />
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                 </div>
               ) : activeDelegated.length === 0 ? (
                 <EmptyState
@@ -260,46 +260,46 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
                     return (
                       <div
                         key={d.id}
-                        className="flex items-center justify-between rounded-xl border border-[#EDF1FE] bg-[#FAFBFF] p-4 transition-all hover:shadow-sm"
+                        className="flex items-center justify-between rounded-xl border border-primary/20 bg-background p-4 transition-all hover:shadow-sm"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#5E81F4]/10">
-                            <User className="h-5 w-5 text-[#5E81F4]" />
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                            <User className="h-5 w-5 text-primary" />
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-semibold text-[#1C1D21]">
+                              <span className="text-sm font-semibold text-foreground">
                                 {d.delegatee?.name ?? '알 수 없음'}
                               </span>
-                              <ArrowRight className="h-3 w-3 text-[#8181A5]" />
+                              <ArrowRight className="h-3 w-3 text-muted-foreground" />
                               <Badge
                                 variant="outline"
-                                className="text-[10px] border-[#C7D2FE] text-[#5E81F4]"
+                                className="text-[10px] border-indigo-200 text-primary"
                               >
                                 {d.scope === 'ALL' ? '전체' : '휴가'}
                               </Badge>
                             </div>
-                            <div className="mt-0.5 flex items-center gap-2 text-[11px] text-[#8181A5]">
+                            <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
                               <CalendarDays className="h-3 w-3" />
                               <span>{formatDate(d.startDate)} ~ {formatDate(d.endDate)}</span>
                               {daysLeft > 0 && (
                                 <Badge
                                   variant="outline"
-                                  className={`text-[9px] px-1 ${daysLeft <= 3 ? 'border-[#FECACA] text-[#EF4444]' : 'border-[#C7D2FE] text-[#5E81F4]'}`}
+                                  className={`text-[9px] px-1 ${daysLeft <= 3 ? 'border-red-200 text-red-500' : 'border-indigo-200 text-primary'}`}
                                 >
                                   D-{daysLeft}
                                 </Badge>
                               )}
                             </div>
                             {d.reason && (
-                              <p className="mt-1 text-[11px] text-[#8181A5]">{d.reason}</p>
+                              <p className="mt-1 text-[11px] text-muted-foreground">{d.reason}</p>
                             )}
                           </div>
                         </div>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="gap-1 text-[11px] text-[#EF4444] border-[#FECACA] hover:bg-[#FEE2E2]"
+                          className="gap-1 text-[11px] text-red-500 border-red-200 hover:bg-red-100"
                           disabled={processing}
                           onClick={() => handleRevoke(d.id)}
                         >
@@ -316,14 +316,14 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
 
           {/* ── Received Delegations ── */}
           {activeReceived.length > 0 && (
-            <Card className="border-[#F0F0F3]">
+            <Card className="border-border">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-[#10B981]" />
-                  <CardTitle className="text-base font-bold text-[#1C1D21]">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                  <CardTitle className="text-base font-bold text-foreground">
                     나에게 위임된 승인 권한
                   </CardTitle>
-                  <Badge className="bg-[#10B981] text-white text-[10px] px-1.5 rounded-full">
+                  <Badge className="bg-emerald-500 text-white text-[10px] px-1.5 rounded-full">
                     {activeReceived.length}
                   </Badge>
                 </div>
@@ -333,22 +333,22 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
                   {activeReceived.map((d) => (
                     <div
                       key={d.id}
-                      className="flex items-center gap-4 rounded-xl border border-[#D1FAE5] bg-[#F0FDF4] p-4"
+                      className="flex items-center gap-4 rounded-xl border border-emerald-100 bg-green-50 p-4"
                     >
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#10B981]/10">
-                        <User className="h-5 w-5 text-[#10B981]" />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10">
+                        <User className="h-5 w-5 text-emerald-500" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-[#1C1D21]">
+                          <span className="text-sm font-semibold text-foreground">
                             {d.delegator?.name ?? '알 수 없음'}
                           </span>
-                          <span className="text-[11px] text-[#8181A5]">님의 승인 권한</span>
+                          <span className="text-[11px] text-muted-foreground">님의 승인 권한</span>
                         </div>
-                        <div className="mt-0.5 flex items-center gap-2 text-[11px] text-[#8181A5]">
+                        <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
                           <CalendarDays className="h-3 w-3" />
                           <span>{formatDate(d.startDate)} ~ {formatDate(d.endDate)}</span>
-                          <Badge variant="outline" className="text-[9px] border-[#D1FAE5] text-[#10B981]">
+                          <Badge variant="outline" className="text-[9px] border-emerald-100 text-emerald-500">
                             {d.scope === 'ALL' ? '전체' : '휴가'}
                           </Badge>
                         </div>
@@ -365,7 +365,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
             <button
               type="button"
               onClick={() => setShowHistory(!showHistory)}
-              className="flex items-center gap-1.5 text-xs text-[#8181A5] hover:text-[#5E81F4] transition-colors"
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
             >
               <Clock className="h-3.5 w-3.5" />
               {showHistory ? '이력 숨기기' : '이력 보기'}
@@ -374,31 +374,31 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
 
           {/* ── History ── */}
           {showHistory && historyDelegated.length > 0 && (
-            <Card className="border-[#F0F0F3]">
+            <Card className="border-border">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-[#8181A5]">이력</CardTitle>
+                <CardTitle className="text-sm font-semibold text-muted-foreground">이력</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   {historyDelegated.map((d) => (
                     <div
                       key={d.id}
-                      className="flex items-center justify-between rounded-xl border border-[#F0F0F3] bg-[#FAFAFA] p-3"
+                      className="flex items-center justify-between rounded-xl border border-border bg-background p-3"
                     >
                       <div className="flex items-center gap-3">
-                        <User className="h-4 w-4 text-[#8181A5]" />
+                        <User className="h-4 w-4 text-muted-foreground" />
                         <div>
-                          <span className="text-xs font-medium text-[#8181A5]">
+                          <span className="text-xs font-medium text-muted-foreground">
                             {d.delegatee?.name ?? '알 수 없음'}
                           </span>
-                          <span className="ml-2 text-[10px] text-[#B0B0C0]">
+                          <span className="ml-2 text-[10px] text-muted-foreground/60">
                             {formatDate(d.startDate)} ~ {formatDate(d.endDate)}
                           </span>
                         </div>
                       </div>
                       <Badge
                         variant="outline"
-                        className={`text-[10px] ${d.status === 'EXPIRED' ? 'border-[#FCD34D] text-[#B45309]' : 'border-[#FECACA] text-[#EF4444]'}`}
+                        className={`text-[10px] ${d.status === 'EXPIRED' ? 'border-amber-300 text-amber-700' : 'border-red-200 text-red-500'}`}
                       >
                         {d.status === 'EXPIRED' ? '만료' : '해제'}
                       </Badge>
@@ -411,17 +411,17 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
         </>
       ) : (
         /* ── Create View ── */
-        <Card className="border-[#F0F0F3]">
+        <Card className="border-border">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-bold text-[#1C1D21]">
+              <CardTitle className="text-base font-bold text-foreground">
                 새 위임 설정
               </CardTitle>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => { setView('list'); resetForm() }}
-                className="text-[#8181A5]"
+                className="text-muted-foreground"
               >
                 취소
               </Button>
@@ -430,7 +430,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
           <CardContent className="space-y-5">
             {/* Error */}
             {error && (
-              <div className="flex items-start gap-2 rounded-lg border border-[#FECACA] bg-[#FEF2F2] p-3 text-xs text-[#EF4444]">
+              <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-500">
                 <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
                 {error}
               </div>
@@ -438,18 +438,18 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
 
             {/* Step 1: Select Delegatee */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-[#1C1D21]">
-                수임자 선택 <span className="text-[#EF4444]">*</span>
+              <label className="text-xs font-semibold text-foreground">
+                수임자 선택 <span className="text-red-500">*</span>
               </label>
               {selectedDelegatee ? (
-                <div className="flex items-center justify-between rounded-lg border border-[#EDF1FE] bg-[#FAFBFF] p-3">
+                <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-background p-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#5E81F4]/10">
-                      <User className="h-4 w-4 text-[#5E81F4]" />
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                      <User className="h-4 w-4 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-[#1C1D21]">{selectedDelegatee.name}</p>
-                      <p className="text-[11px] text-[#8181A5]">
+                      <p className="text-sm font-medium text-foreground">{selectedDelegatee.name}</p>
+                      <p className="text-[11px] text-muted-foreground">
                         {selectedDelegatee.department ?? ''} · {selectedDelegatee.jobGrade ?? ''}
                       </p>
                     </div>
@@ -458,7 +458,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
                     variant="ghost"
                     size="sm"
                     onClick={() => setSelectedDelegatee(null)}
-                    className="text-[#8181A5] h-7"
+                    className="text-muted-foreground h-7"
                   >
                     변경
                   </Button>
@@ -466,7 +466,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
               ) : (
                 <div className="space-y-2">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8181A5]" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder={'이름 또는 이메일로 검색...'}
                       className="pl-9 h-10"
@@ -474,24 +474,24 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
                     {searchLoading && (
-                      <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[#8181A5]" />
+                      <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
                     )}
                   </div>
                   {eligible.length > 0 && (
-                    <div className="max-h-48 overflow-y-auto rounded-lg border border-[#F0F0F3]">
+                    <div className="max-h-48 overflow-y-auto rounded-lg border border-border">
                       {eligible.map((e) => (
                         <button
                           key={e.id}
                           type="button"
                           onClick={() => setSelectedDelegatee(e)}
-                          className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-[#F5F5FA] transition-colors border-b border-[#F0F0F3] last:border-0"
+                          className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-muted transition-colors border-b border-border last:border-0"
                         >
-                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#F5F5FA]">
-                            <User className="h-3.5 w-3.5 text-[#8181A5]" />
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted">
+                            <User className="h-3.5 w-3.5 text-muted-foreground" />
                           </div>
                           <div>
-                            <p className="text-xs font-medium text-[#1C1D21]">{e.name}</p>
-                            <p className="text-[10px] text-[#8181A5]">
+                            <p className="text-xs font-medium text-foreground">{e.name}</p>
+                            <p className="text-[10px] text-muted-foreground">
                               {e.department ?? ''} · {e.email}
                             </p>
                           </div>
@@ -505,7 +505,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
 
             {/* Step 2: Scope */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-[#1C1D21]">위임 범위</label>
+              <label className="text-xs font-semibold text-foreground">위임 범위</label>
               <Select value={scope} onValueChange={(v) => setScope(v as 'LEAVE_ONLY' | 'ALL')}>
                 <SelectTrigger className="h-10">
                   <SelectValue />
@@ -520,8 +520,8 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
             {/* Step 3: Date Range */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-[#1C1D21]">
-                  시작일 <span className="text-[#EF4444]">*</span>
+                <label className="text-xs font-semibold text-foreground">
+                  시작일 <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="date"
@@ -532,8 +532,8 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-[#1C1D21]">
-                  종료일 <span className="text-[#EF4444]">*</span>
+                <label className="text-xs font-semibold text-foreground">
+                  종료일 <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="date"
@@ -547,7 +547,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
 
             {/* Step 4: Reason */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-[#1C1D21]">사유 (선택)</label>
+              <label className="text-xs font-semibold text-foreground">사유 (선택)</label>
               <Input
                 placeholder="출장, 휴가 등..."
                 value={reason}
@@ -566,7 +566,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
                 취소
               </Button>
               <Button
-                className="gap-1.5 bg-[#5E81F4] text-white hover:bg-[#4A6FD4]"
+                className="gap-1.5 bg-primary text-white hover:bg-primary/80"
                 onClick={handleCreate}
                 disabled={processing || !selectedDelegatee || !startDate || !endDate}
               >

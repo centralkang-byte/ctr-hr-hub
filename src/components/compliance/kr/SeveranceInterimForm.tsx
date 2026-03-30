@@ -162,8 +162,8 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#EDF1FE]">
-              <Calculator className="w-4 h-4 text-[#5E81F4]" />
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
+              <Calculator className="w-4 h-4 text-primary" />
             </div>
             <DialogTitle>퇴직금 중간정산 신청</DialogTitle>
           </div>
@@ -173,14 +173,14 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
           {/* Employee Selector */}
           <div>
             <label className="block text-sm font-medium text-[#333] mb-1">
-              직원 선택 <span className="text-[#EF4444]">*</span>
+              직원 선택 <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
               <select
                 value={form.employeeId}
                 onChange={(e) => handleChange('employeeId', e.target.value)}
-                className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+                className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
               >
                 <option value="">직원을 선택하세요</option>
                 {MOCK_EMPLOYEES.map((emp) => (
@@ -194,35 +194,35 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
 
           {/* Pre-calculation Result */}
           {form.employeeId && (
-            <div className="bg-[#FAFAFA] rounded-xl border border-[#E8E8E8] p-4">
+            <div className="bg-background rounded-xl border border-border p-4">
               <div className="flex items-center gap-2 mb-3">
-                <Calculator className="w-4 h-4 text-[#5E81F4]" />
+                <Calculator className="w-4 h-4 text-primary" />
                 <span className="text-sm font-medium text-[#333]">사전 계산 결과</span>
               </div>
 
               {calcLoading ? (
                 <div className="space-y-2">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="h-4 bg-[#E8E8E8] rounded animate-pulse" />
+                    <div key={i} className="h-4 bg-border rounded animate-pulse" />
                   ))}
                 </div>
               ) : calcResult ? (
                 <div className="grid grid-cols-3 gap-3">
                   <div className="text-center">
                     <p className="text-xs text-[#666] mb-1">재직기간</p>
-                    <p className="text-lg font-bold text-[#1A1A1A]">
+                    <p className="text-lg font-bold text-foreground">
                       {calcResult.yearsOfService}년
                     </p>
                   </div>
                   <div className="text-center">
                     <p className="text-xs text-[#666] mb-1">평균 월급여</p>
-                    <p className="text-lg font-bold text-[#1A1A1A]">
+                    <p className="text-lg font-bold text-foreground">
                       {(calcResult.avgMonthlySalary / 10000).toFixed(0)}만원
                     </p>
                   </div>
                   <div className="text-center">
                     <p className="text-xs text-[#666] mb-1">예상 지급액</p>
-                    <p className="text-lg font-bold text-[#4B6DE0]">
+                    <p className="text-lg font-bold text-primary/90">
                       {(calcResult.estimatedAmount / 10000).toFixed(0)}만원
                     </p>
                   </div>
@@ -238,12 +238,12 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
           {/* Reason */}
           <div>
             <label className="block text-sm font-medium text-[#333] mb-1">
-              중간정산 사유 <span className="text-[#EF4444]">*</span>
+              중간정산 사유 <span className="text-red-500">*</span>
             </label>
             <select
               value={form.reason}
               onChange={(e) => handleChange('reason', e.target.value)}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
             >
               <option value="">사유 선택</option>
               {REASONS.map((r) => (
@@ -257,13 +257,13 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
           {/* Request Date */}
           <div>
             <label className="block text-sm font-medium text-[#333] mb-1">
-              신청일 <span className="text-[#EF4444]">*</span>
+              신청일 <span className="text-red-500">*</span>
             </label>
             <input
               type="date"
               value={form.requestDate}
               onChange={(e) => handleChange('requestDate', e.target.value)}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
           </div>
 
@@ -277,7 +277,7 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
               value={form.attachmentUrl}
               onChange={(e) => handleChange('attachmentUrl', e.target.value)}
               placeholder="https://..."
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
             />
             <p className="text-xs text-[#999] mt-1">
               증빙서류(주택매매계약서, 진단서 등) 파일 링크를 입력하세요.
@@ -286,9 +286,9 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
 
           {/* Error */}
           {error && (
-            <div className="flex items-center gap-2 px-3 py-2.5 bg-[#FEE2E2] border border-[#FECACA] rounded-lg">
-              <X className="w-4 h-4 text-[#EF4444] flex-shrink-0" />
-              <p className="text-sm text-[#B91C1C]">{error}</p>
+            <div className="flex items-center gap-2 px-3 py-2.5 bg-red-100 border border-red-200 rounded-lg">
+              <X className="w-4 h-4 text-red-500 flex-shrink-0" />
+              <p className="text-sm text-red-700">{error}</p>
             </div>
           )}
 
@@ -297,14 +297,14 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-[#333] bg-white border border-[#D4D4D4] rounded-lg hover:bg-[#FAFAFA] disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-[#333] bg-white border border-border rounded-lg hover:bg-background disabled:opacity-50 transition-colors"
             >
               취소
             </button>
             <button
               type="submit"
               disabled={submitting || !form.employeeId}
-              className="px-4 py-2 text-sm font-medium text-white bg-[#5E81F4] hover:bg-[#4B6DE0] rounded-lg disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg disabled:opacity-50 transition-colors"
             >
               {submitting ? '신청 중...' : '신청 접수'}
             </button>

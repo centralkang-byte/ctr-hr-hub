@@ -125,7 +125,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
         actions={
           <div className="flex items-center gap-2">
             {connected ? (
-              <span className="flex items-center gap-1.5 text-sm text-[#059669]">
+              <span className="flex items-center gap-1.5 text-sm text-emerald-600">
                 <Wifi className="h-4 w-4" /> 연결됨
               </span>
             ) : (
@@ -138,7 +138,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
       />
 
       {/* ─── Tabs ─── */}
-      <div className="flex border-b border-[#E8E8E8]">
+      <div className="flex border-b border-border">
         {TABS.map((tab, i) => (
           <button
             key={tab}
@@ -146,7 +146,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
             onClick={() => setActiveTab(i)}
             className={`px-4 py-2.5 text-sm font-medium transition-colors ${
               activeTab === i
-                ? 'border-b-2 border-[#5E81F4] text-[#5E81F4]'
+                ? 'border-b-2 border-primary text-primary'
                 : 'text-[#666] hover:text-[#333]'
             }`}
           >
@@ -251,8 +251,8 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
                             }
                             className={`h-8 w-8 rounded-full text-xs font-medium transition-colors ${
                               config.digestDay === i
-                                ? 'bg-[#5E81F4] text-white'
-                                : 'bg-[#F5F5F5] text-[#555] hover:bg-[#E8E8E8]'
+                                ? 'bg-primary text-white'
+                                : 'bg-muted text-[#555] hover:bg-border'
                             }`}
                           >
                             {label}
@@ -271,7 +271,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
                             digestHour: parseInt(e.target.value),
                           }))
                         }
-                        className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm"
+                        className="w-full rounded-lg border border-border px-3 py-2 text-sm"
                       >
                         {Array.from({ length: 24 }, (_, h) => (
                           <option key={h} value={h}>

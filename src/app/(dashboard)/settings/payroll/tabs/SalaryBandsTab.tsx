@@ -25,14 +25,14 @@ export function SalaryBandsTab({
       .finally(() => setLoading(false))
   }, [companyId])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   const fmt = (n: number) => n.toLocaleString()
 
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
-        <div><h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_kec97b0eb_kebb0b4eb')}</h3><p className="text-sm text-[#8181A5]">직급별 최소/중간/최대 급여 범위 {bands.length}건</p></div>
+        <div><h3 className="text-base font-semibold text-foreground">{t('kr_kec97b0eb_kebb0b4eb')}</h3><p className="text-sm text-muted-foreground">직급별 최소/중간/최대 급여 범위 {bands.length}건</p></div>
         <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />{t('kr_kebb0b4eb_add')}</Button>
       </div>
       {bands.length > 0 ? (
@@ -47,8 +47,8 @@ export function SalaryBandsTab({
             </tr></thead>
             <tbody>{bands.map((b) => (
               <tr key={b.id} className={TABLE_STYLES.row}>
-                <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{b.jobGrade?.code ?? '—'} <span className="text-[#8181A5]">{b.jobGrade?.name ?? ''}</span></td>
-                <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{b.jobCategory?.name ?? '—'}</td>
+                <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{b.jobGrade?.code ?? '—'} <span className="text-muted-foreground">{b.jobGrade?.name ?? ''}</span></td>
+                <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>{b.jobCategory?.name ?? '—'}</td>
                 <td className={`${TABLE_STYLES.cell} text-right`}>{fmt(b.minSalary)}</td>
                 <td className={`${TABLE_STYLES.cell} text-right font-medium`}>{fmt(b.midSalary)}</td>
                 <td className={`${TABLE_STYLES.cell} text-right`}>{fmt(b.maxSalary)}</td>
@@ -57,8 +57,8 @@ export function SalaryBandsTab({
           </table>
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <TrendingUp className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">{t('register_keb909c_kec97b0eb_kebb0b4eb_kec9786ec')}</p>
+        <div className="rounded-xl border border-dashed border-border py-12 text-center">
+          <TrendingUp className="mx-auto mb-3 h-8 w-8 text-muted-foreground" /><p className="text-sm font-medium text-foreground">{t('register_keb909c_kec97b0eb_kebb0b4eb_kec9786ec')}</p>
         </div>
       )}
     </div>

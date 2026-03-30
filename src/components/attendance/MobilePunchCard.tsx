@@ -83,7 +83,7 @@ export function MobilePunchCard({ isClockedIn = false, onPunch }: MobilePunchCar
   return (
     <div className="flex flex-col items-center gap-6 py-8">
       {/* Timestamp display */}
-      <div className="flex items-center gap-1.5 text-sm text-[#8181A5]">
+      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
         <Clock size={14} />
         <span>{new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>
       </div>
@@ -99,8 +99,8 @@ export function MobilePunchCard({ isClockedIn = false, onPunch }: MobilePunchCar
           transition-all duration-200 active:scale-95
           disabled:opacity-70 disabled:cursor-not-allowed
           ${isClockingIn
-            ? 'bg-[#5E81F4] hover:bg-[#4B6EE4]'
-            : 'bg-[#FF808B] hover:bg-[#F06070]'
+            ? 'bg-primary hover:bg-primary/90'
+            : 'bg-red-400 hover:bg-red-400'
           }
         `}
       >
@@ -121,16 +121,16 @@ export function MobilePunchCard({ isClockedIn = false, onPunch }: MobilePunchCar
       {/* Status messages */}
       {status === 'success' && lastResult && (
         <div className="text-center space-y-1">
-          <p className="text-sm font-semibold text-[#5E81F4]">
+          <p className="text-sm font-semibold text-primary">
             {lastResult.type === 'IN' ? '출근 완료!' : '퇴근 완료!'}
           </p>
-          <p className="text-xs text-[#8181A5]">
+          <p className="text-xs text-muted-foreground">
             GPS ({lastResult.lat.toFixed(4)}, {lastResult.lng.toFixed(4)})
           </p>
         </div>
       )}
       {status === 'error' && errorMsg && (
-        <p className="text-sm text-[#FF808B] text-center px-4">{errorMsg}</p>
+        <p className="text-sm text-red-400 text-center px-4">{errorMsg}</p>
       )}
     </div>
   )

@@ -61,20 +61,20 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
     <div className={MODAL_STYLES.container}>
       <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-[#E8E8E8]">
+        <div className="flex items-center justify-between p-5 border-b border-border">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-[#4B6DE0]" />
-            <h2 className="text-lg font-semibold text-[#1A1A1A]">AI 평가 초안 생성</h2>
+            <Sparkles className="w-5 h-5 text-primary/90" />
+            <h2 className="text-lg font-semibold text-foreground">AI 평가 초안 생성</h2>
           </div>
-          <button onClick={onClose} className="p-1.5 hover:bg-[#F5F5F5] rounded-lg">
+          <button onClick={onClose} className="p-1.5 hover:bg-muted rounded-lg">
             <X className="w-4 h-4 text-[#666]" />
           </button>
         </div>
 
         {/* Disclaimer */}
-        <div className="mx-5 mt-4 p-3 bg-[#E0E7FF] rounded-lg flex items-start gap-2">
-          <AlertTriangle className="w-4 h-4 text-[#4B6DE0] flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-[#4B6DE0]">
+        <div className="mx-5 mt-4 p-3 bg-indigo-100 rounded-lg flex items-start gap-2">
+          <AlertTriangle className="w-4 h-4 text-primary/90 flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-primary/90">
             이 초안은 AI가 생성한 참고 자료이며, 매니저의 검토와 수정이 필요합니다.
             <strong> AI 추천 등급은 최종 결정이 아닙니다.</strong>
           </p>
@@ -83,14 +83,14 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
         <div className="p-5">
           {!generated ? (
             <div className="text-center py-8">
-              <Sparkles className="w-12 h-12 text-[#E0E7FF] mx-auto mb-3" />
+              <Sparkles className="w-12 h-12 text-indigo-100 mx-auto mb-3" />
               <p className="text-sm text-[#666] mb-6">
                 목표 달성률, 원온원 기록, BEI 점수를 분석하여 평가 초안을 생성합니다.
               </p>
               <button
                 onClick={handleGenerate}
                 disabled={loading}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#4B6DE0] hover:bg-[#3730A3] text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary/90 hover:bg-indigo-800 text-white rounded-lg text-sm font-medium disabled:opacity-50"
               >
                 {loading ? (
                   <>
@@ -108,7 +108,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
           ) : draft ? (
             <div className="space-y-4">
               {/* 입력 데이터 요약 */}
-              <div className="bg-[#FAFAFA] rounded-lg p-3 text-xs text-[#666] flex gap-3">
+              <div className="bg-background rounded-lg p-3 text-xs text-[#666] flex gap-3">
                 <span>목표 {draft.inputSummary.goalCount}개</span>
                 <span>원온원 {draft.inputSummary.oneOnOneCount}건</span>
                 <span>{draft.inputSummary.hasPrevEval ? '전기 평가 참조' : '전기 평가 없음'}</span>
@@ -117,7 +117,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
               {/* 업적 평가 */}
               <div>
                 <label className="text-xs font-semibold text-[#333] mb-1 block">업적 평가</label>
-                <p className="text-sm text-[#333] bg-[#FAFAFA] rounded-lg p-3 whitespace-pre-wrap">
+                <p className="text-sm text-[#333] bg-background rounded-lg p-3 whitespace-pre-wrap">
                   {draft.draftContent.performanceComment}
                 </p>
               </div>
@@ -126,7 +126,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
               {draft.draftContent.competencyComment && (
                 <div>
                   <label className="text-xs font-semibold text-[#333] mb-1 block">역량 평가</label>
-                  <p className="text-sm text-[#333] bg-[#FAFAFA] rounded-lg p-3 whitespace-pre-wrap">
+                  <p className="text-sm text-[#333] bg-background rounded-lg p-3 whitespace-pre-wrap">
                     {draft.draftContent.competencyComment}
                   </p>
                 </div>
@@ -135,21 +135,21 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
               {/* 강점 / 개발 영역 */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-[#047857] mb-1 block">강점</label>
+                  <label className="text-xs font-semibold text-emerald-700 mb-1 block">강점</label>
                   <ul className="space-y-1">
                     {draft.draftContent.strengths.map((s, i) => (
                       <li key={i} className="text-xs text-[#333] flex items-start gap-1">
-                        <span className="text-[#5E81F4]">•</span> {s}
+                        <span className="text-primary">•</span> {s}
                       </li>
                     ))}
                   </ul>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-[#B45309] mb-1 block">개발 영역</label>
+                  <label className="text-xs font-semibold text-amber-700 mb-1 block">개발 영역</label>
                   <ul className="space-y-1">
                     {draft.draftContent.developmentAreas.map((d, i) => (
                       <li key={i} className="text-xs text-[#333] flex items-start gap-1">
-                        <span className="text-[#F59E0B]">•</span> {d}
+                        <span className="text-amber-500">•</span> {d}
                       </li>
                     ))}
                   </ul>
@@ -159,14 +159,14 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
               {/* 종합 소견 */}
               <div>
                 <label className="text-xs font-semibold text-[#333] mb-1 block">종합 소견</label>
-                <p className="text-sm text-[#333] bg-[#FAFAFA] rounded-lg p-3 whitespace-pre-wrap">
+                <p className="text-sm text-[#333] bg-background rounded-lg p-3 whitespace-pre-wrap">
                   {draft.draftContent.overallOpinion}
                 </p>
               </div>
 
               {/* 추천 등급 (흐린 색으로) */}
               {draft.draftContent.recommendedGrade && (
-                <div className="bg-[#F5F5F5] rounded-lg p-3 flex items-center gap-2">
+                <div className="bg-muted rounded-lg p-3 flex items-center gap-2">
                   <span className="text-xs text-[#999]">AI 추천 등급 (참고용):</span>
                   <span className="text-sm text-[#999] line-through">
                     {draft.draftContent.recommendedGrade}
@@ -177,11 +177,11 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
 
               {/* 검토 필요 태그 */}
               {draft.draftContent.reviewNeededTags.length > 0 && (
-                <div className="bg-[#FEF3C7] rounded-lg p-3">
-                  <p className="text-xs font-semibold text-[#B45309] mb-1">검토 필요 항목</p>
+                <div className="bg-amber-100 rounded-lg p-3">
+                  <p className="text-xs font-semibold text-amber-700 mb-1">검토 필요 항목</p>
                   <ul className="space-y-0.5">
                     {draft.draftContent.reviewNeededTags.map((tag, i) => (
-                      <li key={i} className="text-xs text-[#B45309]">• {tag}</li>
+                      <li key={i} className="text-xs text-amber-700">• {tag}</li>
                     ))}
                   </ul>
                 </div>
@@ -191,7 +191,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
               <div className="flex justify-between pt-2">
                 <button
                   onClick={onClose}
-                  className="flex items-center gap-1.5 px-4 py-2 border border-[#FCA5A5] text-[#DC2626] rounded-lg text-sm hover:bg-[#FEE2E2]"
+                  className="flex items-center gap-1.5 px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm hover:bg-red-100"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   폐기

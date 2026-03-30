@@ -39,11 +39,11 @@ interface Props {
 }
 
 const CONTRACT_TYPE_COLORS: Record<string, string> = {
-  PERMANENT: 'bg-[#EDF1FE] text-[#4B6DE0]',
-  FIXED_TERM: 'bg-[#FEF9C3] text-[#854D0E]',
-  DISPATCH: 'bg-[#F5F5F5] text-[#1A1A1A]',
-  INTERN: 'bg-[#F3E8FF] text-[#6B21A8]',
-  PROBATION_ONLY: 'bg-[#FFEDD5] text-[#9A3412]',
+  PERMANENT: 'bg-primary/10 text-primary/90',
+  FIXED_TERM: 'bg-yellow-100 text-yellow-800',
+  DISPATCH: 'bg-muted text-foreground',
+  INTERN: 'bg-purple-50 text-purple-800',
+  PROBATION_ONLY: 'bg-orange-100 text-orange-800',
 }
 
 export default function ContractsClient({ employeeId, permissions }: Props) {
@@ -204,12 +204,12 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
             {contracts.map((c) => (
               <TableRow
                 key={c.id}
-                className={isExpiringSoon(c.endDate) ? 'bg-[#FEFCE8]' : ''}
+                className={isExpiringSoon(c.endDate) ? 'bg-yellow-50' : ''}
               >
                 <TableCell>{c.contractNumber}{t('contractSequenceSuffix')}</TableCell>
                 <TableCell>
                   <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${CONTRACT_TYPE_COLORS[c.contractType] ?? 'bg-[#F5F5F5] text-[#1A1A1A]'}`}
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${CONTRACT_TYPE_COLORS[c.contractType] ?? 'bg-muted text-foreground'}`}
                   >
                     {CONTRACT_TYPE_LABELS[c.contractType] ?? c.contractType}
                   </span>
@@ -217,7 +217,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
                 <TableCell>{format(new Date(c.startDate), 'yyyy-MM-dd')}</TableCell>
                 <TableCell>
                   {c.endDate ? (
-                    <span className={isExpiringSoon(c.endDate) ? 'font-medium text-[#A16207]' : ''}>
+                    <span className={isExpiringSoon(c.endDate) ? 'font-medium text-amber-700' : ''}>
                       {format(new Date(c.endDate), 'yyyy-MM-dd')}
                     </span>
                   ) : (

@@ -92,12 +92,12 @@ function DeptFlowNode({ data }: NodeProps) {
         w-[200px] min-h-[76px] rounded-xl border bg-white cursor-pointer
         flex flex-col items-center justify-center px-3 py-3 shadow-none
         transition-colors hover:border-ctr-primary
-        ${!dept.deletedAt ? 'border-[#E8E8E8]' : 'border-[#E8E8E8] opacity-60'}
+        ${!dept.deletedAt ? 'border-border' : 'border-border opacity-60'}
       `}
       onClick={() => onClick(dept)}
     >
       <Handle type="target" position={Position.Top} className="!bg-ctr-primary" />
-      <p className="text-sm font-bold text-[#1A1A1A] text-center line-clamp-2">
+      <p className="text-sm font-bold text-foreground text-center line-clamp-2">
         {dept.name}
       </p>
       <p className="text-xs text-[#999] mt-1">{tOrg('headcountUnit', { count: dept.employeeCount })}</p>
@@ -198,7 +198,7 @@ function FlowCanvas({ initNodes, initEdges }: FlowCanvasProps) {
       fitViewOptions={{ padding: 0.3 }}
       minZoom={0.4}
       maxZoom={2}
-      className="bg-[#FAFAFA]"
+      className="bg-background"
     >
       <Background color="#E8E8E8" gap={20} />
       <Controls />
@@ -243,22 +243,22 @@ function ListView({ depts, onSelect, selectedId }: ListViewProps) {
             <tr
               key={dept.id}
               onClick={() => onSelect(dept)}
-              className={`border-b border-[#F5F5F5] cursor-pointer hover:bg-[#FAFAFA] transition-colors ${
-                selectedId === dept.id ? 'bg-[#EDF1FE]' : ''
+              className={`border-b border-border cursor-pointer hover:bg-background transition-colors ${
+                selectedId === dept.id ? 'bg-primary/10' : ''
               }`}
             >
               <td className="px-4 py-3 font-mono tabular-nums text-xs text-[#666]">{dept.code}</td>
-              <td className="px-4 py-3 font-medium text-[#1A1A1A]" style={{ paddingLeft: `${1 + dept.level * 1.5}rem` }}>
+              <td className="px-4 py-3 font-medium text-foreground" style={{ paddingLeft: `${1 + dept.level * 1.5}rem` }}>
                 {dept.level > 0 && <span className="text-[#CCC] mr-1">{'└'}</span>}
                 {dept.name}
               </td>
               <td className="px-4 py-3 text-[#666]">{dept.level + 1}</td>
-              <td className="px-4 py-3 text-[#1A1A1A]">{tOrg('headcountUnit', { count: dept.employeeCount })}</td>
+              <td className="px-4 py-3 text-foreground">{tOrg('headcountUnit', { count: dept.employeeCount })}</td>
               <td className="px-4 py-3">
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                   !dept.deletedAt
-                    ? 'bg-[#D1FAE5] text-[#047857]'
-                    : 'bg-[#FAFAFA] text-[#999] border border-[#E8E8E8]'
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'bg-background text-[#999] border border-border'
                 }`}>
                   {!dept.deletedAt ? tc('active') : tc('inactive')}
                 </span>
@@ -300,21 +300,21 @@ function GridView({ depts, onSelect, selectedId }: GridViewProps) {
             onClick={() => onSelect(dept)}
             className={`text-left rounded-xl border p-4 transition-all hover:border-ctr-primary hover:shadow-sm ${
               selectedId === dept.id
-                ? 'border-ctr-primary bg-[#EDF1FE] shadow-sm'
-                : 'border-[#E8E8E8] bg-white'
+                ? 'border-ctr-primary bg-primary/10 shadow-sm'
+                : 'border-border bg-white'
             } ${!!dept.deletedAt ? 'opacity-60' : ''}`}
           >
             <div className="flex items-start justify-between mb-2">
-              <span className="text-[10px] font-mono tabular-nums text-[#999] bg-[#FAFAFA] px-1.5 py-0.5 rounded">{dept.code}</span>
+              <span className="text-[10px] font-mono tabular-nums text-[#999] bg-background px-1.5 py-0.5 rounded">{dept.code}</span>
               {!!dept.deletedAt && (
                 <span className="text-[10px] text-[#999]">{tc('inactive')}</span>
               )}
             </div>
-            <p className="text-sm font-semibold text-[#1A1A1A] line-clamp-2 mb-1">{dept.name}</p>
+            <p className="text-sm font-semibold text-foreground line-clamp-2 mb-1">{dept.name}</p>
             {dept.nameEn && (
               <p className="text-xs text-[#999] line-clamp-1 mb-2">{dept.nameEn}</p>
             )}
-            <p className="text-xs text-[#5E81F4] font-medium">
+            <p className="text-xs text-primary font-medium">
               {tOrg('headcountUnit', { count: dept.employeeCount })}
             </p>
             {dept.children.length > 0 && (
@@ -358,9 +358,9 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
   if (!dept) return null
 
   return (
-    <div className="absolute top-0 right-0 h-full w-80 bg-white border-l border-[#E8E8E8] shadow-lg z-10 flex flex-col overflow-hidden">
+    <div className="absolute top-0 right-0 h-full w-80 bg-white border-l border-border shadow-lg z-10 flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#E8E8E8] bg-ctr-primary text-white shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-ctr-primary text-white shrink-0">
         <h3 className="font-semibold text-sm truncate">{dept.name}</h3>
         <button
           onClick={onClose}
@@ -375,7 +375,7 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
         {/* Dept Info */}
         <div className="space-y-2">
           <h4 className="text-xs font-semibold text-[#999]">{'deptInfo'}</h4>
-          <div className="bg-[#FAFAFA] rounded-lg p-3 space-y-1.5 text-sm">
+          <div className="bg-background rounded-lg p-3 space-y-1.5 text-sm">
             <InfoRow label={'code'} value={dept.code} />
             <InfoRow label={'level'} value={String(dept.level)} />
             <InfoRow label={'상태'} value={!dept.deletedAt ? tc('active') : tc('inactive')} />
@@ -392,8 +392,8 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
             </h4>
             <ul className="space-y-1">
               {dept.children.map((child) => (
-                <li key={child.id} className="text-sm px-3 py-1.5 bg-[#FAFAFA] rounded flex justify-between">
-                  <span className="text-[#1A1A1A]">{child.name}</span>
+                <li key={child.id} className="text-sm px-3 py-1.5 bg-background rounded flex justify-between">
+                  <span className="text-foreground">{child.name}</span>
                   <span className="text-[#999] text-xs">{t('headcountUnit', { count: child.employeeCount })}</span>
                 </li>
               ))}
@@ -411,8 +411,8 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
           ) : (
             <ul className="space-y-1">
               {employees.map((emp) => (
-                <li key={emp.id} className="text-sm px-3 py-1.5 bg-[#FAFAFA] rounded flex justify-between items-center">
-                  <span className="text-[#1A1A1A]">{emp.name}</span>
+                <li key={emp.id} className="text-sm px-3 py-1.5 bg-background rounded flex justify-between items-center">
+                  <span className="text-foreground">{emp.name}</span>
                   <span className="text-[#999] text-xs">{emp.jobGrade?.name ?? emp.employeeNo}</span>
                 </li>
               ))}
@@ -428,7 +428,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between">
       <span className="text-[#999]">{label}</span>
-      <span className="text-[#1A1A1A] font-medium">{value}</span>
+      <span className="text-foreground font-medium">{value}</span>
     </div>
   )
 }
@@ -490,7 +490,7 @@ function ViewModeButton({ mode, current, icon, label, onClick }: ViewModeButtonP
       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
         active
           ? 'bg-primary text-white'
-          : 'bg-white border border-[#D4D4D4] text-[#555] hover:bg-[#FAFAFA]'
+          : 'bg-white border border-border text-[#555] hover:bg-background'
       }`}
     >
       {icon}
@@ -601,8 +601,8 @@ export function OrgClient({ user, companies }: OrgClientProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-3 px-6 py-3 border-b border-[#E8E8E8] bg-white shrink-0">
-        <h1 className="text-lg font-bold text-[#1A1A1A] tracking-ctr mr-2">{t('orgChart')}</h1>
+      <div className="flex flex-wrap items-center gap-3 px-6 py-3 border-b border-border bg-white shrink-0">
+        <h1 className="text-lg font-bold text-foreground tracking-ctr mr-2">{t('orgChart')}</h1>
 
         {/* View mode toggle */}
         <div className="flex items-center gap-1">
@@ -637,7 +637,7 @@ export function OrgClient({ user, companies }: OrgClientProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('searchDepts')}
-            className="w-full pl-8 pr-3 py-1.5 text-sm border border-[#D4D4D4] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
+            className="w-full pl-8 pr-3 py-1.5 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
           />
         </div>
 
@@ -665,7 +665,7 @@ export function OrgClient({ user, companies }: OrgClientProps) {
             <select
               value={selectedCompanyId}
               onChange={(e) => setSelectedCompanyId(e.target.value)}
-              className="text-sm border border-[#D4D4D4] rounded-lg px-3 py-1.5 text-[#1A1A1A] bg-white focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="text-sm border border-border rounded-lg px-3 py-1.5 text-foreground bg-white focus:outline-none focus:ring-2 focus:ring-primary/10"
             >
               <option value={SENTINEL_ALL}>{t('allCompanies')}</option>
               {companies.map((c) => (
@@ -691,15 +691,15 @@ export function OrgClient({ user, companies }: OrgClientProps) {
 
       {/* Snapshot mode banner */}
       {isSnapshot && (
-        <div className="px-6 py-2 bg-[#FEF3C7] border-b border-[#FCD34D] text-[#92400E] text-sm flex items-center gap-2 shrink-0">
+        <div className="px-6 py-2 bg-amber-100 border-b border-amber-300 text-amber-800 text-sm flex items-center gap-2 shrink-0">
           <span className="font-medium">{t('snapshotViewing', { date: snapshotDateStr ?? '' })}</span>
-          <span className="text-[#D97706] text-xs">({t('snapshotData')})</span>
+          <span className="text-amber-600 text-xs">({t('snapshotData')})</span>
         </div>
       )}
 
       {/* Search result count */}
       {search.trim() && (
-        <div className="px-6 py-1.5 bg-[#F0FDF4] border-b border-[#BBF7D0] text-[#15803D] text-xs">
+        <div className="px-6 py-1.5 bg-green-50 border-b border-green-200 text-green-700 text-xs">
           {t('searchResult', { count: filteredDepts.length })}
         </div>
       )}

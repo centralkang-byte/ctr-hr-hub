@@ -123,7 +123,7 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
         if (cells.every((c) => /^[-:]+$/.test(c))) return null // divider row
         const isHeader = i > 0 && lines[i + 1]?.startsWith('|') && lines[i + 1]?.includes('---')
         return (
-          <div key={i} className="overflow-x-auto rounded-xl border border-[#F0F0F3] mb-4">
+          <div key={i} className="overflow-x-auto rounded-xl border border-border mb-4">
             <table className={TABLE_STYLES.table}>
               <tbody>
                 <tr className={isHeader ? TABLE_STYLES.header : TABLE_STYLES.row}>
@@ -185,7 +185,7 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
           <Link
             key={keyIdx++}
             href={linkHref}
-            className="text-[#5E81F4] hover:text-[#4B6DE0] underline underline-offset-2 font-medium"
+            className="text-primary hover:text-primary/90 underline underline-offset-2 font-medium"
           >
             {linkText}
           </Link>
@@ -231,7 +231,7 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
               <select
                 value={selectedPeriod}
                 onChange={(e) => setSelectedPeriod(e.target.value)}
-                className="pl-9 pr-8 py-2.5 text-sm border border-gray-200 rounded-xl bg-white appearance-none cursor-pointer hover:border-[#5E81F4] focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/20 outline-none transition-all min-w-[140px]"
+                className="pl-9 pr-8 py-2.5 text-sm border border-gray-200 rounded-xl bg-white appearance-none cursor-pointer hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all min-w-[140px]"
               >
                 {periodOptions.map((p) => (
                   <option key={p} value={p}>{p}</option>
@@ -248,7 +248,7 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
               <select
                 value={selectedCompany}
                 onChange={(e) => setSelectedCompany(e.target.value)}
-                className="pl-9 pr-8 py-2.5 text-sm border border-gray-200 rounded-xl bg-white appearance-none cursor-pointer hover:border-[#5E81F4] focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/20 outline-none transition-all min-w-[140px]"
+                className="pl-9 pr-8 py-2.5 text-sm border border-gray-200 rounded-xl bg-white appearance-none cursor-pointer hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all min-w-[140px]"
               >
                 <option value="">{t('kr_keca084ec')}</option>
                 {companies.map((c) => (
@@ -289,8 +289,8 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
       {/* Generating animation */}
       {generating && (
         <div className="bg-white rounded-xl border border-gray-100 p-12 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-[#5E81F4]/10 mb-4">
-            <Sparkles className="h-8 w-8 text-[#5E81F4] animate-pulse" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-primary/10 mb-4">
+            <Sparkles className="h-8 w-8 text-primary animate-pulse" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('kr_aikeab080_keba6aced_kec839dec_')}</h3>
           <p className="text-sm text-gray-500">{t('kr_kec95bd_5_15kecb488_kec868cec_')}</p>
@@ -309,8 +309,8 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
           <div className="relative bg-gradient-to-br from-[#5E81F4]/5 to-[#6B73E8]/5 px-6 py-4 border-b border-gray-100">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-[#5E81F4]/10">
-                  <FileText className="h-5 w-5 text-[#5E81F4]" />
+                <div className="p-2 rounded-xl bg-primary/10">
+                  <FileText className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <h3 className="text-base font-semibold text-gray-900">
@@ -325,7 +325,7 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
                       })}
                     </span>
                     {(currentReport.metadata as { model?: string })?.model && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#5E81F4]/10 text-[#5E81F4]">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
                         {(currentReport.metadata as { model?: string }).model === 'template' ? '템플릿' : '🤖 AI'}
                       </span>
                     )}
@@ -357,7 +357,7 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
       {!currentReport && !generating && reports.length === 0 && (
         <div className="bg-white rounded-xl border border-gray-100 p-12 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br from-[#5E81F4]/10 to-[#6B73E8]/10 mb-4">
-            <Sparkles className="h-8 w-8 text-[#5E81F4]" />
+            <Sparkles className="h-8 w-8 text-primary" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('kr_kec9584ec_kec839dec_keba6aced_')}</h3>
           <p className="text-sm text-gray-500 mb-6">

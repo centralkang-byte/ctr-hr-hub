@@ -79,7 +79,7 @@ function KpiCard({ label, value, sub, icon, accent, onClick }: KpiCardProps) {
     <button
       onClick={onClick}
       disabled={!onClick}
-      className={`${CARD_STYLES.kpi} text-left w-full ${onClick ? 'hover:shadow-md hover:border-[#D0D0D0] transition-all cursor-pointer' : 'cursor-default'}`}
+      className={`${CARD_STYLES.kpi} text-left w-full ${onClick ? 'hover:shadow-md hover:border-border transition-all cursor-pointer' : 'cursor-default'}`}
     >
       <div className="flex items-center justify-between mb-2">
         <p className="text-xs text-[#666]">{label}</p>
@@ -87,7 +87,7 @@ function KpiCard({ label, value, sub, icon, accent, onClick }: KpiCardProps) {
           {icon}
         </div>
       </div>
-      <p className="text-lg font-bold text-[#1A1A1A] leading-tight">{value}</p>
+      <p className="text-lg font-bold text-foreground leading-tight">{value}</p>
       {sub && <p className="text-xs text-[#999] mt-0.5">{sub}</p>}
     </button>
   )
@@ -102,13 +102,13 @@ function QuickAction({ icon, label, sub, onClick, accent }: {
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-center gap-2 p-4 rounded-xl border border-[#E8E8E8] bg-white hover:shadow-md hover:border-[#D0D0D0] transition-all w-full"
+      className="flex flex-col items-center gap-2 p-4 rounded-xl border border-border bg-white hover:shadow-md hover:border-border transition-all w-full"
     >
       <div className={`flex h-10 w-10 items-center justify-center rounded-full ${accent}`}>
         {icon}
       </div>
       <div className="text-center">
-        <p className="text-sm font-semibold text-[#1A1A1A]">{label}</p>
+        <p className="text-sm font-semibold text-foreground">{label}</p>
         <p className="text-[11px] text-[#999]">{sub}</p>
       </div>
     </button>
@@ -177,32 +177,32 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
             <Wallet className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-[-0.02em]">{'급여 관리'}</h1>
+            <h1 className="text-2xl font-bold text-foreground tracking-[-0.02em]">{'급여 관리'}</h1>
             <p className="text-sm text-[#666] mt-0.5">{'전체 법인 파이프라인 현황'}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           {/* Month navigator */}
-          <div className="flex items-center gap-1 bg-white border border-[#E8E8E8] rounded-xl px-2 py-1">
-            <button onClick={prevMonth} className="p-1 rounded-lg hover:bg-[#F5F5F5] text-[#555]">
+          <div className="flex items-center gap-1 bg-white border border-border rounded-xl px-2 py-1">
+            <button onClick={prevMonth} className="p-1 rounded-lg hover:bg-muted text-[#555]">
               <ChevronLeft className="h-4 w-4" />
             </button>
-            <span className="text-sm font-semibold text-[#1A1A1A] px-2 min-w-24 text-center">
+            <span className="text-sm font-semibold text-foreground px-2 min-w-24 text-center">
               {year}년 {MONTHS_KO[month - 1]}
             </span>
-            <button onClick={nextMonth} className="p-1 rounded-lg hover:bg-[#F5F5F5] text-[#555]">
+            <button onClick={nextMonth} className="p-1 rounded-lg hover:bg-muted text-[#555]">
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
 
-          <button onClick={fetchDashboard} className="p-2 rounded-xl border border-[#E8E8E8] bg-white hover:bg-[#F5F5F5] text-[#555]">
+          <button onClick={fetchDashboard} className="p-2 rounded-xl border border-border bg-white hover:bg-muted text-[#555]">
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
 
           <button
             onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#5E81F4] hover:bg-[#4F70E0] text-white text-sm font-semibold"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary/85 text-white text-sm font-semibold"
           >
             <Plus className="h-4 w-4" />
             {'급여 실행 생성'}
@@ -213,7 +213,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
       {/* ── Loading ─────────────────────────────────────────── */}
       {loading && (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="h-8 w-8 animate-spin text-[#5E81F4]" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       )}
 
@@ -230,12 +230,12 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
               }
               icon={
                 data.summary.momChangePercent > 0
-                  ? <TrendingUp className="h-3.5 w-3.5 text-[#059669]" />
+                  ? <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
                   : data.summary.momChangePercent < 0
-                    ? <TrendingDown className="h-3.5 w-3.5 text-[#DC2626]" />
-                    : <DollarSign className="h-3.5 w-3.5 text-[#5E81F4]" />
+                    ? <TrendingDown className="h-3.5 w-3.5 text-red-600" />
+                    : <DollarSign className="h-3.5 w-3.5 text-primary" />
               }
-              accent="bg-[#E0E7FF]"
+              accent="bg-indigo-100"
               onClick={() => router.push('/payroll/global')}
             />
 
@@ -243,16 +243,16 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
               label="완료 법인"
               value={`${data.summary.completedCompanies} / ${data.summary.totalCompanies}개`}
               sub="승인 또는 지급 완료"
-              icon={<CheckCircle2 className="h-3.5 w-3.5 text-[#059669]" />}
-              accent="bg-[#D1FAE5]"
+              icon={<CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />}
+              accent="bg-emerald-100"
             />
 
             <KpiCard
               label="미처리 이상 항목"
               value={`${data.summary.openAnomalies}건`}
               sub={data.summary.openAnomalies > 0 ? '검토 필요' : '모두 해결됨 ✅'}
-              icon={<AlertTriangle className="h-3.5 w-3.5 text-[#F59E0B]" />}
-              accent="bg-[#FEF3C7]"
+              icon={<AlertTriangle className="h-3.5 w-3.5 text-amber-500" />}
+              accent="bg-amber-100"
               onClick={data.summary.openAnomalies > 0 ? () => router.push('/payroll/anomalies') : undefined}
             />
 
@@ -260,23 +260,23 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
               label={`결재 대기 / 마감 임박`}
               value={`${data.summary.pendingApprovals}건 / ${data.summary.alertCount}개`}
               sub={`결재 / D-3 법인`}
-              icon={<Clock className="h-3.5 w-3.5 text-[#A855F7]" />}
-              accent="bg-[#F3E8FF]"
+              icon={<Clock className="h-3.5 w-3.5 text-violet-500" />}
+              accent="bg-purple-50"
               onClick={data.summary.pendingApprovals > 0 ? () => router.push('/approvals/inbox') : undefined}
             />
           </div>
 
           {/* ── Pipeline Visualization ──────────────────────── */}
-          <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <div className="bg-white rounded-xl border border-border p-5">
             <div className="flex items-center gap-2 mb-4">
-              <LayoutGrid className="h-4 w-4 text-[#5E81F4]" />
-              <h2 className="font-semibold text-[#1A1A1A]">{'파이프라인 현황'}</h2>
+              <LayoutGrid className="h-4 w-4 text-primary" />
+              <h2 className="font-semibold text-foreground">{'파이프라인 현황'}</h2>
               <span className="ml-1 text-xs text-[#999]">{'— 각 배지를 클릭하면 해당 단계로 이동합니다'}</span>
             </div>
 
             {data.pipelines.length === 0 ? (
               <div className="py-8 text-center text-[#999] text-sm">
-                <Users className="h-8 w-8 mx-auto mb-2 text-[#D4D4D4]" />
+                <Users className="h-8 w-8 mx-auto mb-2 text-border" />
                 {'이 월에 급여 실행이 없습니다. 급여 실행을 생성해 주세요.'}
               </div>
             ) : (
@@ -285,7 +285,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
           </div>
 
           {/* ── Payroll Calendar ────────────────────────────── */}
-          <div className="bg-white rounded-xl border border-[#E8E8E8] p-5">
+          <div className="bg-white rounded-xl border border-border p-5">
             <PayrollCalendar
               entries={calendarEntries}
               yearMonth={`${year}-${String(month).padStart(2, '0')}`}
@@ -294,38 +294,38 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
 
           {/* ── Quick Actions ───────────────────────────────── */}
           <div>
-            <h2 className="font-semibold text-[#1A1A1A] mb-3 flex items-center gap-2">
-              <Play className="h-4 w-4 text-[#5E81F4]" />
+            <h2 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+              <Play className="h-4 w-4 text-primary" />
               {'빠른 실행'}
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <QuickAction
-                icon={<Calendar className="h-5 w-5 text-[#4B6DE0]" />}
+                icon={<Calendar className="h-5 w-5 text-primary/90" />}
                 label="근태 마감"
                 sub="STEP 1 → 2"
                 onClick={() => router.push('/payroll/close-attendance')}
-                accent="bg-[#E0E7FF]"
+                accent="bg-indigo-100"
               />
               <QuickAction
-                icon={<AlertTriangle className="h-5 w-5 text-[#F59E0B]" />}
+                icon={<AlertTriangle className="h-5 w-5 text-amber-500" />}
                 label="이상 검토"
                 sub="STEP 3"
                 onClick={() => router.push('/payroll/anomalies')}
-                accent="bg-[#FEF3C7]"
+                accent="bg-amber-100"
               />
               <QuickAction
-                icon={<CheckCircle2 className="h-5 w-5 text-[#5E81F4]" />}
+                icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
                 label="승인 대기"
                 sub="STEP 4 — 승인함으로"
                 onClick={() => router.push('/approvals/inbox?module=PAYROLL')}
-                accent="bg-[#E0E7FF]"
+                accent="bg-indigo-100"
               />
               <QuickAction
-                icon={<Wallet className="h-5 w-5 text-[#059669]" />}
+                icon={<Wallet className="h-5 w-5 text-emerald-600" />}
                 label="수동 조정"
                 sub="STEP 2.5"
                 onClick={() => router.push('/payroll/adjustments')}
-                accent="bg-[#D1FAE5]"
+                accent="bg-emerald-100"
               />
             </div>
           </div>

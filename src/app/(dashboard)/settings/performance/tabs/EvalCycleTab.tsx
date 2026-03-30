@@ -35,13 +35,13 @@ export function EvalCycleTab({
       .finally(() => setLoading(false))
   }, [companyId])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">{'평가 주기'}</h3>
-        <p className="text-sm text-[#8181A5]">등록된 평가 사이클 {cycles.length}건</p>
+        <h3 className="text-base font-semibold text-foreground">{'평가 주기'}</h3>
+        <p className="text-sm text-muted-foreground">등록된 평가 사이클 {cycles.length}건</p>
       </div>
       {cycles.length > 0 ? (
         <div className={TABLE_STYLES.wrapper}>
@@ -50,7 +50,7 @@ export function EvalCycleTab({
             <th className={TABLE_STYLES.headerCell}>{'유형'}</th>
             <th className={TABLE_STYLES.headerCell}>{'상태'}</th>
             <th className={TABLE_STYLES.headerCell}>{'기간'}</th>
-          </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{cycles.map((c) => {
+          </tr></thead><tbody className="divide-y divide-border">{cycles.map((c) => {
             const s = STATUS_MAP[c.status] ?? { label: c.status, cls: 'bg-gray-50 text-gray-500' }
             return (
               <tr key={c.id} className={TABLE_STYLES.row}>
@@ -63,8 +63,8 @@ export function EvalCycleTab({
           })}</tbody></table>
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <Calendar className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">{'등록된 평가 사이클이 없습니다'}</p>
+        <div className="rounded-xl border border-dashed border-border py-12 text-center">
+          <Calendar className="mx-auto mb-3 h-8 w-8 text-muted-foreground" /><p className="text-sm font-medium text-foreground">{'등록된 평가 사이클이 없습니다'}</p>
         </div>
       )}
     </div>

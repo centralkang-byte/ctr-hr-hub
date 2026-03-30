@@ -24,13 +24,13 @@ export function JobFamiliesTab({
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_keca781ec_keca781eb')}</h3>
-        <p className="text-sm text-[#8181A5]">{families.length}개 직종, 총 {families.reduce((s, f) => s + f.profiles, 0)}개 Job Profile</p>
+        <h3 className="text-base font-semibold text-foreground">{t('kr_keca781ec_keca781eb')}</h3>
+        <p className="text-sm text-muted-foreground">{families.length}개 직종, 총 {families.reduce((s, f) => s + f.profiles, 0)}개 Job Profile</p>
       </div>
 
-      <div className="flex items-start gap-3 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4">
-        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
-        <p className="text-xs text-[#8181A5]">{t('kr_keca781ec_keca781eb_kebb684eb_')}</p>
+      <div className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+        <p className="text-xs text-muted-foreground">{t('kr_keca781ec_keca781eb_kebb684eb_')}</p>
       </div>
 
       <div className={TABLE_STYLES.wrapper}>
@@ -46,10 +46,10 @@ export function JobFamiliesTab({
           <tbody>
             {families.map((f) => (
               <tr key={f.code} className={TABLE_STYLES.row}>
-                <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{f.code}</td>
+                <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{f.code}</td>
                 <td className={TABLE_STYLES.cell}>{f.name}</td>
-                <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{f.nameEn}</td>
-                <td className={`${TABLE_STYLES.cell} text-center text-[#8181A5]`}>{f.profiles}개</td>
+                <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>{f.nameEn}</td>
+                <td className={`${TABLE_STYLES.cell} text-center text-muted-foreground`}>{f.profiles}개</td>
               </tr>
             ))}
           </tbody>

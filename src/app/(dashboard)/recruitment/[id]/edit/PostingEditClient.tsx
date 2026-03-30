@@ -229,15 +229,15 @@ export default function PostingEditClient({
 
   void user
 
-  const inputClass = 'w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors'
-  const labelClass = 'block text-sm font-medium text-[#1A1A1A] mb-1'
-  const errorClass = 'text-xs text-[#F44336] mt-1'
+  const inputClass = 'w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors'
+  const labelClass = 'block text-sm font-medium text-foreground mb-1'
+  const errorClass = 'text-xs text-red-500 mt-1'
 
   if (dataLoading) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex items-center gap-2 text-sm text-[#999]">
-          <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#5E81F4] rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin" />
           {t('loadingData')}
         </div>
       </div>
@@ -245,24 +245,24 @@ export default function PostingEditClient({
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => router.back()} className="p-2 rounded-lg border border-[#E8E8E8] hover:bg-white transition-colors">
+        <button onClick={() => router.back()} className="p-2 rounded-lg border border-border hover:bg-white transition-colors">
           <ChevronLeft className="w-4 h-4 text-[#666]" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#E3F2FD] rounded-lg flex items-center justify-center">
-            <Briefcase className="w-5 h-5 text-[#2196F3]" />
+          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+            <Briefcase className="w-5 h-5 text-blue-500" />
           </div>
-          <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">{t('editPostingTitle')}</h1>
+          <h1 className="text-xl font-bold text-foreground tracking-[-0.02em]">{t('editPostingTitle')}</h1>
         </div>
       </div>
 
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       <form onSubmit={handleSubmit(onSubmit as any)}>
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 mb-6">
-          <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">{t('basicInfo')}</h2>
+        <div className="bg-white border border-border rounded-xl p-6 mb-6">
+          <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">{t('basicInfo')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
               <label className={labelClass}>{t('postingTitleLabel')}</label>
@@ -315,10 +315,10 @@ export default function PostingEditClient({
           </div>
         </div>
 
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 mb-6">
+        <div className="bg-white border border-border rounded-xl p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em]">{t('postingContent')}</h2>
-            <button type="button" onClick={handleAiGenerate} disabled={aiLoading || !watch('title')} className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#7C3AED] hover:bg-[#6D28D9] text-white rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+            <h2 className="text-base font-bold text-foreground tracking-[-0.02em]">{t('postingContent')}</h2>
+            <button type="button" onClick={handleAiGenerate} disabled={aiLoading || !watch('title')} className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-violet-600 hover:bg-violet-700 text-white rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
               {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
               {t('aiDraftGenerate')}
             </button>
@@ -340,22 +340,22 @@ export default function PostingEditClient({
           </div>
         </div>
 
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 mb-6">
-          <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">{t('salarySection')}</h2>
+        <div className="bg-white border border-border rounded-xl p-6 mb-6">
+          <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">{t('salarySection')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div><label className={labelClass}>{t('salaryMinLabel')}</label><input {...register('salaryRangeMin')} type="number" className={inputClass} placeholder="0" /></div>
             <div><label className={labelClass}>{t('salaryMaxLabel')}</label><input {...register('salaryRangeMax')} type="number" className={inputClass} placeholder="0" /></div>
             <div className="md:col-span-2">
-              <label className="flex items-center gap-2 text-sm text-[#1A1A1A]">
-                <input {...register('salaryHidden')} type="checkbox" className="rounded border-[#E8E8E8]" />
+              <label className="flex items-center gap-2 text-sm text-foreground">
+                <input {...register('salaryHidden')} type="checkbox" className="rounded border-border" />
                 {t('salaryHiddenLabel')}
               </label>
             </div>
           </div>
         </div>
 
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 mb-6">
-          <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">{t('recruitmentInfo')}</h2>
+        <div className="bg-white border border-border rounded-xl p-6 mb-6">
+          <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">{t('recruitmentInfo')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div><label className={labelClass}>{t('deadlineDateLabel')}</label><input {...register('deadlineDate')} type="date" className={inputClass} /></div>
             <div>
@@ -373,7 +373,7 @@ export default function PostingEditClient({
         </div>
 
         <div className="flex items-center justify-end gap-3">
-          <button type="button" onClick={() => router.back()} className="px-6 py-2.5 text-sm font-medium border border-[#E8E8E8] text-[#1A1A1A] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150">{t('cancelButton')}</button>
+          <button type="button" onClick={() => router.back()} className="px-6 py-2.5 text-sm font-medium border border-border text-foreground hover:bg-background rounded-lg transition-colors duration-150">{t('cancelButton')}</button>
           <button type="submit" disabled={submitting} className={`${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary} disabled:opacity-50`}>
             {submitting ? t('saving') : t('saveEditButton')}
           </button>

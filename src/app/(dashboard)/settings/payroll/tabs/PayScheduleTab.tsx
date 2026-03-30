@@ -88,14 +88,14 @@ export function PayScheduleTab({
 
   const hasChanges = JSON.stringify(settings) !== JSON.stringify(original)
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_keab889ec')}</h3>
-          <p className="text-sm text-[#8181A5]">{t('kr_keba7a4ec_keab889ec_keca780ea_')}</p>
+          <h3 className="text-base font-semibold text-foreground">{t('kr_keab889ec')}</h3>
+          <p className="text-sm text-muted-foreground">{t('kr_keba7a4ec_keab889ec_keca780ea_')}</p>
         </div>
         {isOverridden && (
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
@@ -104,17 +104,17 @@ export function PayScheduleTab({
 
       <SettingFieldWithOverride label="급여 지급일" description="매월 급여가 지급되는 날짜" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-[#8181A5]">{t('kr_keba7a4ec')}</span>
+          <span className="text-sm text-muted-foreground">{t('kr_keba7a4ec')}</span>
           <Input type="number" value={settings.payDay} min={1} max={31} onChange={(e) => setSettings((p) => ({ ...p, payDay: Number(e.target.value) }))} className="w-20" />
-          <span className="text-sm text-[#8181A5]">{t('kr_kec9dbc')}</span>
+          <span className="text-sm text-muted-foreground">{t('kr_kec9dbc')}</span>
         </div>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="급여 마감일" description="급여 계산 기준 마감일" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-[#8181A5]">{t('kr_keba7a4ec')}</span>
+          <span className="text-sm text-muted-foreground">{t('kr_keba7a4ec')}</span>
           <Input type="number" value={settings.cutoffDay} min={1} max={31} onChange={(e) => setSettings((p) => ({ ...p, cutoffDay: Number(e.target.value) }))} className="w-20" />
-          <span className="text-sm text-[#8181A5]">{t('kr_kec9dbc')}</span>
+          <span className="text-sm text-muted-foreground">{t('kr_kec9dbc')}</span>
         </div>
       </SettingFieldWithOverride>
 

@@ -18,10 +18,10 @@ import type { MinimalEmployee } from '@/types/employee'
 // ─── Status Styles ──────────────────────────────────────────
 
 const STATUS_STYLES: Record<string, { label: string; className: string }> = {
-  ACTIVE:     { label: '재직',  className: 'bg-[#ECFDF5] text-[#047857]' },
-  ON_LEAVE:   { label: '휴직',  className: 'bg-[#FFF7ED] text-[#C2410C]' },
-  RESIGNED:   { label: '퇴사',  className: 'bg-[#FEF2F2] text-[#B91C1C]' },
-  TERMINATED: { label: '해고',  className: 'bg-[#FEF2F2] text-[#B91C1C]' },
+  ACTIVE:     { label: '재직',  className: 'bg-emerald-50 text-emerald-700' },
+  ON_LEAVE:   { label: '휴직',  className: 'bg-orange-50 text-orange-700' },
+  RESIGNED:   { label: '퇴사',  className: 'bg-red-50 text-red-700' },
+  TERMINATED: { label: '해고',  className: 'bg-red-50 text-red-700' },
 }
 
 // ─── Size Config ────────────────────────────────────────────
@@ -182,7 +182,7 @@ function SublineBlock({ d }: { d: ResolvedData }) {
   if (!d.department && !title && !d.locationCode) return null
 
   return (
-    <div className="flex items-center gap-1 min-w-0 text-xs text-[#8181A5] mt-0.5">
+    <div className="flex items-center gap-1 min-w-0 text-xs text-muted-foreground mt-0.5">
       {d.department && (
         <span className="truncate min-w-[40px] max-w-[140px]">{d.department}</span>
       )}
@@ -193,7 +193,7 @@ function SublineBlock({ d }: { d: ResolvedData }) {
       )}
       {d.locationCode && d.locationCity && (
         <span className="flex-shrink-0 inline-flex items-center gap-0.5">
-          <span className="px-1 py-px rounded text-[10px] font-medium bg-[#F5F5FA] text-[#8181A5]">
+          <span className="px-1 py-px rounded text-[10px] font-medium bg-muted text-muted-foreground">
             {d.locationCode}
           </span>
           <span className="truncate max-w-[80px]">{d.locationCity}</span>
@@ -218,7 +218,7 @@ function PeekCardBody({ d }: { d: ResolvedData }) {
           initialsClass={PEEK_AVATAR_CONFIG.initials}
         />
         <div className="min-w-0">
-          <p className="text-sm font-medium text-[#1C1D21] truncate">
+          <p className="text-sm font-medium text-foreground truncate">
             {formatDisplayName(d.name, d.nameEn, d.locationCode)}
           </p>
           <SublineBlock d={d} />
@@ -231,7 +231,7 @@ function PeekCardBody({ d }: { d: ResolvedData }) {
           {d.email && (
             <a
               href={`mailto:${d.email}`}
-              className="flex items-center gap-2 text-xs text-[#8181A5] hover:text-[#5E81F4] transition-colors"
+              className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors"
               onClick={(e) => e.stopPropagation()}
             >
               <Mail size={12} />
@@ -241,7 +241,7 @@ function PeekCardBody({ d }: { d: ResolvedData }) {
           {d.phone && (
             <a
               href={`tel:${d.phone}`}
-              className="flex items-center gap-2 text-xs text-[#8181A5] hover:text-[#5E81F4] transition-colors"
+              className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors"
               onClick={(e) => e.stopPropagation()}
             >
               <Phone size={12} />
@@ -252,11 +252,11 @@ function PeekCardBody({ d }: { d: ResolvedData }) {
       )}
 
       {/* Quick Actions */}
-      <div className="flex items-center gap-2 pt-2 mt-3 border-t border-[#F0F0F3]">
+      <div className="flex items-center gap-2 pt-2 mt-3 border-t border-border">
         {d.id && (
           <Link
             href={`/employees/${d.id}`}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#8181A5] hover:text-[#5E81F4] hover:bg-[#F5F5FA] rounded-md transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-primary hover:bg-muted rounded-md transition-colors"
             onClick={(e) => e.stopPropagation()}
           >
             <User size={14} />
@@ -268,7 +268,7 @@ function PeekCardBody({ d }: { d: ResolvedData }) {
             href={`https://teams.microsoft.com/l/chat/0/0?users=${encodeURIComponent(d.email)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#8181A5] hover:text-[#5E81F4] hover:bg-[#F5F5FA] rounded-md transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-primary hover:bg-muted rounded-md transition-colors"
             onClick={(e) => e.stopPropagation()}
           >
             <MessageSquare size={14} />
@@ -302,11 +302,11 @@ export function EmployeeCell(props: EmployeeCellProps) {
     return (
       <div className={`flex items-center ${cfg.gap} ${className}`}>
         <div
-          className={`${cfg.avatar} rounded-full bg-[#B4B2A9] flex items-center justify-center text-white`}
+          className={`${cfg.avatar} rounded-full bg-stone-400 flex items-center justify-center text-white`}
         >
           <span className={cfg.initials}>?</span>
         </div>
-        <span className="text-sm text-[#8181A5]">알 수 없는 사용자</span>
+        <span className="text-sm text-muted-foreground">알 수 없는 사용자</span>
         {trailing && <div className="ml-auto flex-shrink-0">{trailing}</div>}
       </div>
     )
@@ -323,7 +323,7 @@ export function EmployeeCell(props: EmployeeCellProps) {
   const content = (
     <div
       className={`flex items-center ${cfg.gap} min-w-0 ${className} ${
-        (onClick || linkHref) ? 'cursor-pointer hover:bg-[#FAFAFA] rounded-lg transition-colors' : ''
+        (onClick || linkHref) ? 'cursor-pointer hover:bg-background rounded-lg transition-colors' : ''
       }`}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
@@ -336,7 +336,7 @@ export function EmployeeCell(props: EmployeeCellProps) {
       <div className="min-w-0 flex-1">
         {/* Line 1: Name + status badge (if showStatus && sm) */}
         <div className="flex items-center gap-1.5">
-          <span className={`${cfg.nameText} font-medium text-[#1A1A1A] truncate`}>
+          <span className={`${cfg.nameText} font-medium text-foreground truncate`}>
             {displayName}
           </span>
           {showStatus && size === 'sm' && statusInfo && (
@@ -353,11 +353,11 @@ export function EmployeeCell(props: EmployeeCellProps) {
 
         {/* Line 3: Email + Phone (md/lg only) */}
         {(size === 'md' || size === 'lg') && (d.email || d.phone) && (
-          <div className="flex items-center gap-1 text-[11px] text-[#8181A5] mt-0.5">
+          <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-0.5">
             {d.email && (
               <a
                 href={`mailto:${d.email}`}
-                className="hover:text-[#5E81F4] transition-colors truncate"
+                className="hover:text-primary transition-colors truncate"
                 onClick={(e) => e.stopPropagation()}
               >
                 {d.email}
@@ -367,7 +367,7 @@ export function EmployeeCell(props: EmployeeCellProps) {
             {d.phone && (
               <a
                 href={`tel:${d.phone}`}
-                className="hover:text-[#5E81F4] transition-colors flex-shrink-0"
+                className="hover:text-primary transition-colors flex-shrink-0"
                 onClick={(e) => e.stopPropagation()}
               >
                 {d.phone}
@@ -380,12 +380,12 @@ export function EmployeeCell(props: EmployeeCellProps) {
         {size === 'lg' && (
           <div className="flex items-center gap-2 mt-1">
             {d.hireDate && (
-              <span className="text-xs text-[#8181A5]">
+              <span className="text-xs text-muted-foreground">
                 {formatDate(d.hireDate)} 입사
               </span>
             )}
             {d.hireDate && (
-              <span className="text-xs text-[#8181A5]">
+              <span className="text-xs text-muted-foreground">
                 · {calculateTenure(d.hireDate)}
               </span>
             )}

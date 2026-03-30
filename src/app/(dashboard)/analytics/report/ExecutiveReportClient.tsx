@@ -61,15 +61,15 @@ export default function ExecutiveReportClient({ user }: { user: SessionUser }) {
       }
     >
       {report ? (
-        <div className="rounded-xl border border-[#E8E8E8] bg-white">
+        <div className="rounded-xl border border-border bg-white">
           {/* Report header */}
-          <div className="flex items-center justify-between border-b border-[#F5F5F5] px-6 py-4">
+          <div className="flex items-center justify-between border-b border-border px-6 py-4">
             <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-[#5E81F4]" />
-              <h2 className="text-lg font-semibold text-[#1A1A1A]">HR Analytics Report</h2>
+              <FileText className="h-5 w-5 text-primary" />
+              <h2 className="text-lg font-semibold text-foreground">HR Analytics Report</h2>
             </div>
             <div className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-[#C7D2FE] bg-[#E0E7FF] px-2.5 py-0.5 text-xs font-medium text-[#4B6DE0]">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-primary/90">
                 <Sparkles className="h-3 w-3" />
                 AI Generated
               </span>
@@ -84,10 +84,10 @@ export default function ExecutiveReportClient({ user }: { user: SessionUser }) {
           <div className="prose prose-sm max-w-none px-6 py-6">
             {report.content.split('\n').map((line, i) => {
               if (line.startsWith('# ')) {
-                return <h1 key={i} className="mb-4 mt-6 text-xl font-bold text-[#1A1A1A]">{line.slice(2)}</h1>
+                return <h1 key={i} className="mb-4 mt-6 text-xl font-bold text-foreground">{line.slice(2)}</h1>
               }
               if (line.startsWith('## ')) {
-                return <h2 key={i} className="mb-3 mt-5 text-lg font-semibold text-[#1A1A1A]">{line.slice(3)}</h2>
+                return <h2 key={i} className="mb-3 mt-5 text-lg font-semibold text-foreground">{line.slice(3)}</h2>
               }
               if (line.startsWith('### ')) {
                 return <h3 key={i} className="mb-2 mt-4 text-base font-semibold text-[#333]">{line.slice(4)}</h3>
@@ -106,8 +106,8 @@ export default function ExecutiveReportClient({ user }: { user: SessionUser }) {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#D4D4D4] bg-[#FAFAFA] py-20">
-          <Sparkles className="mb-4 h-12 w-12 text-[#D4D4D4]" />
+        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-background py-20">
+          <Sparkles className="mb-4 h-12 w-12 text-border" />
           <p className="text-sm font-medium text-[#666]">
             {t('promptMessage')}
           </p>

@@ -106,9 +106,9 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
         return (
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
-                    <ShieldAlert className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('kr_keca091ea_keab68ced_kec9786ec')}</h2>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">{t('kr_keb8f8cec')}</a>
+                    <ShieldAlert className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                    <h2 className="mb-2 text-lg font-semibold text-foreground">{t('kr_keca091ea_keab68ced_kec9786ec')}</h2>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-primary hover:underline">{t('kr_keb8f8cec')}</a>
                 </div>
             </div>
         )
@@ -116,12 +116,12 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#F5F5FA] p-6">
+            <div className="min-h-screen bg-muted p-6">
                 <div className="mx-auto max-w-5xl space-y-4">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="animate-pulse rounded-xl border border-[#F0F0F3] bg-white p-6">
-                            <div className="mb-3 h-5 w-1/3 rounded bg-[#F0F0F3]" />
-                            <div className="h-4 w-2/3 rounded bg-[#F0F0F3]" />
+                        <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-6">
+                            <div className="mb-3 h-5 w-1/3 rounded bg-border" />
+                            <div className="h-4 w-2/3 rounded bg-border" />
                         </div>
                     ))}
                 </div>
@@ -134,7 +134,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
                     <EmptyState />
-                    <a href="/performance/cycles" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">{t('kr_keb8f8cec')}</a>
+                    <a href="/performance/cycles" className="mt-4 inline-flex items-center gap-1 text-sm text-primary hover:underline">{t('kr_keb8f8cec')}</a>
                 </div>
             </div>
         )
@@ -152,23 +152,23 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
             <div className="mx-auto max-w-5xl">
                 {/* Back + Title */}
                 <button onClick={() => router.push('/performance/cycles')}
-                    className="mb-4 inline-flex items-center gap-1 text-sm text-[#8181A5] hover:text-[#1C1D21]">
+                    className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
                     <ArrowLeft className="h-4 w-4" /> {t('cycle_kebaaa9eb')}
                 </button>
                 <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-[#1C1D21]">{cycle.name}</h1>
-                    <p className="mt-1 text-sm text-[#8181A5]">{cycle.startDate?.slice(0, 10)} ~ {cycle.endDate?.slice(0, 10)}</p>
+                    <h1 className="text-2xl font-bold text-foreground">{cycle.name}</h1>
+                    <p className="mt-1 text-sm text-muted-foreground">{cycle.startDate?.slice(0, 10)} ~ {cycle.endDate?.slice(0, 10)}</p>
                 </div>
 
                 {error && (
-                    <div className="mb-4 rounded-lg border border-[#FFEBEE] bg-[#FFEBEE] p-3 text-sm text-[#C62828]">
+                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
                         {error} <button onClick={fetchData} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
 
                 {/* Pipeline Visualization */}
-                <div className="mb-6 rounded-xl border border-[#F0F0F3] bg-white p-6">
-                    <h2 className="mb-4 text-base font-semibold text-[#1C1D21]">{t('pipeline_keca784ed_status')}</h2>
+                <div className="mb-6 rounded-xl border border-border bg-white p-6">
+                    <h2 className="mb-4 text-base font-semibold text-foreground">{t('pipeline_keca784ed_status')}</h2>
                     <div className="flex items-center gap-1 overflow-x-auto pb-2">
                         {PIPELINE_STATES.map((state, idx) => {
                             const isCurrent = idx === currentIdx
@@ -176,17 +176,17 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                             return (
                                 <div key={state.key} className="flex items-center">
                                     <div className="flex flex-col items-center">
-                                        <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-colors ${isCurrent ? 'bg-[#5E81F4] text-white ring-4 ring-[#5E81F4]/20' :
-                                                isPast ? 'bg-[#22C55E] text-white' : 'bg-[#F0F0F3] text-[#8181A5]'
+                                        <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-colors ${isCurrent ? 'bg-primary text-white ring-4 ring-primary/20' :
+                                                isPast ? 'bg-green-500 text-white' : 'bg-border text-muted-foreground'
                                             }`}>
                                             {isPast ? '✓' : idx + 1}
                                         </div>
-                                        <span className={`mt-1.5 text-[10px] whitespace-nowrap ${isCurrent ? 'font-bold text-[#5E81F4]' : isPast ? 'text-[#22C55E]' : 'text-[#8181A5]'}`}>
+                                        <span className={`mt-1.5 text-[10px] whitespace-nowrap ${isCurrent ? 'font-bold text-primary' : isPast ? 'text-green-500' : 'text-muted-foreground'}`}>
                                             {state.label}
                                         </span>
                                     </div>
                                     {idx < PIPELINE_STATES.length - 1 && (
-                                        <div className={`mx-1 h-0.5 w-6 ${idx < currentIdx ? 'bg-[#22C55E]' : 'bg-[#F0F0F3]'}`} />
+                                        <div className={`mx-1 h-0.5 w-6 ${idx < currentIdx ? 'bg-green-500' : 'bg-border'}`} />
                                     )}
                                 </div>
                             )
@@ -195,13 +195,13 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
 
                     {/* Advance button */}
                     {nextState && (
-                        <div className="mt-6 flex items-center justify-between rounded-xl border border-[#F0F0F3] bg-[#F5F5FA] p-4">
+                        <div className="mt-6 flex items-center justify-between rounded-xl border border-border bg-muted p-4">
                             <div>
-                                <p className="text-sm font-medium text-[#1C1D21]">현재: {PIPELINE_STATES[currentIdx]?.label}</p>
-                                <p className="text-xs text-[#8181A5]">다음: {PIPELINE_STATES[currentIdx + 1]?.label}</p>
+                                <p className="text-sm font-medium text-foreground">현재: {PIPELINE_STATES[currentIdx]?.label}</p>
+                                <p className="text-xs text-muted-foreground">다음: {PIPELINE_STATES[currentIdx + 1]?.label}</p>
                             </div>
                             <button onClick={handleAdvance} disabled={advancing}
-                                className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-5 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40 transition-colors">
+                                className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40 transition-colors">
                                 {advancing ? '전환 중...' : <><span>{t('next_keb8ba8ea_keca784ed')}</span><ChevronRight className="h-4 w-4" /></>}
                             </button>
                         </div>
@@ -210,12 +210,12 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
 
                 {/* Overdue Warning */}
                 {overdueParticipants.length > 0 && (
-                    <div className="mb-6 rounded-xl border border-[#FDE68A] bg-[#FEF3C7] p-4">
+                    <div className="mb-6 rounded-xl border border-amber-200 bg-amber-100 p-4">
                         <div className="flex items-center gap-2">
-                            <AlertTriangle className="h-5 w-5 text-[#D97706]" />
-                            <span className="text-sm font-medium text-[#92400E]">⚠️ 미완료 현황: {overdueParticipants.length}명</span>
+                            <AlertTriangle className="h-5 w-5 text-amber-600" />
+                            <span className="text-sm font-medium text-amber-800">⚠️ 미완료 현황: {overdueParticipants.length}명</span>
                         </div>
-                        <ul className="mt-2 space-y-1 text-xs text-[#92400E]">
+                        <ul className="mt-2 space-y-1 text-xs text-amber-800">
                             {overdueParticipants.slice(0, 5).map((p) => (
                                 <li key={p.employee.id}>• {p.employee.name} ({p.employee.department?.name ?? '-'}): {(p.overdueFlags ?? []).join(', ')}</li>
                             ))}
@@ -225,33 +225,33 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                 )}
 
                 {/* Tabs */}
-                <div className="mb-4 flex border-b border-[#F0F0F3]">
+                <div className="mb-4 flex border-b border-border">
                     <button onClick={() => setTab('pipeline')}
-                        className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === 'pipeline' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#8181A5]'}`}>
+                        className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === 'pipeline' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground'}`}>
                         {t('cycle_keca095eb')}
                     </button>
                     <button onClick={() => setTab('participants')}
-                        className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === 'participants' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#8181A5]'}`}>
+                        className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === 'participants' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground'}`}>
                         참여자 ({participants.length}명)
                     </button>
                 </div>
 
                 {tab === 'pipeline' ? (
-                    <div className="rounded-xl border border-[#F0F0F3] bg-white p-5 space-y-3">
+                    <div className="rounded-xl border border-border bg-white p-5 space-y-3">
                         <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div><span className="text-[#8181A5]">{t('kr_kecb2b4ed_kebaaa8eb')}</span> <span className="font-medium text-[#1C1D21]">{cycle.checkInMode === 'MANDATORY' ? '필수' : '권장'}</span></div>
-                            <div><span className="text-[#8181A5]">{t('kr_keb8f99eb')}</span> <span className="font-medium text-[#1C1D21]">{cycle.peerReviewEnabled ? `활성 (${cycle.peerReviewMinCount}~${cycle.peerReviewMaxCount}명)` : '비활성'}</span></div>
-                            <div><span className="text-[#8181A5]">{t('kr_kecb0b8ec_kec8898')}</span> <span className="font-medium text-[#1C1D21]">{participants.length}명</span></div>
+                            <div><span className="text-muted-foreground">{t('kr_kecb2b4ed_kebaaa8eb')}</span> <span className="font-medium text-foreground">{cycle.checkInMode === 'MANDATORY' ? '필수' : '권장'}</span></div>
+                            <div><span className="text-muted-foreground">{t('kr_keb8f99eb')}</span> <span className="font-medium text-foreground">{cycle.peerReviewEnabled ? `활성 (${cycle.peerReviewMinCount}~${cycle.peerReviewMaxCount}명)` : '비활성'}</span></div>
+                            <div><span className="text-muted-foreground">{t('kr_kecb0b8ec_kec8898')}</span> <span className="font-medium text-foreground">{participants.length}명</span></div>
                         </div>
                     </div>
                 ) : (
                     /* Participants Table */
                     <div className={TABLE_STYLES.wrapper}>
                         {/* Department filter */}
-                        <div className="border-b border-[#F0F0F3] px-5 py-3 flex items-center gap-3">
-                            <Users className="h-4 w-4 text-[#8181A5]" />
+                        <div className="border-b border-border px-5 py-3 flex items-center gap-3">
+                            <Users className="h-4 w-4 text-muted-foreground" />
                             <select value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)}
-                                className="rounded-lg border border-[#F0F0F3] px-2 py-1 text-xs text-[#1C1D21] focus:border-[#5E81F4] focus:outline-none">
+                                className="rounded-lg border border-border px-2 py-1 text-xs text-foreground focus:border-primary focus:outline-none">
                                 <option value="">{t('all_department')}</option>
                                 {departments.map((d) => <option key={d} value={d}>{d}</option>)}
                             </select>
@@ -272,7 +272,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                     {filteredParticipants.map((p) => {
                                         const hasOverdue = p.overdueFlags && p.overdueFlags.length > 0
                                         return (
-                                            <tr key={p.employee.id} className={cn(TABLE_STYLES.row, hasOverdue && 'bg-[#FEF3C7]/30 hover:bg-[#FEF3C7]/50')}>
+                                            <tr key={p.employee.id} className={cn(TABLE_STYLES.row, hasOverdue && 'bg-amber-100/30 hover:bg-amber-100/50')}>
                                                 <td className={TABLE_STYLES.cell}>
                                                   <EmployeeCell
                                                     size="sm"
@@ -283,17 +283,17 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                                     }}
                                                   />
                                                 </td>
-                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>{p.goalsStatus === 'DONE' ? <CheckCircle2 className="mx-auto h-4 w-4 text-[#22C55E]" /> : <Clock className="mx-auto h-4 w-4 text-[#F59E0B]" />}</td>
-                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>{p.checkinStatus === 'DONE' ? <CheckCircle2 className="mx-auto h-4 w-4 text-[#22C55E]" /> : <Clock className="mx-auto h-4 w-4 text-[#F59E0B]" />}</td>
-                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>{p.selfEvalStatus === 'SUBMITTED' ? <CheckCircle2 className="mx-auto h-4 w-4 text-[#22C55E]" /> : <Clock className="mx-auto h-4 w-4 text-[#F59E0B]" />}</td>
-                                                <td className={cn(TABLE_STYLES.cell, "text-center text-[#8181A5]")}>{p.peerReviewProgress ?? '-'}</td>
+                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>{p.goalsStatus === 'DONE' ? <CheckCircle2 className="mx-auto h-4 w-4 text-green-500" /> : <Clock className="mx-auto h-4 w-4 text-amber-500" />}</td>
+                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>{p.checkinStatus === 'DONE' ? <CheckCircle2 className="mx-auto h-4 w-4 text-green-500" /> : <Clock className="mx-auto h-4 w-4 text-amber-500" />}</td>
+                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>{p.selfEvalStatus === 'SUBMITTED' ? <CheckCircle2 className="mx-auto h-4 w-4 text-green-500" /> : <Clock className="mx-auto h-4 w-4 text-amber-500" />}</td>
+                                                <td className={cn(TABLE_STYLES.cell, "text-center text-muted-foreground")}>{p.peerReviewProgress ?? '-'}</td>
                                                 <td className={cn(TABLE_STYLES.cell, "text-center")}>
                                                     {hasOverdue ? (
-                                                        <span className="inline-flex items-center gap-1 rounded-full bg-[#FFEBEE] px-2 py-0.5 text-xs font-medium text-[#C62828]">
+                                                        <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-800">
                                                             <AlertTriangle className="h-3 w-3" /> {t('kr_keca780ec')}
                                                         </span>
                                                     ) : (
-                                                        <span className="inline-flex rounded-full bg-[#D1FAE5] px-2 py-0.5 text-xs font-medium text-[#047857]">{t('kr_keca095ec')}</span>
+                                                        <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">{t('kr_keca095ec')}</span>
                                                     )}
                                                 </td>
                                             </tr>
@@ -303,7 +303,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                             </table>
                         </div>
                         {/* Summary */}
-                        <div className="border-t border-[#F0F0F3] px-5 py-3 text-xs text-[#8181A5]">
+                        <div className="border-t border-border px-5 py-3 text-xs text-muted-foreground">
                             합계: {filteredParticipants.length}명 | 정상: {filteredParticipants.filter((p) => !p.overdueFlags || p.overdueFlags.length === 0).length} | 지연: {filteredParticipants.filter((p) => p.overdueFlags && p.overdueFlags.length > 0).length}
                         </div>
             </div>

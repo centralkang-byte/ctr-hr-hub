@@ -148,7 +148,7 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
                   type="text"
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
-                  className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
                   placeholder={'문서 제목'}
                 />
               </div>
@@ -160,7 +160,7 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
                   <select
                     value={formDocType}
                     onChange={(e) => setFormDocType(e.target.value)}
-                    className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
                   >
                     {Object.entries(DOC_TYPE_LABELS).map(([key, label]) => (
                       <option key={key} value={key}>
@@ -177,7 +177,7 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
                     type="text"
                     value={formVersion}
                     onChange={(e) => setFormVersion(e.target.value)}
-                    className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
               </div>
@@ -189,7 +189,7 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
                   value={formContent}
                   onChange={(e) => setFormContent(e.target.value)}
                   rows={10}
-                  className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
                   placeholder={'문서 내용을 입력하세요...'}
                 />
               </div>
@@ -318,7 +318,7 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
                       variant={!doc.deletedAt ? 'default' : 'secondary'}
                       className={
                         !doc.deletedAt
-                          ? 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]'
+                          ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
                           : ''
                       }
                     >
@@ -329,7 +329,7 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 text-[#EF4444] hover:bg-[#FEE2E2]"
+                      className="h-8 w-8 p-0 text-red-500 hover:bg-red-100"
                       onClick={() => setDeleteId(doc.id)}
                     >
                       <Trash2 className="h-4 w-4" />

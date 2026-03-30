@@ -614,8 +614,8 @@ export function OffboardingDetailClient({
                           key={n}
                           className={`h-5 w-5 ${
                             n <= interview.satisfactionScore
-                              ? 'fill-[#FACC15] text-[#FACC15]'
-                              : 'text-[#D4D4D4]'
+                              ? 'fill-yellow-400 text-yellow-400'
+                              : 'text-border'
                           }`}
                         />
                       ))}
@@ -626,7 +626,7 @@ export function OffboardingDetailClient({
                   </div>
 
                   {interview.satisfactionDetail && (
-                    <div className="rounded-xl border border-[#E8E8E8] p-3 space-y-2">
+                    <div className="rounded-xl border border-border p-3 space-y-2">
                       <Label className="text-xs text-muted-foreground">{t('satisfactionDetail')}</Label>
                       {(
                         [
@@ -644,7 +644,7 @@ export function OffboardingDetailClient({
                               {[1, 2, 3, 4, 5].map((n) => (
                                 <Star
                                   key={n}
-                                  className={`h-4 w-4 ${n <= score ? 'fill-[#FACC15] text-[#FACC15]' : 'text-[#D4D4D4]'}`}
+                                  className={`h-4 w-4 ${n <= score ? 'fill-yellow-400 text-yellow-400' : 'text-border'}`}
                                 />
                               ))}
                             </div>
@@ -850,8 +850,8 @@ export function OffboardingDetailClient({
                         <Star
                           className={`h-7 w-7 ${
                             n <= formScore
-                              ? 'fill-[#FACC15] text-[#FACC15]'
-                              : 'text-[#D4D4D4]'
+                              ? 'fill-yellow-400 text-yellow-400'
+                              : 'text-border'
                           }`}
                         />
                       </button>
@@ -865,7 +865,7 @@ export function OffboardingDetailClient({
                 </div>
 
                 {/* Category satisfaction scores */}
-                <div className="space-y-3 rounded-xl border border-[#E8E8E8] p-4">
+                <div className="space-y-3 rounded-xl border border-border p-4">
                   <Label className="text-sm font-semibold">{t('satisfactionDetail')}</Label>
                   {([
                     ['compensation', t('satisfactionCompensation')],
@@ -883,13 +883,13 @@ export function OffboardingDetailClient({
                             onClick={() =>
                               setFormSatisfactionDetail((prev) => ({ ...prev, [key]: n }))
                             }
-                            className="p-0.5 rounded hover:bg-[#F5F5F5] transition-colors"
+                            className="p-0.5 rounded hover:bg-muted transition-colors"
                           >
                             <Star
                               className={`h-5 w-5 ${
                                 n <= formSatisfactionDetail[key]
-                                  ? 'fill-[#FACC15] text-[#FACC15]'
-                                  : 'text-[#D4D4D4]'
+                                  ? 'fill-yellow-400 text-yellow-400'
+                                  : 'text-border'
                               }`}
                             />
                           </button>

@@ -84,11 +84,11 @@ export function KpiWidget({
   return (
     <div
       className={`${CARD_STYLES.kpi} ${
-        drilldownPath ? 'cursor-pointer hover:border-[#5E81F4] transition-colors' : ''
+        drilldownPath ? 'cursor-pointer hover:border-primary transition-colors' : ''
       }`}
       onClick={() => drilldownPath && router.push(drilldownPath)}
     >
-      <p className="text-sm font-semibold text-[#1A1A1A] mb-4">{title}</p>
+      <p className="text-sm font-semibold text-foreground mb-4">{title}</p>
 
       <ResponsiveContainer width="100%" height={height}>
         {chartType === 'bar' ? (
@@ -146,12 +146,12 @@ export function KpiWidget({
             {typeof data === 'object' && data !== null ? (
               Object.entries(data as Record<string, unknown>).map(([k, v]) => (
                 <div key={k} className="text-center">
-                  <div className="text-3xl font-bold text-[#1A1A1A]">{String(v)}</div>
+                  <div className="text-3xl font-bold text-foreground">{String(v)}</div>
                   <div className="text-xs text-[#666] mt-1">{k}</div>
                 </div>
               ))
             ) : (
-              <span className="text-3xl font-bold text-[#1A1A1A]">{String(data)}</span>
+              <span className="text-3xl font-bold text-foreground">{String(data)}</span>
             )}
           </div>
         )}

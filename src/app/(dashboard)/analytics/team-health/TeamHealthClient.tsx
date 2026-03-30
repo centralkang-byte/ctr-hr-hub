@@ -136,14 +136,14 @@ export default function TeamHealthClient({ user }: { user: SessionUser }) {
                 <th className={cn(TABLE_STYLES.headerCell, 'text-center')}>{t('status')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F0F0F3]">
+            <tbody className="divide-y divide-border">
               {data.members.map((m) => (
                 <tr key={m.employeeId} className={TABLE_STYLES.row}>
                   <td className={TABLE_STYLES.cell}>{m.name}</td>
                   <td className={cn(TABLE_STYLES.cellRight, m.weeklyOvertime > 10 && 'text-red-600 font-medium')}>{m.weeklyOvertime}h</td>
                   <td className={cn(TABLE_STYLES.cellRight, m.leaveUsageRate < 30 && 'text-amber-600 font-medium')}>{m.leaveUsageRate}%</td>
                   <td className={cn(TABLE_STYLES.cell, 'text-center')}>
-                    <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${m.lastGrade === 'B' ? 'bg-red-50 text-red-600' : 'bg-[#F0F0F3] text-[#1C1D21]'}`}>
+                    <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${m.lastGrade === 'B' ? 'bg-red-50 text-red-600' : 'bg-border text-foreground'}`}>
                       {m.lastGrade}
                     </span>
                   </td>
@@ -175,7 +175,7 @@ export default function TeamHealthClient({ user }: { user: SessionUser }) {
                 <p className="text-xs text-gray-500 mt-1">{rec.actionText}</p>
               </div>
               {rec.actionLink && (
-                <a href={rec.actionLink} className="text-xs text-[#5E81F4] hover:underline whitespace-nowrap">
+                <a href={rec.actionLink} className="text-xs text-primary hover:underline whitespace-nowrap">
                   {t('kr_ked9484eb_view')}
                 </a>
               )}

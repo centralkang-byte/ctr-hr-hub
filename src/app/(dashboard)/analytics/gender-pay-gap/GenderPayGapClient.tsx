@@ -121,22 +121,22 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
     new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW', maximumFractionDigits: 0 }).format(amount)
 
   const getGapColor = (gap: number) => {
-    if (Math.abs(gap) <= 5) return 'text-[#059669]'
-    if (Math.abs(gap) <= 15) return 'text-[#D97706]'
-    return 'text-[#DC2626]'
+    if (Math.abs(gap) <= 5) return 'text-emerald-600'
+    if (Math.abs(gap) <= 15) return 'text-amber-600'
+    return 'text-red-600'
   }
 
   const getGapBadge = (gap: number) => {
-    if (Math.abs(gap) <= 5) return 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]'
-    if (Math.abs(gap) <= 15) return 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]'
-    return 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]'
+    if (Math.abs(gap) <= 5) return 'bg-emerald-100 text-emerald-700 border-emerald-200'
+    if (Math.abs(gap) <= 15) return 'bg-amber-100 text-amber-700 border-amber-300'
+    return 'bg-red-100 text-red-700 border-red-200'
   }
 
   // ─── Render ────────────────────────────────────────────
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 animate-spin text-[#5E81F4]" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     )
   }
@@ -146,7 +146,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{'성별 급여 격차 분석'}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{'성별 급여 격차 분석'}</h1>
           <p className="text-sm text-[#666] mt-1">{'직급·직무·부서별 성별 보상 비교 분석'}</p>
         </div>
         <div className="flex items-center gap-3">
@@ -185,42 +185,42 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
             <Card className="">
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 mb-1">
-                  <Users className="w-4 h-4 text-[#5E81F4]" />
+                  <Users className="w-4 h-4 text-primary" />
                   <p className="text-xs text-[#666]">{'남성 인원'}</p>
                 </div>
-                <p className="text-3xl font-bold text-[#1A1A1A]">{data.summary.totalMale}명</p>
+                <p className="text-3xl font-bold text-foreground">{data.summary.totalMale}명</p>
               </CardContent>
             </Card>
             <Card className="">
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 mb-1">
-                  <Users className="w-4 h-4 text-[#F472B6]" />
+                  <Users className="w-4 h-4 text-pink-400" />
                   <p className="text-xs text-[#666]">{'여성 인원'}</p>
                 </div>
-                <p className="text-3xl font-bold text-[#1A1A1A]">{data.summary.totalFemale}명</p>
+                <p className="text-3xl font-bold text-foreground">{data.summary.totalFemale}명</p>
               </CardContent>
             </Card>
             <Card className="">
               <CardContent className="p-5">
                 <p className="text-xs text-[#666] mb-1">{'남성 평균 급여'}</p>
-                <p className="text-2xl font-bold text-[#1A1A1A]">{formatCurrency(data.summary.overallMaleAvg)}</p>
+                <p className="text-2xl font-bold text-foreground">{formatCurrency(data.summary.overallMaleAvg)}</p>
               </CardContent>
             </Card>
             <Card className="">
               <CardContent className="p-5">
                 <p className="text-xs text-[#666] mb-1">{'여성 평균 급여'}</p>
-                <p className="text-2xl font-bold text-[#1A1A1A]">{formatCurrency(data.summary.overallFemaleAvg)}</p>
+                <p className="text-2xl font-bold text-foreground">{formatCurrency(data.summary.overallFemaleAvg)}</p>
               </CardContent>
             </Card>
             <Card className="border-2" style={{ borderColor: Math.abs(data.summary.overallGapPercent) > 15 ? '#FCA5A5' : Math.abs(data.summary.overallGapPercent) > 5 ? '#FCD34D' : '#6EE7B7' }}>
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 mb-1">
                   {Math.abs(data.summary.overallGapPercent) > 15 ? (
-                    <AlertTriangle className="w-4 h-4 text-[#EF4444]" />
+                    <AlertTriangle className="w-4 h-4 text-red-500" />
                   ) : data.summary.overallGapPercent > 0 ? (
-                    <TrendingDown className="w-4 h-4 text-[#F59E0B]" />
+                    <TrendingDown className="w-4 h-4 text-amber-500" />
                   ) : (
-                    <TrendingUp className="w-4 h-4 text-[#059669]" />
+                    <TrendingUp className="w-4 h-4 text-emerald-600" />
                   )}
                   <p className="text-xs text-[#666]">{'전체 격차'}</p>
                 </div>
@@ -235,7 +235,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
           <Card className="">
             <CardHeader>
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-[#5E81F4]" />
+                <BarChart3 className="w-5 h-5 text-primary" />
                 {GROUP_BY_LABELS[groupBy]} 상세 분석
               </CardTitle>
             </CardHeader>
@@ -256,7 +256,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                         <th className={TABLE_STYLES.headerCell}>{'격차 시각화'}</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#F0F0F3]">
+                    <tbody className="divide-y divide-border">
                       {data.breakdown.map((row) => {
                         const maxSalary = Math.max(row.maleAvgSalary, row.femaleAvgSalary, 1)
                         const maleWidth = (row.maleAvgSalary / maxSalary) * 100
@@ -276,19 +276,19 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                             <td className={TABLE_STYLES.cell}>
                               <div className="space-y-1">
                                 <div className="flex items-center gap-2">
-                                  <span className="text-xs text-[#5E81F4] w-4">M</span>
-                                  <div className="flex-1 h-3 bg-[#F5F5F5] rounded-full overflow-hidden">
+                                  <span className="text-xs text-primary w-4">M</span>
+                                  <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
                                     <div
-                                      className="h-full bg-[#5E81F4] rounded-full"
+                                      className="h-full bg-primary rounded-full"
                                       style={{ width: `${maleWidth}%` }}
                                     />
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-xs text-[#EC4899] w-4">F</span>
-                                  <div className="flex-1 h-3 bg-[#F5F5F5] rounded-full overflow-hidden">
+                                  <span className="text-xs text-pink-500 w-4">F</span>
+                                  <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
                                     <div
-                                      className="h-full bg-[#F472B6] rounded-full"
+                                      className="h-full bg-pink-400 rounded-full"
                                       style={{ width: `${femaleWidth}%` }}
                                     />
                                   </div>
@@ -322,7 +322,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                         <th className={TABLE_STYLES.headerCell}>{'차이'}</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#F0F0F3]">
+                    <tbody className="divide-y divide-border">
                       {data.breakdown
                         .filter((b) => b.maleAvgCompaRatio != null || b.femaleAvgCompaRatio != null)
                         .map((row) => {
@@ -342,7 +342,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                               <td className={TABLE_STYLES.cell}>
                                 {diff !== '-' && (
                                   <div className="flex justify-center">
-                                    <span className={Number(diff) > 0 ? 'text-[#DC2626]' : 'text-[#059669]'}>
+                                    <span className={Number(diff) > 0 ? 'text-red-600' : 'text-emerald-600'}>
                                       {Number(diff) > 0 ? '+' : ''}{diff}%p
                                     </span>
                                   </div>

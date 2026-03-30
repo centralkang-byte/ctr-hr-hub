@@ -103,10 +103,10 @@ export default function NotificationsClient({user }: {
         return (
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
-                    <Bell className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('kr_keab2b0ea_ked86b5eb_keb8ba8ea_')}</h2>
-                    <p className="text-sm text-[#8181A5]">{t('kr_keab2b0ea_ked86b5eb_finalized_')}</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline"><ArrowLeft className="h-4 w-4" /> {t('kr_keb8f8cec')}</a>
+                    <Bell className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                    <h2 className="mb-2 text-lg font-semibold text-foreground">{t('kr_keab2b0ea_ked86b5eb_keb8ba8ea_')}</h2>
+                    <p className="text-sm text-muted-foreground">{t('kr_keab2b0ea_ked86b5eb_finalized_')}</p>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-primary hover:underline"><ArrowLeft className="h-4 w-4" /> {t('kr_keb8f8cec')}</a>
                 </div>
             </div>
         )
@@ -122,11 +122,11 @@ export default function NotificationsClient({user }: {
     function getStatus(item: NotifyItem): { label: string; cls: string } {
         if (item.acknowledgedAt) {
             return item.isAutoAcknowledged
-                ? { label: t('kr_kec9e90eb'), cls: 'text-[#8181A5]' }
-                : { label: t('kr_confirm'), cls: 'text-[#047857]' }
+                ? { label: t('kr_kec9e90eb'), cls: 'text-muted-foreground' }
+                : { label: t('kr_confirm'), cls: 'text-emerald-700' }
         }
-        if (item.notifiedAt) return { label: t('kr_keb8c80ea'), cls: 'text-[#92400E]' }
-        return { label: t('kr_kebafb8ed'), cls: 'text-[#8181A5]' }
+        if (item.notifiedAt) return { label: t('kr_keb8c80ea'), cls: 'text-amber-800' }
+        return { label: t('kr_kebafb8ed'), cls: 'text-muted-foreground' }
     }
 
     const filtered = items.filter((item) => {
@@ -142,25 +142,25 @@ export default function NotificationsClient({user }: {
     const pending = total - notified
 
     return (
-        <div className="min-h-screen bg-[#F5F5FA] p-6">
+        <div className="min-h-screen bg-muted p-6">
             <div className="mx-auto max-w-5xl">
                 {/* Header */}
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#1C1D21]">{t('kr_keab2b0ea_ked86b5eb_result_not')}</h1>
-                        <p className="mt-1 text-sm text-[#8181A5]">
+                        <h1 className="text-2xl font-bold text-foreground">{t('kr_keab2b0ea_ked86b5eb_result_not')}</h1>
+                        <p className="mt-1 text-sm text-muted-foreground">
                             전체: {total}명 | 통보 완료: {notified} | 미통보: {pending} | 확인 완료: {acknowledged}
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
                         {isHrAdmin && pending > 0 && (
                             <button onClick={handleBulkNotify} disabled={bulkNotifying}
-                                className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
+                                className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40">
                                 <Send className="h-4 w-4" /> {bulkNotifying ? '통보 중...' : '전체 일괄 통보'}
                             </button>
                         )}
                         <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                            className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm">
+                            className="rounded-lg border border-border bg-white px-3 py-2 text-sm">
                             {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
@@ -171,14 +171,14 @@ export default function NotificationsClient({user }: {
                 <div className="mb-4 flex gap-2">
                     {([['all', '전체'], ['pending', '미통보'], ['waiting', '대기 중'], ['done', '확인 완료']] as const).map(([key, label]) => (
                         <button key={key} onClick={() => setFilter(key)}
-                            className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${filter === key ? 'bg-[#5E81F4] text-white' : 'bg-white border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA]'}`}>
+                            className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${filter === key ? 'bg-primary text-white' : 'bg-white border border-border text-muted-foreground hover:bg-muted'}`}>
                             {label}
                         </button>
                     ))}
                 </div>
 
                 {error && (
-                    <div className="mb-4 rounded-lg border border-[#FFEBEE] bg-[#FFEBEE] p-3 text-sm text-[#C62828]">
+                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
                         {error} <button onClick={fetchItems} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
@@ -206,8 +206,8 @@ export default function NotificationsClient({user }: {
                                     return (
                                         <tr key={item.reviewId} className={TABLE_STYLES.row}>
                                             <td className={cn(TABLE_STYLES.cell, "px-4")}>
-                                                <p className="font-medium text-[#1C1D21]">{item.employeeName}</p>
-                                                <p className="text-xs text-[#8181A5]">{item.department}</p>
+                                                <p className="font-medium text-foreground">{item.employeeName}</p>
+                                                <p className="text-xs text-muted-foreground">{item.department}</p>
                                             </td>
                                             <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{getGradeLabel(item.finalGradeEnum)}</td>
                                             <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{item.notifiedAt?.slice(0, 10) ?? '-'}</td>
@@ -218,14 +218,14 @@ export default function NotificationsClient({user }: {
                                             </td>
                                             <td className={cn(TABLE_STYLES.cell, "text-center")}>
                                                 {dDay !== null && !item.acknowledgedAt ? (
-                                                    <span className={`text-xs font-medium ${dDay <= 2 ? 'text-[#EF4444]' : 'text-[#F59E0B]'}`}>D-{Math.max(dDay, 0)}</span>
+                                                    <span className={`text-xs font-medium ${dDay <= 2 ? 'text-red-500' : 'text-amber-500'}`}>D-{Math.max(dDay, 0)}</span>
                                                 ) : '-'}
                                             </td>
                                             <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-xs", status.cls)}>{status.label}</td>
                                             <td className={cn(TABLE_STYLES.cell, "text-center")}>
                                                 {!item.notifiedAt && (
                                                     <button onClick={() => handleNotify(item.reviewId)} disabled={notifying === item.reviewId}
-                                                        className="rounded-lg bg-[#5E81F4] px-3 py-1 text-xs font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
+                                                        className="rounded-lg bg-primary px-3 py-1 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-40">
                                                         {notifying === item.reviewId ? '...' : '통보'}
                                                     </button>
                                                 )}
@@ -236,7 +236,7 @@ export default function NotificationsClient({user }: {
                             </tbody>
                         </table>
                         {/* Footer note */}
-                        <div className="border-t border-[#F0F0F3] px-5 py-3 text-xs text-[#8181A5]">
+                        <div className="border-t border-border px-5 py-3 text-xs text-muted-foreground">
                             {t('kr_ked86b5eb_ked9b84_168kec8b9cea')}
                         </div>
                     </div>

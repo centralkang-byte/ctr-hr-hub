@@ -186,7 +186,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
     if (loading) {
         return (
             <div className="flex h-96 items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-[#5E81F4]" />
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
         )
     }
@@ -211,11 +211,11 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
         <div className="space-y-6 p-6">
             {/* Header */}
             <div className="flex items-center gap-3">
-                <button onClick={() => router.push('/onboarding')} className="rounded-lg p-2 text-[#8181A5] hover:bg-[#F5F5FA]">
+                <button onClick={() => router.push('/onboarding')} className="rounded-lg p-2 text-muted-foreground hover:bg-muted">
                     <ArrowLeft className="h-5 w-5" />
                 </button>
                 <PageHeader title={`${data.employee.name} 온보딩`} description={`${data.employee.department ?? ''} · ${data.employee.position ?? ''}`} />
-                <span className={`ml-auto rounded-full px-3 py-1 text-xs font-semibold ${data.status === 'COMPLETED' ? 'bg-[#DCFCE7] text-[#16A34A]' : data.status === 'IN_PROGRESS' ? 'bg-[#EDF1FE] text-[#5E81F4]' : 'bg-[#F5F5FA] text-[#8181A5]'}`}>
+                <span className={`ml-auto rounded-full px-3 py-1 text-xs font-semibold ${data.status === 'COMPLETED' ? 'bg-green-100 text-green-600' : data.status === 'IN_PROGRESS' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
                     {data.status === 'COMPLETED' ? t('statusCompleted') : data.status === 'IN_PROGRESS' ? t('statusInProgress') : data.status}
                 </span>
             </div>
@@ -225,7 +225,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                 {/* LEFT: Info Panel (30%) */}
                 <div className="w-80 flex-shrink-0 space-y-4">
                     {/* Progress Ring Card */}
-                    <div className="rounded-xl border border-[#F0F0F3] bg-white p-5">
+                    <div className="rounded-xl border border-border bg-white p-5">
                         <div className="mb-4 flex items-center justify-center">
                             <div className="relative h-28 w-28">
                                 <svg className="h-28 w-28 -rotate-90" viewBox="0 0 100 100">
@@ -234,30 +234,30 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                         strokeDasharray={`${data.progress.percentage * 2.64} 264`} />
                                 </svg>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <span className="text-2xl font-bold text-[#1C1D21]">{data.progress.percentage}%</span>
-                                    <span className="text-xs text-[#8181A5]">{data.progress.done}/{data.progress.total}</span>
+                                    <span className="text-2xl font-bold text-foreground">{data.progress.percentage}%</span>
+                                    <span className="text-xs text-muted-foreground">{data.progress.done}/{data.progress.total}</span>
                                 </div>
                             </div>
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-center">
-                            <div className="rounded-lg bg-[#EDF1FE] px-2 py-1.5">
-                                <div className="text-sm font-bold text-[#5E81F4]">{data.progress.inProgress}</div>
-                                <div className="text-[10px] text-[#8181A5]">진행 중</div>
+                            <div className="rounded-lg bg-primary/10 px-2 py-1.5">
+                                <div className="text-sm font-bold text-primary">{data.progress.inProgress}</div>
+                                <div className="text-[10px] text-muted-foreground">진행 중</div>
                             </div>
-                            <div className="rounded-lg bg-[#FEF2F2] px-2 py-1.5">
-                                <div className="text-sm font-bold text-[#EF4444]">{data.progress.blocked}</div>
-                                <div className="text-[10px] text-[#8181A5]">차단</div>
+                            <div className="rounded-lg bg-red-50 px-2 py-1.5">
+                                <div className="text-sm font-bold text-red-500">{data.progress.blocked}</div>
+                                <div className="text-[10px] text-muted-foreground">차단</div>
                             </div>
-                            <div className="rounded-lg bg-[#F5F5FA] px-2 py-1.5">
-                                <div className="text-sm font-bold text-[#8181A5]">{data.progress.pending}</div>
-                                <div className="text-[10px] text-[#8181A5]">대기</div>
+                            <div className="rounded-lg bg-muted px-2 py-1.5">
+                                <div className="text-sm font-bold text-muted-foreground">{data.progress.pending}</div>
+                                <div className="text-[10px] text-muted-foreground">대기</div>
                             </div>
                         </div>
                     </div>
 
                     {/* Employee Info Card */}
-                    <div className="rounded-xl border border-[#F0F0F3] bg-white p-5 space-y-3">
-                        <h3 className="text-sm font-semibold text-[#1C1D21]">직원 정보</h3>
+                    <div className="rounded-xl border border-border bg-white p-5 space-y-3">
+                        <h3 className="text-sm font-semibold text-foreground">직원 정보</h3>
                         <InfoRow label="입사일" value={data.employee.hireDate ? new Date(data.employee.hireDate).toLocaleDateString('ko-KR') : '-'} />
                         <InfoRow label="부서" value={data.employee.department ?? '-'} />
                         <InfoRow label="직위" value={data.employee.position ?? '-'} />
@@ -269,30 +269,30 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
 
                     {/* Sign-off Section */}
                     {data.status !== 'COMPLETED' && (
-                        <div className={`rounded-xl border p-5 ${data.signOffEligibility.eligible ? 'border-[#5E81F4] bg-[#EDF1FE]' : 'border-[#F0F0F3] bg-white'}`}>
-                            <h3 className="mb-2 text-sm font-semibold text-[#1C1D21]">🖊️ Sign-off</h3>
+                        <div className={`rounded-xl border p-5 ${data.signOffEligibility.eligible ? 'border-primary bg-primary/10' : 'border-border bg-white'}`}>
+                            <h3 className="mb-2 text-sm font-semibold text-foreground">🖊️ Sign-off</h3>
                             {data.signOffEligibility.eligible ? (
                                 <>
-                                    <p className="mb-3 text-xs text-[#16A34A]">✅ 모든 필수 태스크 완료</p>
+                                    <p className="mb-3 text-xs text-green-600">✅ 모든 필수 태스크 완료</p>
                                     {canSignOff && (
                                         <button onClick={() => setSignOffDialog(true)} disabled={actionLoading === 'sign-off'}
-                                            className="w-full rounded-lg bg-[#5E81F4] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4A6DE0] disabled:opacity-50">
+                                            className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50">
                                             {actionLoading === 'sign-off' ? tCommon('processing') : t('approveOnboarding')}
                                         </button>
                                     )}
                                 </>
                             ) : (
                                 <>
-                                    <p className="mb-2 text-xs text-[#8181A5]">
+                                    <p className="mb-2 text-xs text-muted-foreground">
                                         {data.signOffEligibility.requiredDone}/{data.signOffEligibility.requiredTotal} 필수 태스크 완료
                                     </p>
                                     {data.signOffEligibility.remainingTasks.length > 0 && (
                                         <ul className="space-y-1">
                                             {data.signOffEligibility.remainingTasks.slice(0, 3).map((t, i) => (
-                                                <li key={i} className="text-xs text-[#EF4444]">• {t}</li>
+                                                <li key={i} className="text-xs text-red-500">• {t}</li>
                                             ))}
                                             {data.signOffEligibility.remainingTasks.length > 3 && (
-                                                <li className="text-xs text-[#8181A5]">... +{data.signOffEligibility.remainingTasks.length - 3}건</li>
+                                                <li className="text-xs text-muted-foreground">... +{data.signOffEligibility.remainingTasks.length - 3}건</li>
                                             )}
                                         </ul>
                                     )}
@@ -302,8 +302,8 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     )}
 
                     {data.status === 'COMPLETED' && data.signOff.signedOffBy && (
-                        <div className="rounded-xl border border-[#DCFCE7] bg-[#F0FDF4] p-5">
-                            <h3 className="mb-2 text-sm font-semibold text-[#16A34A]">✅ 온보딩 완료</h3>
+                        <div className="rounded-xl border border-green-100 bg-green-50 p-5">
+                            <h3 className="mb-2 text-sm font-semibold text-green-600">✅ 온보딩 완료</h3>
                             <InfoRow label="승인자" value={data.signOff.signedOffBy.name} />
                             <InfoRow label="승인일" value={data.signOff.signedOffAt ? new Date(data.signOff.signedOffAt).toLocaleDateString('ko-KR') : '-'} />
                             {data.signOff.note && <InfoRow label="코멘트" value={data.signOff.note} />}
@@ -314,12 +314,12 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                 {/* RIGHT: Tab Content (70%) */}
                 <div className="flex-1 min-w-0">
                     {/* Tab Bar */}
-                    <div className="mb-4 flex gap-1 rounded-xl bg-[#F5F5FA] p-1">
+                    <div className="mb-4 flex gap-1 rounded-xl bg-muted p-1">
                         {(['tasks', 'checkins', 'timeline'] as const).map((tabKey) => {
                             const tabLabel = tabKey === 'tasks' ? t('tabTasks') : tabKey === 'checkins' ? t('tabCheckins') : t('tabTimeline')
                             return (
                                 <button key={tabKey} onClick={() => setTab(tabKey)}
-                                    className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tab === tabKey ? 'bg-white text-[#1C1D21] shadow-sm' : 'text-[#8181A5] hover:text-[#1C1D21]'}`}>
+                                    className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tab === tabKey ? 'bg-white text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
                                     {tabLabel}
                                 </button>
                             )
@@ -335,17 +335,17 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                 const done = tasks.filter((t) => t.status === 'DONE').length
 
                                 return (
-                                    <div key={milestone} className="rounded-xl border border-[#F0F0F3] bg-white">
-                                        <div className="flex items-center justify-between border-b border-[#F0F0F3] px-5 py-3">
-                                            <h3 className="text-sm font-semibold text-[#1C1D21]">{milestoneLabels[milestone]}</h3>
+                                    <div key={milestone} className="rounded-xl border border-border bg-white">
+                                        <div className="flex items-center justify-between border-b border-border px-5 py-3">
+                                            <h3 className="text-sm font-semibold text-foreground">{milestoneLabels[milestone]}</h3>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-xs text-[#8181A5]">{done}/{tasks.length}</span>
-                                                <div className="h-1.5 w-20 overflow-hidden rounded-full bg-[#F0F0F3]">
-                                                    <div className="h-full rounded-full bg-[#5E81F4] transition-all" style={{ width: `${tasks.length > 0 ? (done / tasks.length) * 100 : 0}%` }} />
+                                                <span className="text-xs text-muted-foreground">{done}/{tasks.length}</span>
+                                                <div className="h-1.5 w-20 overflow-hidden rounded-full bg-border">
+                                                    <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${tasks.length > 0 ? (done / tasks.length) * 100 : 0}%` }} />
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="divide-y divide-[#F0F0F3]">
+                                        <div className="divide-y divide-border">
                                             {tasks.map((task) => (
                                                 <TaskRow key={task.id} task={task} user={user} isHrAdmin={isHrAdmin}
                                                     actionLoading={actionLoading} onStatusChange={updateTaskStatus}
@@ -367,8 +367,8 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                             ) : (
                                 <>
                                     {/* Mini Trend */}
-                                    <div className="rounded-xl border border-[#F0F0F3] bg-white p-5">
-                                        <h3 className="mb-3 text-sm font-semibold text-[#1C1D21]">감정 추이</h3>
+                                    <div className="rounded-xl border border-border bg-white p-5">
+                                        <h3 className="mb-3 text-sm font-semibold text-foreground">감정 추이</h3>
                                         <div className="flex items-end justify-around gap-4 h-28">
                                             {data.checkins.map((c, i) => (
                                                 <div key={i} className="flex flex-col items-center gap-1">
@@ -377,28 +377,28 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                                         <MetricBar label="E" value={c.energy} />
                                                         <MetricBar label="B" value={c.belonging} />
                                                     </div>
-                                                    <span className="text-[10px] text-[#8181A5]">{c.milestone ?? `W${c.checkinWeek}`}</span>
+                                                    <span className="text-[10px] text-muted-foreground">{c.milestone ?? `W${c.checkinWeek}`}</span>
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
                                     {/* Checkin Cards */}
                                     {data.checkins.map((c) => (
-                                        <div key={c.id} className="rounded-xl border border-[#F0F0F3] bg-white p-5">
+                                        <div key={c.id} className="rounded-xl border border-border bg-white p-5">
                                             <div className="mb-2 flex items-center justify-between">
-                                                <span className="text-sm font-semibold text-[#1C1D21]">
+                                                <span className="text-sm font-semibold text-foreground">
                                                     {c.milestone ? milestoneLabels[c.milestone] ?? c.milestone : `Week ${c.checkinWeek}`}
                                                 </span>
-                                                <span className="text-xs text-[#8181A5]">{new Date(c.submittedAt).toLocaleDateString('ko-KR')}</span>
+                                                <span className="text-xs text-muted-foreground">{new Date(c.submittedAt).toLocaleDateString('ko-KR')}</span>
                                             </div>
                                             <div className="grid grid-cols-3 gap-3">
                                                 <EmotionCell label="기분" value={c.mood} emoji={moodEmoji(c.mood)} />
                                                 <EmotionCell label="에너지" value={String(c.energy)} emoji={numEmoji(c.energy)} />
                                                 <EmotionCell label="소속감" value={String(c.belonging)} emoji={numEmoji(c.belonging)} />
                                             </div>
-                                            {c.comment && <p className="mt-3 text-sm text-[#8181A5]">{c.comment}</p>}
+                                            {c.comment && <p className="mt-3 text-sm text-muted-foreground">{c.comment}</p>}
                                             {c.aiSummary && (
-                                                <div className="mt-2 rounded-lg bg-[#EDF1FE] p-3 text-xs text-[#5E81F4]">
+                                                <div className="mt-2 rounded-lg bg-primary/10 p-3 text-xs text-primary">
                                                     🤖 AI 요약: {c.aiSummary}
                                                 </div>
                                             )}
@@ -411,19 +411,19 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
 
                     {/* Timeline Tab */}
                     {tab === 'timeline' && (
-                        <div className="rounded-xl border border-[#F0F0F3] bg-white p-5">
-                            <h3 className="mb-4 text-sm font-semibold text-[#1C1D21]">차단 이력</h3>
+                        <div className="rounded-xl border border-border bg-white p-5">
+                            <h3 className="mb-4 text-sm font-semibold text-foreground">차단 이력</h3>
                             {data.blockedHistory.length === 0 ? (
-                                <p className="text-sm text-[#8181A5]">{t('emptyBlockedHistory')}</p>
+                                <p className="text-sm text-muted-foreground">{t('emptyBlockedHistory')}</p>
                             ) : (
                                 <div className="space-y-3">
                                     {data.blockedHistory.map((b, i) => (
-                                        <div key={i} className="flex items-start gap-3 rounded-lg border border-[#FEE2E2] bg-[#FEF2F2] p-3">
-                                            <Lock className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#EF4444]" />
+                                        <div key={i} className="flex items-start gap-3 rounded-lg border border-red-100 bg-red-50 p-3">
+                                            <Lock className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
                                             <div>
-                                                <p className="text-sm font-medium text-[#1C1D21]">{b.taskTitle}</p>
-                                                <p className="text-xs text-[#8181A5]">사유: {b.reason}</p>
-                                                <p className="text-xs text-[#8181A5]">
+                                                <p className="text-sm font-medium text-foreground">{b.taskTitle}</p>
+                                                <p className="text-xs text-muted-foreground">사유: {b.reason}</p>
+                                                <p className="text-xs text-muted-foreground">
                                                     {new Date(b.blockedAt).toLocaleDateString('ko-KR')} ~ {b.unblockedAt ? new Date(b.unblockedAt).toLocaleDateString('ko-KR') : '진행 중'}
                                                     {' '}({b.durationDays}일)
                                                 </p>
@@ -446,11 +446,11 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     </DialogHeader>
                     <Textarea placeholder={tCommon('placeholderBlockReason')} value={blockReason} onChange={(e) => setBlockReason(e.target.value)} rows={3} />
                     <DialogFooter>
-                        <button onClick={() => setBlockDialog(null)} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm text-[#8181A5] hover:bg-[#F5F5FA]">
+                        <button onClick={() => setBlockDialog(null)} className="rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground hover:bg-muted">
                         {tCommon('cancel')}
                         </button>
                         <button onClick={blockTask} disabled={!blockReason.trim() || !!actionLoading}
-                            className="rounded-lg bg-[#EF4444] px-4 py-2 text-sm font-semibold text-white hover:bg-[#DC2626] disabled:opacity-50">
+                            className="rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 disabled:opacity-50">
                             차단하기
                         </button>
                     </DialogFooter>
@@ -465,18 +465,18 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                         <DialogDescription>{data.employee.name}의 온보딩을 완료 처리합니다.</DialogDescription>
                     </DialogHeader>
                     <div className="space-y-3">
-                        <div className="rounded-lg bg-[#EDF1FE] p-3">
-                            <p className="text-sm text-[#5E81F4]">✅ {data.signOffEligibility.requiredDone}/{data.signOffEligibility.requiredTotal} 필수 태스크 완료</p>
-                            <p className="text-xs text-[#8181A5] mt-1">감정 체크인 {data.checkins.length}회 기록됨</p>
+                        <div className="rounded-lg bg-primary/10 p-3">
+                            <p className="text-sm text-primary">✅ {data.signOffEligibility.requiredDone}/{data.signOffEligibility.requiredTotal} 필수 태스크 완료</p>
+                            <p className="text-xs text-muted-foreground mt-1">감정 체크인 {data.checkins.length}회 기록됨</p>
                         </div>
                         <Textarea placeholder={tCommon('enterComment')} value={signOffNote} onChange={(e) => setSignOffNote(e.target.value)} rows={3} />
                     </div>
                     <DialogFooter>
-                        <button onClick={() => setSignOffDialog(false)} className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm text-[#8181A5] hover:bg-[#F5F5FA]">
+                        <button onClick={() => setSignOffDialog(false)} className="rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground hover:bg-muted">
                         {tCommon('cancel')}
                         </button>
                         <button onClick={handleSignOff} disabled={actionLoading === 'sign-off'}
-                            className="rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-semibold text-white hover:bg-[#4A6DE0] disabled:opacity-50">
+                            className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50">
                             {actionLoading === 'sign-off' ? tCommon('processing') : t('approve')}
                         </button>
                     </DialogFooter>
@@ -491,8 +491,8 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
 function InfoRow({ label, value }: { label: string; value: string }) {
     return (
         <div className="flex justify-between text-sm">
-            <span className="text-[#8181A5]">{label}</span>
-            <span className="font-medium text-[#1C1D21]">{value}</span>
+            <span className="text-muted-foreground">{label}</span>
+            <span className="font-medium text-foreground">{value}</span>
         </div>
     )
 }
@@ -510,28 +510,28 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
     const isLoading = actionLoading === task.id
 
     return (
-        <div className={`flex items-start gap-3 px-5 py-3 ${task.status === 'BLOCKED' ? 'border-l-4 border-l-[#EF4444] bg-[#FEF2F2]' : ''}`}>
+        <div className={`flex items-start gap-3 px-5 py-3 ${task.status === 'BLOCKED' ? 'border-l-4 border-l-[#EF4444] bg-red-50' : ''}`}>
             <div className="mt-0.5 flex-shrink-0">
-                {task.status === 'DONE' ? <CheckCircle2 className="h-5 w-5 text-[#22C55E]" /> :
-                    task.status === 'IN_PROGRESS' ? <Play className="h-5 w-5 text-[#5E81F4]" /> :
-                        task.status === 'BLOCKED' ? <Lock className="h-5 w-5 text-[#EF4444]" /> :
-                            task.status === 'SKIPPED' ? <SkipForward className="h-5 w-5 text-[#8181A5]" /> :
-                                <Circle className="h-5 w-5 text-[#D1D5DB]" />}
+                {task.status === 'DONE' ? <CheckCircle2 className="h-5 w-5 text-green-500" /> :
+                    task.status === 'IN_PROGRESS' ? <Play className="h-5 w-5 text-primary" /> :
+                        task.status === 'BLOCKED' ? <Lock className="h-5 w-5 text-red-500" /> :
+                            task.status === 'SKIPPED' ? <SkipForward className="h-5 w-5 text-muted-foreground" /> :
+                                <Circle className="h-5 w-5 text-gray-300" />}
             </div>
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                    <span className={`text-sm font-medium ${task.status === 'DONE' || task.status === 'SKIPPED' ? 'text-[#8181A5] line-through' : 'text-[#1C1D21]'}`}>
+                    <span className={`text-sm font-medium ${task.status === 'DONE' || task.status === 'SKIPPED' ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
                         {task.task.title}
                     </span>
-                    {task.task.isRequired && <span className="rounded bg-[#EDF1FE] px-1.5 py-0.5 text-[10px] font-medium text-[#5E81F4]">필수</span>}
-                    {!task.task.isRequired && <span className="rounded bg-[#F5F5FA] px-1.5 py-0.5 text-[10px] text-[#8181A5]">{tCommon('select')}</span>}
+                    {task.task.isRequired && <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">필수</span>}
+                    {!task.task.isRequired && <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">{tCommon('select')}</span>}
                 </div>
-                {task.task.description && <p className="mt-0.5 text-xs text-[#8181A5]">{task.task.description}</p>}
-                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[#8181A5]">
+                {task.task.description && <p className="mt-0.5 text-xs text-muted-foreground">{task.task.description}</p>}
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     {task.assignee && <span>👤 {task.assignee.name}</span>}
-                    <span className="rounded bg-[#F5F5FA] px-1.5 py-0.5 text-[10px]">{task.task.assigneeType}</span>
+                    <span className="rounded bg-muted px-1.5 py-0.5 text-[10px]">{task.task.assigneeType}</span>
                     {task.dueDate && (
-                        <span className={isOverdue ? 'font-medium text-[#EF4444]' : ''}>
+                        <span className={isOverdue ? 'font-medium text-red-500' : ''}>
                             <Clock className="mr-0.5 inline h-3 w-3" />
                             {new Date(task.dueDate).toLocaleDateString('ko-KR')}
                             {isOverdue && ' (지연)'}
@@ -539,7 +539,7 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
                     )}
                 </div>
                 {task.status === 'BLOCKED' && task.blockedReason && (
-                    <div className="mt-1.5 rounded bg-[#FEE2E2] px-2 py-1 text-xs text-[#DC2626]">
+                    <div className="mt-1.5 rounded bg-red-100 px-2 py-1 text-xs text-red-600">
                         🚫 {task.blockedReason}
                     </div>
                 )}
@@ -549,31 +549,31 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
                 <div className="flex flex-shrink-0 gap-1">
                     {task.status === 'PENDING' && (
                         <button onClick={() => onStatusChange(task.id, 'IN_PROGRESS')} disabled={isLoading}
-                            className="rounded-lg border border-[#5E81F4] px-2 py-1 text-xs text-[#5E81F4] hover:bg-[#EDF1FE] disabled:opacity-50">
+                            className="rounded-lg border border-primary px-2 py-1 text-xs text-primary hover:bg-primary/10 disabled:opacity-50">
                             시작
                         </button>
                     )}
                     {(task.status === 'PENDING' || task.status === 'IN_PROGRESS') && (
                         <button onClick={() => onStatusChange(task.id, 'DONE')} disabled={isLoading}
-                            className="rounded-lg bg-[#22C55E] px-2 py-1 text-xs text-white hover:bg-[#16A34A] disabled:opacity-50">
+                            className="rounded-lg bg-green-500 px-2 py-1 text-xs text-white hover:bg-green-600 disabled:opacity-50">
                             완료
                         </button>
                     )}
                     {(task.status === 'PENDING' || task.status === 'IN_PROGRESS') && (
                         <button onClick={() => onBlock(task.id, task.task.title)} disabled={isLoading}
-                            className="rounded-lg border border-[#EF4444] px-2 py-1 text-xs text-[#EF4444] hover:bg-[#FEF2F2] disabled:opacity-50">
+                            className="rounded-lg border border-red-500 px-2 py-1 text-xs text-red-500 hover:bg-red-50 disabled:opacity-50">
                             차단
                         </button>
                     )}
                     {task.status === 'BLOCKED' && (
                         <button onClick={() => onUnblock(task.id)} disabled={isLoading}
-                            className="rounded-lg border border-[#F59E0B] px-2 py-1 text-xs text-[#F59E0B] hover:bg-[#FFFBEB] disabled:opacity-50">
+                            className="rounded-lg border border-amber-500 px-2 py-1 text-xs text-amber-500 hover:bg-amber-50 disabled:opacity-50">
                             해제
                         </button>
                     )}
                     {task.status === 'PENDING' && !task.task.isRequired && (
                         <button onClick={() => onStatusChange(task.id, 'SKIPPED')} disabled={isLoading}
-                            className="rounded-lg border border-[#8181A5] px-2 py-1 text-xs text-[#8181A5] hover:bg-[#F5F5FA] disabled:opacity-50">
+                            className="rounded-lg border border-muted-foreground px-2 py-1 text-xs text-muted-foreground hover:bg-muted disabled:opacity-50">
                             건너뛰기
                         </button>
                     )}
@@ -585,10 +585,10 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
 
 function EmotionCell({ label, value, emoji }: { label: string; value: string; emoji: string }) {
     return (
-        <div className="rounded-lg bg-[#F5F5FA] p-3 text-center">
+        <div className="rounded-lg bg-muted p-3 text-center">
             <div className="text-2xl">{emoji}</div>
-            <div className="mt-1 text-xs text-[#8181A5]">{label}</div>
-            <div className="text-sm font-semibold text-[#1C1D21]">{value}</div>
+            <div className="mt-1 text-xs text-muted-foreground">{label}</div>
+            <div className="text-sm font-semibold text-foreground">{value}</div>
         </div>
     )
 }
@@ -599,7 +599,7 @@ function MetricBar({ label, value }: { label: string; value: number }) {
     return (
         <div className="flex flex-col items-center">
             <div className="w-3 rounded-t" style={{ height, backgroundColor: color }} />
-            <span className="mt-0.5 text-[9px] text-[#8181A5]">{label}</span>
+            <span className="mt-0.5 text-[9px] text-muted-foreground">{label}</span>
         </div>
     )
 }

@@ -62,10 +62,10 @@ const CATEGORY_ICONS: Record<string, string> = {
 }
 
 const ASSIGNEE_BADGE_STYLES: Record<string, string> = {
-  EMPLOYEE: 'bg-[#DCFCE7] text-[#16A34A]',
-  MANAGER: 'bg-[#E3F2FD] text-[#2196F3]',
-  HR: 'bg-[#FEF2F2] text-[#EF4444]',
-  BUDDY: 'bg-[#F3E5F5] text-[#9C27B0]',
+  EMPLOYEE: 'bg-green-100 text-green-600',
+  MANAGER: 'bg-blue-50 text-blue-500',
+  HR: 'bg-red-50 text-red-500',
+  BUDDY: 'bg-purple-50 text-purple-700',
 }
 
 // ─── Helpers ──────────────────────────────────────────────────
@@ -161,10 +161,10 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
   if (loading) {
     return (
       <div className="space-y-6 p-8">
-        <div className="h-10 w-64 bg-[#F5F5FA] rounded animate-pulse" />
-        <div className="h-24 w-full bg-[#F5F5FA] rounded-xl animate-pulse" />
-        <div className="h-40 w-full bg-[#F5F5FA] rounded-xl animate-pulse" />
-        <div className="h-60 w-full bg-[#F5F5FA] rounded-xl animate-pulse" />
+        <div className="h-10 w-64 bg-muted rounded animate-pulse" />
+        <div className="h-24 w-full bg-muted rounded-xl animate-pulse" />
+        <div className="h-40 w-full bg-muted rounded-xl animate-pulse" />
+        <div className="h-60 w-full bg-muted rounded-xl animate-pulse" />
       </div>
     )
   }
@@ -177,7 +177,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
           title={t('myOnboarding')}
           description={t('myOnboardingNoActive')}
         />
-        <div className="bg-white rounded-xl border border-[#F0F0F3] p-8">
+        <div className="bg-white rounded-xl border border-border p-8">
           <EmptyState
             title={t('noOnboardingData')}
             description={t('noOnboardingAssigned')}
@@ -190,7 +190,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
   return (
     <div className="space-y-6 p-8">
       {/* ─── Welcome Banner ─── */}
-      <div className="rounded-xl bg-[#5E81F4] p-6 text-white">
+      <div className="rounded-xl bg-primary p-6 text-white">
         <h1 className="text-2xl font-bold">
           {t('welcomeMessage', { name: user.name })}
         </h1>
@@ -203,42 +203,42 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
       <div className="grid gap-4 md:grid-cols-2">
         {/* Buddy Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em] mb-4">{t('onboardingBuddy')}</h3>
+          <h3 className="text-base font-bold text-foreground tracking-[-0.02em] mb-4">{t('onboardingBuddy')}</h3>
           {data.buddy ? (
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#DCFCE7] text-[#5E81F4]">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-primary">
                 <User className="h-6 w-6" />
               </div>
               <div>
-                <p className="font-semibold text-[#1C1D21]">{data.buddy.name}</p>
-                <p className="text-sm text-[#8181A5]">
+                <p className="font-semibold text-foreground">{data.buddy.name}</p>
+                <p className="text-sm text-muted-foreground">
                   {data.buddy.jobCategory?.name ?? ''}
                 </p>
               </div>
             </div>
           ) : (
-            <p className="text-sm text-[#8181A5]">{t('noBuddyAssigned')}</p>
+            <p className="text-sm text-muted-foreground">{t('noBuddyAssigned')}</p>
           )}
         </div>
 
         {/* Progress Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em] mb-4">{t('overallProgress')}</h3>
+          <h3 className="text-base font-bold text-foreground tracking-[-0.02em] mb-4">{t('overallProgress')}</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-[#8181A5]">
+              <span className="text-muted-foreground">
                 {t('completedCount', { completed: progress.completed, total: progress.total })}
               </span>
-              <span className="font-semibold text-[#5E81F4]">{progress.pct}%</span>
+              <span className="font-semibold text-primary">{progress.pct}%</span>
             </div>
-            <div className="h-3 w-full rounded-full bg-[#F5F5FA]">
+            <div className="h-3 w-full rounded-full bg-muted">
               <div
                 className="h-3 rounded-full bg-gradient-to-r from-[#5E81F4] to-[#4A6DE0] transition-all duration-500"
                 style={{ width: `${progress.pct}%` }}
               />
             </div>
             {data.status === 'COMPLETED' && (
-              <div className="flex items-center gap-1 text-sm text-[#16A34A]">
+              <div className="flex items-center gap-1 text-sm text-green-600">
                 <CheckCircle2 className="h-4 w-4" />
                 {t('onboardingCompleted')}
               </div>
@@ -255,10 +255,10 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
             <div key={cat} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex items-center gap-2 mb-4">
                 <span>{CATEGORY_ICONS[cat]}</span>
-                <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em]">
+                <h3 className="text-base font-bold text-foreground tracking-[-0.02em]">
                   {CATEGORY_LABELS[cat]}
                 </h3>
-                <span className="ml-auto inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#F5F5FA] text-[#8181A5]">
+                <span className="ml-auto inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-muted text-muted-foreground">
                   {grouped[cat].filter((t) => t.status === 'DONE').length} /{' '}
                   {grouped[cat].length}
                 </span>
@@ -272,8 +272,8 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
                   return (
                     <div
                       key={row.id}
-                      className={`flex items-center gap-3 rounded-lg border border-[#F0F0F3] px-4 py-3 transition-colors ${
-                        isDone ? 'bg-[#FAFAFA] opacity-70' : 'hover:bg-[#FAFAFA]'
+                      className={`flex items-center gap-3 rounded-lg border border-border px-4 py-3 transition-colors ${
+                        isDone ? 'bg-background opacity-70' : 'hover:bg-background'
                       }`}
                     >
                       {/* Checkbox */}
@@ -282,7 +282,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
                         checked={isDone || isSkipped}
                         disabled={isDone || isSkipped || isCompleting}
                         onChange={() => handleComplete(row.id)}
-                        className="h-5 w-5 rounded border-[#F0F0F3] text-[#5E81F4] accent-[#5E81F4] cursor-pointer disabled:cursor-default"
+                        className="h-5 w-5 rounded border-border text-primary accent-[#5E81F4] cursor-pointer disabled:cursor-default"
                       />
 
                       {/* Task info */}
@@ -290,17 +290,17 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
                         <div className="flex flex-wrap items-center gap-2">
                           <span
                             className={`text-sm font-medium ${
-                              isDone ? 'line-through text-[#8181A5]' : 'text-[#1C1D21]'
+                              isDone ? 'line-through text-muted-foreground' : 'text-foreground'
                             }`}
                           >
                             {row.task.title}
                           </span>
                           {!row.task.isRequired && (
-                            <span className="text-xs text-[#8181A5]">{t('optional')}</span>
+                            <span className="text-xs text-muted-foreground">{t('optional')}</span>
                           )}
                         </div>
                         {row.task.description && (
-                          <p className="mt-0.5 text-xs text-[#8181A5] truncate">
+                          <p className="mt-0.5 text-xs text-muted-foreground truncate">
                             {row.task.description}
                           </p>
                         )}
@@ -308,23 +308,23 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
 
                       {/* Assignee badge */}
                       <span
-                        className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold ${ASSIGNEE_BADGE_STYLES[row.task.assigneeType] ?? 'bg-[#F5F5FA] text-[#8181A5]'}`}
+                        className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold ${ASSIGNEE_BADGE_STYLES[row.task.assigneeType] ?? 'bg-muted text-muted-foreground'}`}
                       >
                         {ASSIGNEE_LABELS[row.task.assigneeType] ?? row.task.assigneeType}
                       </span>
 
                       {/* Due date */}
-                      <div className="flex shrink-0 items-center gap-1 text-xs text-[#8181A5]">
+                      <div className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />
                         {addDays(data.startedAt, row.task.dueDaysAfter)}
                       </div>
 
                       {/* Status */}
                       {isDone && (
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-[#16A34A]" />
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-green-600" />
                       )}
                       {isCompleting && (
-                        <span className="text-xs text-[#8181A5] shrink-0">{t('processing')}</span>
+                        <span className="text-xs text-muted-foreground shrink-0">{t('processing')}</span>
                       )}
                     </div>
                   )

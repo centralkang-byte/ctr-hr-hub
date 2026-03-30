@@ -120,9 +120,9 @@ export default function DisciplineDetailClient({ user, id }: Props) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-background p-6 flex items-center justify-center">
         <div className="flex items-center gap-2 text-sm text-[#999]">
-          <div className="w-5 h-5 border-2 border-[#E8E8E8] border-t-[#5E81F4] rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-border border-t-primary rounded-full animate-spin" />
           {tPage('loadingData')}
         </div>
       </div>
@@ -131,7 +131,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] p-6">
+      <div className="min-h-screen bg-background p-6">
         <div className="text-center text-sm text-[#999] py-12">
           {t('notFound')}
         </div>
@@ -140,21 +140,21 @@ export default function DisciplineDetailClient({ user, id }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] p-6">
+    <div className="min-h-screen bg-background p-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => router.push('/discipline')}
-          className="p-2 border border-[#E8E8E8] rounded-lg hover:bg-[#FAFAFA] transition-colors"
+          className="p-2 border border-border rounded-lg hover:bg-background transition-colors"
         >
           <ChevronLeft className="w-4 h-4 text-[#666]" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#FFEBEE] rounded-lg flex items-center justify-center">
-            <Gavel className="w-5 h-5 text-[#F44336]" />
+          <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center">
+            <Gavel className="w-5 h-5 text-red-500" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
+            <h1 className="text-xl font-bold text-foreground tracking-[-0.02em]">
               {t('title')}
             </h1>
             <div className="flex items-center gap-2 mt-0.5">
@@ -174,8 +174,8 @@ export default function DisciplineDetailClient({ user, id }: Props) {
         {/* Left Panel: Detail */}
         <div className="space-y-6">
           {/* Info Card */}
-          <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
+          <div className="bg-white border border-border rounded-xl p-6">
+            <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
               {t('disciplineInfo')}
             </h2>
             <div className="grid grid-cols-2 gap-y-4 gap-x-6">
@@ -192,25 +192,25 @@ export default function DisciplineDetailClient({ user, id }: Props) {
           </div>
 
           {/* Description */}
-          <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h2 className="text-base font-bold text-[#1A1A1A] mb-3 flex items-center gap-2 tracking-[-0.02em]">
+          <div className="bg-white border border-border rounded-xl p-6">
+            <h2 className="text-base font-bold text-foreground mb-3 flex items-center gap-2 tracking-[-0.02em]">
               <FileText className="w-4 h-4 text-[#666]" />
               {t('reason')}
             </h2>
-            <p className="text-sm text-[#1A1A1A] leading-relaxed whitespace-pre-wrap">
+            <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
               {data.description}
             </p>
           </div>
 
           {/* Evidence */}
           {data.evidenceKeys && data.evidenceKeys.length > 0 && (
-            <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#1A1A1A] mb-3 tracking-[-0.02em]">
+            <div className="bg-white border border-border rounded-xl p-6">
+              <h2 className="text-base font-bold text-foreground mb-3 tracking-[-0.02em]">
                 {t('evidence')}
               </h2>
               <div className="space-y-1.5">
                 {data.evidenceKeys.map((key, idx) => (
-                  <div key={idx} className="flex items-center gap-2 text-sm text-[#2196F3]">
+                  <div key={idx} className="flex items-center gap-2 text-sm text-blue-500">
                     <FileText className="w-4 h-4" />
                     <span className="truncate">{key}</span>
                   </div>
@@ -221,8 +221,8 @@ export default function DisciplineDetailClient({ user, id }: Props) {
 
           {/* Committee */}
           {(data.committeeDate || (data.committeeMembers && data.committeeMembers.length > 0)) && (
-            <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
+            <div className="bg-white border border-border rounded-xl p-6">
+              <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
                 {t('committee')}
               </h2>
               <div className="grid grid-cols-2 gap-y-3 gap-x-6">
@@ -235,13 +235,13 @@ export default function DisciplineDetailClient({ user, id }: Props) {
                 {data.committeeMembers && data.committeeMembers.length > 0 && (
                   <div className="col-span-2">
                     <span className="text-xs text-[#999]">{t('committeeMembers')}</span>
-                    <p className="text-sm text-[#1A1A1A]">{data.committeeMembers.join(', ')}</p>
+                    <p className="text-sm text-foreground">{data.committeeMembers.join(', ')}</p>
                   </div>
                 )}
                 {data.decision && (
                   <div className="col-span-2">
                     <span className="text-xs text-[#999]">{t('decisionContent')}</span>
-                    <p className="text-sm text-[#1A1A1A] whitespace-pre-wrap">{data.decision}</p>
+                    <p className="text-sm text-foreground whitespace-pre-wrap">{data.decision}</p>
                   </div>
                 )}
               </div>
@@ -250,8 +250,8 @@ export default function DisciplineDetailClient({ user, id }: Props) {
 
           {/* Conditional: Suspension */}
           {data.suspensionStart && (
-            <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
+            <div className="bg-white border border-border rounded-xl p-6">
+              <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
                 {t('suspensionPeriod')}
               </h2>
               <div className="grid grid-cols-2 gap-y-3 gap-x-6">
@@ -265,8 +265,8 @@ export default function DisciplineDetailClient({ user, id }: Props) {
 
           {/* Conditional: Salary Reduction */}
           {data.salaryReductionRate !== null && data.salaryReductionRate !== undefined && (
-            <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
+            <div className="bg-white border border-border rounded-xl p-6">
+              <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
                 {t('salaryReductionInfo')}
               </h2>
               <div className="grid grid-cols-2 gap-y-3 gap-x-6">
@@ -280,8 +280,8 @@ export default function DisciplineDetailClient({ user, id }: Props) {
 
           {/* Conditional: Demotion */}
           {data.demotionGrade && (
-            <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
+            <div className="bg-white border border-border rounded-xl p-6">
+              <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
                 {t('demotionInfo')}
               </h2>
               <InfoItem label={t('demotionGrade')} value={data.demotionGrade.name} />
@@ -292,32 +292,32 @@ export default function DisciplineDetailClient({ user, id }: Props) {
         {/* Right Panel */}
         <div className="space-y-6">
           {/* Employee Summary */}
-          <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+          <div className="bg-white border border-border rounded-xl p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-[#E3F2FD] rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-[#1565C0]" />
+              <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                <User className="w-5 h-5 text-blue-800" />
               </div>
               <div>
-                <p className="text-sm font-bold text-[#1A1A1A]">{data.employee.name}</p>
+                <p className="text-sm font-bold text-foreground">{data.employee.name}</p>
                 <p className="text-xs text-[#999]">{data.employee.employeeNo}</p>
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#999]">{tCommon('department')}</span>
-                <span className="text-[#1A1A1A]">{data.employee.department?.name ?? '-'}</span>
+                <span className="text-foreground">{data.employee.department?.name ?? '-'}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#999]">{tCommon('grade')}</span>
-                <span className="text-[#1A1A1A]">{data.employee.jobGrade?.name ?? '-'}</span>
+                <span className="text-foreground">{data.employee.jobGrade?.name ?? '-'}</span>
               </div>
             </div>
           </div>
 
           {/* Appeal Section */}
-          <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h3 className="text-base font-bold text-[#1A1A1A] mb-4 flex items-center gap-2 tracking-[-0.02em]">
-              <AlertTriangle className="w-4 h-4 text-[#FF9800]" />
+          <div className="bg-white border border-border rounded-xl p-6">
+            <h3 className="text-base font-bold text-foreground mb-4 flex items-center gap-2 tracking-[-0.02em]">
+              <AlertTriangle className="w-4 h-4 text-orange-500" />
               {t('appealSection')}
             </h3>
 
@@ -328,12 +328,12 @@ export default function DisciplineDetailClient({ user, id }: Props) {
                   onChange={(e) => setAppealText(e.target.value)}
                   rows={4}
                   placeholder={t('appealPlaceholder')}
-                  className="w-full px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 resize-none"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
                 />
                 <button
                   onClick={handleAppeal}
                   disabled={!appealText.trim() || appealSubmitting}
-                  className="w-full px-4 py-2 text-sm font-medium bg-[#FF9800] hover:bg-[#F57C00] text-white rounded-lg transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full px-4 py-2 text-sm font-medium bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {appealSubmitting ? t('appealSubmitting') : t('submitAppeal')}
                 </button>
@@ -353,7 +353,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
                   )}
                 </div>
                 {data.appealText && (
-                  <p className="text-sm text-[#1A1A1A] whitespace-pre-wrap">{data.appealText}</p>
+                  <p className="text-sm text-foreground whitespace-pre-wrap">{data.appealText}</p>
                 )}
               </div>
             )}
@@ -364,7 +364,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
                   {tPage('appealLabels.UNDER_REVIEW')}
                 </span>
                 {data.appealText && (
-                  <p className="text-sm text-[#1A1A1A] whitespace-pre-wrap">{data.appealText}</p>
+                  <p className="text-sm text-foreground whitespace-pre-wrap">{data.appealText}</p>
                 )}
               </div>
             )}
@@ -377,13 +377,13 @@ export default function DisciplineDetailClient({ user, id }: Props) {
                 {data.appealText && (
                   <div className="mt-2">
                     <span className="text-xs text-[#999]">{t('appealContent')}</span>
-                    <p className="text-sm text-[#1A1A1A] whitespace-pre-wrap">{data.appealText}</p>
+                    <p className="text-sm text-foreground whitespace-pre-wrap">{data.appealText}</p>
                   </div>
                 )}
                 {data.appealResult && (
                   <div className="mt-2">
                     <span className="text-xs text-[#999]">{t('appealReviewResult')}</span>
-                    <p className="text-sm text-[#1A1A1A] whitespace-pre-wrap">{data.appealResult}</p>
+                    <p className="text-sm text-foreground whitespace-pre-wrap">{data.appealResult}</p>
                   </div>
                 )}
               </div>
@@ -401,7 +401,7 @@ function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <span className="text-xs text-[#999]">{label}</span>
-      <p className="text-sm text-[#1A1A1A] mt-0.5">{value}</p>
+      <p className="text-sm text-foreground mt-0.5">{value}</p>
     </div>
   )
 }

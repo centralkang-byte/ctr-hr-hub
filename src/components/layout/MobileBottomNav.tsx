@@ -20,7 +20,7 @@ export function MobileBottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 w-full z-50 bg-white border-t border-[#F0F0F3] flex justify-around py-3 md:hidden">
+    <nav className="fixed bottom-0 w-full z-50 bg-white border-t border-border flex justify-around py-3 md:hidden">
       {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
         const isActive = pathname === href || pathname.startsWith(href + '/')
         return (
@@ -31,12 +31,12 @@ export function MobileBottomNav() {
           >
             <Icon
               size={22}
-              className={isActive ? 'text-[#5E81F4]' : 'text-[#8181A5]'}
+              className={isActive ? 'text-primary' : 'text-muted-foreground'}
               strokeWidth={isActive ? 2 : 1.5}
             />
             <span
               className={`text-[10px] font-medium ${
-                isActive ? 'text-[#5E81F4]' : 'text-[#8181A5]'
+                isActive ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
               {label}

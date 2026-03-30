@@ -170,9 +170,9 @@ export default function BoardClient({ user }: Props) {
 
   const getAiScoreBadge = (score: number | null) => {
     if (score === null) return null
-    let style = 'bg-[#FEE2E2] text-[#B91C1C]'
-    if (score >= 80) style = 'bg-[#D1FAE5] text-[#065F46]'
-    else if (score >= 50) style = 'bg-[#FEF3C7] text-[#B45309]'
+    let style = 'bg-red-100 text-red-700'
+    if (score >= 80) style = 'bg-emerald-100 text-emerald-800'
+    else if (score >= 50) style = 'bg-amber-100 text-amber-700'
     return (
       <span className={`inline-block px-1.5 py-0.5 text-[10px] font-semibold rounded ${style}`}>
         AI {score}
@@ -352,8 +352,8 @@ export default function BoardClient({ user }: Props) {
 
   if (loading) {
     return (
-      <div className="min-h-[400px] flex items-center justify-center bg-[#F5F5FA]">
-        <div className="flex items-center gap-2 text-sm text-[#8181A5]">
+      <div className="min-h-[400px] flex items-center justify-center bg-muted">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Loader2 className="w-4 h-4 animate-spin" />
           {tCommon('loading')}
         </div>
@@ -373,25 +373,25 @@ export default function BoardClient({ user }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5FA] p-6">
+    <div className="min-h-screen bg-muted p-6">
       {/* Page Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#EDF1FE] rounded-xl flex items-center justify-center">
-            <LayoutGrid className="w-5 h-5 text-[#5E81F4]" />
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <LayoutGrid className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[#1C1D21]" style={{ letterSpacing: '-0.02em' }}>
+            <h1 className="text-xl font-bold text-foreground" style={{ letterSpacing: '-0.02em' }}>
               {t('kanbanBoard')}
             </h1>
-            <p className="text-sm text-[#8181A5]">
+            <p className="text-sm text-muted-foreground">
               {t('kanbanBoardDesc')}
             </p>
           </div>
         </div>
         <button
           onClick={() => router.push('/recruitment')}
-          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-white border border-[#F0F0F3] text-[#1C1D21] rounded-lg hover:bg-[#F5F5FA] transition-colors duration-150"
+          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-white border border-border text-foreground rounded-lg hover:bg-muted transition-colors duration-150"
         >
           {t('listView')}
           <ChevronRight className="w-4 h-4" />
@@ -399,7 +399,7 @@ export default function BoardClient({ user }: Props) {
       </div>
 
       {/* Column Header Row (sticky) */}
-      <div className="sticky top-0 z-10 bg-[#F5F5FA] pb-2">
+      <div className="sticky top-0 z-10 bg-muted pb-2">
         <div className="flex gap-3 overflow-x-auto">
           {/* Lane label spacer */}
           <div className="shrink-0 w-56" />
@@ -412,7 +412,7 @@ export default function BoardClient({ user }: Props) {
                 className="w-2 h-2 rounded-full shrink-0"
                 style={{ backgroundColor: STAGE_ACCENT[stage] }}
               />
-              <span className="text-xs font-bold text-[#8181A5] uppercase tracking-wider whitespace-nowrap">
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                 {STAGE_LABELS[stage]}
               </span>
             </div>
@@ -428,39 +428,39 @@ export default function BoardClient({ user }: Props) {
           return (
             <div
               key={posting.id}
-              className="rounded-xl border border-[#F0F0F3] bg-white overflow-hidden"
+              className="rounded-xl border border-border bg-white overflow-hidden"
             >
               {/* Swimlane Header */}
               <div
                 className={`flex items-center gap-3 px-4 py-3 ${
-                  idx > 0 ? 'border-t border-[#F0F0F3]' : ''
+                  idx > 0 ? 'border-t border-border' : ''
                 } bg-white`}
               >
                 <button
                   onClick={() => router.push(`/recruitment/${posting.id}/pipeline`)}
                   className="flex items-center gap-2 hover:underline"
                 >
-                  <span className="text-sm font-bold text-[#1C1D21]" style={{ letterSpacing: '-0.01em' }}>
+                  <span className="text-sm font-bold text-foreground" style={{ letterSpacing: '-0.01em' }}>
                     {posting.title}
                   </span>
                 </button>
                 {posting.department && (
-                  <span className="text-xs text-[#8181A5] bg-[#F5F5FA] px-2 py-0.5 rounded-full">
+                  <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
                     {posting.department.name}
                   </span>
                 )}
                 <div className="flex items-center gap-1 ml-auto">
-                  <Users className="w-3.5 h-3.5 text-[#8181A5]" />
-                  <span className="text-xs text-[#8181A5]">{totalCount}{tCommon('unit.person')}</span>
-                  <span className="text-xs text-[#C5C5D0] mx-1">·</span>
-                  <span className="text-xs text-[#8181A5]">
+                  <Users className="w-3.5 h-3.5 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">{totalCount}{tCommon('unit.person')}</span>
+                  <span className="text-xs text-muted-foreground/70 mx-1">·</span>
+                  <span className="text-xs text-muted-foreground">
                     {t('recruit')} {posting.headcount}{tCommon('unit.person')}
                   </span>
                 </div>
               </div>
 
               {/* Kanban Columns within this swimlane */}
-              <div className="flex gap-3 p-3 overflow-x-auto bg-[#F5F5FA]">
+              <div className="flex gap-3 p-3 overflow-x-auto bg-muted">
                 {STAGES.map((stage) => {
                   const cards = getApplicationsByStage(posting.applications, stage)
                   const overKey = `${posting.id}:${stage}`
@@ -477,8 +477,8 @@ export default function BoardClient({ user }: Props) {
                       onDrop={(e) => handleDrop(e, posting.id, stage as StageType)}
                       className={`flex-1 min-w-[160px] flex flex-col rounded-lg border transition-all duration-150 ${
                         isOver && canReceive
-                          ? 'border-[#5E81F4] ring-2 ring-[#5E81F4]/20 bg-[#EDF1FE]'
-                          : 'border-[#F0F0F3] bg-white'
+                          ? 'border-primary ring-2 ring-primary/20 bg-primary/10'
+                          : 'border-border bg-white'
                       }`}
                       style={{ minHeight: 80 }}
                     >
@@ -491,7 +491,7 @@ export default function BoardClient({ user }: Props) {
                           {STAGE_LABELS[stage]}
                         </span>
                         {cards.length > 0 && (
-                          <span className="text-[10px] font-bold text-[#8181A5] bg-[#F5F5FA] px-1.5 py-0.5 rounded-full">
+                          <span className="text-[10px] font-bold text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
                             {cards.length}
                           </span>
                         )}
@@ -507,24 +507,24 @@ export default function BoardClient({ user }: Props) {
                               handleDragStart(e, app.id, posting.id)
                             }
                             onDragEnd={handleDragEnd}
-                            className={`group bg-white border border-[#F0F0F3] rounded-xl p-2.5 cursor-grab active:cursor-grabbing transition-all duration-150 hover:border-[#C5C5D0] hover:shadow-sm ${
+                            className={`group bg-white border border-border rounded-xl p-2.5 cursor-grab active:cursor-grabbing transition-all duration-150 hover:border-border hover:shadow-sm ${
                               draggingApplicationId === app.id
                                 ? 'opacity-40 scale-95'
                                 : 'opacity-100'
                             }`}
                           >
                             <div className="flex items-start gap-1.5">
-                              <GripVertical className="w-3 h-3 text-[#C5C5D0] mt-0.5 shrink-0 group-hover:text-[#8181A5] transition-colors" />
+                              <GripVertical className="w-3 h-3 text-muted-foreground/70 mt-0.5 shrink-0 group-hover:text-muted-foreground transition-colors" />
                               <div className="min-w-0 flex-1">
-                                <p className="text-xs font-semibold text-[#1C1D21] truncate">
+                                <p className="text-xs font-semibold text-foreground truncate">
                                   {app.applicant.name}
                                 </p>
-                                <p className="text-[10px] text-[#8181A5] truncate">
+                                <p className="text-[10px] text-muted-foreground truncate">
                                   {app.applicant.email}
                                 </p>
                                 <div className="flex items-center gap-1 mt-1">
                                   {getAiScoreBadge(app.aiScreeningScore)}
-                                  <span className="text-[9px] text-[#C5C5D0]">
+                                  <span className="text-[9px] text-muted-foreground/70">
                                     {format(new Date(app.appliedAt), 'MM/dd')}
                                   </span>
                                 </div>
@@ -535,8 +535,8 @@ export default function BoardClient({ user }: Props) {
 
                         {/* Empty slot placeholder */}
                         {cards.length === 0 && (
-                          <div className="h-10 rounded-xl border border-dashed border-[#E8E8EF] flex items-center justify-center">
-                          <span className="text-[10px] text-[#C5C5D0]">{tCommon('empty')}</span>
+                          <div className="h-10 rounded-xl border border-dashed border-border flex items-center justify-center">
+                          <span className="text-[10px] text-muted-foreground/70">{tCommon('empty')}</span>
                           </div>
                         )}
                       </div>
@@ -563,9 +563,9 @@ export default function BoardClient({ user }: Props) {
               })
             }
           />
-          <div className="relative bg-white border border-[#F0F0F3] rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
+          <div className="relative bg-white border border-border rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-bold text-[#1C1D21]" style={{ letterSpacing: '-0.02em' }}>
+              <h2 className="text-base font-bold text-foreground" style={{ letterSpacing: '-0.02em' }}>
                 {t('offerModal')}
               </h2>
               <button
@@ -577,14 +577,14 @@ export default function BoardClient({ user }: Props) {
                     form: { offeredSalary: '', offeredDate: '', expectedStartDate: '' },
                   })
                 }
-                className="p-1 rounded-lg hover:bg-[#F5F5FA] transition-colors"
+                className="p-1 rounded-lg hover:bg-muted transition-colors"
               >
-                <X className="w-4 h-4 text-[#8181A5]" />
+                <X className="w-4 h-4 text-muted-foreground" />
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#1C1D21] mb-1">
+                <label className="block text-xs font-semibold text-foreground mb-1">
                   {t('offeredSalary')}
                 </label>
                 <input
@@ -597,11 +597,11 @@ export default function BoardClient({ user }: Props) {
                     }))
                   }
                   placeholder="예: 60000000"
-                  className="w-full px-3 py-2 text-sm border border-[#F0F0F3] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#8181A5] transition-colors"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground transition-colors"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#1C1D21] mb-1">
+                <label className="block text-xs font-semibold text-foreground mb-1">
                   {t('offeredDate')}
                 </label>
                 <input
@@ -613,11 +613,11 @@ export default function BoardClient({ user }: Props) {
                       form: { ...prev.form, offeredDate: e.target.value },
                     }))
                   }
-                  className="w-full px-3 py-2 text-sm border border-[#F0F0F3] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#1C1D21] mb-1">
+                <label className="block text-xs font-semibold text-foreground mb-1">
                   {t('expectedStartDate')}
                 </label>
                 <input
@@ -629,7 +629,7 @@ export default function BoardClient({ user }: Props) {
                       form: { ...prev.form, expectedStartDate: e.target.value },
                     }))
                   }
-                  className="w-full px-3 py-2 text-sm border border-[#F0F0F3] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
                 />
               </div>
             </div>
@@ -643,7 +643,7 @@ export default function BoardClient({ user }: Props) {
                     form: { offeredSalary: '', offeredDate: '', expectedStartDate: '' },
                   })
                 }
-                className="px-4 py-2 text-sm font-medium text-[#1C1D21] border border-[#F0F0F3] rounded-lg hover:bg-[#F5F5FA] transition-colors"
+                className="px-4 py-2 text-sm font-medium text-foreground border border-border rounded-lg hover:bg-muted transition-colors"
               >
                 {tCommon('cancel')}
               </button>
@@ -655,7 +655,7 @@ export default function BoardClient({ user }: Props) {
                   !offerModal.form.expectedStartDate ||
                   modalSubmitting
                 }
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#5E81F4] hover:bg-[#4B6FE0] text-white rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors disabled:opacity-50"
               >
                 {modalSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 {modalSubmitting ? tCommon('loading') : t('confirmOffer')}
@@ -674,18 +674,18 @@ export default function BoardClient({ user }: Props) {
               setRejectionModal({ open: false, applicationId: '', postingId: '', reason: '' })
             }
           />
-          <div className="relative bg-white border border-[#F0F0F3] rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
+          <div className="relative bg-white border border-border rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-bold text-[#1C1D21]" style={{ letterSpacing: '-0.02em' }}>
+              <h2 className="text-base font-bold text-foreground" style={{ letterSpacing: '-0.02em' }}>
                 {t('rejectionModal')}
               </h2>
               <button
                 onClick={() =>
                   setRejectionModal({ open: false, applicationId: '', postingId: '', reason: '' })
                 }
-                className="p-1 rounded-lg hover:bg-[#F5F5FA] transition-colors"
+                className="p-1 rounded-lg hover:bg-muted transition-colors"
               >
-                <X className="w-4 h-4 text-[#8181A5]" />
+                <X className="w-4 h-4 text-muted-foreground" />
               </button>
             </div>
             <textarea
@@ -695,14 +695,14 @@ export default function BoardClient({ user }: Props) {
               }
               placeholder="불합격 사유를 입력해주세요."
               rows={4}
-              className="w-full px-3 py-2 text-sm border border-[#F0F0F3] rounded-lg resize-none focus:outline-none focus:border-[#FF808B] transition-colors placeholder:text-[#8181A5]"
+              className="w-full px-3 py-2 text-sm border border-border rounded-lg resize-none focus:outline-none focus:border-red-400 transition-colors placeholder:text-muted-foreground"
             />
             <div className="flex items-center justify-end gap-2 mt-4">
               <button
                 onClick={() =>
                   setRejectionModal({ open: false, applicationId: '', postingId: '', reason: '' })
                 }
-                className="px-4 py-2 text-sm font-medium text-[#1C1D21] border border-[#F0F0F3] rounded-lg hover:bg-[#F5F5FA] transition-colors"
+                className="px-4 py-2 text-sm font-medium text-foreground border border-border rounded-lg hover:bg-muted transition-colors"
               >
                 {tCommon('cancel')}
               </button>
@@ -720,7 +720,7 @@ export default function BoardClient({ user }: Props) {
                   setRejectionModal({ open: false, applicationId: '', postingId: '', reason: '' })
                 }}
                 disabled={!rejectionModal.reason.trim() || modalSubmitting}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#FF808B] hover:bg-[#E11D48] text-white rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-red-400 hover:bg-rose-600 text-white rounded-lg transition-colors disabled:opacity-50"
               >
                 {modalSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 {modalSubmitting ? tCommon('loading') : t('confirmRejection')}

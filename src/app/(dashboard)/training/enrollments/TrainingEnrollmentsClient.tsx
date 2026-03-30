@@ -99,7 +99,7 @@ export default function TrainingEnrollmentsClient({ user }: { user: SessionUser 
         <div className="flex items-center gap-2">
           <span>{row.course.title}</span>
           {row.course.isMandatory && (
-            <Badge className="bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA] text-[10px]">{t('mandatoryBadge')}</Badge>
+            <Badge className="bg-red-100 text-red-700 border-red-200 text-[10px]">{t('mandatoryBadge')}</Badge>
           )}
         </div>
       ),
@@ -146,7 +146,7 @@ export default function TrainingEnrollmentsClient({ user }: { user: SessionUser 
             <Button
               variant="ghost"
               size="sm"
-              className="text-[#059669]"
+              className="text-emerald-600"
               onClick={() => handleStatusChange(row, 'ENROLLMENT_COMPLETED')}
             >
               {t('completed')}
@@ -154,7 +154,7 @@ export default function TrainingEnrollmentsClient({ user }: { user: SessionUser 
             <Button
               variant="ghost"
               size="sm"
-              className="text-[#EF4444]"
+              className="text-red-500"
               onClick={() => handleStatusChange(row, 'DROPPED')}
             >
               {t('dropped')}
@@ -170,11 +170,11 @@ export default function TrainingEnrollmentsClient({ user }: { user: SessionUser 
       <div className="flex items-center justify-between">
         <div>
           <nav className="text-xs text-[#999] mb-1">{t('enrollmentBreadcrumb')}</nav>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('enrollmentList')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('enrollmentList')}</h1>
         </div>
         <div className="flex items-center gap-3">
           <select
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
+            className="px-3 py-2 border border-border rounded-lg text-sm"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >

@@ -41,16 +41,16 @@ export function LeavePromotionTab({
   return (
     <div className="space-y-6">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_kec97b0ec')}</h3>
-        <p className="text-sm text-[#8181A5]">
+        <h3 className="text-base font-semibold text-foreground">{t('kr_kec97b0ec')}</h3>
+        <p className="text-sm text-muted-foreground">
           {t('kr_kebafb8ec_kec97b0ec_kec868cec_')}
         </p>
       </div>
 
       {/* Info banner */}
-      <div className="flex items-start gap-3 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4">
-        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
-        <p className="text-xs text-[#8181A5]">
+      <div className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+        <p className="text-xs text-muted-foreground">
           {t('kr_kec97b0ec_keab79cec_ked9884ec_')}
         </p>
       </div>
@@ -71,7 +71,7 @@ export function LeavePromotionTab({
             onChange={(e) => setSettings((p) => ({ ...p, promotionStartMonth: Number(e.target.value) }))}
             className="w-16"
           />
-          <span className="text-sm text-[#8181A5]">{t('month')}</span>
+          <span className="text-sm text-muted-foreground">{t('month')}</span>
           <Input
             type="number"
             min={1}
@@ -80,7 +80,7 @@ export function LeavePromotionTab({
             onChange={(e) => setSettings((p) => ({ ...p, promotionStartDay: Number(e.target.value) }))}
             className="w-16"
           />
-          <span className="text-sm text-[#8181A5]">{t('kr_kec9dbc_kebb680ed')}</span>
+          <span className="text-sm text-muted-foreground">{t('kr_kec9dbc_kebb680ed')}</span>
         </div>
       </SettingFieldWithOverride>
 
@@ -100,7 +100,7 @@ export function LeavePromotionTab({
             onChange={(e) => setSettings((p) => ({ ...p, notifyIntervalDays: Number(e.target.value) }))}
             className="w-20"
           />
-          <span className="text-sm text-[#8181A5]">{t('kr_kec9dbceb_kebb09cec')}</span>
+          <span className="text-sm text-muted-foreground">{t('kr_kec9dbceb_kebb09cec')}</span>
         </div>
       </SettingFieldWithOverride>
 
@@ -120,7 +120,7 @@ export function LeavePromotionTab({
             onChange={(e) => setSettings((p) => ({ ...p, maxNotifications: Number(e.target.value) }))}
             className="w-20"
           />
-          <span className="text-sm text-[#8181A5]">{t('kr_ked9a8c')}</span>
+          <span className="text-sm text-muted-foreground">{t('kr_ked9a8c')}</span>
         </div>
       </SettingFieldWithOverride>
 
@@ -137,27 +137,27 @@ export function LeavePromotionTab({
               type="checkbox"
               checked={true}
               disabled
-              className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
+              className="h-4 w-4 rounded border-border text-primary"
             />
-            <span className="text-[#1C1D21]">{t('kr_kebb3b8ec_required')}</span>
+            <span className="text-foreground">{t('kr_kebb3b8ec_required')}</span>
           </label>
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={settings.includeManager}
               onChange={(e) => setSettings((p) => ({ ...p, includeManager: e.target.checked }))}
-              className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
+              className="h-4 w-4 rounded border-border text-primary"
             />
-            <span className="text-[#1C1D21]">{t('kr_keca781ec_kec8381ec')}</span>
+            <span className="text-foreground">{t('kr_keca781ec_kec8381ec')}</span>
           </label>
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={settings.includeHR}
               onChange={(e) => setSettings((p) => ({ ...p, includeHR: e.target.checked }))}
-              className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
+              className="h-4 w-4 rounded border-border text-primary"
             />
-            <span className="text-[#1C1D21]">{t('kr_hr_keb8bb4eb')}</span>
+            <span className="text-foreground">{t('kr_hr_keb8bb4eb')}</span>
           </label>
         </div>
       </SettingFieldWithOverride>
@@ -176,10 +176,10 @@ export function LeavePromotionTab({
               name="expiryPolicy"
               checked={settings.expiryPolicy === 'year_end'}
               onChange={() => setSettings((p) => ({ ...p, expiryPolicy: 'year_end' }))}
-              className="h-4 w-4 text-[#5E81F4]"
+              className="h-4 w-4 text-primary"
             />
-            <span className="text-[#1C1D21]">{t('kr_kec97b0eb_kec868ceb')}</span>
-            <span className="text-xs text-[#8181A5]">{t('kr_12_31kec9790_kec9e94ec_kec97b0')}</span>
+            <span className="text-foreground">{t('kr_kec97b0eb_kec868ceb')}</span>
+            <span className="text-xs text-muted-foreground">{t('kr_12_31kec9790_kec9e94ec_kec97b0')}</span>
           </label>
           <label className="flex items-center gap-2 text-sm">
             <input
@@ -187,10 +187,10 @@ export function LeavePromotionTab({
               name="expiryPolicy"
               checked={settings.expiryPolicy === 'carry_then_expire'}
               onChange={() => setSettings((p) => ({ ...p, expiryPolicy: 'carry_then_expire' }))}
-              className="h-4 w-4 text-[#5E81F4]"
+              className="h-4 w-4 text-primary"
             />
-            <span className="text-[#1C1D21]">{t('kr_kec9db4ec_ked9b84_kec868ceb')}</span>
-            <span className="text-xs text-[#8181A5]">{t('kr_kec9db4ec_keab79cec_keb94b0eb_')}</span>
+            <span className="text-foreground">{t('kr_kec9db4ec_ked9b84_kec868ceb')}</span>
+            <span className="text-xs text-muted-foreground">{t('kr_kec9db4ec_keab79cec_keb94b0eb_')}</span>
           </label>
         </div>
       </SettingFieldWithOverride>
@@ -203,7 +203,7 @@ export function LeavePromotionTab({
         companySelected={!!companyId}
       >
         <div className="flex items-center gap-2">
-          <span className="text-sm text-[#8181A5]">{t('kr_kec868ceb')}</span>
+          <span className="text-sm text-muted-foreground">{t('kr_kec868ceb')}</span>
           <Input
             type="number"
             min={1}
@@ -212,7 +212,7 @@ export function LeavePromotionTab({
             onChange={(e) => setSettings((p) => ({ ...p, expiryWarningDays: Number(e.target.value) }))}
             className="w-20"
           />
-          <span className="text-sm text-[#8181A5]">{t('kr_kec9dbc_keca084_keab2bdea')}</span>
+          <span className="text-sm text-muted-foreground">{t('kr_kec9dbc_keca084_keab2bdea')}</span>
         </div>
       </SettingFieldWithOverride>
 

@@ -208,22 +208,22 @@ export default function ApplicantFormClient({
         onCancel={() => { setDuplicates([]); setPendingSubmit(false) }}
       />
     )}
-    <div className="min-h-screen bg-[#FAFAFA] p-6">
+    <div className="min-h-screen bg-background p-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => router.push(`/recruitment/${postingId}/applicants`)}
-          className="p-2 rounded-lg border border-[#E8E8E8] hover:bg-white transition-colors duration-150"
+          className="p-2 rounded-lg border border-border hover:bg-white transition-colors duration-150"
         >
           <ChevronLeft className="w-4 h-4 text-[#666]" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#EDF1FE] rounded-lg flex items-center justify-center">
-            <UserPlus className="w-5 h-5 text-[#5E81F4]" />
+          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+            <UserPlus className="w-5 h-5 text-primary" />
           </div>
           <div>
             <h1
-              className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]"
+              className="text-xl font-bold text-foreground tracking-[-0.02em]"
             >
               {t('applicantFormTitle')}
             </h1>
@@ -236,18 +236,18 @@ export default function ApplicantFormClient({
 
       {/* Form Card */}
       <form onSubmit={handleSubmit}>
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6 max-w-2xl">
+        <div className="bg-white border border-border rounded-xl p-6 max-w-2xl">
           {error && (
-            <div className="mb-6 px-4 py-3 bg-[#FFEBEE] border border-[#FFCDD2] rounded-lg">
-              <p className="text-sm text-[#C62828]">{error}</p>
+            <div className="mb-6 px-4 py-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-800">{error}</p>
             </div>
           )}
 
           <div className="space-y-5">
             {/* 이름 */}
             <div>
-              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
-                {t('nameLabel')} <span className="text-[#F44336]">*</span>
+              <label className="block text-sm font-medium text-foreground mb-1">
+                {t('nameLabel')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -255,14 +255,14 @@ export default function ApplicantFormClient({
                 value={form.name}
                 onChange={handleChange}
                 placeholder={t('namePlaceholder')}
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
               />
             </div>
 
             {/* 이메일 */}
             <div>
-              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
-                {t('emailLabel')} <span className="text-[#F44336]">*</span>
+              <label className="block text-sm font-medium text-foreground mb-1">
+                {t('emailLabel')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"
@@ -271,10 +271,10 @@ export default function ApplicantFormClient({
                 onChange={handleChange}
                 onBlur={handleEmailBlur}
                 placeholder="example@email.com"
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
               />
               {emailWarning && (
-                <p className="flex items-center gap-1.5 text-[#B45309] bg-[#F4BE5E]/10 px-2 py-1.5 rounded-md mt-1.5 text-sm font-medium">
+                <p className="flex items-center gap-1.5 text-amber-700 bg-amber-400/10 px-2 py-1.5 rounded-md mt-1.5 text-sm font-medium">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
                   {emailWarning}
                 </p>
@@ -283,7 +283,7 @@ export default function ApplicantFormClient({
 
             {/* 전화번호 */}
             <div>
-              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 {t('phoneLabel')}
               </label>
               <input
@@ -293,10 +293,10 @@ export default function ApplicantFormClient({
                 onChange={handleChange}
                 onBlur={handlePhoneBlur}
                 placeholder="010-0000-0000"
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
               />
               {phoneWarning && (
-                <p className="flex items-center gap-1.5 text-[#B45309] bg-[#F4BE5E]/10 px-2 py-1.5 rounded-md mt-1.5 text-sm font-medium">
+                <p className="flex items-center gap-1.5 text-amber-700 bg-amber-400/10 px-2 py-1.5 rounded-md mt-1.5 text-sm font-medium">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
                   {phoneWarning}
                 </p>
@@ -305,14 +305,14 @@ export default function ApplicantFormClient({
 
             {/* 지원경로 */}
             <div>
-              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
-                {t('sourceLabel')} <span className="text-[#F44336]">*</span>
+              <label className="block text-sm font-medium text-foreground mb-1">
+                {t('sourceLabel')} <span className="text-red-500">*</span>
               </label>
               <select
                 name="source"
                 value={form.source}
                 onChange={handleChange}
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
               >
                 {SOURCE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -324,7 +324,7 @@ export default function ApplicantFormClient({
 
             {/* 포트폴리오 URL */}
             <div>
-              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 {t('portfolioUrlLabel')}
               </label>
               <input
@@ -333,13 +333,13 @@ export default function ApplicantFormClient({
                 value={form.portfolioUrl}
                 onChange={handleChange}
                 placeholder="https://..."
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
               />
             </div>
 
             {/* 이력서 키 (placeholder) */}
             <div>
-              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 {t('resumeKeyLabel')}
               </label>
               <input
@@ -348,7 +348,7 @@ export default function ApplicantFormClient({
                 value={form.resumeKey}
                 onChange={handleChange}
                 placeholder={t('resumeKeyPlaceholder')}
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-[#FAFAFA] focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-border rounded-lg bg-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
               />
               <p className="text-xs text-[#999] mt-1">
                 {t('resumeKeyDescription')}
@@ -357,7 +357,7 @@ export default function ApplicantFormClient({
 
             {/* 메모 */}
             <div>
-              <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 {t('memoLabel')}
               </label>
               <textarea
@@ -366,17 +366,17 @@ export default function ApplicantFormClient({
                 onChange={handleChange}
                 placeholder={t('memoPlaceholder')}
                 rows={3}
-                className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg resize-none focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                className="w-full px-4 py-2 text-sm border border-border rounded-lg resize-none focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
               />
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-3 mt-8 pt-6 border-t border-[#E8E8E8]">
+          <div className="flex items-center gap-3 mt-8 pt-6 border-t border-border">
             <button
               type="button"
               onClick={() => router.push(`/recruitment/${postingId}/applicants`)}
-              className="px-4 py-2 text-sm font-medium text-[#666] border border-[#E8E8E8] rounded-lg hover:bg-[#FAFAFA] transition-colors duration-150"
+              className="px-4 py-2 text-sm font-medium text-[#666] border border-border rounded-lg hover:bg-background transition-colors duration-150"
             >
               {t('cancelButton')}
             </button>
@@ -393,7 +393,7 @@ export default function ApplicantFormClient({
               {t('registerSubmit')}
             </button>
             {savedAt && (
-              <span className="text-xs text-[#8181A5]">
+              <span className="text-xs text-muted-foreground">
                 초안 자동 저장됨{' '}
                 {savedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
               </span>

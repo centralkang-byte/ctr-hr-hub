@@ -2,16 +2,16 @@
 
 // TODO: i18n — 상태 레이블을 i18n 키로 이동 시 여기서 t() 호출
 const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; border: string }> = {
-  DRAFT: { label: '초안', bg: 'bg-[#FAFAFA]', text: 'text-[#555]', border: 'border-[#E8E8E8]' },
-  ATTENDANCE_CLOSED: { label: '근태 마감', bg: 'bg-[#EDF1FE]', text: 'text-[#047857]', border: 'border-[#A7F3D0]' },
-  CALCULATING: { label: '계산 중', bg: 'bg-[#FEF3C7]', text: 'text-[#B45309]', border: 'border-[#FCD34D]' },
-  ADJUSTMENT: { label: '수동 조정', bg: 'bg-[#DBEAFE]', text: 'text-[#1D4ED8]', border: 'border-[#BFDBFE]' },
-  REVIEW: { label: '이상 검토', bg: 'bg-[#EDE9FE]', text: 'text-[#7C3AED]', border: 'border-[#DDD6FE]' },
-  PENDING_APPROVAL: { label: '결재 대기', bg: 'bg-[#FEF3C7]', text: 'text-[#B45309]', border: 'border-[#FCD34D]' },
-  APPROVED: { label: '승인 완료', bg: 'bg-[#D1FAE5]', text: 'text-[#047857]', border: 'border-[#A7F3D0]' },
-  PAID: { label: '지급 완료', bg: 'bg-[#E0E7FF]', text: 'text-[#4B6DE0]', border: 'border-[#C7D2FE]' },
-  PUBLISHED: { label: '확정', bg: 'bg-[#E0E7FF]', text: 'text-[#4B6DE0]', border: 'border-[#C7D2FE]' },
-  CANCELLED: { label: '취소', bg: 'bg-[#FEE2E2]', text: 'text-[#B91C1C]', border: 'border-[#FECACA]' },
+  DRAFT: { label: '초안', bg: 'bg-background', text: 'text-[#555]', border: 'border-border' },
+  ATTENDANCE_CLOSED: { label: '근태 마감', bg: 'bg-primary/10', text: 'text-emerald-700', border: 'border-emerald-200' },
+  CALCULATING: { label: '계산 중', bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300' },
+  ADJUSTMENT: { label: '수동 조정', bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200' },
+  REVIEW: { label: '이상 검토', bg: 'bg-violet-100', text: 'text-violet-600', border: 'border-violet-200' },
+  PENDING_APPROVAL: { label: '결재 대기', bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300' },
+  APPROVED: { label: '승인 완료', bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200' },
+  PAID: { label: '지급 완료', bg: 'bg-indigo-100', text: 'text-primary/90', border: 'border-indigo-200' },
+  PUBLISHED: { label: '확정', bg: 'bg-indigo-100', text: 'text-primary/90', border: 'border-indigo-200' },
+  CANCELLED: { label: '취소', bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-200' },
 }
 
 interface PayrollStatusBadgeProps {

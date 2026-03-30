@@ -97,8 +97,8 @@ export function EmployeeTitlesTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">호칭 관리</h3>
-          <p className="text-sm text-[#8181A5]">{titles.length}개 호칭 등록 · 직급과 독립적으로 관리</p>
+          <h3 className="text-base font-semibold text-foreground">호칭 관리</h3>
+          <p className="text-sm text-muted-foreground">{titles.length}개 호칭 등록 · 직급과 독립적으로 관리</p>
         </div>
         <Button size="sm" onClick={() => setShowAdd(true)}>
           <Plus className="mr-1 h-4 w-4" /> 추가
@@ -106,7 +106,7 @@ export function EmployeeTitlesTab({ companyId }: Props) {
       </div>
 
       {showAdd && (
-        <div className="rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4 space-y-3">
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
           <p className="text-sm font-medium">새 호칭 추가</p>
           <div className="grid grid-cols-4 gap-2">
             <Input placeholder="코드 (예: CEO)" value={addForm.code} onChange={e => setAddForm(p => ({ ...p, code: e.target.value }))} />
@@ -137,18 +137,18 @@ export function EmployeeTitlesTab({ companyId }: Props) {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={5} className="py-8 text-center text-sm text-[#8181A5]">로딩 중...</td></tr>
+              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">로딩 중...</td></tr>
             ) : titles.length === 0 ? (
-              <tr><td colSpan={5} className="py-8 text-center text-sm text-[#8181A5]">등록된 호칭이 없습니다</td></tr>
+              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">등록된 호칭이 없습니다</td></tr>
             ) : titles.map((t) => (
               <tr key={t.id} className={TABLE_STYLES.row}>
-                <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{t.code}</td>
+                <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{t.code}</td>
                 <td className={TABLE_STYLES.cell}>
                   {editingId === t.id ? (
                     <Input className="h-7 text-sm" value={editForm.name ?? ''} onChange={e => setEditForm(p => ({ ...p, name: e.target.value }))} />
                   ) : t.name}
                 </td>
-                <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>
+                <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>
                   {editingId === t.id ? (
                     <Input className="h-7 text-sm" value={editForm.nameEn ?? ''} onChange={e => setEditForm(p => ({ ...p, nameEn: e.target.value }))} />
                   ) : t.nameEn ?? '—'}

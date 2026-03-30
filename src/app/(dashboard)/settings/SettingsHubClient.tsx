@@ -35,13 +35,13 @@ export function SettingsHubClient() {
     <>
       {/* Search bar */}
       <div className="relative mb-8 max-w-lg">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8181A5]" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={tCommon('placeholderSettingsSearch')}
-          className="w-full rounded-xl border border-[#F0F0F3] bg-white py-3 pl-10 pr-4 text-sm text-[#1C1D21] placeholder:text-[#8181A5] shadow-sm transition-colors focus:border-[#5E81F4]/40 focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+          className="w-full rounded-xl border border-border bg-white py-3 pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground shadow-sm transition-colors focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10"
         />
       </div>
 

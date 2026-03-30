@@ -38,14 +38,14 @@ const STAGE_KEYS: Record<string, string> = {
 }
 
 const STAGE_BADGE_STYLES: Record<string, string> = {
-  APPLIED: 'bg-[#F5F5F5] text-[#999]',
-  SCREENING: 'bg-[#E3F2FD] text-[#1565C0]',
-  INTERVIEW_1: 'bg-[#E3F2FD] text-[#1565C0]',
-  INTERVIEW_2: 'bg-[#E3F2FD] text-[#1565C0]',
-  FINAL: 'bg-[#FFF3E0] text-[#E65100]',
-  OFFER: 'bg-[#EDF1FE] text-[#2E7D32]',
-  HIRED: 'bg-[#EDF1FE] text-[#1B5E20] font-bold',
-  REJECTED: 'bg-[#FFEBEE] text-[#C62828]',
+  APPLIED: 'bg-muted text-[#999]',
+  SCREENING: 'bg-blue-50 text-blue-800',
+  INTERVIEW_1: 'bg-blue-50 text-blue-800',
+  INTERVIEW_2: 'bg-blue-50 text-blue-800',
+  FINAL: 'bg-orange-50 text-orange-800',
+  OFFER: 'bg-primary/10 text-green-700',
+  HIRED: 'bg-primary/10 text-green-900 font-bold',
+  REJECTED: 'bg-red-50 text-red-800',
 }
 
 const SOURCE_KEYS: Record<string, string> = {
@@ -57,11 +57,11 @@ const SOURCE_KEYS: Record<string, string> = {
 }
 
 const SOURCE_BADGE_STYLES: Record<string, string> = {
-  DIRECT: 'bg-[#F5F5F5] text-[#666]',
-  REFERRAL: 'bg-[#EDF1FE] text-[#2E7D32]',
-  AGENCY: 'bg-[#E3F2FD] text-[#1565C0]',
-  JOB_BOARD: 'bg-[#FFF3E0] text-[#E65100]',
-  INTERNAL: 'bg-[#F3E5F5] text-[#7B1FA2]',
+  DIRECT: 'bg-muted text-[#666]',
+  REFERRAL: 'bg-primary/10 text-green-700',
+  AGENCY: 'bg-blue-50 text-blue-800',
+  JOB_BOARD: 'bg-orange-50 text-orange-800',
+  INTERNAL: 'bg-purple-50 text-purple-800',
 }
 
 const STAGES_ALL = [
@@ -166,30 +166,30 @@ export default function ApplicantListClient({
     if (score === null || score === undefined) {
       return <span className="text-sm text-[#999]">-</span>
     }
-    let colorClass = 'text-[#F44336]'
-    if (score >= 80) colorClass = 'text-[#5E81F4]'
-    else if (score >= 50) colorClass = 'text-[#FF9800]'
+    let colorClass = 'text-red-500'
+    if (score >= 80) colorClass = 'text-primary'
+    else if (score >= 50) colorClass = 'text-orange-500'
     return <span className={`text-sm font-medium ${colorClass}`}>{t('scorePoints', { score })}</span>
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] p-6">
+    <div className="min-h-screen bg-background p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push(`/recruitment/${postingId}`)}
-            className="p-2 rounded-lg border border-[#E8E8E8] hover:bg-white transition-colors duration-150"
+            className="p-2 rounded-lg border border-border hover:bg-white transition-colors duration-150"
           >
             <ChevronLeft className="w-4 h-4 text-[#666]" />
           </button>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#E3F2FD] rounded-lg flex items-center justify-center">
-              <Users className="w-5 h-5 text-[#2196F3]" />
+            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+              <Users className="w-5 h-5 text-blue-500" />
             </div>
             <div>
               <h1
-                className="text-xl font-bold text-[#1A1A1A]"
+                className="text-xl font-bold text-foreground"
                 style={{ letterSpacing: '-0.02em' }}
               >
                 {t('applicantManagement')}
@@ -210,7 +210,7 @@ export default function ApplicantListClient({
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white border border-[#E8E8E8] rounded-xl p-4 mb-6">
+      <div className="bg-white border border-border rounded-xl p-4 mb-6">
         <div className="flex items-center gap-3">
           {/* Search */}
           <div className="flex-1 relative">
@@ -221,7 +221,7 @@ export default function ApplicantListClient({
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
             />
           </div>
           {/* Stage Filter */}
@@ -233,7 +233,7 @@ export default function ApplicantListClient({
                 setStageFilter(e.target.value)
                 setPage(1)
               }}
-              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+              className="px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
             >
               <option value="">{t('allStages')}</option>
               {STAGES_ALL.map((s) => (
@@ -245,7 +245,7 @@ export default function ApplicantListClient({
           </div>
           <button
             onClick={handleSearch}
-            className="px-4 py-2 text-sm font-medium bg-[#1A1A1A] text-white rounded-lg hover:bg-[#333] transition-colors duration-150"
+            className="px-4 py-2 text-sm font-medium bg-foreground text-white rounded-lg hover:bg-[#333] transition-colors duration-150"
           >
             {t('searchButton')}
           </button>
@@ -257,7 +257,7 @@ export default function ApplicantListClient({
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <div className="flex items-center gap-2 text-sm text-[#999]">
-              <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#5E81F4] rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin" />
               {t('loadingData')}
             </div>
           </div>
@@ -291,7 +291,7 @@ export default function ApplicantListClient({
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#F0F0F3]">
+              <tbody className="divide-y divide-border">
                 {!data?.length && <EmptyState />}
               {data?.map((app) => (
                   <tr
@@ -300,7 +300,7 @@ export default function ApplicantListClient({
                     className={TABLE_STYLES.rowClickable}
                   >
                     <td className="px-6 py-4">
-                      <span className="text-sm font-medium text-[#1A1A1A]">
+                      <span className="text-sm font-medium text-foreground">
                         {app.applicant.name}
                       </span>
                     </td>
@@ -312,7 +312,7 @@ export default function ApplicantListClient({
                     <td className="px-6 py-4">
                       <span
                         className={`inline-block px-2 py-1 text-xs font-medium rounded ${
-                          SOURCE_BADGE_STYLES[app.applicant.source] ?? 'bg-[#F5F5F5] text-[#999]'
+                          SOURCE_BADGE_STYLES[app.applicant.source] ?? 'bg-muted text-[#999]'
                         }`}
                       >
                         {SOURCE_KEYS[app.applicant.source] ? t(SOURCE_KEYS[app.applicant.source]) : app.applicant.source}
@@ -324,7 +324,7 @@ export default function ApplicantListClient({
                     <td className="px-6 py-4">
                       <span
                         className={`inline-block px-2 py-1 text-xs font-medium rounded ${
-                          STAGE_BADGE_STYLES[app.stage] ?? 'bg-[#F5F5F5] text-[#999]'
+                          STAGE_BADGE_STYLES[app.stage] ?? 'bg-muted text-[#999]'
                         }`}
                       >
                         {STAGE_KEYS[app.stage] ? t(STAGE_KEYS[app.stage]) : app.stage}
@@ -342,7 +342,7 @@ export default function ApplicantListClient({
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between px-6 py-4 border-t border-[#E8E8E8]">
+              <div className="flex items-center justify-between px-6 py-4 border-t border-border">
                 <p className="text-xs text-[#999]">
                   {t('paginationInfo', { total, from: (page - 1) * LIMIT + 1, to: Math.min(page * LIMIT, total) })}
                 </p>
@@ -350,7 +350,7 @@ export default function ApplicantListClient({
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page <= 1}
-                    className="p-2 rounded-lg border border-[#E8E8E8] hover:bg-[#FAFAFA] disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
+                    className="p-2 rounded-lg border border-border hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
                   >
                     <ChevronLeft className="w-4 h-4 text-[#666]" />
                   </button>
@@ -367,8 +367,8 @@ export default function ApplicantListClient({
                         onClick={() => setPage(pg)}
                         className={`w-8 h-8 text-sm rounded-lg transition-colors duration-150 ${
                           pg === page
-                            ? 'bg-[#1A1A1A] text-white'
-                            : 'text-[#666] hover:bg-[#FAFAFA]'
+                            ? 'bg-foreground text-white'
+                            : 'text-[#666] hover:bg-background'
                         }`}
                       >
                         {pg}
@@ -378,7 +378,7 @@ export default function ApplicantListClient({
                   <button
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page >= totalPages}
-                    className="p-2 rounded-lg border border-[#E8E8E8] hover:bg-[#FAFAFA] disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
+                    className="p-2 rounded-lg border border-border hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
                   >
                     <ChevronRight className="w-4 h-4 text-[#666]" />
                   </button>

@@ -162,12 +162,12 @@ export default function CloseAttendanceClient({ user }: Props) {
     const yearMonth = `${year}-${String(month).padStart(2, '0')}`
 
     return (
-        <div className="p-6 bg-[#FAFAFA] min-h-screen">
+        <div className="p-6 bg-background min-h-screen">
             {/* Page Header */}
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <nav className="text-xs text-[#999] mb-1">{t('kr_keab889ec_keab7bced_closed')}</nav>
-                    <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-tight">{t('closeAttendance')}</h1>
+                    <h1 className="text-2xl font-bold text-foreground tracking-tight">{t('closeAttendance')}</h1>
                     <p className="text-sm text-[#666] mt-0.5">
                         {t('closeAttendanceDesc')}
                     </p>
@@ -177,7 +177,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                     <select
                         value={month}
                         onChange={(e) => setMonth(Number(e.target.value))}
-                        className="px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
+                        className="px-3 py-2 border border-border rounded-lg text-sm bg-white focus:border-primary focus:ring-2 focus:ring-primary/10"
                     >
                         {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
                             <option key={m} value={m}>{m}월</option>
@@ -186,7 +186,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                     <select
                         value={year}
                         onChange={(e) => setYear(Number(e.target.value))}
-                        className="px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm bg-white focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
+                        className="px-3 py-2 border border-border rounded-lg text-sm bg-white focus:border-primary focus:ring-2 focus:ring-primary/10"
                     >
                         {[2024, 2025, 2026].map((y) => (
                             <option key={y} value={y}>{y}년</option>
@@ -199,7 +199,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                 [user.companyId].filter(Boolean).map(fetchStatus)
                             ).finally(() => setLoading(false))
                         }}
-                        className="p-2 border border-[#D4D4D4] rounded-lg hover:bg-[#F5F5F5] transition-colors"
+                        className="p-2 border border-border rounded-lg hover:bg-muted transition-colors"
                     >
                         <RefreshCw size={16} className={`text-[#555] ${loading ? 'animate-spin' : ''}`} />
                     </button>
@@ -216,16 +216,16 @@ export default function CloseAttendanceClient({ user }: Props) {
                     const confirmedPct = status ? Math.round((status.confirmedCount / Math.max(status.totalEmployees, 1)) * 100) : 0
 
                     return (
-                        <div key={companyId} className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
+                        <div key={companyId} className="bg-white rounded-xl border border-border overflow-hidden">
                             {/* Card Header */}
-                            <div className="flex items-center justify-between p-5 border-b border-[#F5F5F5]">
+                            <div className="flex items-center justify-between p-5 border-b border-border">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-lg bg-[#EDF1FE] flex items-center justify-center">
-                                        <Calendar size={18} className="text-[#5E81F4]" />
+                                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                        <Calendar size={18} className="text-primary" />
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-2">
-                                            <p className="text-[15px] font-bold text-[#1A1A1A]">{label}</p>
+                                            <p className="text-[15px] font-bold text-foreground">{label}</p>
                                             <StatusBadge status={status?.payrollRunStatus ?? null} />
                                         </div>
                                         <p className="text-xs text-[#999]">{yearMonth}</p>
@@ -236,7 +236,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                         <button
                                             onClick={() => status?.payrollRunId && handleReopen(status.payrollRunId, companyId)}
                                             disabled={reopening === companyId}
-                                            className="flex items-center gap-1.5 px-3 py-1.5 border border-[#D4D4D4] hover:bg-[#F5F5F5] text-[#555] rounded-lg text-sm transition-colors disabled:opacity-50"
+                                            className="flex items-center gap-1.5 px-3 py-1.5 border border-border hover:bg-muted text-[#555] rounded-lg text-sm transition-colors disabled:opacity-50"
                                         >
                                             <Unlock size={14} />
                                             {tCommon('unlock')}
@@ -263,11 +263,11 @@ export default function CloseAttendanceClient({ user }: Props) {
                                     <div className="mb-4">
                                         <div className="flex items-center justify-between text-xs text-[#666] mb-1.5">
                                             <span>{t('kr_keab7bced_confirmed_status')}</span>
-                                            <span className="font-semibold text-[#1A1A1A]">
+                                            <span className="font-semibold text-foreground">
                                                 {status.confirmedCount}/{status.totalEmployees}명 ({confirmedPct}%)
                                             </span>
                                         </div>
-                                        <div className="h-2 rounded-full bg-[#E8E8E8] overflow-hidden">
+                                        <div className="h-2 rounded-full bg-border overflow-hidden">
                                             <div
                                                 className="h-full rounded-full transition-[width] duration-600"
                                                 style={{
@@ -280,60 +280,60 @@ export default function CloseAttendanceClient({ user }: Props) {
 
                                     {/* KPI row */}
                                     <div className="grid grid-cols-3 gap-3 mb-4">
-                                        <div className="bg-[#FAFAFA] rounded-lg p-3">
+                                        <div className="bg-background rounded-lg p-3">
                                             <div className="flex items-center gap-1.5 mb-1">
-                                                <CheckCircle2 size={13} className="text-[#059669]" />
+                                                <CheckCircle2 size={13} className="text-emerald-600" />
                                                 <p className="text-xs text-[#666]">{t('confirmed')}</p>
                                             </div>
-                                            <p className="text-xl font-bold text-[#1A1A1A]">{status.confirmedCount}명</p>
+                                            <p className="text-xl font-bold text-foreground">{status.confirmedCount}명</p>
                                         </div>
-                                        <div className="bg-[#FAFAFA] rounded-lg p-3">
+                                        <div className="bg-background rounded-lg p-3">
                                             <div className="flex items-center gap-1.5 mb-1">
-                                                <Clock size={13} className="text-[#F59E0B]" />
+                                                <Clock size={13} className="text-amber-500" />
                                                 <p className="text-xs text-[#666]">{t('kr_kecb49dea')}</p>
                                             </div>
-                                            <p className="text-xl font-bold text-[#1A1A1A]">{status.totalWorkHours}h</p>
+                                            <p className="text-xl font-bold text-foreground">{status.totalWorkHours}h</p>
                                         </div>
-                                        <div className="bg-[#FAFAFA] rounded-lg p-3">
+                                        <div className="bg-background rounded-lg p-3">
                                             <div className="flex items-center gap-1.5 mb-1">
-                                                <AlertTriangle size={13} className="text-[#EF4444]" />
+                                                <AlertTriangle size={13} className="text-red-500" />
                                                 <p className="text-xs text-[#666]">{t('kr_kebafb8ed')}</p>
                                             </div>
-                                            <p className="text-xl font-bold text-[#1A1A1A]">{status.unconfirmedCount}명</p>
+                                            <p className="text-xl font-bold text-foreground">{status.unconfirmedCount}명</p>
                                         </div>
                                     </div>
 
                                     {/* Unconfirmed employees expandable */}
                                     {status.unconfirmedEmployees.length > 0 && (
-                                        <div className="border border-[#FEF3C7] rounded-lg overflow-hidden">
+                                        <div className="border border-amber-100 rounded-lg overflow-hidden">
                                             <button
                                                 onClick={() => setExpandedEmp((prev) => ({ ...prev, [companyId]: !prev[companyId] }))}
-                                                className="flex items-center justify-between w-full px-4 py-2.5 bg-[#FFFBEB] hover:bg-[#FEF3C7] transition-colors text-left"
+                                                className="flex items-center justify-between w-full px-4 py-2.5 bg-amber-50 hover:bg-amber-100 transition-colors text-left"
                                             >
                                                 <div className="flex items-center gap-2">
-                                                    <AlertTriangle size={14} className="text-[#F59E0B]" />
-                                                    <span className="text-sm font-semibold text-[#B45309]">
+                                                    <AlertTriangle size={14} className="text-amber-500" />
+                                                    <span className="text-sm font-semibold text-amber-700">
                                                         미확정 직원 {status.unconfirmedEmployees.length}명
                                                     </span>
                                                 </div>
                                                 {expandedEmp[companyId] ? (
-                                                    <ChevronDown size={14} className="text-[#B45309]" />
+                                                    <ChevronDown size={14} className="text-amber-700" />
                                                 ) : (
-                                                    <ChevronRight size={14} className="text-[#B45309]" />
+                                                    <ChevronRight size={14} className="text-amber-700" />
                                                 )}
                                             </button>
                                             {expandedEmp[companyId] && (
-                                                <div className="divide-y divide-[#FDE68A]">
+                                                <div className="divide-y divide-amber-200">
                                                     {status.unconfirmedEmployees.map((emp) => (
                                                         <div key={emp.id} className="flex items-center gap-3 px-4 py-2.5 bg-white">
-                                                            <div className="w-7 h-7 rounded-full bg-[#E8E8E8] flex items-center justify-center flex-shrink-0">
+                                                            <div className="w-7 h-7 rounded-full bg-border flex items-center justify-center flex-shrink-0">
                                                                 <Users size={12} className="text-[#999]" />
                                                             </div>
                                                             <div>
                                                                 <p className="text-sm font-medium text-[#333]">{emp.name}</p>
                                                                 <p className="text-xs text-[#999]">{emp.email}</p>
                                                             </div>
-                                                            <XCircle size={14} className="text-[#EF4444] ml-auto" />
+                                                            <XCircle size={14} className="text-red-500 ml-auto" />
                                                         </div>
                                                     ))}
                                                 </div>
@@ -343,7 +343,7 @@ export default function CloseAttendanceClient({ user }: Props) {
 
                                     {/* Closed at info */}
                                     {isClosed && status.attendanceClosedAt && (
-                                        <div className="mt-3 flex items-center gap-2 text-xs text-[#059669]">
+                                        <div className="mt-3 flex items-center gap-2 text-xs text-emerald-600">
                                             <Lock size={12} />
                                             <span>
                                                 {new Date(status.attendanceClosedAt).toLocaleString('ko-KR')} 마감 완료
@@ -367,20 +367,20 @@ export default function CloseAttendanceClient({ user }: Props) {
             {confirmModal && (
                 <div className={MODAL_STYLES.container}>
                     <div className={`${MODAL_STYLES.content.sm} mx-4 overflow-hidden`}>
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E8E8E8]">
-                            <h2 className="text-lg font-bold text-[#1A1A1A]">{t('closeAttendance_confirm')}</h2>
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+                            <h2 className="text-lg font-bold text-foreground">{t('closeAttendance_confirm')}</h2>
                             <button
                                 onClick={() => setConfirmModal(null)}
-                                className="p-1 hover:bg-[#F5F5F5] rounded-lg transition-colors"
+                                className="p-1 hover:bg-muted rounded-lg transition-colors"
                             >
                                 <XCircle size={20} className="text-[#999]" />
                             </button>
                         </div>
                         <div className="px-6 py-5">
-                            <div className="bg-[#F5F5F5] rounded-xl p-4 mb-4 space-y-2">
+                            <div className="bg-muted rounded-xl p-4 mb-4 space-y-2">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-[#666]">{t('kr_keb8c80ec_company')}</span>
-                                    <span className="font-semibold text-[#1A1A1A]">
+                                    <span className="font-semibold text-foreground">
                                         {COMPANY_LIST.find((c) => c.id === confirmModal.companyId)?.name ?? confirmModal.companyId}
                                     </span>
                                 </div>
@@ -394,11 +394,11 @@ export default function CloseAttendanceClient({ user }: Props) {
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-[#666]">{t('confirmed_keca781ec')}</span>
-                                    <span className="font-semibold text-[#059669]">{confirmModal.status.confirmedCount}명</span>
+                                    <span className="font-semibold text-emerald-600">{confirmModal.status.confirmedCount}명</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-[#666]">{t('kr_kebafb8ed_keca781ec')}</span>
-                                    <span className="font-semibold text-[#EF4444]">{confirmModal.status.unconfirmedCount}명</span>
+                                    <span className="font-semibold text-red-500">{confirmModal.status.unconfirmedCount}명</span>
                                 </div>
                             </div>
                             {confirmModal.status.unconfirmedCount > 0 && (
@@ -410,7 +410,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                         onChange={(e) =>
                                             setConfirmModal((prev) => prev ? { ...prev, excludeUnconfirmed: e.target.checked } : null)
                                         }
-                                        className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
+                                        className="w-4 h-4 rounded border-border text-primary"
                                     />
                                     <span className="text-sm text-[#333]">
                                         미확정 직원 {confirmModal.status.unconfirmedCount}명 제외하고 마감
@@ -421,10 +421,10 @@ export default function CloseAttendanceClient({ user }: Props) {
                                 {t('closed_ked9b84ec_ked95b4eb_kec9b94ec_keab7bced_kec8898ec_kebb688ea_closed_ked95b4ec_keab384ec_kec8b9cec_keca084ea_keab080eb')}
                             </p>
                         </div>
-                        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[#E8E8E8]">
+                        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-border">
                             <button
                                 onClick={() => setConfirmModal(null)}
-                                className="px-4 py-2 border border-[#D4D4D4] hover:bg-[#F5F5F5] text-[#333] rounded-lg text-sm font-medium transition-colors"
+                                className="px-4 py-2 border border-border hover:bg-muted text-[#333] rounded-lg text-sm font-medium transition-colors"
                             >
                                 {tCommon('cancel')}
                             </button>

@@ -23,7 +23,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-ctr-gray-50 px-4">
       <div className="text-center">
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#FEE2E2]">
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
           <AlertCircle className="h-10 w-10 text-ctr-accent" />
         </div>
         <h1 className="text-4xl font-bold text-ctr-gray-900">오류 발생</h1>

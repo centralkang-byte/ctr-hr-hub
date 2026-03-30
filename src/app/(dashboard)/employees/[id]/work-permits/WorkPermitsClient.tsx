@@ -231,7 +231,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
             {permits.map((p) => (
               <TableRow
                 key={p.id}
-                className={isExpiringSoon(p.expiryDate) && p.status === 'ACTIVE' ? 'bg-[#FEFCE8]' : ''}
+                className={isExpiringSoon(p.expiryDate) && p.status === 'ACTIVE' ? 'bg-yellow-50' : ''}
               >
                 <TableCell>{PERMIT_TYPE_LABELS[p.permitType] ?? p.permitType}</TableCell>
                 <TableCell className="font-mono tabular-nums text-sm">{p.permitNumber ?? '-'}</TableCell>
@@ -239,7 +239,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
                 <TableCell>{format(new Date(p.issueDate), 'yyyy-MM-dd')}</TableCell>
                 <TableCell>
                   {p.expiryDate ? (
-                    <span className={isExpiringSoon(p.expiryDate) && p.status === 'ACTIVE' ? 'font-medium text-[#A16207]' : ''}>
+                    <span className={isExpiringSoon(p.expiryDate) && p.status === 'ACTIVE' ? 'font-medium text-amber-700' : ''}>
                       {format(new Date(p.expiryDate), 'yyyy-MM-dd')}
                     </span>
                   ) : (

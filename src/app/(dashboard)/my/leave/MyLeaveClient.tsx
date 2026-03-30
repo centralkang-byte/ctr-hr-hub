@@ -93,10 +93,10 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
   const t = useTranslations('mySpace')
 
   const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-    PENDING: { label: t('status.pending'), color: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]', icon: <Clock className="w-3 h-3" /> },
-    APPROVED: { label: t('status.approved'), color: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]', icon: <CheckCircle2 className="w-3 h-3" /> },
-    REJECTED: { label: t('status.rejected'), color: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]', icon: <XCircle className="w-3 h-3" /> },
-    CANCELLED: { label: t('status.cancelled'), color: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]', icon: null },
+    PENDING: { label: t('status.pending'), color: 'bg-amber-100 text-amber-700 border-amber-300', icon: <Clock className="w-3 h-3" /> },
+    APPROVED: { label: t('status.approved'), color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: <CheckCircle2 className="w-3 h-3" /> },
+    REJECTED: { label: t('status.rejected'), color: 'bg-red-100 text-red-700 border-red-200', icon: <XCircle className="w-3 h-3" /> },
+    CANCELLED: { label: t('status.cancelled'), color: 'bg-background text-[#555] border-border', icon: null },
   }
 
   const [year, setYear] = useState(new Date().getFullYear())
@@ -157,22 +157,22 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <CalendarDays className="w-6 h-6 text-[#5E81F4]" />
+          <CalendarDays className="w-6 h-6 text-primary" />
           <div>
-            <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('myLeave')}</h1>
+            <h1 className="text-2xl font-bold text-foreground">{t('myLeave')}</h1>
             <p className="text-sm text-[#666] mt-0.5">{t('myLeaveDesc')}</p>
           </div>
         </div>
         {/* 연도 선택기 */}
         <div className="flex items-center gap-2">
-          <button onClick={() => setYear((y) => y - 1)} className="p-1.5 hover:bg-[#F5F5F5] rounded-lg">
+          <button onClick={() => setYear((y) => y - 1)} className="p-1.5 hover:bg-muted rounded-lg">
             <ChevronLeft className="w-4 h-4 text-[#555]" />
           </button>
-          <span className="text-lg font-bold text-[#1A1A1A] min-w-16 text-center">{year}{tCommon('unit.year')}</span>
+          <span className="text-lg font-bold text-foreground min-w-16 text-center">{year}{tCommon('unit.year')}</span>
           <button
             onClick={() => setYear((y) => y + 1)}
             disabled={year >= new Date().getFullYear()}
-            className="p-1.5 hover:bg-[#F5F5F5] rounded-lg disabled:opacity-40"
+            className="p-1.5 hover:bg-muted rounded-lg disabled:opacity-40"
           >
             <ChevronRight className="w-4 h-4 text-[#555]" />
           </button>
@@ -180,7 +180,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 text-[#B91C1C] text-sm">
+        <div className="flex items-center gap-2 text-red-700 text-sm">
           <AlertTriangle className="w-4 h-4" />
           {error}
         </div>
@@ -189,11 +189,11 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       {/* KPI 카드 */}
       <div className="grid grid-cols-5 gap-4">
         {[
-          { label: t('totalEntitled'), value: totalEntitled, unit: tCommon('unit.day'), color: 'text-[#1A1A1A]' },
-          { label: tCommon('used'), value: totalUsed, unit: tCommon('unit.day'), color: 'text-[#059669]' },
-          { label: tCommon('pending'), value: totalPending, unit: tCommon('unit.day'), color: 'text-[#B45309]' },
-          { label: '지정연차', value: designatedCount, unit: tCommon('unit.day'), color: 'text-[#7C3AED]' },
-          { label: tCommon('remaining'), value: totalRemaining, unit: tCommon('unit.day'), color: 'text-[#5E81F4]' },
+          { label: t('totalEntitled'), value: totalEntitled, unit: tCommon('unit.day'), color: 'text-foreground' },
+          { label: tCommon('used'), value: totalUsed, unit: tCommon('unit.day'), color: 'text-emerald-600' },
+          { label: tCommon('pending'), value: totalPending, unit: tCommon('unit.day'), color: 'text-amber-700' },
+          { label: '지정연차', value: designatedCount, unit: tCommon('unit.day'), color: 'text-violet-600' },
+          { label: tCommon('remaining'), value: totalRemaining, unit: tCommon('unit.day'), color: 'text-primary' },
         ].map((kpi) => (
           <div key={kpi.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <p className="text-xs text-[#666] mb-1">{kpi.label}</p>
@@ -206,10 +206,10 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* 유형별 잔여 현황 */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8]">
-        <div className="px-5 py-4 border-b border-[#F5F5F5] flex items-center justify-between">
-          <h2 className="text-base font-semibold text-[#1A1A1A]">{t('leaveByType')}</h2>
-          {loadingBalances && <Loader2 className="w-4 h-4 animate-spin text-[#5E81F4]" />}
+      <div className="bg-white rounded-xl border border-border">
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+          <h2 className="text-base font-semibold text-foreground">{t('leaveByType')}</h2>
+          {loadingBalances && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
         </div>
 
         {!loadingBalances && balances.length === 0 ? (
@@ -227,7 +227,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
                   <span className="text-base">{group.icon}</span>
                   <h3 className="text-sm font-semibold text-[#555]">{group.label}</h3>
                   <span className="text-xs text-[#999]">({group.items.length})</span>
-                  <div className="flex-1 border-b border-[#F0F0F0]" />
+                  <div className="flex-1 border-b border-border" />
                 </div>
 
                 <div className="space-y-3 pl-1">
@@ -240,31 +240,31 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
                       <div key={b.id} className="space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-[#1A1A1A]">{b.leaveTypeDef.name}</span>
+                            <span className="text-sm font-medium text-foreground">{b.leaveTypeDef.name}</span>
                             {b.leaveTypeDef.isPaid
-                              ? <span className="text-xs text-[#047857] bg-[#D1FAE5] px-1.5 py-0.5 rounded-full">{t('paid')}</span>
-                              : <span className="text-xs text-[#B45309] bg-[#FEF3C7] px-1.5 py-0.5 rounded-full">{t('unpaid')}</span>
+                              ? <span className="text-xs text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded-full">{t('paid')}</span>
+                              : <span className="text-xs text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded-full">{t('unpaid')}</span>
                             }
                             {b.carriedOver > 0 && (
-                              <span className="text-xs text-[#4B6DE0] bg-[#E0E7FF] px-1.5 py-0.5 rounded-full">{t('carriedOver', { days: b.carriedOver })}</span>
+                              <span className="text-xs text-primary/90 bg-indigo-100 px-1.5 py-0.5 rounded-full">{t('carriedOver', { days: b.carriedOver })}</span>
                             )}
                           </div>
                           <div className="flex items-baseline gap-1">
-                            <span className="text-lg font-bold text-[#5E81F4]">{b.remaining}</span>
+                            <span className="text-lg font-bold text-primary">{b.remaining}</span>
                             <span className="text-xs text-[#999]">/ {total}{tCommon('unitDay')}</span>
                           </div>
                         </div>
 
                         {/* 사용률 바 */}
-                        <div className="h-2 bg-[#F5F5F5] rounded-full overflow-hidden">
+                        <div className="h-2 bg-muted rounded-full overflow-hidden">
                           <div className="h-full flex">
                             <div
-                              className="bg-[#059669] rounded-full transition-all"
+                              className="bg-emerald-600 rounded-full transition-all"
                               style={{ width: `${usedPct}%` }}
                             />
                             {pendingPct > 0 && (
                               <div
-                                className="bg-[#FCD34D] rounded-full transition-all"
+                                className="bg-amber-300 rounded-full transition-all"
                                 style={{ width: `${pendingPct}%` }}
                               />
                             )}
@@ -273,17 +273,17 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
 
                         <div className="flex items-center gap-4 text-xs text-[#999]">
                           <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 bg-[#059669] rounded-full inline-block" />
+                            <span className="w-2 h-2 bg-emerald-600 rounded-full inline-block" />
                             {t('usedDays', { days: b.used })}
                           </span>
                           {b.pending > 0 && (
                             <span className="flex items-center gap-1">
-                              <span className="w-2 h-2 bg-[#FCD34D] rounded-full inline-block" />
+                              <span className="w-2 h-2 bg-amber-300 rounded-full inline-block" />
                               {t('pendingDays', { days: b.pending })}
                             </span>
                           )}
                           {b.expiresAt && (
-                            <span className="text-[#DC2626]">
+                            <span className="text-red-600">
                               {t('expiresOn', { date: format(new Date(b.expiresAt), 'M/d', { locale: ko }) })}
                             </span>
                           )}
@@ -299,10 +299,10 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* 사용 내역 */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8]">
-        <div className="px-5 py-4 border-b border-[#F5F5F5] flex items-center justify-between">
-          <h2 className="text-base font-semibold text-[#1A1A1A]">{t('leaveHistory')}</h2>
-          {loadingRequests && <Loader2 className="w-4 h-4 animate-spin text-[#5E81F4]" />}
+      <div className="bg-white rounded-xl border border-border">
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+          <h2 className="text-base font-semibold text-foreground">{t('leaveHistory')}</h2>
+          {loadingRequests && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
         </div>
 
         {!loadingRequests && requests.length === 0 ? (
@@ -329,7 +329,7 @@ export function MyLeaveClient({ user }: { user: SessionUser }) {
                   const st = STATUS_LABELS[r.status] ?? STATUS_LABELS.PENDING
                   return (
                     <tr key={r.id} className={TABLE_STYLES.row}>
-                      <td className={cn(TABLE_STYLES.cell, "text-[#1A1A1A]")}>
+                      <td className={cn(TABLE_STYLES.cell, "text-foreground")}>
                         {r.policy?.name ?? r.policy?.leaveType ?? '—'}
                       </td>
                       <td className={cn(TABLE_STYLES.cell, "text-[#555]")}>

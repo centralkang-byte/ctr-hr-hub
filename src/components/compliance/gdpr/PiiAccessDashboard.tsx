@@ -27,7 +27,7 @@ function StatCard({
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs text-[#666] mb-1">{label}</p>
-          <p className="text-3xl font-bold text-[#1A1A1A]">{value}</p>
+          <p className="text-3xl font-bold text-foreground">{value}</p>
         </div>
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
           <Icon className="w-5 h-5" />
@@ -72,13 +72,13 @@ export default function PiiAccessDashboard() {
           label={`${t('gdpr.totalAccess')} (30d)`}
           value={data.total_30d ?? 0}
           icon={Eye}
-          color="bg-[#EDF1FE] text-[#5E81F4]"
+          color="bg-primary/10 text-primary"
         />
         <StatCard
           label={tc('today')}
           value={data.today_count ?? 0}
           icon={Calendar}
-          color="bg-[#D1FAE5] text-[#059669]"
+          color="bg-emerald-100 text-emerald-600"
         />
       </div>
 
@@ -98,11 +98,11 @@ export default function PiiAccessDashboard() {
                 <div key={item.access_type}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-medium text-[#555]">{item.access_type}</span>
-                    <span className="text-xs font-bold text-[#1A1A1A]">{item.count}</span>
+                    <span className="text-xs font-bold text-foreground">{item.count}</span>
                   </div>
-                  <div className="w-full h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[#5E81F4] rounded-full"
+                      className="h-full bg-primary rounded-full"
                       style={{ width: `${(item.count / maxByType) * 100}%` }}
                     />
                   </div>
@@ -123,14 +123,14 @@ export default function PiiAccessDashboard() {
           ) : (
             <div className="space-y-2">
               {data.top_actors?.slice(0, 8).map((actor, idx) => (
-                <div key={actor.actor_name} className="flex items-center justify-between py-1.5 border-b border-[#FAFAFA] last:border-0">
+                <div key={actor.actor_name} className="flex items-center justify-between py-1.5 border-b border-background last:border-0">
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-[#F5F5F5] text-[#666] text-xs flex items-center justify-center font-medium">
+                    <span className="w-5 h-5 rounded-full bg-muted text-[#666] text-xs flex items-center justify-center font-medium">
                       {idx + 1}
                     </span>
                     <span className="text-sm text-[#333]">{actor.actor_name}</span>
                   </div>
-                  <span className="text-sm font-semibold text-[#1A1A1A]">{actor.count}</span>
+                  <span className="text-sm font-semibold text-foreground">{actor.count}</span>
                 </div>
               ))}
             </div>

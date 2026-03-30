@@ -33,7 +33,7 @@ const pctStr = (r: number) => `${r >= 0 ? '+' : ''}${(r * 100).toFixed(1)}%`
 function diffColor(n: number) {
   if (n > 0) return 'text-primary'
   if (n < 0) return 'text-red-600'
-  return 'text-[#8181A5]'
+  return 'text-muted-foreground'
 }
 
 function diffArrow(n: number) {
@@ -55,10 +55,10 @@ function KPICard({ label, value, diff, rate, variant }: {
   return (
     <div className={CARD_STYLES.padded}>
       <div className="flex items-center justify-between mb-1">
-        <p className="text-xs text-[#8181A5]">{label}</p>
+        <p className="text-xs text-muted-foreground">{label}</p>
         {rate && <span className={`text-xs px-2 py-0.5 rounded-full ${badgeColor}`}>{rate}</span>}
       </div>
-      <p className="text-xl font-bold text-[#1C1D21]">{value}</p>
+      <p className="text-xl font-bold text-foreground">{value}</p>
       {diff && <p className={`text-xs mt-1 ${diffColor(parseFloat(diff.replace(/[^-\d.]/g, '')))}`}>{diff}</p>}
     </div>
   )
@@ -83,7 +83,7 @@ function EmployeeExpandedDetail({ emp }: { emp: EmployeeSimResult }) {
   const s = emp.simulated
   return (
     <tr>
-      <td colSpan={7} className="p-0 border-b border-[#F0F0F3] bg-[#FAFBFF]">
+      <td colSpan={7} className="p-0 border-b border-border bg-background">
         <div className="px-6 py-4">
           <div className={TABLE_STYLES.wrapper}>
             <table className={TABLE_STYLES.table}>
@@ -101,7 +101,7 @@ function EmployeeExpandedDetail({ emp }: { emp: EmployeeSimResult }) {
                 <DetailRow label="야간수당" c={c.nightPay} s={s.nightPay} />
                 <DetailRow label="식대" c={c.mealAllowance} s={s.mealAllowance} />
                 <DetailRow label="교통비" c={c.transportAllowance} s={s.transportAllowance} />
-                <tr className={cn(TABLE_STYLES.row, "bg-[#FAFAFA] font-semibold")}>
+                <tr className={cn(TABLE_STYLES.row, "bg-background font-semibold")}>
                   <td className={TABLE_STYLES.cell}>{'총 지급액'}</td>
                   <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(c.grossPay)}</td>
                   <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(s.grossPay)}</td>
@@ -113,16 +113,16 @@ function EmployeeExpandedDetail({ emp }: { emp: EmployeeSimResult }) {
                 <DetailRow label="고용보험" c={c.employmentInsurance} s={s.employmentInsurance} />
                 <DetailRow label="소득세" c={c.incomeTax} s={s.incomeTax} />
                 <DetailRow label="지방소득세" c={c.localIncomeTax} s={s.localIncomeTax} />
-                <tr className={cn(TABLE_STYLES.row, "bg-[#FAFAFA] font-semibold")}>
+                <tr className={cn(TABLE_STYLES.row, "bg-background font-semibold")}>
                   <td className={TABLE_STYLES.cell}>{'총 공제액'}</td>
                   <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(c.totalDeductions)}</td>
                   <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(s.totalDeductions)}</td>
                   <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(s.totalDeductions - c.totalDeductions))}>{signedKRW(s.totalDeductions - c.totalDeductions)}</td>
                 </tr>
-                <tr className={cn(TABLE_STYLES.row, "bg-[#EFF6FF] font-bold")}>
+                <tr className={cn(TABLE_STYLES.row, "bg-blue-50 font-bold")}>
                   <td className={TABLE_STYLES.cell}>{'실수령액'}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums text-[#1D4ED8]")}>{fmtKRW(c.netPay)}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums text-[#1D4ED8]")}>{fmtKRW(s.netPay)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums text-blue-700")}>{fmtKRW(c.netPay)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums text-blue-700")}>{fmtKRW(s.netPay)}</td>
                   <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(s.netPay - c.netPay))}>{signedKRW(s.netPay - c.netPay)}</td>
                 </tr>
               </tbody>
@@ -349,27 +349,27 @@ export default function PayrollSimulationClient({ user, companies, departments }
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-primary/5 rounded-lg flex items-center justify-center">
-            <Calculator className="w-5 h-5 text-[#5E81F4]" />
+            <Calculator className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#1C1D21]">{t('simulation')}</h1>
-            <p className="text-sm text-[#8181A5]">{t('simulationDesc')}</p>
+            <h1 className="text-2xl font-bold text-foreground">{t('simulation')}</h1>
+            <p className="text-sm text-muted-foreground">{t('simulationDesc')}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => setScenarioSheetOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 border border-[#F0F0F3] rounded-lg text-sm text-[#8181A5] hover:text-[#1C1D21] hover:bg-[#F5F5FA]">
+            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted">
             <History className="w-4 h-4" /> {t('simScenarioHistory')}
           </button>
           {result && (mode === 'SINGLE' || mode === 'BULK') && (
             <button onClick={handleSaveSingleBulk}
-              className="flex items-center gap-2 px-4 py-2 border border-[#F0F0F3] rounded-lg text-sm text-[#5E81F4] hover:bg-[#5E81F4]/5">
+              className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-primary hover:bg-primary/5">
               <Save className="w-4 h-4" /> {tCommon('save')}
             </button>
           )}
           {result && (
             <button onClick={handleExcelDownload} disabled={isExporting}
-              className="flex items-center gap-2 px-4 py-2 border border-[#F0F0F3] rounded-lg text-sm text-[#1C1D21] hover:bg-[#F5F5FA] disabled:opacity-50">
+              className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-foreground hover:bg-muted disabled:opacity-50">
               {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               {t('excelDownload')}
             </button>
@@ -379,7 +379,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
 
       {/* ─── Mode Toggle (공통) ──────────────────────── */}
       <div className="mb-6">
-        <div className="flex border border-[#F0F0F3] rounded-lg overflow-hidden w-fit">
+        <div className="flex border border-border rounded-lg overflow-hidden w-fit">
           {([
             { key: 'SINGLE' as SimMode, label: t('simModeSingle') },
             { key: 'BULK' as SimMode, label: t('simModeBulk') },
@@ -389,7 +389,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
             { key: 'FX' as SimMode, label: t('simModeFx') },
           ]).map(({ key, label }) => (
             <button key={key} onClick={() => { setMode(key); setResult(null) }}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${mode === key ? 'bg-[#5E81F4] text-white' : 'bg-white text-[#8181A5] hover:text-[#1C1D21]'}`}>
+              className={`px-4 py-2 text-sm font-medium transition-colors ${mode === key ? 'bg-primary text-white' : 'bg-white text-muted-foreground hover:text-foreground'}`}>
               {label}
             </button>
           ))}
@@ -419,40 +419,40 @@ export default function PayrollSimulationClient({ user, companies, departments }
           {/* ─ SINGLE: Employee Search ─ */}
           {mode === 'SINGLE' && (
             <div className={`${CARD_STYLES.kpi} space-y-3`}>
-              <h3 className="text-sm font-semibold text-[#1C1D21]">{t('targetEmployee')}</h3>
+              <h3 className="text-sm font-semibold text-foreground">{t('targetEmployee')}</h3>
               {selectedEmployee ? (
-                <div className="bg-[#F5F5FA] rounded-lg p-3 flex items-center justify-between">
+                <div className="bg-muted rounded-lg p-3 flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-[#1C1D21]">{selectedEmployee.name}</p>
-                    <p className="text-xs text-[#8181A5]">
+                    <p className="text-sm font-medium text-foreground">{selectedEmployee.name}</p>
+                    <p className="text-xs text-muted-foreground">
                       {selectedEmployee.department} · {selectedEmployee.position} · {t('simCurrentLabel')} ₩{fmtN(selectedEmployee.currentSalary)}
                     </p>
                   </div>
-                  <button onClick={() => setSelectedEmployee(null)} className="text-[#8181A5] hover:text-red-500"><X className="w-4 h-4" /></button>
+                  <button onClick={() => setSelectedEmployee(null)} className="text-muted-foreground hover:text-red-500"><X className="w-4 h-4" /></button>
                 </div>
               ) : (
                 <div ref={searchRef} className="relative">
-                  <div className="flex items-center border border-[#F0F0F3] rounded-lg px-3">
-                    <Search className="w-4 h-4 text-[#8181A5]" />
+                  <div className="flex items-center border border-border rounded-lg px-3">
+                    <Search className="w-4 h-4 text-muted-foreground" />
                     <input value={searchQuery} onChange={e => handleSearchChange(e.target.value)}
                       placeholder={t('searchPlaceholder')}
                       className="flex-1 px-2 py-2 text-sm outline-none bg-transparent" />
                   </div>
                   {showDropdown && searchResults.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#F0F0F3] rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto">
                       {!searchResults?.length && <EmptyState />}
               {searchResults?.map(emp => (
                         <button key={emp.id} onClick={() => selectEmployee(emp)}
-                          className="w-full text-left px-3 py-2.5 hover:bg-[#F5F5FA] text-sm border-b border-[#F0F0F3] last:border-0">
-                          <span className="font-medium text-[#1C1D21]">{emp.name}</span>
-                          <span className="text-[#8181A5]"> · {emp.department} · {emp.position}</span>
-                          <span className="text-[#8181A5] text-xs ml-1">({emp.employeeNo})</span>
+                          className="w-full text-left px-3 py-2.5 hover:bg-muted text-sm border-b border-border last:border-0">
+                          <span className="font-medium text-foreground">{emp.name}</span>
+                          <span className="text-muted-foreground"> · {emp.department} · {emp.position}</span>
+                          <span className="text-muted-foreground text-xs ml-1">({emp.employeeNo})</span>
                         </button>
                       ))}
                     </div>
                   )}
                   {showDropdown && searchResults.length === 0 && searchQuery.length >= 1 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#F0F0F3] rounded-lg shadow-lg z-20 p-4 text-center text-sm text-[#8181A5]">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-lg shadow-lg z-20 p-4 text-center text-sm text-muted-foreground">
                       {tCommon('noResults')}
                     </div>
                   )}
@@ -464,49 +464,49 @@ export default function PayrollSimulationClient({ user, companies, departments }
           {/* ─ SINGLE: Parameters ─ */}
           {mode === 'SINGLE' && (
             <div className={`${CARD_STYLES.kpi} space-y-3`}>
-              <h3 className="text-sm font-semibold text-[#1C1D21]">{t('baseSalary')}</h3>
+              <h3 className="text-sm font-semibold text-foreground">{t('baseSalary')}</h3>
               <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm text-[#1C1D21]">
+                <label className="flex items-center gap-2 text-sm text-foreground">
                   <input type="radio" name="salaryMode" checked={salaryMode === 'rate'} onChange={() => setSalaryMode('rate')} />
                   {t('adjustRate')}
                 </label>
                 {salaryMode === 'rate' && (
                   <div className="ml-6 flex items-center gap-1">
                     <input type="number" value={adjustRate} onChange={e => setAdjustRate(Number(e.target.value))}
-                      className="w-20 px-2 py-1.5 border border-[#F0F0F3] rounded text-sm text-right" min={-50} max={50} step={0.5} />
-                    <span className="text-sm text-[#8181A5]">%</span>
+                      className="w-20 px-2 py-1.5 border border-border rounded text-sm text-right" min={-50} max={50} step={0.5} />
+                    <span className="text-sm text-muted-foreground">%</span>
                   </div>
                 )}
-                <label className="flex items-center gap-2 text-sm text-[#1C1D21]">
+                <label className="flex items-center gap-2 text-sm text-foreground">
                   <input type="radio" name="salaryMode" checked={salaryMode === 'override'} onChange={() => setSalaryMode('override')} />
                   {t('amountOverride')}
                 </label>
                 {salaryMode === 'override' && (
                   <div className="ml-6 flex items-center gap-1">
-                    <span className="text-sm text-[#8181A5]">₩</span>
+                    <span className="text-sm text-muted-foreground">₩</span>
                     <input type="number" value={baseSalaryOverride} onChange={e => setBaseSalaryOverride(Number(e.target.value))}
-                      className="w-32 px-2 py-1.5 border border-[#F0F0F3] rounded text-sm text-right" min={0} />
+                      className="w-32 px-2 py-1.5 border border-border rounded text-sm text-right" min={0} />
                   </div>
                 )}
               </div>
-              <h3 className="text-sm font-semibold text-[#1C1D21] pt-2">{t('workHoursOptional')}</h3>
+              <h3 className="text-sm font-semibold text-foreground pt-2">{t('workHoursOptional')}</h3>
               <div className="grid grid-cols-3 gap-2">
                 {([[t('simOvertimeLabel'), overtimeHours, setOvertimeHours], [t('simNightLabel'), nightHours, setNightHours], [t('simHolidayLabel'), holidayHours, setHolidayHours]] as [string, number, (v: number) => void][]).map(([l, v, fn]) => (
                   <div key={l}>
-                    <label className="text-xs text-[#8181A5]">{l}</label>
+                    <label className="text-xs text-muted-foreground">{l}</label>
                     <div className="flex items-center gap-1">
                       <input type="number" value={v} onChange={e => fn(Number(e.target.value))}
-                        className="w-full px-2 py-1.5 border border-[#F0F0F3] rounded text-sm text-right" min={0} max={52} />
-                      <span className="text-xs text-[#8181A5]">h</span>
+                        className="w-full px-2 py-1.5 border border-border rounded text-sm text-right" min={0} max={52} />
+                      <span className="text-xs text-muted-foreground">h</span>
                     </div>
                   </div>
                 ))}
               </div>
-              <h3 className="text-sm font-semibold text-[#1C1D21] pt-2">{t('bonusOptional')}</h3>
+              <h3 className="text-sm font-semibold text-foreground pt-2">{t('bonusOptional')}</h3>
               <div className="flex items-center gap-1">
-                <span className="text-sm text-[#8181A5]">₩</span>
+                <span className="text-sm text-muted-foreground">₩</span>
                 <input type="number" value={bonusAmount} onChange={e => setBonusAmount(Number(e.target.value))}
-                  className="w-32 px-2 py-1.5 border border-[#F0F0F3] rounded text-sm text-right" min={0} />
+                  className="w-32 px-2 py-1.5 border border-border rounded text-sm text-right" min={0} />
               </div>
             </div>
           )}
@@ -514,27 +514,27 @@ export default function PayrollSimulationClient({ user, companies, departments }
           {/* ─ BULK: Target ─ */}
           {mode === 'BULK' && (
             <div className={`${CARD_STYLES.kpi} space-y-3`}>
-              <h3 className="text-sm font-semibold text-[#1C1D21]">{t('selectTarget')}</h3>
+              <h3 className="text-sm font-semibold text-foreground">{t('selectTarget')}</h3>
               {(['COMPANY', 'DEPARTMENT', 'SELECTED'] as BulkTargetType[]).map(bKey => (
                 <div key={bKey}>
-                  <label className="flex items-center gap-2 text-sm text-[#1C1D21]">
+                  <label className="flex items-center gap-2 text-sm text-foreground">
                     <input type="radio" name="bulkTarget" checked={bulkTarget === bKey} onChange={() => setBulkTarget(bKey)} />
                     {bKey === 'COMPANY' ? t('wholeCompany') : bKey === 'DEPARTMENT' ? t('byDept') : t('selectEmployees')}
                   </label>
                   {bulkTarget === 'COMPANY' && bKey === 'COMPANY' && (
                     <select value={selectedCompanyId} onChange={e => setSelectedCompanyId(e.target.value)}
-                      className="mt-1 ml-6 w-48 px-2 py-1.5 border border-[#F0F0F3] rounded text-sm">
+                      className="mt-1 ml-6 w-48 px-2 py-1.5 border border-border rounded text-sm">
                       {companies.map(c => <option key={c.id} value={c.id}>{c.code} ({c.name})</option>)}
                     </select>
                   )}
                   {bulkTarget === 'DEPARTMENT' && bKey === 'DEPARTMENT' && (
                     <div className="mt-1 ml-6 space-y-1">
                       <select value={selectedCompanyId} onChange={e => { setSelectedCompanyId(e.target.value); setSelectedDeptId('') }}
-                        className="w-48 px-2 py-1.5 border border-[#F0F0F3] rounded text-sm">
+                        className="w-48 px-2 py-1.5 border border-border rounded text-sm">
                         {companies.map(c => <option key={c.id} value={c.id}>{c.code}</option>)}
                       </select>
                       <select value={selectedDeptId} onChange={e => setSelectedDeptId(e.target.value)}
-                        className="w-48 px-2 py-1.5 border border-[#F0F0F3] rounded text-sm">
+                        className="w-48 px-2 py-1.5 border border-border rounded text-sm">
                         <option value="">{t('department_kec84a0ed')}</option>
                         {filteredDepts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                       </select>
@@ -543,17 +543,17 @@ export default function PayrollSimulationClient({ user, companies, departments }
                   {bulkTarget === 'SELECTED' && bKey === 'SELECTED' && (
                     <div className="mt-2 ml-6 space-y-2">
                       <div ref={searchRef} className="relative">
-                        <div className="flex items-center border border-[#F0F0F3] rounded px-2">
-                          <Search className="w-3.5 h-3.5 text-[#8181A5]" />
+                        <div className="flex items-center border border-border rounded px-2">
+                          <Search className="w-3.5 h-3.5 text-muted-foreground" />
                           <input value={searchQuery} onChange={e => handleSearchChange(e.target.value)}
                             placeholder={tCommon('searchEmployee')} className="flex-1 px-2 py-1.5 text-sm outline-none bg-transparent" />
                         </div>
                         {showDropdown && searchResults.length > 0 && (
-                          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#F0F0F3] rounded shadow-lg z-20 max-h-40 overflow-y-auto">
+                          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded shadow-lg z-20 max-h-40 overflow-y-auto">
                             {!searchResults?.length && <EmptyState />}
               {searchResults?.map(emp => (
                               <button key={emp.id} onClick={() => selectEmployee(emp)}
-                                className="w-full text-left px-2 py-1.5 hover:bg-[#F5F5FA] text-xs border-b border-[#F0F0F3] last:border-0">
+                                className="w-full text-left px-2 py-1.5 hover:bg-muted text-xs border-b border-border last:border-0">
                                 {emp.name} · {emp.department} ({emp.employeeNo})
                               </button>
                             ))}
@@ -563,13 +563,13 @@ export default function PayrollSimulationClient({ user, companies, departments }
                       {selectedEmployees.length > 0 && (
                         <div className="flex flex-wrap gap-1">
                           {selectedEmployees.map(e => (
-                            <span key={e.id} className="inline-flex items-center px-2 py-1 bg-[#F5F5FA] rounded text-xs text-[#1C1D21]">
+                            <span key={e.id} className="inline-flex items-center px-2 py-1 bg-muted rounded text-xs text-foreground">
                               {e.name}
                               <button onClick={() => setSelectedEmployees(prev => prev.filter(p => p.id !== e.id))}
-                                className="ml-1 text-[#8181A5] hover:text-red-500"><X className="w-3 h-3" /></button>
+                                className="ml-1 text-muted-foreground hover:text-red-500"><X className="w-3 h-3" /></button>
                             </span>
                           ))}
-                        <p className="text-xs text-[#8181A5] w-full mt-1">{selectedEmployees.length}{tCommon('unit.person')} {tCommon('selected')}</p>
+                        <p className="text-xs text-muted-foreground w-full mt-1">{selectedEmployees.length}{tCommon('unit.person')} {tCommon('selected')}</p>
                         </div>
                       )}
                     </div>
@@ -582,30 +582,30 @@ export default function PayrollSimulationClient({ user, companies, departments }
           {/* ─ BULK: Parameters ─ */}
           {mode === 'BULK' && (
             <div className={`${CARD_STYLES.kpi} space-y-3`}>
-              <h3 className="text-sm font-semibold text-[#1C1D21]">{t('adjustConditions')}</h3>
+              <h3 className="text-sm font-semibold text-foreground">{t('adjustConditions')}</h3>
               <div>
-                <label className="text-xs text-[#8181A5]">{t('baseSalaryRate')}</label>
+                <label className="text-xs text-muted-foreground">{t('baseSalaryRate')}</label>
                 <div className="flex items-center gap-1 mt-1">
                   <input type="number" value={bulkRate} onChange={e => setBulkRate(Number(e.target.value))}
-                    className="w-20 px-2 py-1.5 border border-[#F0F0F3] rounded text-sm text-right" min={-50} max={50} step={0.5} />
-                  <span className="text-sm text-[#8181A5]">%</span>
+                    className="w-20 px-2 py-1.5 border border-border rounded text-sm text-right" min={-50} max={50} step={0.5} />
+                  <span className="text-sm text-muted-foreground">%</span>
                 </div>
               </div>
               <div>
-                <label className="text-xs text-[#8181A5]">{t('bonusMonths')}</label>
+                <label className="text-xs text-muted-foreground">{t('bonusMonths')}</label>
                 <div className="flex items-center gap-1 mt-1">
                   <input type="number" value={bonusMonths} onChange={e => setBonusMonths(Number(e.target.value))}
-                    className="w-20 px-2 py-1.5 border border-[#F0F0F3] rounded text-sm text-right" min={0} max={12} step={0.5} />
-                  <span className="text-sm text-[#8181A5]">{tCommon('unit.month')}</span>
+                    className="w-20 px-2 py-1.5 border border-border rounded text-sm text-right" min={0} max={12} step={0.5} />
+                  <span className="text-sm text-muted-foreground">{tCommon('unit.month')}</span>
                 </div>
               </div>
             </div>
           )}
 
-          {error && <div className="text-sm text-[#DC2626] bg-[#FEE2E2] px-4 py-3 rounded-lg">{error}</div>}
+          {error && <div className="text-sm text-red-600 bg-red-100 px-4 py-3 rounded-lg">{error}</div>}
 
           <button onClick={handleCalculate} disabled={!isValid || isLoading}
-            className="w-full px-4 py-3 bg-[#5E81F4] text-white rounded-lg text-sm font-medium hover:bg-[#4B6FE0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+            className="w-full px-4 py-3 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
             {isLoading ? <><Loader2 className="w-4 h-4 animate-spin" />{tCommon('loading')}</> : t('calculate')}
           </button>
         </div>
@@ -613,14 +613,14 @@ export default function PayrollSimulationClient({ user, companies, departments }
         {/* ─── Right Panel: Results ───────────────────── */}
         <div className="flex-1 min-w-0">
           {!result && !isLoading && (
-            <div className="flex flex-col items-center justify-center h-[500px] text-[#8181A5]">
+            <div className="flex flex-col items-center justify-center h-[500px] text-muted-foreground">
               <Calculator className="w-12 h-12 mb-3 opacity-50" />
               <p className="text-sm">{t('simPrompt')}</p>
             </div>
           )}
 
           {isLoading && (
-            <div className="flex flex-col items-center justify-center h-[500px] text-[#8181A5]">
+            <div className="flex flex-col items-center justify-center h-[500px] text-muted-foreground">
               <Loader2 className="w-10 h-10 animate-spin mb-3" />
               <p className="text-sm">{t('simCalculating')}</p>
             </div>
@@ -643,7 +643,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
               {/* Chart (single mode) */}
               {chartData && (
                 <div className={CARD_STYLES.padded}>
-                  <h3 className="text-sm font-semibold text-[#1C1D21] mb-4">{t('currentVsSimulation')}</h3>
+                  <h3 className="text-sm font-semibold text-foreground mb-4">{t('currentVsSimulation')}</h3>
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={chartData} layout="vertical" margin={{ left: 20 }}>
                       <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
@@ -662,7 +662,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
               {/* Department Table (bulk) */}
               {sm.byDepartment && sm.byDepartment.length > 0 && (
                 <div className={CARD_STYLES.padded}>
-                  <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">{t('deptSummary')}</h3>
+                  <h3 className="text-sm font-semibold text-foreground mb-3">{t('deptSummary')}</h3>
                   <div className={TABLE_STYLES.wrapper}>
                     <table className={TABLE_STYLES.table}>
                       <thead>
@@ -688,7 +688,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
                             </td>
                           </tr>
                         ))}
-                        <tr className={cn(TABLE_STYLES.row, "bg-[#FAFAFA] font-semibold")}>
+                        <tr className={cn(TABLE_STYLES.row, "bg-background font-semibold")}>
                           <td className={TABLE_STYLES.cell}>{tCommon('total')}</td>
                           <td className={cn(TABLE_STYLES.cell, "text-right")}>{sm.employeeCount}{tCommon('unit.person')}</td>
                           <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(totals.currentGross)}</td>
@@ -704,7 +704,7 @@ export default function PayrollSimulationClient({ user, companies, departments }
 
               {/* Employee Detail Table */}
               <div className={CARD_STYLES.padded}>
-                <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">직원별 상세 ({result.employees.length}명)</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-3">직원별 상세 ({result.employees.length}명)</h3>
                 <div className={TABLE_STYLES.wrapper}>
                   <table className={TABLE_STYLES.table}>
                     <thead>
@@ -725,10 +725,10 @@ export default function PayrollSimulationClient({ user, companies, departments }
                         const netRate = emp.current.netPay > 0 ? netDiff / emp.current.netPay : 0
                         return (
                           <><tr key={emp.id} onClick={() => setExpandedRow(isExp ? null : emp.id)}
-                            className={cn(TABLE_STYLES.row, isExp ? "bg-[#FAFBFF]" : "hover:bg-[#FAFAFA]", "cursor-pointer")}>
+                            className={cn(TABLE_STYLES.row, isExp ? "bg-background" : "hover:bg-background", "cursor-pointer")}>
                             <td className={cn(TABLE_STYLES.cell, "flex items-center gap-1")}>
-                              {isExp ? <ChevronDown className="w-3.5 h-3.5 text-[#8181A5]" /> : <ChevronRight className="w-3.5 h-3.5 text-[#8181A5]" />}
-                              <span className="font-medium text-[#1A1A1A]">{emp.name}</span>
+                              {isExp ? <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />}
+                              <span className="font-medium text-foreground">{emp.name}</span>
                             </td>
                             <td className={TABLE_STYLES.cell}>{emp.department}</td>
                             <td className={TABLE_STYLES.cell}>{emp.position}</td>

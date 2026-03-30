@@ -36,7 +36,7 @@ export function PipelineTab({
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   const move = (i: number, dir: -1 | 1) => {
     const next = structuredClone(settings)
@@ -50,22 +50,22 @@ export function PipelineTab({
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{'채용 파이프라인'}</h3>
-          <p className="text-sm text-[#8181A5]">{settings.stages.length}단계 파이프라인</p>
+          <h3 className="text-base font-semibold text-foreground">{'채용 파이프라인'}</h3>
+          <p className="text-sm text-muted-foreground">{settings.stages.length}단계 파이프라인</p>
         </div>
         {isOverridden && (
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
         )}
       </div>
       <div className="space-y-2">{settings.stages.map((s, i) => (
-        <div key={s.id} className="flex items-center gap-3 rounded-xl border border-[#F0F0F3] p-3 hover:bg-[#F5F5FA] transition-colors">
-          <GripVertical className="h-4 w-4 text-[#8181A5]" />
+        <div key={s.id} className="flex items-center gap-3 rounded-xl border border-border p-3 hover:bg-muted transition-colors">
+          <GripVertical className="h-4 w-4 text-muted-foreground" />
           <div className="h-3 w-3 rounded-full" style={{ backgroundColor: s.color }} />
-          <span className="flex-1 text-sm font-medium text-[#1C1D21]">{s.name}</span>
-          <span className="text-xs text-[#8181A5]">{s.nameEn}</span>
+          <span className="flex-1 text-sm font-medium text-foreground">{s.name}</span>
+          <span className="text-xs text-muted-foreground">{s.nameEn}</span>
           <div className="flex gap-1">
-            <button onClick={() => move(i, -1)} disabled={i === 0} className="rounded p-1 hover:bg-[#F0F0F3] disabled:opacity-30"><ArrowUp className="h-3 w-3 text-[#8181A5]" /></button>
-            <button onClick={() => move(i, 1)} disabled={i === settings.stages.length - 1} className="rounded p-1 hover:bg-[#F0F0F3] disabled:opacity-30"><ArrowDown className="h-3 w-3 text-[#8181A5]" /></button>
+            <button onClick={() => move(i, -1)} disabled={i === 0} className="rounded p-1 hover:bg-border disabled:opacity-30"><ArrowUp className="h-3 w-3 text-muted-foreground" /></button>
+            <button onClick={() => move(i, 1)} disabled={i === settings.stages.length - 1} className="rounded p-1 hover:bg-border disabled:opacity-30"><ArrowDown className="h-3 w-3 text-muted-foreground" /></button>
           </div>
         </div>
       ))}</div>

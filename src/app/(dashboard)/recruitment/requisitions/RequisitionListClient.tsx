@@ -45,18 +45,18 @@ interface Requisition {
 }
 
 const URGENCY_LABELS: Record<string, { label: string; color: string }> = {
-  urgent: { label: '긴급도', color: 'bg-[#FEE2E2] text-[#B91C1C]' },
-  normal: { label: '평균', color: 'bg-[#FEF3C7] text-[#B45309]' },
-  low: { label: '낮음', color: 'bg-[#F0F9FF] text-[#0369A1]' },
+  urgent: { label: '긴급도', color: 'bg-red-100 text-red-700' },
+  normal: { label: '평균', color: 'bg-amber-100 text-amber-700' },
+  low: { label: '낮음', color: 'bg-sky-50 text-sky-700' },
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  draft: { label: '임시저장', color: 'bg-[#FAFAFA] text-[#555]', icon: <FileText size={12} /> },
-  pending: { label: '결재중', color: 'bg-[#FEF3C7] text-[#B45309]', icon: <Clock size={12} /> },
-  approved: { label: '승인', color: 'bg-[#D1FAE5] text-[#047857]', icon: <CheckCircle2 size={12} /> },
-  rejected: { label: '반려', color: 'bg-[#FEE2E2] text-[#B91C1C]', icon: <XCircle size={12} /> },
-  cancelled: { label: '취소', color: 'bg-[#FAFAFA] text-[#999]', icon: <XCircle size={12} /> },
-  filled: { label: '충원완료', color: 'bg-[#EDF1FE] text-[#4B6DE0]', icon: <CheckCircle2 size={12} /> },
+  draft: { label: '임시저장', color: 'bg-background text-[#555]', icon: <FileText size={12} /> },
+  pending: { label: '결재중', color: 'bg-amber-100 text-amber-700', icon: <Clock size={12} /> },
+  approved: { label: '승인', color: 'bg-emerald-100 text-emerald-700', icon: <CheckCircle2 size={12} /> },
+  rejected: { label: '반려', color: 'bg-red-100 text-red-700', icon: <XCircle size={12} /> },
+  cancelled: { label: '취소', color: 'bg-background text-[#999]', icon: <XCircle size={12} /> },
+  filled: { label: '충원완료', color: 'bg-primary/10 text-primary/90', icon: <CheckCircle2 size={12} /> },
 }
 
 const STEP_ROLE_LABELS: Record<string, string> = {
@@ -107,7 +107,7 @@ export default function RequisitionListClient({user }: {
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('requisitionTitle')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('requisitionTitle')}</h1>
           <p className="text-sm text-[#666] mt-0.5">{t('department_kec9ea5_kecb184ec_kec9a94ec_kebb08f_keab2b0ec_management')}</p>
         </div>
         <button
@@ -120,7 +120,7 @@ export default function RequisitionListClient({user }: {
       </div>
 
       {/* 탭 */}
-      <div className="flex border-b border-[#E8E8E8]">
+      <div className="flex border-b border-border">
         {[
           { key: 'all', label: t('all_kec9a94ec') },
           { key: 'pending', label: t('kr_keab2b0ec_keb8c80ea') },
@@ -132,7 +132,7 @@ export default function RequisitionListClient({user }: {
             onClick={() => setTab(t.key as any)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
               tab === t.key
-                ? 'border-[#5E81F4] text-[#5E81F4]'
+                ? 'border-primary text-primary'
                 : 'border-transparent text-[#666] hover:text-[#333]'
             }`}
           >
@@ -149,10 +149,10 @@ export default function RequisitionListClient({user }: {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="직무명, 부서, 요청자 검색..."
-            className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
+            className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
           />
         </div>
-        <button className="flex items-center gap-2 px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA]">
+        <button className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-[#555] hover:bg-background">
           <Filter size={14} />
           {t('filter')}
         </button>
@@ -163,7 +163,7 @@ export default function RequisitionListClient({user }: {
         <div className="flex items-center justify-center h-48 text-[#999] text-sm">{tCommon('loading')}</div>
       ) : items.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-48 text-[#999]">
-          <FileText size={40} className="mb-3 text-[#E8E8E8]" />
+          <FileText size={40} className="mb-3 text-border" />
           <EmptyState />
         </div>
       ) : (
@@ -181,7 +181,7 @@ export default function RequisitionListClient({user }: {
             return (
               <div
                 key={item.id}
-                className={`${CARD_STYLES.kpi} hover:border-[#5E81F4]/40 transition-colors`}
+                className={`${CARD_STYLES.kpi} hover:border-primary/40 transition-colors`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -196,7 +196,7 @@ export default function RequisitionListClient({user }: {
                         {item.status === 'pending' && totalSteps > 0 && ` (${item.currentStep}/${totalSteps})`}
                       </span>
                     </div>
-                    <h3 className="font-semibold text-[#1A1A1A]">{item.title}</h3>
+                    <h3 className="font-semibold text-foreground">{item.title}</h3>
                     <div className="flex items-center gap-3 mt-1 text-sm text-[#666]">
                       <span className="flex items-center gap-1">
                         <Building2 size={13} />
@@ -220,16 +220,16 @@ export default function RequisitionListClient({user }: {
                           return (
                             <div key={record.id} className="flex items-center gap-1">
                               <div className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${
-                                isRejected ? 'bg-[#FEE2E2] text-[#B91C1C]' :
-                                isDone ? 'bg-[#D1FAE5] text-[#047857]' :
-                                isActive ? 'bg-[#FEF3C7] text-[#B45309]' :
-                                'bg-[#F5F5F5] text-[#999]'
+                                isRejected ? 'bg-red-100 text-red-700' :
+                                isDone ? 'bg-emerald-100 text-emerald-700' :
+                                isActive ? 'bg-amber-100 text-amber-700' :
+                                'bg-muted text-[#999]'
                               }`}>
                                 {isDone ? '✅' : isRejected ? '❌' : isActive ? '⏳' : '⬜'}
                                 {STEP_ROLE_LABELS[record.approverRole] ?? record.approverRole}
                               </div>
                               {idx < item.approvalRecords.length - 1 && (
-                                <ChevronRight size={14} className="text-[#D4D4D4]" />
+                                <ChevronRight size={14} className="text-border" />
                               )}
                             </div>
                           )
@@ -242,7 +242,7 @@ export default function RequisitionListClient({user }: {
                     {canApprove && (
                       <button
                         onClick={() => setApproveTarget(item)}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-[#059669] text-white text-xs font-medium rounded-lg hover:bg-[#047857]"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 text-white text-xs font-medium rounded-lg hover:bg-emerald-700"
                       >
                         <CheckCircle2 size={13} />
                         결재
@@ -250,7 +250,7 @@ export default function RequisitionListClient({user }: {
                     )}
                     <button
                       onClick={() => router.push(`/recruitment/requisitions/${item.id}`)}
-                      className="flex items-center gap-1 px-3 py-1.5 border border-[#D4D4D4] text-[#555] text-xs rounded-lg hover:bg-[#FAFAFA]"
+                      className="flex items-center gap-1 px-3 py-1.5 border border-border text-[#555] text-xs rounded-lg hover:bg-background"
                     >
                       {t('kr_kec8381ec')}
                     </button>

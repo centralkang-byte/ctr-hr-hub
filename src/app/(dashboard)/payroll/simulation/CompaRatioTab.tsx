@@ -68,7 +68,7 @@ export default function CompaRatioTab({ companies }: Props) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16 text-[#8181A5]">
+      <div className="flex items-center justify-center py-16 text-muted-foreground">
         <Loader2 className="w-5 h-5 animate-spin mr-2" />
         {t('simCompaLoading')}
       </div>
@@ -86,15 +86,15 @@ export default function CompaRatioTab({ companies }: Props) {
       {/* ── 필터 ── */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-[#1C1D21]">{t('simCompaTitle')}</h3>
-          <p className="text-xs text-[#8181A5] mt-0.5">
+          <h3 className="text-sm font-semibold text-foreground">{t('simCompaTitle')}</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
             {t('simCompaDesc')}
           </p>
         </div>
         <select
           value={selectedCompanyId}
           onChange={(e) => setSelectedCompanyId(e.target.value)}
-          className="text-sm border border-[#E2E8F0] rounded-md px-3 py-1.5 bg-white"
+          className="text-sm border border-slate-200 rounded-md px-3 py-1.5 bg-white"
         >
           <option value="">{t('simCompaAllCompanies')}</option>
           {companies.map((c) => (
@@ -106,25 +106,25 @@ export default function CompaRatioTab({ companies }: Props) {
       {/* ── 요약 KPI ── */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-[#8181A5]">{t('simCompaKpiTarget')}</p>
-          <p className="text-xl font-bold text-[#1C1D21]">{summary.coveredEmployees}<span className="text-sm font-normal text-[#8181A5]">/{t('simPersonUnit', { count: summary.totalEmployees })}</span></p>
+          <p className="text-xs text-muted-foreground">{t('simCompaKpiTarget')}</p>
+          <p className="text-xl font-bold text-foreground">{summary.coveredEmployees}<span className="text-sm font-normal text-muted-foreground">/{t('simPersonUnit', { count: summary.totalEmployees })}</span></p>
         </div>
         <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-[#8181A5]">{t('simCompaKpiAvg')}</p>
-          <p className="text-xl font-bold text-[#1C1D21]">{summary.avg.toFixed(2)}</p>
+          <p className="text-xs text-muted-foreground">{t('simCompaKpiAvg')}</p>
+          <p className="text-xl font-bold text-foreground">{summary.avg.toFixed(2)}</p>
         </div>
         <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-[#8181A5]">{t('simCompaKpiMedian')}</p>
-          <p className="text-xl font-bold text-[#1C1D21]">{summary.median.toFixed(2)}</p>
+          <p className="text-xs text-muted-foreground">{t('simCompaKpiMedian')}</p>
+          <p className="text-xl font-bold text-foreground">{summary.median.toFixed(2)}</p>
         </div>
         <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-[#8181A5]">{t('simCompaKpiLow')}</p>
+          <p className="text-xs text-muted-foreground">{t('simCompaKpiLow')}</p>
           <p className="text-xl font-bold text-red-600">
             <TrendingDown className="w-4 h-4 inline mr-1" />{t('simPersonUnit', { count: summary.belowBand })}
           </p>
         </div>
         <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-[#8181A5]">{t('simCompaKpiHigh')}</p>
+          <p className="text-xs text-muted-foreground">{t('simCompaKpiHigh')}</p>
           <p className="text-xl font-bold text-amber-600">
             <TrendingUp className="w-4 h-4 inline mr-1" />{t('simPersonUnit', { count: summary.aboveBand })}
           </p>
@@ -133,7 +133,7 @@ export default function CompaRatioTab({ companies }: Props) {
 
       {/* ── 히스토그램 ── */}
       <div className={CARD_STYLES.padded}>
-        <h3 className="text-sm font-semibold text-[#1C1D21] mb-4">{t('simCompaChartTitle')}</h3>
+        <h3 className="text-sm font-semibold text-foreground mb-4">{t('simCompaChartTitle')}</h3>
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={distribution} barCategoryGap="20%">
             <CartesianGrid {...CHART_THEME.grid} />
@@ -149,7 +149,7 @@ export default function CompaRatioTab({ companies }: Props) {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-        <div className="flex items-center justify-center gap-4 mt-3 text-xs text-[#8181A5]">
+        <div className="flex items-center justify-center gap-4 mt-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-500" /> {t('simCompaRiskZone')}</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-500" /> {t('simCompaCautionZone')}</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-600" /> {t('simCompaProperZone')}</span>
@@ -159,7 +159,7 @@ export default function CompaRatioTab({ companies }: Props) {
 
       {/* ── 직급별 평균 ── */}
       <div className={CARD_STYLES.padded}>
-        <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">{t('simCompaGradeAvgTitle')}</h3>
+        <h3 className="text-sm font-semibold text-foreground mb-3">{t('simCompaGradeAvgTitle')}</h3>
         <div className={TABLE_STYLES.wrapper}>
           <table className={TABLE_STYLES.table}>
             <thead>
@@ -183,27 +183,27 @@ export default function CompaRatioTab({ companies }: Props) {
                     <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums')}>{t('simPersonUnit', { count: g.employees })}</td>
                     <td className={cn(
                       TABLE_STYLES.cell, 'text-right tabular-nums font-mono font-medium',
-                      g.avgCompaRatio < 0.8 ? 'text-red-600' : g.avgCompaRatio > 1.2 ? 'text-amber-600' : 'text-[#1C1D21]'
+                      g.avgCompaRatio < 0.8 ? 'text-red-600' : g.avgCompaRatio > 1.2 ? 'text-amber-600' : 'text-foreground'
                     )}>
                       {g.avgCompaRatio.toFixed(3)}
                     </td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-[#8181A5]')}>{g.minRatio.toFixed(2)}</td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-[#8181A5]')}>{g.maxRatio.toFixed(2)}</td>
+                    <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-muted-foreground')}>{g.minRatio.toFixed(2)}</td>
+                    <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-muted-foreground')}>{g.maxRatio.toFixed(2)}</td>
                     <td className={cn(TABLE_STYLES.cell, 'min-w-[120px]')}>
-                      <div className="relative h-4 bg-[#F1F5F9] rounded-full overflow-hidden">
+                      <div className="relative h-4 bg-slate-100 rounded-full overflow-hidden">
                         {/* Range bar */}
                         <div
-                          className="absolute h-full bg-[#4F46E5]/20 rounded-full"
+                          className="absolute h-full bg-indigo-600/20 rounded-full"
                           style={{ left: `${barLeft}%`, width: `${barWidth}%` }}
                         />
                         {/* Average marker */}
                         <div
-                          className="absolute top-0 w-0.5 h-full bg-[#4F46E5]"
+                          className="absolute top-0 w-0.5 h-full bg-indigo-600"
                           style={{ left: `${avgPos}%` }}
                         />
                         {/* 1.0 reference */}
                         <div
-                          className="absolute top-0 w-px h-full bg-[#DC2626]/30"
+                          className="absolute top-0 w-px h-full bg-red-600/30"
                           style={{ left: '50%' }}
                         />
                       </div>
@@ -221,7 +221,7 @@ export default function CompaRatioTab({ companies }: Props) {
         <div className={CARD_STYLES.padded}>
           <div className="flex items-center gap-2 mb-3">
             <AlertCircle className="w-4 h-4 text-red-500" />
-            <h3 className="text-sm font-semibold text-[#1C1D21]">{t('simCompaOutlierTitle', { count: outliers.length })}</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t('simCompaOutlierTitle', { count: outliers.length })}</h3>
           </div>
           <div className={TABLE_STYLES.wrapper}>
             <table className={TABLE_STYLES.table}>
@@ -251,7 +251,7 @@ export default function CompaRatioTab({ companies }: Props) {
                     <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>
                       {o.salary.toLocaleString('ko-KR')} {o.currency}
                     </td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-[#8181A5] text-xs')}>
+                    <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-muted-foreground text-xs')}>
                       {o.bandMin.toLocaleString('ko-KR')} ~ {o.bandMax.toLocaleString('ko-KR')}
                     </td>
                     <td className={TABLE_STYLES.cell}>

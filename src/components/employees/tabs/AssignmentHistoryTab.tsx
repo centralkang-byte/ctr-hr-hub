@@ -115,15 +115,15 @@ function AssignmentSidePanel({
   ]
 
   return (
-    <div className="w-72 flex-shrink-0 rounded-xl border border-[#E8E8E8] bg-white overflow-hidden">
-      <div className="flex items-center justify-between border-b border-[#E8E8E8] px-4 py-3">
-        <h3 className="text-sm font-bold text-[#1A1A1A]">발령 상세</h3>
+    <div className="w-72 flex-shrink-0 rounded-xl border border-border bg-white overflow-hidden">
+      <div className="flex items-center justify-between border-b border-border px-4 py-3">
+        <h3 className="text-sm font-bold text-foreground">발령 상세</h3>
         <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={onClose}>
           <X className="h-4 w-4" />
         </Button>
       </div>
       <div className="p-4 space-y-2.5 overflow-y-auto max-h-96">
-        <div className="flex items-center gap-2 pb-2 border-b border-[#F5F5F5]">
+        <div className="flex items-center gap-2 pb-2 border-b border-border">
           <Badge variant="outline" className="text-xs">{event.title}</Badge>
           <span className="text-xs text-[#999]">{new Date(event.date).toLocaleDateString('ko-KR')}</span>
         </div>
@@ -164,8 +164,8 @@ function ConcurrentStatusSection({
   )
 
   return (
-    <div className="rounded-xl border border-[#E8E8E8] bg-white p-4 space-y-3">
-      <h3 className="text-sm font-bold text-[#1A1A1A]">현재 겸직 현황</h3>
+    <div className="rounded-xl border border-border bg-white p-4 space-y-3">
+      <h3 className="text-sm font-bold text-foreground">현재 겸직 현황</h3>
 
       {activeConcurrents.length === 0 ? (
         <p className="text-xs text-[#999]">현재 활성 겸직이 없습니다.</p>
@@ -174,7 +174,7 @@ function ConcurrentStatusSection({
           {activeConcurrents.map((a) => (
             <div
               key={a.id}
-              className="flex items-center justify-between rounded-lg border border-[#F0F0F0] px-3 py-2"
+              className="flex items-center justify-between rounded-lg border border-border px-3 py-2"
             >
               <span className="text-sm text-[#333]">
                 {[a.company?.name, a.department?.name].filter(Boolean).join(' · ')}
@@ -313,7 +313,7 @@ export function AssignmentHistoryTab({
 
       {/* 타임라인 + 사이드패널 */}
       <div className="flex gap-4">
-        <div className="flex-1 min-w-0 rounded-xl border border-[#E8E8E8] bg-white p-6">
+        <div className="flex-1 min-w-0 rounded-xl border border-border bg-white p-6">
           <AssignmentTimeline
             events={events}
             onEventClick={setSelectedEvent}

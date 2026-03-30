@@ -157,19 +157,19 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="right" className="w-[420px] sm:w-[480px] p-0 flex flex-col">
-          <SheetHeader className="px-6 pt-6 pb-4 border-b border-[#F0F0F3]">
-            <SheetTitle className="text-[#1C1D21]">{t('simScenarioSavedList')}</SheetTitle>
+          <SheetHeader className="px-6 pt-6 pb-4 border-b border-border">
+            <SheetTitle className="text-foreground">{t('simScenarioSavedList')}</SheetTitle>
           </SheetHeader>
 
           {/* ─── 모드 필터 ───── */}
-          <div className="px-6 py-3 border-b border-[#F0F0F3] flex gap-1.5 flex-wrap">
+          <div className="px-6 py-3 border-b border-border flex gap-1.5 flex-wrap">
             {(['ALL', 'SINGLE', 'BULK', 'DIFFERENTIAL', 'HIRING', 'FX'] as const).map(m => (
               <button key={m} onClick={() => setModeFilter(m)}
                 className={cn(
                   'px-2.5 py-1 text-xs rounded-full transition-colors',
                   modeFilter === m
-                    ? 'bg-[#5E81F4] text-white'
-                    : 'bg-[#F5F5FA] text-[#8181A5] hover:text-[#1C1D21]',
+                    ? 'bg-primary text-white'
+                    : 'bg-muted text-muted-foreground hover:text-foreground',
                 )}>
                 {m === 'ALL' ? tCommon('all') : t(MODE_LABEL_KEYS[m])}
               </button>
@@ -178,8 +178,8 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
 
           {/* ─── 비교 바 ───── */}
           {compareIds.length > 0 && (
-            <div className="px-6 py-2.5 bg-[#F5F5FA] border-b border-[#F0F0F3] flex items-center justify-between">
-              <span className="text-xs text-[#8181A5]">
+            <div className="px-6 py-2.5 bg-muted border-b border-border flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">
                 {t('simScenarioCompareCount', { count: compareIds.length })}
                 {compareIds.length === 2 && !canCompare && (
                   <span className="text-red-500 ml-1">({t('simScenarioCompareSameMode')})</span>
@@ -187,11 +187,11 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
               </span>
               <div className="flex gap-2">
                 <button onClick={() => setCompareIds([])}
-                  className="text-xs text-[#8181A5] hover:text-[#1C1D21]">{tCommon('reset')}</button>
+                  className="text-xs text-muted-foreground hover:text-foreground">{tCommon('reset')}</button>
                 <button onClick={handleCompare} disabled={!canCompare || comparing}
                   className={cn(
                     'flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-lg',
-                    'bg-[#5E81F4] text-white hover:bg-[#4A6DE0] disabled:opacity-50',
+                    'bg-primary text-white hover:bg-primary/90 disabled:opacity-50',
                   )}>
                   {comparing ? <Loader2 className="w-3 h-3 animate-spin" /> : <GitCompareArrows className="w-3 h-3" />}
                   {t('simScenarioCompareBtn')}
@@ -204,10 +204,10 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
           <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
             {loading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-5 h-5 animate-spin text-[#8181A5]" />
+                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
               </div>
             ) : scenarios.length === 0 ? (
-              <p className="text-center text-sm text-[#8181A5] py-12">{t('simScenarioEmpty')}</p>
+              <p className="text-center text-sm text-muted-foreground py-12">{t('simScenarioEmpty')}</p>
             ) : (
               scenarios.map(s => {
                 const isSelected = compareIds.includes(s.id)
@@ -215,7 +215,7 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
                   <div key={s.id}
                     className={cn(
                       'border rounded-lg p-3 transition-colors',
-                      isSelected ? 'border-[#5E81F4] bg-[#5E81F4]/5' : 'border-[#F0F0F3] hover:border-[#D0D0D8]',
+                      isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-border',
                     )}>
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
@@ -223,11 +223,11 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
                           <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full font-medium', MODE_COLORS[s.mode])}>
                             {t(MODE_LABEL_KEYS[s.mode])}
                           </span>
-                          <span className="text-xs text-[#8181A5]">{fmtDate(s.createdAt)}</span>
+                          <span className="text-xs text-muted-foreground">{fmtDate(s.createdAt)}</span>
                         </div>
-                        <p className="text-sm font-medium text-[#1C1D21] truncate">{s.title}</p>
+                        <p className="text-sm font-medium text-foreground truncate">{s.title}</p>
                         {s.description && (
-                          <p className="text-xs text-[#8181A5] mt-0.5 line-clamp-1">{s.description}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{s.description}</p>
                         )}
                       </div>
                     </div>
@@ -237,18 +237,18 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
                         className={cn(
                           'px-2 py-1 text-xs rounded transition-colors',
                           isSelected
-                            ? 'bg-[#5E81F4] text-white'
-                            : 'bg-[#F5F5FA] text-[#8181A5] hover:text-[#1C1D21]',
+                            ? 'bg-primary text-white'
+                            : 'bg-muted text-muted-foreground hover:text-foreground',
                         )}>
                         {isSelected ? <X className="w-3 h-3 inline" /> : <GitCompareArrows className="w-3 h-3 inline" />}
                         {' '}{t('simScenarioCompareBtn')}
                       </button>
                       <button onClick={() => handleLoad(s.id)}
-                        className="flex items-center gap-1 px-2 py-1 text-xs bg-[#F5F5FA] text-[#8181A5] hover:text-[#1C1D21] rounded">
+                        className="flex items-center gap-1 px-2 py-1 text-xs bg-muted text-muted-foreground hover:text-foreground rounded">
                         <Upload className="w-3 h-3" /> {t('simScenarioLoadBtn')}
                       </button>
                       <button onClick={() => setDeleteTarget(s)}
-                        className="flex items-center gap-1 px-2 py-1 text-xs bg-[#F5F5FA] text-red-400 hover:text-red-600 rounded ml-auto">
+                        className="flex items-center gap-1 px-2 py-1 text-xs bg-muted text-red-400 hover:text-red-600 rounded ml-auto">
                         <Trash2 className="w-3 h-3" />
                       </button>
                     </div>

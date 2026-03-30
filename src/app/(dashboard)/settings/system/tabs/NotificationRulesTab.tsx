@@ -25,12 +25,12 @@ export function NotificationRulesTab({
       .finally(() => setLoading(false))
   }, [companyId])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
-        <div><h3 className="text-base font-semibold text-[#1C1D21]">{t('notificationRules')}</h3><p className="text-sm text-[#8181A5]">이벤트별 알림 대상 및 채널 ({triggers.length}건)</p></div>
+        <div><h3 className="text-base font-semibold text-foreground">{t('notificationRules')}</h3><p className="text-sm text-muted-foreground">이벤트별 알림 대상 및 채널 ({triggers.length}건)</p></div>
         <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />{t('kr_keab79cec_add')}</Button>
       </div>
       {triggers.length > 0 ? (
@@ -44,10 +44,10 @@ export function NotificationRulesTab({
             </tr></thead>
             <tbody>{triggers.map((trig) => (
               <tr key={trig.id} className={TABLE_STYLES.row}>
-                <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{trig.eventType}</td>
+                <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{trig.eventType}</td>
                 <td className={TABLE_STYLES.cell}>{trig.name}</td>
                 <td className={TABLE_STYLES.cell}><div className="flex gap-1">{(trig.channels ?? []).map((ch) => (
-                  <span key={ch} className="rounded bg-[#F5F5FA] px-2 py-0.5 text-xs text-[#8181A5]">{ch}</span>
+                  <span key={ch} className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">{ch}</span>
                 ))}</div></td>
                 <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!trig.deletedAt ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>{!trig.deletedAt ? '활성' : '비활성'}</span></td>
               </tr>
@@ -55,8 +55,8 @@ export function NotificationRulesTab({
           </table>
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <Bell className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">{t('register_keb909c_kec958ceb_keab79cec_kec9786ec')}</p>
+        <div className="rounded-xl border border-dashed border-border py-12 text-center">
+          <Bell className="mx-auto mb-3 h-8 w-8 text-muted-foreground" /><p className="text-sm font-medium text-foreground">{t('register_keb909c_kec958ceb_keab79cec_kec9786ec')}</p>
         </div>
       )}
     </div>

@@ -271,60 +271,60 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-4">
+        <div className="bg-white border border-border rounded-xl p-4">
           <p className="text-xs text-[#999] font-medium mb-2">{t('totalEmployees')}</p>
           <p className={TYPOGRAPHY.stat}><AnimatedNumber value={kpi?.totalEmployees ?? 0} /></p>
         </div>
 
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-4">
+        <div className="bg-white border border-border rounded-xl p-4">
           <p className="text-xs text-[#999] font-medium mb-2">{t('clockIn')}</p>
           <p className={TYPOGRAPHY.stat}><AnimatedNumber value={kpi?.presentCount ?? 0} /></p>
-          <span className="text-xs font-semibold text-[#5E81F4]">{presentPct}%</span>
+          <span className="text-xs font-semibold text-primary">{presentPct}%</span>
         </div>
 
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-4">
+        <div className="bg-white border border-border rounded-xl p-4">
           <p className="text-xs text-[#999] font-medium mb-2">{t('late')}</p>
-          <p className={`text-3xl font-bold tabular-nums ${(kpi?.lateCount ?? 0) > 0 ? 'text-[#F44336]' : 'text-[#1A1A1A]'}`}><AnimatedNumber value={kpi?.lateCount ?? 0} /></p>
+          <p className={`text-3xl font-bold tabular-nums ${(kpi?.lateCount ?? 0) > 0 ? 'text-red-500' : 'text-foreground'}`}><AnimatedNumber value={kpi?.lateCount ?? 0} /></p>
         </div>
 
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-4">
+        <div className="bg-white border border-border rounded-xl p-4">
           <p className="text-xs text-[#999] font-medium mb-2">{t('absent')}</p>
-          <p className={`text-3xl font-bold tabular-nums ${(kpi?.absentCount ?? 0) > 0 ? 'text-[#F44336]' : 'text-[#1A1A1A]'}`}><AnimatedNumber value={kpi?.absentCount ?? 0} /></p>
+          <p className={`text-3xl font-bold tabular-nums ${(kpi?.absentCount ?? 0) > 0 ? 'text-red-500' : 'text-foreground'}`}><AnimatedNumber value={kpi?.absentCount ?? 0} /></p>
         </div>
       </div>
 
       {/* Average work hours */}
-      <div className="bg-white border border-[#E8E8E8] rounded-xl p-4">
+      <div className="bg-white border border-border rounded-xl p-4">
         <p className="text-xs text-[#999] font-medium mb-2">{t('averageWorkHours')}</p>
         <p className={TYPOGRAPHY.stat}>{kpi ? formatMinutes(kpi.avgTotalMinutes) : '—'}</p>
       </div>
 
       {/* 52시간 모니터링 위젯 */}
       {alerts.length > 0 && (
-        <div className="rounded-xl border border-[#FECACA] bg-white overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3 bg-[#FEF2F2] border-b border-[#FECACA]">
+        <div className="rounded-xl border border-red-200 bg-white overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-3 bg-red-50 border-b border-red-200">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-[#EF4444]" />
-              <span className="text-sm font-semibold text-[#B91C1C]">
+              <AlertTriangle className="h-4 w-4 text-red-500" />
+              <span className="text-sm font-semibold text-red-700">
                 52시간 초과 경고 ({alerts.length}명)
               </span>
             </div>
             <div className="flex items-center gap-3 text-xs text-[#666]">
               <span className="flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-[#F59E0B] inline-block" />
+                <span className="h-2 w-2 rounded-full bg-amber-500 inline-block" />
                 주의: {alerts.filter((a) => a.alertLevel === 'caution').length}
               </span>
               <span className="flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-[#F97316] inline-block" />
+                <span className="h-2 w-2 rounded-full bg-orange-500 inline-block" />
                 경고: {alerts.filter((a) => a.alertLevel === 'warning').length}
               </span>
               <span className="flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-[#EF4444] inline-block" />
+                <span className="h-2 w-2 rounded-full bg-red-500 inline-block" />
                 차단: {alerts.filter((a) => a.alertLevel === 'blocked').length}
               </span>
             </div>
           </div>
-          <div className="divide-y divide-[#F5F5F5]">
+          <div className="divide-y divide-border">
             {!alerts?.length && <EmptyState />}
               {alerts?.map((alert) => (
               <div key={alert.id} className="flex items-center justify-between px-5 py-3">
@@ -332,15 +332,15 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
                   <span
                     className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                       alert.alertLevel === 'blocked'
-                        ? 'bg-[#FEE2E2] text-[#B91C1C]'
+                        ? 'bg-red-100 text-red-700'
                         : alert.alertLevel === 'warning'
-                          ? 'bg-[#FFF7ED] text-[#C2410C]'
-                          : 'bg-[#FFFBEB] text-[#B45309]'
+                          ? 'bg-orange-50 text-orange-700'
+                          : 'bg-amber-50 text-amber-700'
                     }`}
                   >
                     {alert.alertLevel === 'blocked' ? '차단' : alert.alertLevel === 'warning' ? '경고' : '주의'}
                   </span>
-                  <span className="text-sm font-medium text-[#1A1A1A]">
+                  <span className="text-sm font-medium text-foreground">
                     {alert.employee?.name ?? '—'}
                   </span>
                   <span className="text-xs text-[#888]">
@@ -350,7 +350,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
                 <button
                   onClick={() => { void handleResolveAlert(alert.id) }}
                   disabled={resolvingId === alert.id}
-                  className="flex items-center gap-1 text-xs text-[#059669] hover:text-[#047857] disabled:opacity-50"
+                  className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 disabled:opacity-50"
                 >
                   {resolvingId === alert.id ? (
                     <XCircle className="h-4 w-4" />
@@ -443,7 +443,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
 
             <div className="space-y-2">
               <Label htmlFor="correction-note">
-                {t('correctionReason')} <span className="text-[#F44336]">*</span>
+                {t('correctionReason')} <span className="text-red-500">*</span>
               </Label>
               <Textarea
                 id="correction-note"

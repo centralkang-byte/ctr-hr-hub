@@ -120,7 +120,7 @@ export default function PlansTab() {
     {
       key: 'positionTitle',
       header: '직책명',
-      render: (row) => <span className="font-medium text-[#1A1A1A]">{row.positionTitle || '-'}</span>,
+      render: (row) => <span className="font-medium text-foreground">{row.positionTitle || '-'}</span>,
     },
     {
       key: 'department',
@@ -160,7 +160,7 @@ export default function PlansTab() {
       key: 'candidates',
       header: '후보 수',
       render: (row) => (
-        <span className={row._count.candidates === 0 ? 'text-[#EF4444] font-medium' : ''}>
+        <span className={row._count.candidates === 0 ? 'text-red-500 font-medium' : ''}>
           {row._count.candidates}명
         </span>
       ),
@@ -174,7 +174,7 @@ export default function PlansTab() {
             <Eye className="h-4 w-4" />
           </Button>
           <Button variant="ghost" size="sm" onClick={() => handleDelete(row)}>
-            <Trash2 className="h-4 w-4 text-[#EF4444]" />
+            <Trash2 className="h-4 w-4 text-red-500" />
           </Button>
         </div>
       ),
@@ -214,7 +214,7 @@ export default function PlansTab() {
             <div>
               <label className="text-sm font-medium text-[#333] mb-1 block">직책명 *</label>
               <input
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
                 value={form.positionTitle}
                 onChange={(e) => setForm((f) => ({ ...f, positionTitle: e.target.value }))}
               />
@@ -222,7 +222,7 @@ export default function PlansTab() {
             <div>
               <label className="text-sm font-medium text-[#333] mb-1 block">중요도 *</label>
               <select
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                 value={form.criticality}
                 onChange={(e) => setForm((f) => ({ ...f, criticality: e.target.value }))}
               >
@@ -234,7 +234,7 @@ export default function PlansTab() {
             <div>
               <label className="text-sm font-medium text-[#333] mb-1 block">비고</label>
               <textarea
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                 rows={3}
                 value={form.notes}
                 onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}

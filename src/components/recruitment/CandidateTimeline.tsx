@@ -50,16 +50,16 @@ const EVENT_ICONS: Record<string, React.ReactNode> = {
 }
 
 const EVENT_COLORS: Record<string, string> = {
-  APPLIED: 'bg-[#F5F5F5] border-[#D4D4D4] text-[#555]',
-  SCREENING: 'bg-[#E0E7FF] border-[#C7D2FE] text-[#4B6DE0]',
-  INTERVIEW_1: 'bg-[#DBEAFE] border-[#BFDBFE] text-[#1D4ED8]',
-  INTERVIEW_2: 'bg-[#DBEAFE] border-[#BFDBFE] text-[#1D4ED8]',
-  FINAL: 'bg-[#FEF3C7] border-[#FCD34D] text-[#B45309]',
-  OFFER: 'bg-[#EDF1FE] border-[#A7F3D0] text-[#047857]',
-  HIRED: 'bg-[#D1FAE5] border-[#6EE7B7] text-[#065F46]',
-  REJECTED: 'bg-[#FEE2E2] border-[#FECACA] text-[#B91C1C]',
-  pool_entry: 'bg-[#E0E7FF] border-[#C7D2FE] text-[#4B6DE0]',
-  default: 'bg-white border-[#E8E8E8] text-[#555]',
+  APPLIED: 'bg-muted border-border text-[#555]',
+  SCREENING: 'bg-indigo-100 border-indigo-200 text-primary/90',
+  INTERVIEW_1: 'bg-blue-100 border-blue-200 text-blue-700',
+  INTERVIEW_2: 'bg-blue-100 border-blue-200 text-blue-700',
+  FINAL: 'bg-amber-100 border-amber-300 text-amber-700',
+  OFFER: 'bg-primary/10 border-emerald-200 text-emerald-700',
+  HIRED: 'bg-emerald-100 border-emerald-300 text-emerald-800',
+  REJECTED: 'bg-red-100 border-red-200 text-red-700',
+  pool_entry: 'bg-indigo-100 border-indigo-200 text-primary/90',
+  default: 'bg-white border-border text-[#555]',
 }
 
 export default function CandidateTimeline({ applicantId }: Props) {
@@ -98,7 +98,7 @@ export default function CandidateTimeline({ applicantId }: Props) {
       </p>
       <div className="relative">
         {/* 세로 연결선 */}
-        <div className="absolute left-4 top-0 bottom-0 w-px bg-[#E8E8E8]" />
+        <div className="absolute left-4 top-0 bottom-0 w-px bg-border" />
 
         <div className="space-y-3">
           {data.events.map((event, idx) => {
@@ -116,10 +116,10 @@ export default function CandidateTimeline({ applicantId }: Props) {
                 </div>
 
                 {/* 이벤트 카드 */}
-                <div className="bg-white rounded-lg border border-[#E8E8E8] p-3">
+                <div className="bg-white rounded-lg border border-border p-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-[#1A1A1A]">
+                      <p className="text-sm font-semibold text-foreground">
                         {STAGE_LABELS[event.label] ?? event.label}
                       </p>
                       {event.postingTitle && (
@@ -132,7 +132,7 @@ export default function CandidateTimeline({ applicantId }: Props) {
                         <p className="text-xs text-[#888] mt-1">{event.description}</p>
                       )}
                       {event.score !== undefined && event.score !== null && (
-                        <p className="text-xs text-[#4B6DE0] mt-1 font-medium">
+                        <p className="text-xs text-primary/90 mt-1 font-medium">
                           AI 스크리닝 점수: {event.score}점
                         </p>
                       )}
@@ -146,8 +146,8 @@ export default function CandidateTimeline({ applicantId }: Props) {
                     </time>
                   </div>
                   {event.isCurrent && (
-                    <div className="mt-2 flex items-center gap-1 text-xs text-[#4B6DE0] font-medium">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#5E81F4] animate-pulse" />
+                    <div className="mt-2 flex items-center gap-1 text-xs text-primary/90 font-medium">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                       현재 단계
                     </div>
                   )}

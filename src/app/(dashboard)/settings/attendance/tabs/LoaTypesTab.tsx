@@ -214,8 +214,8 @@ export function LoaTypesTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">휴직 유형 관리</h3>
-          <p className="text-sm text-[#8181A5]">
+          <h3 className="text-base font-semibold text-foreground">휴직 유형 관리</h3>
+          <p className="text-sm text-muted-foreground">
             {types.length}개 유형 · 법정 {statutoryCount}개 · 약정 {contractualCount}개
           </p>
         </div>
@@ -226,7 +226,7 @@ export function LoaTypesTab({ companyId }: Props) {
 
       {/* 추가 폼 */}
       {showAdd && (
-        <div className="rounded-lg border border-[#E8E8EF] p-4 space-y-3 bg-[#FAFAFC]">
+        <div className="rounded-lg border border-border p-4 space-y-3 bg-background">
           <p className="text-sm font-medium">새 휴직 유형 추가</p>
           <div className="grid grid-cols-4 gap-3">
             <Input placeholder="코드 (예: SABBATICAL)" value={addForm.code}
@@ -284,12 +284,12 @@ export function LoaTypesTab({ companyId }: Props) {
 
       {/* 테이블 */}
       {loading ? (
-        <div className="py-8 text-center text-sm text-[#8181A5]">로딩 중...</div>
+        <div className="py-8 text-center text-sm text-muted-foreground">로딩 중...</div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-[#E8E8EF]">
+        <div className="overflow-x-auto rounded-lg border border-border">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#E8E8EF] bg-[#FAFAFC]">
+              <tr className="border-b border-border bg-background">
                 <th className={TABLE_STYLES.headerCell}>코드</th>
                 <th className={TABLE_STYLES.headerCell}>유형명</th>
                 <th className={TABLE_STYLES.headerCell}>구분</th>
@@ -303,11 +303,11 @@ export function LoaTypesTab({ companyId }: Props) {
             </thead>
             <tbody>
               {types.length === 0 ? (
-                <tr><td colSpan={9} className="py-8 text-center text-sm text-[#8181A5]">등록된 휴직 유형이 없습니다.</td></tr>
+                <tr><td colSpan={9} className="py-8 text-center text-sm text-muted-foreground">등록된 휴직 유형이 없습니다.</td></tr>
               ) : types.map(t => (
-                <tr key={t.id} className="border-b border-[#E8E8EF] last:border-0 hover:bg-[#FAFAFC]">
+                <tr key={t.id} className="border-b border-border last:border-0 hover:bg-background">
                   <td className={TABLE_STYLES.cell}>
-                    <span className="font-mono text-xs text-[#8181A5]">{t.code}</span>
+                    <span className="font-mono text-xs text-muted-foreground">{t.code}</span>
                   </td>
                   <td className={TABLE_STYLES.cell}>
                     {editingId === t.id ? (
@@ -317,8 +317,8 @@ export function LoaTypesTab({ companyId }: Props) {
                       </div>
                     ) : (
                       <div>
-                        <p className="font-medium text-[#1C1D21]">{t.name}</p>
-                        {t.nameEn && <p className="text-xs text-[#8181A5]">{t.nameEn}</p>}
+                        <p className="font-medium text-foreground">{t.name}</p>
+                        {t.nameEn && <p className="text-xs text-muted-foreground">{t.nameEn}</p>}
                       </div>
                     )}
                   </td>
@@ -350,7 +350,7 @@ export function LoaTypesTab({ companyId }: Props) {
                     ) : (
                       <span>
                         {PAY_TYPE_LABELS[t.payType] ?? t.payType}
-                        {t.payRate != null && <span className="text-xs text-[#8181A5]"> ({t.payRate}%)</span>}
+                        {t.payRate != null && <span className="text-xs text-muted-foreground"> ({t.payRate}%)</span>}
                       </span>
                     )}
                   </td>
@@ -361,14 +361,14 @@ export function LoaTypesTab({ companyId }: Props) {
                     {t.requiresProof ? (
                       <FileText className="h-4 w-4 text-blue-500" />
                     ) : (
-                      <span className="text-[#8181A5]">—</span>
+                      <span className="text-muted-foreground">—</span>
                     )}
                   </td>
                   <td className={TABLE_STYLES.cell}>
                     {t.reinstatementGuaranteed ? (
                       <Shield className="h-4 w-4 text-green-500" />
                     ) : (
-                      <span className="text-[#8181A5]">—</span>
+                      <span className="text-muted-foreground">—</span>
                     )}
                   </td>
                   <td className={cn(TABLE_STYLES.cell, 'text-right')}>

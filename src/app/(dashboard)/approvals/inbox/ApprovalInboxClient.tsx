@@ -61,9 +61,9 @@ const MODULE_ICON: Record<string, React.ElementType> = {
 }
 
 const MODULE_COLOR: Record<string, string> = {
-  LEAVE:       'text-[#5E81F4]',
-  PERFORMANCE: 'text-[#A855F7]',
-  PAYROLL:     'text-[#F59E0B]',
+  LEAVE:       'text-primary',
+  PERFORMANCE: 'text-violet-500',
+  PAYROLL:     'text-amber-500',
 }
 
 const PRIORITY_BORDER: Record<string, string> = {
@@ -110,31 +110,31 @@ function RejectionModal({ item, onClose, onConfirm }: RejectionModalProps) {
       <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
         {/* Header */}
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-[#1C1D21]">반려 사유 입력</h2>
+          <h2 className="text-base font-semibold text-foreground">반려 사유 입력</h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded p-1 text-[#8181A5] hover:bg-[#F5F5FA]"
+            className="rounded p-1 text-muted-foreground hover:bg-muted"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Target */}
-        <div className="mb-4 rounded-lg bg-[#F5F5FA] px-3 py-2 text-sm text-[#8181A5]">
+        <div className="mb-4 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">
           {item.title}
         </div>
 
         {/* Reason textarea */}
         <textarea
-          className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm text-[#1C1D21] placeholder:text-[#C0C0D0] focus:border-[#5E81F4] focus:outline-none"
+          className="w-full rounded-lg border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-primary focus:outline-none"
           rows={4}
           placeholder={'placeholderRejectReasonRequired'}
           value={reason}
           onChange={(e) => { setReason(e.target.value); setError('') }}
         />
         {error && (
-          <p className="mt-1 flex items-center gap-1 text-xs text-[#EF4444]">
+          <p className="mt-1 flex items-center gap-1 text-xs text-red-500">
             <AlertCircle className="h-3 w-3" />
             {error}
           </p>
@@ -147,7 +147,7 @@ function RejectionModal({ item, onClose, onConfirm }: RejectionModalProps) {
           </Button>
           <Button
             size="sm"
-            className="bg-[#EF4444] text-white hover:bg-[#DC2626]"
+            className="bg-red-500 text-white hover:bg-red-600"
             onClick={handleSubmit}
             disabled={submitting}
           >
@@ -183,15 +183,15 @@ function ApproveConfirmModal({ item, onClose, onConfirm }: ApproveConfirmModalPr
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-[#1C1D21]">승인 확인</h2>
-          <button type="button" onClick={onClose} className="rounded p-1 text-[#8181A5] hover:bg-[#F5F5FA]">
+          <h2 className="text-base font-semibold text-foreground">승인 확인</h2>
+          <button type="button" onClick={onClose} className="rounded p-1 text-muted-foreground hover:bg-muted">
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="mb-4 rounded-lg bg-[#F5F5FA] px-3 py-2 text-sm text-[#8181A5]">
+        <div className="mb-4 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">
           {item.title}
         </div>
-        <p className="text-sm text-[#1C1D21]">이 요청을 승인하시겠습니까?</p>
+        <p className="text-sm text-foreground">이 요청을 승인하시겠습니까?</p>
         <div className="mt-5 flex justify-end gap-2">
           <Button variant="outline" size="sm" onClick={onClose} disabled={submitting}>
             취소
@@ -235,13 +235,13 @@ function BulkConfirmModal({ count, onClose, onConfirm }: BulkConfirmModalProps) 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-lg">
-        <h2 className="mb-3 text-base font-semibold text-[#1C1D21]">일괄 승인 확인</h2>
-        <p className="text-sm text-[#8181A5]">
-          선택한 <span className="font-semibold text-[#1C1D21]">{count}건</span>을 모두 승인하시겠습니까?
+        <h2 className="mb-3 text-base font-semibold text-foreground">일괄 승인 확인</h2>
+        <p className="text-sm text-muted-foreground">
+          선택한 <span className="font-semibold text-foreground">{count}건</span>을 모두 승인하시겠습니까?
         </p>
 
         {progress && (
-          <div className="mt-3 text-xs text-[#8181A5]">
+          <div className="mt-3 text-xs text-muted-foreground">
             처리 중... ({progress.done}/{progress.total})
           </div>
         )}
@@ -277,7 +277,7 @@ interface ApprovalRowProps {
 
 function ApprovalRow({ item, isSelected, onToggle, onApprove, onReject, processing }: ApprovalRowProps) {
   const Icon   = MODULE_ICON[item.module] ?? Inbox
-  const color  = MODULE_COLOR[item.module] ?? 'text-[#8181A5]'
+  const color  = MODULE_COLOR[item.module] ?? 'text-muted-foreground'
   const border = PRIORITY_BORDER[item.priority] ?? ''
   const isBusy = processing === item.id
 
@@ -289,52 +289,52 @@ function ApprovalRow({ item, isSelected, onToggle, onApprove, onReject, processi
 
   return (
     <div
-      className={`rounded-xl bg-white p-4 transition-shadow hover:shadow-sm ${border} border border-[#F0F0F3]`}
+      className={`rounded-xl bg-white p-4 transition-shadow hover:shadow-sm ${border} border border-border`}
     >
       <div className="flex items-start gap-3">
         {/* Checkbox (pending only) */}
         {item.status === 'PENDING' ? (
           <button
             type="button"
-            className="mt-0.5 shrink-0 text-[#8181A5] hover:text-[#5E81F4]"
+            className="mt-0.5 shrink-0 text-muted-foreground hover:text-primary"
             onClick={() => onToggle(item.id)}
             aria-label="선택"
           >
             {isSelected
-              ? <CheckSquare className="h-4 w-4 text-[#5E81F4]" />
+              ? <CheckSquare className="h-4 w-4 text-primary" />
               : <Square className="h-4 w-4" />
             }
           </button>
         ) : (
           <div className="mt-0.5 h-4 w-4 shrink-0">
             {item.status === 'APPROVED'
-              ? <CheckCircle2 className="h-4 w-4 text-[#5E81F4]" />
-              : <XCircle className="h-4 w-4 text-[#EF4444]" />
+              ? <CheckCircle2 className="h-4 w-4 text-primary" />
+              : <XCircle className="h-4 w-4 text-red-500" />
             }
           </div>
         )}
 
         {/* Icon */}
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#F5F5FA]">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted">
           <Icon className={`h-4 w-4 ${color}`} />
         </div>
 
         {/* Content */}
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-[#1C1D21]">{item.title}</p>
-          <p className="mt-0.5 truncate text-xs text-[#8181A5]">{item.description}</p>
+          <p className="text-sm font-medium text-foreground">{item.title}</p>
+          <p className="mt-0.5 truncate text-xs text-muted-foreground">{item.description}</p>
           <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
             <Badge variant="outline" className="h-5 px-1.5 text-[10px]">
               {MODULE_LABEL[item.module] ?? item.module}
             </Badge>
-            <span className="text-[10px] text-[#8181A5]">{item.requesterDept}</span>
+            <span className="text-[10px] text-muted-foreground">{item.requesterDept}</span>
             {dueLabel && (
               <Badge
                 variant="outline"
                 className={`h-5 px-1.5 text-[10px] ${
                   isDue
-                    ? 'border-[#FECACA] bg-[#FEF2F2] text-[#EF4444]'
-                    : 'border-[#F0F0F3] text-[#8181A5]'
+                    ? 'border-red-200 bg-red-50 text-red-500'
+                    : 'border-border text-muted-foreground'
                 }`}
               >
                 마감: {dueLabel}
@@ -349,7 +349,7 @@ function ApprovalRow({ item, isSelected, onToggle, onApprove, onReject, processi
             <Button
               size="sm"
               variant="ghost"
-              className="h-7 gap-1 px-2 text-[11px] text-[#5E81F4] hover:bg-[#EDF1FE]"
+              className="h-7 gap-1 px-2 text-[11px] text-primary hover:bg-primary/10"
               disabled={isBusy}
               onClick={() => onApprove(item)}
             >
@@ -362,7 +362,7 @@ function ApprovalRow({ item, isSelected, onToggle, onApprove, onReject, processi
             <Button
               size="sm"
               variant="ghost"
-              className="h-7 gap-1 px-2 text-[11px] text-[#EF4444] hover:bg-[#FEF2F2]"
+              className="h-7 gap-1 px-2 text-[11px] text-red-500 hover:bg-red-50"
               disabled={isBusy}
               onClick={() => onReject(item)}
             >
@@ -370,7 +370,7 @@ function ApprovalRow({ item, isSelected, onToggle, onApprove, onReject, processi
               <span className="hidden sm:inline">반려</span>
             </Button>
             <Link href={item.actions.detailUrl}>
-              <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-[#8181A5] hover:bg-[#F5F5FA]">
+              <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-muted-foreground hover:bg-muted">
                 <ExternalLink className="h-3.5 w-3.5" />
               </Button>
             </Link>
@@ -515,8 +515,8 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
       {/* ── Page Header ── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-[#1C1D21]">{tCommon('approvalsInbox')}</h1>
-          <p className="mt-0.5 text-sm text-[#8181A5]">
+          <h1 className="text-xl font-bold text-foreground">{tCommon('approvalsInbox')}</h1>
+          <p className="mt-0.5 text-sm text-muted-foreground">
             처리가 필요한 승인 요청을 확인하세요.
           </p>
         </div>
@@ -534,16 +534,16 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
 
       {/* ── Bulk progress bar ── */}
       {bulkProgress && (
-        <div className="rounded-lg border border-[#F0F0F3] bg-white p-3 space-y-2">
+        <div className="rounded-lg border border-border bg-white p-3 space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-[#1C1D21] font-medium">
+            <span className="text-foreground font-medium">
               일괄 승인 진행 중... ({bulkProgress.done}/{bulkProgress.total})
             </span>
             {bulkProgress.failed > 0 && (
               <span className="text-sm text-destructive">{bulkProgress.failed}건 실패</span>
             )}
           </div>
-          <div className="h-2 bg-[#F0F0F3] rounded-full overflow-hidden">
+          <div className="h-2 bg-border rounded-full overflow-hidden">
             <div
               className="h-full bg-ctr-primary rounded-full transition-all duration-300"
               style={{ width: `${(bulkProgress.done / bulkProgress.total) * 100}%` }}
@@ -561,14 +561,14 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
             onClick={() => { setTab(t.key); setSelectedIds(new Set()); setPendingVisible(20) }}
             className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               tab === t.key
-                ? 'bg-[#5E81F4] text-white'
-                : 'bg-[#F5F5FA] text-[#8181A5] hover:bg-[#EDF1FE] hover:text-[#5E81F4]'
+                ? 'bg-primary text-white'
+                : 'bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary'
             }`}
           >
             {t.label}
             {tabCounts[t.key] > 0 && (
               <span className={`rounded-full px-1 text-[10px] ${
-                tab === t.key ? 'bg-white/30 text-white' : 'bg-[#E8E8F0] text-[#8181A5]'
+                tab === t.key ? 'bg-white/30 text-white' : 'bg-muted text-muted-foreground'
               }`}>
                 {tabCounts[t.key]}
               </span>
@@ -581,15 +581,15 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
       {loading ? (
         <div className="space-y-2">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-20 animate-pulse rounded-xl bg-[#F5F5FA]" />
+            <div key={i} className="h-20 animate-pulse rounded-xl bg-muted" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <Card className="border-[#F0F0F3] shadow-none">
+        <Card className="border-border shadow-none">
           <CardContent className="flex flex-col items-center py-16 text-center">
-            <CheckCircle2 className="mb-3 h-12 w-12 text-[#5E81F4] opacity-60" />
+            <CheckCircle2 className="mb-3 h-12 w-12 text-primary opacity-60" />
             <EmptyState />
-            <p className="mt-1 text-xs text-[#8181A5]">모든 요청이 처리되었습니다.</p>
+            <p className="mt-1 text-xs text-muted-foreground">모든 요청이 처리되었습니다.</p>
           </CardContent>
         </Card>
       ) : (
@@ -609,7 +609,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
             <button
               type="button"
               onClick={() => setPendingVisible(v => v + 20)}
-              className="w-full py-2 text-sm text-[#5E81F4] hover:underline"
+              className="w-full py-2 text-sm text-primary hover:underline"
             >
               더 보기 ({filtered.length - pendingVisible}건 남음)
             </button>
@@ -625,13 +625,13 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
             className="flex w-full items-center gap-2 py-2"
             onClick={() => setShowHistory(v => !v)}
           >
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#8181A5]">
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               처리 완료 (최근 30일)
             </span>
-            <span className="rounded-full bg-[#F0F0F3] px-1.5 py-0.5 text-[10px] text-[#8181A5]">
+            <span className="rounded-full bg-border px-1.5 py-0.5 text-[10px] text-muted-foreground">
               {historyItems.length}
             </span>
-            <span className="ml-auto text-[#8181A5]">
+            <span className="ml-auto text-muted-foreground">
               {showHistory ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
             </span>
           </button>
@@ -653,7 +653,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
                 <button
                   type="button"
                   onClick={() => setHistoryVisible(v => v + 20)}
-                  className="w-full py-2 text-sm text-[#8181A5] hover:underline"
+                  className="w-full py-2 text-sm text-muted-foreground hover:underline"
                 >
                   더 보기 ({historyItems.length - historyVisible}건 남음)
                 </button>
@@ -666,8 +666,8 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
       {/* ── Bulk floating action bar ── */}
       {selectedIds.size > 0 && (
         <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
-          <div className="flex items-center gap-3 rounded-xl bg-[#1C1D21] px-5 py-3 text-white shadow-lg">
-            <CheckSquare className="h-4 w-4 text-[#5E81F4]" />
+          <div className="flex items-center gap-3 rounded-xl bg-foreground px-5 py-3 text-white shadow-lg">
+            <CheckSquare className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">{selectedIds.size}건 선택됨</span>
             <Button
               size="sm"
@@ -678,7 +678,7 @@ export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
             </Button>
             <button
               type="button"
-              className="text-xs text-[#8181A5] hover:text-white"
+              className="text-xs text-muted-foreground hover:text-white"
               onClick={() => setSelectedIds(new Set())}
             >
               선택 해제

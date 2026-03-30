@@ -70,9 +70,9 @@ function bandHint(band: BandData | undefined, notRegisteredLabel: string): strin
 function KPICard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div className={CARD_STYLES.padded}>
-      <p className="text-xs text-[#8181A5] mb-1">{label}</p>
-      <p className="text-xl font-bold text-[#1C1D21]">{value}</p>
-      {sub && <p className="text-xs text-[#8181A5] mt-0.5">{sub}</p>}
+      <p className="text-xs text-muted-foreground mb-1">{label}</p>
+      <p className="text-xl font-bold text-foreground">{value}</p>
+      {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
     </div>
   )
 }
@@ -234,11 +234,11 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
       {/* ── 입력 영역 ── */}
       <div className={CARD_STYLES.padded}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-[#1C1D21]">{t('simHiringTitle')}</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t('simHiringTitle')}</h3>
           <select
             value={selectedCompanyId}
             onChange={(e) => setSelectedCompanyId(e.target.value)}
-            className="text-sm border border-[#E2E8F0] rounded-md px-3 py-1.5 bg-white"
+            className="text-sm border border-slate-200 rounded-md px-3 py-1.5 bg-white"
           >
             {companies.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
@@ -247,12 +247,12 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
         </div>
 
         {isLoadingGrades ? (
-          <div className="flex items-center justify-center py-8 text-[#8181A5]">
+          <div className="flex items-center justify-center py-8 text-muted-foreground">
             <Loader2 className="w-5 h-5 animate-spin mr-2" />
             {t('simHiringLoading')}
           </div>
         ) : grades.length === 0 ? (
-          <p className="text-sm text-[#8181A5] py-4">{t('simNoGrades')}</p>
+          <p className="text-sm text-muted-foreground py-4">{t('simNoGrades')}</p>
         ) : (
           <>
             <div className={TABLE_STYLES.wrapper}>
@@ -263,7 +263,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                     <th className={cn(TABLE_STYLES.headerCell, 'text-right w-20')}>{t('simHiringColHeadcount')}</th>
                     <th className={cn(TABLE_STYLES.headerCell, 'w-28')}>{t('simHiringColAnchor')}</th>
                     <th className={cn(TABLE_STYLES.headerCell, 'text-right w-32')}>{t('simHiringColSalary')}</th>
-                    <th className={cn(TABLE_STYLES.headerCell, 'text-xs text-[#8181A5]')}>{t('simHiringColBandRef')}</th>
+                    <th className={cn(TABLE_STYLES.headerCell, 'text-xs text-muted-foreground')}>{t('simHiringColBandRef')}</th>
                     <th className={cn(TABLE_STYLES.headerCell, 'w-10')} />
                   </tr>
                 </thead>
@@ -274,7 +274,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                         <select
                           value={h.gradeCode}
                           onChange={(e) => updateHire(h.key, 'gradeCode', e.target.value)}
-                          className="text-sm border border-[#E2E8F0] rounded px-2 py-1 bg-white w-full"
+                          className="text-sm border border-slate-200 rounded px-2 py-1 bg-white w-full"
                         >
                           {grades.map((g) => (
                             <option key={g.id} value={g.code}>{g.code} — {g.name}</option>
@@ -286,14 +286,14 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                           type="number" min={1} max={100}
                           value={h.headcount}
                           onChange={(e) => updateHire(h.key, 'headcount', Math.max(1, Number(e.target.value)))}
-                          className="w-16 text-right border border-[#E2E8F0] rounded px-2 py-1 text-sm font-mono"
+                          className="w-16 text-right border border-slate-200 rounded px-2 py-1 text-sm font-mono"
                         />
                       </td>
                       <td className={TABLE_STYLES.cell}>
                         <select
                           value={h.salaryAnchor}
                           onChange={(e) => updateHire(h.key, 'salaryAnchor', e.target.value)}
-                          className="text-sm border border-[#E2E8F0] rounded px-2 py-1 bg-white w-full"
+                          className="text-sm border border-slate-200 rounded px-2 py-1 bg-white w-full"
                         >
                           <option value="Q1">{t('simHiringQ1')}</option>
                           <option value="MID">{t('simHiringMid')}</option>
@@ -308,16 +308,16 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                           disabled={h.salaryAnchor !== 'CUSTOM'}
                           onChange={(e) => updateHire(h.key, 'monthlySalary', Number(e.target.value))}
                           className={cn(
-                            'w-28 text-right border border-[#E2E8F0] rounded px-2 py-1 text-sm font-mono',
-                            h.salaryAnchor !== 'CUSTOM' && 'bg-[#F5F5FA] text-[#8181A5]'
+                            'w-28 text-right border border-slate-200 rounded px-2 py-1 text-sm font-mono',
+                            h.salaryAnchor !== 'CUSTOM' && 'bg-muted text-muted-foreground'
                           )}
                         />
                       </td>
-                      <td className={cn(TABLE_STYLES.cell, 'text-xs text-[#8181A5]')}>
+                      <td className={cn(TABLE_STYLES.cell, 'text-xs text-muted-foreground')}>
                         {bandHint(bandMap[h.gradeCode], t('simHiringBandNotRegistered'))}
                       </td>
                       <td className={TABLE_STYLES.cell}>
-                        <button onClick={() => removeHire(h.key)} className="text-[#8181A5] hover:text-red-500">
+                        <button onClick={() => removeHire(h.key)} className="text-muted-foreground hover:text-red-500">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </td>
@@ -331,30 +331,30 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
               <div className="flex items-center gap-4">
                 <button
                   onClick={addHire}
-                  className="flex items-center gap-1 text-sm text-[#5E81F4] hover:text-[#4F46E5] font-medium"
+                  className="flex items-center gap-1 text-sm text-primary hover:text-indigo-600 font-medium"
                 >
                   <Plus className="w-4 h-4" /> {t('simHiringAddRow')}
                 </button>
 
-                <label className="flex items-center gap-2 text-sm text-[#64748B]">
+                <label className="flex items-center gap-2 text-sm text-slate-500">
                   <input
                     type="checkbox"
                     checked={includeRecruitment}
                     onChange={(e) => setIncludeRecruitment(e.target.checked)}
-                    className="rounded border-[#E2E8F0]"
+                    className="rounded border-slate-200"
                   />
                   {t('simHiringIncludeRecruitCost')}
                 </label>
 
                 {totalHireCount > 0 && (
-                  <span className="text-xs text-[#8181A5]">{t('simHiringTotalSummary', { count: totalHireCount })}</span>
+                  <span className="text-xs text-muted-foreground">{t('simHiringTotalSummary', { count: totalHireCount })}</span>
                 )}
               </div>
 
               <button
                 onClick={runSimulation}
                 disabled={isLoading || hires.length === 0}
-                className="flex items-center gap-2 px-4 py-2 bg-[#4F46E5] text-white rounded-lg text-sm font-medium hover:bg-[#4338CA] disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
               >
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calculator className="w-4 h-4" />}
                 {t('simRunButton')}
@@ -375,7 +375,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                 parameters: { companyId: selectedCompanyId, hires: hires.map(h => ({ gradeCode: h.gradeCode, headcount: h.headcount, salaryAnchor: h.salaryAnchor, monthlySalary: h.monthlySalary })) },
                 results: result as unknown as Record<string, unknown>,
               })}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#5E81F4] border border-[#5E81F4]/30 rounded-lg hover:bg-[#5E81F4]/5">
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary border border-primary/30 rounded-lg hover:bg-primary/5">
                 <Save className="w-3.5 h-3.5" /> {t('simSaveScenario')}
               </button>
             </div>
@@ -406,7 +406,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
           {/* ── 직급별 비용 차트 ── */}
           {chartData.length > 0 && (
             <div className={CARD_STYLES.padded}>
-              <h3 className="text-sm font-semibold text-[#1C1D21] mb-4">{t('simHiringChartTitle')}</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-4">{t('simHiringChartTitle')}</h3>
               <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={chartData} barGap={4}>
                   <CartesianGrid {...CHART_THEME.grid} />
@@ -423,7 +423,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
 
           {/* ── 직급별 상세 테이블 ── */}
           <div className={CARD_STYLES.padded}>
-            <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">{t('simDetailTitle')}</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('simDetailTitle')}</h3>
             <div className={TABLE_STYLES.wrapper}>
               <table className={TABLE_STYLES.table}>
                 <thead>
@@ -442,7 +442,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                     <tr key={i} className={TABLE_STYLES.row}>
                       <td className={cn(TABLE_STYLES.cell, 'font-mono font-medium')}>{g.grade}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums')}>{t('simPersonUnit', { count: g.headcount })}</td>
-                      <td className={cn(TABLE_STYLES.cell, 'text-center text-xs text-[#8181A5]')}>{g.salaryAnchor}</td>
+                      <td className={cn(TABLE_STYLES.cell, 'text-center text-xs text-muted-foreground')}>{g.salaryAnchor}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(g.grossPerPerson)}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-red-500')}>{fmtKRW(g.deductionsPerPerson)}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(g.netPerPerson)}</td>
@@ -457,7 +457,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
           {/* ── 채용비용 테이블 ── */}
           {summary.recruitmentCosts && summary.recruitmentCosts.length > 0 && (
             <div className={CARD_STYLES.padded}>
-              <h3 className="text-sm font-semibold text-[#1C1D21] mb-3">{t('simHiringRecruitCostTitle')}</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-3">{t('simHiringRecruitCostTitle')}</h3>
               <div className={TABLE_STYLES.wrapper}>
                 <table className={TABLE_STYLES.table}>
                   <thead>

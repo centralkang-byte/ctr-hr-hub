@@ -37,7 +37,7 @@ export function AiScreeningTab({
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   const toggleFeature = (i: number) => {
     const next = structuredClone(settings)
@@ -50,20 +50,20 @@ export function AiScreeningTab({
       <div className="mb-4 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold text-[#1C1D21]">{'AI 스크리닝'}</h3>
+            <h3 className="text-base font-semibold text-foreground">{'AI 스크리닝'}</h3>
             {!companyId && (
               <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />{'글로벌 고정'}</span>
             )}
           </div>
-          <p className="text-sm text-[#8181A5]">{'AI 기반 서류 심사 자동화 설정'}</p>
+          <p className="text-sm text-muted-foreground">{'AI 기반 서류 심사 자동화 설정'}</p>
         </div>
         {isOverridden && (
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
         )}
       </div>
 
-      <div className="flex items-center gap-4 rounded-xl border border-[#F0F0F3] p-4">
-        <span className="text-sm font-medium text-[#1C1D21]">{'최소 합격 점수'}</span>
+      <div className="flex items-center gap-4 rounded-xl border border-border p-4">
+        <span className="text-sm font-medium text-foreground">{'최소 합격 점수'}</span>
         <Input
           type="number"
           value={settings.minScore}
@@ -72,17 +72,17 @@ export function AiScreeningTab({
           onChange={(e) => setSettings((p) => ({ ...p, minScore: Number(e.target.value) }))}
           className="w-20"
         />
-        <span className="text-sm text-[#8181A5]">{'점 이상'}</span>
+        <span className="text-sm text-muted-foreground">{'점 이상'}</span>
       </div>
 
       <div className="space-y-3">{settings.features.map((f, i) => (
-        <div key={f.key} className="flex items-start gap-4 rounded-xl border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">
-          <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C5CFC]/10">
-            <Bot className="h-4 w-4 text-[#7C5CFC]" />
+        <div key={f.key} className="flex items-start gap-4 rounded-xl border border-border p-4 hover:bg-muted transition-colors">
+          <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/10">
+            <Bot className="h-4 w-4 text-violet-500" />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-[#1C1D21]">{f.label}</span>
+              <span className="text-sm font-medium text-foreground">{f.label}</span>
               <button
                 onClick={() => toggleFeature(i)}
                 className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${f.enabled ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}`}
@@ -90,7 +90,7 @@ export function AiScreeningTab({
                 {f.enabled ? '활성' : '비활성'}
               </button>
             </div>
-            <p className="text-xs text-[#8181A5]">{f.desc}</p>
+            <p className="text-xs text-muted-foreground">{f.desc}</p>
           </div>
         </div>
       ))}</div>

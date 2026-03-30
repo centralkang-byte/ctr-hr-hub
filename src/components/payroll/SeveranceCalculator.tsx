@@ -45,8 +45,8 @@ export default function SeveranceCalculator({
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <div className="flex items-center gap-2 mb-4">
-        <Calculator className="h-5 w-5 text-[#5E81F4]" />
-        <h3 className="text-sm font-semibold text-[#1A1A1A]">
+        <Calculator className="h-5 w-5 text-primary" />
+        <h3 className="text-sm font-semibold text-foreground">
           퇴직금 계산{employeeName ? ` — ${employeeName}` : ''}
         </h3>
       </div>
@@ -83,7 +83,7 @@ export default function SeveranceCalculator({
             </div>
             <div>
               <p className="text-[#666]">퇴직금 대상</p>
-              <p className={`font-medium ${result.isEligible ? 'text-[#059669]' : 'text-[#DC2626]'}`}>
+              <p className={`font-medium ${result.isEligible ? 'text-emerald-600' : 'text-red-600'}`}>
                 {result.isEligible ? '해당' : '비해당 (1년 미만)'}
               </p>
             </div>
@@ -115,7 +115,7 @@ export default function SeveranceCalculator({
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="bg-[#FAFAFA] font-semibold">
+                  <tr className="bg-background font-semibold">
                     <td className="px-3 py-2" colSpan={4}>3개월 평균임금</td>
                     <td className="text-right px-3 py-2">{formatCurrency(result.averageMonthlyPay)}</td>
                   </tr>
@@ -126,22 +126,22 @@ export default function SeveranceCalculator({
 
           {/* 퇴직금 결과 */}
           {result.isEligible && (
-            <div className="bg-[#EDF1FE] rounded-xl p-4 space-y-2">
+            <div className="bg-primary/10 rounded-xl p-4 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-[#555]">퇴직금</span>
                 <span className="font-medium">{formatCurrency(result.severancePay)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-[#555]">퇴직소득세</span>
-                <span className="text-[#DC2626]">-{formatCurrency(result.incomeTax)}</span>
+                <span className="text-red-600">-{formatCurrency(result.incomeTax)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-[#555]">지방소득세</span>
-                <span className="text-[#DC2626]">-{formatCurrency(result.localIncomeTax)}</span>
+                <span className="text-red-600">-{formatCurrency(result.localIncomeTax)}</span>
               </div>
-              <div className="flex justify-between text-sm font-bold pt-2 border-t border-[#EDF1FE]">
-                <span className="text-[#4B6DE0]">실지급액</span>
-                <span className="text-[#4B6DE0]">{formatCurrency(result.netSeverancePay)}</span>
+              <div className="flex justify-between text-sm font-bold pt-2 border-t border-primary/20">
+                <span className="text-primary/90">실지급액</span>
+                <span className="text-primary/90">{formatCurrency(result.netSeverancePay)}</span>
               </div>
             </div>
           )}

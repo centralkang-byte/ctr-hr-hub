@@ -47,15 +47,15 @@ export default function SaveScenarioDialog({ open, onOpenChange, onSave, isLoadi
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-[#1C1D21]">
-            <Save className="w-4 h-4 text-[#5E81F4]" />
+          <DialogTitle className="flex items-center gap-2 text-foreground">
+            <Save className="w-4 h-4 text-primary" />
             {t('simScenarioSaveTitle')}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <div>
-            <label className="block text-xs font-medium text-[#8181A5] mb-1">
+            <label className="block text-xs font-medium text-muted-foreground mb-1">
               {t('simScenarioName')} <span className="text-red-500">*</span>
             </label>
             <input
@@ -64,14 +64,14 @@ export default function SaveScenarioDialog({ open, onOpenChange, onSave, isLoadi
               placeholder={t('simScenarioNamePlaceholder')}
               maxLength={100}
               className={cn(
-                'w-full px-3 py-2 text-sm border border-[#F0F0F3] rounded-lg',
-                'focus:outline-none focus:ring-1 focus:ring-[#5E81F4] bg-white text-[#1C1D21]',
+                'w-full px-3 py-2 text-sm border border-border rounded-lg',
+                'focus:outline-none focus:ring-1 focus:ring-primary bg-white text-foreground',
               )}
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#8181A5] mb-1">{t('simScenarioDescLabel')}</label>
+            <label className="block text-xs font-medium text-muted-foreground mb-1">{t('simScenarioDescLabel')}</label>
             <textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
@@ -79,8 +79,8 @@ export default function SaveScenarioDialog({ open, onOpenChange, onSave, isLoadi
               maxLength={500}
               rows={2}
               className={cn(
-                'w-full px-3 py-2 text-sm border border-[#F0F0F3] rounded-lg resize-none',
-                'focus:outline-none focus:ring-1 focus:ring-[#5E81F4] bg-white text-[#1C1D21]',
+                'w-full px-3 py-2 text-sm border border-border rounded-lg resize-none',
+                'focus:outline-none focus:ring-1 focus:ring-primary bg-white text-foreground',
               )}
             />
           </div>
@@ -89,7 +89,7 @@ export default function SaveScenarioDialog({ open, onOpenChange, onSave, isLoadi
         <DialogFooter>
           <button
             onClick={() => handleOpenChange(false)}
-            className="px-4 py-2 text-sm text-[#8181A5] hover:text-[#1C1D21]"
+            className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground"
           >
             {tCommon('cancel')}
           </button>
@@ -98,7 +98,7 @@ export default function SaveScenarioDialog({ open, onOpenChange, onSave, isLoadi
             disabled={!title.trim() || isLoading}
             className={cn(
               'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg',
-              'bg-[#5E81F4] text-white hover:bg-[#4A6DE0] disabled:opacity-50',
+              'bg-primary text-white hover:bg-primary/90 disabled:opacity-50',
             )}
           >
             {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}

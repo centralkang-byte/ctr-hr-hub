@@ -26,10 +26,10 @@ interface Dpia {
 
 function RiskBadge({ level }: { level: string }) {
   const map: Record<string, string> = {
-    low: 'bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]',
-    medium: 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]',
-    high: 'bg-[#FFF7ED] text-[#C2410C] border border-[#FED7AA]',
-    critical: 'bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]',
+    low: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+    medium: 'bg-amber-100 text-amber-700 border border-amber-300',
+    high: 'bg-orange-50 text-orange-700 border border-orange-200',
+    critical: 'bg-red-100 text-red-700 border border-red-200',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[level] ?? map.medium}`}>
@@ -40,10 +40,10 @@ function RiskBadge({ level }: { level: string }) {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    draft: 'bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]',
-    in_review: 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]',
-    approved: 'bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]',
-    rejected: 'bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]',
+    draft: 'bg-background text-[#555] border border-border',
+    in_review: 'bg-amber-100 text-amber-700 border border-amber-300',
+    approved: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+    rejected: 'bg-red-100 text-red-700 border border-red-200',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? map.draft}`}>
@@ -90,11 +90,11 @@ export default function DpiaClient({ user }: { user: SessionUser }) {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#F3E8FF] rounded-xl flex items-center justify-center">
-            <FileSearch className="w-5 h-5 text-[#9333EA]" />
+          <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
+            <FileSearch className="w-5 h-5 text-purple-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#1A1A1A] mb-6">{t('gdpr.dpia')}</h1>
+            <h1 className="text-2xl font-bold text-foreground mb-6">{t('gdpr.dpia')}</h1>
           </div>
         </div>
         <button
@@ -110,31 +110,31 @@ export default function DpiaClient({ user }: { user: SessionUser }) {
       <div className="grid grid-cols-4 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">Total DPIAs</p>
-          <p className="text-3xl font-bold text-[#1A1A1A]">{dpias.length}</p>
+          <p className="text-3xl font-bold text-foreground">{dpias.length}</p>
         </div>
-        <div className="bg-white rounded-xl border border-[#FEE2E2] p-5">
-          <p className="text-xs text-[#EF4444] mb-1">Critical Risk</p>
-          <p className="text-3xl font-bold text-[#DC2626]">{riskCounts.critical}</p>
+        <div className="bg-white rounded-xl border border-red-100 p-5">
+          <p className="text-xs text-red-500 mb-1">Critical Risk</p>
+          <p className="text-3xl font-bold text-red-600">{riskCounts.critical}</p>
         </div>
-        <div className="bg-white rounded-xl border border-[#FFEDD5] p-5">
-          <p className="text-xs text-[#F97316] mb-1">High Risk</p>
-          <p className="text-3xl font-bold text-[#EA580C]">{riskCounts.high}</p>
+        <div className="bg-white rounded-xl border border-orange-100 p-5">
+          <p className="text-xs text-orange-500 mb-1">High Risk</p>
+          <p className="text-3xl font-bold text-orange-600">{riskCounts.high}</p>
         </div>
-        <div className="bg-white rounded-xl border border-[#FEF3C7] p-5">
-          <p className="text-xs text-[#F59E0B] mb-1">Medium Risk</p>
-          <p className="text-3xl font-bold text-[#D97706]">{riskCounts.medium}</p>
+        <div className="bg-white rounded-xl border border-amber-100 p-5">
+          <p className="text-xs text-amber-500 mb-1">Medium Risk</p>
+          <p className="text-3xl font-bold text-amber-600">{riskCounts.medium}</p>
         </div>
       </div>
 
       {/* High Risk Alert */}
       {(riskCounts.critical > 0 || riskCounts.high > 0) && (
-        <div className="flex items-start gap-3 p-4 bg-[#FFF7ED] border border-[#FED7AA] rounded-xl">
-          <AlertTriangle className="w-5 h-5 text-[#EA580C] mt-0.5 flex-shrink-0" />
+        <div className="flex items-start gap-3 p-4 bg-orange-50 border border-orange-200 rounded-xl">
+          <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
           <div>
-            <p className="text-sm font-medium text-[#9A3412]">
+            <p className="text-sm font-medium text-orange-800">
               {riskCounts.critical + riskCounts.high} high-risk DPIA(s) require attention
             </p>
-            <p className="text-xs text-[#EA580C] mt-0.5">
+            <p className="text-xs text-orange-600 mt-0.5">
               Review and ensure mitigations are in place for critical and high risk assessments.
             </p>
           </div>
@@ -142,7 +142,7 @@ export default function DpiaClient({ user }: { user: SessionUser }) {
       )}
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8]">
+      <div className="bg-white rounded-xl border border-border">
         {loading ? (
           <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
         ) : dpias.length === 0 ? (
@@ -165,7 +165,7 @@ export default function DpiaClient({ user }: { user: SessionUser }) {
               {dpias?.map((d) => (
                   <tr key={d.id} className={TABLE_STYLES.row}>
                     <td className={TABLE_STYLES.cell}>
-                      <div className="font-medium text-[#1A1A1A]">{d.title}</div>
+                      <div className="font-medium text-foreground">{d.title}</div>
                       {d.description && (
                         <div className="text-xs text-[#999] mt-0.5 max-w-[200px] truncate">{d.description}</div>
                       )}
@@ -183,7 +183,7 @@ export default function DpiaClient({ user }: { user: SessionUser }) {
                     <td className={TABLE_STYLES.cell}>
                       <button
                         onClick={() => { setSelected(d); setShowForm(true) }}
-                        className="inline-flex items-center gap-1.5 text-[#5E81F4] hover:text-[#4B6DE0] text-sm font-medium"
+                        className="inline-flex items-center gap-1.5 text-primary hover:text-primary/90 text-sm font-medium"
                       >
                         {d.status === 'draft' || d.status === 'in_review' ? (
                           <>

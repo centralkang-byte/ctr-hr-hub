@@ -65,8 +65,8 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
 
   if (adjustments.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-[#E8E8E8] p-12 text-center">
-        <CheckCircle2 className="mx-auto h-12 w-12 text-[#D4D4D4] mb-4" />
+      <div className="bg-white rounded-xl border border-border p-12 text-center">
+        <CheckCircle2 className="mx-auto h-12 w-12 text-border mb-4" />
         <p className="text-[#666] text-sm">
           시뮬레이션 탭에서 연봉 조정을 진행한 후 확정해주세요.
         </p>
@@ -80,23 +80,23 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">확정 인원</p>
-          <p className="text-3xl font-bold text-[#1A1A1A]">{budget.headcount}명</p>
+          <p className="text-3xl font-bold text-foreground">{budget.headcount}명</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">총 인상액</p>
-          <p className="text-xl font-bold text-[#059669]">
+          <p className="text-xl font-bold text-emerald-600">
             +{formatCurrency(budget.totalIncrease)}
           </p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">평균 인상률</p>
-          <p className="text-3xl font-bold text-[#5E81F4]">{budget.avgIncreasePct}%</p>
+          <p className="text-3xl font-bold text-primary">{budget.avgIncreasePct}%</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">적용일</p>
           <input
             type="date"
-            className="w-full px-2 py-1 border border-[#D4D4D4] rounded text-sm mt-1 focus:ring-2 focus:ring-[#5E81F4]/10"
+            className="w-full px-2 py-1 border border-border rounded text-sm mt-1 focus:ring-2 focus:ring-primary/10"
             value={effectiveDate}
             onChange={(e) => setEffectiveDate(e.target.value)}
           />
@@ -123,7 +123,7 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
                 <td className="px-4 py-3 text-sm text-right">
                   {formatCurrency(a.currentSalary)}
                 </td>
-                <td className="px-4 py-3 text-sm text-right text-[#5E81F4] font-medium">
+                <td className="px-4 py-3 text-sm text-right text-primary font-medium">
                   +{a.changePct}%
                 </td>
                 <td className="px-4 py-3 text-sm text-right font-semibold">
@@ -139,7 +139,7 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
       <div className="flex justify-end">
         <Button
           onClick={() => setShowConfirm(true)}
-          className="bg-[#059669] hover:bg-[#047857] text-white px-6 py-2 rounded-lg font-medium text-sm"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-medium text-sm"
         >
           <CheckCircle2 className="mr-2 h-4 w-4" />
           연봉 조정 확정
@@ -164,7 +164,7 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
             <AlertDialogAction
               onClick={handleConfirm}
               disabled={confirming}
-              className="bg-[#059669] hover:bg-[#047857]"
+              className="bg-emerald-600 hover:bg-emerald-700"
             >
               {confirming ? '처리 중...' : '확정'}
             </AlertDialogAction>

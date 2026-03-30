@@ -186,7 +186,7 @@ export function DataTable<T extends Record<string, unknown>>({
     <div className="flex justify-end">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-1.5 border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA]">
+          <Button variant="outline" size="sm" className="gap-1.5 border-border text-muted-foreground hover:bg-muted">
             <Settings2 className="h-3.5 w-3.5" />
             열 설정
           </Button>
@@ -220,7 +220,7 @@ export function DataTable<T extends Record<string, unknown>>({
     return (
       <div className="space-y-4">
         {columnSettingsButton}
-        <div className="rounded-xl border border-[#F0F0F3] overflow-hidden">
+        <div className="rounded-xl border border-border overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
@@ -251,7 +251,7 @@ export function DataTable<T extends Record<string, unknown>>({
     return (
       <div className="space-y-4">
         {columnSettingsButton}
-        <div className="rounded-xl border border-[#F0F0F3] overflow-hidden">
+        <div className="rounded-xl border border-border overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
@@ -276,7 +276,7 @@ export function DataTable<T extends Record<string, unknown>>({
             {col.sortable && onSort ? (
               <button
                 type="button"
-                className="inline-flex items-center gap-1 font-bold text-[#8181A5] hover:text-[#1C1D21]"
+                className="inline-flex items-center gap-1 font-bold text-muted-foreground hover:text-foreground"
                 onClick={() => handleSort(col.key)}
               >
                 {col.header}
@@ -296,7 +296,7 @@ export function DataTable<T extends Record<string, unknown>>({
     <TableRow
       key={rowKey ? rowKey(row, index) : index}
       onClick={onRowClick ? () => onRowClick(row, index) : undefined}
-      className={onRowClick ? 'cursor-pointer hover:bg-[#F5F5FA]' : ''}
+      className={onRowClick ? 'cursor-pointer hover:bg-muted' : ''}
     >
       {visibleColumns.map((col) => (
         <TableCell key={col.key}>
@@ -311,7 +311,7 @@ export function DataTable<T extends Record<string, unknown>>({
       {columnSettingsButton}
       {virtualScroll ? (
         /* ── Virtual scroll mode ── */
-        <div className="rounded-xl border border-[#F0F0F3] overflow-hidden">
+        <div className="rounded-xl border border-border overflow-hidden">
           <div
             ref={scrollContainerRef}
             style={{ height: virtualScrollHeight, overflowY: 'auto' }}
@@ -322,12 +322,12 @@ export function DataTable<T extends Record<string, unknown>>({
                 {visibleColumns.map((col) => (
                   <th
                     key={col.key}
-                    className="px-4 py-3 text-left text-[13px] font-bold text-[#8181A5] border-b border-[#F0F0F3]"
+                    className="px-4 py-3 text-left text-[13px] font-bold text-muted-foreground border-b border-border"
                   >
                     {col.sortable && onSort ? (
                       <button
                         type="button"
-                        className="inline-flex items-center gap-1 font-bold text-[#8181A5] hover:text-[#1C1D21]"
+                        className="inline-flex items-center gap-1 font-bold text-muted-foreground hover:text-foreground"
                         onClick={() => handleSort(col.key)}
                       >
                         {col.header}
@@ -362,12 +362,12 @@ export function DataTable<T extends Record<string, unknown>>({
                       data-index={virtualRow.index}
                       ref={virtualizer.measureElement}
                       onClick={onRowClick ? () => onRowClick(row, virtualRow.index) : undefined}
-                      className={`border-b border-[#F0F0F3] ${onRowClick ? 'cursor-pointer hover:bg-[#F5F5FA]' : ''}`}
+                      className={`border-b border-border ${onRowClick ? 'cursor-pointer hover:bg-muted' : ''}`}
                     >
                       {visibleColumns.map((col) => (
                         <td
                           key={col.key}
-                          className="px-4 py-3 text-sm text-[#1C1D21]"
+                          className="px-4 py-3 text-sm text-foreground"
                         >
                           {col.render
                             ? col.render(row, virtualRow.index)
@@ -398,7 +398,7 @@ export function DataTable<T extends Record<string, unknown>>({
         </div>
       ) : (
         /* ── Normal (paginated) mode ── */
-        <div className="rounded-xl border border-[#F0F0F3] overflow-hidden">
+        <div className="rounded-xl border border-border overflow-hidden">
           <Table>
             {headerRow}
             <TableBody>
@@ -411,7 +411,7 @@ export function DataTable<T extends Record<string, unknown>>({
       {/* ─── Pagination ─── */}
       {pagination && pagination.totalPages > 1 && (
         <div className="flex items-center justify-between px-2">
-          <p className="text-sm text-[#8181A5]">
+          <p className="text-sm text-muted-foreground">
             전체 {pagination.total.toLocaleString()}건 중{' '}
             {((pagination.page - 1) * pagination.limit + 1).toLocaleString()}–
             {Math.min(pagination.page * pagination.limit, pagination.total).toLocaleString()}건
@@ -422,12 +422,12 @@ export function DataTable<T extends Record<string, unknown>>({
               size="sm"
               disabled={pagination.page <= 1}
               onClick={() => onPageChange?.(pagination.page - 1)}
-              className="border-[#F0F0F3] text-[#1C1D21] hover:bg-[#F5F5FA]"
+              className="border-border text-foreground hover:bg-muted"
             >
               <ChevronLeft className="mr-1 h-4 w-4" />
               이전
             </Button>
-            <span className="text-sm text-[#8181A5]">
+            <span className="text-sm text-muted-foreground">
               {pagination.page} / {pagination.totalPages}
             </span>
             <Button
@@ -435,7 +435,7 @@ export function DataTable<T extends Record<string, unknown>>({
               size="sm"
               disabled={pagination.page >= pagination.totalPages}
               onClick={() => onPageChange?.(pagination.page + 1)}
-              className="border-[#F0F0F3] text-[#1C1D21] hover:bg-[#F5F5FA]"
+              className="border-border text-foreground hover:bg-muted"
             >
               다음
               <ChevronRight className="ml-1 h-4 w-4" />

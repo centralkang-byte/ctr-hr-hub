@@ -110,19 +110,19 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('pageTitle')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('pageTitle')}</h1>
           <p className="text-sm text-[#666] mt-0.5">{t('totalMembers', { count: total.toLocaleString() })}</p>
         </div>
-        <div className="flex items-center gap-1.5 p-1 bg-[#F5F5FA] rounded-lg">
+        <div className="flex items-center gap-1.5 p-1 bg-muted rounded-lg">
           <button
             onClick={() => setViewMode('list')}
-            className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white text-[#1A1A1A] shadow-sm' : 'text-[#8181A5] hover:text-[#1A1A1A]'}`}
+            className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
           >
             <List size={18} />
           </button>
           <button
             onClick={() => setViewMode('grid')}
-            className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white text-[#1A1A1A] shadow-sm' : 'text-[#8181A5] hover:text-[#1A1A1A]'}`}
+            className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
           >
             <LayoutGrid size={18} />
           </button>
@@ -218,7 +218,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
                 <th className={TABLE_STYLES.headerCell}>{t('skills')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F0F0F3]">
+            <tbody className="divide-y divide-border">
               {employees.map((emp) => (
                 <tr
                   key={emp.id}
@@ -246,17 +246,17 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
                   <td className={TABLE_STYLES.cell + " font-medium"}>{emp.department?.name ?? '-'}</td>
                   <td className={TABLE_STYLES.cellMuted}>{emp.jobGrade?.name ?? '-'}</td>
                   <td className={TABLE_STYLES.cell}>
-                    <Badge variant="outline" className="h-6 rounded-md bg-white border-[#E8E8F0] text-xs font-medium text-[#555]">
+                    <Badge variant="outline" className="h-6 rounded-md bg-white border-border text-xs font-medium text-[#555]">
                       {emp.company?.code ?? '-'}
                     </Badge>
                   </td>
                   <td className={TABLE_STYLES.cell}>
                     <div className="flex items-center gap-2">
-                      <a href={`mailto:${emp.email}`} onClick={e => e.stopPropagation()} className="p-1.5 rounded-full text-[#8181A5] hover:bg-[#EDF1FE] hover:text-[#5E81F4] transition-colors">
+                      <a href={`mailto:${emp.email}`} onClick={e => e.stopPropagation()} className="p-1.5 rounded-full text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors">
                         <Mail size={14} />
                       </a>
                       {emp.phone && (
-                        <a href={`tel:${emp.phone}`} onClick={e => e.stopPropagation()} className="p-1.5 rounded-full text-[#8181A5] hover:bg-[#F0FDF4] hover:text-[#10B981] transition-colors">
+                        <a href={`tel:${emp.phone}`} onClick={e => e.stopPropagation()} className="p-1.5 rounded-full text-muted-foreground hover:bg-green-50 hover:text-emerald-500 transition-colors">
                           <Phone size={14} />
                         </a>
                       )}
@@ -265,10 +265,10 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
                   <td className={TABLE_STYLES.cell}>
                     <div className="flex gap-1.5 flex-wrap">
                       {emp.skills.slice(0, 3).map((s) => (
-                        <span key={s} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#F5F5FA] text-[#8181A5] group-hover:bg-white border border-transparent group-hover:border-[#E8E8F0]">{s}</span>
+                        <span key={s} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground group-hover:bg-white border border-transparent group-hover:border-border">{s}</span>
                       ))}
                       {emp.skills.length > 3 && (
-                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#F5F5FA] text-[#999]">+{emp.skills.length - 3}</span>
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-[#999]">+{emp.skills.length - 3}</span>
                       )}
                     </div>
                   </td>
@@ -302,7 +302,7 @@ function EmployeeCard({ emp, onClick }: { emp: DirectoryEmployee; onClick: () =>
   return (
     <button
       onClick={onClick}
-      className={`${CARD_STYLES.kpi} text-left hover:border-[#5E81F4] hover:shadow-sm transition-all flex flex-col items-center gap-2`}
+      className={`${CARD_STYLES.kpi} text-left hover:border-primary hover:shadow-sm transition-all flex flex-col items-center gap-2`}
     >
       <EmployeeCell
         size="md"
@@ -322,7 +322,7 @@ function EmployeeCard({ emp, onClick }: { emp: DirectoryEmployee; onClick: () =>
       {emp.skills.length > 0 && (
         <div className="flex gap-1 flex-wrap justify-center">
           {emp.skills.slice(0, 3).map((s) => (
-            <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-[#E0E7FF] text-[#4B6DE0]">{s}</span>
+            <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-primary/90">{s}</span>
           ))}
         </div>
       )}
@@ -376,7 +376,7 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
           <p className="text-xs font-semibold text-[#666] uppercase tracking-wider mb-2">Skills</p>
           <div className="flex flex-wrap gap-1.5">
             {emp.skills.map((s) => (
-              <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-[#E0E7FF] text-[#4B6DE0]">{s}</span>
+              <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-indigo-100 text-primary/90">{s}</span>
             ))}
           </div>
         </div>
@@ -410,7 +410,7 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
         </div>
       )}
 
-      <div className="pt-2 border-t border-[#E8E8E8]">
+      <div className="pt-2 border-t border-border">
         <Button
           size="sm"
           variant="outline"

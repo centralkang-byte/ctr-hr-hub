@@ -76,23 +76,23 @@ function getAlertTokens(level: AlertLevel) {
   switch (level) {
     case 'danger':
       return {
-        banner: 'bg-[#FF808B]/10 border-[#FF808B]/30',
-        icon: 'text-[#E11D48]',
-        text: 'text-[#E11D48]',
+        banner: 'bg-red-400/10 border-red-400/30',
+        icon: 'text-rose-600',
+        text: 'text-rose-600',
         label: '52시간 초과 — 즉시 조정 필요',
       }
     case 'warning':
       return {
-        banner: 'bg-[#F4BE5E]/10 border-[#F4BE5E]/40',
-        icon: 'text-[#B45309]',
-        text: 'text-[#B45309]',
+        banner: 'bg-amber-400/10 border-amber-400/40',
+        icon: 'text-amber-700',
+        text: 'text-amber-700',
         label: '48시간 초과 — 조정 권고',
       }
     default:
       return {
-        banner: 'bg-[#F4BE5E]/10 border-[#F4BE5E]/40',
-        icon: 'text-[#B45309]',
-        text: 'text-[#B45309]',
+        banner: 'bg-amber-400/10 border-amber-400/40',
+        icon: 'text-amber-700',
+        text: 'text-amber-700',
         label: '44시간 초과 — 주의',
       }
   }
@@ -108,19 +108,19 @@ function HoursProgressBar({ current, target }: { current: number; target: number
   return (
     <div className="space-y-1.5">
       <div className="flex justify-between text-xs">
-        <span className="text-[#8181A5]">이번 주 누적</span>
-        <span className={`font-semibold ${isOver ? 'text-[#E11D48]' : isNear ? 'text-[#B45309]' : 'text-[#1C1D21]'}`}>
+        <span className="text-muted-foreground">이번 주 누적</span>
+        <span className={`font-semibold ${isOver ? 'text-rose-600' : isNear ? 'text-amber-700' : 'text-foreground'}`}>
           {current}h / {target}h
         </span>
       </div>
-      <div className="h-2 rounded-full bg-[#F0F0F3] overflow-hidden">
+      <div className="h-2 rounded-full bg-border overflow-hidden">
         <div
           className={`h-full rounded-full transition-[width] duration-600 ${
             isOver
-              ? 'bg-[#E11D48]'
+              ? 'bg-rose-600'
               : isNear
-                ? 'bg-[#F4BE5E]'
-                : 'bg-[#5E81F4]'
+                ? 'bg-amber-400'
+                : 'bg-primary'
           }`}
           style={{ width: `${pct}%` }}
         />
@@ -187,19 +187,19 @@ export function ScheduleAdjustmentModal({
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-[#F0F0F3] px-6 py-4">
+          <div className="flex items-center justify-between border-b border-border px-6 py-4">
             <div className="flex items-center gap-2.5">
               <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${tokens.banner} border`}>
                 <Clock className={`h-4 w-4 ${tokens.icon}`} />
               </div>
               <div>
-                <h2 className="text-base font-bold text-[#1C1D21]">근무 일정 조정</h2>
-                <p className="text-xs text-[#8181A5]">주 52시간 초과 위험 해소</p>
+                <h2 className="text-base font-bold text-foreground">근무 일정 조정</h2>
+                <p className="text-xs text-muted-foreground">주 52시간 초과 위험 해소</p>
               </div>
             </div>
             <button
               onClick={handleClose}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-[#8181A5] hover:bg-[#F5F5FA] transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
@@ -211,18 +211,18 @@ export function ScheduleAdjustmentModal({
             {success ? (
               /* Success State */
               <div className="flex flex-col items-center gap-4 py-8 text-center">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#D1FAE5]">
-                  <CheckCircle2 className="h-8 w-8 text-[#059669]" />
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
+                  <CheckCircle2 className="h-8 w-8 text-emerald-600" />
                 </div>
                 <div>
-                  <p className="text-base font-bold text-[#1C1D21]">조정 요청이 제출되었습니다</p>
-                  <p className="mt-1 text-sm text-[#8181A5]">
+                  <p className="text-base font-bold text-foreground">조정 요청이 제출되었습니다</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
                     담당 매니저가 확인 후 승인할 예정입니다.
                   </p>
                 </div>
                 <button
                   onClick={handleClose}
-                  className="mt-2 rounded-lg bg-[#5E81F4] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#4F70D4] transition-colors"
+                  className="mt-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary/80 transition-colors"
                 >
                   확인
                 </button>
@@ -234,7 +234,7 @@ export function ScheduleAdjustmentModal({
                   <AlertTriangle className={`mt-0.5 h-4 w-4 shrink-0 ${tokens.icon}`} />
                   <div className="space-y-0.5">
                     <p className={`text-sm font-semibold ${tokens.text}`}>{tokens.label}</p>
-                    <p className="text-xs text-[#8181A5]">
+                    <p className="text-xs text-muted-foreground">
                       현재 {weeklyHours}시간 근무 중
                       {overflow > 0 && ` — ${overflow}시간 초과`}
                     </p>
@@ -242,13 +242,13 @@ export function ScheduleAdjustmentModal({
                 </div>
 
                 {/* Hours Progress */}
-                <div className="rounded-xl border border-[#F0F0F3] bg-[#F5F5FA] px-4 py-3.5">
+                <div className="rounded-xl border border-border bg-muted px-4 py-3.5">
                   <HoursProgressBar current={weeklyHours} target={TARGET_HOURS} />
                   {selectedOption && (
-                    <div className="mt-3 border-t border-[#E8E8EC] pt-3">
+                    <div className="mt-3 border-t border-border pt-3">
                       <div className="flex justify-between text-xs">
-                        <span className="text-[#8181A5]">조정 후 예상</span>
-                        <span className={`font-semibold ${projectedHours < 52 ? 'text-[#059669]' : 'text-[#E11D48]'}`}>
+                        <span className="text-muted-foreground">조정 후 예상</span>
+                        <span className={`font-semibold ${projectedHours < 52 ? 'text-emerald-600' : 'text-rose-600'}`}>
                           {projectedHours}h / {TARGET_HOURS}h
                         </span>
                       </div>
@@ -258,7 +258,7 @@ export function ScheduleAdjustmentModal({
 
                 {/* Adjustment Type */}
                 <div className="space-y-2">
-                  <p className="text-sm font-semibold text-[#1C1D21]">조정 방법 선택</p>
+                  <p className="text-sm font-semibold text-foreground">조정 방법 선택</p>
                   <div className="space-y-2">
                     {ADJUSTMENT_OPTIONS.map((opt) => (
                       <button
@@ -266,20 +266,20 @@ export function ScheduleAdjustmentModal({
                         onClick={() => setSelectedType(opt.value)}
                         className={`w-full flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-colors ${
                           selectedType === opt.value
-                            ? 'border-[#5E81F4] bg-[#5E81F4]/5'
-                            : 'border-[#F0F0F3] hover:border-[#D0D0E0] hover:bg-[#F5F5FA]'
+                            ? 'border-primary bg-primary/5'
+                            : 'border-border hover:border-border hover:bg-muted'
                         }`}
                       >
                         <div className="space-y-0.5">
-                          <p className={`text-sm font-semibold ${selectedType === opt.value ? 'text-[#5E81F4]' : 'text-[#1C1D21]'}`}>
+                          <p className={`text-sm font-semibold ${selectedType === opt.value ? 'text-primary' : 'text-foreground'}`}>
                             {opt.label}
                           </p>
-                          <p className="text-xs text-[#8181A5]">{opt.description}</p>
+                          <p className="text-xs text-muted-foreground">{opt.description}</p>
                         </div>
                         <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
                           selectedType === opt.value
-                            ? 'bg-[#5E81F4]/10 text-[#5E81F4]'
-                            : 'bg-[#F0F0F3] text-[#8181A5]'
+                            ? 'bg-primary/10 text-primary'
+                            : 'bg-border text-muted-foreground'
                         }`}>
                           -{opt.savingsHours}h
                         </span>
@@ -290,9 +290,9 @@ export function ScheduleAdjustmentModal({
 
                 {/* Target Day */}
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-[#1C1D21]">
+                  <label className="text-sm font-semibold text-foreground">
                     <span className="flex items-center gap-1.5">
-                      <CalendarDays className="h-4 w-4 text-[#8181A5]" />
+                      <CalendarDays className="h-4 w-4 text-muted-foreground" />
                       적용 요일
                     </span>
                   </label>
@@ -300,25 +300,25 @@ export function ScheduleAdjustmentModal({
                     <select
                       value={selectedDay}
                       onChange={(e) => setSelectedDay(e.target.value)}
-                      className="w-full appearance-none rounded-xl border border-[#F0F0F3] bg-white px-4 py-2.5 pr-10 text-sm text-[#1C1D21] focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+                      className="w-full appearance-none rounded-xl border border-border bg-white px-4 py-2.5 pr-10 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
                     >
                       {DAY_OPTIONS.map((day) => (
                         <option key={day} value={day}>{day}</option>
                       ))}
                     </select>
-                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8181A5]" />
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   </div>
                 </div>
 
                 {/* Note */}
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-[#1C1D21]">사유 (선택)</label>
+                  <label className="text-sm font-semibold text-foreground">사유 (선택)</label>
                   <textarea
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     placeholder={'조정 사유를 간략히 입력하세요...'}
                     rows={3}
-                    className="w-full resize-none rounded-xl border border-[#F0F0F3] px-4 py-2.5 text-sm text-[#1C1D21] placeholder:text-[#8181A5] focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+                    className="w-full resize-none rounded-xl border border-border px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
               </>
@@ -327,17 +327,17 @@ export function ScheduleAdjustmentModal({
 
           {/* Footer */}
           {!success && (
-            <div className="flex justify-end gap-2.5 border-t border-[#F0F0F3] px-6 py-4">
+            <div className="flex justify-end gap-2.5 border-t border-border px-6 py-4">
               <button
                 onClick={handleClose}
-                className="rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#8181A5] hover:bg-[#F5F5FA] transition-colors"
+                className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
               >
                 취소
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={!selectedType || loading}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-semibold text-white hover:bg-[#4F70D4] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {loading ? (
                   <>

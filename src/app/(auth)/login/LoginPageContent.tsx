@@ -113,7 +113,7 @@ export default function LoginPageContent() {
             <CardContent className="space-y-4">
               {/* ── Error Message ── */}
               {errorMessage && (
-                <div className="flex items-start gap-2 rounded-lg border border-[#FECACA] bg-[#FEE2E2] px-3 py-2.5 text-sm text-[#B91C1C]">
+                <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-100 px-3 py-2.5 text-sm text-red-700">
                   <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>{errorMessage}</span>
                 </div>
@@ -123,7 +123,7 @@ export default function LoginPageContent() {
               <Button
                 onClick={handleM365Login}
                 disabled={loadingId !== null}
-                className="w-full bg-white text-[#333] border border-[#D4D4D4] hover:bg-[#F5F5FA] shadow-sm"
+                className="w-full bg-white text-[#333] border border-border hover:bg-muted shadow-sm"
                 size="lg"
               >
                 {loadingId === 'm365' ? (
@@ -157,7 +157,7 @@ export default function LoginPageContent() {
                   <div className="space-y-3">
                     {QA_ACCOUNT_GROUPS.map((group) => (
                       <div key={group.group}>
-                        <p className="mb-1.5 ml-1 text-[11px] font-medium text-[#8181A5]">
+                        <p className="mb-1.5 ml-1 text-[11px] font-medium text-muted-foreground">
                           {group.group}
                         </p>
                         <div className="grid grid-cols-2 gap-1.5">
@@ -168,7 +168,7 @@ export default function LoginPageContent() {
                                 key={account.email}
                                 onClick={() => handleDevLogin(account.email)}
                                 disabled={loadingId !== null}
-                                className="group rounded-xl border border-[#F0F0F3] bg-white p-2.5 text-left transition-colors hover:border-[#5E81F4] hover:bg-[#FAFAFA] disabled:cursor-not-allowed disabled:opacity-60"
+                                className="group rounded-xl border border-border bg-white p-2.5 text-left transition-colors hover:border-primary hover:bg-background disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 <div className="flex items-center gap-1.5">
                                   <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${account.color}`}>
@@ -176,8 +176,8 @@ export default function LoginPageContent() {
                                   </span>
                                   {isLoading && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
                                 </div>
-                                <div className="mt-1 text-xs font-medium text-[#1A1A1A]">{account.name}</div>
-                                <div className="text-[10px] text-[#8181A5]">{account.email}</div>
+                                <div className="mt-1 text-xs font-medium text-foreground">{account.name}</div>
+                                <div className="text-[10px] text-muted-foreground">{account.email}</div>
                               </button>
                             )
                           })}
@@ -189,7 +189,7 @@ export default function LoginPageContent() {
               )}
 
               {/* Footer */}
-              <div className="mt-4 rounded-lg bg-[#F5F5FA] px-4 py-3 text-center">
+              <div className="mt-4 rounded-lg bg-muted px-4 py-3 text-center">
                 <p className="text-xs text-[#555]">
                   계정이 없거나 로그인이 불가한 경우 <span className="font-semibold text-[#333]">HR 담당자</span>에게 문의해주세요.
                 </p>

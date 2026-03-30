@@ -63,18 +63,18 @@ const LEVEL_LABELS: Record<number, { label: string; color: string }> = {
 
 function getGapColor(gap: number | null) {
   if (gap === null) return 'text-[#999]'
-  if (gap >= 2) return 'text-[#EF4444]'
-  if (gap === 1) return 'text-[#F59E0B]'
-  if (gap === 0) return 'text-[#059669]'
-  return 'text-[#3B82F6]' // 초과
+  if (gap >= 2) return 'text-red-500'
+  if (gap === 1) return 'text-amber-500'
+  if (gap === 0) return 'text-emerald-600'
+  return 'text-blue-500' // 초과
 }
 
 function getGapBg(gap: number | null) {
-  if (gap === null) return 'bg-[#FAFAFA]'
-  if (gap >= 2) return 'bg-[#FEE2E2]'
-  if (gap === 1) return 'bg-[#FEF3C7]'
-  if (gap === 0) return 'bg-[#D1FAE5]'
-  return 'bg-[#DBEAFE]'
+  if (gap === null) return 'bg-background'
+  if (gap >= 2) return 'bg-red-100'
+  if (gap === 1) return 'bg-amber-100'
+  if (gap === 0) return 'bg-emerald-100'
+  return 'bg-blue-100'
 }
 
 // ── 레벨 선택 버튼 ────────────────────────────────────────
@@ -97,8 +97,8 @@ function LevelSelector({
             onClick={() => onChange(l)}
             className={`flex flex-col items-center px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
               selected
-                ? 'border-[#5E81F4] bg-[#EDF1FE] text-[#5E81F4]'
-                : 'border-[#E8E8E8] text-[#666] hover:border-[#5E81F4] hover:bg-[#EDF1FE]'
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-border text-[#666] hover:border-primary hover:bg-primary/10'
             }`}
           >
             <span className="text-base font-bold">{l}</span>
@@ -210,7 +210,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">나의 역량 자기평가</h1>
+          <h1 className="text-2xl font-bold text-foreground">나의 역량 자기평가</h1>
           <p className="text-sm text-[#666] mt-1">
             역량별 현재 수준을 자기평가하고, 개발 방향을 확인하세요.
           </p>
@@ -219,7 +219,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
           <select
             value={period}
             onChange={(e) => setPeriod(e.target.value)}
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
+            className="px-3 py-2 border border-border rounded-lg text-sm"
           >
             {PERIODS.map((p) => (
               <option key={p} value={p}>{p}</option>
@@ -227,7 +227,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
           </select>
           <button
             onClick={() => setShowRadar(!showRadar)}
-            className="flex items-center gap-2 px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA]"
+            className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-[#555] hover:bg-background"
           >
             <Radar className="w-4 h-4" />
             레이더 차트
@@ -239,39 +239,39 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">평가 완료</p>
-          <p className="text-3xl font-bold text-[#1A1A1A]">{completedCount}<span className="text-lg font-normal text-[#999]">/{totalCount}</span></p>
-          <div className="mt-2 bg-[#F5F5F5] rounded-full h-2">
-            <div className="bg-[#5E81F4] h-2 rounded-full" style={{ width: `${completionRate}%` }} />
+          <p className="text-3xl font-bold text-foreground">{completedCount}<span className="text-lg font-normal text-[#999]">/{totalCount}</span></p>
+          <div className="mt-2 bg-muted rounded-full h-2">
+            <div className="bg-primary h-2 rounded-full" style={{ width: `${completionRate}%` }} />
           </div>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">미달 역량</p>
-          <p className="text-3xl font-bold text-[#EF4444]">
+          <p className="text-3xl font-bold text-red-500">
             {competencies.filter((c) => {
               const a = assessments[c.id]
               const req = requirementMap[c.id]
               return a && req && a.selfLevel < req
             }).length}
           </p>
-          <p className="text-xs text-[#EF4444] mt-1">기대 수준 미달</p>
+          <p className="text-xs text-red-500 mt-1">기대 수준 미달</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1">강점 역량</p>
-          <p className="text-3xl font-bold text-[#059669]">
+          <p className="text-3xl font-bold text-emerald-600">
             {competencies.filter((c) => {
               const a = assessments[c.id]
               const req = requirementMap[c.id]
               return a && req && a.selfLevel >= req
             }).length}
           </p>
-          <p className="text-xs text-[#059669] mt-1">기대 수준 이상</p>
+          <p className="text-xs text-emerald-600 mt-1">기대 수준 이상</p>
         </div>
       </div>
 
       {/* 레이더 차트 */}
       {showRadar && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-base font-semibold text-[#1A1A1A] mb-4">역량 레이더 차트</h2>
+          <h2 className="text-base font-semibold text-foreground mb-4">역량 레이더 차트</h2>
           <ResponsiveContainer width="100%" height={320}>
             <RadarChart data={radarData}>
               <PolarGrid />
@@ -302,7 +302,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
       {/* 역량 평가 폼 */}
       {loading ? (
         <div className="flex items-center justify-center h-32">
-          <div className="animate-spin w-6 h-6 border-2 border-[#5E81F4] border-t-transparent rounded-full" />
+          <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
         </div>
       ) : (
         <div className="space-y-4">
@@ -310,7 +310,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
             const catKey = category.id
             const expanded = expandedCategories.has(catKey) || expandedCategories.has('all')
             return (
-              <div key={catKey} className="bg-white rounded-xl border border-[#E8E8E8]">
+              <div key={catKey} className="bg-white rounded-xl border border-border">
                 {/* 카테고리 헤더 */}
                 <button
                   onClick={() => {
@@ -322,8 +322,8 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
                   className="w-full flex items-center justify-between p-5 text-left"
                 >
                   <div className="flex items-center gap-3">
-                    <BookOpen className="w-5 h-5 text-[#5E81F4]" />
-                    <span className="font-semibold text-[#1A1A1A]">{category.name}</span>
+                    <BookOpen className="w-5 h-5 text-primary" />
+                    <span className="font-semibold text-foreground">{category.name}</span>
                     <span className="text-xs text-[#666]">
                       {items.filter((c) => assessments[c.id]).length}/{items.length} 완료
                     </span>
@@ -332,7 +332,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
                 </button>
 
                 {expanded && (
-                  <div className="border-t border-[#F5F5F5] divide-y divide-[#F5F5F5]">
+                  <div className="border-t border-border divide-y divide-border">
                     {items.map((c) => {
                       const a = assessments[c.id]
                       const expectedLevel = requirementMap[c.id]
@@ -343,9 +343,9 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
                           <div className="flex items-start justify-between mb-3">
                             <div>
                               <div className="flex items-center gap-2">
-                                <span className="font-medium text-sm text-[#1A1A1A]">{c.name}</span>
+                                <span className="font-medium text-sm text-foreground">{c.name}</span>
                                 {a && (
-                                  <CheckCircle2 className="w-4 h-4 text-[#059669]" />
+                                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                                 )}
                               </div>
                               {expectedLevel != null && (
@@ -384,7 +384,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
                                 }))
                               }
                               rows={2}
-                              className="mt-2 w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm resize-none focus:ring-2 focus:ring-[#5E81F4]/10"
+                              className="mt-2 w-full px-3 py-2 border border-border rounded-lg text-sm resize-none focus:ring-2 focus:ring-primary/10"
                             />
                           )}
 
@@ -410,7 +410,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
         <button
           onClick={() => handleSave(false)}
           disabled={saving || !isDirty}
-          className="flex items-center gap-2 px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA] disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-[#555] hover:bg-background disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
           임시저장

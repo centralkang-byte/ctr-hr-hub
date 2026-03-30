@@ -160,16 +160,16 @@ function StepIndicator({ current }: { current: number }) {
             <div className="flex flex-col items-center gap-1 min-w-0">
               <div
                 className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-colors
-                  ${isActive ? 'bg-[#5E81F4] text-white' : isDone ? 'bg-[#059669] text-white' : 'bg-[#F5F5F5] text-[#999]'}`}
+                  ${isActive ? 'bg-primary text-white' : isDone ? 'bg-emerald-600 text-white' : 'bg-muted text-[#999]'}`}
               >
                 {isDone ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-4 h-4" />}
               </div>
-              <span className={`text-xs font-medium whitespace-nowrap ${isActive ? 'text-[#5E81F4]' : isDone ? 'text-[#059669]' : 'text-[#999]'}`}>
+              <span className={`text-xs font-medium whitespace-nowrap ${isActive ? 'text-primary' : isDone ? 'text-emerald-600' : 'text-[#999]'}`}>
                 {step.label}
               </span>
             </div>
             {i < STEPS.length - 1 && (
-              <div className={`flex-1 h-0.5 mx-2 mt-[-14px] ${isDone ? 'bg-[#059669]' : 'bg-[#E8E8E8]'}`} />
+              <div className={`flex-1 h-0.5 mx-2 mt-[-14px] ${isDone ? 'bg-emerald-600' : 'bg-border'}`} />
             )}
           </div>
         )
@@ -219,7 +219,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-[#1A1A1A]">부양가족 확인</h2>
+          <h2 className="text-lg font-semibold text-foreground">부양가족 확인</h2>
           <p className="text-sm text-[#666] mt-0.5">인적공제를 받을 부양가족 정보를 입력하세요.</p>
         </div>
         <button
@@ -243,7 +243,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
                     value={dep.relationship}
                     onChange={(e) => updateDependent(index, { relationship: e.target.value })}
                     disabled={dep.relationship === '본인'}
-                    className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 disabled:bg-[#F5F5F5] disabled:text-[#999]"
+                    className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 disabled:bg-muted disabled:text-[#999]"
                   >
                     {RELATIONSHIP_OPTIONS.map((r) => (
                       <option key={r} value={r}>{r}</option>
@@ -260,7 +260,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
                     onChange={(e) => updateDependent(index, { name: e.target.value })}
                     disabled={dep.relationship === '본인'}
                     placeholder={'enterTitle'}
-                    className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999] disabled:bg-[#F5F5F5] disabled:text-[#999]"
+                    className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999] disabled:bg-muted disabled:text-[#999]"
                   />
                 </div>
 
@@ -271,7 +271,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
                     type="date"
                     value={dep.birthDate ? dep.birthDate.substring(0, 10) : ''}
                     onChange={(e) => updateDependent(index, { birthDate: e.target.value || null })}
-                    className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+                    className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
 
@@ -282,7 +282,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
                       type="checkbox"
                       checked={dep.isDisabled}
                       onChange={(e) => updateDependent(index, { isDisabled: e.target.checked })}
-                      className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4] focus:ring-[#5E81F4]"
+                      className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
                     />
                     <span className="text-sm text-[#555]">장애인</span>
                   </label>
@@ -291,7 +291,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
                       type="checkbox"
                       checked={dep.isSenior}
                       onChange={(e) => updateDependent(index, { isSenior: e.target.checked })}
-                      className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4] focus:ring-[#5E81F4]"
+                      className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
                     />
                     <span className="text-sm text-[#555]">경로우대 (70세 이상)</span>
                   </label>
@@ -302,7 +302,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
               {dep.relationship !== '본인' && (
                 <button
                   onClick={() => removeDependent(index)}
-                  className="p-1.5 hover:bg-[#FEE2E2] text-[#DC2626] rounded-lg mt-4"
+                  className="p-1.5 hover:bg-red-100 text-red-600 rounded-lg mt-4"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -316,7 +316,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
         ))}
       </div>
 
-      <div className="bg-[#EDF1FE] rounded-xl p-4 text-sm text-[#047857]">
+      <div className="bg-primary/10 rounded-xl p-4 text-sm text-emerald-700">
         <p className="font-medium mb-1">인적공제 안내</p>
         <p>기본공제: 1인당 150만원 / 장애인 추가: 200만원 / 경로우대 추가: 100만원</p>
       </div>
@@ -365,23 +365,23 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-lg font-semibold text-[#1A1A1A]">공제항목 입력</h2>
+        <h2 className="text-lg font-semibold text-foreground">공제항목 입력</h2>
         <p className="text-sm text-[#666] mt-0.5">홈택스 간소화자료를 업로드하거나 직접 입력하세요.</p>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-[#E8E8E8]">
+      <div className="flex border-b border-border">
         <button
           onClick={() => setActiveTab('upload')}
           className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors
-            ${activeTab === 'upload' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#666] hover:text-[#333]'}`}
+            ${activeTab === 'upload' ? 'border-primary text-primary' : 'border-transparent text-[#666] hover:text-[#333]'}`}
         >
           홈택스 간소화자료 업로드
         </button>
         <button
           onClick={() => setActiveTab('manual')}
           className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors
-            ${activeTab === 'manual' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#666] hover:text-[#333]'}`}
+            ${activeTab === 'manual' ? 'border-primary text-primary' : 'border-transparent text-[#666] hover:text-[#333]'}`}
         >
           직접 입력
         </button>
@@ -389,7 +389,7 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
 
       {activeTab === 'upload' && (
         <div className="space-y-4">
-          <div className="border-2 border-dashed border-[#D4D4D4] rounded-xl p-8 text-center hover:border-[#5E81F4] transition-colors">
+          <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary transition-colors">
             <Upload className="w-10 h-10 text-[#999] mx-auto mb-3" />
             <p className="text-sm font-medium text-[#333] mb-1">홈택스 간소화자료 PDF 업로드</p>
             <p className="text-xs text-[#999] mb-4">국세청 홈택스 → 연말정산 → 소득·세액공제자료 조회/발급</p>
@@ -407,13 +407,13 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
           </div>
 
           {uploadError && (
-            <div className="flex items-center gap-2 text-[#B91C1C] text-sm">
+            <div className="flex items-center gap-2 text-red-700 text-sm">
               <AlertTriangle className="w-4 h-4" />
               {uploadError}
             </div>
           )}
 
-          <div className="bg-[#FEF3C7] rounded-xl p-4 text-sm text-[#B45309]">
+          <div className="bg-amber-100 rounded-xl p-4 text-sm text-amber-700">
             <p className="font-medium mb-1">파싱 기능 준비 중</p>
             <p>아래 "직접 입력" 탭에서 금액을 직접 입력해 주세요.</p>
           </div>
@@ -423,9 +423,9 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
       {activeTab === 'manual' && (
         <div className="space-y-6">
           {/* Income deductions */}
-          <div className="bg-white rounded-xl border border-[#E8E8E8]">
-            <div className="px-5 py-3.5 border-b border-[#F5F5F5]">
-              <h3 className="text-sm font-semibold text-[#1A1A1A]">신용카드 등 소득공제</h3>
+          <div className="bg-white rounded-xl border border-border">
+            <div className="px-5 py-3.5 border-b border-border">
+              <h3 className="text-sm font-semibold text-foreground">신용카드 등 소득공제</h3>
             </div>
             <div className="p-5 space-y-4">
               {INCOME_DEDUCTIONS.map((item) => (
@@ -439,7 +439,7 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
                       value={formatAmountInput(amounts[item.configCode] ?? 0)}
                       onChange={(e) => onChange(item.configCode, parseAmount(e.target.value))}
                       placeholder="0"
-                      className="w-full pl-7 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-right focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
+                      className="w-full pl-7 pr-3 py-2 border border-border rounded-lg text-sm text-right focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
                     />
                   </div>
                 </div>
@@ -448,9 +448,9 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
           </div>
 
           {/* Tax credits */}
-          <div className="bg-white rounded-xl border border-[#E8E8E8]">
-            <div className="px-5 py-3.5 border-b border-[#F5F5F5]">
-              <h3 className="text-sm font-semibold text-[#1A1A1A]">세액공제 항목</h3>
+          <div className="bg-white rounded-xl border border-border">
+            <div className="px-5 py-3.5 border-b border-border">
+              <h3 className="text-sm font-semibold text-foreground">세액공제 항목</h3>
             </div>
             <div className="p-5 space-y-4">
               {TAX_CREDIT_DEDUCTIONS.map((item) => (
@@ -464,7 +464,7 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
                       value={formatAmountInput(amounts[item.configCode] ?? 0)}
                       onChange={(e) => onChange(item.configCode, parseAmount(e.target.value))}
                       placeholder="0"
-                      className="w-full pl-7 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-right focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
+                      className="w-full pl-7 pr-3 py-2 border border-border rounded-lg text-sm text-right focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
                     />
                   </div>
                 </div>
@@ -488,13 +488,13 @@ function Step3Additional({ amounts, onChange }: Step3Props) {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-lg font-semibold text-[#1A1A1A]">추가공제 입력</h2>
+        <h2 className="text-lg font-semibold text-foreground">추가공제 입력</h2>
         <p className="text-sm text-[#666] mt-0.5">홈택스 간소화자료에 포함되지 않는 공제 항목입니다.</p>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E8E8E8]">
-        <div className="px-5 py-3.5 border-b border-[#F5F5F5]">
-          <h3 className="text-sm font-semibold text-[#1A1A1A]">주택 관련 공제</h3>
+      <div className="bg-white rounded-xl border border-border">
+        <div className="px-5 py-3.5 border-b border-border">
+          <h3 className="text-sm font-semibold text-foreground">주택 관련 공제</h3>
         </div>
         <div className="p-5 space-y-4">
           {ADDITIONAL_DEDUCTIONS.map((item) => (
@@ -508,7 +508,7 @@ function Step3Additional({ amounts, onChange }: Step3Props) {
                   value={formatAmountInput(amounts[item.configCode] ?? 0)}
                   onChange={(e) => onChange(item.configCode, parseAmount(e.target.value))}
                   placeholder="0"
-                  className="w-full pl-7 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-right focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
+                  className="w-full pl-7 pr-3 py-2 border border-border rounded-lg text-sm text-right focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
                 />
               </div>
             </div>
@@ -516,7 +516,7 @@ function Step3Additional({ amounts, onChange }: Step3Props) {
         </div>
       </div>
 
-      <div className="bg-[#EDF1FE] rounded-xl p-4 text-sm text-[#047857]">
+      <div className="bg-primary/10 rounded-xl p-4 text-sm text-emerald-700">
         <p className="font-medium mb-1">주택마련저축 공제 안내</p>
         <p>총급여 7,000만원 이하 무주택 세대주만 공제 가능합니다. (납입액의 40%, 연한도 240만원)</p>
       </div>
@@ -547,14 +547,14 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-[#1A1A1A]">결과 확인</h2>
+          <h2 className="text-lg font-semibold text-foreground">결과 확인</h2>
           <p className="text-sm text-[#666] mt-0.5">{settlement.year}년 연말정산 예상 결과입니다.</p>
         </div>
         {!isSubmitted && (
           <button
             onClick={onCalculate}
             disabled={calculating}
-            className="flex items-center gap-2 bg-white border border-[#5E81F4] text-[#5E81F4] hover:bg-[#EDF1FE] px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
+            className="flex items-center gap-2 bg-white border border-primary text-primary hover:bg-primary/10 px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
           >
             {calculating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calculator className="w-4 h-4" />}
             {calculating ? '계산 중...' : '재계산'}
@@ -563,11 +563,11 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
       </div>
 
       {/* 11-step breakdown table */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden">
-        <div className="px-5 py-3.5 border-b border-[#F5F5F5]">
-          <h3 className="text-sm font-semibold text-[#1A1A1A]">11단계 세액 계산 내역</h3>
+      <div className="bg-white rounded-xl border border-border overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-border">
+          <h3 className="text-sm font-semibold text-foreground">11단계 세액 계산 내역</h3>
         </div>
-        <div className="divide-y divide-[#F5F5F5]">
+        <div className="divide-y divide-border">
           <ResultRow label="① 총급여" value={data.totalSalary} />
           <ResultRow label="② 근로소득공제" value={data.earnedIncomeDeduction} indent />
           <ResultRow label="③ 근로소득금액" value={data.earnedIncome} highlight />
@@ -580,9 +580,9 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
           <ResultRow label="⑧ 세액공제 합계" value={data.totalTaxCredit} indent />
           <ResultRow label="⑨ 결정세액" value={data.determinedTax} highlight />
           <ResultRow label="⑩ 기납부세액 (원천징수)" value={data.prepaidTax} indent />
-          <div className="px-5 py-4 flex items-center justify-between bg-[#F5F5F5]">
-            <span className="text-sm font-semibold text-[#1A1A1A]">⑪ 환급 예정 / 추가납부</span>
-            <span className={`text-lg font-bold ${isRefund ? 'text-[#059669]' : isAdditional ? 'text-[#DC2626]' : 'text-[#1A1A1A]'}`}>
+          <div className="px-5 py-4 flex items-center justify-between bg-muted">
+            <span className="text-sm font-semibold text-foreground">⑪ 환급 예정 / 추가납부</span>
+            <span className={`text-lg font-bold ${isRefund ? 'text-emerald-600' : isAdditional ? 'text-red-600' : 'text-foreground'}`}>
               {isRefund ? '환급 ' : isAdditional ? '추가납부 ' : ''}
               {formatKRW(Math.abs(finalNum))}
             </span>
@@ -591,14 +591,14 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
       </div>
 
       {/* Local tax */}
-      <div className="bg-[#FAFAFA] rounded-xl border border-[#E8E8E8] px-5 py-3.5 flex items-center justify-between">
+      <div className="bg-background rounded-xl border border-border px-5 py-3.5 flex items-center justify-between">
         <span className="text-sm text-[#555]">지방소득세 (소득세의 10%)</span>
-        <span className="text-sm font-semibold text-[#1A1A1A]">{formatKRW(data.localTaxSettlement ?? '0')}</span>
+        <span className="text-sm font-semibold text-foreground">{formatKRW(data.localTaxSettlement ?? '0')}</span>
       </div>
 
       {/* Status badges */}
       {isSubmitted && (
-        <div className="flex items-center gap-2 bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0] rounded-xl px-5 py-4">
+        <div className="flex items-center gap-2 bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl px-5 py-4">
           <CheckCircle2 className="w-5 h-5" />
           <div>
             <p className="text-sm font-semibold">제출 완료</p>
@@ -629,12 +629,12 @@ function ResultRow({ label, value, indent, highlight }: {
   highlight?: boolean
 }) {
   return (
-    <div className={`px-5 py-3.5 flex items-center justify-between ${highlight ? 'bg-[#F9FFF9]' : ''}`}>
-      <span className={`text-sm ${indent ? 'pl-4 text-[#555]' : highlight ? 'font-semibold text-[#1A1A1A]' : 'text-[#333]'}`}>
+    <div className={`px-5 py-3.5 flex items-center justify-between ${highlight ? 'bg-green-50' : ''}`}>
+      <span className={`text-sm ${indent ? 'pl-4 text-[#555]' : highlight ? 'font-semibold text-foreground' : 'text-[#333]'}`}>
         {indent && <span className="text-[#999] mr-1">├</span>}
         {label}
       </span>
-      <span className={`text-sm ${highlight ? 'font-semibold text-[#1A1A1A]' : 'text-[#555]'}`}>
+      <span className={`text-sm ${highlight ? 'font-semibold text-foreground' : 'text-[#555]'}`}>
         {formatKRW(value)}
       </span>
     </div>
@@ -803,7 +803,7 @@ export function YearEndWizardClient({ user, year }: { user: SessionUser; year: n
     return (
       <div className="p-6 flex items-center justify-center min-h-64">
         <div className="flex flex-col items-center gap-3 text-[#999]">
-          <Loader2 className="w-8 h-8 animate-spin text-[#5E81F4]" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
           <p className="text-sm">연말정산 정보를 불러오는 중...</p>
         </div>
       </div>
@@ -813,7 +813,7 @@ export function YearEndWizardClient({ user, year }: { user: SessionUser; year: n
   if (error && !settlement) {
     return (
       <div className="p-6">
-        <div className="flex items-center gap-2 text-[#B91C1C] bg-[#FEE2E2] border border-[#FECACA] rounded-xl px-5 py-4">
+        <div className="flex items-center gap-2 text-red-700 bg-red-100 border border-red-200 rounded-xl px-5 py-4">
           <AlertTriangle className="w-5 h-5 flex-shrink-0" />
           <p className="text-sm">{error}</p>
         </div>
@@ -827,13 +827,13 @@ export function YearEndWizardClient({ user, year }: { user: SessionUser; year: n
     <div className="p-6 max-w-3xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <FileText className="w-6 h-6 text-[#5E81F4]" />
+        <FileText className="w-6 h-6 text-primary" />
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{year}년 연말정산</h1>
+          <h1 className="text-2xl font-bold text-foreground">{year}년 연말정산</h1>
           <p className="text-sm text-[#666] mt-0.5">4단계 위자드를 완료하고 제출하세요</p>
         </div>
         {isSubmitted && (
-          <span className="ml-auto inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]">
+          <span className="ml-auto inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 border border-emerald-200">
             <CheckCircle2 className="w-3.5 h-3.5" />
             제출완료
           </span>
@@ -842,7 +842,7 @@ export function YearEndWizardClient({ user, year }: { user: SessionUser; year: n
 
       {/* Error banner */}
       {error && (
-        <div className="flex items-center gap-2 text-[#B91C1C] text-sm bg-[#FEE2E2] border border-[#FECACA] rounded-xl px-4 py-3">
+        <div className="flex items-center gap-2 text-red-700 text-sm bg-red-100 border border-red-200 rounded-xl px-4 py-3">
           <AlertTriangle className="w-4 h-4 flex-shrink-0" />
           {error}
           <button onClick={() => setError(null)} className="ml-auto text-xs underline">닫기</button>
@@ -891,7 +891,7 @@ export function YearEndWizardClient({ user, year }: { user: SessionUser; year: n
         <button
           onClick={goPrev}
           disabled={step === 0}
-          className="flex items-center gap-2 bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-40"
+          className="flex items-center gap-2 bg-white border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-40"
         >
           <ChevronLeft className="w-4 h-4" />
           이전

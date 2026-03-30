@@ -101,10 +101,10 @@ const TABS = [
 type TabKey = (typeof TABS)[number]['key']
 
 const RISK_CONFIG: Record<RiskLevel, { label: string; bg: string; text: string; border: string }> = {
-  low:      { label: '낮음', bg: 'bg-[#D1FAE5]', text: 'text-[#047857]', border: 'border-[#A7F3D0]' },
-  medium:   { label: '보통', bg: 'bg-[#FEF3C7]', text: 'text-[#B45309]', border: 'border-[#FCD34D]' },
-  high:     { label: '높음', bg: 'bg-[#FEE2E2]', text: 'text-[#B91C1C]', border: 'border-[#FECACA]' },
-  critical: { label: '위험', bg: 'bg-[#FFF7ED]', text: 'text-[#C2410C]', border: 'border-[#FED7AA]' },
+  low:      { label: '낮음', bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200' },
+  medium:   { label: '보통', bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300' },
+  high:     { label: '높음', bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-200' },
+  critical: { label: '위험', bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
 }
 
 const RISK_COLORS: Record<RiskLevel, string> = {
@@ -139,7 +139,7 @@ function RiskBadge({ level }: { level: RiskLevel }) {
 function ScoreBar({ score, level }: { score: number; level: RiskLevel }) {
   return (
     <div className="flex items-center gap-2">
-      <div className="flex-1 h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">
+      <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all"
           style={{ width: `${score}%`, backgroundColor: RISK_COLORS[level] }}
@@ -217,7 +217,7 @@ function SummaryCards({
             </div>
             <p className="text-xs text-[#666]">{c.label}</p>
           </div>
-          <p className="text-3xl font-bold text-[#1A1A1A]">
+          <p className="text-3xl font-bold text-foreground">
             {c.value}
             <span className="text-sm font-normal text-[#999] ml-1">{c.unit}</span>
           </p>
@@ -242,7 +242,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 분포 차트 */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{'risk_keb8f84_kebb684ed'}</h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">{'risk_keb8f84_kebb684ed'}</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
               <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
@@ -260,12 +260,12 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
 
         {/* 고위험 Top 5 */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{'kr_keab3a0ec_kec8381ec_5persons'}</h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">{'kr_keab3a0ec_kec8381ec_5persons'}</h3>
           <div className="space-y-3">
             {data.slice(0, 5).map((row) => (
               <div key={row.employeeId} className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#1A1A1A] truncate">{row.employeeName}</p>
+                  <p className="text-sm font-medium text-foreground truncate">{row.employeeName}</p>
                   <p className="text-xs text-[#666]">{row.departmentName ?? '—'}</p>
                 </div>
                 {row.latestScore && (
@@ -273,7 +273,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
                     <RiskBadge level={row.latestScore.riskLevel} />
                     <Link
                       href={`/analytics/predictive/${row.employeeId}`}
-                      className="text-[#5E81F4] hover:text-[#4B6DE0]"
+                      className="text-primary hover:text-primary/90"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </Link>
@@ -289,9 +289,9 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
       </div>
 
       {/* 전체 목록 */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8]">
-        <div className="px-5 py-4 border-b border-[#F5F5F5]">
-          <h3 className="text-base font-semibold text-[#1A1A1A]">{'kr_kec9db4ec_risk_all_kebaaa9eb'}</h3>
+      <div className="bg-white rounded-xl border border-border">
+        <div className="px-5 py-4 border-b border-border">
+          <h3 className="text-base font-semibold text-foreground">{'kr_kec9db4ec_risk_all_kebaaa9eb'}</h3>
         </div>
         <div className="overflow-x-auto">
           <table className={TABLE_STYLES.table}>
@@ -309,7 +309,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
             <tbody>
               {data.map((row) => (
                 <tr key={row.employeeId} className={TABLE_STYLES.row}>
-                  <td className={cn(TABLE_STYLES.cell, 'font-medium text-[#1A1A1A]')}>{row.employeeName}</td>
+                  <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>{row.employeeName}</td>
                   <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{row.departmentName ?? '—'}</td>
                   <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{row.jobGradeName ?? '—'}</td>
                   <td className={TABLE_STYLES.cell}>
@@ -325,7 +325,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
                   <td className={TABLE_STYLES.cell}>
                     <div className="flex flex-wrap gap-1">
                       {row.latestScore?.topFactors.slice(0, 2).map((f) => (
-                        <span key={f} className="text-xs bg-[#F5F5F5] text-[#555] px-2 py-0.5 rounded">
+                        <span key={f} className="text-xs bg-muted text-[#555] px-2 py-0.5 rounded">
                           {f}
                         </span>
                       ))}
@@ -334,7 +334,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
                   <td className={TABLE_STYLES.cell}>
                     <Link
                       href={`/analytics/predictive/${row.employeeId}`}
-                      className="text-sm text-[#5E81F4] hover:text-[#4B6DE0] font-medium"
+                      className="text-sm text-primary hover:text-primary/90 font-medium"
                     >
                       {'analytics'}
                     </Link>
@@ -368,7 +368,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{'kr_kebb288ec_risk_kebb684ed'}</h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">{'kr_kebb288ec_risk_kebb684ed'}</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
               <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
@@ -385,12 +385,12 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{'kr_kebb288ec_keab3a0ec_kec8381ec_'}</h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">{'kr_kebb288ec_keab3a0ec_kec8381ec_'}</h3>
           <div className="space-y-3">
             {data.slice(0, 5).map((row) => (
               <div key={row.employeeId} className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#1A1A1A] truncate">{row.employeeName}</p>
+                  <p className="text-sm font-medium text-foreground truncate">{row.employeeName}</p>
                   <p className="text-xs text-[#666]">{row.departmentName ?? '—'}</p>
                 </div>
                 {row.latestScore && <RiskBadge level={row.latestScore.riskLevel} />}
@@ -403,9 +403,9 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E8E8E8]">
-        <div className="px-5 py-4 border-b border-[#F5F5F5]">
-          <h3 className="text-base font-semibold text-[#1A1A1A]">{'kr_kebb288ec_all_kebaaa9eb'}</h3>
+      <div className="bg-white rounded-xl border border-border">
+        <div className="px-5 py-4 border-b border-border">
+          <h3 className="text-base font-semibold text-foreground">{'kr_kebb288ec_all_kebaaa9eb'}</h3>
         </div>
         <div className="overflow-x-auto">
           <table className={TABLE_STYLES.table}>
@@ -421,7 +421,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
             <tbody>
               {data.map((row) => (
                 <tr key={row.employeeId} className={TABLE_STYLES.row}>
-                  <td className={cn(TABLE_STYLES.cell, 'font-medium text-[#1A1A1A]')}>{row.employeeName}</td>
+                  <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>{row.employeeName}</td>
                   <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{row.departmentName ?? '—'}</td>
                   <td className={TABLE_STYLES.cell}>
                     {row.latestScore ? (
@@ -466,7 +466,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{'kr_ked8c80eb_keab1b4ea'}</h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">{'kr_ked8c80eb_keab1b4ea'}</h3>
           <ResponsiveContainer width="100%" height={220}>
             <RadarChart data={radarData}>
               <PolarGrid />
@@ -478,7 +478,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{'kr_ked8c80_keab1b4ea_risk_status'}</h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">{'kr_ked8c80_keab1b4ea_risk_status'}</h3>
           <div className="space-y-3">
             {data
               .filter((d) => ['high', 'critical'].includes(d.latestScore?.riskLevel ?? ''))
@@ -486,22 +486,22 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
               .map((d) => (
                 <div key={d.departmentId} className="flex items-center gap-3">
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-[#1A1A1A]">{d.departmentName}</p>
+                    <p className="text-sm font-medium text-foreground">{d.departmentName}</p>
                     <p className="text-xs text-[#666]">{d.latestScore?.memberCount ?? 0}명</p>
                   </div>
                   {d.latestScore && <RiskBadge level={d.latestScore.riskLevel} />}
                 </div>
               ))}
             {data.filter((d) => ['high', 'critical'].includes(d.latestScore?.riskLevel ?? '')).length === 0 && (
-              <p className="text-sm text-[#059669] text-center py-8">{'kr_kebaaa8eb_ked8c80ec_keab1b4ea'}</p>
+              <p className="text-sm text-emerald-600 text-center py-8">{'kr_kebaaa8eb_ked8c80ec_keab1b4ea'}</p>
             )}
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E8E8E8]">
-        <div className="px-5 py-4 border-b border-[#F5F5F5]">
-          <h3 className="text-base font-semibold text-[#1A1A1A]">{'kr_ked8c80_keab1b4ea_all_status'}</h3>
+      <div className="bg-white rounded-xl border border-border">
+        <div className="px-5 py-4 border-b border-border">
+          <h3 className="text-base font-semibold text-foreground">{'kr_ked8c80_keab1b4ea_all_status'}</h3>
         </div>
         <div className="overflow-x-auto">
           <table className={TABLE_STYLES.table}>
@@ -517,7 +517,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
             <tbody>
               {data.map((row) => (
                 <tr key={row.departmentId} className={TABLE_STYLES.row}>
-                  <td className={cn(TABLE_STYLES.cell, 'font-medium text-[#1A1A1A]')}>{row.departmentName}</td>
+                  <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>{row.departmentName}</td>
                   <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{row.latestScore?.memberCount ?? '—'}</td>
                   <td className={TABLE_STYLES.cell}>
                     {row.latestScore ? (
@@ -589,7 +589,7 @@ function WorkforceTab({
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{'department_kebb384_risk_kec9db8ec_status'}</h3>
+        <h3 className="text-base font-semibold text-foreground mb-4">{'department_kebb384_risk_kec9db8ec_status'}</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 20, left: -20 }}>
             <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
@@ -602,9 +602,9 @@ function WorkforceTab({
         </ResponsiveContainer>
       </div>
 
-      <div className="bg-white rounded-xl border border-[#E8E8E8]">
-        <div className="px-5 py-4 border-b border-[#F5F5F5]">
-          <h3 className="text-base font-semibold text-[#1A1A1A]">{'department_kebb384_integrations_status'}</h3>
+      <div className="bg-white rounded-xl border border-border">
+        <div className="px-5 py-4 border-b border-border">
+          <h3 className="text-base font-semibold text-foreground">{'department_kebb384_integrations_status'}</h3>
         </div>
         <div className="overflow-x-auto">
           <table className={TABLE_STYLES.table}>
@@ -622,13 +622,13 @@ function WorkforceTab({
                 const riskRate = stats.total > 0 ? Math.round(((stats.turnoverHigh + stats.burnoutHigh) / (stats.total * 2)) * 100) : 0
                 return (
                   <tr key={dept} className={TABLE_STYLES.row}>
-                    <td className={cn(TABLE_STYLES.cell, 'font-medium text-[#1A1A1A]')}>{dept}</td>
+                    <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>{dept}</td>
                     <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{stats.total}</td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-[#B91C1C]')}>{stats.turnoverHigh}</td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-[#B45309]')}>{stats.burnoutHigh}</td>
+                    <td className={cn(TABLE_STYLES.cell, 'text-red-700')}>{stats.turnoverHigh}</td>
+                    <td className={cn(TABLE_STYLES.cell, 'text-amber-700')}>{stats.burnoutHigh}</td>
                     <td className={TABLE_STYLES.cell}>
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">
+                        <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                           <div
                             className="h-full rounded-full"
                             style={{
@@ -719,14 +719,14 @@ export default function PredictiveAnalyticsClient() {
       {/* 액션 버튼 */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-[#B45309]" />
+          <AlertTriangle className="w-4 h-4 text-amber-700" />
           <span className="text-sm text-[#666]">{t('kr_hr_admin_keca084ec_keca781ec_k')}</span>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={fetchAll}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA]"
+            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-[#555] hover:bg-background"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             {t('kr_kec8388eb')}
@@ -752,14 +752,14 @@ export default function PredictiveAnalyticsClient() {
       )}
 
       {/* 탭 */}
-      <div className="flex border-b border-[#E8E8E8] mb-6">
+      <div className="flex border-b border-border mb-6">
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               activeTab === tab.key
-                ? 'border-[#5E81F4] text-[#5E81F4]'
+                ? 'border-primary text-primary'
                 : 'border-transparent text-[#666] hover:text-[#333]'
             }`}
           >

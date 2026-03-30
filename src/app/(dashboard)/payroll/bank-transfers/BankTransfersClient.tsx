@@ -94,20 +94,20 @@ const BANKS = [
 ]
 
 const STATUS_MAP: Record<string, { label: string; color: string; icon: typeof Clock }> = {
-  DRAFT: { label: '임시저장', color: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]', icon: Clock },
-  GENERATING: { label: '생성', color: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]', icon: Loader2 },
-  GENERATED: { label: '생성완료', color: 'bg-[#E0E7FF] text-[#4B6DE0] border-[#C7D2FE]', icon: FileSpreadsheet },
-  SUBMITTED: { label: '제출됨', color: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]', icon: Upload },
-  PARTIALLY_COMPLETED: { label: '부분완료', color: 'bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]', icon: AlertTriangle },
-  COMPLETED: { label: '완료', color: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]', icon: CheckCircle2 },
-  FAILED: { label: '실패', color: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]', icon: XCircle },
+  DRAFT: { label: '임시저장', color: 'bg-background text-[#555] border-border', icon: Clock },
+  GENERATING: { label: '생성', color: 'bg-primary/10 text-primary/90 border-primary/20', icon: Loader2 },
+  GENERATED: { label: '생성완료', color: 'bg-indigo-100 text-primary/90 border-indigo-200', icon: FileSpreadsheet },
+  SUBMITTED: { label: '제출됨', color: 'bg-amber-100 text-amber-700 border-amber-300', icon: Upload },
+  PARTIALLY_COMPLETED: { label: '부분완료', color: 'bg-orange-50 text-orange-700 border-orange-200', icon: AlertTriangle },
+  COMPLETED: { label: '완료', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: CheckCircle2 },
+  FAILED: { label: '실패', color: 'bg-red-100 text-red-700 border-red-200', icon: XCircle },
 }
 
 const ITEM_STATUS_MAP: Record<string, { label: string; color: string }> = {
-  PENDING: { label: '🟡 대기', color: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
-  SUCCESS: { label: '성공', color: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
-  FAILED: { label: '실패', color: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },
-  CANCELLED: { label: '취소', color: 'bg-[#FAFAFA] text-[#666] border-[#E8E8E8]' },
+  PENDING: { label: '🟡 대기', color: 'bg-background text-[#555] border-border' },
+  SUCCESS: { label: '성공', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+  FAILED: { label: '실패', color: 'bg-red-100 text-red-700 border-red-200' },
+  CANCELLED: { label: '취소', color: 'bg-background text-[#666] border-border' },
 }
 
 function formatAmount(amount: string | number): string {
@@ -245,7 +245,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#5E81F4]" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
   }
@@ -255,8 +255,8 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
       {/* ─── Header ─── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A] flex items-center gap-2">
-            <Building2 className="h-6 w-6 text-[#5E81F4]" />
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+            <Building2 className="h-6 w-6 text-primary" />
             {'급여 이체 관리'}
           </h1>
           <p className="text-sm text-[#666] mt-1">{'은행별 급여 이체 파일 생성 및 결과 관리'}</p>
@@ -275,25 +275,25 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
         <Card>
           <CardContent className="pt-5">
             <p className="text-xs text-[#666] mb-1">{'전체 배치'}</p>
-            <p className="text-3xl font-bold text-[#1A1A1A]">{totalBatches}</p>
+            <p className="text-3xl font-bold text-foreground">{totalBatches}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
             <p className="text-xs text-[#666] mb-1">{'처리 대기'}</p>
-            <p className="text-3xl font-bold text-[#D97706]">{pendingBatches}</p>
+            <p className="text-3xl font-bold text-amber-600">{pendingBatches}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
             <p className="text-xs text-[#666] mb-1">{'완료'}</p>
-            <p className="text-3xl font-bold text-[#059669]">{completedBatches}</p>
+            <p className="text-3xl font-bold text-emerald-600">{completedBatches}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
             <p className="text-xs text-[#666] mb-1">{'총 이체액'}</p>
-            <p className="text-2xl font-bold text-[#5E81F4]">{formatAmount(totalAmount)}</p>
+            <p className="text-2xl font-bold text-primary">{formatAmount(totalAmount)}</p>
           </CardContent>
         </Card>
       </div>
@@ -317,7 +317,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
       {batches.length === 0 ? (
         <Card>
           <CardContent className="py-16 text-center text-[#666]">
-            <FileSpreadsheet className="h-12 w-12 mx-auto mb-3 text-[#D4D4D4]" />
+            <FileSpreadsheet className="h-12 w-12 mx-auto mb-3 text-border" />
             <EmptyState />
           </CardContent>
         </Card>
@@ -327,14 +327,14 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
             const st = STATUS_MAP[batch.status] ?? STATUS_MAP.DRAFT
             const isProcessing = actionLoading === batch.id
             return (
-              <Card key={batch.id} className="hover:border-[#EDF1FE] transition-colors">
+              <Card key={batch.id} className="hover:border-primary/20 transition-colors">
                 <CardContent className="p-5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
                         <Building2 className="h-5 w-5 text-[#999]" />
                         <div>
-                          <p className="text-sm font-semibold text-[#1A1A1A]">{batch.bankName}</p>
+                          <p className="text-sm font-semibold text-foreground">{batch.bankName}</p>
                           <p className="text-xs text-[#666]">{batch.bankCode} · {batch.format}</p>
                         </div>
                       </div>
@@ -345,14 +345,14 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                     <div className="flex items-center gap-6">
                       {/* Stats */}
                       <div className="text-right">
-                        <p className="text-sm font-bold text-[#1A1A1A]">{formatAmount(batch.totalAmount)}</p>
+                        <p className="text-sm font-bold text-foreground">{formatAmount(batch.totalAmount)}</p>
                         <p className="text-xs text-[#666]">
                           {batch.totalCount}건
                           {batch.successCount > 0 && (
-                            <span className="text-[#059669] ml-1">({batch.successCount} 성공)</span>
+                            <span className="text-emerald-600 ml-1">({batch.successCount} 성공)</span>
                           )}
                           {batch.failCount > 0 && (
-                            <span className="text-[#EF4444] ml-1">({batch.failCount} 실패)</span>
+                            <span className="text-red-500 ml-1">({batch.failCount} 실패)</span>
                           )}
                         </p>
                       </div>
@@ -397,7 +397,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                               size="sm"
                               onClick={() => handleMockResult(batch.id)}
                               disabled={isProcessing}
-                              className="bg-[#059669] hover:bg-[#047857] text-white"
+                              className="bg-emerald-600 hover:bg-emerald-700 text-white"
                             >
                               {isProcessing ? (
                                 <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
@@ -415,16 +415,16 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                   {/* Progress bar for partial completion */}
                   {batch.totalCount > 0 && batch.status !== 'DRAFT' && (
                     <div className="mt-3">
-                      <div className="h-1.5 rounded-full bg-[#E8E8E8] overflow-hidden flex">
+                      <div className="h-1.5 rounded-full bg-border overflow-hidden flex">
                         {batch.successCount > 0 && (
                           <div
-                            className="bg-[#059669] transition-all"
+                            className="bg-emerald-600 transition-all"
                             style={{ width: `${(batch.successCount / batch.totalCount) * 100}%` }}
                           />
                         )}
                         {batch.failCount > 0 && (
                           <div
-                            className="bg-[#EF4444] transition-all"
+                            className="bg-red-500 transition-all"
                             style={{ width: `${(batch.failCount / batch.totalCount) * 100}%` }}
                           />
                         )}
@@ -519,35 +519,35 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
         <DialogContent className="max-w-4xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-[#5E81F4]" />
+              <Building2 className="h-5 w-5 text-primary" />
               {selectedBatch?.bankName} 이체 상세
             </DialogTitle>
           </DialogHeader>
 
           {detailLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" />
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
           ) : (
             <div className="space-y-4">
               {/* Summary */}
               {selectedBatch && (
                 <div className="grid grid-cols-4 gap-3">
-                  <div className="bg-[#FAFAFA] rounded-lg p-3 text-center">
+                  <div className="bg-background rounded-lg p-3 text-center">
                     <p className="text-xs text-[#666]">{'① 총급여'}</p>
                     <p className="text-lg font-bold">{selectedBatch.totalCount}</p>
                   </div>
-                  <div className="bg-[#D1FAE5] rounded-lg p-3 text-center">
-                    <p className="text-xs text-[#059669]">{'성공'}</p>
-                    <p className="text-lg font-bold text-[#047857]">{selectedBatch.successCount}</p>
+                  <div className="bg-emerald-100 rounded-lg p-3 text-center">
+                    <p className="text-xs text-emerald-600">{'성공'}</p>
+                    <p className="text-lg font-bold text-emerald-700">{selectedBatch.successCount}</p>
                   </div>
-                  <div className="bg-[#FEE2E2] rounded-lg p-3 text-center">
-                    <p className="text-xs text-[#EF4444]">{'실패'}</p>
-                    <p className="text-lg font-bold text-[#DC2626]">{selectedBatch.failCount}</p>
+                  <div className="bg-red-100 rounded-lg p-3 text-center">
+                    <p className="text-xs text-red-500">{'실패'}</p>
+                    <p className="text-lg font-bold text-red-600">{selectedBatch.failCount}</p>
                   </div>
-                  <div className="bg-[#EDF1FE] rounded-lg p-3 text-center">
-                    <p className="text-xs text-[#5E81F4]">{'총지급액'}</p>
-                    <p className="text-lg font-bold text-[#4B6DE0]">{formatAmount(selectedBatch.totalAmount)}</p>
+                  <div className="bg-primary/10 rounded-lg p-3 text-center">
+                    <p className="text-xs text-primary">{'총지급액'}</p>
+                    <p className="text-lg font-bold text-primary/90">{formatAmount(selectedBatch.totalAmount)}</p>
                   </div>
                 </div>
               )}
@@ -586,7 +586,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                             <td className={cn(TABLE_STYLES.cell, "text-center")}>
                               <Badge className={`${ist.color} border`}>{ist.label}</Badge>
                             </td>
-                            <td className={cn(TABLE_STYLES.cell, "text-[#EF4444]")}>{item.errorMessage ?? ''}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-red-500")}>{item.errorMessage ?? ''}</td>
                           </tr>
                         )
                       })

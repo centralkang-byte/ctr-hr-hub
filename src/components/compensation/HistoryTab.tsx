@@ -103,7 +103,7 @@ export default function HistoryTab() {
       key: 'changeType',
       header: '유형',
       render: (row) => (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EDF1FE] text-[#4B6DE0] border border-[#EDF1FE]">
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary/90 border border-primary/20">
           {CHANGE_TYPE_LABELS[row.changeType] ?? row.changeType}
         </span>
       ),
@@ -127,7 +127,7 @@ export default function HistoryTab() {
       header: '인상률',
       render: (row) => {
         const pct = Number(row.changePct)
-        const color = pct > 0 ? 'text-[#059669]' : pct < 0 ? 'text-[#DC2626]' : 'text-[#666]'
+        const color = pct > 0 ? 'text-emerald-600' : pct < 0 ? 'text-red-600' : 'text-[#666]'
         return (
           <span className={`text-sm font-medium ${color}`}>
             {pct > 0 ? '+' : ''}
@@ -161,7 +161,7 @@ export default function HistoryTab() {
       {/* ─── Compa-Ratio 분포 차트 ─── */}
       {chartData.length > 0 && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">Compa-Ratio 분포</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">Compa-Ratio 분포</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -192,9 +192,9 @@ export default function HistoryTab() {
       )}
 
       {/* ─── 이력 테이블 ─── */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8]">
-        <div className="p-4 border-b border-[#E8E8E8]">
-          <h3 className="text-lg font-semibold text-[#1A1A1A]">연봉 변경 이력</h3>
+      <div className="bg-white rounded-xl border border-border">
+        <div className="p-4 border-b border-border">
+          <h3 className="text-lg font-semibold text-foreground">연봉 변경 이력</h3>
         </div>
         <DataTable<HistoryRow>
           columns={columns}

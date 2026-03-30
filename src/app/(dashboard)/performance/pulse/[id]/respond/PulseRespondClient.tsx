@@ -84,8 +84,8 @@ export default function PulseRespondClient({ user, id }: { user: SessionUser; id
   if (submitted) {
     return (
       <div className="p-6 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <CheckCircle2 className="w-16 h-16 text-[#5E81F4]" />
-        <h2 className="text-xl font-bold text-[#1A1A1A]">{t('kr_kec9d91eb_keca09cec')}</h2>
+        <CheckCircle2 className="w-16 h-16 text-primary" />
+        <h2 className="text-xl font-bold text-foreground">{t('kr_kec9d91eb_keca09cec')}</h2>
         <p className="text-sm text-[#666]">{t('kr_kec868cec_kec9d98ea_keab090ec')}</p>
         <button onClick={() => router.push('/performance/pulse')}
           className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>
@@ -102,16 +102,16 @@ export default function PulseRespondClient({ user, id }: { user: SessionUser; id
     <div className="p-6 space-y-6 max-w-3xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <button onClick={() => router.push('/performance/pulse')} className="p-1 hover:bg-[#F5F5F5] rounded-lg">
+        <button onClick={() => router.push('/performance/pulse')} className="p-1 hover:bg-muted rounded-lg">
           <ArrowLeft className="w-5 h-5 text-[#666]" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{survey.title}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{survey.title}</h1>
           {survey.description && <p className="text-sm text-[#666] mt-1">{survey.description}</p>}
         </div>
       </div>
 
-      <div className="bg-[#E0E7FF] rounded-xl border border-[#C7D2FE] p-4 text-sm text-[#4B6DE0]">
+      <div className="bg-indigo-100 rounded-xl border border-indigo-200 p-4 text-sm text-primary/90">
         {survey.anonymityLevel === 'FULL_ANONYMOUS'
           ? '이 설문은 완전 익명으로 진행됩니다. 응답자 정보가 기록되지 않습니다.'
           : '이 설문은 부서 단위로 익명이 보장됩니다.'}
@@ -125,9 +125,9 @@ export default function PulseRespondClient({ user, id }: { user: SessionUser; id
             <div className="flex items-start gap-2 mb-3">
               <span className="text-xs font-medium text-[#999]">Q{i + 1}</span>
               <div>
-                <p className="text-sm font-medium text-[#1A1A1A]">
+                <p className="text-sm font-medium text-foreground">
                   {q.questionText}
-                  {q.isRequired && <span className="text-[#EF4444] ml-1">*</span>}
+                  {q.isRequired && <span className="text-red-500 ml-1">*</span>}
                 </p>
               </div>
             </div>
@@ -138,8 +138,8 @@ export default function PulseRespondClient({ user, id }: { user: SessionUser; id
                   <button key={v} onClick={() => setAnswer(q.id, String(v))}
                     className={`flex-1 py-3 rounded-lg border text-sm font-medium transition-colors ${
                       answers[q.id] === String(v)
-                        ? 'bg-[#5E81F4] text-white border-[#5E81F4]'
-                        : 'bg-white text-[#555] border-[#D4D4D4] hover:bg-[#FAFAFA]'
+                        ? 'bg-primary text-white border-primary'
+                        : 'bg-white text-[#555] border-border hover:bg-background'
                     }`}>
                     <div className="text-lg">{v}</div>
                     <div className="text-xs mt-1 opacity-80">{LIKERT_LABELS[v - 1]}</div>
@@ -154,7 +154,7 @@ export default function PulseRespondClient({ user, id }: { user: SessionUser; id
                 onChange={(e) => setAnswer(q.id, e.target.value)}
                 placeholder={tCommon('enterContent')}
                 rows={3}
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
               />
             )}
 
@@ -164,8 +164,8 @@ export default function PulseRespondClient({ user, id }: { user: SessionUser; id
                   <button key={opt} onClick={() => setAnswer(q.id, opt)}
                     className={`w-full text-left px-4 py-2.5 rounded-lg border text-sm transition-colors ${
                       answers[q.id] === opt
-                        ? 'bg-[#EDF1FE] text-[#4B6DE0] border-[#5E81F4]'
-                        : 'bg-white text-[#555] border-[#D4D4D4] hover:bg-[#FAFAFA]'
+                        ? 'bg-primary/10 text-primary/90 border-primary'
+                        : 'bg-white text-[#555] border-border hover:bg-background'
                     }`}>
                     {opt}
                   </button>

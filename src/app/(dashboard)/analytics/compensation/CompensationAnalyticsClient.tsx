@@ -166,7 +166,7 @@ export default function CompensationAnalyticsClient({ user }: { user: SessionUse
                     <th className={TABLE_STYLES.headerCellRight}>P75</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F0F0F3]">
+                <tbody className="divide-y divide-border">
                   {data.distribution.map((r: any, i: number) => (
                     <tr key={i} className={TABLE_STYLES.row}>
                       <td className={TABLE_STYLES.cell}>{r.grade_name}</td>

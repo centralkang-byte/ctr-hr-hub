@@ -26,18 +26,18 @@ export function WidgetSkeleton({
       className={`${CARD_STYLES.padded} ${height} animate-pulse`}
     >
       {/* Title bar */}
-      <div className="h-4 bg-[#F0F0F3] rounded w-1/3 mb-5" />
+      <div className="h-4 bg-border rounded w-1/3 mb-5" />
 
       {showChart ? (
         /* Chart area placeholder */
-        <div className="h-28 bg-[#F0F0F3] rounded-lg" />
+        <div className="h-28 bg-border rounded-lg" />
       ) : (
         /* Text lines */
         <div className="space-y-2.5">
           {Array.from({ length: lines }).map((_, i) => (
             <div
               key={i}
-              className="h-3 bg-[#F0F0F3] rounded"
+              className="h-3 bg-border rounded"
               style={{ width: `${100 - i * 15}%` }}
             />
           ))}

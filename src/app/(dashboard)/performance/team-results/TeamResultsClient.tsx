@@ -79,13 +79,13 @@ export default function TeamResultsClient({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('teamResults')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('teamResults')}</h1>
           <p className="text-sm text-[#666] mt-1">{t('kr_ked8c80ec_kec84b1ea_keab2b0ea_')}</p>
         </div>
         <select
           value={selectedCycleId}
           onChange={(e) => setSelectedCycleId(e.target.value)}
-          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+          className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
         >
           {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -96,15 +96,15 @@ export default function TeamResultsClient({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Users className="w-3.5 h-3.5" /> {t('kr_ked8c80ec_kec8898')}</p>
-          <p className="text-3xl font-bold text-[#1A1A1A]">{results.length}</p>
+          <p className="text-3xl font-bold text-foreground">{results.length}</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Target className="w-3.5 h-3.5" /> {t('average_kec84b1ea')}</p>
-          <p className="text-3xl font-bold text-[#1A1A1A]">{avgPerfScore.toFixed(1)}</p>
+          <p className="text-3xl font-bold text-foreground">{avgPerfScore.toFixed(1)}</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> {t('evaluation_kec9984eb')}</p>
-          <p className="text-3xl font-bold text-[#5E81F4]">
+          <p className="text-3xl font-bold text-primary">
             {results.length > 0 ? Math.round(results.filter((r) => r.managerEval?.status === 'SUBMITTED').length / results.length * 100) : 0}%
           </p>
         </div>
@@ -142,14 +142,14 @@ export default function TeamResultsClient({
                 <td className={cn(TABLE_STYLES.cellMuted)}>{r.employee.department?.name ?? '-'}</td>
                 <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>
                   {r.selfEval ? (
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.selfEval.status === 'SUBMITTED' ? 'bg-[#D1FAE5] text-[#047857]' : 'bg-[#F5F5F5] text-[#666]'}`}>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.selfEval.status === 'SUBMITTED' ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-[#666]'}`}>
                       {r.selfEval.performanceScore?.toFixed(1) ?? '-'}
                     </span>
                   ) : <span className="text-[#999]">-</span>}
                 </td>
                 <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>
                   {r.managerEval ? (
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.managerEval.status === 'SUBMITTED' ? 'bg-[#D1FAE5] text-[#047857]' : 'bg-[#F5F5F5] text-[#666]'}`}>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.managerEval.status === 'SUBMITTED' ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-[#666]'}`}>
                       {r.managerEval.performanceScore?.toFixed(1) ?? '-'}
                     </span>
                   ) : <span className="text-[#999]">-</span>}
@@ -162,7 +162,7 @@ export default function TeamResultsClient({
                 </td>
                 <td className={cn(TABLE_STYLES.cell, "text-center")}>
                   {r.finalResult?.emsBlock ? (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#EDF1FE] text-[#4B6DE0]">
+                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary/90">
                       {r.finalResult.emsBlock}
                       {r.finalResult.calibrated && ' ✓'}
                     </span>

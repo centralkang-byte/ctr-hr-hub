@@ -18,7 +18,7 @@ export default function PreHireClient({ userName, futureAssignment }: Props) {
     : null
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F5F5FA] p-4">
+    <div className="flex min-h-screen items-center justify-center bg-muted p-4">
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
         <div className="mb-6 flex justify-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-50">

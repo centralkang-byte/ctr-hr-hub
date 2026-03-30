@@ -24,17 +24,17 @@ export function CompetencyTab({
       .finally(() => setLoading(false))
   }, [companyId])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_kec97adeb_keb9dbcec')}</h3>
+            <h3 className="text-base font-semibold text-foreground">{t('kr_kec97adeb_keb9dbcec')}</h3>
             <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />{t('global_keab3a0ec')}</span>
           </div>
-          <p className="text-sm text-[#8181A5]">핵심가치 역량 {items.length}개</p>
+          <p className="text-sm text-muted-foreground">핵심가치 역량 {items.length}개</p>
         </div>
       </div>
       {items.length > 0 ? (
@@ -44,18 +44,18 @@ export function CompetencyTab({
             <th className={TABLE_STYLES.headerCell}>{t('kr_kec9881eb')}</th>
             <th className={TABLE_STYLES.headerCell}>{t('kr_kecb9b4ed')}</th>
             <th className={TABLE_STYLES.headerCell}>{t('kr_ked9689eb')}</th>
-          </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{items.map((c) => (
+          </tr></thead><tbody className="divide-y divide-border">{items.map((c) => (
             <tr key={c.id} className={TABLE_STYLES.row}>
               <td className={TABLE_STYLES.cell}>{c.name}</td>
               <td className={TABLE_STYLES.cellMuted}>{c.nameEn ?? '—'}</td>
               <td className={TABLE_STYLES.cellMuted}>{c.category}</td>
-              <td className="px-4 py-3 text-center text-sm text-[#8181A5]">{c._count?.indicators ?? 0}개</td>
+              <td className="px-4 py-3 text-center text-sm text-muted-foreground">{c._count?.indicators ?? 0}개</td>
             </tr>
           ))}</tbody></table>
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <BookOpen className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">{t('register_keb909c_kec97adeb_kec9786ec')}</p>
+        <div className="rounded-xl border border-dashed border-border py-12 text-center">
+          <BookOpen className="mx-auto mb-3 h-8 w-8 text-muted-foreground" /><p className="text-sm font-medium text-foreground">{t('register_keb909c_kec97adeb_kec9786ec')}</p>
         </div>
       )}
     </div>

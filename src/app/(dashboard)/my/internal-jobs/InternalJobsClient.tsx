@@ -56,9 +56,9 @@ const WORK_MODE_LABELS: Record<string, string> = {
 }
 
 const URGENCY_COLORS: Record<string, string> = {
-  urgent: 'bg-[#FEE2E2] text-[#B91C1C]',
-  normal: 'bg-[#FEF3C7] text-[#B45309]',
-  low: 'bg-[#F0F9FF] text-[#0369A1]',
+  urgent: 'bg-red-100 text-red-700',
+  normal: 'bg-amber-100 text-amber-700',
+  low: 'bg-sky-50 text-sky-700',
 }
 
 const STAGE_LABELS: Record<string, string> = {
@@ -119,7 +119,7 @@ export default function InternalJobsClient({ user }: { user: SessionUser }) {
     <div className="p-6 space-y-6">
       {/* 헤더 */}
       <div>
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">사내 공개 채용</h1>
+        <h1 className="text-2xl font-bold text-foreground">사내 공개 채용</h1>
         <p className="text-sm text-[#666] mt-0.5">
           그룹 내 공개된 내부 채용 공고입니다. 관심 있는 포지션에 지원하세요.
         </p>
@@ -133,13 +133,13 @@ export default function InternalJobsClient({ user }: { user: SessionUser }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="공고명 또는 부서 검색..."
-            className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
+            className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
           />
         </div>
         <select
           value={companyId}
           onChange={(e) => setCompanyId(e.target.value)}
-          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
+          className="px-3 py-2 border border-border rounded-lg text-sm text-[#555] focus:ring-2 focus:ring-primary/10 focus:border-primary"
         >
           <option value="">전체 법인</option>
           {companies.map((c) => (
@@ -153,7 +153,7 @@ export default function InternalJobsClient({ user }: { user: SessionUser }) {
         <div className="flex items-center justify-center h-48 text-[#999] text-sm">{tCommon('loading')}</div>
       ) : items.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-48 text-[#999]">
-          <BriefcaseBusiness size={40} className="mb-3 text-[#E8E8E8]" />
+          <BriefcaseBusiness size={40} className="mb-3 text-border" />
           <EmptyState />
         </div>
       ) : (
@@ -166,7 +166,7 @@ export default function InternalJobsClient({ user }: { user: SessionUser }) {
             return (
               <div
                 key={job.id}
-                className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden hover:border-[#5E81F4]/40 transition-colors"
+                className="bg-white rounded-xl border border-border overflow-hidden hover:border-primary/40 transition-colors"
               >
                 {/* 카드 상단 */}
                 <div className="p-5">
@@ -177,16 +177,16 @@ export default function InternalJobsClient({ user }: { user: SessionUser }) {
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${urgencyColor}`}>
                           {urgencyLabel}
                         </span>
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-[#EDF1FE] text-[#4B6DE0] font-medium">
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary/90 font-medium">
                           내부 채용
                         </span>
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-[#F5F5F5] text-[#555]">
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-[#555]">
                           {EMP_TYPE_LABELS[job.employmentType] ?? job.employmentType}
                         </span>
                       </div>
 
                       {/* 제목 */}
-                      <h3 className="font-semibold text-[#1A1A1A] text-base">{job.title}</h3>
+                      <h3 className="font-semibold text-foreground text-base">{job.title}</h3>
 
                       {/* 메타 */}
                       <div className="flex items-center gap-3 mt-1.5 flex-wrap text-sm text-[#666]">
@@ -238,7 +238,7 @@ export default function InternalJobsClient({ user }: { user: SessionUser }) {
                     {/* 지원 버튼 / 상태 */}
                     <div className="flex-shrink-0 flex flex-col items-end gap-2">
                       {job.alreadyApplied ? (
-                        <div className="flex items-center gap-1 px-3 py-1.5 bg-[#D1FAE5] text-[#047857] rounded-lg text-sm font-medium">
+                        <div className="flex items-center gap-1 px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-lg text-sm font-medium">
                           <CheckCircle2 size={14} />
                           {STAGE_LABELS[job.myStage ?? ''] ?? '지원완료'}
                         </div>
@@ -268,7 +268,7 @@ export default function InternalJobsClient({ user }: { user: SessionUser }) {
 
                 {/* 공고 상세 (접기/펼치기) */}
                 {isExpanded && (
-                  <div className="border-t border-[#F5F5F5] p-5 bg-[#FAFAFA]">
+                  <div className="border-t border-border p-5 bg-background">
                     <p className="text-sm text-[#555] whitespace-pre-wrap leading-relaxed">
                       {job.description}
                     </p>

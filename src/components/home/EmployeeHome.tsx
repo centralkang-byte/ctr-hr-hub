@@ -57,10 +57,10 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
     <div className="space-y-6">
       {/* ── Greeting ── */}
       <div>
-        <h1 className="text-2xl font-bold text-[#1C1D21]">
+        <h1 className="text-2xl font-bold text-foreground">
           안녕하세요, {user.name}님 👋
         </h1>
-        <p className="mt-1 text-sm text-[#8181A5]">오늘도 좋은 하루 되세요.</p>
+        <p className="mt-1 text-sm text-muted-foreground">오늘도 좋은 하루 되세요.</p>
       </div>
 
       {/* ── Quick Actions ── */}
@@ -98,20 +98,20 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
         {/* Right sidebar */}
         <div className="space-y-4">
           {/* 나의 현황 */}
-          <Card className="border-[#F0F0F3] shadow-none">
+          <Card className="border-border shadow-none">
             <CardHeader className="pb-2 pt-4">
-              <CardTitle className="text-sm font-semibold text-[#1C1D21]">
+              <CardTitle className="text-sm font-semibold text-foreground">
                 나의 현황
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 pb-4">
               {/* 근태 */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-sm text-[#8181A5]">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="h-4 w-4" />
                   이번 달 근무
                 </div>
-                <span className="text-sm font-bold text-[#1C1D21]">
+                <span className="text-sm font-bold text-foreground">
                   {summary?.attendanceThisMonth ?? '-'}일
                 </span>
               </div>
@@ -119,18 +119,18 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
               {/* 잔여 연차 */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-[#8181A5]">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <CalendarDays className="h-4 w-4" />
                     잔여 연차
                   </div>
-                  <span className="text-sm font-bold text-[#5E81F4]">
+                  <span className="text-sm font-bold text-primary">
                     {annualLeave ? `${annualLeave.remaining}일` : '-'}
                   </span>
                 </div>
                 {annualLeave && (
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#F0F0F3]">
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
                     <div
-                      className="h-1.5 rounded-full bg-[#5E81F4] transition-all"
+                      className="h-1.5 rounded-full bg-primary transition-all"
                       style={{
                         width: `${annualLeave.total > 0 ? (annualLeave.remaining / annualLeave.total) * 100 : 0}%`,
                       }}
@@ -142,29 +142,29 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
           </Card>
 
           {/* 최근 받은 칭찬 */}
-          <Card className="border-[#F0F0F3] shadow-none">
+          <Card className="border-border shadow-none">
             <CardHeader className="pb-2 pt-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1C1D21]">
-                <Award className="h-4 w-4 text-[#F59E0B]" />
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <Award className="h-4 w-4 text-amber-500" />
                 최근 받은 칭찬
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 pb-4">
-              <div className="rounded-lg bg-[#F5F5FA] p-3">
-                <p className="text-sm font-medium text-[#1C1D21]">
+              <div className="rounded-lg bg-muted p-3">
+                <p className="text-sm font-medium text-foreground">
                   &quot;프로젝트 기여에 감사합니다!&quot;
                 </p>
-                <p className="mt-1 text-xs text-[#8181A5]">김팀장 · 도전</p>
+                <p className="mt-1 text-xs text-muted-foreground">김팀장 · 도전</p>
               </div>
-              <div className="rounded-lg bg-[#F5F5FA] p-3">
-                <p className="text-sm font-medium text-[#1C1D21]">
+              <div className="rounded-lg bg-muted p-3">
+                <p className="text-sm font-medium text-foreground">
                   &quot;꼼꼼한 리뷰 감사합니다&quot;
                 </p>
-                <p className="mt-1 text-xs text-[#8181A5]">박과장 · 신뢰</p>
+                <p className="mt-1 text-xs text-muted-foreground">박과장 · 신뢰</p>
               </div>
               <Link
                 href="/performance/recognition"
-                className="block pt-1 text-center text-xs font-medium text-[#5E81F4] hover:underline"
+                className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
               >
                 전체 보기 →
               </Link>
@@ -172,26 +172,26 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
           </Card>
 
           {/* 성과 진행률 */}
-          <Card className="border-[#F0F0F3] shadow-none">
+          <Card className="border-border shadow-none">
             <CardHeader className="pb-2 pt-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-[#1C1D21]">
-                <TrendingUp className="h-4 w-4 text-[#5E81F4]" />
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <TrendingUp className="h-4 w-4 text-primary" />
                 MBO 달성률
               </CardTitle>
             </CardHeader>
             <CardContent className="pb-4">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-[#8181A5]">2026 H1</span>
-                  <span className="text-sm font-bold text-[#1C1D21]">72%</span>
+                  <span className="text-sm text-muted-foreground">2026 H1</span>
+                  <span className="text-sm font-bold text-foreground">72%</span>
                 </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#F0F0F3]">
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
                   <div
-                    className="h-1.5 rounded-full bg-[#5E81F4]"
+                    className="h-1.5 rounded-full bg-primary"
                     style={{ width: '72%' }}
                   />
                 </div>
-                <div className="flex items-center justify-between text-xs text-[#8181A5]">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>설정된 목표 5개</span>
                   <Badge variant="outline" className="text-[10px]">진행 중</Badge>
                 </div>

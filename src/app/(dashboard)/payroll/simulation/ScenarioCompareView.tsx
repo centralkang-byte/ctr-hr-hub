@@ -31,7 +31,7 @@ const fmtDate = (d: string) => new Date(d).toLocaleDateString('ko-KR', {
 function diffColor(n: number) {
   if (n > 0) return 'text-primary'
   if (n < 0) return 'text-red-600'
-  return 'text-[#8181A5]'
+  return 'text-muted-foreground'
 }
 
 const MODE_LABEL_KEYS: Record<SaveableMode, string> = {
@@ -74,7 +74,7 @@ function CompareTable({ rows, headers }: { rows: CompareRow[]; headers: { item: 
           {rows.map((r, i) => {
             const diff = r.rightVal - r.leftVal
             return (
-              <tr key={i} className={cn(TABLE_STYLES.row, r.bold && 'bg-[#FAFAFA] font-semibold')}>
+              <tr key={i} className={cn(TABLE_STYLES.row, r.bold && 'bg-background font-semibold')}>
                 <td className={TABLE_STYLES.cell}>{r.label}</td>
                 <td className={cn(TABLE_STYLES.cell, 'text-right font-mono tabular-nums')}>{fmt(r.leftVal, r.format)}</td>
                 <td className={cn(TABLE_STYLES.cell, 'text-right font-mono tabular-nums')}>{fmt(r.rightVal, r.format)}</td>
@@ -138,7 +138,7 @@ function CompareDifferential({ left, right, headers }: { left: ScenarioDetail; r
       <CompareTable rows={topRows} headers={headers} />
       {gradeRows.length > 0 && (
         <>
-          <h4 className="text-sm font-semibold text-[#1C1D21] mt-4">{t('simCompareGradeCostTitle')}</h4>
+          <h4 className="text-sm font-semibold text-foreground mt-4">{t('simCompareGradeCostTitle')}</h4>
           <CompareTable rows={gradeRows} headers={headers} />
         </>
       )}
@@ -198,14 +198,14 @@ export default function ScenarioCompareView({ left, right, onClose }: Props) {
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <GitCompareArrows className="w-5 h-5 text-[#5E81F4]" />
-          <h2 className="text-lg font-bold text-[#1C1D21]">{t('simCompareTitle')}</h2>
-          <span className="text-xs px-2 py-0.5 bg-[#5E81F4]/10 text-[#5E81F4] rounded-full">
+          <GitCompareArrows className="w-5 h-5 text-primary" />
+          <h2 className="text-lg font-bold text-foreground">{t('simCompareTitle')}</h2>
+          <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">
             {t(MODE_LABEL_KEYS[mode])}
           </span>
         </div>
         <button onClick={onClose}
-          className="flex items-center gap-1 px-3 py-1.5 text-sm text-[#8181A5] hover:text-[#1C1D21] border border-[#F0F0F3] rounded-lg">
+          className="flex items-center gap-1 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
           <X className="w-4 h-4" /> {tCommon('close')}
         </button>
       </div>
@@ -218,14 +218,14 @@ export default function ScenarioCompareView({ left, right, onClose }: Props) {
         ].map(({ label, scenario }) => (
           <div key={label} className={CARD_STYLES.padded}>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-bold text-white bg-[#5E81F4] w-5 h-5 rounded flex items-center justify-center">
+              <span className="text-xs font-bold text-white bg-primary w-5 h-5 rounded flex items-center justify-center">
                 {label}
               </span>
-              <span className="text-sm font-medium text-[#1C1D21] truncate">{scenario.title}</span>
+              <span className="text-sm font-medium text-foreground truncate">{scenario.title}</span>
             </div>
-            <p className="text-xs text-[#8181A5]">{fmtDate(scenario.createdAt)}</p>
+            <p className="text-xs text-muted-foreground">{fmtDate(scenario.createdAt)}</p>
             {scenario.description && (
-              <p className="text-xs text-[#8181A5] mt-1 line-clamp-1">{scenario.description}</p>
+              <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{scenario.description}</p>
             )}
           </div>
         ))}

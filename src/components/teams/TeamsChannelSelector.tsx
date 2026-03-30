@@ -103,7 +103,7 @@ export function TeamsChannelSelector({ teamId, channelId, onSelect }: Props) {
                 onSelect(val, null)
                 setChannels([])
               }}
-              className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm"
             >
               <option value="">팀을 선택하세요</option>
               {teams.map((team) => (
@@ -127,7 +127,7 @@ export function TeamsChannelSelector({ teamId, channelId, onSelect }: Props) {
               <select
                 value={channelId ?? ''}
                 onChange={(e) => onSelect(teamId, e.target.value || null)}
-                className="w-full rounded-lg border border-[#D4D4D4] px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm"
               >
                 <option value="">채널을 선택하세요</option>
                 {channels.map((ch) => (

@@ -66,9 +66,9 @@ function getDdayStyle(dueDate?: string): string {
     const diff = Math.ceil(
         (new Date(dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
     )
-    if (diff < 0) return 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]'
-    if (diff <= 3) return 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]'
-    return 'bg-[#EDF1FE] text-[#5E81F4] border-[#C7D2FE]'
+    if (diff < 0) return 'bg-red-100 text-red-700 border-red-200'
+    if (diff <= 3) return 'bg-amber-100 text-amber-700 border-amber-300'
+    return 'bg-primary/10 text-primary border-indigo-200'
 }
 
 // ─── Task Card ───────────────────────────────────────────
@@ -100,9 +100,9 @@ function UnifiedTaskCard({
     const isBusy = processing === task.id
     const isBlocked = !!(task.metadata as Record<string, unknown>)?.isBlocked
 
-    let borderStyle = 'border border-[#F0F0F3]'
-    if (task.priority === UnifiedTaskPriority.URGENT) borderStyle = 'border border-[#FECACA] border-l-4 border-l-[#EF4444]'
-    else if (task.priority === UnifiedTaskPriority.HIGH) borderStyle = 'border border-[#FCD34D] border-l-4 border-l-[#F59E0B]'
+    let borderStyle = 'border border-border'
+    if (task.priority === UnifiedTaskPriority.URGENT) borderStyle = 'border border-red-200 border-l-4 border-l-[#EF4444]'
+    else if (task.priority === UnifiedTaskPriority.HIGH) borderStyle = 'border border-amber-300 border-l-4 border-l-[#F59E0B]'
 
     return (
         <div
@@ -147,21 +147,21 @@ function UnifiedTaskCard({
                         {!!(task.metadata as Record<string, unknown>)?.delegated && (
                             <Badge
                                 variant="outline"
-                                className="h-5 rounded-md border-[#C7D2FE] bg-[#EDF1FE] px-1.5 text-[10px] font-medium text-[#8B5CF6]"
+                                className="h-5 rounded-md border-indigo-200 bg-primary/10 px-1.5 text-[10px] font-medium text-violet-500"
                             >
                                 {t('delegated')}
                             </Badge>
                         )}
                     </div>
-                    <p className="mt-1 text-sm font-medium text-[#1C1D21] line-clamp-1">
+                    <p className="mt-1 text-sm font-medium text-foreground line-clamp-1">
                         {task.title}
                     </p>
                     {task.summary && (
-                        <p className="mt-0.5 text-xs text-[#8181A5] line-clamp-1">
+                        <p className="mt-0.5 text-xs text-muted-foreground line-clamp-1">
                             {task.summary}
                         </p>
                     )}
-                    <div className="mt-1.5 flex items-center gap-2 text-[11px] text-[#8181A5]">
+                    <div className="mt-1.5 flex items-center gap-2 text-[11px] text-muted-foreground">
                         <span>{task.requester?.name}</span>
                         {task.requester?.department && (
                             <>
@@ -185,7 +185,7 @@ function UnifiedTaskCard({
                                 <Button
                                     size="sm"
                                     variant="ghost"
-                                    className="h-7 gap-1 px-2 text-[11px] text-[#4B6DE0] hover:bg-[#EDF1FE]"
+                                    className="h-7 gap-1 px-2 text-[11px] text-primary/90 hover:bg-primary/10"
                                     disabled={isBusy}
                                     onClick={(e) => { e.stopPropagation(); onAction(task.id, 'approve', task.sourceId) }}
                                 >
@@ -195,7 +195,7 @@ function UnifiedTaskCard({
                                 <Button
                                     size="sm"
                                     variant="ghost"
-                                    className="h-7 gap-1 px-2 text-[11px] text-[#EF4444] hover:bg-[#FEE2E2]"
+                                    className="h-7 gap-1 px-2 text-[11px] text-red-500 hover:bg-red-100"
                                     disabled={isBusy}
                                     onClick={(e) => { e.stopPropagation(); onAction(task.id, 'reject', task.sourceId) }}
                                 >
@@ -205,14 +205,14 @@ function UnifiedTaskCard({
                             </>
                         ) : isPending && task.actionUrl ? (
                             <Link href={task.actionUrl}>
-                                <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-[11px] text-[#8181A5] hover:bg-[#F5F5FA]">
+                                <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-[11px] text-muted-foreground hover:bg-muted">
                                     <ExternalLink className="h-3.5 w-3.5" />
                                     <span className="hidden sm:inline">{t('actionView')}</span>
                                 </Button>
                             </Link>
                         ) : task.actionUrl ? (
                             <Link href={task.actionUrl}>
-                                <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-[11px] text-[#8181A5] hover:bg-[#F5F5FA]">
+                                <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-[11px] text-muted-foreground hover:bg-muted">
                                     <ExternalLink className="h-3.5 w-3.5" />
                                 </Button>
                             </Link>
@@ -359,18 +359,18 @@ function MyTasksInner({ user }: { user: SessionUser }) {
             />
 
             {/* ── Status Tabs ── */}
-            <div className="flex items-center gap-1 rounded-lg bg-[#F5F5FA] p-1 w-fit">
+            <div className="flex items-center gap-1 rounded-lg bg-muted p-1 w-fit">
                 <button
                     type="button"
                     onClick={() => updateParams({ tab: null, page: null, type: null })}
                     className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${statusTab === 'PENDING'
-                        ? 'bg-white text-[#1C1D21] shadow-sm'
-                        : 'text-[#8181A5] hover:text-[#1C1D21]'
+                        ? 'bg-white text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
                         }`}
                 >
                     {t('tabInProgress')}
                     {statusTab === 'PENDING' && totalAllTypes > 0 && (
-                        <span className="ml-1.5 rounded-full bg-[#5E81F4] px-2 py-0.5 text-[10px] font-bold text-white">
+                        <span className="ml-1.5 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-white">
                             {totalAllTypes}
                         </span>
                     )}
@@ -379,8 +379,8 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                     type="button"
                     onClick={() => updateParams({ tab: 'COMPLETED', page: null, type: null })}
                     className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${statusTab === 'COMPLETED'
-                        ? 'bg-white text-[#1C1D21] shadow-sm'
-                        : 'text-[#8181A5] hover:text-[#1C1D21]'
+                        ? 'bg-white text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
                         }`}
                 >
                     {t('tabCompleted')}
@@ -400,15 +400,15 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                                 type="button"
                                 onClick={() => updateParams({ type: tab.key === 'all' ? null : tab.key, page: null })}
                                 className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-150 ${isActive
-                                    ? 'bg-[#5E81F4] text-white shadow-sm'
-                                    : 'bg-[#F5F5FA] text-[#8181A5] hover:bg-[#EDF1FE] hover:text-[#5E81F4]'
+                                    ? 'bg-primary text-white shadow-sm'
+                                    : 'bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary'
                                     }`}
                             >
                                 {tab.label}
                                 {count > 0 && (
                                     <span className={`rounded-full px-1.5 text-[10px] ${isActive
                                         ? 'bg-white/25 text-white'
-                                        : 'bg-[#E8E8F0] text-[#8181A5]'
+                                        : 'bg-muted text-muted-foreground'
                                         }`}>
                                         {count}
                                     </span>
@@ -420,7 +420,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
 
                 {/* Sort control */}
                 <div className="flex items-center gap-2">
-                    <ArrowUpDown className="h-3.5 w-3.5 text-[#8181A5]" />
+                    <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
                     <Select
                         value={sortBy}
                         onValueChange={(v) => updateParams({ sortBy: v, page: null })}
@@ -443,7 +443,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
             {loading ? (
                 <div className="space-y-3">
                     {Array.from({ length: 5 }).map((_, i) => (
-                        <Card key={i} className="border-[#F0F0F3]">
+                        <Card key={i} className="border-border">
                             <CardContent className="p-4">
                                 <div className="flex items-start gap-3">
                                     <Skeleton className="h-9 w-9 rounded-lg" />
@@ -459,7 +459,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                     ))}
                 </div>
             ) : tasks.length === 0 ? (
-                <Card className="border-[#F0F0F3]">
+                <Card className="border-border">
                     <CardContent className="py-16">
                         <EmptyState
                             icon={statusTab === 'PENDING'
@@ -497,16 +497,16 @@ function MyTasksInner({ user }: { user: SessionUser }) {
 
             {/* ── Completed Tab Notice ── */}
             {statusTab === 'COMPLETED' && !loading && (
-                <div className="flex items-start gap-3 rounded-xl border border-[#C7D2FE] bg-[#EDF1FE] p-4">
-                    <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
-                    <div className="text-xs text-[#5E81F4]">
+                <div className="flex items-start gap-3 rounded-xl border border-indigo-200 bg-primary/10 p-4">
+                    <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <div className="text-xs text-primary">
                         <p className="font-medium">{t('completedNotice')}</p>
-                        <p className="mt-1 text-[#8181A5]">
+                        <p className="mt-1 text-muted-foreground">
                             {t('completedLinks')}
                             <span className="ml-1 space-x-2">
-                                <Link href="/leave" className="underline hover:text-[#5E81F4]">{t('linkLeave')}</Link>
-                                <Link href="/payroll/me" className="underline hover:text-[#5E81F4]">{t('linkPayslip')}</Link>
-                                <Link href="/performance" className="underline hover:text-[#5E81F4]">{t('linkPerformance')}</Link>
+                                <Link href="/leave" className="underline hover:text-primary">{t('linkLeave')}</Link>
+                                <Link href="/payroll/me" className="underline hover:text-primary">{t('linkPayslip')}</Link>
+                                <Link href="/performance" className="underline hover:text-primary">{t('linkPerformance')}</Link>
                             </span>
                         </p>
                     </div>
@@ -516,7 +516,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
             {/* ── Pagination ── */}
             {totalPages > 1 && !loading && (
                 <div className="flex items-center justify-between px-1">
-                    <p className="text-sm text-[#8181A5]">
+                    <p className="text-sm text-muted-foreground">
                         {t('totalCount', { count: total.toLocaleString() })}
                     </p>
                     <div className="flex items-center gap-2">
@@ -528,7 +528,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                         >
                             <ChevronLeft className="h-4 w-4" />
                         </Button>
-                        <span className="text-sm text-[#1C1D21]">
+                        <span className="text-sm text-foreground">
                             {page} / {totalPages}
                         </span>
                         <Button

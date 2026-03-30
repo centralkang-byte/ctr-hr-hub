@@ -18,19 +18,19 @@ interface AnalyticsKpiCardProps {
 }
 
 const colorMap = {
-  default: 'border-[#E8E8E8]',
-  success: 'border-[#A7F3D0]',
-  warning: 'border-[#FCD34D]',
-  danger: 'border-[#FECACA]',
-  info: 'border-[#EDF1FE]',
+  default: 'border-border',
+  success: 'border-emerald-200',
+  warning: 'border-amber-300',
+  danger: 'border-red-200',
+  info: 'border-primary/20',
 }
 
 const iconBgMap = {
-  default: 'bg-[#F5F5F5] text-[#555]',
-  success: 'bg-[#D1FAE5] text-[#059669]',
-  warning: 'bg-[#FEF3C7] text-[#D97706]',
-  danger: 'bg-[#FEE2E2] text-[#DC2626]',
-  info: 'bg-[#EDF1FE] text-[#5E81F4]',
+  default: 'bg-muted text-[#555]',
+  success: 'bg-emerald-100 text-emerald-600',
+  warning: 'bg-amber-100 text-amber-600',
+  danger: 'bg-red-100 text-red-600',
+  info: 'bg-primary/10 text-primary',
 }
 
 export function AnalyticsKpiCard({
@@ -46,7 +46,7 @@ export function AnalyticsKpiCard({
       <div className="flex items-start justify-between">
         <div className="min-w-0 flex-1">
           <p className="text-xs font-medium text-[#666]">{label}</p>
-          <p className="mt-1 text-3xl font-bold text-[#1A1A1A]">
+          <p className="mt-1 text-3xl font-bold text-foreground">
             {value}
             {suffix && <span className="ml-1 text-base font-normal text-[#999]">{suffix}</span>}
           </p>
@@ -54,7 +54,7 @@ export function AnalyticsKpiCard({
             <p
               className={cn(
                 'mt-1 text-xs font-medium',
-                change.value > 0 ? 'text-[#059669]' : change.value < 0 ? 'text-[#DC2626]' : 'text-[#666]',
+                change.value > 0 ? 'text-emerald-600' : change.value < 0 ? 'text-red-600' : 'text-[#666]',
               )}
             >
               {change.value > 0 ? '\u2191' : change.value < 0 ? '\u2193' : ''}

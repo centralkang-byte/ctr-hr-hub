@@ -44,14 +44,14 @@ export function MethodologyTab({
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{t('evaluation_kebb0a9eb')}</h3>
-          <p className="text-sm text-[#8181A5]">{t('kr_mbo_bei_kebb984ec_goals_kec889')}</p>
+          <h3 className="text-base font-semibold text-foreground">{t('evaluation_kebb0a9eb')}</h3>
+          <p className="text-sm text-muted-foreground">{t('kr_mbo_bei_kebb984ec_goals_kec889')}</p>
         </div>
         {isOverridden && (
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
@@ -61,21 +61,21 @@ export function MethodologyTab({
       <SettingFieldWithOverride label="최대 목표 수" description="직원 1인당 설정 가능한 최대 목표 개수" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.maxGoals} min={1} max={20} onChange={(e) => setSettings((p) => ({ ...p, maxGoals: Number(e.target.value) }))} className="w-20" />
-          <span className="text-sm text-[#8181A5]">{t('kr_keab09c')}</span>
+          <span className="text-sm text-muted-foreground">{t('kr_keab09c')}</span>
         </div>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="가중치 합계 검증" description="목표 가중치의 합이 반드시 100%여야 하는지" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={settings.weightSumRequired} onChange={(e) => setSettings((p) => ({ ...p, weightSumRequired: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
-          <span className="text-[#1C1D21]">가중치 합계 {settings.weightSum}% 필수</span>
+          <input type="checkbox" checked={settings.weightSumRequired} onChange={(e) => setSettings((p) => ({ ...p, weightSumRequired: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
+          <span className="text-foreground">가중치 합계 {settings.weightSum}% 필수</span>
         </label>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="목표 카테고리" description="사용 가능한 목표 분류 항목" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex flex-wrap gap-2">
           {settings.categories.map((cat, i) => (
-            <span key={i} className="rounded-full bg-[#5E81F4]/10 px-3 py-1 text-sm font-medium text-[#5E81F4]">{cat}</span>
+            <span key={i} className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{cat}</span>
           ))}
         </div>
       </SettingFieldWithOverride>

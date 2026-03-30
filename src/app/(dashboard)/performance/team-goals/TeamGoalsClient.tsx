@@ -27,10 +27,10 @@ import type { SessionUser } from '@/types'
 // ─── Status config ────────────────────────────────────────
 
 const STATUS_STYLES: Record<string, string> = {
-  DRAFT: 'bg-[#F5F5F5] text-[#666]',
-  PENDING_APPROVAL: 'bg-[#FFF8E1] text-[#F57F17]',
-  APPROVED: 'bg-[#EDF1FE] text-[#2E7D32]',
-  REJECTED: 'bg-[#FFEBEE] text-[#C62828]',
+  DRAFT: 'bg-muted text-[#666]',
+  PENDING_APPROVAL: 'bg-amber-50 text-amber-700',
+  APPROVED: 'bg-primary/10 text-green-700',
+  REJECTED: 'bg-red-50 text-red-800',
 }
 
 // ─── Types ────────────────────────────────────────────────
@@ -105,9 +105,9 @@ export default function TeamGoalsClient({
   }
 
   function getMemberStatusStyle(label: string): string {
-    if (label === t('allApproved')) return 'text-[#2E7D32]'
-    if (label === t('hasPendingApproval')) return 'text-[#F57F17]'
-    if (label === t('hasRejected')) return 'text-[#C62828]'
+    if (label === t('allApproved')) return 'text-green-700'
+    if (label === t('hasPendingApproval')) return 'text-amber-700'
+    if (label === t('hasRejected')) return 'text-red-800'
     return 'text-[#999]'
   }
 
@@ -213,8 +213,8 @@ export default function TeamGoalsClient({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Users className="h-7 w-7 text-[#5E81F4]" />
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('teamGoalManagement')}</h1>
+          <Users className="h-7 w-7 text-primary" />
+          <h1 className="text-2xl font-bold text-foreground">{t('teamGoalManagement')}</h1>
         </div>
 
         {/* Cycle selector */}
@@ -222,7 +222,7 @@ export default function TeamGoalsClient({
           <select
             value={selectedCycleId}
             onChange={(e) => setSelectedCycleId(e.target.value)}
-            className="rounded-lg border border-[#E8E8E8] px-4 py-2 text-sm focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+            className="rounded-lg border border-border px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
           >
             {cycles.map((c) => (
               <option key={c.id} value={c.id}>
@@ -238,14 +238,14 @@ export default function TeamGoalsClient({
       {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-[#5E81F4]" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <span className="ml-3 text-[#999]">{t('loadingText')}</span>
         </div>
       )}
 
       {/* Empty state */}
       {!loading && members.length === 0 && (
-        <div className="rounded-xl border border-dashed border-[#E8E8E8] bg-[#FAFAFA] py-20 text-center">
+        <div className="rounded-xl border border-dashed border-border bg-background py-20 text-center">
           <Users className="mx-auto h-12 w-12 text-[#CCC]" />
           <p className="mt-4 text-[#999]">{t('noTeamMembersOrGoals')}</p>
         </div>
@@ -263,13 +263,13 @@ export default function TeamGoalsClient({
           return (
             <div
               key={member.employee.id}
-              className="overflow-hidden rounded-xl border border-[#E8E8E8] bg-white"
+              className="overflow-hidden rounded-xl border border-border bg-white"
             >
               {/* Summary row */}
               <button
                 type="button"
                 onClick={() => toggleExpanded(member.employee.id)}
-                className="flex w-full items-center gap-4 px-6 py-4 text-left transition-colors hover:bg-[#FAFAFA]"
+                className="flex w-full items-center gap-4 px-6 py-4 text-left transition-colors hover:bg-background"
               >
                 {isExpanded ? (
                   <ChevronDown className="h-5 w-5 shrink-0 text-[#999]" />
@@ -280,7 +280,7 @@ export default function TeamGoalsClient({
                 {/* Employee info */}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-[#1A1A1A]">
+                    <span className="font-semibold text-foreground">
                       {member.employee.name}
                     </span>
                     <span className="text-sm text-[#999]">
@@ -308,7 +308,7 @@ export default function TeamGoalsClient({
                       className={`font-medium ${
                         member.totalWeight === 100
                           ? 'text-green-600'
-                          : 'text-[#F97316]'
+                          : 'text-orange-500'
                       }`}
                     >
                       {member.totalWeight}%
@@ -329,7 +329,7 @@ export default function TeamGoalsClient({
                     </div>
                   </div>
                   {pendingCount > 0 && (
-                    <span className="rounded-full bg-[#FFF8E1] px-2.5 py-0.5 text-xs font-medium text-[#F57F17]">
+                    <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">
                       {t('pendingApprovalCount', { count: pendingCount })}
                     </span>
                   )}
@@ -338,7 +338,7 @@ export default function TeamGoalsClient({
 
               {/* Expanded: Goal cards */}
               {isExpanded && (
-                <div className="border-t border-[#F5F5F5] bg-[#FAFAFA] px-6 py-4">
+                <div className="border-t border-border bg-background px-6 py-4">
                   {member.goals.length === 0 ? (
                     <p className="py-4 text-center text-sm text-[#999]">
                       {t('noGoalsRegistered')}
@@ -354,19 +354,19 @@ export default function TeamGoalsClient({
                         return (
                           <div
                             key={goal.id}
-                            className="rounded-xl border border-[#E8E8E8] bg-white p-4"
+                            className="rounded-xl border border-border bg-white p-4"
                           >
                             <div className="flex items-start justify-between gap-4">
                               {/* Goal info */}
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-center gap-2">
-                                  <Target className="h-4 w-4 shrink-0 text-[#5E81F4]" />
-                                  <h4 className="font-medium text-[#1A1A1A]">
+                                  <Target className="h-4 w-4 shrink-0 text-primary" />
+                                  <h4 className="font-medium text-foreground">
                                     {goal.title}
                                   </h4>
                                   <span
                                     className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                                      STATUS_STYLES[goal.status] ?? 'bg-[#F5F5F5] text-[#666]'
+                                      STATUS_STYLES[goal.status] ?? 'bg-muted text-[#666]'
                                     }`}
                                   >
                                     {t(`goalStatusLabels.${goal.status}` as Parameters<typeof t>[0])}
@@ -386,9 +386,9 @@ export default function TeamGoalsClient({
                                 </div>
 
                                 {/* Progress bar */}
-                                <div className="mt-2 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-[#F5F5F5]">
+                                <div className="mt-2 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-muted">
                                   <div
-                                    className="h-full rounded-full bg-[#5E81F4] transition-all"
+                                    className="h-full rounded-full bg-primary transition-all"
                                     style={{
                                       width: `${Math.min(latestProgress, 100)}%`,
                                     }}
@@ -424,7 +424,7 @@ export default function TeamGoalsClient({
                                       }
                                     }}
                                     disabled={isThisLoading}
-                                    className="inline-flex items-center gap-1 rounded-lg bg-[#F97316] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[#EA580C] disabled:opacity-50"
+                                    className="inline-flex items-center gap-1 rounded-lg bg-orange-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
                                   >
                                     <MessageSquareWarning className="h-3.5 w-3.5" />
                                     {t('requestRevisionButton')}
@@ -435,13 +435,13 @@ export default function TeamGoalsClient({
 
                             {/* Inline revision comment */}
                             {isRevisionOpen && (
-                              <div className="mt-3 border-t border-[#F5F5F5] pt-3">
+                              <div className="mt-3 border-t border-border pt-3">
                                 <textarea
                                   value={revisionComment}
                                   onChange={(e) => setRevisionComment(e.target.value)}
                                   placeholder={t('revisionPlaceholder')}
                                   rows={3}
-                                  className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm placeholder-[#999] focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+                                  className="w-full rounded-lg border border-border px-3 py-2 text-sm placeholder-[#999] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
                                 />
                                 <div className="mt-2 flex justify-end gap-2">
                                   <button
@@ -450,7 +450,7 @@ export default function TeamGoalsClient({
                                       setRevisionGoalId(null)
                                       setRevisionComment('')
                                     }}
-                                    className="rounded-lg border border-[#E8E8E8] px-3 py-1.5 text-xs text-[#666] hover:bg-[#FAFAFA]"
+                                    className="rounded-lg border border-border px-3 py-1.5 text-xs text-[#666] hover:bg-background"
                                   >
                                     {tc('cancel')}
                                   </button>
@@ -458,7 +458,7 @@ export default function TeamGoalsClient({
                                     type="button"
                                     onClick={() => handleRequestRevision(goal.id)}
                                     disabled={isThisLoading || !revisionComment.trim()}
-                                    className="inline-flex items-center gap-1 rounded-lg bg-[#F97316] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#EA580C] disabled:opacity-50"
+                                    className="inline-flex items-center gap-1 rounded-lg bg-orange-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-orange-600 disabled:opacity-50"
                                   >
                                     {isThisLoading && (
                                       <Loader2 className="h-3.5 w-3.5 animate-spin" />

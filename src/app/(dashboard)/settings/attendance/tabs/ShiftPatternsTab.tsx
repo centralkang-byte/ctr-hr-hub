@@ -61,7 +61,7 @@ export function ShiftPatternsTab({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     )
   }
@@ -71,8 +71,8 @@ export function ShiftPatternsTab({
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{t('shiftWork_ked8ca8ed')}</h3>
-          <p className="text-sm text-[#8181A5]">
+          <h3 className="text-base font-semibold text-foreground">{t('shiftWork_ked8ca8ed')}</h3>
+          <p className="text-sm text-muted-foreground">
             {t('kr_keab590eb_keab7bceb_ked8ca8ed_')}
           </p>
         </div>
@@ -97,24 +97,24 @@ export function ShiftPatternsTab({
                 <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F0F0F3]">
+            <tbody className="divide-y divide-border">
               {patterns.map((pattern) => (
                 <tr key={pattern.id} className={TABLE_STYLES.rowClickable}>
-                  <td className="px-4 py-3 text-sm font-mono tabular-nums text-[#5E81F4]">{pattern.code}</td>
+                  <td className="px-4 py-3 text-sm font-mono tabular-nums text-primary">{pattern.code}</td>
                   <td className={TABLE_STYLES.cell}>{pattern.name}</td>
                   <td className={TABLE_STYLES.cellMuted}>
                     {pattern.patternType === 'FIXED' ? '고정' : pattern.patternType === 'ROTATING' ? '순환' : pattern.patternType}
                   </td>
-                  <td className="px-4 py-3 text-center text-sm text-[#1C1D21]">
+                  <td className="px-4 py-3 text-center text-sm text-foreground">
                     <span className="inline-flex items-center gap-1">
-                      <Clock className="h-3.5 w-3.5 text-[#8181A5]" />
+                      <Clock className="h-3.5 w-3.5 text-muted-foreground" />
                       {Array.isArray(pattern.slots) ? pattern.slots.length : 0}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-center text-sm text-[#1C1D21]">{pattern.cycleDays}일</td>
-                  <td className="px-4 py-3 text-center text-sm text-[#1C1D21]">
+                  <td className="px-4 py-3 text-center text-sm text-foreground">{pattern.cycleDays}일</td>
+                  <td className="px-4 py-3 text-center text-sm text-foreground">
                     <span className="inline-flex items-center gap-1">
-                      <Users className="h-3.5 w-3.5 text-[#8181A5]" />
+                      <Users className="h-3.5 w-3.5 text-muted-foreground" />
                       {pattern._count?.shiftGroups ?? 0}
                     </span>
                   </td>
@@ -133,10 +133,10 @@ export function ShiftPatternsTab({
           </table>
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <Clock className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" />
-          <p className="text-sm font-medium text-[#1C1D21]">{t('register_keb909c_keab590eb_ked8ca8ed_kec9786ec')}</p>
-          <p className="mt-1 text-xs text-[#8181A5]">
+        <div className="rounded-xl border border-dashed border-border py-12 text-center">
+          <Clock className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
+          <p className="text-sm font-medium text-foreground">{t('register_keb909c_keab590eb_ked8ca8ed_kec9786ec')}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
             {t('shiftWork_keab080_ked9584ec_kebb295ec_ked8ca8ed_kecb694ea')}
           </p>
         </div>

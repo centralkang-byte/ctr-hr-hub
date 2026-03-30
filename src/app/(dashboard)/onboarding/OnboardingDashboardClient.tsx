@@ -77,11 +77,11 @@ const STATUS_BADGE_STYLES: Record<string, string> = {
 }
 
 const MOOD_CONFIG: Record<string, { icon: typeof Smile; color: string; label: string }> = {
-  GREAT: { icon: Smile, color: 'text-[#22C55E]', label: '매우 좋음' },
-  GOOD: { icon: Smile, color: 'text-[#16A34A]', label: '좋음' },
-  NEUTRAL: { icon: Meh, color: 'text-[#F59E0B]', label: '보통' },
-  STRUGGLING: { icon: Frown, color: 'text-[#EF4444]', label: '힘듦' },
-  BAD: { icon: Frown, color: 'text-[#DC2626]', label: '나쁨' },
+  GREAT: { icon: Smile, color: 'text-green-500', label: '매우 좋음' },
+  GOOD: { icon: Smile, color: 'text-green-600', label: '좋음' },
+  NEUTRAL: { icon: Meh, color: 'text-amber-500', label: '보통' },
+  STRUGGLING: { icon: Frown, color: 'text-red-500', label: '힘듦' },
+  BAD: { icon: Frown, color: 'text-red-600', label: '나쁨' },
 }
 
 const PLAN_TYPE_TABS = [
@@ -205,13 +205,13 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
         const pct = total > 0 ? (completed / total) * 100 : 0
         return (
           <div className="flex items-center gap-2">
-            <div className="flex-1 bg-[#F0F0F3] rounded-full h-2">
+            <div className="flex-1 bg-border rounded-full h-2">
               <div
-                className="bg-[#5E81F4] h-2 rounded-full transition-all"
+                className="bg-primary h-2 rounded-full transition-all"
                 style={{ width: `${pct}%` }}
               />
             </div>
-            <span className="text-sm text-[#8181A5] whitespace-nowrap">
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
               {completed}/{total}
             </span>
           </div>
@@ -228,7 +228,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
       />
 
       {/* ─── Plan Type Tabs ─── */}
-      <div className="flex border-b border-[#F0F0F3]">
+      <div className="flex border-b border-border">
         {PLAN_TYPE_TABS.map((tab) => (
           <button
             key={tab.value}
@@ -237,8 +237,8 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
               setPage(1)
             }}
             className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors ${planType === tab.value
-                ? 'border-b-2 border-[#5E81F4] text-[#5E81F4]'
-                : 'text-[#8181A5] hover:text-[#1C1D21]'
+                ? 'border-b-2 border-primary text-primary'
+                : 'text-muted-foreground hover:text-foreground'
               }`}
           >
             {tab.label}
@@ -257,8 +257,8 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                 setPage(1)
               }}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${filter === opt.value
-                  ? 'bg-[#5E81F4] text-white border-[#5E81F4]'
-                  : 'bg-white text-[#8181A5] border-[#F0F0F3] hover:border-[#5E81F4]'
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white text-muted-foreground border-border hover:border-primary'
                 }`}
             >
               {opt.label}
@@ -274,7 +274,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
               setCompanyIdFilter(e.target.value)
               setPage(1)
             }}
-            className="text-sm border border-[#F0F0F3] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
+            className="text-sm border border-border rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
           >
             <option value="">전체 법인</option>
             {companies.map((c) => (
@@ -291,7 +291,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
             setLimit(Number(e.target.value))
             setPage(1)
           }}
-          className="text-sm border border-[#F0F0F3] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
+          className="text-sm border border-border rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
         >
           {LIMIT_OPTIONS.map((n) => (
             <option key={n} value={String(n)}>
@@ -328,7 +328,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
           </table>
         </div>
       ) : data.length === 0 ? (
-        <div className="bg-white rounded-xl border border-[#F0F0F3] p-8">
+        <div className="bg-white rounded-xl border border-border p-8">
           <EmptyState
             title={t('noOnboardingData')}
             description={t('noOnboardingDataDesc')}
@@ -355,7 +355,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                 {data.map((row) => (
                   <tr
                     key={row.id}
-                    className={`${TABLE_STYLES.rowClickable} ${row.isDelayed ? 'bg-[#FEF2F2]/30' : ''}`}
+                    className={`${TABLE_STYLES.rowClickable} ${row.isDelayed ? 'bg-red-50/30' : ''}`}
                     onClick={() => router.push(`/onboarding/${row.id}`)}
                   >
                     <td className={TABLE_STYLES.cell}>
@@ -391,12 +391,12 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                     </td>
                     <td className={TABLE_STYLES.cell}>
                       {row.isDelayed ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#FEF2F2] text-[#EF4444]">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-red-50 text-red-500">
                           <AlertTriangle className="mr-1 h-3 w-3" />
                           {t('delayed')}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-[#DCFCE7] text-[#16A34A]">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-green-100 text-green-600">
                           {t('normal')}
                         </span>
                       )}
@@ -404,7 +404,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                     <td className={TABLE_STYLES.cell}>
                       {row.emotionPulse ? (() => {
                         const cfg = MOOD_CONFIG[row.emotionPulse.mood]
-                        if (!cfg) return <span className="text-xs text-[#8181A5]">-</span>
+                        if (!cfg) return <span className="text-xs text-muted-foreground">-</span>
                         const Icon = cfg.icon
                         return (
                           <span
@@ -416,14 +416,14 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                           </span>
                         )
                       })() : (
-                        <span className="text-xs text-[#8181A5]">-</span>
+                        <span className="text-xs text-muted-foreground">-</span>
                       )}
                     </td>
                     {isHrAdmin && (
                       <td className={TABLE_STYLES.cell}>
                         {row.status !== 'COMPLETED' && (
                           <button
-                            className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA] transition-colors"
+                            className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();
                               setForceTarget(row);
@@ -443,22 +443,22 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
           {/* ─── Pagination ─── */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-2">
-              <p className="text-sm text-[#8181A5]">
+              <p className="text-sm text-muted-foreground">
                 {t('totalItems', { total: pagination?.total.toLocaleString() ?? '0' })}
               </p>
               <div className="flex items-center gap-2">
                 <button
-                  className="px-3 py-1.5 text-sm font-medium rounded-lg border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1.5 text-sm font-medium rounded-lg border border-border text-muted-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   disabled={page <= 1}
                   onClick={() => setPage((p) => p - 1)}
                 >
                   {tCommon('prev')}
                 </button>
-                <span className="text-sm text-[#8181A5]">
+                <span className="text-sm text-muted-foreground">
                   {page} / {totalPages}
                 </span>
                 <button
-                  className="px-3 py-1.5 text-sm font-medium rounded-lg border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-1.5 text-sm font-medium rounded-lg border border-border text-muted-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                   disabled={page >= totalPages}
                   onClick={() => setPage((p) => p + 1)}
                 >
@@ -504,7 +504,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
           </div>
           <DialogFooter>
             <button
-              className="px-4 py-2 text-sm font-medium rounded-lg border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA] transition-colors"
+              className="px-4 py-2 text-sm font-medium rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
               onClick={() => {
                 setForceTarget(null)
                 setForceReason('')
@@ -515,7 +515,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
             <button
               onClick={handleForceComplete}
               disabled={!forceReason.trim() || forceLoading}
-              className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#EF4444] hover:bg-[#DC2626] text-white disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-red-500 hover:bg-red-600 text-white disabled:opacity-50 transition-colors"
             >
               {forceLoading ? t('processing') : t('forceCompleteConfirm')}
             </button>

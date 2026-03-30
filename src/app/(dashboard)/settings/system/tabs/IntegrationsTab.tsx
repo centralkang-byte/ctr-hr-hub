@@ -21,26 +21,26 @@ export function IntegrationsTab({
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">{'연동'}</h3>
-        <p className="text-sm text-[#8181A5]">{'외부 시스템 연동 설정'}</p>
+        <h3 className="text-base font-semibold text-foreground">{'연동'}</h3>
+        <p className="text-sm text-muted-foreground">{'외부 시스템 연동 설정'}</p>
       </div>
-      <div className="flex items-start gap-3 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4">
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
-        <p className="text-xs text-[#8181A5]">{'ℹ️ 연동 기능은 향후 업데이트에서 지원 예정입니다.'}</p>
+      <div className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+        <p className="text-xs text-muted-foreground">{'ℹ️ 연동 기능은 향후 업데이트에서 지원 예정입니다.'}</p>
       </div>
       <div className="space-y-3">{INTEGRATIONS.map((int) => (
-        <div key={int.key} className="flex items-center gap-4 rounded-xl border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">
+        <div key={int.key} className="flex items-center gap-4 rounded-xl border border-border p-4 hover:bg-muted transition-colors">
           <span className="text-2xl">{int.icon}</span>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-[#1C1D21]">{int.label}</span>
+              <span className="text-sm font-medium text-foreground">{int.label}</span>
               <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${int.status === 'available' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-400'}`}>
                 {int.status === 'available' ? '사용 가능' : '예정'}
               </span>
             </div>
-            <p className="text-xs text-[#8181A5]">{int.desc}</p>
+            <p className="text-xs text-muted-foreground">{int.desc}</p>
           </div>
-          {int.status === 'available' && <Plug className="h-4 w-4 text-[#8181A5]" />}
+          {int.status === 'available' && <Plug className="h-4 w-4 text-muted-foreground" />}
         </div>
       ))}</div>
     </div>

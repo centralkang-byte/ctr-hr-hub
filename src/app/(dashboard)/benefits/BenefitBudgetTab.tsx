@@ -82,7 +82,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
         <select
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
-          className="px-3 py-1.5 border border-[#D4D4D4] rounded-lg text-sm"
+          className="px-3 py-1.5 border border-border rounded-lg text-sm"
         >
           {[2024, 2025, 2026].map((y) => (
             <option key={y} value={y}>{y}년</option>
@@ -91,7 +91,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-[#FEE2E2] rounded-lg text-sm text-[#B91C1C]">
+        <div className="flex items-center gap-2 p-3 bg-red-100 rounded-lg text-sm text-red-700">
           <AlertTriangle className="w-4 h-4" />
           {error}
         </div>
@@ -99,10 +99,10 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
 
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <Loader2 className="w-6 h-6 animate-spin text-[#5E81F4]" />
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
         </div>
       ) : budgets.length === 0 ? (
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-8 text-center text-[#999] text-sm">
+        <div className="bg-white rounded-xl border border-border p-8 text-center text-[#999] text-sm">
           예산 데이터가 없습니다.
         </div>
       ) : (
@@ -121,11 +121,11 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-                    <h3 className="text-base font-semibold text-[#1A1A1A]">
+                    <h3 className="text-base font-semibold text-foreground">
                       {CATEGORY_LABELS[budget.category] ?? budget.category}
                     </h3>
                     {isWarning && (
-                      <span className="text-xs px-2 py-0.5 bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D] rounded-full">
+                      <span className="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 border border-amber-300 rounded-full">
                         80% 초과 ⚠️
                       </span>
                     )}
@@ -137,7 +137,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
                           type="number"
                           value={editValue}
                           onChange={(e) => setEditValue(e.target.value)}
-                          className="w-32 px-2 py-1 border border-[#D4D4D4] rounded text-sm"
+                          className="w-32 px-2 py-1 border border-border rounded text-sm"
                         />
                         <button
                           onClick={() => void handleSave(budget)}
@@ -150,7 +150,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
                     ) : (
                       <button
                         onClick={() => { setEditingId(budget.id); setEditValue(String(budget.totalBudget)) }}
-                        className="p-1.5 hover:bg-[#F5F5F5] rounded text-[#999]"
+                        className="p-1.5 hover:bg-muted rounded text-[#999]"
                       >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
@@ -158,7 +158,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
                   </div>
                 </div>
 
-                <div className="w-full bg-[#F5F5F5] rounded-full h-3 mb-2 overflow-hidden">
+                <div className="w-full bg-muted rounded-full h-3 mb-2 overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all"
                     style={{ width: `${pct}%`, backgroundColor: isWarning ? '#F59E0B' : color }}

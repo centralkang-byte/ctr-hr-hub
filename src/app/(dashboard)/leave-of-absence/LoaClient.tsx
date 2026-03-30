@@ -315,8 +315,8 @@ export function LoaClient({ user }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1C1D21]">휴직 관리</h1>
-          <p className="text-sm text-[#8181A5] mt-1">
+          <h1 className="text-2xl font-bold text-foreground">휴직 관리</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             {isHrAdmin ? '전사 휴직 신청 관리 및 승인' : '내 휴직 이력 및 신청'}
           </p>
         </div>
@@ -357,22 +357,22 @@ export function LoaClient({ user }: Props) {
             <SelectItem value="CANCELLED">취소</SelectItem>
           </SelectContent>
         </Select>
-        <span className="text-sm text-[#8181A5]">총 {total}건</span>
+        <span className="text-sm text-muted-foreground">총 {total}건</span>
       </div>
 
       {/* Table */}
       {loading ? (
-        <div className="py-12 text-center text-sm text-[#8181A5]">로딩 중...</div>
+        <div className="py-12 text-center text-sm text-muted-foreground">로딩 중...</div>
       ) : records.length === 0 ? (
         <div className="flex flex-col items-center py-16 text-[#999]">
-          <Shield className="h-10 w-10 mb-3 text-[#E8E8E8]" />
+          <Shield className="h-10 w-10 mb-3 text-border" />
           <p className="text-sm font-medium text-[#666]">휴직 기록이 없습니다</p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-[#E8E8EF]">
+        <div className="overflow-x-auto rounded-lg border border-border">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-[#E8E8EF] bg-[#FAFAFC]">
+              <tr className="border-b border-border bg-background">
                 {isHrAdmin && <th className={TABLE_STYLES.headerCell}>직원</th>}
                 <th className={TABLE_STYLES.headerCell}>유형</th>
                 <th className={TABLE_STYLES.headerCell}>기간</th>
@@ -383,11 +383,11 @@ export function LoaClient({ user }: Props) {
             </thead>
             <tbody>
               {records.map(r => (
-                <tr key={r.id} className="border-b border-[#E8E8EF] last:border-0 hover:bg-[#FAFAFC]">
+                <tr key={r.id} className="border-b border-border last:border-0 hover:bg-background">
                   {isHrAdmin && (
                     <td className={TABLE_STYLES.cell}>
-                      <p className="font-medium text-[#1C1D21]">{r.employee.name}</p>
-                      <p className="text-xs text-[#8181A5]">{r.employee.employeeNo}</p>
+                      <p className="font-medium text-foreground">{r.employee.name}</p>
+                      <p className="text-xs text-muted-foreground">{r.employee.employeeNo}</p>
                     </td>
                   )}
                   <td className={TABLE_STYLES.cell}>
@@ -402,12 +402,12 @@ export function LoaClient({ user }: Props) {
                     </div>
                   </td>
                   <td className={TABLE_STYLES.cell}>
-                    <p className="text-[#1C1D21]">
+                    <p className="text-foreground">
                       {formatDate(r.startDate)} ~ {formatDate(r.actualEndDate ?? r.expectedEndDate)}
                     </p>
                   </td>
                   <td className={TABLE_STYLES.cell}>
-                    <p className="max-w-[200px] truncate text-[#8181A5]">{r.reason ?? '—'}</p>
+                    <p className="max-w-[200px] truncate text-muted-foreground">{r.reason ?? '—'}</p>
                   </td>
                   <td className={TABLE_STYLES.cell}>
                     <Badge className={cn(STATUS_COLORS[r.status])}>
@@ -464,7 +464,7 @@ export function LoaClient({ user }: Props) {
                       )}
                       {/* 취소 (REQUESTED/APPROVED 상태) */}
                       {['REQUESTED', 'APPROVED'].includes(r.status) && (isHrAdmin || r.employee.id === user.employeeId) && (
-                        <Button size="sm" variant="ghost" className="h-7 text-xs text-[#8181A5]"
+                        <Button size="sm" variant="ghost" className="h-7 text-xs text-muted-foreground"
                           onClick={() => handleCancel(r)}>
                           취소
                         </Button>
@@ -482,7 +482,7 @@ export function LoaClient({ user }: Props) {
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2">
           <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>이전</Button>
-          <span className="text-sm text-[#8181A5]">{page} / {totalPages}</span>
+          <span className="text-sm text-muted-foreground">{page} / {totalPages}</span>
           <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>다음</Button>
         </div>
       )}
@@ -496,13 +496,13 @@ export function LoaClient({ user }: Props) {
           <div className="space-y-4 py-2">
             {isHrAdmin && (
               <div>
-                <label className="text-sm font-medium text-[#1C1D21]">직원 ID</label>
+                <label className="text-sm font-medium text-foreground">직원 ID</label>
                 <Input placeholder="직원 ID 입력" value={requestForm.employeeId}
                   onChange={e => setRequestForm(f => ({ ...f, employeeId: e.target.value }))} />
               </div>
             )}
             <div>
-              <label className="text-sm font-medium text-[#1C1D21]">휴직 유형</label>
+              <label className="text-sm font-medium text-foreground">휴직 유형</label>
               <Select value={requestForm.typeId} onValueChange={v => setRequestForm(f => ({ ...f, typeId: v }))}>
                 <SelectTrigger><SelectValue placeholder="유형 선택" /></SelectTrigger>
                 <SelectContent>
@@ -529,18 +529,18 @@ export function LoaClient({ user }: Props) {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-sm font-medium text-[#1C1D21]">시작일</label>
+                <label className="text-sm font-medium text-foreground">시작일</label>
                 <Input type="date" value={requestForm.startDate}
                   onChange={e => setRequestForm(f => ({ ...f, startDate: e.target.value }))} />
               </div>
               <div>
-                <label className="text-sm font-medium text-[#1C1D21]">예상 복귀일</label>
+                <label className="text-sm font-medium text-foreground">예상 복귀일</label>
                 <Input type="date" value={requestForm.expectedEndDate}
                   onChange={e => setRequestForm(f => ({ ...f, expectedEndDate: e.target.value }))} />
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-[#1C1D21]">사유</label>
+              <label className="text-sm font-medium text-foreground">사유</label>
               <Textarea placeholder="휴직 사유를 입력하세요" value={requestForm.reason}
                 onChange={e => setRequestForm(f => ({ ...f, reason: e.target.value }))} rows={3} />
             </div>
@@ -564,17 +564,17 @@ export function LoaClient({ user }: Props) {
           </DialogHeader>
           {actionTarget && (
             <div className="space-y-4 py-2">
-              <div className="rounded-lg bg-[#FAFAFC] p-3 space-y-1">
+              <div className="rounded-lg bg-background p-3 space-y-1">
                 <p className="text-sm font-medium">{actionTarget.employee.name} ({actionTarget.employee.employeeNo})</p>
-                <p className="text-sm text-[#8181A5]">{actionTarget.type.name}</p>
-                <p className="text-sm text-[#8181A5]">
+                <p className="text-sm text-muted-foreground">{actionTarget.type.name}</p>
+                <p className="text-sm text-muted-foreground">
                   {formatDate(actionTarget.startDate)} ~ {formatDate(actionTarget.expectedEndDate)}
                 </p>
-                {actionTarget.reason && <p className="text-xs text-[#8181A5]">사유: {actionTarget.reason}</p>}
+                {actionTarget.reason && <p className="text-xs text-muted-foreground">사유: {actionTarget.reason}</p>}
               </div>
               {actionType === 'reject' && (
                 <div>
-                  <label className="text-sm font-medium text-[#1C1D21]">거부 사유 (필수)</label>
+                  <label className="text-sm font-medium text-foreground">거부 사유 (필수)</label>
                   <Textarea placeholder="거부 사유를 입력하세요" value={rejectionReason}
                     onChange={e => setRejectionReason(e.target.value)} rows={3} />
                 </div>
@@ -602,15 +602,15 @@ export function LoaClient({ user }: Props) {
           </DialogHeader>
           {returnTarget && (
             <div className="space-y-4 py-2">
-              <div className="rounded-lg bg-[#FAFAFC] p-3 space-y-1">
+              <div className="rounded-lg bg-background p-3 space-y-1">
                 <p className="text-sm font-medium">{returnTarget.type.name}</p>
-                <p className="text-sm text-[#8181A5]">
+                <p className="text-sm text-muted-foreground">
                   휴직 기간: {formatDate(returnTarget.startDate)} ~ {formatDate(returnTarget.expectedEndDate)}
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-[#1C1D21]">특이사항</label>
-                <p className="text-xs text-[#8181A5] mb-1">희망 복직일이나 기타 사항을 입력하세요</p>
+                <label className="text-sm font-medium text-foreground">특이사항</label>
+                <p className="text-xs text-muted-foreground mb-1">희망 복직일이나 기타 사항을 입력하세요</p>
                 <Textarea
                   placeholder="예: 희망 복직일 2026-04-15, 부서 변경 희망 등"
                   value={returnNotes}
@@ -637,15 +637,15 @@ export function LoaClient({ user }: Props) {
           </DialogHeader>
           {completeTarget && (
             <div className="space-y-4 py-2">
-              <div className="rounded-lg bg-[#FAFAFC] p-3 space-y-1">
+              <div className="rounded-lg bg-background p-3 space-y-1">
                 <p className="text-sm font-medium">{completeTarget.employee.name} ({completeTarget.employee.employeeNo})</p>
-                <p className="text-sm text-[#8181A5]">{completeTarget.type.name}</p>
-                <p className="text-sm text-[#8181A5]">
+                <p className="text-sm text-muted-foreground">{completeTarget.type.name}</p>
+                <p className="text-sm text-muted-foreground">
                   휴직 기간: {formatDate(completeTarget.startDate)} ~ {formatDate(completeTarget.expectedEndDate)}
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-[#1C1D21]">실제 복직일 (필수)</label>
+                <label className="text-sm font-medium text-foreground">실제 복직일 (필수)</label>
                 <Input
                   type="date"
                   value={completeForm.actualEndDate}
@@ -653,7 +653,7 @@ export function LoaClient({ user }: Props) {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-[#1C1D21]">복귀 직위</label>
+                <label className="text-sm font-medium text-foreground">복귀 직위</label>
                 <Select
                   value={completeForm.returnPositionId}
                   onValueChange={v => setCompleteForm(f => ({ ...f, returnPositionId: v === '__none__' ? '' : v }))}
@@ -665,10 +665,10 @@ export function LoaClient({ user }: Props) {
                     <SelectItem value="__none__">현재 직위 유지</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-[#8181A5] mt-1">다른 직위로 복귀 시 직위 변경은 인사 발령에서 처리하세요</p>
+                <p className="text-xs text-muted-foreground mt-1">다른 직위로 복귀 시 직위 변경은 인사 발령에서 처리하세요</p>
               </div>
               <div>
-                <label className="text-sm font-medium text-[#1C1D21]">복직 메모</label>
+                <label className="text-sm font-medium text-foreground">복직 메모</label>
                 <Textarea
                   placeholder="복직 관련 메모 (선택)"
                   value={completeForm.returnNotes}
@@ -708,12 +708,12 @@ function KpiCard({ icon: Icon, label, value, color }: {
 }) {
   const c = COLOR_MAP[color] ?? COLOR_MAP.yellow
   return (
-    <div className={cn('rounded-lg border border-[#E8E8EF] border-l-4 bg-white p-4', c.border)}>
+    <div className={cn('rounded-lg border border-border border-l-4 bg-white p-4', c.border)}>
       <div className="flex items-center gap-2 mb-1">
         <Icon className={cn('h-4 w-4', c.icon)} />
-        <p className="text-xs text-[#8181A5] font-medium">{label}</p>
+        <p className="text-xs text-muted-foreground font-medium">{label}</p>
       </div>
-      <p className="text-2xl font-bold text-[#1C1D21]">{value}</p>
+      <p className="text-2xl font-bold text-foreground">{value}</p>
     </div>
   )
 }

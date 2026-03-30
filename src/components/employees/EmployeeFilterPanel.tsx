@@ -39,9 +39,9 @@ interface EmployeeFilterPanelProps {
 
 function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <Badge variant="outline" className="flex items-center gap-1 pl-2.5 pr-1.5 py-0.5 text-xs bg-[#5E81F4]/10 border-[#5E81F4]/20 text-[#5E81F4]">
+    <Badge variant="outline" className="flex items-center gap-1 pl-2.5 pr-1.5 py-0.5 text-xs bg-primary/10 border-primary/20 text-primary">
       {label}
-      <button onClick={onRemove} className="ml-0.5 rounded-full hover:bg-[#5E81F4]/20 p-0.5">
+      <button onClick={onRemove} className="ml-0.5 rounded-full hover:bg-primary/20 p-0.5">
         <X className="h-3 w-3" />
       </button>
     </Badge>
@@ -191,17 +191,17 @@ export function EmployeeFilterPanel({
   )
 
   return (
-    <div className="rounded-xl border border-[#F0F0F3] bg-white p-4 space-y-3">
+    <div className="rounded-xl border border-border bg-white p-4 space-y-3">
       <div className="flex items-center justify-between">
         {/* 데스크톱: 인라인 토글 */}
         <button
           onClick={() => setExpanded((v) => !v)}
-          className="hidden md:flex items-center gap-2 text-sm font-medium text-[#333] hover:text-[#1A1A1A]"
+          className="hidden md:flex items-center gap-2 text-sm font-medium text-[#333] hover:text-foreground"
         >
           <SlidersHorizontal className="h-4 w-4 text-[#666]" />
           고급 검색 필터
           {hasFilters && (
-            <span className="rounded-full bg-[#5E81F4] text-white text-xs px-1.5 py-0.5">
+            <span className="rounded-full bg-primary text-white text-xs px-1.5 py-0.5">
               {chips.length}
             </span>
           )}
@@ -210,11 +210,11 @@ export function EmployeeFilterPanel({
         {/* 모바일: Sheet 트리거 */}
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
-            <button className="flex md:hidden items-center gap-2 text-sm font-medium text-[#333] hover:text-[#1A1A1A]">
+            <button className="flex md:hidden items-center gap-2 text-sm font-medium text-[#333] hover:text-foreground">
               <SlidersHorizontal className="h-4 w-4 text-[#666]" />
               필터
               {hasFilters && (
-                <span className="rounded-full bg-[#5E81F4] text-white text-xs px-1.5 py-0.5">
+                <span className="rounded-full bg-primary text-white text-xs px-1.5 py-0.5">
                   {chips.length}
                 </span>
               )}
@@ -265,7 +265,7 @@ export function EmployeeFilterPanel({
               size="sm"
               onClick={onExport}
               disabled={exportLoading}
-              className="h-7 gap-1.5 text-xs border-[#D4D4D4]"
+              className="h-7 gap-1.5 text-xs border-border"
             >
               <Download className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">{exportLoading ? '다운로드 중...' : '엑셀 다운로드'}</span>
@@ -289,7 +289,7 @@ export function EmployeeFilterPanel({
 
       {/* 데스크톱 인라인 필터 */}
       {expanded && (
-        <div className="hidden md:block pt-2 border-t border-[#F0F0F3]">
+        <div className="hidden md:block pt-2 border-t border-border">
           {filterForm}
         </div>
       )}

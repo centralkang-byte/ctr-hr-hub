@@ -19,21 +19,21 @@ import type { SessionUser } from '@/types'
 // ─── Badge Styles ────────────────────────────────────────
 
 const REWARD_TYPE_BADGE_STYLES: Record<string, string> = {
-  COMMENDATION: 'bg-[#EDF1FE] text-[#2E7D32]',
-  BONUS_AWARD: 'bg-[#E3F2FD] text-[#1565C0]',
-  CTR_VALUE_AWARD: 'bg-[#F3E5F5] text-[#7B1FA2]',
-  LONG_SERVICE: 'bg-[#FFF3E0] text-[#E65100]',
-  INNOVATION: 'bg-[#EDF1FE] text-[#5E81F4]',
-  SAFETY_AWARD: 'bg-[#E3F2FD] text-[#2196F3]',
-  PROMOTION_RECOMMENDATION: 'bg-[#EDF1FE] text-[#2E7D32]',
-  OTHER: 'bg-[#F5F5F5] text-[#999]',
+  COMMENDATION: 'bg-primary/10 text-green-700',
+  BONUS_AWARD: 'bg-blue-50 text-blue-800',
+  CTR_VALUE_AWARD: 'bg-purple-50 text-purple-800',
+  LONG_SERVICE: 'bg-orange-50 text-orange-800',
+  INNOVATION: 'bg-primary/10 text-primary',
+  SAFETY_AWARD: 'bg-blue-50 text-blue-500',
+  PROMOTION_RECOMMENDATION: 'bg-primary/10 text-green-700',
+  OTHER: 'bg-muted text-[#999]',
 }
 
 const CTR_VALUE_BADGE_STYLES: Record<string, string> = {
-  CHALLENGE: 'bg-[#FFEBEE] text-[#C62828]',
-  TRUST: 'bg-[#E3F2FD] text-[#1565C0]',
-  RESPONSIBILITY: 'bg-[#FFF3E0] text-[#E65100]',
-  RESPECT: 'bg-[#F3E5F5] text-[#7B1FA2]',
+  CHALLENGE: 'bg-red-50 text-red-800',
+  TRUST: 'bg-blue-50 text-blue-800',
+  RESPONSIBILITY: 'bg-orange-50 text-orange-800',
+  RESPECT: 'bg-purple-50 text-purple-800',
 }
 
 // ─── Types ───────────────────────────────────────────────
@@ -93,9 +93,9 @@ export default function RewardDetailClient({ user, id }: Props) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-background p-6 flex items-center justify-center">
         <div className="flex items-center gap-2 text-sm text-[#999]">
-          <div className="w-5 h-5 border-2 border-[#E8E8E8] border-t-[#5E81F4] rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-border border-t-primary rounded-full animate-spin" />
           {tRewards('loadingData')}
         </div>
       </div>
@@ -104,7 +104,7 @@ export default function RewardDetailClient({ user, id }: Props) {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] p-6">
+      <div className="min-h-screen bg-background p-6">
         <div className="text-center text-sm text-[#999] py-12">
           {t('notFound')}
         </div>
@@ -113,29 +113,29 @@ export default function RewardDetailClient({ user, id }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] p-6">
+    <div className="min-h-screen bg-background p-6">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={() => router.push('/discipline/rewards')}
-          className="p-2 border border-[#E8E8E8] rounded-lg hover:bg-[#FAFAFA] transition-colors"
+          className="p-2 border border-border rounded-lg hover:bg-background transition-colors"
         >
           <ChevronLeft className="w-4 h-4 text-[#666]" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#EDF1FE] rounded-lg flex items-center justify-center">
-            <Award className="w-5 h-5 text-[#5E81F4]" />
+          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+            <Award className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
+            <h1 className="text-xl font-bold text-foreground tracking-[-0.02em]">
               {t('title')}
             </h1>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${REWARD_TYPE_BADGE_STYLES[data.rewardType] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
+              <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${REWARD_TYPE_BADGE_STYLES[data.rewardType] ?? 'bg-muted text-[#999]'}`}>
                 {tRewards(`rewardTypeLabels.${data.rewardType}`, { defaultValue: data.rewardType })}
               </span>
               {data.rewardType === 'CTR_VALUE_AWARD' && data.ctrValue && (
-                <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${CTR_VALUE_BADGE_STYLES[data.ctrValue] ?? 'bg-[#F5F5F5] text-[#999]'}`}>
+                <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${CTR_VALUE_BADGE_STYLES[data.ctrValue] ?? 'bg-muted text-[#999]'}`}>
                   {tRewards(`ctrValueLabels.${data.ctrValue}`, { defaultValue: data.ctrValue })}
                 </span>
               )}
@@ -149,8 +149,8 @@ export default function RewardDetailClient({ user, id }: Props) {
         {/* Left Panel */}
         <div className="space-y-6">
           {/* Reward Info */}
-          <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
+          <div className="bg-white border border-border rounded-xl p-6">
+            <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
               {t('rewardInfo')}
             </h2>
             <div className="grid grid-cols-2 gap-y-4 gap-x-6">
@@ -179,9 +179,9 @@ export default function RewardDetailClient({ user, id }: Props) {
 
             {/* CTR Value */}
             {data.rewardType === 'CTR_VALUE_AWARD' && data.ctrValue && (
-              <div className="mt-4 p-4 bg-[#F3E5F5] rounded-lg">
+              <div className="mt-4 p-4 bg-purple-50 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-[#7B1FA2]">{t('ctrCoreValue')}:</span>
+                  <span className="text-sm font-medium text-purple-800">{t('ctrCoreValue')}:</span>
                   <span className={`px-2 py-1 text-xs font-medium rounded ${CTR_VALUE_BADGE_STYLES[data.ctrValue] ?? ''}`}>
                     {tRewards(`ctrValueLabels.${data.ctrValue}`, { defaultValue: data.ctrValue })}
                   </span>
@@ -192,11 +192,11 @@ export default function RewardDetailClient({ user, id }: Props) {
 
           {/* Description */}
           {data.description && (
-            <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#1A1A1A] mb-3 tracking-[-0.02em]">
+            <div className="bg-white border border-border rounded-xl p-6">
+              <h2 className="text-base font-bold text-foreground mb-3 tracking-[-0.02em]">
                 {t('reason')}
               </h2>
-              <p className="text-sm text-[#1A1A1A] leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
                 {data.description}
               </p>
             </div>
@@ -206,42 +206,42 @@ export default function RewardDetailClient({ user, id }: Props) {
         {/* Right Panel */}
         <div className="space-y-6">
           {/* Employee Summary */}
-          <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+          <div className="bg-white border border-border rounded-xl p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-[#E3F2FD] rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-[#1565C0]" />
+              <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                <User className="w-5 h-5 text-blue-800" />
               </div>
               <div>
-                <p className="text-sm font-bold text-[#1A1A1A]">{data.employee.name}</p>
+                <p className="text-sm font-bold text-foreground">{data.employee.name}</p>
                 <p className="text-xs text-[#999]">{data.employee.employeeNo}</p>
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#999]">{tCommon('department')}</span>
-                <span className="text-[#1A1A1A]">{data.employee.department?.name ?? '-'}</span>
+                <span className="text-foreground">{data.employee.department?.name ?? '-'}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#999]">{tCommon('grade')}</span>
-                <span className="text-[#1A1A1A]">{data.employee.jobGrade?.name ?? '-'}</span>
+                <span className="text-foreground">{data.employee.jobGrade?.name ?? '-'}</span>
               </div>
             </div>
           </div>
 
           {/* Date Info */}
-          <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h3 className="text-base font-bold text-[#1A1A1A] mb-4 flex items-center gap-2 tracking-[-0.02em]">
+          <div className="bg-white border border-border rounded-xl p-6">
+            <h3 className="text-base font-bold text-foreground mb-4 flex items-center gap-2 tracking-[-0.02em]">
               <Calendar className="w-4 h-4 text-[#666]" />
               {t('dateInfo')}
             </h3>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#999]">{tRewards('awardedDate')}</span>
-                <span className="text-[#1A1A1A]">{format(new Date(data.awardedDate), 'yyyy-MM-dd')}</span>
+                <span className="text-foreground">{format(new Date(data.awardedDate), 'yyyy-MM-dd')}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-[#999]">{t('registeredDate')}</span>
-                <span className="text-[#1A1A1A]">{format(new Date(data.createdAt), 'yyyy-MM-dd')}</span>
+                <span className="text-foreground">{format(new Date(data.createdAt), 'yyyy-MM-dd')}</span>
               </div>
             </div>
           </div>
@@ -257,7 +257,7 @@ function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <span className="text-xs text-[#999]">{label}</span>
-      <p className="text-sm text-[#1A1A1A] mt-0.5">{value}</p>
+      <p className="text-sm text-foreground mt-0.5">{value}</p>
     </div>
   )
 }

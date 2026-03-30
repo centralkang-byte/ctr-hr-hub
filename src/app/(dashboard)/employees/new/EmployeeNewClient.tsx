@@ -127,7 +127,7 @@ function Field({
     <div className="space-y-1.5">
       <Label>
         {label}
-        {required && <span className="ml-0.5 text-[#F44336]">*</span>}
+        {required && <span className="ml-0.5 text-red-500">*</span>}
       </Label>
       {children}
     </div>
@@ -558,12 +558,12 @@ export function EmployeeNewClient({
     ]
 
     return (
-      <div className="rounded-xl border border-[#E8E8E8] bg-[#FAFAFA] p-6">
+      <div className="rounded-xl border border-border bg-background p-6">
         <dl className="grid grid-cols-1 gap-x-8 gap-y-1 md:grid-cols-2">
           {rows.map(([label, value]) => (
             <div key={label} className="py-2">
               <p className="text-xs text-[#999] font-medium mb-1">{label}</p>
-              <p className="text-sm text-[#1A1A1A]">{value}</p>
+              <p className="text-sm text-foreground">{value}</p>
             </div>
           ))}
         </dl>
@@ -626,8 +626,8 @@ export function EmployeeNewClient({
       </div>
 
       {/* ─── Step content ─── */}
-      <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
-        <h2 className="mb-5 text-base font-bold text-[#1A1A1A] tracking-ctr">
+      <div className="rounded-xl border border-border bg-white p-6">
+        <h2 className="mb-5 text-base font-bold text-foreground tracking-ctr">
           {step + 1}단계: {STEPS[step]!.label}
         </h2>
         {step === 0 && renderStep1()}

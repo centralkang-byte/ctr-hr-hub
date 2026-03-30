@@ -53,48 +53,48 @@ function getNudgeStyle(triggerType: string): {
   if (triggerType.includes('leave')) {
     return {
       Icon: Clock,
-      borderColor: 'border-[#EF4444]',
-      bgColor:     'bg-[#FEF2F2]',
-      dotColor:    'bg-[#EF4444]',
+      borderColor: 'border-red-500',
+      bgColor:     'bg-red-50',
+      dotColor:    'bg-red-500',
     }
   }
   if (triggerType.includes('payroll')) {
     return {
       Icon: AlertTriangle,
-      borderColor: 'border-[#F59E0B]',
-      bgColor:     'bg-[#FFFBEB]',
-      dotColor:    'bg-[#F59E0B]',
+      borderColor: 'border-amber-500',
+      bgColor:     'bg-amber-50',
+      dotColor:    'bg-amber-500',
     }
   }
   if (triggerType.includes('performance') || triggerType.includes('eval')) {
     return {
       Icon: Target,
-      borderColor: 'border-[#A855F7]',
-      bgColor:     'bg-[#FAF5FF]',
-      dotColor:    'bg-[#A855F7]',
+      borderColor: 'border-violet-500',
+      bgColor:     'bg-purple-50',
+      dotColor:    'bg-violet-500',
     }
   }
   if (triggerType.includes('onboarding')) {
     return {
       Icon: ClipboardCheck,
-      borderColor: 'border-[#5E81F4]',
-      bgColor:     'bg-[#F0FDF4]',
-      dotColor:    'bg-[#5E81F4]',
+      borderColor: 'border-primary',
+      bgColor:     'bg-green-50',
+      dotColor:    'bg-primary',
     }
   }
   if (triggerType.includes('offboarding')) {
     return {
       Icon: Bell,
-      borderColor: 'border-[#F59E0B]',
-      bgColor:     'bg-[#FFFBEB]',
-      dotColor:    'bg-[#F59E0B]',
+      borderColor: 'border-amber-500',
+      bgColor:     'bg-amber-50',
+      dotColor:    'bg-amber-500',
     }
   }
   return {
     Icon: Bell,
-    borderColor: 'border-[#5E81F4]',
-    bgColor:     'bg-[#EDF1FE]',
-    dotColor:    'bg-[#5E81F4]',
+    borderColor: 'border-primary',
+    bgColor:     'bg-primary/10',
+    dotColor:    'bg-primary',
   }
 }
 
@@ -151,12 +151,12 @@ export function NudgeCards({ user }: NudgeCardsProps) {
   const overflow = nudges.length - VISIBLE_COUNT
 
   return (
-    <div className="rounded-xl border border-[#F0F0F3] bg-white p-4">
+    <div className="rounded-xl border border-border bg-white p-4">
       {/* Header */}
       <div className="mb-3 flex items-center gap-2">
-        <AlertTriangle className="h-4 w-4 text-[#F59E0B]" />
-        <span className="text-sm font-semibold text-[#1C1D21]">주의가 필요합니다</span>
-        <span className="ml-1 rounded-full bg-[#FEF3C7] px-1.5 py-0.5 text-[10px] font-medium text-[#B45309]">
+        <AlertTriangle className="h-4 w-4 text-amber-500" />
+        <span className="text-sm font-semibold text-foreground">주의가 필요합니다</span>
+        <span className="ml-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">
           {nudges.length}건
         </span>
       </div>
@@ -175,7 +175,7 @@ export function NudgeCards({ user }: NudgeCardsProps) {
               {/* Dismiss button */}
               <button
                 type="button"
-                className="absolute right-2 top-2 rounded p-0.5 text-[#8181A5] hover:bg-black/5"
+                className="absolute right-2 top-2 rounded p-0.5 text-muted-foreground hover:bg-black/5"
                 onClick={() => dismiss(nudge.id)}
                 aria-label="닫기"
               >
@@ -185,18 +185,18 @@ export function NudgeCards({ user }: NudgeCardsProps) {
               {/* Content */}
               <div className="mb-2 flex items-center gap-1.5">
                 <span className={`h-2 w-2 rounded-full ${dotColor}`} />
-                <Icon className="h-3.5 w-3.5 text-[#8181A5]" />
+                <Icon className="h-3.5 w-3.5 text-muted-foreground" />
               </div>
-              <p className="text-xs font-semibold leading-snug text-[#1C1D21]">
+              <p className="text-xs font-semibold leading-snug text-foreground">
                 {nudge.title}
               </p>
-              <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-[#8181A5]">
+              <p className="mt-1 line-clamp-2 text-[11px] leading-snug text-muted-foreground">
                 {nudge.body}
               </p>
               {nudge.link && (
                 <Link
                   href={href}
-                  className="mt-2 inline-flex items-center text-[11px] font-medium text-[#5E81F4] hover:underline"
+                  className="mt-2 inline-flex items-center text-[11px] font-medium text-primary hover:underline"
                 >
                   조치하기 →
                 </Link>
@@ -210,7 +210,7 @@ export function NudgeCards({ user }: NudgeCardsProps) {
           <button
             type="button"
             onClick={() => setExpanded(true)}
-            className="flex min-w-[80px] flex-col items-center justify-center rounded-xl border border-dashed border-[#D0D5DD] px-3 py-4 text-xs text-[#8181A5] hover:border-[#5E81F4] hover:text-[#5E81F4]"
+            className="flex min-w-[80px] flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 px-3 py-4 text-xs text-muted-foreground hover:border-primary hover:text-primary"
           >
             <span className="text-base font-bold">+{overflow}</span>
             <span>더 보기</span>

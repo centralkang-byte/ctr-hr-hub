@@ -36,7 +36,7 @@ export function AssignmentRulesTab({
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   const toggleApproval = (i: number) => {
     const next = structuredClone(settings)
@@ -48,8 +48,8 @@ export function AssignmentRulesTab({
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{'발령 규칙'}</h3>
-          <p className="text-sm text-[#8181A5]">{'발령 유형 및 승인 절차 설정'}</p>
+          <h3 className="text-base font-semibold text-foreground">{'발령 규칙'}</h3>
+          <p className="text-sm text-muted-foreground">{'발령 유형 및 승인 절차 설정'}</p>
         </div>
         {isOverridden && (
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
@@ -69,9 +69,9 @@ export function AssignmentRulesTab({
           <tbody>
             {settings.rules.map((t, i) => (
               <tr key={t.code} className={TABLE_STYLES.row}>
-                <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{t.code}</td>
+                <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{t.code}</td>
                 <td className={TABLE_STYLES.cell}>{t.label}</td>
-                <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{t.desc}</td>
+                <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>{t.desc}</td>
                 <td className={`${TABLE_STYLES.cell} text-center`}>
                   <button
                     onClick={() => toggleApproval(i)}

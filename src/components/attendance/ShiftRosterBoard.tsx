@@ -85,7 +85,7 @@ const SHIFT_BLOCKS: ShiftBlockDef[] = [
     defaultStart: '08:00',
     defaultEnd: '17:00',
     colorClass:
-      'bg-[#5E81F4]/10 text-[#5E81F4] border border-[#5E81F4]/20 hover:bg-[#5E81F4]/15',
+      'bg-primary/10 text-primary border border-primary/20 hover:bg-primary/15',
     Icon: Sun,
   },
   {
@@ -95,7 +95,7 @@ const SHIFT_BLOCKS: ShiftBlockDef[] = [
     defaultStart: '21:00',
     defaultEnd: '06:00',
     colorClass:
-      'bg-[#1C1D21]/10 text-[#1C1D21] border border-[#1C1D21]/20 hover:bg-[#1C1D21]/15',
+      'bg-foreground/10 text-foreground border border-foreground/20 hover:bg-foreground/15',
     Icon: Moon,
   },
   {
@@ -105,7 +105,7 @@ const SHIFT_BLOCKS: ShiftBlockDef[] = [
     defaultStart: '',
     defaultEnd: '',
     colorClass:
-      'bg-[#FF808B]/10 text-[#FF808B] border border-[#FF808B]/20 hover:bg-[#FF808B]/15',
+      'bg-red-400/10 text-red-400 border border-red-400/20 hover:bg-red-400/15',
     Icon: Coffee,
   },
 ]
@@ -352,14 +352,14 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
       {/* ── Page header ─────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1C1D21]">근무 배정표</h1>
-          <p className="text-sm text-[#8181A5]">
+          <h1 className="text-2xl font-bold text-foreground">근무 배정표</h1>
+          <p className="text-sm text-muted-foreground">
             현장 근무자의 교대 일정을 시각적으로 관리합니다.
           </p>
         </div>
         <button
           onClick={() => void fetchData()}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm text-[#1C1D21] transition-colors hover:bg-[#F5F5FA]"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted"
         >
           <RefreshCw className="h-4 w-4" />
           새로고침
@@ -370,23 +370,23 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
       <div className="flex items-center gap-3">
         <button
           onClick={prevWeek}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#F0F0F3] bg-white transition-colors hover:bg-[#F5F5FA]"
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-white transition-colors hover:bg-muted"
         >
-          <ChevronLeft className="h-4 w-4 text-[#1C1D21]" />
+          <ChevronLeft className="h-4 w-4 text-foreground" />
         </button>
-        <div className="flex items-center gap-2 rounded-lg border border-[#F0F0F3] bg-white px-4 py-1.5">
-          <Calendar className="h-4 w-4 text-[#8181A5]" />
-          <span className="text-sm font-semibold text-[#1C1D21]">{weekLabel}</span>
+        <div className="flex items-center gap-2 rounded-lg border border-border bg-white px-4 py-1.5">
+          <Calendar className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm font-semibold text-foreground">{weekLabel}</span>
         </div>
         <button
           onClick={nextWeek}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#F0F0F3] bg-white transition-colors hover:bg-[#F5F5FA]"
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-white transition-colors hover:bg-muted"
         >
-          <ChevronRight className="h-4 w-4 text-[#1C1D21]" />
+          <ChevronRight className="h-4 w-4 text-foreground" />
         </button>
         <button
           onClick={goToday}
-          className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-1.5 text-xs font-medium text-[#1C1D21] transition-colors hover:bg-[#F5F5FA]"
+          className="rounded-lg border border-border bg-white px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
         >
           오늘
         </button>
@@ -396,10 +396,10 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
       <div className="flex flex-1 gap-4 overflow-hidden">
         {/* ── Left: Shift toolbar ─────────────────────────────── */}
         <div className="flex w-44 flex-shrink-0 flex-col gap-2">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#8181A5]">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             근무 유형
           </p>
-          <p className="text-xs text-[#8181A5]">드래그하여 배정</p>
+          <p className="text-xs text-muted-foreground">드래그하여 배정</p>
 
           {SHIFT_BLOCKS.map((block) => {
             const { Icon } = block
@@ -426,21 +426,21 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
           })}
 
           {/* Legend */}
-          <div className="mt-4 rounded-lg border border-[#F0F0F3] bg-[#F5F5FA] p-3">
-            <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[#8181A5]">
+          <div className="mt-4 rounded-lg border border-border bg-muted p-3">
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               범례
             </p>
             <ul className="space-y-1.5">
-              <li className="flex items-center gap-2 text-xs text-[#1C1D21]">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#5E81F4]" />
+              <li className="flex items-center gap-2 text-xs text-foreground">
+                <span className="h-2.5 w-2.5 rounded-full bg-primary" />
                 주간 (8h–17h)
               </li>
-              <li className="flex items-center gap-2 text-xs text-[#1C1D21]">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#1C1D21]" />
+              <li className="flex items-center gap-2 text-xs text-foreground">
+                <span className="h-2.5 w-2.5 rounded-full bg-foreground" />
                 야간 (21h–6h)
               </li>
-              <li className="flex items-center gap-2 text-xs text-[#1C1D21]">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#FF808B]" />
+              <li className="flex items-center gap-2 text-xs text-foreground">
+                <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
                 휴무
               </li>
             </ul>
@@ -448,26 +448,26 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
         </div>
 
         {/* ── Right: Roster grid ──────────────────────────────── */}
-        <div className="relative flex-1 overflow-hidden rounded-xl border border-[#F0F0F3] bg-white">
+        <div className="relative flex-1 overflow-hidden rounded-xl border border-border bg-white">
           {loading && (
             <div className="absolute inset-0 z-30 flex items-center justify-center bg-white/70">
-              <Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" />
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
           )}
 
           {error && (
-            <div className="m-6 rounded-lg bg-[#FF808B]/10 p-4 text-sm text-[#FF808B]">
+            <div className="m-6 rounded-lg bg-red-400/10 p-4 text-sm text-red-400">
               {error}
             </div>
           )}
 
           {!loading && !error && employees.length === 0 && (
             <div className="flex h-full flex-col items-center justify-center gap-3 p-12 text-center">
-              <Calendar className="h-12 w-12 text-[#F0F0F3]" />
-              <p className="text-sm font-medium text-[#1C1D21]">
+              <Calendar className="h-12 w-12 text-border" />
+              <p className="text-sm font-medium text-foreground">
                 배정된 근무자가 없습니다
               </p>
-              <p className="max-w-xs text-xs text-[#8181A5]">
+              <p className="max-w-xs text-xs text-muted-foreground">
                 교대 그룹에 구성원을 추가하거나, 설정 → 교대 패턴에서
                 스케줄을 생성하세요.
               </p>
@@ -481,8 +481,8 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
                 <thead>
                   <tr>
                     {/* Employee column header */}
-                    <th className="sticky left-0 top-0 z-20 min-w-[180px] border-b border-r border-[#F0F0F3] bg-white px-4 py-3 text-left">
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-[#8181A5]">
+                    <th className="sticky left-0 top-0 z-20 min-w-[180px] border-b border-r border-border bg-white px-4 py-3 text-left">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                         직원
                       </span>
                     </th>
@@ -495,14 +495,14 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
                       return (
                         <th
                           key={dateStr}
-                          className={`sticky top-0 z-10 min-w-[90px] border-b border-r border-[#F0F0F3] bg-white px-2 py-3 text-center ${
-                            isTdy ? 'bg-[#5E81F4]/5' : ''
+                          className={`sticky top-0 z-10 min-w-[90px] border-b border-r border-border bg-white px-2 py-3 text-center ${
+                            isTdy ? 'bg-primary/5' : ''
                           }`}
                         >
                           <div className="flex flex-col items-center gap-0.5">
                             <span
                               className={`text-[11px] font-semibold uppercase ${
-                                isWknd ? 'text-[#FF808B]' : 'text-[#8181A5]'
+                                isWknd ? 'text-red-400' : 'text-muted-foreground'
                               }`}
                             >
                               {format(day, 'EEE', { locale: ko })}
@@ -510,10 +510,10 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
                             <span
                               className={`flex h-6 w-6 items-center justify-center rounded-full text-sm font-bold ${
                                 isTdy
-                                  ? 'bg-[#5E81F4] text-white'
+                                  ? 'bg-primary text-white'
                                   : isWknd
-                                    ? 'text-[#FF808B]'
-                                    : 'text-[#1C1D21]'
+                                    ? 'text-red-400'
+                                    : 'text-foreground'
                               }`}
                             >
                               {format(day, 'd')}
@@ -530,14 +530,14 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
                   {employees.map((emp, rowIdx) => (
                     <tr
                       key={emp.id}
-                      className={`border-b border-[#F0F0F3] ${
-                        rowIdx % 2 === 0 ? 'bg-white' : 'bg-[#FAFAFA]'
+                      className={`border-b border-border ${
+                        rowIdx % 2 === 0 ? 'bg-white' : 'bg-background'
                       }`}
                     >
                       {/* Sticky employee column */}
                       <td
-                        className={`sticky left-0 z-10 border-r border-[#F0F0F3] px-4 py-2.5 ${
-                          rowIdx % 2 === 0 ? 'bg-white' : 'bg-[#FAFAFA]'
+                        className={`sticky left-0 z-10 border-r border-border px-4 py-2.5 ${
+                          rowIdx % 2 === 0 ? 'bg-white' : 'bg-background'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
@@ -548,15 +548,15 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
                               className="h-8 w-8 rounded-full object-cover"
                             />
                           ) : (
-                            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#5E81F4]/10 text-sm font-bold text-[#5E81F4]">
+                            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
                               {getInitials(emp.name)}
                             </div>
                           )}
                           <div className="min-w-0">
-                            <p className="truncate text-[13px] font-semibold text-[#1C1D21]">
+                            <p className="truncate text-[13px] font-semibold text-foreground">
                               {emp.name}
                             </p>
-                            <p className="truncate text-[11px] text-[#8181A5]">
+                            <p className="truncate text-[11px] text-muted-foreground">
                               {emp.department ?? emp.groupName ?? emp.employeeNo}
                             </p>
                           </div>
@@ -576,13 +576,13 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
                         return (
                           <td
                             key={dateStr}
-                            className={`border-r border-[#F0F0F3] p-1 text-center transition-colors ${
+                            className={`border-r border-border p-1 text-center transition-colors ${
                               isDropTarget
-                                ? 'bg-[#5E81F4]/10 ring-1 ring-inset ring-[#5E81F4]/30'
+                                ? 'bg-primary/10 ring-1 ring-inset ring-primary/30'
                                 : isTdy
-                                  ? 'bg-[#5E81F4]/5'
+                                  ? 'bg-primary/5'
                                   : isWknd
-                                    ? 'bg-[#F5F5FA]/60'
+                                    ? 'bg-muted/60'
                                     : ''
                             }`}
                             onDragOver={(e) =>
@@ -619,17 +619,17 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
 
       {/* ── DnD ghost indicator ──────────────────────────────── */}
       {draggedType && (
-        <div className="pointer-events-none fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full border border-[#F0F0F3] bg-white px-4 py-2 shadow-lg">
+        <div className="pointer-events-none fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full border border-border bg-white px-4 py-2 shadow-lg">
           <div
             className={`h-2 w-2 rounded-full ${
               draggedType === 'morning'
-                ? 'bg-[#5E81F4]'
+                ? 'bg-primary'
                 : draggedType === 'night'
-                  ? 'bg-[#1C1D21]'
-                  : 'bg-[#FF808B]'
+                  ? 'bg-foreground'
+                  : 'bg-red-400'
             }`}
           />
-          <span className="text-xs font-medium text-[#1C1D21]">
+          <span className="text-xs font-medium text-foreground">
             {SHIFT_BY_TYPE[draggedType]?.shortLabel} 배정 중…
           </span>
         </div>
@@ -689,11 +689,11 @@ function EmptyCell({ isDropTarget }: { isDropTarget: boolean }) {
     <div
       className={`flex h-12 w-full items-center justify-center rounded-xl border border-dashed transition-colors ${
         isDropTarget
-          ? 'border-[#5E81F4] bg-[#5E81F4]/5'
-          : 'border-[#F0F0F3] bg-transparent hover:border-[#C4C4D4] hover:bg-[#F5F5FA]'
+          ? 'border-primary bg-primary/5'
+          : 'border-border bg-transparent hover:border-border hover:bg-muted'
       }`}
     >
-      <span className="text-[10px] text-[#C4C4D4]">
+      <span className="text-[10px] text-muted-foreground/70">
         {isDropTarget ? '놓기' : '—'}
       </span>
     </div>

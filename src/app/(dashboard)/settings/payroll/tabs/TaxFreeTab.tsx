@@ -100,22 +100,22 @@ export function TaxFreeTab({
 
   const hasChanges = JSON.stringify(limits) !== JSON.stringify(original)
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{'비과세 한도'}</h3>
-          <p className="text-sm text-[#8181A5]">{'항목별 비과세 한도액 (2025 기준)'}</p>
+          <h3 className="text-base font-semibold text-foreground">{'비과세 한도'}</h3>
+          <p className="text-sm text-muted-foreground">{'항목별 비과세 한도액 (2025 기준)'}</p>
         </div>
         {isOverridden && (
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
         )}
       </div>
-      <div className="flex items-start gap-3 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4">
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
-        <p className="text-xs text-[#8181A5]">{'세법 개정 시 관리자가 직접 한도액을 수정할 수 있습니다. 변경 사항은 급여 계산에 즉시 반영됩니다.'}</p>
+      <div className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+        <p className="text-xs text-muted-foreground">{'세법 개정 시 관리자가 직접 한도액을 수정할 수 있습니다. 변경 사항은 급여 계산에 즉시 반영됩니다.'}</p>
       </div>
       <div className={TABLE_STYLES.wrapper}>
         <table className={TABLE_STYLES.table}>
@@ -127,7 +127,7 @@ export function TaxFreeTab({
           </tr></thead>
           <tbody>{limits.map((l, i) => (
             <tr key={l.code} className={TABLE_STYLES.row}>
-              <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{l.code}</td>
+              <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{l.code}</td>
               <td className={TABLE_STYLES.cell}>{l.label}</td>
               <td className={`${TABLE_STYLES.cell} text-right`}>
                 <Input
@@ -141,7 +141,7 @@ export function TaxFreeTab({
                   className="ml-auto w-32 text-right"
                 />
               </td>
-              <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{l.note}</td>
+              <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>{l.note}</td>
             </tr>
           ))}</tbody>
         </table>

@@ -37,19 +37,19 @@ interface SeveranceInterimRequest {
 const STATUS_MAP: Record<SipStatus, { label: string; className: string }> = {
   SIP_PENDING: {
     label: '검토 중',
-    className: 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]',
+    className: 'bg-amber-100 text-amber-700 border border-amber-300',
   },
   SIP_APPROVED: {
     label: '승인',
-    className: 'bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]',
+    className: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
   },
   SIP_REJECTED: {
     label: '반려',
-    className: 'bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]',
+    className: 'bg-red-100 text-red-700 border border-red-200',
   },
   SIP_PAID: {
     label: '지급 완료',
-    className: 'bg-[#EDF1FE] text-[#4B6DE0] border border-[#EDF1FE]',
+    className: 'bg-primary/10 text-primary/90 border border-primary/20',
   },
 }
 
@@ -189,7 +189,7 @@ export default function SeveranceInterimTab() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-[#1A1A1A]">퇴직금 중간정산</h2>
+          <h2 className="text-lg font-semibold text-foreground">퇴직금 중간정산</h2>
           <p className="text-sm text-[#666] mt-0.5">
             중간정산 신청 현황 및 승인 처리를 관리합니다.
           </p>
@@ -252,10 +252,10 @@ export default function SeveranceInterimTab() {
             <tbody>
               {loading ? (
                 Array.from({ length: 4 }).map((_, i) => (
-                  <tr key={i} className="border-b border-[#F5F5F5]">
+                  <tr key={i} className="border-b border-border">
                     {Array.from({ length: 7 }).map((_, j) => (
                       <td key={j} className="px-4 py-3">
-                        <div className="h-4 bg-[#F5F5F5] rounded animate-pulse" />
+                        <div className="h-4 bg-muted rounded animate-pulse" />
                       </td>
                     ))}
                   </tr>
@@ -281,7 +281,7 @@ export default function SeveranceInterimTab() {
                       {/* Employee */}
                       <td className="px-4 py-3">
                         <div>
-                          <p className="text-sm font-medium text-[#1A1A1A]">{req.employeeName}</p>
+                          <p className="text-sm font-medium text-foreground">{req.employeeName}</p>
                           <p className="text-xs text-[#999]">
                             {req.employeeNo} · {req.department}
                           </p>
@@ -297,7 +297,7 @@ export default function SeveranceInterimTab() {
 
                       {/* Amount */}
                       <td className="px-4 py-3 text-right">
-                        <span className="text-sm font-semibold text-[#1A1A1A]">
+                        <span className="text-sm font-semibold text-foreground">
                           {formatCurrency(req.estimatedAmount)}
                         </span>
                       </td>
@@ -332,7 +332,7 @@ export default function SeveranceInterimTab() {
                         <div className="flex items-center justify-center gap-1.5">
                           {/* Calculate button always shown */}
                           <button
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border border-[#D4D4D4] text-[#555] hover:bg-[#FAFAFA] transition-colors"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border border-border text-[#555] hover:bg-background transition-colors"
                             title="중간정산 계산"
                           >
                             <Calculator className="w-3 h-3" />
@@ -344,7 +344,7 @@ export default function SeveranceInterimTab() {
                               <button
                                 onClick={() => handleReview(req.id, 'approve')}
                                 disabled={actionLoading === req.id + 'approve'}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-[#059669] hover:bg-[#047857] text-white disabled:opacity-50 transition-colors"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50 transition-colors"
                               >
                                 <CheckCircle2 className="w-3 h-3" />
                                 승인
@@ -352,7 +352,7 @@ export default function SeveranceInterimTab() {
                               <button
                                 onClick={() => handleReview(req.id, 'reject')}
                                 disabled={actionLoading === req.id + 'reject'}
-                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border border-[#FCA5A5] text-[#DC2626] hover:bg-[#FEE2E2] disabled:opacity-50 transition-colors"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border border-red-300 text-red-600 hover:bg-red-100 disabled:opacity-50 transition-colors"
                               >
                                 <XCircle className="w-3 h-3" />
                                 반려
@@ -361,7 +361,7 @@ export default function SeveranceInterimTab() {
                           )}
 
                           {req.status === 'SIP_REJECTED' && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs text-[#DC2626]">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs text-red-600">
                               <AlertCircle className="w-3 h-3" />
                               반려됨
                             </span>

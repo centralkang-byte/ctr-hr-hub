@@ -50,10 +50,10 @@ function getStepState(entry: PipelineEntry, col: number): StepState {
 }
 
 const STATE_CONFIG: Record<StepState, { bg: string; text: string; border: string }> = {
-    done: { bg: 'bg-[#D1FAE5]', text: 'text-[#047857]', border: 'border-[#A7F3D0]' },
-    active: { bg: 'bg-[#DBEAFE]', text: 'text-[#1D4ED8]', border: 'border-[#BFDBFE]' },
-    pending: { bg: 'bg-[#F3F4F6]', text: 'text-[#9CA3AF]', border: 'border-[#E5E7EB]' },
-    not_started: { bg: 'bg-[#F9FAFB]', text: 'text-[#D1D5DB]', border: 'border-[#F3F4F6]' },
+    done: { bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200' },
+    active: { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200' },
+    pending: { bg: 'bg-gray-100', text: 'text-gray-400', border: 'border-gray-200' },
+    not_started: { bg: 'bg-gray-50', text: 'text-gray-300', border: 'border-gray-100' },
 }
 
 function StepStateIcon({ state }: { state: StepState }) {
@@ -115,7 +115,7 @@ export default function PayrollPipeline({ pipelines }: Props) {
                 </div>
 
                 {/* Divider */}
-                <div className="h-px bg-[#F0F0F3] mb-3" />
+                <div className="h-px bg-border mb-3" />
 
                 {/* Pipeline rows */}
                 <div className="space-y-2">
@@ -123,8 +123,8 @@ export default function PayrollPipeline({ pipelines }: Props) {
                         <div key={entry.companyId} className="grid grid-cols-7 gap-2 items-center">
                             {/* Company label */}
                             <div>
-                                <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${entry.alertLevel === 'red' ? 'bg-[#FEE2E2] text-[#B91C1C]' :
-                                    entry.alertLevel === 'amber' ? 'bg-[#FEF3C7] text-[#B45309]' :
+                                <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${entry.alertLevel === 'red' ? 'bg-red-100 text-red-700' :
+                                    entry.alertLevel === 'amber' ? 'bg-amber-100 text-amber-700' :
                                         'text-[#333]'
                                     }`}>
                                     {entry.companyCode ?? entry.companyName}
@@ -148,14 +148,14 @@ export default function PayrollPipeline({ pipelines }: Props) {
                                             className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all
                         ${cfg.bg} ${cfg.text} ${cfg.border}
                         ${url ? 'hover:opacity-80 cursor-pointer hover:shadow-sm' : 'cursor-default'}
-                        ${isAnomaly ? 'ring-1 ring-[#F59E0B]' : ''}
-                        ${isApproval ? 'ring-1 ring-[#5E81F4] animate-pulse' : ''}
+                        ${isAnomaly ? 'ring-1 ring-amber-500' : ''}
+                        ${isApproval ? 'ring-1 ring-primary animate-pulse' : ''}
                       `}
                                         >
                                             <StepStateIcon state={state} />
                                             <span className="hidden sm:inline">{stateLabel(state)}</span>
                                             {isAnomaly && (
-                                                <span className="ml-0.5 bg-[#F59E0B] text-white text-[9px] rounded-full px-1">{entry.anomalyCount}</span>
+                                                <span className="ml-0.5 bg-amber-500 text-white text-[9px] rounded-full px-1">{entry.anomalyCount}</span>
                                             )}
                                             {isApproval && entry.approvalStep != null && (
                                                 <span className="ml-0.5 text-[9px] opacity-70">{entry.approvalStep}/{entry.approvalTotal}</span>
@@ -169,7 +169,7 @@ export default function PayrollPipeline({ pipelines }: Props) {
                 </div>
 
                 {/* Legend */}
-                <div className="mt-4 pt-3 border-t border-[#F0F0F3] flex items-center gap-5 text-xs text-[#666]">
+                <div className="mt-4 pt-3 border-t border-border flex items-center gap-5 text-xs text-[#666]">
                     {[
                         { state: 'done' as StepState, label: '완료' },
                         { state: 'active' as StepState, label: '진행중' },

@@ -111,7 +111,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     )
   }
@@ -129,8 +129,8 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">지정연차</h3>
-          <p className="text-sm text-[#8181A5]">
+          <h3 className="text-base font-semibold text-foreground">지정연차</h3>
+          <p className="text-sm text-muted-foreground">
             회사가 지정한 연차 사용일을 관리합니다. 해당 날짜에 전 직원 연차 1일이 자동 차감됩니다.
           </p>
         </div>
@@ -139,7 +139,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
-            className="h-9 rounded-lg border border-[#E8E8E8] px-3 text-sm bg-white"
+            className="h-9 rounded-lg border border-border px-3 text-sm bg-white"
           >
             {[selectedYear - 1, selectedYear, selectedYear + 1].map((y) => (
               <option key={y} value={y}>{y}년</option>
@@ -161,8 +161,8 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
 
       {/* List */}
       {days.length === 0 ? (
-        <div className="py-16 text-center text-sm text-[#8181A5]">
-          <CalendarDays className="mx-auto h-10 w-10 text-[#D0D0D0] mb-2" />
+        <div className="py-16 text-center text-sm text-muted-foreground">
+          <CalendarDays className="mx-auto h-10 w-10 text-border mb-2" />
           <p>{selectedYear}년에 등록된 지정연차가 없습니다.</p>
         </div>
       ) : (
@@ -177,18 +177,18 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
                   {items.map((d) => (
                     <div
                       key={d.id}
-                      className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-[#F9F9FB] group"
+                      className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-background group"
                     >
                       <div className="flex items-center gap-3">
-                        <CalendarDays className="h-4 w-4 text-[#5E81F4]" />
-                        <span className="text-sm font-medium text-[#1A1A1A]">{d.name}</span>
+                        <CalendarDays className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium text-foreground">{d.name}</span>
                         <span className="text-xs text-[#999]">{formatDate(d.date)}</span>
                       </div>
                       <button
                         onClick={() => handleDelete(d.id)}
-                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-[#FEE2E2] rounded transition-opacity"
+                        className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 rounded transition-opacity"
                       >
-                        <Trash2 className="h-3.5 w-3.5 text-[#DC2626]" />
+                        <Trash2 className="h-3.5 w-3.5 text-red-600" />
                       </button>
                     </div>
                   ))}
@@ -197,7 +197,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
             )
           })}
 
-          <div className="pt-2 border-t border-[#F0F0F0] text-sm text-[#555]">
+          <div className="pt-2 border-t border-border text-sm text-[#555]">
             합계: <span className="font-semibold">{days.length}일</span>
           </div>
         </div>

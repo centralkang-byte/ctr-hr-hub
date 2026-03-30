@@ -16,14 +16,14 @@ function ChangeIndicator({ current, previous }: { current: number; previous?: nu
   const pct = ((diff / previous) * 100).toFixed(1)
   if (diff > 0) {
     return (
-      <span className="inline-flex items-center gap-0.5 text-[10px] text-[#059669] font-medium ml-1">
+      <span className="inline-flex items-center gap-0.5 text-[10px] text-emerald-600 font-medium ml-1">
         <ArrowUp className="h-3 w-3" />
         {pct}%
       </span>
     )
   }
   return (
-    <span className="inline-flex items-center gap-0.5 text-[10px] text-[#EF4444] font-medium ml-1">
+    <span className="inline-flex items-center gap-0.5 text-[10px] text-red-500 font-medium ml-1">
       <ArrowDown className="h-3 w-3" />
       {Math.abs(Number(pct))}%
     </span>
@@ -73,9 +73,9 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
           <span>실수령 {netRatio.toFixed(1)}%</span>
           <span>공제 {deductionRatio.toFixed(1)}%</span>
         </div>
-        <div className="h-3 rounded-full bg-[#E8E8E8] overflow-hidden flex">
+        <div className="h-3 rounded-full bg-border overflow-hidden flex">
           <div
-            className="bg-[#5E81F4] transition-all"
+            className="bg-primary transition-all"
             style={{ width: `${netRatio}%` }}
           />
           <div
@@ -86,9 +86,9 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
       </div>
 
       {/* 실수령액 + 전월비교 */}
-      <div className="text-center py-4 bg-[#EDF1FE] rounded-xl">
-        <p className="text-xs text-[#5E81F4] mb-1">실수령액</p>
-        <p className="text-3xl font-bold text-[#4B6DE0]">
+      <div className="text-center py-4 bg-primary/10 rounded-xl">
+        <p className="text-xs text-primary mb-1">실수령액</p>
+        <p className="text-3xl font-bold text-primary/90">
           {formatCurrency(netPay)}
           <ChangeIndicator current={netPay} previous={previousMonth?.netPay} />
         </p>
@@ -102,14 +102,14 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* 지급항목 */}
         <div>
-          <h4 className="text-sm font-semibold text-[#1A1A1A] mb-3 pb-2 border-b border-[#E8E8E8]">
+          <h4 className="text-sm font-semibold text-foreground mb-3 pb-2 border-b border-border">
             지급항목
           </h4>
           <div className="space-y-2">
             {earningItems.map((item) => (
               <div key={item.label} className="flex justify-between text-sm">
                 <span className="text-[#555]">{item.label}</span>
-                <span className="font-medium text-[#1A1A1A]">
+                <span className="font-medium text-foreground">
                   {formatCurrency(item.value)}
                   <ChangeIndicator current={item.value} previous={item.prev} />
                 </span>
@@ -119,7 +119,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
             {/* 사용자 정의 수당 */}
             {customAllowances && customAllowances.length > 0 && (
               <>
-                <div className="border-t border-dashed border-[#E8E8E8] pt-2 mt-2">
+                <div className="border-t border-dashed border-border pt-2 mt-2">
                   <p className="text-xs text-[#999] mb-1.5">추가 수당</p>
                 </div>
                 {customAllowances.map((item) => (
@@ -127,12 +127,12 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
                     <span className="text-[#555] flex items-center gap-1">
                       {item.name}
                       {item.isTaxExempt && (
-                        <span className="inline-flex items-center px-1 py-0 rounded text-[10px] bg-[#D1FAE5] text-[#059669] border border-[#A7F3D0]">
+                        <span className="inline-flex items-center px-1 py-0 rounded text-[10px] bg-emerald-100 text-emerald-600 border border-emerald-200">
                           비과세
                         </span>
                       )}
                     </span>
-                    <span className="font-medium text-[#1A1A1A]">
+                    <span className="font-medium text-foreground">
                       {formatCurrency(item.amount)}
                     </span>
                   </div>
@@ -140,9 +140,9 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
               </>
             )}
 
-            <div className="flex justify-between text-sm font-semibold pt-2 border-t border-[#E8E8E8]">
+            <div className="flex justify-between text-sm font-semibold pt-2 border-t border-border">
               <span className="text-[#333]">총 지급액</span>
-              <span className="text-[#059669]">
+              <span className="text-emerald-600">
                 {formatCurrency(grossPay)}
                 <ChangeIndicator current={grossPay} previous={previousMonth?.grossPay} />
               </span>
@@ -152,14 +152,14 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
 
         {/* 공제항목 */}
         <div>
-          <h4 className="text-sm font-semibold text-[#1A1A1A] mb-3 pb-2 border-b border-[#E8E8E8]">
+          <h4 className="text-sm font-semibold text-foreground mb-3 pb-2 border-b border-border">
             공제항목
           </h4>
           <div className="space-y-2">
             {deductionItems.map((item) => (
               <div key={item.label} className="flex justify-between text-sm">
                 <span className="text-[#555]">{item.label}</span>
-                <span className="font-medium text-[#DC2626]">
+                <span className="font-medium text-red-600">
                   -{formatCurrency(item.value)}
                 </span>
               </div>
@@ -168,7 +168,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
             {/* 사용자 정의 공제 */}
             {customDeductions && customDeductions.length > 0 && (
               <>
-                <div className="border-t border-dashed border-[#E8E8E8] pt-2 mt-2">
+                <div className="border-t border-dashed border-border pt-2 mt-2">
                   <p className="text-xs text-[#999] mb-1.5">추가 공제</p>
                 </div>
                 {customDeductions.map((item) => (
@@ -179,7 +179,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
                         ({item.category === 'STATUTORY' ? '법정' : '선택'})
                       </span>
                     </span>
-                    <span className="font-medium text-[#DC2626]">
+                    <span className="font-medium text-red-600">
                       -{formatCurrency(item.amount)}
                     </span>
                   </div>
@@ -187,9 +187,9 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
               </>
             )}
 
-            <div className="flex justify-between text-sm font-semibold pt-2 border-t border-[#E8E8E8]">
+            <div className="flex justify-between text-sm font-semibold pt-2 border-t border-border">
               <span className="text-[#333]">총 공제액</span>
-              <span className="text-[#DC2626]">
+              <span className="text-red-600">
                 -{formatCurrency(totalDeductions)}
                 <ChangeIndicator current={totalDeductions} previous={previousMonth?.totalDeductions} />
               </span>
@@ -201,10 +201,10 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
       {/* 초과근무 상세 */}
       {overtime.totalOvertimeHours > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-[#1A1A1A] mb-3 pb-2 border-b border-[#E8E8E8]">
+          <h4 className="text-sm font-semibold text-foreground mb-3 pb-2 border-b border-border">
             초과근무 상세
           </h4>
-          <div className="bg-[#FAFAFA] rounded-lg p-4 space-y-2">
+          <div className="bg-background rounded-lg p-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-[#555]">통상시급</span>
               <span className="font-medium">{formatCurrency(overtime.hourlyWage)}</span>
@@ -233,7 +233,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
                 <span className="font-medium">{overtime.nightHours}시간</span>
               </div>
             )}
-            <div className="flex justify-between text-sm font-semibold pt-2 border-t border-[#D4D4D4]">
+            <div className="flex justify-between text-sm font-semibold pt-2 border-t border-border">
               <span>합계</span>
               <span>{overtime.totalOvertimeHours}시간</span>
             </div>

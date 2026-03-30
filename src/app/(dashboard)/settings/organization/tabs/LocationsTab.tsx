@@ -208,7 +208,7 @@ export function LocationsTab({ companyId }: Props) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     )
   }
@@ -218,8 +218,8 @@ export function LocationsTab({ companyId }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">근무지 목록</h3>
-          <p className="text-sm text-[#8181A5]">등록된 근무지 {locations.length}개</p>
+          <h3 className="text-base font-semibold text-foreground">근무지 목록</h3>
+          <p className="text-sm text-muted-foreground">등록된 근무지 {locations.length}개</p>
         </div>
         <button onClick={openCreate} className={`${BUTTON_VARIANTS.primary} ${BUTTON_SIZES.md} inline-flex items-center`}>
           <Plus className="mr-1.5 h-4 w-4" />
@@ -233,7 +233,7 @@ export function LocationsTab({ companyId }: Props) {
         placeholder="코드, 이름, 도시로 검색..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full max-w-sm rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none focus:ring-1 focus:ring-[#5E81F4]"
+        className="w-full max-w-sm rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
       />
 
       {/* Table */}
@@ -261,7 +261,7 @@ export function LocationsTab({ companyId }: Props) {
                   <td className={TABLE_STYLES.cell}>
                     <div>{loc.name}</div>
                     {loc.nameEn && (
-                      <div className="text-xs text-[#8181A5]">{loc.nameEn}</div>
+                      <div className="text-xs text-muted-foreground">{loc.nameEn}</div>
                     )}
                   </td>
                   {!companyId && (
@@ -272,7 +272,7 @@ export function LocationsTab({ companyId }: Props) {
                   <td className={TABLE_STYLES.cell}>{loc.country}</td>
                   <td className={TABLE_STYLES.cellMuted}>{loc.city ?? '-'}</td>
                   <td className={TABLE_STYLES.cell}>
-                    <span className="inline-flex items-center rounded-md bg-[#F5F5FA] px-2 py-0.5 text-xs font-medium text-[#1C1D21]">
+                    <span className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
                       {loc.locationType ?? '-'}
                     </span>
                   </td>
@@ -291,7 +291,7 @@ export function LocationsTab({ companyId }: Props) {
                   <td className={TABLE_STYLES.cell}>
                     <button
                       onClick={() => openEdit(loc)}
-                      className="rounded p-1 text-[#8181A5] hover:bg-[#F5F5FA] hover:text-[#5E81F4]"
+                      className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-primary"
                       title="수정"
                     >
                       <Pencil className="h-4 w-4" />
@@ -303,10 +303,10 @@ export function LocationsTab({ companyId }: Props) {
           </table>
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <MapPin className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" />
-          <p className="text-sm font-medium text-[#1C1D21]">등록된 근무지가 없습니다</p>
-          <p className="mt-1 text-xs text-[#8181A5]">위의 &apos;근무지 추가&apos; 버튼으로 등록하세요</p>
+        <div className="rounded-xl border border-dashed border-border py-12 text-center">
+          <MapPin className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
+          <p className="text-sm font-medium text-foreground">등록된 근무지가 없습니다</p>
+          <p className="mt-1 text-xs text-muted-foreground">위의 &apos;근무지 추가&apos; 버튼으로 등록하세요</p>
         </div>
       )}
 
@@ -315,10 +315,10 @@ export function LocationsTab({ companyId }: Props) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-[#1C1D21]">
+              <h3 className="text-lg font-semibold text-foreground">
                 {editingId ? '근무지 수정' : '근무지 추가'}
               </h3>
-              <button onClick={() => setShowModal(false)} className="text-[#8181A5] hover:text-[#1C1D21]">
+              <button onClick={() => setShowModal(false)} className="text-muted-foreground hover:text-foreground">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -327,13 +327,13 @@ export function LocationsTab({ companyId }: Props) {
               {/* Code (only on create) */}
               {!editingId && (
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-[#1C1D21]">코드 *</label>
+                  <label className="mb-1 block text-sm font-medium text-foreground">코드 *</label>
                   <input
                     type="text"
                     value={form.code}
                     onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
                     placeholder="SEOUL-HQ"
-                    className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none"
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
                   />
                 </div>
               )}
@@ -341,23 +341,23 @@ export function LocationsTab({ companyId }: Props) {
               {/* Name */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-[#1C1D21]">이름 (한국어) *</label>
+                  <label className="mb-1 block text-sm font-medium text-foreground">이름 (한국어) *</label>
                   <input
                     type="text"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder="서울 본사"
-                    className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none"
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-[#1C1D21]">이름 (영문)</label>
+                  <label className="mb-1 block text-sm font-medium text-foreground">이름 (영문)</label>
                   <input
                     type="text"
                     value={form.nameEn}
                     onChange={(e) => setForm({ ...form, nameEn: e.target.value })}
                     placeholder="Seoul HQ"
-                    className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none"
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
                   />
                 </div>
               </div>
@@ -365,11 +365,11 @@ export function LocationsTab({ companyId }: Props) {
               {/* Country + City */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-[#1C1D21]">국가 *</label>
+                  <label className="mb-1 block text-sm font-medium text-foreground">국가 *</label>
                   <select
                     value={form.country}
                     onChange={(e) => setForm({ ...form, country: e.target.value })}
-                    className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none"
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
                   >
                     {COUNTRY_OPTIONS.map((c) => (
                       <option key={c.value} value={c.value}>{c.label}</option>
@@ -377,13 +377,13 @@ export function LocationsTab({ companyId }: Props) {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-[#1C1D21]">도시</label>
+                  <label className="mb-1 block text-sm font-medium text-foreground">도시</label>
                   <input
                     type="text"
                     value={form.city}
                     onChange={(e) => setForm({ ...form, city: e.target.value })}
                     placeholder="서울"
-                    className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none"
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
                   />
                 </div>
               </div>
@@ -391,11 +391,11 @@ export function LocationsTab({ companyId }: Props) {
               {/* Timezone + Type */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-[#1C1D21]">타임존 *</label>
+                  <label className="mb-1 block text-sm font-medium text-foreground">타임존 *</label>
                   <select
                     value={form.timezone}
                     onChange={(e) => setForm({ ...form, timezone: e.target.value })}
-                    className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none"
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
                   >
                     {TIMEZONE_OPTIONS.map((tz) => (
                       <option key={tz} value={tz}>{tz}</option>
@@ -403,11 +403,11 @@ export function LocationsTab({ companyId }: Props) {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-[#1C1D21]">유형</label>
+                  <label className="mb-1 block text-sm font-medium text-foreground">유형</label>
                   <select
                     value={form.locationType}
                     onChange={(e) => setForm({ ...form, locationType: e.target.value })}
-                    className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none"
+                    className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
                   >
                     {LOCATION_TYPES.map((lt) => (
                       <option key={lt.value} value={lt.value}>{lt.label}</option>
@@ -418,13 +418,13 @@ export function LocationsTab({ companyId }: Props) {
 
               {/* Address */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-[#1C1D21]">주소</label>
+                <label className="mb-1 block text-sm font-medium text-foreground">주소</label>
                 <input
                   type="text"
                   value={form.address}
                   onChange={(e) => setForm({ ...form, address: e.target.value })}
                   placeholder="경남 창원시 의창구..."
-                  className="w-full rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none"
+                  className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
                 />
               </div>
             </div>

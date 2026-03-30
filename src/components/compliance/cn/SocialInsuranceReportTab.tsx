@@ -147,19 +147,19 @@ export default function SocialInsuranceReportTab() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-base font-semibold text-[#1A1A1A]">월간 사회보험 보고서</h2>
+          <h2 className="text-base font-semibold text-foreground">월간 사회보험 보고서</h2>
           <p className="text-xs text-[#666] mt-0.5">월별 五险一金 납부 내역을 확인합니다</p>
         </div>
       </div>
 
       {/* Controls */}
-      <div className="flex flex-wrap items-end gap-3 mb-5 p-4 bg-[#FAFAFA] rounded-lg">
+      <div className="flex flex-wrap items-end gap-3 mb-5 p-4 bg-background rounded-lg">
         <div>
           <label className="block text-xs font-medium text-[#555] mb-1">연도</label>
           <select
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
           >
             {years.map((y) => (
               <option key={y} value={y}>
@@ -173,7 +173,7 @@ export default function SocialInsuranceReportTab() {
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
           >
             {months.map((m) => (
               <option key={m} value={m}>
@@ -194,7 +194,7 @@ export default function SocialInsuranceReportTab() {
           <button
             onClick={handleExport}
             disabled={exporting}
-            className="flex items-center gap-2 bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 bg-white border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
             {exporting ? '내보내는 중...' : '보고서 내보내기'}
@@ -204,12 +204,12 @@ export default function SocialInsuranceReportTab() {
 
       {/* Status Messages */}
       {calcMessage && (
-        <div className="mb-4 bg-[#D1FAE5] border border-[#A7F3D0] text-[#047857] text-sm rounded-lg px-4 py-3">
+        <div className="mb-4 bg-emerald-100 border border-emerald-200 text-emerald-700 text-sm rounded-lg px-4 py-3">
           {calcMessage}
         </div>
       )}
       {error && (
-        <div className="mb-4 bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-sm rounded-lg px-4 py-3">
+        <div className="mb-4 bg-red-100 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
           {error}
         </div>
       )}
@@ -241,7 +241,7 @@ export default function SocialInsuranceReportTab() {
                     key={row.insuranceType}
                     className={TABLE_STYLES.row}
                   >
-                    <td className="px-4 py-3 font-medium text-[#1A1A1A]">
+                    <td className="px-4 py-3 font-medium text-foreground">
                       {INSURANCE_TYPE_LABELS[row.insuranceType] ?? row.insuranceType}
                     </td>
                     <td className="px-4 py-3 text-right text-[#333]">
@@ -256,24 +256,24 @@ export default function SocialInsuranceReportTab() {
                     <td className="px-4 py-3 text-right text-[#333]">
                       {formatCNY(row.totalEmployeeAmount)}
                     </td>
-                    <td className="px-4 py-3 text-right font-medium text-[#1A1A1A]">
+                    <td className="px-4 py-3 text-right font-medium text-foreground">
                       {formatCNY(row.totalAmount)}
                     </td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
-                <tr className="bg-[#FAFAFA] font-semibold">
-                  <td className="px-4 py-3 text-[#1A1A1A]">합계</td>
+                <tr className="bg-background font-semibold">
+                  <td className="px-4 py-3 text-foreground">합계</td>
                   <td className="px-4 py-3" />
                   <td className="px-4 py-3" />
-                  <td className="px-4 py-3 text-right text-[#1A1A1A]">
+                  <td className="px-4 py-3 text-right text-foreground">
                     {formatCNY(reportData.summary.grandTotalEmployer)}
                   </td>
-                  <td className="px-4 py-3 text-right text-[#1A1A1A]">
+                  <td className="px-4 py-3 text-right text-foreground">
                     {formatCNY(reportData.summary.grandTotalEmployee)}
                   </td>
-                  <td className="px-4 py-3 text-right text-[#4B6DE0]">
+                  <td className="px-4 py-3 text-right text-primary/90">
                     {formatCNY(reportData.summary.grandTotal)}
                   </td>
                 </tr>

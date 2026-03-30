@@ -323,8 +323,8 @@ export function HrChatbot() {
                           type="button"
                           onClick={() => loadSession(s.id)}
                           className={cn(
-                            'w-full rounded px-3 py-2 text-left text-xs text-[#333] hover:bg-[#F5F5F5]',
-                            s.id === currentSessionId && 'bg-[#EDF1FE] font-medium',
+                            'w-full rounded px-3 py-2 text-left text-xs text-[#333] hover:bg-muted',
+                            s.id === currentSessionId && 'bg-primary/10 font-medium',
                           )}
                         >
                           {s.title ?? t('chatbotDefaultTitle')}
@@ -387,7 +387,7 @@ export function HrChatbot() {
                         'rounded-lg px-3 py-2 text-sm',
                         msg.role === 'user'
                           ? 'bg-ctr-primary text-white'
-                          : 'bg-[#F5F5F5] text-foreground',
+                          : 'bg-muted text-foreground',
                       )}
                     >
                       {msg.content}
@@ -401,7 +401,7 @@ export function HrChatbot() {
                           {msg.sources.map((src, i) => (
                             <span
                               key={i}
-                              className="inline-flex items-center gap-1 rounded bg-[#EDF1FE] px-1.5 py-0.5 text-xs text-[#4B6DE0]"
+                              className="inline-flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-xs text-primary/90"
                             >
                               {src.title} {src.reference}
                             </span>
@@ -411,15 +411,15 @@ export function HrChatbot() {
 
                     {/* Low confidence warning */}
                     {msg.needsEscalation && !msg.escalated && (
-                      <div className="rounded bg-[#FEF3C7] px-2 py-1.5">
-                        <div className="flex items-center gap-1 text-xs text-[#B45309]">
+                      <div className="rounded bg-amber-100 px-2 py-1.5">
+                        <div className="flex items-center gap-1 text-xs text-amber-700">
                           <AlertTriangle className="h-3 w-3" />
                           {t('chatbotLowConfidence')}
                         </div>
                         <button
                           type="button"
                           onClick={() => handleEscalate(msg.id)}
-                          className="mt-1 text-xs font-medium text-[#92400E] underline hover:text-[#78350F]"
+                          className="mt-1 text-xs font-medium text-amber-800 underline hover:text-amber-900"
                         >
                           {t('chatbotEscalate')}
                         </button>
@@ -439,7 +439,7 @@ export function HrChatbot() {
                           type="button"
                           onClick={() => handleFeedback(msg.id, 'POSITIVE')}
                           className={cn(
-                            'rounded p-0.5 hover:bg-[#E8E8E8]',
+                            'rounded p-0.5 hover:bg-border',
                             msg.feedback === 'POSITIVE' && 'text-green-600',
                           )}
                           aria-label={t('feedbackPositive')}
@@ -450,8 +450,8 @@ export function HrChatbot() {
                           type="button"
                           onClick={() => handleFeedback(msg.id, 'NEGATIVE')}
                           className={cn(
-                            'rounded p-0.5 hover:bg-[#E8E8E8]',
-                            msg.feedback === 'NEGATIVE' && 'text-[#DC2626]',
+                            'rounded p-0.5 hover:bg-border',
+                            msg.feedback === 'NEGATIVE' && 'text-red-600',
                           )}
                           aria-label={t('feedbackNegative')}
                         >
@@ -461,7 +461,7 @@ export function HrChatbot() {
                     )}
                   </div>
                   {msg.role === 'user' && (
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#E8E8E8]">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-border">
                       <UserCircle className="h-3.5 w-3.5 text-[#555]" />
                     </div>
                   )}
@@ -474,7 +474,7 @@ export function HrChatbot() {
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ctr-primary text-white">
                     <MessageSquare className="h-3.5 w-3.5" />
                   </div>
-                  <div className="rounded-lg bg-[#F5F5F5] px-3 py-2">
+                  <div className="rounded-lg bg-muted px-3 py-2">
                     <Loader2 className="h-4 w-4 animate-spin text-[#666]" />
                   </div>
                 </div>

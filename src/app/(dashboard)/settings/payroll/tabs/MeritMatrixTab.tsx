@@ -29,7 +29,7 @@ export function MeritMatrixTab({
       .finally(() => setLoading(false))
   }, [companyId])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   const grades = ['E', 'M_PLUS', 'M', 'B']
   const bands = ['LOW', 'MID', 'HIGH']
@@ -38,8 +38,8 @@ export function MeritMatrixTab({
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_kec9db8ec_keba7a4ed')}</h3>
-        <p className="text-sm text-[#8181A5]">{t('kr_keb93b1ea_kebb0b4eb_keab8b0eb_')}</p>
+        <h3 className="text-base font-semibold text-foreground">{t('kr_kec9db8ec_keba7a4ed')}</h3>
+        <p className="text-sm text-muted-foreground">{t('kr_keb93b1ea_kebb0b4eb_keab8b0eb_')}</p>
       </div>
       {matrix.length > 0 ? (
         <div className={TABLE_STYLES.wrapper}>
@@ -54,12 +54,12 @@ export function MeritMatrixTab({
                 {bands.map((b) => { const c = getCell(g, b); return (
                   <td key={b} className={`${TABLE_STYLES.cell} text-center`}>
                     <div className="flex items-center justify-center gap-1 text-sm">
-                      <span className="text-[#8181A5]">{c?.minPct ?? '—'}</span>
-                      <span className="text-[#8181A5]">~</span>
-                      <span className="font-semibold text-[#5E81F4]">{c?.recommendedPct ?? '—'}</span>
-                      <span className="text-[#8181A5]">~</span>
-                      <span className="text-[#8181A5]">{c?.maxPct ?? '—'}</span>
-                      <span className="text-xs text-[#8181A5]">%</span>
+                      <span className="text-muted-foreground">{c?.minPct ?? '—'}</span>
+                      <span className="text-muted-foreground">~</span>
+                      <span className="font-semibold text-primary">{c?.recommendedPct ?? '—'}</span>
+                      <span className="text-muted-foreground">~</span>
+                      <span className="text-muted-foreground">{c?.maxPct ?? '—'}</span>
+                      <span className="text-xs text-muted-foreground">%</span>
                     </div>
                   </td>
                 )})}
@@ -68,8 +68,8 @@ export function MeritMatrixTab({
           </table>
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <Info className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">{t('kr_kec9db8ec_keba7a4ed_kec84a4ec_')}</p>
+        <div className="rounded-xl border border-dashed border-border py-12 text-center">
+          <Info className="mx-auto mb-3 h-8 w-8 text-muted-foreground" /><p className="text-sm font-medium text-foreground">{t('kr_kec9db8ec_keba7a4ed_kec84a4ec_')}</p>
         </div>
       )}
     </div>

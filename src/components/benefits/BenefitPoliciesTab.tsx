@@ -193,9 +193,9 @@ export default function BenefitPoliciesTab() {
       header: '과세',
       render: (row) =>
         row.isTaxable ? (
-          <Badge variant="outline" className="bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]">과세</Badge>
+          <Badge variant="outline" className="bg-amber-100 text-amber-700 border-amber-300">과세</Badge>
         ) : (
-          <Badge variant="outline" className="bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]">비과세</Badge>
+          <Badge variant="outline" className="bg-emerald-100 text-emerald-700 border-emerald-200">비과세</Badge>
         ),
     },
     {
@@ -203,9 +203,9 @@ export default function BenefitPoliciesTab() {
       header: '상태',
       render: (row) =>
         !row.deletedAt ? (
-          <Badge className="bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]">활성</Badge>
+          <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">활성</Badge>
         ) : (
-          <Badge variant="outline" className="bg-[#FAFAFA] text-[#555] border-[#E8E8E8]">비활성</Badge>
+          <Badge variant="outline" className="bg-background text-[#555] border-border">비활성</Badge>
         ),
     },
     {
@@ -217,7 +217,7 @@ export default function BenefitPoliciesTab() {
             <Pencil className="h-4 w-4" />
           </Button>
           <Button variant="ghost" size="sm" onClick={() => handleDelete(row)}>
-            <Trash2 className="h-4 w-4 text-[#EF4444]" />
+            <Trash2 className="h-4 w-4 text-red-500" />
           </Button>
         </div>
       ),
@@ -254,7 +254,7 @@ export default function BenefitPoliciesTab() {
             <div>
               <label className="text-sm font-medium text-[#333] mb-1 block">정책명 *</label>
               <input
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               />
@@ -263,7 +263,7 @@ export default function BenefitPoliciesTab() {
               <div>
                 <label className="text-sm font-medium text-[#333] mb-1 block">분류 *</label>
                 <select
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   value={form.category}
                   onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
                 >
@@ -275,7 +275,7 @@ export default function BenefitPoliciesTab() {
               <div>
                 <label className="text-sm font-medium text-[#333] mb-1 block">지급주기 *</label>
                 <select
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   value={form.frequency}
                   onChange={(e) => setForm((f) => ({ ...f, frequency: e.target.value }))}
                 >
@@ -290,7 +290,7 @@ export default function BenefitPoliciesTab() {
                 <label className="text-sm font-medium text-[#333] mb-1 block">금액</label>
                 <input
                   type="number"
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   value={form.amount}
                   onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
                   placeholder="0"
@@ -299,7 +299,7 @@ export default function BenefitPoliciesTab() {
               <div>
                 <label className="text-sm font-medium text-[#333] mb-1 block">통화</label>
                 <input
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   value={form.currency}
                   onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}
                 />
@@ -309,7 +309,7 @@ export default function BenefitPoliciesTab() {
               <input
                 type="checkbox"
                 id="isTaxable"
-                className="w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
+                className="w-4 h-4 rounded border-border text-primary"
                 checked={form.isTaxable}
                 onChange={(e) => setForm((f) => ({ ...f, isTaxable: e.target.checked }))}
               />

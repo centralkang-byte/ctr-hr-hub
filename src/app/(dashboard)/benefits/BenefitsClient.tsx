@@ -30,17 +30,17 @@ export function BenefitsClient({ user }: { user: SessionUser }) {
     <div className="p-6 space-y-6">
       <div>
         <nav className="text-xs text-[#999] mb-1">{t('breadcrumb')}</nav>
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('pageTitle')}</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('pageTitle')}</h1>
       </div>
 
-      <div className="flex border-b border-[#E8E8E8]">
+      <div className="flex border-b border-border">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               activeTab === tab.key
-                ? 'border-[#5E81F4] text-[#5E81F4]'
+                ? 'border-primary text-primary'
                 : 'border-transparent text-[#666] hover:text-[#333]'
             }`}
           >

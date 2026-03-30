@@ -137,9 +137,9 @@ export default function PostingDetailClient({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex items-center gap-2 text-sm text-[#999]">
-          <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#5E81F4] rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin" />
           {t('loadingData')}
         </div>
       </div>
@@ -148,7 +148,7 @@ export default function PostingDetailClient({
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <p className="text-sm text-[#999]">{t('notFound')}</p>
       </div>
     )
@@ -165,22 +165,22 @@ export default function PostingDetailClient({
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] p-6">
+    <div className="min-h-screen bg-background p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/recruitment')}
-            className="p-2 rounded-lg border border-[#E8E8E8] hover:bg-white transition-colors"
+            className="p-2 rounded-lg border border-border hover:bg-white transition-colors"
           >
             <ChevronLeft className="w-4 h-4 text-[#666]" />
           </button>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#E3F2FD] rounded-lg flex items-center justify-center">
-              <Briefcase className="w-5 h-5 text-[#2196F3]" />
+            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+              <Briefcase className="w-5 h-5 text-blue-500" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
+              <h1 className="text-xl font-bold text-foreground tracking-[-0.02em]">
                 {data.title}
               </h1>
               <p className="text-sm text-[#999]">
@@ -194,7 +194,7 @@ export default function PostingDetailClient({
             <>
               <button
                 onClick={() => router.push(`/recruitment/${id}/edit`)}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#E8E8E8] text-[#1A1A1A] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-border text-foreground hover:bg-background rounded-lg transition-colors duration-150"
               >
                 <Edit3 className="w-4 h-4" />
                 {t('editButton')}
@@ -214,7 +214,7 @@ export default function PostingDetailClient({
               <button
                 onClick={handleClose}
                 disabled={actionLoading}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-[#FF9800] hover:bg-[#F57C00] text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
               >
                 <Lock className="w-4 h-4" />
                 {t('closePostingButton')}
@@ -229,22 +229,22 @@ export default function PostingDetailClient({
         {/* Left (65%) */}
         <div className="flex-[65] space-y-6">
           {/* Description */}
-          <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
+          <div className="bg-white border border-border rounded-xl p-6">
+            <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
               {t('descriptionSection')}
             </h2>
-            <p className="text-sm text-[#1A1A1A] leading-relaxed whitespace-pre-wrap">
+            <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
               {data.description}
             </p>
           </div>
 
           {/* Requirements */}
           {data.requirements && (
-            <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
+            <div className="bg-white border border-border rounded-xl p-6">
+              <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
                 {t('requirementsSection')}
               </h2>
-              <p className="text-sm text-[#1A1A1A] leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
                 {data.requirements}
               </p>
             </div>
@@ -252,26 +252,26 @@ export default function PostingDetailClient({
 
           {/* Preferred */}
           {data.preferred && (
-            <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
+            <div className="bg-white border border-border rounded-xl p-6">
+              <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
                 {t('preferredSection')}
               </h2>
-              <p className="text-sm text-[#1A1A1A] leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
                 {data.preferred}
               </p>
             </div>
           )}
 
           {/* Application Summary */}
-          <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h2 className="text-base font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
+          <div className="bg-white border border-border rounded-xl p-6">
+            <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">
               {t('applicationStatus')}
             </h2>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-4 py-3 bg-[#E3F2FD] rounded-lg">
-                <Users className="w-5 h-5 text-[#2196F3]" />
+              <div className="flex items-center gap-2 px-4 py-3 bg-blue-50 rounded-lg">
+                <Users className="w-5 h-5 text-blue-500" />
                 <div>
-                  <p className="text-2xl font-bold text-[#2196F3]">{data._count.applications}</p>
+                  <p className="text-2xl font-bold text-blue-500">{data._count.applications}</p>
                   <p className="text-xs text-[#666]">{t('totalApplicantLabel')}</p>
                 </div>
               </div>
@@ -282,8 +282,8 @@ export default function PostingDetailClient({
         {/* Right (35%) */}
         <div className="flex-[35] space-y-6">
           {/* Status Card */}
-          <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h3 className="text-sm font-bold text-[#1A1A1A] mb-4 tracking-[-0.02em]">
+          <div className="bg-white border border-border rounded-xl p-6">
+            <h3 className="text-sm font-bold text-foreground mb-4 tracking-[-0.02em]">
               {t('postingInfo')}
             </h3>
             <div className="space-y-3">
@@ -294,7 +294,7 @@ export default function PostingDetailClient({
                 </span>
               </div>
 
-              <div className="border-t border-[#F5F5F5]" />
+              <div className="border-t border-border" />
 
               <InfoRow
                 icon={<Briefcase className="w-4 h-4 text-[#999]" />}
@@ -359,15 +359,15 @@ export default function PostingDetailClient({
 
           {/* Competencies */}
           {data.requiredCompetencies && Array.isArray(data.requiredCompetencies) && data.requiredCompetencies.length > 0 && (
-            <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-              <h3 className="text-sm font-bold text-[#1A1A1A] mb-3 tracking-[-0.02em]">
+            <div className="bg-white border border-border rounded-xl p-6">
+              <h3 className="text-sm font-bold text-foreground mb-3 tracking-[-0.02em]">
                 {t('requiredCompetencies')}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {data.requiredCompetencies.map((comp, idx) => (
                   <span
                     key={idx}
-                    className="px-3 py-1 text-xs font-medium bg-[#E3F2FD] text-[#1565C0] rounded"
+                    className="px-3 py-1 text-xs font-medium bg-blue-50 text-blue-800 rounded"
                   >
                     {comp}
                   </span>
@@ -377,8 +377,8 @@ export default function PostingDetailClient({
           )}
 
           {/* Timeline */}
-          <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
-            <h3 className="text-sm font-bold text-[#1A1A1A] mb-3 tracking-[-0.02em]">
+          <div className="bg-white border border-border rounded-xl p-6">
+            <h3 className="text-sm font-bold text-foreground mb-3 tracking-[-0.02em]">
               {t('timelineSection')}
             </h3>
             <div className="space-y-2">
@@ -414,7 +414,7 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
       {icon}
       <div className="flex-1 flex items-center justify-between">
         <span className="text-xs text-[#999]">{label}</span>
-        <span className="text-sm text-[#1A1A1A]">{value}</span>
+        <span className="text-sm text-foreground">{value}</span>
       </div>
     </div>
   )

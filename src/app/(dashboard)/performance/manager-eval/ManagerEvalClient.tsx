@@ -258,7 +258,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('managerEval')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('managerEval')}</h1>
           <p className="text-sm text-[#666] mt-1">{t('kr_ked8c80ec_kec84b1ea_ked8f89ea')}</p>
         </div>
         <select
@@ -270,7 +270,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
             setCompetencyGrade('')
             setBeiChecks({})
           }}
-          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+          className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
         >
           {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
@@ -278,14 +278,14 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Team member list */}
-        <div className="rounded-xl border border-[#E8E8E8] bg-white">
-          <div className="px-5 py-4 border-b border-[#E8E8E8]">
-            <h2 className="text-base font-semibold text-[#1A1A1A] flex items-center gap-2">
+        <div className="rounded-xl border border-border bg-white">
+          <div className="px-5 py-4 border-b border-border">
+            <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
               <Users className="w-4 h-4 text-[#666]" />
               {t('kr_ked8c80ec_kebaaa9eb')}
             </h2>
           </div>
-          <div className="divide-y divide-[#F5F5F5]">
+          <div className="divide-y divide-border">
             {teamMembers.length === 0 && (
               <div className="px-5 py-8 text-center text-sm text-[#999]">{t('kr_keca781ec_ked8c80ec_kec9786ec')}</div>
             )}
@@ -293,12 +293,12 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
               <button
                 key={tm.employee.id}
                 onClick={() => loadEmployeeForm(tm.employee.id)}
-                className={`w-full px-5 py-3 flex items-center justify-between text-left hover:bg-[#FAFAFA] transition-colors ${
-                  selectedEmployee === tm.employee.id ? 'bg-[#EDF1FE]' : ''
+                className={`w-full px-5 py-3 flex items-center justify-between text-left hover:bg-background transition-colors ${
+                  selectedEmployee === tm.employee.id ? 'bg-primary/10' : ''
                 }`}
               >
                 <div>
-                  <p className="text-sm font-medium text-[#1A1A1A]">{tm.employee.name}</p>
+                  <p className="text-sm font-medium text-foreground">{tm.employee.name}</p>
                   <p className="text-xs text-[#999]">{tm.employee.employeeCode}</p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -324,27 +324,27 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
         {/* Eval form */}
         <div className="lg:col-span-2 space-y-4">
           {!selectedEmployee ? (
-            <div className="rounded-xl border border-[#E8E8E8] bg-white flex items-center justify-center h-64">
+            <div className="rounded-xl border border-border bg-white flex items-center justify-center h-64">
               <p className="text-sm text-[#999]">{t('kr_ked8c80ec_kec84a0ed')}</p>
             </div>
           ) : formLoading ? (
-            <div className="rounded-xl border border-[#E8E8E8] bg-white flex items-center justify-center h-64">
+            <div className="rounded-xl border border-border bg-white flex items-center justify-center h-64">
               <p className="text-sm text-[#666]">{tc('loading')}...</p>
             </div>
           ) : (
             <>
               {/* Goal Scoring */}
               {goals.length > 0 && (
-                <div className="rounded-xl border border-[#E8E8E8] bg-white">
-                  <div className="px-5 py-4 border-b border-[#E8E8E8]">
-                    <h3 className="text-base font-semibold text-[#1A1A1A]">{t('goals_evaluation')}</h3>
+                <div className="rounded-xl border border-border bg-white">
+                  <div className="px-5 py-4 border-b border-border">
+                    <h3 className="text-base font-semibold text-foreground">{t('goals_evaluation')}</h3>
                   </div>
-                  <div className="divide-y divide-[#F5F5F5]">
+                  <div className="divide-y divide-border">
                     {goals.map((goal) => (
                       <div key={goal.id} className="px-5 py-4 space-y-2">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm font-medium text-[#1A1A1A]">{goal.title}</p>
+                            <p className="text-sm font-medium text-foreground">{goal.title}</p>
                             <p className="text-xs text-[#999]">가중치: {goal.weight}%</p>
                           </div>
                           <div className="flex items-center gap-1">
@@ -357,8 +357,8 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                                 }))}
                                 className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                                   goalScores[goal.id]?.score === score
-                                    ? 'bg-[#5E81F4] text-white'
-                                    : 'bg-[#F5F5F5] text-[#666] hover:bg-[#E8E8E8]'
+                                    ? 'bg-primary text-white'
+                                    : 'bg-muted text-[#666] hover:bg-border'
                                 }`}
                               >
                                 {score}
@@ -375,8 +375,8 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
 
               {/* 업적 등급 선택 */}
               {evalSettings && evalSettings.mboGrades.length > 0 && (
-                <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
-                  <h3 className="text-base font-semibold text-[#1A1A1A] mb-3">{t('kr_kec9785ec_keb93b1ea')}</h3>
+                <div className="rounded-xl border border-border bg-white p-5">
+                  <h3 className="text-base font-semibold text-foreground mb-3">{t('kr_kec9785ec_keb93b1ea')}</h3>
                   <div className="flex items-center gap-2 flex-wrap">
                     {evalSettings.mboGrades.map((g) => (
                       <button
@@ -384,8 +384,8 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                         onClick={() => setPerformanceGrade(g.code)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
                           performanceGrade === g.code
-                            ? 'bg-[#5E81F4] text-white border-[#5E81F4]'
-                            : 'bg-white text-[#333] border-[#D4D4D4] hover:bg-[#FAFAFA]'
+                            ? 'bg-primary text-white border-primary'
+                            : 'bg-white text-[#333] border-border hover:bg-background'
                         }`}
                       >
                         {g.label} ({g.code})
@@ -397,17 +397,17 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
 
               {/* BEI 역량 평가 — methodology = MBO_BEI일 때만 */}
               {evalSettings?.methodology === 'MBO_BEI' && beiIndicators.length > 0 && (
-                <div className="rounded-xl border border-[#E8E8E8] bg-white">
-                  <div className="px-5 py-4 border-b border-[#E8E8E8]">
-                    <h3 className="text-base font-semibold text-[#1A1A1A]">{t('kr_kec97adeb_evaluation_bei')}</h3>
+                <div className="rounded-xl border border-border bg-white">
+                  <div className="px-5 py-4 border-b border-border">
+                    <h3 className="text-base font-semibold text-foreground">{t('kr_kec97adeb_evaluation_bei')}</h3>
                     <p className="text-xs text-[#666] mt-0.5">
                       {t('kr_keab480ec_ked9689eb_kecb2b4ed_')}
                     </p>
                   </div>
-                  <div className="divide-y divide-[#F5F5F5]">
+                  <div className="divide-y divide-border">
                     {beiIndicators.map((group) => (
                       <div key={group.competencyId} className="px-5 py-4 space-y-3">
-                        <p className="text-sm font-semibold text-[#1A1A1A]">{group.competencyName}</p>
+                        <p className="text-sm font-semibold text-foreground">{group.competencyName}</p>
                         <div className="space-y-2 pl-2">
                           {group.indicators.map((ind) => (
                             <label key={ind.id} className="flex items-start gap-2.5 cursor-pointer">
@@ -420,7 +420,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                                     [ind.id]: e.target.checked,
                                   }))
                                 }
-                                className="mt-0.5 w-4 h-4 rounded border-[#D4D4D4] text-[#5E81F4]"
+                                className="mt-0.5 w-4 h-4 rounded border-border text-primary"
                               />
                               <span className="text-sm text-[#333]">{ind.indicatorText}</span>
                             </label>
@@ -431,7 +431,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   </div>
                   {/* 역량 종합 등급 */}
                   {evalSettings && evalSettings.beiGrades.length > 0 && (
-                    <div className="px-5 py-4 border-t border-[#E8E8E8]">
+                    <div className="px-5 py-4 border-t border-border">
                       <p className="text-sm font-medium text-[#333] mb-2">{t('kr_kec97adeb_keca285ed_keb93b1ea')}</p>
                       <div className="flex items-center gap-2 flex-wrap">
                         {evalSettings.beiGrades.map((g) => (
@@ -440,8 +440,8 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                             onClick={() => setCompetencyGrade(g.code)}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
                               competencyGrade === g.code
-                                ? 'bg-[#4B6DE0] text-white border-[#4B6DE0]'
-                                : 'bg-white text-[#333] border-[#D4D4D4] hover:bg-[#FAFAFA]'
+                                ? 'bg-primary/90 text-white border-primary/90'
+                                : 'bg-white text-[#333] border-border hover:bg-background'
                             }`}
                           >
                             {g.label} ({g.code})
@@ -455,9 +455,9 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
 
               {/* 종합 등급 표시 — overallGradeEnabled=true일 때 */}
               {evalSettings?.overallGradeEnabled && performanceGrade && (
-                <div className="rounded-xl border border-[#EDF1FE] bg-[#F0FDF4] p-4">
-                  <p className="text-sm font-semibold text-[#4B6DE0]">{t('kr_keca285ed_keb93b1ea_kec9e90eb_')}</p>
-                  <p className="text-xs text-[#047857] mt-1">
+                <div className="rounded-xl border border-primary/20 bg-green-50 p-4">
+                  <p className="text-sm font-semibold text-primary/90">{t('kr_keca285ed_keb93b1ea_kec9e90eb_')}</p>
+                  <p className="text-xs text-emerald-700 mt-1">
                     업적 {evalSettings.mboWeight}% ({performanceGrade})
                     {evalSettings.methodology === 'MBO_BEI' && competencyGrade
                       ? ` + 역량 ${evalSettings.beiWeight}% (${competencyGrade})`
@@ -470,13 +470,13 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
               )}
 
               {/* Overall Comment */}
-              <div className="rounded-xl border border-[#E8E8E8] bg-white p-5 space-y-3">
+              <div className="rounded-xl border border-border bg-white p-5 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-base font-semibold text-[#1A1A1A]">{t('kr_keca285ed_kec9d98ea')}</h3>
+                  <h3 className="text-base font-semibold text-foreground">{t('kr_keca285ed_kec9d98ea')}</h3>
                   <button
                     onClick={handleAiSuggest}
                     disabled={aiLoading}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#E0E7FF] text-[#4B6DE0] hover:bg-[#C7D2FE] transition-colors disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-100 text-primary/90 hover:bg-indigo-200 transition-colors disabled:opacity-50"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
                     {aiLoading ? t('aiGenerating') : 'AI 코멘트 제안'}
@@ -487,7 +487,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   value={overallComment}
                   onChange={(e) => setOverallComment(e.target.value)}
                   placeholder="팀원에 대한 종합 평가 의견을 작성하세요..."
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999] resize-none"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999] resize-none"
                 />
               </div>
 
@@ -497,7 +497,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   onClick={() => setShowAiDraft(true)}
                   disabled={!currentEvaluationId}
                   title={!currentEvaluationId ? '먼저 임시 저장 후 AI 초안을 생성할 수 있습니다' : undefined}
-                  className="flex items-center gap-1.5 px-3 py-2 border border-[#C7D2FE] bg-[#E0E7FF] text-[#4B6DE0] rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#C7D2FE] transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-2 border border-indigo-200 bg-indigo-100 text-primary/90 rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-indigo-200 transition-colors"
                 >
                   <Sparkles className="w-4 h-4" />
                   {t('kr_ai_draft_kec839dec')}
@@ -506,7 +506,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   <button
                     onClick={() => handleSave('DRAFT')}
                     disabled={submitting}
-                    className="flex items-center gap-2 px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm font-medium text-[#333] hover:bg-[#FAFAFA] disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm font-medium text-[#333] hover:bg-background disabled:opacity-50"
                   >
                     <Save className="w-4 h-4" />
                     {t('kr_kec9e84ec_save')}

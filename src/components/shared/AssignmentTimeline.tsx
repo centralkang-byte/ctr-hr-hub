@@ -52,14 +52,14 @@ function TimelineSkeleton() {
       {[1, 2, 3].map((i) => (
         <div key={i} className="flex gap-4">
           <div className="flex flex-col items-center">
-            <div className="h-8 w-8 rounded-full bg-[#E8E8E8]" />
-            {i < 3 && <div className="mt-1 w-px flex-1 bg-[#E8E8E8]" style={{ minHeight: 48 }} />}
+            <div className="h-8 w-8 rounded-full bg-border" />
+            {i < 3 && <div className="mt-1 w-px flex-1 bg-border" style={{ minHeight: 48 }} />}
           </div>
           <div className="flex-1 pb-6">
-            <div className="h-3 w-24 rounded bg-[#E8E8E8] mb-2" />
-            <div className="rounded-xl border border-[#E8E8E8] p-4">
-              <div className="h-4 w-32 rounded bg-[#E8E8E8] mb-1" />
-              <div className="h-3 w-48 rounded bg-[#E8E8E8]" />
+            <div className="h-3 w-24 rounded bg-border mb-2" />
+            <div className="rounded-xl border border-border p-4">
+              <div className="h-4 w-32 rounded bg-border mb-1" />
+              <div className="h-3 w-48 rounded bg-border" />
             </div>
           </div>
         </div>
@@ -104,7 +104,7 @@ export function AssignmentTimeline({
                 <span role="img" aria-label={event.type}>{style.icon}</span>
               </div>
               {!isLast && (
-                <div className="mt-1 w-px flex-1 bg-[#E8E8E8]" style={{ minHeight: 32 }} />
+                <div className="mt-1 w-px flex-1 bg-border" style={{ minHeight: 32 }} />
               )}
             </div>
 
@@ -117,11 +117,11 @@ export function AssignmentTimeline({
                 onClick={() => onEventClick?.(event)}
                 className={cn(
                   'w-full rounded-lg border p-4 text-left transition-all',
-                  onEventClick && 'cursor-pointer hover:border-[#5E81F4] hover:shadow-sm',
+                  onEventClick && 'cursor-pointer hover:border-primary hover:shadow-sm',
                   !onEventClick && 'cursor-default',
                   event.highlighted
-                    ? 'border-[#5E81F4] bg-[#EDF1FE] ring-1 ring-[#5E81F4]/20'
-                    : 'border-[#E8E8E8] bg-white',
+                    ? 'border-primary bg-primary/10 ring-1 ring-primary/20'
+                    : 'border-border bg-white',
                 )}
               >
                 <div className="flex items-center gap-2">

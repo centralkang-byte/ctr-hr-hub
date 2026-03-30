@@ -187,7 +187,7 @@ export function CustomFieldsSection({
               <Label className="text-xs">
                 {field.fieldLabel}
                 {field.isRequired && (
-                  <span className="ml-0.5 text-[#EF4444]">*</span>
+                  <span className="ml-0.5 text-red-500">*</span>
                 )}
               </Label>
 

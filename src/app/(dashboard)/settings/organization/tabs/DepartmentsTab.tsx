@@ -36,13 +36,13 @@ export function DepartmentsTab({
       .finally(() => setLoading(false))
   }, [companyId])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">{t('department_keab5acec')}</h3>
-        <p className="text-sm text-[#8181A5]">등록된 부서 {depts.length}개</p>
+        <h3 className="text-base font-semibold text-foreground">{t('department_keab5acec')}</h3>
+        <p className="text-sm text-muted-foreground">등록된 부서 {depts.length}개</p>
       </div>
 
       {depts.length > 0 ? (
@@ -61,26 +61,26 @@ export function DepartmentsTab({
             <tbody>
               {depts.map((d) => (
                 <tr key={d.id} className={TABLE_STYLES.row}>
-                  <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{d.code}</td>
+                  <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{d.code}</td>
                   <td className={TABLE_STYLES.cell}>
                     <span style={{ paddingLeft: `${(d.level - 1) * 16}px` }} className="flex items-center gap-1">
-                      {d.level > 1 && <ChevronRight className="h-3 w-3 text-[#8181A5]" />}
+                      {d.level > 1 && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
                       {d.name}
                     </span>
                   </td>
-                  <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{d.nameEn ?? '—'}</td>
-                  <td className={`${TABLE_STYLES.cell} text-center text-[#8181A5]`}>L{d.level}</td>
-                  <td className={`${TABLE_STYLES.cell} text-center text-[#8181A5]`}>{d._count?.children ?? 0}</td>
-                  <td className={`${TABLE_STYLES.cell} text-center text-[#8181A5]`}>{d._count?.employees ?? 0}</td>
+                  <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>{d.nameEn ?? '—'}</td>
+                  <td className={`${TABLE_STYLES.cell} text-center text-muted-foreground`}>L{d.level}</td>
+                  <td className={`${TABLE_STYLES.cell} text-center text-muted-foreground`}>{d._count?.children ?? 0}</td>
+                  <td className={`${TABLE_STYLES.cell} text-center text-muted-foreground`}>{d._count?.employees ?? 0}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <FolderTree className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" />
-          <p className="text-sm font-medium text-[#1C1D21]">{t('register_keb909c_kebb680ec_kec9786ec')}</p>
+        <div className="rounded-xl border border-dashed border-border py-12 text-center">
+          <FolderTree className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
+          <p className="text-sm font-medium text-foreground">{t('register_keb909c_kebb680ec_kec9786ec')}</p>
         </div>
       )}
     </div>

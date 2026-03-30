@@ -23,27 +23,27 @@ export function RolesTab({
       <div className="mb-4 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold text-[#1C1D21]">{'역할/권한'}</h3>
+            <h3 className="text-base font-semibold text-foreground">{'역할/권한'}</h3>
             <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />{'글로벌 고정'}</span>
           </div>
-          <p className="text-sm text-[#8181A5]">RBAC 역할 정의 ({ROLES.length}개 역할)</p>
+          <p className="text-sm text-muted-foreground">RBAC 역할 정의 ({ROLES.length}개 역할)</p>
         </div>
       </div>
-      <div className="flex items-start gap-3 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4">
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#5E81F4]" />
-        <p className="text-xs text-[#8181A5]">{'역할/권한은 시스템에서 관리됩니다. 변경이 필요하면 시스템 관리자에게 문의하세요.'}</p>
+      <div className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+        <p className="text-xs text-muted-foreground">{'역할/권한은 시스템에서 관리됩니다. 변경이 필요하면 시스템 관리자에게 문의하세요.'}</p>
       </div>
       <div className="space-y-3">{ROLES.map((r) => (
-        <div key={r.key} className="flex items-start gap-4 rounded-xl border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#5E81F4]/10"><Shield className="h-5 w-5 text-[#5E81F4]" /></div>
+        <div key={r.key} className="flex items-start gap-4 rounded-xl border border-border p-4 hover:bg-muted transition-colors">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"><Shield className="h-5 w-5 text-primary" /></div>
           <div className="flex-1">
             <div className="flex items-baseline gap-2">
-              <span className="text-sm font-semibold text-[#1C1D21]">{r.label}</span>
-              <span className="text-xs text-[#5E81F4]">{r.key}</span>
+              <span className="text-sm font-semibold text-foreground">{r.label}</span>
+              <span className="text-xs text-primary">{r.key}</span>
             </div>
-            <p className="text-xs text-[#8181A5]">{r.desc}</p>
+            <p className="text-xs text-muted-foreground">{r.desc}</p>
             <div className="mt-2 flex flex-wrap gap-1">{r.perms.map((p) => (
-              <span key={p} className="rounded bg-[#F5F5FA] px-2 py-0.5 text-xs text-[#8181A5]">{p}</span>
+              <span key={p} className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">{p}</span>
             ))}</div>
           </div>
         </div>

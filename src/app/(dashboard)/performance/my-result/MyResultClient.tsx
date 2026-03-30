@@ -49,12 +49,12 @@ interface PeerResult {
 // ─── Grade display config ─────────────────────────────────
 
 const GRADE_STYLE: Record<string, { bg: string; text: string; label: string }> = {
-    EXCEEDS_PLUS: { bg: 'bg-[#EDF1FE]', text: 'text-[#4B6DE0]', label: '탁월 (E+)' },
-    EXCEEDS: { bg: 'bg-[#DBEAFE]', text: 'text-[#1D4ED8]', label: '우수 (E)' },
-    MEETS_PLUS: { bg: 'bg-[#D1FAE5]', text: 'text-[#047857]', label: '기대 이상 (M+)' },
-    MEETS: { bg: 'bg-[#EDF1FE]', text: 'text-[#2E7D32]', label: '기대 충족 (M)' },
-    BELOW: { bg: 'bg-[#FEF3C7]', text: 'text-[#92400E]', label: '개선 필요 (B)' },
-    BELOW_MINUS: { bg: 'bg-[#FFEBEE]', text: 'text-[#C62828]', label: '미흡 (B-)' },
+    EXCEEDS_PLUS: { bg: 'bg-primary/10', text: 'text-primary/90', label: '탁월 (E+)' },
+    EXCEEDS: { bg: 'bg-blue-100', text: 'text-blue-700', label: '우수 (E)' },
+    MEETS_PLUS: { bg: 'bg-emerald-100', text: 'text-emerald-700', label: '기대 이상 (M+)' },
+    MEETS: { bg: 'bg-primary/10', text: 'text-green-700', label: '기대 충족 (M)' },
+    BELOW: { bg: 'bg-amber-100', text: 'text-amber-800', label: '개선 필요 (B)' },
+    BELOW_MINUS: { bg: 'bg-red-50', text: 'text-red-800', label: '미흡 (B-)' },
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -131,10 +131,10 @@ export default function MyResultClient({user }: {
         return (
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
-                    <Award className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('kr_kec9584ec_keab2b0ea_keab3b5ea_')}</h2>
-                    <p className="text-sm text-[#8181A5]">{t('kr_keab2b0ea_ked8f89ea_kec9984eb_')}</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">
+                    <Award className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                    <h2 className="mb-2 text-lg font-semibold text-foreground">{t('kr_kec9584ec_keab2b0ea_keab3b5ea_')}</h2>
+                    <p className="text-sm text-muted-foreground">{t('kr_keab2b0ea_ked8f89ea_kec9984eb_')}</p>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-primary hover:underline">
                         <ArrowLeft className="h-4 w-4" /> {t('kr_keb8f8cec')}
                     </a>
                 </div>
@@ -146,9 +146,9 @@ export default function MyResultClient({user }: {
         return (
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
-                    <Award className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('kr_ked9884ec_keca784ed_keca491ec_')}</h2>
-                    <p className="text-sm text-[#8181A5]">{t('kr_keab2b0ea_keab3b5ea_kec97acea_')}</p>
+                    <Award className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                    <h2 className="mb-2 text-lg font-semibold text-foreground">{t('kr_ked9884ec_keca784ed_keca491ec_')}</h2>
+                    <p className="text-sm text-muted-foreground">{t('kr_keab2b0ea_keab3b5ea_kec97acea_')}</p>
                 </div>
             </div>
         )
@@ -159,22 +159,22 @@ export default function MyResultClient({user }: {
     const daysLeft = result?.acknowledgeDeadline ? Math.ceil((new Date(result.acknowledgeDeadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : null
 
     return (
-        <div className="min-h-screen bg-[#F5F5FA] p-6">
+        <div className="min-h-screen bg-muted p-6">
             <div className="mx-auto max-w-4xl">
                 {/* Header */}
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#1C1D21]">{t('kr_keb8298ec_kec84b1ea_keab2b0ea_')}</h1>
-                        <p className="mt-1 text-sm text-[#8181A5]">{t('kr_kec84b1ea_evaluation_keab2b0ea')}</p>
+                        <h1 className="text-2xl font-bold text-foreground">{t('kr_keb8298ec_kec84b1ea_keab2b0ea_')}</h1>
+                        <p className="mt-1 text-sm text-muted-foreground">{t('kr_kec84b1ea_evaluation_keab2b0ea')}</p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                        className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm">
+                        className="rounded-lg border border-border bg-white px-3 py-2 text-sm">
                         {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                 </div>
 
                 {error && (
-                    <div className="mb-4 rounded-lg border border-[#FFEBEE] bg-[#FFEBEE] p-3 text-sm text-[#C62828]">
+                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
                         {error} <button onClick={fetchResult} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
@@ -182,67 +182,67 @@ export default function MyResultClient({user }: {
                 {loading ? (
                     <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse rounded-xl border border-[#F0F0F3] bg-white p-6">
-                                <div className="mb-3 h-6 w-1/3 rounded bg-[#F0F0F3]" />
-                                <div className="h-4 w-1/2 rounded bg-[#F0F0F3]" />
+                            <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-6">
+                                <div className="mb-3 h-6 w-1/3 rounded bg-border" />
+                                <div className="h-4 w-1/2 rounded bg-border" />
                             </div>
                         ))}
                     </div>
                 ) : !result ? (
-                    <div className="rounded-xl border border-[#F0F0F3] bg-white p-16 text-center">
-                        <Award className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
+                    <div className="rounded-xl border border-border bg-white p-16 text-center">
+                        <Award className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                         <EmptyState />
                     </div>
                 ) : (
                     <>
                         {/* Grade card */}
-                        <div className="mb-6 rounded-xl border border-[#F0F0F3] bg-white p-8 text-center">
-                            <p className="mb-3 text-sm text-[#8181A5]">{t('kr_kecb59cec_keb93b1ea')}</p>
+                        <div className="mb-6 rounded-xl border border-border bg-white p-8 text-center">
+                            <p className="mb-3 text-sm text-muted-foreground">{t('kr_kecb59cec_keb93b1ea')}</p>
                             {grade ? (
                                 <div className={`mx-auto inline-flex rounded-xl px-8 py-4 ${grade.bg}`}>
                                     <span className={`text-2xl font-bold ${grade.text}`}>{grade.label}</span>
                                 </div>
                             ) : (
-                                <p className="text-lg text-[#8181A5]">{t('kr_keb93b1ea_kebafb8ec')}</p>
+                                <p className="text-lg text-muted-foreground">{t('kr_keb93b1ea_kebafb8ec')}</p>
                             )}
                             <div className="mt-6 grid grid-cols-3 gap-4">
                                 <div>
-                                    <div className="flex items-center justify-center gap-1 text-xs text-[#8181A5]"><Target className="h-3.5 w-3.5" /> {t('kr_mbo_score')}</div>
-                                    <p className="mt-1 text-xl font-bold text-[#1C1D21]">{result.performanceScore?.toFixed(1) ?? '-'}<span className="text-sm text-[#8181A5]">/5.0</span></p>
+                                    <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground"><Target className="h-3.5 w-3.5" /> {t('kr_mbo_score')}</div>
+                                    <p className="mt-1 text-xl font-bold text-foreground">{result.performanceScore?.toFixed(1) ?? '-'}<span className="text-sm text-muted-foreground">/5.0</span></p>
                                 </div>
                                 <div>
-                                    <div className="flex items-center justify-center gap-1 text-xs text-[#8181A5]"><TrendingUp className="h-3.5 w-3.5" /> {t('kr_bei_score')}</div>
-                                    <p className="mt-1 text-xl font-bold text-[#1C1D21]">{result.competencyScore?.toFixed(1) ?? '-'}<span className="text-sm text-[#8181A5]">/5.0</span></p>
+                                    <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground"><TrendingUp className="h-3.5 w-3.5" /> {t('kr_bei_score')}</div>
+                                    <p className="mt-1 text-xl font-bold text-foreground">{result.competencyScore?.toFixed(1) ?? '-'}<span className="text-sm text-muted-foreground">/5.0</span></p>
                                 </div>
                                 <div>
-                                    <div className="flex items-center justify-center gap-1 text-xs text-[#5E81F4]"><Award className="h-3.5 w-3.5" /> {t('kr_keca285ed_score')}</div>
-                                    <p className="mt-1 text-xl font-bold text-[#5E81F4]">{result.totalScore?.toFixed(2) ?? '-'}<span className="text-sm text-[#8181A5]">/5.0</span></p>
+                                    <div className="flex items-center justify-center gap-1 text-xs text-primary"><Award className="h-3.5 w-3.5" /> {t('kr_keca285ed_score')}</div>
+                                    <p className="mt-1 text-xl font-bold text-primary">{result.totalScore?.toFixed(2) ?? '-'}<span className="text-sm text-muted-foreground">/5.0</span></p>
                                 </div>
                             </div>
-                            <p className="mt-3 text-xs text-[#8181A5]">(MBO {result.mboWeight}% + BEI {result.beiWeight}%)</p>
+                            <p className="mt-3 text-xs text-muted-foreground">(MBO {result.mboWeight}% + BEI {result.beiWeight}%)</p>
                         </div>
 
                         {/* MBO Results */}
                         {result.goals.length > 0 && (
-                            <div className="mb-6 rounded-xl border border-[#F0F0F3] bg-white">
-                                <div className="border-b border-[#F0F0F3] px-5 py-4">
-                                    <h2 className="text-base font-semibold text-[#1C1D21]">{t('kr_mbo_kebaaa9ed_keab2b0ea')}</h2>
+                            <div className="mb-6 rounded-xl border border-border bg-white">
+                                <div className="border-b border-border px-5 py-4">
+                                    <h2 className="text-base font-semibold text-foreground">{t('kr_mbo_kebaaa9ed_keab2b0ea')}</h2>
                                 </div>
-                                <div className="divide-y divide-[#F0F0F3]">
+                                <div className="divide-y divide-border">
                                     {result.goals.map((goal) => (
                                         <div key={goal.id} className="px-5 py-4">
                                             <div className="mb-2 flex items-center justify-between">
                                                 <div>
-                                                    <h3 className="text-sm font-medium text-[#1C1D21]">{goal.title}</h3>
-                                                    <span className="text-xs text-[#8181A5]">가중치: {goal.weight}%</span>
+                                                    <h3 className="text-sm font-medium text-foreground">{goal.title}</h3>
+                                                    <span className="text-xs text-muted-foreground">가중치: {goal.weight}%</span>
                                                 </div>
                                                 <div className="text-right text-sm">
-                                                    <span className="text-[#8181A5]">{t('kr_kec9e90ea')} </span><span className="font-medium text-[#1C1D21]">{goal.selfScore ?? '-'}</span>
-                                                    <span className="ml-3 text-[#8181A5]">{t('kr_keba7a4eb')} </span><span className="font-medium text-[#1C1D21]">{goal.managerScore ?? '-'}</span>
+                                                    <span className="text-muted-foreground">{t('kr_kec9e90ea')} </span><span className="font-medium text-foreground">{goal.selfScore ?? '-'}</span>
+                                                    <span className="ml-3 text-muted-foreground">{t('kr_keba7a4eb')} </span><span className="font-medium text-foreground">{goal.managerScore ?? '-'}</span>
                                                 </div>
                                             </div>
                                             {goal.managerComment && (
-                                                <p className="mt-1 text-xs text-[#8181A5]">매니저 코멘트: &quot;{goal.managerComment}&quot;</p>
+                                                <p className="mt-1 text-xs text-muted-foreground">매니저 코멘트: &quot;{goal.managerComment}&quot;</p>
                                             )}
                                         </div>
                                     ))}
@@ -252,9 +252,9 @@ export default function MyResultClient({user }: {
 
                         {/* Peer Review Results (masked) */}
                         {peerResult && peerResult.summary.completedReviewers > 0 && (
-                            <div className="mb-6 rounded-xl border border-[#F0F0F3] bg-white">
-                                <div className="border-b border-[#F0F0F3] px-5 py-4">
-                                    <h2 className="text-base font-semibold text-[#1C1D21]">
+                            <div className="mb-6 rounded-xl border border-border bg-white">
+                                <div className="border-b border-border px-5 py-4">
+                                    <h2 className="text-base font-semibold text-foreground">
                                         동료평가 결과 ({peerResult.summary.completedReviewers}명 평가 완료)
                                     </h2>
                                 </div>
@@ -267,30 +267,30 @@ export default function MyResultClient({user }: {
                                             { label: t('responsibility'), score: peerResult.summary.averageResponsibility },
                                             { label: t('respect'), score: peerResult.summary.averageRespect },
                                         ].map((v) => (
-                                            <div key={v.label} className="rounded-lg bg-[#F5F5FA] p-3 text-center">
-                                                <p className="text-xs text-[#8181A5]">{v.label}</p>
-                                                <p className="mt-1 text-lg font-bold text-[#1C1D21]">{v.score.toFixed(1)}</p>
+                                            <div key={v.label} className="rounded-lg bg-muted p-3 text-center">
+                                                <p className="text-xs text-muted-foreground">{v.label}</p>
+                                                <p className="mt-1 text-lg font-bold text-foreground">{v.score.toFixed(1)}</p>
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="mb-4 rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-3 text-center">
-                                        <span className="text-sm text-[#8181A5]">{t('kr_keca285ed_average')} </span>
-                                        <span className="text-lg font-bold text-[#5E81F4]">{peerResult.summary.overallAverage.toFixed(1)} / 5.0</span>
+                                    <div className="mb-4 rounded-lg border border-primary/20 bg-primary/5 p-3 text-center">
+                                        <span className="text-sm text-muted-foreground">{t('kr_keca285ed_average')} </span>
+                                        <span className="text-lg font-bold text-primary">{peerResult.summary.overallAverage.toFixed(1)} / 5.0</span>
                                     </div>
 
                                     {/* Anonymous comments */}
                                     {peerResult.reviews.length > 0 && (
                                         <div className="space-y-3">
                                             {peerResult.reviews.map((r, i) => (
-                                                <div key={i} className="rounded-xl border border-[#F0F0F3] p-3">
-                                                    <p className="mb-1 text-xs font-medium text-[#8181A5]">{r.reviewerName}</p>
-                                                    <p className="text-sm text-[#1C1D21]">{r.overallComment || '(의견 없음)'}</p>
+                                                <div key={i} className="rounded-xl border border-border p-3">
+                                                    <p className="mb-1 text-xs font-medium text-muted-foreground">{r.reviewerName}</p>
+                                                    <p className="text-sm text-foreground">{r.overallComment || '(의견 없음)'}</p>
                                                 </div>
                                             ))}
                                         </div>
                                     )}
 
-                                    <div className="mt-4 flex items-center gap-1.5 text-xs text-[#8181A5]">
+                                    <div className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
                                         <Shield className="h-3.5 w-3.5" /> {t('evaluation_kec9e90_keca095eb_kec9db5eb_kecb298eb')}
                                     </div>
                                 </div>
@@ -298,30 +298,30 @@ export default function MyResultClient({user }: {
                         )}
 
                         {/* Acknowledge section */}
-                        <div className="rounded-xl border border-[#F0F0F3] bg-white p-5">
-                            <h2 className="mb-3 text-base font-semibold text-[#1C1D21]">{t('kr_keab2b0ea_confirm')}</h2>
+                        <div className="rounded-xl border border-border bg-white p-5">
+                            <h2 className="mb-3 text-base font-semibold text-foreground">{t('kr_keab2b0ea_confirm')}</h2>
                             {isAcknowledged ? (
-                                <div className="flex items-center gap-2 rounded-lg border border-[#A7F3D0] bg-[#D1FAE5] p-4">
-                                    <CheckCircle2 className="h-5 w-5 text-[#059669]" />
-                                    <span className="text-sm font-medium text-[#047857]">
+                                <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-100 p-4">
+                                    <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                                    <span className="text-sm font-medium text-emerald-700">
                                         ✅ 확인 완료 ({result.acknowledgedAt?.slice(0, 10)})
                                     </span>
                                 </div>
                             ) : (
                                 <>
                                     {daysLeft !== null && (
-                                        <div className="mb-3 flex items-center gap-2 rounded-lg border border-[#FDE68A] bg-[#FEF3C7] p-3">
-                                            <Clock className="h-4 w-4 text-[#D97706]" />
-                                            <span className="text-xs text-[#92400E]">
+                                        <div className="mb-3 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-100 p-3">
+                                            <Clock className="h-4 w-4 text-amber-600" />
+                                            <span className="text-xs text-amber-800">
                                                 {result.acknowledgeDeadline?.slice(0, 10)}까지 확인하지 않으면 자동 확인 처리됩니다. (D-{Math.max(daysLeft, 0)})
                                             </span>
                                         </div>
                                     )}
                                     <button onClick={handleAcknowledge} disabled={acknowledging}
-                                        className="w-full rounded-lg bg-[#5E81F4] py-3 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40 transition-colors">
+                                        className="w-full rounded-lg bg-primary py-3 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40 transition-colors">
                                         {acknowledging ? t('processing') : '결과를 확인합니다'}
                                     </button>
-                                    <div className="mt-3 flex items-start gap-1.5 text-xs text-[#8181A5]">
+                                    <div className="mt-3 flex items-start gap-1.5 text-xs text-muted-foreground">
                                         <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                                         <p>{t('kr_keab2b0ea_ked9995ec_keb8f99ec_')}</p>
                                     </div>

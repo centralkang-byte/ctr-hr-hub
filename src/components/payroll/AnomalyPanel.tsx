@@ -8,15 +8,15 @@ import { apiClient } from '@/lib/api'
 import type { PayrollAnomalyResult, AnomalySeverity } from '@/lib/payroll/types'
 
 const SEVERITY_CONFIG: Record<AnomalySeverity, { icon: typeof AlertTriangle; color: string; bg: string }> = {
-  ERROR: { icon: AlertCircle, color: 'text-[#DC2626]', bg: 'bg-[#FEE2E2]' },
-  WARNING: { icon: AlertTriangle, color: 'text-[#D97706]', bg: 'bg-[#FEF3C7]' },
-  INFO: { icon: Info, color: 'text-[#5E81F4]', bg: 'bg-[#EDF1FE]' },
+  ERROR: { icon: AlertCircle, color: 'text-red-600', bg: 'bg-red-100' },
+  WARNING: { icon: AlertTriangle, color: 'text-amber-600', bg: 'bg-amber-100' },
+  INFO: { icon: Info, color: 'text-primary', bg: 'bg-primary/10' },
 }
 
 const RISK_COLORS: Record<string, string> = {
-  LOW: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]',
-  MEDIUM: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]',
-  HIGH: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]',
+  LOW: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  MEDIUM: 'bg-amber-100 text-amber-700 border-amber-300',
+  HIGH: 'bg-red-100 text-red-700 border-red-200',
 }
 
 interface AnomalyPanelProps {
@@ -46,8 +46,8 @@ export default function AnomalyPanel({ runId }: AnomalyPanelProps) {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-[#8B5CF6]" />
-            <h3 className="text-sm font-semibold text-[#1A1A1A]">AI 이상감지</h3>
+            <Sparkles className="h-5 w-5 text-violet-500" />
+            <h3 className="text-sm font-semibold text-foreground">AI 이상감지</h3>
             <Badge variant="secondary" className="gap-1 text-xs">
               <Sparkles className="h-3 w-3" />
               AI 생성
@@ -57,7 +57,7 @@ export default function AnomalyPanel({ runId }: AnomalyPanelProps) {
             onClick={runCheck}
             disabled={loading}
             size="sm"
-            className="bg-[#5E81F4] hover:bg-[#4B6DE0] text-white"
+            className="bg-primary hover:bg-primary/90 text-white"
           >
             {loading ? (
               <>
@@ -83,8 +83,8 @@ export default function AnomalyPanel({ runId }: AnomalyPanelProps) {
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-[#8B5CF6]" />
-          <h3 className="text-sm font-semibold text-[#1A1A1A]">AI 이상감지 결과</h3>
+          <Sparkles className="h-5 w-5 text-violet-500" />
+          <h3 className="text-sm font-semibold text-foreground">AI 이상감지 결과</h3>
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${RISK_COLORS[result.risk_level]}`}
           >
@@ -137,9 +137,9 @@ export default function AnomalyPanel({ runId }: AnomalyPanelProps) {
       )}
 
       {/* Recommendation */}
-      <div className="bg-[#E0E7FF] rounded-lg p-3">
-        <p className="text-xs font-medium text-[#5E81F4] mb-1">AI 권고사항</p>
-        <p className="text-sm text-[#3730A3]">{result.recommendation}</p>
+      <div className="bg-indigo-100 rounded-lg p-3">
+        <p className="text-xs font-medium text-primary mb-1">AI 권고사항</p>
+        <p className="text-sm text-indigo-800">{result.recommendation}</p>
       </div>
     </div>
   )

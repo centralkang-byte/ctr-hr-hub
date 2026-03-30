@@ -81,11 +81,11 @@ interface EmployeeRiskData {
 // ─── 상수 ────────────────────────────────────────────────
 
 const RISK_CONFIG: Record<string, { label: string; bg: string; text: string; border: string; color: string }> = {
-  low:      { label: '낮음',     bg: 'bg-[#D1FAE5]', text: 'text-[#047857]', border: 'border-[#A7F3D0]', color: '#059669' },
-  medium:   { label: '보통',     bg: 'bg-[#FEF3C7]', text: 'text-[#B45309]', border: 'border-[#FCD34D]', color: '#F59E0B' },
-  high:     { label: '높음',     bg: 'bg-[#FEE2E2]', text: 'text-[#B91C1C]', border: 'border-[#FECACA]', color: '#EF4444' },
-  critical: { label: '위험',     bg: 'bg-[#FFF7ED]', text: 'text-[#C2410C]', border: 'border-[#FED7AA]', color: '#C2410C' },
-  insufficient_data: { label: '데이터 부족', bg: 'bg-[#FAFAFA]', text: 'text-[#555]', border: 'border-[#E8E8E8]', color: '#999' },
+  low:      { label: '낮음',     bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200', color: '#059669' },
+  medium:   { label: '보통',     bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300', color: '#F59E0B' },
+  high:     { label: '높음',     bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-200', color: '#EF4444' },
+  critical: { label: '위험',     bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200', color: '#C2410C' },
+  insufficient_data: { label: '데이터 부족', bg: 'bg-background', text: 'text-[#555]', border: 'border-border', color: '#999' },
 }
 
 const SIGNAL_LABELS: Record<string, string> = {
@@ -169,17 +169,17 @@ function RecommendedActions({ turnover, burnout }: {
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{'kr_keab68cea_kec95a1ec'}</h3>
+      <h3 className="text-base font-semibold text-foreground mb-4">{'kr_keab68cea_kec95a1ec'}</h3>
       <div className="space-y-3">
         {actions.map((action, i) => (
           <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${
-            action.priority === 'high' ? 'bg-[#FFF7ED] border border-[#FED7AA]' : 'bg-[#F9F9F9]'
+            action.priority === 'high' ? 'bg-orange-50 border border-orange-200' : 'bg-background'
           }`}>
             <span className="text-lg">{action.icon}</span>
             <div>
-              <p className="text-sm text-[#1A1A1A]">{action.text}</p>
+              <p className="text-sm text-foreground">{action.text}</p>
               {action.priority === 'high' && (
-                <span className="text-xs text-[#C2410C] font-medium">{'kr_keca689ec_keca1b0ec_ked9584ec'}</span>
+                <span className="text-xs text-orange-700 font-medium">{'kr_keca689ec_keca1b0ec_ked9584ec'}</span>
               )}
             </div>
           </div>
@@ -255,7 +255,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
             <ArrowLeft className="w-4 h-4" /> {t('kr_kebaaa9eb')}
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-[#1A1A1A]">{data.employee.name}</h1>
+            <h1 className="text-2xl font-bold text-foreground">{data.employee.name}</h1>
             <p className="text-sm text-[#666]">
               {data.employee.department?.name ?? '—'} · {data.employee.jobGrade?.name ?? '—'}
             </p>
@@ -280,8 +280,8 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
         {/* 이직 위험 */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-2 mb-4">
-            <TrendingDown className="w-5 h-5 text-[#EF4444]" />
-            <h3 className="text-base font-semibold text-[#1A1A1A]">{t('kr_kec9db4ec_kec9c84ed')}</h3>
+            <TrendingDown className="w-5 h-5 text-red-500" />
+            <h3 className="text-base font-semibold text-foreground">{t('kr_kec9db4ec_kec9c84ed')}</h3>
             {data.turnover && <RiskBadge level={data.turnover.riskLevel} />}
           </div>
           {data.turnover ? (
@@ -292,7 +292,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
                 <div className="space-y-1">
                   {data.turnover.topFactors.slice(0, 4).map((f) => (
                     <div key={f} className="flex items-center gap-2">
-                      <AlertTriangle className="w-3 h-3 text-[#F59E0B]" />
+                      <AlertTriangle className="w-3 h-3 text-amber-500" />
                       <span className="text-xs text-[#555]">{f}</span>
                     </div>
                   ))}
@@ -312,8 +312,8 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
         {/* 번아웃 */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Activity className="w-5 h-5 text-[#F59E0B]" />
-            <h3 className="text-base font-semibold text-[#1A1A1A]">{t('kr_kebb288ec_kec9c84ed')}</h3>
+            <Activity className="w-5 h-5 text-amber-500" />
+            <h3 className="text-base font-semibold text-foreground">{t('kr_kebb288ec_kec9c84ed')}</h3>
             {data.burnout && <RiskBadge level={data.burnout.riskLevel} />}
           </div>
           {data.burnout ? (
@@ -329,7 +329,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
                       <div key={indicator.indicator} className="flex items-center gap-2">
                         <div className="flex-1">
                           <p className="text-[10px] text-[#666]">{indicator.indicator}</p>
-                          <div className="h-1 bg-[#F5F5F5] rounded-full overflow-hidden mt-0.5">
+                          <div className="h-1 bg-muted rounded-full overflow-hidden mt-0.5">
                             <div
                               className="h-full rounded-full"
                               style={{
@@ -357,7 +357,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {radarData.length > 0 && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{t('kr_kec9db4ec_risk_kec8ba0ed_keba0')}</h3>
+            <h3 className="text-base font-semibold text-foreground mb-4">{t('kr_kec9db4ec_risk_kec8ba0ed_keba0')}</h3>
             <ResponsiveContainer width="100%" height={250}>
               <RadarChart data={radarData}>
                 <PolarGrid />
@@ -380,9 +380,9 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
 
       {/* 신호 상세 테이블 */}
       {data.turnover && (
-        <div className="bg-white rounded-xl border border-[#E8E8E8]">
-          <div className="px-5 py-4 border-b border-[#F5F5F5]">
-            <h3 className="text-base font-semibold text-[#1A1A1A]">{t('kr_kec9db4ec_risk_kec8ba0ed_kec83')}</h3>
+        <div className="bg-white rounded-xl border border-border">
+          <div className="px-5 py-4 border-b border-border">
+            <h3 className="text-base font-semibold text-foreground">{t('kr_kec9db4ec_risk_kec8ba0ed_kec83')}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className={TABLE_STYLES.table}>
@@ -398,14 +398,14 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
               <tbody>
                 {(data.turnover.signals as unknown as Signal[]).map((signal) => (
                   <tr key={signal.signal} className={TABLE_STYLES.row}>
-                    <td className={cn(TABLE_STYLES.cell, 'font-medium text-[#1A1A1A]')}>
+                    <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>
                       {SIGNAL_LABELS[signal.signal] ?? signal.signal}
                     </td>
                     <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{Math.round(signal.weight * 100)}%</td>
                     <td className={TABLE_STYLES.cell}>
                       {signal.available ? (
                         <div className="flex items-center gap-2">
-                          <div className="w-20 h-1.5 bg-[#F5F5F5] rounded-full overflow-hidden">
+                          <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
                             <div
                               className="h-full rounded-full"
                               style={{
@@ -423,8 +423,8 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
                     <td className={TABLE_STYLES.cell}>
                       <span className={`text-xs px-2 py-0.5 rounded-full ${
                         signal.available
-                          ? 'bg-[#D1FAE5] text-[#047857]'
-                          : 'bg-[#FAFAFA] text-[#999]'
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : 'bg-background text-[#999]'
                       }`}>
                         {signal.available ? '계산됨' : '데이터 없음'}
                       </span>

@@ -94,7 +94,7 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     )
   }
@@ -109,8 +109,8 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
   return (
     <div className="space-y-6">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_kecb488ea')}</h3>
-        <p className="text-sm text-[#8181A5]">
+        <h3 className="text-base font-semibold text-foreground">{t('kr_kecb488ea')}</h3>
+        <p className="text-sm text-muted-foreground">
           {t('kr_kec82acec_kec8898eb_kebb0b0ec_')}
         </p>
       </div>
@@ -138,9 +138,9 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
             type="checkbox"
             checked={settings.requiresApproval}
             onChange={(e) => setSettings((p) => ({ ...p, requiresApproval: e.target.checked }))}
-            className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
+            className="h-4 w-4 rounded border-border text-primary"
           />
-          <span className="text-[#1C1D21]">{t('kr_kec82acec_approve_ked999cec')}</span>
+          <span className="text-foreground">{t('kr_kec82acec_approve_ked999cec')}</span>
         </label>
       </SettingFieldWithOverride>
 
@@ -160,7 +160,7 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
             onChange={(e) => setSettings((p) => ({ ...p, nightStartHour: Number(e.target.value) }))}
             className="w-20 text-center"
           />
-          <span className="text-sm text-[#8181A5]">시 ~</span>
+          <span className="text-sm text-muted-foreground">시 ~</span>
           <Input
             type="number"
             min={0}
@@ -169,13 +169,13 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
             onChange={(e) => setSettings((p) => ({ ...p, nightEndHour: Number(e.target.value) }))}
             className="w-20 text-center"
           />
-          <span className="text-sm text-[#8181A5]">시</span>
+          <span className="text-sm text-muted-foreground">시</span>
         </div>
       </SettingFieldWithOverride>
 
       {/* 수당 배율 테이블 */}
       <div>
-        <h4 className="mb-3 text-sm font-semibold text-[#1C1D21]">{t('kr_kec8898eb_keab384ec_kebb0b0ec')}</h4>
+        <h4 className="mb-3 text-sm font-semibold text-foreground">{t('kr_kec8898eb_keab384ec_kebb0b0ec')}</h4>
         <div className={TABLE_STYLES.wrapper}>
           <table className={TABLE_STYLES.table}>
             <thead>
@@ -185,7 +185,7 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
                 <th className={TABLE_STYLES.headerCell}>배율</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F0F0F3]">
+            <tbody className="divide-y divide-border">
               {rateRows.map((row) => (
                 <tr key={row.key} className={TABLE_STYLES.row}>
                   <td className={TABLE_STYLES.cell}>{row.label}</td>
@@ -210,7 +210,7 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
 
       {/* 법인별 참고 배율 */}
       <div>
-        <h4 className="mb-3 text-sm font-semibold text-[#1C1D21]">{t('company_kebb384_kecb0b8ea_kebb0b0ec')}</h4>
+        <h4 className="mb-3 text-sm font-semibold text-foreground">{t('company_kebb384_kecb0b8ea_kebb0b0ec')}</h4>
         <div className={TABLE_STYLES.wrapper}>
           <table className={TABLE_STYLES.table}>
             <thead>
@@ -221,12 +221,12 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
                 <th className={TABLE_STYLES.headerCell}>휴일</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F0F0F3]">
+            <tbody className="divide-y divide-border">
               {COUNTRY_RATES.map((cr) => (
                 <tr key={cr.code} className={TABLE_STYLES.row}>
                   <td className={TABLE_STYLES.cell}>{cr.flag} {cr.code}</td>
                   <td className={TABLE_STYLES.cell}>{cr.weekday}x</td>
-                  <td className={cr.night > 0 ? TABLE_STYLES.cell : 'px-4 py-2 text-center text-[#8181A5]'}>
+                  <td className={cr.night > 0 ? TABLE_STYLES.cell : 'px-4 py-2 text-center text-muted-foreground'}>
                     {cr.night > 0 ? `+${cr.night}x` : '—'}
                   </td>
                   <td className={TABLE_STYLES.cell}>{cr.holiday}x</td>
@@ -235,7 +235,7 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
             </tbody>
           </table>
         </div>
-        <p className="mt-2 text-xs text-[#8181A5]">
+        <p className="mt-2 text-xs text-muted-foreground">
           * 위 참고 배율은 각국 근로기준법 기본값입니다. 법인별 CompanySelector를 통해 오버라이드할 수 있습니다.
         </p>
       </div>

@@ -74,7 +74,7 @@ export function DottedLineReportsCard() {
                     className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#EDF1FE] text-xs font-medium text-ctr-primary">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-ctr-primary">
                         {emp.name.charAt(0)}
                       </div>
                       <div>
@@ -109,7 +109,7 @@ export function DottedLineReportsCard() {
               })}
             </div>
             {hasCrossCompany && (
-              <div className="mt-3 flex items-start gap-1.5 rounded-md bg-[#F8FAFC] p-2">
+              <div className="mt-3 flex items-start gap-1.5 rounded-md bg-slate-50 p-2">
                 <Info className="mt-0.5 h-3 w-3 shrink-0 text-ctr-gray-400" />
                 <p className="text-xs text-ctr-gray-500">
                   타 법인 점선 보고 직원은 조회만 가능합니다.

@@ -141,8 +141,8 @@ export function PositionsTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">직위 관리</h3>
-          <p className="text-sm text-[#8181A5]">{positions.length}개 직위 등록 · 법인별 보직(직책) 목록</p>
+          <h3 className="text-base font-semibold text-foreground">직위 관리</h3>
+          <p className="text-sm text-muted-foreground">{positions.length}개 직위 등록 · 법인별 보직(직책) 목록</p>
         </div>
         <Button size="sm" onClick={() => setShowAdd(true)}>
           <Plus className="mr-1 h-4 w-4" /> 직위 추가
@@ -150,7 +150,7 @@ export function PositionsTab({ companyId }: Props) {
       </div>
 
       {showAdd && (
-        <div className="rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4 space-y-3">
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
           <p className="text-sm font-medium">새 직위 추가</p>
           <div className="grid grid-cols-2 gap-2">
             <Input
@@ -213,12 +213,12 @@ export function PositionsTab({ companyId }: Props) {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={5} className="py-8 text-center text-sm text-[#8181A5]">로딩 중...</td></tr>
+              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">로딩 중...</td></tr>
             ) : positions.length === 0 ? (
-              <tr><td colSpan={5} className="py-8 text-center text-sm text-[#8181A5]">등록된 직위가 없습니다</td></tr>
+              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">등록된 직위가 없습니다</td></tr>
             ) : positions.map((p) => (
               <tr key={p.id} className={TABLE_STYLES.row}>
-                <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>
+                <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>
                   {editingId === p.id ? (
                     <Input className="h-7 text-sm w-28" value={editForm.code} onChange={e => setEditForm(f => ({ ...f, code: e.target.value }))} />
                   ) : p.code}
@@ -227,16 +227,16 @@ export function PositionsTab({ companyId }: Props) {
                   {editingId === p.id ? (
                     <div className="space-y-1">
                       <Input className="h-7 text-sm" value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} />
-                      <Input className="h-7 text-sm text-[#8181A5]" placeholder="영문명" value={editForm.nameEn} onChange={e => setEditForm(f => ({ ...f, nameEn: e.target.value }))} />
+                      <Input className="h-7 text-sm text-muted-foreground" placeholder="영문명" value={editForm.nameEn} onChange={e => setEditForm(f => ({ ...f, nameEn: e.target.value }))} />
                     </div>
                   ) : (
                     <div>
                       <div>{p.name}</div>
-                      {p.nameEn && <div className="text-xs text-[#8181A5]">{p.nameEn}</div>}
+                      {p.nameEn && <div className="text-xs text-muted-foreground">{p.nameEn}</div>}
                     </div>
                   )}
                 </td>
-                <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>
+                <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>
                   {editingId === p.id ? (
                     <Select
                       value={editForm.reportsToPositionId}
@@ -269,7 +269,7 @@ export function PositionsTab({ companyId }: Props) {
                   ) : (
                     p.jobGradeName
                       ? <span className="inline-block rounded px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700">{p.jobGradeName}</span>
-                      : <span className="text-[#8181A5]">—</span>
+                      : <span className="text-muted-foreground">—</span>
                   )}
                 </td>
                 <td className={TABLE_STYLES.cell}>

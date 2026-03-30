@@ -34,7 +34,7 @@ export function NotificationChannelsTab({
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   const toggle = (i: number) => {
     const next = structuredClone(settings)
@@ -46,8 +46,8 @@ export function NotificationChannelsTab({
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{'알림 채널'}</h3>
-          <p className="text-sm text-[#8181A5]">{'이메일/Teams/앱 푸시 채널 설정'}</p>
+          <h3 className="text-base font-semibold text-foreground">{'알림 채널'}</h3>
+          <p className="text-sm text-muted-foreground">{'이메일/Teams/앱 푸시 채널 설정'}</p>
         </div>
         {isOverridden && (
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
@@ -56,10 +56,10 @@ export function NotificationChannelsTab({
       <div className="space-y-3">{settings.channels.map((ch, i) => {
         const Icon = ICON_MAP[ch.iconKey] ?? Bell
         return (
-          <div key={ch.key} className="flex items-center gap-4 rounded-xl border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#5E81F4]/10"><Icon className="h-5 w-5 text-[#5E81F4]" /></div>
-            <div className="flex-1"><span className="text-sm font-medium text-[#1C1D21]">{ch.label}</span></div>
-            <button onClick={() => toggle(i)} className={`relative h-6 w-11 rounded-full transition-colors ${ch.enabled ? 'bg-[#5E81F4]' : 'bg-[#F0F0F3]'}`}>
+          <div key={ch.key} className="flex items-center gap-4 rounded-xl border border-border p-4 hover:bg-muted transition-colors">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"><Icon className="h-5 w-5 text-primary" /></div>
+            <div className="flex-1"><span className="text-sm font-medium text-foreground">{ch.label}</span></div>
+            <button onClick={() => toggle(i)} className={`relative h-6 w-11 rounded-full transition-colors ${ch.enabled ? 'bg-primary' : 'bg-border'}`}>
               <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${ch.enabled ? 'left-[22px]' : 'left-0.5'}`} />
             </button>
           </div>

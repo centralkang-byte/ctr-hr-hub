@@ -17,10 +17,10 @@ interface PiiAccessLog {
 }
 
 const ACCESS_TYPE_BADGE: Record<string, string> = {
-  VIEW: 'bg-[#EDF1FE] text-[#4B6DE0] border border-[#EDF1FE]',
-  EXPORT: 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]',
-  EDIT: 'bg-[#FFF7ED] text-[#C2410C] border border-[#FED7AA]',
-  DELETE: 'bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]',
+  VIEW: 'bg-primary/10 text-primary/90 border border-primary/20',
+  EXPORT: 'bg-amber-100 text-amber-700 border border-amber-300',
+  EDIT: 'bg-orange-50 text-orange-700 border border-orange-200',
+  DELETE: 'bg-red-100 text-red-700 border border-red-200',
 }
 
 export default function PiiAccessLogTable() {
@@ -91,7 +91,7 @@ export default function PiiAccessLogTable() {
             <label className="block text-xs text-[#666] mb-1">{t('gdpr.actor')}</label>
             <input
               type="text"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
               placeholder={tc('searchPlaceholder')}
               value={actor}
               onChange={(e) => setActor(e.target.value)}
@@ -101,7 +101,7 @@ export default function PiiAccessLogTable() {
             <label className="block text-xs text-[#666] mb-1">{t('gdpr.target')}</label>
             <input
               type="text"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
               placeholder={tc('searchPlaceholder')}
               value={target}
               onChange={(e) => setTarget(e.target.value)}
@@ -111,7 +111,7 @@ export default function PiiAccessLogTable() {
             <label className="block text-xs text-[#666] mb-1">{tc('startDate')}</label>
             <input
               type="date"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
             />
@@ -120,7 +120,7 @@ export default function PiiAccessLogTable() {
             <label className="block text-xs text-[#666] mb-1">{tc('endDate')}</label>
             <input
               type="date"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
             />
@@ -136,7 +136,7 @@ export default function PiiAccessLogTable() {
           </button>
           <button
             onClick={handleReset}
-            className="inline-flex items-center gap-1.5 bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
+            className="inline-flex items-center gap-1.5 bg-white border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             {tc('reset')}
@@ -168,12 +168,12 @@ export default function PiiAccessLogTable() {
                   {logs.map((log) => (
                     <tr key={log.id} className={TABLE_STYLES.row}>
                       <td className="px-4 py-3 text-sm">
-                        <div className="font-medium text-[#1A1A1A]">{log.actor_name}</div>
+                        <div className="font-medium text-foreground">{log.actor_name}</div>
                         <div className="text-xs text-[#999]">{log.actor_role}</div>
                       </td>
                       <td className="px-4 py-3 text-sm text-[#333]">{log.target_name}</td>
                       <td className="px-4 py-3 text-sm">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${ACCESS_TYPE_BADGE[log.access_type] ?? 'bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]'}`}>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${ACCESS_TYPE_BADGE[log.access_type] ?? 'bg-background text-[#555] border border-border'}`}>
                           {log.access_type}
                         </span>
                       </td>
@@ -190,7 +190,7 @@ export default function PiiAccessLogTable() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between px-4 py-3 border-t border-[#F5F5F5]">
+              <div className="flex items-center justify-between px-4 py-3 border-t border-border">
                 <p className="text-xs text-[#666]">
                   {tc('total')}: {total}
                 </p>
@@ -198,7 +198,7 @@ export default function PiiAccessLogTable() {
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="px-3 py-1.5 text-xs rounded-lg border border-[#D4D4D4] text-[#555] hover:bg-[#FAFAFA] disabled:opacity-40"
+                    className="px-3 py-1.5 text-xs rounded-lg border border-border text-[#555] hover:bg-background disabled:opacity-40"
                   >
                     {tc('prev')}
                   </button>
@@ -208,7 +208,7 @@ export default function PiiAccessLogTable() {
                   <button
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="px-3 py-1.5 text-xs rounded-lg border border-[#D4D4D4] text-[#555] hover:bg-[#FAFAFA] disabled:opacity-40"
+                    className="px-3 py-1.5 text-xs rounded-lg border border-border text-[#555] hover:bg-background disabled:opacity-40"
                   >
                     {tc('next')}
                   </button>

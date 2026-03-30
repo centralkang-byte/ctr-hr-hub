@@ -457,14 +457,14 @@ export function RecruitmentDashboardClient(_props: {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F0F0F3]">
+                <tbody className="divide-y divide-border">
                   {!vacancyByCompany?.length && <EmptyState />}
                 {vacancyByCompany?.map((row) => (
-                    <tr key={row.companyId} className="hover:bg-[#FAFAFA] transition-colors">
-                      <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">{row.companyName}</td>
-                      <td className="px-4 py-3 text-sm text-[#1A1A1A] text-right">{row.total}</td>
-                      <td className="px-4 py-3 text-sm text-[#4B6DE0] text-right">{row.withActivePosting}</td>
-                      <td className="px-4 py-3 text-sm text-[#B45309] text-right">{row.withoutPosting}</td>
+                    <tr key={row.companyId} className="hover:bg-background transition-colors">
+                      <td className="px-4 py-3 text-sm font-medium text-foreground">{row.companyName}</td>
+                      <td className="px-4 py-3 text-sm text-foreground text-right">{row.total}</td>
+                      <td className="px-4 py-3 text-sm text-primary/90 text-right">{row.withActivePosting}</td>
+                      <td className="px-4 py-3 text-sm text-amber-700 text-right">{row.withoutPosting}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -503,7 +503,7 @@ export function RecruitmentDashboardClient(_props: {
                 <th className={TABLE_STYLES.headerCellRight}>{'게시일'}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F0F0F3]">
+            <tbody className="divide-y divide-border">
               {data.recentPostings.length === 0 ? (
                 <tr>
                   <td
@@ -520,10 +520,10 @@ export function RecruitmentDashboardClient(_props: {
                     onClick={() => router.push(`/recruitment/${posting.id}`)}
                     className={TABLE_STYLES.rowClickable}
                   >
-                    <td className="px-4 py-3 text-sm font-medium text-[#1A1A1A]">
+                    <td className="px-4 py-3 text-sm font-medium text-foreground">
                       {posting.title}
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#1A1A1A] text-right">
+                    <td className="px-4 py-3 text-sm text-foreground text-right">
                       <span
                         style={{
                           display: 'inline-block',

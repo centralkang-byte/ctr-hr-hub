@@ -56,35 +56,35 @@ export default function ConvertToEmployeeButton({ applicationId, applicantName }
         <div className={MODAL_STYLES.container}>
           <div className="bg-white rounded-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between p-6 pb-0">
-              <h2 className="text-lg font-bold text-[#1A1A1A] tracking-[-0.02em]">
+              <h2 className="text-lg font-bold text-foreground tracking-[-0.02em]">
                 {applicantName} — 직원 전환
               </h2>
               <button
                 onClick={() => setOpen(false)}
-                className="p-1 rounded-lg hover:bg-[#FAFAFA] text-[#999] transition-colors duration-150"
+                className="p-1 rounded-lg hover:bg-background text-[#999] transition-colors duration-150"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   사번 (선택 — 미입력 시 자동 생성)
                 </label>
                 <input
                   placeholder="예: CTR-2025-0042"
                   value={form.employeeNo}
                   onChange={(e) => setForm((f) => ({ ...f, employeeNo: e.target.value }))}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">입사일 *</label>
+                <label className="block text-sm font-medium text-foreground mb-1">입사일 *</label>
                 <input
                   type="date"
                   value={form.startDate}
                   onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
                 />
               </div>
               <button

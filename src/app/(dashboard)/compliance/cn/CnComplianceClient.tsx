@@ -30,24 +30,24 @@ export default function CnComplianceClient({ user }: { user: SessionUser }) {
     <div className="p-6 space-y-6">
       {/* Page Header */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-[#EDF1FE] rounded-xl flex items-center justify-center">
-          <Shield className="w-5 h-5 text-[#5E81F4]" />
+        <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+          <Shield className="w-5 h-5 text-primary" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('cn.title')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('cn.title')}</h1>
           <p className="text-sm text-[#666]">{t('cn.socialInsurance')}</p>
         </div>
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex border-b border-[#E8E8E8]">
+      <div className="flex border-b border-border">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={
               activeTab === tab.key
-                ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-[#5E81F4] text-[#5E81F4]'
+                ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-primary text-primary'
                 : 'px-4 py-2.5 text-sm font-medium text-[#666] hover:text-[#333] border-b-2 border-transparent'
             }
           >

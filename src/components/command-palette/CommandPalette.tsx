@@ -224,22 +224,22 @@ export function CommandPalette() {
 
       {/* Modal */}
       <div
-        className="relative mx-4 w-full max-w-[560px] overflow-hidden rounded-xl border border-[#F0F0F3] bg-white shadow-lg"
+        className="relative mx-4 w-full max-w-[560px] overflow-hidden rounded-xl border border-border bg-white shadow-lg"
         onMouseDown={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
         {/* ── Search input ── */}
-        <div className="flex items-center gap-3 border-b border-[#F0F0F3] px-4 py-3.5">
-          <Search className="h-4 w-4 flex-shrink-0 text-[#8181A5]" />
+        <div className="flex items-center gap-3 border-b border-border px-4 py-3.5">
+          <Search className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
           <input
             ref={inputRef}
             type="text"
-            className="flex-1 border-none bg-transparent text-[15px] text-[#1C1D21] placeholder:text-[#8181A5] focus:outline-none focus:ring-0"
+            className="flex-1 border-none bg-transparent text-[15px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-0"
             placeholder={placeholderText}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-          <kbd className="hidden items-center gap-0.5 rounded border border-[#F0F0F3] bg-[#F5F5FA] px-1.5 py-0.5 font-mono text-[10px] text-[#8181A5] sm:inline-flex">
+          <kbd className="hidden items-center gap-0.5 rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline-flex">
             ESC
           </kbd>
         </div>
@@ -255,16 +255,16 @@ export function CommandPalette() {
                   key={`recent-${page.path}`}
                   type="button"
                   className={`flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors ${flatList[activeIndex]?.id === `recent-${page.path}`
-                      ? 'bg-[#F5F5FA]'
-                      : 'hover:bg-[#F5F5FA]'
+                      ? 'bg-muted'
+                      : 'hover:bg-muted'
                     }`}
                   onMouseDown={(e) => { e.preventDefault(); navigate(page.path) }}
                   onMouseEnter={() => setActiveIndex(idx)}
                 >
-                  <Clock className="h-4 w-4 flex-shrink-0 text-[#8181A5]" />
+                  <Clock className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-[#1C1D21]">{page.title}</p>
-                    <p className="truncate text-xs text-[#8181A5]">{page.path}</p>
+                    <p className="text-sm text-foreground">{page.title}</p>
+                    <p className="truncate text-xs text-muted-foreground">{page.path}</p>
                   </div>
                 </button>
               ))}
@@ -274,8 +274,8 @@ export function CommandPalette() {
           {/* ── No-query, no recent: empty tip ── */}
           {!debouncedQuery && recentPages.length === 0 && (
             <div className="px-4 py-6 text-center">
-              <Hash className="mx-auto mb-2 h-5 w-5 text-[#C5C7D4]" />
-              <p className="text-sm text-[#8181A5]">직원 이름, 메뉴를 검색하세요</p>
+              <Hash className="mx-auto mb-2 h-5 w-5 text-muted-foreground/70" />
+              <p className="text-sm text-muted-foreground">직원 이름, 메뉴를 검색하세요</p>
             </div>
           )}
 
@@ -283,7 +283,7 @@ export function CommandPalette() {
           {debouncedQuery && (employeeResults.length > 0 || loadingEmployees) && (
             <ResultGroup label={t('employees')}>
               {loadingEmployees && employeeResults.length === 0 ? (
-                <div className="px-3 py-2 text-xs text-[#8181A5]">검색 중…</div>
+                <div className="px-3 py-2 text-xs text-muted-foreground">검색 중…</div>
               ) : (
                 employeeResults.map((emp, idx) => {
                   const flatIdx = idx
@@ -292,8 +292,8 @@ export function CommandPalette() {
                       key={`emp-${emp.id}`}
                       type="button"
                       className={`flex w-full cursor-pointer items-center rounded-lg px-3 py-2 text-left transition-colors ${flatList[activeIndex]?.id === `emp-${emp.id}`
-                          ? 'bg-[#F5F5FA]'
-                          : 'hover:bg-[#F5F5FA]'
+                          ? 'bg-muted'
+                          : 'hover:bg-muted'
                         }`}
                       onMouseDown={(e) => { e.preventDefault(); navigate(`/employees/${emp.id}`) }}
                       onMouseEnter={() => setActiveIndex(flatIdx)}
@@ -324,15 +324,15 @@ export function CommandPalette() {
                     key={item.id}
                     type="button"
                     className={`flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${flatList[activeIndex]?.id === item.id
-                        ? 'bg-[#F5F5FA] text-[#5E81F4]'
-                        : 'hover:bg-[#F5F5FA]'
+                        ? 'bg-muted text-primary'
+                        : 'hover:bg-muted'
                       }`}
                     onMouseDown={(e) => { e.preventDefault(); navigate(item.href) }}
                     onMouseEnter={() => setActiveIndex(flatIdx)}
                   >
-                    <LayoutDashboard className={`h-4 w-4 flex-shrink-0 ${flatList[activeIndex]?.id === item.id ? 'text-[#5E81F4]' : 'text-[#C5C7D4]'
+                    <LayoutDashboard className={`h-4 w-4 flex-shrink-0 ${flatList[activeIndex]?.id === item.id ? 'text-primary' : 'text-muted-foreground/70'
                       }`} />
-                    <span className={`text-sm font-medium ${flatList[activeIndex]?.id === item.id ? 'text-[#5E81F4]' : 'text-[#3D3F4E]'
+                    <span className={`text-sm font-medium ${flatList[activeIndex]?.id === item.id ? 'text-primary' : 'text-foreground'
                       }`}>
                       {item.label}
                     </span>
@@ -344,29 +344,29 @@ export function CommandPalette() {
 
           {/* ── No results ── */}
           {debouncedQuery && !loadingEmployees && !hasResults && (
-            <div className="px-4 py-8 text-center text-sm text-[#8181A5]">
+            <div className="px-4 py-8 text-center text-sm text-muted-foreground">
               {t('noResults')}
             </div>
           )}
         </div>
 
         {/* ── Footer ── */}
-        <div className="flex items-center justify-between border-t border-[#F0F0F3] bg-[#FAFAFA] px-4 py-2">
-          <div className="flex items-center gap-3 text-[11px] text-[#C5C7D4]">
+        <div className="flex items-center justify-between border-t border-border bg-background px-4 py-2">
+          <div className="flex items-center gap-3 text-[11px] text-muted-foreground/70">
             <span className="flex items-center gap-1">
-              <kbd className="rounded border border-[#E8E8EC] bg-white px-1 py-0.5 font-mono">↑↓</kbd>
+              <kbd className="rounded border border-border bg-white px-1 py-0.5 font-mono">↑↓</kbd>
               탐색
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="rounded border border-[#E8E8EC] bg-white px-1 py-0.5 font-mono">↵</kbd>
+              <kbd className="rounded border border-border bg-white px-1 py-0.5 font-mono">↵</kbd>
               이동
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="rounded border border-[#E8E8EC] bg-white px-1 py-0.5 font-mono">ESC</kbd>
+              <kbd className="rounded border border-border bg-white px-1 py-0.5 font-mono">ESC</kbd>
               닫기
             </span>
           </div>
-          <span className="font-mono text-[11px] text-[#C5C7D4]">{shortcutHint}</span>
+          <span className="font-mono text-[11px] text-muted-foreground/70">{shortcutHint}</span>
         </div>
       </div>
     </div>
@@ -378,7 +378,7 @@ export function CommandPalette() {
 function ResultGroup({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="mb-1 px-2">
-      <p className="px-1 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wider text-[#C5C7D4]">
+      <p className="px-1 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
         {label}
       </p>
       {children}

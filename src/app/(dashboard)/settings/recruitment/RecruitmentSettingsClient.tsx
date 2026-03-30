@@ -52,7 +52,7 @@ function RecruitmentSettingsContent() {
 
 export function RecruitmentSettingsClient() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center p-16 text-[#8181A5]">{'로딩 중...'}</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center p-16 text-muted-foreground">{'로딩 중...'}</div>}>
       <RecruitmentSettingsContent />
     </Suspense>
   )

@@ -78,33 +78,33 @@ export default function WorkHoursMonitorTab() {
           label: '준수율',
           value: `${summary.complianceRate.toFixed(1)}%`,
           icon: CheckCircle2,
-          iconColor: 'text-[#5E81F4]',
-          bgColor: 'bg-[#EDF1FE]',
-          textColor: 'text-[#5E81F4]',
+          iconColor: 'text-primary',
+          bgColor: 'bg-primary/10',
+          textColor: 'text-primary',
         },
         {
           label: '준수 인원',
           value: summary.compliantCount.toLocaleString(),
           icon: Users,
-          iconColor: 'text-[#2196F3]',
-          bgColor: 'bg-[#E3F2FD]',
-          textColor: 'text-[#1A1A1A]',
+          iconColor: 'text-blue-500',
+          bgColor: 'bg-blue-50',
+          textColor: 'text-foreground',
         },
         {
           label: '주의 인원',
           value: summary.warningCount.toLocaleString(),
           icon: Clock,
-          iconColor: 'text-[#FF9800]',
-          bgColor: 'bg-[#FFF3E0]',
-          textColor: 'text-[#FF9800]',
+          iconColor: 'text-orange-500',
+          bgColor: 'bg-orange-50',
+          textColor: 'text-orange-500',
         },
         {
           label: '위반 인원',
           value: summary.violationCount.toLocaleString(),
           icon: AlertTriangle,
-          iconColor: 'text-[#F44336]',
-          bgColor: 'bg-[#FFEBEE]',
-          textColor: 'text-[#F44336]',
+          iconColor: 'text-red-500',
+          bgColor: 'bg-red-50',
+          textColor: 'text-red-500',
         },
       ]
     : []
@@ -116,8 +116,8 @@ export default function WorkHoursMonitorTab() {
         {loading
           ? Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <div className="h-4 w-20 bg-[#F5F5F5] rounded animate-pulse mb-3" />
-                <div className="h-8 w-16 bg-[#F5F5F5] rounded animate-pulse" />
+                <div className="h-4 w-20 bg-muted rounded animate-pulse mb-3" />
+                <div className="h-8 w-16 bg-muted rounded animate-pulse" />
               </div>
             ))
           : kpiCards.map((card) => {
@@ -142,11 +142,11 @@ export default function WorkHoursMonitorTab() {
       {/* Week Selector */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em]">주간 근무시간 현황</h2>
+          <h2 className="text-base font-bold text-foreground tracking-[-0.02em]">주간 근무시간 현황</h2>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setWeekOffset((prev) => prev - 1)}
-              className="flex items-center justify-center w-8 h-8 rounded-lg border border-[#E8E8E8] hover:bg-[#F5F5F5] text-[#666] transition-colors"
+              className="flex items-center justify-center w-8 h-8 rounded-lg border border-border hover:bg-muted text-[#666] transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -156,7 +156,7 @@ export default function WorkHoursMonitorTab() {
             <button
               onClick={() => setWeekOffset((prev) => prev + 1)}
               disabled={weekOffset >= 0}
-              className="flex items-center justify-center w-8 h-8 rounded-lg border border-[#E8E8E8] hover:bg-[#F5F5F5] text-[#666] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center justify-center w-8 h-8 rounded-lg border border-border hover:bg-muted text-[#666] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

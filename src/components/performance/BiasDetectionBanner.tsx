@@ -25,9 +25,9 @@ const BIAS_TYPE_LABEL: Record<string, string> = {
 }
 
 const SEVERITY_STYLE: Record<string, string> = {
-  info: 'bg-[#E0E7FF] text-[#4B6DE0]',
-  warning: 'bg-[#FEF3C7] text-[#B45309]',
-  critical: 'bg-[#FEE2E2] text-[#B91C1C]',
+  info: 'bg-indigo-100 text-primary/90',
+  warning: 'bg-amber-100 text-amber-700',
+  critical: 'bg-red-100 text-red-700',
 }
 
 export default function BiasDetectionBanner({ cycleId, onRunCheck }: Props) {
@@ -68,12 +68,12 @@ export default function BiasDetectionBanner({ cycleId, onRunCheck }: Props) {
 
   if (loading) return null
   if (logs.length === 0) return (
-    <div className="flex items-center justify-between bg-[#D1FAE5] rounded-lg px-4 py-2.5 mb-4">
-      <p className="text-xs text-[#047857]">편향 감지: 현재 경고 없음</p>
+    <div className="flex items-center justify-between bg-emerald-100 rounded-lg px-4 py-2.5 mb-4">
+      <p className="text-xs text-emerald-700">편향 감지: 현재 경고 없음</p>
       <button
         onClick={handleRunCheck}
         disabled={checking}
-        className="text-xs text-[#047857] underline"
+        className="text-xs text-emerald-700 underline"
       >
         {checking ? '분석 중...' : '재분석'}
       </button>
@@ -84,11 +84,11 @@ export default function BiasDetectionBanner({ cycleId, onRunCheck }: Props) {
   const warningCount = logs.filter((l) => l.severity === 'warning').length
 
   return (
-    <div className={`rounded-lg border mb-4 ${criticalCount > 0 ? 'border-[#FCA5A5] bg-[#FEE2E2]' : 'border-[#FCD34D] bg-[#FEF3C7]'}`}>
+    <div className={`rounded-lg border mb-4 ${criticalCount > 0 ? 'border-red-300 bg-red-100' : 'border-amber-300 bg-amber-100'}`}>
       <div className="flex items-center justify-between px-4 py-2.5">
         <div className="flex items-center gap-2">
-          <AlertTriangle className={`w-4 h-4 ${criticalCount > 0 ? 'text-[#B91C1C]' : 'text-[#B45309]'}`} />
-          <span className={`text-sm font-medium ${criticalCount > 0 ? 'text-[#B91C1C]' : 'text-[#B45309]'}`}>
+          <AlertTriangle className={`w-4 h-4 ${criticalCount > 0 ? 'text-red-700' : 'text-amber-700'}`} />
+          <span className={`text-sm font-medium ${criticalCount > 0 ? 'text-red-700' : 'text-amber-700'}`}>
             편향 감지 알림 ({logs.length}건)
             {criticalCount > 0 && <span className="ml-1 text-xs">— Critical {criticalCount}건</span>}
             {warningCount > 0 && <span className="ml-1 text-xs">— Warning {warningCount}건</span>}
@@ -104,7 +104,7 @@ export default function BiasDetectionBanner({ cycleId, onRunCheck }: Props) {
         </div>
       </div>
       {expanded && (
-        <div className="px-4 pb-3 space-y-1.5 border-t border-[#E8E8E8]">
+        <div className="px-4 pb-3 space-y-1.5 border-t border-border">
           {logs.map((log) => (
             <div key={log.id} className="flex items-start gap-2 py-1.5">
               <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium flex-shrink-0 ${SEVERITY_STYLE[log.severity] ?? ''}`}>

@@ -107,23 +107,23 @@ interface ChangeRequest {
 // ─── Constants ──────────────────────────────────────────────
 
 const SLOT_COLORS: Record<number, string> = {
-  0: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]',
-  1: 'bg-[#FEF3C7] text-[#92400E] border-[#FCD34D]',
-  2: 'bg-[#F3E8FF] text-[#6B21A8] border-[#E9D5FF]',
-  3: 'bg-[#D1FAE5] text-[#065F46] border-[#A7F3D0]',
+  0: 'bg-primary/10 text-primary/90 border-primary/20',
+  1: 'bg-amber-100 text-amber-800 border-amber-300',
+  2: 'bg-purple-50 text-purple-800 border-purple-200',
+  3: 'bg-emerald-100 text-emerald-800 border-emerald-200',
 }
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
-  SCHEDULED: { label: '예정', color: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]' },
-  WORKED: { label: '완료', color: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
-  ABSENT: { label: '결근', color: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },
-  SWAPPED: { label: '교대변경', color: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
+  SCHEDULED: { label: '예정', color: 'bg-primary/10 text-primary/90 border-primary/20' },
+  WORKED: { label: '완료', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+  ABSENT: { label: '결근', color: 'bg-red-100 text-red-700 border-red-200' },
+  SWAPPED: { label: '교대변경', color: 'bg-amber-100 text-amber-700 border-amber-300' },
 }
 
 const REQUEST_STATUS_MAP: Record<string, { label: string; color: string }> = {
-  SCR_PENDING: { label: '대기', color: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
-  SCR_APPROVED: { label: '승인', color: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
-  SCR_REJECTED: { label: '반려', color: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },
+  SCR_PENDING: { label: '대기', color: 'bg-amber-100 text-amber-700 border-amber-300' },
+  SCR_APPROVED: { label: '승인', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+  SCR_REJECTED: { label: '반려', color: 'bg-red-100 text-red-700 border-red-200' },
 }
 
 const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
@@ -273,7 +273,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#5E81F4]" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
   }
@@ -283,8 +283,8 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
       {/* ─── Header ─── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A] flex items-center gap-2 tracking-[-0.02em]">
-            <Calendar className="h-6 w-6 text-[#5E81F4]" />
+          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2 tracking-[-0.02em]">
+            <Calendar className="h-6 w-6 text-primary" />
             교대근무 캘린더
           </h1>
           <p className="text-sm text-[#999] mt-1">월간 교대 스케줄 배정 현황</p>
@@ -305,19 +305,19 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
 
       {/* ─── KPI Cards ─── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+        <div className="bg-white border border-border rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">배정 인원</p>
           <p className={TYPOGRAPHY.stat}><AnimatedNumber value={totalEmployees} /></p>
         </div>
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+        <div className="bg-white border border-border rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">예정 스케줄</p>
           <p className="text-3xl font-bold tabular-nums text-primary"><AnimatedNumber value={totalScheduled} /></p>
         </div>
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+        <div className="bg-white border border-border rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">완료</p>
           <p className="text-3xl font-bold tabular-nums text-emerald-600"><AnimatedNumber value={totalWorked} /></p>
         </div>
-        <div className="bg-white border border-[#E8E8E8] rounded-xl p-6">
+        <div className="bg-white border border-border rounded-xl p-6">
           <p className="text-xs text-[#999] font-medium mb-2">교대변경 요청</p>
           <p className="text-3xl font-bold tabular-nums text-amber-500"><AnimatedNumber value={pendingSwaps} /></p>
         </div>
@@ -326,13 +326,13 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
       {/* ─── Controls ─── */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={prevMonth} className="p-1.5 hover:bg-[#F5F5F5] rounded-lg border border-[#E8E8E8]">
+          <button onClick={prevMonth} className="p-1.5 hover:bg-muted rounded-lg border border-border">
             <ChevronLeft className="h-4 w-4 text-[#666]" />
           </button>
-          <h2 className="text-base font-bold text-[#1A1A1A] min-w-[120px] text-center tracking-[-0.02em]">
+          <h2 className="text-base font-bold text-foreground min-w-[120px] text-center tracking-[-0.02em]">
             {year}년 {month}월
           </h2>
-          <button onClick={nextMonth} className="p-1.5 hover:bg-[#F5F5F5] rounded-lg border border-[#E8E8E8]">
+          <button onClick={nextMonth} className="p-1.5 hover:bg-muted rounded-lg border border-border">
             <ChevronRight className="h-4 w-4 text-[#666]" />
           </button>
         </div>
@@ -359,12 +359,12 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
             </SelectContent>
           </Select>
 
-          <div className="flex rounded-lg border border-[#E8E8E8]">
+          <div className="flex rounded-lg border border-border">
             <button
               className={`px-3 py-1.5 text-sm font-medium rounded-l-lg ${
                 viewMode === 'calendar'
-                  ? 'bg-[#1A1A1A] text-white'
-                  : 'bg-white text-[#666] hover:bg-[#F5F5F5]'
+                  ? 'bg-foreground text-white'
+                  : 'bg-white text-[#666] hover:bg-muted'
               }`}
               onClick={() => setViewMode('calendar')}
             >
@@ -373,8 +373,8 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
             <button
               className={`px-3 py-1.5 text-sm font-medium rounded-r-lg ${
                 viewMode === 'list'
-                  ? 'bg-[#1A1A1A] text-white'
-                  : 'bg-white text-[#666] hover:bg-[#F5F5F5]'
+                  ? 'bg-foreground text-white'
+                  : 'bg-white text-[#666] hover:bg-muted'
               }`}
               onClick={() => setViewMode('list')}
             >
@@ -418,7 +418,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                 <div
                   key={label}
                   className={`text-center text-xs font-medium py-2 ${
-                    idx === 0 ? 'text-[#F44336]' : idx === 6 ? 'text-[#2196F3]' : 'text-[#999]'
+                    idx === 0 ? 'text-red-500' : idx === 6 ? 'text-blue-500' : 'text-[#999]'
                   }`}
                 >
                   {label}
@@ -427,10 +427,10 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
             </div>
 
             {/* Calendar grid */}
-            <div className="grid grid-cols-7 gap-px bg-[#E8E8E8] rounded-lg overflow-hidden">
+            <div className="grid grid-cols-7 gap-px bg-border rounded-lg overflow-hidden">
               {/* Empty cells before first day */}
               {Array.from({ length: firstDayOffset }).map((_, i) => (
-                <div key={`empty-${i}`} className="bg-[#FAFAFA] min-h-[100px] p-1" />
+                <div key={`empty-${i}`} className="bg-background min-h-[100px] p-1" />
               ))}
 
               {/* Day cells */}
@@ -449,17 +449,17 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                       setSelectedDate(dateKey)
                       setDetailOpen(true)
                     }}
-                    className={`bg-white min-h-[100px] p-1.5 text-left hover:bg-[#FAFAFA] transition-colors ${
-                      isToday ? 'ring-2 ring-[#5E81F4] ring-inset' : ''
+                    className={`bg-white min-h-[100px] p-1.5 text-left hover:bg-background transition-colors ${
+                      isToday ? 'ring-2 ring-primary ring-inset' : ''
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span
                         className={`text-xs font-medium ${
                           isToday
-                            ? 'bg-[#5E81F4] text-white rounded-full w-5 h-5 flex items-center justify-center'
+                            ? 'bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center'
                             : isWeekend
-                              ? dayOfWeek === 0 ? 'text-[#F44336]' : 'text-[#2196F3]'
+                              ? dayOfWeek === 0 ? 'text-red-500' : 'text-blue-500'
                               : 'text-[#666]'
                         }`}
                       >
@@ -511,7 +511,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
               <table className={TABLE_STYLES.table}>
                 <thead className={TABLE_STYLES.header}>
                   <tr>
-                    <th className={`sticky left-0 z-10 bg-[#FAFAFA] ${TABLE_STYLES.headerCell}`}>
+                    <th className={`sticky left-0 z-10 bg-background ${TABLE_STYLES.headerCell}`}>
                       직원
                     </th>
                     {days.map(date => {
@@ -521,10 +521,10 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                           key={formatDateKey(date)}
                           className={`min-w-[44px] px-1 py-3 text-center text-xs font-medium ${
                             dayOfWeek === 0
-                              ? 'text-[#F44336]'
+                              ? 'text-red-500'
                               : dayOfWeek === 6
-                                ? 'text-[#2196F3]'
-                                : 'text-[#8181A5]'
+                                ? 'text-blue-500'
+                                : 'text-muted-foreground'
                           }`}
                         >
                           <div>{date.getDate()}</div>
@@ -547,7 +547,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                       <tr key={empId} className={TABLE_STYLES.row}>
                         <td className={`sticky left-0 z-10 bg-white ${TABLE_STYLES.cell} whitespace-nowrap`}>
                           <div className="flex flex-col">
-                            <span className="text-sm font-medium text-[#1A1A1A]">{emp.lastName}{emp.firstName}</span>
+                            <span className="text-sm font-medium text-foreground">{emp.lastName}{emp.firstName}</span>
                             <span className="text-xs text-[#999]">{emp.employeeNumber}</span>
                           </div>
                         </td>
@@ -556,11 +556,11 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                           const sched = schedMap.get(dateKey)
 
                           if (!sched) {
-                            return <td key={dateKey} className="px-1 py-1 text-center border-t border-[#F0F0F3]">—</td>
+                            return <td key={dateKey} className="px-1 py-1 text-center border-t border-border">—</td>
                           }
 
                           return (
-                            <td key={dateKey} className="px-1 py-1 text-center border-t border-[#F0F0F3]">
+                            <td key={dateKey} className="px-1 py-1 text-center border-t border-border">
                               <span
                                 className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-medium border ${
                                   SLOT_COLORS[sched.slotIndex] ?? SLOT_COLORS[0]
@@ -587,7 +587,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
-              <ArrowRightLeft className="h-5 w-5 text-[#FF9800]" />
+              <ArrowRightLeft className="h-5 w-5 text-orange-500" />
               교대변경 요청 ({changeRequests.length})
             </CardTitle>
           </CardHeader>
@@ -598,7 +598,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                 return (
                   <div
                     key={req.id}
-                    className="flex items-center justify-between p-3 rounded-lg border border-[#E8E8E8] bg-[#FAFAFA]/50"
+                    className="flex items-center justify-between p-3 rounded-lg border border-border bg-background/50"
                   >
                     <div className="flex items-center gap-4">
                       <div className="text-sm">
@@ -629,7 +629,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-[#5E81F4]" />
+              <Calendar className="h-5 w-5 text-primary" />
               {selectedDate} 교대 스케줄
             </DialogTitle>
           </DialogHeader>
@@ -645,7 +645,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                 return (
                   <div
                     key={s.id}
-                    className="flex items-center justify-between p-3 rounded-lg border border-[#E8E8E8]"
+                    className="flex items-center justify-between p-3 rounded-lg border border-border"
                   >
                     <div className="flex items-center gap-3">
                       <span
@@ -655,7 +655,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                         {s.shiftGroup.name.charAt(0)}
                       </span>
                       <div>
-                        <p className="text-sm font-medium text-[#1A1A1A]">
+                        <p className="text-sm font-medium text-foreground">
                           {s.employee.lastName}{s.employee.firstName}
                         </p>
                         <p className="text-xs text-[#999]">

@@ -26,7 +26,7 @@ interface AttritionTrendChartProps {
 export default function AttritionTrendChart({ data }: AttritionTrendChartProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">이탈 위험 추이</h3>
+      <h3 className="text-lg font-semibold text-foreground mb-4">이탈 위험 추이</h3>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />

@@ -232,13 +232,13 @@ export default function SelfEvalClient({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('selfEval')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('selfEval')}</h1>
           <p className="text-sm text-[#666] mt-1">{t('kr_kec9e90ea_kec84b1ea_kebb08f_ke')}</p>
         </div>
         <select
           value={selectedCycleId}
           onChange={(e) => setSelectedCycleId(e.target.value)}
-          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+          className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
         >
           {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => (
@@ -248,24 +248,24 @@ export default function SelfEvalClient({
       </div>
 
       {isSubmitted && (
-        <div className="flex items-center gap-2 p-4 rounded-xl border border-[#A7F3D0] bg-[#D1FAE5]">
-          <CheckCircle2 className="w-5 h-5 text-[#059669]" />
-          <span className="text-sm font-medium text-[#047857]">{t('selfEval_keab080_keca09cec')}</span>
+        <div className="flex items-center gap-2 p-4 rounded-xl border border-emerald-200 bg-emerald-100">
+          <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+          <span className="text-sm font-medium text-emerald-700">{t('selfEval_keab080_keca09cec')}</span>
         </div>
       )}
 
       {/* Goal Scoring */}
       {goals.length > 0 && (
-        <div className="rounded-xl border border-[#E8E8E8] bg-white">
-          <div className="px-5 py-4 border-b border-[#E8E8E8]">
-            <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('goals_evaluation')}</h2>
+        <div className="rounded-xl border border-border bg-white">
+          <div className="px-5 py-4 border-b border-border">
+            <h2 className="text-lg font-semibold text-foreground">{t('goals_evaluation')}</h2>
           </div>
-          <div className="divide-y divide-[#F5F5F5]">
+          <div className="divide-y divide-border">
             {goals.map((goal) => (
               <div key={goal.id} className="px-5 py-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-[#1A1A1A]">{goal.title}</p>
+                    <p className="text-sm font-medium text-foreground">{goal.title}</p>
                     <p className="text-xs text-[#999]">가중치: {goal.weight}%</p>
                   </div>
                   <div className="flex items-center gap-1">
@@ -279,8 +279,8 @@ export default function SelfEvalClient({
                         }))}
                         className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                           goalScores[goal.id]?.score === score
-                            ? 'bg-[#5E81F4] text-white'
-                            : 'bg-[#F5F5F5] text-[#666] hover:bg-[#E8E8E8]'
+                            ? 'bg-primary text-white'
+                            : 'bg-muted text-[#666] hover:bg-border'
                         } ${isSubmitted ? 'cursor-not-allowed opacity-60' : ''}`}
                       >
                         {score}
@@ -298,7 +298,7 @@ export default function SelfEvalClient({
                     ...prev,
                     [goal.id]: { ...prev[goal.id], comment: e.target.value },
                   }))}
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999] disabled:bg-[#FAFAFA]"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999] disabled:bg-background"
                 />
               </div>
             ))}
@@ -308,16 +308,16 @@ export default function SelfEvalClient({
 
       {/* Competency Scoring */}
       {competencies.length > 0 && (
-        <div className="rounded-xl border border-[#E8E8E8] bg-white">
-          <div className="px-5 py-4 border-b border-[#E8E8E8]">
-            <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('kr_kec97adeb_evaluation')}</h2>
+        <div className="rounded-xl border border-border bg-white">
+          <div className="px-5 py-4 border-b border-border">
+            <h2 className="text-lg font-semibold text-foreground">{t('kr_kec97adeb_evaluation')}</h2>
           </div>
-          <div className="divide-y divide-[#F5F5F5]">
+          <div className="divide-y divide-border">
             {competencies.map((comp) => (
               <div key={comp.id} className="px-5 py-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-[#1A1A1A]">{comp.name}</p>
+                    <p className="text-sm font-medium text-foreground">{comp.name}</p>
                     <p className="text-xs text-[#999]">{comp.category}</p>
                   </div>
                   <div className="flex items-center gap-1">
@@ -331,8 +331,8 @@ export default function SelfEvalClient({
                         }))}
                         className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                           compScores[comp.id]?.score === score
-                            ? 'bg-[#5E81F4] text-white'
-                            : 'bg-[#F5F5F5] text-[#666] hover:bg-[#E8E8E8]'
+                            ? 'bg-primary text-white'
+                            : 'bg-muted text-[#666] hover:bg-border'
                         } ${isSubmitted ? 'cursor-not-allowed opacity-60' : ''}`}
                       >
                         {score}
@@ -348,14 +348,14 @@ export default function SelfEvalClient({
       )}
 
       {/* Overall Comment */}
-      <div className="rounded-xl border border-[#E8E8E8] bg-white p-5 space-y-3">
+      <div className="rounded-xl border border-border bg-white p-5 space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('kr_keca285ed_kec9d98ea')}</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t('kr_keca285ed_kec9d98ea')}</h2>
           {!isSubmitted && (
             <button
               onClick={handleAiSuggest}
               disabled={aiLoading}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#E0E7FF] text-[#4B6DE0] hover:bg-[#C7D2FE] transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-100 text-primary/90 hover:bg-indigo-200 transition-colors disabled:opacity-50"
             >
               <Sparkles className="w-3.5 h-3.5" />
               {aiLoading ? t('aiGenerating') : 'AI 코멘트 제안'}
@@ -368,7 +368,7 @@ export default function SelfEvalClient({
           value={overallComment}
           onChange={(e) => setOverallComment(e.target.value)}
           placeholder="이번 평가 주기에 대한 종합 의견을 작성하세요..."
-          className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999] disabled:bg-[#FAFAFA] resize-none"
+          className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999] disabled:bg-background resize-none"
         />
       </div>
 
@@ -378,7 +378,7 @@ export default function SelfEvalClient({
           <button
             onClick={() => handleSave('DRAFT')}
             disabled={submitting}
-            className="flex items-center gap-2 px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm font-medium text-[#333] hover:bg-[#FAFAFA] disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm font-medium text-[#333] hover:bg-background disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             {t('kr_kec9e84ec_save')}

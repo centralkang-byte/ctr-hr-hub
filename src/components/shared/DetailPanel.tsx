@@ -2,7 +2,7 @@
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — DetailPanel (P01 Master-Detail Slide-over)
-// CRAFTUI: bg-white / border-l #F0F0F3 / text-[#1C1D21]
+// CRAFTUI: bg-white / border-l #F0F0F3 / text-foreground
 // ═══════════════════════════════════════════════════════════
 
 import { useEffect } from 'react'
@@ -49,7 +49,7 @@ export function DetailPanel({
       {/* Panel */}
       <div
         className={`fixed inset-y-0 right-0 z-50 flex flex-col ${width}
-          bg-white border-l border-[#F0F0F3] shadow-lg
+          bg-white border-l border-border shadow-lg
           transition-transform duration-250 ease-in-out
           ${open ? 'translate-x-0' : 'translate-x-full'}`}
         role="dialog"
@@ -57,16 +57,16 @@ export function DetailPanel({
         aria-label={title}
       >
         {/* Header */}
-        <div className="flex items-start justify-between px-5 py-4 border-b border-[#F0F0F3]">
+        <div className="flex items-start justify-between px-5 py-4 border-b border-border">
           <div className="min-w-0">
-            <h2 className="text-[15px] font-semibold text-[#1C1D21] truncate">{title}</h2>
+            <h2 className="text-[15px] font-semibold text-foreground truncate">{title}</h2>
             {subtitle && (
-              <p className="mt-0.5 text-xs text-[#8181A5] truncate">{subtitle}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground truncate">{subtitle}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="ml-3 flex-shrink-0 p-1.5 rounded-lg text-[#8181A5] hover:bg-[#F5F5FA] hover:text-[#1C1D21] transition-colors"
+            className="ml-3 flex-shrink-0 p-1.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             aria-label="닫기"
           >
             <X className="h-4 w-4" />

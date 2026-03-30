@@ -34,14 +34,14 @@ export function ProbationEvalTab({
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{t('probationEval')}</h3>
-          <p className="text-sm text-[#8181A5]">{t('probation_keca491_evaluation_kec8b9cec_kebb08f_keab8b0ec_settings')}</p>
+          <h3 className="text-base font-semibold text-foreground">{t('probationEval')}</h3>
+          <p className="text-sm text-muted-foreground">{t('probation_keca491_evaluation_kec8b9cec_kebb08f_keab8b0ec_settings')}</p>
         </div>
         {isOverridden && (
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
@@ -50,21 +50,21 @@ export function ProbationEvalTab({
 
       <SettingFieldWithOverride label="평가 시점" description="수습 기간 중 평가를 실시할 시점" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">{settings.evalTimings.map((d, i) => (
-          <span key={i} className="rounded-full bg-[#5E81F4]/10 px-3 py-1 text-sm font-medium text-[#5E81F4]">{d}일차</span>
+          <span key={i} className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{d}일차</span>
         ))}</div>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="합격 기준 점수" description="수습 평가 합격 기준 점수 (100점 만점)" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.passingScore} min={0} max={100} onChange={(e) => setSettings((p) => ({ ...p, passingScore: Number(e.target.value) }))} className="w-20" />
-          <span className="text-sm text-[#8181A5]">{t('kr_keca090_kec9db4ec')}</span>
+          <span className="text-sm text-muted-foreground">{t('kr_keca090_kec9db4ec')}</span>
         </div>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="자동 정규직 전환" description="합격 시 자동 정규직 전환 여부" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={settings.autoConfirm} onChange={(e) => setSettings((p) => ({ ...p, autoConfirm: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
-          <span className="text-[#1C1D21]">{t('passed_kec8b9c_kec9e90eb_keca084ed')}</span>
+          <input type="checkbox" checked={settings.autoConfirm} onChange={(e) => setSettings((p) => ({ ...p, autoConfirm: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
+          <span className="text-foreground">{t('passed_kec8b9c_kec9e90eb_keca084ed')}</span>
         </label>
       </SettingFieldWithOverride>
 

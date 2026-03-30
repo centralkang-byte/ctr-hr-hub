@@ -29,13 +29,13 @@ export function SettingFieldWithOverride({
   companySelected = false,
 }: SettingFieldWithOverrideProps) {
   return (
-    <div className="rounded-lg border border-[#F0F0F3] bg-white p-4">
+    <div className="rounded-lg border border-border bg-white p-4">
       {/* Label row */}
       <div className="mb-3 flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-[#1C1D21]">{label}</p>
+          <p className="text-sm font-medium text-foreground">{label}</p>
           {description && (
-            <p className="mt-0.5 text-xs text-[#8181A5]">{description}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
           )}
         </div>
 
@@ -55,13 +55,13 @@ export function SettingFieldWithOverride({
                   법인 커스텀
                 </span>
                 {globalValue && (
-                  <span className="text-xs text-[#8181A5]">(글로벌: {globalValue})</span>
+                  <span className="text-xs text-muted-foreground">(글로벌: {globalValue})</span>
                 )}
                 {onRevert && (
                   <button
                     type="button"
                     onClick={onRevert}
-                    className="inline-flex items-center gap-1 rounded-md border border-[#F0F0F3] px-2 py-1 text-xs text-[#8181A5] transition-colors hover:border-orange-200 hover:text-orange-600"
+                    className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs text-muted-foreground transition-colors hover:border-orange-200 hover:text-orange-600"
                   >
                     <RotateCcw className="h-3 w-3" />
                     기본값으로

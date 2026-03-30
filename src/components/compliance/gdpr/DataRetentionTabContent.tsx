@@ -60,7 +60,7 @@ export default function DataRetentionTabContent() {
     <>
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('gdpr.retention')}</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t('gdpr.retention')}</h2>
         <button
           onClick={() => { setSelected(null); setShowForm(true) }}
           className={`inline-flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm`}
@@ -92,7 +92,7 @@ export default function DataRetentionTabContent() {
                 {policies.map((p) => (
                   <tr key={p.id} className={TABLE_STYLES.row}>
                     <td className="px-4 py-3 text-sm">
-                      <div className="font-medium text-[#1A1A1A]">{p.category}</div>
+                      <div className="font-medium text-foreground">{p.category}</div>
                       {p.description && (
                         <div className="text-xs text-[#999] mt-0.5 max-w-[200px] truncate">{p.description}</div>
                       )}
@@ -102,12 +102,12 @@ export default function DataRetentionTabContent() {
                       <span className="text-xs text-[#999] ml-1">({Math.round(p.retention_months / 12 * 10) / 10} yr)</span>
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${p.auto_delete ? 'bg-[#D1FAE5] text-[#047857]' : 'bg-[#FAFAFA] text-[#666]'}`}>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${p.auto_delete ? 'bg-emerald-100 text-emerald-700' : 'bg-background text-[#666]'}`}>
                         {p.auto_delete ? tc('yes') : tc('no')}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${p.anonymize ? 'bg-[#EDF1FE] text-[#4B6DE0]' : 'bg-[#FAFAFA] text-[#666]'}`}>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${p.anonymize ? 'bg-primary/10 text-primary/90' : 'bg-background text-[#666]'}`}>
                         {p.anonymize ? tc('yes') : tc('no')}
                       </span>
                     </td>
@@ -118,21 +118,21 @@ export default function DataRetentionTabContent() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => { setSelected(p); setShowForm(true) }}
-                          className="text-[#666] hover:text-[#5E81F4]"
+                          className="text-[#666] hover:text-primary"
                           title={tc('edit')}
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleRunPolicy(p.id)}
-                          className="text-[#666] hover:text-[#059669]"
+                          className="text-[#666] hover:text-emerald-600"
                           title={t('gdpr.runRetention')}
                         >
                           <Play className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(p.id)}
-                          className="text-[#666] hover:text-[#DC2626]"
+                          className="text-[#666] hover:text-red-600"
                           title={tc('delete')}
                         >
                           <Trash2 className="w-4 h-4" />

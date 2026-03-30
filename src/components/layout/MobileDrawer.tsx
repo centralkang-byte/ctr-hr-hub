@@ -64,7 +64,7 @@ export function MobileDrawer({ isOpen, onClose, children }: MobileDrawerProps) {
         {/* Close button (absolute positioned) */}
         <button
           onClick={onClose}
-          className="absolute top-3.5 right-3 z-10 p-1.5 rounded-lg text-[#8181A5] hover:bg-[#F5F5FA] transition-colors"
+          className="absolute top-3.5 right-3 z-10 p-1.5 rounded-lg text-muted-foreground hover:bg-muted transition-colors"
           aria-label="Close menu"
         >
           <X size={20} />

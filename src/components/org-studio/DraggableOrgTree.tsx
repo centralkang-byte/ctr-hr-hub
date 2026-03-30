@@ -274,9 +274,9 @@ function formatKRW(amount: number): string {
 
 const LEVEL_INDENT = ['', 'pl-6', 'pl-12']
 const LEVEL_ACCENT = [
-  'border-l-4 border-[#5E81F4]',
-  'border-l-4 border-[#6EE7B7]',
-  'border-l-4 border-[#FCD34D]',
+  'border-l-4 border-primary',
+  'border-l-4 border-emerald-300',
+  'border-l-4 border-amber-300',
 ]
 
 // ─── OrgNodeCard ─────────────────────────────────────────────
@@ -325,10 +325,10 @@ function OrgNodeCard({
           isDragging
             ? 'opacity-40 scale-95'
             : isDragOver
-              ? 'border-[#5E81F4] shadow-md ring-2 ring-[#5E81F4]/30 bg-[#EDF1FE]'
+              ? 'border-primary shadow-md ring-2 ring-primary/30 bg-primary/10'
               : isSelected
-                ? 'border-[#5E81F4] shadow-sm ring-1 ring-[#5E81F4]/20'
-                : 'border-[#F0F0F3] hover:border-[#5E81F4]/30 hover:shadow-sm',
+                ? 'border-primary shadow-sm ring-1 ring-primary/20'
+                : 'border-border hover:border-primary/30 hover:shadow-sm',
         ].join(' ')}
         onClick={() => onSelect(node)}
         role="button"
@@ -338,7 +338,7 @@ function OrgNodeCard({
         <div className="flex items-center gap-2 px-3 py-3">
           {/* Drag handle */}
           <span
-            className="flex-shrink-0 cursor-grab text-[#C7C7D2] active:cursor-grabbing"
+            className="flex-shrink-0 cursor-grab text-muted-foreground/70 active:cursor-grabbing"
             title="드래그하여 이동"
             onClick={(e) => e.stopPropagation()}
           >
@@ -348,7 +348,7 @@ function OrgNodeCard({
           {/* Expand toggle */}
           {hasChildren ? (
             <button
-              className="flex-shrink-0 text-[#8181A5] hover:text-[#1C1D21]"
+              className="flex-shrink-0 text-muted-foreground hover:text-foreground"
               onClick={(e) => {
                 e.stopPropagation()
                 setExpanded((v) => !v)
@@ -361,7 +361,7 @@ function OrgNodeCard({
           )}
 
           {/* Icon */}
-          <span className="flex-shrink-0 text-[#8181A5]">
+          <span className="flex-shrink-0 text-muted-foreground">
             {node.level === 0 ? (
               <Building2 size={15} />
             ) : node.level === 1 ? (
@@ -374,25 +374,25 @@ function OrgNodeCard({
           {/* Info */}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <p className="truncate text-sm font-semibold text-[#1C1D21]">{node.name}</p>
-              <span className="flex-shrink-0 rounded-full bg-[#F5F5FA] px-2 py-0.5 text-[11px] font-medium text-[#8181A5]">
+              <p className="truncate text-sm font-semibold text-foreground">{node.name}</p>
+              <span className="flex-shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                 {node.headcount}명
               </span>
             </div>
-            <p className="mt-0.5 truncate text-xs text-[#8181A5]">{node.manager}</p>
+            <p className="mt-0.5 truncate text-xs text-muted-foreground">{node.manager}</p>
           </div>
 
           {/* Cost */}
           <div className="flex-shrink-0 text-right">
-            <p className="text-xs font-semibold text-[#1C1D21]">{formatKRW(node.estSalaryCost)}</p>
-            <p className="text-[10px] text-[#8181A5]">월 인건비(추정)</p>
+            <p className="text-xs font-semibold text-foreground">{formatKRW(node.estSalaryCost)}</p>
+            <p className="text-[10px] text-muted-foreground">월 인건비(추정)</p>
           </div>
         </div>
       </div>
 
       {/* Children */}
       {hasChildren && expanded && (
-        <div className="ml-4 border-l border-dashed border-[#E8E8F0]">
+        <div className="ml-4 border-l border-dashed border-border">
           {node.children!.map((child) => (
             <OrgNodeCard
               key={child.id}
@@ -522,19 +522,19 @@ export function DraggableOrgTree({
       {/* Toolbar */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-semibold text-[#1C1D21]">조직 트리</h2>
-          <p className="text-xs text-[#8181A5]">
+          <h2 className="text-base font-semibold text-foreground">조직 트리</h2>
+          <p className="text-xs text-muted-foreground">
             총 {stats.depts + 1}개 부서 · {stats.total + tree[0].headcount}명 ·{' '}
             월 {formatKRW(stats.cost + tree[0].estSalaryCost)} 추정
           </p>
         </div>
         <div className="flex items-center gap-2">
           {moves.length > 0 && (
-            <span className="flex items-center gap-1 rounded-full bg-[#5E81F4]/10 px-2.5 py-1 text-xs font-medium text-[#4B6DE0]">
+            <span className="flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary/90">
               {moves.length}개 변경됨
             </span>
           )}
-          <span className="flex items-center gap-1 rounded-full bg-[#5E81F4]/10 px-2.5 py-1 text-xs font-medium text-[#5E81F4]">
+          <span className="flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
             <GripVertical size={11} />
             드래그 이동 활성
           </span>
@@ -542,23 +542,23 @@ export function DraggableOrgTree({
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 rounded-lg border border-[#F0F0F3] bg-white px-4 py-2.5">
-        <span className="text-xs font-medium text-[#8181A5]">범례</span>
+      <div className="flex items-center gap-4 rounded-lg border border-border bg-white px-4 py-2.5">
+        <span className="text-xs font-medium text-muted-foreground">범례</span>
         <div className="flex items-center gap-1.5">
-          <div className="h-3 w-1 rounded-full bg-[#5E81F4]" />
-          <span className="text-xs text-[#8181A5]">본부급</span>
+          <div className="h-3 w-1 rounded-full bg-primary" />
+          <span className="text-xs text-muted-foreground">본부급</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="h-3 w-1 rounded-full bg-[#6EE7B7]" />
-          <span className="text-xs text-[#8181A5]">부문급</span>
+          <div className="h-3 w-1 rounded-full bg-emerald-300" />
+          <span className="text-xs text-muted-foreground">부문급</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="h-3 w-1 rounded-full bg-[#FCD34D]" />
-          <span className="text-xs text-[#8181A5]">팀급</span>
+          <div className="h-3 w-1 rounded-full bg-amber-300" />
+          <span className="text-xs text-muted-foreground">팀급</span>
         </div>
         <div className="ml-auto flex items-center gap-1.5">
-          <div className="h-3 w-3 rounded border-2 border-[#5E81F4]" />
-          <span className="text-xs text-[#8181A5]">드롭 대상</span>
+          <div className="h-3 w-3 rounded border-2 border-primary" />
+          <span className="text-xs text-muted-foreground">드롭 대상</span>
         </div>
       </div>
 

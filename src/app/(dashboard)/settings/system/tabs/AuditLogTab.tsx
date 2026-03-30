@@ -80,7 +80,7 @@ export function AuditLogTab({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     )
   }
@@ -89,8 +89,8 @@ export function AuditLogTab({
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{'설정 변경 이력'}</h3>
-          <p className="text-sm text-[#8181A5]">
+          <h3 className="text-base font-semibold text-foreground">{'설정 변경 이력'}</h3>
+          <p className="text-sm text-muted-foreground">
             최근 설정 변경 기록 · 총 {total}건
           </p>
         </div>
@@ -122,26 +122,26 @@ export function AuditLogTab({
               <tbody>
                 {logs.map((log) => {
                   const changes = log.changes as AuditLogChanges | null
-                  const actionInfo = ACTION_LABELS[log.action] ?? { label: log.action, color: 'text-[#8181A5] bg-[#F5F5FA]' }
+                  const actionInfo = ACTION_LABELS[log.action] ?? { label: log.action, color: 'text-muted-foreground bg-muted' }
                   const categoryLabel = CATEGORY_LABELS[changes?.category ?? ''] ?? changes?.category ?? '—'
 
                   return (
                     <tr key={log.id} className={TABLE_STYLES.row}>
-                      <td className={`${TABLE_STYLES.cell} text-[#8181A5] whitespace-nowrap`}>
+                      <td className={`${TABLE_STYLES.cell} text-muted-foreground whitespace-nowrap`}>
                         {new Date(log.createdAt).toLocaleString('ko-KR', {
                           year: 'numeric', month: '2-digit', day: '2-digit',
                           hour: '2-digit', minute: '2-digit',
                         })}
                       </td>
                       <td className={TABLE_STYLES.cell}>
-                        <span className="inline-flex items-center rounded-md bg-[#F5F5FA] px-2 py-1 text-xs font-medium text-[#1C1D21]">
+                        <span className="inline-flex items-center rounded-md bg-muted px-2 py-1 text-xs font-medium text-foreground">
                           {categoryLabel}
                         </span>
                       </td>
                       <td className={TABLE_STYLES.cell}>
                         {changes?.key ?? '—'}
                       </td>
-                      <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>
+                      <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>
                         {log.company?.name ??
                           (changes?.companyId === 'global' || !changes?.companyId ? '글로벌' : changes.companyId)}
                       </td>
@@ -150,7 +150,7 @@ export function AuditLogTab({
                           {actionInfo.label}
                         </span>
                       </td>
-                      <td className={`${TABLE_STYLES.cell} text-[#8181A5] max-w-[280px] truncate`} title={changes?.description ?? ''}>
+                      <td className={`${TABLE_STYLES.cell} text-muted-foreground max-w-[280px] truncate`} title={changes?.description ?? ''}>
                         {changes?.description ?? '—'}
                       </td>
                     </tr>
@@ -163,7 +163,7 @@ export function AuditLogTab({
           {/* Pagination */}
           {total > limit && (
             <div className="flex items-center justify-between pt-2">
-              <p className="text-xs text-[#8181A5]">
+              <p className="text-xs text-muted-foreground">
                 {offset + 1}~{Math.min(offset + limit, total)} / {total}건
               </p>
               <div className="flex gap-2">
@@ -190,12 +190,12 @@ export function AuditLogTab({
           )}
         </>
       ) : (
-        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <FileSearch className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" />
-          <p className="text-sm font-medium text-[#1C1D21]">
+        <div className="rounded-xl border border-dashed border-border py-12 text-center">
+          <FileSearch className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
+          <p className="text-sm font-medium text-foreground">
             {'📋 설정 변경 기록이 없습니다'}
           </p>
-          <p className="mt-1 text-xs text-[#8181A5]">
+          <p className="mt-1 text-xs text-muted-foreground">
             {'설정을 변경하면 자동으로 기록됩니다.'}
           </p>
         </div>

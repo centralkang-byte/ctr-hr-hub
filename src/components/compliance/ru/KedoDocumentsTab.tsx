@@ -116,7 +116,7 @@ export default function KedoDocumentsTab() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
             >
               <option value="">전체 상태</option>
               {Object.entries(STATUS_LABELS).map(([val, label]) => (
@@ -127,7 +127,7 @@ export default function KedoDocumentsTab() {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
             >
               <option value="">전체 유형</option>
               {Object.entries(DOC_TYPE_LABELS).map(([val, label]) => (
@@ -137,7 +137,7 @@ export default function KedoDocumentsTab() {
             {/* Refresh */}
             <button
               onClick={() => fetchDocuments()}
-              className="p-2 border border-[#D4D4D4] rounded-lg hover:bg-[#FAFAFA] text-[#555]"
+              className="p-2 border border-border rounded-lg hover:bg-background text-[#555]"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
@@ -193,13 +193,13 @@ export default function KedoDocumentsTab() {
               {documents.map((doc) => (
                 <tr key={doc.id} className={TABLE_STYLES.row}>
                   <td className="px-4 py-3">
-                    <p className="text-sm font-medium text-[#1A1A1A] max-w-xs truncate">
+                    <p className="text-sm font-medium text-foreground max-w-xs truncate">
                       {doc.title}
                     </p>
                   </td>
                   <td className="px-4 py-3">
                     <div>
-                      <p className="text-sm text-[#1A1A1A]">{doc.employee.name}</p>
+                      <p className="text-sm text-foreground">{doc.employee.name}</p>
                       <p className="text-xs text-[#666]">{doc.employee.employeeNo}</p>
                     </div>
                   </td>
@@ -209,7 +209,7 @@ export default function KedoDocumentsTab() {
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-                        STATUS_COLORS[doc.status] ?? 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]'
+                        STATUS_COLORS[doc.status] ?? 'bg-background text-[#555] border-border'
                       }`}
                     >
                       {STATUS_LABELS[doc.status] ?? doc.status}
@@ -226,7 +226,7 @@ export default function KedoDocumentsTab() {
                       {doc.status === 'DRAFT' && (
                         <button
                           onClick={() => { setSelectedDoc(doc); setShowForm(true) }}
-                          className="p-1.5 hover:bg-[#F5F5F5] rounded text-[#666] hover:text-[#333]"
+                          className="p-1.5 hover:bg-muted rounded text-[#666] hover:text-[#333]"
                           title="수정"
                         >
                           <PenLine className="w-4 h-4" />
@@ -235,7 +235,7 @@ export default function KedoDocumentsTab() {
                       {(doc.status === 'DRAFT' || doc.status === 'PENDING_SIGNATURE') && (
                         <button
                           onClick={() => setSignDoc(doc)}
-                          className="text-sm text-[#5E81F4] hover:text-[#4B6DE0] font-medium"
+                          className="text-sm text-primary hover:text-primary/90 font-medium"
                         >
                           서명
                         </button>
@@ -243,7 +243,7 @@ export default function KedoDocumentsTab() {
                       {doc.status !== 'SIGNED' && doc.status !== 'REJECTED' && (
                         <button
                           onClick={() => setSignDoc(doc)}
-                          className="p-1.5 hover:bg-[#FEE2E2] rounded text-[#F87171] hover:text-[#DC2626]"
+                          className="p-1.5 hover:bg-red-100 rounded text-red-400 hover:text-red-600"
                           title="반려"
                         >
                           <XCircle className="w-4 h-4" />
@@ -259,7 +259,7 @@ export default function KedoDocumentsTab() {
 
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (
-          <div className="px-4 py-3 border-t border-[#E8E8E8] flex items-center justify-between">
+          <div className="px-4 py-3 border-t border-border flex items-center justify-between">
             <p className="text-xs text-[#666]">전체 {pagination.total}건</p>
             <div className="flex gap-1">
               {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
@@ -268,8 +268,8 @@ export default function KedoDocumentsTab() {
                   onClick={() => fetchDocuments(page)}
                   className={`w-8 h-8 text-xs rounded-lg ${
                     page === pagination.page
-                      ? 'bg-[#5E81F4] text-white'
-                      : 'text-[#555] hover:bg-[#F5F5F5]'
+                      ? 'bg-primary text-white'
+                      : 'text-[#555] hover:bg-muted'
                   }`}
                 >
                   {page}

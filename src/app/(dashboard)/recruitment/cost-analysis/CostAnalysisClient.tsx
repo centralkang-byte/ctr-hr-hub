@@ -91,14 +91,14 @@ const COST_TYPE_LABELS: Record<string, string> = {
 }
 
 const COST_TYPE_BADGE_STYLES: Record<string, string> = {
-  AD_FEE: 'bg-[#E3F2FD] text-[#1565C0]',
-  AGENCY_FEE: 'bg-[#F3E5F5] text-[#7B1FA2]',
-  REFERRAL_BONUS: 'bg-[#EDF1FE] text-[#2E7D32]',
-  ASSESSMENT_TOOL: 'bg-[#FFF3E0] text-[#E65100]',
-  TRAVEL: 'bg-[#E0F7FA] text-[#00838F]',
-  RELOCATION: 'bg-[#FFF3E0] text-[#E65100]',
-  SIGNING_BONUS: 'bg-[#E8EAF6] text-[#283593]',
-  OTHER: 'bg-[#F5F5F5] text-[#666]',
+  AD_FEE: 'bg-blue-50 text-blue-800',
+  AGENCY_FEE: 'bg-purple-50 text-purple-800',
+  REFERRAL_BONUS: 'bg-primary/10 text-green-700',
+  ASSESSMENT_TOOL: 'bg-orange-50 text-orange-800',
+  TRAVEL: 'bg-cyan-50 text-cyan-700',
+  RELOCATION: 'bg-orange-50 text-orange-800',
+  SIGNING_BONUS: 'bg-indigo-50 text-indigo-800',
+  OTHER: 'bg-muted text-[#666]',
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -198,7 +198,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 animate-spin text-[#5E81F4]" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     )
   }
@@ -208,14 +208,14 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-[-0.02em]">{'채용단가 ROI 분석'}</h1>
+          <h1 className="text-2xl font-bold text-foreground tracking-[-0.02em]">{'채용단가 ROI 분석'}</h1>
           <p className="text-sm text-[#999] mt-1">{'채용 비용 추적 및 투자 대비 효율 분석'}</p>
         </div>
         <div className="flex items-center gap-3">
           <select
             value={String(year)}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+            className="px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
           >
             {[2024, 2025, 2026].map((y) => (
               <option key={y} value={String(y)}>{y}년</option>
@@ -232,15 +232,15 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-[#E8E8E8]">
+      <div className="flex border-b border-border">
         {(['analysis', 'costs'] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors duration-150 ${
               tab === t
-                ? 'border-[#5E81F4] text-[#5E81F4]'
-                : 'border-transparent text-[#999] hover:text-[#1A1A1A]'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-[#999] hover:text-foreground'
             }`}
           >
             {t === 'analysis' ? 'ROI 분석' : '비용 내역'}
@@ -253,38 +253,38 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
         <div className="space-y-6">
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-white border border-[#E8E8E8] rounded-xl p-5">
+            <div className="bg-white border border-border rounded-xl p-5">
               <p className="text-xs text-[#999] mb-1">{'총 채용 비용'}</p>
-              <p className="text-3xl font-bold text-[#1A1A1A]">{formatCurrency(analysis.totalCost)}</p>
+              <p className="text-3xl font-bold text-foreground">{formatCurrency(analysis.totalCost)}</p>
             </div>
-            <div className="bg-white border border-[#E8E8E8] rounded-xl p-5">
+            <div className="bg-white border border-border rounded-xl p-5">
               <div className="flex items-center gap-2 mb-1">
                 <Users className="w-4 h-4 text-[#999]" />
                 <p className="text-xs text-[#999]">{'총 채용 인원'}</p>
               </div>
-              <p className="text-3xl font-bold text-[#1A1A1A]">{analysis.totalHires}명</p>
+              <p className="text-3xl font-bold text-foreground">{analysis.totalHires}명</p>
             </div>
-            <div className="bg-white border border-[#E8E8E8] rounded-xl p-5">
+            <div className="bg-white border border-border rounded-xl p-5">
               <div className="flex items-center gap-2 mb-1">
                 <DollarSign className="w-4 h-4 text-[#999]" />
                 <p className="text-xs text-[#999]">{'인당 채용 단가'}</p>
               </div>
-              <p className="text-3xl font-bold text-[#5E81F4]">{formatCurrency(analysis.costPerHire)}</p>
+              <p className="text-3xl font-bold text-primary">{formatCurrency(analysis.costPerHire)}</p>
             </div>
-            <div className="bg-white border border-[#E8E8E8] rounded-xl p-5">
+            <div className="bg-white border border-border rounded-xl p-5">
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp className="w-4 h-4 text-[#999]" />
                 <p className="text-xs text-[#999]">{'비용 유형 수'}</p>
               </div>
-              <p className="text-3xl font-bold text-[#1A1A1A]">{analysis.byCostType.length}</p>
+              <p className="text-3xl font-bold text-foreground">{analysis.byCostType.length}</p>
             </div>
           </div>
 
           {/* Source Analysis */}
-          <div className="bg-white border border-[#E8E8E8] rounded-xl">
+          <div className="bg-white border border-border rounded-xl">
             <div className="p-6 pb-0">
-              <h2 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em] flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-[#5E81F4]" />
+              <h2 className="text-base font-bold text-foreground tracking-[-0.02em] flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-primary" />
                 {'채용 소스별 효율'}
               </h2>
             </div>
@@ -303,24 +303,24 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                         <th className={TABLE_STYLES.headerCellRight}>{'비중'}</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#F0F0F3]">
+                    <tbody className="divide-y divide-border">
                       {analysis.bySource.map((s) => {
                         const pct = analysis.totalCost > 0
                           ? ((s.totalCost / analysis.totalCost) * 100).toFixed(1)
                           : '0'
                         return (
-                          <tr key={s.source} className="hover:bg-[#FAFAFA] transition-colors">
-                            <td className="px-4 py-3 font-medium text-[#1A1A1A]">{SOURCE_LABELS[s.source] ?? s.source}</td>
-                            <td className="px-4 py-3 text-right text-[#1A1A1A]">{formatCurrency(s.totalCost)}</td>
-                            <td className="px-4 py-3 text-right text-[#1A1A1A]">{s.hires}명</td>
-                            <td className="px-4 py-3 text-right font-semibold text-[#5E81F4]">
+                          <tr key={s.source} className="hover:bg-background transition-colors">
+                            <td className="px-4 py-3 font-medium text-foreground">{SOURCE_LABELS[s.source] ?? s.source}</td>
+                            <td className="px-4 py-3 text-right text-foreground">{formatCurrency(s.totalCost)}</td>
+                            <td className="px-4 py-3 text-right text-foreground">{s.hires}명</td>
+                            <td className="px-4 py-3 text-right font-semibold text-primary">
                               {formatCurrency(s.costPerHire)}
                             </td>
                             <td className="px-4 py-3 text-right">
                               <div className="flex items-center justify-end gap-2">
-                                <div className="w-16 h-2 bg-[#F5F5F5] rounded-full overflow-hidden">
+                                <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                                   <div
-                                    className="h-full bg-[#5E81F4] rounded-full"
+                                    className="h-full bg-primary rounded-full"
                                     style={{ width: `${pct}%` }}
                                   />
                                 </div>
@@ -338,9 +338,9 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
           </div>
 
           {/* Cost Type Breakdown */}
-          <div className="bg-white border border-[#E8E8E8] rounded-xl">
+          <div className="bg-white border border-border rounded-xl">
             <div className="p-6 pb-0">
-              <h2 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em]">{'비용 유형별 분석'}</h2>
+              <h2 className="text-base font-bold text-foreground tracking-[-0.02em]">{'비용 유형별 분석'}</h2>
             </div>
             <div className="p-6">
               {analysis.byCostType.length === 0 ? (
@@ -348,11 +348,11 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {analysis.byCostType.map((ct) => (
-                    <div key={ct.costType} className="border border-[#E8E8E8] rounded-lg p-4">
+                    <div key={ct.costType} className="border border-border rounded-lg p-4">
                       <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${COST_TYPE_BADGE_STYLES[ct.costType] ?? COST_TYPE_BADGE_STYLES.OTHER}`}>
                         {COST_TYPE_LABELS[ct.costType] ?? ct.costType}
                       </span>
-                      <p className="text-xl font-bold text-[#1A1A1A] mt-2">
+                      <p className="text-xl font-bold text-foreground mt-2">
                         {formatCurrency(ct.totalAmount)}
                       </p>
                       <p className="text-xs text-[#999]">{ct.count}건</p>
@@ -365,9 +365,9 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
 
           {/* Top Postings */}
           {analysis.byPosting.length > 0 && (
-            <div className="bg-white border border-[#E8E8E8] rounded-xl">
+            <div className="bg-white border border-border rounded-xl">
               <div className="p-6 pb-0">
-                <h2 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em]">{'공고별 채용 비용 (Top 20)'}</h2>
+                <h2 className="text-base font-bold text-foreground tracking-[-0.02em]">{'공고별 채용 비용 (Top 20)'}</h2>
               </div>
               <div className="p-6">
                 <div className={TABLE_STYLES.wrapper}>
@@ -381,14 +381,14 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                         <th className={TABLE_STYLES.headerCellRight}>{'인당 단가'}</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#F0F0F3]">
+                    <tbody className="divide-y divide-border">
                       {analysis.byPosting.map((p) => (
-                        <tr key={p.postingId} className="hover:bg-[#FAFAFA] transition-colors">
-                          <td className="px-4 py-3 font-medium text-[#1A1A1A] max-w-[200px] truncate">{p.title}</td>
-                          <td className="px-4 py-3 text-right text-[#1A1A1A]">{formatCurrency(p.totalCost)}</td>
-                          <td className="px-4 py-3 text-right text-[#1A1A1A]">{p.headcount}명</td>
-                          <td className="px-4 py-3 text-right text-[#1A1A1A]">{p.hires}명</td>
-                          <td className="px-4 py-3 text-right font-semibold text-[#5E81F4]">
+                        <tr key={p.postingId} className="hover:bg-background transition-colors">
+                          <td className="px-4 py-3 font-medium text-foreground max-w-[200px] truncate">{p.title}</td>
+                          <td className="px-4 py-3 text-right text-foreground">{formatCurrency(p.totalCost)}</td>
+                          <td className="px-4 py-3 text-right text-foreground">{p.headcount}명</td>
+                          <td className="px-4 py-3 text-right text-foreground">{p.hires}명</td>
+                          <td className="px-4 py-3 text-right font-semibold text-primary">
                             {formatCurrency(p.costPerHire)}
                           </td>
                         </tr>
@@ -411,7 +411,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
             <select
               value={costFilter}
               onChange={(e) => setCostFilter(e.target.value)}
-              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+              className="px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
             >
               <option value="ALL">{'전체'}</option>
               {Object.entries(COST_TYPE_LABELS).map(([k, v]) => (
@@ -421,7 +421,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
           </div>
 
           {/* Cost List */}
-          <div className="bg-white border border-[#E8E8E8] rounded-xl overflow-hidden">
+          <div className="bg-white border border-border rounded-xl overflow-hidden">
             {costs.length === 0 ? (
               <EmptyState />
             ) : (
@@ -438,9 +438,9 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                       <th className={TABLE_STYLES.headerCell}>{'액션'}</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#F0F0F3]">
+                  <tbody className="divide-y divide-border">
                     {costs.map((c) => (
-                      <tr key={c.id} className="hover:bg-[#FAFAFA] transition-colors">
+                      <tr key={c.id} className="hover:bg-background transition-colors">
                         <td className="px-4 py-3">
                           <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${COST_TYPE_BADGE_STYLES[c.costType] ?? COST_TYPE_BADGE_STYLES.OTHER}`}>
                             {COST_TYPE_LABELS[c.costType] ?? c.costType}
@@ -452,7 +452,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                         <td className="px-4 py-3 text-[#666] max-w-[150px] truncate">
                           {c.posting?.title ?? '-'}
                         </td>
-                        <td className="px-4 py-3 text-right font-semibold text-[#1A1A1A]">
+                        <td className="px-4 py-3 text-right font-semibold text-foreground">
                           {formatCurrency(c.amount)}
                         </td>
                         <td className="px-4 py-3 text-[#999]">{c.vendorName ?? '-'}</td>
@@ -463,13 +463,13 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                           <div className="flex items-center justify-center gap-1">
                             <button
                               onClick={() => setDetailCost(c)}
-                              className="p-1.5 rounded-lg hover:bg-[#FAFAFA] text-[#666] transition-colors duration-150"
+                              className="p-1.5 rounded-lg hover:bg-background text-[#666] transition-colors duration-150"
                             >
                               <Eye className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDelete(c.id)}
-                              className="p-1.5 rounded-lg hover:bg-[#FFEBEE] text-[#F44336] transition-colors duration-150"
+                              className="p-1.5 rounded-lg hover:bg-red-50 text-red-500 transition-colors duration-150"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -490,18 +490,18 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
         <div className={MODAL_STYLES.container}>
           <div className="bg-white rounded-xl w-full max-w-lg mx-4">
             <div className="flex items-center justify-between p-6 pb-0">
-              <h2 className="text-lg font-bold text-[#1A1A1A] tracking-[-0.02em]">{'채용 비용 등록'}</h2>
-              <button onClick={() => setShowCreate(false)} className="p-1 rounded-lg hover:bg-[#FAFAFA] text-[#999] transition-colors duration-150">
+              <h2 className="text-lg font-bold text-foreground tracking-[-0.02em]">{'채용 비용 등록'}</h2>
+              <button onClick={() => setShowCreate(false)} className="p-1 rounded-lg hover:bg-background text-[#999] transition-colors duration-150">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{'채용 소스'}</label>
+                <label className="block text-sm font-medium text-foreground mb-1">{'채용 소스'}</label>
                 <select
                   value={form.applicantSource}
                   onChange={(e) => setForm({ ...form, applicantSource: e.target.value })}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
                 >
                   {Object.entries(SOURCE_LABELS).map(([k, v]) => (
                     <option key={k} value={k}>{v}</option>
@@ -509,11 +509,11 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{'비용 유형'}</label>
+                <label className="block text-sm font-medium text-foreground mb-1">{'비용 유형'}</label>
                 <select
                   value={form.costType}
                   onChange={(e) => setForm({ ...form, costType: e.target.value })}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
                 >
                   {Object.entries(COST_TYPE_LABELS).map(([k, v]) => (
                     <option key={k} value={k}>{v}</option>
@@ -522,21 +522,21 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{'금액'}</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">{'금액'}</label>
                   <input
                     type="number"
                     placeholder="0"
                     value={form.amount}
                     onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                    className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                    className="w-full px-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{'통화'}</label>
+                  <label className="block text-sm font-medium text-foreground mb-1">{'통화'}</label>
                   <select
                     value={form.currency}
                     onChange={(e) => setForm({ ...form, currency: e.target.value })}
-                    className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg bg-white focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                    className="w-full px-4 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
                   >
                     {['KRW', 'USD', 'CNY', 'RUB', 'VND', 'MXN', 'PLN'].map((c) => (
                       <option key={c} value={c}>{c}</option>
@@ -545,37 +545,37 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{'거부'}</label>
+                <label className="block text-sm font-medium text-foreground mb-1">{'거부'}</label>
                 <input
                   placeholder="거래처명"
                   value={form.vendorName}
                   onChange={(e) => setForm({ ...form, vendorName: e.target.value })}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{'청구일'}</label>
+                <label className="block text-sm font-medium text-foreground mb-1">{'청구일'}</label>
                 <input
                   type="date"
                   value={form.invoiceDate}
                   onChange={(e) => setForm({ ...form, invoiceDate: e.target.value })}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#1A1A1A] mb-1">{'설명'}</label>
+                <label className="block text-sm font-medium text-foreground mb-1">{'설명'}</label>
                 <input
                   placeholder={'비용 설명 (선택)'}
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="w-full px-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors duration-150"
+                  className="w-full px-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
                 />
               </div>
             </div>
             <div className="flex items-center justify-end gap-3 p-6 pt-0">
               <button
                 onClick={() => setShowCreate(false)}
-                className="px-4 py-2 text-sm font-medium text-[#666] border border-[#E8E8E8] rounded-lg hover:bg-[#FAFAFA] transition-colors duration-150"
+                className="px-4 py-2 text-sm font-medium text-[#666] border border-border rounded-lg hover:bg-background transition-colors duration-150"
               >
                 {'취소'}
               </button>
@@ -597,8 +597,8 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
         <div className={MODAL_STYLES.container}>
           <div className="bg-white rounded-xl w-full max-w-md mx-4">
             <div className="flex items-center justify-between p-6 pb-0">
-              <h2 className="text-lg font-bold text-[#1A1A1A] tracking-[-0.02em]">{'비용 상세'}</h2>
-              <button onClick={() => setDetailCost(null)} className="p-1 rounded-lg hover:bg-[#FAFAFA] text-[#999] transition-colors duration-150">
+              <h2 className="text-lg font-bold text-foreground tracking-[-0.02em]">{'비용 상세'}</h2>
+              <button onClick={() => setDetailCost(null)} className="p-1 rounded-lg hover:bg-background text-[#999] transition-colors duration-150">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -611,36 +611,36 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#999]">{'채용 소스'}</span>
-                <span className="text-sm font-medium text-[#1A1A1A]">
+                <span className="text-sm font-medium text-foreground">
                   {SOURCE_LABELS[detailCost.applicantSource] ?? detailCost.applicantSource}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#999]">{'금액'}</span>
-                <span className="text-sm font-bold text-[#5E81F4]">{formatCurrency(detailCost.amount)}</span>
+                <span className="text-sm font-bold text-primary">{formatCurrency(detailCost.amount)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#999]">{'통화'}</span>
-                <span className="text-sm text-[#1A1A1A]">{detailCost.currency}</span>
+                <span className="text-sm text-foreground">{detailCost.currency}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#999]">공고</span>
-                <span className="text-sm text-[#1A1A1A]">{detailCost.posting?.title ?? '-'}</span>
+                <span className="text-sm text-foreground">{detailCost.posting?.title ?? '-'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#999]">{'거부'}</span>
-                <span className="text-sm text-[#1A1A1A]">{detailCost.vendorName ?? '-'}</span>
+                <span className="text-sm text-foreground">{detailCost.vendorName ?? '-'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#999]">{'청구일'}</span>
-                <span className="text-sm text-[#1A1A1A]">
+                <span className="text-sm text-foreground">
                   {detailCost.invoiceDate ? new Date(detailCost.invoiceDate).toLocaleDateString('ko-KR') : '-'}
                 </span>
               </div>
               {detailCost.description && (
                 <div>
                   <span className="text-sm text-[#999] block mb-1">{'설명'}</span>
-                  <p className="text-sm bg-[#FAFAFA] rounded-lg p-3 text-[#1A1A1A]">{detailCost.description}</p>
+                  <p className="text-sm bg-background rounded-lg p-3 text-foreground">{detailCost.description}</p>
                 </div>
               )}
             </div>

@@ -63,20 +63,20 @@ function fmtHours(minutes: number | null): string {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  NORMAL: { label: '정상', color: 'bg-[#D1FAE5] text-[#047857]' },
-  LATE: { label: '지각', color: 'bg-[#FEF3C7] text-[#B45309]' },
-  EARLY_OUT: { label: '조퇴', color: 'bg-[#FFF7ED] text-[#C2410C]' },
-  ABSENT: { label: '결근', color: 'bg-[#FEE2E2] text-[#B91C1C]' },
-  HOLIDAY: { label: '휴가', color: 'bg-[#E0E7FF] text-[#4B6DE0]' },
+  NORMAL: { label: '정상', color: 'bg-emerald-100 text-emerald-700' },
+  LATE: { label: '지각', color: 'bg-amber-100 text-amber-700' },
+  EARLY_OUT: { label: '조퇴', color: 'bg-orange-50 text-orange-700' },
+  ABSENT: { label: '결근', color: 'bg-red-100 text-red-700' },
+  HOLIDAY: { label: '휴가', color: 'bg-indigo-100 text-primary/90' },
 }
 
 // ─── Mini KPI ────────────────────────────────────────────
 
 function MiniKpi({ label, value, sub, warn }: { label: string; value: string; sub?: string; warn?: boolean }) {
   return (
-    <div className={`rounded-lg border p-4 ${warn ? 'border-[#FECACA] bg-[#FEF2F2]' : 'border-[#E8E8E8] bg-white'}`}>
+    <div className={`rounded-lg border p-4 ${warn ? 'border-red-200 bg-red-50' : 'border-border bg-white'}`}>
       <p className="text-xs text-[#888] mb-1">{label}</p>
-      <p className={`text-2xl font-bold ${warn ? 'text-[#B91C1C]' : 'text-[#1A1A1A]'}`}>{value}</p>
+      <p className={`text-2xl font-bold ${warn ? 'text-red-700' : 'text-foreground'}`}>{value}</p>
       {sub && <p className="text-xs text-[#999] mt-0.5">{sub}</p>}
     </div>
   )
@@ -142,9 +142,9 @@ export function AttendanceTab({ employeeId }: Props) {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
+      <div className="rounded-xl border border-border bg-white p-6">
         <div className="flex items-center justify-center py-12">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#5E81F4] border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
       </div>
     )
@@ -152,9 +152,9 @@ export function AttendanceTab({ employeeId }: Props) {
 
   if (!data) {
     return (
-      <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
+      <div className="rounded-xl border border-border bg-white p-6">
         <div className="flex flex-col items-center py-12 text-[#999]">
-          <Clock className="h-10 w-10 mb-3 text-[#E8E8E8]" />
+          <Clock className="h-10 w-10 mb-3 text-border" />
           <p className="text-sm text-[#666]">근태 데이터를 불러올 수 없습니다.</p>
         </div>
       </div>
@@ -191,16 +191,16 @@ export function AttendanceTab({ employeeId }: Props) {
       {data.weeklyHours >= 44 && (
         <div className={`flex items-center justify-between gap-3 rounded-xl border px-4 py-3 ${
           data.weeklyHours >= 52
-            ? 'border-[#FF808B]/30 bg-[#FF808B]/10'
-            : 'border-[#F4BE5E]/40 bg-[#F4BE5E]/10'
+            ? 'border-red-400/30 bg-red-400/10'
+            : 'border-amber-400/40 bg-amber-400/10'
         }`}>
           <div className="flex items-center gap-2.5">
             <AlertTriangle className={`h-4 w-4 shrink-0 ${
-              data.weeklyHours >= 52 ? 'text-[#E11D48]' : 'text-[#B45309]'
+              data.weeklyHours >= 52 ? 'text-rose-600' : 'text-amber-700'
             }`} />
             <div>
               <p className={`text-sm font-semibold ${
-                data.weeklyHours >= 52 ? 'text-[#E11D48]' : 'text-[#B45309]'
+                data.weeklyHours >= 52 ? 'text-rose-600' : 'text-amber-700'
               }`}>
                 {data.weeklyHours >= 52
                   ? `주 52시간 초과 — 현재 ${data.weeklyHours}h (차단 대상)`
@@ -208,7 +208,7 @@ export function AttendanceTab({ employeeId }: Props) {
                     ? `주 48시간 초과 — 현재 ${data.weeklyHours}h (경고)`
                     : `주 44시간 초과 — 현재 ${data.weeklyHours}h (주의)`}
               </p>
-              <p className="text-xs text-[#8181A5] mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 일정 조정으로 초과근무 위험을 해소하세요.
               </p>
             </div>
@@ -217,8 +217,8 @@ export function AttendanceTab({ employeeId }: Props) {
             onClick={() => setAdjustModalOpen(true)}
             className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
               data.weeklyHours >= 52
-                ? 'bg-[#E11D48] text-white hover:bg-[#BE1239]'
-                : 'bg-[#B45309] text-white hover:bg-[#92400E]'
+                ? 'bg-rose-600 text-white hover:bg-rose-700'
+                : 'bg-amber-700 text-white hover:bg-amber-800'
             }`}
           >
             <CalendarClock className="h-3.5 w-3.5" />
@@ -236,29 +236,29 @@ export function AttendanceTab({ employeeId }: Props) {
       />
 
       {/* 최근 근태 기록 테이블 */}
-      <div className="rounded-xl border border-[#E8E8E8] bg-white overflow-hidden">
-        <div className="px-5 py-3 border-b border-[#E8E8E8]">
-          <h3 className="text-sm font-semibold text-[#1A1A1A]">최근 근태 기록</h3>
+      <div className="rounded-xl border border-border bg-white overflow-hidden">
+        <div className="px-5 py-3 border-b border-border">
+          <h3 className="text-sm font-semibold text-foreground">최근 근태 기록</h3>
         </div>
         {data.recentRecords.length === 0 ? (
           <div className="flex flex-col items-center py-10 text-[#999]">
-            <MinusCircle className="h-8 w-8 mb-2 text-[#E8E8E8]" />
+            <MinusCircle className="h-8 w-8 mb-2 text-border" />
             <p className="text-sm">근태 기록이 없습니다.</p>
           </div>
         ) : (
-          <div className="divide-y divide-[#F5F5F5]">
+          <div className="divide-y divide-border">
             {data.recentRecords.map((rec) => {
-              const statusCfg = STATUS_CONFIG[rec.status] ?? { label: rec.status, color: 'bg-[#FAFAFA] text-[#555]' }
+              const statusCfg = STATUS_CONFIG[rec.status] ?? { label: rec.status, color: 'bg-background text-[#555]' }
               return (
                 <div key={rec.id} className="flex items-center justify-between px-5 py-3">
                   <div className="flex items-center gap-3">
                     {rec.status === 'NORMAL' ? (
-                      <CheckCircle2 className="h-4 w-4 text-[#059669] shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
                     ) : (
-                      <AlertTriangle className="h-4 w-4 text-[#F59E0B] shrink-0" />
+                      <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" />
                     )}
                     <div>
-                      <p className="text-sm font-medium text-[#1A1A1A]">{fmtDate(rec.workDate)}</p>
+                      <p className="text-sm font-medium text-foreground">{fmtDate(rec.workDate)}</p>
                       <p className="text-xs text-[#888]">
                         {fmtTime(rec.clockIn)} — {fmtTime(rec.clockOut)}
                       </p>

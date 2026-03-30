@@ -25,19 +25,19 @@ export function CustomFieldsTab({
       .finally(() => setLoading(false))
   }, [companyId])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   const grouped = fields.reduce<Record<string, CustomField[]>>((acc, f) => { (acc[f.entityType] ??= []).push(f); return acc }, {})
 
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
-        <div><h3 className="text-base font-semibold text-[#1C1D21]">{t('customFields')}</h3><p className="text-sm text-[#8181A5]">사용자 정의 필드 {fields.length}개</p></div>
+        <div><h3 className="text-base font-semibold text-foreground">{t('customFields')}</h3><p className="text-sm text-muted-foreground">사용자 정의 필드 {fields.length}개</p></div>
         <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />{t('kr_ked9584eb_add')}</Button>
       </div>
       {fields.length > 0 ? Object.entries(grouped).map(([entity, items]) => (
         <div key={entity}>
-          <h4 className="mb-2 text-sm font-semibold text-[#8181A5]">{entity}</h4>
+          <h4 className="mb-2 text-sm font-semibold text-muted-foreground">{entity}</h4>
           <div className={TABLE_STYLES.wrapper}>
             <table className={TABLE_STYLES.table}>
               <thead className={TABLE_STYLES.header}><tr>
@@ -49,9 +49,9 @@ export function CustomFieldsTab({
               </tr></thead>
               <tbody>{items.map((f) => (
                 <tr key={f.id} className={TABLE_STYLES.row}>
-                  <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{f.fieldKey}</td>
+                  <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{f.fieldKey}</td>
                   <td className={TABLE_STYLES.cell}>{f.fieldLabel}</td>
-                  <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{f.fieldType}</td>
+                  <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>{f.fieldType}</td>
                   <td className={`${TABLE_STYLES.cell} text-center`}>{f.isRequired ? '✓' : '—'}</td>
                   <td className={`${TABLE_STYLES.cell} text-center`}>{f.isSearchable ? '✓' : '—'}</td>
                 </tr>
@@ -60,8 +60,8 @@ export function CustomFieldsTab({
           </div>
         </div>
       )) : (
-        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <Settings2 className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">{t('register_keb909c_kecbba4ec_ked9584eb_kec9786ec')}</p>
+        <div className="rounded-xl border border-dashed border-border py-12 text-center">
+          <Settings2 className="mx-auto mb-3 h-8 w-8 text-muted-foreground" /><p className="text-sm font-medium text-foreground">{t('register_keb909c_kecbba4ec_ked9584eb_kec9786ec')}</p>
         </div>
       )}
     </div>

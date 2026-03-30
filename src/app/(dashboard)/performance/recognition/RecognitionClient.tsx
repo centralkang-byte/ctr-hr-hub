@@ -46,10 +46,10 @@ interface Employee {
 // ─── Constants ───────────────────────────────────────────
 
 const VALUE_CONFIG: Record<string, { label: string; emoji: string; bgDefault: string; borderDefault: string; textDefault: string; bgActive: string; textActive: string }> = {
-  CHALLENGE: { label: '도전', emoji: '🔴', bgDefault: 'bg-[#FEF2F2]', borderDefault: 'border-[#FECACA]', textDefault: 'text-[#EF4444]', bgActive: 'bg-[#EF4444]', textActive: 'text-white' },
-  TRUST: { label: '신뢰', emoji: '🟢', bgDefault: 'bg-[#EDF1FE]', borderDefault: 'border-[#A5D6A7]', textDefault: 'text-[#5E81F4]', bgActive: 'bg-[#5E81F4]', textActive: 'text-white' },
-  RESPONSIBILITY: { label: '책임', emoji: '🟠', bgDefault: 'bg-[#FFFBEB]', borderDefault: 'border-[#FDE68A]', textDefault: 'text-[#F59E0B]', bgActive: 'bg-[#F59E0B]', textActive: 'text-white' },
-  RESPECT: { label: '존중', emoji: '🔵', bgDefault: 'bg-[#EFF6FF]', borderDefault: 'border-[#BFDBFE]', textDefault: 'text-[#3B82F6]', bgActive: 'bg-[#3B82F6]', textActive: 'text-white' },
+  CHALLENGE: { label: '도전', emoji: '🔴', bgDefault: 'bg-red-50', borderDefault: 'border-red-200', textDefault: 'text-red-500', bgActive: 'bg-red-500', textActive: 'text-white' },
+  TRUST: { label: '신뢰', emoji: '🟢', bgDefault: 'bg-primary/10', borderDefault: 'border-green-300', textDefault: 'text-primary', bgActive: 'bg-primary', textActive: 'text-white' },
+  RESPONSIBILITY: { label: '책임', emoji: '🟠', bgDefault: 'bg-amber-50', borderDefault: 'border-amber-200', textDefault: 'text-amber-500', bgActive: 'bg-amber-500', textActive: 'text-white' },
+  RESPECT: { label: '존중', emoji: '🔵', bgDefault: 'bg-blue-50', borderDefault: 'border-blue-200', textDefault: 'text-blue-500', bgActive: 'bg-blue-500', textActive: 'text-white' },
 }
 
 const VALUE_LABELS: Record<string, string> = { CHALLENGE: 'Challenge', TRUST: 'Trust', RESPONSIBILITY: 'Responsibility', RESPECT: 'Respect' }
@@ -164,8 +164,8 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Heart className="w-6 h-6 text-[#5E81F4]" />
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">Recognition</h1>
+          <Heart className="w-6 h-6 text-primary" />
+          <h1 className="text-2xl font-bold text-foreground">Recognition</h1>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
@@ -177,11 +177,11 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
 
       {/* Tabs */}
       <div className="flex items-center justify-between">
-        <div className="flex border-b border-[#E8E8E8]">
+        <div className="flex border-b border-border">
           <button
             onClick={() => setActiveTab('feed')}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
-              activeTab === 'feed' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#666] hover:text-[#333]'
+              activeTab === 'feed' ? 'border-primary text-primary' : 'border-transparent text-[#666] hover:text-[#333]'
             }`}
           >
             {t('kr_ked94bceb')}
@@ -190,7 +190,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
             <button
               onClick={() => setActiveTab('stats')}
               className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
-                activeTab === 'stats' ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#666] hover:text-[#333]'
+                activeTab === 'stats' ? 'border-primary text-primary' : 'border-transparent text-[#666] hover:text-[#333]'
               }`}
             >
               {t('statistics')}
@@ -201,7 +201,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
           <select
             value={valueFilter}
             onChange={(e) => setValueFilter(e.target.value)}
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm"
+            className="px-3 py-2 border border-border rounded-lg text-sm"
           >
             <option value="">{tCommon('all')}</option>
             {Object.entries(VALUE_CONFIG).map(([key, config]) => (
@@ -218,7 +218,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
             <div className="text-center py-12 text-[#999]">{tCommon('loading')}</div>
           ) : feed.length === 0 ? (
             <div className="text-center py-12 text-[#999]">
-              <Heart className="w-12 h-12 mx-auto mb-3 text-[#D4D4D4]" />
+              <Heart className="w-12 h-12 mx-auto mb-3 text-border" />
               <EmptyState />
             </div>
           ) : (
@@ -247,8 +247,8 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                         onClick={() => handleLike(item.id)}
                         className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium ${
                           item.likedByMe
-                            ? 'bg-[#EDF1FE] text-[#5E81F4]'
-                            : 'bg-[#FAFAFA] text-[#666] hover:bg-[#F5F5F5]'
+                            ? 'bg-primary/10 text-primary'
+                            : 'bg-background text-[#666] hover:bg-muted'
                         }`}
                       >
                         <ThumbsUp className={`w-4 h-4 ${item.likedByMe ? 'fill-current' : ''}`} />
@@ -263,7 +263,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                 <div className="text-center">
                   <button
                     onClick={() => fetchFeed(nextCursor)}
-                    className="px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA]"
+                    className="px-4 py-2 border border-border rounded-lg text-sm text-[#555] hover:bg-background"
                   >
                     {t('kr_keb8d94_view')}
                   </button>
@@ -280,7 +280,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Value Distribution */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{t('kr_ked95b5ec_kebb684ed')}</h3>
+              <h3 className="text-base font-semibold text-foreground mb-4">{t('kr_ked95b5ec_kebb684ed')}</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -306,7 +306,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
 
             {/* Department Activity */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{t('department_kebb384_ked999cec')}</h3>
+              <h3 className="text-base font-semibold text-foreground mb-4">{t('department_kebb384_ked999cec')}</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.departmentActivity.slice(0, 8)}>
@@ -325,7 +325,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
 
           {/* Monthly Trend */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-base font-semibold text-[#1A1A1A] mb-4">{t('month_kebb384_kecb694ec')}</h3>
+            <h3 className="text-base font-semibold text-foreground mb-4">{t('month_kebb384_kecb694ec')}</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={stats.monthlyTrend}>
@@ -342,34 +342,34 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
           {/* Rankings */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-base font-semibold text-[#1A1A1A] mb-4 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#F59E0B]" /> Top Recognizers
+              <h3 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-500" /> Top Recognizers
               </h3>
               <div className="space-y-2">
                 {stats.topRecognizers.map((r, i) => (
-                  <div key={i} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
+                  <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
                     <div className="flex items-center gap-3">
-                      <span className="w-6 h-6 rounded-full bg-[#FAFAFA] text-xs text-[#666] font-medium flex items-center justify-center">{i + 1}</span>
-                      <span className="text-sm text-[#1A1A1A]">{r.name}</span>
+                      <span className="w-6 h-6 rounded-full bg-background text-xs text-[#666] font-medium flex items-center justify-center">{i + 1}</span>
+                      <span className="text-sm text-foreground">{r.name}</span>
                     </div>
-                    <span className="text-sm font-medium text-[#5E81F4]">{r.count}건</span>
+                    <span className="text-sm font-medium text-primary">{r.count}건</span>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-base font-semibold text-[#1A1A1A] mb-4 flex items-center gap-2">
-                <Heart className="w-4 h-4 text-[#EF4444]" /> Top Recognized
+              <h3 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
+                <Heart className="w-4 h-4 text-red-500" /> Top Recognized
               </h3>
               <div className="space-y-2">
                 {stats.topRecognized.map((r, i) => (
-                  <div key={i} className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0">
+                  <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
                     <div className="flex items-center gap-3">
-                      <span className="w-6 h-6 rounded-full bg-[#FAFAFA] text-xs text-[#666] font-medium flex items-center justify-center">{i + 1}</span>
-                      <span className="text-sm text-[#1A1A1A]">{r.name}</span>
+                      <span className="w-6 h-6 rounded-full bg-background text-xs text-[#666] font-medium flex items-center justify-center">{i + 1}</span>
+                      <span className="text-sm text-foreground">{r.name}</span>
                     </div>
-                    <span className="text-sm font-medium text-[#8B5CF6]">{r.count}건</span>
+                    <span className="text-sm font-medium text-violet-500">{r.count}건</span>
                   </div>
                 ))}
               </div>
@@ -382,19 +382,19 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
       {showCreateModal && (
         <div className={MODAL_STYLES.container}>
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
-            <div className="p-6 border-b border-[#E8E8E8]">
-              <h3 className="text-lg font-semibold text-[#1A1A1A]">{t('kr_kecb9adec_kebb3b4eb')}</h3>
+            <div className="p-6 border-b border-border">
+              <h3 className="text-lg font-semibold text-foreground">{t('kr_kecb9adec_kebb3b4eb')}</h3>
             </div>
             <div className="p-6 space-y-4">
               {/* Receiver search */}
               <div>
                 <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_kebb09beb_kec82aceb')}</label>
                 {selectedReceiver ? (
-                  <div className="flex items-center justify-between px-3 py-2 border border-[#D4D4D4] rounded-lg bg-[#FAFAFA]">
-                    <span className="text-sm text-[#1A1A1A]">
+                  <div className="flex items-center justify-between px-3 py-2 border border-border rounded-lg bg-background">
+                    <span className="text-sm text-foreground">
                       {selectedReceiver.name} ({selectedReceiver.employeeNo})
                     </span>
-                    <button onClick={() => { setSelectedReceiver(null); setSearchQuery('') }} className="text-xs text-[#999] hover:text-[#EF4444]">{t('kr_kebb380ea')}</button>
+                    <button onClick={() => { setSelectedReceiver(null); setSearchQuery('') }} className="text-xs text-[#999] hover:text-red-500">{t('kr_kebb380ea')}</button>
                   </div>
                 ) : (
                   <div className="relative">
@@ -404,15 +404,15 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                       value={searchQuery}
                       onChange={(e) => searchEmployees(e.target.value)}
                       placeholder={tCommon('searchEmployee')}
-                      className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
+                      className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
                     />
                     {searchResults.length > 0 && (
-                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#E8E8E8] rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
                         {searchResults.map((emp) => (
                           <button
                             key={emp.id}
                             onClick={() => { setSelectedReceiver(emp); setSearchResults([]); setSearchQuery('') }}
-                            className="w-full px-3 py-2 text-left text-sm hover:bg-[#FAFAFA] flex items-center justify-between"
+                            className="w-full px-3 py-2 text-left text-sm hover:bg-background flex items-center justify-between"
                           >
                             <span>{emp.name}</span>
                             <span className="text-xs text-[#999]">{emp.employeeNo}</span>
@@ -454,15 +454,15 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                   placeholder="칭찬 메시지를 작성하세요..."
                   rows={4}
                   maxLength={500}
-                  className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 placeholder:text-[#999]"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
                 />
                 <p className="text-xs text-[#999] mt-1">{message.length}/500</p>
               </div>
             </div>
-            <div className="p-6 border-t border-[#E8E8E8] flex justify-end gap-3">
+            <div className="p-6 border-t border-border flex justify-end gap-3">
               <button
                 onClick={() => { setShowCreateModal(false); setSelectedReceiver(null); setSelectedValue(''); setMessage('') }}
-                className="px-4 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#333] hover:bg-[#FAFAFA]"
+                className="px-4 py-2 border border-border rounded-lg text-sm text-[#333] hover:bg-background"
               >
                 {t('cancel')}
               </button>

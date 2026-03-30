@@ -21,10 +21,10 @@ interface DataRequest {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    pending: 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]',
-    in_progress: 'bg-[#EDF1FE] text-[#4B6DE0] border border-[#EDF1FE]',
-    completed: 'bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]',
-    rejected: 'bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]',
+    pending: 'bg-amber-100 text-amber-700 border border-amber-300',
+    in_progress: 'bg-primary/10 text-primary/90 border border-primary/20',
+    completed: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+    rejected: 'bg-red-100 text-red-700 border border-red-200',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? map.pending}`}>
@@ -74,7 +74,7 @@ export default function DataRequestsTab() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('gdpr.requests')}</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t('gdpr.requests')}</h2>
         <button
           onClick={() => { setSelected(null); setShowForm(true) }}
           className={`inline-flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm`}
@@ -106,7 +106,7 @@ export default function DataRequestsTab() {
                 {requests.map((r) => (
                   <tr key={r.id} className={TABLE_STYLES.row}>
                     <td className="px-4 py-3 text-sm">
-                      <div className="font-medium text-[#1A1A1A]">{r.employee_name}</div>
+                      <div className="font-medium text-foreground">{r.employee_name}</div>
                       <div className="text-xs text-[#999]">{r.employee_no}</div>
                     </td>
                     <td className="px-4 py-3 text-sm text-[#333]">
@@ -117,7 +117,7 @@ export default function DataRequestsTab() {
                     </td>
                     <td className="px-4 py-3 text-sm">
                       {r.deadline ? (
-                        <span className={`flex items-center gap-1 ${isOverdue(r.deadline) && r.status !== 'completed' ? 'text-[#DC2626] font-medium' : 'text-[#555]'}`}>
+                        <span className={`flex items-center gap-1 ${isOverdue(r.deadline) && r.status !== 'completed' ? 'text-red-600 font-medium' : 'text-[#555]'}`}>
                           {isOverdue(r.deadline) && r.status !== 'completed' ? (
                             <Clock className="w-3.5 h-3.5" />
                           ) : null}
@@ -131,7 +131,7 @@ export default function DataRequestsTab() {
                     <td className="px-4 py-3 text-sm">
                       <button
                         onClick={() => { setSelected(r); setShowForm(true) }}
-                        className="inline-flex items-center gap-1 text-[#5E81F4] hover:text-[#4B6DE0] text-sm font-medium"
+                        className="inline-flex items-center gap-1 text-primary hover:text-primary/90 text-sm font-medium"
                       >
                         <Eye className="w-4 h-4" />
                         {r.status === 'pending' || r.status === 'in_progress' ? tc('edit') : tc('view')}

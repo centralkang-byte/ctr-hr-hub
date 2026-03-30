@@ -113,15 +113,15 @@ export default function DisciplineListClient({ user }: Props) {
   const CATEGORY_KEYS = ['ATTENDANCE', 'SAFETY', 'QUALITY', 'CONDUCT', 'POLICY_VIOLATION', 'MISCONDUCT', 'HARASSMENT', 'FRAUD', 'OTHER'] as const
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] p-6">
+    <div className="min-h-screen bg-background p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#FFEBEE] rounded-lg flex items-center justify-center">
-            <Gavel className="w-5 h-5 text-[#F44336]" />
+          <div className="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center">
+            <Gavel className="w-5 h-5 text-red-500" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[#1A1A1A] tracking-[-0.02em]">
+            <h1 className="text-xl font-bold text-foreground tracking-[-0.02em]">
               {t('title')}
             </h1>
             <p className="text-sm text-[#999]">{tCommon('total')} {total}{tCommon('items')}</p>
@@ -130,7 +130,7 @@ export default function DisciplineListClient({ user }: Props) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => router.push('/discipline/rewards')}
-            className="px-4 py-2 text-sm font-medium border border-[#E8E8E8] text-[#1A1A1A] hover:bg-[#FAFAFA] rounded-lg transition-colors duration-150"
+            className="px-4 py-2 text-sm font-medium border border-border text-foreground hover:bg-background rounded-lg transition-colors duration-150"
           >
             {t('rewardsManagement')}
           </button>
@@ -145,7 +145,7 @@ export default function DisciplineListClient({ user }: Props) {
       </div>
 
       {/* Filters */}
-      <div className="bg-white border border-[#E8E8E8] rounded-xl p-4 mb-6">
+      <div className="bg-white border border-border rounded-xl p-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[240px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
@@ -154,7 +154,7 @@ export default function DisciplineListClient({ user }: Props) {
               placeholder={t('searchPlaceholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 transition-colors"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -162,7 +162,7 @@ export default function DisciplineListClient({ user }: Props) {
             <select
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
-              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 bg-white"
+              className="px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-white"
             >
               <option value="">{t('statusAll')}</option>
               <option value="DISCIPLINE_ACTIVE">{t('statusLabels.DISCIPLINE_ACTIVE')}</option>
@@ -172,7 +172,7 @@ export default function DisciplineListClient({ user }: Props) {
             <select
               value={categoryFilter}
               onChange={(e) => { setCategoryFilter(e.target.value); setPage(1) }}
-              className="px-3 py-2 text-sm border border-[#E8E8E8] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 bg-white"
+              className="px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 bg-white"
             >
               <option value="">{t('categoryAll')}</option>
               {CATEGORY_KEYS.map((key) => (
@@ -197,12 +197,12 @@ export default function DisciplineListClient({ user }: Props) {
               <th className={TABLE_STYLES.headerCell}>{t('appeal')}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#F0F0F3]">
+          <tbody className="divide-y divide-border">
             {loading ? (
               <tr>
                 <td colSpan={7} className="px-4 py-12 text-center text-sm text-[#999]">
                   <div className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-[#E8E8E8] border-t-[#5E81F4] rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin" />
                     {t('loadingData')}
                   </div>
                 </td>
@@ -220,16 +220,16 @@ export default function DisciplineListClient({ user }: Props) {
                   onClick={() => router.push(`/discipline/${row.id}`)}
                   className={TABLE_STYLES.rowClickable}
                 >
-                  <td className="px-4 py-3 text-sm text-[#1A1A1A] font-medium">
+                  <td className="px-4 py-3 text-sm text-foreground font-medium">
                     {row.employee.name}
                   </td>
                   <td className="px-4 py-3 text-sm text-[#666]">
                     {row.employee.employeeNo}
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#1A1A1A]">
+                  <td className="px-4 py-3 text-sm text-foreground">
                     {t(`typeLabels.${row.actionType}`, { defaultValue: row.actionType })}
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#1A1A1A]">
+                  <td className="px-4 py-3 text-sm text-foreground">
                     {t(`categoryLabels.${row.category}`, { defaultValue: row.category })}
                   </td>
                   <td className="px-4 py-3 text-sm text-[#666]">
@@ -253,7 +253,7 @@ export default function DisciplineListClient({ user }: Props) {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#E8E8E8]">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-border">
             <p className="text-xs text-[#999]">
               {t('paginationInfo', { total, start: (page - 1) * LIMIT + 1, end: Math.min(page * LIMIT, total) })}
             </p>
@@ -261,17 +261,17 @@ export default function DisciplineListClient({ user }: Props) {
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="p-1.5 rounded-lg border border-[#E8E8E8] hover:bg-[#FAFAFA] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg border border-border hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronLeft className="w-4 h-4 text-[#666]" />
               </button>
-              <span className="px-3 text-sm text-[#1A1A1A]">
+              <span className="px-3 text-sm text-foreground">
                 {page} / {totalPages}
               </span>
               <button
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="p-1.5 rounded-lg border border-[#E8E8E8] hover:bg-[#FAFAFA] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="p-1.5 rounded-lg border border-border hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 <ChevronRight className="w-4 h-4 text-[#666]" />
               </button>

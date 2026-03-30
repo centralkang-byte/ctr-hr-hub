@@ -205,8 +205,8 @@ export default function PayStubDetailClient({ user: _user, runId }: PayStubDetai
           </Button>
           <div>
             <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-[#5E81F4]" />
-              <h1 className="text-2xl font-bold text-[#1A1A1A]">
+              <FileText className="h-5 w-5 text-primary" />
+              <h1 className="text-2xl font-bold text-foreground">
                 {t('titleWithMonth', { month: item.run.yearMonth })}
               </h1>
             </div>

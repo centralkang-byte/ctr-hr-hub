@@ -56,9 +56,9 @@ function renderElement(el: AdaptiveElement, idx: number): React.ReactNode {
               : 'text-sm'
       const colorClass =
         el.color === 'Accent'
-          ? 'text-[#5E81F4]'
+          ? 'text-primary'
           : el.color === 'Warning'
-            ? 'text-[#D97706]'
+            ? 'text-amber-600'
             : ''
       const weightClass = el.weight === 'Bolder' ? 'font-bold' : ''
       return (
@@ -77,7 +77,7 @@ function renderElement(el: AdaptiveElement, idx: number): React.ReactNode {
 
     case 'FactSet':
       return (
-        <div key={idx} className="space-y-1 border-t border-[#F5F5F5] pt-2 mt-2">
+        <div key={idx} className="space-y-1 border-t border-border pt-2 mt-2">
           {el.facts?.map((f, i) => (
             <div key={i} className="flex justify-between text-sm">
               <span className="text-[#666]">{f.title}</span>
@@ -89,7 +89,7 @@ function renderElement(el: AdaptiveElement, idx: number): React.ReactNode {
 
     case 'ColumnSet':
       return (
-        <div key={idx} className="grid grid-cols-3 gap-2 border-t border-[#F5F5F5] pt-2 mt-2">
+        <div key={idx} className="grid grid-cols-3 gap-2 border-t border-border pt-2 mt-2">
           {el.columns?.map((col, i) => (
             <div key={i} className="text-center">
               {col.items.map((item, j) => renderElement(item, j))}
@@ -135,7 +135,7 @@ export function AdaptiveCardPreview({ card, title }: Props) {
         {card.body?.map((el, i) => renderElement(el, i))}
 
         {card.actions && card.actions.length > 0 && (
-          <div className="flex gap-2 border-t border-[#F5F5F5] pt-3 mt-3">
+          <div className="flex gap-2 border-t border-border pt-3 mt-3">
             {card.actions.map((action, i) => renderAction(action, i))}
           </div>
         )}

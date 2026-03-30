@@ -194,7 +194,7 @@ export default function AttritionRiskClient({ user }: { user: SessionUser }) {
       <div className="flex items-center justify-between">
         <div>
           <nav className="text-xs text-[#999] mb-1">{t('breadcrumb')}</nav>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('title')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
         </div>
         <Button
           variant="outline"

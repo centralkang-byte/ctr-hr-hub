@@ -115,23 +115,23 @@ export default function PeerReviewClient({ user }: { user: SessionUser }) {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <Users className="w-6 h-6 text-[#5E81F4]" />
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('peerReviewTitle')}</h1>
+        <Users className="w-6 h-6 text-primary" />
+        <h1 className="text-2xl font-bold text-foreground">{t('peerReviewTitle')}</h1>
       </div>
 
       {/* Cycle Selector + Tabs */}
       <div className="flex items-center justify-between">
-        <div className="flex border-b border-[#E8E8E8]">
+        <div className="flex border-b border-border">
           {TABS.map((tab_) => (
             <button key={tab_.key} onClick={() => setTab(tab_.key)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 ${tab === tab_.key ? 'border-[#5E81F4] text-[#5E81F4]' : 'border-transparent text-[#666] hover:text-[#333]'}`}>
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 ${tab === tab_.key ? 'border-primary text-primary' : 'border-transparent text-[#666] hover:text-[#333]'}`}>
               <tab_.icon className="w-4 h-4" />
               {tab_.label}
             </button>
           ))}
         </div>
         <select value={selectedCycleId} onChange={(e) => setSelectedCycleId(e.target.value)}
-          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm">
+          className="px-3 py-2 border border-border rounded-lg text-sm">
           {cycles.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
@@ -196,15 +196,15 @@ export default function PeerReviewClient({ user }: { user: SessionUser }) {
             <div className="grid grid-cols-3 gap-4">
               <div className={CARD_STYLES.padded}>
                 <p className="text-xs text-[#666] mb-1">{t('targetEmployees')}</p>
-                <p className="text-3xl font-bold text-[#1A1A1A]">{teamResults.totalEmployees}{tCommon('unit.person')}</p>
+                <p className="text-3xl font-bold text-foreground">{teamResults.totalEmployees}{tCommon('unit.person')}</p>
               </div>
               <div className={CARD_STYLES.padded}>
                 <p className="text-xs text-[#666] mb-1">{t('totalNominations')}</p>
-                <p className="text-3xl font-bold text-[#1A1A1A]">{teamResults.totalNominations}{tCommon('unit.count')}</p>
+                <p className="text-3xl font-bold text-foreground">{teamResults.totalNominations}{tCommon('unit.count')}</p>
               </div>
               <div className={CARD_STYLES.padded}>
                 <p className="text-xs text-[#666] mb-1">{tCommon('completionRate')}</p>
-                <p className="text-3xl font-bold text-[#5E81F4]">{teamResults.completionRate}%</p>
+                <p className="text-3xl font-bold text-primary">{teamResults.completionRate}%</p>
               </div>
             </div>
 
@@ -241,7 +241,7 @@ export default function PeerReviewClient({ user }: { user: SessionUser }) {
                       </td>
                       <td className={cn(TABLE_STYLES.cell, "text-center")}>
                         <button onClick={() => router.push(`/performance/peer-review/results/${selectedCycleId}?employeeId=${e.employee.id}`)}
-                          className="text-sm text-[#5E81F4] hover:text-[#4B6DE0] font-medium">{tCommon('view')}</button>
+                          className="text-sm text-primary hover:text-primary/90 font-medium">{tCommon('view')}</button>
                       </td>
                     </tr>
                   ))}

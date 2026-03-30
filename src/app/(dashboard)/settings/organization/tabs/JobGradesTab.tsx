@@ -118,8 +118,8 @@ export function JobGradesTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">직급 체계</h3>
-          <p className="text-sm text-[#8181A5]">{grades.length}개 직급 등록 · 법인별 가변 설정</p>
+          <h3 className="text-base font-semibold text-foreground">직급 체계</h3>
+          <p className="text-sm text-muted-foreground">{grades.length}개 직급 등록 · 법인별 가변 설정</p>
         </div>
         <div className="flex items-center gap-2">
           <Select value={filter} onValueChange={setFilter}>
@@ -140,7 +140,7 @@ export function JobGradesTab({ companyId }: Props) {
       </div>
 
       {showAdd && (
-        <div className="rounded-lg border border-[#5E81F4]/20 bg-[#5E81F4]/5 p-4 space-y-3">
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
           <p className="text-sm font-medium">새 직급 추가</p>
           <div className="grid grid-cols-5 gap-2">
             <Input placeholder="코드 (예: L3)" value={addForm.code} onChange={e => setAddForm(p => ({ ...p, code: e.target.value }))} />
@@ -178,19 +178,19 @@ export function JobGradesTab({ companyId }: Props) {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7} className="py-8 text-center text-sm text-[#8181A5]">로딩 중...</td></tr>
+              <tr><td colSpan={7} className="py-8 text-center text-sm text-muted-foreground">로딩 중...</td></tr>
             ) : grades.length === 0 ? (
-              <tr><td colSpan={7} className="py-8 text-center text-sm text-[#8181A5]">등록된 직급이 없습니다</td></tr>
+              <tr><td colSpan={7} className="py-8 text-center text-sm text-muted-foreground">등록된 직급이 없습니다</td></tr>
             ) : grades.map((g) => (
               <tr key={g.id} className={TABLE_STYLES.row}>
-                <td className={TABLE_STYLES.cell}><GripVertical className="h-4 w-4 text-[#8181A5]" /></td>
-                <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{g.code}</td>
+                <td className={TABLE_STYLES.cell}><GripVertical className="h-4 w-4 text-muted-foreground" /></td>
+                <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{g.code}</td>
                 <td className={TABLE_STYLES.cell}>
                   {editingId === g.id ? (
                     <Input className="h-7 text-sm" value={editForm.name ?? ''} onChange={e => setEditForm(p => ({ ...p, name: e.target.value }))} />
                   ) : g.name}
                 </td>
-                <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>
+                <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>
                   {editingId === g.id ? (
                     <Input className="h-7 text-sm" value={editForm.nameEn ?? ''} onChange={e => setEditForm(p => ({ ...p, nameEn: e.target.value }))} />
                   ) : g.nameEn ?? '—'}
@@ -200,7 +200,7 @@ export function JobGradesTab({ companyId }: Props) {
                     {GRADE_TYPE_LABELS[g.gradeType] ?? g.gradeType}
                   </span>
                 </td>
-                <td className={`${TABLE_STYLES.cell} text-center text-[#8181A5]`}>
+                <td className={`${TABLE_STYLES.cell} text-center text-muted-foreground`}>
                   {g.minPromotionYears != null ? `${g.minPromotionYears}년` : '—'}
                 </td>
                 <td className={TABLE_STYLES.cell}>

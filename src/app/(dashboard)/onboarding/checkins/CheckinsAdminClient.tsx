@@ -77,15 +77,15 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
   }
 
   const SENTIMENT_BADGE: Record<string, { label: string; className: string }> = {
-    POSITIVE: { label: '긍정적', className: 'bg-[#DCFCE7] text-[#16A34A]' },
-    MIXED: { label: '혼합', className: 'bg-[#EDF1FE] text-[#5E81F4]' },
-    CONCERNING: { label: '우려', className: 'bg-[#FEF2F2] text-[#EF4444]' },
+    POSITIVE: { label: '긍정적', className: 'bg-green-100 text-green-600' },
+    MIXED: { label: '혼합', className: 'bg-primary/10 text-primary' },
+    CONCERNING: { label: '우려', className: 'bg-red-50 text-red-500' },
   }
 
   const TREND_BADGE: Record<string, { label: string; className: string }> = {
-    IMPROVING: { label: '개선 중', className: 'bg-[#DCFCE7] text-[#16A34A]' },
-    STABLE: { label: '안정적', className: 'bg-[#F5F5FA] text-[#8181A5]' },
-    DECLINING: { label: '하락 중', className: 'bg-[#FEF2F2] text-[#EF4444]' },
+    IMPROVING: { label: '개선 중', className: 'bg-green-100 text-green-600' },
+    STABLE: { label: '안정적', className: 'bg-muted text-muted-foreground' },
+    DECLINING: { label: '하락 중', className: 'bg-red-50 text-red-500' },
   }
 
   const [checkins, setCheckins] = useState<CheckinRow[]>([])
@@ -185,7 +185,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
           return (
             <button
               type="button"
-              className="text-sm font-medium text-[#5E81F4] hover:underline"
+              className="text-sm font-medium text-primary hover:underline"
               onClick={(e) => {
                 e.stopPropagation()
                 selectEmployee(row.employee.id, row.employee.name)
@@ -231,7 +231,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
         render: (r) => {
           const row = r as unknown as CheckinRow
           return (
-            <span className={`text-sm ${row.belonging <= 2 ? 'font-semibold text-[#EF4444]' : ''}`}>
+            <span className={`text-sm ${row.belonging <= 2 ? 'font-semibold text-red-500' : ''}`}>
               {row.belonging}/5
             </span>
           )
@@ -242,7 +242,7 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
         header: '제출일',
         render: (r) => {
           const row = r as unknown as CheckinRow
-          return <span className="text-sm text-[#8181A5]">{formatDate(String(row.submittedAt))}</span>
+          return <span className="text-sm text-muted-foreground">{formatDate(String(row.submittedAt))}</span>
         },
       },
     ],
@@ -253,8 +253,8 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
   if (loading && checkins.length === 0) {
     return (
       <div className="space-y-6 p-6">
-        <div className="h-10 w-64 bg-[#F5F5FA] rounded animate-pulse" />
-        <div className="h-60 w-full bg-[#F5F5FA] rounded-xl animate-pulse" />
+        <div className="h-10 w-64 bg-muted rounded animate-pulse" />
+        <div className="h-60 w-full bg-muted rounded-xl animate-pulse" />
       </div>
     )
   }
@@ -269,9 +269,9 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
       {/* ─── Employee selector ─── */}
       {uniqueEmployees.length > 0 && (
         <div className="flex items-center gap-3">
-          <label className="text-sm font-medium text-[#1C1D21]">{'직원 선택:'}</label>
+          <label className="text-sm font-medium text-foreground">{'직원 선택:'}</label>
           <select
-            className="rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
+            className="rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
             value={selectedEmployeeId ?? ''}
             onChange={(e) => {
               const emp = uniqueEmployees.find((u) => u.id === e.target.value)
@@ -305,13 +305,13 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
         <div className="space-y-4">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em]">
+              <h3 className="text-base font-bold text-foreground tracking-[-0.02em]">
                 {selectedEmployeeName} - {'체크인 트렌드'}
               </h3>
               <button
                 onClick={requestAiSummary}
                 disabled={loadingAi || employeeCheckins.length === 0}
-                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg border border-[#F0F0F3] text-[#8181A5] hover:bg-[#F5F5FA] disabled:opacity-50 transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg border border-border text-muted-foreground hover:bg-muted disabled:opacity-50 transition-colors"
               >
                 <Sparkles className="h-4 w-4" />
                 {loadingAi ? 'AI 분석 중...' : 'AI 요약'}
@@ -319,9 +319,9 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
             </div>
             <div>
               {loadingDetail ? (
-                <div className="h-64 w-full bg-[#F5F5FA] rounded-xl animate-pulse" />
+                <div className="h-64 w-full bg-muted rounded-xl animate-pulse" />
               ) : chartData.length === 0 ? (
-                <p className="py-8 text-center text-sm text-[#8181A5]">{'체크인 데이터가 없습니다'}</p>
+                <p className="py-8 text-center text-sm text-muted-foreground">{'체크인 데이터가 없습니다'}</p>
               ) : (
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={chartData}>
@@ -383,28 +383,28 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
           {aiSummary && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="h-4 w-4 text-[#5E81F4]" />
-                <h3 className="text-base font-bold text-[#1C1D21] tracking-[-0.02em]">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <h3 className="text-base font-bold text-foreground tracking-[-0.02em]">
                   {'AI 분석 요약'}
                 </h3>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold bg-[#F5F5FA] text-[#8181A5] ml-2">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold bg-muted text-muted-foreground ml-2">
                   AI Generated
                 </span>
               </div>
               <div className="space-y-4">
                 <div className="flex gap-3">
                   <div>
-                    <span className="text-xs text-[#8181A5]">{'전반적 감정'}</span>
+                    <span className="text-xs text-muted-foreground">{'전반적 감정'}</span>
                     <div className="mt-1">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${SENTIMENT_BADGE[aiSummary.overall_sentiment]?.className ?? 'bg-[#F5F5FA] text-[#8181A5]'}`}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${SENTIMENT_BADGE[aiSummary.overall_sentiment]?.className ?? 'bg-muted text-muted-foreground'}`}>
                         {SENTIMENT_BADGE[aiSummary.overall_sentiment]?.label ?? aiSummary.overall_sentiment}
                       </span>
                     </div>
                   </div>
                   <div>
-                    <span className="text-xs text-[#8181A5]">{'추이'}</span>
+                    <span className="text-xs text-muted-foreground">{'추이'}</span>
                     <div className="mt-1">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${TREND_BADGE[aiSummary.trend]?.className ?? 'bg-[#F5F5FA] text-[#8181A5]'}`}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${TREND_BADGE[aiSummary.trend]?.className ?? 'bg-muted text-muted-foreground'}`}>
                         {TREND_BADGE[aiSummary.trend]?.label ?? aiSummary.trend}
                       </span>
                     </div>
@@ -413,11 +413,11 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
 
                 {aiSummary.key_observations.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-[#1C1D21] mb-1">{'주요 관찰 사항'}</h4>
-                    <ul className="space-y-1 text-sm text-[#8181A5]">
+                    <h4 className="text-sm font-medium text-foreground mb-1">{'주요 관찰 사항'}</h4>
+                    <ul className="space-y-1 text-sm text-muted-foreground">
                       {aiSummary.key_observations.map((obs, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#5E81F4]" />
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                           {obs}
                         </li>
                       ))}
@@ -427,11 +427,11 @@ export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
 
                 {aiSummary.recommended_actions.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-medium text-[#1C1D21] mb-1">{'권장 조치'}</h4>
-                    <ul className="space-y-1 text-sm text-[#8181A5]">
+                    <h4 className="text-sm font-medium text-foreground mb-1">{'권장 조치'}</h4>
+                    <ul className="space-y-1 text-sm text-muted-foreground">
                       {aiSummary.recommended_actions.map((action, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#EF4444]" />
+                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />
                           {action}
                         </li>
                       ))}

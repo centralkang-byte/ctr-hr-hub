@@ -67,12 +67,12 @@ export default function CompensationClient({ user }: { user: SessionUser }) {
       <div className="flex items-center justify-between">
         <div>
           <nav className="text-xs text-[#999] mb-1">{tMenu('settings')} / {tMenu('compensation')}</nav>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('salaryAdjustment')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('salaryAdjustment')}</h1>
         </div>
         <div className="flex items-center gap-3">
           <label className="text-sm text-[#555]">{t('evaluationCycle')}:</label>
           <select
-            className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
             value={selectedCycleId}
             onChange={(e) => setSelectedCycleId(e.target.value)}
           >
@@ -98,7 +98,7 @@ export default function CompensationClient({ user }: { user: SessionUser }) {
             <CheckCircle2 className="mr-1.5 h-4 w-4" />
             {t('confirm')}
             {pendingAdjustments.length > 0 && (
-              <span className="ml-1.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-xs bg-[#EDF1FE] text-[#4B6DE0]">
+              <span className="ml-1.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-xs bg-primary/10 text-primary/90">
                 {pendingAdjustments.length}
               </span>
             )}

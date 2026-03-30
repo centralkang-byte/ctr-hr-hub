@@ -90,9 +90,9 @@ export function LoaTab({ employeeId }: Props) {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
+      <div className="rounded-xl border border-border bg-white p-6">
         <div className="flex items-center justify-center py-12">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#5E81F4] border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
       </div>
     )
@@ -100,9 +100,9 @@ export function LoaTab({ employeeId }: Props) {
 
   if (records.length === 0) {
     return (
-      <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
+      <div className="rounded-xl border border-border bg-white p-6">
         <div className="flex flex-col items-center py-12 text-[#999]">
-          <Shield className="h-10 w-10 mb-3 text-[#E8E8E8]" />
+          <Shield className="h-10 w-10 mb-3 text-border" />
           <p className="text-sm font-medium text-[#666]">휴직 이력이 없습니다</p>
         </div>
       </div>
@@ -114,16 +114,16 @@ export function LoaTab({ employeeId }: Props) {
   const past = records.filter(r => ['COMPLETED', 'REJECTED', 'CANCELLED'].includes(r.status))
 
   return (
-    <div className="rounded-xl border border-[#E8E8E8] bg-white p-6 space-y-6">
+    <div className="rounded-xl border border-border bg-white p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold text-[#1C1D21]">휴직 이력</h3>
-        <span className="text-sm text-[#8181A5]">{records.length}건</span>
+        <h3 className="text-base font-semibold text-foreground">휴직 이력</h3>
+        <span className="text-sm text-muted-foreground">{records.length}건</span>
       </div>
 
       {/* 활성 휴직 */}
       {active.length > 0 && (
         <div className="space-y-3">
-          <p className="text-xs font-medium text-[#8181A5] uppercase tracking-wider">진행중</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">진행중</p>
           {active.map(r => <LoaCard key={r.id} record={r} />)}
         </div>
       )}
@@ -131,7 +131,7 @@ export function LoaTab({ employeeId }: Props) {
       {/* 과거 이력 */}
       {past.length > 0 && (
         <div className="space-y-3">
-          {active.length > 0 && <p className="text-xs font-medium text-[#8181A5] uppercase tracking-wider pt-2">이전 이력</p>}
+          {active.length > 0 && <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider pt-2">이전 이력</p>}
           {past.map(r => <LoaCard key={r.id} record={r} />)}
         </div>
       )}
@@ -144,11 +144,11 @@ function LoaCard({ record: r }: { record: LoaRecord }) {
   const days = calcDuration(r.startDate, r.actualEndDate ?? r.expectedEndDate)
 
   return (
-    <div className="rounded-lg border border-[#E8E8EF] p-4 hover:bg-[#FAFAFC] transition-colors">
+    <div className="rounded-lg border border-border p-4 hover:bg-background transition-colors">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="font-medium text-[#1C1D21]">{r.type.name}</span>
+            <span className="font-medium text-foreground">{r.type.name}</span>
             <span className={cn(
               'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
               r.type.category === 'STATUTORY' ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-500',
@@ -156,18 +156,18 @@ function LoaCard({ record: r }: { record: LoaRecord }) {
               {r.type.category === 'STATUTORY' ? '법정' : '약정'}
             </span>
             {r.splitSequence > 1 && (
-              <span className="text-xs text-[#8181A5]">{r.splitSequence}차</span>
+              <span className="text-xs text-muted-foreground">{r.splitSequence}차</span>
             )}
           </div>
-          <div className="flex items-center gap-3 text-sm text-[#8181A5]">
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <span>{formatDate(r.startDate)} ~ {formatDate(r.actualEndDate ?? r.expectedEndDate)}</span>
             <span className="text-xs">({days}일)</span>
           </div>
           {r.reason && (
-            <p className="mt-1 text-xs text-[#8181A5] truncate">{r.reason}</p>
+            <p className="mt-1 text-xs text-muted-foreground truncate">{r.reason}</p>
           )}
           {r.approver && (
-            <p className="mt-1 text-xs text-[#8181A5]">
+            <p className="mt-1 text-xs text-muted-foreground">
               승인: {r.approver.name} ({formatDate(r.approvedAt)})
             </p>
           )}

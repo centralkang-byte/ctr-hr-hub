@@ -35,14 +35,14 @@ export function DistributionTab({
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_kebb0b0eb_keab080ec')}</h3>
-          <p className="text-sm text-[#8181A5]">{t('kr_keb93b1ea_recommended_kebb0b0e')}</p>
+          <h3 className="text-base font-semibold text-foreground">{t('kr_kebb0b0eb_keab080ec')}</h3>
+          <p className="text-sm text-muted-foreground">{t('kr_keb93b1ea_recommended_kebb0b0e')}</p>
         </div>
         {isOverridden && (
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
@@ -53,26 +53,26 @@ export function DistributionTab({
         <table className={TABLE_STYLES.table}><thead><tr className={TABLE_STYLES.header}>
           <th className={TABLE_STYLES.headerCell}>{t('kr_keb93b1ea')}</th>
           <th className={TABLE_STYLES.headerCellRight}>{t('recommended_rate')}</th>
-        </tr></thead><tbody className="divide-y divide-[#F0F0F3]">{settings.guidePcts.map((pct, i) => (
+        </tr></thead><tbody className="divide-y divide-border">{settings.guidePcts.map((pct, i) => (
           <tr key={i} className={TABLE_STYLES.row}>
             <td className={TABLE_STYLES.cell}>{GRADE_LABELS[i]}</td>
             <td className="px-4 py-3 text-right"><Input type="number" value={pct} min={0} max={100} onChange={(e) => { const next = structuredClone(settings); next.guidePcts[i] = Number(e.target.value); setSettings(next) }} className="ml-auto w-20 text-right" /></td>
           </tr>
         ))}</tbody></table>
       </div>
-      <div className="text-right text-sm text-[#8181A5]">합계: {settings.guidePcts.reduce((a, b) => a + b, 0)}%</div>
+      <div className="text-right text-sm text-muted-foreground">합계: {settings.guidePcts.reduce((a, b) => a + b, 0)}%</div>
 
       <SettingFieldWithOverride label="강제 배분" description="가이드라인을 필수로 적용할지 선택" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={settings.forced} onChange={(e) => setSettings((p) => ({ ...p, forced: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
-          <span className="text-[#1C1D21]">{t('kr_keab095ec_kebb0b0eb_keca081ec')}</span>
+          <input type="checkbox" checked={settings.forced} onChange={(e) => setSettings((p) => ({ ...p, forced: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
+          <span className="text-foreground">{t('kr_keab095ec_kebb0b0eb_keca081ec')}</span>
         </label>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="최소 참여 인원" description="배분 가이드라인 적용을 위한 최소 평가 대상 인원" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.minParticipants} onChange={(e) => setSettings((p) => ({ ...p, minParticipants: Number(e.target.value) }))} className="w-20" />
-          <span className="text-sm text-[#8181A5]">{t('persons_kec9db4ec')}</span>
+          <span className="text-sm text-muted-foreground">{t('persons_kec9db4ec')}</span>
         </div>
       </SettingFieldWithOverride>
 

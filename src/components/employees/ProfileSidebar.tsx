@@ -92,7 +92,7 @@ export function ProfileSidebar({
   const subtitle = [title, position].filter(Boolean).join(' · ')
 
   return (
-    <aside className="w-72 shrink-0 border-r border-[#E8E8E8] bg-white p-6 hidden lg:block">
+    <aside className="w-72 shrink-0 border-r border-border bg-white p-6 hidden lg:block">
       {/* Avatar + Name */}
       <div className="text-center mb-6">
         <div
@@ -111,16 +111,16 @@ export function ProfileSidebar({
             </div>
           )}
         </div>
-        <h2 className="text-lg font-bold text-[#1A1A1A] tracking-ctr">{name}</h2>
+        <h2 className="text-lg font-bold text-foreground tracking-ctr">{name}</h2>
         {nameEn && <p className="text-xs text-[#999] mt-0.5">{nameEn}</p>}
         {subtitle && <p className="text-sm text-[#666] mt-1">{subtitle}</p>}
       </div>
 
-      <div className="divide-y divide-[#F0F0F0]">
+      <div className="divide-y divide-border">
         {/* 조직 정보 */}
         {(company || division || team || locationName) && (
           <div className="py-4 space-y-1.5 text-sm">
-            {company && <p className="font-medium text-[#1A1A1A]">{company}</p>}
+            {company && <p className="font-medium text-foreground">{company}</p>}
             {(division || team) && (
               <p className="text-[#555]">
                 {[division, team].filter(Boolean).join(' / ')}

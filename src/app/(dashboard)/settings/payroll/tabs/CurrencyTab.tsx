@@ -28,13 +28,13 @@ export function CurrencyTab({
       .finally(() => setLoading(false))
   }, [companyId, year, month])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_ked86b5ed_ked9998ec')}</h3>
-        <p className="text-sm text-[#8181A5]">{year}년 {month}월 적용 환율 ({rates.length}건)</p>
+        <h3 className="text-base font-semibold text-foreground">{t('kr_ked86b5ed_ked9998ec')}</h3>
+        <p className="text-sm text-muted-foreground">{year}년 {month}월 적용 환율 ({rates.length}건)</p>
       </div>
       {rates.length > 0 ? (
         <div className={TABLE_STYLES.wrapper}>
@@ -48,18 +48,18 @@ export function CurrencyTab({
             </tr></thead>
             <tbody>{rates.map((r, i) => (
               <tr key={i} className={TABLE_STYLES.row}>
-                <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{r.fromCurrency}</td>
-                <td className={`${TABLE_STYLES.cell} text-center`}><ArrowLeftRight className="mx-auto h-4 w-4 text-[#8181A5]" /></td>
-                <td className={`${TABLE_STYLES.cell} font-medium text-[#5E81F4]`}>{r.toCurrency}</td>
+                <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{r.fromCurrency}</td>
+                <td className={`${TABLE_STYLES.cell} text-center`}><ArrowLeftRight className="mx-auto h-4 w-4 text-muted-foreground" /></td>
+                <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{r.toCurrency}</td>
                 <td className={`${TABLE_STYLES.cell} text-right font-medium`}>{Number(r.rate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}</td>
-                <td className={`${TABLE_STYLES.cell} text-[#8181A5]`}>{r.source}</td>
+                <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>{r.source}</td>
               </tr>
             ))}</tbody>
           </table>
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <ArrowLeftRight className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">{year}년 {month}월 환율이 등록되지 않았습니다</p>
+        <div className="rounded-xl border border-dashed border-border py-12 text-center">
+          <ArrowLeftRight className="mx-auto mb-3 h-8 w-8 text-muted-foreground" /><p className="text-sm font-medium text-foreground">{year}년 {month}월 환율이 등록되지 않았습니다</p>
         </div>
       )}
     </div>

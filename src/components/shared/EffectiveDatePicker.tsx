@@ -74,7 +74,7 @@ export function EffectiveDatePicker({
   }
 
   return (
-    <div className={cn('rounded-lg border border-[#E8E8E8] bg-[#FAFAFA] p-3', className)}>
+    <div className={cn('rounded-lg border border-border bg-background p-3', className)}>
       <div className="flex flex-wrap items-center gap-2">
         <Calendar className="h-4 w-4 text-[#666] flex-shrink-0" />
         <span className="text-sm font-medium text-[#333]">{label}:</span>
@@ -83,7 +83,7 @@ export function EffectiveDatePicker({
           type="date"
           value={toInputDateString(value)}
           onChange={handleInputChange}
-          className="h-8 w-36 rounded-md border-[#D4D4D4] text-sm px-2"
+          className="h-8 w-36 rounded-md border-border text-sm px-2"
         />
 
         <div className="flex flex-wrap gap-1">
@@ -93,7 +93,7 @@ export function EffectiveDatePicker({
               variant="outline"
               size="sm"
               onClick={() => onChange(qs.getDate())}
-              className="h-7 px-2.5 text-xs border-[#D4D4D4] hover:border-[#5E81F4] hover:text-[#5E81F4]"
+              className="h-7 px-2.5 text-xs border-border hover:border-primary hover:text-primary"
             >
               {qs.label}
             </Button>
@@ -103,8 +103,8 @@ export function EffectiveDatePicker({
 
       {/* 미래 시점 허용 경고 */}
       {allowFuture && isFuture && (
-        <div className="mt-2 flex items-center gap-1.5 rounded-md bg-[#FEF3C7] px-3 py-1.5">
-          <span className="text-xs text-[#B45309] font-medium">
+        <div className="mt-2 flex items-center gap-1.5 rounded-md bg-amber-100 px-3 py-1.5">
+          <span className="text-xs text-amber-700 font-medium">
             ⚠️ 미래 시점 조회 중 (HR Admin 전용)
           </span>
         </div>
@@ -112,8 +112,8 @@ export function EffectiveDatePicker({
 
       {/* 미래 시점 불허 경고 */}
       {!allowFuture && isFuture && (
-        <div className="mt-2 flex items-center gap-1.5 rounded-md bg-[#FEE2E2] px-3 py-1.5">
-          <span className="text-xs text-[#B91C1C] font-medium">
+        <div className="mt-2 flex items-center gap-1.5 rounded-md bg-red-100 px-3 py-1.5">
+          <span className="text-xs text-red-700 font-medium">
             ❌ 미래 날짜는 선택할 수 없습니다.
           </span>
         </div>

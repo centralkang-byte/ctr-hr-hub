@@ -16,10 +16,10 @@ import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 // ─── Status config ────────────────────────────────────────
 
 const STATUS_STYLES: Record<string, string> = {
-  DRAFT: 'bg-[#F5F5F5] text-[#666]',
-  PENDING_APPROVAL: 'bg-[#FFF8E1] text-[#F57F17]',
-  APPROVED: 'bg-[#EDF1FE] text-[#2E7D32]',
-  REJECTED: 'bg-[#FFEBEE] text-[#C62828]',
+  DRAFT: 'bg-muted text-[#666]',
+  PENDING_APPROVAL: 'bg-amber-50 text-amber-700',
+  APPROVED: 'bg-primary/10 text-green-700',
+  REJECTED: 'bg-red-50 text-red-800',
 }
 
 // ─── Types ────────────────────────────────────────────────
@@ -156,14 +156,14 @@ export default function GoalsClient({
 
   return (
     <>
-    <div className="min-h-screen bg-[#FAFAFA] p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="mx-auto max-w-4xl">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('mboGoalManagement')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('mboGoalManagement')}</h1>
           <button
             onClick={() => router.push('/performance/goals/new')}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4B6DE0] transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
           >
             <Plus className="h-4 w-4" />
             {t('addGoal')}
@@ -178,7 +178,7 @@ export default function GoalsClient({
           <select
             value={selectedCycleId}
             onChange={(e) => setSelectedCycleId(e.target.value)}
-            className="w-full max-w-xs rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+            className="w-full max-w-xs rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
           >
             {cycles.map((c) => (
               <option key={c.id} value={c.id}>
@@ -196,7 +196,7 @@ export default function GoalsClient({
             <p className="text-[#999]">{t('noGoalsRegistered')}</p>
             <button
               onClick={() => router.push('/performance/goals/new')}
-              className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-[#5E81F4] hover:underline"
+              className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
             >
               <Plus className="h-4 w-4" />
               {t('addFirstGoal')}
@@ -221,11 +221,11 @@ export default function GoalsClient({
                   <div className="mb-3 flex items-start justify-between gap-3">
                     <div className="flex-1">
                       <div className="mb-1 flex items-center gap-2">
-                        <h3 className="text-base font-semibold text-[#1A1A1A]">
+                        <h3 className="text-base font-semibold text-foreground">
                           {goal.title}
                         </h3>
                         <span
-                          className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[goal.status] ?? 'bg-[#F5F5F5] text-[#666]'}`}
+                          className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[goal.status] ?? 'bg-muted text-[#666]'}`}
                         >
                           {t(`goalStatusLabels.${goal.status}` as Parameters<typeof t>[0])}
                         </span>
@@ -236,7 +236,7 @@ export default function GoalsClient({
                         </p>
                       )}
                     </div>
-                    <span className="shrink-0 text-lg font-bold text-[#5E81F4]">
+                    <span className="shrink-0 text-lg font-bold text-primary">
                       {Number(goal.weight)}%
                     </span>
                   </div>
@@ -247,9 +247,9 @@ export default function GoalsClient({
                       <span>{t('achievement')}</span>
                       <span>{pct}%</span>
                     </div>
-                    <div className="h-2 rounded-full bg-[#E8E8E8]">
+                    <div className="h-2 rounded-full bg-border">
                       <div
-                        className="h-2 rounded-full bg-[#5E81F4] transition-all"
+                        className="h-2 rounded-full bg-primary transition-all"
                         style={{ width: `${Math.min(pct, 100)}%` }}
                       />
                     </div>
@@ -262,7 +262,7 @@ export default function GoalsClient({
                         onClick={() =>
                           router.push(`/performance/goals/${goal.id}/edit`)
                         }
-                        className="inline-flex items-center gap-1 rounded-md border border-[#E8E8E8] px-3 py-1.5 text-xs font-medium text-[#666] hover:bg-[#FAFAFA] transition-colors"
+                        className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-[#666] hover:bg-background transition-colors"
                       >
                         <Pencil className="h-3 w-3" />
                         {t('editButton')}
@@ -271,7 +271,7 @@ export default function GoalsClient({
                     {goal.status === 'DRAFT' && (
                       <button
                         onClick={() => handleDelete(goal.id)}
-                        className="inline-flex items-center gap-1 rounded-md border border-[#FECACA] px-3 py-1.5 text-xs font-medium text-[#DC2626] hover:bg-[#FEE2E2] transition-colors"
+                        className="inline-flex items-center gap-1 rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-100 transition-colors"
                       >
                         <Trash2 className="h-3 w-3" />
                         {t('deleteButton')}
@@ -286,7 +286,7 @@ export default function GoalsClient({
                             note: '',
                           })
                         }
-                        className="inline-flex items-center gap-1 rounded-md border border-[#5E81F4] px-3 py-1.5 text-xs font-medium text-[#5E81F4] hover:bg-[#EDF1FE] transition-colors"
+                        className="inline-flex items-center gap-1 rounded-md border border-primary px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/10 transition-colors"
                       >
                         <TrendingUp className="h-3 w-3" />
                         {t('recordProgress')}
@@ -296,7 +296,7 @@ export default function GoalsClient({
 
                   {/* Inline progress form */}
                   {progressForm?.goalId === goal.id && (
-                    <div className="mt-4 rounded-md border border-[#E8E8E8] bg-[#FAFAFA] p-4">
+                    <div className="mt-4 rounded-md border border-border bg-background p-4">
                       <h4 className="mb-3 text-sm font-semibold text-[#666]">
                         {t('recordProgressTitle')}
                       </h4>
@@ -315,7 +315,7 @@ export default function GoalsClient({
                               progressPct: Number(e.target.value),
                             })
                           }
-                          className="w-32 rounded-md border border-[#E8E8E8] px-3 py-1.5 text-sm focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+                          className="w-32 rounded-md border border-border px-3 py-1.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
                         />
                       </div>
                       <div className="mb-3">
@@ -332,20 +332,20 @@ export default function GoalsClient({
                             })
                           }
                           placeholder={t('memoPlaceholder')}
-                          className="w-full rounded-md border border-[#E8E8E8] px-3 py-1.5 text-sm focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+                          className="w-full rounded-md border border-border px-3 py-1.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
                         />
                       </div>
                       <div className="flex gap-2">
                         <button
                           onClick={handleProgressSubmit}
                           disabled={submitting}
-                          className="rounded-md bg-[#5E81F4] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#4B6DE0] disabled:opacity-50 transition-colors"
+                          className="rounded-md bg-primary px-4 py-1.5 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-50 transition-colors"
                         >
                           {submitting ? t('saving') : tc('save')}
                         </button>
                         <button
                           onClick={() => setProgressForm(null)}
-                          className="rounded-md border border-[#E8E8E8] px-4 py-1.5 text-xs font-medium text-[#666] hover:bg-[#F5F5F5] transition-colors"
+                          className="rounded-md border border-border px-4 py-1.5 text-xs font-medium text-[#666] hover:bg-muted transition-colors"
                         >
                           {tc('cancel')}
                         </button>
@@ -364,12 +364,12 @@ export default function GoalsClient({
             <div className="text-sm">
               <span className="text-[#666]">{t('weightSum')}</span>
               <span
-                className={`font-bold ${totalWeight === 100 ? 'text-green-600' : 'text-[#DC2626]'}`}
+                className={`font-bold ${totalWeight === 100 ? 'text-green-600' : 'text-red-600'}`}
               >
                 {totalWeight}%
               </span>
               {totalWeight !== 100 && (
-                <span className="ml-2 text-xs text-[#EF4444]">
+                <span className="ml-2 text-xs text-red-500">
                   {t('weightMustBe100')}
                 </span>
               )}
@@ -377,7 +377,7 @@ export default function GoalsClient({
             <button
               onClick={handleSubmitAll}
               disabled={!canSubmit || submitting}
-              className="rounded-lg bg-[#EF4444] px-5 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40 transition-opacity"
+              className="rounded-lg bg-red-500 px-5 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40 transition-opacity"
             >
               {submitting ? t('submittingAll') : t('submitAll')}
             </button>

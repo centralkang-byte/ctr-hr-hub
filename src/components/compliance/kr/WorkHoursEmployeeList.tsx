@@ -29,17 +29,17 @@ const STATUS_MAP: Record<WorkHoursStatus, { label: string; className: string }> 
   COMPLIANT: {
     label: '준수',
     className:
-      'bg-[#EDF1FE] text-[#2E7D32]',
+      'bg-primary/10 text-green-700',
   },
   WARNING: {
     label: '주의',
     className:
-      'bg-[#FFF3E0] text-[#FF9800]',
+      'bg-orange-50 text-orange-500',
   },
   VIOLATION: {
     label: '위반',
     className:
-      'bg-[#FFEBEE] text-[#F44336]',
+      'bg-red-50 text-red-500',
   },
 }
 
@@ -94,12 +94,12 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
   })
 
   return (
-    <div className="bg-white rounded-xl border border-[#E8E8E8]">
+    <div className="bg-white rounded-xl border border-border">
       {/* List Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-6 border-b border-[#E8E8E8]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-6 border-b border-border">
         <div className="flex items-center gap-2">
-          <h2 className="text-base font-bold text-[#1A1A1A] tracking-[-0.02em]">직원별 근무현황</h2>
-          <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold bg-[#F5F5F5] text-[#666]">
+          <h2 className="text-base font-bold text-foreground tracking-[-0.02em]">직원별 근무현황</h2>
+          <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold bg-muted text-[#666]">
             {filtered.length}명
           </span>
         </div>
@@ -113,7 +113,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
               placeholder={tCommon('placeholderSearchNameIdDept')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 pr-3 py-1.5 text-sm border border-[#E0E0E0] rounded-lg focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 w-48"
+              className="pl-8 pr-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 w-48"
             />
           </div>
 
@@ -121,7 +121,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as WorkHoursStatus | 'ALL')}
-            className="text-sm border border-[#E0E0E0] rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10"
+            className="text-sm border border-border rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
           >
             <option value="ALL">전체 상태</option>
             <option value="COMPLIANT">준수</option>
@@ -156,10 +156,10 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
           <tbody>
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i} className="border-b border-[#F0F0F0]">
+                <tr key={i} className="border-b border-border">
                   {Array.from({ length: 5 }).map((_, j) => (
                     <td key={j} className="px-4 py-3">
-                      <div className="h-4 bg-[#F5F5F5] rounded animate-pulse" />
+                      <div className="h-4 bg-muted rounded animate-pulse" />
                     </td>
                   ))}
                 </tr>
@@ -184,9 +184,9 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-[#1A1A1A]">{employee.name}</span>
+                        <span className="text-sm font-medium text-foreground">{employee.name}</span>
                         {isViolation && (
-                          <AlertTriangle className="w-3.5 h-3.5 text-[#F44336]" />
+                          <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
                         )}
                       </div>
                     </td>
@@ -196,10 +196,10 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
                       <span
                         className={`text-sm font-semibold ${
                           isViolation
-                            ? 'text-[#F44336]'
+                            ? 'text-red-500'
                             : employee.status === 'WARNING'
-                            ? 'text-[#FF9800]'
-                            : 'text-[#1A1A1A]'
+                            ? 'text-orange-500'
+                            : 'text-foreground'
                         }`}
                       >
                         {employee.weeklyHours}시간

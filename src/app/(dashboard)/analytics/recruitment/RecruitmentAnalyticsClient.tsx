@@ -134,7 +134,7 @@ export default function RecruitmentAnalyticsClient({ user }: { user: SessionUser
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F0F0F3]">
+                <tbody className="divide-y divide-border">
                   {[...postingMap.entries()].map(([id, { title, stages }]) => (
                     <tr key={id} className={TABLE_STYLES.row}>
                       <td className={TABLE_STYLES.cell}>{title}</td>

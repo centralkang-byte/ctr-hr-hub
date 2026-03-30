@@ -36,14 +36,14 @@ export function CfrTab({
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{t('cfr_settings')}</h3>
-          <p className="text-sm text-[#8181A5]">{t('kr_continuous_feedback_amp_recogn')}</p>
+          <h3 className="text-base font-semibold text-foreground">{t('cfr_settings')}</h3>
+          <p className="text-sm text-muted-foreground">{t('kr_continuous_feedback_amp_recogn')}</p>
         </div>
         {isOverridden && (
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
@@ -52,29 +52,29 @@ export function CfrTab({
 
       <SettingFieldWithOverride label="1:1 최소 빈도" description="월간 최소 1:1 면담 횟수" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-[#8181A5]">{t('month')}</span>
+          <span className="text-sm text-muted-foreground">{t('month')}</span>
           <Input type="number" value={settings.minFrequency} min={1} max={10} onChange={(e) => setSettings((p) => ({ ...p, minFrequency: Number(e.target.value) }))} className="w-20" />
-          <span className="text-sm text-[#8181A5]">{t('kr_ked9a8c_kec9db4ec')}</span>
+          <span className="text-sm text-muted-foreground">{t('kr_ked9a8c_kec9db4ec')}</span>
         </div>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="피드백 익명 여부" description="동료 피드백 익명 허용" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={settings.anonymous} onChange={(e) => setSettings((p) => ({ ...p, anonymous: e.target.checked }))} className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]" />
-          <span className="text-[#1C1D21]">{t('kr_kec9db5eb_ked94bceb_ked9788ec')}</span>
+          <input type="checkbox" checked={settings.anonymous} onChange={(e) => setSettings((p) => ({ ...p, anonymous: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
+          <span className="text-foreground">{t('kr_kec9db5eb_ked94bceb_ked9788ec')}</span>
         </label>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="리마인더" description="1:1 미완료 시 알림 주기" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.reminderDays} onChange={(e) => setSettings((p) => ({ ...p, reminderDays: Number(e.target.value) }))} className="w-20" />
-          <span className="text-sm text-[#8181A5]">{t('kr_kec9dbceb_keba6aceb')}</span>
+          <span className="text-sm text-muted-foreground">{t('kr_kec9dbceb_keba6aceb')}</span>
         </div>
       </SettingFieldWithOverride>
 
       <SettingFieldWithOverride label="피드백 카테고리" description="사용 가능한 피드백 분류" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex flex-wrap gap-2">{settings.feedbackCategories.map((cat, i) => (
-          <span key={i} className="rounded-full bg-[#5E81F4]/10 px-3 py-1 text-sm font-medium text-[#5E81F4]">{cat}</span>
+          <span key={i} className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{cat}</span>
         ))}</div>
       </SettingFieldWithOverride>
 

@@ -49,10 +49,10 @@ const SOURCE_LABELS: Record<string, string> = {
 }
 
 const STATUS_MAP: Record<string, { label: string; cls: string }> = {
-  PROPOSED: { label: '검토 대기', cls: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
-  NOMINATION_APPROVED: { label: '승인', cls: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
-  NOMINATION_REJECTED: { label: '거부', cls: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },
-  NOMINATION_COMPLETED: { label: '평가 완료', cls: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]' },
+  PROPOSED: { label: '검토 대기', cls: 'bg-amber-100 text-amber-700 border-amber-300' },
+  NOMINATION_APPROVED: { label: '승인', cls: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+  NOMINATION_REJECTED: { label: '거부', cls: 'bg-red-100 text-red-700 border-red-200' },
+  NOMINATION_COMPLETED: { label: '평가 완료', cls: 'bg-primary/10 text-primary/90 border-primary/20' },
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -151,31 +151,31 @@ export default function PeerNominationSetupClient({ user, cycleId }: { user: Ses
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <button onClick={() => router.push('/performance/peer-review')} className="p-1 hover:bg-[#F5F5F5] rounded-lg">
+        <button onClick={() => router.push('/performance/peer-review')} className="p-1 hover:bg-muted rounded-lg">
           <ArrowLeft className="w-5 h-5 text-[#666]" />
         </button>
-        <Users className="w-6 h-6 text-[#5E81F4]" />
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('peerReview_kecb694ec_keca780ec')}</h1>
+        <Users className="w-6 h-6 text-primary" />
+        <h1 className="text-2xl font-bold text-foreground">{t('peerReview_kecb694ec_keca780ec')}</h1>
       </div>
 
       <div className="grid grid-cols-2 gap-6">
         {/* Left: Employee Search + AI Recommendations */}
         <div className="space-y-4">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">{t('kr_keb8c80ec_keca781ec_kec84a0ed')}</h2>
+            <h2 className="text-base font-semibold text-foreground mb-3">{t('kr_keb8c80ec_keca781ec_kec84a0ed')}</h2>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
               <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={tCommon('searchEmployee')}
-                className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm placeholder:text-[#999]" />
+                className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm placeholder:text-[#999]" />
             </div>
             {empLoading && <p className="text-xs text-[#999] mt-2">{t('search_keca491')}</p>}
             {employees.length > 0 && (
               <div className="mt-2 space-y-1">
                 {employees.map((emp) => (
                   <button key={emp.id} onClick={() => fetchRecommendations(emp.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-[#FAFAFA] ${selectedEmployeeId === emp.id ? 'bg-[#EDF1FE] border border-[#5E81F4]' : ''}`}>
-                    <span className="font-medium text-[#1A1A1A]">{emp.name}</span>
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm hover:bg-background ${selectedEmployeeId === emp.id ? 'bg-primary/10 border border-primary' : ''}`}>
+                    <span className="font-medium text-foreground">{emp.name}</span>
                     <span className="text-[#666] ml-2">{emp.employeeNo}</span>
                     {emp.department && <span className="text-[#999] ml-2">· {emp.department.name}</span>}
                   </button>
@@ -186,20 +186,20 @@ export default function PeerNominationSetupClient({ user, cycleId }: { user: Ses
 
           {/* AI Recommendations */}
           {selectedEmployeeId && candidates.length > 0 && (
-            <div className="bg-[#E0E7FF] rounded-xl border border-[#C7D2FE] p-5">
+            <div className="bg-indigo-100 rounded-xl border border-indigo-200 p-5">
               <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-4 h-4 text-[#4B6DE0]" />
-                <h3 className="text-sm font-semibold text-[#4B6DE0]">{t('kr_ai_kecb694ec_ked8f89ea')}</h3>
+                <Sparkles className="w-4 h-4 text-primary/90" />
+                <h3 className="text-sm font-semibold text-primary/90">{t('kr_ai_kecb694ec_ked8f89ea')}</h3>
               </div>
               <div className="space-y-2">
                 {candidates.map((c) => (
                   <div key={c.employeeId} className="bg-white rounded-lg p-3 flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-[#1A1A1A]">{c.name}</p>
+                      <p className="text-sm font-medium text-foreground">{c.name}</p>
                       <p className="text-xs text-[#666]">{c.department} · 협업 점수: {c.totalScore}</p>
                     </div>
                     <button onClick={() => handleNominate(c.employeeId, 'AI_RECOMMENDED', c.totalScore)}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-[#4B6DE0] text-white rounded-lg text-xs font-medium hover:bg-[#3730A3]">
+                      className="flex items-center gap-1 px-3 py-1.5 bg-primary/90 text-white rounded-lg text-xs font-medium hover:bg-indigo-800">
                       <Plus className="w-3 h-3" /> {t('kr_kecb694ec')}
                     </button>
                   </div>
@@ -211,7 +211,7 @@ export default function PeerNominationSetupClient({ user, cycleId }: { user: Ses
 
         {/* Right: Nominations List */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-base font-semibold text-[#1A1A1A] mb-3">
+          <h2 className="text-base font-semibold text-foreground mb-3">
             현재 지명 목록 ({nominations.length}건)
           </h2>
           {loading ? (
@@ -221,10 +221,10 @@ export default function PeerNominationSetupClient({ user, cycleId }: { user: Ses
           ) : (
             <div className="space-y-3 max-h-[60vh] overflow-y-auto">
               {nominations.map((n) => (
-                <div key={n.id} className="border border-[#F5F5F5] rounded-lg p-3">
+                <div key={n.id} className="border border-border rounded-lg p-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-[#1A1A1A]">
+                      <p className="text-sm text-foreground">
                         <span className="font-medium">{n.employee.name}</span>
                         <span className="text-[#999] mx-1">←</span>
                         <span className="font-medium">{n.nominee.name}</span>
@@ -241,11 +241,11 @@ export default function PeerNominationSetupClient({ user, cycleId }: { user: Ses
                       {n.status === 'PROPOSED' && (
                         <div className="flex gap-1">
                           <button onClick={() => handleApproveReject(n.id, 'NOMINATION_APPROVED')}
-                            className="p-1 text-[#059669] hover:bg-[#D1FAE5] rounded">
+                            className="p-1 text-emerald-600 hover:bg-emerald-100 rounded">
                             <CheckCircle2 className="w-4 h-4" />
                           </button>
                           <button onClick={() => handleApproveReject(n.id, 'NOMINATION_REJECTED')}
-                            className="p-1 text-[#EF4444] hover:bg-[#FEE2E2] rounded">
+                            className="p-1 text-red-500 hover:bg-red-100 rounded">
                             <XCircle className="w-4 h-4" />
                           </button>
                         </div>

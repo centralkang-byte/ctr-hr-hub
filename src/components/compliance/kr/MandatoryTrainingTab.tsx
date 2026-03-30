@@ -120,7 +120,7 @@ export default function MandatoryTrainingTab() {
       {/* Header row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-[#1A1A1A]">법정의무교육 현황</h2>
+          <h2 className="text-lg font-semibold text-foreground">법정의무교육 현황</h2>
           <p className="text-sm text-[#666] mt-0.5">연도별 법정의무교육 이수 현황을 확인합니다.</p>
         </div>
 
@@ -130,7 +130,7 @@ export default function MandatoryTrainingTab() {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(Number(e.target.value))}
-              className="appearance-none pl-3 pr-8 py-2 text-sm font-medium border border-[#D4D4D4] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10 bg-white"
+              className="appearance-none pl-3 pr-8 py-2 text-sm font-medium border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10 bg-white"
             >
               {YEAR_OPTIONS.map((y) => (
                 <option key={y} value={y}>
@@ -158,20 +158,20 @@ export default function MandatoryTrainingTab() {
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className={CARD_STYLES.padded}>
               <div className="space-y-3">
-                <div className="h-4 w-32 bg-[#F5F5F5] rounded animate-pulse" />
-                <div className="h-5 w-48 bg-[#F5F5F5] rounded animate-pulse" />
-                <div className="h-2 w-full bg-[#F5F5F5] rounded animate-pulse" />
+                <div className="h-4 w-32 bg-muted rounded animate-pulse" />
+                <div className="h-5 w-48 bg-muted rounded animate-pulse" />
+                <div className="h-2 w-full bg-muted rounded animate-pulse" />
               </div>
             </div>
           ))}
         </div>
       ) : trainings.length === 0 ? (
-        <div className="bg-white rounded-xl border border-[#E8E8E8] p-12 text-center">
-          <BookOpen className="w-10 h-10 text-[#D4D4D4] mx-auto mb-3" />
+        <div className="bg-white rounded-xl border border-border p-12 text-center">
+          <BookOpen className="w-10 h-10 text-border mx-auto mb-3" />
           <p className="text-sm text-[#666]">{selectedYear}년 교육 데이터가 없습니다.</p>
           <button
             onClick={() => setShowForm(true)}
-            className="mt-4 text-sm text-[#5E81F4] hover:text-[#4B6DE0] font-medium"
+            className="mt-4 text-sm text-primary hover:text-primary/90 font-medium"
           >
             + 교육 추가하기
           </button>
@@ -183,12 +183,12 @@ export default function MandatoryTrainingTab() {
             const barWidth = Math.min(training.completionRate, 100)
             const barColor =
               training.completionRate >= 80
-                ? 'bg-[#059669]'
+                ? 'bg-emerald-600'
                 : training.completionRate >= 50
-                ? 'bg-[#5E81F4]'
+                ? 'bg-primary'
                 : overdue
-                ? 'bg-[#EF4444]'
-                : 'bg-[#F59E0B]'
+                ? 'bg-red-500'
+                : 'bg-amber-500'
 
             return (
               <div
@@ -198,11 +198,11 @@ export default function MandatoryTrainingTab() {
                 {/* Top row */}
                 <div className="flex items-start justify-between mb-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EDF1FE] text-[#4B6DE0] border border-[#EDF1FE]">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary/90 border border-primary/20">
                       {training.trainingType}
                     </span>
                     {overdue && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">
                         <AlertCircle className="w-3 h-3" />
                         기한 초과
                       </span>
@@ -211,7 +211,7 @@ export default function MandatoryTrainingTab() {
                 </div>
 
                 {/* Course title */}
-                <h3 className="text-base font-semibold text-[#1A1A1A] mt-2 mb-3">
+                <h3 className="text-base font-semibold text-foreground mt-2 mb-3">
                   {training.courseTitle}
                 </h3>
 
@@ -236,16 +236,16 @@ export default function MandatoryTrainingTab() {
                     <span
                       className={`text-xs font-semibold ${
                         training.completionRate >= 80
-                          ? 'text-[#047857]'
+                          ? 'text-emerald-700'
                           : overdue
-                          ? 'text-[#B91C1C]'
+                          ? 'text-red-700'
                           : 'text-[#333]'
                       }`}
                     >
                       {training.completionRate}%
                     </span>
                   </div>
-                  <div className="h-2 w-full rounded-full bg-[#F5F5F5]">
+                  <div className="h-2 w-full rounded-full bg-muted">
                     <div
                       className={`h-2 rounded-full ${barColor} transition-all duration-500`}
                       style={{ width: `${barWidth}%` }}

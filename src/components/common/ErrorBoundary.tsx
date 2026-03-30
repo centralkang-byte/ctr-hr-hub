@@ -14,14 +14,14 @@ import { Button } from '@/components/ui/button'
 function DefaultErrorFallback({ onReset }: { onReset: () => void }) {
   return (
     <div className="flex min-h-[400px] flex-col items-center justify-center px-6">
-      <div className="w-full max-w-md rounded-xl border border-[#F0F0F3] bg-white p-8 text-center shadow-sm">
+      <div className="w-full max-w-md rounded-xl border border-border bg-white p-8 text-center shadow-sm">
         <div className="mb-4 flex items-center justify-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#FEF2F2]">
-            <AlertTriangle className="h-8 w-8 text-[#EF4444]" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
+            <AlertTriangle className="h-8 w-8 text-red-500" />
           </div>
         </div>
-        <h2 className="mb-2 text-lg font-bold text-[#1C1D21]">문제가 발생했습니다</h2>
-        <p className="mb-6 text-sm text-[#8181A5]">
+        <h2 className="mb-2 text-lg font-bold text-foreground">문제가 발생했습니다</h2>
+        <p className="mb-6 text-sm text-muted-foreground">
           페이지를 불러오는 중 오류가 발생했습니다. 다시 시도하거나 홈으로 이동해 주세요.
         </p>
         <div className="flex items-center justify-center gap-3">
@@ -34,7 +34,7 @@ function DefaultErrorFallback({ onReset }: { onReset: () => void }) {
           </Button>
           <Button
             size="sm"
-            className="bg-[#5E81F4] text-white hover:bg-[#4B6DE0]"
+            className="bg-primary text-white hover:bg-primary/90"
             onClick={() => { window.location.href = '/' }}
           >
             홈으로 이동

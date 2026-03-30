@@ -21,29 +21,29 @@ export default function PayrollKpiCards({
       label: '대상 인원',
       value: `${headcount}명`,
       icon: Users,
-      color: 'text-[#5E81F4]',
-      bg: 'bg-[#EDF1FE]',
+      color: 'text-primary',
+      bg: 'bg-primary/10',
     },
     {
       label: '총 지급액',
       value: formatCurrency(totalGross),
       icon: TrendingUp,
-      color: 'text-[#059669]',
-      bg: 'bg-[#D1FAE5]',
+      color: 'text-emerald-600',
+      bg: 'bg-emerald-100',
     },
     {
       label: '총 공제액',
       value: formatCurrency(totalDeductions),
       icon: TrendingDown,
-      color: 'text-[#D97706]',
-      bg: 'bg-[#FEF3C7]',
+      color: 'text-amber-600',
+      bg: 'bg-amber-100',
     },
     {
       label: '총 실지급액',
       value: formatCurrency(totalNet),
       icon: Wallet,
-      color: 'text-[#5E81F4]',
-      bg: 'bg-[#E0E7FF]',
+      color: 'text-primary',
+      bg: 'bg-indigo-100',
     },
   ]
 
@@ -60,7 +60,7 @@ export default function PayrollKpiCards({
             </div>
             <p className="text-xs text-[#666]">{card.label}</p>
           </div>
-          <p className="text-2xl font-bold text-[#1A1A1A]">{card.value}</p>
+          <p className="text-2xl font-bold text-foreground">{card.value}</p>
         </div>
       ))}
     </div>

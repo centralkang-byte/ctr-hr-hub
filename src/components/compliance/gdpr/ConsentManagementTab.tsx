@@ -21,10 +21,10 @@ interface Consent {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    active: 'bg-[#D1FAE5] text-[#047857] border border-[#A7F3D0]',
-    revoked: 'bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]',
-    expired: 'bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]',
-    pending: 'bg-[#FEF3C7] text-[#B45309] border border-[#FCD34D]',
+    active: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+    revoked: 'bg-red-100 text-red-700 border border-red-200',
+    expired: 'bg-background text-[#555] border border-border',
+    pending: 'bg-amber-100 text-amber-700 border border-amber-300',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? map.pending}`}>
@@ -71,7 +71,7 @@ export default function ConsentManagementTab() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-[#1A1A1A]">{t('gdpr.consents')}</h2>
+        <h2 className="text-lg font-semibold text-foreground">{t('gdpr.consents')}</h2>
         <button
           onClick={() => setShowForm(true)}
           className={`inline-flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm`}
@@ -104,7 +104,7 @@ export default function ConsentManagementTab() {
                 {consents.map((c) => (
                   <tr key={c.id} className={TABLE_STYLES.row}>
                     <td className="px-4 py-3 text-sm">
-                      <div className="font-medium text-[#1A1A1A]">{c.employee_name}</div>
+                      <div className="font-medium text-foreground">{c.employee_name}</div>
                       <div className="text-xs text-[#999]">{c.employee_no}</div>
                     </td>
                     <td className="px-4 py-3 text-sm text-[#333]">{c.purpose}</td>
@@ -122,7 +122,7 @@ export default function ConsentManagementTab() {
                       {c.status === 'active' && (
                         <button
                           onClick={() => handleRevoke(c.id)}
-                          className="inline-flex items-center gap-1 text-[#DC2626] hover:text-[#B91C1C] text-sm font-medium"
+                          className="inline-flex items-center gap-1 text-red-600 hover:text-red-700 text-sm font-medium"
                         >
                           <XCircle className="w-4 h-4" />
                           {t('gdpr.revokeConsent')}

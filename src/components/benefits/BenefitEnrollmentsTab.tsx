@@ -125,7 +125,7 @@ export default function BenefitEnrollmentsTab() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-[#EF4444]"
+              className="text-red-500"
               onClick={() => handleStatusChange(row, 'EXPIRED')}
             >
               만료처리

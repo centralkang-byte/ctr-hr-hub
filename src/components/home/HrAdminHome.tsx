@@ -88,7 +88,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
                   <AnimatedNumber value={summary?.totalEmployees ?? 0} />
                 </p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#EEF1FF]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                 <Users className="h-5 w-5 text-primary" />
               </div>
             </div>
@@ -161,7 +161,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
         {/* Right sidebar — compact above-fold cards only */}
         <div className="space-y-4">
           {/* 승인 대기 현황 */}
-          <Card className="border-l-4 border-[#F0F0F3] border-l-primary shadow-none">
+          <Card className="border-l-4 border-border border-l-primary shadow-none">
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-800">
                 <CheckSquare className="h-4 w-4 text-primary" />
@@ -191,7 +191,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
           </Card>
 
           {/* 퇴직 진행 현황 */}
-          <Card className="border-[#F0F0F3] shadow-none">
+          <Card className="border-border shadow-none">
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-gray-800">
                 <UserMinus className="h-4 w-4 text-amber-500" />

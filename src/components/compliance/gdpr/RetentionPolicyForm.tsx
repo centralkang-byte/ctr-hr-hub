@@ -116,10 +116,10 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
           {/* Category */}
           <div>
             <label className="block text-sm font-medium text-[#333] mb-1">
-              {tc('category')} <span className="text-[#EF4444]">*</span>
+              {tc('category')} <span className="text-red-500">*</span>
             </label>
             <select
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
               value={form.category}
               onChange={(e) => handleChange('category', e.target.value)}
             >
@@ -133,13 +133,13 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
           {/* Retention Months */}
           <div>
             <label className="block text-sm font-medium text-[#333] mb-1">
-              {t('gdpr.retentionMonths')} <span className="text-[#EF4444]">*</span>
+              {t('gdpr.retentionMonths')} <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
               min={1}
               max={600}
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
               value={form.retention_months}
               onChange={(e) => handleChange('retention_months', parseInt(e.target.value) || 0)}
             />
@@ -150,7 +150,7 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
           <div>
             <label className="block text-sm font-medium text-[#333] mb-1">{tc('description')}</label>
             <textarea
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] resize-none"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none"
               rows={3}
               placeholder="Policy description and legal basis..."
               value={form.description}
@@ -160,7 +160,7 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
 
           {/* Toggles */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-[#FAFAFA] rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-background rounded-lg">
               <div>
                 <p className="text-sm font-medium text-[#333]">{t('gdpr.autoDelete')}</p>
                 <p className="text-xs text-[#999]">Automatically delete data after retention period</p>
@@ -168,13 +168,13 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
               <button
                 type="button"
                 onClick={() => handleChange('auto_delete', !form.auto_delete)}
-                className={`relative w-10 h-5 rounded-full transition-colors ${form.auto_delete ? 'bg-[#5E81F4]' : 'bg-[#D4D4D4]'}`}
+                className={`relative w-10 h-5 rounded-full transition-colors ${form.auto_delete ? 'bg-primary' : 'bg-border'}`}
               >
                 <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.auto_delete ? 'translate-x-5' : 'translate-x-0.5'}`} />
               </button>
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-[#FAFAFA] rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-background rounded-lg">
               <div>
                 <p className="text-sm font-medium text-[#333]">{t('gdpr.anonymize')}</p>
                 <p className="text-xs text-[#999]">Anonymize instead of deleting</p>
@@ -182,20 +182,20 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
               <button
                 type="button"
                 onClick={() => handleChange('anonymize', !form.anonymize)}
-                className={`relative w-10 h-5 rounded-full transition-colors ${form.anonymize ? 'bg-[#5E81F4]' : 'bg-[#D4D4D4]'}`}
+                className={`relative w-10 h-5 rounded-full transition-colors ${form.anonymize ? 'bg-primary' : 'bg-border'}`}
               >
                 <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.anonymize ? 'translate-x-5' : 'translate-x-0.5'}`} />
               </button>
             </div>
           </div>
 
-          {error && <p className="text-sm text-[#DC2626]">{error}</p>}
+          {error && <p className="text-sm text-red-600">{error}</p>}
         </div>
 
         <DialogFooter className="gap-2">
           <button
             onClick={onClose}
-            className="bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
+            className="bg-white border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
           >
             {tc('cancel')}
           </button>

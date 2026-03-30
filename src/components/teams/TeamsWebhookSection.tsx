@@ -123,8 +123,8 @@ export function TeamsWebhookSection() {
       {/* Section header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Webhook className="w-4 h-4 text-[#5E81F4]" />
-          <h3 className="text-base font-semibold text-[#1A1A1A]">
+          <Webhook className="w-4 h-4 text-primary" />
+          <h3 className="text-base font-semibold text-foreground">
             Microsoft Teams Webhook 채널
           </h3>
         </div>
@@ -148,24 +148,24 @@ export function TeamsWebhookSection() {
         <div key={wh.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-start justify-between mb-3">
             <div>
-              <p className="text-sm font-semibold text-[#1A1A1A]">{wh.channelName}</p>
+              <p className="text-sm font-semibold text-foreground">{wh.channelName}</p>
               <p className="text-xs text-[#999] mt-0.5 font-mono tabular-nums break-all">{wh.webhookUrl}</p>
             </div>
             <div className="flex items-center gap-2 ml-4 flex-shrink-0">
               <button
                 onClick={() => handleTest(wh.id, wh.webhookUrl)}
                 disabled={testingId === wh.id}
-                className="flex items-center gap-1 text-xs border border-[#D4D4D4] hover:bg-[#F5F5F5] px-2.5 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center gap-1 text-xs border border-border hover:bg-muted px-2.5 py-1.5 rounded-lg transition-colors disabled:opacity-50"
               >
                 {testResult[wh.id] !== undefined ? (
                   testResult[wh.id] ? (
                     <>
-                      <Check className="w-3 h-3 text-[#059669]" />
+                      <Check className="w-3 h-3 text-emerald-600" />
                       성공
                     </>
                   ) : (
                     <>
-                      <X className="w-3 h-3 text-[#EF4444]" />
+                      <X className="w-3 h-3 text-red-500" />
                       실패
                     </>
                   )
@@ -178,7 +178,7 @@ export function TeamsWebhookSection() {
               </button>
               <button
                 onClick={() => handleDelete(wh.id)}
-                className="p-1.5 text-[#999] hover:text-[#EF4444] hover:bg-[#FEE2E2] rounded-lg transition-colors"
+                className="p-1.5 text-[#999] hover:text-red-500 hover:bg-red-100 rounded-lg transition-colors"
                 aria-label="Webhook 삭제"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -196,7 +196,7 @@ export function TeamsWebhookSection() {
                 return (
                   <span
                     key={et}
-                    className="text-xs px-2 py-0.5 bg-[#EDF1FE] text-[#4B6DE0] rounded-full border border-[#EDF1FE]"
+                    className="text-xs px-2 py-0.5 bg-primary/10 text-primary/90 rounded-full border border-primary/20"
                   >
                     {ev?.label ?? et}
                   </span>
@@ -209,20 +209,20 @@ export function TeamsWebhookSection() {
 
       {/* Add new webhook form */}
       {adding && (
-        <div className="bg-white rounded-xl border border-[#5E81F4]/30 p-4 space-y-3">
+        <div className="bg-white rounded-xl border border-primary/30 p-4 space-y-3">
           <input
             type="text"
             placeholder={'채널명 (예: HR-알림)'}
             value={newChannel}
             onChange={(e) => setNewChannel(e.target.value)}
-            className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 focus:outline-none"
+            className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 focus:outline-none"
           />
           <input
             type="url"
             placeholder="Webhook URL (https://outlook.office.com/...)"
             value={newUrl}
             onChange={(e) => setNewUrl(e.target.value)}
-            className="w-full px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm font-mono tabular-nums focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 focus:outline-none"
+            className="w-full px-3 py-2 border border-border rounded-lg text-sm font-mono tabular-nums focus:border-primary focus:ring-2 focus:ring-primary/10 focus:outline-none"
           />
           <div>
             <p className="text-xs font-medium text-[#666] mb-2">전송할 이벤트</p>
@@ -233,8 +233,8 @@ export function TeamsWebhookSection() {
                   onClick={() => toggleEventType(ev.key)}
                   className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
                     newEvents.includes(ev.key)
-                      ? 'bg-[#5E81F4] text-white border-[#5E81F4]'
-                      : 'bg-white text-[#666] border-[#D4D4D4] hover:border-[#5E81F4]'
+                      ? 'bg-primary text-white border-primary'
+                      : 'bg-white text-[#666] border-border hover:border-primary'
                   }`}
                 >
                   {ev.label}
@@ -257,7 +257,7 @@ export function TeamsWebhookSection() {
                 setNewUrl('')
                 setNewEvents([])
               }}
-              className="bg-white border border-[#D4D4D4] hover:bg-[#F5F5F5] text-[#333] px-4 py-2 rounded-lg text-sm transition-colors"
+              className="bg-white border border-border hover:bg-muted text-[#333] px-4 py-2 rounded-lg text-sm transition-colors"
             >
               취소
             </button>

@@ -116,7 +116,7 @@ function EmployeeQuickPanel({
     return (
       <div className="p-5 space-y-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-5 rounded bg-[#F5F5FA] animate-pulse" />
+          <div key={i} className="h-5 rounded bg-muted animate-pulse" />
         ))}
       </div>
     )
@@ -124,7 +124,7 @@ function EmployeeQuickPanel({
 
   if (!employee) {
     return (
-      <div className="flex items-center justify-center h-40 text-sm text-[#8181A5]">
+      <div className="flex items-center justify-center h-40 text-sm text-muted-foreground">
         직원 정보를 불러올 수 없습니다.
       </div>
     )
@@ -157,8 +157,8 @@ function EmployeeQuickPanel({
   return (
     <div className="flex flex-col h-full">
       {/* Profile header */}
-      <div className="px-5 py-5 flex items-center gap-4 border-b border-[#F0F0F3]">
-        <div className={`w-14 h-14 rounded-full bg-[#F0F0F3] flex items-center justify-center overflow-hidden flex-shrink-0 ${ringClass} ring-offset-2`}>
+      <div className="px-5 py-5 flex items-center gap-4 border-b border-border">
+        <div className={`w-14 h-14 rounded-full bg-border flex items-center justify-center overflow-hidden flex-shrink-0 ${ringClass} ring-offset-2`}>
           {employee.photoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -167,18 +167,18 @@ function EmployeeQuickPanel({
               className="w-full h-full object-cover"
             />
           ) : (
-            <User className="w-7 h-7 text-[#8181A5]" />
+            <User className="w-7 h-7 text-muted-foreground" />
           )}
         </div>
         <div className="min-w-0">
-          <p className="text-[15px] font-semibold text-[#1C1D21] truncate">{employee.name}</p>
+          <p className="text-[15px] font-semibold text-foreground truncate">{employee.name}</p>
           {employee.nameEn && (
-            <p className="text-xs text-[#8181A5] truncate">{employee.nameEn}</p>
+            <p className="text-xs text-muted-foreground truncate">{employee.nameEn}</p>
           )}
           {subtitle && (
             <p className="text-sm text-[#666] mt-0.5 truncate">{subtitle}</p>
           )}
-          <span className="text-xs font-mono tabular-nums text-[#8181A5] mt-1 block">{employee.employeeNo}</span>
+          <span className="text-xs font-mono tabular-nums text-muted-foreground mt-1 block">{employee.employeeNo}</span>
         </div>
       </div>
 
@@ -187,64 +187,64 @@ function EmployeeQuickPanel({
         {/* 조직 */}
         {employee.company && (
           <div className="flex items-center gap-3">
-            <Building2 className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
+            <Building2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
             <div>
-              <p className="text-[11px] text-[#8181A5]">법인</p>
-              <p className="text-sm text-[#1C1D21]">{employee.company.name}</p>
+              <p className="text-[11px] text-muted-foreground">법인</p>
+              <p className="text-sm text-foreground">{employee.company.name}</p>
             </div>
           </div>
         )}
 
         {employee.department && (
           <div className="flex items-center gap-3">
-            <Building2 className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
+            <Building2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
             <div>
-              <p className="text-[11px] text-[#8181A5]">부서</p>
-              <p className="text-sm text-[#1C1D21]">{employee.department.name}</p>
+              <p className="text-[11px] text-muted-foreground">부서</p>
+              <p className="text-sm text-foreground">{employee.department.name}</p>
             </div>
           </div>
         )}
 
         {employee.workLocation && (
           <div className="flex items-center gap-3">
-            <MapPin className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
+            <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
             <div>
-              <p className="text-[11px] text-[#8181A5]">근무지</p>
-              <p className="text-sm text-[#1C1D21]">{employee.workLocation.name}</p>
+              <p className="text-[11px] text-muted-foreground">근무지</p>
+              <p className="text-sm text-foreground">{employee.workLocation.name}</p>
             </div>
           </div>
         )}
 
         {/* 구분선 */}
-        <div className="border-t border-[#F0F0F3]" />
+        <div className="border-t border-border" />
 
         {/* 연락처 */}
         {employee.email && (
           <div className="flex items-center gap-3">
-            <Mail className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
-            <p className="text-sm text-[#1C1D21] truncate">{employee.email}</p>
+            <Mail className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+            <p className="text-sm text-foreground truncate">{employee.email}</p>
           </div>
         )}
 
         {employee.phone && (
           <div className="flex items-center gap-3">
-            <Phone className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
-            <p className="text-sm text-[#1C1D21]">{employee.phone}</p>
+            <Phone className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+            <p className="text-sm text-foreground">{employee.phone}</p>
           </div>
         )}
 
         {/* 구분선 */}
-        <div className="border-t border-[#F0F0F3]" />
+        <div className="border-t border-border" />
 
         {/* 입사일 + 근속 */}
         <div className="flex items-center gap-3">
-          <Calendar className="w-4 h-4 text-[#8181A5] flex-shrink-0" />
+          <Calendar className="w-4 h-4 text-muted-foreground flex-shrink-0" />
           <div>
-            <p className="text-[11px] text-[#8181A5]">입사일</p>
-            <p className="text-sm text-[#1C1D21]">
+            <p className="text-[11px] text-muted-foreground">입사일</p>
+            <p className="text-sm text-foreground">
               {hireDate}
               {employee.hireDate && (
-                <span className="text-xs text-[#8181A5] ml-1.5">· {calcTenure(employee.hireDate)}</span>
+                <span className="text-xs text-muted-foreground ml-1.5">· {calcTenure(employee.hireDate)}</span>
               )}
             </p>
           </div>
@@ -252,7 +252,7 @@ function EmployeeQuickPanel({
 
         {/* 재직 상태 */}
         <div className="pt-1">
-          <p className="text-[11px] text-[#8181A5] mb-1.5">재직 상태</p>
+          <p className="text-[11px] text-muted-foreground mb-1.5">재직 상태</p>
           <Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'}>
             {{
               ACTIVE: 'statusActive',
@@ -265,10 +265,10 @@ function EmployeeQuickPanel({
       </div>
 
       {/* Footer action */}
-      <div className="px-5 py-4 border-t border-[#F0F0F3]">
+      <div className="px-5 py-4 border-t border-border">
         <Button
           onClick={onViewFull}
-          className="w-full bg-[#5E81F4] hover:bg-[#4B6EE0] text-white text-sm font-medium rounded-lg"
+          className="w-full bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-lg"
         >
           <ExternalLink className="w-4 h-4 mr-2" />
           전체 프로필 보기
@@ -449,7 +449,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
       sortable: true,
       render: (row) => (
         <div>
-          <p className={`font-medium ${row.id === selectedId ? 'text-[#5E81F4]' : ''}`}>
+          <p className={`font-medium ${row.id === selectedId ? 'text-primary' : ''}`}>
             {row.name}
           </p>
           {row.nameEn && <p className="text-xs text-muted-foreground">{row.nameEn}</p>}

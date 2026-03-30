@@ -26,11 +26,11 @@ interface BenefitClaim {
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  pending: { label: '승인대기', color: 'bg-[#FEF3C7] text-[#B45309] border-[#FCD34D]' },
-  approved: { label: '승인', color: 'bg-[#D1FAE5] text-[#047857] border-[#A7F3D0]' },
-  rejected: { label: '반려', color: 'bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA]' },
-  paid: { label: '지급완료', color: 'bg-[#EDF1FE] text-[#4B6DE0] border-[#EDF1FE]' },
-  cancelled: { label: '취소', color: 'bg-[#FAFAFA] text-[#555] border-[#E8E8E8]' },
+  pending: { label: '승인대기', color: 'bg-amber-100 text-amber-700 border-amber-300' },
+  approved: { label: '승인', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+  rejected: { label: '반려', color: 'bg-red-100 text-red-700 border-red-200' },
+  paid: { label: '지급완료', color: 'bg-primary/10 text-primary/90 border-primary/20' },
+  cancelled: { label: '취소', color: 'bg-background text-[#555] border-border' },
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -96,16 +96,16 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
   return (
     <div className="flex gap-4" style={{ height: 'calc(100vh - 280px)' }}>
       {/* 좌측 목록 */}
-      <div className="w-80 shrink-0 bg-white rounded-xl border border-[#E8E8E8] overflow-hidden flex flex-col">
-        <div className="p-4 border-b border-[#E8E8E8] flex items-center justify-between">
+      <div className="w-80 shrink-0 bg-white rounded-xl border border-border overflow-hidden flex flex-col">
+        <div className="p-4 border-b border-border flex items-center justify-between">
           <span className="text-sm font-medium text-[#333]">
             {view === 'pending' ? '승인 대기' : '전체 내역'} ({total})
           </span>
-          {loading && <Loader2 className="w-4 h-4 animate-spin text-[#5E81F4]" />}
+          {loading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
         </div>
-        <div className="flex-1 overflow-y-auto divide-y divide-[#F5F5F5]">
+        <div className="flex-1 overflow-y-auto divide-y divide-border">
           {error && (
-            <div className="p-4 text-sm text-[#B91C1C] flex items-center gap-2">
+            <div className="p-4 text-sm text-red-700 flex items-center gap-2">
               <AlertTriangle className="w-4 h-4" />
               {error}
             </div>
@@ -123,10 +123,10 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
               <button
                 key={claim.id}
                 onClick={() => { setSelected(claim); setShowRejectForm(false); setRejectedReason('') }}
-                className={`w-full text-left px-4 py-3 hover:bg-[#FAFAFA] transition-colors ${isSelected ? 'bg-[#EDF1FE]' : ''}`}
+                className={`w-full text-left px-4 py-3 hover:bg-background transition-colors ${isSelected ? 'bg-primary/10' : ''}`}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-[#1A1A1A] truncate">{claim.employee.name}</span>
+                  <span className="text-sm font-medium text-foreground truncate">{claim.employee.name}</span>
                   <span className={`text-xs px-2 py-0.5 rounded-full border shrink-0 ${s.color}`}>
                     {s.label}
                   </span>
@@ -136,7 +136,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
                   <span className="text-xs text-[#999]">
                     {format(new Date(claim.createdAt), 'MM/dd', { locale: ko })}
                   </span>
-                  <span className="text-xs font-semibold text-[#1A1A1A]">
+                  <span className="text-xs font-semibold text-foreground">
                     {formatCurrency(claim.claimAmount, claim.benefitPlan.currency)}
                   </span>
                 </div>
@@ -147,7 +147,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
       </div>
 
       {/* 우측 상세 */}
-      <div className="flex-1 bg-white rounded-xl border border-[#E8E8E8] overflow-hidden flex flex-col">
+      <div className="flex-1 bg-white rounded-xl border border-border overflow-hidden flex flex-col">
         {!selected ? (
           <div className="flex-1 flex flex-col items-center justify-center text-[#999]">
             <ChevronRight className="w-10 h-10 mb-3" />
@@ -155,10 +155,10 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
           </div>
         ) : (
           <>
-            <div className="p-5 border-b border-[#E8E8E8]">
+            <div className="p-5 border-b border-border">
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="text-base font-semibold text-[#1A1A1A]">
+                  <h3 className="text-base font-semibold text-foreground">
                     {selected.employee.name} · {selected.benefitPlan.name}
                   </h3>
                   <p className="text-xs text-[#999] mt-0.5">
@@ -201,7 +201,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
                   <div className="space-y-1">
                     {selected.proofPaths.map((path, i) => (
                       <div key={i} className="flex items-center gap-2 text-sm text-[#555]">
-                        <FileText className="w-4 h-4 text-[#5E81F4]" />
+                        <FileText className="w-4 h-4 text-primary" />
                         {path.split('/').pop()}
                       </div>
                     ))}
@@ -210,15 +210,15 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
               )}
 
               {selected.rejectedReason && (
-                <div className="p-3 bg-[#FEE2E2] rounded-lg">
+                <div className="p-3 bg-red-100 rounded-lg">
                   <p className="text-xs text-[#999] mb-1">반려 사유</p>
-                  <p className="text-sm text-[#B91C1C]">{selected.rejectedReason}</p>
+                  <p className="text-sm text-red-700">{selected.rejectedReason}</p>
                 </div>
               )}
             </div>
 
             {selected.status === 'pending' && (
-              <div className="p-5 border-t border-[#E8E8E8] space-y-3">
+              <div className="p-5 border-t border-border space-y-3">
                 {showRejectForm && (
                   <div>
                     <label className="text-xs text-[#333] font-medium mb-1 block">반려 사유 *</label>
@@ -227,7 +227,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
                       onChange={(e) => setRejectedReason(e.target.value)}
                       placeholder={'반려 사유를 입력해 주세요.'}
                       rows={2}
-                      className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 resize-none"
+                      className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 resize-none"
                     />
                   </div>
                 )}
@@ -238,14 +238,14 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
                       void handleAction('reject')
                     }}
                     disabled={processing}
-                    className="flex-1 py-2 border border-[#FCA5A5] text-[#DC2626] hover:bg-[#FEE2E2] rounded-lg text-sm font-medium disabled:opacity-50"
+                    className="flex-1 py-2 border border-red-300 text-red-600 hover:bg-red-100 rounded-lg text-sm font-medium disabled:opacity-50"
                   >
                     {showRejectForm ? '반려 확인' : '반려'}
                   </button>
                   <button
                     onClick={() => void handleAction('approve')}
                     disabled={processing}
-                    className="flex-1 py-2 bg-[#059669] hover:bg-[#047857] text-white rounded-lg text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     {processing && <Loader2 className="w-4 h-4 animate-spin" />}
                     승인

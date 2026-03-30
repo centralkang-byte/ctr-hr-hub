@@ -24,37 +24,37 @@ export function GradeScaleTab({
       .finally(() => setLoading(false))
   }, [companyId])
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_keb93b1ea_kecb2b4ea')}</h3>
-        <p className="text-sm text-[#8181A5]">{grades.length}단계 등급 체계</p>
+        <h3 className="text-base font-semibold text-foreground">{t('kr_keb93b1ea_kecb2b4ea')}</h3>
+        <p className="text-sm text-muted-foreground">{grades.length}단계 등급 체계</p>
       </div>
       {grades.length > 0 ? (
         <div className="space-y-3">
           {grades.map((g) => (
-            <div key={g.key} className="flex items-center gap-4 rounded-xl border border-[#F0F0F3] p-4 hover:bg-[#F5F5FA] transition-colors">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#5E81F4] text-sm font-bold text-white">{g.key}</div>
+            <div key={g.key} className="flex items-center gap-4 rounded-xl border border-border p-4 hover:bg-muted transition-colors">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-sm font-bold text-white">{g.key}</div>
               <div className="flex-1">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-sm font-semibold text-[#1C1D21]">{g.labelKo}</span>
-                  <span className="text-xs text-[#8181A5]">{g.labelEn}</span>
+                  <span className="text-sm font-semibold text-foreground">{g.labelKo}</span>
+                  <span className="text-xs text-muted-foreground">{g.labelEn}</span>
                 </div>
-                <p className="text-xs text-[#8181A5]">{g.description}</p>
+                <p className="text-xs text-muted-foreground">{g.description}</p>
               </div>
               <div className="text-right">
-                <span className="text-lg font-bold text-[#5E81F4]">{g.guidePct}%</span>
-                <p className="text-xs text-[#8181A5]">{t('kr_kebb0b0eb_keab080ec')}</p>
+                <span className="text-lg font-bold text-primary">{g.guidePct}%</span>
+                <p className="text-xs text-muted-foreground">{t('kr_kebb0b0eb_keab080ec')}</p>
               </div>
             </div>
           ))}
-          <div className="mt-2 text-right text-sm text-[#8181A5]">합계: {grades.reduce((s, g) => s + g.guidePct, 0)}%</div>
+          <div className="mt-2 text-right text-sm text-muted-foreground">합계: {grades.reduce((s, g) => s + g.guidePct, 0)}%</div>
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-[#F0F0F3] py-12 text-center">
-          <Info className="mx-auto mb-3 h-8 w-8 text-[#8181A5]" /><p className="text-sm font-medium text-[#1C1D21]">{t('kr_keb93b1ea_kecb2b4ea_kec84a4ec_')}</p>
+        <div className="rounded-xl border border-dashed border-border py-12 text-center">
+          <Info className="mx-auto mb-3 h-8 w-8 text-muted-foreground" /><p className="text-sm font-medium text-foreground">{t('kr_keb93b1ea_kecb2b4ea_kec84a4ec_')}</p>
         </div>
       )}
     </div>

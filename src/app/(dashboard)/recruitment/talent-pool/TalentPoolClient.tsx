@@ -43,17 +43,17 @@ interface TalentPoolEntry {
 }
 
 const POOL_REASON_LABELS: Record<string, { label: string; color: string }> = {
-  rejected_qualified: { label: '우수 불합격', color: 'bg-[#E0E7FF] text-[#4B6DE0]' },
-  withdrawn: { label: '자진 철회', color: 'bg-[#FEF3C7] text-[#B45309]' },
-  overqualified: { label: '역량 초과', color: 'bg-[#F0F9FF] text-[#0369A1]' },
-  manual: { label: '수동 등록', color: 'bg-[#FAFAFA] text-[#555]' },
+  rejected_qualified: { label: '우수 불합격', color: 'bg-indigo-100 text-primary/90' },
+  withdrawn: { label: '자진 철회', color: 'bg-amber-100 text-amber-700' },
+  overqualified: { label: '역량 초과', color: 'bg-sky-50 text-sky-700' },
+  manual: { label: '수동 등록', color: 'bg-background text-[#555]' },
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  active: { label: '활성', color: 'bg-[#D1FAE5] text-[#047857]' },
-  contacted: { label: '접촉 중', color: 'bg-[#FEF3C7] text-[#B45309]' },
-  expired: { label: '만료', color: 'bg-[#FAFAFA] text-[#999]' },
-  hired: { label: '채용 완료', color: 'bg-[#EDF1FE] text-[#4B6DE0]' },
+  active: { label: '활성', color: 'bg-emerald-100 text-emerald-700' },
+  contacted: { label: '접촉 중', color: 'bg-amber-100 text-amber-700' },
+  expired: { label: '만료', color: 'bg-background text-[#999]' },
+  hired: { label: '채용 완료', color: 'bg-primary/10 text-primary/90' },
 }
 
 const STAGE_LABELS: Record<string, string> = {
@@ -114,12 +114,12 @@ export default function TalentPoolClient({user }: {
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">Talent Pool</h1>
+          <h1 className="text-2xl font-bold text-foreground">Talent Pool</h1>
           <p className="text-sm text-[#666] mt-0.5">{t('good_ked9b84eb_kec9db8ec_ked9280_management_gdpr_2keb8584_kebb3b4ea')}</p>
         </div>
         <button
           onClick={load}
-          className="flex items-center gap-2 px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] hover:bg-[#FAFAFA]"
+          className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-[#555] hover:bg-background"
         >
           <RefreshCw size={14} />
           {t('kr_kec8388eb')}
@@ -129,14 +129,14 @@ export default function TalentPoolClient({user }: {
       {/* KPI */}
       <div className="grid grid-cols-4 gap-4">
         {[
-          { label: t('all_kec9db8ec'), value: stats.total, icon: <Users size={18} />, color: 'text-[#4B6DE0]' },
-          { label: t('active'), value: stats.active, icon: <CheckCircle2 size={18} />, color: 'text-[#047857]' },
-          { label: t('kr_keca091ec_keca491'), value: stats.contacted, icon: <Mail size={18} />, color: 'text-[#B45309]' },
-          { label: t('kr_30kec9dbc_keb82b4_keba78ceb'), value: stats.expiringSoon, icon: <Clock size={18} />, color: 'text-[#B91C1C]' },
+          { label: t('all_kec9db8ec'), value: stats.total, icon: <Users size={18} />, color: 'text-primary/90' },
+          { label: t('active'), value: stats.active, icon: <CheckCircle2 size={18} />, color: 'text-emerald-700' },
+          { label: t('kr_keca091ec_keca491'), value: stats.contacted, icon: <Mail size={18} />, color: 'text-amber-700' },
+          { label: t('kr_30kec9dbc_keb82b4_keba78ceb'), value: stats.expiringSoon, icon: <Clock size={18} />, color: 'text-red-700' },
         ].map((kpi) => (
           <div key={kpi.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <div className={`${kpi.color} mb-1`}>{kpi.icon}</div>
-            <p className="text-2xl font-bold text-[#1A1A1A]">{kpi.value}</p>
+            <p className="text-2xl font-bold text-foreground">{kpi.value}</p>
             <p className="text-xs text-[#666] mt-0.5">{kpi.label}</p>
           </div>
         ))}
@@ -150,13 +150,13 @@ export default function TalentPoolClient({user }: {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={tCommon('searchPlaceholder')}
-            className="w-full pl-9 pr-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
+            className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm text-[#555] focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
+          className="px-3 py-2 border border-border rounded-lg text-sm text-[#555] focus:ring-2 focus:ring-primary/10 focus:border-primary"
         >
           <option value="">{t('all_status')}</option>
           <option value="active">{t('active')}</option>
@@ -171,7 +171,7 @@ export default function TalentPoolClient({user }: {
         <div className="flex items-center justify-center h-48 text-[#999] text-sm">{tCommon('loading')}</div>
       ) : items.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-48 text-[#999]">
-          <UserPlus size={40} className="mb-3 text-[#E8E8E8]" />
+          <UserPlus size={40} className="mb-3 text-border" />
           <EmptyState />
         </div>
       ) : (
@@ -195,13 +195,13 @@ export default function TalentPoolClient({user }: {
                         {reasonInfo.label}
                       </span>
                       {!entry.consentGiven && (
-                        <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-[#FEE2E2] text-[#B91C1C]">
+                        <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700">
                           <AlertTriangle size={10} />
                           {t('kr_keb8f99ec_kec9786ec')}
                         </span>
                       )}
                       {isExpiringSoon && (
-                        <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-[#FEF3C7] text-[#B45309]">
+                        <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
                           <Clock size={10} />
                           {daysLeft}일 후 만료
                         </span>
@@ -209,7 +209,7 @@ export default function TalentPoolClient({user }: {
                     </div>
 
                     {/* 후보자 정보 */}
-                    <h3 className="font-semibold text-[#1A1A1A]">{entry.applicant.name}</h3>
+                    <h3 className="font-semibold text-foreground">{entry.applicant.name}</h3>
                     <div className="flex items-center gap-3 mt-1 text-sm text-[#666] flex-wrap">
                       <span className="flex items-center gap-1">
                         <Mail size={13} />
@@ -228,7 +228,7 @@ export default function TalentPoolClient({user }: {
                       <div className="flex items-center gap-1.5 mt-2 flex-wrap">
                         <Tag size={13} className="text-[#999]" />
                         {entry.tags.map((tag) => (
-                          <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-[#F5F5F5] text-[#555]">
+                          <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-muted text-[#555]">
                             {tag}
                           </span>
                         ))}
@@ -262,7 +262,7 @@ export default function TalentPoolClient({user }: {
                       value={entry.status}
                       onChange={(e) => handleStatusChange(entry.id, e.target.value)}
                       disabled={updatingId === entry.id}
-                      className="px-2 py-1.5 border border-[#D4D4D4] rounded-lg text-xs text-[#555] disabled:opacity-50"
+                      className="px-2 py-1.5 border border-border rounded-lg text-xs text-[#555] disabled:opacity-50"
                     >
                       <option value="active">{t('active')}</option>
                       <option value="contacted">{t('kr_keca091ec_keca491')}</option>

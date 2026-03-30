@@ -78,7 +78,7 @@ export function LeaveAccrualTab({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     )
   }
@@ -91,8 +91,8 @@ export function LeaveAccrualTab({
   return (
     <div className="space-y-6">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-[#1C1D21]">{'휴가 부여 규칙'}</h3>
-        <p className="text-sm text-[#8181A5]">
+        <h3 className="text-base font-semibold text-foreground">{'휴가 부여 규칙'}</h3>
+        <p className="text-sm text-muted-foreground">
           {'휴가 유형별 부여 방식, 근속 가산, 이월 정책 설정'}
         </p>
       </div>
@@ -110,20 +110,20 @@ export function LeaveAccrualTab({
               type="checkbox"
               checked={settings.allowNegativeBalance}
               onChange={(e) => setSettings((p) => ({ ...p, allowNegativeBalance: e.target.checked }))}
-              className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
+              className="h-4 w-4 rounded border-border text-primary"
             />
-            <span className="text-[#1C1D21]">{'마이너스 연차 허용'}</span>
+            <span className="text-foreground">{'마이너스 연차 허용'}</span>
           </label>
           {settings.allowNegativeBalance && (
             <div className="flex items-center gap-2 pl-6">
-              <span className="text-sm text-[#8181A5]">{'최대 마이너스 한도:'}</span>
+              <span className="text-sm text-muted-foreground">{'최대 마이너스 한도:'}</span>
               <Input
                 type="number"
                 value={settings.negativeBalanceLimit}
                 onChange={(e) => setSettings((p) => ({ ...p, negativeBalanceLimit: Number(e.target.value) }))}
                 className="w-20"
               />
-              <span className="text-sm text-[#8181A5]">{'일'}</span>
+              <span className="text-sm text-muted-foreground">{'일'}</span>
             </div>
           )}
         </div>
@@ -131,34 +131,34 @@ export function LeaveAccrualTab({
 
       {/* 유형별 부여 규칙 accordion */}
       <div>
-        <h4 className="mb-3 text-sm font-semibold text-[#1C1D21]">{'유형별 부여 규칙'}</h4>
+        <h4 className="mb-3 text-sm font-semibold text-foreground">{'유형별 부여 규칙'}</h4>
         {typesWithRules.length > 0 ? (
           <div className="space-y-2">
             {typesWithRules.map((typeDef) => {
               const rule = typeDef.accrualRules?.[0]
               const isExpanded = expandedId === typeDef.id
               return (
-                <div key={typeDef.id} className="rounded-xl border border-[#F0F0F3]">
+                <div key={typeDef.id} className="rounded-xl border border-border">
                   <button
                     type="button"
                     onClick={() => setExpandedId(isExpanded ? null : typeDef.id)}
-                    className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-[#F5F5FA]"
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted"
                   >
                     {isExpanded ? (
-                      <ChevronDown className="h-4 w-4 text-[#8181A5]" />
+                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
                     ) : (
-                      <ChevronRight className="h-4 w-4 text-[#8181A5]" />
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     )}
-                    <span className="font-mono tabular-nums text-xs text-[#5E81F4]">{typeDef.code}</span>
-                    <span className="text-sm font-medium text-[#1C1D21]">{typeDef.name}</span>
+                    <span className="font-mono tabular-nums text-xs text-primary">{typeDef.code}</span>
+                    <span className="text-sm font-medium text-foreground">{typeDef.name}</span>
                     {rule && (
-                      <span className="ml-auto text-xs text-[#8181A5]">
+                      <span className="ml-auto text-xs text-muted-foreground">
                         {rule.accrualType === 'annual' ? '연간 부여' : rule.accrualType === 'monthly' ? '월별 부여' : '수동 부여'} · {rule.accrualBasis === 'hire_date_anniversary' ? '입사일 기준' : '회계연도 기준'}
                       </span>
                     )}
                   </button>
                   {isExpanded && rule && (
-                    <div className="border-t border-[#F0F0F3] px-4 py-4">
+                    <div className="border-t border-border px-4 py-4">
                       <AccrualRuleDetail rule={rule} />
                     </div>
                   )}
@@ -167,12 +167,12 @@ export function LeaveAccrualTab({
             })}
           </div>
         ) : (
-          <div className="rounded-xl border border-dashed border-[#F0F0F3] py-8 text-center">
-            <Info className="mx-auto mb-2 h-6 w-6 text-[#8181A5]" />
-            <p className="text-sm text-[#8181A5]">
+          <div className="rounded-xl border border-dashed border-border py-8 text-center">
+            <Info className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">
               {'부여 규칙이 설정된 휴가 유형이 없습니다'}
             </p>
-            <p className="mt-1 text-xs text-[#8181A5]">
+            <p className="mt-1 text-xs text-muted-foreground">
               {'휴가 유형 탭에서 유형을 추가한 후 부여 규칙을 설정하세요'}
             </p>
           </div>
@@ -190,9 +190,9 @@ export function LeaveAccrualTab({
           <input
             type="checkbox"
             defaultChecked={true}
-            className="h-4 w-4 rounded border-[#F0F0F3] text-[#5E81F4]"
+            className="h-4 w-4 rounded border-border text-primary"
           />
-          <span className="text-[#1C1D21]">{'비례 부여 활성화'}</span>
+          <span className="text-foreground">{'비례 부여 활성화'}</span>
         </label>
       </SettingFieldWithOverride>
 
@@ -215,21 +215,21 @@ function AccrualRuleDetail({ rule }: { rule: LeaveAccrualRuleRow }) {
     <div className="space-y-4">
       {/* Summary */}
       <div className="grid grid-cols-2 gap-4 text-sm">
-        <div className="rounded-lg bg-[#F5F5FA] px-3 py-2">
-          <p className="text-xs text-[#8181A5]">{'부여 방식'}</p>
-          <p className="font-medium text-[#1C1D21]">
+        <div className="rounded-lg bg-muted px-3 py-2">
+          <p className="text-xs text-muted-foreground">{'부여 방식'}</p>
+          <p className="font-medium text-foreground">
             {rule.accrualType === 'annual' ? '연간 일괄 부여' : rule.accrualType === 'monthly' ? '월별 적립' : '수동 부여'}
           </p>
         </div>
-        <div className="rounded-lg bg-[#F5F5FA] px-3 py-2">
-          <p className="text-xs text-[#8181A5]">{'기준 기간'}</p>
-          <p className="font-medium text-[#1C1D21]">
+        <div className="rounded-lg bg-muted px-3 py-2">
+          <p className="text-xs text-muted-foreground">{'기준 기간'}</p>
+          <p className="font-medium text-foreground">
             {rule.accrualBasis === 'hire_date_anniversary' ? '입사일 기준' : '회계연도 (1/1)'}
           </p>
         </div>
-        <div className="rounded-lg bg-[#F5F5FA] px-3 py-2">
-          <p className="text-xs text-[#8181A5]">{'이월 정책'}</p>
-          <p className="font-medium text-[#1C1D21]">
+        <div className="rounded-lg bg-muted px-3 py-2">
+          <p className="text-xs text-muted-foreground">{'이월 정책'}</p>
+          <p className="font-medium text-foreground">
             {rule.carryOverType === 'none'
               ? '이월 불가'
               : rule.carryOverType === 'limited'
@@ -238,9 +238,9 @@ function AccrualRuleDetail({ rule }: { rule: LeaveAccrualRuleRow }) {
           </p>
         </div>
         {rule.carryOverExpiryMonths && (
-          <div className="rounded-lg bg-[#F5F5FA] px-3 py-2">
-            <p className="text-xs text-[#8181A5]">{'이월 소멸'}</p>
-            <p className="font-medium text-[#1C1D21]">{rule.carryOverExpiryMonths}개월 후 소멸</p>
+          <div className="rounded-lg bg-muted px-3 py-2">
+            <p className="text-xs text-muted-foreground">{'이월 소멸'}</p>
+            <p className="font-medium text-foreground">{rule.carryOverExpiryMonths}개월 후 소멸</p>
           </div>
         )}
       </div>
@@ -257,27 +257,27 @@ function AccrualRuleDetail({ rule }: { rule: LeaveAccrualRuleRow }) {
                 <th className={TABLE_STYLES.headerCellRight}>{'상한'}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F0F0F3]">
+            <tbody className="divide-y divide-border">
               {tiers.map((tier, i) => (
                 <tr key={i}>
-                  <td className="px-3 py-2 text-[#1C1D21]">
+                  <td className="px-3 py-2 text-foreground">
                     {tier.minTenureMonths !== undefined ? `${tier.minTenureMonths}개월` : '—'}
                     {' ~ '}
                     {tier.maxTenureMonths !== undefined && tier.maxTenureMonths !== null
                       ? `${tier.maxTenureMonths}개월`
                       : '무제한'}
                   </td>
-                  <td className="px-3 py-2 text-right text-[#1C1D21]">
+                  <td className="px-3 py-2 text-right text-foreground">
                     {tier.daysPerYear !== undefined
                       ? `연 ${tier.daysPerYear}일`
                       : tier.daysPerMonth !== undefined
                         ? `월 ${tier.daysPerMonth}일`
                         : '—'}
                   </td>
-                  <td className="px-3 py-2 text-right text-[#8181A5]">
+                  <td className="px-3 py-2 text-right text-muted-foreground">
                     {tier.bonusPerTwoYears ? `2년마다 +${tier.bonusPerTwoYears}일` : '—'}
                   </td>
-                  <td className="px-3 py-2 text-right text-[#8181A5]">
+                  <td className="px-3 py-2 text-right text-muted-foreground">
                     {tier.maxDays ? `최대 ${tier.maxDays}일` : '—'}
                   </td>
                 </tr>

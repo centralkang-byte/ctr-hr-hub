@@ -93,18 +93,18 @@ export default function NewGoalClient({
   // ─── Render ───────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="mx-auto max-w-2xl">
         {/* Header */}
         <div className="mb-6">
           <button
             onClick={() => router.push('/performance/goals')}
-            className="mb-4 inline-flex items-center gap-1 text-sm text-[#999] hover:text-[#5E81F4] transition-colors"
+            className="mb-4 inline-flex items-center gap-1 text-sm text-[#999] hover:text-primary transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             {t('backToGoalList')}
           </button>
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">{t('newGoalRegister')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('newGoalRegister')}</h1>
         </div>
 
         {/* Form */}
@@ -117,11 +117,11 @@ export default function NewGoalClient({
           {/* 사이클 */}
           <div>
             <label className="mb-1 block text-sm font-medium text-[#666]">
-              {t('cycleLabel')} <span className="text-[#EF4444]">*</span>
+              {t('cycleLabel')} <span className="text-red-500">*</span>
             </label>
             <select
               {...register('cycleId')}
-              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
             >
               <option value="">{t('selectCycle')}</option>
               {!cycles?.length && <EmptyState />}
@@ -132,23 +132,23 @@ export default function NewGoalClient({
               ))}
             </select>
             {errors.cycleId && (
-              <p className="mt-1 text-xs text-[#EF4444]">{errors.cycleId.message}</p>
+              <p className="mt-1 text-xs text-red-500">{errors.cycleId.message}</p>
             )}
           </div>
 
           {/* 제목 */}
           <div>
             <label className="mb-1 block text-sm font-medium text-[#666]">
-              {t('titleLabel')} <span className="text-[#EF4444]">*</span>
+              {t('titleLabel')} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               {...register('title')}
               placeholder={t('titlePlaceholder')}
-              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
             {errors.title && (
-              <p className="mt-1 text-xs text-[#EF4444]">{errors.title.message}</p>
+              <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>
             )}
           </div>
 
@@ -161,10 +161,10 @@ export default function NewGoalClient({
               rows={4}
               {...register('description')}
               placeholder={t('descriptionPlaceholder')}
-              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
             {errors.description && (
-              <p className="mt-1 text-xs text-[#EF4444]">
+              <p className="mt-1 text-xs text-red-500">
                 {errors.description.message}
               </p>
             )}
@@ -173,17 +173,17 @@ export default function NewGoalClient({
           {/* 가중치 */}
           <div>
             <label className="mb-1 block text-sm font-medium text-[#666]">
-              {t('weightPercent')} <span className="text-[#EF4444]">*</span>
+              {t('weightPercent')} <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
               min={0}
               max={100}
               {...register('weight')}
-              className="w-32 rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-32 rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
             {errors.weight && (
-              <p className="mt-1 text-xs text-[#EF4444]">{errors.weight.message}</p>
+              <p className="mt-1 text-xs text-red-500">{errors.weight.message}</p>
             )}
           </div>
 
@@ -196,10 +196,10 @@ export default function NewGoalClient({
               type="text"
               {...register('targetMetric')}
               placeholder={t('kpiMetricPlaceholder')}
-              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
             {errors.targetMetric && (
-              <p className="mt-1 text-xs text-[#EF4444]">
+              <p className="mt-1 text-xs text-red-500">
                 {errors.targetMetric.message}
               </p>
             )}
@@ -214,10 +214,10 @@ export default function NewGoalClient({
               type="text"
               {...register('targetValue')}
               placeholder={t('targetValuePlaceholder')}
-              className="w-full rounded-lg border border-[#E8E8E8] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/10"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
             {errors.targetValue && (
-              <p className="mt-1 text-xs text-[#EF4444]">
+              <p className="mt-1 text-xs text-red-500">
                 {errors.targetValue.message}
               </p>
             )}
@@ -228,14 +228,14 @@ export default function NewGoalClient({
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-lg bg-[#5E81F4] px-6 py-2 text-sm font-medium text-white hover:bg-[#4B6DE0] disabled:opacity-50 transition-colors"
+              className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50 transition-colors"
             >
               {submitting ? t('registering') : t('registerGoal')}
             </button>
             <button
               type="button"
               onClick={() => router.push('/performance/goals')}
-              className="rounded-lg border border-[#E8E8E8] px-6 py-2 text-sm font-medium text-[#666] hover:bg-[#FAFAFA] transition-colors"
+              className="rounded-lg border border-border px-6 py-2 text-sm font-medium text-[#666] hover:bg-background transition-colors"
             >
               {tc('cancel')}
             </button>

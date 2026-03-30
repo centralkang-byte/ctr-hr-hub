@@ -32,14 +32,14 @@ export function InterviewFormTab({
     }),
   })
 
-  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[#5E81F4]" /></div>
+  if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[#1C1D21]">{t('interview_ked8f89ea')}</h3>
-          <p className="text-sm text-[#8181A5]">{t('interview_ked8f89ea_keab8b0eb_ked95adeb_management')}</p>
+          <h3 className="text-base font-semibold text-foreground">{t('interview_ked8f89ea')}</h3>
+          <p className="text-sm text-muted-foreground">{t('interview_ked8f89ea_keab8b0eb_ked95adeb_management')}</p>
         </div>
         {isOverridden && (
           <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
@@ -47,10 +47,10 @@ export function InterviewFormTab({
       </div>
       {settings.categories.map((cat) => (
         <div key={cat.category}>
-          <h4 className="mb-2 text-sm font-semibold text-[#8181A5]">{cat.category}</h4>
+          <h4 className="mb-2 text-sm font-semibold text-muted-foreground">{cat.category}</h4>
           <div className="space-y-1">{cat.items.map((item) => (
-            <div key={item} className="flex items-center gap-3 rounded-xl border border-[#F0F0F3] px-4 py-3 hover:bg-[#F5F5FA]">
-              <span className="text-sm text-[#1C1D21]">{item}</span>
+            <div key={item} className="flex items-center gap-3 rounded-xl border border-border px-4 py-3 hover:bg-muted">
+              <span className="text-sm text-foreground">{item}</span>
             </div>
           ))}</div>
         </div>

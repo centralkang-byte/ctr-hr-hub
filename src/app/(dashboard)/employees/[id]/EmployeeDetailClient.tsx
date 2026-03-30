@@ -163,7 +163,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="py-2.5">
       <p className="text-xs text-[#999] font-medium mb-1">{label}</p>
-      <div className="text-sm text-[#1A1A1A]">{value ?? '-'}</div>
+      <div className="text-sm text-foreground">{value ?? '-'}</div>
     </div>
   )
 }
@@ -452,7 +452,7 @@ export function EmployeeDetailClient({
     return (
       <div className="space-y-6">
         <div>
-          <h3 className="mb-3 text-base font-bold text-[#1A1A1A] tracking-ctr">{t('personalInfo')}</h3>
+          <h3 className="mb-3 text-base font-bold text-foreground tracking-ctr">{t('personalInfo')}</h3>
           <dl className="grid grid-cols-1 gap-x-8 gap-y-0 md:grid-cols-2">
             <InfoRow label={t('nameKorean')} value={employee.name} />
             <InfoRow label={t('nameEn')} value={employee.nameEn} />
@@ -467,7 +467,7 @@ export function EmployeeDetailClient({
         </div>
         <Separator />
         <div>
-          <h3 className="mb-3 text-base font-bold text-[#1A1A1A] tracking-ctr">{t('employmentInfo')}</h3>
+          <h3 className="mb-3 text-base font-bold text-foreground tracking-ctr">{t('employmentInfo')}</h3>
           <dl className="grid grid-cols-1 gap-x-8 gap-y-0 md:grid-cols-2">
             <InfoRow label={t('employeeCode')} value={<span className="font-mono tabular-nums">{employee.employeeNo}</span>} />
             <InfoRow label={t('companyEntity')} value={employee.company?.name} />
@@ -528,7 +528,7 @@ export function EmployeeDetailClient({
           <div className="flex items-center gap-4">
             <Avatar name={employee.name} photoUrl={employee.photoUrl} size="lg" />
             <div>
-              <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-ctr">{employee.name}</h1>
+              <h1 className="text-2xl font-bold text-foreground tracking-ctr">{employee.name}</h1>
               <p className="text-sm text-[#999]">
                 {employee.department?.name ?? '-'}{employee.jobGrade ? ` · ${employee.jobGrade.name}` : ''}
               </p>
@@ -573,7 +573,7 @@ export function EmployeeDetailClient({
 
             {/* Tab 1: 프로필 */}
             <TabsContent value="profile" className="mt-0">
-              <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
+              <div className="rounded-xl border border-border bg-white p-6">
                 {isHrAdmin && !editing && (
                   <div className="mb-4 flex justify-end">
                     <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
@@ -583,8 +583,8 @@ export function EmployeeDetailClient({
                   </div>
                 )}
                 {editing && (
-                  <div className="mb-4 rounded-lg bg-[#FEF3C7] border border-[#FCD34D] px-4 py-3">
-                    <p className="text-xs text-[#B45309]">
+                  <div className="mb-4 rounded-lg bg-amber-100 border border-amber-300 px-4 py-3">
+                    <p className="text-xs text-amber-700">
                       ⚠️ 소속정보(부서/직급/고용형태)는 발령 프로세스를 통해서만 변경 가능합니다.
                     </p>
                   </div>
@@ -605,7 +605,7 @@ export function EmployeeDetailClient({
             {/* Tab 3: 급여정보 (HR Admin only) */}
             {isHrAdmin && (
               <TabsContent value="compensation-info" className="mt-0">
-                <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
+                <div className="rounded-xl border border-border bg-white p-6">
                   <CompensationTab employeeId={employee.id} />
                 </div>
               </TabsContent>
@@ -623,9 +623,9 @@ export function EmployeeDetailClient({
 
             {/* Tab 6: 평가결과 (comingSoon - B3) */}
             <TabsContent value="performance" className="mt-0">
-              <div className="rounded-xl border border-[#E8E8E8] bg-white p-6">
+              <div className="rounded-xl border border-border bg-white p-6">
                 <div className="flex flex-col items-center py-12 text-[#999]">
-                  <TrendingUp className="h-10 w-10 mb-3 text-[#E8E8E8]" />
+                  <TrendingUp className="h-10 w-10 mb-3 text-border" />
                   <p className="text-sm font-medium text-[#666]">평가결과</p>
                   <p className="text-xs mt-1">B3 세션에서 구현 예정입니다.</p>
                 </div>
@@ -636,7 +636,7 @@ export function EmployeeDetailClient({
 
         {/* ─── Offboarding action (HR_ADMIN + ACTIVE) ─── */}
         {isHrAdmin && employee.status === 'ACTIVE' && (
-          <div className="mt-6 pt-6 border-t border-[#E8E8E8]">
+          <div className="mt-6 pt-6 border-t border-border">
             <Button
               variant="destructive"
               size="sm"

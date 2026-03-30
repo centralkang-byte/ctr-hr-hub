@@ -13,10 +13,10 @@ interface DepartmentHeatmapProps {
 }
 
 function getHeatColor(score: number): string {
-  if (score >= 70) return 'bg-[#FECACA] text-[#7F1D1D]'
-  if (score >= 50) return 'bg-[#FFEDD5] text-[#7C2D12]'
-  if (score >= 35) return 'bg-[#FEF3C7] text-[#78350F]'
-  return 'bg-[#D1FAE5] text-[#064E3B]'
+  if (score >= 70) return 'bg-red-200 text-red-900'
+  if (score >= 50) return 'bg-orange-100 text-orange-900'
+  if (score >= 35) return 'bg-amber-100 text-amber-900'
+  return 'bg-emerald-100 text-emerald-900'
 }
 
 export default function DepartmentHeatmap({ departments }: DepartmentHeatmapProps) {
@@ -24,7 +24,7 @@ export default function DepartmentHeatmap({ departments }: DepartmentHeatmapProp
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h3 className="text-lg font-semibold text-[#1A1A1A] mb-4">부서별 이탈 위험</h3>
+      <h3 className="text-lg font-semibold text-foreground mb-4">부서별 이탈 위험</h3>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {sorted.map((dept) => (
           <div

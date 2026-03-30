@@ -121,8 +121,8 @@ export function NotificationPreferenceClient() {
     return (
       <div className="p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-[#F5F5F5] rounded w-48" />
-          <div className="h-64 bg-[#F5F5F5] rounded-xl" />
+          <div className="h-8 bg-muted rounded w-48" />
+          <div className="h-64 bg-muted rounded-xl" />
         </div>
       </div>
     )
@@ -132,14 +132,14 @@ export function NotificationPreferenceClient() {
     <div className="p-6 max-w-3xl">
       {/* Header */}
       <div className="flex items-center gap-2 mb-6">
-        <Bell className="w-5 h-5 text-[#5E81F4]" />
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">{'알림 설정'}</h1>
+        <Bell className="w-5 h-5 text-primary" />
+        <h1 className="text-2xl font-bold text-foreground">{'알림 설정'}</h1>
       </div>
 
       {/* Channel toggles */}
-      <div className="bg-white rounded-xl border border-[#E8E8E8] overflow-hidden mb-6">
+      <div className="bg-white rounded-xl border border-border overflow-hidden mb-6">
         {/* Header row */}
-        <div className="grid grid-cols-[1fr_80px_80px_80px] gap-4 px-5 py-3 bg-[#FAFAFA] border-b border-[#E8E8E8]">
+        <div className="grid grid-cols-[1fr_80px_80px_80px] gap-4 px-5 py-3 bg-background border-b border-border">
           <span className="text-xs font-semibold text-[#999] uppercase tracking-wider">
             이벤트
           </span>
@@ -157,7 +157,7 @@ export function NotificationPreferenceClient() {
         {EVENT_GROUPS.map((group) => (
           <div key={group.label}>
             {/* Group header */}
-            <div className="px-5 py-2 bg-[#F5F5F5] border-b border-[#E8E8E8]">
+            <div className="px-5 py-2 bg-muted border-b border-border">
               <span className="text-xs font-semibold text-[#666]">{group.label}</span>
             </div>
 
@@ -167,7 +167,7 @@ export function NotificationPreferenceClient() {
               return (
                 <div
                   key={ev.key}
-                  className="grid grid-cols-[1fr_80px_80px_80px] gap-4 px-5 py-3.5 border-b border-[#F5F5F5] last:border-0 items-center"
+                  className="grid grid-cols-[1fr_80px_80px_80px] gap-4 px-5 py-3.5 border-b border-border last:border-0 items-center"
                 >
                   <span className="text-sm text-[#333]">{ev.label}</span>
                   {(['in_app', 'email', 'teams'] as Channel[]).map((ch) => (
@@ -176,8 +176,8 @@ export function NotificationPreferenceClient() {
                         onClick={() => toggleChannel(ev.key, ch)}
                         className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                           pref[ch]
-                            ? 'bg-[#5E81F4] border-[#5E81F4]'
-                            : 'bg-white border-[#D4D4D4] hover:border-[#5E81F4]'
+                            ? 'bg-primary border-primary'
+                            : 'bg-white border-border hover:border-primary'
                         }`}
                         aria-label={`${ev.label} ${ch} 알림 ${pref[ch] ? '끄기' : '켜기'}`}
                       >
@@ -196,7 +196,7 @@ export function NotificationPreferenceClient() {
       <div className={`${CARD_STYLES.kpi} mb-6`}>
         <div className="flex items-center gap-2 mb-4">
           <Moon className="w-4 h-4 text-[#666]" />
-          <h2 className="text-base font-semibold text-[#1A1A1A]">방해금지 시간</h2>
+          <h2 className="text-base font-semibold text-foreground">방해금지 시간</h2>
           <span className="text-xs text-[#999]">(urgent 알림 제외)</span>
         </div>
         <div className="flex items-center gap-3">
@@ -204,14 +204,14 @@ export function NotificationPreferenceClient() {
             type="time"
             value={quietStart}
             onChange={(e) => setQuietStart(e.target.value)}
-            className="px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 focus:outline-none"
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 focus:outline-none"
           />
           <span className="text-sm text-[#666]">~</span>
           <input
             type="time"
             value={quietEnd}
             onChange={(e) => setQuietEnd(e.target.value)}
-            className="px-3 py-2 border border-[#E0E0E0] rounded-lg text-sm focus:border-[#5E81F4] focus:ring-2 focus:ring-[#5E81F4]/10 focus:outline-none"
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 focus:outline-none"
           />
         </div>
         <p className="text-xs text-[#999] mt-2">

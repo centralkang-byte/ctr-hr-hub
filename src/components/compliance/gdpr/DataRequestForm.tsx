@@ -133,10 +133,10 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
           {!isEdit && (
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1">
-                {tc('name')} <span className="text-[#EF4444]">*</span>
+                {tc('name')} <span className="text-red-500">*</span>
               </label>
               <select
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
                 value={form.employee_id}
                 onChange={(e) => handleChange('employee_id', e.target.value)}
               >
@@ -153,10 +153,10 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
           {/* Request Type */}
           <div>
             <label className="block text-sm font-medium text-[#333] mb-1">
-              {t('gdpr.requestType')} <span className="text-[#EF4444]">*</span>
+              {t('gdpr.requestType')} <span className="text-red-500">*</span>
             </label>
             <select
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
               value={form.request_type}
               onChange={(e) => handleChange('request_type', e.target.value)}
             >
@@ -170,10 +170,10 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-[#333] mb-1">
-              {tc('description')} <span className="text-[#EF4444]">*</span>
+              {tc('description')} <span className="text-red-500">*</span>
             </label>
             <textarea
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] resize-none"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none"
               rows={3}
               placeholder="Describe the data subject request..."
               value={form.description}
@@ -186,7 +186,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
             <label className="block text-sm font-medium text-[#333] mb-1">{t('gdpr.deadline')}</label>
             <input
               type="date"
-              className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
               value={form.deadline}
               onChange={(e) => handleChange('deadline', e.target.value)}
             />
@@ -197,7 +197,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1">{tc('status')}</label>
               <select
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4]"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
                 value={form.status}
                 onChange={(e) => handleChange('status', e.target.value)}
               >
@@ -213,7 +213,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
             <div>
               <label className="block text-sm font-medium text-[#333] mb-1">{t('gdpr.responseNote')}</label>
               <textarea
-                className="w-full px-3 py-2 border border-[#D4D4D4] rounded-lg text-sm focus:ring-2 focus:ring-[#5E81F4]/10 focus:border-[#5E81F4] resize-none"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none"
                 rows={3}
                 placeholder="Response or resolution notes..."
                 value={form.response_note}
@@ -222,13 +222,13 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
             </div>
           )}
 
-          {error && <p className="text-sm text-[#DC2626]">{error}</p>}
+          {error && <p className="text-sm text-red-600">{error}</p>}
         </div>
 
         <DialogFooter className="gap-2">
           <button
             onClick={onClose}
-            className="bg-white border border-[#D4D4D4] hover:bg-[#FAFAFA] text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
+            className="bg-white border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
           >
             {tc('cancel')}
           </button>

@@ -99,7 +99,7 @@ export function ComplianceHubClient({ user, defaultTab }: Props) {
   return (
     <div className="space-y-4">
       <Tabs value={activeTab} onValueChange={handleTabChange}>
-        <div className="border-b border-[#F0F0F3] overflow-x-auto">
+        <div className="border-b border-border overflow-x-auto">
           <TabsList className="h-auto bg-transparent p-0 w-full justify-start gap-0 rounded-none">
             {[
               { value: 'overview',       label: '개요' },
@@ -114,7 +114,7 @@ export function ComplianceHubClient({ user, defaultTab }: Props) {
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium text-[#8181A5] data-[state=active]:border-[#5E81F4] data-[state=active]:text-[#5E81F4] data-[state=active]:bg-transparent hover:text-[#1C1D21]"
+                className="rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium text-muted-foreground data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent hover:text-foreground"
               >
                 {tab.label}
               </TabsTrigger>

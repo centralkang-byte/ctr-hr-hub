@@ -78,9 +78,9 @@ function Toggle({
   description?: string
 }) {
   return (
-    <div className="flex items-center justify-between rounded-xl border border-[#E8E8E8] bg-white p-4">
+    <div className="flex items-center justify-between rounded-xl border border-border bg-white p-4">
       <div>
-        <p className="text-sm font-medium text-[#1A1A1A]">{label}</p>
+        <p className="text-sm font-medium text-foreground">{label}</p>
         {description && <p className="text-xs text-[#666] mt-0.5">{description}</p>}
       </div>
       <button
@@ -88,8 +88,8 @@ function Toggle({
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-[#5E81F4]/30 ${
-          checked ? 'bg-[#5E81F4]' : 'bg-[#E8E8E8]'
+        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30 ${
+          checked ? 'bg-primary' : 'bg-border'
         }`}
       >
         <span
@@ -132,7 +132,7 @@ function NumberInput({
           min={min}
           max={max}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="w-24 border-[#D4D4D4] text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+          className="w-24 border-border text-sm focus:ring-2 focus:ring-primary/10"
         />
         {unit && <span className="text-sm text-[#666]">{unit}</span>}
       </div>
@@ -145,7 +145,7 @@ function NumberInput({
 function SectionHeader({ title, description }: { title: string; description?: string }) {
   return (
     <div className="mb-4">
-      <h3 className="text-base font-semibold text-[#1A1A1A]">{title}</h3>
+      <h3 className="text-base font-semibold text-foreground">{title}</h3>
       {description && <p className="text-sm text-[#666] mt-0.5">{description}</p>}
     </div>
   )
@@ -248,7 +248,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
   const renderWorkTypeTab = () => (
     <div className="space-y-6">
       {/* 기본 근무시간 */}
-      <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
+      <div className="rounded-xl border border-border bg-white p-5">
         <SectionHeader
           title="기본 근무시간"
           description="법인 기준 표준 근무시간을 설정합니다."
@@ -283,7 +283,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
       </div>
 
       {/* 유연근무제 */}
-      <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
+      <div className="rounded-xl border border-border bg-white p-5">
         <SectionHeader
           title="유연근무제 (Flex Time)"
           description="코어 타임과 최소 일일 근무시간을 설정합니다."
@@ -297,14 +297,14 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
           />
 
           {settings.flexWork.flexEnabled && (
-            <div className="ml-0 grid grid-cols-1 gap-4 sm:grid-cols-3 rounded-lg bg-[#FAFAFA] border border-[#F0F0F0] p-4">
+            <div className="ml-0 grid grid-cols-1 gap-4 sm:grid-cols-3 rounded-lg bg-background border border-border p-4">
               <div>
                 <Label className="text-sm font-medium text-[#333]">{'코어 타임 시작'}</Label>
                 <Input
                   type="time"
                   value={settings.flexWork.coreTimeStart}
                   onChange={(e) => patchFlexWork({ coreTimeStart: e.target.value })}
-                  className="mt-1 border-[#D4D4D4] text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+                  className="mt-1 border-border text-sm focus:ring-2 focus:ring-primary/10"
                 />
               </div>
               <div>
@@ -313,7 +313,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
                   type="time"
                   value={settings.flexWork.coreTimeEnd}
                   onChange={(e) => patchFlexWork({ coreTimeEnd: e.target.value })}
-                  className="mt-1 border-[#D4D4D4] text-sm focus:ring-2 focus:ring-[#5E81F4]/10"
+                  className="mt-1 border-border text-sm focus:ring-2 focus:ring-primary/10"
                 />
               </div>
               <NumberInput
@@ -330,7 +330,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
       </div>
 
       {/* 타임존 */}
-      <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
+      <div className="rounded-xl border border-border bg-white p-5">
         <SectionHeader title="타임존" description="근태 기록 기준 타임존입니다." />
         <div className="max-w-xs">
           <Label className="text-sm font-medium text-[#333]">{'타입'}</Label>
@@ -356,44 +356,44 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
   const render52hTab = () => (
     <div className="space-y-6">
       {/* 3단계 알림 임계값 */}
-      <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
+      <div className="rounded-xl border border-border bg-white p-5">
         <SectionHeader
           title="3단계 알림 임계값"
           description="주간 누적 근무시간이 임계값에 도달하면 알림이 발송됩니다."
         />
 
         {/* 시각적 타임라인 */}
-        <div className="mb-6 rounded-lg bg-[#FAFAFA] border border-[#F0F0F0] p-4">
+        <div className="mb-6 rounded-lg bg-background border border-border p-4">
           <div className="flex items-center gap-0">
             <div className="flex-1 text-center">
-              <div className="text-2xl font-bold text-[#1A1A1A]">0</div>
+              <div className="text-2xl font-bold text-foreground">0</div>
               <div className="text-xs text-[#999]">{'시작일'}</div>
             </div>
-            <div className="flex-1 h-2 rounded-l-full bg-[#D1FAE5]" />
+            <div className="flex-1 h-2 rounded-l-full bg-emerald-100" />
             <div className="flex-1 text-center">
-              <div className="text-2xl font-bold text-[#B45309]">{settings.alertThresholds.caution}</div>
-              <div className="text-xs text-[#B45309]">{'주의:'}</div>
+              <div className="text-2xl font-bold text-amber-700">{settings.alertThresholds.caution}</div>
+              <div className="text-xs text-amber-700">{'주의:'}</div>
             </div>
-            <div className="flex-1 h-2 bg-[#FEF3C7]" />
+            <div className="flex-1 h-2 bg-amber-100" />
             <div className="flex-1 text-center">
-              <div className="text-2xl font-bold text-[#C2410C]">{settings.alertThresholds.warning}</div>
-              <div className="text-xs text-[#C2410C]">{'경고'}</div>
+              <div className="text-2xl font-bold text-orange-700">{settings.alertThresholds.warning}</div>
+              <div className="text-xs text-orange-700">{'경고'}</div>
             </div>
-            <div className="flex-1 h-2 bg-[#FED7AA]" />
+            <div className="flex-1 h-2 bg-orange-200" />
             <div className="flex-1 text-center">
-              <div className="text-2xl font-bold text-[#B91C1C]">{settings.alertThresholds.blocked}</div>
-              <div className="text-xs text-[#B91C1C]">{'차단'}</div>
+              <div className="text-2xl font-bold text-red-700">{settings.alertThresholds.blocked}</div>
+              <div className="text-xs text-red-700">{'차단'}</div>
             </div>
-            <div className="flex-1 h-2 rounded-r-full bg-[#FEE2E2]" />
+            <div className="flex-1 h-2 rounded-r-full bg-red-100" />
           </div>
           <div className="mt-1 text-center text-xs text-[#999]">{'단위: 시간/주'}</div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="rounded-lg border border-[#FCD34D] bg-[#FFFBEB] p-4">
+          <div className="rounded-lg border border-amber-300 bg-amber-50 p-4">
             <div className="flex items-center gap-1.5 mb-3">
-              <div className="h-3 w-3 rounded-full bg-[#F59E0B]" />
-              <span className="text-sm font-semibold text-[#B45309]">{'주의 (Caution)'}</span>
+              <div className="h-3 w-3 rounded-full bg-amber-500" />
+              <span className="text-sm font-semibold text-amber-700">{'주의 (Caution)'}</span>
             </div>
             <NumberInput
               label="임계값"
@@ -405,10 +405,10 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
               hint="HR 알림 발송"
             />
           </div>
-          <div className="rounded-lg border border-[#FED7AA] bg-[#FFF7ED] p-4">
+          <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
             <div className="flex items-center gap-1.5 mb-3">
-              <div className="h-3 w-3 rounded-full bg-[#F97316]" />
-              <span className="text-sm font-semibold text-[#C2410C]">{'경고 (Warning)'}</span>
+              <div className="h-3 w-3 rounded-full bg-orange-500" />
+              <span className="text-sm font-semibold text-orange-700">{'경고 (Warning)'}</span>
             </div>
             <NumberInput
               label="임계값"
@@ -420,10 +420,10 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
               hint="매니저 + HR 알림"
             />
           </div>
-          <div className="rounded-lg border border-[#FECACA] bg-[#FEF2F2] p-4">
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4">
             <div className="flex items-center gap-1.5 mb-3">
-              <div className="h-3 w-3 rounded-full bg-[#EF4444]" />
-              <span className="text-sm font-semibold text-[#B91C1C]">{'차단 (Blocked)'}</span>
+              <div className="h-3 w-3 rounded-full bg-red-500" />
+              <span className="text-sm font-semibold text-red-700">{'차단 (Blocked)'}</span>
             </div>
             <NumberInput
               label="임계값"
@@ -439,9 +439,9 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
 
         {settings.alertThresholds.caution >= settings.alertThresholds.warning ||
         settings.alertThresholds.warning >= settings.alertThresholds.blocked ? (
-          <div className="mt-3 flex items-center gap-2 rounded-lg bg-[#FEF2F2] border border-[#FECACA] px-3 py-2">
-            <AlertTriangle className="h-4 w-4 text-[#EF4444] shrink-0" />
-            <span className="text-xs text-[#B91C1C]">
+          <div className="mt-3 flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 px-3 py-2">
+            <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
+            <span className="text-xs text-red-700">
               임계값 순서: 주의 {'<'} 경고 {'<'} 차단 이어야 합니다.
             </span>
           </div>
@@ -449,7 +449,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
       </div>
 
       {/* 차단 옵션 */}
-      <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
+      <div className="rounded-xl border border-border bg-white p-5">
         <SectionHeader
           title="초과근무 차단"
           description="차단 임계값 도달 시 클락인을 차단합니다."
@@ -462,9 +462,9 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
             description="차단 임계값 초과 시 직원의 출근 기록이 자동으로 거부됩니다."
           />
           {settings.enableBlocking && (
-            <div className="flex items-start gap-2 rounded-lg bg-[#FFF7ED] border border-[#FED7AA] px-3 py-2">
-              <Info className="h-4 w-4 text-[#F97316] shrink-0 mt-0.5" />
-              <p className="text-xs text-[#C2410C]">
+            <div className="flex items-start gap-2 rounded-lg bg-orange-50 border border-orange-200 px-3 py-2">
+              <Info className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
+              <p className="text-xs text-orange-700">
                 {'차단이 활성화되면 클락인 API에서 52시간 초과 여부를 확인합니다. HR 관리자만 차단을 해제할 수 있습니다.'}
               </p>
             </div>
@@ -479,7 +479,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
   const renderShiftTab = () => (
     <div className="space-y-6">
       {/* 교대근무 활성화 */}
-      <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
+      <div className="rounded-xl border border-border bg-white p-5">
         <SectionHeader
           title="교대근무 활성화"
           description="법인에서 교대근무(2교대/3교대)를 운영합니다."
@@ -494,25 +494,25 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
 
       {/* 교대근무 패턴 관리 링크 */}
       {settings.shiftEnabled && (
-        <div className="rounded-xl border border-[#E8E8E8] bg-white p-5">
+        <div className="rounded-xl border border-border bg-white p-5">
           <SectionHeader title="교대근무 상세 설정" />
           <div className="space-y-3">
             <Link
               href="/settings/shift-patterns"
-              className="flex items-center justify-between rounded-lg border border-[#E8E8E8] bg-[#FAFAFA] px-4 py-3 hover:bg-[#F0F0F0] transition-colors"
+              className="flex items-center justify-between rounded-lg border border-border bg-background px-4 py-3 hover:bg-muted transition-colors"
             >
               <div>
-                <p className="text-sm font-medium text-[#1A1A1A]">{'교대 패턴 관리'}</p>
+                <p className="text-sm font-medium text-foreground">{'교대 패턴 관리'}</p>
                 <p className="text-xs text-[#666]">{'2교대/3교대 패턴 정의 및 슬롯 설정'}</p>
               </div>
               <ChevronRight className="h-4 w-4 text-[#999]" />
             </Link>
             <Link
               href="/settings/shift-roster"
-              className="flex items-center justify-between rounded-lg border border-[#E8E8E8] bg-[#FAFAFA] px-4 py-3 hover:bg-[#F0F0F0] transition-colors"
+              className="flex items-center justify-between rounded-lg border border-border bg-background px-4 py-3 hover:bg-muted transition-colors"
             >
               <div>
-                <p className="text-sm font-medium text-[#1A1A1A]">{'교대 로스터'}</p>
+                <p className="text-sm font-medium text-foreground">{'교대 로스터'}</p>
                 <p className="text-xs text-[#666]">{'월별 교대 일정 배정 및 조 편성'}</p>
               </div>
               <ChevronRight className="h-4 w-4 text-[#999]" />
@@ -522,11 +522,11 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
       )}
 
       {/* 안내 */}
-      <div className="rounded-xl border border-[#E0E7FF] bg-[#EDF1FE] p-4 flex items-start gap-3">
-        <Info className="h-5 w-5 text-[#4B6DE0] shrink-0 mt-0.5" />
+      <div className="rounded-xl border border-indigo-100 bg-primary/10 p-4 flex items-start gap-3">
+        <Info className="h-5 w-5 text-primary/90 shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-medium text-[#4B6DE0]">{'교대근무 야간 수당 안내'}</p>
-          <p className="text-xs text-[#8B5CF6] mt-0.5">
+          <p className="text-sm font-medium text-primary/90">{'교대근무 야간 수당 안내'}</p>
+          <p className="text-xs text-violet-500 mt-0.5">
             {'야간 교대(22:00~06:00) 근무는 야간 수당이 자동 계산됩니다. 급여 설정에서 수당 비율을 조정하세요.'}
           </p>
         </div>
@@ -545,19 +545,19 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
 
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <Loader2 className="h-8 w-8 animate-spin text-[#5E81F4]" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       ) : (
         <div className="mt-6 space-y-6">
           {/* Tabs */}
-          <div className="flex border-b border-[#E8E8E8]">
+          <div className="flex border-b border-border">
             {tabs.map((t) => (
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2 transition-colors ${
                   tab === t.id
-                    ? 'border-[#5E81F4] text-[#5E81F4]'
+                    ? 'border-primary text-primary'
                     : 'border-transparent text-[#666] hover:text-[#333]'
                 }`}
               >
@@ -576,27 +576,27 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
 
           {/* Messages */}
           {error && (
-            <div className="flex items-center gap-2 rounded-lg bg-[#FEF2F2] border border-[#FECACA] px-4 py-3">
-              <AlertTriangle className="h-4 w-4 text-[#EF4444] shrink-0" />
-              <span className="text-sm text-[#B91C1C]">{error}</span>
+            <div className="flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 px-4 py-3">
+              <AlertTriangle className="h-4 w-4 text-red-500 shrink-0" />
+              <span className="text-sm text-red-700">{error}</span>
             </div>
           )}
           {successMsg && (
-            <div className="flex items-center gap-2 rounded-lg bg-[#D1FAE5] border border-[#A7F3D0] px-4 py-3">
-              <span className="text-sm text-[#047857]">{successMsg}</span>
+            <div className="flex items-center gap-2 rounded-lg bg-emerald-100 border border-emerald-200 px-4 py-3">
+              <span className="text-sm text-emerald-700">{successMsg}</span>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-between border-t border-[#E8E8E8] pt-4">
+          <div className="flex items-center justify-between border-t border-border pt-4">
             <div className="flex items-center gap-2">
               {settings.isCustom && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#EDF1FE] text-[#4B6DE0] border border-[#EDF1FE]">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary/90 border border-primary/20">
                   {'법인 커스텀 설정'}
                 </span>
               )}
               {!settings.isCustom && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#FAFAFA] text-[#555] border border-[#E8E8E8]">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-background text-[#555] border border-border">
                   {'글로벌 기본값'}
                 </span>
               )}
@@ -606,7 +606,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
                 variant="outline"
                 size="sm"
                 onClick={() => { void fetchSettings() }}
-                className="border-[#D4D4D4] text-[#333] hover:bg-[#FAFAFA]"
+                className="border-border text-[#333] hover:bg-background"
               >
                 <RotateCcw className="h-4 w-4 mr-1.5" />
                 {'초기화'}

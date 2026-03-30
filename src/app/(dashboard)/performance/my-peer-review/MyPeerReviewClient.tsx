@@ -45,10 +45,10 @@ function Stars({ value, onChange, disabled }: { value: number; onChange: (v: num
             {[1, 2, 3, 4, 5].map((i) => (
                 <button key={i} disabled={disabled} onClick={() => onChange(i)}
                     className={`transition-transform ${disabled ? 'cursor-not-allowed' : 'hover:scale-110'}`}>
-                    <Star className={`h-5 w-5 ${i <= value ? 'fill-[#F59E0B] text-[#F59E0B]' : 'text-[#D1D5DB]'}`} />
+                    <Star className={`h-5 w-5 ${i <= value ? 'fill-amber-500 text-amber-500' : 'text-gray-300'}`} />
                 </button>
             ))}
-            <span className="ml-2 text-sm font-medium text-[#8181A5]">{value}/5</span>
+            <span className="ml-2 text-sm font-medium text-muted-foreground">{value}/5</span>
         </div>
     )
 }
@@ -163,10 +163,10 @@ export default function MyPeerReviewClient({user }: {
         return (
             <div className="flex min-h-[60vh] items-center justify-center p-6">
                 <div className="text-center">
-                    <Users className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
-                    <h2 className="mb-2 text-lg font-semibold text-[#1C1D21]">{t('kr_kec9584ec_keb8f99eb_keab8b0ea_')}</h2>
-                    <p className="text-sm text-[#8181A5]">{t('kr_keb8f99eb_eval_open_keb8ba8ea_')}</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-[#5E81F4] hover:underline">
+                    <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+                    <h2 className="mb-2 text-lg font-semibold text-foreground">{t('kr_kec9584ec_keb8f99eb_keab8b0ea_')}</h2>
+                    <p className="text-sm text-muted-foreground">{t('kr_keb8f99eb_eval_open_keb8ba8ea_')}</p>
+                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-primary hover:underline">
                         <ArrowLeft className="h-4 w-4" /> {t('kr_keb8f8cec')}
                     </a>
                 </div>
@@ -178,37 +178,37 @@ export default function MyPeerReviewClient({user }: {
     const total = assignments.length
 
     return (
-        <div className="min-h-screen bg-[#F5F5FA] p-6">
+        <div className="min-h-screen bg-muted p-6">
             <div className="mx-auto max-w-4xl">
                 {/* Header */}
                 <div className="mb-6 flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#1C1D21]">{t('kr_keb8f99eb_peer_review')}</h1>
-                        <p className="mt-1 text-sm text-[#8181A5]">
+                        <h1 className="text-2xl font-bold text-foreground">{t('kr_keb8f99eb_peer_review')}</h1>
+                        <p className="mt-1 text-sm text-muted-foreground">
                             내가 평가해야 할 동료: {total}명 | 완료: {completed}/{total}
                         </p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
-                        className="rounded-lg border border-[#F0F0F3] bg-white px-3 py-2 text-sm">
+                        className="rounded-lg border border-border bg-white px-3 py-2 text-sm">
                         {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                 </div>
 
                 {/* Progress */}
                 {total > 0 && (
-                    <div className="mb-6 rounded-xl border border-[#F0F0F3] bg-white p-4">
+                    <div className="mb-6 rounded-xl border border-border bg-white p-4">
                         <div className="mb-2 flex items-center justify-between text-sm">
-                            <span className="text-[#8181A5]">{t('kr_keca784ed')}</span>
-                            <span className="font-medium text-[#1C1D21]">{completed}/{total} 완료</span>
+                            <span className="text-muted-foreground">{t('kr_keca784ed')}</span>
+                            <span className="font-medium text-foreground">{completed}/{total} 완료</span>
                         </div>
-                        <div className="h-2 rounded-full bg-[#F0F0F3]">
-                            <div className="h-2 rounded-full bg-[#5E81F4] transition-all" style={{ width: `${total > 0 ? (completed / total) * 100 : 0}%` }} />
+                        <div className="h-2 rounded-full bg-border">
+                            <div className="h-2 rounded-full bg-primary transition-all" style={{ width: `${total > 0 ? (completed / total) * 100 : 0}%` }} />
                         </div>
                     </div>
                 )}
 
                 {error && (
-                    <div className="mb-4 rounded-lg border border-[#FFEBEE] bg-[#FFEBEE] p-3 text-sm text-[#C62828]">
+                    <div className="mb-4 rounded-lg border border-red-100 bg-red-50 p-3 text-sm text-red-800">
                         {error} <button onClick={fetchAssignments} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
@@ -216,15 +216,15 @@ export default function MyPeerReviewClient({user }: {
                 {loading ? (
                     <div className="space-y-4">
                         {[1, 2, 3].map((i) => (
-                            <div key={i} className="animate-pulse rounded-xl border border-[#F0F0F3] bg-white p-5">
-                                <div className="mb-2 h-4 w-1/3 rounded bg-[#F0F0F3]" />
-                                <div className="h-3 w-1/4 rounded bg-[#F0F0F3]" />
+                            <div key={i} className="animate-pulse rounded-xl border border-border bg-white p-5">
+                                <div className="mb-2 h-4 w-1/3 rounded bg-border" />
+                                <div className="h-3 w-1/4 rounded bg-border" />
                             </div>
                         ))}
                     </div>
                 ) : assignments.length === 0 ? (
-                    <div className="rounded-xl border border-[#F0F0F3] bg-white p-16 text-center">
-                        <Users className="mx-auto mb-4 h-12 w-12 text-[#8181A5]" />
+                    <div className="rounded-xl border border-border bg-white p-16 text-center">
+                        <Users className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                         <EmptyState />
                     </div>
                 ) : (
@@ -235,10 +235,10 @@ export default function MyPeerReviewClient({user }: {
                             const isCompleted = item.status === 'SUBMITTED'
 
                             return (
-                                <div key={item.nominationId} className="flex items-center justify-between rounded-xl border border-[#F0F0F3] bg-white p-5 transition-colors hover:border-[#5E81F4]/30">
+                                <div key={item.nominationId} className="flex items-center justify-between rounded-xl border border-border bg-white p-5 transition-colors hover:border-primary/30">
                                     <div>
-                                        <h3 className="text-sm font-semibold text-[#1C1D21]">{item.employeeName}</h3>
-                                        <p className="mt-0.5 text-xs text-[#8181A5]">{item.department}</p>
+                                        <h3 className="text-sm font-semibold text-foreground">{item.employeeName}</h3>
+                                        <p className="mt-0.5 text-xs text-muted-foreground">{item.department}</p>
                                     </div>
                                     <div className="flex items-center gap-3">
                                         {badge && (
@@ -248,7 +248,7 @@ export default function MyPeerReviewClient({user }: {
                                         )}
                                         {!isCompleted && (
                                             <button onClick={() => openReview(item)}
-                                                className="rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] transition-colors">
+                                                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors">
                                                 {item.status === 'DRAFT' ? '이어서 작성' : '평가 시작'}
                                             </button>
                                         )}
@@ -264,55 +264,55 @@ export default function MyPeerReviewClient({user }: {
             {activeReview && (
                 <div className="fixed inset-0 z-50 flex items-start justify-end bg-black/30" onClick={() => setActiveReview(null)}>
                     <div className="h-full w-full max-w-xl overflow-y-auto bg-white shadow-lg" onClick={(e) => e.stopPropagation()}>
-                        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[#F0F0F3] bg-white px-6 py-4">
-                            <h2 className="text-lg font-bold text-[#1C1D21]">{activeReview.employeeName} 님에 대한 동료평가</h2>
-                            <button onClick={() => setActiveReview(null)} className="text-[#8181A5] hover:text-[#1C1D21]"><X className="h-5 w-5" /></button>
+                        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-white px-6 py-4">
+                            <h2 className="text-lg font-bold text-foreground">{activeReview.employeeName} 님에 대한 동료평가</h2>
+                            <button onClick={() => setActiveReview(null)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
                         </div>
 
                         <div className="p-6 space-y-6">
                             {/* Anonymity notice */}
-                            <div className="flex items-start gap-2 rounded-lg border border-[#DBEAFE] bg-[#EFF6FF] p-3">
-                                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-[#3B82F6]" />
-                                <p className="text-xs text-[#1E40AF]">
+                            <div className="flex items-start gap-2 rounded-lg border border-blue-100 bg-blue-50 p-3">
+                                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+                                <p className="text-xs text-blue-800">
                                     {t('evaluation_keb8a94_kec9db5eb_kecb298eb_keba7a4eb_ked8f89ea_ked9995ec_kec8898_kec9e88ec')}
                                 </p>
                             </div>
 
                             {/* CTR Values */}
                             <div className="space-y-5">
-                                <h3 className="text-base font-semibold text-[#1C1D21]">{t('kr_ctr_ked95b5ec_evaluation')}</h3>
+                                <h3 className="text-base font-semibold text-foreground">{t('kr_ctr_ked95b5ec_evaluation')}</h3>
                                 {CTR_VALUES.map((v) => (
-                                    <div key={v.scoreKey} className="rounded-xl border border-[#F0F0F3] p-4 space-y-2">
+                                    <div key={v.scoreKey} className="rounded-xl border border-border p-4 space-y-2">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm font-medium text-[#1C1D21]">{v.label} ({v.labelEn})</span>
+                                            <span className="text-sm font-medium text-foreground">{v.label} ({v.labelEn})</span>
                                             <Stars value={form[v.scoreKey]} onChange={(val) => setForm((p) => ({ ...p, [v.scoreKey]: val }))} disabled={false} />
                                         </div>
                                         <textarea rows={2} value={form[v.commentKey]}
                                             onChange={(e) => setForm((p) => ({ ...p, [v.commentKey]: e.target.value }))}
                                             placeholder={`${v.label}에 대한 의견 (선택)`}
-                                            className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
+                                            className="w-full resize-none rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" />
                                     </div>
                                 ))}
                             </div>
 
                             {/* Overall comment */}
                             <div>
-                                <h3 className="mb-2 text-base font-semibold text-[#1C1D21]">종합 의견 (최소 20자)</h3>
+                                <h3 className="mb-2 text-base font-semibold text-foreground">종합 의견 (최소 20자)</h3>
                                 <textarea rows={4} value={form.overallComment}
                                     onChange={(e) => setForm((p) => ({ ...p, overallComment: e.target.value }))}
                                     placeholder="동료에 대한 종합적인 의견을 작성해주세요..."
-                                    className="w-full resize-none rounded-lg border border-[#F0F0F3] px-3 py-2 text-sm focus:border-[#5E81F4] focus:outline-none" />
-                                <p className="mt-1 text-xs text-[#8181A5]">{form.overallComment.length}자 / 최소 20자</p>
+                                    className="w-full resize-none rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" />
+                                <p className="mt-1 text-xs text-muted-foreground">{form.overallComment.length}자 / 최소 20자</p>
                             </div>
 
                             {/* Actions */}
-                            <div className="flex justify-end gap-3 border-t border-[#F0F0F3] pt-4">
+                            <div className="flex justify-end gap-3 border-t border-border pt-4">
                                 <button onClick={() => handleSubmit('DRAFT')} disabled={saving}
-                                    className="inline-flex items-center gap-2 rounded-lg border border-[#F0F0F3] px-4 py-2 text-sm font-medium text-[#1C1D21] hover:bg-[#F5F5FA] disabled:opacity-40">
+                                    className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-40">
                                     <Save className="h-4 w-4" /> {t('kr_kec9e84ec')}
                                 </button>
                                 <button onClick={() => handleSubmit('SUBMITTED')} disabled={saving}
-                                    className="inline-flex items-center gap-2 rounded-lg bg-[#5E81F4] px-4 py-2 text-sm font-medium text-white hover:bg-[#4A6FE0] disabled:opacity-40">
+                                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40">
                                     <Send className="h-4 w-4" /> {saving ? tCommon('loading') : tCommon('submit')}
                                 </button>
                             </div>

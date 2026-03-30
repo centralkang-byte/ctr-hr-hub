@@ -34,7 +34,7 @@ export function KpiSummaryCard({
 
   return (
     <div
-      className={`${CARD_STYLES.kpi} ${onClick ? 'cursor-pointer hover:border-[#5E81F4] transition-colors' : ''}`}
+      className={`${CARD_STYLES.kpi} ${onClick ? 'cursor-pointer hover:border-primary transition-colors' : ''}`}
       onClick={onClick}
     >
       <p className="text-xs text-[#666] mb-1">{label}</p>
@@ -45,15 +45,15 @@ export function KpiSummaryCard({
       {change !== null && change !== undefined && (
         <div className="flex items-center gap-1 text-xs">
           {change > 0 ? (
-            <ArrowUpRight className="w-3 h-3 text-[#059669]" />
+            <ArrowUpRight className="w-3 h-3 text-emerald-600" />
           ) : change < 0 ? (
-            <ArrowDownRight className="w-3 h-3 text-[#EF4444]" />
+            <ArrowDownRight className="w-3 h-3 text-red-500" />
           ) : (
             <Minus className="w-3 h-3 text-[#999]" />
           )}
           <span
             className={
-              change > 0 ? 'text-[#059669]' : change < 0 ? 'text-[#EF4444]' : 'text-[#999]'
+              change > 0 ? 'text-emerald-600' : change < 0 ? 'text-red-500' : 'text-[#999]'
             }
           >
             {change > 0 ? '+' : ''}
