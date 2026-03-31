@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import { toast } from '@/hooks/use-toast'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Save, Send, Star, ArrowLeft, Loader2, CheckCircle2, XCircle } from 'lucide-react'
+import { Save, Send, Star, ArrowLeft, Loader2, CheckCircle2, XCircle, Sparkles } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import { useUnsavedChanges } from '@/hooks/useUnsavedChanges'
@@ -233,6 +233,75 @@ export default function MyEvaluationClient({user: _user }: {
         if (c) setCycleStatus(c.status)
     }
 
+    const [aiLoading, setAiLoading] = useState(false)
+
+    async function handleAiDraft() {
+        if (!evalData || !goals.length) return
+        const hasExistingComments = Object.values(evalData.goalScores).some(s => s.comment.trim())
+            || Object.values(evalData.beiScores).some(s => s.comment.trim())
+
+        if (hasExistingComments) {
+            confirm({
+                title: 'AI 초안이 기존 코멘트를 덮어씁니다. 계속하시겠습니까?',
+                onConfirm: () => executeAiDraft(),
+            })
+        } else {
+            executeAiDraft()
+        }
+    }
+
+    async function executeAiDraft() {
+        if (!evalData) return
+        setAiLoading(true)
+        try {
+            const res = await apiClient.post<{
+                suggested_comment: string
+                strengths: string[]
+                improvement_areas: string[]
+                development_suggestions: string[]
+            }>('/api/v1/ai/eval-comment', {
+                employeeName: _user.name ?? '',
+                goalSummary: goals.map(g => g.title).join(', '),
+                goalScores: goals.map(g => ({
+                    title: g.title,
+                    score: evalData.goalScores[g.id]?.score ?? 3,
+                    weight: g.weight,
+                })),
+                competencyScores: BEI_ITEMS.map(b => ({
+                    name: b.label,
+                    score: evalData.beiScores[b.key]?.score ?? 3,
+                })),
+                evalType: 'SELF' as const,
+            })
+
+            const ai = res.data
+            // MBO 코멘트: 각 목표에 강점/개선영역 조합으로 분배
+            const newGoalScores = { ...evalData.goalScores }
+            goals.forEach((g, i) => {
+                const parts: string[] = []
+                if (ai.strengths[i]) parts.push(ai.strengths[i])
+                if (ai.improvement_areas[i]) parts.push(ai.improvement_areas[i])
+                if (parts.length === 0 && ai.suggested_comment) parts.push(ai.suggested_comment)
+                newGoalScores[g.id] = { ...newGoalScores[g.id], comment: parts.join(' ') || ai.suggested_comment }
+            })
+
+            // BEI 코멘트: 역량별 dev suggestion 분배
+            const newBeiScores = { ...evalData.beiScores }
+            BEI_ITEMS.forEach((b, i) => {
+                const suggestion = ai.development_suggestions[i] ?? ai.suggested_comment
+                newBeiScores[b.key] = { ...newBeiScores[b.key], comment: suggestion }
+            })
+
+            setEvalData(p => p ? { ...p, goalScores: newGoalScores, beiScores: newBeiScores } : p)
+            setIsDirty(true)
+            toast({ title: 'AI 초안이 적용되었습니다. 검토 후 수정하세요.' })
+        } catch {
+            toast({ title: 'AI 초안 생성 실패', variant: 'destructive' })
+        } finally {
+            setAiLoading(false)
+        }
+    }
+
     const isSubmitted = evalData?.status === 'SUBMITTED'
 
     // ─── Calculated scores
@@ -320,6 +389,26 @@ export default function MyEvaluationClient({user: _user }: {
                         <p className="text-xs text-muted-foreground">/ 5.0</p>
                     </div>
                 </div>
+
+                {/* AI Draft Button */}
+                {!isSubmitted && !loading && goals.length > 0 && (
+                    <div className="mb-6 rounded-2xl border border-primary/15 bg-primary/5 p-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="h-5 w-5 text-primary" />
+                                <div>
+                                    <p className="text-sm font-medium text-foreground">{t('aiDraftTitle') || 'AI 코멘트 초안'}</p>
+                                    <p className="text-xs text-muted-foreground">{t('aiDraftDesc') || '점수 기반으로 자기평가 코멘트 초안을 생성합니다'}</p>
+                                </div>
+                            </div>
+                            <button onClick={handleAiDraft} disabled={aiLoading}
+                                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40 transition-colors">
+                                {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                                {aiLoading ? (t('aiGenerating') || '생성 중...') : (t('aiGenerate') || 'AI 초안 생성')}
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {error && (
                     <div className="mb-4 rounded-lg border border-destructive/15 bg-destructive/5 p-3 text-sm text-destructive">
