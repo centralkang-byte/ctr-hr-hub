@@ -39,7 +39,15 @@ const createSchema = z.object({
   recruiterId: z.string().uuid().optional(),
   deadlineDate: z.string().optional(),
   requiredCompetencies: z.array(z.string()).optional(),
-})
+}).refine(
+  (data) => {
+    if (data.salaryRangeMin != null && data.salaryRangeMax != null) {
+      return data.salaryRangeMin <= data.salaryRangeMax
+    }
+    return true
+  },
+  { message: '최소 급여가 최대 급여보다 클 수 없습니다.', path: ['salaryRangeMax'] },
+)
 
 // ─── GET /api/v1/recruitment/postings ─────────────────────
 
