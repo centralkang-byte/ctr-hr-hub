@@ -50,7 +50,7 @@ const MeritRowComponent = memo(function MeritRowComponent({
     const newSalary = Math.round(row.currentSalary * (1 + localPct / 100))
 
     return (
-        <tr className={cn(TABLE_STYLES.row, row.isException || isOutOfRange ? 'bg-amber-100/30' : '')}>
+        <tr className={cn(TABLE_STYLES.row, row.isException || isOutOfRange ? 'bg-amber-500/15/30' : '')}>
             <td className={TABLE_STYLES.cell}>{row.name}</td>
             <td className={TABLE_STYLES.cellMuted}>{row.department}</td>
             <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{getGradeLabel(row.gradeEnum)}</td>
@@ -349,7 +349,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                                 ) : (
                                     <table className={TABLE_STYLES.table}>
                                         <thead>
-                                            <tr className={cn(TABLE_STYLES.header, "bg-amber-100")}>
+                                            <tr className={cn(TABLE_STYLES.header, "bg-amber-500/15")}>
                                                 <th className={cn(TABLE_STYLES.headerCell, "text-amber-800")}>{t('name')}</th>
                                                 <th className={cn(TABLE_STYLES.headerCell, "text-amber-800")}>{t('department')}</th>
                                                 <th className={cn(TABLE_STYLES.headerCell, "text-amber-800 text-center")}>{t('kr_keb93b1ea')}</th>
@@ -360,7 +360,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                                         </thead>
                                         <tbody>
                                             {exceptionRows.map((row) => (
-                                                <tr key={row.employeeId} className={cn(TABLE_STYLES.row, "bg-amber-100/20")}>
+                                                <tr key={row.employeeId} className={cn(TABLE_STYLES.row, "bg-amber-500/15/20")}>
                                                     <td className={TABLE_STYLES.cell}>{row.name}</td>
                                                     <td className={TABLE_STYLES.cellMuted}>{row.department}</td>
                                                     <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{getGradeLabel(row.gradeEnum)}</td>

@@ -79,7 +79,7 @@ export default function PayrollAdjustDialog({
             <div>
               <Label>기본급</Label>
               <Input name="baseSalary" type="number" defaultValue={item.baseSalary} />
-              <p className="text-xs text-[#999] mt-0.5">현재: {formatCurrency(item.baseSalary)}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">현재: {formatCurrency(item.baseSalary)}</p>
             </div>
             <div>
               <Label>초과근무수당</Label>

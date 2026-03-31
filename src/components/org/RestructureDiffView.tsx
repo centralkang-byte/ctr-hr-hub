@@ -163,9 +163,9 @@ function buildDiffLines(
 
 function DiffRow({ line }: { line: DiffLine }) {
   const typeConfig = {
-    add: { bg: 'bg-tertiary-container/10', border: 'border-l-[#5E81F4]', icon: <CheckCircle2 size={14} className="text-primary" />, badge: 'bg-emerald-100 text-emerald-700', badgeText: '추가' },
+    add: { bg: 'bg-tertiary-container/10', border: 'border-l-[#5E81F4]', icon: <CheckCircle2 size={14} className="text-primary" />, badge: 'bg-emerald-500/15 text-emerald-700', badgeText: '추가' },
     remove: { bg: 'bg-destructive/5', border: 'border-l-[#EF4444]', icon: <AlertTriangle size={14} className="text-red-500" />, badge: 'bg-destructive/10 text-destructive', badgeText: '제거' },
-    modify: { bg: 'bg-amber-50', border: 'border-l-[#F59E0B]', icon: <Building2 size={14} className="text-amber-500" />, badge: 'bg-amber-100 text-amber-700', badgeText: '변경' },
+    modify: { bg: 'bg-amber-500/10', border: 'border-l-[#F59E0B]', icon: <Building2 size={14} className="text-amber-500" />, badge: 'bg-amber-500/15 text-amber-700', badgeText: '변경' },
     move: { bg: 'bg-primary/5', border: 'border-l-[#3B82F6]', icon: <ArrowRight size={14} className="text-blue-500" />, badge: 'bg-primary/10 text-primary', badgeText: '이동' },
   }[line.type]
 
@@ -178,9 +178,9 @@ function DiffRow({ line }: { line: DiffLine }) {
           {typeConfig.badgeText}
         </span>
       </div>
-      <p className="text-xs text-[#555] pl-5">{line.detail}</p>
+      <p className="text-xs text-muted-foreground pl-5">{line.detail}</p>
       {line.affectedCount > 0 && (
-        <p className="text-xs text-[#666] pl-5 flex items-center gap-1">
+        <p className="text-xs text-muted-foreground pl-5 flex items-center gap-1">
           <Users size={11} /> 영향 인원: {line.affectedCount}명
         </p>
       )}
@@ -219,37 +219,37 @@ export function RestructureDiffView({ plan, depts, employees }: RestructureDiffV
       <div className="grid grid-cols-4 gap-3">
         <div className="bg-tertiary-container/10 border border-tertiary/20 rounded-xl p-3 text-center">
           <p className="text-2xl font-bold text-primary">{addCount}</p>
-          <p className="text-xs text-[#555] mt-0.5">신설</p>
+          <p className="text-xs text-muted-foreground mt-0.5">신설</p>
         </div>
         <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-3 text-center">
           <p className="text-2xl font-bold text-red-500">{removeCount}</p>
-          <p className="text-xs text-[#555] mt-0.5">제거</p>
+          <p className="text-xs text-muted-foreground mt-0.5">제거</p>
         </div>
-        <div className="bg-amber-50 border border-amber-300 rounded-xl p-3 text-center">
+        <div className="bg-amber-500/10 border border-amber-300 rounded-xl p-3 text-center">
           <p className="text-2xl font-bold text-amber-500">{modifyCount}</p>
-          <p className="text-xs text-[#555] mt-0.5">변경</p>
+          <p className="text-xs text-muted-foreground mt-0.5">변경</p>
         </div>
         <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 text-center">
           <p className="text-2xl font-bold text-blue-500">{moveCount}</p>
-          <p className="text-xs text-[#555] mt-0.5">이동</p>
+          <p className="text-xs text-muted-foreground mt-0.5">이동</p>
         </div>
       </div>
 
       {/* Impact summary */}
       <div className="bg-background border border-border rounded-xl p-4 flex items-center gap-4">
-        <div className="flex items-center gap-2 text-sm text-[#555]">
-          <Users size={16} className="text-[#666]" />
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Users size={16} className="text-muted-foreground" />
           <span>총 영향 인원:</span>
           <span className="font-bold text-foreground">{totalAffected}명</span>
         </div>
         <div className="w-px h-4 bg-border" />
-        <div className="flex items-center gap-2 text-sm text-[#555]">
-          <Building2 size={16} className="text-[#666]" />
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Building2 size={16} className="text-muted-foreground" />
           <span>변경 항목:</span>
           <span className="font-bold text-foreground">{plan.changes.length}건</span>
         </div>
         <div className="w-px h-4 bg-border" />
-        <div className="flex items-center gap-2 text-sm text-[#555]">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span>발효일:</span>
           <span className="font-bold text-foreground">{plan.effectiveDate.toLocaleDateString('ko-KR')}</span>
         </div>
@@ -257,7 +257,7 @@ export function RestructureDiffView({ plan, depts, employees }: RestructureDiffV
 
       {/* Warnings */}
       {warnings.length > 0 && (
-        <div className="bg-amber-100 border border-amber-300 rounded-xl p-4 space-y-1">
+        <div className="bg-amber-500/15 border border-amber-300 rounded-xl p-4 space-y-1">
           <p className="text-xs font-semibold text-amber-800 flex items-center gap-1.5 mb-2">
             <AlertTriangle size={13} />
             주의 필요 ({warnings.length}건)
@@ -276,7 +276,7 @@ export function RestructureDiffView({ plan, depts, employees }: RestructureDiffV
             <DiffRow key={line.changeId} line={line} />
           ))}
           {diffLines.length === 0 && (
-            <p className="text-sm text-[#999] text-center py-8">변경 사항이 없습니다.</p>
+            <p className="text-sm text-muted-foreground text-center py-8">변경 사항이 없습니다.</p>
           )}
         </div>
       </div>
@@ -287,16 +287,16 @@ export function RestructureDiffView({ plan, depts, employees }: RestructureDiffV
         <div className="flex items-center gap-4">
           <div className="text-center">
             <p className="text-3xl font-bold text-foreground">{depts.length}</p>
-            <p className="text-xs text-[#999] mt-0.5">현재</p>
+            <p className="text-xs text-muted-foreground mt-0.5">현재</p>
           </div>
-          <ArrowRight size={20} className="text-[#999]" />
+          <ArrowRight size={20} className="text-muted-foreground" />
           <div className="text-center">
             <p className="text-3xl font-bold text-primary">
               {depts.length + addCount - removeCount}
             </p>
-            <p className="text-xs text-[#999] mt-0.5">개편 후 예상</p>
+            <p className="text-xs text-muted-foreground mt-0.5">개편 후 예상</p>
           </div>
-          <div className="ml-auto text-xs text-[#666]">
+          <div className="ml-auto text-xs text-muted-foreground">
             {addCount > 0 && <span className="text-primary">+{addCount} 신설 </span>}
             {removeCount > 0 && <span className="text-red-500">-{removeCount} 폐지/통합</span>}
           </div>

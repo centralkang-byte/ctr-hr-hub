@@ -123,7 +123,7 @@ export function HolidaysTab({
                           <div className="text-xs text-muted-foreground">{formatDate(holiday.date)}</div>
                         </div>
                         {holiday.isSubstitute && (
-                          <span className="rounded-full bg-orange-50 px-2 py-0.5 text-xs font-medium text-orange-600">
+                          <span className="rounded-full bg-orange-500/10 px-2 py-0.5 text-xs font-medium text-orange-600">
                             {t('kr_keb8c80ec')}
                           </span>
                         )}

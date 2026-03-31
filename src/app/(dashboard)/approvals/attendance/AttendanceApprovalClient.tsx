@@ -46,16 +46,16 @@ type RequestTypeFilter = 'all' | 'leave' | 'overtime' | 'attendance_correction' 
 
 const REQUEST_TYPE_LABELS: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
   leave: { label: '휴가', icon: <CalendarDays className="w-3.5 h-3.5" />, color: 'bg-primary/10 text-emerald-700' },
-  overtime: { label: '초과근무', icon: <Clock className="w-3.5 h-3.5" />, color: 'bg-amber-100 text-amber-700' },
-  attendance_correction: { label: '근태수정', icon: <ClipboardList className="w-3.5 h-3.5" />, color: 'bg-indigo-100 text-primary/90' },
-  shift_change: { label: '교대변경', icon: <ArrowRightLeft className="w-3.5 h-3.5" />, color: 'bg-orange-50 text-orange-700' },
+  overtime: { label: '초과근무', icon: <Clock className="w-3.5 h-3.5" />, color: 'bg-amber-500/15 text-amber-700' },
+  attendance_correction: { label: '근태수정', icon: <ClipboardList className="w-3.5 h-3.5" />, color: 'bg-indigo-500/15 text-primary/90' },
+  shift_change: { label: '교대변경', icon: <ArrowRightLeft className="w-3.5 h-3.5" />, color: 'bg-orange-500/10 text-orange-700' },
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  pending: { label: '대기중', color: 'bg-amber-100 text-amber-700 border-amber-300' },
-  approved: { label: '승인', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+  pending: { label: '대기중', color: 'bg-amber-500/15 text-amber-700 border-amber-300' },
+  approved: { label: '승인', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
   rejected: { label: '반려', color: 'bg-destructive/10 text-destructive border-destructive/20' },
-  cancelled: { label: '취소', color: 'bg-background text-[#555] border-border' },
+  cancelled: { label: '취소', color: 'bg-background text-muted-foreground border-border' },
 }
 
 // ─── 메인 컴포넌트 ─────────────────────────────────────────

@@ -85,7 +85,7 @@ export default function ComplianceClient({ user }: { user: SessionUser }) {
       description: 'GDPR compliance management — consents, requests, DPIA',
       href: '/compliance/gdpr',
       icon: Shield,
-      color: 'bg-emerald-100 text-emerald-600',
+      color: 'bg-emerald-500/15 text-emerald-600',
     },
     {
       title: t('gdpr.piiAudit'),
@@ -99,14 +99,14 @@ export default function ComplianceClient({ user }: { user: SessionUser }) {
       description: t('gdpr.retentionDesc'),
       href: '/compliance/data-retention',
       icon: Database,
-      color: 'bg-purple-50 text-purple-600',
+      color: 'bg-purple-500/10 text-purple-600',
     },
     {
       title: t('gdpr.dpia'),
       description: t('gdpr.dpiaDesc'),
       href: '/compliance/dpia',
       icon: FileSearch,
-      color: 'bg-indigo-100 text-primary',
+      color: 'bg-indigo-500/15 text-primary',
     },
   ]
 
@@ -151,7 +151,7 @@ export default function ComplianceClient({ user }: { user: SessionUser }) {
                 <card.icon className={`h-5 w-5 ${card.color}`} />
               </div>
               <div>
-                <p className="text-xs text-[#666]">{card.label}</p>
+                <p className="text-xs text-muted-foreground">{card.label}</p>
                 <p className="text-2xl font-bold text-foreground">
                   {loading ? '—' : card.value}
                 </p>
@@ -175,7 +175,7 @@ export default function ComplianceClient({ user }: { user: SessionUser }) {
                 <card.icon className="h-5 w-5" />
               </div>
               <h3 className="text-sm font-semibold text-foreground mb-1">{card.title}</h3>
-              <p className="text-xs text-[#666] mb-3">{card.description}</p>
+              <p className="text-xs text-muted-foreground mb-3">{card.description}</p>
               <div className="flex items-center text-xs font-medium text-primary group-hover:text-primary/90">
                 <ArrowRight className="h-3.5 w-3.5" />
               </div>
@@ -198,7 +198,7 @@ export default function ComplianceClient({ user }: { user: SessionUser }) {
                 <span className="text-2xl">{card.flag}</span>
                 <h3 className="text-sm font-semibold text-foreground">{card.title}</h3>
               </div>
-              <p className="text-xs text-[#666] mb-3">{card.description}</p>
+              <p className="text-xs text-muted-foreground mb-3">{card.description}</p>
               <div className="flex items-center text-xs font-medium text-primary group-hover:text-primary/90">
                 <ArrowRight className="h-3.5 w-3.5" />
               </div>

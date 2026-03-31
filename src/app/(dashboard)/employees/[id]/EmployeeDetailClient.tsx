@@ -162,7 +162,7 @@ function Avatar({ name, photoUrl, size = 'md' }: { name: string; photoUrl?: stri
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="py-2.5">
-      <p className="text-xs text-[#999] font-medium mb-1">{label}</p>
+      <p className="text-xs text-muted-foreground font-medium mb-1">{label}</p>
       <div className="text-sm text-foreground">{value ?? '-'}</div>
     </div>
   )
@@ -529,7 +529,7 @@ export function EmployeeDetailClient({
             <Avatar name={employee.name} photoUrl={employee.photoUrl} size="lg" />
             <div>
               <h1 className="text-2xl font-bold text-foreground tracking-ctr">{employee.name}</h1>
-              <p className="text-sm text-[#999]">
+              <p className="text-sm text-muted-foreground">
                 {employee.department?.name ?? '-'}{employee.jobGrade ? ` · ${employee.jobGrade.name}` : ''}
               </p>
               <Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'} className="mt-1">
@@ -583,7 +583,7 @@ export function EmployeeDetailClient({
                   </div>
                 )}
                 {editing && (
-                  <div className="mb-4 rounded-lg bg-amber-100 border border-amber-300 px-4 py-3">
+                  <div className="mb-4 rounded-lg bg-amber-500/15 border border-amber-300 px-4 py-3">
                     <p className="text-xs text-amber-700">
                       ⚠️ 소속정보(부서/직급/고용형태)는 발령 프로세스를 통해서만 변경 가능합니다.
                     </p>
@@ -624,9 +624,9 @@ export function EmployeeDetailClient({
             {/* Tab 6: 평가결과 (comingSoon - B3) */}
             <TabsContent value="performance" className="mt-0">
               <div className="rounded-xl border border-border bg-card p-6">
-                <div className="flex flex-col items-center py-12 text-[#999]">
+                <div className="flex flex-col items-center py-12 text-muted-foreground">
                   <TrendingUp className="h-10 w-10 mb-3 text-border" />
-                  <p className="text-sm font-medium text-[#666]">평가결과</p>
+                  <p className="text-sm font-medium text-muted-foreground">평가결과</p>
                   <p className="text-xs mt-1">B3 세션에서 구현 예정입니다.</p>
                 </div>
               </div>

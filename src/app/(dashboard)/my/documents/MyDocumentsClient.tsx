@@ -67,10 +67,10 @@ const CERT_TYPE_LABELS: Record<string, string> = {
 }
 
 const CERT_STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof Clock }> = {
-  REQUESTED: { label: '신청완료', color: 'bg-primary/10 text-primary dark:bg-blue-900/30 dark:text-blue-300', icon: Clock },
-  APPROVED: { label: '승인', color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300', icon: CheckCircle2 },
-  ISSUED: { label: '발급완료', color: 'bg-tertiary-container/20 text-tertiary dark:bg-green-900/30 dark:text-green-300', icon: CheckCircle2 },
-  REJECTED: { label: '반려', color: 'bg-destructive/10 text-destructive dark:bg-red-900/30 dark:text-red-300', icon: XCircle },
+  REQUESTED: { label: '신청완료', color: 'bg-primary/10 text-primary', icon: Clock },
+  APPROVED: { label: '승인', color: 'bg-yellow-500/15 text-yellow-700', icon: CheckCircle2 },
+  ISSUED: { label: '발급완료', color: 'bg-tertiary-container/20 text-tertiary', icon: CheckCircle2 },
+  REJECTED: { label: '반려', color: 'bg-destructive/10 text-destructive', icon: XCircle },
 }
 
 const TABS = [
@@ -162,7 +162,7 @@ export function MyDocumentsClient({ user }: { user: SessionUser }) {
     <div className="p-6 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#222] dark:text-white">문서/증명서</h1>
+        <h1 className="text-2xl font-bold text-foreground">문서/증명서</h1>
       </div>
 
       {/* Tabs */}
@@ -178,7 +178,7 @@ export function MyDocumentsClient({ user }: { user: SessionUser }) {
                 'flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors',
                 isActive
                   ? 'border-primary text-primary'
-                  : 'border-transparent text-[#999] hover:text-[#666] dark:text-muted-foreground/60 dark:hover:text-slate-300',
+                  : 'border-transparent text-muted-foreground hover:text-muted-foreground',
               )}
             >
               <Icon className="w-4 h-4" />
@@ -236,13 +236,13 @@ function DocumentsTab({
           className="flex items-center justify-between p-4 bg-card rounded-lg border border-border"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary/5 dark:bg-slate-700 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center">
               <FileText className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <p className="font-medium text-[#222] dark:text-white">{doc.title}</p>
-              <div className="flex items-center gap-2 text-xs text-[#999] dark:text-muted-foreground/60">
-                <span className="px-1.5 py-0.5 rounded bg-muted dark:bg-slate-700">
+              <p className="font-medium text-foreground">{doc.title}</p>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span className="px-1.5 py-0.5 rounded bg-muted">
                   {DOC_TYPE_LABELS[doc.docType] ?? doc.docType}
                 </span>
                 <span>{new Date(doc.createdAt).toLocaleDateString('ko-KR')}</span>
@@ -252,7 +252,7 @@ function DocumentsTab({
           </div>
           <button
             onClick={() => onDownload(doc.id)}
-            className="p-2 rounded-lg hover:bg-muted dark:hover:bg-slate-700 transition-colors"
+            className="p-2 rounded-lg hover:bg-muted transition-colors"
           >
             <Download className="w-5 h-5 text-primary" />
           </button>
@@ -303,15 +303,15 @@ function CertificatesTab({
       {showDialog && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
           <div className="bg-card rounded-xl shadow-xl w-full max-w-md p-6">
-            <h2 className="text-lg font-bold text-[#222] dark:text-white mb-4">증명서 발급 신청</h2>
+            <h2 className="text-lg font-bold text-foreground mb-4">증명서 발급 신청</h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#666] dark:text-slate-300 mb-1">증명서 유형</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">증명서 유형</label>
                 <select
                   value={requestType}
                   onChange={(e) => onTypeChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-border rounded-lg bg-card dark:bg-slate-700 text-[#222] dark:text-white"
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground"
                 >
                   {Object.entries(CERT_TYPE_LABELS).map(([key, label]) => (
                     <option key={key} value={key}>{label}</option>
@@ -320,13 +320,13 @@ function CertificatesTab({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#666] dark:text-slate-300 mb-1">용도 (선택)</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">용도 (선택)</label>
                 <textarea
                   value={requestPurpose}
                   onChange={(e) => onPurposeChange(e.target.value)}
                   placeholder="예: 은행 대출 신청용"
                   rows={3}
-                  className="w-full px-3 py-2 border border-border rounded-lg bg-card dark:bg-slate-700 text-[#222] dark:text-white resize-none"
+                  className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground resize-none"
                 />
               </div>
             </div>
@@ -364,14 +364,14 @@ function CertificatesTab({
                 className="flex items-center justify-between p-4 bg-card rounded-lg border border-border"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary/5 dark:bg-slate-700 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center">
                     <FilePlus className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <p className="font-medium text-[#222] dark:text-white">
+                    <p className="font-medium text-foreground">
                       {CERT_TYPE_LABELS[req.type] ?? req.type}
                     </p>
-                    <div className="flex items-center gap-2 text-xs text-[#999] dark:text-muted-foreground/60">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <span>{new Date(req.requestedAt).toLocaleDateString('ko-KR')}</span>
                       {req.purpose && <span>· {req.purpose}</span>}
                     </div>
@@ -385,7 +385,7 @@ function CertificatesTab({
                   {req.status === 'ISSUED' && req.issuedFileKey && (
                     <button
                       onClick={() => onDownload(req.id)}
-                      className="p-2 rounded-lg hover:bg-muted dark:hover:bg-slate-700 transition-colors"
+                      className="p-2 rounded-lg hover:bg-muted transition-colors"
                       title="다운로드"
                     >
                       <Download className="w-5 h-5 text-primary" />

@@ -17,8 +17,8 @@ interface Props {
 // ─── Helpers ────────────────────────────────────────────────
 
 function getColor(p: number): string {
-  if (p >= 75) return 'bg-emerald-500'
-  if (p >= 25) return 'bg-amber-500'
+  if (p >= 75) return 'bg-emerald-500/100'
+  if (p >= 25) return 'bg-amber-500/100'
   return 'bg-destructive/50'
 }
 

@@ -129,27 +129,27 @@ export default function PlanDetailDialog({ planId, onClose }: PlanDetailDialogPr
         </DialogHeader>
 
         {loading ? (
-          <div className="py-8 text-center text-[#666]">로딩 중...</div>
+          <div className="py-8 text-center text-muted-foreground">로딩 중...</div>
         ) : plan ? (
           <div className="space-y-6">
             {/* ─── Plan Info ─── */}
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-[#666]">부서:</span>{' '}
+                <span className="text-muted-foreground">부서:</span>{' '}
                 <span className="font-medium">{plan.department?.name ?? '-'}</span>
               </div>
               <div>
-                <span className="text-[#666]">현 직책자:</span>{' '}
+                <span className="text-muted-foreground">현 직책자:</span>{' '}
                 <span className="font-medium">
                   {plan.currentHolder?.name ?? '-'}
                 </span>
               </div>
               <div>
-                <span className="text-[#666]">중요도:</span>{' '}
+                <span className="text-muted-foreground">중요도:</span>{' '}
                 <Badge variant="outline">{CRITICALITY_LABELS[plan.criticality] ?? plan.criticality}</Badge>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[#666]">상태:</span>
+                <span className="text-muted-foreground">상태:</span>
                 <Badge variant="outline">{STATUS_LABELS[plan.status] ?? plan.status}</Badge>
                 {plan.status === 'PLAN_DRAFT' && (
                   <Button variant="ghost" size="sm" className="text-xs" onClick={() => handleStatusChange('PLAN_ACTIVE')}>
@@ -164,7 +164,7 @@ export default function PlanDetailDialog({ planId, onClose }: PlanDetailDialogPr
               </div>
             </div>
             {plan.notes && (
-              <p className="text-sm text-[#555] bg-background p-3 rounded-lg">{plan.notes}</p>
+              <p className="text-sm text-muted-foreground bg-background p-3 rounded-lg">{plan.notes}</p>
             )}
 
             {/* ─── Candidates ─── */}
@@ -216,7 +216,7 @@ export default function PlanDetailDialog({ planId, onClose }: PlanDetailDialogPr
               )}
 
               {plan.candidates.length === 0 ? (
-                <p className="text-sm text-[#666] py-4 text-center">등록된 후보자가 없습니다.</p>
+                <p className="text-sm text-muted-foreground py-4 text-center">등록된 후보자가 없습니다.</p>
               ) : (
                 <div className="grid gap-3">
                   {plan.candidates.map((c) => (

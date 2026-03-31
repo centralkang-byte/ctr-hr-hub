@@ -52,7 +52,7 @@ export default function SuccessionDashboard() {
   }, [fetchDashboard])
 
   if (loading) {
-    return <div className="py-8 text-center text-[#666]">로딩 중...</div>
+    return <div className="py-8 text-center text-muted-foreground">로딩 중...</div>
   }
 
   if (!data) return null
@@ -75,18 +75,18 @@ export default function SuccessionDashboard() {
               <Crown className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="text-xs text-[#666]">전체 핵심직책</p>
+              <p className="text-xs text-muted-foreground">전체 핵심직책</p>
               <p className="text-2xl font-bold text-foreground">{data.totalPlans}</p>
             </div>
           </div>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-emerald-500/15 flex items-center justify-center">
               <Shield className="h-5 w-5 text-emerald-600" />
             </div>
             <div>
-              <p className="text-xs text-[#666]">활성 계획</p>
+              <p className="text-xs text-muted-foreground">활성 계획</p>
               <p className="text-2xl font-bold text-foreground">{data.activePlans}</p>
             </div>
           </div>
@@ -97,18 +97,18 @@ export default function SuccessionDashboard() {
               <AlertTriangle className="h-5 w-5 text-destructive" />
             </div>
             <div>
-              <p className="text-xs text-[#666]">후보 없는 직책</p>
+              <p className="text-xs text-muted-foreground">후보 없는 직책</p>
               <p className="text-2xl font-bold text-destructive">{data.plansWithoutCandidates}</p>
             </div>
           </div>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-amber-500/15 flex items-center justify-center">
               <Users className="h-5 w-5 text-amber-600" />
             </div>
             <div>
-              <p className="text-xs text-[#666]">전체 후보자</p>
+              <p className="text-xs text-muted-foreground">전체 후보자</p>
               <p className="text-2xl font-bold text-foreground">{totalCandidates}</p>
             </div>
           </div>
@@ -140,7 +140,7 @@ export default function SuccessionDashboard() {
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="text-center">
                   <p className="text-2xl font-bold">{totalCandidates}</p>
-                  <p className="text-xs text-[#666]">후보자</p>
+                  <p className="text-xs text-muted-foreground">후보자</p>
                 </div>
               </div>
             </div>
@@ -150,7 +150,7 @@ export default function SuccessionDashboard() {
                   <span className="w-3 h-3 rounded-full" style={{ backgroundColor: d.color }} />
                   <span className="text-sm">{d.name}</span>
                   <span className="text-sm font-medium">{d.value}명</span>
-                  <span className="text-xs text-[#999]">
+                  <span className="text-xs text-muted-foreground">
                     ({totalCandidates > 0 ? Math.round((d.value / totalCandidates) * 100) : 0}%)
                   </span>
                 </div>

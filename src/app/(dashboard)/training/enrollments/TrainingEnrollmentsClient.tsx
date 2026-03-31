@@ -88,7 +88,7 @@ export default function TrainingEnrollmentsClient({ user }: { user: SessionUser 
       render: (row) => (
         <div>
           <p className="text-sm font-medium">{row.employee.name}</p>
-          <p className="text-xs text-[#666]">{row.employee.employeeNo}</p>
+          <p className="text-xs text-muted-foreground">{row.employee.employeeNo}</p>
         </div>
       ),
     },
@@ -169,7 +169,7 @@ export default function TrainingEnrollmentsClient({ user }: { user: SessionUser 
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <nav className="text-xs text-[#999] mb-1">{t('enrollmentBreadcrumb')}</nav>
+          <nav className="text-xs text-muted-foreground mb-1">{t('enrollmentBreadcrumb')}</nav>
           <h1 className="text-2xl font-bold text-foreground">{t('enrollmentList')}</h1>
         </div>
         <div className="flex items-center gap-3">

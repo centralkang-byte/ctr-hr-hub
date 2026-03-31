@@ -69,11 +69,11 @@ export default function ExecutiveReportClient({ user }: { user: SessionUser }) {
               <h2 className="text-lg font-semibold text-foreground">HR Analytics Report</h2>
             </div>
             <div className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-primary/90">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-500/15 px-2.5 py-0.5 text-xs font-medium text-primary/90">
                 <Sparkles className="h-3 w-3" />
                 AI Generated
               </span>
-              <span className="flex items-center gap-1 text-xs text-[#666]">
+              <span className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Clock className="h-3 w-3" />
                 {new Date(report.generatedAt).toLocaleString('ko-KR')}
               </span>
@@ -90,28 +90,28 @@ export default function ExecutiveReportClient({ user }: { user: SessionUser }) {
                 return <h2 key={i} className="mb-3 mt-5 text-lg font-semibold text-foreground">{line.slice(3)}</h2>
               }
               if (line.startsWith('### ')) {
-                return <h3 key={i} className="mb-2 mt-4 text-base font-semibold text-[#333]">{line.slice(4)}</h3>
+                return <h3 key={i} className="mb-2 mt-4 text-base font-semibold text-foreground">{line.slice(4)}</h3>
               }
               if (line.startsWith('- ')) {
-                return <li key={i} className="ml-4 text-sm text-[#555]">{line.slice(2)}</li>
+                return <li key={i} className="ml-4 text-sm text-muted-foreground">{line.slice(2)}</li>
               }
               if (line.startsWith('**') && line.endsWith('**')) {
-                return <p key={i} className="text-sm font-semibold text-[#333]">{line.slice(2, -2)}</p>
+                return <p key={i} className="text-sm font-semibold text-foreground">{line.slice(2, -2)}</p>
               }
               if (line.trim() === '') {
                 return <br key={i} />
               }
-              return <p key={i} className="text-sm text-[#555]">{line}</p>
+              return <p key={i} className="text-sm text-muted-foreground">{line}</p>
             })}
           </div>
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-background py-20">
           <Sparkles className="mb-4 h-12 w-12 text-border" />
-          <p className="text-sm font-medium text-[#666]">
+          <p className="text-sm font-medium text-muted-foreground">
             {t('promptMessage')}
           </p>
-          <p className="mt-1 text-xs text-[#999]">
+          <p className="mt-1 text-xs text-muted-foreground">
             {t('promptDescription')}
           </p>
         </div>

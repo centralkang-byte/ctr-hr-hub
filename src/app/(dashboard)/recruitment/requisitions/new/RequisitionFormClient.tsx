@@ -103,13 +103,13 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
       <div className="flex items-center gap-3">
         <button
           onClick={() => router.back()}
-          className="p-2 rounded-lg hover:bg-muted text-[#555]"
+          className="p-2 rounded-lg hover:bg-muted text-muted-foreground"
         >
           <ArrowLeft size={18} />
         </button>
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('requisitionFormTitle')}</h1>
-          <p className="text-sm text-[#666] mt-0.5">{t('department_kec9ea5ec_hrkec9790_kecb184ec_kec9a94ec')}</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{t('department_kec9ea5ec_hrkec9790_kecb184ec_kec9a94ec')}</p>
         </div>
       </div>
 
@@ -119,7 +119,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
         {/* 법인 / 부서 */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1.5">
+            <label className="block text-sm font-medium text-foreground mb-1.5">
               {t('company')} <span className="text-red-500">*</span>
             </label>
             <select
@@ -135,7 +135,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1.5">
+            <label className="block text-sm font-medium text-foreground mb-1.5">
               {t('department')} <span className="text-red-500">*</span>
             </label>
             <select
@@ -153,21 +153,21 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
 
         {/* 직무명 */}
         <div>
-          <label className="block text-sm font-medium text-[#333] mb-1.5">
+          <label className="block text-sm font-medium text-foreground mb-1.5">
             {t('kr_kecb184ec_keca781eb')} <span className="text-red-500">*</span>
           </label>
           <input
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
             placeholder="예: 시니어 백엔드 개발자"
-            className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary placeholder:text-[#999]"
+            className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary placeholder:text-muted-foreground"
           />
         </div>
 
         {/* 인원 / 직급 / 고용형태 */}
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1.5">{t('kr_kecb184ec_kec9db8ec')}</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">{t('kr_kecb184ec_kec9db8ec')}</label>
             <input
               type="number"
               min={1}
@@ -177,16 +177,16 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1.5">{t('grade')}</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">{t('grade')}</label>
             <input
               value={form.jobLevel}
               onChange={(e) => setForm({ ...form, jobLevel: e.target.value })}
               placeholder="예: 과장"
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary placeholder:text-[#999]"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary placeholder:text-muted-foreground"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1.5">{t('kr_keab3a0ec')}</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">{t('kr_keab3a0ec')}</label>
             <select
               value={form.employmentType}
               onChange={(e) => setForm({ ...form, employmentType: e.target.value as 'permanent' | 'contract' | 'intern' })}
@@ -202,7 +202,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
         {/* 긴급도 / 희망입사일 */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1.5">{t('kr_keab8b4ea')}</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">{t('kr_keab8b4ea')}</label>
             <div className="flex gap-3">
               {(['urgent', 'normal', 'low'] as const).map((u) => (
                 <label key={u} className="flex items-center gap-1.5 cursor-pointer">
@@ -222,7 +222,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1.5">{t('kr_ked9daceb_kec9e85ec')}</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">{t('kr_ked9daceb_kec9e85ec')}</label>
             <input
               type="date"
               value={form.targetDate}
@@ -234,8 +234,8 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
 
         {/* 연결 포지션 */}
         <div>
-          <label className="block text-sm font-medium text-[#333] mb-1.5">
-            {t('kr_kec97b0ea_ked8facec')} <span className="text-[#999] font-normal">{t('kr_keab3b5ec_kec84a0ed_keb9890eb_')}</span>
+          <label className="block text-sm font-medium text-foreground mb-1.5">
+            {t('kr_kec97b0ea_ked8facec')} <span className="text-muted-foreground font-normal">{t('kr_keab3b5ec_kec84a0ed_keb9890eb_')}</span>
           </label>
           <select
             value={form.positionId}
@@ -253,7 +253,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
 
         {/* 채용 사유 */}
         <div>
-          <label className="block text-sm font-medium text-[#333] mb-1.5">
+          <label className="block text-sm font-medium text-foreground mb-1.5">
             {t('kr_kecb184ec_kec82acec')} <span className="text-red-500">*</span>
           </label>
           <textarea
@@ -261,14 +261,14 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
             value={form.justification}
             onChange={(e) => setForm({ ...form, justification: e.target.value })}
             placeholder="채용이 필요한 사유를 상세히 작성해주세요. (예: 신규 프로젝트 인력 확충, 퇴직자 대체 충원 등)"
-            className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none placeholder:text-[#999]"
+            className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none placeholder:text-muted-foreground"
           />
         </div>
 
         {/* 결재선 안내 */}
         <div className="bg-primary/10 rounded-lg p-4">
           <p className="text-sm text-primary/90 font-medium mb-1">{t('kr_keab2b0ec_kec9e90eb_keca081ec')}</p>
-          <p className="text-xs text-[#555]">
+          <p className="text-xs text-muted-foreground">
             {form.urgency === 'urgent'
               ? '긴급: 팀장 → 부서장 → HR → 대표 (4단계)'
               : '일반: 팀장 → HR (2단계)'}
@@ -287,14 +287,14 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
       <div className="flex items-center justify-end gap-3">
         <button
           onClick={() => router.back()}
-          className="px-4 py-2 border border-border rounded-lg text-sm text-[#555] hover:bg-background"
+          className="px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background"
         >
           {t('cancel')}
         </button>
         <button
           onClick={() => handleSave(false)}
           disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-[#333] hover:bg-background disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-foreground hover:bg-background disabled:opacity-50"
         >
           <Save size={15} />
           {t('kr_kec9e84ec')}

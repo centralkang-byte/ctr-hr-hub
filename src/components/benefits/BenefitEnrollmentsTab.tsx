@@ -78,7 +78,7 @@ export default function BenefitEnrollmentsTab() {
       render: (row) => (
         <div>
           <p className="text-sm font-medium">{row.employee.name}</p>
-          <p className="text-xs text-[#666]">{row.employee.employeeNo}</p>
+          <p className="text-xs text-muted-foreground">{row.employee.employeeNo}</p>
         </div>
       ),
     },

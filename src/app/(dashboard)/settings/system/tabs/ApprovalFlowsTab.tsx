@@ -199,7 +199,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                           </span>
                           <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
                             !flow.deletedAt
-                              ? 'bg-emerald-50 text-emerald-600'
+                              ? 'bg-emerald-500/10 text-emerald-600'
                               : 'bg-muted text-muted-foreground/60'
                           }`}>
                             {!flow.deletedAt ? '활성' : '비활성'}
@@ -213,7 +213,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                           {flow.steps.length > 0 && ` (${flow.steps.map(s => roleLabel(s.approverRole as ApproverRole | null)).join(' → ')})`}
                         </p>
                       </div>
-                      {isExpanded ? <ChevronUp className="h-4 w-4 text-[#999]" /> : <ChevronDown className="h-4 w-4 text-[#999]" />}
+                      {isExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
                     </button>
 
                     {/* 확장 영역 */}
@@ -244,7 +244,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                               </button>
                               <button
                                 onClick={() => { setEditingFlow(null); setExpandedId(null) }}
-                                className="flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-xs font-medium text-[#666] hover:bg-muted"
+                                className="flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-xs font-medium text-muted-foreground hover:bg-muted"
                               >
                                 <X className="h-3 w-3" />
                                 취소
@@ -290,7 +290,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                     {isCreating && editingFlow ? (
                       <div className="px-4 py-3 space-y-3">
                         <div className="flex items-center gap-2">
-                          <GitBranch className="h-4 w-4 text-[#999]" />
+                          <GitBranch className="h-4 w-4 text-muted-foreground" />
                           <span className="text-sm font-semibold text-foreground">{MODULE_LABELS[mod]}</span>
                         </div>
                         <input
@@ -311,7 +311,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                           </button>
                           <button
                             onClick={() => { setCreatingModule(null); setEditingFlow(null) }}
-                            className="flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-xs font-medium text-[#666] hover:bg-muted"
+                            className="flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-xs font-medium text-muted-foreground hover:bg-muted"
                           >
                             <X className="h-3 w-3" />
                             취소
@@ -330,11 +330,11 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                         className="flex w-full items-center gap-3 px-4 py-3"
                       >
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
-                          <Plus className="h-4 w-4 text-[#999]" />
+                          <Plus className="h-4 w-4 text-muted-foreground" />
                         </div>
                         <div className="text-left">
-                          <span className="text-sm font-medium text-[#666]">{MODULE_LABELS[mod]}</span>
-                          <p className="text-xs text-[#999]">플로우 미설정 — 클릭하여 생성</p>
+                          <span className="text-sm font-medium text-muted-foreground">{MODULE_LABELS[mod]}</span>
+                          <p className="text-xs text-muted-foreground">플로우 미설정 — 클릭하여 생성</p>
                         </div>
                       </button>
                     )}

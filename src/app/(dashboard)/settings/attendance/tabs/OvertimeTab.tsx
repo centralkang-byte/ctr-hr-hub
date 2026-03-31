@@ -116,7 +116,7 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
       </div>
 
       {/* Info banner */}
-      <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4">
+      <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-500/10 p-4">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
         <div>
           <p className="text-xs font-medium text-amber-800">{t('company_kebb384_kec8898eb_kebb0b0ec_keb8ba4eb')}</p>

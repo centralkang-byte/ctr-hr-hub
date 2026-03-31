@@ -101,9 +101,9 @@ function SalaryBandBar({
           style={{ left: `calc(${pct}% - 10px)` }}
         />
       </div>
-      <div className="mt-1.5 flex justify-between text-xs text-[#999]">
+      <div className="mt-1.5 flex justify-between text-xs text-muted-foreground">
         <span>최소 {formatCurrency(min, currency)}</span>
-        <span className="text-[#666]">중간 {formatCurrency(mid, currency)}</span>
+        <span className="text-muted-foreground">중간 {formatCurrency(mid, currency)}</span>
         <span>최대 {formatCurrency(max, currency)}</span>
       </div>
     </div>
@@ -142,7 +142,7 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
 
   if (!data?.latestComp) {
     return (
-      <div className="flex flex-col items-center py-12 text-[#999]">
+      <div className="flex flex-col items-center py-12 text-muted-foreground">
         <span className="text-3xl mb-2">💰</span>
         <p className="text-sm">등록된 급여 정보가 없습니다.</p>
       </div>
@@ -165,7 +165,7 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
         <h3 className="text-base font-bold text-foreground">
           급여 정보 ({effectiveDateStr} 기준)
         </h3>
-        <span className="text-xs text-[#999] rounded-full bg-muted px-2.5 py-1">
+        <span className="text-xs text-muted-foreground rounded-full bg-muted px-2.5 py-1">
           HR Admin 전용
         </span>
       </div>
@@ -194,7 +194,7 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
                 {formatCurrency(latestComp.newBaseSalary, currency)}
               </td>
               <td className="px-4 py-3 text-center">
-                <span className="text-xs text-emerald-700 bg-emerald-100 rounded-full px-2 py-0.5">
+                <span className="text-xs text-emerald-700 bg-emerald-500/15 rounded-full px-2 py-0.5">
                   기본
                 </span>
               </td>
@@ -203,14 +203,14 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
             {/* 수당 항목 — yearMonth 기반 (isTaxable 없음) */}
             {allowances.map((a) => (
               <tr key={a.id} className="border-t border-border">
-                <td className="px-4 py-3 text-sm text-[#555]">
+                <td className="px-4 py-3 text-sm text-muted-foreground">
                   {getAllowanceLabel(a.allowanceType)}
                 </td>
-                <td className="px-4 py-3 text-right text-sm font-mono tabular-nums text-[#555]">
+                <td className="px-4 py-3 text-right text-sm font-mono tabular-nums text-muted-foreground">
                   {formatCurrency(a.amount, a.currency)}
                 </td>
                 <td className="px-4 py-3 text-center">
-                  <span className="text-xs text-amber-700 bg-amber-100 rounded-full px-2 py-0.5">
+                  <span className="text-xs text-amber-700 bg-amber-500/15 rounded-full px-2 py-0.5">
                     {a.yearMonth}
                   </span>
                 </td>
@@ -235,7 +235,7 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
           <h4 className="text-sm font-semibold text-foreground mb-1">
             연봉밴드 위치
             {jobGrade && (
-              <span className="ml-2 text-[#999] font-normal">({jobGrade.name})</span>
+              <span className="ml-2 text-muted-foreground font-normal">({jobGrade.name})</span>
             )}
           </h4>
           <SalaryBandBar
@@ -246,7 +246,7 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
             currency={salaryBand.currency}
           />
           {latestComp.compaRatio !== null && (
-            <p className="mt-3 text-xs text-[#666]">
+            <p className="mt-3 text-xs text-muted-foreground">
               Compa-ratio:{' '}
               <span className="font-semibold text-foreground">
                 {((latestComp.compaRatio as number) * 100).toFixed(1)}%

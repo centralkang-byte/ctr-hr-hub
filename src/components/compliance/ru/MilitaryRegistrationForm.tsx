@@ -121,7 +121,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
           {/* Employee ID (only when creating) */}
           {!editing && (
             <div>
-              <label className="text-sm font-medium text-[#333] block mb-1">
+              <label className="text-sm font-medium text-foreground block mb-1">
                 직원 ID <span className="text-red-500">*</span>
               </label>
               <input
@@ -131,7 +131,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
                 onChange={handleChange}
                 required
                 placeholder={'직원 UUID 입력'}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
               />
             </div>
           )}
@@ -140,7 +140,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
           {editing && (
             <div className="p-3 bg-background rounded-lg">
               <p className="text-sm font-medium text-foreground">{registration.employee.name}</p>
-              <p className="text-xs text-[#666]">
+              <p className="text-xs text-muted-foreground">
                 {registration.employee.employeeNo} · {registration.employee.department?.name ?? '-'}
               </p>
             </div>
@@ -149,7 +149,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
           {/* Category */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-sm font-medium text-[#333] block mb-1">
+              <label className="text-sm font-medium text-foreground block mb-1">
                 복무 구분 <span className="text-red-500">*</span>
               </label>
               <select
@@ -166,7 +166,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium text-[#333] block mb-1">
+              <label className="text-sm font-medium text-foreground block mb-1">
                 적합도 <span className="text-red-500">*</span>
               </label>
               <select
@@ -188,46 +188,46 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
           {/* Rank & Specialty */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-sm font-medium text-[#333] block mb-1">계급</label>
+              <label className="text-sm font-medium text-foreground block mb-1">계급</label>
               <input
                 type="text"
                 name="rank"
                 value={form.rank}
                 onChange={handleChange}
                 placeholder="예: 상사"
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-[#333] block mb-1">군사특기</label>
+              <label className="text-sm font-medium text-foreground block mb-1">군사특기</label>
               <input
                 type="text"
                 name="specialtyCode"
                 value={form.specialtyCode}
                 onChange={handleChange}
                 placeholder="예: 106A"
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
               />
             </div>
           </div>
 
           {/* Military Office */}
           <div>
-            <label className="text-sm font-medium text-[#333] block mb-1">군사기관</label>
+            <label className="text-sm font-medium text-foreground block mb-1">군사기관</label>
             <input
               type="text"
               name="militaryOffice"
               value={form.militaryOffice}
               onChange={handleChange}
               placeholder="담당 군사기관명"
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
             />
           </div>
 
           {/* Dates */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-sm font-medium text-[#333] block mb-1">등록일</label>
+              <label className="text-sm font-medium text-foreground block mb-1">등록일</label>
               <input
                 type="date"
                 name="registrationDate"
@@ -237,7 +237,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-[#333] block mb-1">해제일</label>
+              <label className="text-sm font-medium text-foreground block mb-1">해제일</label>
               <input
                 type="date"
                 name="deregistrationDate"
@@ -250,14 +250,14 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
 
           {/* Notes */}
           <div>
-            <label className="text-sm font-medium text-[#333] block mb-1">비고</label>
+            <label className="text-sm font-medium text-foreground block mb-1">비고</label>
             <textarea
               name="notes"
               value={form.notes}
               onChange={handleChange}
               rows={3}
               placeholder={'추가 메모'}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999] resize-none"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground resize-none"
             />
           </div>
 
@@ -272,7 +272,7 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
             <button
               type="button"
               onClick={onClose}
-              className="bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
+              className="bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm"
             >
               취소
             </button>

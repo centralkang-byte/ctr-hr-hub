@@ -79,7 +79,7 @@ function ViewProgressBar({ viewed, total }: { viewed: number; total: number }) {
     return (
         <div>
             <div className="flex items-center justify-between mb-1.5">
-                <span className="text-sm text-[#666]">열람률</span>
+                <span className="text-sm text-muted-foreground">열람률</span>
                 <span className="text-sm font-bold text-foreground">{pct}%</span>
             </div>
             <div className="h-3 w-full bg-border rounded-full overflow-hidden">
@@ -88,7 +88,7 @@ function ViewProgressBar({ viewed, total }: { viewed: number; total: number }) {
                     style={{ width: `${pct}%` }}
                 />
             </div>
-            <div className="flex justify-between mt-1 text-xs text-[#999]">
+            <div className="flex justify-between mt-1 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> 열람 {viewed}명</span>
                 <span className="flex items-center gap-1"><EyeOff className="h-3 w-3" /> 미열람 {total - viewed}명</span>
             </div>
@@ -165,15 +165,15 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
         <div className="p-6 max-w-4xl mx-auto space-y-5">
             {/* Header */}
             <div className="flex items-center gap-3">
-                <button onClick={() => router.push('/payroll')} className="text-[#999] hover:text-[#333]">
+                <button onClick={() => router.push('/payroll')} className="text-muted-foreground hover:text-foreground">
                     <ArrowLeft className="h-5 w-5" />
                 </button>
                 <div>
                     <h1 className="text-2xl font-bold text-foreground tracking-[-0.02em]">{t('kr_kebb09ced_status')}</h1>
                     <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-sm text-[#666]">{run.yearMonth}</span>
+                        <span className="text-sm text-muted-foreground">{run.yearMonth}</span>
                         {isApproved && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-700 border border-emerald-200">
                                 <CheckCircle2 className="h-3 w-3" /> {t('kr_kebb09ced_complete')}
                             </span>
                         )}
@@ -191,7 +191,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                 ].map((kpi) => (
                     <div key={kpi.label} className={CARD_STYLES.padded}>
                         <div className="flex items-center justify-between mb-1">
-                            <p className="text-xs text-[#666]">{kpi.label}</p>
+                            <p className="text-xs text-muted-foreground">{kpi.label}</p>
                             {kpi.icon}
                         </div>
                         <p className="text-sm font-bold text-foreground leading-tight">{kpi.value}</p>
@@ -206,7 +206,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                     <button
                         onClick={handleNotifyUnread}
                         disabled={notifying || payslipStats.unviewed === 0}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-sm text-[#555] hover:bg-muted disabled:opacity-40"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-sm text-muted-foreground hover:bg-muted disabled:opacity-40"
                     >
                         {notifying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bell className="h-4 w-4" />}
                         미열람자 재알림 ({payslipStats.unviewed}명)
@@ -214,7 +214,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                 </div>
                 <ViewProgressBar viewed={payslipStats.viewed} total={payslipStats.total} />
                 {notifyResult && (
-                    <p className="text-xs text-emerald-600 bg-emerald-100 rounded-lg px-3 py-2">{notifyResult}</p>
+                    <p className="text-xs text-emerald-600 bg-emerald-500/15 rounded-lg px-3 py-2">{notifyResult}</p>
                 )}
             </div>
 
@@ -224,7 +224,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                     <h2 className="font-semibold text-foreground">{t('kr_ked8c8cec_keb8ba4ec')}</h2>
                     <button
                         onClick={() => setShowDownloads(!showDownloads)}
-                        className="text-[#999] hover:text-[#333]"
+                        className="text-muted-foreground hover:text-foreground"
                     >
                         <ChevronDown className={`h-4 w-4 transition-transform ${showDownloads ? 'rotate-180' : ''}`} />
                     </button>
@@ -235,7 +235,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                             label: t('kr_kec9d80ed_kec9db4ec'),
                             sub: 'CSV',
                             icon: <CreditCard className="h-5 w-5 text-emerald-600" />,
-                            bg: 'bg-emerald-100',
+                            bg: 'bg-emerald-500/15',
                             disabled: !isApproved,
                             url: `/api/v1/payroll/${runId}/export/transfer`,
                         },
@@ -243,7 +243,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                             label: t('kr_keab889ec'),
                             sub: 'Excel',
                             icon: <FileSpreadsheet className="h-5 w-5 text-primary/90" />,
-                            bg: 'bg-indigo-100',
+                            bg: 'bg-indigo-500/15',
                             disabled: false,
                             url: `/api/v1/payroll/${runId}/export/ledger`,
                         },
@@ -251,7 +251,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                             label: t('kr_keca084ec_keb8c80eb_kebb984ea'),
                             sub: 'Excel',
                             icon: <FileSpreadsheet className="h-5 w-5 text-amber-500" />,
-                            bg: 'bg-amber-100',
+                            bg: 'bg-amber-500/15',
                             disabled: false,
                             url: `/api/v1/payroll/${runId}/export/comparison`,
                         },
@@ -259,7 +259,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                             label: t('kr_kec9db8ea_keca084ed'),
                             sub: 'Excel',
                             icon: <FileText className="h-5 w-5 text-violet-500" />,
-                            bg: 'bg-purple-50',
+                            bg: 'bg-purple-500/10',
                             disabled: false,
                             url: `/api/v1/payroll/${runId}/export/journal`,
                         },
@@ -275,9 +275,9 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                             </div>
                             <div className="text-center">
                                 <p className="text-xs font-semibold text-foreground">{item.label}</p>
-                                <p className="text-[10px] text-[#999]">{item.sub}</p>
+                                <p className="text-[10px] text-muted-foreground">{item.sub}</p>
                             </div>
-                            <Download className="h-3.5 w-3.5 text-[#999]" />
+                            <Download className="h-3.5 w-3.5 text-muted-foreground" />
                         </button>
                     ))}
                 </div>
@@ -285,13 +285,13 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                 {/* Transfer batch history */}
                 {transferBatches.length > 0 && showDownloads && (
                     <div className="mt-4 border-t border-border pt-4">
-                        <p className="text-xs font-semibold text-[#999] mb-2">{t('kr_kec9db4ec_ked8c8cec_kec839dec_')}</p>
+                        <p className="text-xs font-semibold text-muted-foreground mb-2">{t('kr_kec9db4ec_ked8c8cec_kec839dec_')}</p>
                         <div className="space-y-1">
                             {transferBatches.map((b) => (
-                                <div key={b.id} className="flex items-center justify-between text-xs text-[#666]">
+                                <div key={b.id} className="flex items-center justify-between text-xs text-muted-foreground">
                                     <span>{fmtDate(b.createdAt)}</span>
                                     <span>{b.totalCount}명 / {fmt(Number(b.totalAmount))}</span>
-                                    <span className="text-[#999]">{b.status}</span>
+                                    <span className="text-muted-foreground">{b.status}</span>
                                 </div>
                             ))}
                         </div>
@@ -306,7 +306,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                     <div className="space-y-3">
                         {approvalHistory.map((step) => (
                             <div key={step.stepNumber} className="flex items-start gap-3">
-                                <div className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-100' : 'bg-destructive/10'}`}>
+                                <div className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-500/15' : 'bg-destructive/10'}`}>
                                     {step.status === 'APPROVED'
                                         ? <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
                                         : <XCircle className="h-3.5 w-3.5 text-destructive" />
@@ -315,16 +315,16 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <p className="text-sm font-medium text-foreground">{step.approverName ?? step.roleRequired}</p>
-                                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-700' : 'bg-destructive/10 text-destructive'}`}>
+                                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-500/15 text-emerald-700' : 'bg-destructive/10 text-destructive'}`}>
                                             {step.status === 'APPROVED' ? '승인' : '반려'}
                                         </span>
-                                        <span className="text-xs text-[#999] flex items-center gap-1">
+                                        <span className="text-xs text-muted-foreground flex items-center gap-1">
                                             <Clock className="h-3 w-3" />
                                             {fmtDate(step.decidedAt)}
                                         </span>
                                     </div>
                                     {step.comment && (
-                                        <p className="text-sm text-[#666] mt-0.5 italic">"{step.comment}"</p>
+                                        <p className="text-sm text-muted-foreground mt-0.5 italic">"{step.comment}"</p>
                                     )}
                                 </div>
                             </div>

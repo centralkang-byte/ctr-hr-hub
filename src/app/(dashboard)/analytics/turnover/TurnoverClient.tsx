@@ -153,10 +153,10 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
             <span className="px-2.5 py-1 rounded-full bg-destructive/5 text-destructive">
               {t('kr_keab3a0ec')} <strong>{predictions.summary?.highRisk || 0}명</strong>
             </span>
-            <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700">
+            <span className="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-700">
               {t('kr_keca3bcec')} <strong>{predictions.summary?.mediumRisk || 0}명</strong>
             </span>
-            <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700">
+            <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700">
               {t('kr_kec9588ec')} <strong>{predictions.summary?.lowRisk || 0}명</strong>
             </span>
           </div>
@@ -184,7 +184,7 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
                         <div className="flex items-center justify-end gap-2">
                           <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                             <div
-                              className={`h-full rounded-full ${emp.level === 'HIGH' ? 'bg-destructive/50' : emp.level === 'MEDIUM' ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                              className={`h-full rounded-full ${emp.level === 'HIGH' ? 'bg-destructive/50' : emp.level === 'MEDIUM' ? 'bg-amber-500/100' : 'bg-emerald-500/100'}`}
                               style={{ width: `${emp.score}%` }}
                             />
                           </div>
@@ -195,8 +195,8 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
                         <div className="flex justify-center">
                           <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-medium ${
                             emp.level === 'HIGH' ? 'bg-destructive/5 text-destructive' :
-                            emp.level === 'MEDIUM' ? 'bg-amber-50 text-amber-600' :
-                            'bg-emerald-50 text-emerald-700'
+                            emp.level === 'MEDIUM' ? 'bg-amber-500/10 text-amber-600' :
+                            'bg-emerald-500/10 text-emerald-700'
                           }`}>
                             {emp.level === 'HIGH' ? '고위험' : emp.level === 'MEDIUM' ? t('caution') : '안전'}
                           </span>
@@ -206,7 +206,7 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
                         <div className="flex justify-center">
                           <button
                             onClick={() => setExpandedRow(expandedRow === emp.employeeId ? null : emp.employeeId)}
-                            className="p-1.5 rounded hover:bg-indigo-100 text-muted-foreground transition-colors"
+                            className="p-1.5 rounded hover:bg-indigo-500/15 text-muted-foreground transition-colors"
                           >
                             {expandedRow === emp.employeeId ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                           </button>
@@ -298,7 +298,7 @@ export default function TurnoverClient({ user }: { user: SessionUser }) {
           </div>
         )}
         {exitInterviewStats.insufficientDepartments && exitInterviewStats.insufficientDepartments.length > 0 && (
-          <div className="mt-3 p-2 bg-amber-50 rounded-lg">
+          <div className="mt-3 p-2 bg-amber-500/10 rounded-lg">
             <p className="text-xs text-amber-700">
               ⚠️ 통계 미생성 부서: {exitInterviewStats.insufficientDepartments.join(', ')} (5건 미만)
             </p>

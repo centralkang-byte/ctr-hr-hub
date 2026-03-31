@@ -171,8 +171,8 @@ export default function BoardClient({ user }: Props) {
   const getAiScoreBadge = (score: number | null) => {
     if (score === null) return null
     let style = 'bg-destructive/10 text-destructive'
-    if (score >= 80) style = 'bg-emerald-100 text-emerald-800'
-    else if (score >= 50) style = 'bg-amber-100 text-amber-700'
+    if (score >= 80) style = 'bg-emerald-500/15 text-emerald-800'
+    else if (score >= 50) style = 'bg-amber-500/15 text-amber-700'
     return (
       <span className={`inline-block px-1.5 py-0.5 text-[10px] font-semibold rounded ${style}`}>
         AI {score}

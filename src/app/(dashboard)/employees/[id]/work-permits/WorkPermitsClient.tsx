@@ -213,7 +213,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
       </div>
 
       {loading ? (
-        <p className="text-sm text-[#666]">{tc('loading')}</p>
+        <p className="text-sm text-muted-foreground">{tc('loading')}</p>
       ) : (
         <Table>
           <TableHeader>
@@ -231,7 +231,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
             {permits.map((p) => (
               <TableRow
                 key={p.id}
-                className={isExpiringSoon(p.expiryDate) && p.status === 'ACTIVE' ? 'bg-yellow-50' : ''}
+                className={isExpiringSoon(p.expiryDate) && p.status === 'ACTIVE' ? 'bg-yellow-500/10' : ''}
               >
                 <TableCell>{PERMIT_TYPE_LABELS[p.permitType] ?? p.permitType}</TableCell>
                 <TableCell className="font-mono tabular-nums text-sm">{p.permitNumber ?? '-'}</TableCell>
@@ -243,7 +243,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
                       {format(new Date(p.expiryDate), 'yyyy-MM-dd')}
                     </span>
                   ) : (
-                    <span className="text-[#999]">-</span>
+                    <span className="text-muted-foreground">-</span>
                   )}
                 </TableCell>
                 <TableCell>
@@ -251,7 +251,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
                     {STATUS_LABELS[p.status] ?? p.status}
                   </span>
                 </TableCell>
-                <TableCell className="text-sm text-[#666]">{p.notes ?? '-'}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">{p.notes ?? '-'}</TableCell>
               </TableRow>
             ))}
             {!permits?.length && (

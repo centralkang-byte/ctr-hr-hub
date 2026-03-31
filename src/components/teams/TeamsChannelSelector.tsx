@@ -92,7 +92,7 @@ export function TeamsChannelSelector({ teamId, channelId, onSelect }: Props) {
         <div className="space-y-2">
           <Label className="text-sm font-medium">팀 선택</Label>
           {loadingTeams ? (
-            <div className="flex items-center gap-2 text-sm text-[#666]">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" /> 팀 목록 로딩 중...
             </div>
           ) : (
@@ -120,7 +120,7 @@ export function TeamsChannelSelector({ teamId, channelId, onSelect }: Props) {
           <div className="space-y-2">
             <Label className="text-sm font-medium">채널 선택</Label>
             {loadingChannels ? (
-              <div className="flex items-center gap-2 text-sm text-[#666]">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" /> 채널 목록 로딩 중...
               </div>
             ) : (
@@ -140,7 +140,7 @@ export function TeamsChannelSelector({ teamId, channelId, onSelect }: Props) {
           </div>
         )}
 
-        <p className="text-xs text-[#666]">
+        <p className="text-xs text-muted-foreground">
           선택한 채널로 주간 다이제스트와 알림이 전송됩니다.
         </p>
       </CardContent>

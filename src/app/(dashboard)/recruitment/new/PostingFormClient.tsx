@@ -220,7 +220,7 @@ export default function PostingFormClient({
           onClick={() => router.back()}
           className="p-2 rounded-lg border border-border hover:bg-card transition-colors"
         >
-          <ChevronLeft className="w-4 h-4 text-[#666]" />
+          <ChevronLeft className="w-4 h-4 text-muted-foreground" />
         </button>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">

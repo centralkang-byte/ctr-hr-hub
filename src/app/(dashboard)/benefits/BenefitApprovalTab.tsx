@@ -26,11 +26,11 @@ interface BenefitClaim {
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  pending: { label: '승인대기', color: 'bg-amber-100 text-amber-700 border-amber-300' },
-  approved: { label: '승인', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+  pending: { label: '승인대기', color: 'bg-amber-500/15 text-amber-700 border-amber-300' },
+  approved: { label: '승인', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
   rejected: { label: '반려', color: 'bg-destructive/10 text-destructive border-destructive/20' },
   paid: { label: '지급완료', color: 'bg-primary/10 text-primary/90 border-primary/20' },
-  cancelled: { label: '취소', color: 'bg-background text-[#555] border-border' },
+  cancelled: { label: '취소', color: 'bg-background text-muted-foreground border-border' },
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -98,7 +98,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
       {/* 좌측 목록 */}
       <div className="w-80 shrink-0 bg-card rounded-xl border border-border overflow-hidden flex flex-col">
         <div className="p-4 border-b border-border flex items-center justify-between">
-          <span className="text-sm font-medium text-[#333]">
+          <span className="text-sm font-medium text-foreground">
             {view === 'pending' ? '승인 대기' : '전체 내역'} ({total})
           </span>
           {loading && <Loader2 className="w-4 h-4 animate-spin text-primary" />}
@@ -111,7 +111,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
             </div>
           )}
           {!loading && claims.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 text-[#999] text-sm">
+            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground text-sm">
               <CheckCircle2 className="w-8 h-8 mb-2" />
               {view === 'pending' ? '대기중인 신청이 없습니다.' : '내역이 없습니다.'}
             </div>
@@ -131,9 +131,9 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
                     {s.label}
                   </span>
                 </div>
-                <p className="text-xs text-[#666] truncate">{claim.benefitPlan.name}</p>
+                <p className="text-xs text-muted-foreground truncate">{claim.benefitPlan.name}</p>
                 <div className="flex items-center justify-between mt-1">
-                  <span className="text-xs text-[#999]">
+                  <span className="text-xs text-muted-foreground">
                     {format(new Date(claim.createdAt), 'MM/dd', { locale: ko })}
                   </span>
                   <span className="text-xs font-semibold text-foreground">
@@ -149,7 +149,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
       {/* 우측 상세 */}
       <div className="flex-1 bg-card rounded-xl border border-border overflow-hidden flex flex-col">
         {!selected ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-[#999]">
+          <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
             <ChevronRight className="w-10 h-10 mb-3" />
             <p className="text-sm">신청 항목을 선택하세요</p>
           </div>
@@ -161,7 +161,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
                   <h3 className="text-base font-semibold text-foreground">
                     {selected.employee.name} · {selected.benefitPlan.name}
                   </h3>
-                  <p className="text-xs text-[#999] mt-0.5">
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     신청일: {format(new Date(selected.createdAt), 'yyyy.MM.dd', { locale: ko })}
                   </p>
                 </div>
@@ -174,22 +174,22 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
             <div className="flex-1 overflow-y-auto p-5 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-xs text-[#999] mb-1">카테고리</p>
+                  <p className="text-xs text-muted-foreground mb-1">카테고리</p>
                   <p className="text-sm font-medium">{CATEGORY_LABELS[selected.benefitPlan.category] ?? selected.benefitPlan.category}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-[#999] mb-1">신청 금액</p>
+                  <p className="text-xs text-muted-foreground mb-1">신청 금액</p>
                   <p className="text-sm font-medium">{formatCurrency(selected.claimAmount, selected.benefitPlan.currency)}</p>
                 </div>
                 {selected.eventDate && (
                   <div>
-                    <p className="text-xs text-[#999] mb-1">이벤트 날짜</p>
+                    <p className="text-xs text-muted-foreground mb-1">이벤트 날짜</p>
                     <p className="text-sm">{format(new Date(selected.eventDate), 'yyyy.MM.dd', { locale: ko })}</p>
                   </div>
                 )}
                 {selected.eventDetail && (
                   <div>
-                    <p className="text-xs text-[#999] mb-1">상세</p>
+                    <p className="text-xs text-muted-foreground mb-1">상세</p>
                     <p className="text-sm">{selected.eventDetail}</p>
                   </div>
                 )}
@@ -197,10 +197,10 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
 
               {selected.proofPaths.length > 0 && (
                 <div>
-                  <p className="text-xs text-[#999] mb-2">증빙 서류</p>
+                  <p className="text-xs text-muted-foreground mb-2">증빙 서류</p>
                   <div className="space-y-1">
                     {selected.proofPaths.map((path, i) => (
-                      <div key={i} className="flex items-center gap-2 text-sm text-[#555]">
+                      <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
                         <FileText className="w-4 h-4 text-primary" />
                         {path.split('/').pop()}
                       </div>
@@ -211,7 +211,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
 
               {selected.rejectedReason && (
                 <div className="p-3 bg-destructive/10 rounded-lg">
-                  <p className="text-xs text-[#999] mb-1">반려 사유</p>
+                  <p className="text-xs text-muted-foreground mb-1">반려 사유</p>
                   <p className="text-sm text-destructive">{selected.rejectedReason}</p>
                 </div>
               )}
@@ -221,7 +221,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
               <div className="p-5 border-t border-border space-y-3">
                 {showRejectForm && (
                   <div>
-                    <label className="text-xs text-[#333] font-medium mb-1 block">반려 사유 *</label>
+                    <label className="text-xs text-foreground font-medium mb-1 block">반려 사유 *</label>
                     <textarea
                       value={rejectedReason}
                       onChange={(e) => setRejectedReason(e.target.value)}
@@ -254,7 +254,7 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
                 {showRejectForm && (
                   <button
                     onClick={() => { setShowRejectForm(false); setRejectedReason('') }}
-                    className="w-full text-xs text-[#999] hover:text-[#555]"
+                    className="w-full text-xs text-muted-foreground hover:text-muted-foreground"
                   >
                     취소
                   </button>

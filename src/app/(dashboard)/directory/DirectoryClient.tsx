@@ -111,7 +111,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('pageTitle')}</h1>
-          <p className="text-sm text-[#666] mt-0.5">{t('totalMembers', { count: total.toLocaleString() })}</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{t('totalMembers', { count: total.toLocaleString() })}</p>
         </div>
         <div className="flex items-center gap-1.5 p-1 bg-muted rounded-lg">
           <button
@@ -132,7 +132,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
       {/* Search + Filters */}
       <div className={`${CARD_STYLES.kpi} space-y-3`}>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#999]" size={16} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
           <Input
             placeholder={t('searchPlaceholder')}
             className="pl-9"
@@ -141,7 +141,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
           />
         </div>
         <div className="flex items-center gap-3 flex-wrap">
-          <Filter size={14} className="text-[#666]" />
+          <Filter size={14} className="text-muted-foreground" />
           <Select value={selectedCompany} onValueChange={setSelectedCompany}>
             <SelectTrigger className="w-36 h-8 text-xs">
               <SelectValue placeholder={tCommon('filterAllCompanies')} />
@@ -178,7 +178,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
           {hasFilters && (
             <button
               onClick={clearFilters}
-              className="flex items-center gap-1 text-xs text-[#666] hover:text-[#333]"
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
             >
               <X size={12} /> {tCommon('reset')}
             </button>
@@ -246,7 +246,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
                   <td className={TABLE_STYLES.cell + " font-medium"}>{emp.department?.name ?? '-'}</td>
                   <td className={TABLE_STYLES.cellMuted}>{emp.jobGrade?.name ?? '-'}</td>
                   <td className={TABLE_STYLES.cell}>
-                    <Badge variant="outline" className="h-6 rounded-md bg-card border-border text-xs font-medium text-[#555]">
+                    <Badge variant="outline" className="h-6 rounded-md bg-card border-border text-xs font-medium text-muted-foreground">
                       {emp.company?.code ?? '-'}
                     </Badge>
                   </td>
@@ -268,7 +268,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
                         <span key={s} className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground group-hover:bg-card border border-transparent group-hover:border-border">{s}</span>
                       ))}
                       {emp.skills.length > 3 && (
-                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-[#999]">+{emp.skills.length - 3}</span>
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">+{emp.skills.length - 3}</span>
                       )}
                     </div>
                   </td>
@@ -283,7 +283,7 @@ export function DirectoryClient({ user, companies, departments, jobGrades }: Dir
       {total > 20 && (
         <div className="flex items-center justify-center gap-2">
           <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>{tCommon('previous')}</Button>
-          <span className="text-sm text-[#666]">{page} / {Math.ceil(total / 20)}</span>
+          <span className="text-sm text-muted-foreground">{page} / {Math.ceil(total / 20)}</span>
           <Button variant="outline" size="sm" disabled={page >= Math.ceil(total / 20)} onClick={() => setPage(p => p + 1)}>{tCommon('next')}</Button>
         </div>
       )}
@@ -322,7 +322,7 @@ function EmployeeCard({ emp, onClick }: { emp: DirectoryEmployee; onClick: () =>
       {emp.skills.length > 0 && (
         <div className="flex gap-1 flex-wrap justify-center">
           {emp.skills.slice(0, 3).map((s) => (
-            <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-primary/90">{s}</span>
+            <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-indigo-500/15 text-primary/90">{s}</span>
           ))}
         </div>
       )}
@@ -355,17 +355,17 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
       </SheetHeader>
 
       {emp.bio && (
-        <p className="text-sm text-[#555] italic">"{emp.bio}"</p>
+        <p className="text-sm text-muted-foreground italic">"{emp.bio}"</p>
       )}
 
       <div className="space-y-2">
-        <div className="flex items-center gap-2 text-sm text-[#555]">
-          <Mail size={14} className="text-[#999]" />
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Mail size={14} className="text-muted-foreground" />
           <span>{emp.email}</span>
         </div>
         {emp.phone && (
-          <div className="flex items-center gap-2 text-sm text-[#555]">
-            <Phone size={14} className="text-[#999]" />
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Phone size={14} className="text-muted-foreground" />
             <span>{emp.phone}</span>
           </div>
         )}
@@ -373,10 +373,10 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
 
       {emp.skills.length > 0 && (
         <div>
-          <p className="text-xs font-semibold text-[#666] uppercase tracking-wider mb-2">Skills</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Skills</p>
           <div className="flex flex-wrap gap-1.5">
             {emp.skills.map((s) => (
-              <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-indigo-100 text-primary/90">{s}</span>
+              <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-indigo-500/15 text-primary/90">{s}</span>
             ))}
           </div>
         </div>
@@ -384,12 +384,12 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
 
       {languages && Array.isArray(languages) && languages.length > 0 && (
         <div>
-          <p className="text-xs font-semibold text-[#666] uppercase tracking-wider mb-2">Languages</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Languages</p>
           <div className="space-y-1">
             {languages.map((l, i) => (
               <div key={i} className="flex items-center justify-between text-sm">
-                <span className="text-[#555]">{l.language}</span>
-                <span className="text-xs text-[#999]">{l.level}</span>
+                <span className="text-muted-foreground">{l.language}</span>
+                <span className="text-xs text-muted-foreground">{l.level}</span>
               </div>
             ))}
           </div>
@@ -398,12 +398,12 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
 
       {certifications && Array.isArray(certifications) && certifications.length > 0 && (
         <div>
-          <p className="text-xs font-semibold text-[#666] uppercase tracking-wider mb-2">Certifications</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Certifications</p>
           <div className="space-y-1">
             {certifications.map((c, i) => (
-              <div key={i} className="text-sm text-[#555]">
+              <div key={i} className="text-sm text-muted-foreground">
                 <span className="font-medium">{c.name}</span>
-                <span className="text-[#999] ml-2">({c.issuer}, {c.date})</span>
+                <span className="text-muted-foreground ml-2">({c.issuer}, {c.date})</span>
               </div>
             ))}
           </div>

@@ -5,9 +5,9 @@
 type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'muted'
 
 const BADGE_STYLES: Record<BadgeVariant, string> = {
-  success: 'bg-emerald-50 text-emerald-700',
-  warning: 'bg-amber-50 text-amber-700',
-  danger: 'bg-rose-50 text-rose-700',
+  success: 'bg-emerald-500/10 text-emerald-700',
+  warning: 'bg-amber-500/10 text-amber-700',
+  danger: 'bg-rose-500/10 text-rose-700',
   info: 'bg-primary/5 text-primary',
   neutral: 'bg-muted text-foreground',
   muted: 'bg-muted/50 text-muted-foreground',

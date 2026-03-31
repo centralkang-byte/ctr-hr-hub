@@ -85,7 +85,7 @@ export default function RuReportsTab() {
         <h3 className="text-base font-semibold text-foreground mb-4">보고서 기간 설정</h3>
         <div className="flex flex-wrap gap-4 items-end">
           <div>
-            <label className="text-sm font-medium text-[#333] block mb-1">연도</label>
+            <label className="text-sm font-medium text-foreground block mb-1">연도</label>
             <select
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
@@ -97,8 +97,8 @@ export default function RuReportsTab() {
             </select>
           </div>
           <div>
-            <label className="text-sm font-medium text-[#333] block mb-1">
-              분기 <span className="text-xs text-[#999]">(P-4 전용)</span>
+            <label className="text-sm font-medium text-foreground block mb-1">
+              분기 <span className="text-xs text-muted-foreground">(P-4 전용)</span>
             </label>
             <select
               value={quarter}
@@ -130,7 +130,7 @@ export default function RuReportsTab() {
             </div>
             <div>
               <h3 className="text-base font-semibold text-foreground">П-4 분기 보고서</h3>
-              <p className="text-xs text-[#666]">
+              <p className="text-xs text-muted-foreground">
                 Форма П-4 — 직원 수 및 임금 통계 (Росстат)
               </p>
             </div>
@@ -148,7 +148,7 @@ export default function RuReportsTab() {
                 onClick={() =>
                   downloadReport(p4Data, `P4_${year}_Q${quarter}.json`)
                 }
-                className="flex items-center gap-2 bg-card border border-border hover:bg-background text-[#333] px-3 py-2 rounded-lg font-medium text-sm"
+                className="flex items-center gap-2 bg-card border border-border hover:bg-background text-foreground px-3 py-2 rounded-lg font-medium text-sm"
               >
                 <Download className="w-4 h-4" />
                 다운로드
@@ -162,17 +162,17 @@ export default function RuReportsTab() {
             {/* Summary Cards */}
             <div className="grid grid-cols-3 gap-4">
               <div className="p-4 bg-background rounded-lg">
-                <p className="text-xs text-[#666] mb-1">보고 기간</p>
+                <p className="text-xs text-muted-foreground mb-1">보고 기간</p>
                 <p className="text-sm font-semibold text-foreground">
                   {p4Data.year}년 {p4Data.quarter}분기
                 </p>
               </div>
               <div className="p-4 bg-background rounded-lg">
-                <p className="text-xs text-[#666] mb-1">총 인원</p>
+                <p className="text-xs text-muted-foreground mb-1">총 인원</p>
                 <p className="text-3xl font-bold text-foreground">{p4Data.totalHeadcount}</p>
               </div>
               <div className="p-4 bg-background rounded-lg">
-                <p className="text-xs text-[#666] mb-1">보고서 생성일</p>
+                <p className="text-xs text-muted-foreground mb-1">보고서 생성일</p>
                 <p className="text-sm font-semibold text-foreground">
                   {new Date(p4Data.reportDate).toLocaleDateString('ko-KR')}
                 </p>
@@ -182,7 +182,7 @@ export default function RuReportsTab() {
             {/* Department breakdown */}
             {p4Data.departments.length > 0 && (
               <div>
-                <h4 className="text-sm font-medium text-[#333] mb-2">부서별 인원 현황</h4>
+                <h4 className="text-sm font-medium text-foreground mb-2">부서별 인원 현황</h4>
                 <table className={TABLE_STYLES.table}>
                   <thead>
                     <tr className={TABLE_STYLES.header}>
@@ -205,7 +205,7 @@ export default function RuReportsTab() {
             )}
           </div>
         ) : (
-          <div className="flex items-center justify-center py-10 text-[#999] text-sm">
+          <div className="flex items-center justify-center py-10 text-muted-foreground text-sm">
             연도와 분기를 선택 후 &quot;생성&quot; 버튼을 클릭하세요.
           </div>
         )}
@@ -215,12 +215,12 @@ export default function RuReportsTab() {
       <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-indigo-100 rounded-lg">
+            <div className="p-2 bg-indigo-500/15 rounded-lg">
               <BarChart3 className="w-5 h-5 text-primary" />
             </div>
             <div>
               <h3 className="text-base font-semibold text-foreground">57-Т 연간 임금조사</h3>
-              <p className="text-xs text-[#666]">
+              <p className="text-xs text-muted-foreground">
                 Форма 57-Т — 직군별 임금 및 처우 연간 조사 (Росстат)
               </p>
             </div>
@@ -238,7 +238,7 @@ export default function RuReportsTab() {
                 onClick={() =>
                   downloadReport(report57tData, `57T_${year}.json`)
                 }
-                className="flex items-center gap-2 bg-card border border-border hover:bg-background text-[#333] px-3 py-2 rounded-lg font-medium text-sm"
+                className="flex items-center gap-2 bg-card border border-border hover:bg-background text-foreground px-3 py-2 rounded-lg font-medium text-sm"
               >
                 <Download className="w-4 h-4" />
                 다운로드
@@ -252,11 +252,11 @@ export default function RuReportsTab() {
             {/* Summary */}
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-background rounded-lg">
-                <p className="text-xs text-[#666] mb-1">대상 연도</p>
+                <p className="text-xs text-muted-foreground mb-1">대상 연도</p>
                 <p className="text-sm font-semibold text-foreground">{report57tData.year}년</p>
               </div>
               <div className="p-4 bg-background rounded-lg">
-                <p className="text-xs text-[#666] mb-1">총 인원</p>
+                <p className="text-xs text-muted-foreground mb-1">총 인원</p>
                 <p className="text-3xl font-bold text-foreground">{report57tData.totalHeadcount}</p>
               </div>
             </div>
@@ -264,7 +264,7 @@ export default function RuReportsTab() {
             {/* Job Category breakdown */}
             {report57tData.jobCategories.length > 0 && (
               <div>
-                <h4 className="text-sm font-medium text-[#333] mb-2">직군별 인원 현황</h4>
+                <h4 className="text-sm font-medium text-foreground mb-2">직군별 인원 현황</h4>
                 <table className={TABLE_STYLES.table}>
                   <thead>
                     <tr className={TABLE_STYLES.header}>
@@ -276,7 +276,7 @@ export default function RuReportsTab() {
                   <tbody>
                     {report57tData.jobCategories.map((cat) => (
                       <tr key={cat.categoryCode} className={TABLE_STYLES.row}>
-                        <td className="px-4 py-2 text-xs text-[#666] font-mono tabular-nums">
+                        <td className="px-4 py-2 text-xs text-muted-foreground font-mono tabular-nums">
                           {cat.categoryCode}
                         </td>
                         <td className="px-4 py-2 text-sm text-foreground">{cat.categoryName}</td>
@@ -291,7 +291,7 @@ export default function RuReportsTab() {
             )}
           </div>
         ) : (
-          <div className="flex items-center justify-center py-10 text-[#999] text-sm">
+          <div className="flex items-center justify-center py-10 text-muted-foreground text-sm">
             연도를 선택 후 &quot;생성&quot; 버튼을 클릭하세요.
           </div>
         )}

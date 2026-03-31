@@ -157,7 +157,7 @@ export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; 
   }
 
   if (loading || !meeting) {
-    return <div className="p-6 text-center text-[#999]">{tCommon('loading')}</div>
+    return <div className="p-6 text-center text-muted-foreground">{tCommon('loading')}</div>
   }
 
   return (
@@ -165,14 +165,14 @@ export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; 
       {/* Header */}
       <div className="flex items-center gap-3">
         <button onClick={() => router.push('/performance/one-on-one')} className="p-1 hover:bg-muted rounded-lg">
-          <ArrowLeft className="w-5 h-5 text-[#666]" />
+          <ArrowLeft className="w-5 h-5 text-muted-foreground" />
         </button>
         <MessageSquare className="w-6 h-6 text-primary" />
         <div>
           <h1 className="text-2xl font-bold text-foreground">
             1:1 기록 — {meeting.employee.name}
           </h1>
-          <p className="text-sm text-[#666]">
+          <p className="text-sm text-muted-foreground">
             {new Date(meeting.scheduledAt).toLocaleDateString('ko-KR')} · {MEETING_TYPE_LABELS[meeting.meetingType] ?? meeting.meetingType}
             {meeting.employee.department && ` · ${meeting.employee.department.name}`}
           </p>
@@ -196,16 +196,16 @@ export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; 
                 >
                   {a.completed && <CheckCircle2 className="w-3 h-3" />}
                 </button>
-                <span className={`text-sm ${a.completed ? 'line-through text-[#999]' : 'text-foreground'}`}>
+                <span className={`text-sm ${a.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                   {a.item}
                 </span>
                 {a.dueDate && (
-                  <span className="text-xs text-[#999] ml-auto">(기한: {a.dueDate})</span>
+                  <span className="text-xs text-muted-foreground ml-auto">(기한: {a.dueDate})</span>
                 )}
                 <span className={`text-xs px-2 py-0.5 rounded-full ${
                   a.completed
-                    ? 'bg-emerald-100 text-emerald-700'
-                    : 'bg-amber-100 text-amber-700'
+                    ? 'bg-emerald-500/15 text-emerald-700'
+                    : 'bg-amber-500/15 text-amber-700'
                 }`}>
                   {a.completed ? '완료' : t('inProgress')}
                 </span>
@@ -223,7 +223,7 @@ export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; 
           onChange={(e) => setNotes(e.target.value)}
           placeholder="미팅 내용을 기록하세요..."
           rows={8}
-          className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+          className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
         />
       </div>
 
@@ -244,7 +244,7 @@ export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; 
               className={`flex flex-col items-center px-3 py-2 rounded-lg border text-xs transition-colors ${
                 sentimentTag === opt.value
                   ? 'border-primary bg-primary/10 text-primary/90'
-                  : 'border-border hover:border-border text-[#666]'
+                  : 'border-border hover:border-border text-muted-foreground'
               }`}
             >
               <span className="text-base mb-0.5">{opt.emoji}</span>
@@ -273,7 +273,7 @@ export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; 
                 value={a.item}
                 onChange={(e) => updateActionItem(i, 'item', e.target.value)}
                 placeholder="액션 아이템 입력"
-                className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+                className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
               />
               <select
                 value={a.assignee}
@@ -291,7 +291,7 @@ export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; 
               />
               <button
                 onClick={() => removeActionItem(i)}
-                className="p-2 text-[#999] hover:text-red-500 rounded-lg hover:bg-destructive/10"
+                className="p-2 text-muted-foreground hover:text-red-500 rounded-lg hover:bg-destructive/10"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -305,12 +305,12 @@ export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; 
 
       {/* AI Summary + Coaching Tip */}
       {meeting.aiSummary && (
-        <div className="bg-indigo-100 rounded-xl border border-indigo-200 p-5">
+        <div className="bg-indigo-500/15 rounded-xl border border-indigo-200 p-5">
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="w-4 h-4 text-primary/90" />
             <span className="text-sm font-medium text-primary/90">{t('kr_ai_kecbd94ec_ked8c81')}</span>
           </div>
-          <p className="text-sm text-[#333]">{meeting.aiSummary}</p>
+          <p className="text-sm text-foreground">{meeting.aiSummary}</p>
         </div>
       )}
 
@@ -319,7 +319,7 @@ export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; 
         <button
           onClick={handleAiNotes}
           disabled={aiLoading}
-          className="flex items-center gap-2 px-4 py-2 border border-indigo-200 text-primary/90 rounded-lg text-sm font-medium hover:bg-indigo-100 disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 border border-indigo-200 text-primary/90 rounded-lg text-sm font-medium hover:bg-indigo-500/15 disabled:opacity-50"
         >
           <Sparkles className="w-4 h-4" />
           {aiLoading ? t('aiGenerating') : 'AI 요약 생성'}
@@ -328,14 +328,14 @@ export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; 
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/performance/one-on-one')}
-            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-[#333] hover:bg-background"
+            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-foreground hover:bg-background"
           >
             <Calendar className="w-4 h-4" /> {t('next_1_1_kec9888ec')}
           </button>
           <button
             onClick={() => handleSave(false)}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-[#333] hover:bg-background disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-foreground hover:bg-background disabled:opacity-50"
           >
             <Save className="w-4 h-4" /> {t('kr_kec9e84ec')}
           </button>

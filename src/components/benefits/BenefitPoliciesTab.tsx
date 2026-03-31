@@ -193,9 +193,9 @@ export default function BenefitPoliciesTab() {
       header: '과세',
       render: (row) =>
         row.isTaxable ? (
-          <Badge variant="outline" className="bg-amber-100 text-amber-700 border-amber-300">과세</Badge>
+          <Badge variant="outline" className="bg-amber-500/15 text-amber-700 border-amber-300">과세</Badge>
         ) : (
-          <Badge variant="outline" className="bg-emerald-100 text-emerald-700 border-emerald-200">비과세</Badge>
+          <Badge variant="outline" className="bg-emerald-500/15 text-emerald-700 border-emerald-200">비과세</Badge>
         ),
     },
     {
@@ -203,9 +203,9 @@ export default function BenefitPoliciesTab() {
       header: '상태',
       render: (row) =>
         !row.deletedAt ? (
-          <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">활성</Badge>
+          <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-200">활성</Badge>
         ) : (
-          <Badge variant="outline" className="bg-background text-[#555] border-border">비활성</Badge>
+          <Badge variant="outline" className="bg-background text-muted-foreground border-border">비활성</Badge>
         ),
     },
     {
@@ -252,7 +252,7 @@ export default function BenefitPoliciesTab() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">정책명 *</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">정책명 *</label>
               <input
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
                 value={form.name}
@@ -261,7 +261,7 @@ export default function BenefitPoliciesTab() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">분류 *</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">분류 *</label>
                 <select
                   className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   value={form.category}
@@ -273,7 +273,7 @@ export default function BenefitPoliciesTab() {
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">지급주기 *</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">지급주기 *</label>
                 <select
                   className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   value={form.frequency}
@@ -287,7 +287,7 @@ export default function BenefitPoliciesTab() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">금액</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">금액</label>
                 <input
                   type="number"
                   className="w-full px-3 py-2 border border-border rounded-lg text-sm"
@@ -297,7 +297,7 @@ export default function BenefitPoliciesTab() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">통화</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">통화</label>
                 <input
                   className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   value={form.currency}
@@ -313,7 +313,7 @@ export default function BenefitPoliciesTab() {
                 checked={form.isTaxable}
                 onChange={(e) => setForm((f) => ({ ...f, isTaxable: e.target.checked }))}
               />
-              <label htmlFor="isTaxable" className="text-sm text-[#333]">과세 항목</label>
+              <label htmlFor="isTaxable" className="text-sm text-foreground">과세 항목</label>
             </div>
           </div>
           <DialogFooter>

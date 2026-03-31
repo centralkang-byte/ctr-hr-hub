@@ -80,7 +80,7 @@ function renderElement(el: AdaptiveElement, idx: number): React.ReactNode {
         <div key={idx} className="space-y-1 border-t border-border pt-2 mt-2">
           {el.facts?.map((f, i) => (
             <div key={i} className="flex justify-between text-sm">
-              <span className="text-[#666]">{f.title}</span>
+              <span className="text-muted-foreground">{f.title}</span>
               <span className="font-medium">{f.value}</span>
             </div>
           ))}

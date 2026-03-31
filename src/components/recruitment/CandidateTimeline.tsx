@@ -50,16 +50,16 @@ const EVENT_ICONS: Record<string, React.ReactNode> = {
 }
 
 const EVENT_COLORS: Record<string, string> = {
-  APPLIED: 'bg-muted border-border text-[#555]',
-  SCREENING: 'bg-indigo-100 border-indigo-200 text-primary/90',
+  APPLIED: 'bg-muted border-border text-muted-foreground',
+  SCREENING: 'bg-indigo-500/15 border-indigo-200 text-primary/90',
   INTERVIEW_1: 'bg-primary/10 border-primary/20 text-primary',
   INTERVIEW_2: 'bg-primary/10 border-primary/20 text-primary',
-  FINAL: 'bg-amber-100 border-amber-300 text-amber-700',
+  FINAL: 'bg-amber-500/15 border-amber-300 text-amber-700',
   OFFER: 'bg-primary/10 border-emerald-200 text-emerald-700',
-  HIRED: 'bg-emerald-100 border-emerald-300 text-emerald-800',
+  HIRED: 'bg-emerald-500/15 border-emerald-300 text-emerald-800',
   REJECTED: 'bg-destructive/10 border-destructive/20 text-destructive',
-  pool_entry: 'bg-indigo-100 border-indigo-200 text-primary/90',
-  default: 'bg-card border-border text-[#555]',
+  pool_entry: 'bg-indigo-500/15 border-indigo-200 text-primary/90',
+  default: 'bg-card border-border text-muted-foreground',
 }
 
 export default function CandidateTimeline({ applicantId }: Props) {
@@ -77,7 +77,7 @@ export default function CandidateTimeline({ applicantId }: Props) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-8 text-sm text-[#999]">
+      <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
         히스토리 로딩 중...
       </div>
     )
@@ -85,7 +85,7 @@ export default function CandidateTimeline({ applicantId }: Props) {
 
   if (!data || data.events.length === 0) {
     return (
-      <div className="flex items-center justify-center py-8 text-sm text-[#999]">
+      <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
         이력이 없습니다.
       </div>
     )
@@ -93,7 +93,7 @@ export default function CandidateTimeline({ applicantId }: Props) {
 
   return (
     <div className="space-y-1">
-      <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-3">
+      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
         지원 히스토리
       </p>
       <div className="relative">
@@ -123,13 +123,13 @@ export default function CandidateTimeline({ applicantId }: Props) {
                         {STAGE_LABELS[event.label] ?? event.label}
                       </p>
                       {event.postingTitle && (
-                        <p className="text-xs text-[#666] mt-0.5 flex items-center gap-1">
+                        <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
                           <Building2 size={11} />
                           {event.companyName && `${event.companyName} · `}{event.postingTitle}
                         </p>
                       )}
                       {event.description && (
-                        <p className="text-xs text-[#888] mt-1">{event.description}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{event.description}</p>
                       )}
                       {event.score !== undefined && event.score !== null && (
                         <p className="text-xs text-primary/90 mt-1 font-medium">
@@ -137,7 +137,7 @@ export default function CandidateTimeline({ applicantId }: Props) {
                         </p>
                       )}
                     </div>
-                    <time className="text-xs text-[#999] flex-shrink-0">
+                    <time className="text-xs text-muted-foreground flex-shrink-0">
                       {new Date(event.timestamp).toLocaleDateString('ko-KR', {
                         year: 'numeric',
                         month: '2-digit',

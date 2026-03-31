@@ -67,12 +67,12 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
             <h2 className="text-lg font-semibold text-foreground">AI 평가 초안 생성</h2>
           </div>
           <button onClick={onClose} className="p-1.5 hover:bg-muted rounded-lg">
-            <X className="w-4 h-4 text-[#666]" />
+            <X className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
 
         {/* Disclaimer */}
-        <div className="mx-5 mt-4 p-3 bg-indigo-100 rounded-lg flex items-start gap-2">
+        <div className="mx-5 mt-4 p-3 bg-indigo-500/15 rounded-lg flex items-start gap-2">
           <AlertTriangle className="w-4 h-4 text-primary/90 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-primary/90">
             이 초안은 AI가 생성한 참고 자료이며, 매니저의 검토와 수정이 필요합니다.
@@ -84,7 +84,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
           {!generated ? (
             <div className="text-center py-8">
               <Sparkles className="w-12 h-12 text-indigo-100 mx-auto mb-3" />
-              <p className="text-sm text-[#666] mb-6">
+              <p className="text-sm text-muted-foreground mb-6">
                 목표 달성률, 원온원 기록, BEI 점수를 분석하여 평가 초안을 생성합니다.
               </p>
               <button
@@ -108,7 +108,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
           ) : draft ? (
             <div className="space-y-4">
               {/* 입력 데이터 요약 */}
-              <div className="bg-background rounded-lg p-3 text-xs text-[#666] flex gap-3">
+              <div className="bg-background rounded-lg p-3 text-xs text-muted-foreground flex gap-3">
                 <span>목표 {draft.inputSummary.goalCount}개</span>
                 <span>원온원 {draft.inputSummary.oneOnOneCount}건</span>
                 <span>{draft.inputSummary.hasPrevEval ? '전기 평가 참조' : '전기 평가 없음'}</span>
@@ -116,8 +116,8 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
 
               {/* 업적 평가 */}
               <div>
-                <label className="text-xs font-semibold text-[#333] mb-1 block">업적 평가</label>
-                <p className="text-sm text-[#333] bg-background rounded-lg p-3 whitespace-pre-wrap">
+                <label className="text-xs font-semibold text-foreground mb-1 block">업적 평가</label>
+                <p className="text-sm text-foreground bg-background rounded-lg p-3 whitespace-pre-wrap">
                   {draft.draftContent.performanceComment}
                 </p>
               </div>
@@ -125,8 +125,8 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
               {/* 역량 평가 (있을 때만) */}
               {draft.draftContent.competencyComment && (
                 <div>
-                  <label className="text-xs font-semibold text-[#333] mb-1 block">역량 평가</label>
-                  <p className="text-sm text-[#333] bg-background rounded-lg p-3 whitespace-pre-wrap">
+                  <label className="text-xs font-semibold text-foreground mb-1 block">역량 평가</label>
+                  <p className="text-sm text-foreground bg-background rounded-lg p-3 whitespace-pre-wrap">
                     {draft.draftContent.competencyComment}
                   </p>
                 </div>
@@ -138,7 +138,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
                   <label className="text-xs font-semibold text-emerald-700 mb-1 block">강점</label>
                   <ul className="space-y-1">
                     {draft.draftContent.strengths.map((s, i) => (
-                      <li key={i} className="text-xs text-[#333] flex items-start gap-1">
+                      <li key={i} className="text-xs text-foreground flex items-start gap-1">
                         <span className="text-primary">•</span> {s}
                       </li>
                     ))}
@@ -148,7 +148,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
                   <label className="text-xs font-semibold text-amber-700 mb-1 block">개발 영역</label>
                   <ul className="space-y-1">
                     {draft.draftContent.developmentAreas.map((d, i) => (
-                      <li key={i} className="text-xs text-[#333] flex items-start gap-1">
+                      <li key={i} className="text-xs text-foreground flex items-start gap-1">
                         <span className="text-amber-500">•</span> {d}
                       </li>
                     ))}
@@ -158,8 +158,8 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
 
               {/* 종합 소견 */}
               <div>
-                <label className="text-xs font-semibold text-[#333] mb-1 block">종합 소견</label>
-                <p className="text-sm text-[#333] bg-background rounded-lg p-3 whitespace-pre-wrap">
+                <label className="text-xs font-semibold text-foreground mb-1 block">종합 소견</label>
+                <p className="text-sm text-foreground bg-background rounded-lg p-3 whitespace-pre-wrap">
                   {draft.draftContent.overallOpinion}
                 </p>
               </div>
@@ -167,17 +167,17 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
               {/* 추천 등급 (흐린 색으로) */}
               {draft.draftContent.recommendedGrade && (
                 <div className="bg-muted rounded-lg p-3 flex items-center gap-2">
-                  <span className="text-xs text-[#999]">AI 추천 등급 (참고용):</span>
-                  <span className="text-sm text-[#999] line-through">
+                  <span className="text-xs text-muted-foreground">AI 추천 등급 (참고용):</span>
+                  <span className="text-sm text-muted-foreground line-through">
                     {draft.draftContent.recommendedGrade}
                   </span>
-                  <span className="text-xs text-[#999]">(매니저가 직접 선택)</span>
+                  <span className="text-xs text-muted-foreground">(매니저가 직접 선택)</span>
                 </div>
               )}
 
               {/* 검토 필요 태그 */}
               {draft.draftContent.reviewNeededTags.length > 0 && (
-                <div className="bg-amber-100 rounded-lg p-3">
+                <div className="bg-amber-500/15 rounded-lg p-3">
                   <p className="text-xs font-semibold text-amber-700 mb-1">검토 필요 항목</p>
                   <ul className="space-y-0.5">
                     {draft.draftContent.reviewNeededTags.map((tag, i) => (

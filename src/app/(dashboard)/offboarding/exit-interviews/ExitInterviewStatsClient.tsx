@@ -146,7 +146,7 @@ export function ExitInterviewStatsClient({ user }: { user: SessionUser }) {
                         <Card className="border border-border">
                             <CardContent className="p-6">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <div className="p-2 rounded-lg bg-amber-500/10">
+                                    <div className="p-2 rounded-lg bg-amber-500/100/10">
                                         <Star className="w-5 h-5 text-amber-500" />
                                     </div>
                                     <span className="text-sm text-muted-foreground">평균 만족도</span>

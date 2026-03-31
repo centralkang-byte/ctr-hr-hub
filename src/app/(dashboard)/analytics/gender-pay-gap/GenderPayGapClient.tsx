@@ -127,8 +127,8 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
   }
 
   const getGapBadge = (gap: number) => {
-    if (Math.abs(gap) <= 5) return 'bg-emerald-100 text-emerald-700 border-emerald-200'
-    if (Math.abs(gap) <= 15) return 'bg-amber-100 text-amber-700 border-amber-300'
+    if (Math.abs(gap) <= 5) return 'bg-emerald-500/15 text-emerald-700 border-emerald-200'
+    if (Math.abs(gap) <= 15) return 'bg-amber-500/15 text-amber-700 border-amber-300'
     return 'bg-destructive/10 text-destructive border-destructive/20'
   }
 
@@ -147,7 +147,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">{'성별 급여 격차 분석'}</h1>
-          <p className="text-sm text-[#666] mt-1">{'직급·직무·부서별 성별 보상 비교 분석'}</p>
+          <p className="text-sm text-muted-foreground mt-1">{'직급·직무·부서별 성별 보상 비교 분석'}</p>
         </div>
         <div className="flex items-center gap-3">
           <Select value={groupBy} onValueChange={setGroupBy}>
@@ -186,7 +186,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 mb-1">
                   <Users className="w-4 h-4 text-primary" />
-                  <p className="text-xs text-[#666]">{'남성 인원'}</p>
+                  <p className="text-xs text-muted-foreground">{'남성 인원'}</p>
                 </div>
                 <p className="text-3xl font-bold text-foreground">{data.summary.totalMale}명</p>
               </CardContent>
@@ -195,20 +195,20 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 mb-1">
                   <Users className="w-4 h-4 text-pink-400" />
-                  <p className="text-xs text-[#666]">{'여성 인원'}</p>
+                  <p className="text-xs text-muted-foreground">{'여성 인원'}</p>
                 </div>
                 <p className="text-3xl font-bold text-foreground">{data.summary.totalFemale}명</p>
               </CardContent>
             </Card>
             <Card className="">
               <CardContent className="p-5">
-                <p className="text-xs text-[#666] mb-1">{'남성 평균 급여'}</p>
+                <p className="text-xs text-muted-foreground mb-1">{'남성 평균 급여'}</p>
                 <p className="text-2xl font-bold text-foreground">{formatCurrency(data.summary.overallMaleAvg)}</p>
               </CardContent>
             </Card>
             <Card className="">
               <CardContent className="p-5">
-                <p className="text-xs text-[#666] mb-1">{'여성 평균 급여'}</p>
+                <p className="text-xs text-muted-foreground mb-1">{'여성 평균 급여'}</p>
                 <p className="text-2xl font-bold text-foreground">{formatCurrency(data.summary.overallFemaleAvg)}</p>
               </CardContent>
             </Card>
@@ -222,7 +222,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                   ) : (
                     <TrendingUp className="w-4 h-4 text-emerald-600" />
                   )}
-                  <p className="text-xs text-[#666]">{'전체 격차'}</p>
+                  <p className="text-xs text-muted-foreground">{'전체 격차'}</p>
                 </div>
                 <p className={`text-3xl font-bold ${getGapColor(data.summary.overallGapPercent)}`}>
                   {data.summary.overallGapPercent.toFixed(1)}%

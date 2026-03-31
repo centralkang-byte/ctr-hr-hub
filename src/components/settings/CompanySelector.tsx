@@ -38,11 +38,11 @@ export function CompanySelector({ selectedCompanyId, onCompanyChange, className 
         onClick={() => setOpen((prev) => !prev)}
         className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
       >
-        <Building2 className="h-4 w-4 text-[#666]" />
+        <Building2 className="h-4 w-4 text-muted-foreground" />
         <span className="font-medium text-foreground">
           {selected ? `${selected.code} ${selected.name}` : '법인 선택'}
         </span>
-        <ChevronDown className={`h-4 w-4 text-[#666] transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
@@ -58,12 +58,12 @@ export function CompanySelector({ selectedCompanyId, onCompanyChange, className 
                   setOpen(false)
                 }}
                 className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm hover:bg-background ${
-                  company.id === selectedCompanyId ? 'bg-primary/10 text-primary/90' : 'text-[#333]'
+                  company.id === selectedCompanyId ? 'bg-primary/10 text-primary/90' : 'text-foreground'
                 }`}
               >
                 <span className="font-medium">{company.code}</span>
-                <span className="text-[#666]">{company.name}</span>
-                <span className="ml-auto text-xs text-[#999]">{company.currency}</span>
+                <span className="text-muted-foreground">{company.name}</span>
+                <span className="ml-auto text-xs text-muted-foreground">{company.currency}</span>
               </button>
             ))}
           </div>

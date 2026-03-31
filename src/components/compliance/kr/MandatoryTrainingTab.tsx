@@ -121,7 +121,7 @@ export default function MandatoryTrainingTab() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold text-foreground">법정의무교육 현황</h2>
-          <p className="text-sm text-[#666] mt-0.5">연도별 법정의무교육 이수 현황을 확인합니다.</p>
+          <p className="text-sm text-muted-foreground mt-0.5">연도별 법정의무교육 이수 현황을 확인합니다.</p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -138,7 +138,7 @@ export default function MandatoryTrainingTab() {
                 </option>
               ))}
             </select>
-            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999] pointer-events-none" />
+            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
           </div>
 
           {/* Add Training Button */}
@@ -168,7 +168,7 @@ export default function MandatoryTrainingTab() {
       ) : trainings.length === 0 ? (
         <div className="bg-card rounded-xl border border-border p-12 text-center">
           <BookOpen className="w-10 h-10 text-border mx-auto mb-3" />
-          <p className="text-sm text-[#666]">{selectedYear}년 교육 데이터가 없습니다.</p>
+          <p className="text-sm text-muted-foreground">{selectedYear}년 교육 데이터가 없습니다.</p>
           <button
             onClick={() => setShowForm(true)}
             className="mt-4 text-sm text-primary hover:text-primary/90 font-medium"
@@ -188,7 +188,7 @@ export default function MandatoryTrainingTab() {
                 ? 'bg-primary'
                 : overdue
                 ? 'bg-destructive/50'
-                : 'bg-amber-500'
+                : 'bg-amber-500/100'
 
             return (
               <div
@@ -217,11 +217,11 @@ export default function MandatoryTrainingTab() {
 
                 {/* Meta info */}
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="flex items-center gap-1.5 text-xs text-[#666]">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <Calendar className="w-3.5 h-3.5" />
                     <span>마감: {formatDate(training.dueDate)}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-[#666]">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <Users className="w-3.5 h-3.5" />
                     <span>
                       {training.enrolledCount}/{training.totalCount}명
@@ -232,14 +232,14 @@ export default function MandatoryTrainingTab() {
                 {/* Progress bar */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-[#666]">이수율</span>
+                    <span className="text-xs text-muted-foreground">이수율</span>
                     <span
                       className={`text-xs font-semibold ${
                         training.completionRate >= 80
                           ? 'text-emerald-700'
                           : overdue
                           ? 'text-destructive'
-                          : 'text-[#333]'
+                          : 'text-foreground'
                       }`}
                     >
                       {training.completionRate}%

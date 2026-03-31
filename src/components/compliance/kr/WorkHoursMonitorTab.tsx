@@ -95,7 +95,7 @@ export default function WorkHoursMonitorTab() {
           value: summary.warningCount.toLocaleString(),
           icon: Clock,
           iconColor: 'text-orange-500',
-          bgColor: 'bg-orange-50',
+          bgColor: 'bg-orange-500/10',
           textColor: 'text-orange-500',
         },
         {
@@ -128,7 +128,7 @@ export default function WorkHoursMonitorTab() {
                   className="bg-card rounded-xl shadow-sm border border-border p-6"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-xs text-[#999] font-medium">{card.label}</p>
+                    <p className="text-xs text-muted-foreground font-medium">{card.label}</p>
                     <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${card.bgColor}`}>
                       <Icon className={`w-4 h-4 ${card.iconColor}`} />
                     </div>
@@ -146,17 +146,17 @@ export default function WorkHoursMonitorTab() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setWeekOffset((prev) => prev - 1)}
-              className="flex items-center justify-center w-8 h-8 rounded-lg border border-border hover:bg-muted text-[#666] transition-colors"
+              className="flex items-center justify-center w-8 h-8 rounded-lg border border-border hover:bg-muted text-muted-foreground transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-sm font-medium text-[#666] min-w-[180px] text-center">
+            <span className="text-sm font-medium text-muted-foreground min-w-[180px] text-center">
               {getWeekLabel(weekOffset)}
             </span>
             <button
               onClick={() => setWeekOffset((prev) => prev + 1)}
               disabled={weekOffset >= 0}
-              className="flex items-center justify-center w-8 h-8 rounded-lg border border-border hover:bg-muted text-[#666] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center justify-center w-8 h-8 rounded-lg border border-border hover:bg-muted text-muted-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

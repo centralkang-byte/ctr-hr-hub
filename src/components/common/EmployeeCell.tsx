@@ -18,8 +18,8 @@ import type { MinimalEmployee } from '@/types/employee'
 // ─── Status Styles ──────────────────────────────────────────
 
 const STATUS_STYLES: Record<string, { label: string; className: string }> = {
-  ACTIVE:     { label: '재직',  className: 'bg-emerald-50 text-emerald-700' },
-  ON_LEAVE:   { label: '휴직',  className: 'bg-orange-50 text-orange-700' },
+  ACTIVE:     { label: '재직',  className: 'bg-emerald-500/10 text-emerald-700' },
+  ON_LEAVE:   { label: '휴직',  className: 'bg-orange-500/10 text-orange-700' },
   RESIGNED:   { label: '퇴사',  className: 'bg-destructive/5 text-destructive' },
   TERMINATED: { label: '해고',  className: 'bg-destructive/5 text-destructive' },
 }
@@ -302,7 +302,7 @@ export function EmployeeCell(props: EmployeeCellProps) {
     return (
       <div className={`flex items-center ${cfg.gap} ${className}`}>
         <div
-          className={`${cfg.avatar} rounded-full bg-stone-400 flex items-center justify-center text-white`}
+          className={`${cfg.avatar} rounded-full bg-muted-foreground/30 flex items-center justify-center text-foreground`}
         >
           <span className={cfg.initials}>?</span>
         </div>

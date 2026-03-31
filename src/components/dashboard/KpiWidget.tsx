@@ -147,7 +147,7 @@ export function KpiWidget({
               Object.entries(data as Record<string, unknown>).map(([k, v]) => (
                 <div key={k} className="text-center">
                   <div className="text-3xl font-bold text-foreground">{String(v)}</div>
-                  <div className="text-xs text-[#666] mt-1">{k}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{k}</div>
                 </div>
               ))
             ) : (

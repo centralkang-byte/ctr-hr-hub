@@ -148,14 +148,14 @@ export default function SocialInsuranceReportTab() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-base font-semibold text-foreground">월간 사회보험 보고서</h2>
-          <p className="text-xs text-[#666] mt-0.5">월별 五险一金 납부 내역을 확인합니다</p>
+          <p className="text-xs text-muted-foreground mt-0.5">월별 五险一金 납부 내역을 확인합니다</p>
         </div>
       </div>
 
       {/* Controls */}
       <div className="flex flex-wrap items-end gap-3 mb-5 p-4 bg-background rounded-lg">
         <div>
-          <label className="block text-xs font-medium text-[#555] mb-1">연도</label>
+          <label className="block text-xs font-medium text-muted-foreground mb-1">연도</label>
           <select
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
@@ -169,7 +169,7 @@ export default function SocialInsuranceReportTab() {
           </select>
         </div>
         <div>
-          <label className="block text-xs font-medium text-[#555] mb-1">월</label>
+          <label className="block text-xs font-medium text-muted-foreground mb-1">월</label>
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
@@ -194,7 +194,7 @@ export default function SocialInsuranceReportTab() {
           <button
             onClick={handleExport}
             disabled={exporting}
-            className="flex items-center gap-2 bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm transition-colors disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
             {exporting ? '내보내는 중...' : '보고서 내보내기'}
@@ -204,7 +204,7 @@ export default function SocialInsuranceReportTab() {
 
       {/* Status Messages */}
       {calcMessage && (
-        <div className="mb-4 bg-emerald-100 border border-emerald-200 text-emerald-700 text-sm rounded-lg px-4 py-3">
+        <div className="mb-4 bg-emerald-500/15 border border-emerald-200 text-emerald-700 text-sm rounded-lg px-4 py-3">
           {calcMessage}
         </div>
       )}
@@ -216,9 +216,9 @@ export default function SocialInsuranceReportTab() {
 
       {/* Report Table */}
       {loading ? (
-        <div className="py-12 text-center text-sm text-[#666]">Loading...</div>
+        <div className="py-12 text-center text-sm text-muted-foreground">Loading...</div>
       ) : !reportData || reportData.rows.length === 0 ? (
-        <div className="py-12 text-center text-sm text-[#666]">
+        <div className="py-12 text-center text-sm text-muted-foreground">
           {year}년 {month}월 데이터가 없습니다. 계산 버튼을 눌러 데이터를 생성하세요.
         </div>
       ) : (
@@ -244,16 +244,16 @@ export default function SocialInsuranceReportTab() {
                     <td className="px-4 py-3 font-medium text-foreground">
                       {INSURANCE_TYPE_LABELS[row.insuranceType] ?? row.insuranceType}
                     </td>
-                    <td className="px-4 py-3 text-right text-[#333]">
+                    <td className="px-4 py-3 text-right text-foreground">
                       {row.employeeCount.toLocaleString()}명
                     </td>
-                    <td className="px-4 py-3 text-right text-[#333]">
+                    <td className="px-4 py-3 text-right text-foreground">
                       {formatCNY(row.totalBaseSalary)}
                     </td>
-                    <td className="px-4 py-3 text-right text-[#333]">
+                    <td className="px-4 py-3 text-right text-foreground">
                       {formatCNY(row.totalEmployerAmount)}
                     </td>
-                    <td className="px-4 py-3 text-right text-[#333]">
+                    <td className="px-4 py-3 text-right text-foreground">
                       {formatCNY(row.totalEmployeeAmount)}
                     </td>
                     <td className="px-4 py-3 text-right font-medium text-foreground">
@@ -281,7 +281,7 @@ export default function SocialInsuranceReportTab() {
             </table>
           </div>
 
-          <p className="mt-3 text-xs text-[#999]">
+          <p className="mt-3 text-xs text-muted-foreground">
             생성일시: {new Date(reportData.meta.generatedAt).toLocaleString('ko-KR')}
           </p>
         </>

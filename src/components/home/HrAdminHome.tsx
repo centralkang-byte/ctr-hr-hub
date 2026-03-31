@@ -107,7 +107,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
                   <AnimatedNumber value={summary?.newHires ?? 0} />
                 </p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10">
                 <ArrowUpRight className="h-5 w-5 text-emerald-500" />
               </div>
             </div>
@@ -142,7 +142,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
                   />
                 </p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-50">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/10">
                 <AlertTriangle className="h-5 w-5 text-amber-500" />
               </div>
             </div>

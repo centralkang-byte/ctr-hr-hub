@@ -21,9 +21,9 @@ interface DataRequest {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    pending: 'bg-amber-100 text-amber-700 border border-amber-300',
+    pending: 'bg-amber-500/15 text-amber-700 border border-amber-300',
     in_progress: 'bg-primary/10 text-primary/90 border border-primary/20',
-    completed: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+    completed: 'bg-emerald-500/15 text-emerald-700 border border-emerald-200',
     rejected: 'bg-destructive/10 text-destructive border border-destructive/20',
   }
   return (
@@ -86,9 +86,9 @@ export default function DataRequestsTab() {
 
       <div className={TABLE_STYLES.wrapper}>
         {loading ? (
-          <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
+          <div className="p-8 text-center text-muted-foreground">{tc('loading')}</div>
         ) : requests.length === 0 ? (
-          <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
+          <div className="p-8 text-center text-muted-foreground">{tc('noData')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className={TABLE_STYLES.table}>
@@ -107,9 +107,9 @@ export default function DataRequestsTab() {
                   <tr key={r.id} className={TABLE_STYLES.row}>
                     <td className="px-4 py-3 text-sm">
                       <div className="font-medium text-foreground">{r.employee_name}</div>
-                      <div className="text-xs text-[#999]">{r.employee_no}</div>
+                      <div className="text-xs text-muted-foreground">{r.employee_no}</div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#333]">
+                    <td className="px-4 py-3 text-sm text-foreground">
                       {REQUEST_TYPE_LABELS[r.request_type] ?? r.request_type}
                     </td>
                     <td className="px-4 py-3 text-sm">
@@ -117,7 +117,7 @@ export default function DataRequestsTab() {
                     </td>
                     <td className="px-4 py-3 text-sm">
                       {r.deadline ? (
-                        <span className={`flex items-center gap-1 ${isOverdue(r.deadline) && r.status !== 'completed' ? 'text-destructive font-medium' : 'text-[#555]'}`}>
+                        <span className={`flex items-center gap-1 ${isOverdue(r.deadline) && r.status !== 'completed' ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
                           {isOverdue(r.deadline) && r.status !== 'completed' ? (
                             <Clock className="w-3.5 h-3.5" />
                           ) : null}
@@ -125,7 +125,7 @@ export default function DataRequestsTab() {
                         </span>
                       ) : '-'}
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#555]">
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
                       {new Date(r.created_at).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3 text-sm">

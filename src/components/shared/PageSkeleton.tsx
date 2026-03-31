@@ -52,7 +52,7 @@ export function TableSkeleton({ rows = 8, cols = 5, className }: TableSkeletonPr
       {Array.from({ length: rows }).map((_, i) => (
         <div
           key={i}
-          className="flex gap-4 p-4 border-b border-border dark:border-slate-800 last:border-b-0"
+          className="flex gap-4 p-4 border-b border-border last:border-b-0"
           style={{ animationDelay: `${i * 75}ms` }}
         >
           {Array.from({ length: cols }).map((_, j) => (

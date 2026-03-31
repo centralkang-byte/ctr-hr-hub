@@ -136,7 +136,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
                 <p className="text-xs font-medium text-muted-foreground">인건비 비율</p>
                 <p className="text-display-sm font-extrabold text-foreground">32.1%</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-50">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10">
                 <DollarSign className="h-6 w-6 text-amber-600" />
               </div>
             </div>

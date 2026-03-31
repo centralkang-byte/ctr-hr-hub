@@ -117,7 +117,7 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
         <div className="space-y-4 py-2 max-h-[60vh] overflow-y-auto pr-1">
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               {tc('name')} / Title <span className="text-red-500">*</span>
             </label>
             <input
@@ -131,7 +131,7 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">{tc('description')}</label>
+            <label className="block text-sm font-medium text-foreground mb-1">{tc('description')}</label>
             <textarea
               className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none"
               rows={3}
@@ -143,7 +143,7 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
 
           {/* Processing Scope */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               {t('gdpr.processingScope')} <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -157,7 +157,7 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
 
           {/* Risk Level */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">{t('gdpr.riskLevel')}</label>
+            <label className="block text-sm font-medium text-foreground mb-1">{t('gdpr.riskLevel')}</label>
             <div className="grid grid-cols-4 gap-2">
               {RISK_LEVELS.map((rl) => (
                 <button
@@ -167,10 +167,10 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
                   className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
                     form.risk_level === rl.value
                       ? rl.value === 'low' ? 'bg-emerald-600 text-white border-emerald-600'
-                      : rl.value === 'medium' ? 'bg-amber-500 text-white border-amber-500'
-                      : rl.value === 'high' ? 'bg-orange-500 text-white border-orange-500'
+                      : rl.value === 'medium' ? 'bg-amber-500/100 text-white border-amber-500'
+                      : rl.value === 'high' ? 'bg-orange-500/100 text-white border-orange-500'
                       : 'bg-red-600 text-white border-red-600'
-                      : 'bg-card text-[#555] border-border hover:bg-background'
+                      : 'bg-card text-muted-foreground border-border hover:bg-background'
                   }`}
                 >
                   {rl.label}
@@ -181,7 +181,7 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
 
           {/* Mitigations */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">{t('gdpr.mitigations')}</label>
+            <label className="block text-sm font-medium text-foreground mb-1">{t('gdpr.mitigations')}</label>
             <textarea
               className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none"
               rows={4}
@@ -194,7 +194,7 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
           {/* Status */}
           {isEdit && (
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">{tc('status')}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{tc('status')}</label>
               <select
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
                 value={form.status}
@@ -213,7 +213,7 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
         <DialogFooter className="gap-2">
           <button
             onClick={onClose}
-            className="bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
+            className="bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm"
           >
             {tc('cancel')}
           </button>

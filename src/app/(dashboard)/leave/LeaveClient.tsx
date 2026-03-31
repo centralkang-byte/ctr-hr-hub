@@ -96,10 +96,10 @@ interface LeavePolicyLocal {
 // ─── Status badge styles ────────────────────────────────────
 
 const statusBadgeClass: Record<string, string> = {
-  PENDING: 'bg-orange-50 text-orange-500',
+  PENDING: 'bg-orange-500/10 text-orange-500',
   APPROVED: 'bg-primary/10 text-tertiary',
   REJECTED: 'bg-destructive/5 text-red-500',
-  CANCELLED: 'bg-muted text-[#666]',
+  CANCELLED: 'bg-muted text-muted-foreground',
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -431,7 +431,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       key: 'status',
       header: te('status'),
       render: (row: LeaveRequestLocal) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${statusBadgeClass[row.status] ?? 'bg-muted text-[#666]'}`}>
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${statusBadgeClass[row.status] ?? 'bg-muted text-muted-foreground'}`}>
           {statusLabel[row.status] ?? row.status}
         </span>
       ),
@@ -483,7 +483,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
       {/* ─── Section 1: Leave Balance Cards (카테고리 그룹핑) ─── */}
       {!balances?.length && !loading && (
-        <p className="py-4 text-sm text-[#999]">{tc('noData')}</p>
+        <p className="py-4 text-sm text-muted-foreground">{tc('noData')}</p>
       )}
       {balances?.length > 0 && (() => {
         // 카테고리별 그룹핑
@@ -504,7 +504,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
           <div className="space-y-4">
             {orderedGroups.map(cat => (
               <div key={cat}>
-                <p className="text-xs font-semibold text-[#555] mb-2 uppercase tracking-wide">
+                <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
                   {CATEGORY_LABELS[cat] ?? cat}
                 </p>
                 <div className="flex gap-4 overflow-x-auto pb-1">
@@ -517,14 +517,14 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                         key={b.id}
                         className="min-w-[200px] flex-shrink-0 bg-card border border-border rounded-xl p-5"
                       >
-                        <p className="text-xs text-[#999] font-medium mb-2">
+                        <p className="text-xs text-muted-foreground font-medium mb-2">
                           {b.leaveTypeDef?.name ?? b.policy?.name ?? '-'}
                         </p>
                         <div className="flex items-end gap-1">
-                          <p className={`text-2xl font-bold tracking-[-0.02em] ${remaining > 0 ? 'text-primary' : 'text-[#999]'}`}>
+                          <p className={`text-2xl font-bold tracking-[-0.02em] ${remaining > 0 ? 'text-primary' : 'text-muted-foreground'}`}>
                             {remaining}
                           </p>
-                          <p className="text-sm text-[#999] mb-0.5">/ {total} {t('fullDay')}</p>
+                          <p className="text-sm text-muted-foreground mb-0.5">/ {total} {t('fullDay')}</p>
                         </div>
                         <div className="mt-2 h-1.5 rounded-full bg-border overflow-hidden">
                           <div
@@ -532,7 +532,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                             style={{ width: `${Math.min(usagePct, 100)}%` }}
                           />
                         </div>
-                        <p className="mt-1.5 text-xs text-[#999]">
+                        <p className="mt-1.5 text-xs text-muted-foreground">
                           {t('usedDays')} {b.used}{t('fullDay')} / {t('pendingDays')} {b.pending}{t('fullDay')}
                         </p>
                       </div>
@@ -560,7 +560,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
             className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
               statusFilter === f.value
                 ? 'bg-foreground text-white border-foreground'
-                : 'bg-card text-[#666] border-border hover:bg-muted'
+                : 'bg-card text-muted-foreground border-border hover:bg-muted'
             }`}
           >
             {f.label}
@@ -620,7 +620,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
             {selectedBalance && selectedRemaining !== null && (
               <div className="rounded-lg border border-border bg-background px-4 py-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-[#666]">
+                  <span className="text-sm text-muted-foreground">
                     현재 잔여:{' '}
                     <strong className="text-foreground">{selectedRemaining}{t('fullDay')}</strong>
                   </span>
@@ -663,7 +663,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                       className={`px-3 py-2 text-sm font-medium rounded-md border transition-colors ${
                         presetType === preset.id
                           ? 'bg-foreground text-white border-foreground'
-                          : 'bg-card text-[#666] border-border hover:bg-muted'
+                          : 'bg-card text-muted-foreground border-border hover:bg-muted'
                       }`}
                     >
                       {preset.label}

@@ -146,14 +146,14 @@ function SettlementDetailModal({
             <h2 className="text-lg font-semibold text-foreground">
               {settlement.employeeName} — {settlement.year}년 연말정산
             </h2>
-            <p className="text-sm text-[#666] mt-0.5">
+            <p className="text-sm text-muted-foreground mt-0.5">
               {settlement.department} &middot; {settlement.employeeNo}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-muted text-[#666]"
+            className="p-2 rounded-lg hover:bg-muted text-muted-foreground"
           >
             <X className="h-5 w-5" />
           </button>
@@ -165,7 +165,7 @@ function SettlementDetailModal({
           <div className="flex items-center gap-3">
             <StatusBadge status={settlement.status} />
             {settlement.submittedAt && (
-              <span className="text-xs text-[#666]">
+              <span className="text-xs text-muted-foreground">
                 제출일: {formatDate(settlement.submittedAt)}
               </span>
             )}
@@ -178,7 +178,7 @@ function SettlementDetailModal({
 
           {/* Calculation Breakdown */}
           <div className="rounded-xl border border-border overflow-hidden">
-            <div className="bg-background px-4 py-2 text-xs font-semibold text-[#666] uppercase tracking-wider">
+            <div className="bg-background px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               {'소득세 계산 요약'}
             </div>
             <div className="divide-y divide-border">
@@ -189,7 +189,7 @@ function SettlementDetailModal({
                 { label: '기록하기', value: settlement.prepaidTax },
               ].map((row) => (
                 <div key={row.label} className="flex items-center justify-between px-4 py-2.5">
-                  <span className="text-sm text-[#555]">{row.label}</span>
+                  <span className="text-sm text-muted-foreground">{row.label}</span>
                   <span className="text-sm font-medium text-foreground">
                     {formatKRW(row.value)}
                   </span>
@@ -202,8 +202,8 @@ function SettlementDetailModal({
           <div
             className={`rounded-xl p-5 text-center ${
               isRefund
-                ? 'bg-emerald-100 border border-emerald-200'
-                : 'bg-amber-100 border border-amber-300'
+                ? 'bg-emerald-500/15 border border-emerald-200'
+                : 'bg-amber-500/15 border border-amber-300'
             }`}
           >
             <p
@@ -216,7 +216,7 @@ function SettlementDetailModal({
             >
               {formatKRW(Math.abs(finalNum))}
             </p>
-            <p className="text-xs text-[#666] mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               지방소득세 포함: {formatKRW(settlement.localTaxSettlement)}
             </p>
           </div>
@@ -237,7 +237,7 @@ function SettlementDetailModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm text-[#555] hover:bg-muted rounded-lg"
+            className="px-4 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg"
           >
             {'닫기'}
           </button>
@@ -247,7 +247,7 @@ function SettlementDetailModal({
                 type="button"
                 onClick={() => onIssueReceipt(settlement.id)}
                 disabled={issuingReceipt}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-card border border-border hover:bg-background text-[#333] rounded-lg disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm bg-card border border-border hover:bg-background text-foreground rounded-lg disabled:opacity-50"
               >
                 <Download className="h-4 w-4" />
                 {issuingReceipt ? '발행 중...' : '영수증 발행'}
@@ -518,7 +518,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
       {/* Progress Overview Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {[
-          { key: 'not_started', label: t('kr_kebafb8ec'), icon: Users, color: 'text-[#666]' },
+          { key: 'not_started', label: t('kr_kebafb8ec'), icon: Users, color: 'text-muted-foreground' },
           { key: 'in_progress', label: t('inProgress'), icon: Clock, color: 'text-amber-700' },
           { key: 'submitted', label: t('submitted'), icon: Send, color: 'text-primary/90' },
           { key: 'hr_review', label: t('hrReviewing'), icon: Eye, color: 'text-orange-700' },
@@ -537,7 +537,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
 
         {/* Progress bar card */}
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">{t('all_kec9984eb')}</p>
+          <p className="text-xs text-muted-foreground mb-1">{t('all_kec9984eb')}</p>
           <p className="text-2xl font-bold text-primary">{completionPct}%</p>
           <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
             <div
@@ -558,7 +558,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
             className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               statusFilter === tab.key
                 ? 'border-primary text-primary'
-                : 'border-transparent text-[#666] hover:text-[#333]'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             {tab.label}
@@ -567,7 +567,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                 className={`text-xs px-1.5 py-0.5 rounded-full ${
                   statusFilter === tab.key
                     ? 'bg-primary/10 text-primary'
-                    : 'bg-muted text-[#666]'
+                    : 'bg-muted text-muted-foreground'
                 }`}
               >
                 {tab.count}
@@ -614,13 +614,13 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-[#666]">
+                <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
                   {t('kr_keb8db0ec_kebb688eb_keca491')}
                 </td>
               </tr>
             ) : filteredSettlements.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-[#666]">
+                <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
                   {t('kr_ked95b4eb_keca1b0ea_yearend_ke')}
                 </td>
               </tr>
@@ -647,7 +647,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                         <span className="font-medium text-foreground">
                           {s.employeeName}
                         </span>
-                        <span className="text-xs text-[#999]">{s.employeeNo}</span>
+                        <span className="text-xs text-muted-foreground">{s.employeeNo}</span>
                       </div>
                     </td>
                     <td className={TABLE_STYLES.cell}>{s.department}</td>
@@ -672,7 +672,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                         <button
                           type="button"
                           onClick={() => setSelectedSettlement(s)}
-                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-[#555] hover:bg-muted rounded-lg"
+                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-muted-foreground hover:bg-muted rounded-lg"
                         >
                           <Eye className="h-3.5 w-3.5" />
                           {t('kr_keab280ed')}
@@ -693,7 +693,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                             type="button"
                             onClick={() => handleIssueReceipt(s.id)}
                             disabled={issuingReceipt}
-                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-primary/90 bg-indigo-100 hover:bg-indigo-200 rounded-lg disabled:opacity-50"
+                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-primary/90 bg-indigo-500/15 hover:bg-indigo-200 rounded-lg disabled:opacity-50"
                           >
                             <Download className="h-3.5 w-3.5" />
                             {t('kr_kec9881ec')}
@@ -713,7 +713,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
       {/* Bulk action bar */}
       {selectedIds.size > 0 && (
         <div className="mt-4 px-4 py-3 border border-border rounded-lg bg-muted/50 flex items-center justify-between">
-          <span className="text-sm text-[#555]">
+          <span className="text-sm text-muted-foreground">
             {selectedIds.size}건 선택됨
           </span>
           <button

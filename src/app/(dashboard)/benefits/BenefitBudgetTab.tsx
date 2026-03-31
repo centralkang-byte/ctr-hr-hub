@@ -78,7 +78,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <label className="text-sm font-medium text-[#333]">기준 연도</label>
+        <label className="text-sm font-medium text-foreground">기준 연도</label>
         <select
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
@@ -102,7 +102,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
         </div>
       ) : budgets.length === 0 ? (
-        <div className="bg-card rounded-xl border border-border p-8 text-center text-[#999] text-sm">
+        <div className="bg-card rounded-xl border border-border p-8 text-center text-muted-foreground text-sm">
           예산 데이터가 없습니다.
         </div>
       ) : (
@@ -125,7 +125,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
                       {CATEGORY_LABELS[budget.category] ?? budget.category}
                     </h3>
                     {isWarning && (
-                      <span className="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 border border-amber-300 rounded-full">
+                      <span className="text-xs px-2 py-0.5 bg-amber-500/15 text-amber-700 border border-amber-300 rounded-full">
                         80% 초과 ⚠️
                       </span>
                     )}
@@ -150,7 +150,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
                     ) : (
                       <button
                         onClick={() => { setEditingId(budget.id); setEditValue(String(budget.totalBudget)) }}
-                        className="p-1.5 hover:bg-muted rounded text-[#999]"
+                        className="p-1.5 hover:bg-muted rounded text-muted-foreground"
                       >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
@@ -165,7 +165,7 @@ export function BenefitBudgetTab({ user }: { user: SessionUser }) {
                   />
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-[#666]">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>사용: {formatAmount(budget.usedAmount, isKRW)}</span>
                   <span className="font-medium">{pct}%</span>
                   <span>총: {formatAmount(budget.totalBudget, isKRW)}</span>

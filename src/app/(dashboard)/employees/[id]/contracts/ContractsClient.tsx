@@ -40,10 +40,10 @@ interface Props {
 
 const CONTRACT_TYPE_COLORS: Record<string, string> = {
   PERMANENT: 'bg-primary/10 text-primary/90',
-  FIXED_TERM: 'bg-yellow-100 text-yellow-800',
+  FIXED_TERM: 'bg-yellow-500/15 text-yellow-800',
   DISPATCH: 'bg-muted text-foreground',
-  INTERN: 'bg-purple-50 text-purple-800',
-  PROBATION_ONLY: 'bg-orange-100 text-orange-800',
+  INTERN: 'bg-purple-500/10 text-purple-800',
+  PROBATION_ONLY: 'bg-orange-500/15 text-orange-800',
 }
 
 export default function ContractsClient({ employeeId, permissions }: Props) {
@@ -186,7 +186,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
       </div>
 
       {loading ? (
-        <p className="text-sm text-[#666]">{tc('loading')}</p>
+        <p className="text-sm text-muted-foreground">{tc('loading')}</p>
       ) : (
         <Table>
           <TableHeader>
@@ -204,7 +204,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
             {contracts.map((c) => (
               <TableRow
                 key={c.id}
-                className={isExpiringSoon(c.endDate) ? 'bg-yellow-50' : ''}
+                className={isExpiringSoon(c.endDate) ? 'bg-yellow-500/10' : ''}
               >
                 <TableCell>{c.contractNumber}{t('contractSequenceSuffix')}</TableCell>
                 <TableCell>
@@ -221,7 +221,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
                       {format(new Date(c.endDate), 'yyyy-MM-dd')}
                     </span>
                   ) : (
-                    <span className="text-[#999]">{t('indefinite')}</span>
+                    <span className="text-muted-foreground">{t('indefinite')}</span>
                   )}
                 </TableCell>
                 <TableCell>
@@ -232,7 +232,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
                 <TableCell>
                   {c.signedAt ? format(new Date(c.signedAt), 'yyyy-MM-dd') : '-'}
                 </TableCell>
-                <TableCell className="text-sm text-[#666]">{c.notes ?? '-'}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">{c.notes ?? '-'}</TableCell>
               </TableRow>
             ))}
             {!contracts?.length && (

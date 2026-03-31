@@ -62,9 +62,9 @@ interface ApprovalStatus {
 }
 
 const STEP_STATUS_CONFIG = {
-    APPROVED: { icon: <CheckCircle2 className="h-5 w-5 text-emerald-600" />, bg: 'bg-emerald-100', label: '승인' },
+    APPROVED: { icon: <CheckCircle2 className="h-5 w-5 text-emerald-600" />, bg: 'bg-emerald-500/15', label: '승인' },
     REJECTED: { icon: <XCircle className="h-5 w-5 text-destructive" />, bg: 'bg-destructive/10', label: '반려' },
-    PENDING: { icon: <Clock className="h-5 w-5 text-amber-500" />, bg: 'bg-amber-100', label: '🟡 대기' },
+    PENDING: { icon: <Clock className="h-5 w-5 text-amber-500" />, bg: 'bg-amber-500/15', label: '🟡 대기' },
 }
 
 const fmt = (n: number | string | null | undefined) => {
@@ -82,7 +82,7 @@ const fmtDate = (d: string | null | undefined) => {
 function ApprovalProgressBar({ chain, currentStep }: { chain: ApprovalChainStep[]; currentStep: number }) {
     return (
         <div className={CARD_STYLES.padded}>
-            <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-4">{'결재 진행 현황'}</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">{'결재 진행 현황'}</p>
             <div className="flex items-center gap-0">
                 {chain.map((step, idx) => {
                     const cfg = STEP_STATUS_CONFIG[step.status]
@@ -93,12 +93,12 @@ function ApprovalProgressBar({ chain, currentStep }: { chain: ApprovalChainStep[
                                 <div className={`flex h-10 w-10 items-center justify-center rounded-full ${cfg.bg} ${isActive ? 'ring-2 ring-offset-1 ring-amber-500' : ''}`}>
                                     {cfg.icon}
                                 </div>
-                                <p className="mt-1.5 text-[11px] font-medium text-[#333] text-center truncate max-w-20">
+                                <p className="mt-1.5 text-[11px] font-medium text-foreground text-center truncate max-w-20">
                                     {step.approverName ?? step.roleRequired}
                                 </p>
-                                <p className="text-[10px] text-[#999] text-center">{cfg.label}</p>
+                                <p className="text-[10px] text-muted-foreground text-center">{cfg.label}</p>
                                 {step.decidedAt && (
-                                    <p className="text-[10px] text-[#999]">{fmtDate(step.decidedAt)}</p>
+                                    <p className="text-[10px] text-muted-foreground">{fmtDate(step.decidedAt)}</p>
                                 )}
                             </div>
                             {idx < chain.length - 1 && (
@@ -209,16 +209,16 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
         <div className="p-4 max-w-3xl mx-auto space-y-4">
             {/* Header */}
             <div className="flex items-center gap-3">
-                <button onClick={() => router.push('/approvals/inbox')} className="text-[#999] hover:text-[#333]">
+                <button onClick={() => router.push('/approvals/inbox')} className="text-muted-foreground hover:text-foreground">
                     <ArrowLeft className="h-5 w-5" />
                 </button>
                 <div>
                     <h1 className="text-2xl font-bold text-foreground tracking-[-0.02em]">{t('kr_keab889ec_keab2b0ec')}</h1>
-                    <p className="text-sm text-[#666] mt-0.5">{run.name} · {run.yearMonth}</p>
+                    <p className="text-sm text-muted-foreground mt-0.5">{run.name} · {run.yearMonth}</p>
                 </div>
                 <div className="ml-auto">
                     {isComplete && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold">
+                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-700 text-sm font-semibold">
                             <CheckCheck className="h-4 w-4" /> {t('approve_complete')}
                         </span>
                     )}
@@ -228,7 +228,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                         </span>
                     )}
                     {isPending && !isComplete && !isRejected && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-100 text-amber-700 text-sm font-semibold">
+                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-500/15 text-amber-700 text-sm font-semibold">
                             <Clock className="h-4 w-4" /> {t('kr_keab2b0ec_keb8c80ea')}
                         </span>
                     )}
@@ -244,11 +244,11 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                     { label: t('kr_keb8c80ec_kec9db8ec'), value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-primary/90" /> },
                     { label: t('netPay'), value: fmt(Number(run.totalNet ?? 0)), icon: <DollarSign className="h-4 w-4 text-emerald-600" /> },
                     { label: t('kr_kec9db4ec_ked95adeb'), value: run.allAnomaliesResolved ? '없음 ✅' : '있음 ⚠️', icon: <AlertTriangle className="h-4 w-4 text-amber-500" /> },
-                    { label: t('adjustments'), value: `${run.adjustmentCount ?? 0}건`, icon: <CheckCircle2 className="h-4 w-4 text-[#999]" /> },
+                    { label: t('adjustments'), value: `${run.adjustmentCount ?? 0}건`, icon: <CheckCircle2 className="h-4 w-4 text-muted-foreground" /> },
                 ].map((kpi) => (
                     <div key={kpi.label} className={CARD_STYLES.padded}>
                         <div className="flex items-center justify-between mb-1">
-                            <p className="text-xs text-[#666]">{kpi.label}</p>
+                            <p className="text-xs text-muted-foreground">{kpi.label}</p>
                             {kpi.icon}
                         </div>
                         <p className="text-sm font-bold text-foreground leading-tight">{kpi.value}</p>
@@ -259,15 +259,15 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             {/* HR Notes */}
             {run.notes && (
                 <div className="bg-background rounded-xl border border-border p-4">
-                    <p className="text-xs font-semibold text-[#999] mb-1">{t('kr_hr_keba994eb')}</p>
-                    <p className="text-sm text-[#555]">{run.notes}</p>
+                    <p className="text-xs font-semibold text-muted-foreground mb-1">{t('kr_hr_keba994eb')}</p>
+                    <p className="text-sm text-muted-foreground">{run.notes}</p>
                 </div>
             )}
 
             {/* Step History */}
             {chain.filter((s) => s.status !== 'PENDING').length > 0 && (
                 <div className={CARD_STYLES.padded}>
-                    <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-3">{t('kr_keab2b0ec_kec9db4eb')}</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">{t('kr_keab2b0ec_kec9db4eb')}</p>
                     <div className="space-y-3">
                         {chain.filter((s) => s.status !== 'PENDING').map((step) => (
                             <div key={step.stepNumber} className="flex items-start gap-3">
@@ -281,13 +281,13 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
                                         <p className="text-sm font-medium text-foreground">{step.approverName ?? step.roleRequired}</p>
-                                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-700' : 'bg-destructive/10 text-destructive'}`}>
+                                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-500/15 text-emerald-700' : 'bg-destructive/10 text-destructive'}`}>
                                             {STEP_STATUS_CONFIG[step.status].label}
                                         </span>
-                                        <span className="text-xs text-[#999]">{fmtDate(step.decidedAt)}</span>
+                                        <span className="text-xs text-muted-foreground">{fmtDate(step.decidedAt)}</span>
                                     </div>
                                     {step.comment && (
-                                        <p className="text-sm text-[#666] mt-0.5">"{step.comment}"</p>
+                                        <p className="text-sm text-muted-foreground mt-0.5">"{step.comment}"</p>
                                     )}
                                 </div>
                             </div>
@@ -299,7 +299,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             {/* Action Area (pending only) */}
             {isPending && !isComplete && !isRejected && (
                 <div className={`${CARD_STYLES.kpi} space-y-4`}>
-                    <p className="text-xs font-semibold text-[#999] uppercase tracking-wider">{t('kr_keb82b4_keab2b0ec_kec9d98ea')}</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('kr_keb82b4_keab2b0ec_kec9d98ea')}</p>
                     <textarea
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
@@ -343,12 +343,12 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                     <div className="bg-card rounded-xl shadow-lg w-full max-w-md">
                         <div className="p-5 border-b border-border flex items-center justify-between">
                             <h3 className="font-bold text-lg text-foreground">{t('reject_kec82acec_kec9e85eb')}</h3>
-                            <button onClick={() => setShowReject(false)} className="text-[#999] hover:text-[#333]">
+                            <button onClick={() => setShowReject(false)} className="text-muted-foreground hover:text-foreground">
                                 <X className="h-5 w-5" />
                             </button>
                         </div>
                         <div className="p-5 space-y-3">
-                            <p className="text-sm text-[#666]">{t('reject_kec8b9c_keab889ec_keb8bb4eb_kec82acec_keca084eb_kec9e90ec_kec9e85eb_keca3bcec')}</p>
+                            <p className="text-sm text-muted-foreground">{t('reject_kec8b9c_keab889ec_keb8bb4eb_kec82acec_keca084eb_kec9e90ec_kec9e85eb_keca3bcec')}</p>
                             <textarea
                                 value={rejectComment}
                                 onChange={(e) => setRejectComment(e.target.value)}
@@ -360,7 +360,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                         <div className="p-5 border-t border-border flex justify-end gap-2">
                             <button
                                 onClick={() => setShowReject(false)}
-                                className="px-4 py-2 rounded-lg border border-border text-sm text-[#555] hover:bg-muted"
+                                className="px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:bg-muted"
                             >
                                 {t('cancel')}
                             </button>

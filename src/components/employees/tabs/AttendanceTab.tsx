@@ -63,11 +63,11 @@ function fmtHours(minutes: number | null): string {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  NORMAL: { label: '정상', color: 'bg-emerald-100 text-emerald-700' },
-  LATE: { label: '지각', color: 'bg-amber-100 text-amber-700' },
-  EARLY_OUT: { label: '조퇴', color: 'bg-orange-50 text-orange-700' },
+  NORMAL: { label: '정상', color: 'bg-emerald-500/15 text-emerald-700' },
+  LATE: { label: '지각', color: 'bg-amber-500/15 text-amber-700' },
+  EARLY_OUT: { label: '조퇴', color: 'bg-orange-500/10 text-orange-700' },
   ABSENT: { label: '결근', color: 'bg-destructive/10 text-destructive' },
-  HOLIDAY: { label: '휴가', color: 'bg-indigo-100 text-primary/90' },
+  HOLIDAY: { label: '휴가', color: 'bg-indigo-500/15 text-primary/90' },
 }
 
 // ─── Mini KPI ────────────────────────────────────────────
@@ -75,9 +75,9 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
 function MiniKpi({ label, value, sub, warn }: { label: string; value: string; sub?: string; warn?: boolean }) {
   return (
     <div className={`rounded-lg border p-4 ${warn ? 'border-destructive/20 bg-destructive/5' : 'border-border bg-card'}`}>
-      <p className="text-xs text-[#888] mb-1">{label}</p>
+      <p className="text-xs text-muted-foreground mb-1">{label}</p>
       <p className={`text-2xl font-bold ${warn ? 'text-destructive' : 'text-foreground'}`}>{value}</p>
-      {sub && <p className="text-xs text-[#999] mt-0.5">{sub}</p>}
+      {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
     </div>
   )
 }
@@ -153,9 +153,9 @@ export function AttendanceTab({ employeeId }: Props) {
   if (!data) {
     return (
       <div className="rounded-xl border border-border bg-card p-6">
-        <div className="flex flex-col items-center py-12 text-[#999]">
+        <div className="flex flex-col items-center py-12 text-muted-foreground">
           <Clock className="h-10 w-10 mb-3 text-border" />
-          <p className="text-sm text-[#666]">근태 데이터를 불러올 수 없습니다.</p>
+          <p className="text-sm text-muted-foreground">근태 데이터를 불러올 수 없습니다.</p>
         </div>
       </div>
     )
@@ -241,14 +241,14 @@ export function AttendanceTab({ employeeId }: Props) {
           <h3 className="text-sm font-semibold text-foreground">최근 근태 기록</h3>
         </div>
         {data.recentRecords.length === 0 ? (
-          <div className="flex flex-col items-center py-10 text-[#999]">
+          <div className="flex flex-col items-center py-10 text-muted-foreground">
             <MinusCircle className="h-8 w-8 mb-2 text-border" />
             <p className="text-sm">근태 기록이 없습니다.</p>
           </div>
         ) : (
           <div className="divide-y divide-border">
             {data.recentRecords.map((rec) => {
-              const statusCfg = STATUS_CONFIG[rec.status] ?? { label: rec.status, color: 'bg-background text-[#555]' }
+              const statusCfg = STATUS_CONFIG[rec.status] ?? { label: rec.status, color: 'bg-background text-muted-foreground' }
               return (
                 <div key={rec.id} className="flex items-center justify-between px-5 py-3">
                   <div className="flex items-center gap-3">
@@ -259,13 +259,13 @@ export function AttendanceTab({ employeeId }: Props) {
                     )}
                     <div>
                       <p className="text-sm font-medium text-foreground">{fmtDate(rec.workDate)}</p>
-                      <p className="text-xs text-[#888]">
+                      <p className="text-xs text-muted-foreground">
                         {fmtTime(rec.clockIn)} — {fmtTime(rec.clockOut)}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-[#888]">
+                    <span className="text-xs text-muted-foreground">
                       {fmtHours(rec.totalMinutes)}
                     </span>
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusCfg.color}`}>

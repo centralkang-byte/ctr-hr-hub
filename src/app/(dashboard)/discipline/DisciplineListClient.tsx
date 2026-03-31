@@ -124,7 +124,7 @@ export default function DisciplineListClient({ user }: Props) {
             <h1 className="text-xl font-bold text-foreground tracking-[-0.02em]">
               {t('title')}
             </h1>
-            <p className="text-sm text-[#999]">{tCommon('total')} {total}{tCommon('items')}</p>
+            <p className="text-sm text-muted-foreground">{tCommon('total')} {total}{tCommon('items')}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -148,7 +148,7 @@ export default function DisciplineListClient({ user }: Props) {
       <div className="bg-card border border-border rounded-xl p-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[240px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
               placeholder={t('searchPlaceholder')}
@@ -158,7 +158,7 @@ export default function DisciplineListClient({ user }: Props) {
             />
           </div>
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-[#999]" />
+            <Filter className="w-4 h-4 text-muted-foreground" />
             <select
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
@@ -200,7 +200,7 @@ export default function DisciplineListClient({ user }: Props) {
           <tbody className="divide-y divide-border">
             {loading ? (
               <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-sm text-[#999]">
+                <td colSpan={7} className="px-4 py-12 text-center text-sm text-muted-foreground">
                   <div className="flex items-center justify-center gap-2">
                     <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin" />
                     {t('loadingData')}
@@ -209,7 +209,7 @@ export default function DisciplineListClient({ user }: Props) {
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-sm text-[#999]">
+                <td colSpan={7} className="px-4 py-12 text-center text-sm text-muted-foreground">
                   {t('emptyMessage')}
                 </td>
               </tr>
@@ -223,7 +223,7 @@ export default function DisciplineListClient({ user }: Props) {
                   <td className="px-4 py-3 text-sm text-foreground font-medium">
                     {row.employee.name}
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#666]">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
                     {row.employee.employeeNo}
                   </td>
                   <td className="px-4 py-3 text-sm text-foreground">
@@ -232,7 +232,7 @@ export default function DisciplineListClient({ user }: Props) {
                   <td className="px-4 py-3 text-sm text-foreground">
                     {t(`categoryLabels.${row.category}`, { defaultValue: row.category })}
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#666]">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
                     {format(new Date(row.incidentDate), 'yyyy-MM-dd')}
                   </td>
                   <td className="px-4 py-3">
@@ -254,7 +254,7 @@ export default function DisciplineListClient({ user }: Props) {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-            <p className="text-xs text-[#999]">
+            <p className="text-xs text-muted-foreground">
               {t('paginationInfo', { total, start: (page - 1) * LIMIT + 1, end: Math.min(page * LIMIT, total) })}
             </p>
             <div className="flex items-center gap-1">
@@ -263,7 +263,7 @@ export default function DisciplineListClient({ user }: Props) {
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 className="p-1.5 rounded-lg border border-border hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
-                <ChevronLeft className="w-4 h-4 text-[#666]" />
+                <ChevronLeft className="w-4 h-4 text-muted-foreground" />
               </button>
               <span className="px-3 text-sm text-foreground">
                 {page} / {totalPages}
@@ -273,7 +273,7 @@ export default function DisciplineListClient({ user }: Props) {
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 className="p-1.5 rounded-lg border border-border hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
-                <ChevronRight className="w-4 h-4 text-[#666]" />
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </button>
             </div>
           </div>

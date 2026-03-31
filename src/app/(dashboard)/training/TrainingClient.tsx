@@ -24,7 +24,7 @@ export default function TrainingClient({ user }: { user: SessionUser }) {
       {/* ─── 페이지 헤더 ─── */}
       <div className="flex items-center justify-between">
         <div>
-          <nav className="text-xs text-[#999] mb-1">{t('breadcrumb')}</nav>
+          <nav className="text-xs text-muted-foreground mb-1">{t('breadcrumb')}</nav>
           <h1 className="text-2xl font-bold text-foreground">{t('pageTitle')}</h1>
         </div>
       </div>

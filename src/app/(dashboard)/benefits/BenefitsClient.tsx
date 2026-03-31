@@ -29,7 +29,7 @@ export function BenefitsClient({ user }: { user: SessionUser }) {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <nav className="text-xs text-[#999] mb-1">{t('breadcrumb')}</nav>
+        <nav className="text-xs text-muted-foreground mb-1">{t('breadcrumb')}</nav>
         <h1 className="text-2xl font-bold text-foreground">{t('pageTitle')}</h1>
       </div>
 
@@ -41,7 +41,7 @@ export function BenefitsClient({ user }: { user: SessionUser }) {
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               activeTab === tab.key
                 ? 'border-primary text-primary'
-                : 'border-transparent text-[#666] hover:text-[#333]'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             {tab.icon}

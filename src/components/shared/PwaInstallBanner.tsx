@@ -60,7 +60,7 @@ export function PwaInstallBanner() {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-foreground">CTR HR Hub 설치</p>
-          <p className="text-xs text-[#666]">홈 화면에 추가하여 빠르게 접근하세요</p>
+          <p className="text-xs text-muted-foreground">홈 화면에 추가하여 빠르게 접근하세요</p>
         </div>
         <button
           onClick={handleInstall}
@@ -70,7 +70,7 @@ export function PwaInstallBanner() {
         </button>
         <button
           onClick={handleDismiss}
-          className="flex-shrink-0 p-1 text-[#999] hover:text-[#555]"
+          className="flex-shrink-0 p-1 text-muted-foreground hover:text-muted-foreground"
           aria-label="닫기"
         >
           <X size={16} />

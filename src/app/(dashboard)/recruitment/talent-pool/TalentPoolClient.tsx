@@ -43,16 +43,16 @@ interface TalentPoolEntry {
 }
 
 const POOL_REASON_LABELS: Record<string, { label: string; color: string }> = {
-  rejected_qualified: { label: '우수 불합격', color: 'bg-indigo-100 text-primary/90' },
-  withdrawn: { label: '자진 철회', color: 'bg-amber-100 text-amber-700' },
-  overqualified: { label: '역량 초과', color: 'bg-sky-50 text-sky-700' },
-  manual: { label: '수동 등록', color: 'bg-background text-[#555]' },
+  rejected_qualified: { label: '우수 불합격', color: 'bg-indigo-500/15 text-primary/90' },
+  withdrawn: { label: '자진 철회', color: 'bg-amber-500/15 text-amber-700' },
+  overqualified: { label: '역량 초과', color: 'bg-sky-500/10 text-sky-700' },
+  manual: { label: '수동 등록', color: 'bg-background text-muted-foreground' },
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  active: { label: '활성', color: 'bg-emerald-100 text-emerald-700' },
-  contacted: { label: '접촉 중', color: 'bg-amber-100 text-amber-700' },
-  expired: { label: '만료', color: 'bg-background text-[#999]' },
+  active: { label: '활성', color: 'bg-emerald-500/15 text-emerald-700' },
+  contacted: { label: '접촉 중', color: 'bg-amber-500/15 text-amber-700' },
+  expired: { label: '만료', color: 'bg-background text-muted-foreground' },
   hired: { label: '채용 완료', color: 'bg-primary/10 text-primary/90' },
 }
 
@@ -115,11 +115,11 @@ export default function TalentPoolClient({user }: {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Talent Pool</h1>
-          <p className="text-sm text-[#666] mt-0.5">{t('good_ked9b84eb_kec9db8ec_ked9280_management_gdpr_2keb8584_kebb3b4ea')}</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{t('good_ked9b84eb_kec9db8ec_ked9280_management_gdpr_2keb8584_kebb3b4ea')}</p>
         </div>
         <button
           onClick={load}
-          className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-[#555] hover:bg-background"
+          className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background"
         >
           <RefreshCw size={14} />
           {t('kr_kec8388eb')}
@@ -137,7 +137,7 @@ export default function TalentPoolClient({user }: {
           <div key={kpi.label} className="bg-card rounded-xl shadow-sm border border-border p-6">
             <div className={`${kpi.color} mb-1`}>{kpi.icon}</div>
             <p className="text-2xl font-bold text-foreground">{kpi.value}</p>
-            <p className="text-xs text-[#666] mt-0.5">{kpi.label}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{kpi.label}</p>
           </div>
         ))}
       </div>
@@ -145,7 +145,7 @@ export default function TalentPoolClient({user }: {
       {/* 검색 / 필터 */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-sm">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#999]" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -156,7 +156,7 @@ export default function TalentPoolClient({user }: {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3 py-2 border border-border rounded-lg text-sm text-[#555] focus:ring-2 focus:ring-primary/10 focus:border-primary"
+          className="px-3 py-2 border border-border rounded-lg text-sm text-muted-foreground focus:ring-2 focus:ring-primary/10 focus:border-primary"
         >
           <option value="">{t('all_status')}</option>
           <option value="active">{t('active')}</option>
@@ -168,9 +168,9 @@ export default function TalentPoolClient({user }: {
 
       {/* 목록 */}
       {loading ? (
-        <div className="flex items-center justify-center h-48 text-[#999] text-sm">{tCommon('loading')}</div>
+        <div className="flex items-center justify-center h-48 text-muted-foreground text-sm">{tCommon('loading')}</div>
       ) : items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-48 text-[#999]">
+        <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
           <UserPlus size={40} className="mb-3 text-border" />
           <EmptyState />
         </div>
@@ -201,7 +201,7 @@ export default function TalentPoolClient({user }: {
                         </span>
                       )}
                       {isExpiringSoon && (
-                        <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                        <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700">
                           <Clock size={10} />
                           {daysLeft}일 후 만료
                         </span>
@@ -210,7 +210,7 @@ export default function TalentPoolClient({user }: {
 
                     {/* 후보자 정보 */}
                     <h3 className="font-semibold text-foreground">{entry.applicant.name}</h3>
-                    <div className="flex items-center gap-3 mt-1 text-sm text-[#666] flex-wrap">
+                    <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground flex-wrap">
                       <span className="flex items-center gap-1">
                         <Mail size={13} />
                         {entry.applicant.email}
@@ -226,9 +226,9 @@ export default function TalentPoolClient({user }: {
                     {/* 태그 */}
                     {entry.tags.length > 0 && (
                       <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-                        <Tag size={13} className="text-[#999]" />
+                        <Tag size={13} className="text-muted-foreground" />
                         {entry.tags.map((tag) => (
-                          <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-muted text-[#555]">
+                          <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                             {tag}
                           </span>
                         ))}
@@ -239,7 +239,7 @@ export default function TalentPoolClient({user }: {
                     {entry.applicant.applications.length > 0 && (
                       <div className="mt-2 space-y-1">
                         {entry.applicant.applications.map((app, idx) => (
-                          <p key={idx} className="text-xs text-[#999]">
+                          <p key={idx} className="text-xs text-muted-foreground">
                             {app.posting.company.name} · {app.posting.title} →{' '}
                             <span className="font-medium">{STAGE_LABELS[app.stage] ?? app.stage}</span>{' '}
                             ({new Date(app.createdAt).toLocaleDateString('ko-KR')})
@@ -250,7 +250,7 @@ export default function TalentPoolClient({user }: {
 
                     {/* 등록 출처 공고 */}
                     {entry.sourcePosting && (
-                      <p className="text-xs text-[#999] mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         출처 공고: {entry.sourcePosting.title}
                       </p>
                     )}
@@ -262,14 +262,14 @@ export default function TalentPoolClient({user }: {
                       value={entry.status}
                       onChange={(e) => handleStatusChange(entry.id, e.target.value)}
                       disabled={updatingId === entry.id}
-                      className="px-2 py-1.5 border border-border rounded-lg text-xs text-[#555] disabled:opacity-50"
+                      className="px-2 py-1.5 border border-border rounded-lg text-xs text-muted-foreground disabled:opacity-50"
                     >
                       <option value="active">{t('active')}</option>
                       <option value="contacted">{t('kr_keca091ec_keca491')}</option>
                       <option value="hired">{t('kr_kecb184ec_complete')}</option>
                       <option value="expired">{t('kr_keba78ceb')}</option>
                     </select>
-                    <p className="text-xs text-[#999] mt-1 text-right">
+                    <p className="text-xs text-muted-foreground mt-1 text-right">
                       만료: {new Date(entry.expiresAt).toLocaleDateString('ko-KR')}
                     </p>
                   </div>

@@ -14,9 +14,9 @@ interface DepartmentHeatmapProps {
 
 function getHeatColor(score: number): string {
   if (score >= 70) return 'bg-red-200 text-red-900'
-  if (score >= 50) return 'bg-orange-100 text-orange-900'
-  if (score >= 35) return 'bg-amber-100 text-amber-900'
-  return 'bg-emerald-100 text-emerald-900'
+  if (score >= 50) return 'bg-orange-500/15 text-orange-900'
+  if (score >= 35) return 'bg-amber-500/15 text-amber-900'
+  return 'bg-emerald-500/15 text-emerald-900'
 }
 
 export default function DepartmentHeatmap({ departments }: DepartmentHeatmapProps) {
@@ -42,7 +42,7 @@ export default function DepartmentHeatmap({ departments }: DepartmentHeatmapProp
         ))}
       </div>
       {departments.length === 0 && (
-        <p className="text-sm text-[#999] text-center py-8">데이터가 없습니다.</p>
+        <p className="text-sm text-muted-foreground text-center py-8">데이터가 없습니다.</p>
       )}
     </div>
   )

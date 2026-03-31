@@ -272,30 +272,30 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-card border border-border rounded-xl p-4">
-          <p className="text-xs text-[#999] font-medium mb-2">{t('totalEmployees')}</p>
+          <p className="text-xs text-muted-foreground font-medium mb-2">{t('totalEmployees')}</p>
           <p className={TYPOGRAPHY.stat}><AnimatedNumber value={kpi?.totalEmployees ?? 0} /></p>
         </div>
 
         <div className="bg-card border border-border rounded-xl p-4">
-          <p className="text-xs text-[#999] font-medium mb-2">{t('clockIn')}</p>
+          <p className="text-xs text-muted-foreground font-medium mb-2">{t('clockIn')}</p>
           <p className={TYPOGRAPHY.stat}><AnimatedNumber value={kpi?.presentCount ?? 0} /></p>
           <span className="text-xs font-semibold text-primary">{presentPct}%</span>
         </div>
 
         <div className="bg-card border border-border rounded-xl p-4">
-          <p className="text-xs text-[#999] font-medium mb-2">{t('late')}</p>
+          <p className="text-xs text-muted-foreground font-medium mb-2">{t('late')}</p>
           <p className={`text-3xl font-bold tabular-nums ${(kpi?.lateCount ?? 0) > 0 ? 'text-red-500' : 'text-foreground'}`}><AnimatedNumber value={kpi?.lateCount ?? 0} /></p>
         </div>
 
         <div className="bg-card border border-border rounded-xl p-4">
-          <p className="text-xs text-[#999] font-medium mb-2">{t('absent')}</p>
+          <p className="text-xs text-muted-foreground font-medium mb-2">{t('absent')}</p>
           <p className={`text-3xl font-bold tabular-nums ${(kpi?.absentCount ?? 0) > 0 ? 'text-red-500' : 'text-foreground'}`}><AnimatedNumber value={kpi?.absentCount ?? 0} /></p>
         </div>
       </div>
 
       {/* Average work hours */}
       <div className="bg-card border border-border rounded-xl p-4">
-        <p className="text-xs text-[#999] font-medium mb-2">{t('averageWorkHours')}</p>
+        <p className="text-xs text-muted-foreground font-medium mb-2">{t('averageWorkHours')}</p>
         <p className={TYPOGRAPHY.stat}>{kpi ? formatMinutes(kpi.avgTotalMinutes) : '—'}</p>
       </div>
 
@@ -309,13 +309,13 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
                 52시간 초과 경고 ({alerts.length}명)
               </span>
             </div>
-            <div className="flex items-center gap-3 text-xs text-[#666]">
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-amber-500 inline-block" />
+                <span className="h-2 w-2 rounded-full bg-amber-500/100 inline-block" />
                 주의: {alerts.filter((a) => a.alertLevel === 'caution').length}
               </span>
               <span className="flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-orange-500 inline-block" />
+                <span className="h-2 w-2 rounded-full bg-orange-500/100 inline-block" />
                 경고: {alerts.filter((a) => a.alertLevel === 'warning').length}
               </span>
               <span className="flex items-center gap-1">
@@ -334,8 +334,8 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
                       alert.alertLevel === 'blocked'
                         ? 'bg-destructive/10 text-destructive'
                         : alert.alertLevel === 'warning'
-                          ? 'bg-orange-50 text-orange-700'
-                          : 'bg-amber-50 text-amber-700'
+                          ? 'bg-orange-500/10 text-orange-700'
+                          : 'bg-amber-500/10 text-amber-700'
                     }`}
                   >
                     {alert.alertLevel === 'blocked' ? '차단' : alert.alertLevel === 'warning' ? '경고' : '주의'}
@@ -343,7 +343,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
                   <span className="text-sm font-medium text-foreground">
                     {alert.employee?.name ?? '—'}
                   </span>
-                  <span className="text-xs text-[#888]">
+                  <span className="text-xs text-muted-foreground">
                     {alert.totalHours.toFixed(1)}h / 주
                   </span>
                 </div>

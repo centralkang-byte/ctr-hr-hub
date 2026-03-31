@@ -63,7 +63,7 @@ const STAGE_HEADER_BG: Record<string, string> = {
   SCREENING: 'bg-primary/5',
   INTERVIEW_1: 'bg-primary/5',
   INTERVIEW_2: 'bg-primary/5',
-  FINAL: 'bg-orange-50',
+  FINAL: 'bg-orange-500/10',
   OFFER: 'bg-primary/10',
   HIRED: 'bg-primary/10',
   REJECTED: 'bg-destructive/5',
@@ -318,14 +318,14 @@ export default function PipelineClient({ user, postingId }: Props) {
   const getAiScoreBadge = (score: number | null) => {
     if (score === null || score === undefined) {
       return (
-        <span className="inline-block px-2 py-0.5 text-xs bg-muted text-[#999] rounded">
+        <span className="inline-block px-2 py-0.5 text-xs bg-muted text-muted-foreground rounded">
           -
         </span>
       )
     }
     let bgClass = 'bg-destructive/5 text-destructive'
     if (score >= 80) bgClass = 'bg-primary/10 text-green-900'
-    else if (score >= 50) bgClass = 'bg-orange-50 text-orange-800'
+    else if (score >= 50) bgClass = 'bg-orange-500/10 text-orange-800'
     return (
       <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${bgClass}`}>
         AI {score}
@@ -338,7 +338,7 @@ export default function PipelineClient({ user, postingId }: Props) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="flex items-center gap-2 text-sm text-[#999]">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin" />
           {t('loadingData')}
         </div>
@@ -354,7 +354,7 @@ export default function PipelineClient({ user, postingId }: Props) {
           onClick={() => router.push(`/recruitment/${postingId}`)}
           className="p-2 rounded-lg border border-border hover:bg-card transition-colors duration-150"
         >
-          <ChevronLeft className="w-4 h-4 text-[#666]" />
+          <ChevronLeft className="w-4 h-4 text-muted-foreground" />
         </button>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">
@@ -362,12 +362,12 @@ export default function PipelineClient({ user, postingId }: Props) {
           </div>
           <div>
             <h1
-              className="text-xl font-bold text-[#333]"
+              className="text-xl font-bold text-foreground"
               style={{ letterSpacing: '-0.02em' }}
             >
               {t('pipelineTitle')}
             </h1>
-            <p className="text-sm text-[#999]">
+            <p className="text-sm text-muted-foreground">
               {t('pipelineDescription')}
             </p>
           </div>
@@ -396,10 +396,10 @@ export default function PipelineClient({ user, postingId }: Props) {
                 {/* Column Header */}
                 <div className={`px-3 py-3 ${STAGE_HEADER_BG[stage]} rounded-t-xl`}>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#333]">
+                    <span className="text-xs font-bold text-foreground">
                       {STAGE_KEYS[stage] ? t(STAGE_KEYS[stage]) : stage}
                     </span>
-                    <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-card text-[#666] rounded-full">
+                    <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-card text-muted-foreground rounded-full">
                       {items.length}
                     </span>
                   </div>
@@ -417,13 +417,13 @@ export default function PipelineClient({ user, postingId }: Props) {
                         draggingId === app.id ? 'opacity-50' : 'opacity-100'
                       } hover:border-[#CCC]`}
                     >
-                      <p className="text-sm font-medium text-[#333] mb-1">
+                      <p className="text-sm font-medium text-foreground mb-1">
                         {app.applicant.name}
                       </p>
                       <div className="flex items-center gap-2 mb-1">
                         {getAiScoreBadge(app.aiScreeningScore)}
                       </div>
-                      <p className="text-xs text-[#999]">
+                      <p className="text-xs text-muted-foreground">
                         {format(new Date(app.appliedAt), 'yyyy-MM-dd')}
                       </p>
                     </div>
@@ -447,7 +447,7 @@ export default function PipelineClient({ user, postingId }: Props) {
           <div className="relative bg-card border border-border rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2
-                className="text-lg font-bold text-[#333]"
+                className="text-lg font-bold text-foreground"
                 style={{ letterSpacing: '-0.02em' }}
               >
                 {t('rejectionReason')}
@@ -458,7 +458,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                 }
                 className="p-1 rounded-lg hover:bg-muted transition-colors duration-150"
               >
-                <X className="w-5 h-5 text-[#999]" />
+                <X className="w-5 h-5 text-muted-foreground" />
               </button>
             </div>
             <textarea
@@ -475,7 +475,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                 onClick={() =>
                   setRejectionModal({ open: false, applicationId: '', reason: '' })
                 }
-                className="px-4 py-2 text-sm font-medium text-[#666] border border-border rounded-lg hover:bg-background transition-colors duration-150"
+                className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-background transition-colors duration-150"
               >
                 {t('cancelButton')}
               </button>
@@ -508,7 +508,7 @@ export default function PipelineClient({ user, postingId }: Props) {
           <div className="relative bg-card border border-border rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <h2
-                className="text-lg font-bold text-[#333]"
+                className="text-lg font-bold text-foreground"
                 style={{ letterSpacing: '-0.02em' }}
               >
                 {t('offerInfo')}
@@ -523,13 +523,13 @@ export default function PipelineClient({ user, postingId }: Props) {
                 }
                 className="p-1 rounded-lg hover:bg-muted transition-colors duration-150"
               >
-                <X className="w-5 h-5 text-[#999]" />
+                <X className="w-5 h-5 text-muted-foreground" />
               </button>
             </div>
             <div className="space-y-4">
               {/* 제안 연봉 */}
               <div>
-                <label className="block text-sm font-medium text-[#333] mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   {t('offeredSalaryLabel')}
                 </label>
                 <input
@@ -547,7 +547,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               </div>
               {/* 제안일 */}
               <div>
-                <label className="block text-sm font-medium text-[#333] mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   {t('offeredDateLabel')}
                 </label>
                 <input
@@ -564,7 +564,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               </div>
               {/* 입사 예정일 */}
               <div>
-                <label className="block text-sm font-medium text-[#333] mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   {t('expectedStartDateLabel')}
                 </label>
                 <input
@@ -589,7 +589,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                     form: { offeredSalary: '', offeredDate: '', expectedStartDate: '' },
                   })
                 }
-                className="px-4 py-2 text-sm font-medium text-[#666] border border-border rounded-lg hover:bg-background transition-colors duration-150"
+                className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-background transition-colors duration-150"
               >
                 {t('cancelButton')}
               </button>

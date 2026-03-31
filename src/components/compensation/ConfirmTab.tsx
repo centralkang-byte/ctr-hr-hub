@@ -67,7 +67,7 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
     return (
       <div className="bg-card rounded-xl border border-border p-12 text-center">
         <CheckCircle2 className="mx-auto h-12 w-12 text-border mb-4" />
-        <p className="text-[#666] text-sm">
+        <p className="text-muted-foreground text-sm">
           시뮬레이션 탭에서 연봉 조정을 진행한 후 확정해주세요.
         </p>
       </div>
@@ -79,21 +79,21 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
       {/* ─── 요약 ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">확정 인원</p>
+          <p className="text-xs text-muted-foreground mb-1">확정 인원</p>
           <p className="text-3xl font-bold text-foreground">{budget.headcount}명</p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">총 인상액</p>
+          <p className="text-xs text-muted-foreground mb-1">총 인상액</p>
           <p className="text-xl font-bold text-emerald-600">
             +{formatCurrency(budget.totalIncrease)}
           </p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">평균 인상률</p>
+          <p className="text-xs text-muted-foreground mb-1">평균 인상률</p>
           <p className="text-3xl font-bold text-primary">{budget.avgIncreasePct}%</p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">적용일</p>
+          <p className="text-xs text-muted-foreground mb-1">적용일</p>
           <input
             type="date"
             className="w-full px-2 py-1 border border-border rounded text-sm mt-1 focus:ring-2 focus:ring-primary/10"
@@ -119,7 +119,7 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
             {adjustments.map((a) => (
               <tr key={a.employeeId} className={TABLE_STYLES.row}>
                 <td className="px-4 py-3 text-sm font-medium">{a.employeeName}</td>
-                <td className="px-4 py-3 text-sm text-[#555]">{a.department}</td>
+                <td className="px-4 py-3 text-sm text-muted-foreground">{a.department}</td>
                 <td className="px-4 py-3 text-sm text-right">
                   {formatCurrency(a.currentSalary)}
                 </td>

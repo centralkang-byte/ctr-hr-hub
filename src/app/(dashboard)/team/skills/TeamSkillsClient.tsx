@@ -52,8 +52,8 @@ const LEVEL_LABELS: Record<number, string> = {
 function getGapBadge(gap: number | null) {
   if (gap === null) return null
   if (gap >= 2) return <span className="px-1.5 py-0.5 rounded-full text-xs bg-destructive/10 text-destructive">미달 -{gap}</span>
-  if (gap === 1) return <span className="px-1.5 py-0.5 rounded-full text-xs bg-amber-100 text-amber-700">부족 -1</span>
-  if (gap === 0) return <span className="px-1.5 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-700">충족</span>
+  if (gap === 1) return <span className="px-1.5 py-0.5 rounded-full text-xs bg-amber-500/15 text-amber-700">부족 -1</span>
+  if (gap === 0) return <span className="px-1.5 py-0.5 rounded-full text-xs bg-emerald-500/15 text-emerald-700">충족</span>
   return <span className="px-1.5 py-0.5 rounded-full text-xs bg-primary/10 text-primary">초과 +{Math.abs(gap)}</span>
 }
 
@@ -158,7 +158,7 @@ export default function TeamSkillsClient({user: _user }: {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('pageTitle')}</h1>
-          <p className="text-sm text-[#666] mt-1">팀원의 역량 수준을 평가하세요. 자기평가를 참고할 수 있습니다.</p>
+          <p className="text-sm text-muted-foreground mt-1">팀원의 역량 수준을 평가하세요. 자기평가를 참고할 수 있습니다.</p>
         </div>
         <select
           value={period}
@@ -181,7 +181,7 @@ export default function TeamSkillsClient({user: _user }: {
               className={`flex items-center gap-2 px-3 py-2 rounded-lg whitespace-nowrap text-sm transition-all ${
                 idx === currentMemberIndex
                   ? 'bg-primary/10 text-primary font-medium'
-                  : 'text-[#555] hover:bg-background'
+                  : 'text-muted-foreground hover:bg-background'
               }`}
             >
               <UserIcon className="w-4 h-4" />
@@ -206,7 +206,7 @@ export default function TeamSkillsClient({user: _user }: {
                   department: currentMember.department?.name,
                 }}
                 trailing={
-                  <div className="ml-auto text-sm text-[#666]">
+                  <div className="ml-auto text-sm text-muted-foreground">
                     평가 완료: {Object.keys(evalItems).length}/{currentMember.assessments.length}
                   </div>
                 }
@@ -217,7 +217,7 @@ export default function TeamSkillsClient({user: _user }: {
             <div className="space-y-6">
               {Object.entries(groupedAssessments).map(([catId, { categoryName, items }]) => (
                 <div key={catId}>
-                  <h3 className="text-sm font-semibold text-[#666] uppercase tracking-wider mb-3">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                     {categoryName}
                   </h3>
                   <div className="space-y-4">
@@ -229,7 +229,7 @@ export default function TeamSkillsClient({user: _user }: {
                             <div>
                               <span className="font-medium text-sm text-foreground">{a.competency.name}</span>
                               {a.selfLevel !== null && (
-                                <span className="ml-2 text-xs text-[#666]">
+                                <span className="ml-2 text-xs text-muted-foreground">
                                   자기평가: {a.selfLevel} ({LEVEL_LABELS[a.selfLevel] ?? '-'})
                                 </span>
                               )}
@@ -241,7 +241,7 @@ export default function TeamSkillsClient({user: _user }: {
 
                           {/* 매니저 레벨 선택 */}
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-[#666] w-16">매니저 평가:</span>
+                            <span className="text-xs text-muted-foreground w-16">매니저 평가:</span>
                             <div className="flex gap-1.5">
                               {[1, 2, 3, 4, 5].map((l) => {
                                 const selected = current?.managerLevel === l
@@ -264,19 +264,19 @@ export default function TeamSkillsClient({user: _user }: {
                                     className={`relative w-10 h-10 rounded-lg border text-sm font-medium transition-all ${
                                       selected
                                         ? 'border-primary bg-primary/10 text-primary'
-                                        : 'border-border text-[#666] hover:border-primary'
+                                        : 'border-border text-muted-foreground hover:border-primary'
                                     }`}
                                   >
                                     {l}
                                     {isSelf && !selected && (
-                                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full" title="자기평가 점수" />
+                                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500/100 rounded-full" title="자기평가 점수" />
                                     )}
                                   </button>
                                 )
                               })}
                             </div>
                             {a.expectedLevel != null && (
-                              <span className="text-xs text-[#666] ml-1">
+                              <span className="text-xs text-muted-foreground ml-1">
                                 (기대: {a.expectedLevel})
                               </span>
                             )}
@@ -313,7 +313,7 @@ export default function TeamSkillsClient({user: _user }: {
               <button
                 onClick={() => setCurrentMemberIndex((i) => Math.max(0, i - 1))}
                 disabled={currentMemberIndex === 0}
-                className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-[#555] disabled:opacity-40"
+                className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground disabled:opacity-40"
               >
                 <ChevronLeft className="w-4 h-4" />
                 이전 팀원
@@ -331,7 +331,7 @@ export default function TeamSkillsClient({user: _user }: {
                   setCurrentMemberIndex((i) => Math.min((teamData?.teamMembers.length ?? 1) - 1, i + 1))
                 }
                 disabled={currentMemberIndex === (teamData?.teamMembers.length ?? 1) - 1}
-                className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-[#555] disabled:opacity-40"
+                className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground disabled:opacity-40"
               >
                 다음 팀원
                 <ChevronRight className="w-4 h-4" />

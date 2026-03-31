@@ -61,7 +61,7 @@ export default function ConvertToEmployeeButton({ applicationId, applicantName }
               </h2>
               <button
                 onClick={() => setOpen(false)}
-                className="p-1 rounded-lg hover:bg-background text-[#999] transition-colors duration-150"
+                className="p-1 rounded-lg hover:bg-background text-muted-foreground transition-colors duration-150"
               >
                 <X className="w-5 h-5" />
               </button>

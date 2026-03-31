@@ -139,7 +139,7 @@ export function TeamsWebhookSection() {
 
       {/* Existing webhooks */}
       {webhooks.length === 0 && !adding && (
-        <p className="text-sm text-[#999] py-4 text-center">
+        <p className="text-sm text-muted-foreground py-4 text-center">
           등록된 Webhook 채널이 없습니다
         </p>
       )}
@@ -149,7 +149,7 @@ export function TeamsWebhookSection() {
           <div className="flex items-start justify-between mb-3">
             <div>
               <p className="text-sm font-semibold text-foreground">{wh.channelName}</p>
-              <p className="text-xs text-[#999] mt-0.5 font-mono tabular-nums break-all">{wh.webhookUrl}</p>
+              <p className="text-xs text-muted-foreground mt-0.5 font-mono tabular-nums break-all">{wh.webhookUrl}</p>
             </div>
             <div className="flex items-center gap-2 ml-4 flex-shrink-0">
               <button
@@ -178,7 +178,7 @@ export function TeamsWebhookSection() {
               </button>
               <button
                 onClick={() => handleDelete(wh.id)}
-                className="p-1.5 text-[#999] hover:text-red-500 hover:bg-destructive/10 rounded-lg transition-colors"
+                className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-destructive/10 rounded-lg transition-colors"
                 aria-label="Webhook 삭제"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -189,7 +189,7 @@ export function TeamsWebhookSection() {
           {/* Event type badges */}
           <div className="flex flex-wrap gap-1.5">
             {wh.eventTypes.length === 0 ? (
-              <span className="text-xs text-[#999]">선택된 이벤트 없음</span>
+              <span className="text-xs text-muted-foreground">선택된 이벤트 없음</span>
             ) : (
               wh.eventTypes.map((et) => {
                 const ev = ALL_EVENT_TYPES.find((e) => e.key === et)
@@ -225,7 +225,7 @@ export function TeamsWebhookSection() {
             className="w-full px-3 py-2 border border-border rounded-lg text-sm font-mono tabular-nums focus:border-primary focus:ring-2 focus:ring-primary/10 focus:outline-none"
           />
           <div>
-            <p className="text-xs font-medium text-[#666] mb-2">전송할 이벤트</p>
+            <p className="text-xs font-medium text-muted-foreground mb-2">전송할 이벤트</p>
             <div className="flex flex-wrap gap-2">
               {ALL_EVENT_TYPES.map((ev) => (
                 <button
@@ -234,7 +234,7 @@ export function TeamsWebhookSection() {
                   className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
                     newEvents.includes(ev.key)
                       ? 'bg-primary text-white border-primary'
-                      : 'bg-card text-[#666] border-border hover:border-primary'
+                      : 'bg-card text-muted-foreground border-border hover:border-primary'
                   }`}
                 >
                   {ev.label}
@@ -257,7 +257,7 @@ export function TeamsWebhookSection() {
                 setNewUrl('')
                 setNewEvents([])
               }}
-              className="bg-card border border-border hover:bg-muted text-[#333] px-4 py-2 rounded-lg text-sm transition-colors"
+              className="bg-card border border-border hover:bg-muted text-foreground px-4 py-2 rounded-lg text-sm transition-colors"
             >
               취소
             </button>

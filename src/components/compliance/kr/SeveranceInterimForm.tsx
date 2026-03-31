@@ -172,11 +172,11 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
           {/* Employee Selector */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               직원 선택 <span className="text-red-500">*</span>
             </label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <select
                 value={form.employeeId}
                 onChange={(e) => handleChange('employeeId', e.target.value)}
@@ -197,7 +197,7 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
             <div className="bg-background rounded-xl border border-border p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Calculator className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-[#333]">사전 계산 결과</span>
+                <span className="text-sm font-medium text-foreground">사전 계산 결과</span>
               </div>
 
               {calcLoading ? (
@@ -209,19 +209,19 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
               ) : calcResult ? (
                 <div className="grid grid-cols-3 gap-3">
                   <div className="text-center">
-                    <p className="text-xs text-[#666] mb-1">재직기간</p>
+                    <p className="text-xs text-muted-foreground mb-1">재직기간</p>
                     <p className="text-lg font-bold text-foreground">
                       {calcResult.yearsOfService}년
                     </p>
                   </div>
                   <div className="text-center">
-                    <p className="text-xs text-[#666] mb-1">평균 월급여</p>
+                    <p className="text-xs text-muted-foreground mb-1">평균 월급여</p>
                     <p className="text-lg font-bold text-foreground">
                       {(calcResult.avgMonthlySalary / 10000).toFixed(0)}만원
                     </p>
                   </div>
                   <div className="text-center">
-                    <p className="text-xs text-[#666] mb-1">예상 지급액</p>
+                    <p className="text-xs text-muted-foreground mb-1">예상 지급액</p>
                     <p className="text-lg font-bold text-primary/90">
                       {(calcResult.estimatedAmount / 10000).toFixed(0)}만원
                     </p>
@@ -229,7 +229,7 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
                 </div>
               ) : null}
 
-              <p className="text-xs text-[#999] mt-3">
+              <p className="text-xs text-muted-foreground mt-3">
                 * 실제 지급액은 최종 심사 후 확정됩니다.
               </p>
             </div>
@@ -237,7 +237,7 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
 
           {/* Reason */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               중간정산 사유 <span className="text-red-500">*</span>
             </label>
             <select
@@ -256,7 +256,7 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
 
           {/* Request Date */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               신청일 <span className="text-red-500">*</span>
             </label>
             <input
@@ -269,7 +269,7 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
 
           {/* Attachment URL */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               첨부서류 URL
             </label>
             <input
@@ -277,9 +277,9 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
               value={form.attachmentUrl}
               onChange={(e) => handleChange('attachmentUrl', e.target.value)}
               placeholder="https://..."
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
             />
-            <p className="text-xs text-[#999] mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               증빙서류(주택매매계약서, 진단서 등) 파일 링크를 입력하세요.
             </p>
           </div>
@@ -297,7 +297,7 @@ export default function SeveranceInterimForm({ onClose, onSuccess }: SeveranceIn
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-[#333] bg-card border border-border rounded-lg hover:bg-background disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-background disabled:opacity-50 transition-colors"
             >
               취소
             </button>

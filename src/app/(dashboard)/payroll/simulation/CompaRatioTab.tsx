@@ -151,7 +151,7 @@ export default function CompaRatioTab({ companies }: Props) {
         </ResponsiveContainer>
         <div className="flex items-center justify-center gap-4 mt-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-destructive/50" /> {t('simCompaRiskZone')}</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-500" /> {t('simCompaCautionZone')}</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-500/100" /> {t('simCompaCautionZone')}</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-600" /> {t('simCompaProperZone')}</span>
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-primary/50" /> {t('simCompaManageZone')}</span>
         </div>
@@ -257,7 +257,7 @@ export default function CompaRatioTab({ companies }: Props) {
                     <td className={TABLE_STYLES.cell}>
                       <span className={cn(
                         'text-xs px-2 py-0.5 rounded-full font-medium',
-                        o.compaRatio < 0.8 ? 'bg-destructive/5 text-destructive' : 'bg-amber-50 text-amber-700'
+                        o.compaRatio < 0.8 ? 'bg-destructive/5 text-destructive' : 'bg-amber-500/10 text-amber-700'
                       )}>
                         {o.compaRatio < 0.8 ? t('simCompaLowLabel') : t('simCompaHighLabel')}
                       </span>

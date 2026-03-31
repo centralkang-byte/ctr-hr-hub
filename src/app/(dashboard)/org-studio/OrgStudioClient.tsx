@@ -180,7 +180,7 @@ export function OrgStudioClient({ user }: OrgStudioClientProps) {
 
           {/* Save status feedback */}
           {saveState === 'success' && (
-            <div className="flex items-center gap-1.5 rounded-lg bg-emerald-100 px-3 py-1.5">
+            <div className="flex items-center gap-1.5 rounded-lg bg-emerald-500/15 px-3 py-1.5">
               <CheckCircle2 size={13} className="text-emerald-700" />
               <span className="text-xs font-medium text-emerald-700">초안으로 저장됨</span>
             </div>
@@ -200,7 +200,7 @@ export function OrgStudioClient({ user }: OrgStudioClientProps) {
               'inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-colors',
               hasMoves && saveState !== 'saving'
                 ? 'bg-primary text-white hover:bg-primary/90'
-                : 'cursor-not-allowed bg-border text-[#999]',
+                : 'cursor-not-allowed bg-border text-muted-foreground',
             ].join(' ')}
           >
             {saveState === 'saving' ? (

@@ -567,7 +567,7 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
                     )}
                     {task.status === 'BLOCKED' && (
                         <button onClick={() => onUnblock(task.id)} disabled={isLoading}
-                            className="rounded-lg border border-amber-500 px-2 py-1 text-xs text-amber-500 hover:bg-amber-50 disabled:opacity-50">
+                            className="rounded-lg border border-amber-500 px-2 py-1 text-xs text-amber-500 hover:bg-amber-500/10 disabled:opacity-50">
                             해제
                         </button>
                     )}

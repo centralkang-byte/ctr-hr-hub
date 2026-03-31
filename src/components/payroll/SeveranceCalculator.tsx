@@ -70,19 +70,19 @@ export default function SeveranceCalculator({
           {/* 기본 정보 */}
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-[#666]">입사일</p>
+              <p className="text-muted-foreground">입사일</p>
               <p className="font-medium">{result.hireDate.split('T')[0]}</p>
             </div>
             <div>
-              <p className="text-[#666]">퇴직일</p>
+              <p className="text-muted-foreground">퇴직일</p>
               <p className="font-medium">{result.terminationDate.split('T')[0]}</p>
             </div>
             <div>
-              <p className="text-[#666]">재직일수</p>
+              <p className="text-muted-foreground">재직일수</p>
               <p className="font-medium">{result.tenureDays}일 ({result.tenureYears}년)</p>
             </div>
             <div>
-              <p className="text-[#666]">퇴직금 대상</p>
+              <p className="text-muted-foreground">퇴직금 대상</p>
               <p className={`font-medium ${result.isEligible ? 'text-emerald-600' : 'text-destructive'}`}>
                 {result.isEligible ? '해당' : '비해당 (1년 미만)'}
               </p>
@@ -92,7 +92,7 @@ export default function SeveranceCalculator({
           {/* 3개월 평균임금 테이블 */}
           {result.recentThreeMonths.length > 0 && (
             <div>
-              <p className="text-xs font-medium text-[#666] mb-2">최근 3개월 급여</p>
+              <p className="text-xs font-medium text-muted-foreground mb-2">최근 3개월 급여</p>
               <table className={TABLE_STYLES.table}>
                 <thead>
                   <tr className={TABLE_STYLES.header}>
@@ -128,15 +128,15 @@ export default function SeveranceCalculator({
           {result.isEligible && (
             <div className="bg-primary/10 rounded-xl p-4 space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-[#555]">퇴직금</span>
+                <span className="text-muted-foreground">퇴직금</span>
                 <span className="font-medium">{formatCurrency(result.severancePay)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[#555]">퇴직소득세</span>
+                <span className="text-muted-foreground">퇴직소득세</span>
                 <span className="text-destructive">-{formatCurrency(result.incomeTax)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[#555]">지방소득세</span>
+                <span className="text-muted-foreground">지방소득세</span>
                 <span className="text-destructive">-{formatCurrency(result.localIncomeTax)}</span>
               </div>
               <div className="flex justify-between text-sm font-bold pt-2 border-t border-primary/20">

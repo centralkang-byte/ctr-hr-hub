@@ -243,9 +243,9 @@ export default function AdjustmentsClient({user }: Props) {
         <div className="p-6 bg-background min-h-screen">
             {/* Header */}
             <div className="mb-6">
-                <nav className="text-xs text-[#999] mb-1">{t('kr_keab889ec_kec8898eb_keca1b0ec')}</nav>
+                <nav className="text-xs text-muted-foreground mb-1">{t('kr_keab889ec_kec8898eb_keca1b0ec')}</nav>
                 <h1 className="text-2xl font-bold text-foreground tracking-tight">{t('adjustmentsTitle')}</h1>
-                <p className="text-sm text-[#666] mt-0.5">{t('kr_kec868cea_keca780ea_kebb3b4eb_')}</p>
+                <p className="text-sm text-muted-foreground mt-0.5">{t('kr_kec868cea_keca780ea_kebb3b4eb_')}</p>
             </div>
 
             <div className="flex gap-5">
@@ -253,7 +253,7 @@ export default function AdjustmentsClient({user }: Props) {
                 <div className="w-72 flex-shrink-0">
                     <div className="bg-card rounded-xl border border-border overflow-hidden">
                         <div className="px-4 py-3 border-b border-border">
-                            <p className="text-xs font-semibold text-[#666] uppercase tracking-wider">{t('kr_keca1b0ec_keb8c80ea_keab889ec')}</p>
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('kr_keca1b0ec_keb8c80ea_keab889ec')}</p>
                         </div>
                         <div className="divide-y divide-border">
                             {runs.length === 0 ? (
@@ -270,7 +270,7 @@ export default function AdjustmentsClient({user }: Props) {
                                             }`}
                                     >
                                         <p className="text-sm font-semibold text-foreground">{run.yearMonth}</p>
-                                        <p className="text-xs text-[#999] mt-0.5">조정 {run.adjustmentCount}건</p>
+                                        <p className="text-xs text-muted-foreground mt-0.5">조정 {run.adjustmentCount}건</p>
                                     </button>
                                 ))
                             )}
@@ -284,7 +284,7 @@ export default function AdjustmentsClient({user }: Props) {
                         <div className="bg-card rounded-xl border border-border flex items-center justify-center h-64">
                             <div className="text-center">
                                 <FileText size={32} className="text-border mx-auto mb-3" />
-                                <p className="text-[#999]">{t('kr_keab889ec_kec8ba4ed_kec84a0ed')}</p>
+                                <p className="text-muted-foreground">{t('kr_keab889ec_kec8ba4ed_kec84a0ed')}</p>
                             </div>
                         </div>
                     ) : (
@@ -293,19 +293,19 @@ export default function AdjustmentsClient({user }: Props) {
                             {summary && (
                                 <div className="grid grid-cols-3 gap-4 mb-4">
                                     <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-                                        <p className="text-xs text-[#666] mb-1">{t('add_ked95a9ea')}</p>
+                                        <p className="text-xs text-muted-foreground mb-1">{t('add_ked95a9ea')}</p>
                                         <p className="text-xl font-bold text-emerald-600">
                                             +{summary.totalAdd.toLocaleString()}원
                                         </p>
                                     </div>
                                     <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-                                        <p className="text-xs text-[#666] mb-1">{t('kr_keab3b5ec_ked95a9ea')}</p>
+                                        <p className="text-xs text-muted-foreground mb-1">{t('kr_keab3b5ec_ked95a9ea')}</p>
                                         <p className="text-xl font-bold text-red-500">
                                             −{summary.totalDeduct.toLocaleString()}원
                                         </p>
                                     </div>
                                     <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-                                        <p className="text-xs text-[#666] mb-1">{t('kr_kec889c_keca1b0ec')}</p>
+                                        <p className="text-xs text-muted-foreground mb-1">{t('kr_kec889c_keca1b0ec')}</p>
                                         <p className={`text-xl font-bold ${summary.netAdjustment >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                                             {formatKRW(summary.netAdjustment)}
                                         </p>
@@ -318,7 +318,7 @@ export default function AdjustmentsClient({user }: Props) {
                                 <div className="flex items-center gap-2">
                                     {/* Search */}
                                     <div className="relative">
-                                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#999]" />
+                                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                                         <input
                                             type="text"
                                             value={search}
@@ -329,7 +329,7 @@ export default function AdjustmentsClient({user }: Props) {
                                     </div>
                                     {/* Type filter */}
                                     <div className="relative">
-                                        <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#999]" />
+                                        <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                                         <select
                                             value={filterType}
                                             onChange={(e) => setFilterType(e.target.value)}
@@ -340,7 +340,7 @@ export default function AdjustmentsClient({user }: Props) {
                                                 <option key={k} value={k}>{v.label}</option>
                                             ))}
                                         </select>
-                                        <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#999] pointer-events-none" />
+                                        <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -354,7 +354,7 @@ export default function AdjustmentsClient({user }: Props) {
                                     <button
                                         onClick={handleComplete}
                                         disabled={completing}
-                                        className="flex items-center gap-1.5 px-4 py-2 border border-border hover:bg-muted text-[#333] rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                                        className="flex items-center gap-1.5 px-4 py-2 border border-border hover:bg-muted text-foreground rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                                     >
                                         <ArrowRight size={15} />
                                         {completing ? t('processing') : '이상 검토로 전환'}
@@ -365,7 +365,7 @@ export default function AdjustmentsClient({user }: Props) {
                             {/* Adjustments table */}
                             <div className="bg-card rounded-xl border border-border overflow-hidden">
                                 {loading ? (
-                                    <div className="flex items-center justify-center h-40 text-[#999]">{tCommon('loading')}</div>
+                                    <div className="flex items-center justify-center h-40 text-muted-foreground">{tCommon('loading')}</div>
                                 ) : filteredAdj.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center h-40">
                                         <FileText size={28} className="text-border mb-2" />
@@ -390,16 +390,16 @@ export default function AdjustmentsClient({user }: Props) {
                                                     <tr key={adj.id} className={cn(TABLE_STYLES.row, "group")}>
                                                         <td className={TABLE_STYLES.cell}>
                                                             <p className="font-medium text-foreground">{adj.employee.name}</p>
-                                                            <p className="text-xs text-[#999]">{adj.employee.email}</p>
+                                                            <p className="text-xs text-muted-foreground">{adj.employee.email}</p>
                                                         </td>
                                                         <td className={TABLE_STYLES.cell}>
                                                             <TypeBadge type={adj.type} />
                                                         </td>
                                                         <td className={TABLE_STYLES.cell}>
-                                                            <span className="text-[#555]">{adj.category}</span>
+                                                            <span className="text-muted-foreground">{adj.category}</span>
                                                         </td>
                                                         <td className={TABLE_STYLES.cell}>
-                                                            <span className="text-[#333] line-clamp-1">{adj.description}</span>
+                                                            <span className="text-foreground line-clamp-1">{adj.description}</span>
                                                         </td>
                                                         <td className={cn(TABLE_STYLES.cell, "text-right")}>
                                                             <span className={`font-semibold tabular-nums ${adj.amount >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
@@ -448,7 +448,7 @@ export default function AdjustmentsClient({user }: Props) {
                         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
                             <h2 className="text-lg font-bold text-foreground">{t('kr_keca1b0ec_add')}</h2>
                             <button onClick={() => setShowForm(false)} className="p-1 hover:bg-muted rounded-lg">
-                                <XCircle size={20} className="text-[#999]" />
+                                <XCircle size={20} className="text-muted-foreground" />
                             </button>
                         </div>
                         <form ref={formRef} onSubmit={handleCreate} className="px-6 py-5 space-y-4">
@@ -467,7 +467,7 @@ export default function AdjustmentsClient({user }: Props) {
                                             <option key={e.id} value={e.id}>{e.name} ({e.email})</option>
                                         ))}
                                     </select>
-                                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#999] pointer-events-none" />
+                                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                                 </div>
                             </div>
 
@@ -485,7 +485,7 @@ export default function AdjustmentsClient({user }: Props) {
                                                 <option key={k} value={k}>{v.label}</option>
                                             ))}
                                         </select>
-                                        <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#999] pointer-events-none" />
+                                        <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                                     </div>
                                 </div>
                                 <div>
@@ -498,7 +498,7 @@ export default function AdjustmentsClient({user }: Props) {
                                         >
                                             {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                                         </select>
-                                        <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#999] pointer-events-none" />
+                                        <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                                     </div>
                                 </div>
                             </div>
@@ -507,7 +507,7 @@ export default function AdjustmentsClient({user }: Props) {
                             <div>
                                 <label className="block text-xs font-semibold text-[#444] mb-1.5">
                                     {t('amount_krw')}
-                                    <span className="font-normal text-[#999] ml-1">{t('kr_kec9691ec_add_kec9d8cec_keab3b')}</span>
+                                    <span className="font-normal text-muted-foreground ml-1">{t('kr_kec9691ec_add_kec9d8cec_keab3b')}</span>
                                 </label>
                                 <input
                                     type="number"
@@ -536,7 +536,7 @@ export default function AdjustmentsClient({user }: Props) {
                             <div>
                                 <label className="block text-xs font-semibold text-[#444] mb-1.5">
                                     {t('kr_keca69deb_url')}
-                                    <span className="font-normal text-[#999] ml-1">{t('kr_kec84a0ed')}</span>
+                                    <span className="font-normal text-muted-foreground ml-1">{t('kr_kec84a0ed')}</span>
                                 </label>
                                 <input
                                     type="url"
@@ -552,7 +552,7 @@ export default function AdjustmentsClient({user }: Props) {
                                 <button
                                     type="button"
                                     onClick={() => setShowForm(false)}
-                                    className="px-4 py-2 border border-border hover:bg-muted text-[#333] rounded-lg text-sm"
+                                    className="px-4 py-2 border border-border hover:bg-muted text-foreground rounded-lg text-sm"
                                 >
                                     {t('cancel')}
                                 </button>

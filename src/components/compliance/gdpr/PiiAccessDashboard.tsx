@@ -26,7 +26,7 @@ function StatCard({
     <div className="bg-card rounded-xl shadow-sm border border-border p-6">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs text-[#666] mb-1">{label}</p>
+          <p className="text-xs text-muted-foreground mb-1">{label}</p>
           <p className="text-3xl font-bold text-foreground">{value}</p>
         </div>
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
@@ -55,11 +55,11 @@ export default function PiiAccessDashboard() {
   }, [])
 
   if (loading) {
-    return <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
+    return <div className="p-8 text-center text-muted-foreground">{tc('loading')}</div>
   }
 
   if (!data) {
-    return <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
+    return <div className="p-8 text-center text-muted-foreground">{tc('noData')}</div>
   }
 
   const maxByType = Math.max(...(data.access_by_type?.map((a) => a.count) ?? [1]))
@@ -78,7 +78,7 @@ export default function PiiAccessDashboard() {
           label={tc('today')}
           value={data.today_count ?? 0}
           icon={Calendar}
-          color="bg-emerald-100 text-emerald-600"
+          color="bg-emerald-500/15 text-emerald-600"
         />
       </div>
 
@@ -87,17 +87,17 @@ export default function PiiAccessDashboard() {
         {/* Access by Type */}
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-4 h-4 text-[#666]" />
-            <h3 className="text-sm font-semibold text-[#333]">{t('gdpr.accessByType')}</h3>
+            <TrendingUp className="w-4 h-4 text-muted-foreground" />
+            <h3 className="text-sm font-semibold text-foreground">{t('gdpr.accessByType')}</h3>
           </div>
           {data.access_by_type?.length === 0 ? (
-            <p className="text-sm text-[#999]">{tc('noData')}</p>
+            <p className="text-sm text-muted-foreground">{tc('noData')}</p>
           ) : (
             <div className="space-y-3">
               {data.access_by_type?.map((item) => (
                 <div key={item.access_type}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-medium text-[#555]">{item.access_type}</span>
+                    <span className="text-xs font-medium text-muted-foreground">{item.access_type}</span>
                     <span className="text-xs font-bold text-foreground">{item.count}</span>
                   </div>
                   <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
@@ -115,20 +115,20 @@ export default function PiiAccessDashboard() {
         {/* Top Actors */}
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Users className="w-4 h-4 text-[#666]" />
-            <h3 className="text-sm font-semibold text-[#333]">{t('gdpr.topActors')}</h3>
+            <Users className="w-4 h-4 text-muted-foreground" />
+            <h3 className="text-sm font-semibold text-foreground">{t('gdpr.topActors')}</h3>
           </div>
           {data.top_actors?.length === 0 ? (
-            <p className="text-sm text-[#999]">{tc('noData')}</p>
+            <p className="text-sm text-muted-foreground">{tc('noData')}</p>
           ) : (
             <div className="space-y-2">
               {data.top_actors?.slice(0, 8).map((actor, idx) => (
                 <div key={actor.actor_name} className="flex items-center justify-between py-1.5 border-b border-background last:border-0">
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-muted text-[#666] text-xs flex items-center justify-center font-medium">
+                    <span className="w-5 h-5 rounded-full bg-muted text-muted-foreground text-xs flex items-center justify-center font-medium">
                       {idx + 1}
                     </span>
-                    <span className="text-sm text-[#333]">{actor.actor_name}</span>
+                    <span className="text-sm text-foreground">{actor.actor_name}</span>
                   </div>
                   <span className="text-sm font-semibold text-foreground">{actor.count}</span>
                 </div>

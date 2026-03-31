@@ -305,7 +305,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
             {members.map((member) => (
               <div key={member.employeeId} className="flex items-center justify-between px-4 py-3">
                 <span className="text-sm font-medium text-foreground">{member.name}</span>
-                <span className="text-xs text-[#999]">휴가 없음</span>
+                <span className="text-xs text-muted-foreground">휴가 없음</span>
               </div>
             ))}
           </div>
@@ -328,11 +328,11 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                     )
 
                     const rowBorderBg = optimisticStatus === 'APPROVED'
-                      ? 'border-emerald-200 bg-emerald-100/30'
+                      ? 'border-emerald-200 bg-emerald-500/15/30'
                       : optimisticStatus === 'REJECTED'
                       ? 'border-destructive/20 bg-destructive/10/30'
                       : isPending
-                      ? 'border-orange-200 bg-orange-50/30'
+                      ? 'border-orange-200 bg-orange-500/10/30'
                       : 'border-border'
 
                     return (
@@ -347,7 +347,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                               {formatDate(req.startDate)} ~{' '}
                               {formatDate(req.endDate)}
                             </span>
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-medium border border-border text-[#666]">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-medium border border-border text-muted-foreground">
                               {LEAVE_TYPE_LABEL[req.leaveType] ?? req.leaveType}
                             </span>
                             <span
@@ -359,7 +359,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                             </span>
                           </div>
                           <div className="flex items-center gap-3">
-                            <span className="text-xs text-[#999]">
+                            <span className="text-xs text-muted-foreground">
                               {req.days}{'일수'}
                             </span>
                             {isPending && absenceCount > 0 && (

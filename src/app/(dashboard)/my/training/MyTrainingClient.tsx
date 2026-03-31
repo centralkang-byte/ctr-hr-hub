@@ -90,8 +90,8 @@ const FORMAT_LABELS: Record<string, string> = {
 }
 
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
-  ENROLLED: { label: '수강대기', className: 'bg-amber-100 text-amber-700 border-amber-300' },
-  IN_PROGRESS: { label: '수강중', className: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+  ENROLLED: { label: '수강대기', className: 'bg-amber-500/15 text-amber-700 border-amber-300' },
+  IN_PROGRESS: { label: '수강중', className: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
 }
 
 function formatDate(dateStr?: string | null) {
@@ -191,13 +191,13 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
     <div className="p-6 space-y-6">
       {/* ─── 헤더 ─── */}
       <div>
-        <nav className="text-xs text-[#999] mb-1">나의 공간</nav>
+        <nav className="text-xs text-muted-foreground mb-1">나의 공간</nav>
         <h1 className="text-2xl font-bold text-foreground">내 교육 현황</h1>
       </div>
 
       {/* ─── 만료 임박 경고 ─── */}
       {expiringSoon.length > 0 && (
-        <div className="bg-orange-50 border border-orange-200 rounded-xl p-4">
+        <div className="bg-orange-500/10 border border-orange-200 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className="h-4 w-4 text-orange-700" />
             <span className="text-sm font-semibold text-orange-700">이수 만료 임박 ({expiringSoon.length}건)</span>
@@ -221,19 +221,19 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
       {/* ─── KPI 요약 ─── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className={`${CARD_STYLES.kpi} text-center`}>
-          <p className="text-xs text-[#666] mb-1">미이수 필수</p>
+          <p className="text-xs text-muted-foreground mb-1">미이수 필수</p>
           <p className="text-3xl font-bold text-red-500">{requiredPending.length}</p>
         </div>
         <div className={`${CARD_STYLES.kpi} text-center`}>
-          <p className="text-xs text-[#666] mb-1">신청 필요</p>
+          <p className="text-xs text-muted-foreground mb-1">신청 필요</p>
           <p className="text-3xl font-bold text-amber-700">{jobRequired.length}</p>
         </div>
         <div className={`${CARD_STYLES.kpi} text-center`}>
-          <p className="text-xs text-[#666] mb-1">추천 과정</p>
+          <p className="text-xs text-muted-foreground mb-1">추천 과정</p>
           <p className="text-3xl font-bold text-primary/90">{recommended.length}</p>
         </div>
         <div className={`${CARD_STYLES.kpi} text-center`}>
-          <p className="text-xs text-[#666] mb-1">이수 완료</p>
+          <p className="text-xs text-muted-foreground mb-1">이수 완료</p>
           <p className="text-3xl font-bold text-emerald-700">{history.length}</p>
         </div>
       </div>
@@ -247,7 +247,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
           </h2>
           <div className="space-y-3">
             {requiredPending.map((item) => {
-              const statusInfo = STATUS_LABELS[item.status] ?? { label: item.status, className: 'bg-background text-[#555] border-border' }
+              const statusInfo = STATUS_LABELS[item.status] ?? { label: item.status, className: 'bg-background text-muted-foreground border-border' }
               return (
                 <div key={item.enrollmentId} className={CARD_STYLES.padded}>
                   <div className="flex items-start justify-between gap-4">
@@ -257,7 +257,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
                         <Badge className={`text-[10px] px-1.5 py-0 ${statusInfo.className}`}>{statusInfo.label}</Badge>
                         <Badge variant="outline" className="text-[10px] px-1.5 py-0">필수</Badge>
                       </div>
-                      <div className="flex items-center gap-3 text-xs text-[#666] flex-wrap">
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                         <span>{CATEGORY_LABELS[item.course.category] ?? item.course.category}</span>
                         {item.course.durationHours && <span>{item.course.durationHours}h</span>}
                         {item.course.format && <span>{FORMAT_LABELS[item.course.format] ?? item.course.format}</span>}
@@ -302,7 +302,7 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
                       <span className="font-semibold text-foreground text-sm">{course.title}</span>
                       <Badge className="text-[10px] px-1.5 py-0 bg-destructive/10 text-destructive border-destructive/20">필수</Badge>
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-[#666] flex-wrap">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                       <span>{CATEGORY_LABELS[course.category] ?? course.category}</span>
                       {course.durationHours && <span>{course.durationHours}h</span>}
                       {course.provider && <span>{course.provider}</span>}
@@ -337,9 +337,9 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <span className="font-semibold text-foreground text-sm">{course.title}</span>
-                      <Badge className="text-[10px] px-1.5 py-0 bg-indigo-100 text-primary/90 border-indigo-200">추천</Badge>
+                      <Badge className="text-[10px] px-1.5 py-0 bg-indigo-500/15 text-primary/90 border-indigo-200">추천</Badge>
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-[#666] flex-wrap">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                       <span>{CATEGORY_LABELS[course.category] ?? course.category}</span>
                       {course.durationHours && <span>{course.durationHours}h</span>}
                       {course.format && <span>{FORMAT_LABELS[course.format] ?? course.format}</span>}
@@ -366,10 +366,10 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
         <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
           <CheckCircle2 className="h-5 w-5 text-emerald-700" />
           이수 이력
-          <span className="text-sm font-normal text-[#999]">(최근 20건)</span>
+          <span className="text-sm font-normal text-muted-foreground">(최근 20건)</span>
         </h2>
         {history.length === 0 ? (
-          <div className="bg-card rounded-xl border border-border p-8 text-center text-sm text-[#999]">
+          <div className="bg-card rounded-xl border border-border p-8 text-center text-sm text-muted-foreground">
             이수 이력이 없습니다.
           </div>
         ) : (
@@ -395,12 +395,12 @@ export default function MyTrainingClient({ user }: { user: SessionUser }) {
                         )}
                       </div>
                     </td>
-                    <td className={cn(TABLE_STYLES.cell, "text-[#666]")}>
+                    <td className={cn(TABLE_STYLES.cell, "text-muted-foreground")}>
                       {CATEGORY_LABELS[item.course.category] ?? item.course.category}
                     </td>
-                    <td className={cn(TABLE_STYLES.cell, "text-[#666]")}>{formatDate(item.completedAt)}</td>
-                    <td className={cn(TABLE_STYLES.cell, "text-[#666]")}>{formatDate(item.expiresAt)}</td>
-                    <td className={cn(TABLE_STYLES.cell, "text-[#666]")}>
+                    <td className={cn(TABLE_STYLES.cell, "text-muted-foreground")}>{formatDate(item.completedAt)}</td>
+                    <td className={cn(TABLE_STYLES.cell, "text-muted-foreground")}>{formatDate(item.expiresAt)}</td>
+                    <td className={cn(TABLE_STYLES.cell, "text-muted-foreground")}>
                       {item.score !== null && item.score !== undefined ? `${item.score}점` : '-'}
                     </td>
                   </tr>

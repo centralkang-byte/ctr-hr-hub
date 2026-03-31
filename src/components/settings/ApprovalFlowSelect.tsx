@@ -41,10 +41,10 @@ export function ApprovalFlowSelect({
         type="button"
         disabled={disabled}
         onClick={() => setOpen((p) => !p)}
-        className="flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-[#333] hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-background disabled:text-[#999]"
+        className="flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-background disabled:text-muted-foreground"
       >
         <span>{selected ? selected.name : placeholder}</span>
-        <ChevronDown className={`h-4 w-4 text-[#999] transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && !disabled && (
@@ -54,7 +54,7 @@ export function ApprovalFlowSelect({
             <button
               type="button"
               onClick={() => { onChange(null); setOpen(false) }}
-              className="flex w-full items-center px-4 py-2.5 text-left text-sm text-[#999] hover:bg-background"
+              className="flex w-full items-center px-4 py-2.5 text-left text-sm text-muted-foreground hover:bg-background"
             >
               선택 안 함
             </button>
@@ -67,8 +67,8 @@ export function ApprovalFlowSelect({
                   flow.id === value ? 'bg-primary/10' : ''
                 }`}
               >
-                <span className="text-sm font-medium text-[#333]">{flow.name}</span>
-                <span className="text-xs text-[#999]">
+                <span className="text-sm font-medium text-foreground">{flow.name}</span>
+                <span className="text-xs text-muted-foreground">
                   {flow.steps.length}단계 승인
                   {flow.companyId ? '' : ' (글로벌)'}
                 </span>

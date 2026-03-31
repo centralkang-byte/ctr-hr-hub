@@ -157,7 +157,7 @@ export default function CoursesTab() {
           <span className="font-medium">{row.title}</span>
           {row.externalUrl && (
             <a href={row.externalUrl} target="_blank" rel="noopener noreferrer">
-              <ExternalLink className="h-3 w-3 text-[#999]" />
+              <ExternalLink className="h-3 w-3 text-muted-foreground" />
             </a>
           )}
         </div>
@@ -177,7 +177,7 @@ export default function CoursesTab() {
         row.isMandatory ? (
           <Badge className="bg-destructive/10 text-destructive border-destructive/20">필수</Badge>
         ) : (
-          <span className="text-[#999] text-xs">선택</span>
+          <span className="text-muted-foreground text-xs">선택</span>
         ),
     },
     {
@@ -195,9 +195,9 @@ export default function CoursesTab() {
       header: '상태',
       render: (row) =>
         !row.deletedAt ? (
-          <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">활성</Badge>
+          <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-200">활성</Badge>
         ) : (
-          <Badge variant="outline" className="bg-background text-[#555] border-border">비활성</Badge>
+          <Badge variant="outline" className="bg-background text-muted-foreground border-border">비활성</Badge>
         ),
     },
     {
@@ -244,7 +244,7 @@ export default function CoursesTab() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">과정명 *</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">과정명 *</label>
               <input
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
                 value={form.title}
@@ -252,7 +252,7 @@ export default function CoursesTab() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">설명</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">설명</label>
               <textarea
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
                 rows={3}
@@ -262,7 +262,7 @@ export default function CoursesTab() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">분류 *</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">분류 *</label>
                 <select
                   className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   value={form.category}
@@ -274,7 +274,7 @@ export default function CoursesTab() {
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">교육시간 (h)</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">교육시간 (h)</label>
                 <input
                   type="number"
                   className="w-full px-3 py-2 border border-border rounded-lg text-sm"
@@ -285,7 +285,7 @@ export default function CoursesTab() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">교육 제공자</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">교육 제공자</label>
                 <input
                   className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   value={form.provider}
@@ -293,7 +293,7 @@ export default function CoursesTab() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">외부 URL</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">외부 URL</label>
                 <input
                   className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   value={form.externalUrl}
@@ -310,7 +310,7 @@ export default function CoursesTab() {
                 checked={form.isMandatory}
                 onChange={(e) => setForm((f) => ({ ...f, isMandatory: e.target.checked }))}
               />
-              <label htmlFor="isMandatory" className="text-sm text-[#333]">필수 교육</label>
+              <label htmlFor="isMandatory" className="text-sm text-foreground">필수 교육</label>
             </div>
           </div>
           <DialogFooter>

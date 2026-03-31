@@ -16,8 +16,8 @@ import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 // ─── Status config ────────────────────────────────────────
 
 const STATUS_STYLES: Record<string, string> = {
-  DRAFT: 'bg-muted text-[#666]',
-  PENDING_APPROVAL: 'bg-amber-50 text-amber-700',
+  DRAFT: 'bg-muted text-muted-foreground',
+  PENDING_APPROVAL: 'bg-amber-500/10 text-amber-700',
   APPROVED: 'bg-primary/10 text-tertiary',
   REJECTED: 'bg-destructive/5 text-destructive',
 }
@@ -172,7 +172,7 @@ export default function GoalsClient({
 
         {/* Cycle selector */}
         <div className="mb-6">
-          <label className="mb-1 block text-sm font-medium text-[#666]">
+          <label className="mb-1 block text-sm font-medium text-muted-foreground">
             {t('evaluationCycle')}
           </label>
           <select
@@ -190,10 +190,10 @@ export default function GoalsClient({
 
         {/* Goal cards */}
         {loading ? (
-          <div className="py-20 text-center text-[#999]">{t('loadingText')}</div>
+          <div className="py-20 text-center text-muted-foreground">{t('loadingText')}</div>
         ) : goals.length === 0 ? (
           <div className="rounded-lg bg-card p-12 text-center">
-            <p className="text-[#999]">{t('noGoalsRegistered')}</p>
+            <p className="text-muted-foreground">{t('noGoalsRegistered')}</p>
             <button
               onClick={() => router.push('/performance/goals/new')}
               className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline"
@@ -225,13 +225,13 @@ export default function GoalsClient({
                           {goal.title}
                         </h3>
                         <span
-                          className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[goal.status] ?? 'bg-muted text-[#666]'}`}
+                          className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[goal.status] ?? 'bg-muted text-muted-foreground'}`}
                         >
                           {t(`goalStatusLabels.${goal.status}` as Parameters<typeof t>[0])}
                         </span>
                       </div>
                       {goal.description && (
-                        <p className="text-sm text-[#999] line-clamp-2">
+                        <p className="text-sm text-muted-foreground line-clamp-2">
                           {goal.description}
                         </p>
                       )}
@@ -243,7 +243,7 @@ export default function GoalsClient({
 
                   {/* Progress bar */}
                   <div className="mb-3">
-                    <div className="mb-1 flex items-center justify-between text-xs text-[#999]">
+                    <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
                       <span>{t('achievement')}</span>
                       <span>{pct}%</span>
                     </div>
@@ -262,7 +262,7 @@ export default function GoalsClient({
                         onClick={() =>
                           router.push(`/performance/goals/${goal.id}/edit`)
                         }
-                        className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-[#666] hover:bg-background transition-colors"
+                        className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-background transition-colors"
                       >
                         <Pencil className="h-3 w-3" />
                         {t('editButton')}
@@ -297,11 +297,11 @@ export default function GoalsClient({
                   {/* Inline progress form */}
                   {progressForm?.goalId === goal.id && (
                     <div className="mt-4 rounded-md border border-border bg-background p-4">
-                      <h4 className="mb-3 text-sm font-semibold text-[#666]">
+                      <h4 className="mb-3 text-sm font-semibold text-muted-foreground">
                         {t('recordProgressTitle')}
                       </h4>
                       <div className="mb-3">
-                        <label className="mb-1 block text-xs font-medium text-[#666]">
+                        <label className="mb-1 block text-xs font-medium text-muted-foreground">
                           {t('achievementRate')}
                         </label>
                         <input
@@ -319,7 +319,7 @@ export default function GoalsClient({
                         />
                       </div>
                       <div className="mb-3">
-                        <label className="mb-1 block text-xs font-medium text-[#666]">
+                        <label className="mb-1 block text-xs font-medium text-muted-foreground">
                           {t('memoLabel')}
                         </label>
                         <textarea
@@ -345,7 +345,7 @@ export default function GoalsClient({
                         </button>
                         <button
                           onClick={() => setProgressForm(null)}
-                          className="rounded-md border border-border px-4 py-1.5 text-xs font-medium text-[#666] hover:bg-muted transition-colors"
+                          className="rounded-md border border-border px-4 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
                         >
                           {tc('cancel')}
                         </button>
@@ -362,7 +362,7 @@ export default function GoalsClient({
         {goals.length > 0 && (
           <div className="mt-6 flex items-center justify-between rounded-lg bg-card p-4">
             <div className="text-sm">
-              <span className="text-[#666]">{t('weightSum')}</span>
+              <span className="text-muted-foreground">{t('weightSum')}</span>
               <span
                 className={`font-bold ${totalWeight === 100 ? 'text-tertiary' : 'text-destructive'}`}
               >

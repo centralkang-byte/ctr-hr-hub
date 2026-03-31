@@ -47,10 +47,10 @@ const FITNESS_LABELS: Record<string, string> = {
 }
 
 const FITNESS_COLORS: Record<string, string> = {
-  FIT_A: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  FIT_A: 'bg-emerald-500/15 text-emerald-700 border-emerald-200',
   FIT_B: 'bg-primary/10 text-primary/90 border-primary/20',
-  FIT_C: 'bg-amber-100 text-amber-700 border-amber-300',
-  FIT_D: 'bg-orange-50 text-orange-700 border-orange-200',
+  FIT_C: 'bg-amber-500/15 text-amber-700 border-amber-300',
+  FIT_D: 'bg-orange-500/10 text-orange-700 border-orange-200',
   UNFIT: 'bg-destructive/10 text-destructive border-destructive/20',
 }
 
@@ -126,13 +126,13 @@ export default function MilitaryRegistrationTab() {
           <div className="flex gap-2 flex-1">
             {/* Search */}
             <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
                 placeholder={'이름 또는 사번 검색...'}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+                className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
               />
             </div>
             {/* Category Filter */}
@@ -149,7 +149,7 @@ export default function MilitaryRegistrationTab() {
             {/* Refresh */}
             <button
               onClick={() => fetchRegistrations()}
-              className="p-2 border border-border rounded-lg hover:bg-background text-[#555]"
+              className="p-2 border border-border rounded-lg hover:bg-background text-muted-foreground"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
@@ -159,7 +159,7 @@ export default function MilitaryRegistrationTab() {
             <button
               onClick={handleExportT2}
               disabled={exporting}
-              className="flex items-center gap-2 bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
+              className="flex items-center gap-2 bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
             >
               <Download className="w-4 h-4" />
               T-2 내보내기
@@ -179,11 +179,11 @@ export default function MilitaryRegistrationTab() {
       {/* Table */}
       <div className={TABLE_STYLES.wrapper}>
         {loading ? (
-          <div className="flex items-center justify-center py-16 text-[#999] text-sm">
+          <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
             로딩 중...
           </div>
         ) : registrations.length === 0 ? (
-          <div className="flex items-center justify-center py-16 text-[#999] text-sm">
+          <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
             군복무 등록 데이터가 없습니다.
           </div>
         ) : (
@@ -219,28 +219,28 @@ export default function MilitaryRegistrationTab() {
                   <td className="px-4 py-3">
                     <div>
                       <p className="text-sm font-medium text-foreground">{reg.employee.name}</p>
-                      <p className="text-xs text-[#666]">{reg.employee.employeeNo}</p>
+                      <p className="text-xs text-muted-foreground">{reg.employee.employeeNo}</p>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#555]">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
                     {reg.employee.department?.name ?? '-'}
                   </td>
                   <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-[#333]">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-foreground">
                       {CATEGORY_LABELS[reg.category] ?? reg.category}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#555]">{reg.rank ?? '-'}</td>
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{reg.rank ?? '-'}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-                        FITNESS_COLORS[reg.fitnessCategory] ?? 'bg-background text-[#555] border-border'
+                        FITNESS_COLORS[reg.fitnessCategory] ?? 'bg-background text-muted-foreground border-border'
                       }`}
                     >
                       {FITNESS_LABELS[reg.fitnessCategory] ?? reg.fitnessCategory}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#555]">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
                     {reg.registrationDate
                       ? new Date(reg.registrationDate).toLocaleDateString('ko-KR')
                       : '-'}
@@ -265,7 +265,7 @@ export default function MilitaryRegistrationTab() {
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (
           <div className="px-4 py-3 border-t border-border flex items-center justify-between">
-            <p className="text-xs text-[#666]">
+            <p className="text-xs text-muted-foreground">
               전체 {pagination.total}건
             </p>
             <div className="flex gap-1">
@@ -276,7 +276,7 @@ export default function MilitaryRegistrationTab() {
                   className={`w-8 h-8 text-xs rounded-lg ${
                     page === pagination.page
                       ? 'bg-primary text-white'
-                      : 'text-[#555] hover:bg-muted'
+                      : 'text-muted-foreground hover:bg-muted'
                   }`}
                 >
                   {page}

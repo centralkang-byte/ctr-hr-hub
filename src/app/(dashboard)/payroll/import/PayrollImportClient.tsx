@@ -175,14 +175,14 @@ export default function PayrollImportClient({ user, companies }: {
 
   const statusBadge = (status: string) => {
     const map: Record<string, string> = {
-      uploaded: 'bg-amber-100 text-amber-700',
-      processing: 'bg-indigo-100 text-primary/90',
-      confirmed: 'bg-emerald-100 text-emerald-700',
+      uploaded: 'bg-amber-500/15 text-amber-700',
+      processing: 'bg-indigo-500/15 text-primary/90',
+      confirmed: 'bg-emerald-500/15 text-emerald-700',
       failed: 'bg-destructive/10 text-destructive',
     }
     const label: Record<string, string> = { uploaded: '업로드됨', processing: '처리중', confirmed: t('confirmed'), failed: t('failed') }
     return (
-      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${map[status] ?? 'bg-muted text-[#666]'}`}>
+      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${map[status] ?? 'bg-muted text-muted-foreground'}`}>
         {label[status] ?? status}
       </span>
     )
@@ -197,14 +197,14 @@ export default function PayrollImportClient({ user, companies }: {
         </div>
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('importTitle')}</h1>
-          <p className="text-sm text-[#666]">{t('kr_ked95b4ec_company_keab889ec_ke')}</p>
+          <p className="text-sm text-muted-foreground">{t('kr_ked95b4ec_company_keab889ec_ke')}</p>
         </div>
       </div>
 
       {/* Company Selector */}
       <div className="flex items-center gap-3 mb-6">
-        <Building2 className="w-4 h-4 text-[#666]" />
-        <span className="text-sm text-[#666]">{t('company_kec84a0ed')}</span>
+        <Building2 className="w-4 h-4 text-muted-foreground" />
+        <span className="text-sm text-muted-foreground">{t('company_kec84a0ed')}</span>
         <div className="flex gap-2 flex-wrap">
           {companies.map(co => (
             <button
@@ -213,7 +213,7 @@ export default function PayrollImportClient({ user, companies }: {
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 selectedCompany?.id === co.id
                   ? 'bg-primary text-white'
-                  : 'bg-card border border-border text-[#555] hover:bg-background'
+                  : 'bg-card border border-border text-muted-foreground hover:bg-background'
               }`}
             >
               {co.code} ({co.currency})
@@ -232,7 +232,7 @@ export default function PayrollImportClient({ user, companies }: {
               className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
                 tab === key
                   ? 'border-primary text-primary'
-                  : 'border-transparent text-[#666] hover:text-[#333]'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -249,9 +249,9 @@ export default function PayrollImportClient({ user, companies }: {
           <div className="bg-card rounded-xl shadow-sm border border-border p-6">
             <h3 className="text-sm font-semibold text-foreground mb-3">{t('kr_kecbbaceb_keba7a4ed_kec84a0ed')}</h3>
             {loadingMappings ? (
-              <div className="text-sm text-[#999]">{tCommon('loading')}</div>
+              <div className="text-sm text-muted-foreground">{tCommon('loading')}</div>
             ) : mappings.length === 0 ? (
-              <div className="text-sm text-[#999]">
+              <div className="text-sm text-muted-foreground">
                 선택한 법인에 매핑 설정이 없습니다.{' '}
                 <button onClick={() => setTab('mapping')} className="text-primary underline">
                   {t('kr_keba7a4ed_add')}
@@ -267,10 +267,10 @@ export default function PayrollImportClient({ user, companies }: {
                     className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${
                       selectedMapping?.id === m.id
                         ? 'border-primary bg-primary/10 text-primary/90'
-                        : 'border-border text-[#555] hover:bg-background'
+                        : 'border-border text-muted-foreground hover:bg-background'
                     }`}
                   >
-                    {m.name} {m.isDefault && <span className="text-xs ml-1 text-[#999]">{t('kr_keab8b0eb')}</span>}
+                    {m.name} {m.isDefault && <span className="text-xs ml-1 text-muted-foreground">{t('kr_keab8b0eb')}</span>}
                   </button>
                 ))}
               </div>
@@ -309,12 +309,12 @@ export default function PayrollImportClient({ user, companies }: {
             {selectedFile ? (
               <div>
                 <p className="text-sm font-semibold text-foreground">{selectedFile.name}</p>
-                <p className="text-xs text-[#999] mt-1">{(selectedFile.size / 1024).toFixed(1)} KB</p>
+                <p className="text-xs text-muted-foreground mt-1">{(selectedFile.size / 1024).toFixed(1)} KB</p>
               </div>
             ) : (
               <div>
-                <p className="text-sm font-semibold text-[#333]">{t('kr_ked8c8cec_ked81b4eb_kec84a0ed')}</p>
-                <p className="text-xs text-[#999] mt-1">{t('kr_xlsx_csv_keca780ec')}</p>
+                <p className="text-sm font-semibold text-foreground">{t('kr_ked8c8cec_ked81b4eb_kec84a0ed')}</p>
+                <p className="text-xs text-muted-foreground mt-1">{t('kr_xlsx_csv_keca780ec')}</p>
               </div>
             )}
             <input ref={fileRef} type="file" accept=".xlsx,.csv" className="hidden" onChange={handleFileChange} />
@@ -330,7 +330,7 @@ export default function PayrollImportClient({ user, companies }: {
           </button>
 
           {!selectedMapping && (
-            <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-100 p-3 rounded-lg">
+            <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-500/15 p-3 rounded-lg">
               <AlertCircle className="w-4 h-4 shrink-0" />
               {t('kr_kecbbaceb_keba7a4ed_keba8bcec_')}
             </div>
@@ -396,7 +396,7 @@ export default function PayrollImportClient({ user, companies }: {
               <h4 className="text-sm font-semibold text-foreground">{t('kr_kec8388_keba7a4ed_settings')}</h4>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="text-xs text-[#666] mb-1 block">{t('kr_keba7a4ed')}</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t('kr_keba7a4ed')}</label>
                   <input
                     value={editingMapping.name ?? ''}
                     onChange={e => setEditingMapping(prev => ({ ...prev, name: e.target.value }))}
@@ -405,7 +405,7 @@ export default function PayrollImportClient({ user, companies }: {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-[#666] mb-1 block">{t('kr_ked8c8cec_ked9895ec')}</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t('kr_ked8c8cec_ked9895ec')}</label>
                   <select
                     value={editingMapping.fileType ?? 'xlsx'}
                     onChange={e => setEditingMapping(prev => ({ ...prev, fileType: e.target.value }))}
@@ -416,7 +416,7 @@ export default function PayrollImportClient({ user, companies }: {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-[#666] mb-1 block">{t('kr_ked97a4eb_ked9689_kebb288ed')}</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t('kr_ked97a4eb_ked9689_kebb288ed')}</label>
                   <input
                     type="number"
                     min={1}
@@ -428,11 +428,11 @@ export default function PayrollImportClient({ user, companies }: {
               </div>
 
               <div>
-                <h5 className="text-xs text-[#666] font-medium mb-2">{t('kr_kecbbaceb_keba7a4ed_ked8c8cec_')}</h5>
+                <h5 className="text-xs text-muted-foreground font-medium mb-2">{t('kr_kecbbaceb_keba7a4ed_ked8c8cec_')}</h5>
                 <div className="grid grid-cols-2 gap-3">
                   {STANDARD_FIELDS.map(field => (
                     <div key={field.key} className="flex items-center gap-2">
-                      <span className="text-xs text-[#555] w-28 shrink-0">
+                      <span className="text-xs text-muted-foreground w-28 shrink-0">
                         {field.label}
                         {field.required && <span className="text-destructive ml-0.5">*</span>}
                       </span>
@@ -452,7 +452,7 @@ export default function PayrollImportClient({ user, companies }: {
               </div>
 
               <div className="flex items-center justify-between pt-2">
-                <label className="flex items-center gap-2 text-sm text-[#555] cursor-pointer">
+                <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
                   <input
                     type="checkbox"
                     checked={editingMapping.isDefault ?? false}
@@ -464,7 +464,7 @@ export default function PayrollImportClient({ user, companies }: {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setEditingMapping(null)}
-                    className="px-3 py-1.5 border border-border rounded-lg text-sm text-[#555] hover:bg-background"
+                    className="px-3 py-1.5 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background"
                   >
                     {t('cancel')}
                   </button>
@@ -500,9 +500,9 @@ export default function PayrollImportClient({ user, companies }: {
             </thead>
             <tbody>
               {loadingLogs ? (
-                <tr><td colSpan={7} className="py-12 text-center text-sm text-[#999]">{tCommon('loading')}</td></tr>
+                <tr><td colSpan={7} className="py-12 text-center text-sm text-muted-foreground">{tCommon('loading')}</td></tr>
               ) : logs.length === 0 ? (
-                <tr><td colSpan={7} className="py-12 text-center text-sm text-[#999]">{t('kr_kec9785eb_kec9db4eb_kec9786ec')}</td></tr>
+                <tr><td colSpan={7} className="py-12 text-center text-sm text-muted-foreground">{t('kr_kec9785eb_kec9db4eb_kec9786ec')}</td></tr>
               ) : (
                 logs.map(log => (
                   <tr key={log.id} className={TABLE_STYLES.row}>

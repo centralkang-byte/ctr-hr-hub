@@ -136,9 +136,9 @@ export default function EmployeeRegistryTab() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-base font-semibold text-foreground">
-            직원 명부 <span className="text-[#999] font-normal text-sm">(花名册)</span>
+            직원 명부 <span className="text-muted-foreground font-normal text-sm">(花名册)</span>
           </h2>
-          <p className="text-xs text-[#666] mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             재직 중인 직원 명부를 관리합니다
           </p>
         </div>
@@ -167,7 +167,7 @@ export default function EmployeeRegistryTab() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder={'이름, 사번 검색...'}
-          className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary placeholder:text-[#999] w-56"
+          className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary placeholder:text-muted-foreground w-56"
         />
         <select
           value={departmentFilter}
@@ -185,9 +185,9 @@ export default function EmployeeRegistryTab() {
 
       {/* Table */}
       {loading ? (
-        <div className="py-12 text-center text-sm text-[#666]">Loading...</div>
+        <div className="py-12 text-center text-sm text-muted-foreground">Loading...</div>
       ) : filteredRows.length === 0 ? (
-        <div className="py-12 text-center text-sm text-[#666]">
+        <div className="py-12 text-center text-sm text-muted-foreground">
           직원 데이터가 없습니다.
         </div>
       ) : (
@@ -214,41 +214,41 @@ export default function EmployeeRegistryTab() {
                     key={row.employeeNo}
                     className={TABLE_STYLES.row}
                   >
-                    <td className="px-4 py-3 font-mono tabular-nums text-[#555] text-xs">
+                    <td className="px-4 py-3 font-mono tabular-nums text-muted-foreground text-xs">
                       {row.employeeNo}
                     </td>
                     <td className="px-4 py-3">
                       <div className="font-medium text-foreground">{row.name}</div>
                       {row.nameEn && (
-                        <div className="text-xs text-[#999]">{row.nameEn}</div>
+                        <div className="text-xs text-muted-foreground">{row.nameEn}</div>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-[#333]">
+                    <td className="px-4 py-3 text-foreground">
                       {row.gender ? (GENDER_LABELS[row.gender] ?? row.gender) : '-'}
                     </td>
-                    <td className="px-4 py-3 text-[#333]">
+                    <td className="px-4 py-3 text-foreground">
                       {row.birthDate ?? '-'}
                     </td>
-                    <td className="px-4 py-3 text-[#333]">{row.department}</td>
-                    <td className="px-4 py-3 text-[#333]">{row.jobGrade}</td>
-                    <td className="px-4 py-3 text-[#333]">
+                    <td className="px-4 py-3 text-foreground">{row.department}</td>
+                    <td className="px-4 py-3 text-foreground">{row.jobGrade}</td>
+                    <td className="px-4 py-3 text-foreground">
                       {EMPLOYMENT_TYPE_LABELS[row.employmentType] ?? row.employmentType}
                     </td>
-                    <td className="px-4 py-3 text-[#333]">{row.hireDate}</td>
+                    <td className="px-4 py-3 text-foreground">{row.hireDate}</td>
                     <td className="px-4 py-3 text-center">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           row.status === 'ACTIVE'
-                            ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                            ? 'bg-emerald-500/15 text-emerald-700 border border-emerald-200'
                             : row.status === 'ON_LEAVE'
-                              ? 'bg-amber-100 text-amber-700 border border-amber-300'
-                              : 'bg-background text-[#555] border border-border'
+                              ? 'bg-amber-500/15 text-amber-700 border border-amber-300'
+                              : 'bg-background text-muted-foreground border border-border'
                         }`}
                       >
                         {STATUS_LABELS[row.status] ?? row.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-[#555] text-xs">{row.email}</td>
+                    <td className="px-4 py-3 text-muted-foreground text-xs">{row.email}</td>
                   </tr>
                 ))}
               </tbody>
@@ -256,14 +256,14 @@ export default function EmployeeRegistryTab() {
           </div>
 
           <div className="mt-3 flex items-center justify-between">
-            <p className="text-xs text-[#999]">
+            <p className="text-xs text-muted-foreground">
               {filteredRows.length.toLocaleString()}명 표시
               {registryData && filteredRows.length < registryData.rows.length
                 ? ` (전체 ${registryData.rows.length.toLocaleString()}명 중)`
                 : ''}
             </p>
             {registryData && (
-              <p className="text-xs text-[#999]">
+              <p className="text-xs text-muted-foreground">
                 생성일시: {new Date(registryData.meta.generatedAt).toLocaleString('ko-KR')}
               </p>
             )}

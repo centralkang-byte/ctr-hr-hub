@@ -101,10 +101,10 @@ const TABS = [
 type TabKey = (typeof TABS)[number]['key']
 
 const RISK_CONFIG: Record<RiskLevel, { label: string; bg: string; text: string; border: string }> = {
-  low:      { label: '낮음', bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200' },
-  medium:   { label: '보통', bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300' },
+  low:      { label: '낮음', bg: 'bg-emerald-500/15', text: 'text-emerald-700', border: 'border-emerald-200' },
+  medium:   { label: '보통', bg: 'bg-amber-500/15', text: 'text-amber-700', border: 'border-amber-300' },
   high:     { label: '높음', bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20' },
-  critical: { label: '위험', bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
+  critical: { label: '위험', bg: 'bg-orange-500/10', text: 'text-orange-700', border: 'border-orange-200' },
 }
 
 const RISK_COLORS: Record<RiskLevel, string> = {
@@ -145,7 +145,7 @@ function ScoreBar({ score, level }: { score: number; level: RiskLevel }) {
           style={{ width: `${score}%`, backgroundColor: RISK_COLORS[level] }}
         />
       </div>
-      <span className="text-xs text-[#666] w-8 text-right">{score}</span>
+      <span className="text-xs text-muted-foreground w-8 text-right">{score}</span>
     </div>
   )
 }
@@ -215,11 +215,11 @@ function SummaryCards({
             <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: c.bg }}>
               <c.icon className="w-5 h-5" style={{ color: c.color }} />
             </div>
-            <p className="text-xs text-[#666]">{c.label}</p>
+            <p className="text-xs text-muted-foreground">{c.label}</p>
           </div>
           <p className="text-3xl font-bold text-foreground">
             {c.value}
-            <span className="text-sm font-normal text-[#999] ml-1">{c.unit}</span>
+            <span className="text-sm font-normal text-muted-foreground ml-1">{c.unit}</span>
           </p>
         </div>
       ))}
@@ -266,7 +266,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
               <div key={row.employeeId} className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{row.employeeName}</p>
-                  <p className="text-xs text-[#666]">{row.departmentName ?? '—'}</p>
+                  <p className="text-xs text-muted-foreground">{row.departmentName ?? '—'}</p>
                 </div>
                 {row.latestScore && (
                   <>
@@ -282,7 +282,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
               </div>
             ))}
             {data.length === 0 && (
-              <p className="text-sm text-[#999] text-center py-8">{'kr_kec8aa4ec_keb8db0ec_kec9786ec'}</p>
+              <p className="text-sm text-muted-foreground text-center py-8">{'kr_kec8aa4ec_keb8db0ec_kec9786ec'}</p>
             )}
           </div>
         </div>
@@ -310,13 +310,13 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
               {data.map((row) => (
                 <tr key={row.employeeId} className={TABLE_STYLES.row}>
                   <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>{row.employeeName}</td>
-                  <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{row.departmentName ?? '—'}</td>
-                  <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{row.jobGradeName ?? '—'}</td>
+                  <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>{row.departmentName ?? '—'}</td>
+                  <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>{row.jobGradeName ?? '—'}</td>
                   <td className={TABLE_STYLES.cell}>
                     {row.latestScore ? (
                       <ScoreBar score={row.latestScore.overallScore} level={row.latestScore.riskLevel} />
                     ) : (
-                      <span className="text-xs text-[#999]">{'kr_kebafb8ea'}</span>
+                      <span className="text-xs text-muted-foreground">{'kr_kebafb8ea'}</span>
                     )}
                   </td>
                   <td className={TABLE_STYLES.cell}>
@@ -325,7 +325,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
                   <td className={TABLE_STYLES.cell}>
                     <div className="flex flex-wrap gap-1">
                       {row.latestScore?.topFactors.slice(0, 2).map((f) => (
-                        <span key={f} className="text-xs bg-muted text-[#555] px-2 py-0.5 rounded">
+                        <span key={f} className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded">
                           {f}
                         </span>
                       ))}
@@ -344,7 +344,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
             </tbody>
           </table>
           {data.length === 0 && (
-            <div className="text-center py-12 text-sm text-[#999]">
+            <div className="text-center py-12 text-sm text-muted-foreground">
               {'kr_keb8db0ec_kec9786ec_kebb0b0ec_'}
             </div>
           )}
@@ -391,13 +391,13 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
               <div key={row.employeeId} className="flex items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{row.employeeName}</p>
-                  <p className="text-xs text-[#666]">{row.departmentName ?? '—'}</p>
+                  <p className="text-xs text-muted-foreground">{row.departmentName ?? '—'}</p>
                 </div>
                 {row.latestScore && <RiskBadge level={row.latestScore.riskLevel} />}
               </div>
             ))}
             {data.length === 0 && (
-              <p className="text-sm text-[#999] text-center py-8">{'kr_kec8aa4ec_keb8db0ec_kec9786ec'}</p>
+              <p className="text-sm text-muted-foreground text-center py-8">{'kr_kec8aa4ec_keb8db0ec_kec9786ec'}</p>
             )}
           </div>
         </div>
@@ -422,18 +422,18 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
               {data.map((row) => (
                 <tr key={row.employeeId} className={TABLE_STYLES.row}>
                   <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>{row.employeeName}</td>
-                  <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{row.departmentName ?? '—'}</td>
+                  <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>{row.departmentName ?? '—'}</td>
                   <td className={TABLE_STYLES.cell}>
                     {row.latestScore ? (
                       <ScoreBar score={row.latestScore.overallScore} level={row.latestScore.riskLevel} />
                     ) : (
-                      <span className="text-xs text-[#999]">{'kr_kebafb8ea'}</span>
+                      <span className="text-xs text-muted-foreground">{'kr_kebafb8ea'}</span>
                     )}
                   </td>
                   <td className={TABLE_STYLES.cell}>
                     {row.latestScore && <RiskBadge level={row.latestScore.riskLevel} />}
                   </td>
-                  <td className={cn(TABLE_STYLES.cell, 'text-[#999]')}>
+                  <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>
                     {row.latestScore
                       ? new Date(row.latestScore.calculatedAt).toLocaleDateString('ko-KR')
                       : '—'}
@@ -443,7 +443,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
             </tbody>
           </table>
           {data.length === 0 && (
-            <div className="text-center py-12 text-sm text-[#999]">
+            <div className="text-center py-12 text-sm text-muted-foreground">
               {'kr_keb8db0ec_kec9786ec_kebb0b0ec_'}
             </div>
           )}
@@ -487,7 +487,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
                 <div key={d.departmentId} className="flex items-center gap-3">
                   <div className="flex-1">
                     <p className="text-sm font-medium text-foreground">{d.departmentName}</p>
-                    <p className="text-xs text-[#666]">{d.latestScore?.memberCount ?? 0}명</p>
+                    <p className="text-xs text-muted-foreground">{d.latestScore?.memberCount ?? 0}명</p>
                   </div>
                   {d.latestScore && <RiskBadge level={d.latestScore.riskLevel} />}
                 </div>
@@ -518,18 +518,18 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
               {data.map((row) => (
                 <tr key={row.departmentId} className={TABLE_STYLES.row}>
                   <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>{row.departmentName}</td>
-                  <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{row.latestScore?.memberCount ?? '—'}</td>
+                  <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>{row.latestScore?.memberCount ?? '—'}</td>
                   <td className={TABLE_STYLES.cell}>
                     {row.latestScore ? (
                       <ScoreBar score={row.latestScore.overallScore} level={row.latestScore.riskLevel} />
                     ) : (
-                      <span className="text-xs text-[#999]">{'kr_kebafb8ea'}</span>
+                      <span className="text-xs text-muted-foreground">{'kr_kebafb8ea'}</span>
                     )}
                   </td>
                   <td className={TABLE_STYLES.cell}>
                     {row.latestScore && <RiskBadge level={row.latestScore.riskLevel} />}
                   </td>
-                  <td className={cn(TABLE_STYLES.cell, 'text-[#999]')}>
+                  <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>
                     {row.latestScore
                       ? new Date(row.latestScore.calculatedAt).toLocaleDateString('ko-KR')
                       : '—'}
@@ -539,7 +539,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
             </tbody>
           </table>
           {data.length === 0 && (
-            <div className="text-center py-12 text-sm text-[#999]">
+            <div className="text-center py-12 text-sm text-muted-foreground">
               {'kr_keb8db0ec_kec9786ec_kebb0b0ec_'}
             </div>
           )}
@@ -623,7 +623,7 @@ function WorkforceTab({
                 return (
                   <tr key={dept} className={TABLE_STYLES.row}>
                     <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>{dept}</td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{stats.total}</td>
+                    <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>{stats.total}</td>
                     <td className={cn(TABLE_STYLES.cell, 'text-destructive')}>{stats.turnoverHigh}</td>
                     <td className={cn(TABLE_STYLES.cell, 'text-amber-700')}>{stats.burnoutHigh}</td>
                     <td className={TABLE_STYLES.cell}>
@@ -637,7 +637,7 @@ function WorkforceTab({
                             }}
                           />
                         </div>
-                        <span className="text-xs text-[#666]">{riskRate}%</span>
+                        <span className="text-xs text-muted-foreground">{riskRate}%</span>
                       </div>
                     </td>
                   </tr>
@@ -646,7 +646,7 @@ function WorkforceTab({
             </tbody>
           </table>
           {Object.keys(deptMap).length === 0 && (
-            <div className="text-center py-12 text-sm text-[#999]">
+            <div className="text-center py-12 text-sm text-muted-foreground">
               {'kr_keb8db0ec_kec9786ec_kebb0b0ec_'}
             </div>
           )}
@@ -720,13 +720,13 @@ export default function PredictiveAnalyticsClient() {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 text-amber-700" />
-          <span className="text-sm text-[#666]">{t('kr_hr_admin_keca084ec_keca781ec_k')}</span>
+          <span className="text-sm text-muted-foreground">{t('kr_hr_admin_keca084ec_keca781ec_k')}</span>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={fetchAll}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-[#555] hover:bg-background"
+            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             {t('kr_kec8388eb')}
@@ -760,7 +760,7 @@ export default function PredictiveAnalyticsClient() {
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               activeTab === tab.key
                 ? 'border-primary text-primary'
-                : 'border-transparent text-[#666] hover:text-[#333]'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             <tab.icon className="w-4 h-4" />
@@ -771,7 +771,7 @@ export default function PredictiveAnalyticsClient() {
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-[#999]" />
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       ) : (
         <>

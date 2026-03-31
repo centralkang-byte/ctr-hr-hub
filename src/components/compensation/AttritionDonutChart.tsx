@@ -64,7 +64,7 @@ export default function AttritionDonutChart({
                   return (
                     <div className="rounded-md border bg-card p-3 shadow-lg">
                       <p className="font-medium text-sm">{d.label}</p>
-                      <p className="text-xs text-[#666]">
+                      <p className="text-xs text-muted-foreground">
                         {d.count}명 ({d.percentage.toFixed(1)}%)
                       </p>
                     </div>
@@ -76,7 +76,7 @@ export default function AttritionDonutChart({
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="text-center">
               <p className="text-2xl font-bold text-foreground">{totalCount}</p>
-              <p className="text-xs text-[#666]">전체</p>
+              <p className="text-xs text-muted-foreground">전체</p>
             </div>
           </div>
         </div>
@@ -87,9 +87,9 @@ export default function AttritionDonutChart({
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: d.color }}
               />
-              <span className="text-sm text-[#333]">{d.label}</span>
+              <span className="text-sm text-foreground">{d.label}</span>
               <span className="text-sm font-medium text-foreground">{d.count}명</span>
-              <span className="text-xs text-[#999]">({d.percentage.toFixed(1)}%)</span>
+              <span className="text-xs text-muted-foreground">({d.percentage.toFixed(1)}%)</span>
             </div>
           ))}
         </div>

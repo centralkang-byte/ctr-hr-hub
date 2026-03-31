@@ -21,19 +21,19 @@ import type { SessionUser } from '@/types'
 const REWARD_TYPE_BADGE_STYLES: Record<string, string> = {
   COMMENDATION: 'bg-primary/10 text-tertiary',
   BONUS_AWARD: 'bg-primary/5 text-blue-800',
-  CTR_VALUE_AWARD: 'bg-purple-50 text-purple-800',
-  LONG_SERVICE: 'bg-orange-50 text-orange-800',
+  CTR_VALUE_AWARD: 'bg-purple-500/10 text-purple-800',
+  LONG_SERVICE: 'bg-orange-500/10 text-orange-800',
   INNOVATION: 'bg-primary/10 text-primary',
   SAFETY_AWARD: 'bg-primary/5 text-blue-500',
   PROMOTION_RECOMMENDATION: 'bg-primary/10 text-tertiary',
-  OTHER: 'bg-muted text-[#999]',
+  OTHER: 'bg-muted text-muted-foreground',
 }
 
 const CTR_VALUE_BADGE_STYLES: Record<string, string> = {
   CHALLENGE: 'bg-destructive/5 text-destructive',
   TRUST: 'bg-primary/5 text-blue-800',
-  RESPONSIBILITY: 'bg-orange-50 text-orange-800',
-  RESPECT: 'bg-purple-50 text-purple-800',
+  RESPONSIBILITY: 'bg-orange-500/10 text-orange-800',
+  RESPECT: 'bg-purple-500/10 text-purple-800',
 }
 
 // ─── Types ───────────────────────────────────────────────
@@ -94,7 +94,7 @@ export default function RewardDetailClient({ user, id }: Props) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background p-6 flex items-center justify-center">
-        <div className="flex items-center gap-2 text-sm text-[#999]">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <div className="w-5 h-5 border-2 border-border border-t-primary rounded-full animate-spin" />
           {tRewards('loadingData')}
         </div>
@@ -105,7 +105,7 @@ export default function RewardDetailClient({ user, id }: Props) {
   if (!data) {
     return (
       <div className="min-h-screen bg-background p-6">
-        <div className="text-center text-sm text-[#999] py-12">
+        <div className="text-center text-sm text-muted-foreground py-12">
           {t('notFound')}
         </div>
       </div>
@@ -120,7 +120,7 @@ export default function RewardDetailClient({ user, id }: Props) {
           onClick={() => router.push('/discipline/rewards')}
           className="p-2 border border-border rounded-lg hover:bg-background transition-colors"
         >
-          <ChevronLeft className="w-4 h-4 text-[#666]" />
+          <ChevronLeft className="w-4 h-4 text-muted-foreground" />
         </button>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -131,11 +131,11 @@ export default function RewardDetailClient({ user, id }: Props) {
               {t('title')}
             </h1>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${REWARD_TYPE_BADGE_STYLES[data.rewardType] ?? 'bg-muted text-[#999]'}`}>
+              <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${REWARD_TYPE_BADGE_STYLES[data.rewardType] ?? 'bg-muted text-muted-foreground'}`}>
                 {tRewards(`rewardTypeLabels.${data.rewardType}`, { defaultValue: data.rewardType })}
               </span>
               {data.rewardType === 'CTR_VALUE_AWARD' && data.ctrValue && (
-                <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${CTR_VALUE_BADGE_STYLES[data.ctrValue] ?? 'bg-muted text-[#999]'}`}>
+                <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${CTR_VALUE_BADGE_STYLES[data.ctrValue] ?? 'bg-muted text-muted-foreground'}`}>
                   {tRewards(`ctrValueLabels.${data.ctrValue}`, { defaultValue: data.ctrValue })}
                 </span>
               )}
@@ -179,7 +179,7 @@ export default function RewardDetailClient({ user, id }: Props) {
 
             {/* CTR Value */}
             {data.rewardType === 'CTR_VALUE_AWARD' && data.ctrValue && (
-              <div className="mt-4 p-4 bg-purple-50 rounded-lg">
+              <div className="mt-4 p-4 bg-purple-500/10 rounded-lg">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-purple-800">{t('ctrCoreValue')}:</span>
                   <span className={`px-2 py-1 text-xs font-medium rounded ${CTR_VALUE_BADGE_STYLES[data.ctrValue] ?? ''}`}>
@@ -213,16 +213,16 @@ export default function RewardDetailClient({ user, id }: Props) {
               </div>
               <div>
                 <p className="text-sm font-bold text-foreground">{data.employee.name}</p>
-                <p className="text-xs text-[#999]">{data.employee.employeeNo}</p>
+                <p className="text-xs text-muted-foreground">{data.employee.employeeNo}</p>
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#999]">{tCommon('department')}</span>
+                <span className="text-muted-foreground">{tCommon('department')}</span>
                 <span className="text-foreground">{data.employee.department?.name ?? '-'}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#999]">{tCommon('grade')}</span>
+                <span className="text-muted-foreground">{tCommon('grade')}</span>
                 <span className="text-foreground">{data.employee.jobGrade?.name ?? '-'}</span>
               </div>
             </div>
@@ -231,16 +231,16 @@ export default function RewardDetailClient({ user, id }: Props) {
           {/* Date Info */}
           <div className="bg-card border border-border rounded-xl p-6">
             <h3 className="text-base font-bold text-foreground mb-4 flex items-center gap-2 tracking-[-0.02em]">
-              <Calendar className="w-4 h-4 text-[#666]" />
+              <Calendar className="w-4 h-4 text-muted-foreground" />
               {t('dateInfo')}
             </h3>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#999]">{tRewards('awardedDate')}</span>
+                <span className="text-muted-foreground">{tRewards('awardedDate')}</span>
                 <span className="text-foreground">{format(new Date(data.awardedDate), 'yyyy-MM-dd')}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-[#999]">{t('registeredDate')}</span>
+                <span className="text-muted-foreground">{t('registeredDate')}</span>
                 <span className="text-foreground">{format(new Date(data.createdAt), 'yyyy-MM-dd')}</span>
               </div>
             </div>
@@ -256,7 +256,7 @@ export default function RewardDetailClient({ user, id }: Props) {
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <span className="text-xs text-[#999]">{label}</span>
+      <span className="text-xs text-muted-foreground">{label}</span>
       <p className="text-sm text-foreground mt-0.5">{value}</p>
     </div>
   )

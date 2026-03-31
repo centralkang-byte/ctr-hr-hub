@@ -117,8 +117,8 @@ const ASSIGNEE_COLORS: Record<string, string> = {
   EMPLOYEE: 'bg-muted text-foreground',
   MANAGER: 'bg-primary/10 text-primary/90',
   HR: 'bg-tertiary-container/20 text-tertiary',
-  IT: 'bg-purple-50 text-purple-700',
-  FINANCE: 'bg-orange-100 text-orange-700',
+  IT: 'bg-purple-500/10 text-purple-700',
+  FINANCE: 'bg-orange-500/15 text-orange-700',
 }
 
 const LIMIT_OPTIONS = [10, 20, 50]
@@ -251,7 +251,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                 style={{ width: `${pct}%` }}
               />
             </div>
-            <span className="text-sm text-[#555] whitespace-nowrap">
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
               {completed}/{total}
             </span>
           </div>
@@ -277,12 +277,12 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
       if (isD7) {
         return (
           <div className="flex items-center gap-1.5">
-            <span className="inline-flex rounded-full h-2.5 w-2.5 bg-yellow-500" />
+            <span className="inline-flex rounded-full h-2.5 w-2.5 bg-yellow-500/100" />
             <span className="text-sm font-medium text-amber-700">D-{daysUntil}</span>
           </div>
         )
       }
-      return <span className="text-sm text-[#666]">D-{daysUntil}</span>
+      return <span className="text-sm text-muted-foreground">D-{daysUntil}</span>
     },
     [],
   )
@@ -410,7 +410,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                         row.isD3
                           ? 'bg-destructive/10'
                           : row.isD7
-                            ? 'bg-yellow-50'
+                            ? 'bg-yellow-500/10'
                             : ''
                       }
                     >

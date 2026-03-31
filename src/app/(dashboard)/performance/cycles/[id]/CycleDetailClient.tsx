@@ -210,7 +210,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
 
                 {/* Overdue Warning */}
                 {overdueParticipants.length > 0 && (
-                    <div className="mb-6 rounded-xl border border-amber-200 bg-amber-100 p-4">
+                    <div className="mb-6 rounded-xl border border-amber-200 bg-amber-500/15 p-4">
                         <div className="flex items-center gap-2">
                             <AlertTriangle className="h-5 w-5 text-amber-600" />
                             <span className="text-sm font-medium text-amber-800">⚠️ 미완료 현황: {overdueParticipants.length}명</span>
@@ -272,7 +272,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                     {filteredParticipants.map((p) => {
                                         const hasOverdue = p.overdueFlags && p.overdueFlags.length > 0
                                         return (
-                                            <tr key={p.employee.id} className={cn(TABLE_STYLES.row, hasOverdue && 'bg-amber-100/30 hover:bg-amber-100/50')}>
+                                            <tr key={p.employee.id} className={cn(TABLE_STYLES.row, hasOverdue && 'bg-amber-500/15/30 hover:bg-amber-500/15/50')}>
                                                 <td className={TABLE_STYLES.cell}>
                                                   <EmployeeCell
                                                     size="sm"
@@ -293,7 +293,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                                             <AlertTriangle className="h-3 w-3" /> {t('kr_keca780ec')}
                                                         </span>
                                                     ) : (
-                                                        <span className="inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">{t('kr_keca095ec')}</span>
+                                                        <span className="inline-flex rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-medium text-emerald-700">{t('kr_keca095ec')}</span>
                                                     )}
                                                 </td>
                                             </tr>

@@ -58,12 +58,12 @@ interface TeamMemberGoals {
 // ─── Status config ────────────────────────────────────────
 
 const CYCLE_STATUS_STYLES: Record<string, string> = {
-  PLANNING: 'bg-muted text-[#666]',
+  PLANNING: 'bg-muted text-muted-foreground',
   GOAL_SETTING: 'bg-primary/5 text-blue-800',
   IN_PROGRESS: 'bg-primary/10 text-tertiary',
-  EVALUATION: 'bg-amber-50 text-amber-700',
-  CALIBRATION: 'bg-purple-50 text-purple-800',
-  COMPLETED: 'bg-border text-[#666]',
+  EVALUATION: 'bg-amber-500/10 text-amber-700',
+  CALIBRATION: 'bg-purple-500/10 text-purple-800',
+  COMPLETED: 'bg-border text-muted-foreground',
 }
 
 // ─── Helpers ──────────────────────────────────────────────
@@ -209,10 +209,10 @@ export default function PerformanceClient({
             <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
             {activeCycle && (
               <div className="mt-2 flex items-center gap-3">
-                <span className="text-sm text-[#999]">{activeCycle.name}</span>
+                <span className="text-sm text-muted-foreground">{activeCycle.name}</span>
                 <span
                   className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                    CYCLE_STATUS_STYLES[activeCycle.status] ?? 'bg-muted text-[#666]'
+                    CYCLE_STATUS_STYLES[activeCycle.status] ?? 'bg-muted text-muted-foreground'
                   }`}
                 >
                   {t(`cycleStatusLabels.${activeCycle.status}` as Parameters<typeof t>[0])}
@@ -231,7 +231,7 @@ export default function PerformanceClient({
                 <Calendar className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-[#999]">{t('currentCycle')}</p>
+                <p className="text-sm text-muted-foreground">{t('currentCycle')}</p>
                 <p className="text-lg font-semibold text-foreground">
                   {activeCycle
                     ? t(`cycleStatusLabels.${activeCycle.status}` as Parameters<typeof t>[0])
@@ -248,7 +248,7 @@ export default function PerformanceClient({
                 <Target className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-[#999]">
+                <p className="text-sm text-muted-foreground">
                   {isManager ? t('teamGoalCount') : t('myGoalCount')}
                 </p>
                 <p className="text-lg font-semibold text-foreground">
@@ -261,11 +261,11 @@ export default function PerformanceClient({
           {/* Card 3: 평균 달성률 */}
           <div className="rounded-xl border border-border bg-card p-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10">
                 <TrendingUp className="h-5 w-5 text-purple-800" />
               </div>
               <div>
-                <p className="text-sm text-[#999]">{t('avgAchievement')}</p>
+                <p className="text-sm text-muted-foreground">{t('avgAchievement')}</p>
                 <p className="text-lg font-semibold text-foreground">
                   {isManager ? teamAvgProgress : avgProgress}%
                 </p>
@@ -276,11 +276,11 @@ export default function PerformanceClient({
           {/* Card 4: 다음 마감일 */}
           <div className="rounded-xl border border-border bg-card p-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-50">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500/10">
                 <ClipboardList className="h-5 w-5 text-orange-800" />
               </div>
               <div>
-                <p className="text-sm text-[#999]">{t('nextDeadline')}</p>
+                <p className="text-sm text-muted-foreground">{t('nextDeadline')}</p>
                 <p className="text-sm font-semibold text-foreground">
                   {getNextDeadline(activeCycle)}
                 </p>
@@ -308,7 +308,7 @@ export default function PerformanceClient({
                   </Link>
                 </div>
                 {goals.length === 0 ? (
-                  <div className="rounded-xl border border-border bg-card p-8 text-center text-[#999]">
+                  <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">
                     {t('noGoals')}
                   </div>
                 ) : (
@@ -330,16 +330,16 @@ export default function PerformanceClient({
                                   goal.status === 'APPROVED'
                                     ? 'bg-primary/10 text-tertiary'
                                     : goal.status === 'PENDING_APPROVAL'
-                                      ? 'bg-amber-50 text-amber-700'
+                                      ? 'bg-amber-500/10 text-amber-700'
                                       : goal.status === 'REJECTED'
                                         ? 'bg-destructive/5 text-destructive'
-                                        : 'bg-muted text-[#666]'
+                                        : 'bg-muted text-muted-foreground'
                                 }`}
                               >
                                 {t(`goalStatusLabels.${goal.status}` as Parameters<typeof t>[0])}
                               </span>
                             </div>
-                            <span className="text-sm text-[#999]">
+                            <span className="text-sm text-muted-foreground">
                               {t('weightLabel', { weight: goal.weight })}
                             </span>
                           </div>
@@ -350,7 +350,7 @@ export default function PerformanceClient({
                                 style={{ width: `${Math.min(progress, 100)}%` }}
                               />
                             </div>
-                            <span className="text-sm font-medium text-[#666]">
+                            <span className="text-sm font-medium text-muted-foreground">
                               {progress}%
                             </span>
                           </div>
@@ -378,7 +378,7 @@ export default function PerformanceClient({
                   </Link>
                 </div>
                 {teamData.length === 0 ? (
-                  <div className="rounded-xl border border-border bg-card p-8 text-center text-[#999]">
+                  <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">
                     {t('noTeamMembers')}
                   </div>
                 ) : (
@@ -414,7 +414,7 @@ export default function PerformanceClient({
                               }}
                             />
                           </div>
-                          <span className="text-sm font-medium text-[#666]">
+                          <span className="text-sm font-medium text-muted-foreground">
                             {member.avgProgress}%
                           </span>
                         </div>
@@ -441,7 +441,7 @@ export default function PerformanceClient({
                               <span className="font-medium text-foreground">
                                 {goal.title}
                               </span>
-                              <span className="text-sm text-[#999]">
+                              <span className="text-sm text-muted-foreground">
                                 {progress}%
                               </span>
                             </div>
@@ -479,11 +479,11 @@ export default function PerformanceClient({
 
                 {/* Active cycles */}
                 <div className="mb-6">
-                  <h3 className="mb-3 text-sm font-semibold text-[#666]">
+                  <h3 className="mb-3 text-sm font-semibold text-muted-foreground">
                     {t('activeCycles')}
                   </h3>
                   {cycles.length === 0 ? (
-                    <div className="rounded-xl border border-border bg-card p-6 text-center text-[#999]">
+                    <div className="rounded-xl border border-border bg-card p-6 text-center text-muted-foreground">
                       {t('noCycles')}
                     </div>
                   ) : (
@@ -500,13 +500,13 @@ export default function PerformanceClient({
                             </span>
                             <span
                               className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                                CYCLE_STATUS_STYLES[cycle.status] ?? 'bg-muted text-[#666]'
+                                CYCLE_STATUS_STYLES[cycle.status] ?? 'bg-muted text-muted-foreground'
                               }`}
                             >
                               {t(`cycleStatusLabels.${cycle.status}` as Parameters<typeof t>[0])}
                             </span>
                           </div>
-                          <p className="text-xs text-[#999]">
+                          <p className="text-xs text-muted-foreground">
                             {formatDate(cycle.startDate)} ~ {formatDate(cycle.endDate)}
                           </p>
                         </div>
@@ -517,7 +517,7 @@ export default function PerformanceClient({
 
                 {/* Submission rate */}
                 <div className="rounded-xl border border-border bg-card p-5">
-                  <h3 className="mb-3 text-sm font-semibold text-[#666]">
+                  <h3 className="mb-3 text-sm font-semibold text-muted-foreground">
                     {t('overallSubmissionRate')}
                   </h3>
                   <div className="flex items-center gap-4">
@@ -531,7 +531,7 @@ export default function PerformanceClient({
                       {submissionRate}%
                     </span>
                   </div>
-                  <p className="mt-2 text-xs text-[#999]">
+                  <p className="mt-2 text-xs text-muted-foreground">
                     {t('submissionStats', { submitted: submittedGoals, total: totalGoals })}
                   </p>
                 </div>
@@ -562,7 +562,7 @@ export default function PerformanceClient({
                               <span className="font-medium text-foreground">
                                 {goal.title}
                               </span>
-                              <span className="text-sm text-[#999]">
+                              <span className="text-sm text-muted-foreground">
                                 {progress}%
                               </span>
                             </div>

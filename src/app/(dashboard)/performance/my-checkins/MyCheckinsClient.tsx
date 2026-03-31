@@ -135,7 +135,7 @@ export default function MyCheckinsClient({user }: {
 
                 {/* Status banner */}
                 {checkinStatus && (
-                    <div className={`mb-6 rounded-xl border p-4 ${allComplete ? 'border-emerald-200 bg-emerald-100' : isMandatory ? 'border-amber-200 bg-amber-100' : 'border-border bg-card'}`}>
+                    <div className={`mb-6 rounded-xl border p-4 ${allComplete ? 'border-emerald-200 bg-emerald-500/15' : isMandatory ? 'border-amber-200 bg-amber-500/15' : 'border-border bg-card'}`}>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 {allComplete ? (

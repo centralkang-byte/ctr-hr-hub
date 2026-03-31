@@ -132,7 +132,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
           {/* Employee — only for new */}
           {!isEdit && (
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">
+              <label className="block text-sm font-medium text-foreground mb-1">
                 {tc('name')} <span className="text-red-500">*</span>
               </label>
               <select
@@ -152,7 +152,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
 
           {/* Request Type */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               {t('gdpr.requestType')} <span className="text-red-500">*</span>
             </label>
             <select
@@ -169,7 +169,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               {tc('description')} <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -183,7 +183,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
 
           {/* Deadline */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">{t('gdpr.deadline')}</label>
+            <label className="block text-sm font-medium text-foreground mb-1">{t('gdpr.deadline')}</label>
             <input
               type="date"
               className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
@@ -195,7 +195,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
           {/* Status — only for edit */}
           {isEdit && (
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">{tc('status')}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{tc('status')}</label>
               <select
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
                 value={form.status}
@@ -211,7 +211,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
           {/* Response Note — only for edit */}
           {isEdit && (
             <div>
-              <label className="block text-sm font-medium text-[#333] mb-1">{t('gdpr.responseNote')}</label>
+              <label className="block text-sm font-medium text-foreground mb-1">{t('gdpr.responseNote')}</label>
               <textarea
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none"
                 rows={3}
@@ -228,7 +228,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
         <DialogFooter className="gap-2">
           <button
             onClick={onClose}
-            className="bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
+            className="bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm"
           >
             {tc('cancel')}
           </button>

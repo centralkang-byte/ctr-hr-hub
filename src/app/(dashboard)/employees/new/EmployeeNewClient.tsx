@@ -562,7 +562,7 @@ export function EmployeeNewClient({
         <dl className="grid grid-cols-1 gap-x-8 gap-y-1 md:grid-cols-2">
           {rows.map(([label, value]) => (
             <div key={label} className="py-2">
-              <p className="text-xs text-[#999] font-medium mb-1">{label}</p>
+              <p className="text-xs text-muted-foreground font-medium mb-1">{label}</p>
               <p className="text-sm text-foreground">{value}</p>
             </div>
           ))}

@@ -138,7 +138,7 @@ export default function PostingDetailClient({
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="flex items-center gap-2 text-sm text-[#999]">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin" />
           {t('loadingData')}
         </div>
@@ -149,7 +149,7 @@ export default function PostingDetailClient({
   if (!data) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-sm text-[#999]">{t('notFound')}</p>
+        <p className="text-sm text-muted-foreground">{t('notFound')}</p>
       </div>
     )
   }
@@ -173,7 +173,7 @@ export default function PostingDetailClient({
             onClick={() => router.push('/recruitment')}
             className="p-2 rounded-lg border border-border hover:bg-card transition-colors"
           >
-            <ChevronLeft className="w-4 h-4 text-[#666]" />
+            <ChevronLeft className="w-4 h-4 text-muted-foreground" />
           </button>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">
@@ -183,7 +183,7 @@ export default function PostingDetailClient({
               <h1 className="text-xl font-bold text-foreground tracking-[-0.02em]">
                 {data.title}
               </h1>
-              <p className="text-sm text-[#999]">
+              <p className="text-sm text-muted-foreground">
                 {data.creator?.name ?? '-'} | {format(new Date(data.createdAt), 'yyyy-MM-dd')}
               </p>
             </div>
@@ -214,7 +214,7 @@ export default function PostingDetailClient({
               <button
                 onClick={handleClose}
                 disabled={actionLoading}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-orange-500/100 hover:bg-orange-600 text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
               >
                 <Lock className="w-4 h-4" />
                 {t('closePostingButton')}
@@ -272,7 +272,7 @@ export default function PostingDetailClient({
                 <Users className="w-5 h-5 text-blue-500" />
                 <div>
                   <p className="text-2xl font-bold text-blue-500">{data._count.applications}</p>
-                  <p className="text-xs text-[#666]">{t('totalApplicantLabel')}</p>
+                  <p className="text-xs text-muted-foreground">{t('totalApplicantLabel')}</p>
                 </div>
               </div>
             </div>
@@ -288,7 +288,7 @@ export default function PostingDetailClient({
             </h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-[#999]">{t('statusLabel')}</span>
+                <span className="text-xs text-muted-foreground">{t('statusLabel')}</span>
                 <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${STATUS_BADGE_STYLES[data.status] ?? STATUS_VARIANT.neutral}`}>
                   {STATUS_KEYS[data.status] ? t(STATUS_KEYS[data.status]) : data.status}
                 </span>
@@ -297,59 +297,59 @@ export default function PostingDetailClient({
               <div className="border-t border-border" />
 
               <InfoRow
-                icon={<Briefcase className="w-4 h-4 text-[#999]" />}
+                icon={<Briefcase className="w-4 h-4 text-muted-foreground" />}
                 label={t('department')}
                 value={data.department?.name ?? '-'}
               />
               <InfoRow
-                icon={<Tag className="w-4 h-4 text-[#999]" />}
+                icon={<Tag className="w-4 h-4 text-muted-foreground" />}
                 label={t('jobGrade')}
                 value={data.jobGrade?.name ?? '-'}
               />
               <InfoRow
-                icon={<Tag className="w-4 h-4 text-[#999]" />}
+                icon={<Tag className="w-4 h-4 text-muted-foreground" />}
                 label={t('jobCategory')}
                 value={data.jobCategory?.name ?? '-'}
               />
               <InfoRow
-                icon={<Briefcase className="w-4 h-4 text-[#999]" />}
+                icon={<Briefcase className="w-4 h-4 text-muted-foreground" />}
                 label={t('employmentType')}
                 value={EMPLOYMENT_TYPE_KEYS[data.employmentType] ? t(EMPLOYMENT_TYPE_KEYS[data.employmentType]) : data.employmentType}
               />
               {data.workMode && (
                 <InfoRow
-                  icon={<MapPin className="w-4 h-4 text-[#999]" />}
+                  icon={<MapPin className="w-4 h-4 text-muted-foreground" />}
                   label={t('workMode')}
                   value={WORK_MODE_KEYS[data.workMode] ? t(WORK_MODE_KEYS[data.workMode]) : data.workMode}
                 />
               )}
               <InfoRow
-                icon={<Users className="w-4 h-4 text-[#999]" />}
+                icon={<Users className="w-4 h-4 text-muted-foreground" />}
                 label={t('headcountColumn')}
                 value={t('headcountWithUnit', { count: data.headcount })}
               />
               <InfoRow
-                icon={<Tag className="w-4 h-4 text-[#999]" />}
+                icon={<Tag className="w-4 h-4 text-muted-foreground" />}
                 label={t('salaryLabel')}
                 value={formatSalary(data.salaryRangeMin, data.salaryRangeMax)}
               />
               {data.deadlineDate && (
                 <InfoRow
-                  icon={<Calendar className="w-4 h-4 text-[#999]" />}
+                  icon={<Calendar className="w-4 h-4 text-muted-foreground" />}
                   label={t('deadlineDate')}
                   value={format(new Date(data.deadlineDate), 'yyyy-MM-dd')}
                 />
               )}
               {data.recruiter && (
                 <InfoRow
-                  icon={<User className="w-4 h-4 text-[#999]" />}
+                  icon={<User className="w-4 h-4 text-muted-foreground" />}
                   label={t('recruiterInfo')}
                   value={data.recruiter.name}
                 />
               )}
               {data.location && (
                 <InfoRow
-                  icon={<MapPin className="w-4 h-4 text-[#999]" />}
+                  icon={<MapPin className="w-4 h-4 text-muted-foreground" />}
                   label={t('workLocation')}
                   value={data.location}
                 />
@@ -413,7 +413,7 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
     <div className="flex items-center gap-3">
       {icon}
       <div className="flex-1 flex items-center justify-between">
-        <span className="text-xs text-[#999]">{label}</span>
+        <span className="text-xs text-muted-foreground">{label}</span>
         <span className="text-sm text-foreground">{value}</span>
       </div>
     </div>
@@ -423,8 +423,8 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
 function TimelineItem({ label, date }: { label: string; date: string }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-xs text-[#999]">{label}</span>
-      <span className="text-sm text-[#666]">{format(new Date(date), 'yyyy-MM-dd HH:mm')}</span>
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="text-sm text-muted-foreground">{format(new Date(date), 'yyyy-MM-dd HH:mm')}</span>
     </div>
   )
 }

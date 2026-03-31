@@ -99,7 +99,7 @@ export default function NewGoalClient({
         <div className="mb-6">
           <button
             onClick={() => router.push('/performance/goals')}
-            className="mb-4 inline-flex items-center gap-1 text-sm text-[#999] hover:text-primary transition-colors"
+            className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             {t('backToGoalList')}
@@ -116,7 +116,7 @@ export default function NewGoalClient({
         >
           {/* 사이클 */}
           <div>
-            <label className="mb-1 block text-sm font-medium text-[#666]">
+            <label className="mb-1 block text-sm font-medium text-muted-foreground">
               {t('cycleLabel')} <span className="text-red-500">*</span>
             </label>
             <select
@@ -138,7 +138,7 @@ export default function NewGoalClient({
 
           {/* 제목 */}
           <div>
-            <label className="mb-1 block text-sm font-medium text-[#666]">
+            <label className="mb-1 block text-sm font-medium text-muted-foreground">
               {t('titleLabel')} <span className="text-red-500">*</span>
             </label>
             <input
@@ -154,7 +154,7 @@ export default function NewGoalClient({
 
           {/* 설명 */}
           <div>
-            <label className="mb-1 block text-sm font-medium text-[#666]">
+            <label className="mb-1 block text-sm font-medium text-muted-foreground">
               {t('descriptionLabel')}
             </label>
             <textarea
@@ -172,7 +172,7 @@ export default function NewGoalClient({
 
           {/* 가중치 */}
           <div>
-            <label className="mb-1 block text-sm font-medium text-[#666]">
+            <label className="mb-1 block text-sm font-medium text-muted-foreground">
               {t('weightPercent')} <span className="text-red-500">*</span>
             </label>
             <input
@@ -189,7 +189,7 @@ export default function NewGoalClient({
 
           {/* KPI 지표 */}
           <div>
-            <label className="mb-1 block text-sm font-medium text-[#666]">
+            <label className="mb-1 block text-sm font-medium text-muted-foreground">
               {t('kpiMetric')}
             </label>
             <input
@@ -207,7 +207,7 @@ export default function NewGoalClient({
 
           {/* 목표값 */}
           <div>
-            <label className="mb-1 block text-sm font-medium text-[#666]">
+            <label className="mb-1 block text-sm font-medium text-muted-foreground">
               {t('targetValue')}
             </label>
             <input
@@ -235,7 +235,7 @@ export default function NewGoalClient({
             <button
               type="button"
               onClick={() => router.push('/performance/goals')}
-              className="rounded-lg border border-border px-6 py-2 text-sm font-medium text-[#666] hover:bg-background transition-colors"
+              className="rounded-lg border border-border px-6 py-2 text-sm font-medium text-muted-foreground hover:bg-background transition-colors"
             >
               {tc('cancel')}
             </button>

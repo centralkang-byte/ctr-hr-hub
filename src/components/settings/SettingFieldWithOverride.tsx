@@ -50,7 +50,7 @@ export function SettingFieldWithOverride({
             )}
             {status === 'custom' && (
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1 text-xs font-medium text-orange-600">
+                <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/10 px-2.5 py-1 text-xs font-medium text-orange-600">
                   <Pencil className="h-3 w-3" />
                   법인 커스텀
                 </span>

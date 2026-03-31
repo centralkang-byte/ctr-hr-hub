@@ -25,8 +25,8 @@ const BIAS_TYPE_LABEL: Record<string, string> = {
 }
 
 const SEVERITY_STYLE: Record<string, string> = {
-  info: 'bg-indigo-100 text-primary/90',
-  warning: 'bg-amber-100 text-amber-700',
+  info: 'bg-indigo-500/15 text-primary/90',
+  warning: 'bg-amber-500/15 text-amber-700',
   critical: 'bg-destructive/10 text-destructive',
 }
 
@@ -68,7 +68,7 @@ export default function BiasDetectionBanner({ cycleId, onRunCheck }: Props) {
 
   if (loading) return null
   if (logs.length === 0) return (
-    <div className="flex items-center justify-between bg-emerald-100 rounded-lg px-4 py-2.5 mb-4">
+    <div className="flex items-center justify-between bg-emerald-500/15 rounded-lg px-4 py-2.5 mb-4">
       <p className="text-xs text-emerald-700">편향 감지: 현재 경고 없음</p>
       <button
         onClick={handleRunCheck}
@@ -84,7 +84,7 @@ export default function BiasDetectionBanner({ cycleId, onRunCheck }: Props) {
   const warningCount = logs.filter((l) => l.severity === 'warning').length
 
   return (
-    <div className={`rounded-lg border mb-4 ${criticalCount > 0 ? 'border-red-300 bg-destructive/10' : 'border-amber-300 bg-amber-100'}`}>
+    <div className={`rounded-lg border mb-4 ${criticalCount > 0 ? 'border-red-300 bg-destructive/10' : 'border-amber-300 bg-amber-500/15'}`}>
       <div className="flex items-center justify-between px-4 py-2.5">
         <div className="flex items-center gap-2">
           <AlertTriangle className={`w-4 h-4 ${criticalCount > 0 ? 'text-destructive' : 'text-amber-700'}`} />
@@ -95,11 +95,11 @@ export default function BiasDetectionBanner({ cycleId, onRunCheck }: Props) {
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={handleRunCheck} disabled={checking} className="text-xs text-[#666] underline">
+          <button onClick={handleRunCheck} disabled={checking} className="text-xs text-muted-foreground underline">
             {checking ? '분석 중...' : '재분석'}
           </button>
           <button onClick={() => setExpanded(!expanded)}>
-            {expanded ? <ChevronUp className="w-4 h-4 text-[#666]" /> : <ChevronDown className="w-4 h-4 text-[#666]" />}
+            {expanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
           </button>
         </div>
       </div>
@@ -111,10 +111,10 @@ export default function BiasDetectionBanner({ cycleId, onRunCheck }: Props) {
                 {log.severity.toUpperCase()}
               </span>
               <div>
-                <span className="text-xs font-medium text-[#333]">
+                <span className="text-xs font-medium text-foreground">
                   {BIAS_TYPE_LABEL[log.biasType] ?? log.biasType}
                 </span>
-                <p className="text-xs text-[#666]">{log.description}</p>
+                <p className="text-xs text-muted-foreground">{log.description}</p>
               </div>
             </div>
           ))}

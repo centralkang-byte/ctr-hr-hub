@@ -18,8 +18,8 @@ interface PiiAccessLog {
 
 const ACCESS_TYPE_BADGE: Record<string, string> = {
   VIEW: 'bg-primary/10 text-primary/90 border border-primary/20',
-  EXPORT: 'bg-amber-100 text-amber-700 border border-amber-300',
-  EDIT: 'bg-orange-50 text-orange-700 border border-orange-200',
+  EXPORT: 'bg-amber-500/15 text-amber-700 border border-amber-300',
+  EDIT: 'bg-orange-500/10 text-orange-700 border border-orange-200',
   DELETE: 'bg-destructive/10 text-destructive border border-destructive/20',
 }
 
@@ -83,12 +83,12 @@ export default function PiiAccessLogTable() {
       {/* Filter Bar */}
       <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="flex items-center gap-2 mb-3">
-          <SlidersHorizontal className="w-4 h-4 text-[#666]" />
-          <span className="text-sm font-medium text-[#333]">{tc('filter')}</span>
+          <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
+          <span className="text-sm font-medium text-foreground">{tc('filter')}</span>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div>
-            <label className="block text-xs text-[#666] mb-1">{t('gdpr.actor')}</label>
+            <label className="block text-xs text-muted-foreground mb-1">{t('gdpr.actor')}</label>
             <input
               type="text"
               className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
@@ -98,7 +98,7 @@ export default function PiiAccessLogTable() {
             />
           </div>
           <div>
-            <label className="block text-xs text-[#666] mb-1">{t('gdpr.target')}</label>
+            <label className="block text-xs text-muted-foreground mb-1">{t('gdpr.target')}</label>
             <input
               type="text"
               className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
@@ -108,7 +108,7 @@ export default function PiiAccessLogTable() {
             />
           </div>
           <div>
-            <label className="block text-xs text-[#666] mb-1">{tc('startDate')}</label>
+            <label className="block text-xs text-muted-foreground mb-1">{tc('startDate')}</label>
             <input
               type="date"
               className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
@@ -117,7 +117,7 @@ export default function PiiAccessLogTable() {
             />
           </div>
           <div>
-            <label className="block text-xs text-[#666] mb-1">{tc('endDate')}</label>
+            <label className="block text-xs text-muted-foreground mb-1">{tc('endDate')}</label>
             <input
               type="date"
               className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
@@ -136,7 +136,7 @@ export default function PiiAccessLogTable() {
           </button>
           <button
             onClick={handleReset}
-            className="inline-flex items-center gap-1.5 bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
+            className="inline-flex items-center gap-1.5 bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             {tc('reset')}
@@ -147,9 +147,9 @@ export default function PiiAccessLogTable() {
       {/* Table */}
       <div className={TABLE_STYLES.wrapper}>
         {loading ? (
-          <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
+          <div className="p-8 text-center text-muted-foreground">{tc('loading')}</div>
         ) : logs.length === 0 ? (
-          <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
+          <div className="p-8 text-center text-muted-foreground">{tc('noData')}</div>
         ) : (
           <>
             <div className="overflow-x-auto">
@@ -169,17 +169,17 @@ export default function PiiAccessLogTable() {
                     <tr key={log.id} className={TABLE_STYLES.row}>
                       <td className="px-4 py-3 text-sm">
                         <div className="font-medium text-foreground">{log.actor_name}</div>
-                        <div className="text-xs text-[#999]">{log.actor_role}</div>
+                        <div className="text-xs text-muted-foreground">{log.actor_role}</div>
                       </td>
-                      <td className="px-4 py-3 text-sm text-[#333]">{log.target_name}</td>
+                      <td className="px-4 py-3 text-sm text-foreground">{log.target_name}</td>
                       <td className="px-4 py-3 text-sm">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${ACCESS_TYPE_BADGE[log.access_type] ?? 'bg-background text-[#555] border border-border'}`}>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${ACCESS_TYPE_BADGE[log.access_type] ?? 'bg-background text-muted-foreground border border-border'}`}>
                           {log.access_type}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-[#555] font-mono tabular-nums text-xs">{log.field_name ?? '-'}</td>
-                      <td className="px-4 py-3 text-sm text-[#666] font-mono tabular-nums text-xs">{log.ip_address ?? '-'}</td>
-                      <td className="px-4 py-3 text-sm text-[#555]">
+                      <td className="px-4 py-3 text-sm text-muted-foreground font-mono tabular-nums text-xs">{log.field_name ?? '-'}</td>
+                      <td className="px-4 py-3 text-sm text-muted-foreground font-mono tabular-nums text-xs">{log.ip_address ?? '-'}</td>
+                      <td className="px-4 py-3 text-sm text-muted-foreground">
                         {new Date(log.created_at).toLocaleString()}
                       </td>
                     </tr>
@@ -191,24 +191,24 @@ export default function PiiAccessLogTable() {
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-                <p className="text-xs text-[#666]">
+                <p className="text-xs text-muted-foreground">
                   {tc('total')}: {total}
                 </p>
                 <div className="flex gap-1">
                   <button
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="px-3 py-1.5 text-xs rounded-lg border border-border text-[#555] hover:bg-background disabled:opacity-40"
+                    className="px-3 py-1.5 text-xs rounded-lg border border-border text-muted-foreground hover:bg-background disabled:opacity-40"
                   >
                     {tc('prev')}
                   </button>
-                  <span className="px-3 py-1.5 text-xs text-[#555]">
+                  <span className="px-3 py-1.5 text-xs text-muted-foreground">
                     {page} / {totalPages}
                   </span>
                   <button
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="px-3 py-1.5 text-xs rounded-lg border border-border text-[#555] hover:bg-background disabled:opacity-40"
+                    className="px-3 py-1.5 text-xs rounded-lg border border-border text-muted-foreground hover:bg-background disabled:opacity-40"
                   >
                     {tc('next')}
                   </button>

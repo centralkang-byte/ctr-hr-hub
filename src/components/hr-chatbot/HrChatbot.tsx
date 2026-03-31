@@ -323,7 +323,7 @@ export function HrChatbot() {
                           type="button"
                           onClick={() => loadSession(s.id)}
                           className={cn(
-                            'w-full rounded px-3 py-2 text-left text-xs text-[#333] hover:bg-muted',
+                            'w-full rounded px-3 py-2 text-left text-xs text-foreground hover:bg-muted',
                             s.id === currentSessionId && 'bg-primary/10 font-medium',
                           )}
                         >
@@ -331,7 +331,7 @@ export function HrChatbot() {
                         </button>
                       ))}
                       {sessions.length === 0 && (
-                        <p className="px-3 py-2 text-xs text-[#666]">
+                        <p className="px-3 py-2 text-xs text-muted-foreground">
                           {t('chatbotNoHistory')}
                         </p>
                       )}
@@ -411,7 +411,7 @@ export function HrChatbot() {
 
                     {/* Low confidence warning */}
                     {msg.needsEscalation && !msg.escalated && (
-                      <div className="rounded bg-amber-100 px-2 py-1.5">
+                      <div className="rounded bg-amber-500/15 px-2 py-1.5">
                         <div className="flex items-center gap-1 text-xs text-amber-700">
                           <AlertTriangle className="h-3 w-3" />
                           {t('chatbotLowConfidence')}
@@ -462,7 +462,7 @@ export function HrChatbot() {
                   </div>
                   {msg.role === 'user' && (
                     <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-border">
-                      <UserCircle className="h-3.5 w-3.5 text-[#555]" />
+                      <UserCircle className="h-3.5 w-3.5 text-muted-foreground" />
                     </div>
                   )}
                 </div>
@@ -475,7 +475,7 @@ export function HrChatbot() {
                     <MessageSquare className="h-3.5 w-3.5" />
                   </div>
                   <div className="rounded-lg bg-muted px-3 py-2">
-                    <Loader2 className="h-4 w-4 animate-spin text-[#666]" />
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                   </div>
                 </div>
               )}

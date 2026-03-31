@@ -176,7 +176,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
             className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
               statusFilter === s
                 ? 'border-primary text-primary'
-                : 'border-transparent text-[#666] hover:text-[#333]'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             {s === 'ALL' ? '전체' : s === 'SCHEDULED' ? '예정' : '완료'}
@@ -185,7 +185,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-[#999]">{tCommon('loading')}</div>
+        <div className="text-center py-12 text-muted-foreground">{tCommon('loading')}</div>
       ) : (
         <div className="space-y-6">
           {/* Scheduled Meetings */}
@@ -203,7 +203,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                           size="sm"
                           employee={isManager ? (m.employee as any) : { id: m.id, name: m.manager?.name ?? '', } }
                           trailing={
-                            <p className="text-xs text-[#666]">
+                            <p className="text-xs text-muted-foreground">
                               {new Date(m.scheduledAt).toLocaleDateString('ko-KR')} {new Date(m.scheduledAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
                               {' · '}
                               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary/90">
@@ -223,7 +223,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                       )}
                     </div>
                     {m.agenda && (
-                      <p className="mt-2 text-sm text-[#555] pl-[52px]">아젠다: {m.agenda}</p>
+                      <p className="mt-2 text-sm text-muted-foreground pl-[52px]">아젠다: {m.agenda}</p>
                     )}
                   </div>
                 ))}
@@ -267,7 +267,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                             {new Date(m.completedAt ?? m.scheduledAt).toLocaleDateString('ko-KR')}
                           </td>
                           <td className={TABLE_STYLES.cell}>
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-background text-[#555] border border-border">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-background text-muted-foreground border border-border">
                               {MEETING_TYPE_LABELS[m.meetingType] ?? m.meetingType}
                             </span>
                           </td>
@@ -290,7 +290,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
           )}
 
           {meetings.length === 0 && (
-            <div className="text-center py-12 text-[#999]">
+            <div className="text-center py-12 text-muted-foreground">
               <MessageSquare className="w-12 h-12 mx-auto mb-3 text-border" />
               <EmptyState />
             </div>
@@ -344,9 +344,9 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                       <div key={i} className="flex items-center gap-3 py-2 border-b border-border last:border-0">
                         <div className="w-4 h-4 rounded border border-border" />
                         <span className="text-sm text-foreground font-medium">{a.employeeName}:</span>
-                        <span className="text-sm text-[#555]">&quot;{a.item}&quot;</span>
+                        <span className="text-sm text-muted-foreground">&quot;{a.item}&quot;</span>
                         {a.dueDate && (
-                          <span className="text-xs text-[#999] ml-auto">(기한: {a.dueDate})</span>
+                          <span className="text-xs text-muted-foreground ml-auto">(기한: {a.dueDate})</span>
                         )}
                       </div>
                     ))}
@@ -367,7 +367,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_ked8c80ec')}</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">{t('kr_ked8c80ec')}</label>
                 <select
                   value={newMeeting.employeeId}
                   onChange={(e) => setNewMeeting({ ...newMeeting, employeeId: e.target.value })}
@@ -380,7 +380,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_kec9dbcec')}</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">{t('kr_kec9dbcec')}</label>
                 <input
                   type="datetime-local"
                   value={newMeeting.scheduledAt}
@@ -389,7 +389,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_kec9ca0ed')}</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">{t('kr_kec9ca0ed')}</label>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(MEETING_TYPE_LABELS).map(([key, label]) => (
                     <button
@@ -398,7 +398,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                       className={`px-3 py-2 rounded-lg text-sm border ${
                         newMeeting.meetingType === key
                           ? 'bg-primary text-white border-primary'
-                          : 'bg-card text-[#555] border-border hover:bg-background'
+                          : 'bg-card text-muted-foreground border-border hover:bg-background'
                       }`}
                     >
                       {label}
@@ -407,20 +407,20 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_kec9584ec')}</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">{t('kr_kec9584ec')}</label>
                 <textarea
                   value={newMeeting.agenda}
                   onChange={(e) => setNewMeeting({ ...newMeeting, agenda: e.target.value })}
                   placeholder="논의할 내용을 입력하세요"
                   rows={3}
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
                 />
               </div>
             </div>
             <div className="p-6 border-t border-border flex justify-end gap-3">
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="px-4 py-2 border border-border rounded-lg text-sm text-[#333] hover:bg-background"
+                className="px-4 py-2 border border-border rounded-lg text-sm text-foreground hover:bg-background"
               >
                 {t('cancel')}
               </button>

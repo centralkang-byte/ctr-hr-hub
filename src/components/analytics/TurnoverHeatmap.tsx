@@ -21,9 +21,9 @@ interface TurnoverHeatmapProps {
 
 // 이직률 → 색상 클래스 (0% emerald → 5% amber → 10%+ red)
 function getHeatColor(rate: number): string {
-  if (rate === 0) return 'bg-emerald-100 dark:bg-emerald-900/30'
+  if (rate === 0) return 'bg-emerald-500/15 dark:bg-emerald-900/30'
   if (rate < 2) return 'bg-emerald-200 dark:bg-emerald-800/40'
-  if (rate < 4) return 'bg-amber-100 dark:bg-amber-900/30'
+  if (rate < 4) return 'bg-amber-500/15 dark:bg-amber-900/30'
   if (rate < 6) return 'bg-amber-200 dark:bg-amber-800/40'
   if (rate < 8) return 'bg-orange-200 dark:bg-orange-800/40'
   if (rate < 10) return 'bg-red-200 dark:bg-red-800/40'
@@ -114,7 +114,7 @@ export function TurnoverHeatmap({ data }: TurnoverHeatmapProps) {
       <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
         <span>낮음</span>
         <div className="flex gap-0.5">
-          {['bg-emerald-100', 'bg-emerald-200', 'bg-amber-100', 'bg-amber-200', 'bg-orange-200', 'bg-red-200', 'bg-red-400'].map((c) => (
+          {['bg-emerald-500/15', 'bg-emerald-200', 'bg-amber-500/15', 'bg-amber-200', 'bg-orange-200', 'bg-red-200', 'bg-red-400'].map((c) => (
             <div key={c} className={cn('w-5 h-3 rounded-sm', c)} />
           ))}
         </div>

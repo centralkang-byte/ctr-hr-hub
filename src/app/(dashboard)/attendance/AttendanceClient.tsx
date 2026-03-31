@@ -269,10 +269,10 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
           {clockState === 'NOT_CLOCKED_IN' && (
             <div className="flex flex-col items-center gap-4 py-8">
               <div className="text-center">
-                <p className="text-lg font-medium text-[#666]">
+                <p className="text-lg font-medium text-muted-foreground">
                   {t('notClockedIn')}
                 </p>
-                <p className="mt-1 text-sm text-[#999]">
+                <p className="mt-1 text-sm text-muted-foreground">
                   {t('clockInPrompt')}
                 </p>
               </div>
@@ -296,7 +296,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
               <p className="font-mono text-4xl font-bold text-primary tabular-nums">
                 {formatElapsedTime(elapsed)}
               </p>
-              <p className="text-sm text-[#999]">
+              <p className="text-sm text-muted-foreground">
                 {t('clockIn')}: {formatTime(today?.clockIn ?? null)}
               </p>
               <Button
@@ -320,7 +320,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
               <p className="text-2xl font-bold text-foreground">
                 {formatMinutesToHM(today?.totalMinutes)}
               </p>
-              <div className="flex gap-6 text-sm text-[#999]">
+              <div className="flex gap-6 text-sm text-muted-foreground">
                 <span>
                   {t('clockIn')}: {formatTime(today?.clockIn ?? null)}
                 </span>
@@ -350,7 +350,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
 
                 return (
                   <div key={day.date} className="flex items-center gap-3">
-                    <span className="w-6 shrink-0 text-center text-sm font-medium text-[#999]">
+                    <span className="w-6 shrink-0 text-center text-sm font-medium text-muted-foreground">
                       {DAY_LABELS[idx]}
                     </span>
                     <div className="relative h-6 flex-1 rounded bg-muted">
@@ -367,7 +367,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
                         />
                       )}
                     </div>
-                    <span className="w-14 shrink-0 text-right text-sm tabular-nums text-[#999]">
+                    <span className="w-14 shrink-0 text-right text-sm tabular-nums text-muted-foreground">
                       {hours > 0 ? `${hours.toFixed(1)}h` : '-'}
                     </span>
                   </div>
@@ -377,13 +377,13 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
               {/* Totals row */}
               <div className="mt-4 flex justify-between border-t border-border pt-3">
                 <div className="text-sm">
-                  <span className="text-[#999]">{t('workHours')}: </span>
+                  <span className="text-muted-foreground">{t('workHours')}: </span>
                   <span className="font-semibold text-foreground">
                     {formatMinutesToHM(weekly.totalMinutes)}
                   </span>
                 </div>
                 <div className="text-sm">
-                  <span className="text-[#999]">{t('overtimeHours')}: </span>
+                  <span className="text-muted-foreground">{t('overtimeHours')}: </span>
                   <span className="font-semibold text-orange-500">
                     {formatMinutesToHM(weekly.totalOvertimeMinutes)}
                   </span>
@@ -391,7 +391,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
               </div>
             </div>
           ) : (
-            <p className="py-4 text-center text-sm text-[#999]">
+            <p className="py-4 text-center text-sm text-muted-foreground">
               {tc('noData')}
             </p>
           )}
@@ -403,7 +403,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
           <div className="flex flex-wrap items-center gap-3">
             {/* Attendance status badge */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-[#999]">{t('status')}:</span>
+              <span className="text-sm text-muted-foreground">{t('status')}:</span>
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_COLORS[today.status] ?? STATUS_VARIANT.neutral}`}>
                 {STATUS_LABELS[today.status] ?? today.status}
               </span>
@@ -411,7 +411,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
 
             {/* Work type badge */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-[#999]">{t('workType')}:</span>
+              <span className="text-sm text-muted-foreground">{t('workType')}:</span>
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${WORK_TYPE_COLORS[today.workType] ?? STATUS_VARIANT.neutral}`}>
                 {WORK_TYPE_LABELS[today.workType] ?? today.workType}
               </span>

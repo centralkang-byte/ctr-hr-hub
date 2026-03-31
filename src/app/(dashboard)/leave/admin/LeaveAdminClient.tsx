@@ -530,7 +530,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                             className={`text-[10px] ${
                               atLimit
                                 ? 'border-red-500 text-red-500 bg-destructive/5'
-                                : 'border-amber-500 text-amber-500 bg-amber-50'
+                                : 'border-amber-500 text-amber-500 bg-amber-500/10'
                             }`}
                           >
                             {atLimit ? '🔴 한도 도달' : '🟡 한도 이내'}

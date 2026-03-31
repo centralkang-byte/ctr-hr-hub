@@ -172,7 +172,7 @@ function DDayBadge({ dDay }: { dDay: number }) {
 
   let bgColor = 'bg-primary/10 text-primary'
   if (isOver)     bgColor = 'bg-destructive/5 text-red-500'
-  if (isImminent) bgColor = 'bg-amber-100 text-amber-700'
+  if (isImminent) bgColor = 'bg-amber-500/15 text-amber-700'
 
   const label = isOver ? `D+${Math.abs(dDay)}` : dDay === 0 ? 'D-Day' : `D-${dDay}`
 

@@ -65,7 +65,7 @@ export function DashboardShell({ user, companies, children }: DashboardShellProp
       {/* Main content area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header user={user} companies={companies} onMenuClick={handleOpenDrawer} />
-        <main className="flex-1 overflow-auto bg-muted dark:bg-slate-950 p-4 md:p-6 pb-20 md:pb-6">
+        <main className="flex-1 overflow-auto bg-muted p-4 md:p-6 pb-20 md:pb-6">
           <ErrorBoundary>{children}</ErrorBoundary>
           {/* Dark mode toggle — 좌하단 고정 */}
           <div className="fixed bottom-20 md:bottom-6 left-4 md:left-[17rem] z-40">

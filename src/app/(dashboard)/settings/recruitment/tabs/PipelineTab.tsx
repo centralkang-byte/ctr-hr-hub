@@ -54,7 +54,7 @@ export function PipelineTab({
           <p className="text-sm text-muted-foreground">{settings.stages.length}단계 파이프라인</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
+          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
         )}
       </div>
       <div className="space-y-2">{settings.stages.map((s, i) => (

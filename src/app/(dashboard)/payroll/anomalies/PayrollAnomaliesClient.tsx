@@ -32,8 +32,8 @@ interface AnomalyData {
 
 const SEVERITY_COLORS: Record<string, string> = {
   high: 'bg-destructive/10 text-destructive border-destructive/20',
-  medium: 'bg-amber-100 text-amber-700 border-amber-300',
-  low: 'bg-indigo-100 text-primary/90 border-indigo-200',
+  medium: 'bg-amber-500/15 text-amber-700 border-amber-300',
+  low: 'bg-indigo-500/15 text-primary/90 border-indigo-200',
 }
 
 const SEVERITY_LABEL: Record<string, string> = { high: '높음', medium: '보통', low: '낮음' }
@@ -107,7 +107,7 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
           </tbody>
         </table>
         {details.length > 8 && (
-          <p className="text-xs text-[#999] mt-2 px-3">... 외 {details.length - 8}건 더</p>
+          <p className="text-xs text-muted-foreground mt-2 px-3">... 외 {details.length - 8}건 더</p>
         )}
       </div>
     )
@@ -123,29 +123,29 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground">{'급여 이상 탐지'}</h1>
-            <p className="text-sm text-[#666]">{'밴드 이탈 · 내부 분산 · 법인간 격차 · 급격한 변화를 자동으로 탐지합니다'}</p>
+            <p className="text-sm text-muted-foreground">{'밴드 이탈 · 내부 분산 · 법인간 격차 · 급격한 변화를 자동으로 탐지합니다'}</p>
           </div>
         </div>
         <button onClick={fetchData} className="p-2 hover:bg-muted rounded-lg" disabled={loading}>
-          <RefreshCw className={`w-4 h-4 text-[#555] ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-4 h-4 text-muted-foreground ${loading ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
       {/* Month Nav */}
       <div className="flex items-center gap-4 mb-6">
         <button onClick={prevMonth} className="p-2 hover:bg-muted rounded-lg">
-          <ChevronLeft className="w-5 h-5 text-[#555]" />
+          <ChevronLeft className="w-5 h-5 text-muted-foreground" />
         </button>
         <div className="text-lg font-semibold text-foreground min-w-[120px] text-center">
           {year}년 {month}월
         </div>
         <button onClick={nextMonth} className="p-2 hover:bg-muted rounded-lg">
-          <ChevronRight className="w-5 h-5 text-[#555]" />
+          <ChevronRight className="w-5 h-5 text-muted-foreground" />
         </button>
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-20 text-[#999] text-sm gap-2">
+        <div className="flex items-center justify-center py-20 text-muted-foreground text-sm gap-2">
           <RefreshCw className="w-4 h-4 animate-spin" /> {'분석 중...'}
         </div>
       )}
@@ -155,29 +155,29 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
           {/* Summary KPI */}
           <div className="grid grid-cols-4 gap-4 mb-6">
             <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-[#666] mb-1">{tPayroll('totalAnomalies')}</p>
+              <p className="text-xs text-muted-foreground mb-1">{tPayroll('totalAnomalies')}</p>
               <p className={`text-3xl font-bold ${data.totalAnomalies > 0 ? 'text-destructive' : 'text-emerald-600'}`}>
                 {data.totalAnomalies}
               </p>
             </div>
             <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-[#666] mb-1">{tPayroll('highOrAbove')}</p>
+              <p className="text-xs text-muted-foreground mb-1">{tPayroll('highOrAbove')}</p>
               <p className="text-3xl font-bold text-destructive">
                 {data.anomalies.filter(a => a.severity === 'high').reduce((s, a) => s + a.affectedCount, 0)}
               </p>
             </div>
             <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-[#666] mb-1">{'분석 규칙'}</p>
+              <p className="text-xs text-muted-foreground mb-1">{'분석 규칙'}</p>
               <p className="text-3xl font-bold text-foreground">4</p>
             </div>
             <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-[#666] mb-1">{'스캔 인원'}</p>
+              <p className="text-xs text-muted-foreground mb-1">{'스캔 인원'}</p>
               <p className="text-3xl font-bold text-foreground">{data.scannedCount}</p>
             </div>
           </div>
 
           {data.totalAnomalies === 0 && (
-            <div className="flex items-center gap-3 p-6 bg-emerald-100 rounded-xl text-emerald-700">
+            <div className="flex items-center gap-3 p-6 bg-emerald-500/15 rounded-xl text-emerald-700">
               <CheckCircle2 className="w-6 h-6 shrink-0" />
               <div>
                 <p className="font-semibold">{tPayroll('noAnomalies')}</p>
@@ -209,13 +209,13 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
                         </span>
                         <span className="text-sm font-bold text-destructive">{anomaly.affectedCount}건</span>
                       </div>
-                      <p className="text-sm text-[#666] mt-0.5">{anomaly.description}</p>
+                      <p className="text-sm text-muted-foreground mt-0.5">{anomaly.description}</p>
                     </div>
                   </div>
                   {expanded[anomaly.rule] ? (
-                    <ChevronUp className="w-5 h-5 text-[#999] shrink-0" />
+                    <ChevronUp className="w-5 h-5 text-muted-foreground shrink-0" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-[#999] shrink-0" />
+                    <ChevronDown className="w-5 h-5 text-muted-foreground shrink-0" />
                   )}
                 </div>
                 {expanded[anomaly.rule] && (
@@ -233,8 +233,8 @@ export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) 
                 <div key={rule} className={`${CARD_STYLES.kpi} flex items-center gap-3 opacity-60`}>
                   <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                   <div>
-                    <h3 className="font-medium text-[#555]">{rule}</h3>
-                    <p className="text-sm text-[#999]">{'이상 없음'}</p>
+                    <h3 className="font-medium text-muted-foreground">{rule}</h3>
+                    <p className="text-sm text-muted-foreground">{'이상 없음'}</p>
                   </div>
                 </div>
               ))}

@@ -54,7 +54,7 @@ export function GlobalChangeConfirmModal({
         </button>
 
         {/* Icon */}
-        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-amber-50">
+        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/10">
           <AlertTriangle className="h-5 w-5 text-amber-600" />
         </div>
 

@@ -42,13 +42,13 @@ export const COMPA_RATIO_CONFIG: Record<
   LOW: {
     label: '시장 대비 낮음',
     color: '#F59E0B',
-    bgClass: 'bg-amber-50',
+    bgClass: 'bg-amber-500/10',
     textClass: 'text-amber-700',
   },
   AT_RANGE: {
     label: '적정',
     color: '#10B981',
-    bgClass: 'bg-emerald-50',
+    bgClass: 'bg-emerald-500/10',
     textClass: 'text-emerald-700',
   },
   HIGH: {
@@ -60,7 +60,7 @@ export const COMPA_RATIO_CONFIG: Record<
   VERY_HIGH: {
     label: '과보상',
     color: '#8B5CF6',
-    bgClass: 'bg-purple-50',
+    bgClass: 'bg-purple-500/10',
     textClass: 'text-purple-700',
   },
 }

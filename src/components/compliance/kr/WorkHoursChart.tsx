@@ -38,11 +38,11 @@ export default function WorkHoursChart({
       label: '주의 (40~52시간)',
       count: warningCount,
       pct: warningPct,
-      barColor: 'bg-orange-500',
+      barColor: 'bg-orange-500/100',
       textColor: 'text-orange-800',
-      bgColor: 'bg-orange-50',
+      bgColor: 'bg-orange-500/10',
       borderColor: 'border-orange-200',
-      dotColor: 'bg-orange-500',
+      dotColor: 'bg-orange-500/100',
     },
     {
       label: '위반 (52시간 초과)',
@@ -79,11 +79,11 @@ export default function WorkHoursChart({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className={`inline-block w-2.5 h-2.5 rounded-full ${seg.dotColor}`} />
-                <span className="text-xs text-[#666]">{seg.label}</span>
+                <span className="text-xs text-muted-foreground">{seg.label}</span>
               </div>
               <div className="flex items-center gap-3">
                 <span className={`text-xs font-semibold ${seg.textColor}`}>{seg.count}명</span>
-                <span className="text-xs text-[#999] w-10 text-right">{seg.pct}%</span>
+                <span className="text-xs text-muted-foreground w-10 text-right">{seg.pct}%</span>
               </div>
             </div>
             <div className="h-2 w-full rounded-full bg-muted">
@@ -107,7 +107,7 @@ export default function WorkHoursChart({
             {seg.label.split(' ')[0]}: {seg.count}명
           </span>
         ))}
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-muted text-[#666] border border-border">
+        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border">
           전체: {total}명
         </span>
       </div>

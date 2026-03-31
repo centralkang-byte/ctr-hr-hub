@@ -80,7 +80,7 @@ export function AssignmentTimeline({
 
   if (events.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-[#999]">
+      <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
         <span className="text-3xl mb-2">📋</span>
         <p className="text-sm">{emptyMessage}</p>
       </div>
@@ -110,7 +110,7 @@ export function AssignmentTimeline({
 
             {/* Right: date + card */}
             <div className={cn('flex-1 pb-6', isLast && 'pb-0')}>
-              <p className="mb-1.5 text-xs font-medium text-[#999]">
+              <p className="mb-1.5 text-xs font-medium text-muted-foreground">
                 {formatEventDate(event.date)}
               </p>
               <button
@@ -132,7 +132,7 @@ export function AssignmentTimeline({
                     {event.title}
                   </span>
                 </div>
-                <p className="mt-1 text-sm text-[#555]">{event.description}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{event.description}</p>
               </button>
             </div>
           </div>

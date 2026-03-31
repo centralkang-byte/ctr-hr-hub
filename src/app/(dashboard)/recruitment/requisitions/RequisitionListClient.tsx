@@ -46,16 +46,16 @@ interface Requisition {
 
 const URGENCY_LABELS: Record<string, { label: string; color: string }> = {
   urgent: { label: '긴급도', color: 'bg-destructive/10 text-destructive' },
-  normal: { label: '평균', color: 'bg-amber-100 text-amber-700' },
-  low: { label: '낮음', color: 'bg-sky-50 text-sky-700' },
+  normal: { label: '평균', color: 'bg-amber-500/15 text-amber-700' },
+  low: { label: '낮음', color: 'bg-sky-500/10 text-sky-700' },
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  draft: { label: '임시저장', color: 'bg-background text-[#555]', icon: <FileText size={12} /> },
-  pending: { label: '결재중', color: 'bg-amber-100 text-amber-700', icon: <Clock size={12} /> },
-  approved: { label: '승인', color: 'bg-emerald-100 text-emerald-700', icon: <CheckCircle2 size={12} /> },
+  draft: { label: '임시저장', color: 'bg-background text-muted-foreground', icon: <FileText size={12} /> },
+  pending: { label: '결재중', color: 'bg-amber-500/15 text-amber-700', icon: <Clock size={12} /> },
+  approved: { label: '승인', color: 'bg-emerald-500/15 text-emerald-700', icon: <CheckCircle2 size={12} /> },
   rejected: { label: '반려', color: 'bg-destructive/10 text-destructive', icon: <XCircle size={12} /> },
-  cancelled: { label: '취소', color: 'bg-background text-[#999]', icon: <XCircle size={12} /> },
+  cancelled: { label: '취소', color: 'bg-background text-muted-foreground', icon: <XCircle size={12} /> },
   filled: { label: '충원완료', color: 'bg-primary/10 text-primary/90', icon: <CheckCircle2 size={12} /> },
 }
 
@@ -108,7 +108,7 @@ export default function RequisitionListClient({user }: {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('requisitionTitle')}</h1>
-          <p className="text-sm text-[#666] mt-0.5">{t('department_kec9ea5_kecb184ec_kec9a94ec_kebb08f_keab2b0ec_management')}</p>
+          <p className="text-sm text-muted-foreground mt-0.5">{t('department_kec9ea5_kecb184ec_kec9a94ec_kebb08f_keab2b0ec_management')}</p>
         </div>
         <button
           onClick={() => router.push('/recruitment/requisitions/new')}
@@ -133,7 +133,7 @@ export default function RequisitionListClient({user }: {
             className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
               tab === t.key
                 ? 'border-primary text-primary'
-                : 'border-transparent text-[#666] hover:text-[#333]'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             {t.label}
@@ -144,7 +144,7 @@ export default function RequisitionListClient({user }: {
       {/* 검색 */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-sm">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#999]" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -152,7 +152,7 @@ export default function RequisitionListClient({user }: {
             className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
           />
         </div>
-        <button className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-[#555] hover:bg-background">
+        <button className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background">
           <Filter size={14} />
           {t('filter')}
         </button>
@@ -160,9 +160,9 @@ export default function RequisitionListClient({user }: {
 
       {/* 목록 */}
       {loading ? (
-        <div className="flex items-center justify-center h-48 text-[#999] text-sm">{tCommon('loading')}</div>
+        <div className="flex items-center justify-center h-48 text-muted-foreground text-sm">{tCommon('loading')}</div>
       ) : items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-48 text-[#999]">
+        <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
           <FileText size={40} className="mb-3 text-border" />
           <EmptyState />
         </div>
@@ -186,7 +186,7 @@ export default function RequisitionListClient({user }: {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-mono tabular-nums text-[#999]">{item.reqNumber}</span>
+                      <span className="text-xs font-mono tabular-nums text-muted-foreground">{item.reqNumber}</span>
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${urgency.color}`}>
                         {urgency.label}
                       </span>
@@ -197,7 +197,7 @@ export default function RequisitionListClient({user }: {
                       </span>
                     </div>
                     <h3 className="font-semibold text-foreground">{item.title}</h3>
-                    <div className="flex items-center gap-3 mt-1 text-sm text-[#666]">
+                    <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Building2 size={13} />
                         {item.company.name}
@@ -221,9 +221,9 @@ export default function RequisitionListClient({user }: {
                             <div key={record.id} className="flex items-center gap-1">
                               <div className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${
                                 isRejected ? 'bg-destructive/10 text-destructive' :
-                                isDone ? 'bg-emerald-100 text-emerald-700' :
-                                isActive ? 'bg-amber-100 text-amber-700' :
-                                'bg-muted text-[#999]'
+                                isDone ? 'bg-emerald-500/15 text-emerald-700' :
+                                isActive ? 'bg-amber-500/15 text-amber-700' :
+                                'bg-muted text-muted-foreground'
                               }`}>
                                 {isDone ? '✅' : isRejected ? '❌' : isActive ? '⏳' : '⬜'}
                                 {STEP_ROLE_LABELS[record.approverRole] ?? record.approverRole}
@@ -250,7 +250,7 @@ export default function RequisitionListClient({user }: {
                     )}
                     <button
                       onClick={() => router.push(`/recruitment/requisitions/${item.id}`)}
-                      className="flex items-center gap-1 px-3 py-1.5 border border-border text-[#555] text-xs rounded-lg hover:bg-background"
+                      className="flex items-center gap-1 px-3 py-1.5 border border-border text-muted-foreground text-xs rounded-lg hover:bg-background"
                     >
                       {t('kr_kec8381ec')}
                     </button>

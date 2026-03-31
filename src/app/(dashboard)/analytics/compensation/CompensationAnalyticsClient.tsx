@@ -59,7 +59,7 @@ export default function CompensationAnalyticsClient({ user }: { user: SessionUse
     return (
       <AnalyticsPageLayout title={t('title')}>
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-[#999]" />
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
       </AnalyticsPageLayout>
     )

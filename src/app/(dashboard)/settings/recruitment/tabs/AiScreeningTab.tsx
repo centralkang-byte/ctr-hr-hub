@@ -52,13 +52,13 @@ export function AiScreeningTab({
           <div className="flex items-center gap-2">
             <h3 className="text-base font-semibold text-foreground">{'AI 스크리닝'}</h3>
             {!companyId && (
-              <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />{'글로벌 고정'}</span>
+              <span className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />{'글로벌 고정'}</span>
             )}
           </div>
           <p className="text-sm text-muted-foreground">{'AI 기반 서류 심사 자동화 설정'}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
+          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
         )}
       </div>
 
@@ -77,7 +77,7 @@ export function AiScreeningTab({
 
       <div className="space-y-3">{settings.features.map((f, i) => (
         <div key={f.key} className="flex items-start gap-4 rounded-xl border border-border p-4 hover:bg-muted transition-colors">
-          <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/10">
+          <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/100/10">
             <Bot className="h-4 w-4 text-violet-500" />
           </div>
           <div className="flex-1">

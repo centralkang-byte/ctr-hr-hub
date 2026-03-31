@@ -172,7 +172,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
             const items = grouped[month]
             return (
               <div key={month}>
-                <h4 className="text-sm font-semibold text-[#555] mb-2">{month}월</h4>
+                <h4 className="text-sm font-semibold text-muted-foreground mb-2">{month}월</h4>
                 <div className="space-y-1">
                   {items.map((d) => (
                     <div
@@ -182,7 +182,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
                       <div className="flex items-center gap-3">
                         <CalendarDays className="h-4 w-4 text-primary" />
                         <span className="text-sm font-medium text-foreground">{d.name}</span>
-                        <span className="text-xs text-[#999]">{formatDate(d.date)}</span>
+                        <span className="text-xs text-muted-foreground">{formatDate(d.date)}</span>
                       </div>
                       <button
                         onClick={() => handleDelete(d.id)}
@@ -197,7 +197,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
             )
           })}
 
-          <div className="pt-2 border-t border-border text-sm text-[#555]">
+          <div className="pt-2 border-t border-border text-sm text-muted-foreground">
             합계: <span className="font-semibold">{days.length}일</span>
           </div>
         </div>
@@ -211,7 +211,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">날짜</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">날짜</label>
               <Input
                 type="date"
                 value={newDate}
@@ -219,7 +219,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">명칭</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">명칭</label>
               <Input
                 placeholder="예: 여름 집단휴가, 설 연휴 사이"
                 value={newName}

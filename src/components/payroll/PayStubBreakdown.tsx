@@ -12,7 +12,7 @@ interface PayStubBreakdownProps {
 function ChangeIndicator({ current, previous }: { current: number; previous?: number }) {
   if (previous == null || previous === 0) return null
   const diff = current - previous
-  if (diff === 0) return <Minus className="h-3 w-3 text-[#999] inline" />
+  if (diff === 0) return <Minus className="h-3 w-3 text-muted-foreground inline" />
   const pct = ((diff / previous) * 100).toFixed(1)
   if (diff > 0) {
     return (
@@ -69,7 +69,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
     <div className="space-y-6">
       {/* 실수령/공제 비율 바 */}
       <div>
-        <div className="flex justify-between text-xs text-[#666] mb-1">
+        <div className="flex justify-between text-xs text-muted-foreground mb-1">
           <span>실수령 {netRatio.toFixed(1)}%</span>
           <span>공제 {deductionRatio.toFixed(1)}%</span>
         </div>
@@ -93,7 +93,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
           <ChangeIndicator current={netPay} previous={previousMonth?.netPay} />
         </p>
         {previousMonth && (
-          <p className="text-xs text-[#666] mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             전월 {formatCurrency(previousMonth.netPay)}
           </p>
         )}
@@ -108,7 +108,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
           <div className="space-y-2">
             {earningItems.map((item) => (
               <div key={item.label} className="flex justify-between text-sm">
-                <span className="text-[#555]">{item.label}</span>
+                <span className="text-muted-foreground">{item.label}</span>
                 <span className="font-medium text-foreground">
                   {formatCurrency(item.value)}
                   <ChangeIndicator current={item.value} previous={item.prev} />
@@ -120,14 +120,14 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
             {customAllowances && customAllowances.length > 0 && (
               <>
                 <div className="border-t border-dashed border-border pt-2 mt-2">
-                  <p className="text-xs text-[#999] mb-1.5">추가 수당</p>
+                  <p className="text-xs text-muted-foreground mb-1.5">추가 수당</p>
                 </div>
                 {customAllowances.map((item) => (
                   <div key={item.code} className="flex justify-between text-sm">
-                    <span className="text-[#555] flex items-center gap-1">
+                    <span className="text-muted-foreground flex items-center gap-1">
                       {item.name}
                       {item.isTaxExempt && (
-                        <span className="inline-flex items-center px-1 py-0 rounded text-[10px] bg-emerald-100 text-emerald-600 border border-emerald-200">
+                        <span className="inline-flex items-center px-1 py-0 rounded text-[10px] bg-emerald-500/15 text-emerald-600 border border-emerald-200">
                           비과세
                         </span>
                       )}
@@ -141,7 +141,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
             )}
 
             <div className="flex justify-between text-sm font-semibold pt-2 border-t border-border">
-              <span className="text-[#333]">총 지급액</span>
+              <span className="text-foreground">총 지급액</span>
               <span className="text-emerald-600">
                 {formatCurrency(grossPay)}
                 <ChangeIndicator current={grossPay} previous={previousMonth?.grossPay} />
@@ -158,7 +158,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
           <div className="space-y-2">
             {deductionItems.map((item) => (
               <div key={item.label} className="flex justify-between text-sm">
-                <span className="text-[#555]">{item.label}</span>
+                <span className="text-muted-foreground">{item.label}</span>
                 <span className="font-medium text-destructive">
                   -{formatCurrency(item.value)}
                 </span>
@@ -169,13 +169,13 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
             {customDeductions && customDeductions.length > 0 && (
               <>
                 <div className="border-t border-dashed border-border pt-2 mt-2">
-                  <p className="text-xs text-[#999] mb-1.5">추가 공제</p>
+                  <p className="text-xs text-muted-foreground mb-1.5">추가 공제</p>
                 </div>
                 {customDeductions.map((item) => (
                   <div key={item.code} className="flex justify-between text-sm">
-                    <span className="text-[#555]">
+                    <span className="text-muted-foreground">
                       {item.name}
-                      <span className="text-[10px] text-[#999] ml-1">
+                      <span className="text-[10px] text-muted-foreground ml-1">
                         ({item.category === 'STATUTORY' ? '법정' : '선택'})
                       </span>
                     </span>
@@ -188,7 +188,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
             )}
 
             <div className="flex justify-between text-sm font-semibold pt-2 border-t border-border">
-              <span className="text-[#333]">총 공제액</span>
+              <span className="text-foreground">총 공제액</span>
               <span className="text-destructive">
                 -{formatCurrency(totalDeductions)}
                 <ChangeIndicator current={totalDeductions} previous={previousMonth?.totalDeductions} />
@@ -206,30 +206,30 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
           </h4>
           <div className="bg-background rounded-lg p-4 space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-[#555]">통상시급</span>
+              <span className="text-muted-foreground">통상시급</span>
               <span className="font-medium">{formatCurrency(overtime.hourlyWage)}</span>
             </div>
             {overtime.weekdayOTHours > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-[#555]">평일 연장 (×1.5)</span>
+                <span className="text-muted-foreground">평일 연장 (×1.5)</span>
                 <span className="font-medium">{overtime.weekdayOTHours}시간</span>
               </div>
             )}
             {overtime.weekendHours > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-[#555]">휴일근로 (×1.5)</span>
+                <span className="text-muted-foreground">휴일근로 (×1.5)</span>
                 <span className="font-medium">{overtime.weekendHours}시간</span>
               </div>
             )}
             {overtime.holidayHours > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-[#555]">공휴일근로 (×2.0)</span>
+                <span className="text-muted-foreground">공휴일근로 (×2.0)</span>
                 <span className="font-medium">{overtime.holidayHours}시간</span>
               </div>
             )}
             {overtime.nightHours > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-[#555]">야간근로 (×0.5)</span>
+                <span className="text-muted-foreground">야간근로 (×0.5)</span>
                 <span className="font-medium">{overtime.nightHours}시간</span>
               </div>
             )}

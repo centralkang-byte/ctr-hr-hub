@@ -51,9 +51,9 @@ interface PeerResult {
 const GRADE_STYLE: Record<string, { bg: string; text: string; label: string }> = {
     EXCEEDS_PLUS: { bg: 'bg-primary/10', text: 'text-primary/90', label: '탁월 (E+)' },
     EXCEEDS: { bg: 'bg-primary/10', text: 'text-primary', label: '우수 (E)' },
-    MEETS_PLUS: { bg: 'bg-emerald-100', text: 'text-emerald-700', label: '기대 이상 (M+)' },
+    MEETS_PLUS: { bg: 'bg-emerald-500/15', text: 'text-emerald-700', label: '기대 이상 (M+)' },
     MEETS: { bg: 'bg-primary/10', text: 'text-tertiary', label: '기대 충족 (M)' },
-    BELOW: { bg: 'bg-amber-100', text: 'text-amber-800', label: '개선 필요 (B)' },
+    BELOW: { bg: 'bg-amber-500/15', text: 'text-amber-800', label: '개선 필요 (B)' },
     BELOW_MINUS: { bg: 'bg-destructive/5', text: 'text-destructive', label: '미흡 (B-)' },
 }
 
@@ -301,7 +301,7 @@ export default function MyResultClient({user }: {
                         <div className="rounded-xl border border-border bg-card p-5">
                             <h2 className="mb-3 text-base font-semibold text-foreground">{t('kr_keab2b0ea_confirm')}</h2>
                             {isAcknowledged ? (
-                                <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-100 p-4">
+                                <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-500/15 p-4">
                                     <CheckCircle2 className="h-5 w-5 text-emerald-600" />
                                     <span className="text-sm font-medium text-emerald-700">
                                         ✅ 확인 완료 ({result.acknowledgedAt?.slice(0, 10)})
@@ -310,7 +310,7 @@ export default function MyResultClient({user }: {
                             ) : (
                                 <>
                                     {daysLeft !== null && (
-                                        <div className="mb-3 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-100 p-3">
+                                        <div className="mb-3 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-500/15 p-3">
                                             <Clock className="h-4 w-4 text-amber-600" />
                                             <span className="text-xs text-amber-800">
                                                 {result.acknowledgeDeadline?.slice(0, 10)}까지 확인하지 않으면 자동 확인 처리됩니다. (D-{Math.max(daysLeft, 0)})

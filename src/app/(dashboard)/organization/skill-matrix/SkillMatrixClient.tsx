@@ -91,11 +91,11 @@ type RadarData = {
 function getCellStyle(status: MatrixScore['status']) {
   switch (status) {
     case 'critical':  return 'bg-destructive/10 text-destructive'
-    case 'below':     return 'bg-amber-100 text-amber-700'
-    case 'meets':     return 'bg-emerald-100 text-emerald-700'
+    case 'below':     return 'bg-amber-500/15 text-amber-700'
+    case 'meets':     return 'bg-emerald-500/15 text-emerald-700'
     case 'exceeds':   return 'bg-primary/10 text-primary'
     case 'expert':    return 'bg-violet-100 text-violet-800'
-    default:          return 'bg-muted text-[#999]'
+    default:          return 'bg-muted text-muted-foreground'
   }
 }
 
@@ -109,28 +109,28 @@ function getCellLabel(status: MatrixScore['status'], gap: number | null) {
 }
 
 function getDeptCellStyle(avgGap: number | null) {
-  if (avgGap === null) return 'bg-muted text-[#999]'
+  if (avgGap === null) return 'bg-muted text-muted-foreground'
   if (avgGap >= 2)  return 'bg-destructive/10 text-destructive'
-  if (avgGap >= 1)  return 'bg-amber-100 text-amber-700'
+  if (avgGap >= 1)  return 'bg-amber-500/15 text-amber-700'
   if (avgGap <= -1) return 'bg-violet-100 text-violet-800'
-  return 'bg-emerald-100 text-emerald-700'
+  return 'bg-emerald-500/15 text-emerald-700'
 }
 
 function GapLegend() {
   const items = [
     { color: 'bg-destructive/10 border border-destructive/20', label: '미달 (≥2)', text: 'text-destructive' },
-    { color: 'bg-amber-100 border border-amber-300', label: '부족 (1)', text: 'text-amber-700' },
-    { color: 'bg-emerald-100 border border-emerald-200', label: '충족 (0)', text: 'text-emerald-700' },
+    { color: 'bg-amber-500/15 border border-amber-300', label: '부족 (1)', text: 'text-amber-700' },
+    { color: 'bg-emerald-500/15 border border-emerald-200', label: '충족 (0)', text: 'text-emerald-700' },
     { color: 'bg-primary/10 border border-primary/20', label: '초과', text: 'text-primary' },
     { color: 'bg-violet-100 border border-violet-200', label: '전문가 (5)', text: 'text-violet-800' },
-    { color: 'bg-muted border border-border', label: '미평가', text: 'text-[#999]' },
+    { color: 'bg-muted border border-border', label: '미평가', text: 'text-muted-foreground' },
   ]
   return (
     <div className="flex items-center gap-3 flex-wrap">
       {items.map((i) => (
         <div key={i.label} className="flex items-center gap-1">
           <span className={`w-5 h-5 rounded text-xs flex items-center justify-center font-medium ${i.color} ${i.text}`}>A</span>
-          <span className="text-xs text-[#666]">{i.label}</span>
+          <span className="text-xs text-muted-foreground">{i.label}</span>
         </div>
       ))}
     </div>
@@ -168,14 +168,14 @@ function RadarModal({
               {data?.employee.name ?? '직원'} 역량 레이더
             </h2>
             {data?.employee && (
-              <p className="text-sm text-[#666]">{data.employee.grade} · {period}</p>
+              <p className="text-sm text-muted-foreground">{data.employee.grade} · {period}</p>
             )}
           </div>
           <button
             onClick={onClose}
             className="p-2 hover:bg-muted rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-[#666]" />
+            <X className="w-5 h-5 text-muted-foreground" />
           </button>
         </div>
 
@@ -196,7 +196,7 @@ function RadarModal({
                   { label: '달성률', value: `${data.summary.overallProgress}%`, color: 'text-primary' },
                 ].map((k) => (
                   <div key={k.label} className="bg-background rounded-lg p-3 text-center">
-                    <p className="text-xs text-[#666]">{k.label}</p>
+                    <p className="text-xs text-muted-foreground">{k.label}</p>
                     <p className={`text-xl font-bold ${k.color}`}>{k.value}</p>
                   </div>
                 ))}
@@ -297,7 +297,7 @@ export default function SkillMatrixClient({user,
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('skillMatrixTitle')}</h1>
-          <p className="text-sm text-[#666] mt-1">팀/조직 역량 수준을 히트맵으로 확인하세요.</p>
+          <p className="text-sm text-muted-foreground mt-1">팀/조직 역량 수준을 히트맵으로 확인하세요.</p>
         </div>
         <div className="flex items-center gap-2">
           <select
@@ -333,7 +333,7 @@ export default function SkillMatrixClient({user,
           ].map((k) => (
             <div key={k.label} className="bg-card rounded-xl shadow-sm border border-border p-6">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs text-[#666]">{k.label}</p>
+                <p className="text-xs text-muted-foreground">{k.label}</p>
                 <k.icon className="w-4 h-4 text-border" />
               </div>
               <p className={`text-3xl font-bold ${k.color}`}>{k.value}</p>
@@ -356,7 +356,7 @@ export default function SkillMatrixClient({user,
               className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === t.key
                   ? 'border-primary text-primary'
-                  : 'border-transparent text-[#666] hover:text-[#333]'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
               }`}
             >
               {t.label}
@@ -376,13 +376,13 @@ export default function SkillMatrixClient({user,
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <GapLegend />
-                    <span className="text-xs text-[#666]">
+                    <span className="text-xs text-muted-foreground">
                       셀 클릭 → 레이더 차트
                     </span>
                   </div>
 
                   {matrixData.matrix.length === 0 ? (
-                    <div className="text-center py-12 text-[#666]">
+                    <div className="text-center py-12 text-muted-foreground">
                       <Users className="w-10 h-10 text-border mx-auto mb-3" />
                       <EmptyState />
                     </div>
@@ -427,7 +427,7 @@ export default function SkillMatrixClient({user,
                                   className="text-left hover:text-primary transition-colors"
                                 >
                                   <p className="font-medium text-foreground">{emp.employeeName}</p>
-                                  <p className="text-[#999]">{emp.grade} · {emp.department}</p>
+                                  <p className="text-muted-foreground">{emp.grade} · {emp.department}</p>
                                 </button>
                               </td>
                               {emp.scores.map((s) => (
@@ -464,7 +464,7 @@ export default function SkillMatrixClient({user,
                     <GapLegend />
                   </div>
                   {gapReport.departmentMatrix.length === 0 ? (
-                    <div className="text-center py-12 text-[#666]">데이터가 없습니다.</div>
+                    <div className="text-center py-12 text-muted-foreground">데이터가 없습니다.</div>
                   ) : (
                     <div className={`${TABLE_STYLES.wrapper} overflow-x-auto overflow-y-visible`}>
                       <table className={`${TABLE_STYLES.table} text-xs border-collapse min-w-[600px]`}>
@@ -489,7 +489,7 @@ export default function SkillMatrixClient({user,
                             <tr key={row.department.id} className={TABLE_STYLES.row}>
                               <td className="px-3 py-2 border border-border whitespace-nowrap">
                                 <p className="font-medium text-foreground">{row.department.name}</p>
-                                <p className="text-[#999]">{row.memberCount}명</p>
+                                <p className="text-muted-foreground">{row.memberCount}명</p>
                               </td>
                               {gapReport.allCompetencyGaps.map((c) => {
                                 const s = row.scores.find((x) => x.competencyId === c.competencyId)
@@ -527,10 +527,10 @@ export default function SkillMatrixClient({user,
                         <EmptyState />
                       ) : gapReport.topGaps.map((g, i) => (
                         <div key={g.competencyId} className="flex items-center gap-3 p-3 bg-background rounded-lg">
-                          <span className="text-sm font-bold text-[#999] w-5">{i + 1}</span>
+                          <span className="text-sm font-bold text-muted-foreground w-5">{i + 1}</span>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-foreground truncate">{g.competencyName}</p>
-                            <p className="text-xs text-[#666]">{g.category.name} · 평가율 {g.assessmentRate}%</p>
+                            <p className="text-xs text-muted-foreground">{g.category.name} · 평가율 {g.assessmentRate}%</p>
                           </div>
                           <div className="text-right">
                             <span className="px-2 py-0.5 rounded-full text-xs bg-destructive/10 text-destructive font-medium">
@@ -553,13 +553,13 @@ export default function SkillMatrixClient({user,
                         <EmptyState />
                       ) : gapReport.topStrengths.map((g, i) => (
                         <div key={g.competencyId} className="flex items-center gap-3 p-3 bg-background rounded-lg">
-                          <span className="text-sm font-bold text-[#999] w-5">{i + 1}</span>
+                          <span className="text-sm font-bold text-muted-foreground w-5">{i + 1}</span>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-foreground truncate">{g.competencyName}</p>
-                            <p className="text-xs text-[#666]">{g.category.name} · 평가율 {g.assessmentRate}%</p>
+                            <p className="text-xs text-muted-foreground">{g.category.name} · 평가율 {g.assessmentRate}%</p>
                           </div>
                           <div className="text-right">
-                            <span className="px-2 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-700 font-medium">
+                            <span className="px-2 py-0.5 rounded-full text-xs bg-emerald-500/15 text-emerald-700 font-medium">
                               초과 {g.avgGap?.toFixed(1)}
                             </span>
                           </div>
@@ -578,11 +578,11 @@ export default function SkillMatrixClient({user,
                       {gapReport.topGaps.slice(0, 3).map((g) => (
                         <div
                           key={g.competencyId}
-                          className="p-4 rounded-xl border border-indigo-100 bg-violet-50"
+                          className="p-4 rounded-xl border border-indigo-100 bg-violet-500/10"
                         >
                           <p className="text-sm font-semibold text-primary/90 mb-1">{g.competencyName}</p>
                           <p className="text-xs text-violet-500 mb-2">평균 갭: {g.avgGap?.toFixed(1)} / 대상: {g.assessed}명</p>
-                          <p className="text-xs text-[#555]">
+                          <p className="text-xs text-muted-foreground">
                             {g.category.name} 역량 강화를 위한 교육 과정을 검토하세요.
                           </p>
                         </div>

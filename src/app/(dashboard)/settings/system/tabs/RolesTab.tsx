@@ -24,7 +24,7 @@ export function RolesTab({
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-base font-semibold text-foreground">{'역할/권한'}</h3>
-            <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />{'글로벌 고정'}</span>
+            <span className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />{'글로벌 고정'}</span>
           </div>
           <p className="text-sm text-muted-foreground">RBAC 역할 정의 ({ROLES.length}개 역할)</p>
         </div>

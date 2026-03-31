@@ -68,13 +68,13 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
               value={step.approverRole ?? ''}
               onChange={(e) => updateStep(index, { approverRole: e.target.value as ApproverRole })}
               disabled={disabled}
-              className="w-full appearance-none rounded-lg border border-border bg-card px-3 py-2 text-sm text-[#333] focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-background disabled:text-[#999]"
+              className="w-full appearance-none rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-background disabled:text-muted-foreground"
             >
               {APPROVER_ROLES.map((r) => (
                 <option key={r.value} value={r.value}>{r.label}</option>
               ))}
             </select>
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#999]" />
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           </div>
 
           {/* 자동승인 일수 */}
@@ -88,9 +88,9 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
                 autoApproveDays: e.target.value ? parseInt(e.target.value) : null
               })}
               disabled={disabled}
-              className="w-24 rounded-lg border border-border px-2 py-2 text-sm text-[#333] placeholder:text-[#999] focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-background"
+              className="w-24 rounded-lg border border-border px-2 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-background"
             />
-            <span className="text-xs text-[#999]">일 후 자동</span>
+            <span className="text-xs text-muted-foreground">일 후 자동</span>
           </div>
 
           {/* 삭제 */}
@@ -98,7 +98,7 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
             <button
               type="button"
               onClick={() => removeStep(index)}
-              className="flex-shrink-0 rounded-lg p-1.5 text-[#999] hover:bg-destructive/10 hover:text-destructive"
+              className="flex-shrink-0 rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
             >
               <Trash2 className="h-4 w-4" />
             </button>
@@ -110,7 +110,7 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
         <button
           type="button"
           onClick={addStep}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border py-2.5 text-sm text-[#666] hover:border-primary hover:text-primary"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border py-2.5 text-sm text-muted-foreground hover:border-primary hover:text-primary"
         >
           <Plus className="h-4 w-4" />
           단계 추가

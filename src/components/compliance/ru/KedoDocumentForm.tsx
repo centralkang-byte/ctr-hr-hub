@@ -91,7 +91,7 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
           {/* Employee ID (only when creating) */}
           {!editing && (
             <div>
-              <label className="text-sm font-medium text-[#333] block mb-1">
+              <label className="text-sm font-medium text-foreground block mb-1">
                 직원 ID <span className="text-red-500">*</span>
               </label>
               <input
@@ -101,7 +101,7 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
                 onChange={handleChange}
                 required
                 placeholder={'직원 UUID 입력'}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
               />
             </div>
           )}
@@ -109,13 +109,13 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
           {editing && (
             <div className="p-3 bg-background rounded-lg">
               <p className="text-sm font-medium text-foreground">{document.employee.name}</p>
-              <p className="text-xs text-[#666]">{document.employee.employeeNo}</p>
+              <p className="text-xs text-muted-foreground">{document.employee.employeeNo}</p>
             </div>
           )}
 
           {/* Document Type */}
           <div>
-            <label className="text-sm font-medium text-[#333] block mb-1">
+            <label className="text-sm font-medium text-foreground block mb-1">
               문서 유형 <span className="text-red-500">*</span>
             </label>
             <select
@@ -138,7 +138,7 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
 
           {/* Title */}
           <div>
-            <label className="text-sm font-medium text-[#333] block mb-1">
+            <label className="text-sm font-medium text-foreground block mb-1">
               제목 <span className="text-red-500">*</span>
             </label>
             <input
@@ -148,14 +148,14 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
               onChange={handleChange}
               required
               placeholder={'문서 제목'}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
             />
           </div>
 
           {/* Signature Level & Expires At */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-sm font-medium text-[#333] block mb-1">서명 수준</label>
+              <label className="text-sm font-medium text-foreground block mb-1">서명 수준</label>
               <select
                 name="signatureLevel"
                 value={form.signatureLevel}
@@ -168,7 +168,7 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium text-[#333] block mb-1">만료일</label>
+              <label className="text-sm font-medium text-foreground block mb-1">만료일</label>
               <input
                 type="date"
                 name="expiresAt"
@@ -181,14 +181,14 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
 
           {/* Content */}
           <div>
-            <label className="text-sm font-medium text-[#333] block mb-1">문서 내용</label>
+            <label className="text-sm font-medium text-foreground block mb-1">문서 내용</label>
             <textarea
               name="content"
               value={form.content}
               onChange={handleChange}
               rows={4}
               placeholder={'문서 내용 (선택)'}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999] resize-none"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground resize-none"
             />
           </div>
 
@@ -203,7 +203,7 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
             <button
               type="button"
               onClick={onClose}
-              className="bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
+              className="bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm"
             >
               취소
             </button>

@@ -172,7 +172,7 @@ export default function ManagerEvaluationClient({user }: {
                                                     </span>
                                                 )}
                                                 {isCompleted && (
-                                                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                                                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-medium text-emerald-700">
                                                         <CheckCircle2 className="h-3 w-3" /> {t('evaluation_complete')}
                                                     </span>
                                                 )}

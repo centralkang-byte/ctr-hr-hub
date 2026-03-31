@@ -66,7 +66,7 @@ export default function PeerEvalFormClient({ user, nominationId }: { user: Sessi
       <div className="p-6 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
         <CheckCircle2 className="w-16 h-16 text-primary" />
         <h2 className="text-xl font-bold text-foreground">{t('peerReview_keab080_keca09cec')}</h2>
-        <p className="text-sm text-[#666]">{t('kr_kec868cec_ked94bceb_keab090ec')}</p>
+        <p className="text-sm text-muted-foreground">{t('kr_kec868cec_ked94bceb_keab090ec')}</p>
         <button onClick={() => router.push('/performance/peer-review')}
           className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>
           {t('kr_keb8f8cec')}
@@ -80,13 +80,13 @@ export default function PeerEvalFormClient({ user, nominationId }: { user: Sessi
       {/* Header */}
       <div className="flex items-center gap-3">
         <button onClick={() => router.push('/performance/peer-review')} className="p-1 hover:bg-muted rounded-lg">
-          <ArrowLeft className="w-5 h-5 text-[#666]" />
+          <ArrowLeft className="w-5 h-5 text-muted-foreground" />
         </button>
         <Users className="w-6 h-6 text-primary" />
         <h1 className="text-2xl font-bold text-foreground">{t('peerReview_kec9e91ec')}</h1>
       </div>
 
-      <div className="bg-indigo-100 rounded-xl border border-indigo-200 p-4 text-sm text-primary/90">
+      <div className="bg-indigo-500/15 rounded-xl border border-indigo-200 p-4 text-sm text-primary/90">
         {t('peerReview_keb8a94_kec9db5eb_keca791ea_kec8694ec_keab1b4ec_ked94bceb_kebb680ed')}
       </div>
 
@@ -95,14 +95,14 @@ export default function PeerEvalFormClient({ user, nominationId }: { user: Sessi
         {PEER_QUESTIONS.map((q) => (
           <div key={q.key} className="bg-card rounded-xl shadow-sm border border-border p-6">
             <h3 className="text-sm font-semibold text-foreground">{q.label}</h3>
-            <p className="text-xs text-[#666] mt-1 mb-3">{q.desc}</p>
+            <p className="text-xs text-muted-foreground mt-1 mb-3">{q.desc}</p>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((v) => (
                 <button key={v} onClick={() => setScore(q.key, v)}
                   className={`flex-1 py-2.5 rounded-lg border text-sm font-medium transition-colors ${
                     scores[q.key] === v
                       ? 'bg-primary text-white border-primary'
-                      : 'bg-card text-[#555] border-border hover:bg-background'
+                      : 'bg-card text-muted-foreground border-border hover:bg-background'
                   }`}>
                   <div>{v}</div>
                   <div className="text-xs mt-0.5 opacity-80">{SCORE_LABELS[v - 1]}</div>
@@ -116,23 +116,23 @@ export default function PeerEvalFormClient({ user, nominationId }: { user: Sessi
       {/* Overall Score Display */}
       {allScored && (
         <div className="bg-primary/10 rounded-xl border border-primary/20 p-4 text-center">
-          <p className="text-xs text-[#666]">{t('kr_keca285ed_score')}</p>
-          <p className="text-3xl font-bold text-primary">{avgScore} <span className="text-sm text-[#666]">/ 5.0</span></p>
+          <p className="text-xs text-muted-foreground">{t('kr_keca285ed_score')}</p>
+          <p className="text-3xl font-bold text-primary">{avgScore} <span className="text-sm text-muted-foreground">/ 5.0</span></p>
         </div>
       )}
 
       {/* Comment */}
       <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <h3 className="text-sm font-semibold text-foreground mb-2">{t('kr_keca285ed_kecbd94eb')} <span className="text-red-500">*</span></h3>
-        <p className="text-xs text-[#666] mb-3">{t('kr_keb8f99eb_keab095ec_kebb09cec_')}</p>
+        <p className="text-xs text-muted-foreground mb-3">{t('kr_keb8f99eb_keab095ec_kebb09cec_')}</p>
         <textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder="건설적인 피드백을 작성해 주세요..."
           rows={5}
-          className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+          className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
         />
-        <p className="text-xs text-[#999] mt-1 text-right">{comment.length}자</p>
+        <p className="text-xs text-muted-foreground mt-1 text-right">{comment.length}자</p>
       </div>
 
       {/* Submit */}

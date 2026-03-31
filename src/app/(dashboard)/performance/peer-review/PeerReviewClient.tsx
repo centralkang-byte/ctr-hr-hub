@@ -124,7 +124,7 @@ export default function PeerReviewClient({ user }: { user: SessionUser }) {
         <div className="flex border-b border-border">
           {TABS.map((tab_) => (
             <button key={tab_.key} onClick={() => setTab(tab_.key)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 ${tab === tab_.key ? 'border-primary text-primary' : 'border-transparent text-[#666] hover:text-[#333]'}`}>
+              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 ${tab === tab_.key ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
               <tab_.icon className="w-4 h-4" />
               {tab_.label}
             </button>
@@ -195,15 +195,15 @@ export default function PeerReviewClient({ user }: { user: SessionUser }) {
             {/* KPIs */}
             <div className="grid grid-cols-3 gap-4">
               <div className={CARD_STYLES.padded}>
-                <p className="text-xs text-[#666] mb-1">{t('targetEmployees')}</p>
+                <p className="text-xs text-muted-foreground mb-1">{t('targetEmployees')}</p>
                 <p className="text-3xl font-bold text-foreground">{teamResults.totalEmployees}{tCommon('unit.person')}</p>
               </div>
               <div className={CARD_STYLES.padded}>
-                <p className="text-xs text-[#666] mb-1">{t('totalNominations')}</p>
+                <p className="text-xs text-muted-foreground mb-1">{t('totalNominations')}</p>
                 <p className="text-3xl font-bold text-foreground">{teamResults.totalNominations}{tCommon('unit.count')}</p>
               </div>
               <div className={CARD_STYLES.padded}>
-                <p className="text-xs text-[#666] mb-1">{tCommon('completionRate')}</p>
+                <p className="text-xs text-muted-foreground mb-1">{tCommon('completionRate')}</p>
                 <p className="text-3xl font-bold text-primary">{teamResults.completionRate}%</p>
               </div>
             </div>

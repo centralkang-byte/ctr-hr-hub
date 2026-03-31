@@ -34,7 +34,7 @@ const STATUS_MAP: Record<WorkHoursStatus, { label: string; className: string }> 
   WARNING: {
     label: '주의',
     className:
-      'bg-orange-50 text-orange-500',
+      'bg-orange-500/10 text-orange-500',
   },
   VIOLATION: {
     label: '위반',
@@ -99,7 +99,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-6 border-b border-border">
         <div className="flex items-center gap-2">
           <h2 className="text-base font-bold text-foreground tracking-[-0.02em]">직원별 근무현황</h2>
-          <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold bg-muted text-[#666]">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold bg-muted text-muted-foreground">
             {filtered.length}명
           </span>
         </div>
@@ -107,7 +107,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
         <div className="flex items-center gap-2">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#999]" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
             <input
               type="text"
               placeholder={tCommon('placeholderSearchNameIdDept')}
@@ -167,7 +167,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
             ) : filtered.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-4 py-12 text-center">
-                  <div className="flex flex-col items-center gap-2 text-[#999]">
+                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
                     <AlertTriangle className="w-8 h-8" />
                     <p className="text-sm">검색 결과가 없습니다.</p>
                   </div>
@@ -190,8 +190,8 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#666]">{employee.employeeNo}</td>
-                    <td className="px-4 py-3 text-sm text-[#666]">{employee.department}</td>
+                    <td className="px-4 py-3 text-sm text-muted-foreground">{employee.employeeNo}</td>
+                    <td className="px-4 py-3 text-sm text-muted-foreground">{employee.department}</td>
                     <td className="px-4 py-3 text-right">
                       <span
                         className={`text-sm font-semibold ${

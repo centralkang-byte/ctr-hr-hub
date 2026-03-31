@@ -48,7 +48,7 @@ interface Employee {
 const VALUE_CONFIG: Record<string, { label: string; emoji: string; bgDefault: string; borderDefault: string; textDefault: string; bgActive: string; textActive: string }> = {
   CHALLENGE: { label: '도전', emoji: '🔴', bgDefault: 'bg-destructive/5', borderDefault: 'border-destructive/20', textDefault: 'text-red-500', bgActive: 'bg-destructive/50', textActive: 'text-white' },
   TRUST: { label: '신뢰', emoji: '🟢', bgDefault: 'bg-primary/10', borderDefault: 'border-green-300', textDefault: 'text-primary', bgActive: 'bg-primary', textActive: 'text-white' },
-  RESPONSIBILITY: { label: '책임', emoji: '🟠', bgDefault: 'bg-amber-50', borderDefault: 'border-amber-200', textDefault: 'text-amber-500', bgActive: 'bg-amber-500', textActive: 'text-white' },
+  RESPONSIBILITY: { label: '책임', emoji: '🟠', bgDefault: 'bg-amber-500/10', borderDefault: 'border-amber-200', textDefault: 'text-amber-500', bgActive: 'bg-amber-500/100', textActive: 'text-white' },
   RESPECT: { label: '존중', emoji: '🔵', bgDefault: 'bg-primary/5', borderDefault: 'border-primary/20', textDefault: 'text-blue-500', bgActive: 'bg-primary/50', textActive: 'text-white' },
 }
 
@@ -181,7 +181,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
           <button
             onClick={() => setActiveTab('feed')}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
-              activeTab === 'feed' ? 'border-primary text-primary' : 'border-transparent text-[#666] hover:text-[#333]'
+              activeTab === 'feed' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             {t('kr_ked94bceb')}
@@ -190,7 +190,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
             <button
               onClick={() => setActiveTab('stats')}
               className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
-                activeTab === 'stats' ? 'border-primary text-primary' : 'border-transparent text-[#666] hover:text-[#333]'
+                activeTab === 'stats' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'
               }`}
             >
               {t('statistics')}
@@ -215,9 +215,9 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
       {activeTab === 'feed' && (
         <div className="space-y-4">
           {loading ? (
-            <div className="text-center py-12 text-[#999]">{tCommon('loading')}</div>
+            <div className="text-center py-12 text-muted-foreground">{tCommon('loading')}</div>
           ) : feed.length === 0 ? (
-            <div className="text-center py-12 text-[#999]">
+            <div className="text-center py-12 text-muted-foreground">
               <Heart className="w-12 h-12 mx-auto mb-3 text-border" />
               <EmptyState />
             </div>
@@ -229,7 +229,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                   <div key={item.id} className="bg-card rounded-xl shadow-sm border border-border p-6">
                     <div className="flex items-center gap-2 mb-3">
                       <EmployeeCell size="sm" employee={item.sender as any} />
-                      <span className="text-[#999]">→</span>
+                      <span className="text-muted-foreground">→</span>
                       <EmployeeCell size="sm" employee={item.receiver as any} />
                     </div>
                     {config && (
@@ -237,8 +237,8 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                         {config.emoji} {config.label} ({VALUE_LABELS[item.coreValue]})
                       </span>
                     )}
-                    <p className="text-sm text-[#333] leading-relaxed mb-3">&quot;{item.message}&quot;</p>
-                    <div className="flex items-center justify-between text-xs text-[#999]">
+                    <p className="text-sm text-foreground leading-relaxed mb-3">&quot;{item.message}&quot;</p>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>
                         {formatTimeAgo(item.createdAt)}
                         {item.sender.department && ` · ${item.sender.department.name}`}
@@ -248,7 +248,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                         className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium ${
                           item.likedByMe
                             ? 'bg-primary/10 text-primary'
-                            : 'bg-background text-[#666] hover:bg-muted'
+                            : 'bg-background text-muted-foreground hover:bg-muted'
                         }`}
                       >
                         <ThumbsUp className={`w-4 h-4 ${item.likedByMe ? 'fill-current' : ''}`} />
@@ -263,7 +263,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                 <div className="text-center">
                   <button
                     onClick={() => fetchFeed(nextCursor)}
-                    className="px-4 py-2 border border-border rounded-lg text-sm text-[#555] hover:bg-background"
+                    className="px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background"
                   >
                     {t('kr_keb8d94_view')}
                   </button>
@@ -349,7 +349,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                 {stats.topRecognizers.map((r, i) => (
                   <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
                     <div className="flex items-center gap-3">
-                      <span className="w-6 h-6 rounded-full bg-background text-xs text-[#666] font-medium flex items-center justify-center">{i + 1}</span>
+                      <span className="w-6 h-6 rounded-full bg-background text-xs text-muted-foreground font-medium flex items-center justify-center">{i + 1}</span>
                       <span className="text-sm text-foreground">{r.name}</span>
                     </div>
                     <span className="text-sm font-medium text-primary">{r.count}건</span>
@@ -366,7 +366,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                 {stats.topRecognized.map((r, i) => (
                   <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
                     <div className="flex items-center gap-3">
-                      <span className="w-6 h-6 rounded-full bg-background text-xs text-[#666] font-medium flex items-center justify-center">{i + 1}</span>
+                      <span className="w-6 h-6 rounded-full bg-background text-xs text-muted-foreground font-medium flex items-center justify-center">{i + 1}</span>
                       <span className="text-sm text-foreground">{r.name}</span>
                     </div>
                     <span className="text-sm font-medium text-violet-500">{r.count}건</span>
@@ -388,23 +388,23 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
             <div className="p-6 space-y-4">
               {/* Receiver search */}
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_kebb09beb_kec82aceb')}</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">{t('kr_kebb09beb_kec82aceb')}</label>
                 {selectedReceiver ? (
                   <div className="flex items-center justify-between px-3 py-2 border border-border rounded-lg bg-background">
                     <span className="text-sm text-foreground">
                       {selectedReceiver.name} ({selectedReceiver.employeeNo})
                     </span>
-                    <button onClick={() => { setSelectedReceiver(null); setSearchQuery('') }} className="text-xs text-[#999] hover:text-red-500">{t('kr_kebb380ea')}</button>
+                    <button onClick={() => { setSelectedReceiver(null); setSearchQuery('') }} className="text-xs text-muted-foreground hover:text-red-500">{t('kr_kebb380ea')}</button>
                   </div>
                 ) : (
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => searchEmployees(e.target.value)}
                       placeholder={tCommon('searchEmployee')}
-                      className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+                      className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
                     />
                     {searchResults.length > 0 && (
                       <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
@@ -415,7 +415,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                             className="w-full px-3 py-2 text-left text-sm hover:bg-background flex items-center justify-between"
                           >
                             <span>{emp.name}</span>
-                            <span className="text-xs text-[#999]">{emp.employeeNo}</span>
+                            <span className="text-xs text-muted-foreground">{emp.employeeNo}</span>
                           </button>
                         ))}
                       </div>
@@ -426,7 +426,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
 
               {/* Core Value selection */}
               <div>
-                <label className="text-sm font-medium text-[#333] mb-2 block">{t('kr_ctr_ked95b5ec_kec84a0ed_requir')}</label>
+                <label className="text-sm font-medium text-foreground mb-2 block">{t('kr_ctr_ked95b5ec_kec84a0ed_requir')}</label>
                 <div className="grid grid-cols-2 gap-2">
                   {Object.entries(VALUE_CONFIG).map(([key, config]) => (
                     <button
@@ -447,22 +447,22 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
 
               {/* Message */}
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_keba994ec_10_500kec9e90')}</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">{t('kr_keba994ec_10_500kec9e90')}</label>
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="칭찬 메시지를 작성하세요..."
                   rows={4}
                   maxLength={500}
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
                 />
-                <p className="text-xs text-[#999] mt-1">{message.length}/500</p>
+                <p className="text-xs text-muted-foreground mt-1">{message.length}/500</p>
               </div>
             </div>
             <div className="p-6 border-t border-border flex justify-end gap-3">
               <button
                 onClick={() => { setShowCreateModal(false); setSelectedReceiver(null); setSelectedValue(''); setMessage('') }}
-                className="px-4 py-2 border border-border rounded-lg text-sm text-[#333] hover:bg-background"
+                className="px-4 py-2 border border-border rounded-lg text-sm text-foreground hover:bg-background"
               >
                 {t('cancel')}
               </button>

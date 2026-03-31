@@ -13,9 +13,9 @@ const STATUS_MAP: Record<string, { label: string; cls: string }> = {
   DRAFT: { label: '임시저장', cls: 'bg-muted/50 text-muted-foreground' },
   GOAL_SETTING: { label: '목표 설정', cls: 'bg-primary/5 text-primary' },
   IN_PROGRESS: { label: '진행 중', cls: 'bg-tertiary-container/10 text-tertiary' },
-  SELF_REVIEW: { label: '자기평가', cls: 'bg-yellow-50 text-yellow-600' },
-  MANAGER_REVIEW: { label: '상세', cls: 'bg-orange-50 text-orange-600' },
-  CALIBRATION: { label: '캘리브레이션', cls: 'bg-purple-50 text-purple-600' },
+  SELF_REVIEW: { label: '자기평가', cls: 'bg-yellow-500/10 text-yellow-600' },
+  MANAGER_REVIEW: { label: '상세', cls: 'bg-orange-500/10 text-orange-600' },
+  CALIBRATION: { label: '캘리브레이션', cls: 'bg-purple-500/10 text-purple-600' },
   COMPLETED: { label: '완료', cls: 'bg-muted/50 text-muted-foreground' },
   CLOSED: { label: '마감', cls: 'bg-muted text-muted-foreground/60' },
 }

@@ -68,20 +68,20 @@ interface AdjItem {
 
 const BLOCK_LABELS: Record<number, { label: string; color: string }> = {
   1: { label: '1A', color: 'bg-destructive/10 text-destructive' },
-  2: { label: '2A', color: 'bg-amber-100 text-amber-700' },
-  3: { label: '3A', color: 'bg-emerald-100 text-emerald-700' },
-  4: { label: '1B', color: 'bg-amber-100 text-amber-700' },
+  2: { label: '2A', color: 'bg-amber-500/15 text-amber-700' },
+  3: { label: '3A', color: 'bg-emerald-500/15 text-emerald-700' },
+  4: { label: '1B', color: 'bg-amber-500/15 text-amber-700' },
   5: { label: '2B', color: 'bg-primary/10 text-primary/90' },
-  6: { label: '3B', color: 'bg-emerald-100 text-emerald-700' },
-  7: { label: '1C', color: 'bg-indigo-100 text-primary/90' },
-  8: { label: '2C', color: 'bg-emerald-100 text-emerald-700' },
+  6: { label: '3B', color: 'bg-emerald-500/15 text-emerald-700' },
+  7: { label: '1C', color: 'bg-indigo-500/15 text-primary/90' },
+  8: { label: '2C', color: 'bg-emerald-500/15 text-emerald-700' },
   9: { label: '3C', color: 'bg-primary/10 text-primary/90' },
 }
 
 const STATUS_MAP: Record<string, { label: string; style: string }> = {
-  CALIBRATION_DRAFT: { label: '임시저장', style: 'bg-muted text-[#666]' },
-  CALIBRATION_IN_PROGRESS: { label: '진행 중', style: 'bg-amber-100 text-amber-700' },
-  CALIBRATION_COMPLETED: { label: '완료', style: 'bg-emerald-100 text-emerald-700' },
+  CALIBRATION_DRAFT: { label: '임시저장', style: 'bg-muted text-muted-foreground' },
+  CALIBRATION_IN_PROGRESS: { label: '진행 중', style: 'bg-amber-500/15 text-amber-700' },
+  CALIBRATION_COMPLETED: { label: '완료', style: 'bg-emerald-500/15 text-emerald-700' },
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -276,8 +276,8 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
     return (
       <div className="space-y-2">
         <div className="flex items-center gap-2 mb-3">
-          <Grid3X3 className="w-4 h-4 text-[#666]" />
-          <span className="text-sm font-medium text-[#333]">EMS 9-Block Matrix</span>
+          <Grid3X3 className="w-4 h-4 text-muted-foreground" />
+          <span className="text-sm font-medium text-foreground">EMS 9-Block Matrix</span>
         </div>
         <div className="grid grid-cols-3 gap-1">
           {gridLayout.flat().map((blockNum) => {
@@ -292,7 +292,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                   <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${blockInfo?.color ?? ''}`}>
                     {blockInfo?.label ?? blockNum}
                   </span>
-                  <span className="text-xs text-[#999]">{items.length}명</span>
+                  <span className="text-xs text-muted-foreground">{items.length}명</span>
                 </div>
                 <div className="space-y-0.5">
                   {items.slice(0, 3).map((ev) => (
@@ -319,14 +319,14 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                     </div>
                   ))}
                   {items.length > 3 && (
-                    <span className="text-xs text-[#999]">+{items.length - 3}명</span>
+                    <span className="text-xs text-muted-foreground">+{items.length - 3}명</span>
                   )}
                 </div>
               </div>
             )
           })}
         </div>
-        <div className="flex justify-between text-xs text-[#999] mt-1">
+        <div className="flex justify-between text-xs text-muted-foreground mt-1">
           <span>{t('kr_kec84b1ea_low')}</span>
           <span>{t('kr_kec84b1ea_high')}</span>
         </div>
@@ -335,7 +335,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
   }
 
   if (loading) {
-    return <div className="p-4 flex items-center justify-center h-64 text-[#666]">{tc('loading')}...</div>
+    return <div className="p-4 flex items-center justify-center h-64 text-muted-foreground">{tc('loading')}...</div>
   }
 
   return (
@@ -345,7 +345,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('calibration')}</h1>
-          <p className="text-sm text-[#666] mt-1">{t('kr_kec84b1ea_kecba98eb_keab480eb')}</p>
+          <p className="text-sm text-muted-foreground mt-1">{t('kr_kec84b1ea_kecba98eb_keab480eb')}</p>
         </div>
         <div className="flex items-center gap-3">
           <select
@@ -374,7 +374,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
               value={newSessionName}
               onChange={(e) => setNewSessionName(e.target.value)}
               placeholder="세션 이름"
-              className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+              className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
             />
             <button
               onClick={handleCreateSession}
@@ -384,7 +384,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
             </button>
             <button
               onClick={() => setShowCreateForm(false)}
-              className="px-4 py-2 border border-border rounded-lg text-sm text-[#666] hover:bg-background"
+              className="px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background"
             >
               {t('cancel')}
             </button>
@@ -400,7 +400,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
           </div>
           <div className="divide-y divide-border">
             {sessions.length === 0 && (
-              <div className="px-5 py-8 text-center text-sm text-[#999]">{t('kr_kec84b8ec_kec9786ec')}</div>
+              <div className="px-5 py-8 text-center text-sm text-muted-foreground">{t('kr_kec84b8ec_kec9786ec')}</div>
             )}
             {sessions.map((s) => {
               const st = STATUS_MAP[s.status]
@@ -418,7 +418,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                       {st?.label ?? s.status}
                     </span>
                   </div>
-                  <p className="text-xs text-[#999] mt-0.5">
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     {s.department?.name ?? '전사'} · 조정 {s._count.adjustments}건
                   </p>
                 </button>
@@ -431,11 +431,11 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
         <div className="lg:col-span-2 space-y-4">
           {detailLoading ? (
             <div className="rounded-xl border border-border bg-card flex items-center justify-center h-64">
-              <p className="text-sm text-[#666]">{tc('loading')}...</p>
+              <p className="text-sm text-muted-foreground">{tc('loading')}...</p>
             </div>
           ) : !selectedSession ? (
             <div className="rounded-xl border border-border bg-card flex items-center justify-center h-64">
-              <p className="text-sm text-[#999]">{t('kr_kec84b8ec_kec84a0ed')}</p>
+              <p className="text-sm text-muted-foreground">{t('kr_kec84b8ec_kec84a0ed')}</p>
             </div>
           ) : (
             <>
@@ -457,7 +457,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                 <button
                   onClick={handleAiAnalysis}
                   disabled={aiLoading}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-indigo-100 text-primary/90 hover:bg-indigo-200 disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-indigo-500/15 text-primary/90 hover:bg-indigo-200 disabled:opacity-50"
                 >
                   <Sparkles className="w-4 h-4" />
                   {aiLoading ? t('aiAnalyzing') : 'AI 캘리브레이션 분석'}
@@ -472,11 +472,11 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                       <AlertTriangle className="w-4 h-4 inline mr-1 text-amber-700" />
                       점수 조정: {adjEmployee.employee.name}
                     </h3>
-                    <button onClick={() => setAdjEmployee(null)} className="text-sm text-[#999] hover:text-[#666]">{t('close')}</button>
+                    <button onClick={() => setAdjEmployee(null)} className="text-sm text-muted-foreground hover:text-muted-foreground">{t('close')}</button>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_kec84b1ea_score')}</label>
+                      <label className="text-sm font-medium text-foreground mb-1 block">{t('kr_kec84b1ea_score')}</label>
                       <input
                         type="number"
                         min={1} max={5} step={0.1}
@@ -486,7 +486,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_kec97adeb_score')}</label>
+                      <label className="text-sm font-medium text-foreground mb-1 block">{t('kr_kec97adeb_score')}</label>
                       <input
                         type="number"
                         min={1} max={5} step={0.1}
@@ -497,13 +497,13 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_keca1b0ec_kec82acec')}</label>
+                    <label className="text-sm font-medium text-foreground mb-1 block">{t('kr_keca1b0ec_kec82acec')}</label>
                     <textarea
                       rows={2}
                       value={adjReason}
                       onChange={(e) => setAdjReason(e.target.value)}
                       placeholder={tCommon('placeholderAdjustmentReason')}
-                      className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999] resize-none"
+                      className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground resize-none"
                     />
                   </div>
                   <button

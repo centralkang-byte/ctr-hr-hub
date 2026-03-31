@@ -21,10 +21,10 @@ interface Consent {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    active: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+    active: 'bg-emerald-500/15 text-emerald-700 border border-emerald-200',
     revoked: 'bg-destructive/10 text-destructive border border-destructive/20',
-    expired: 'bg-background text-[#555] border border-border',
-    pending: 'bg-amber-100 text-amber-700 border border-amber-300',
+    expired: 'bg-background text-muted-foreground border border-border',
+    pending: 'bg-amber-500/15 text-amber-700 border border-amber-300',
   }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? map.pending}`}>
@@ -83,9 +83,9 @@ export default function ConsentManagementTab() {
 
       <div className={TABLE_STYLES.wrapper}>
         {loading ? (
-          <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
+          <div className="p-8 text-center text-muted-foreground">{tc('loading')}</div>
         ) : consents.length === 0 ? (
-          <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
+          <div className="p-8 text-center text-muted-foreground">{tc('noData')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className={TABLE_STYLES.table}>
@@ -105,17 +105,17 @@ export default function ConsentManagementTab() {
                   <tr key={c.id} className={TABLE_STYLES.row}>
                     <td className="px-4 py-3 text-sm">
                       <div className="font-medium text-foreground">{c.employee_name}</div>
-                      <div className="text-xs text-[#999]">{c.employee_no}</div>
+                      <div className="text-xs text-muted-foreground">{c.employee_no}</div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#333]">{c.purpose}</td>
-                    <td className="px-4 py-3 text-sm text-[#555] max-w-[200px] truncate">{c.legal_basis}</td>
+                    <td className="px-4 py-3 text-sm text-foreground">{c.purpose}</td>
+                    <td className="px-4 py-3 text-sm text-muted-foreground max-w-[200px] truncate">{c.legal_basis}</td>
                     <td className="px-4 py-3 text-sm">
                       <StatusBadge status={c.status} />
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#555]">
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
                       {c.consented_at ? new Date(c.consented_at).toLocaleDateString() : '-'}
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#555]">
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
                       {c.expires_at ? new Date(c.expires_at).toLocaleDateString() : '-'}
                     </td>
                     <td className="px-4 py-3 text-sm">
@@ -129,7 +129,7 @@ export default function ConsentManagementTab() {
                         </button>
                       )}
                       {c.status !== 'active' && (
-                        <span className="text-[#999] text-xs flex items-center gap-1">
+                        <span className="text-muted-foreground text-xs flex items-center gap-1">
                           <ShieldCheck className="w-3.5 h-3.5" />
                           {c.status}
                         </span>

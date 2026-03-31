@@ -323,7 +323,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
                   <CardTitle className="text-base font-bold text-foreground">
                     나에게 위임된 승인 권한
                   </CardTitle>
-                  <Badge className="bg-emerald-500 text-white text-[10px] px-1.5 rounded-full">
+                  <Badge className="bg-emerald-500/100 text-white text-[10px] px-1.5 rounded-full">
                     {activeReceived.length}
                   </Badge>
                 </div>
@@ -335,7 +335,7 @@ export function DelegationSettingsClient({ user }: { user: SessionUser }) {
                       key={d.id}
                       className="flex items-center gap-4 rounded-xl border border-emerald-100 bg-tertiary-container/10 p-4"
                     >
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/100/10">
                         <User className="h-5 w-5 text-emerald-500" />
                       </div>
                       <div>

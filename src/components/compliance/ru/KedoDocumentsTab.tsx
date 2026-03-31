@@ -137,7 +137,7 @@ export default function KedoDocumentsTab() {
             {/* Refresh */}
             <button
               onClick={() => fetchDocuments()}
-              className="p-2 border border-border rounded-lg hover:bg-background text-[#555]"
+              className="p-2 border border-border rounded-lg hover:bg-background text-muted-foreground"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
@@ -155,11 +155,11 @@ export default function KedoDocumentsTab() {
       {/* Table */}
       <div className={TABLE_STYLES.wrapper}>
         {loading ? (
-          <div className="flex items-center justify-center py-16 text-[#999] text-sm">
+          <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
             로딩 중...
           </div>
         ) : documents.length === 0 ? (
-          <div className="flex items-center justify-center py-16 text-[#999] text-sm">
+          <div className="flex items-center justify-center py-16 text-muted-foreground text-sm">
             KEDO 문서가 없습니다.
           </div>
         ) : (
@@ -200,25 +200,25 @@ export default function KedoDocumentsTab() {
                   <td className="px-4 py-3">
                     <div>
                       <p className="text-sm text-foreground">{doc.employee.name}</p>
-                      <p className="text-xs text-[#666]">{doc.employee.employeeNo}</p>
+                      <p className="text-xs text-muted-foreground">{doc.employee.employeeNo}</p>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#555]">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
                     {DOC_TYPE_LABELS[doc.documentType] ?? doc.documentType}
                   </td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-                        STATUS_COLORS[doc.status] ?? 'bg-background text-[#555] border-border'
+                        STATUS_COLORS[doc.status] ?? 'bg-background text-muted-foreground border-border'
                       }`}
                     >
                       {STATUS_LABELS[doc.status] ?? doc.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#555]">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
                     {doc.signatureLevel ?? '-'}
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#555]">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
                     {new Date(doc.createdAt).toLocaleDateString('ko-KR')}
                   </td>
                   <td className="px-4 py-3 text-right">
@@ -226,7 +226,7 @@ export default function KedoDocumentsTab() {
                       {doc.status === 'DRAFT' && (
                         <button
                           onClick={() => { setSelectedDoc(doc); setShowForm(true) }}
-                          className="p-1.5 hover:bg-muted rounded text-[#666] hover:text-[#333]"
+                          className="p-1.5 hover:bg-muted rounded text-muted-foreground hover:text-foreground"
                           title="수정"
                         >
                           <PenLine className="w-4 h-4" />
@@ -260,7 +260,7 @@ export default function KedoDocumentsTab() {
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (
           <div className="px-4 py-3 border-t border-border flex items-center justify-between">
-            <p className="text-xs text-[#666]">전체 {pagination.total}건</p>
+            <p className="text-xs text-muted-foreground">전체 {pagination.total}건</p>
             <div className="flex gap-1">
               {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
                 <button
@@ -269,7 +269,7 @@ export default function KedoDocumentsTab() {
                   className={`w-8 h-8 text-xs rounded-lg ${
                     page === pagination.page
                       ? 'bg-primary text-white'
-                      : 'text-[#555] hover:bg-muted'
+                      : 'text-muted-foreground hover:bg-muted'
                   }`}
                 >
                   {page}

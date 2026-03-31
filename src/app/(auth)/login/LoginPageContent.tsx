@@ -25,7 +25,7 @@ const QA_ACCOUNT_GROUPS: QAGroup[] = [
   {
     group: '전사관리',
     accounts: [
-      { email: 'super@ctr.co.kr', name: '최상우 (전사관리)', roleBadge: 'SA', color: 'bg-purple-100 text-purple-700' },
+      { email: 'super@ctr.co.kr', name: '최상우 (전사관리)', roleBadge: 'SA', color: 'bg-purple-500/15 text-purple-700' },
     ],
   },
   {
@@ -123,7 +123,7 @@ export default function LoginPageContent() {
               <Button
                 onClick={handleM365Login}
                 disabled={loadingId !== null}
-                className="w-full bg-card text-[#333] border border-border hover:bg-muted shadow-sm"
+                className="w-full bg-card text-foreground border border-border hover:bg-muted shadow-sm"
                 size="lg"
               >
                 {loadingId === 'm365' ? (
@@ -190,8 +190,8 @@ export default function LoginPageContent() {
 
               {/* Footer */}
               <div className="mt-4 rounded-lg bg-muted px-4 py-3 text-center">
-                <p className="text-xs text-[#555]">
-                  계정이 없거나 로그인이 불가한 경우 <span className="font-semibold text-[#333]">HR 담당자</span>에게 문의해주세요.
+                <p className="text-xs text-muted-foreground">
+                  계정이 없거나 로그인이 불가한 경우 <span className="font-semibold text-foreground">HR 담당자</span>에게 문의해주세요.
                 </p>
               </div>
             </CardContent>

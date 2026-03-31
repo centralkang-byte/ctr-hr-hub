@@ -54,7 +54,7 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
         <div className="flex items-center justify-between p-6 border-b border-border">
           <h2 className="text-lg font-semibold text-foreground">{'채용 요청 결재'}</h2>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-muted">
-            <X size={18} className="text-[#666]" />
+            <X size={18} className="text-muted-foreground" />
           </button>
         </div>
 
@@ -62,11 +62,11 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
         <div className="p-6 space-y-4">
           <div className="bg-background rounded-lg p-4 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono tabular-nums text-[#999]">{requisition.reqNumber}</span>
+              <span className="text-xs font-mono tabular-nums text-muted-foreground">{requisition.reqNumber}</span>
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                 requisition.urgency === 'urgent' ? 'bg-destructive/10 text-destructive' :
-                requisition.urgency === 'normal' ? 'bg-amber-100 text-amber-700' :
-                'bg-sky-50 text-sky-700'
+                requisition.urgency === 'normal' ? 'bg-amber-500/15 text-amber-700' :
+                'bg-sky-500/10 text-sky-700'
               }`}>
                 {requisition.urgency === 'urgent' ? '긴급' : requisition.urgency === 'normal' ? '보통' : '낮음'}
               </span>
@@ -76,15 +76,15 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
 
           {/* 코멘트 */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1.5">
-              {'코멘트'} <span className="text-[#999] font-normal">{'(반려 시 필수)'}</span>
+            <label className="block text-sm font-medium text-foreground mb-1.5">
+              {'코멘트'} <span className="text-muted-foreground font-normal">{'(반려 시 필수)'}</span>
             </label>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={3}
               placeholder={'승인 또는 반려 사유를 입력하세요...'}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none placeholder:text-[#999]"
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none placeholder:text-muted-foreground"
             />
           </div>
 
@@ -101,7 +101,7 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
           <button
             onClick={onClose}
             disabled={loading}
-            className="px-4 py-2 border border-border rounded-lg text-sm text-[#555] hover:bg-background disabled:opacity-50"
+            className="px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background disabled:opacity-50"
           >
             {'취소'}
           </button>

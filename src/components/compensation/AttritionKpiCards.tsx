@@ -25,10 +25,10 @@ export default function AttritionKpiCards({
       <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-            <Users className="h-5 w-5 text-[#555]" />
+            <Users className="h-5 w-5 text-muted-foreground" />
           </div>
           <div>
-            <p className="text-xs text-[#666]">전체 구성원</p>
+            <p className="text-xs text-muted-foreground">전체 구성원</p>
             <p className="text-2xl font-bold text-foreground">{totalEmployees}명</p>
           </div>
         </div>
@@ -40,11 +40,11 @@ export default function AttritionKpiCards({
             <AlertTriangle className="h-5 w-5 text-destructive" />
           </div>
           <div>
-            <p className="text-xs text-[#666]">고위험군</p>
+            <p className="text-xs text-muted-foreground">고위험군</p>
             <p className="text-2xl font-bold text-destructive">{highRiskCount}명</p>
             {highChange != null && (
               <span
-                className={`text-xs flex items-center gap-0.5 ${highChange > 0 ? 'text-red-500' : highChange < 0 ? 'text-emerald-600' : 'text-[#999]'}`}
+                className={`text-xs flex items-center gap-0.5 ${highChange > 0 ? 'text-red-500' : highChange < 0 ? 'text-emerald-600' : 'text-muted-foreground'}`}
               >
                 {highChange > 0 ? (
                   <TrendingUp className="h-3 w-3" />
@@ -61,11 +61,11 @@ export default function AttritionKpiCards({
 
       <div className="bg-card rounded-xl border border-amber-300 p-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-amber-500/15 flex items-center justify-center">
             <AlertTriangle className="h-5 w-5 text-amber-600" />
           </div>
           <div>
-            <p className="text-xs text-[#666]">주의군</p>
+            <p className="text-xs text-muted-foreground">주의군</p>
             <p className="text-2xl font-bold text-amber-600">{mediumRiskCount}명</p>
           </div>
         </div>
@@ -77,9 +77,9 @@ export default function AttritionKpiCards({
             <TrendingUp className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <p className="text-xs text-[#666]">평균 이탈 점수</p>
+            <p className="text-xs text-muted-foreground">평균 이탈 점수</p>
             <p className="text-2xl font-bold text-foreground">{avgScore}</p>
-            <span className="text-xs text-[#999]">/ 100</span>
+            <span className="text-xs text-muted-foreground">/ 100</span>
           </div>
         </div>
       </div>

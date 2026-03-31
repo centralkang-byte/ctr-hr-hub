@@ -20,9 +20,9 @@ interface Dpia {
 
 function RiskBadge({ level }: { level: string }) {
   const map: Record<string, string> = {
-    low: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
-    medium: 'bg-amber-100 text-amber-700 border border-amber-300',
-    high: 'bg-orange-50 text-orange-700 border border-orange-200',
+    low: 'bg-emerald-500/15 text-emerald-700 border border-emerald-200',
+    medium: 'bg-amber-500/15 text-amber-700 border border-amber-300',
+    high: 'bg-orange-500/10 text-orange-700 border border-orange-200',
     critical: 'bg-destructive/10 text-destructive border border-destructive/20',
   }
   return (
@@ -34,9 +34,9 @@ function RiskBadge({ level }: { level: string }) {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    draft: 'bg-background text-[#555] border border-border',
-    in_review: 'bg-amber-100 text-amber-700 border border-amber-300',
-    approved: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+    draft: 'bg-background text-muted-foreground border border-border',
+    in_review: 'bg-amber-500/15 text-amber-700 border border-amber-300',
+    approved: 'bg-emerald-500/15 text-emerald-700 border border-emerald-200',
     rejected: 'bg-destructive/10 text-destructive border border-destructive/20',
   }
   return (
@@ -85,9 +85,9 @@ export default function DpiaTabContent() {
 
       <div className={TABLE_STYLES.wrapper}>
         {loading ? (
-          <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
+          <div className="p-8 text-center text-muted-foreground">{tc('loading')}</div>
         ) : dpias.length === 0 ? (
-          <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
+          <div className="p-8 text-center text-muted-foreground">{tc('noData')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className={TABLE_STYLES.table}>
@@ -106,7 +106,7 @@ export default function DpiaTabContent() {
                     <td className="px-4 py-3 text-sm">
                       <div className="font-medium text-foreground">{d.title}</div>
                       {d.description && (
-                        <div className="text-xs text-[#999] mt-0.5 max-w-[280px] truncate">{d.description}</div>
+                        <div className="text-xs text-muted-foreground mt-0.5 max-w-[280px] truncate">{d.description}</div>
                       )}
                     </td>
                     <td className="px-4 py-3 text-sm">
@@ -115,14 +115,14 @@ export default function DpiaTabContent() {
                     <td className="px-4 py-3 text-sm">
                       <StatusBadge status={d.status} />
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#666]">
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
                       {new Date(d.updated_at).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => { setSelected(d); setShowForm(true) }}
-                          className="text-[#666] hover:text-primary"
+                          className="text-muted-foreground hover:text-primary"
                           title={d.status === 'draft' || d.status === 'in_review' ? tc('edit') : tc('view')}
                         >
                           {d.status === 'draft' || d.status === 'in_review' ? (

@@ -160,12 +160,12 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
         {/* ── Step 1: Template download ── */}
         {step === 1 && (
           <div className="space-y-4 py-2">
-            <p className="text-sm text-[#555]">
+            <p className="text-sm text-muted-foreground">
               아래 버튼으로 템플릿을 다운로드한 후, 발령 데이터를 입력하세요.
             </p>
 
             <div className="rounded-lg border border-border bg-background p-4">
-              <p className="text-xs text-[#999] mb-2">필수 컬럼</p>
+              <p className="text-xs text-muted-foreground mb-2">필수 컬럼</p>
               <div className="flex flex-wrap gap-2">
                 {['사번', DEPT_COL, GRADE_COL, '발효일'].map((col) => (
                   <span
@@ -180,13 +180,13 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
                 {['변경유형', '사유'].map((col) => (
                   <span
                     key={col}
-                    className="rounded-full bg-muted text-[#666] text-xs px-2.5 py-0.5"
+                    className="rounded-full bg-muted text-muted-foreground text-xs px-2.5 py-0.5"
                   >
                     {col} (선택)
                   </span>
                 ))}
               </div>
-              <p className="text-xs text-[#999] mt-3">
+              <p className="text-xs text-muted-foreground mt-3">
                 변경유형 허용값: TRANSFER · PROMOTION · DEMOTION · REORGANIZATION ·
                 STATUS_CHANGE · CONTRACT_CHANGE · COMPANY_TRANSFER · HIRE
               </p>
@@ -220,11 +220,11 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
               onClick={() => fileInputRef.current?.click()}
               className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-background py-12 cursor-pointer hover:border-primary hover:bg-primary/10/30 transition-colors"
             >
-              <Upload className="h-10 w-10 text-[#999] mb-3" />
-              <p className="text-sm font-medium text-[#555]">
+              <Upload className="h-10 w-10 text-muted-foreground mb-3" />
+              <p className="text-sm font-medium text-muted-foreground">
                 엑셀 파일을 드래그하거나 클릭하여 업로드
               </p>
-              <p className="text-xs text-[#999] mt-1">.xlsx, .xls 파일만 지원 / 최대 500건</p>
+              <p className="text-xs text-muted-foreground mt-1">.xlsx, .xls 파일만 지원 / 최대 500건</p>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -246,7 +246,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
         {step === 3 && (
           <div className="space-y-3 py-2">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-[#555]">
+              <p className="text-sm text-muted-foreground">
                 총 <strong>{preview.length}건</strong> 확인됨
                 {errors.length > 0 && (
                   <span className="ml-2 text-destructive">오류 {errors.length}건</span>
@@ -259,12 +259,12 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
               <table className="w-full text-xs">
                 <thead className="sticky top-0 bg-background">
                   <tr>
-                    <th className="px-3 py-2 text-left text-[#666]">행</th>
-                    <th className="px-3 py-2 text-left text-[#666]">사번</th>
-                    <th className="px-3 py-2 text-left text-[#666]">{DEPT_COL}</th>
-                    <th className="px-3 py-2 text-left text-[#666]">{GRADE_COL}</th>
-                    <th className="px-3 py-2 text-left text-[#666]">발효일</th>
-                    <th className="px-3 py-2 text-left text-[#666]">상태</th>
+                    <th className="px-3 py-2 text-left text-muted-foreground">행</th>
+                    <th className="px-3 py-2 text-left text-muted-foreground">사번</th>
+                    <th className="px-3 py-2 text-left text-muted-foreground">{DEPT_COL}</th>
+                    <th className="px-3 py-2 text-left text-muted-foreground">{GRADE_COL}</th>
+                    <th className="px-3 py-2 text-left text-muted-foreground">발효일</th>
+                    <th className="px-3 py-2 text-left text-muted-foreground">상태</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -277,7 +277,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
                           : 'hover:bg-background'
                       }
                     >
-                      <td className="px-3 py-2 text-[#999]">{row.rowNum}</td>
+                      <td className="px-3 py-2 text-muted-foreground">{row.rowNum}</td>
                       <td className="px-3 py-2 font-mono tabular-nums">{String(row.사번 ?? '')}</td>
                       <td className="px-3 py-2">{String(row[DEPT_COL] ?? '')}</td>
                       <td className="px-3 py-2">{String(row[GRADE_COL] ?? '')}</td>
@@ -342,7 +342,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
           <div className="flex flex-col items-center py-8 space-y-4">
             <CheckCircle2 className="h-14 w-14 text-emerald-600" />
             <p className="text-lg font-bold text-foreground">업로드 완료</p>
-            <p className="text-sm text-[#555]">
+            <p className="text-sm text-muted-foreground">
               총 {preview.length}건의 발령이 성공적으로 등록되었습니다.
             </p>
             <Button

@@ -176,7 +176,7 @@ function EmployeeQuickPanel({
             <p className="text-xs text-muted-foreground truncate">{employee.nameEn}</p>
           )}
           {subtitle && (
-            <p className="text-sm text-[#666] mt-0.5 truncate">{subtitle}</p>
+            <p className="text-sm text-muted-foreground mt-0.5 truncate">{subtitle}</p>
           )}
           <span className="text-xs font-mono tabular-nums text-muted-foreground mt-1 block">{employee.employeeNo}</span>
         </div>

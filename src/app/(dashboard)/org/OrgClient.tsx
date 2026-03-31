@@ -100,7 +100,7 @@ function DeptFlowNode({ data }: NodeProps) {
       <p className="text-sm font-bold text-foreground text-center line-clamp-2">
         {dept.name}
       </p>
-      <p className="text-xs text-[#999] mt-1">{tOrg('headcountUnit', { count: dept.employeeCount })}</p>
+      <p className="text-xs text-muted-foreground mt-1">{tOrg('headcountUnit', { count: dept.employeeCount })}</p>
       <Handle type="source" position={Position.Bottom} className="!bg-ctr-primary" />
     </div>
   )
@@ -221,7 +221,7 @@ function ListView({ depts, onSelect, selectedId }: ListViewProps) {
   if (depts.length === 0) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-sm text-[#999]">{tOrg('noDepartments')}</p>
+        <p className="text-sm text-muted-foreground">{tOrg('noDepartments')}</p>
       </div>
     )
   }
@@ -247,18 +247,18 @@ function ListView({ depts, onSelect, selectedId }: ListViewProps) {
                 selectedId === dept.id ? 'bg-primary/10' : ''
               }`}
             >
-              <td className="px-4 py-3 font-mono tabular-nums text-xs text-[#666]">{dept.code}</td>
+              <td className="px-4 py-3 font-mono tabular-nums text-xs text-muted-foreground">{dept.code}</td>
               <td className="px-4 py-3 font-medium text-foreground" style={{ paddingLeft: `${1 + dept.level * 1.5}rem` }}>
                 {dept.level > 0 && <span className="text-[#CCC] mr-1">{'└'}</span>}
                 {dept.name}
               </td>
-              <td className="px-4 py-3 text-[#666]">{dept.level + 1}</td>
+              <td className="px-4 py-3 text-muted-foreground">{dept.level + 1}</td>
               <td className="px-4 py-3 text-foreground">{tOrg('headcountUnit', { count: dept.employeeCount })}</td>
               <td className="px-4 py-3">
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                   !dept.deletedAt
-                    ? 'bg-emerald-100 text-emerald-700'
-                    : 'bg-background text-[#999] border border-border'
+                    ? 'bg-emerald-500/15 text-emerald-700'
+                    : 'bg-background text-muted-foreground border border-border'
                 }`}>
                   {!dept.deletedAt ? tc('active') : tc('inactive')}
                 </span>
@@ -286,7 +286,7 @@ function GridView({ depts, onSelect, selectedId }: GridViewProps) {
   if (depts.length === 0) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-sm text-[#999]">{tOrg('noDepartments')}</p>
+        <p className="text-sm text-muted-foreground">{tOrg('noDepartments')}</p>
       </div>
     )
   }
@@ -305,20 +305,20 @@ function GridView({ depts, onSelect, selectedId }: GridViewProps) {
             } ${!!dept.deletedAt ? 'opacity-60' : ''}`}
           >
             <div className="flex items-start justify-between mb-2">
-              <span className="text-[10px] font-mono tabular-nums text-[#999] bg-background px-1.5 py-0.5 rounded">{dept.code}</span>
+              <span className="text-[10px] font-mono tabular-nums text-muted-foreground bg-background px-1.5 py-0.5 rounded">{dept.code}</span>
               {!!dept.deletedAt && (
-                <span className="text-[10px] text-[#999]">{tc('inactive')}</span>
+                <span className="text-[10px] text-muted-foreground">{tc('inactive')}</span>
               )}
             </div>
             <p className="text-sm font-semibold text-foreground line-clamp-2 mb-1">{dept.name}</p>
             {dept.nameEn && (
-              <p className="text-xs text-[#999] line-clamp-1 mb-2">{dept.nameEn}</p>
+              <p className="text-xs text-muted-foreground line-clamp-1 mb-2">{dept.nameEn}</p>
             )}
             <p className="text-xs text-primary font-medium">
               {tOrg('headcountUnit', { count: dept.employeeCount })}
             </p>
             {dept.children.length > 0 && (
-              <p className="text-xs text-[#999] mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {tOrg('subDepartments')} {dept.children.length}
               </p>
             )}
@@ -374,7 +374,7 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* Dept Info */}
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-[#999]">{'deptInfo'}</h4>
+          <h4 className="text-xs font-semibold text-muted-foreground">{'deptInfo'}</h4>
           <div className="bg-background rounded-lg p-3 space-y-1.5 text-sm">
             <InfoRow label={'code'} value={dept.code} />
             <InfoRow label={'level'} value={String(dept.level)} />
@@ -387,14 +387,14 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
         {/* Sub-departments */}
         {dept.children.length > 0 && (
           <div className="space-y-2">
-            <h4 className="text-xs font-semibold text-[#999]">
+            <h4 className="text-xs font-semibold text-muted-foreground">
               {'subDepartments'} ({dept.children.length})
             </h4>
             <ul className="space-y-1">
               {dept.children.map((child) => (
                 <li key={child.id} className="text-sm px-3 py-1.5 bg-background rounded flex justify-between">
                   <span className="text-foreground">{child.name}</span>
-                  <span className="text-[#999] text-xs">{t('headcountUnit', { count: child.employeeCount })}</span>
+                  <span className="text-muted-foreground text-xs">{t('headcountUnit', { count: child.employeeCount })}</span>
                 </li>
               ))}
             </ul>
@@ -403,17 +403,17 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
 
         {/* Employees */}
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-[#999]">{'employees'}</h4>
+          <h4 className="text-xs font-semibold text-muted-foreground">{'employees'}</h4>
           {loadingEmps ? (
-            <p className="text-xs text-[#999] py-2">{'loadingData'}</p>
+            <p className="text-xs text-muted-foreground py-2">{'loadingData'}</p>
           ) : employees.length === 0 ? (
-            <p className="text-xs text-[#999] py-2">{'noEmployees'}</p>
+            <p className="text-xs text-muted-foreground py-2">{'noEmployees'}</p>
           ) : (
             <ul className="space-y-1">
               {employees.map((emp) => (
                 <li key={emp.id} className="text-sm px-3 py-1.5 bg-background rounded flex justify-between items-center">
                   <span className="text-foreground">{emp.name}</span>
-                  <span className="text-[#999] text-xs">{emp.jobGrade?.name ?? emp.employeeNo}</span>
+                  <span className="text-muted-foreground text-xs">{emp.jobGrade?.name ?? emp.employeeNo}</span>
                 </li>
               ))}
             </ul>
@@ -427,7 +427,7 @@ function DetailPanel({ dept, onClose }: DetailPanelProps) {
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between">
-      <span className="text-[#999]">{label}</span>
+      <span className="text-muted-foreground">{label}</span>
       <span className="text-foreground font-medium">{value}</span>
     </div>
   )
@@ -490,7 +490,7 @@ function ViewModeButton({ mode, current, icon, label, onClick }: ViewModeButtonP
       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
         active
           ? 'bg-primary text-white'
-          : 'bg-card border border-border text-[#555] hover:bg-background'
+          : 'bg-card border border-border text-muted-foreground hover:bg-background'
       }`}
     >
       {icon}
@@ -631,13 +631,13 @@ export function OrgClient({ user, companies }: OrgClientProps) {
 
         {/* Search */}
         <div className="relative flex-1 min-w-[160px] max-w-xs">
-          <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#999]" />
+          <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('searchDepts')}
-            className="w-full pl-8 pr-3 py-1.5 text-sm border border-border rounded-lg bg-card focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+            className="w-full pl-8 pr-3 py-1.5 text-sm border border-border rounded-lg bg-card focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
           />
         </div>
 
@@ -691,7 +691,7 @@ export function OrgClient({ user, companies }: OrgClientProps) {
 
       {/* Snapshot mode banner */}
       {isSnapshot && (
-        <div className="px-6 py-2 bg-amber-100 border-b border-amber-300 text-amber-800 text-sm flex items-center gap-2 shrink-0">
+        <div className="px-6 py-2 bg-amber-500/15 border-b border-amber-300 text-amber-800 text-sm flex items-center gap-2 shrink-0">
           <span className="font-medium">{t('snapshotViewing', { date: snapshotDateStr ?? '' })}</span>
           <span className="text-amber-600 text-xs">({t('snapshotData')})</span>
         </div>
@@ -708,13 +708,13 @@ export function OrgClient({ user, companies }: OrgClientProps) {
       <div className="relative flex-1 overflow-hidden">
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-background/70 z-20">
-            <p className="text-sm text-[#999]">{t('loadingData')}</p>
+            <p className="text-sm text-muted-foreground">{t('loadingData')}</p>
           </div>
         )}
 
         {!loading && tree.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-sm text-[#999]">{t('noDepartments')}</p>
+            <p className="text-sm text-muted-foreground">{t('noDepartments')}</p>
           </div>
         )}
 

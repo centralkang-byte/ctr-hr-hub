@@ -236,7 +236,7 @@ export default function PostingEditClient({
   if (dataLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="flex items-center gap-2 text-sm text-[#999]">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin" />
           {t('loadingData')}
         </div>
@@ -248,7 +248,7 @@ export default function PostingEditClient({
     <div className="min-h-screen bg-background p-6">
       <div className="flex items-center gap-3 mb-6">
         <button onClick={() => router.back()} className="p-2 rounded-lg border border-border hover:bg-card transition-colors">
-          <ChevronLeft className="w-4 h-4 text-[#666]" />
+          <ChevronLeft className="w-4 h-4 text-muted-foreground" />
         </button>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">

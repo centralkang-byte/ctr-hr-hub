@@ -61,7 +61,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }
 }
 
 function StatusBadge({ status }: { status: string | null }) {
-    if (!status) return <span className="text-xs text-[#999]">—</span>
+    if (!status) return <span className="text-xs text-muted-foreground">—</span>
     const s = STATUS_LABELS[status] ?? { label: status, color: '#555', bg: '#FAFAFA' }
     return (
         <span
@@ -166,9 +166,9 @@ export default function CloseAttendanceClient({ user }: Props) {
             {/* Page Header */}
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <nav className="text-xs text-[#999] mb-1">{t('kr_keab889ec_keab7bced_closed')}</nav>
+                    <nav className="text-xs text-muted-foreground mb-1">{t('kr_keab889ec_keab7bced_closed')}</nav>
                     <h1 className="text-2xl font-bold text-foreground tracking-tight">{t('closeAttendance')}</h1>
-                    <p className="text-sm text-[#666] mt-0.5">
+                    <p className="text-sm text-muted-foreground mt-0.5">
                         {t('closeAttendanceDesc')}
                     </p>
                 </div>
@@ -201,7 +201,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                         }}
                         className="p-2 border border-border rounded-lg hover:bg-muted transition-colors"
                     >
-                        <RefreshCw size={16} className={`text-[#555] ${loading ? 'animate-spin' : ''}`} />
+                        <RefreshCw size={16} className={`text-muted-foreground ${loading ? 'animate-spin' : ''}`} />
                     </button>
                 </div>
             </div>
@@ -228,7 +228,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                             <p className="text-[15px] font-bold text-foreground">{label}</p>
                                             <StatusBadge status={status?.payrollRunStatus ?? null} />
                                         </div>
-                                        <p className="text-xs text-[#999]">{yearMonth}</p>
+                                        <p className="text-xs text-muted-foreground">{yearMonth}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -236,7 +236,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                         <button
                                             onClick={() => status?.payrollRunId && handleReopen(status.payrollRunId, companyId)}
                                             disabled={reopening === companyId}
-                                            className="flex items-center gap-1.5 px-3 py-1.5 border border-border hover:bg-muted text-[#555] rounded-lg text-sm transition-colors disabled:opacity-50"
+                                            className="flex items-center gap-1.5 px-3 py-1.5 border border-border hover:bg-muted text-muted-foreground rounded-lg text-sm transition-colors disabled:opacity-50"
                                         >
                                             <Unlock size={14} />
                                             {tCommon('unlock')}
@@ -251,7 +251,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                             {t('close')}
                                         </button>
                                     ) : (
-                                        <span className="text-xs text-[#999]">{tCommon('processing')}</span>
+                                        <span className="text-xs text-muted-foreground">{tCommon('processing')}</span>
                                     )}
                                 </div>
                             </div>
@@ -261,7 +261,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                 <div className="p-5">
                                     {/* Progress */}
                                     <div className="mb-4">
-                                        <div className="flex items-center justify-between text-xs text-[#666] mb-1.5">
+                                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
                                             <span>{t('kr_keab7bced_confirmed_status')}</span>
                                             <span className="font-semibold text-foreground">
                                                 {status.confirmedCount}/{status.totalEmployees}명 ({confirmedPct}%)
@@ -283,21 +283,21 @@ export default function CloseAttendanceClient({ user }: Props) {
                                         <div className="bg-background rounded-lg p-3">
                                             <div className="flex items-center gap-1.5 mb-1">
                                                 <CheckCircle2 size={13} className="text-emerald-600" />
-                                                <p className="text-xs text-[#666]">{t('confirmed')}</p>
+                                                <p className="text-xs text-muted-foreground">{t('confirmed')}</p>
                                             </div>
                                             <p className="text-xl font-bold text-foreground">{status.confirmedCount}명</p>
                                         </div>
                                         <div className="bg-background rounded-lg p-3">
                                             <div className="flex items-center gap-1.5 mb-1">
                                                 <Clock size={13} className="text-amber-500" />
-                                                <p className="text-xs text-[#666]">{t('kr_kecb49dea')}</p>
+                                                <p className="text-xs text-muted-foreground">{t('kr_kecb49dea')}</p>
                                             </div>
                                             <p className="text-xl font-bold text-foreground">{status.totalWorkHours}h</p>
                                         </div>
                                         <div className="bg-background rounded-lg p-3">
                                             <div className="flex items-center gap-1.5 mb-1">
                                                 <AlertTriangle size={13} className="text-red-500" />
-                                                <p className="text-xs text-[#666]">{t('kr_kebafb8ed')}</p>
+                                                <p className="text-xs text-muted-foreground">{t('kr_kebafb8ed')}</p>
                                             </div>
                                             <p className="text-xl font-bold text-foreground">{status.unconfirmedCount}명</p>
                                         </div>
@@ -308,7 +308,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                         <div className="border border-amber-100 rounded-lg overflow-hidden">
                                             <button
                                                 onClick={() => setExpandedEmp((prev) => ({ ...prev, [companyId]: !prev[companyId] }))}
-                                                className="flex items-center justify-between w-full px-4 py-2.5 bg-amber-50 hover:bg-amber-100 transition-colors text-left"
+                                                className="flex items-center justify-between w-full px-4 py-2.5 bg-amber-500/10 hover:bg-amber-500/15 transition-colors text-left"
                                             >
                                                 <div className="flex items-center gap-2">
                                                     <AlertTriangle size={14} className="text-amber-500" />
@@ -327,11 +327,11 @@ export default function CloseAttendanceClient({ user }: Props) {
                                                     {status.unconfirmedEmployees.map((emp) => (
                                                         <div key={emp.id} className="flex items-center gap-3 px-4 py-2.5 bg-card">
                                                             <div className="w-7 h-7 rounded-full bg-border flex items-center justify-center flex-shrink-0">
-                                                                <Users size={12} className="text-[#999]" />
+                                                                <Users size={12} className="text-muted-foreground" />
                                                             </div>
                                                             <div>
-                                                                <p className="text-sm font-medium text-[#333]">{emp.name}</p>
-                                                                <p className="text-xs text-[#999]">{emp.email}</p>
+                                                                <p className="text-sm font-medium text-foreground">{emp.name}</p>
+                                                                <p className="text-xs text-muted-foreground">{emp.email}</p>
                                                             </div>
                                                             <XCircle size={14} className="text-red-500 ml-auto" />
                                                         </div>
@@ -354,7 +354,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                             )}
 
                             {!status && (
-                                <div className="p-5 flex items-center justify-center text-[#999] text-sm">
+                                <div className="p-5 flex items-center justify-center text-muted-foreground text-sm">
                                     {loading ? '로딩 중...' : '데이터 없음'}
                                 </div>
                             )}
@@ -373,31 +373,31 @@ export default function CloseAttendanceClient({ user }: Props) {
                                 onClick={() => setConfirmModal(null)}
                                 className="p-1 hover:bg-muted rounded-lg transition-colors"
                             >
-                                <XCircle size={20} className="text-[#999]" />
+                                <XCircle size={20} className="text-muted-foreground" />
                             </button>
                         </div>
                         <div className="px-6 py-5">
                             <div className="bg-muted rounded-xl p-4 mb-4 space-y-2">
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-[#666]">{t('kr_keb8c80ec_company')}</span>
+                                    <span className="text-muted-foreground">{t('kr_keb8c80ec_company')}</span>
                                     <span className="font-semibold text-foreground">
                                         {COMPANY_LIST.find((c) => c.id === confirmModal.companyId)?.name ?? confirmModal.companyId}
                                     </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-[#666]">{t('kr_keb8c80ec_month')}</span>
+                                    <span className="text-muted-foreground">{t('kr_keb8c80ec_month')}</span>
                                     <span className="font-semibold">{yearMonth}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-[#666]">{t('all_keca781ec')}</span>
+                                    <span className="text-muted-foreground">{t('all_keca781ec')}</span>
                                     <span className="font-semibold">{confirmModal.status.totalEmployees}명</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-[#666]">{t('confirmed_keca781ec')}</span>
+                                    <span className="text-muted-foreground">{t('confirmed_keca781ec')}</span>
                                     <span className="font-semibold text-emerald-600">{confirmModal.status.confirmedCount}명</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-[#666]">{t('kr_kebafb8ed_keca781ec')}</span>
+                                    <span className="text-muted-foreground">{t('kr_kebafb8ed_keca781ec')}</span>
                                     <span className="font-semibold text-red-500">{confirmModal.status.unconfirmedCount}명</span>
                                 </div>
                             </div>
@@ -412,19 +412,19 @@ export default function CloseAttendanceClient({ user }: Props) {
                                         }
                                         className="w-4 h-4 rounded border-border text-primary"
                                     />
-                                    <span className="text-sm text-[#333]">
+                                    <span className="text-sm text-foreground">
                                         미확정 직원 {confirmModal.status.unconfirmedCount}명 제외하고 마감
                                     </span>
                                 </label>
                             )}
-                            <p className="text-xs text-[#999] mb-5">
+                            <p className="text-xs text-muted-foreground mb-5">
                                 {t('closed_ked9b84ec_ked95b4eb_kec9b94ec_keab7bced_kec8898ec_kebb688ea_closed_ked95b4ec_keab384ec_kec8b9cec_keca084ea_keab080eb')}
                             </p>
                         </div>
                         <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-border">
                             <button
                                 onClick={() => setConfirmModal(null)}
-                                className="px-4 py-2 border border-border hover:bg-muted text-[#333] rounded-lg text-sm font-medium transition-colors"
+                                className="px-4 py-2 border border-border hover:bg-muted text-foreground rounded-lg text-sm font-medium transition-colors"
                             >
                                 {tCommon('cancel')}
                             </button>

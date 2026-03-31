@@ -62,16 +62,16 @@ function getNudgeStyle(triggerType: string): {
     return {
       Icon: AlertTriangle,
       borderColor: 'border-amber-500',
-      bgColor:     'bg-amber-50',
-      dotColor:    'bg-amber-500',
+      bgColor:     'bg-amber-500/10',
+      dotColor:    'bg-amber-500/100',
     }
   }
   if (triggerType.includes('performance') || triggerType.includes('eval')) {
     return {
       Icon: Target,
       borderColor: 'border-violet-500',
-      bgColor:     'bg-purple-50',
-      dotColor:    'bg-violet-500',
+      bgColor:     'bg-purple-500/10',
+      dotColor:    'bg-violet-500/100',
     }
   }
   if (triggerType.includes('onboarding')) {
@@ -86,8 +86,8 @@ function getNudgeStyle(triggerType: string): {
     return {
       Icon: Bell,
       borderColor: 'border-amber-500',
-      bgColor:     'bg-amber-50',
-      dotColor:    'bg-amber-500',
+      bgColor:     'bg-amber-500/10',
+      dotColor:    'bg-amber-500/100',
     }
   }
   return {
@@ -156,7 +156,7 @@ export function NudgeCards({ user }: NudgeCardsProps) {
       <div className="mb-3 flex items-center gap-2">
         <AlertTriangle className="h-4 w-4 text-amber-500" />
         <span className="text-sm font-semibold text-foreground">주의가 필요합니다</span>
-        <span className="ml-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">
+        <span className="ml-1 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">
           {nudges.length}건
         </span>
       </div>

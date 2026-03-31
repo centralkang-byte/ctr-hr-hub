@@ -26,9 +26,9 @@ const colorMap = {
 }
 
 const iconBgMap = {
-  default: 'bg-muted text-[#555]',
-  success: 'bg-emerald-100 text-emerald-600',
-  warning: 'bg-amber-100 text-amber-600',
+  default: 'bg-muted text-muted-foreground',
+  success: 'bg-emerald-500/15 text-emerald-600',
+  warning: 'bg-amber-500/15 text-amber-600',
   danger: 'bg-destructive/10 text-destructive',
   info: 'bg-primary/10 text-primary',
 }
@@ -45,16 +45,16 @@ export function AnalyticsKpiCard({
     <div className={cn('rounded-xl border bg-card p-5', colorMap[color])}>
       <div className="flex items-start justify-between">
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-medium text-[#666]">{label}</p>
+          <p className="text-xs font-medium text-muted-foreground">{label}</p>
           <p className="mt-1 text-3xl font-bold text-foreground">
             {value}
-            {suffix && <span className="ml-1 text-base font-normal text-[#999]">{suffix}</span>}
+            {suffix && <span className="ml-1 text-base font-normal text-muted-foreground">{suffix}</span>}
           </p>
           {change && (
             <p
               className={cn(
                 'mt-1 text-xs font-medium',
-                change.value > 0 ? 'text-emerald-600' : change.value < 0 ? 'text-destructive' : 'text-[#666]',
+                change.value > 0 ? 'text-emerald-600' : change.value < 0 ? 'text-destructive' : 'text-muted-foreground',
               )}
             >
               {change.value > 0 ? '\u2191' : change.value < 0 ? '\u2193' : ''}

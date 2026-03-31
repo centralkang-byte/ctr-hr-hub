@@ -37,11 +37,11 @@ interface SeveranceInterimRequest {
 const STATUS_MAP: Record<SipStatus, { label: string; className: string }> = {
   SIP_PENDING: {
     label: '검토 중',
-    className: 'bg-amber-100 text-amber-700 border border-amber-300',
+    className: 'bg-amber-500/15 text-amber-700 border border-amber-300',
   },
   SIP_APPROVED: {
     label: '승인',
-    className: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+    className: 'bg-emerald-500/15 text-emerald-700 border border-emerald-200',
   },
   SIP_REJECTED: {
     label: '반려',
@@ -190,7 +190,7 @@ export default function SeveranceInterimTab() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold text-foreground">퇴직금 중간정산</h2>
-          <p className="text-sm text-[#666] mt-0.5">
+          <p className="text-sm text-muted-foreground mt-0.5">
             중간정산 신청 현황 및 승인 처리를 관리합니다.
           </p>
         </div>
@@ -263,7 +263,7 @@ export default function SeveranceInterimTab() {
               ) : requests.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-4 py-12 text-center">
-                    <div className="flex flex-col items-center gap-2 text-[#999]">
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
                       <FileText className="w-8 h-8" />
                       <p className="text-sm">신청 내역이 없습니다.</p>
                     </div>
@@ -282,7 +282,7 @@ export default function SeveranceInterimTab() {
                       <td className="px-4 py-3">
                         <div>
                           <p className="text-sm font-medium text-foreground">{req.employeeName}</p>
-                          <p className="text-xs text-[#999]">
+                          <p className="text-xs text-muted-foreground">
                             {req.employeeNo} · {req.department}
                           </p>
                         </div>
@@ -290,7 +290,7 @@ export default function SeveranceInterimTab() {
 
                       {/* Reason */}
                       <td className="px-4 py-3">
-                        <span className="text-sm text-[#333]">
+                        <span className="text-sm text-foreground">
                           {REASON_LABELS[req.reason] ?? req.reason}
                         </span>
                       </td>
@@ -304,7 +304,7 @@ export default function SeveranceInterimTab() {
 
                       {/* Request Date */}
                       <td className="px-4 py-3 text-center">
-                        <span className="text-sm text-[#555]">{formatDate(req.requestDate)}</span>
+                        <span className="text-sm text-muted-foreground">{formatDate(req.requestDate)}</span>
                       </td>
 
                       {/* Status */}
@@ -318,7 +318,7 @@ export default function SeveranceInterimTab() {
 
                       {/* Reviewed/Paid At */}
                       <td className="px-4 py-3 text-center">
-                        <span className="text-xs text-[#666]">
+                        <span className="text-xs text-muted-foreground">
                           {req.paidAt
                             ? `지급: ${formatDate(req.paidAt)}`
                             : req.reviewedAt
@@ -332,7 +332,7 @@ export default function SeveranceInterimTab() {
                         <div className="flex items-center justify-center gap-1.5">
                           {/* Calculate button always shown */}
                           <button
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border border-border text-[#555] hover:bg-background transition-colors"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border border-border text-muted-foreground hover:bg-background transition-colors"
                             title="중간정산 계산"
                           >
                             <Calculator className="w-3 h-3" />

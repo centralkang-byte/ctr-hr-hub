@@ -27,8 +27,8 @@ import type { SessionUser } from '@/types'
 // ─── Status config ────────────────────────────────────────
 
 const STATUS_STYLES: Record<string, string> = {
-  DRAFT: 'bg-muted text-[#666]',
-  PENDING_APPROVAL: 'bg-amber-50 text-amber-700',
+  DRAFT: 'bg-muted text-muted-foreground',
+  PENDING_APPROVAL: 'bg-amber-500/10 text-amber-700',
   APPROVED: 'bg-primary/10 text-tertiary',
   REJECTED: 'bg-destructive/5 text-destructive',
 }
@@ -108,7 +108,7 @@ export default function TeamGoalsClient({
     if (label === t('allApproved')) return 'text-tertiary'
     if (label === t('hasPendingApproval')) return 'text-amber-700'
     if (label === t('hasRejected')) return 'text-destructive'
-    return 'text-[#999]'
+    return 'text-muted-foreground'
   }
 
   // ─── Fetch cycles ─────────────────────────────────────
@@ -231,7 +231,7 @@ export default function TeamGoalsClient({
             ))}
           </select>
         ) : (
-          <span className="text-sm text-[#999]">{t('noCycles')}</span>
+          <span className="text-sm text-muted-foreground">{t('noCycles')}</span>
         )}
       </div>
 
@@ -239,7 +239,7 @@ export default function TeamGoalsClient({
       {loading && (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <span className="ml-3 text-[#999]">{t('loadingText')}</span>
+          <span className="ml-3 text-muted-foreground">{t('loadingText')}</span>
         </div>
       )}
 
@@ -247,7 +247,7 @@ export default function TeamGoalsClient({
       {!loading && members.length === 0 && (
         <div className="rounded-xl border border-dashed border-border bg-background py-20 text-center">
           <Users className="mx-auto h-12 w-12 text-[#CCC]" />
-          <p className="mt-4 text-[#999]">{t('noTeamMembersOrGoals')}</p>
+          <p className="mt-4 text-muted-foreground">{t('noTeamMembersOrGoals')}</p>
         </div>
       )}
 
@@ -272,9 +272,9 @@ export default function TeamGoalsClient({
                 className="flex w-full items-center gap-4 px-6 py-4 text-left transition-colors hover:bg-background"
               >
                 {isExpanded ? (
-                  <ChevronDown className="h-5 w-5 shrink-0 text-[#999]" />
+                  <ChevronDown className="h-5 w-5 shrink-0 text-muted-foreground" />
                 ) : (
-                  <ChevronRight className="h-5 w-5 shrink-0 text-[#999]" />
+                  <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
                 )}
 
                 {/* Employee info */}
@@ -283,11 +283,11 @@ export default function TeamGoalsClient({
                     <span className="font-semibold text-foreground">
                       {member.employee.name}
                     </span>
-                    <span className="text-sm text-[#999]">
+                    <span className="text-sm text-muted-foreground">
                       {member.employee.employeeNo}
                     </span>
                     {member.employee.department && (
-                      <span className="text-sm text-[#999]">
+                      <span className="text-sm text-muted-foreground">
                         · {member.employee.department.name}
                       </span>
                     )}
@@ -297,13 +297,13 @@ export default function TeamGoalsClient({
                 {/* Stats */}
                 <div className="flex shrink-0 items-center gap-6 text-sm">
                   <div className="text-center">
-                    <div className="text-xs text-[#999]">{t('goalCountLabel')}</div>
-                    <div className="font-medium text-[#666]">
+                    <div className="text-xs text-muted-foreground">{t('goalCountLabel')}</div>
+                    <div className="font-medium text-muted-foreground">
                       {member.goals.length}
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xs text-[#999]">{t('weightSumLabel')}</div>
+                    <div className="text-xs text-muted-foreground">{t('weightSumLabel')}</div>
                     <div
                       className={`font-medium ${
                         member.totalWeight === 100
@@ -315,13 +315,13 @@ export default function TeamGoalsClient({
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xs text-[#999]">{t('avgAchievementLabel')}</div>
-                    <div className="font-medium text-[#666]">
+                    <div className="text-xs text-muted-foreground">{t('avgAchievementLabel')}</div>
+                    <div className="font-medium text-muted-foreground">
                       {member.avgProgress}%
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-xs text-[#999]">{t('statusLabel')}</div>
+                    <div className="text-xs text-muted-foreground">{t('statusLabel')}</div>
                     <div
                       className={`font-medium ${getMemberStatusStyle(overallStatus)}`}
                     >
@@ -329,7 +329,7 @@ export default function TeamGoalsClient({
                     </div>
                   </div>
                   {pendingCount > 0 && (
-                    <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                    <span className="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-700">
                       {t('pendingApprovalCount', { count: pendingCount })}
                     </span>
                   )}
@@ -340,7 +340,7 @@ export default function TeamGoalsClient({
               {isExpanded && (
                 <div className="border-t border-border bg-background px-6 py-4">
                   {member.goals.length === 0 ? (
-                    <p className="py-4 text-center text-sm text-[#999]">
+                    <p className="py-4 text-center text-sm text-muted-foreground">
                       {t('noGoalsRegistered')}
                     </p>
                   ) : (
@@ -366,18 +366,18 @@ export default function TeamGoalsClient({
                                   </h4>
                                   <span
                                     className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                                      STATUS_STYLES[goal.status] ?? 'bg-muted text-[#666]'
+                                      STATUS_STYLES[goal.status] ?? 'bg-muted text-muted-foreground'
                                     }`}
                                   >
                                     {t(`goalStatusLabels.${goal.status}` as Parameters<typeof t>[0])}
                                   </span>
                                 </div>
                                 {goal.description && (
-                                  <p className="mt-1 text-sm text-[#999] line-clamp-2">
+                                  <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
                                     {goal.description}
                                   </p>
                                 )}
-                                <div className="mt-2 flex items-center gap-4 text-xs text-[#999]">
+                                <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
                                   <span>{t('weightColLabel')}: {goal.weight}%</span>
                                   <span>{t('achievementColLabel')}: {latestProgress}%</span>
                                   {goal.achievementScore != null && (
@@ -424,7 +424,7 @@ export default function TeamGoalsClient({
                                       }
                                     }}
                                     disabled={isThisLoading}
-                                    className="inline-flex items-center gap-1 rounded-lg bg-orange-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
+                                    className="inline-flex items-center gap-1 rounded-lg bg-orange-500/100 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
                                   >
                                     <MessageSquareWarning className="h-3.5 w-3.5" />
                                     {t('requestRevisionButton')}
@@ -450,7 +450,7 @@ export default function TeamGoalsClient({
                                       setRevisionGoalId(null)
                                       setRevisionComment('')
                                     }}
-                                    className="rounded-lg border border-border px-3 py-1.5 text-xs text-[#666] hover:bg-background"
+                                    className="rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-background"
                                   >
                                     {tc('cancel')}
                                   </button>
@@ -458,7 +458,7 @@ export default function TeamGoalsClient({
                                     type="button"
                                     onClick={() => handleRequestRevision(goal.id)}
                                     disabled={isThisLoading || !revisionComment.trim()}
-                                    className="inline-flex items-center gap-1 rounded-lg bg-orange-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-orange-600 disabled:opacity-50"
+                                    className="inline-flex items-center gap-1 rounded-lg bg-orange-500/100 px-3 py-1.5 text-xs font-medium text-white hover:bg-orange-600 disabled:opacity-50"
                                   >
                                     {isThisLoading && (
                                       <Loader2 className="h-3.5 w-3.5 animate-spin" />

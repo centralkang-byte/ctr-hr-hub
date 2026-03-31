@@ -107,8 +107,8 @@ function getDdayColor(dueDate?: string): string {
     (new Date(dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
   )
   if (diff < 0) return 'bg-destructive/10 text-destructive border-destructive/20'
-  if (diff === 0) return 'bg-amber-100 text-amber-700 border-amber-300'
-  if (diff <= 3) return 'bg-amber-100 text-amber-700 border-amber-300'
+  if (diff === 0) return 'bg-amber-500/15 text-amber-700 border-amber-300'
+  if (diff <= 3) return 'bg-amber-500/15 text-amber-700 border-amber-300'
   return 'bg-primary/10 text-primary border-indigo-200'
 }
 
@@ -462,7 +462,7 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
               user={user}
               onAction={handleAction}
               processing={processing}
-              accentColor="bg-amber-500"
+              accentColor="bg-amber-500/100"
             />
             <GroupSection
               label="📅 이번 달"

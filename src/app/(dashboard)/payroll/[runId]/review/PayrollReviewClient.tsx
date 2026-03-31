@@ -128,8 +128,8 @@ const SEVERITY_CONFIG = {
   },
   WARNING: {
     border: 'border-l-4 border-amber-500',
-    bg: 'bg-amber-50',
-    badge: 'bg-amber-100 text-amber-700 border-amber-300',
+    bg: 'bg-amber-500/10',
+    badge: 'bg-amber-500/15 text-amber-700 border-amber-300',
     icon: <AlertTriangle className="h-4 w-4 text-amber-500" />,
     label: '경고',
   },
@@ -186,18 +186,18 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
                 <span className="font-semibold text-foreground text-sm">
                   {anomaly.employee.name}
                 </span>
-                <span className="text-xs text-[#999]">{dept}{pos ? ` / ${pos}` : ''}</span>
+                <span className="text-xs text-muted-foreground">{dept}{pos ? ` / ${pos}` : ''}</span>
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border ${cfg.badge}`}>
                   {cfg.label}
                 </span>
               </div>
-              <p className="text-sm text-[#555] mt-1">{anomaly.description}</p>
+              <p className="text-sm text-muted-foreground mt-1">{anomaly.description}</p>
             </div>
           </div>
         </div>
 
         {(anomaly.currentValue || anomaly.previousValue) && (
-          <div className="flex items-center gap-6 text-xs text-[#666] bg-background rounded-lg p-3">
+          <div className="flex items-center gap-6 text-xs text-muted-foreground bg-background rounded-lg p-3">
             {anomaly.currentValue != null && (
               <span>{'이번 달:'} <strong className="text-foreground">{Number(anomaly.currentValue).toLocaleString()}</strong></span>
             )}
@@ -214,20 +214,20 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
           <button
             onClick={() => resolve('CONFIRMED_NORMAL')}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-700 text-xs font-semibold hover:bg-emerald-200 transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-700 text-xs font-semibold hover:bg-emerald-200 transition-colors disabled:opacity-50"
           >
             <CheckCircle2 className="h-3.5 w-3.5" />
             {'정상 확인'}
           </button>
           <button
             onClick={() => router.push(`/payroll/adjustments`)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-[#555] text-xs font-medium hover:bg-muted transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-muted-foreground text-xs font-medium hover:bg-muted transition-colors"
           >
             {'수정 →'}
           </button>
           <button
             onClick={() => setShowWhitelistModal(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-[#555] text-xs font-medium hover:bg-muted transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-muted-foreground text-xs font-medium hover:bg-muted transition-colors"
           >
             <ShieldX className="h-3.5 w-3.5" />
             {'예외 등록'}
@@ -240,12 +240,12 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
           <div className="bg-card rounded-xl shadow-lg w-full max-w-md">
             <div className="p-5 border-b border-border flex items-center justify-between">
               <h3 className="font-semibold text-foreground">{'예외 등록'}</h3>
-              <button onClick={() => setShowWhitelistModal(false)} className="text-[#999] hover:text-[#333]">
+              <button onClick={() => setShowWhitelistModal(false)} className="text-muted-foreground hover:text-foreground">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div className="p-5 space-y-3">
-              <p className="text-sm text-[#555]">
+              <p className="text-sm text-muted-foreground">
                 <strong>{anomaly.employee.name}</strong>{'의'} <strong>{anomaly.ruleCode}</strong> {'규칙을 예외 처리합니다.'}
               </p>
               <textarea
@@ -259,7 +259,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
             <div className="p-5 border-t border-border flex justify-end gap-2">
               <button
                 onClick={() => setShowWhitelistModal(false)}
-                className="px-4 py-2 rounded-lg border border-border text-sm text-[#555] hover:bg-muted"
+                className="px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:bg-muted"
               >
                 {'취소'}
               </button>
@@ -310,9 +310,9 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
         <div className="sticky top-0 bg-card p-4 border-b border-border flex items-center justify-between">
           <div>
             <p className="font-bold text-foreground">{row.employeeName}</p>
-            <p className="text-xs text-[#999]">{row.department}</p>
+            <p className="text-xs text-muted-foreground">{row.department}</p>
           </div>
-          <button onClick={onClose} className="text-[#999] hover:text-[#333]">
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -321,7 +321,7 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
           <div className="p-4 space-y-4">
             {/* 지급 */}
             <div>
-              <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-2">{'지급'}</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{'지급'}</p>
               <div className="space-y-1.5">
                 {[
                   ['기본급', detail.baseSalary],
@@ -331,7 +331,7 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
                 ].map(([label, value]) => (
                   Number(value) > 0 && (
                     <div key={label as string} className="flex justify-between text-sm">
-                      <span className="text-[#666]">{label as string}</span>
+                      <span className="text-muted-foreground">{label as string}</span>
                       <span className="text-foreground">{Number(value).toLocaleString()}</span>
                     </div>
                   )
@@ -345,7 +345,7 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
 
             {/* 공제 */}
             <div>
-              <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-2">{'공제합계'}</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{'공제합계'}</p>
               <div className="border-t border-border pt-1.5 flex justify-between text-sm font-semibold">
                 <span className="text-destructive">공제합계</span>
                 <span className="text-destructive">-{detail.deductions.toLocaleString()}</span>
@@ -361,7 +361,7 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
             </div>
 
             {detail.isManuallyAdjusted && (
-              <div className="bg-amber-100 rounded-lg p-3 text-xs text-amber-700">
+              <div className="bg-amber-500/15 rounded-lg p-3 text-xs text-amber-700">
                 ✏️ 수동 조정: {detail.adjustmentReason}
               </div>
             )}
@@ -369,15 +369,15 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
             {/* 전월 비교 */}
             {row.previousNet != null && (
               <div className="border-t border-border pt-3">
-                <p className="text-xs font-semibold text-[#999] uppercase tracking-wider mb-2">{'전월 비교'}</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{'전월 비교'}</p>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-[#666]">{'전월 실수령'}</span>
+                    <span className="text-muted-foreground">{'전월 실수령'}</span>
                     <span>{row.previousNet.toLocaleString()}원</span>
                   </div>
                   <div className="flex justify-between font-semibold">
-                    <span className="text-[#666]">{'변동률'}</span>
-                    <span className={row.diffNet > 0 ? 'text-emerald-600' : row.diffNet < 0 ? 'text-destructive' : 'text-[#999]'}>
+                    <span className="text-muted-foreground">{'변동률'}</span>
+                    <span className={row.diffNet > 0 ? 'text-emerald-600' : row.diffNet < 0 ? 'text-destructive' : 'text-muted-foreground'}>
                       {row.diffNet > 0 ? '+' : ''}{row.diffNet.toLocaleString()}원
                       &nbsp;({fmtPct(row.diffPercent)})
                     </span>
@@ -395,7 +395,7 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
                 ['전월 실수령', row.previousNet ?? '—'],
               ].map(([label, value]) => (
                 <div key={label as string} className="flex justify-between text-sm">
-                  <span className="text-[#666]">{label as string}</span>
+                  <span className="text-muted-foreground">{label as string}</span>
                   <span className="font-medium text-foreground">
                     {typeof value === 'number' ? value.toLocaleString() + '원' : String(value)}
                   </span>
@@ -403,14 +403,14 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
               ))}
               {row.diffNet !== 0 && (
                 <div className="flex justify-between text-sm font-semibold">
-                  <span className="text-[#666]">{'변동률'}</span>
+                  <span className="text-muted-foreground">{'변동률'}</span>
                   <span className={row.diffNet > 0 ? 'text-emerald-600' : 'text-destructive'}>
                     {row.diffNet > 0 ? '+' : ''}{row.diffNet.toLocaleString()}원 ({fmtPct(row.diffPercent)})
                   </span>
                 </div>
               )}
               {row.changeReason && (
-                <div className="text-xs text-[#999] bg-background rounded-lg p-2 mt-2">
+                <div className="text-xs text-muted-foreground bg-background rounded-lg p-2 mt-2">
                   사유: {row.changeReason}
                 </div>
               )}
@@ -603,14 +603,14 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button onClick={() => router.push('/payroll')} className="text-[#999] hover:text-[#333]">
+          <button onClick={() => router.push('/payroll')} className="text-muted-foreground hover:text-foreground">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
             <h1 className="text-2xl font-bold text-foreground tracking-[-0.02em]">{run.name}</h1>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-sm text-[#666]">{run.yearMonth}</span>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-primary/90 border border-indigo-200">
+              <span className="text-sm text-muted-foreground">{run.yearMonth}</span>
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/15 text-primary/90 border border-indigo-200">
                 {t('anomalies_keca491')}
               </span>
             </div>
@@ -624,7 +624,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
           title={!allResolved ? `미처리 이상항목 ${anomalySummary?.open ?? 0}건이 있습니다` : '승인 요청'}
           className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors ${allResolved
               ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-              : 'bg-border text-[#999] cursor-not-allowed'
+              : 'bg-border text-muted-foreground cursor-not-allowed'
             }`}
         >
           <CheckCircle2 className="h-4 w-4" />
@@ -641,11 +641,11 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
           { label: t('kr_kecb49d_keab889ec'), value: fmt(Number(run.totalGross ?? 0)), icon: <DollarSign className="h-4 w-4 text-emerald-600" /> },
           { label: t('kr_kec9db8ec'), value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-primary/90" /> },
           { label: t('kr_kec9db4ec_ked95adeb'), value: `${anomalySummary?.open ?? 0}건`, icon: <AlertTriangle className="h-4 w-4 text-amber-500" />, highlight: (anomalySummary?.open ?? 0) > 0 },
-          { label: t('adjustments'), value: `${run.adjustmentCount ?? 0}건`, icon: <Clock className="h-4 w-4 text-[#999]" /> },
+          { label: t('adjustments'), value: `${run.adjustmentCount ?? 0}건`, icon: <Clock className="h-4 w-4 text-muted-foreground" /> },
         ].map((kpi) => (
           <div key={kpi.label} className={`bg-card rounded-xl border p-5 ${kpi.highlight ? 'border-amber-500' : 'border-border'}`}>
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs text-[#666]">{kpi.label}</p>
+              <p className="text-xs text-muted-foreground">{kpi.label}</p>
               {kpi.icon}
             </div>
             <p className={`text-2xl font-bold leading-tight ${kpi.highlight ? 'text-amber-500' : 'text-foreground'}`}>
@@ -657,7 +657,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
 
       {/* Alert Banner */}
       {!allResolved && anomalySummary && anomalySummary.open > 0 && (
-        <div className="bg-amber-100 border border-amber-300 rounded-xl p-4 flex items-center gap-3">
+        <div className="bg-amber-500/15 border border-amber-300 rounded-xl p-4 flex items-center gap-3">
           <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0" />
           <p className="text-sm text-amber-700 font-medium">
             이상 항목 {anomalySummary.open}건 — 모두 처리해야 승인 요청이 가능합니다.
@@ -669,7 +669,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       )}
 
       {allResolved && (
-        <div className="bg-emerald-100 border border-emerald-200 rounded-xl p-4 flex items-center gap-3">
+        <div className="bg-emerald-500/15 border border-emerald-200 rounded-xl p-4 flex items-center gap-3">
           <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />
           <p className="text-sm text-emerald-700 font-medium">{t('kr_kebaaa8eb_kec9db4ec_ked95adeb_')}</p>
         </div>
@@ -685,7 +685,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`pb-2.5 text-sm font-${activeTab === tab ? 'bold border-b-2 border-foreground text-foreground' : 'medium text-[#999] hover:text-[#333]'} transition-colors`}
+            className={`pb-2.5 text-sm font-${activeTab === tab ? 'bold border-b-2 border-foreground text-foreground' : 'medium text-muted-foreground hover:text-foreground'} transition-colors`}
           >
             {label}
           </button>
@@ -704,7 +704,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                   </span>
                 )}
                 {anomalySummary.bySeverity.WARNING > 0 && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 border border-amber-300">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-700 border border-amber-300">
                     <AlertTriangle className="h-3 w-3" /> 경고 {anomalySummary.bySeverity.WARNING}
                   </span>
                 )}
@@ -718,7 +718,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                 <button
                   onClick={handleBulkResolveInfo}
                   disabled={bulkResolving}
-                  className="text-xs px-3 py-1.5 rounded-lg border border-border text-[#555] hover:bg-muted disabled:opacity-50"
+                  className="text-xs px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:bg-muted disabled:opacity-50"
                 >
                   정보 항목 {infoCount}건 일괄 확인
                 </button>
@@ -758,12 +758,12 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
               {[
                 { label: t('kr_keca69dea'), value: comparisonSummary.employeesIncreased, color: 'text-emerald-600', icon: <TrendingUp className="h-4 w-4 text-emerald-600" /> },
                 { label: t('kr_keab090ec'), value: comparisonSummary.employeesDecreased, color: 'text-destructive', icon: <TrendingDown className="h-4 w-4 text-destructive" /> },
-                { label: t('kr_keb8f99ec'), value: comparisonSummary.employeesUnchanged, color: 'text-[#999]', icon: <Minus className="h-4 w-4 text-[#999]" /> },
+                { label: t('kr_keb8f99ec'), value: comparisonSummary.employeesUnchanged, color: 'text-muted-foreground', icon: <Minus className="h-4 w-4 text-muted-foreground" /> },
               ].map((item) => (
                 <div key={item.label} className={`${CARD_STYLES.kpi} flex items-center gap-3`}>
                   {item.icon}
                   <div>
-                    <p className="text-xs text-[#666]">{item.label}</p>
+                    <p className="text-xs text-muted-foreground">{item.label}</p>
                     <p className={`text-xl font-bold ${item.color}`}>{String(item.value)}명</p>
                   </div>
                 </div>
@@ -774,7 +774,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
           {/* Filters */}
           <div className="flex items-center gap-3 flex-wrap">
             <div className="relative flex-1 min-w-48">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#999]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
@@ -785,12 +785,12 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
             <select
               value={deptFilter}
               onChange={(e) => setDeptFilter(e.target.value)}
-              className="px-3 py-2 border border-border rounded-lg text-sm text-[#555] bg-card"
+              className="px-3 py-2 border border-border rounded-lg text-sm text-muted-foreground bg-card"
             >
               <option value="">{t('all_department')}</option>
               {depts.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
-            <label className="inline-flex items-center gap-2 text-sm text-[#555] cursor-pointer">
+            <label className="inline-flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
               <input
                 type="checkbox"
                 checked={anomalyOnly}
@@ -804,7 +804,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
             <div className="relative" ref={downloadRef}>
               <button
                 onClick={() => setShowDownloadMenu(!showDownloadMenu)}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-[#555] hover:bg-muted"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:bg-muted"
               >
                 <Download className="h-4 w-4" />
                 {t('kr_kec9791ec')}
@@ -820,7 +820,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                     <button
                       key={item.label}
                       onClick={() => triggerDownload(item.href)}
-                      className="w-full text-left px-4 py-2 text-sm text-[#333] hover:bg-muted"
+                      className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted"
                     >
                       {item.label}
                     </button>
@@ -937,7 +937,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                   <tr key={entry.id} className={TABLE_STYLES.row}>
                     <td className={cn(TABLE_STYLES.cell, "font-medium")}>{entry.employee.name}</td>
                     <td className={TABLE_STYLES.cell}>
-                      <span className="px-2 py-1 bg-muted rounded text-xs font-mono tabular-nums text-[#555]">{entry.ruleCode}</span>
+                      <span className="px-2 py-1 bg-muted rounded text-xs font-mono tabular-nums text-muted-foreground">{entry.ruleCode}</span>
                     </td>
                     <td className={TABLE_STYLES.cellMuted}>{entry.whitelistReason ?? '—'}</td>
                     <td className={cn(TABLE_STYLES.cellMuted, "text-xs")}>{entry.payrollRun?.yearMonth}</td>
@@ -972,7 +972,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
           <div className={MODAL_STYLES.content.md}>
             <div className="p-5 border-b border-border flex items-center justify-between">
               <h3 className="font-bold text-lg text-foreground">{t('approve_kec9a94ec')}</h3>
-              <button onClick={() => setShowSubmitModal(false)} className="text-[#999] hover:text-[#333]">
+              <button onClick={() => setShowSubmitModal(false)} className="text-muted-foreground hover:text-foreground">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -985,13 +985,13 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                   ['수동 조정', `${run.adjustmentCount ?? 0}건`],
                 ].map(([label, value]) => (
                   <div key={label as string} className="flex justify-between">
-                    <span className="text-[#666]">{label as string}</span>
+                    <span className="text-muted-foreground">{label as string}</span>
                     <span className="font-semibold text-foreground">{value as string}</span>
                   </div>
                 ))}
               </div>
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">{t('kr_keba994eb_kec84a0ed')}</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">{t('kr_keba994eb_kec84a0ed')}</label>
                 <textarea
                   value={submitNote}
                   onChange={(e) => setSubmitNote(e.target.value)}
@@ -1004,7 +1004,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
             <div className="p-5 border-t border-border flex justify-end gap-2">
               <button
                 onClick={() => setShowSubmitModal(false)}
-                className="px-4 py-2 rounded-lg border border-border text-sm text-[#555] hover:bg-muted"
+                className="px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:bg-muted"
               >
                 {t('cancel')}
               </button>

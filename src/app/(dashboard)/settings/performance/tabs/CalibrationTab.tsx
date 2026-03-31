@@ -46,7 +46,7 @@ export function CalibrationTab({
           <p className="text-sm text-muted-foreground">{t('kr_keb93b1ea_keca1b0ec_ked9a8cec_')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
+          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
         )}
       </div>
 

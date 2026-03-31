@@ -78,7 +78,7 @@ export default function PerformanceClient({ user }: { user: SessionUser }) {
       <ChartCard
         title="📊 등급 분포 vs 가이드라인"
         badge={hasBias ? '⚠️ 상위 편향 감지' : undefined}
-        badgeColor="bg-amber-50 text-amber-700 border-amber-200"
+        badgeColor="bg-amber-500/10 text-amber-700 border-amber-200"
       >
         {charts.gradeDistribution.length === 0 ? <EmptyChart /> : (
           <ResponsiveContainer width="100%" height={300}>

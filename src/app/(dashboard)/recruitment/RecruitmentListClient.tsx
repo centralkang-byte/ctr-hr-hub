@@ -118,7 +118,7 @@ export default function RecruitmentListClient({ user }: Props) {
             <h1 className="text-xl font-bold text-foreground tracking-[-0.02em]">
               {t('postings')}
             </h1>
-            <p className="text-sm text-[#999]">{t('totalCount', { count: total })}</p>
+            <p className="text-sm text-muted-foreground">{t('totalCount', { count: total })}</p>
           </div>
         </div>
         <button
@@ -134,7 +134,7 @@ export default function RecruitmentListClient({ user }: Props) {
       <div className="bg-card border border-border rounded-xl p-4 mb-6">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[240px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
               placeholder={t('searchByTitle')}
@@ -144,7 +144,7 @@ export default function RecruitmentListClient({ user }: Props) {
             />
           </div>
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-[#999]" />
+            <Filter className="w-4 h-4 text-muted-foreground" />
             <select
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
@@ -178,7 +178,7 @@ export default function RecruitmentListClient({ user }: Props) {
           <tbody className="divide-y divide-border">
             {loading ? (
               <tr>
-                <td colSpan={8} className="px-4 py-12 text-center text-sm text-[#999]">
+                <td colSpan={8} className="px-4 py-12 text-center text-sm text-muted-foreground">
                   <div className="flex items-center justify-center gap-2">
                     <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin" />
                     {t('loadingData')}
@@ -187,7 +187,7 @@ export default function RecruitmentListClient({ user }: Props) {
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-12 text-center text-sm text-[#999]">
+                <td colSpan={8} className="px-4 py-12 text-center text-sm text-muted-foreground">
                   {t('noPostings')}
                 </td>
               </tr>
@@ -201,10 +201,10 @@ export default function RecruitmentListClient({ user }: Props) {
                   <td className="px-4 py-3 text-sm text-foreground font-medium">
                     {row.title}
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#666]">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
                     {row.department?.name ?? '-'}
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#666]">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
                     {row.jobGrade?.name ?? '-'}
                   </td>
                   <td className="px-4 py-3 text-sm text-foreground">
@@ -221,7 +221,7 @@ export default function RecruitmentListClient({ user }: Props) {
                       {STATUS_KEYS[row.status] ? t(STATUS_KEYS[row.status]) : row.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#666]">
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
                     {format(new Date(row.createdAt), 'yyyy-MM-dd')}
                   </td>
                 </tr>
@@ -233,7 +233,7 @@ export default function RecruitmentListClient({ user }: Props) {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-            <p className="text-xs text-[#999]">
+            <p className="text-xs text-muted-foreground">
               {t('paginationInfo', { total, from: (page - 1) * LIMIT + 1, to: Math.min(page * LIMIT, total) })}
             </p>
             <div className="flex items-center gap-1">
@@ -242,7 +242,7 @@ export default function RecruitmentListClient({ user }: Props) {
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 className="p-1.5 rounded-lg border border-border hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
-                <ChevronLeft className="w-4 h-4 text-[#666]" />
+                <ChevronLeft className="w-4 h-4 text-muted-foreground" />
               </button>
               <span className="px-3 text-sm text-foreground">
                 {page} / {totalPages}
@@ -252,7 +252,7 @@ export default function RecruitmentListClient({ user }: Props) {
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 className="p-1.5 rounded-lg border border-border hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
-                <ChevronRight className="w-4 h-4 text-[#666]" />
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </button>
             </div>
           </div>

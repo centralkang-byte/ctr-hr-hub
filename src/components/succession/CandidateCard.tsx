@@ -17,9 +17,9 @@ interface CandidateCardProps {
 }
 
 const READINESS_BADGE: Record<string, { label: string; className: string }> = {
-  READY_NOW: { label: '즉시 가능', className: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+  READY_NOW: { label: '즉시 가능', className: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
   READY_1_2_YEARS: { label: '1-2년 내', className: 'bg-primary/10 text-primary/90 border-primary/20' },
-  READY_3_PLUS_YEARS: { label: '3년 이상', className: 'bg-amber-100 text-amber-700 border-amber-300' },
+  READY_3_PLUS_YEARS: { label: '3년 이상', className: 'bg-amber-500/15 text-amber-700 border-amber-300' },
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -61,7 +61,7 @@ export default function CandidateCard({ candidate, onDelete }: CandidateCardProp
       {candidate.developmentAreas && Array.isArray(candidate.developmentAreas) && candidate.developmentAreas.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1">
           {candidate.developmentAreas.map((area, i) => (
-            <Badge key={i} variant="outline" className="text-xs bg-indigo-100 text-primary/90 border-indigo-200">
+            <Badge key={i} variant="outline" className="text-xs bg-indigo-500/15 text-primary/90 border-indigo-200">
               {area}
             </Badge>
           ))}
@@ -69,11 +69,11 @@ export default function CandidateCard({ candidate, onDelete }: CandidateCardProp
       )}
 
       {candidate.notes && (
-        <p className="mt-2 text-xs text-[#666]">{candidate.notes}</p>
+        <p className="mt-2 text-xs text-muted-foreground">{candidate.notes}</p>
       )}
 
       {candidate.developmentNote && (
-        <p className="text-xs text-[#666] mt-1.5 border-t border-border pt-1.5">
+        <p className="text-xs text-muted-foreground mt-1.5 border-t border-border pt-1.5">
           {candidate.developmentNote}
         </p>
       )}

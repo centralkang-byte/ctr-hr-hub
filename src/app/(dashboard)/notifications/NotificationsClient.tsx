@@ -155,7 +155,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
               className={`px-4 py-2.5 text-sm font-medium transition-colors ${
                 selectedTab === tab.value
                   ? 'border-b-2 border-primary text-primary'
-                  : 'text-[#666] hover:text-[#333]'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
               onClick={() => setSelectedTab(tab.value)}
             >
@@ -173,7 +173,7 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
               className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 readFilter === f.value
                   ? 'bg-primary text-white'
-                  : 'text-[#555] hover:bg-muted'
+                  : 'text-muted-foreground hover:bg-muted'
               }`}
               onClick={() => setReadFilter(f.value)}
             >
@@ -217,21 +217,21 @@ export function NotificationsClient({ user }: { user: SessionUser }) {
                     <div>
                       <p
                         className={`text-sm ${
-                          !item.isRead ? 'font-semibold text-foreground' : 'text-[#333]'
+                          !item.isRead ? 'font-semibold text-foreground' : 'text-foreground'
                         }`}
                       >
                         {item.title}
                       </p>
-                      <p className="mt-1 text-sm text-[#666]">
+                      <p className="mt-1 text-sm text-muted-foreground">
                         {item.body}
                       </p>
                     </div>
-                    <span className="shrink-0 text-xs text-[#999]">
+                    <span className="shrink-0 text-xs text-muted-foreground">
                       {formatRelativeTime(item.createdAt)}
                     </span>
                   </div>
                   <div className="mt-2 flex items-center gap-2">
-                    <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-[#555]">
+                    <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
                       {item.triggerType}
                     </span>
                     {!item.isRead && (

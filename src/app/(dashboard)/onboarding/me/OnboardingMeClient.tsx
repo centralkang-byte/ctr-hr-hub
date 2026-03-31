@@ -65,7 +65,7 @@ const ASSIGNEE_BADGE_STYLES: Record<string, string> = {
   EMPLOYEE: 'bg-tertiary-container/20 text-tertiary',
   MANAGER: 'bg-primary/5 text-blue-500',
   HR: 'bg-destructive/5 text-red-500',
-  BUDDY: 'bg-purple-50 text-purple-700',
+  BUDDY: 'bg-purple-500/10 text-purple-700',
 }
 
 // ─── Helpers ──────────────────────────────────────────────────

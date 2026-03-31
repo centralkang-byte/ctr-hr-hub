@@ -96,7 +96,7 @@ export function DigestPreview() {
       </CardHeader>
       <CardContent>
         {!digest && !loading && (
-          <p className="text-sm text-[#666]">
+          <p className="text-sm text-muted-foreground">
             미리보기 버튼을 클릭하여 이번 주 다이제스트를 확인하세요.
           </p>
         )}
@@ -116,7 +116,7 @@ export function DigestPreview() {
                   key={label}
                   className="rounded-lg border border-border p-3 text-center"
                 >
-                  <p className="text-xs text-[#666]">{label}</p>
+                  <p className="text-xs text-muted-foreground">{label}</p>
                   <p className="text-xl font-bold text-foreground">{value}</p>
                 </div>
               ))}
@@ -125,10 +125,10 @@ export function DigestPreview() {
             {/* 주요 알림 */}
             {digest.highlights.length > 0 && (
               <div className="space-y-1">
-                <p className="text-sm font-medium text-[#333]">주요 알림</p>
+                <p className="text-sm font-medium text-foreground">주요 알림</p>
                 <ul className="space-y-1">
                   {digest.highlights.map((h, i) => (
-                    <li key={i} className="text-sm text-[#555]">
+                    <li key={i} className="text-sm text-muted-foreground">
                       &bull; {h}
                     </li>
                   ))}

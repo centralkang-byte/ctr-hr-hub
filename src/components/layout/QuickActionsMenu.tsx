@@ -138,7 +138,7 @@ export function QuickActionsMenu({ userRole }: QuickActionsMenuProps) {
             {open && (
                 <div
                     role="menu"
-                    className="absolute right-0 top-full z-50 mt-2 min-w-[220px] rounded-xl border border-border bg-white p-2 shadow-lg"
+                    className="absolute right-0 top-full z-50 mt-2 min-w-[220px] rounded-xl border border-border bg-card p-2 shadow-lg"
                 >
                     {/* Header */}
                     <p className="mb-1 px-3 pb-1 pt-0.5 text-xs font-medium text-muted-foreground">

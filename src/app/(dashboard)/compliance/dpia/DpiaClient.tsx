@@ -26,9 +26,9 @@ interface Dpia {
 
 function RiskBadge({ level }: { level: string }) {
   const map: Record<string, string> = {
-    low: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
-    medium: 'bg-amber-100 text-amber-700 border border-amber-300',
-    high: 'bg-orange-50 text-orange-700 border border-orange-200',
+    low: 'bg-emerald-500/15 text-emerald-700 border border-emerald-200',
+    medium: 'bg-amber-500/15 text-amber-700 border border-amber-300',
+    high: 'bg-orange-500/10 text-orange-700 border border-orange-200',
     critical: 'bg-destructive/10 text-destructive border border-destructive/20',
   }
   return (
@@ -40,9 +40,9 @@ function RiskBadge({ level }: { level: string }) {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    draft: 'bg-background text-[#555] border border-border',
-    in_review: 'bg-amber-100 text-amber-700 border border-amber-300',
-    approved: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+    draft: 'bg-background text-muted-foreground border border-border',
+    in_review: 'bg-amber-500/15 text-amber-700 border border-amber-300',
+    approved: 'bg-emerald-500/15 text-emerald-700 border border-emerald-200',
     rejected: 'bg-destructive/10 text-destructive border border-destructive/20',
   }
   return (
@@ -90,7 +90,7 @@ export default function DpiaClient({ user }: { user: SessionUser }) {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center">
             <FileSearch className="w-5 h-5 text-purple-600" />
           </div>
           <div>
@@ -109,7 +109,7 @@ export default function DpiaClient({ user }: { user: SessionUser }) {
       {/* Summary Cards */}
       <div className="grid grid-cols-4 gap-4">
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">Total DPIAs</p>
+          <p className="text-xs text-muted-foreground mb-1">Total DPIAs</p>
           <p className="text-3xl font-bold text-foreground">{dpias.length}</p>
         </div>
         <div className="bg-card rounded-xl border border-destructive/15 p-5">
@@ -128,7 +128,7 @@ export default function DpiaClient({ user }: { user: SessionUser }) {
 
       {/* High Risk Alert */}
       {(riskCounts.critical > 0 || riskCounts.high > 0) && (
-        <div className="flex items-start gap-3 p-4 bg-orange-50 border border-orange-200 rounded-xl">
+        <div className="flex items-start gap-3 p-4 bg-orange-500/10 border border-orange-200 rounded-xl">
           <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
           <div>
             <p className="text-sm font-medium text-orange-800">
@@ -144,9 +144,9 @@ export default function DpiaClient({ user }: { user: SessionUser }) {
       {/* Table */}
       <div className="bg-card rounded-xl border border-border">
         {loading ? (
-          <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
+          <div className="p-8 text-center text-muted-foreground">{tc('loading')}</div>
         ) : dpias.length === 0 ? (
-          <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
+          <div className="p-8 text-center text-muted-foreground">{tc('noData')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className={TABLE_STYLES.table}>
@@ -167,17 +167,17 @@ export default function DpiaClient({ user }: { user: SessionUser }) {
                     <td className={TABLE_STYLES.cell}>
                       <div className="font-medium text-foreground">{d.title}</div>
                       {d.description && (
-                        <div className="text-xs text-[#999] mt-0.5 max-w-[200px] truncate">{d.description}</div>
+                        <div className="text-xs text-muted-foreground mt-0.5 max-w-[200px] truncate">{d.description}</div>
                       )}
                     </td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-[#555] max-w-[240px] truncate')}>{d.processing_scope}</td>
+                    <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground max-w-[240px] truncate')}>{d.processing_scope}</td>
                     <td className={TABLE_STYLES.cell}>
                       <RiskBadge level={d.risk_level} />
                     </td>
                     <td className={TABLE_STYLES.cell}>
                       <StatusBadge status={d.status} />
                     </td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-[#666]')}>
+                    <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>
                       {new Date(d.updated_at).toLocaleDateString()}
                     </td>
                     <td className={TABLE_STYLES.cell}>

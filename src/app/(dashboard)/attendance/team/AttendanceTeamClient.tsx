@@ -153,17 +153,17 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
       {/* Summary cards */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
         <div className="bg-card border border-border rounded-xl p-6">
-          <p className="text-xs text-[#999] font-medium mb-2">{t('clockIn')}</p>
+          <p className="text-xs text-muted-foreground font-medium mb-2">{t('clockIn')}</p>
           <p className="text-3xl font-bold tabular-nums text-emerald-600"><AnimatedNumber value={presentCount} /></p>
         </div>
 
         <div className="bg-card border border-border rounded-xl p-6 border-l-4 border-l-[#FF9800]">
-          <p className="text-xs text-[#999] font-medium mb-2">{t('notClockedIn')}</p>
+          <p className="text-xs text-muted-foreground font-medium mb-2">{t('notClockedIn')}</p>
           <p className="text-3xl font-bold tabular-nums text-amber-500"><AnimatedNumber value={absentCount} /></p>
         </div>
 
         <div className="bg-card border border-border rounded-xl p-6">
-          <p className="text-xs text-[#999] font-medium mb-2">{t('late')}</p>
+          <p className="text-xs text-muted-foreground font-medium mb-2">{t('late')}</p>
           <p className={`text-3xl font-bold tabular-nums ${lateCount > 0 ? 'text-red-500' : 'text-foreground'}`}><AnimatedNumber value={lateCount} /></p>
         </div>
       </div>

@@ -211,7 +211,7 @@ export function ScheduleAdjustmentModal({
             {success ? (
               /* Success State */
               <div className="flex flex-col items-center gap-4 py-8 text-center">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15">
                   <CheckCircle2 className="h-8 w-8 text-emerald-600" />
                 </div>
                 <div>

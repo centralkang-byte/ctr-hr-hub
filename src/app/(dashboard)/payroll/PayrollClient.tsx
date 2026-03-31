@@ -82,13 +82,13 @@ function KpiCard({ label, value, sub, icon, accent, onClick }: KpiCardProps) {
       className={`${CARD_STYLES.kpi} text-left w-full ${onClick ? 'hover:shadow-md hover:border-border transition-all cursor-pointer' : 'cursor-default'}`}
     >
       <div className="flex items-center justify-between mb-2">
-        <p className="text-xs text-[#666]">{label}</p>
+        <p className="text-xs text-muted-foreground">{label}</p>
         <div className={`flex h-7 w-7 items-center justify-center rounded-full ${accent}`}>
           {icon}
         </div>
       </div>
       <p className="text-lg font-bold text-foreground leading-tight">{value}</p>
-      {sub && <p className="text-xs text-[#999] mt-0.5">{sub}</p>}
+      {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
     </button>
   )
 }
@@ -109,7 +109,7 @@ function QuickAction({ icon, label, sub, onClick, accent }: {
       </div>
       <div className="text-center">
         <p className="text-sm font-semibold text-foreground">{label}</p>
-        <p className="text-[11px] text-[#999]">{sub}</p>
+        <p className="text-[11px] text-muted-foreground">{sub}</p>
       </div>
     </button>
   )
@@ -178,25 +178,25 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground tracking-[-0.02em]">{'급여 관리'}</h1>
-            <p className="text-sm text-[#666] mt-0.5">{'전체 법인 파이프라인 현황'}</p>
+            <p className="text-sm text-muted-foreground mt-0.5">{'전체 법인 파이프라인 현황'}</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           {/* Month navigator */}
           <div className="flex items-center gap-1 bg-card border border-border rounded-xl px-2 py-1">
-            <button onClick={prevMonth} className="p-1 rounded-lg hover:bg-muted text-[#555]">
+            <button onClick={prevMonth} className="p-1 rounded-lg hover:bg-muted text-muted-foreground">
               <ChevronLeft className="h-4 w-4" />
             </button>
             <span className="text-sm font-semibold text-foreground px-2 min-w-24 text-center">
               {year}년 {MONTHS_KO[month - 1]}
             </span>
-            <button onClick={nextMonth} className="p-1 rounded-lg hover:bg-muted text-[#555]">
+            <button onClick={nextMonth} className="p-1 rounded-lg hover:bg-muted text-muted-foreground">
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
 
-          <button onClick={fetchDashboard} className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-[#555]">
+          <button onClick={fetchDashboard} className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground">
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
 
@@ -235,7 +235,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
                     ? <TrendingDown className="h-3.5 w-3.5 text-destructive" />
                     : <DollarSign className="h-3.5 w-3.5 text-primary" />
               }
-              accent="bg-indigo-100"
+              accent="bg-indigo-500/15"
               onClick={() => router.push('/payroll/global')}
             />
 
@@ -244,7 +244,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
               value={`${data.summary.completedCompanies} / ${data.summary.totalCompanies}개`}
               sub="승인 또는 지급 완료"
               icon={<CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />}
-              accent="bg-emerald-100"
+              accent="bg-emerald-500/15"
             />
 
             <KpiCard
@@ -252,7 +252,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
               value={`${data.summary.openAnomalies}건`}
               sub={data.summary.openAnomalies > 0 ? '검토 필요' : '모두 해결됨 ✅'}
               icon={<AlertTriangle className="h-3.5 w-3.5 text-amber-500" />}
-              accent="bg-amber-100"
+              accent="bg-amber-500/15"
               onClick={data.summary.openAnomalies > 0 ? () => router.push('/payroll/anomalies') : undefined}
             />
 
@@ -261,7 +261,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
               value={`${data.summary.pendingApprovals}건 / ${data.summary.alertCount}개`}
               sub={`결재 / D-3 법인`}
               icon={<Clock className="h-3.5 w-3.5 text-violet-500" />}
-              accent="bg-purple-50"
+              accent="bg-purple-500/10"
               onClick={data.summary.pendingApprovals > 0 ? () => router.push('/approvals/inbox') : undefined}
             />
           </div>
@@ -271,11 +271,11 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
             <div className="flex items-center gap-2 mb-4">
               <LayoutGrid className="h-4 w-4 text-primary" />
               <h2 className="font-semibold text-foreground">{'파이프라인 현황'}</h2>
-              <span className="ml-1 text-xs text-[#999]">{'— 각 배지를 클릭하면 해당 단계로 이동합니다'}</span>
+              <span className="ml-1 text-xs text-muted-foreground">{'— 각 배지를 클릭하면 해당 단계로 이동합니다'}</span>
             </div>
 
             {data.pipelines.length === 0 ? (
-              <div className="py-8 text-center text-[#999] text-sm">
+              <div className="py-8 text-center text-muted-foreground text-sm">
                 <Users className="h-8 w-8 mx-auto mb-2 text-border" />
                 {'이 월에 급여 실행이 없습니다. 급여 실행을 생성해 주세요.'}
               </div>
@@ -304,28 +304,28 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
                 label="근태 마감"
                 sub="STEP 1 → 2"
                 onClick={() => router.push('/payroll/close-attendance')}
-                accent="bg-indigo-100"
+                accent="bg-indigo-500/15"
               />
               <QuickAction
                 icon={<AlertTriangle className="h-5 w-5 text-amber-500" />}
                 label="이상 검토"
                 sub="STEP 3"
                 onClick={() => router.push('/payroll/anomalies')}
-                accent="bg-amber-100"
+                accent="bg-amber-500/15"
               />
               <QuickAction
                 icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
                 label="승인 대기"
                 sub="STEP 4 — 승인함으로"
                 onClick={() => router.push('/approvals/inbox?module=PAYROLL')}
-                accent="bg-indigo-100"
+                accent="bg-indigo-500/15"
               />
               <QuickAction
                 icon={<Wallet className="h-5 w-5 text-emerald-600" />}
                 label="수동 조정"
                 sub="STEP 2.5"
                 onClick={() => router.push('/payroll/adjustments')}
-                accent="bg-emerald-100"
+                accent="bg-emerald-500/15"
               />
             </div>
           </div>

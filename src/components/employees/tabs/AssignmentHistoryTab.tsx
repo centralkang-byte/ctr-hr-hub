@@ -125,12 +125,12 @@ function AssignmentSidePanel({
       <div className="p-4 space-y-2.5 overflow-y-auto max-h-96">
         <div className="flex items-center gap-2 pb-2 border-b border-border">
           <Badge variant="outline" className="text-xs">{event.title}</Badge>
-          <span className="text-xs text-[#999]">{new Date(event.date).toLocaleDateString('ko-KR')}</span>
+          <span className="text-xs text-muted-foreground">{new Date(event.date).toLocaleDateString('ko-KR')}</span>
         </div>
         {rows.map((row) => (
           <div key={row.label} className="flex items-start gap-2">
-            <span className="w-20 flex-shrink-0 text-xs text-[#999]">{row.label}</span>
-            <span className="text-xs text-[#333] font-medium break-all">{row.value}</span>
+            <span className="w-20 flex-shrink-0 text-xs text-muted-foreground">{row.label}</span>
+            <span className="text-xs text-foreground font-medium break-all">{row.value}</span>
           </div>
         ))}
       </div>
@@ -168,7 +168,7 @@ function ConcurrentStatusSection({
       <h3 className="text-sm font-bold text-foreground">현재 겸직 현황</h3>
 
       {activeConcurrents.length === 0 ? (
-        <p className="text-xs text-[#999]">현재 활성 겸직이 없습니다.</p>
+        <p className="text-xs text-muted-foreground">현재 활성 겸직이 없습니다.</p>
       ) : (
         <div className="space-y-2">
           {activeConcurrents.map((a) => (
@@ -176,9 +176,9 @@ function ConcurrentStatusSection({
               key={a.id}
               className="flex items-center justify-between rounded-lg border border-border px-3 py-2"
             >
-              <span className="text-sm text-[#333]">
+              <span className="text-sm text-foreground">
                 {[a.company?.name, a.department?.name].filter(Boolean).join(' · ')}
-                <span className="ml-2 text-xs text-[#999]">
+                <span className="ml-2 text-xs text-muted-foreground">
                   {new Date(a.effectiveDate).toLocaleDateString('ko-KR')} ~
                 </span>
               </span>
@@ -331,7 +331,7 @@ export function AssignmentHistoryTab({
       </div>
 
       {snapshotLoading && (
-        <div className="text-xs text-[#999] text-center py-1 animate-pulse">시점 정보 조회 중...</div>
+        <div className="text-xs text-muted-foreground text-center py-1 animate-pulse">시점 정보 조회 중...</div>
       )}
 
       {/* Dialogs */}

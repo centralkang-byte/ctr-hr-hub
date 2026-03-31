@@ -81,7 +81,7 @@ function Toggle({
     <div className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
       <div>
         <p className="text-sm font-medium text-foreground">{label}</p>
-        {description && <p className="text-xs text-[#666] mt-0.5">{description}</p>}
+        {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
       </div>
       <button
         type="button"
@@ -123,8 +123,8 @@ function NumberInput({
 }) {
   return (
     <div>
-      <Label className="text-sm font-medium text-[#333]">{label}</Label>
-      {hint && <p className="text-xs text-[#888] mt-0.5 mb-1">{hint}</p>}
+      <Label className="text-sm font-medium text-foreground">{label}</Label>
+      {hint && <p className="text-xs text-muted-foreground mt-0.5 mb-1">{hint}</p>}
       <div className="flex items-center gap-2 mt-1">
         <Input
           type="number"
@@ -134,7 +134,7 @@ function NumberInput({
           onChange={(e) => onChange(Number(e.target.value))}
           className="w-24 border-border text-sm focus:ring-2 focus:ring-primary/10"
         />
-        {unit && <span className="text-sm text-[#666]">{unit}</span>}
+        {unit && <span className="text-sm text-muted-foreground">{unit}</span>}
       </div>
     </div>
   )
@@ -146,7 +146,7 @@ function SectionHeader({ title, description }: { title: string; description?: st
   return (
     <div className="mb-4">
       <h3 className="text-base font-semibold text-foreground">{title}</h3>
-      {description && <p className="text-sm text-[#666] mt-0.5">{description}</p>}
+      {description && <p className="text-sm text-muted-foreground mt-0.5">{description}</p>}
     </div>
   )
 }
@@ -299,7 +299,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
           {settings.flexWork.flexEnabled && (
             <div className="ml-0 grid grid-cols-1 gap-4 sm:grid-cols-3 rounded-lg bg-background border border-border p-4">
               <div>
-                <Label className="text-sm font-medium text-[#333]">{'코어 타임 시작'}</Label>
+                <Label className="text-sm font-medium text-foreground">{'코어 타임 시작'}</Label>
                 <Input
                   type="time"
                   value={settings.flexWork.coreTimeStart}
@@ -308,7 +308,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
                 />
               </div>
               <div>
-                <Label className="text-sm font-medium text-[#333]">{'코어 타임 종료'}</Label>
+                <Label className="text-sm font-medium text-foreground">{'코어 타임 종료'}</Label>
                 <Input
                   type="time"
                   value={settings.flexWork.coreTimeEnd}
@@ -333,7 +333,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
       <div className="rounded-xl border border-border bg-card p-5">
         <SectionHeader title="타임존" description="근태 기록 기준 타임존입니다." />
         <div className="max-w-xs">
-          <Label className="text-sm font-medium text-[#333]">{'타입'}</Label>
+          <Label className="text-sm font-medium text-foreground">{'타입'}</Label>
           <select
             value={settings.timezone}
             onChange={(e) => patchSettings({ timezone: e.target.value })}
@@ -367,14 +367,14 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
           <div className="flex items-center gap-0">
             <div className="flex-1 text-center">
               <div className="text-2xl font-bold text-foreground">0</div>
-              <div className="text-xs text-[#999]">{'시작일'}</div>
+              <div className="text-xs text-muted-foreground">{'시작일'}</div>
             </div>
-            <div className="flex-1 h-2 rounded-l-full bg-emerald-100" />
+            <div className="flex-1 h-2 rounded-l-full bg-emerald-500/15" />
             <div className="flex-1 text-center">
               <div className="text-2xl font-bold text-amber-700">{settings.alertThresholds.caution}</div>
               <div className="text-xs text-amber-700">{'주의:'}</div>
             </div>
-            <div className="flex-1 h-2 bg-amber-100" />
+            <div className="flex-1 h-2 bg-amber-500/15" />
             <div className="flex-1 text-center">
               <div className="text-2xl font-bold text-orange-700">{settings.alertThresholds.warning}</div>
               <div className="text-xs text-orange-700">{'경고'}</div>
@@ -386,13 +386,13 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
             </div>
             <div className="flex-1 h-2 rounded-r-full bg-destructive/10" />
           </div>
-          <div className="mt-1 text-center text-xs text-[#999]">{'단위: 시간/주'}</div>
+          <div className="mt-1 text-center text-xs text-muted-foreground">{'단위: 시간/주'}</div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="rounded-lg border border-amber-300 bg-amber-50 p-4">
+          <div className="rounded-lg border border-amber-300 bg-amber-500/10 p-4">
             <div className="flex items-center gap-1.5 mb-3">
-              <div className="h-3 w-3 rounded-full bg-amber-500" />
+              <div className="h-3 w-3 rounded-full bg-amber-500/100" />
               <span className="text-sm font-semibold text-amber-700">{'주의 (Caution)'}</span>
             </div>
             <NumberInput
@@ -405,9 +405,9 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
               hint="HR 알림 발송"
             />
           </div>
-          <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
+          <div className="rounded-lg border border-orange-200 bg-orange-500/10 p-4">
             <div className="flex items-center gap-1.5 mb-3">
-              <div className="h-3 w-3 rounded-full bg-orange-500" />
+              <div className="h-3 w-3 rounded-full bg-orange-500/100" />
               <span className="text-sm font-semibold text-orange-700">{'경고 (Warning)'}</span>
             </div>
             <NumberInput
@@ -462,7 +462,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
             description="차단 임계값 초과 시 직원의 출근 기록이 자동으로 거부됩니다."
           />
           {settings.enableBlocking && (
-            <div className="flex items-start gap-2 rounded-lg bg-orange-50 border border-orange-200 px-3 py-2">
+            <div className="flex items-start gap-2 rounded-lg bg-orange-500/10 border border-orange-200 px-3 py-2">
               <Info className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
               <p className="text-xs text-orange-700">
                 {'차단이 활성화되면 클락인 API에서 52시간 초과 여부를 확인합니다. HR 관리자만 차단을 해제할 수 있습니다.'}
@@ -503,9 +503,9 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
             >
               <div>
                 <p className="text-sm font-medium text-foreground">{'교대 패턴 관리'}</p>
-                <p className="text-xs text-[#666]">{'2교대/3교대 패턴 정의 및 슬롯 설정'}</p>
+                <p className="text-xs text-muted-foreground">{'2교대/3교대 패턴 정의 및 슬롯 설정'}</p>
               </div>
-              <ChevronRight className="h-4 w-4 text-[#999]" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </Link>
             <Link
               href="/settings/shift-roster"
@@ -513,9 +513,9 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
             >
               <div>
                 <p className="text-sm font-medium text-foreground">{'교대 로스터'}</p>
-                <p className="text-xs text-[#666]">{'월별 교대 일정 배정 및 조 편성'}</p>
+                <p className="text-xs text-muted-foreground">{'월별 교대 일정 배정 및 조 편성'}</p>
               </div>
-              <ChevronRight className="h-4 w-4 text-[#999]" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </Link>
           </div>
         </div>
@@ -558,7 +558,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
                 className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium border-b-2 transition-colors ${
                   tab === t.id
                     ? 'border-primary text-primary'
-                    : 'border-transparent text-[#666] hover:text-[#333]'
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {t.icon}
@@ -582,7 +582,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
             </div>
           )}
           {successMsg && (
-            <div className="flex items-center gap-2 rounded-lg bg-emerald-100 border border-emerald-200 px-4 py-3">
+            <div className="flex items-center gap-2 rounded-lg bg-emerald-500/15 border border-emerald-200 px-4 py-3">
               <span className="text-sm text-emerald-700">{successMsg}</span>
             </div>
           )}
@@ -596,7 +596,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
                 </span>
               )}
               {!settings.isCustom && (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-background text-[#555] border border-border">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-background text-muted-foreground border border-border">
                   {'글로벌 기본값'}
                 </span>
               )}
@@ -606,7 +606,7 @@ export function AttendanceSettingsClient({ user: _user }: Props) {
                 variant="outline"
                 size="sm"
                 onClick={() => { void fetchSettings() }}
-                className="border-border text-[#333] hover:bg-background"
+                className="border-border text-foreground hover:bg-background"
               >
                 <RotateCcw className="h-4 w-4 mr-1.5" />
                 {'초기화'}

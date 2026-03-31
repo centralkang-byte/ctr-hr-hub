@@ -78,7 +78,7 @@ export default function ResultsClient({
   useEffect(() => { fetchResult() }, [fetchResult])
 
   if (loading) {
-    return <div className="p-6 flex items-center justify-center h-64 text-[#666]">{tc('loading')}...</div>
+    return <div className="p-6 flex items-center justify-center h-64 text-muted-foreground">{tc('loading')}...</div>
   }
 
   const final = result?.finalResult
@@ -89,7 +89,7 @@ export default function ResultsClient({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('results')}</h1>
-          <p className="text-sm text-[#666] mt-1">{t('kr_keb8298ec_kec84b1ea_keab2b0ea_')}</p>
+          <p className="text-sm text-muted-foreground mt-1">{t('kr_keb8298ec_kec84b1ea_keab2b0ea_')}</p>
         </div>
         <select
           value={selectedCycleId}
@@ -104,26 +104,26 @@ export default function ResultsClient({
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Target className="w-3.5 h-3.5" /> {t('kr_kec84b1ea_score')}</p>
+          <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><Target className="w-3.5 h-3.5" /> {t('kr_kec84b1ea_score')}</p>
           <p className="text-3xl font-bold text-foreground">
             {final?.performanceScore?.toFixed(1) ?? '-'}
           </p>
-          <p className="text-xs text-[#999] mt-1">/5.0</p>
+          <p className="text-xs text-muted-foreground mt-1">/5.0</p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> {t('kr_kec97adeb_score')}</p>
+          <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> {t('kr_kec97adeb_score')}</p>
           <p className="text-3xl font-bold text-foreground">
             {final?.competencyScore?.toFixed(1) ?? '-'}
           </p>
-          <p className="text-xs text-[#999] mt-1">/5.0</p>
+          <p className="text-xs text-muted-foreground mt-1">/5.0</p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Award className="w-3.5 h-3.5" /> {t('kr_ems_kebb894eb')}</p>
+          <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><Award className="w-3.5 h-3.5" /> {t('kr_ems_kebb894eb')}</p>
           <p className="text-3xl font-bold text-primary">
             {final?.emsBlock ?? '-'}
           </p>
           {final?.calibrated && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-primary/90 mt-1">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-500/15 text-primary/90 mt-1">
               {t('calibration_kebb098ec')}
             </span>
           )}
@@ -155,7 +155,7 @@ export default function ResultsClient({
                     <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.selfEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-primary")}>{result.selfEvaluation.emsBlock ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cell, "text-center")}>
-                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">{result.selfEvaluation.status}</span>
+                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-700">{result.selfEvaluation.status}</span>
                     </td>
                   </tr>
                 )}
@@ -166,7 +166,7 @@ export default function ResultsClient({
                     <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.managerEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-primary")}>{result.managerEvaluation.emsBlock ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cell, "text-center")}>
-                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">{result.managerEvaluation.status}</span>
+                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-700">{result.managerEvaluation.status}</span>
                     </td>
                   </tr>
                 )}
@@ -187,13 +187,13 @@ export default function ResultsClient({
               <div key={goal.id} className="px-5 py-3 flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-foreground">{goal.title}</p>
-                  <p className="text-xs text-[#999]">가중치: {goal.weight}%</p>
+                  <p className="text-xs text-muted-foreground">가중치: {goal.weight}%</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium text-foreground">
                     {goal.achievementScore != null ? `${goal.achievementScore}/5` : '-'}
                   </p>
-                  <p className="text-xs text-[#999]">
+                  <p className="text-xs text-muted-foreground">
                     {goal.achievementScore != null ? SCORE_LABELS[Math.round(goal.achievementScore)] : ''}
                   </p>
                 </div>

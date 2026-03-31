@@ -269,7 +269,7 @@ export function DashboardClient({ user }: Props) {
                   className={cn(
                     'flex items-center gap-3 p-3 rounded-xl transition-colors',
                     alert.severity === 'HIGH' && 'bg-destructive/5 hover:bg-destructive/10',
-                    alert.severity === 'MEDIUM' && 'bg-amber-50/50 hover:bg-amber-50/80 dark:bg-amber-950/20 dark:hover:bg-amber-950/30',
+                    alert.severity === 'MEDIUM' && 'bg-amber-500/10/50 hover:bg-amber-500/10/80 dark:bg-amber-950/20 dark:hover:bg-amber-950/30',
                     alert.severity !== 'HIGH' && alert.severity !== 'MEDIUM' && 'bg-primary/5 hover:bg-primary/10',
                   )}
                 >

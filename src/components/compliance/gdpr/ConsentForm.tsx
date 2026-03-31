@@ -93,7 +93,7 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
         <div className="space-y-4 py-2">
           {/* Employee Selector */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               {tc('name')} <span className="text-red-500">*</span>
             </label>
             <select
@@ -112,7 +112,7 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
 
           {/* Purpose */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               {t('gdpr.purpose')} <span className="text-red-500">*</span>
             </label>
             <select
@@ -131,7 +131,7 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
 
           {/* Legal Basis */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               {t('gdpr.legalBasis')} <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -145,7 +145,7 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
 
           {/* Expires At */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               {t('gdpr.expiresAt')}
             </label>
             <input
@@ -162,7 +162,7 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
         <DialogFooter className="gap-2">
           <button
             onClick={onClose}
-            className="bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
+            className="bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm"
           >
             {tc('cancel')}
           </button>

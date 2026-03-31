@@ -129,7 +129,7 @@ export function ExecutionConfirm({
       {/* 경고 박스 */}
       <div
         className={cn(
-          'flex items-start gap-3 rounded-md border border-amber-200 bg-amber-50 p-4',
+          'flex items-start gap-3 rounded-md border border-amber-200 bg-amber-500/10 p-4',
           'dark:border-amber-800 dark:bg-amber-950/30'
         )}
       >

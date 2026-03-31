@@ -81,11 +81,11 @@ interface EmployeeRiskData {
 // ─── 상수 ────────────────────────────────────────────────
 
 const RISK_CONFIG: Record<string, { label: string; bg: string; text: string; border: string; color: string }> = {
-  low:      { label: '낮음',     bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200', color: '#059669' },
-  medium:   { label: '보통',     bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-300', color: '#F59E0B' },
+  low:      { label: '낮음',     bg: 'bg-emerald-500/15', text: 'text-emerald-700', border: 'border-emerald-200', color: '#059669' },
+  medium:   { label: '보통',     bg: 'bg-amber-500/15', text: 'text-amber-700', border: 'border-amber-300', color: '#F59E0B' },
   high:     { label: '높음',     bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20', color: '#EF4444' },
-  critical: { label: '위험',     bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200', color: '#C2410C' },
-  insufficient_data: { label: '데이터 부족', bg: 'bg-background', text: 'text-[#555]', border: 'border-border', color: '#999' },
+  critical: { label: '위험',     bg: 'bg-orange-500/10', text: 'text-orange-700', border: 'border-orange-200', color: '#C2410C' },
+  insufficient_data: { label: '데이터 부족', bg: 'bg-background', text: 'text-muted-foreground', border: 'border-border', color: '#999' },
 }
 
 const SIGNAL_LABELS: Record<string, string> = {
@@ -173,7 +173,7 @@ function RecommendedActions({ turnover, burnout }: {
       <div className="space-y-3">
         {actions.map((action, i) => (
           <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${
-            action.priority === 'high' ? 'bg-orange-50 border border-orange-200' : 'bg-background'
+            action.priority === 'high' ? 'bg-orange-500/10 border border-orange-200' : 'bg-background'
           }`}>
             <span className="text-lg">{action.icon}</span>
             <div>
@@ -220,7 +220,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
   if (loading) {
     return (
       <div className="p-6 flex items-center justify-center min-h-96">
-        <Loader2 className="w-8 h-8 animate-spin text-[#999]" />
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
       </div>
     )
   }
@@ -228,7 +228,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
   if (!data) {
     return (
       <div className="p-6">
-        <Link href="/analytics/predictive" className="flex items-center gap-2 text-sm text-[#666] hover:text-[#333] mb-6">
+        <Link href="/analytics/predictive" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
           <ArrowLeft className="w-4 h-4" /> {t('kr_kec9888ec_kec95a0eb_keb8f8cec')}
         </Link>
         <EmptyState />
@@ -251,12 +251,12 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/analytics/predictive" className="flex items-center gap-2 text-sm text-[#666] hover:text-[#333]">
+          <Link href="/analytics/predictive" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="w-4 h-4" /> {t('kr_kebaaa9eb')}
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-foreground">{data.employee.name}</h1>
-            <p className="text-sm text-[#666]">
+            <p className="text-sm text-muted-foreground">
               {data.employee.department?.name ?? '—'} · {data.employee.jobGrade?.name ?? '—'}
             </p>
           </div>
@@ -288,22 +288,22 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
             <div className="flex items-center gap-6">
               <ScoreGauge score={data.turnover.overallScore} riskLevel={data.turnover.riskLevel} />
               <div className="flex-1">
-                <p className="text-xs text-[#666] mb-2">{t('kr_keca3bcec_risk_kec9a94ec')}</p>
+                <p className="text-xs text-muted-foreground mb-2">{t('kr_keca3bcec_risk_kec9a94ec')}</p>
                 <div className="space-y-1">
                   {data.turnover.topFactors.slice(0, 4).map((f) => (
                     <div key={f} className="flex items-center gap-2">
                       <AlertTriangle className="w-3 h-3 text-amber-500" />
-                      <span className="text-xs text-[#555]">{f}</span>
+                      <span className="text-xs text-muted-foreground">{f}</span>
                     </div>
                   ))}
                 </div>
-                <p className="text-[10px] text-[#999] mt-3">
+                <p className="text-[10px] text-muted-foreground mt-3">
                   계산일: {new Date(data.turnover.calculatedAt).toLocaleDateString('ko-KR')}
                 </p>
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-2 py-8 text-sm text-[#999]">
+            <div className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
               <Info className="w-4 h-4" /> {t('kr_keb8db0ec_insufficient_kec9eac')}
             </div>
           )}
@@ -320,7 +320,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
             <div className="flex items-center gap-6">
               <ScoreGauge score={data.burnout.overallScore} riskLevel={data.burnout.riskLevel} />
               <div className="flex-1">
-                <p className="text-xs text-[#666] mb-2">{t('kr_keca780ed_status')}</p>
+                <p className="text-xs text-muted-foreground mb-2">{t('kr_keca780ed_status')}</p>
                 <div className="space-y-2">
                   {(data.burnout.indicators as unknown as Indicator[])
                     .filter((i) => i.available)
@@ -328,7 +328,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
                     .map((indicator) => (
                       <div key={indicator.indicator} className="flex items-center gap-2">
                         <div className="flex-1">
-                          <p className="text-[10px] text-[#666]">{indicator.indicator}</p>
+                          <p className="text-[10px] text-muted-foreground">{indicator.indicator}</p>
                           <div className="h-1 bg-muted rounded-full overflow-hidden mt-0.5">
                             <div
                               className="h-full rounded-full"
@@ -339,14 +339,14 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
                             />
                           </div>
                         </div>
-                        <span className="text-xs text-[#666] w-6">{indicator.score}</span>
+                        <span className="text-xs text-muted-foreground w-6">{indicator.score}</span>
                       </div>
                     ))}
                 </div>
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-2 py-8 text-sm text-[#999]">
+            <div className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
               <Info className="w-4 h-4" /> {t('kr_keb8db0ec_insufficient_kec9eac')}
             </div>
           )}
@@ -401,7 +401,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
                     <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>
                       {SIGNAL_LABELS[signal.signal] ?? signal.signal}
                     </td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-[#555]')}>{Math.round(signal.weight * 100)}%</td>
+                    <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>{Math.round(signal.weight * 100)}%</td>
                     <td className={TABLE_STYLES.cell}>
                       {signal.available ? (
                         <div className="flex items-center gap-2">
@@ -414,22 +414,22 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
                               }}
                             />
                           </div>
-                          <span className="text-xs text-[#666]">{signal.score}</span>
+                          <span className="text-xs text-muted-foreground">{signal.score}</span>
                         </div>
                       ) : (
-                        <span className="text-xs text-[#999]">—</span>
+                        <span className="text-xs text-muted-foreground">—</span>
                       )}
                     </td>
                     <td className={TABLE_STYLES.cell}>
                       <span className={`text-xs px-2 py-0.5 rounded-full ${
                         signal.available
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : 'bg-background text-[#999]'
+                          ? 'bg-emerald-500/15 text-emerald-700'
+                          : 'bg-background text-muted-foreground'
                       }`}>
                         {signal.available ? '계산됨' : '데이터 없음'}
                       </span>
                     </td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-[#666]')}>
+                    <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>
                       {signal.rawData
                         ? Object.entries(signal.rawData)
                             .map(([k, v]) => `${k}: ${v}`)

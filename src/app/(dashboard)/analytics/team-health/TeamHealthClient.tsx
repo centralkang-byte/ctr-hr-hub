@@ -29,7 +29,7 @@ const SUB_ICONS = [
 ]
 const STATUS_COLORS = { GREEN: STATUS_FG.success, YELLOW: STATUS_FG.warning, RED: STATUS_FG.error }
 const STATUS_LABELS = { GREEN: '🟢', YELLOW: '🟡', RED: '🔴' }
-const RISK_COLORS = { HIGH: 'text-destructive bg-destructive/5', MEDIUM: 'text-amber-600 bg-amber-50', LOW: 'text-emerald-600 bg-emerald-50' }
+const RISK_COLORS = { HIGH: 'text-destructive bg-destructive/5', MEDIUM: 'text-amber-600 bg-amber-500/10', LOW: 'text-emerald-600 bg-emerald-500/10' }
 
 export default function TeamHealthClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
@@ -165,7 +165,7 @@ export default function TeamHealthClient({ user }: { user: SessionUser }) {
         <div className="space-y-3">
           {data.recommendations.map((rec, i) => (
             <div key={i} className={`flex items-start gap-3 p-3 rounded-lg border-l-4 ${
-              rec.severity === 'RED' ? 'border-l-red-500 bg-destructive/5/30' : 'border-l-amber-500 bg-amber-50/30'
+              rec.severity === 'RED' ? 'border-l-red-500 bg-destructive/5/30' : 'border-l-amber-500 bg-amber-500/10/30'
             }`}>
               <div className="flex-1">
                 <p className="text-sm font-medium text-foreground">

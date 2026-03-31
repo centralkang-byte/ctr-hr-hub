@@ -166,10 +166,10 @@ function translateDocType(type: string): string {
 
 function VisibilityBadge({ level }: { level: string }) {
   const colors: Record<string, string> = {
-    public: 'bg-emerald-100 text-emerald-700',
-    team: 'bg-indigo-100 text-primary/90',
-    manager: 'bg-amber-100 text-amber-700',
-    private: 'bg-muted text-[#555]',
+    public: 'bg-emerald-500/15 text-emerald-700',
+    team: 'bg-indigo-500/15 text-primary/90',
+    manager: 'bg-amber-500/15 text-amber-700',
+    private: 'bg-muted text-muted-foreground',
   }
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${colors[level] ?? colors.private}`}>
@@ -288,7 +288,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
           </div>
           <button
             onClick={() => toast({ title: '준비 중', description: '아바타 업로드는 곧 지원됩니다.' })}
-            className="absolute -bottom-2 -right-2 w-8 h-8 bg-card border border-border rounded-full flex items-center justify-center shadow-sm hover:bg-background text-[#555] hover:text-primary transition-colors"
+            className="absolute -bottom-2 -right-2 w-8 h-8 bg-card border border-border rounded-full flex items-center justify-center shadow-sm hover:bg-background text-muted-foreground hover:text-primary transition-colors"
           >
             <Camera className="w-4 h-4" />
           </button>
@@ -298,12 +298,12 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
             <div>
               <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
                 {employee.name}
-                {employee.nameEn && <span className="text-sm font-normal text-[#666]">({employee.nameEn})</span>}
+                {employee.nameEn && <span className="text-sm font-normal text-muted-foreground">({employee.nameEn})</span>}
               </h1>
               <p className="text-primary font-medium mt-1">
                 {[asgn?.title?.name, asgn?.position?.titleKo].filter(Boolean).join(' · ') || (asgn?.jobGrade?.name ?? '-')}
               </p>
-              <p className="text-sm text-[#999] mt-0.5">
+              <p className="text-sm text-muted-foreground mt-0.5">
                 {[asgn?.company?.name, division, asgn?.department?.name].filter(Boolean).join(' · ')}
               </p>
             </div>
@@ -313,10 +313,10 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
               </span>
             </div>
           </div>
-          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[#666]">
-            <span className="flex items-center gap-1.5"><Building className="w-4 h-4 text-[#999]" /> {asgn?.jobGrade?.name ?? '-'}</span>
-            <span className="flex items-center gap-1.5"><User className="w-4 h-4 text-[#999]" /> {employee.employeeNo}</span>
-            <span className="flex items-center gap-1.5"><Globe className="w-4 h-4 text-[#999]" /> {employee.email}</span>
+          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1.5"><Building className="w-4 h-4 text-muted-foreground" /> {asgn?.jobGrade?.name ?? '-'}</span>
+            <span className="flex items-center gap-1.5"><User className="w-4 h-4 text-muted-foreground" /> {employee.employeeNo}</span>
+            <span className="flex items-center gap-1.5"><Globe className="w-4 h-4 text-muted-foreground" /> {employee.email}</span>
           </div>
         </div>
       </div>
@@ -332,7 +332,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all ${
                 isActive 
                   ? 'bg-card text-primary/90 shadow-sm' 
-                  : 'text-[#666] hover:text-[#333] hover:bg-border/50'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-border/50'
               }`}
             >
               <tab.icon className={`w-4 h-4 ${isActive ? 'text-primary' : ''}`} />
@@ -379,7 +379,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
 
                 <div className={CARD_STYLES.padded}>
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600">
                       <Award className="h-4 w-4" />
                     </div>
                     <span className="text-xs text-muted-foreground">{t('atGlance.certLang')}</span>
@@ -390,7 +390,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
 
                 <div className={CARD_STYLES.padded}>
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-50 text-purple-600">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600">
                       <Clock className="h-4 w-4" />
                     </div>
                     <span className="text-xs text-muted-foreground">{t('atGlance.skills')}</span>
@@ -419,7 +419,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                   { label: '연락처 (개인)', value: employee.phone ?? '-', action: () => { setChangeReqField('phone'); setChangeReqValue(''); setChangeReqReason('') } },
                 ].map(({ label, value, action }) => (
                   <div key={label} className="border-b border-border pb-2 last:border-0 last:pb-0">
-                    <p className="text-xs text-[#999] mb-0.5">{label}</p>
+                    <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
                     <div className="flex justify-between items-center">
                       <p className="text-sm text-foreground font-medium">{value}</p>
                       {action && (
@@ -452,20 +452,20 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                     placeholder={tCommon('placeholderSelfIntro')}
                   />
                   <div className="flex justify-between items-center">
-                    <p className="text-xs text-[#999]">{bioValue.length}/500</p>
+                    <p className="text-xs text-muted-foreground">{bioValue.length}/500</p>
                     <div className="flex gap-2">
                       <button onClick={saveBio} className={`flex items-center gap-1 ${BUTTON_VARIANTS.primary} px-3 py-1.5 rounded-lg text-sm font-medium`}>
                         <Save className="w-3.5 h-3.5" /> 저장
                       </button>
-                      <button onClick={() => setEditingBio(false)} className="flex items-center gap-1 border border-border text-[#555] px-3 py-1.5 rounded-lg text-sm hover:bg-muted">
+                      <button onClick={() => setEditingBio(false)} className="flex items-center gap-1 border border-border text-muted-foreground px-3 py-1.5 rounded-lg text-sm hover:bg-muted">
                         <X className="w-3.5 h-3.5" /> 취소
                       </button>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="text-sm text-[#333] whitespace-pre-wrap leading-relaxed">
-                  {ext.bio ? ext.bio : <span className="text-[#999] italic">아직 작성된 자기소개가 없습니다.</span>}
+                <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+                  {ext.bio ? ext.bio : <span className="text-muted-foreground italic">아직 작성된 자기소개가 없습니다.</span>}
                 </div>
               )}
             </div>
@@ -482,7 +482,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                     </button>
                   </span>
                 ))}
-                {ext.skills.length === 0 && <p className="text-sm text-[#999]">등록된 스킬이 없습니다.</p>}
+                {ext.skills.length === 0 && <p className="text-sm text-muted-foreground">등록된 스킬이 없습니다.</p>}
               </div>
               <div className="flex gap-2">
                 <input
@@ -512,16 +512,16 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
               </div>
               
               {emergencyContacts.length === 0 ? (
-                <p className="text-xs text-[#999] py-2 text-center">등록된 비상연락처가 없습니다.</p>
+                <p className="text-xs text-muted-foreground py-2 text-center">등록된 비상연락처가 없습니다.</p>
               ) : (
                 <div className="space-y-3">
                   {emergencyContacts.map((c) => (
                     <div key={c.id} className="group relative pr-6">
                       <div className="flex items-center gap-2 mb-0.5">
                         <p className="text-sm font-medium text-foreground">{c.name}</p>
-                        {c.isPrimary && <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-sm">주요</span>}
+                        {c.isPrimary && <span className="text-[10px] bg-amber-500/15 text-amber-700 px-1.5 py-0.5 rounded-sm">주요</span>}
                       </div>
-                      <p className="text-xs text-[#666]">{c.relationship} · {c.phone}</p>
+                      <p className="text-xs text-muted-foreground">{c.relationship} · {c.phone}</p>
                       <button onClick={() => deleteEmergencyContact(c.id)} className="absolute right-0 top-1/2 -translate-y-1/2 text-border hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity p-1">
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -544,7 +544,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                   { label: '보유 스킬', field: 'skills' },
                 ]).map(({ label, field }) => (
                   <div key={field} className="flex items-center justify-between">
-                    <p className="text-xs text-[#555]">{label}</p>
+                    <p className="text-xs text-muted-foreground">{label}</p>
                     <div className="flex items-center gap-1.5">
                       <VisibilityBadge level={(visibility as any)[field]} />
                       <select
@@ -585,12 +585,12 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                        <span className="text-xs font-semibold text-primary/90 bg-primary/10 px-2 py-0.5 rounded-md">
                          {translateChangeType(hist.changeType)}
                        </span>
-                       <span className="text-xs text-[#999] font-medium">{formatDate(hist.effectiveDate)}</span>
+                       <span className="text-xs text-muted-foreground font-medium">{formatDate(hist.effectiveDate)}</span>
                     </div>
                     <h3 className="text-sm font-bold text-foreground mb-1">
                       {hist.toDept?.name ?? '부서 미지정'} · {hist.toGrade?.name ?? '직급 미지정'}
                     </h3>
-                    <p className="text-xs text-[#666]">
+                    <p className="text-xs text-muted-foreground">
                       {hist.toCompany?.name ?? (extractPrimaryAssignment(employee.assignments as unknown as Record<string, unknown>[]) as Assignment | undefined)?.company?.name ?? 'CTR Group'}
                     </p>
                   </div>
@@ -664,9 +664,9 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                   <tbody className="divide-y divide-border">
                     {employee.compensationHistories.map((comp) => (
                       <tr key={comp.id} className={TABLE_STYLES.row}>
-                        <td className={TABLE_STYLES.cell + " font-medium text-[#333]"}>{formatDate(comp.effectiveDate)}</td>
+                        <td className={TABLE_STYLES.cell + " font-medium text-foreground"}>{formatDate(comp.effectiveDate)}</td>
                         <td className={TABLE_STYLES.cell}>
-                          <span className="inline-flex bg-border text-[#555] px-2 py-0.5 rounded text-xs">
+                          <span className="inline-flex bg-border text-muted-foreground px-2 py-0.5 rounded text-xs">
                             {translateChangeType(comp.changeType)}
                           </span>
                         </td>
@@ -704,7 +704,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-semibold text-foreground truncate">{doc.title}</h4>
-                    <p className="text-xs text-[#666] mt-0.5 flex gap-2">
+                    <p className="text-xs text-muted-foreground mt-0.5 flex gap-2">
                        <span>{translateDocType(doc.docType)}</span>
                        <span className="text-border">|</span>
                        <span>{formatDate(doc.createdAt)}</span>
@@ -723,7 +723,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
           <div className="bg-card rounded-xl shadow-lg w-full max-w-md p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-foreground">비상연락처 추가</h3>
-              <button onClick={() => setShowEcForm(false)} className="text-[#999] hover:text-[#333]"><X className="w-5 h-5" /></button>
+              <button onClick={() => setShowEcForm(false)} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
             </div>
             <div className="space-y-3">
               {(
@@ -734,7 +734,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                 ] as const
               ).map(({ label, key, placeholder }) => (
                 <div key={key}>
-                  <label className="text-sm font-medium text-[#333] block mb-1">{label}</label>
+                  <label className="text-sm font-medium text-foreground block mb-1">{label}</label>
                   <input
                     value={ecForm[key as keyof typeof ecForm] as string}
                     onChange={(e) => setEcForm((prev) => ({ ...prev, [key]: e.target.value }))}
@@ -743,7 +743,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                   />
                 </div>
               ))}
-              <label className="flex items-center gap-2 text-sm text-[#333] pt-2 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-foreground pt-2 cursor-pointer">
                 <input type="checkbox" checked={ecForm.isPrimary} onChange={(e) => setEcForm((prev) => ({ ...prev, isPrimary: e.target.checked }))} className="w-4 h-4 rounded border-border text-primary cursor-pointer" />
                 주요 연락처로 설정
               </label>
@@ -752,7 +752,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
               <button onClick={addEmergencyContact} className={`flex-1 ${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary}`}>
                 {tCommon('save')}
               </button>
-              <button onClick={() => setShowEcForm(false)} className={`flex-1 border border-border text-[#555] rounded-xl text-sm font-medium hover:bg-muted py-2`}>
+              <button onClick={() => setShowEcForm(false)} className={`flex-1 border border-border text-muted-foreground rounded-xl text-sm font-medium hover:bg-muted py-2`}>
                 {tCommon('cancel')}
               </button>
             </div>
@@ -766,14 +766,14 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
           <div className="bg-card rounded-xl shadow-lg w-full max-w-md p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-foreground">정보 변경 요청</h3>
-              <button onClick={() => setChangeReqField(null)} className="text-[#999] hover:text-[#333]"><X className="w-5 h-5" /></button>
+              <button onClick={() => setChangeReqField(null)} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
             </div>
-            <p className="text-sm text-[#666] bg-muted p-3 rounded-lg border border-border">
+            <p className="text-sm text-muted-foreground bg-muted p-3 rounded-lg border border-border">
               핵심 인사 정보 변경은 HR 담당자의 승인 후 최종 반영됩니다.
             </p>
             <div className="space-y-3 mt-2">
               <div>
-                <label className="text-sm font-medium text-[#333] block mb-1">새로운 값 명시</label>
+                <label className="text-sm font-medium text-foreground block mb-1">새로운 값 명시</label>
                 <input
                   value={changeReqValue}
                   onChange={(e) => setChangeReqValue(e.target.value)}
@@ -782,7 +782,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-[#333] block mb-1">변경 사유 (선택)</label>
+                <label className="text-sm font-medium text-foreground block mb-1">변경 사유 (선택)</label>
                 <textarea
                   value={changeReqReason}
                   onChange={(e) => setChangeReqReason(e.target.value)}
@@ -801,7 +801,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
               >
                 <CheckCircle2 className="w-4 h-4" /> 요청 제출
               </button>
-              <button onClick={() => setChangeReqField(null)} className="flex-1 border border-border text-[#555] py-2 rounded-xl text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-muted">
+              <button onClick={() => setChangeReqField(null)} className="flex-1 border border-border text-muted-foreground py-2 rounded-xl text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-muted">
                 <XCircle className="w-4 h-4" /> 취소
               </button>
             </div>

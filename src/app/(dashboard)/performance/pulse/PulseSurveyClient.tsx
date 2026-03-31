@@ -37,9 +37,9 @@ interface PendingSurvey {
 }
 
 const STATUS_MAP: Record<string, { label: string; cls: string }> = {
-  PULSE_DRAFT: { label: '임시저장', cls: 'bg-background text-[#555] border-border' },
-  PULSE_ACTIVE: { label: '진행 중', cls: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-  PULSE_CLOSED: { label: '종료', cls: 'bg-muted text-[#666] border-border' },
+  PULSE_DRAFT: { label: '임시저장', cls: 'bg-background text-muted-foreground border-border' },
+  PULSE_ACTIVE: { label: '진행 중', cls: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
+  PULSE_CLOSED: { label: '종료', cls: 'bg-muted text-muted-foreground border-border' },
 }
 
 const SCOPE_MAP: Record<string, string> = {
@@ -123,18 +123,18 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
         </div>
         <div className="p-6 space-y-4">
           <div>
-            <label className="text-sm font-medium text-[#333] mb-1 block">{'제목'}</label>
+            <label className="text-sm font-medium text-foreground mb-1 block">{'제목'}</label>
             <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="서베이 제목"
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]" />
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground" />
           </div>
           <div>
-            <label className="text-sm font-medium text-[#333] mb-1 block">{'설명 (선택)'}</label>
+            <label className="text-sm font-medium text-foreground mb-1 block">{'설명 (선택)'}</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]" />
+              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">{'대상 범위'}</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">{'대상 범위'}</label>
               <select value={targetScope} onChange={(e) => setTargetScope(e.target.value)}
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm">
                 <option value="ALL">{'전사'}</option>
@@ -144,7 +144,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">{'익명 수준'}</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">{'익명 수준'}</label>
               <select value={anonymityLevel} onChange={(e) => setAnonymityLevel(e.target.value)}
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm">
                 <option value="FULL_ANONYMOUS">{'완전 익명'}</option>
@@ -154,12 +154,12 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">{'시작일'}</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">{'시작일'}</label>
               <input type="datetime-local" value={openAt} onChange={(e) => setOpenAt(e.target.value)}
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm" />
             </div>
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">{'종료일'}</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">{'종료일'}</label>
               <input type="datetime-local" value={closeAt} onChange={(e) => setCloseAt(e.target.value)}
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm" />
             </div>
@@ -178,9 +178,9 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
               {questions?.map((q, i) => (
                 <div key={i} className="bg-background rounded-lg p-3 space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-[#999] font-medium">Q{i + 1}</span>
+                    <span className="text-xs text-muted-foreground font-medium">Q{i + 1}</span>
                     <input value={q.questionText} onChange={(e) => updateQuestion(i, 'questionText', e.target.value)}
-                      placeholder="질문 내용" className="flex-1 px-3 py-1.5 border border-border rounded-lg text-sm placeholder:text-[#999]" />
+                      placeholder="질문 내용" className="flex-1 px-3 py-1.5 border border-border rounded-lg text-sm placeholder:text-muted-foreground" />
                     <select value={q.questionType} onChange={(e) => updateQuestion(i, 'questionType', e.target.value)}
                       className="px-2 py-1.5 border border-border rounded-lg text-xs">
                       <option value="LIKERT">{'리커트 (1-5)'}</option>
@@ -188,7 +188,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
                       <option value="CHOICE">{'객관식'}</option>
                     </select>
                     {questions.length > 1 && (
-                      <button onClick={() => removeQuestion(i)} className="p-1 text-[#999] hover:text-red-500">
+                      <button onClick={() => removeQuestion(i)} className="p-1 text-muted-foreground hover:text-red-500">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     )}
@@ -199,7 +199,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
                         value={q.options.join(', ')}
                         onChange={(e) => updateQuestion(i, 'options', e.target.value.split(',').map((s) => s.trim()).filter(Boolean))}
                         placeholder="보기를 쉼표로 구분 (예: 매우 만족, 만족, 보통, 불만족)"
-                        className="w-full px-3 py-1.5 border border-border rounded-lg text-xs placeholder:text-[#999]"
+                        className="w-full px-3 py-1.5 border border-border rounded-lg text-xs placeholder:text-muted-foreground"
                       />
                     </div>
                   )}
@@ -209,7 +209,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
           </div>
         </div>
         <div className="p-6 border-t border-border flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 border border-border rounded-lg text-sm text-[#333] hover:bg-background">{'취소'}</button>
+          <button onClick={onClose} className="px-4 py-2 border border-border rounded-lg text-sm text-foreground hover:bg-background">{'취소'}</button>
           <button onClick={handleSubmit} disabled={saving} className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}>
             {saving ? '생성 중...' : '생성'}
           </button>
@@ -285,21 +285,21 @@ export default function PulseSurveyClient({ user }: { user: SessionUser }) {
       <div className="flex border-b border-border">
         {TABS.map((t) => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 ${tab === t.key ? 'border-primary text-primary' : 'border-transparent text-[#666] hover:text-[#333]'}`}>
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 ${tab === t.key ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
             {t.label}
           </button>
         ))}
       </div>
 
       {loading ? (
-        <div className="text-center text-[#999] py-10">{tCommon('loading')}</div>
+        <div className="text-center text-muted-foreground py-10">{tCommon('loading')}</div>
       ) : tab === 'manage' ? (
         <>
           {/* Status Filter */}
           <div className="flex gap-2">
             {[{ key: '', label: t('all') }, { key: 'PULSE_DRAFT', label: t('draft') }, { key: 'PULSE_ACTIVE', label: t('inProgress') }, { key: 'PULSE_CLOSED', label: t('ended') }].map((f) => (
               <button key={f.key} onClick={() => setStatusFilter(f.key)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium border ${statusFilter === f.key ? 'bg-primary text-white border-primary' : 'bg-card text-[#555] border-border hover:bg-background'}`}>
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border ${statusFilter === f.key ? 'bg-primary text-white border-primary' : 'bg-card text-muted-foreground border-border hover:bg-background'}`}>
                 {f.label}
               </button>
             ))}
@@ -324,7 +324,7 @@ export default function PulseSurveyClient({ user }: { user: SessionUser }) {
                   <tr key={s.id} className={TABLE_STYLES.row}>
                     <td className={`${TABLE_STYLES.cell} font-medium`}>{s.title}</td>
                     <td className={TABLE_STYLES.cell}>{SCOPE_MAP[s.targetScope] ?? s.targetScope}</td>
-                    <td className={`${TABLE_STYLES.cell} text-xs text-[#666]`}>
+                    <td className={`${TABLE_STYLES.cell} text-xs text-muted-foreground`}>
                       {new Date(s.openAt).toLocaleDateString('ko-KR')} ~ {new Date(s.closeAt).toLocaleDateString('ko-KR')}
                     </td>
                     <td className={`${TABLE_STYLES.cell} text-center`}>{s._count.questions}</td>
@@ -344,19 +344,19 @@ export default function PulseSurveyClient({ user }: { user: SessionUser }) {
                         )}
                         {s.status === 'PULSE_ACTIVE' && (
                           <button onClick={() => handleStatusChange(s.id, 'PULSE_CLOSED')} title="종료"
-                            className="p-1.5 text-amber-700 hover:bg-amber-100 rounded-lg">
+                            className="p-1.5 text-amber-700 hover:bg-amber-500/15 rounded-lg">
                             <Square className="w-4 h-4" />
                           </button>
                         )}
                         {(s.status === 'PULSE_ACTIVE' || s.status === 'PULSE_CLOSED') && (
                           <button onClick={() => router.push(`/performance/pulse/${s.id}/results`)} title="결과 보기"
-                            className="p-1.5 text-primary/90 hover:bg-indigo-100 rounded-lg">
+                            className="p-1.5 text-primary/90 hover:bg-indigo-500/15 rounded-lg">
                             <Eye className="w-4 h-4" />
                           </button>
                         )}
                         {s.status === 'PULSE_DRAFT' && (
                           <button onClick={() => handleDelete(s.id)} title="삭제"
-                            className="p-1.5 text-[#999] hover:text-red-500 hover:bg-destructive/10 rounded-lg">
+                            className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-destructive/10 rounded-lg">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         )}
@@ -365,7 +365,7 @@ export default function PulseSurveyClient({ user }: { user: SessionUser }) {
                   </tr>
                 ))}
                 {surveys.length === 0 && (
-                  <tr><td colSpan={7} className={`${TABLE_STYLES.cell} py-10 text-center text-[#999]`}>{t('register_keb909c_kec84a4eb_kec9786ec')}</td></tr>
+                  <tr><td colSpan={7} className={`${TABLE_STYLES.cell} py-10 text-center text-muted-foreground`}>{t('register_keb909c_kec84a4eb_kec9786ec')}</td></tr>
                 )}
               </tbody>
             </table>
@@ -375,14 +375,14 @@ export default function PulseSurveyClient({ user }: { user: SessionUser }) {
         /* Pending Surveys */
         <div className="space-y-4">
           {pending.length === 0 ? (
-            <div className="text-center text-[#999] py-10 text-sm">{t('kr_kec9d91eb_keb8c80ea_keca491ec_')}</div>
+            <div className="text-center text-muted-foreground py-10 text-sm">{t('kr_kec9d91eb_keb8c80ea_keca491ec_')}</div>
           ) : (
             pending.map((s) => (
               <div key={s.id} className={`${CARD_STYLES.kpi} flex items-center justify-between`}>
                 <div>
                   <h3 className="text-sm font-semibold text-foreground">{s.title}</h3>
-                  {s.description && <p className="text-xs text-[#666] mt-1">{s.description}</p>}
-                  <div className="flex items-center gap-2 mt-2 text-xs text-[#999]">
+                  {s.description && <p className="text-xs text-muted-foreground mt-1">{s.description}</p>}
+                  <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                     <Calendar className="w-3 h-3" />
                     <span>마감: {new Date(s.closeAt).toLocaleDateString('ko-KR')}</span>
                     <span>·</span>

@@ -215,7 +215,7 @@ export default function ApplicantFormClient({
           onClick={() => router.push(`/recruitment/${postingId}/applicants`)}
           className="p-2 rounded-lg border border-border hover:bg-card transition-colors duration-150"
         >
-          <ChevronLeft className="w-4 h-4 text-[#666]" />
+          <ChevronLeft className="w-4 h-4 text-muted-foreground" />
         </button>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -227,7 +227,7 @@ export default function ApplicantFormClient({
             >
               {t('applicantFormTitle')}
             </h1>
-            <p className="text-sm text-[#999]">
+            <p className="text-sm text-muted-foreground">
               {t('applicantFormDescription')}
             </p>
           </div>
@@ -350,7 +350,7 @@ export default function ApplicantFormClient({
                 placeholder={t('resumeKeyPlaceholder')}
                 className="w-full px-4 py-2 text-sm border border-border rounded-lg bg-background focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
               />
-              <p className="text-xs text-[#999] mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {t('resumeKeyDescription')}
               </p>
             </div>
@@ -376,7 +376,7 @@ export default function ApplicantFormClient({
             <button
               type="button"
               onClick={() => router.push(`/recruitment/${postingId}/applicants`)}
-              className="px-4 py-2 text-sm font-medium text-[#666] border border-border rounded-lg hover:bg-background transition-colors duration-150"
+              className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-background transition-colors duration-150"
             >
               {t('cancelButton')}
             </button>

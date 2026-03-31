@@ -50,7 +50,7 @@ function getStepState(entry: PipelineEntry, col: number): StepState {
 }
 
 const STATE_CONFIG: Record<StepState, { bg: string; text: string; border: string }> = {
-    done: { bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-200' },
+    done: { bg: 'bg-emerald-500/15', text: 'text-emerald-700', border: 'border-emerald-200' },
     active: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
     pending: { bg: 'bg-muted', text: 'text-muted-foreground/60', border: 'border-border' },
     not_started: { bg: 'bg-muted/50', text: 'text-muted-foreground/40', border: 'border-border' },
@@ -105,11 +105,11 @@ export default function PayrollPipeline({ pipelines }: Props) {
             <div className="min-w-[700px]">
                 {/* Header row */}
                 <div className="grid grid-cols-7 gap-2 mb-3">
-                    <div className="text-xs font-semibold text-[#999] py-1">법인</div>
+                    <div className="text-xs font-semibold text-muted-foreground py-1">법인</div>
                     {STEPS.map((step) => (
                         <div key={step.col} className="text-center">
-                            <div className="text-[10px] font-bold text-[#555] uppercase tracking-wider">{step.label}</div>
-                            <div className="text-[11px] text-[#999]">{step.sublabel}</div>
+                            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{step.label}</div>
+                            <div className="text-[11px] text-muted-foreground">{step.sublabel}</div>
                         </div>
                     ))}
                 </div>
@@ -124,8 +124,8 @@ export default function PayrollPipeline({ pipelines }: Props) {
                             {/* Company label */}
                             <div>
                                 <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${entry.alertLevel === 'red' ? 'bg-destructive/10 text-destructive' :
-                                    entry.alertLevel === 'amber' ? 'bg-amber-100 text-amber-700' :
-                                        'text-[#333]'
+                                    entry.alertLevel === 'amber' ? 'bg-amber-500/15 text-amber-700' :
+                                        'text-foreground'
                                     }`}>
                                     {entry.companyCode ?? entry.companyName}
                                 </span>
@@ -155,7 +155,7 @@ export default function PayrollPipeline({ pipelines }: Props) {
                                             <StepStateIcon state={state} />
                                             <span className="hidden sm:inline">{stateLabel(state)}</span>
                                             {isAnomaly && (
-                                                <span className="ml-0.5 bg-amber-500 text-white text-[9px] rounded-full px-1">{entry.anomalyCount}</span>
+                                                <span className="ml-0.5 bg-amber-500/100 text-white text-[9px] rounded-full px-1">{entry.anomalyCount}</span>
                                             )}
                                             {isApproval && entry.approvalStep != null && (
                                                 <span className="ml-0.5 text-[9px] opacity-70">{entry.approvalStep}/{entry.approvalTotal}</span>
@@ -169,7 +169,7 @@ export default function PayrollPipeline({ pipelines }: Props) {
                 </div>
 
                 {/* Legend */}
-                <div className="mt-4 pt-3 border-t border-border flex items-center gap-5 text-xs text-[#666]">
+                <div className="mt-4 pt-3 border-t border-border flex items-center gap-5 text-xs text-muted-foreground">
                     {[
                         { state: 'done' as StepState, label: '완료' },
                         { state: 'active' as StepState, label: '진행중' },

@@ -43,7 +43,7 @@ export default function KrComplianceClient({ user }: { user: SessionUser }) {
             <h1 className="text-2xl font-bold text-foreground">
               {t('kr.title')}
             </h1>
-            <p className="text-sm text-[#666] mt-0.5">
+            <p className="text-sm text-muted-foreground mt-0.5">
               {t('kr.subtitle')}
             </p>
           </div>
@@ -58,7 +58,7 @@ export default function KrComplianceClient({ user }: { user: SessionUser }) {
               className={
                 activeTab === tab.key
                   ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-primary text-primary'
-                  : 'px-4 py-2.5 text-sm font-medium text-[#666] hover:text-[#333]'
+                  : 'px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground'
               }
             >
               {t(tab.labelKey)}

@@ -250,7 +250,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
   }
 
   if (loading) {
-    return <div className="p-6 flex items-center justify-center h-64 text-[#666]">{tc('loading')}...</div>
+    return <div className="p-6 flex items-center justify-center h-64 text-muted-foreground">{tc('loading')}...</div>
   }
 
   return (
@@ -259,7 +259,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('managerEval')}</h1>
-          <p className="text-sm text-[#666] mt-1">{t('kr_ked8c80ec_kec84b1ea_ked8f89ea')}</p>
+          <p className="text-sm text-muted-foreground mt-1">{t('kr_ked8c80ec_kec84b1ea_ked8f89ea')}</p>
         </div>
         <select
           value={selectedCycleId}
@@ -281,13 +281,13 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
         <div className="rounded-xl border border-border bg-card">
           <div className="px-5 py-4 border-b border-border">
             <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
-              <Users className="w-4 h-4 text-[#666]" />
+              <Users className="w-4 h-4 text-muted-foreground" />
               {t('kr_ked8c80ec_kebaaa9eb')}
             </h2>
           </div>
           <div className="divide-y divide-border">
             {teamMembers.length === 0 && (
-              <div className="px-5 py-8 text-center text-sm text-[#999]">{t('kr_keca781ec_ked8c80ec_kec9786ec')}</div>
+              <div className="px-5 py-8 text-center text-sm text-muted-foreground">{t('kr_keca781ec_ked8c80ec_kec9786ec')}</div>
             )}
             {teamMembers.map((tm) => (
               <button
@@ -299,7 +299,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
               >
                 <div>
                   <p className="text-sm font-medium text-foreground">{tm.employee.name}</p>
-                  <p className="text-xs text-[#999]">{tm.employee.employeeCode}</p>
+                  <p className="text-xs text-muted-foreground">{tm.employee.employeeCode}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   {tm.selfEval && (
@@ -314,7 +314,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                       매니저
                     </span>
                   )}
-                  <ChevronRight className="w-4 h-4 text-[#999]" />
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </div>
               </button>
             ))}
@@ -325,11 +325,11 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
         <div className="lg:col-span-2 space-y-4">
           {!selectedEmployee ? (
             <div className="rounded-xl border border-border bg-card flex items-center justify-center h-64">
-              <p className="text-sm text-[#999]">{t('kr_ked8c80ec_kec84a0ed')}</p>
+              <p className="text-sm text-muted-foreground">{t('kr_ked8c80ec_kec84a0ed')}</p>
             </div>
           ) : formLoading ? (
             <div className="rounded-xl border border-border bg-card flex items-center justify-center h-64">
-              <p className="text-sm text-[#666]">{tc('loading')}...</p>
+              <p className="text-sm text-muted-foreground">{tc('loading')}...</p>
             </div>
           ) : (
             <>
@@ -345,7 +345,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                         <div className="flex items-center justify-between">
                           <div>
                             <p className="text-sm font-medium text-foreground">{goal.title}</p>
-                            <p className="text-xs text-[#999]">가중치: {goal.weight}%</p>
+                            <p className="text-xs text-muted-foreground">가중치: {goal.weight}%</p>
                           </div>
                           <div className="flex items-center gap-1">
                             {[1, 2, 3, 4, 5].map((score) => (
@@ -358,7 +358,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                                 className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                                   goalScores[goal.id]?.score === score
                                     ? 'bg-primary text-white'
-                                    : 'bg-muted text-[#666] hover:bg-border'
+                                    : 'bg-muted text-muted-foreground hover:bg-border'
                                 }`}
                               >
                                 {score}
@@ -366,7 +366,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                             ))}
                           </div>
                         </div>
-                        <p className="text-xs text-[#999]">{SCORE_LABELS[goalScores[goal.id]?.score ?? 3]}</p>
+                        <p className="text-xs text-muted-foreground">{SCORE_LABELS[goalScores[goal.id]?.score ?? 3]}</p>
                       </div>
                     ))}
                   </div>
@@ -385,7 +385,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
                           performanceGrade === g.code
                             ? 'bg-primary text-white border-primary'
-                            : 'bg-card text-[#333] border-border hover:bg-background'
+                            : 'bg-card text-foreground border-border hover:bg-background'
                         }`}
                       >
                         {g.label} ({g.code})
@@ -400,7 +400,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                 <div className="rounded-xl border border-border bg-card">
                   <div className="px-5 py-4 border-b border-border">
                     <h3 className="text-base font-semibold text-foreground">{t('kr_kec97adeb_evaluation_bei')}</h3>
-                    <p className="text-xs text-[#666] mt-0.5">
+                    <p className="text-xs text-muted-foreground mt-0.5">
                       {t('kr_keab480ec_ked9689eb_kecb2b4ed_')}
                     </p>
                   </div>
@@ -422,7 +422,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                                 }
                                 className="mt-0.5 w-4 h-4 rounded border-border text-primary"
                               />
-                              <span className="text-sm text-[#333]">{ind.indicatorText}</span>
+                              <span className="text-sm text-foreground">{ind.indicatorText}</span>
                             </label>
                           ))}
                         </div>
@@ -432,7 +432,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   {/* 역량 종합 등급 */}
                   {evalSettings && evalSettings.beiGrades.length > 0 && (
                     <div className="px-5 py-4 border-t border-border">
-                      <p className="text-sm font-medium text-[#333] mb-2">{t('kr_kec97adeb_keca285ed_keb93b1ea')}</p>
+                      <p className="text-sm font-medium text-foreground mb-2">{t('kr_kec97adeb_keca285ed_keb93b1ea')}</p>
                       <div className="flex items-center gap-2 flex-wrap">
                         {evalSettings.beiGrades.map((g) => (
                           <button
@@ -441,7 +441,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
                               competencyGrade === g.code
                                 ? 'bg-primary/90 text-white border-primary/90'
-                                : 'bg-card text-[#333] border-border hover:bg-background'
+                                : 'bg-card text-foreground border-border hover:bg-background'
                             }`}
                           >
                             {g.label} ({g.code})
@@ -463,7 +463,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                       ? ` + 역량 ${evalSettings.beiWeight}% (${competencyGrade})`
                       : ''}
                   </p>
-                  <p className="text-xs text-[#555] mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {t('kr_kecb59cec_keb93b1ea_calibratio')}
                   </p>
                 </div>
@@ -476,7 +476,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   <button
                     onClick={handleAiSuggest}
                     disabled={aiLoading}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-100 text-primary/90 hover:bg-indigo-200 transition-colors disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-500/15 text-primary/90 hover:bg-indigo-200 transition-colors disabled:opacity-50"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
                     {aiLoading ? t('aiGenerating') : 'AI 코멘트 제안'}
@@ -487,7 +487,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   value={overallComment}
                   onChange={(e) => setOverallComment(e.target.value)}
                   placeholder="팀원에 대한 종합 평가 의견을 작성하세요..."
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999] resize-none"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground resize-none"
                 />
               </div>
 
@@ -497,7 +497,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   onClick={() => setShowAiDraft(true)}
                   disabled={!currentEvaluationId}
                   title={!currentEvaluationId ? '먼저 임시 저장 후 AI 초안을 생성할 수 있습니다' : undefined}
-                  className="flex items-center gap-1.5 px-3 py-2 border border-indigo-200 bg-indigo-100 text-primary/90 rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-indigo-200 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-2 border border-indigo-200 bg-indigo-500/15 text-primary/90 rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-indigo-200 transition-colors"
                 >
                   <Sparkles className="w-4 h-4" />
                   {t('kr_ai_draft_kec839dec')}
@@ -506,7 +506,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
                   <button
                     onClick={() => handleSave('DRAFT')}
                     disabled={submitting}
-                    className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm font-medium text-[#333] hover:bg-background disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground hover:bg-background disabled:opacity-50"
                   >
                     <Save className="w-4 h-4" />
                     {t('kr_kec9e84ec_save')}

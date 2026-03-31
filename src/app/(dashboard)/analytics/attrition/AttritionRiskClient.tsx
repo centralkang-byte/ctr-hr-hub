@@ -183,7 +183,7 @@ export default function AttritionRiskClient({ user }: { user: SessionUser }) {
   if (loading) {
     return (
       <div className="p-6 flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-[#999]" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     )
   }
@@ -193,7 +193,7 @@ export default function AttritionRiskClient({ user }: { user: SessionUser }) {
       {/* ─── 헤더 ─── */}
       <div className="flex items-center justify-between">
         <div>
-          <nav className="text-xs text-[#999] mb-1">{t('breadcrumb')}</nav>
+          <nav className="text-xs text-muted-foreground mb-1">{t('breadcrumb')}</nav>
           <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
         </div>
         <Button

@@ -120,8 +120,8 @@ function KpiCard({
   return (
     <div
       style={{
-        backgroundColor: '#FFFFFF',
-        border: '1px solid #E8E8E8',
+        backgroundColor: 'hsl(var(--card))',
+        border: '1px solid hsl(var(--border))',
         borderRadius: 12,
         padding: 24,
         display: 'flex',
@@ -148,7 +148,7 @@ function KpiCard({
           style={{
             fontSize: 24,
             fontWeight: 700,
-            color: '#1A1A1A',
+            color: 'hsl(var(--foreground))',
             lineHeight: 1.2,
           }}
         >
@@ -157,7 +157,7 @@ function KpiCard({
         <div
           style={{
             fontSize: 12,
-            color: '#999',
+            color: 'hsl(var(--muted-foreground))',
             marginTop: 4,
           }}
         >
@@ -190,17 +190,17 @@ function CustomTooltip({
   return (
     <div
       style={{
-        backgroundColor: '#FFFFFF',
-        border: '1px solid #E8E8E8',
+        backgroundColor: 'hsl(var(--card))',
+        border: '1px solid hsl(var(--border))',
         borderRadius: 8,
         padding: '8px 12px',
         boxShadow: '0 2px 8px rgba(15,23,42,0.08)',
       }}
     >
-      <p style={{ fontSize: 13, fontWeight: 600, color: '#1A1A1A' }}>
+      <p style={{ fontSize: 13, fontWeight: 600, color: 'hsl(var(--foreground))' }}>
         {data.payload.stageName}
       </p>
-      <p style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
+      <p style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))', marginTop: 2 }}>
         {t('countPeople', { count: data.value })}
       </p>
     </div>
@@ -265,7 +265,7 @@ export function RecruitmentDashboardClient(_props: {
         style={{
           textAlign: 'center',
           padding: 48,
-          color: '#999',
+          color: 'hsl(var(--muted-foreground))',
           fontSize: 14,
         }}
       >
@@ -285,7 +285,7 @@ export function RecruitmentDashboardClient(_props: {
     {
       label: '총 지원자',
       icon: Users,
-      color: '#5E81F4',
+      color: 'hsl(var(--primary))',
       format: (k) => String(k.totalApplicants),
     },
     {
@@ -297,7 +297,7 @@ export function RecruitmentDashboardClient(_props: {
     {
       label: '합격률',
       icon: Target,
-      color: '#5E81F4',
+      color: 'hsl(var(--primary))',
       format: (k) => t('hireRatePercent', { rate: k.hireRate }),
     },
   ]
@@ -339,8 +339,8 @@ export function RecruitmentDashboardClient(_props: {
       {/* Recruitment Funnel */}
       <div
         style={{
-          backgroundColor: '#FFFFFF',
-          border: '1px solid #E8E8E8',
+          backgroundColor: 'hsl(var(--card))',
+          border: '1px solid hsl(var(--border))',
           borderRadius: 12,
           padding: 24,
         }}
@@ -349,7 +349,7 @@ export function RecruitmentDashboardClient(_props: {
           style={{
             fontSize: 16,
             fontWeight: 700,
-            color: '#1A1A1A',
+            color: 'hsl(var(--foreground))',
             marginBottom: 20,
             letterSpacing: '-0.02em',
           }}
@@ -402,15 +402,15 @@ export function RecruitmentDashboardClient(_props: {
       {vacancySummary && (
         <div
           style={{
-            backgroundColor: '#FFFFFF',
-            border: '1px solid #E8E8E8',
+            backgroundColor: 'hsl(var(--card))',
+            border: '1px solid hsl(var(--border))',
             borderRadius: 12,
             padding: 24,
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
             <Briefcase size={18} className="text-primary" />
-            <h2 style={{ fontSize: 16, fontWeight: 700, color: '#1A1A1A', letterSpacing: '-0.02em' }}>
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: 'hsl(var(--foreground))', letterSpacing: '-0.02em' }}>
               {'공석 현황 (Position Vacancies)'}
             </h2>
           </div>
@@ -418,10 +418,10 @@ export function RecruitmentDashboardClient(_props: {
           {/* 요약 뱃지 */}
           <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
             {[
-              { label: '전체 공석', value: vacancySummary.totalVacancies, bg: '#F5F5F5', color: '#1A1A1A' },
-              { label: '채용 진행 중', value: vacancySummary.withActivePosting, bg: '#EDF1FE', color: '#4B6DE0' },
+              { label: '전체 공석', value: vacancySummary.totalVacancies, bg: 'hsl(var(--muted))', color: 'hsl(var(--foreground))' },
+              { label: '채용 진행 중', value: vacancySummary.withActivePosting, bg: 'hsl(var(--primary) / 0.08)', color: 'hsl(var(--primary))' },
               { label: '공고 없음', value: vacancySummary.withoutPosting, bg: '#FEF3C7', color: '#B45309' },
-              { label: '30일 내 충원', value: vacancySummary.recentlyFilled, bg: '#E0E7FF', color: '#4B6DE0' },
+              { label: '30일 내 충원', value: vacancySummary.recentlyFilled, bg: 'hsl(var(--primary) / 0.1)', color: 'hsl(var(--primary))' },
             ].map((item) => (
               <div
                 key={item.label}
@@ -433,13 +433,13 @@ export function RecruitmentDashboardClient(_props: {
                 }}
               >
                 <div style={{ fontSize: 22, fontWeight: 700, color: item.color }}>{item.value}</div>
-                <div style={{ fontSize: 11, color: '#666', marginTop: 2 }}>{item.label}</div>
+                <div style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', marginTop: 2 }}>{item.label}</div>
               </div>
             ))}
             {vacancySummary.avgFillDays !== null && (
-              <div style={{ backgroundColor: '#F0F9FF', borderRadius: 10, padding: '12px 16px', minWidth: 110 }}>
-                <div style={{ fontSize: 22, fontWeight: 700, color: '#0369A1' }}>{vacancySummary.avgFillDays}일</div>
-                <div style={{ fontSize: 11, color: '#666', marginTop: 2 }}>{'평균 채용 소요일'}</div>
+              <div style={{ backgroundColor: 'hsl(var(--primary) / 0.05)', borderRadius: 10, padding: '12px 16px', minWidth: 110 }}>
+                <div style={{ fontSize: 22, fontWeight: 700, color: 'hsl(var(--primary))' }}>{vacancySummary.avgFillDays}일</div>
+                <div style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', marginTop: 2 }}>{'평균 채용 소요일'}</div>
               </div>
             )}
           </div>
@@ -477,8 +477,8 @@ export function RecruitmentDashboardClient(_props: {
       {/* Recent Postings */}
       <div
         style={{
-          backgroundColor: '#FFFFFF',
-          border: '1px solid #E8E8E8',
+          backgroundColor: 'hsl(var(--card))',
+          border: '1px solid hsl(var(--border))',
           borderRadius: 12,
           padding: 24,
         }}
@@ -487,7 +487,7 @@ export function RecruitmentDashboardClient(_props: {
           style={{
             fontSize: 16,
             fontWeight: 700,
-            color: '#1A1A1A',
+            color: 'hsl(var(--foreground))',
             marginBottom: 16,
             letterSpacing: '-0.02em',
           }}
@@ -508,7 +508,7 @@ export function RecruitmentDashboardClient(_props: {
                 <tr>
                   <td
                     colSpan={3}
-                    className="px-4 py-12 text-center text-sm text-[#999]"
+                    className="px-4 py-12 text-center text-sm text-muted-foreground"
                   >
                     {'최근 공고가 없습니다'}
                   </td>
@@ -538,7 +538,7 @@ export function RecruitmentDashboardClient(_props: {
                         {t('countPeople', { count: posting.applicantCount })}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#666] text-right">
+                    <td className="px-4 py-3 text-sm text-muted-foreground text-right">
                       {posting.publishedAt
                         ? format(new Date(posting.publishedAt), 'yyyy-MM-dd')
                         : '-'}

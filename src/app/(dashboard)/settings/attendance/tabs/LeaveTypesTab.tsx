@@ -138,7 +138,7 @@ export function LeaveTypesTab({
                 </td>
                 <td className="px-4 py-3 text-center">
                   {type.category ? (
-                    <span className="inline-flex rounded-full bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-700">
+                    <span className="inline-flex rounded-full bg-violet-500/10 px-2 py-0.5 text-xs font-medium text-violet-700">
                       {CATEGORY_LABELS[type.category] ?? type.category}
                     </span>
                   ) : <span className="text-xs text-muted-foreground">—</span>}
@@ -159,7 +159,7 @@ export function LeaveTypesTab({
                   <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                     !type.companyId
                       ? 'bg-primary/5 text-primary'
-                      : 'bg-orange-50 text-orange-600'
+                      : 'bg-orange-500/10 text-orange-600'
                   }`}>
                     {!type.companyId ? '글로벌' : '법인'}
                   </span>
@@ -201,7 +201,7 @@ function BoolBadge({
 }) {
   return (
     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-      value ? 'bg-emerald-50 text-emerald-700' : 'bg-muted text-muted-foreground'
+      value ? 'bg-emerald-500/10 text-emerald-700' : 'bg-muted text-muted-foreground'
     }`}>
       {value ? trueLabel : falseLabel}
     </span>

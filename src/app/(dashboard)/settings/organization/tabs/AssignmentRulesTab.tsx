@@ -52,7 +52,7 @@ export function AssignmentRulesTab({
           <p className="text-sm text-muted-foreground">{'발령 유형 및 승인 절차 설정'}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
+          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
         )}
       </div>
 

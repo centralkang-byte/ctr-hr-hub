@@ -242,7 +242,7 @@ export default function MandatoryConfigTab() {
             ))}
           </div>
         ) : statuses.length === 0 ? (
-          <div className="bg-card rounded-xl border border-border p-8 text-center text-sm text-[#999]">
+          <div className="bg-card rounded-xl border border-border p-8 text-center text-sm text-muted-foreground">
             {statusYear}년 의무교육 현황이 없습니다.
           </div>
         ) : (
@@ -252,17 +252,17 @@ export default function MandatoryConfigTab() {
                 <div className="flex items-center justify-between mb-2">
                   <div>
                     <span className="font-semibold text-foreground text-sm">{s.title}</span>
-                    <span className="text-xs text-[#999] ml-2">
+                    <span className="text-xs text-muted-foreground ml-2">
                       {TARGET_GROUP_LABELS[s.targetGroup] ?? s.targetGroup}
                       {s.deadlineMonth ? ` · 마감: ${MONTH_LABELS[s.deadlineMonth - 1]}` : ''}
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-[#666]">
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <span>이수 <strong className="text-emerald-700">{s.completed}</strong></span>
                     <span>수강중 <strong className="text-amber-700">{s.enrolled}</strong></span>
                     <span>미이수 <strong className="text-red-500">{s.pending}</strong></span>
                     {s.expiringSoon > 0 && (
-                      <Badge className="text-[10px] bg-orange-50 text-orange-700 border-orange-200">
+                      <Badge className="text-[10px] bg-orange-500/10 text-orange-700 border-orange-200">
                         만료 임박 {s.expiringSoon}
                       </Badge>
                     )}
@@ -275,7 +275,7 @@ export default function MandatoryConfigTab() {
                   />
                 </div>
                 <div className="flex justify-between items-center mt-1">
-                  <span className="text-xs text-[#999]">이수율</span>
+                  <span className="text-xs text-muted-foreground">이수율</span>
                   <span className="text-xs font-semibold text-primary">{s.completionRate}%</span>
                 </div>
               </div>
@@ -299,7 +299,7 @@ export default function MandatoryConfigTab() {
             {[1, 2].map((i) => <div key={i} className="h-16 bg-muted rounded-xl animate-pulse" />)}
           </div>
         ) : configs.length === 0 ? (
-          <div className="bg-card rounded-xl border border-border p-8 text-center text-sm text-[#999]">
+          <div className="bg-card rounded-xl border border-border p-8 text-center text-sm text-muted-foreground">
             등록된 의무교육 설정이 없습니다.
           </div>
         ) : (
@@ -322,27 +322,27 @@ export default function MandatoryConfigTab() {
                       <div>
                         <span className="font-medium text-foreground">{config.course.title}</span>
                         {config.course.code && (
-                          <span className="text-xs text-[#999] ml-1.5">{config.course.code}</span>
+                          <span className="text-xs text-muted-foreground ml-1.5">{config.course.code}</span>
                         )}
                       </div>
                       {config.company && (
-                        <span className="text-xs text-[#999]">{config.company.name}</span>
+                        <span className="text-xs text-muted-foreground">{config.company.name}</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-[#666]">
+                    <td className="px-4 py-3 text-muted-foreground">
                       {TARGET_GROUP_LABELS[config.targetGroup] ?? config.targetGroup}
                     </td>
-                    <td className="px-4 py-3 text-[#666]">
+                    <td className="px-4 py-3 text-muted-foreground">
                       {FREQUENCY_LABELS[config.frequency] ?? config.frequency}
                     </td>
-                    <td className="px-4 py-3 text-[#666]">
+                    <td className="px-4 py-3 text-muted-foreground">
                       {config.deadlineMonth ? MONTH_LABELS[config.deadlineMonth - 1] : '-'}
                     </td>
                     <td className="px-4 py-3">
                       {!config.deletedAt ? (
-                        <Badge className="text-[10px] bg-emerald-100 text-emerald-700 border-emerald-200">활성</Badge>
+                        <Badge className="text-[10px] bg-emerald-500/15 text-emerald-700 border-emerald-200">활성</Badge>
                       ) : (
-                        <Badge variant="outline" className="text-[10px] bg-background text-[#555] border-border">비활성</Badge>
+                        <Badge variant="outline" className="text-[10px] bg-background text-muted-foreground border-border">비활성</Badge>
                       )}
                     </td>
                     <td className="px-4 py-3">
@@ -371,7 +371,7 @@ export default function MandatoryConfigTab() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">교육과정 *</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">교육과정 *</label>
               <select
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                 value={form.courseId}
@@ -385,7 +385,7 @@ export default function MandatoryConfigTab() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">대상 *</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">대상 *</label>
                 <select
                   className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   value={form.targetGroup}
@@ -397,7 +397,7 @@ export default function MandatoryConfigTab() {
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium text-[#333] mb-1 block">주기 *</label>
+                <label className="text-sm font-medium text-foreground mb-1 block">주기 *</label>
                 <select
                   className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   value={form.frequency}
@@ -410,7 +410,7 @@ export default function MandatoryConfigTab() {
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">마감월</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">마감월</label>
               <select
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                 value={form.deadlineMonth}
@@ -430,7 +430,7 @@ export default function MandatoryConfigTab() {
                 checked={!form.deletedAt}
                 onChange={(e) => setForm((f) => ({ ...f, deletedAt: e.target.checked ? null : new Date().toISOString() }))}
               />
-              <label htmlFor="isActiveConfig" className="text-sm text-[#333]">활성화</label>
+              <label htmlFor="isActiveConfig" className="text-sm text-foreground">활성화</label>
             </div>
           </div>
           <DialogFooter>

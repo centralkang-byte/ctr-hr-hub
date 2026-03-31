@@ -270,7 +270,7 @@ export default function MyEvaluationClient({user }: {
 
                 {/* Submitted banner */}
                 {isSubmitted && (
-                    <div className="mb-6 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-100 p-4">
+                    <div className="mb-6 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-500/15 p-4">
                         <CheckCircle2 className="h-5 w-5 text-emerald-600" />
                         <span className="text-sm font-medium text-emerald-700">{t('selfEval_keab080_keca09cec_kec8898ec_kec8898_kec9786ec')}</span>
                     </div>

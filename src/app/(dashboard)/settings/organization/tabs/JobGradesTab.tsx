@@ -30,8 +30,8 @@ const GRADE_TYPE_LABELS: Record<string, string> = {
 
 const GRADE_TYPE_COLORS: Record<string, string> = {
   STAFF: 'bg-primary/10 text-primary',
-  SPECIALIST: 'bg-purple-100 text-purple-700',
-  EXECUTIVE: 'bg-amber-100 text-amber-700',
+  SPECIALIST: 'bg-purple-500/15 text-purple-700',
+  EXECUTIVE: 'bg-amber-500/15 text-amber-700',
 }
 
 export function JobGradesTab({ companyId }: Props) {

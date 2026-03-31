@@ -35,7 +35,7 @@ export default function CnComplianceClient({ user }: { user: SessionUser }) {
         </div>
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('cn.title')}</h1>
-          <p className="text-sm text-[#666]">{t('cn.socialInsurance')}</p>
+          <p className="text-sm text-muted-foreground">{t('cn.socialInsurance')}</p>
         </div>
       </div>
 
@@ -48,7 +48,7 @@ export default function CnComplianceClient({ user }: { user: SessionUser }) {
             className={
               activeTab === tab.key
                 ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-primary text-primary'
-                : 'px-4 py-2.5 text-sm font-medium text-[#666] hover:text-[#333] border-b-2 border-transparent'
+                : 'px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground border-b-2 border-transparent'
             }
           >
             {tab.label}

@@ -32,7 +32,7 @@ export function CompetencyTab({
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-base font-semibold text-foreground">{t('kr_kec97adeb_keb9dbcec')}</h3>
-            <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />{t('global_keab3a0ec')}</span>
+            <span className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />{t('global_keab3a0ec')}</span>
           </div>
           <p className="text-sm text-muted-foreground">핵심가치 역량 {items.length}개</p>
         </div>

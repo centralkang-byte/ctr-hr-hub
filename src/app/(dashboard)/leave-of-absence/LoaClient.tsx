@@ -63,10 +63,10 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  REQUESTED: 'bg-yellow-100 text-yellow-700',
+  REQUESTED: 'bg-yellow-500/15 text-yellow-700',
   APPROVED: 'bg-primary/10 text-primary',
-  ACTIVE: 'bg-orange-100 text-orange-700',
-  RETURN_REQUESTED: 'bg-purple-100 text-purple-700',
+  ACTIVE: 'bg-orange-500/15 text-orange-700',
+  RETURN_REQUESTED: 'bg-purple-500/15 text-purple-700',
   COMPLETED: 'bg-tertiary-container/20 text-tertiary',
   REJECTED: 'bg-destructive/10 text-destructive',
   CANCELLED: 'bg-muted text-muted-foreground',
@@ -364,9 +364,9 @@ export function LoaClient({ user }: Props) {
       {loading ? (
         <div className="py-12 text-center text-sm text-muted-foreground">로딩 중...</div>
       ) : records.length === 0 ? (
-        <div className="flex flex-col items-center py-16 text-[#999]">
+        <div className="flex flex-col items-center py-16 text-muted-foreground">
           <Shield className="h-10 w-10 mb-3 text-border" />
-          <p className="text-sm font-medium text-[#666]">휴직 기록이 없습니다</p>
+          <p className="text-sm font-medium text-muted-foreground">휴직 기록이 없습니다</p>
         </div>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border">

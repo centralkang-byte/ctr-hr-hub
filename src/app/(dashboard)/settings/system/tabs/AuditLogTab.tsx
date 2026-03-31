@@ -38,9 +38,9 @@ interface Props {
 }
 
 const ACTION_LABELS: Record<string, { label: string; color: string }> = {
-  SETTINGS_CREATE: { label: '생성', color: 'text-emerald-600 bg-emerald-50' },
+  SETTINGS_CREATE: { label: '생성', color: 'text-emerald-600 bg-emerald-500/10' },
   SETTINGS_UPDATE: { label: '수정', color: 'text-primary bg-primary/5' },
-  SETTINGS_REVERT: { label: '복원', color: 'text-amber-600 bg-amber-50' },
+  SETTINGS_REVERT: { label: '복원', color: 'text-amber-600 bg-amber-500/10' },
 }
 
 const CATEGORY_LABELS: Record<string, string> = {

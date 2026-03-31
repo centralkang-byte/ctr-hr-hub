@@ -117,8 +117,8 @@ const RECOMMENDATION_KEYS: Record<string, string> = {
 }
 
 const RECOMMENDATION_COLORS: Record<string, { bg: string; text: string }> = {
-  STRONG_YES: { bg: '#EDF1FE', text: '#5E81F4' },
-  YES: { bg: '#EDF1FE', text: '#5E81F4' },
+  STRONG_YES: { bg: 'hsl(var(--primary) / 0.08)', text: '#5E81F4' },
+  YES: { bg: 'hsl(var(--primary) / 0.08)', text: '#5E81F4' },
   NEUTRAL: { bg: '#FFF3E0', text: '#FF9800' },
   NO: { bg: '#FFEBEE', text: '#F44336' },
   STRONG_NO: { bg: '#FFEBEE', text: '#F44336' },
@@ -159,7 +159,7 @@ function ScoreSelect({
 }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-      <Label style={{ minWidth: 100, fontSize: 14, color: '#1A1A1A' }}>
+      <Label style={{ minWidth: 100, fontSize: 14, color: 'hsl(var(--foreground))' }}>
         {label}
       </Label>
       <div style={{ display: 'flex', gap: 4 }}>
@@ -248,11 +248,11 @@ function EvaluationModal({
         style={{ maxWidth: 560, borderRadius: 16, padding: 0 }}
       >
         <DialogHeader style={{ padding: '24px 24px 0' }}>
-          <DialogTitle style={{ fontSize: 18, fontWeight: 700, color: '#1A1A1A' }}>
+          <DialogTitle style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))' }}>
             {'면접 평가'}
           </DialogTitle>
           {interview && (
-            <p style={{ fontSize: 13, color: '#999', marginTop: 4 }}>
+            <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', marginTop: 4 }}>
               {interview.application.applicant.name} ·{' '}
               {ROUND_KEYS[interview.round ?? ''] ? t(ROUND_KEYS[interview.round ?? '']) : '-'} ·{' '}
               {format(new Date(interview.scheduledAt), 'yyyy-MM-dd HH:mm')}
@@ -285,7 +285,7 @@ function EvaluationModal({
             <p
               style={{
                 fontSize: 12,
-                color: '#999',
+                color: 'hsl(var(--muted-foreground))',
                 fontWeight: 600,
                 marginBottom: 12,
               }}
@@ -312,7 +312,7 @@ function EvaluationModal({
           </div>
 
           <div>
-            <Label style={{ fontSize: 14, color: '#1A1A1A' }}>{'강점'}</Label>
+            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))' }}>{'강점'}</Label>
             <Textarea
               value={form.strengths}
               onChange={(e) => updateField('strengths', e.target.value)}
@@ -323,7 +323,7 @@ function EvaluationModal({
           </div>
 
           <div>
-            <Label style={{ fontSize: 14, color: '#1A1A1A' }}>{'우려사항'}</Label>
+            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))' }}>{'우려사항'}</Label>
             <Textarea
               value={form.concerns}
               onChange={(e) => updateField('concerns', e.target.value)}
@@ -334,7 +334,7 @@ function EvaluationModal({
           </div>
 
           <div>
-            <Label style={{ fontSize: 14, color: '#1A1A1A', marginBottom: 8, display: 'block' }}>
+            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))', marginBottom: 8, display: 'block' }}>
               {'추천'}
             </Label>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -342,7 +342,7 @@ function EvaluationModal({
                 Object.entries(RECOMMENDATION_KEYS) as [string, string][]
               ).map(([key, tKey]) => {
                 const colors = RECOMMENDATION_COLORS[key] ?? {
-                  bg: '#F5F5F5',
+                  bg: 'hsl(var(--muted))',
                   text: '#999',
                 }
                 const isActive = form.recommendation === key
@@ -373,7 +373,7 @@ function EvaluationModal({
           </div>
 
           <div>
-            <Label style={{ fontSize: 14, color: '#1A1A1A' }}>{'코멘트'}</Label>
+            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))' }}>{'코멘트'}</Label>
             <Textarea
               value={form.comment}
               onChange={(e) => updateField('comment', e.target.value)}
@@ -478,7 +478,7 @@ export function InterviewListClient({
       key: 'applicantName',
       header: '지원자',
       render: (row) => (
-        <span style={{ fontWeight: 500, color: '#1A1A1A' }}>
+        <span style={{ fontWeight: 500, color: 'hsl(var(--foreground))' }}>
           {row.application.applicant.name}
         </span>
       ),
@@ -675,8 +675,8 @@ export function InterviewListClient({
       {/* Table */}
       <div
         style={{
-          backgroundColor: '#FFFFFF',
-          border: '1px solid #E8E8E8',
+          backgroundColor: 'hsl(var(--card))',
+          border: '1px solid hsl(var(--border))',
           borderRadius: 12,
           overflow: 'hidden',
         }}

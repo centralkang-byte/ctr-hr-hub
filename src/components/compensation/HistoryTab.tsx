@@ -112,7 +112,7 @@ export default function HistoryTab() {
       key: 'previousBaseSalary',
       header: '이전 연봉',
       render: (row) => (
-        <span className="text-sm text-[#666]">{formatCurrency(row.previousBaseSalary)}</span>
+        <span className="text-sm text-muted-foreground">{formatCurrency(row.previousBaseSalary)}</span>
       ),
     },
     {
@@ -127,7 +127,7 @@ export default function HistoryTab() {
       header: '인상률',
       render: (row) => {
         const pct = Number(row.changePct)
-        const color = pct > 0 ? 'text-emerald-600' : pct < 0 ? 'text-destructive' : 'text-[#666]'
+        const color = pct > 0 ? 'text-emerald-600' : pct < 0 ? 'text-destructive' : 'text-muted-foreground'
         return (
           <span className={`text-sm font-medium ${color}`}>
             {pct > 0 ? '+' : ''}
@@ -174,7 +174,7 @@ export default function HistoryTab() {
                   return (
                     <div className="rounded-md border bg-card p-3 shadow-lg">
                       <p className="font-medium text-sm">{d.label}</p>
-                      <p className="text-xs text-[#666]">
+                      <p className="text-xs text-muted-foreground">
                         {d.count}명 ({d.percentage.toFixed(1)}%)
                       </p>
                     </div>

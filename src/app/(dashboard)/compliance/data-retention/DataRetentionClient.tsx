@@ -68,7 +68,7 @@ export default function DataRetentionClient({ user }: { user: SessionUser }) {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-indigo-500/15 rounded-xl flex items-center justify-center">
             <Database className="w-5 h-5 text-primary" />
           </div>
           <div>
@@ -87,15 +87,15 @@ export default function DataRetentionClient({ user }: { user: SessionUser }) {
       {/* Summary Cards */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">Total Policies</p>
+          <p className="text-xs text-muted-foreground mb-1">Total Policies</p>
           <p className="text-3xl font-bold text-foreground">{policies.length}</p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">{t('gdpr.autoDelete')} Enabled</p>
+          <p className="text-xs text-muted-foreground mb-1">{t('gdpr.autoDelete')} Enabled</p>
           <p className="text-3xl font-bold text-foreground">{policies.filter((p) => p.auto_delete).length}</p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">{t('gdpr.anonymize')} Enabled</p>
+          <p className="text-xs text-muted-foreground mb-1">{t('gdpr.anonymize')} Enabled</p>
           <p className="text-3xl font-bold text-foreground">{policies.filter((p) => p.anonymize).length}</p>
         </div>
       </div>
@@ -103,9 +103,9 @@ export default function DataRetentionClient({ user }: { user: SessionUser }) {
       {/* Table */}
       <div className="bg-card rounded-xl border border-border">
         {loading ? (
-          <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
+          <div className="p-8 text-center text-muted-foreground">{tc('loading')}</div>
         ) : policies.length === 0 ? (
-          <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
+          <div className="p-8 text-center text-muted-foreground">{tc('noData')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className={TABLE_STYLES.table}>
@@ -125,19 +125,19 @@ export default function DataRetentionClient({ user }: { user: SessionUser }) {
               {policies?.map((p) => (
                   <tr key={p.id} className={TABLE_STYLES.row}>
                     <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>{p.category}</td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-[#333]')}>
+                    <td className={cn(TABLE_STYLES.cell, 'text-foreground')}>
                       {p.retention_months} mo
-                      <span className="text-xs text-[#999] ml-1">
+                      <span className="text-xs text-muted-foreground ml-1">
                         ({Math.round((p.retention_months / 12) * 10) / 10} yr)
                       </span>
                     </td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-[#555] max-w-[200px] truncate')}>{p.description || '-'}</td>
+                    <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground max-w-[200px] truncate')}>{p.description || '-'}</td>
                     <td className={TABLE_STYLES.cell}>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           p.auto_delete
-                            ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
-                            : 'bg-background text-[#555] border border-border'
+                            ? 'bg-emerald-500/15 text-emerald-700 border border-emerald-200'
+                            : 'bg-background text-muted-foreground border border-border'
                         }`}
                       >
                         {p.auto_delete ? tc('yes') : tc('no')}
@@ -148,34 +148,34 @@ export default function DataRetentionClient({ user }: { user: SessionUser }) {
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           p.anonymize
                             ? 'bg-primary/10 text-primary/90 border border-primary/20'
-                            : 'bg-background text-[#555] border border-border'
+                            : 'bg-background text-muted-foreground border border-border'
                         }`}
                       >
                         {p.anonymize ? tc('yes') : tc('no')}
                       </span>
                     </td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-[#666]')}>
+                    <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>
                       {p.last_run_at ? new Date(p.last_run_at).toLocaleDateString() : '-'}
                     </td>
                     <td className={TABLE_STYLES.cell}>
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => { setSelected(p); setShowForm(true) }}
-                          className="p-1.5 text-[#666] hover:text-primary hover:bg-primary/10 rounded"
+                          className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded"
                           title={tc('edit')}
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleRunPolicy(p.id)}
-                          className="p-1.5 text-[#666] hover:text-emerald-600 hover:bg-emerald-100 rounded"
+                          className="p-1.5 text-muted-foreground hover:text-emerald-600 hover:bg-emerald-500/15 rounded"
                           title={t('gdpr.runRetention')}
                         >
                           <Play className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(p.id)}
-                          className="p-1.5 text-[#666] hover:text-destructive hover:bg-destructive/10 rounded"
+                          className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded"
                           title={tc('delete')}
                         >
                           <Trash2 className="w-4 h-4" />

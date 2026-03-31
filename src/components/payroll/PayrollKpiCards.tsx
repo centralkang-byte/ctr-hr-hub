@@ -29,21 +29,21 @@ export default function PayrollKpiCards({
       value: formatCurrency(totalGross),
       icon: TrendingUp,
       color: 'text-emerald-600',
-      bg: 'bg-emerald-100',
+      bg: 'bg-emerald-500/15',
     },
     {
       label: '총 공제액',
       value: formatCurrency(totalDeductions),
       icon: TrendingDown,
       color: 'text-amber-600',
-      bg: 'bg-amber-100',
+      bg: 'bg-amber-500/15',
     },
     {
       label: '총 실지급액',
       value: formatCurrency(totalNet),
       icon: Wallet,
       color: 'text-primary',
-      bg: 'bg-indigo-100',
+      bg: 'bg-indigo-500/15',
     },
   ]
 
@@ -58,7 +58,7 @@ export default function PayrollKpiCards({
             <div className={`p-1.5 rounded-lg ${card.bg}`}>
               <card.icon className={`h-4 w-4 ${card.color}`} />
             </div>
-            <p className="text-xs text-[#666]">{card.label}</p>
+            <p className="text-xs text-muted-foreground">{card.label}</p>
           </div>
           <p className="text-2xl font-bold text-foreground">{card.value}</p>
         </div>

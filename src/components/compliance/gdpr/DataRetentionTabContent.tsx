@@ -72,9 +72,9 @@ export default function DataRetentionTabContent() {
 
       <div className={TABLE_STYLES.wrapper}>
         {loading ? (
-          <div className="p-8 text-center text-[#666]">{tc('loading')}</div>
+          <div className="p-8 text-center text-muted-foreground">{tc('loading')}</div>
         ) : policies.length === 0 ? (
-          <div className="p-8 text-center text-[#666]">{tc('noData')}</div>
+          <div className="p-8 text-center text-muted-foreground">{tc('noData')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className={TABLE_STYLES.table}>
@@ -94,45 +94,45 @@ export default function DataRetentionTabContent() {
                     <td className="px-4 py-3 text-sm">
                       <div className="font-medium text-foreground">{p.category}</div>
                       {p.description && (
-                        <div className="text-xs text-[#999] mt-0.5 max-w-[200px] truncate">{p.description}</div>
+                        <div className="text-xs text-muted-foreground mt-0.5 max-w-[200px] truncate">{p.description}</div>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#333]">
+                    <td className="px-4 py-3 text-sm text-foreground">
                       {p.retention_months} mo
-                      <span className="text-xs text-[#999] ml-1">({Math.round(p.retention_months / 12 * 10) / 10} yr)</span>
+                      <span className="text-xs text-muted-foreground ml-1">({Math.round(p.retention_months / 12 * 10) / 10} yr)</span>
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${p.auto_delete ? 'bg-emerald-100 text-emerald-700' : 'bg-background text-[#666]'}`}>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${p.auto_delete ? 'bg-emerald-500/15 text-emerald-700' : 'bg-background text-muted-foreground'}`}>
                         {p.auto_delete ? tc('yes') : tc('no')}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${p.anonymize ? 'bg-primary/10 text-primary/90' : 'bg-background text-[#666]'}`}>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${p.anonymize ? 'bg-primary/10 text-primary/90' : 'bg-background text-muted-foreground'}`}>
                         {p.anonymize ? tc('yes') : tc('no')}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-[#666]">
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
                       {p.last_run_at ? new Date(p.last_run_at).toLocaleDateString() : '-'}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => { setSelected(p); setShowForm(true) }}
-                          className="text-[#666] hover:text-primary"
+                          className="text-muted-foreground hover:text-primary"
                           title={tc('edit')}
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleRunPolicy(p.id)}
-                          className="text-[#666] hover:text-emerald-600"
+                          className="text-muted-foreground hover:text-emerald-600"
                           title={t('gdpr.runRetention')}
                         >
                           <Play className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(p.id)}
-                          className="text-[#666] hover:text-destructive"
+                          className="text-muted-foreground hover:text-destructive"
                           title={tc('delete')}
                         >
                           <Trash2 className="w-4 h-4" />

@@ -78,8 +78,8 @@ export default function PulseResultsClient({ user, id }: { user: SessionUser; id
     setAiLoading(false)
   }
 
-  if (loading) return <div className="p-6 text-center text-[#999]">{tCommon('loading')}</div>
-  if (!results) return <div className="p-6 text-center text-[#999]">{t('kr_keab2b0ea_kebb688eb_kec8898_ke')}</div>
+  if (loading) return <div className="p-6 text-center text-muted-foreground">{tCommon('loading')}</div>
+  if (!results) return <div className="p-6 text-center text-muted-foreground">{t('kr_keab2b0ea_kebb688eb_kec8898_ke')}</div>
 
   return (
     <div className="p-6 space-y-6">
@@ -87,16 +87,16 @@ export default function PulseResultsClient({ user, id }: { user: SessionUser; id
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => router.push('/performance/pulse')} className="p-1 hover:bg-muted rounded-lg">
-            <ArrowLeft className="w-5 h-5 text-[#666]" />
+            <ArrowLeft className="w-5 h-5 text-muted-foreground" />
           </button>
           <BarChart3 className="w-6 h-6 text-primary" />
           <div>
             <h1 className="text-2xl font-bold text-foreground">{results.title} — 결과</h1>
-            <p className="text-sm text-[#666]">총 {results.totalRespondents}명 응답</p>
+            <p className="text-sm text-muted-foreground">총 {results.totalRespondents}명 응답</p>
           </div>
         </div>
         <button onClick={handleAiAnalysis} disabled={aiLoading}
-          className="flex items-center gap-2 px-4 py-2 border border-indigo-200 text-primary/90 rounded-lg text-sm font-medium hover:bg-indigo-100 disabled:opacity-50">
+          className="flex items-center gap-2 px-4 py-2 border border-indigo-200 text-primary/90 rounded-lg text-sm font-medium hover:bg-indigo-500/15 disabled:opacity-50">
           <Sparkles className="w-4 h-4" />
           {aiLoading ? t('aiAnalyzing') : 'AI 인사이트'}
         </button>
@@ -104,34 +104,34 @@ export default function PulseResultsClient({ user, id }: { user: SessionUser; id
 
       {/* AI Analysis */}
       {aiAnalysis && (
-        <div className="bg-indigo-100 rounded-xl border border-indigo-200 p-5 space-y-3">
+        <div className="bg-indigo-500/15 rounded-xl border border-indigo-200 p-5 space-y-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-primary/90" />
             <span className="text-sm font-semibold text-primary/90">{t('kr_ai_analytics_keab2b0ea')}</span>
           </div>
-          <p className="text-sm text-[#333]">{aiAnalysis.overall_sentiment}</p>
+          <p className="text-sm text-foreground">{aiAnalysis.overall_sentiment}</p>
           <div className="grid grid-cols-3 gap-4">
             <div>
               <h4 className="text-xs font-medium text-primary/90 mb-2">{t('kr_ked95b5ec_kec9db8ec')}</h4>
               <ul className="space-y-1">{aiAnalysis.key_insights.map((ins, i) => (
-                <li key={i} className="text-xs text-[#333]">• {ins}</li>
+                <li key={i} className="text-xs text-foreground">• {ins}</li>
               ))}</ul>
             </div>
             <div>
               <h4 className="text-xs font-medium text-destructive mb-2">{t('kr_keca3bcec_kec9881ec')}</h4>
               <ul className="space-y-1">{aiAnalysis.risk_areas.map((r, i) => (
-                <li key={i} className="text-xs text-[#333]">• {r}</li>
+                <li key={i} className="text-xs text-foreground">• {r}</li>
               ))}</ul>
             </div>
             <div>
               <h4 className="text-xs font-medium text-emerald-600 mb-2">{t('kr_keab09cec_keca09cec')}</h4>
               <ul className="space-y-1">{aiAnalysis.recommendations.map((r, i) => (
-                <li key={i} className="text-xs text-[#333]">• {r}</li>
+                <li key={i} className="text-xs text-foreground">• {r}</li>
               ))}</ul>
             </div>
           </div>
           {aiAnalysis.department_comparison && (
-            <p className="text-xs text-[#555] border-t border-indigo-200 pt-2 mt-2">{aiAnalysis.department_comparison}</p>
+            <p className="text-xs text-muted-foreground border-t border-indigo-200 pt-2 mt-2">{aiAnalysis.department_comparison}</p>
           )}
         </div>
       )}
@@ -142,17 +142,17 @@ export default function PulseResultsClient({ user, id }: { user: SessionUser; id
           <div key={q.questionId} className="bg-card rounded-xl shadow-sm border border-border p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <span className="text-xs text-[#999] font-medium">Q{i + 1}</span>
+                <span className="text-xs text-muted-foreground font-medium">Q{i + 1}</span>
                 <h3 className="text-sm font-semibold text-foreground mt-1">{q.questionText}</h3>
               </div>
-              <span className="text-xs text-[#666]">{q.responseCount}명 응답</span>
+              <span className="text-xs text-muted-foreground">{q.responseCount}명 응답</span>
             </div>
 
             {q.questionType === 'LIKERT' && q.distribution && (
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <span className="text-2xl font-bold text-foreground">{q.average}</span>
-                  <span className="text-sm text-[#666]">/ 5.0</span>
+                  <span className="text-sm text-muted-foreground">/ 5.0</span>
                 </div>
                 <div className="h-48">
                   <ResponsiveContainer width="100%" height="100%">
@@ -193,7 +193,7 @@ export default function PulseResultsClient({ user, id }: { user: SessionUser; id
             {q.questionType === 'TEXT' && q.answers && (
               <div className="space-y-2 max-h-60 overflow-y-auto">
                 {q.answers.map((a, idx) => (
-                  <div key={idx} className="bg-background rounded-lg px-3 py-2 text-sm text-[#333]">{a}</div>
+                  <div key={idx} className="bg-background rounded-lg px-3 py-2 text-sm text-foreground">{a}</div>
                 ))}
               </div>
             )}

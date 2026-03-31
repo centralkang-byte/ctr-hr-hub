@@ -318,7 +318,7 @@ export function HrDocumentManager({ user: _user }: HrDocumentManagerProps) {
                       variant={!doc.deletedAt ? 'default' : 'secondary'}
                       className={
                         !doc.deletedAt
-                          ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
+                          ? 'bg-emerald-500/15 text-emerald-700 border-emerald-200'
                           : ''
                       }
                     >

@@ -76,8 +76,8 @@ export function EffectiveDatePicker({
   return (
     <div className={cn('rounded-lg border border-border bg-background p-3', className)}>
       <div className="flex flex-wrap items-center gap-2">
-        <Calendar className="h-4 w-4 text-[#666] flex-shrink-0" />
-        <span className="text-sm font-medium text-[#333]">{label}:</span>
+        <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+        <span className="text-sm font-medium text-foreground">{label}:</span>
 
         <Input
           type="date"
@@ -103,7 +103,7 @@ export function EffectiveDatePicker({
 
       {/* 미래 시점 허용 경고 */}
       {allowFuture && isFuture && (
-        <div className="mt-2 flex items-center gap-1.5 rounded-md bg-amber-100 px-3 py-1.5">
+        <div className="mt-2 flex items-center gap-1.5 rounded-md bg-amber-500/15 px-3 py-1.5">
           <span className="text-xs text-amber-700 font-medium">
             ⚠️ 미래 시점 조회 중 (HR Admin 전용)
           </span>

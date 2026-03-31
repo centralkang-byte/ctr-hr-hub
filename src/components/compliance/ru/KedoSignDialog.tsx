@@ -100,10 +100,10 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
           {/* Document Info */}
           <div className="p-4 bg-background rounded-lg space-y-1.5">
             <p className="text-sm font-semibold text-foreground">{document.title}</p>
-            <p className="text-xs text-[#666]">
+            <p className="text-xs text-muted-foreground">
               {DOC_TYPE_LABELS[document.documentType] ?? document.documentType}
             </p>
-            <p className="text-xs text-[#666]">
+            <p className="text-xs text-muted-foreground">
               대상자: {document.employee.name} ({document.employee.employeeNo})
             </p>
           </div>
@@ -115,7 +115,7 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium border transition-colors ${
                 mode === 'sign'
                   ? 'bg-emerald-600 text-white border-emerald-600'
-                  : 'bg-card text-[#555] border-border hover:bg-background'
+                  : 'bg-card text-muted-foreground border-border hover:bg-background'
               }`}
             >
               <CheckCircle2 className="w-4 h-4" />
@@ -138,7 +138,7 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
           {mode === 'sign' && (
             <div className="space-y-3">
               <div>
-                <label className="text-sm font-medium text-[#333] block mb-1">
+                <label className="text-sm font-medium text-foreground block mb-1">
                   서명 수준 <span className="text-red-500">*</span>
                 </label>
                 <select
@@ -163,7 +163,7 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
           {/* Reject Mode */}
           {mode === 'reject' && (
             <div>
-              <label className="text-sm font-medium text-[#333] block mb-1">
+              <label className="text-sm font-medium text-foreground block mb-1">
                 반려 사유 <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -171,7 +171,7 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
                 onChange={(e) => setRejectionReason(e.target.value)}
                 rows={3}
                 placeholder={'반려 사유를 상세히 입력하세요.'}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999] resize-none"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground resize-none"
               />
             </div>
           )}
@@ -189,7 +189,7 @@ export default function KedoSignDialog({ document, onClose, onSuccess }: Props) 
             type="button"
             onClick={onClose}
             disabled={processing}
-            className="bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
+            className="bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm"
           >
             취소
           </button>

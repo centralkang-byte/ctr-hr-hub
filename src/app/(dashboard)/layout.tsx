@@ -81,7 +81,7 @@ export default async function DashboardLayout({
 
   return (
     <BrandProvider companyId={user.companyId}>
-      <div className="flex h-screen overflow-hidden bg-muted dark:bg-slate-950">
+      <div className="flex h-screen overflow-hidden bg-muted">
         <DashboardShell user={user} companies={companies}>
           {children}
         </DashboardShell>

@@ -78,15 +78,15 @@ export default function PulseRespondClient({ user, id }: { user: SessionUser; id
     setSubmitting(false)
   }
 
-  if (loading) return <div className="p-6 text-center text-[#999]">{tCommon('loading')}</div>
-  if (!survey) return <div className="p-6 text-center text-[#999]">{t('kr_kec84a4eb_kecb0beec_kec8898_ke')}</div>
+  if (loading) return <div className="p-6 text-center text-muted-foreground">{tCommon('loading')}</div>
+  if (!survey) return <div className="p-6 text-center text-muted-foreground">{t('kr_kec84a4eb_kecb0beec_kec8898_ke')}</div>
 
   if (submitted) {
     return (
       <div className="p-6 flex flex-col items-center justify-center min-h-[60vh] space-y-4">
         <CheckCircle2 className="w-16 h-16 text-primary" />
         <h2 className="text-xl font-bold text-foreground">{t('kr_kec9d91eb_keca09cec')}</h2>
-        <p className="text-sm text-[#666]">{t('kr_kec868cec_kec9d98ea_keab090ec')}</p>
+        <p className="text-sm text-muted-foreground">{t('kr_kec868cec_kec9d98ea_keab090ec')}</p>
         <button onClick={() => router.push('/performance/pulse')}
           className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>
           {t('kr_keb8f8cec')}
@@ -103,15 +103,15 @@ export default function PulseRespondClient({ user, id }: { user: SessionUser; id
       {/* Header */}
       <div className="flex items-center gap-3">
         <button onClick={() => router.push('/performance/pulse')} className="p-1 hover:bg-muted rounded-lg">
-          <ArrowLeft className="w-5 h-5 text-[#666]" />
+          <ArrowLeft className="w-5 h-5 text-muted-foreground" />
         </button>
         <div>
           <h1 className="text-2xl font-bold text-foreground">{survey.title}</h1>
-          {survey.description && <p className="text-sm text-[#666] mt-1">{survey.description}</p>}
+          {survey.description && <p className="text-sm text-muted-foreground mt-1">{survey.description}</p>}
         </div>
       </div>
 
-      <div className="bg-indigo-100 rounded-xl border border-indigo-200 p-4 text-sm text-primary/90">
+      <div className="bg-indigo-500/15 rounded-xl border border-indigo-200 p-4 text-sm text-primary/90">
         {survey.anonymityLevel === 'FULL_ANONYMOUS'
           ? '이 설문은 완전 익명으로 진행됩니다. 응답자 정보가 기록되지 않습니다.'
           : '이 설문은 부서 단위로 익명이 보장됩니다.'}
@@ -123,7 +123,7 @@ export default function PulseRespondClient({ user, id }: { user: SessionUser; id
         {survey.questions.map((q, i) => (
           <div key={q.id} className="bg-card rounded-xl shadow-sm border border-border p-6">
             <div className="flex items-start gap-2 mb-3">
-              <span className="text-xs font-medium text-[#999]">Q{i + 1}</span>
+              <span className="text-xs font-medium text-muted-foreground">Q{i + 1}</span>
               <div>
                 <p className="text-sm font-medium text-foreground">
                   {q.questionText}
@@ -139,7 +139,7 @@ export default function PulseRespondClient({ user, id }: { user: SessionUser; id
                     className={`flex-1 py-3 rounded-lg border text-sm font-medium transition-colors ${
                       answers[q.id] === String(v)
                         ? 'bg-primary text-white border-primary'
-                        : 'bg-card text-[#555] border-border hover:bg-background'
+                        : 'bg-card text-muted-foreground border-border hover:bg-background'
                     }`}>
                     <div className="text-lg">{v}</div>
                     <div className="text-xs mt-1 opacity-80">{LIKERT_LABELS[v - 1]}</div>
@@ -154,7 +154,7 @@ export default function PulseRespondClient({ user, id }: { user: SessionUser; id
                 onChange={(e) => setAnswer(q.id, e.target.value)}
                 placeholder={tCommon('enterContent')}
                 rows={3}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999]"
+                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
               />
             )}
 
@@ -165,7 +165,7 @@ export default function PulseRespondClient({ user, id }: { user: SessionUser; id
                     className={`w-full text-left px-4 py-2.5 rounded-lg border text-sm transition-colors ${
                       answers[q.id] === opt
                         ? 'bg-primary/10 text-primary/90 border-primary'
-                        : 'bg-card text-[#555] border-border hover:bg-background'
+                        : 'bg-card text-muted-foreground border-border hover:bg-background'
                     }`}>
                     {opt}
                   </button>

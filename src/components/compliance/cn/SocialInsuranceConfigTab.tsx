@@ -75,7 +75,7 @@ export default function SocialInsuranceConfigTab() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-base font-semibold text-foreground">사회보험 요율 설정</h2>
-          <p className="text-xs text-[#666] mt-0.5">五险一金 요율 및 기수를 관리합니다</p>
+          <p className="text-xs text-muted-foreground mt-0.5">五险一金 요율 및 기수를 관리합니다</p>
         </div>
         <button
           onClick={handleAdd}
@@ -88,9 +88,9 @@ export default function SocialInsuranceConfigTab() {
 
       {/* Table */}
       {loading ? (
-        <div className="py-12 text-center text-sm text-[#666]">Loading...</div>
+        <div className="py-12 text-center text-sm text-muted-foreground">Loading...</div>
       ) : configs.length === 0 ? (
-        <div className="py-12 text-center text-sm text-[#666]">
+        <div className="py-12 text-center text-sm text-muted-foreground">
           등록된 사회보험 요율이 없습니다.
         </div>
       ) : (
@@ -118,28 +118,28 @@ export default function SocialInsuranceConfigTab() {
                   <td className="px-4 py-3 font-medium text-foreground">
                     {INSURANCE_TYPE_LABELS[config.insuranceType] ?? config.insuranceType}
                   </td>
-                  <td className="px-4 py-3 text-[#333]">{config.city}</td>
-                  <td className="px-4 py-3 text-right text-[#333]">
+                  <td className="px-4 py-3 text-foreground">{config.city}</td>
+                  <td className="px-4 py-3 text-right text-foreground">
                     {config.employerRate.toFixed(2)}%
                   </td>
-                  <td className="px-4 py-3 text-right text-[#333]">
+                  <td className="px-4 py-3 text-right text-foreground">
                     {config.employeeRate.toFixed(2)}%
                   </td>
-                  <td className="px-4 py-3 text-right text-[#333]">
+                  <td className="px-4 py-3 text-right text-foreground">
                     {config.baseMin.toLocaleString()}
                   </td>
-                  <td className="px-4 py-3 text-right text-[#333]">
+                  <td className="px-4 py-3 text-right text-foreground">
                     {config.baseMax.toLocaleString()}
                   </td>
-                  <td className="px-4 py-3 text-[#333]">
+                  <td className="px-4 py-3 text-foreground">
                     {config.effectiveFrom.split('T')[0]}
                   </td>
                   <td className="px-4 py-3 text-center">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         !config.deletedAt
-                          ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
-                          : 'bg-background text-[#555] border border-border'
+                          ? 'bg-emerald-500/15 text-emerald-700 border border-emerald-200'
+                          : 'bg-background text-muted-foreground border border-border'
                       }`}
                     >
                       {!config.deletedAt ? '활성' : '비활성'}
@@ -148,7 +148,7 @@ export default function SocialInsuranceConfigTab() {
                   <td className="px-4 py-3 text-center">
                     <button
                       onClick={() => handleEdit(config)}
-                      className="p-1.5 text-[#999] hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                      className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
                       title="수정"
                     >
                       <Pencil className="w-4 h-4" />

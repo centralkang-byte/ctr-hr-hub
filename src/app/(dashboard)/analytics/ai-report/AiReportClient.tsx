@@ -279,7 +279,7 @@ export default function AiReportClient({ user }: { user: SessionUser }) {
         </div>
 
         {error && (
-          <div className="mt-4 flex items-center gap-2 text-sm text-amber-600 bg-amber-50 rounded-lg px-4 py-2.5">
+          <div className="mt-4 flex items-center gap-2 text-sm text-amber-600 bg-amber-500/10 rounded-lg px-4 py-2.5">
             <AlertCircle className="h-4 w-4 flex-shrink-0" />
             {error}
           </div>

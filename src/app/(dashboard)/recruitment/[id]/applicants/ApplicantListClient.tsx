@@ -38,11 +38,11 @@ const STAGE_KEYS: Record<string, string> = {
 }
 
 const STAGE_BADGE_STYLES: Record<string, string> = {
-  APPLIED: 'bg-muted text-[#999]',
+  APPLIED: 'bg-muted text-muted-foreground',
   SCREENING: 'bg-primary/5 text-blue-800',
   INTERVIEW_1: 'bg-primary/5 text-blue-800',
   INTERVIEW_2: 'bg-primary/5 text-blue-800',
-  FINAL: 'bg-orange-50 text-orange-800',
+  FINAL: 'bg-orange-500/10 text-orange-800',
   OFFER: 'bg-primary/10 text-tertiary',
   HIRED: 'bg-primary/10 text-green-900 font-bold',
   REJECTED: 'bg-destructive/5 text-destructive',
@@ -57,11 +57,11 @@ const SOURCE_KEYS: Record<string, string> = {
 }
 
 const SOURCE_BADGE_STYLES: Record<string, string> = {
-  DIRECT: 'bg-muted text-[#666]',
+  DIRECT: 'bg-muted text-muted-foreground',
   REFERRAL: 'bg-primary/10 text-tertiary',
   AGENCY: 'bg-primary/5 text-blue-800',
-  JOB_BOARD: 'bg-orange-50 text-orange-800',
-  INTERNAL: 'bg-purple-50 text-purple-800',
+  JOB_BOARD: 'bg-orange-500/10 text-orange-800',
+  INTERNAL: 'bg-purple-500/10 text-purple-800',
 }
 
 const STAGES_ALL = [
@@ -164,7 +164,7 @@ export default function ApplicantListClient({
 
   const getAiScoreDisplay = (score: number | null) => {
     if (score === null || score === undefined) {
-      return <span className="text-sm text-[#999]">-</span>
+      return <span className="text-sm text-muted-foreground">-</span>
     }
     let colorClass = 'text-red-500'
     if (score >= 80) colorClass = 'text-primary'
@@ -181,7 +181,7 @@ export default function ApplicantListClient({
             onClick={() => router.push(`/recruitment/${postingId}`)}
             className="p-2 rounded-lg border border-border hover:bg-card transition-colors duration-150"
           >
-            <ChevronLeft className="w-4 h-4 text-[#666]" />
+            <ChevronLeft className="w-4 h-4 text-muted-foreground" />
           </button>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">
@@ -194,7 +194,7 @@ export default function ApplicantListClient({
               >
                 {t('applicantManagement')}
               </h1>
-              <p className="text-sm text-[#999]">
+              <p className="text-sm text-muted-foreground">
                 {t('totalCountPeople', { count: total })}
               </p>
             </div>
@@ -214,7 +214,7 @@ export default function ApplicantListClient({
         <div className="flex items-center gap-3">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
               placeholder={t('searchApplicantPlaceholder')}
@@ -226,7 +226,7 @@ export default function ApplicantListClient({
           </div>
           {/* Stage Filter */}
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-[#999]" />
+            <Filter className="w-4 h-4 text-muted-foreground" />
             <select
               value={stageFilter}
               onChange={(e) => {
@@ -256,13 +256,13 @@ export default function ApplicantListClient({
       <div className={TABLE_STYLES.wrapper}>
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="flex items-center gap-2 text-sm text-[#999]">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin" />
               {t('loadingData')}
             </div>
           </div>
         ) : data.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-[#999]">
+          <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
             <Users className="w-8 h-8 mb-2" />
             <p className="text-sm">{t('noApplicants')}</p>
           </div>
@@ -305,14 +305,14 @@ export default function ApplicantListClient({
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm text-[#666]">
+                      <span className="text-sm text-muted-foreground">
                         {app.applicant.email}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <span
                         className={`inline-block px-2 py-1 text-xs font-medium rounded ${
-                          SOURCE_BADGE_STYLES[app.applicant.source] ?? 'bg-muted text-[#999]'
+                          SOURCE_BADGE_STYLES[app.applicant.source] ?? 'bg-muted text-muted-foreground'
                         }`}
                       >
                         {SOURCE_KEYS[app.applicant.source] ? t(SOURCE_KEYS[app.applicant.source]) : app.applicant.source}
@@ -324,14 +324,14 @@ export default function ApplicantListClient({
                     <td className="px-6 py-4">
                       <span
                         className={`inline-block px-2 py-1 text-xs font-medium rounded ${
-                          STAGE_BADGE_STYLES[app.stage] ?? 'bg-muted text-[#999]'
+                          STAGE_BADGE_STYLES[app.stage] ?? 'bg-muted text-muted-foreground'
                         }`}
                       >
                         {STAGE_KEYS[app.stage] ? t(STAGE_KEYS[app.stage]) : app.stage}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm text-[#666]">
+                      <span className="text-sm text-muted-foreground">
                         {format(new Date(app.appliedAt), 'yyyy-MM-dd')}
                       </span>
                     </td>
@@ -343,7 +343,7 @@ export default function ApplicantListClient({
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-between px-6 py-4 border-t border-border">
-                <p className="text-xs text-[#999]">
+                <p className="text-xs text-muted-foreground">
                   {t('paginationInfo', { total, from: (page - 1) * LIMIT + 1, to: Math.min(page * LIMIT, total) })}
                 </p>
                 <div className="flex items-center gap-1">
@@ -352,7 +352,7 @@ export default function ApplicantListClient({
                     disabled={page <= 1}
                     className="p-2 rounded-lg border border-border hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
                   >
-                    <ChevronLeft className="w-4 h-4 text-[#666]" />
+                    <ChevronLeft className="w-4 h-4 text-muted-foreground" />
                   </button>
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     const startPage = Math.max(
@@ -368,7 +368,7 @@ export default function ApplicantListClient({
                         className={`w-8 h-8 text-sm rounded-lg transition-colors duration-150 ${
                           pg === page
                             ? 'bg-foreground text-white'
-                            : 'text-[#666] hover:bg-background'
+                            : 'text-muted-foreground hover:bg-background'
                         }`}
                       >
                         {pg}
@@ -380,7 +380,7 @@ export default function ApplicantListClient({
                     disabled={page >= totalPages}
                     className="p-2 rounded-lg border border-border hover:bg-background disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
                   >
-                    <ChevronRight className="w-4 h-4 text-[#666]" />
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   </button>
                 </div>
               </div>

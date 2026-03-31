@@ -115,7 +115,7 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
         <div className="space-y-4 py-2">
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               {tc('category')} <span className="text-red-500">*</span>
             </label>
             <select
@@ -132,7 +132,7 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
 
           {/* Retention Months */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">
+            <label className="block text-sm font-medium text-foreground mb-1">
               {t('gdpr.retentionMonths')} <span className="text-red-500">*</span>
             </label>
             <input
@@ -143,12 +143,12 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
               value={form.retention_months}
               onChange={(e) => handleChange('retention_months', parseInt(e.target.value) || 0)}
             />
-            <p className="text-xs text-[#999] mt-1">e.g., 36 = 3 years, 84 = 7 years</p>
+            <p className="text-xs text-muted-foreground mt-1">e.g., 36 = 3 years, 84 = 7 years</p>
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-[#333] mb-1">{tc('description')}</label>
+            <label className="block text-sm font-medium text-foreground mb-1">{tc('description')}</label>
             <textarea
               className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none"
               rows={3}
@@ -162,8 +162,8 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 bg-background rounded-lg">
               <div>
-                <p className="text-sm font-medium text-[#333]">{t('gdpr.autoDelete')}</p>
-                <p className="text-xs text-[#999]">Automatically delete data after retention period</p>
+                <p className="text-sm font-medium text-foreground">{t('gdpr.autoDelete')}</p>
+                <p className="text-xs text-muted-foreground">Automatically delete data after retention period</p>
               </div>
               <button
                 type="button"
@@ -176,8 +176,8 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
 
             <div className="flex items-center justify-between p-3 bg-background rounded-lg">
               <div>
-                <p className="text-sm font-medium text-[#333]">{t('gdpr.anonymize')}</p>
-                <p className="text-xs text-[#999]">Anonymize instead of deleting</p>
+                <p className="text-sm font-medium text-foreground">{t('gdpr.anonymize')}</p>
+                <p className="text-xs text-muted-foreground">Anonymize instead of deleting</p>
               </div>
               <button
                 type="button"
@@ -195,7 +195,7 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
         <DialogFooter className="gap-2">
           <button
             onClick={onClose}
-            className="bg-card border border-border hover:bg-background text-[#333] px-4 py-2 rounded-lg font-medium text-sm"
+            className="bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm"
           >
             {tc('cancel')}
           </button>

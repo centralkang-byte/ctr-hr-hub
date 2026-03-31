@@ -43,9 +43,9 @@ interface HighRiskListProps {
 
 const RISK_BADGE_CLASSES: Record<string, string> = {
   CRITICAL: 'bg-destructive/10 text-destructive border-destructive/20',
-  HIGH: 'bg-orange-50 text-orange-700 border-orange-200',
-  MEDIUM: 'bg-amber-100 text-amber-700 border-amber-300',
-  LOW: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  HIGH: 'bg-orange-500/10 text-orange-700 border-orange-200',
+  MEDIUM: 'bg-amber-500/15 text-amber-700 border-amber-300',
+  LOW: 'bg-emerald-500/15 text-emerald-700 border-emerald-200',
 }
 
 const RISK_LABELS: Record<string, string> = {
@@ -125,16 +125,16 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                     {topFactors.map((f) => (
                       <span
                         key={f.factor}
-                        className="text-xs bg-muted text-[#555] px-2 py-0.5 rounded"
+                        className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded"
                       >
                         {f.description}
                       </span>
                     ))}
                   </div>
                   {isExpanded ? (
-                    <ChevronUp className="h-4 w-4 text-[#999]" />
+                    <ChevronUp className="h-4 w-4 text-muted-foreground" />
                   ) : (
-                    <ChevronDown className="h-4 w-4 text-[#999]" />
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
                   )}
                 </div>
               </button>
@@ -143,12 +143,12 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                 <div className="px-4 pb-4 bg-background">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                     <div>
-                      <h4 className="text-sm font-medium text-[#333] mb-2">6요인 레이더</h4>
+                      <h4 className="text-sm font-medium text-foreground mb-2">6요인 레이더</h4>
                       <AttritionRadarChart factors={emp.factors} />
                     </div>
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="text-sm font-medium text-[#333]">
+                        <h4 className="text-sm font-medium text-foreground">
                           AI 인사이트
                         </h4>
                         {!ai && (
@@ -173,12 +173,12 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                         <div className="space-y-3">
                           {/* AI adjusted score */}
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-[#666]">AI 보정 점수:</span>
+                            <span className="text-xs text-muted-foreground">AI 보정 점수:</span>
                             <span className="text-sm font-bold">{ai.adjusted_score}</span>
                             <Badge className={`text-xs ${RISK_BADGE_CLASSES[ai.adjusted_level] ?? ''}`}>
                               {RISK_LABELS[ai.adjusted_level] ?? ai.adjusted_level}
                             </Badge>
-                            <span className="text-xs text-[#999]">
+                            <span className="text-xs text-muted-foreground">
                               신뢰도: {CONFIDENCE_LABELS[ai.confidence] ?? ai.confidence}
                             </span>
                           </div>
@@ -186,10 +186,10 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                           {/* Risk drivers */}
                           {ai.risk_drivers.length > 0 && (
                             <div>
-                              <p className="text-xs font-medium text-[#555] mb-1">핵심 이탈 동인</p>
+                              <p className="text-xs font-medium text-muted-foreground mb-1">핵심 이탈 동인</p>
                               <ul className="space-y-1">
                                 {ai.risk_drivers.map((d, i) => (
-                                  <li key={i} className="text-xs text-orange-700 bg-orange-50 px-2 py-1 rounded">
+                                  <li key={i} className="text-xs text-orange-700 bg-orange-500/10 px-2 py-1 rounded">
                                     {d}
                                   </li>
                                 ))}
@@ -200,10 +200,10 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                           {/* Contextual risks */}
                           {ai.contextual_risks.length > 0 && (
                             <div>
-                              <p className="text-xs font-medium text-[#555] mb-1">맥락적 위험</p>
+                              <p className="text-xs font-medium text-muted-foreground mb-1">맥락적 위험</p>
                               <ul className="space-y-1">
                                 {ai.contextual_risks.map((r, i) => (
-                                  <li key={i} className="text-xs text-[#555]">
+                                  <li key={i} className="text-xs text-muted-foreground">
                                     · {r}
                                   </li>
                                 ))}
@@ -214,12 +214,12 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                           {/* Retention actions */}
                           {ai.retention_actions.length > 0 && (
                             <div>
-                              <p className="text-xs font-medium text-[#555] mb-1">리텐션 액션</p>
+                              <p className="text-xs font-medium text-muted-foreground mb-1">리텐션 액션</p>
                               <ul className="space-y-1">
                                 {ai.retention_actions.map((action, i) => (
                                   <li
                                     key={i}
-                                    className="flex items-start gap-2 text-sm text-[#555]"
+                                    className="flex items-start gap-2 text-sm text-muted-foreground"
                                   >
                                     <span className="inline-block w-5 h-5 rounded bg-primary/10 text-primary/90 text-xs font-medium text-center leading-5 flex-shrink-0">
                                       {i + 1}
@@ -238,7 +238,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                               {emp.retentionActions.map((action, i) => (
                                 <li
                                   key={i}
-                                  className="flex items-start gap-2 text-sm text-[#555]"
+                                  className="flex items-start gap-2 text-sm text-muted-foreground"
                                 >
                                   <span className="inline-block w-5 h-5 rounded bg-primary/10 text-primary/90 text-xs font-medium text-center leading-5 flex-shrink-0">
                                     {i + 1}
@@ -248,7 +248,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
                               ))}
                             </ul>
                           ) : (
-                            <p className="text-sm text-[#999]">
+                            <p className="text-sm text-muted-foreground">
                               AI 분석 버튼을 클릭하여 인사이트를 확인하세요.
                             </p>
                           )}
@@ -262,7 +262,7 @@ export default function HighRiskList({ employees }: HighRiskListProps) {
           )
         })}
         {employees.length === 0 && (
-          <div className="p-8 text-center text-[#999] text-sm">
+          <div className="p-8 text-center text-muted-foreground text-sm">
             고위험 직원이 없습니다.
           </div>
         )}

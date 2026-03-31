@@ -134,8 +134,8 @@ const ASSIGNEE_COLORS: Record<string, string> = {
   EMPLOYEE: 'bg-muted text-foreground',
   MANAGER: 'bg-primary/10 text-primary',
   HR: 'bg-tertiary-container/20 text-tertiary',
-  IT: 'bg-purple-100 text-purple-700',
-  FINANCE: 'bg-orange-100 text-orange-700',
+  IT: 'bg-purple-500/15 text-purple-700',
+  FINANCE: 'bg-orange-500/15 text-orange-700',
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -600,7 +600,7 @@ export function OffboardingDetailClient({
                         interview.primaryReason}
                     </p>
                     {interview.detailedReason && (
-                      <p className="text-sm text-[#666] mt-1">{interview.detailedReason}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{interview.detailedReason}</p>
                     )}
                   </div>
 
@@ -639,7 +639,7 @@ export function OffboardingDetailClient({
                         const score = interview.satisfactionDetail![key]
                         return (
                           <div key={key} className="flex items-center justify-between">
-                            <span className="text-sm text-[#555]">{label}</span>
+                            <span className="text-sm text-muted-foreground">{label}</span>
                             <div className="flex gap-0.5">
                               {[1, 2, 3, 4, 5].map((n) => (
                                 <Star
@@ -874,7 +874,7 @@ export function OffboardingDetailClient({
                     ['growth', t('satisfactionGrowth')],
                   ] as [keyof typeof formSatisfactionDetail, string][]).map(([key, label]) => (
                     <div key={key} className="flex items-center justify-between">
-                      <span className="text-sm text-[#555]">{label}</span>
+                      <span className="text-sm text-muted-foreground">{label}</span>
                       <div className="flex gap-0.5">
                         {[1, 2, 3, 4, 5].map((n) => (
                           <button
@@ -933,7 +933,7 @@ export function OffboardingDetailClient({
                 <div className="flex items-center justify-between">
                   <div>
                     <Label htmlFor="confidential-switch">{t('isConfidential')}</Label>
-                    <p className="text-xs text-[#999] mt-0.5">{t('isConfidentialDesc')}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{t('isConfidentialDesc')}</p>
                   </div>
                   <Switch
                     id="confidential-switch"

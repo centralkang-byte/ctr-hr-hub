@@ -43,7 +43,7 @@ function MoMDelta({ current, previous, sameLabel }: { current: number; previous:
   const diff = current - previous
   const pct = Math.round((diff / previous) * 100)
   if (diff === 0) return (
-    <span className="text-xs text-[#999] flex items-center gap-0.5">
+    <span className="text-xs text-muted-foreground flex items-center gap-0.5">
       <Minus className="h-3 w-3" /> {sameLabel}
     </span>
   )
@@ -101,7 +101,7 @@ export default function PayrollMeClient({
       </div>
 
       {items.length === 0 ? (
-        <div className="text-center py-16 text-[#666]">
+        <div className="text-center py-16 text-muted-foreground">
           <Wallet className="h-12 w-12 mx-auto mb-3 text-border" />
           <p>{t('emptyMessage')}</p>
         </div>
@@ -131,19 +131,19 @@ export default function PayrollMeClient({
                     {item.run.yearMonth}
                   </h3>
                   {!isNew && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-primary/90 border border-indigo-200">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-500/15 text-primary/90 border border-indigo-200">
                       {t('paid')}
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-[#666] mb-3">{item.run.name}</p>
+                <p className="text-xs text-muted-foreground mb-3">{item.run.name}</p>
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-sm">
-                    <span className="text-[#666]">{t('grossPay')}</span>
+                    <span className="text-muted-foreground">{t('grossPay')}</span>
                     <span className="font-medium">{formatCurrency(Number(item.grossPay))}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-[#666]">{t('deductions')}</span>
+                    <span className="text-muted-foreground">{t('deductions')}</span>
                     <span className="text-destructive">-{formatCurrency(Number(item.deductions))}</span>
                   </div>
                   <div className="flex justify-between text-sm font-bold pt-1.5 border-t border-border">

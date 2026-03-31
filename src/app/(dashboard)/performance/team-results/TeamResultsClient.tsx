@@ -71,7 +71,7 @@ export default function TeamResultsClient({
     : 0
 
   if (loading) {
-    return <div className="p-6 flex items-center justify-center h-64 text-[#666]">{tc('loading')}...</div>
+    return <div className="p-6 flex items-center justify-center h-64 text-muted-foreground">{tc('loading')}...</div>
   }
 
   return (
@@ -80,7 +80,7 @@ export default function TeamResultsClient({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('teamResults')}</h1>
-          <p className="text-sm text-[#666] mt-1">{t('kr_ked8c80ec_kec84b1ea_keab2b0ea_')}</p>
+          <p className="text-sm text-muted-foreground mt-1">{t('kr_ked8c80ec_kec84b1ea_keab2b0ea_')}</p>
         </div>
         <select
           value={selectedCycleId}
@@ -95,15 +95,15 @@ export default function TeamResultsClient({
       {/* KPI */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Users className="w-3.5 h-3.5" /> {t('kr_ked8c80ec_kec8898')}</p>
+          <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><Users className="w-3.5 h-3.5" /> {t('kr_ked8c80ec_kec8898')}</p>
           <p className="text-3xl font-bold text-foreground">{results.length}</p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><Target className="w-3.5 h-3.5" /> {t('average_kec84b1ea')}</p>
+          <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><Target className="w-3.5 h-3.5" /> {t('average_kec84b1ea')}</p>
           <p className="text-3xl font-bold text-foreground">{avgPerfScore.toFixed(1)}</p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> {t('evaluation_kec9984eb')}</p>
+          <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> {t('evaluation_kec9984eb')}</p>
           <p className="text-3xl font-bold text-primary">
             {results.length > 0 ? Math.round(results.filter((r) => r.managerEval?.status === 'SUBMITTED').length / results.length * 100) : 0}%
           </p>
@@ -142,17 +142,17 @@ export default function TeamResultsClient({
                 <td className={cn(TABLE_STYLES.cellMuted)}>{r.employee.department?.name ?? '-'}</td>
                 <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>
                   {r.selfEval ? (
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.selfEval.status === 'SUBMITTED' ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-[#666]'}`}>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.selfEval.status === 'SUBMITTED' ? 'bg-emerald-500/15 text-emerald-700' : 'bg-muted text-muted-foreground'}`}>
                       {r.selfEval.performanceScore?.toFixed(1) ?? '-'}
                     </span>
-                  ) : <span className="text-[#999]">-</span>}
+                  ) : <span className="text-muted-foreground">-</span>}
                 </td>
                 <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>
                   {r.managerEval ? (
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.managerEval.status === 'SUBMITTED' ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-[#666]'}`}>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.managerEval.status === 'SUBMITTED' ? 'bg-emerald-500/15 text-emerald-700' : 'bg-muted text-muted-foreground'}`}>
                       {r.managerEval.performanceScore?.toFixed(1) ?? '-'}
                     </span>
-                  ) : <span className="text-[#999]">-</span>}
+                  ) : <span className="text-muted-foreground">-</span>}
                 </td>
                 <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>
                   {r.finalResult?.performanceScore?.toFixed(1) ?? '-'}
@@ -166,7 +166,7 @@ export default function TeamResultsClient({
                       {r.finalResult.emsBlock}
                       {r.finalResult.calibrated && ' ✓'}
                     </span>
-                  ) : <span className="text-[#999]">-</span>}
+                  ) : <span className="text-muted-foreground">-</span>}
                 </td>
               </tr>
             ))}

@@ -108,7 +108,7 @@ export function EmployeeFilterPanel({
   const filterForm = (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-4">
           <div className="space-y-1">
-            <Label className="text-xs text-[#666]">법인</Label>
+            <Label className="text-xs text-muted-foreground">법인</Label>
             <Select value={filters.companyId ?? '__ALL__'} onValueChange={(v) => set('companyId', v === '__ALL__' ? undefined : v)}>
               <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={'전체'} /></SelectTrigger>
               <SelectContent>
@@ -119,7 +119,7 @@ export function EmployeeFilterPanel({
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs text-[#666]">부서</Label>
+            <Label className="text-xs text-muted-foreground">부서</Label>
             <Select value={filters.departmentId ?? '__ALL__'} onValueChange={(v) => set('departmentId', v === '__ALL__' ? undefined : v)}>
               <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={'전체'} /></SelectTrigger>
               <SelectContent>
@@ -130,7 +130,7 @@ export function EmployeeFilterPanel({
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs text-[#666]">직급</Label>
+            <Label className="text-xs text-muted-foreground">직급</Label>
             <Select value={filters.jobGradeId ?? '__ALL__'} onValueChange={(v) => set('jobGradeId', v === '__ALL__' ? undefined : v)}>
               <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={'전체'} /></SelectTrigger>
               <SelectContent>
@@ -141,7 +141,7 @@ export function EmployeeFilterPanel({
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs text-[#666]">재직상태</Label>
+            <Label className="text-xs text-muted-foreground">재직상태</Label>
             <Select value={filters.status ?? '__ALL__'} onValueChange={(v) => set('status', v === '__ALL__' ? undefined : v)}>
               <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={'전체'} /></SelectTrigger>
               <SelectContent>
@@ -155,7 +155,7 @@ export function EmployeeFilterPanel({
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs text-[#666]">고용형태</Label>
+            <Label className="text-xs text-muted-foreground">고용형태</Label>
             <Select value={filters.employmentType ?? '__ALL__'} onValueChange={(v) => set('employmentType', v === '__ALL__' ? undefined : v)}>
               <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={'전체'} /></SelectTrigger>
               <SelectContent>
@@ -169,7 +169,7 @@ export function EmployeeFilterPanel({
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs text-[#666]">입사일 (시작)</Label>
+            <Label className="text-xs text-muted-foreground">입사일 (시작)</Label>
             <Input
               type="date"
               value={filters.hireDateFrom ?? ''}
@@ -179,7 +179,7 @@ export function EmployeeFilterPanel({
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs text-[#666]">입사일 (종료)</Label>
+            <Label className="text-xs text-muted-foreground">입사일 (종료)</Label>
             <Input
               type="date"
               value={filters.hireDateTo ?? ''}
@@ -196,9 +196,9 @@ export function EmployeeFilterPanel({
         {/* 데스크톱: 인라인 토글 */}
         <button
           onClick={() => setExpanded((v) => !v)}
-          className="hidden md:flex items-center gap-2 text-sm font-medium text-[#333] hover:text-foreground"
+          className="hidden md:flex items-center gap-2 text-sm font-medium text-foreground hover:text-foreground"
         >
-          <SlidersHorizontal className="h-4 w-4 text-[#666]" />
+          <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
           고급 검색 필터
           {hasFilters && (
             <span className="rounded-full bg-primary text-white text-xs px-1.5 py-0.5">
@@ -210,8 +210,8 @@ export function EmployeeFilterPanel({
         {/* 모바일: Sheet 트리거 */}
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
-            <button className="flex md:hidden items-center gap-2 text-sm font-medium text-[#333] hover:text-foreground">
-              <SlidersHorizontal className="h-4 w-4 text-[#666]" />
+            <button className="flex md:hidden items-center gap-2 text-sm font-medium text-foreground hover:text-foreground">
+              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
               필터
               {hasFilters && (
                 <span className="rounded-full bg-primary text-white text-xs px-1.5 py-0.5">
@@ -254,7 +254,7 @@ export function EmployeeFilterPanel({
               variant="ghost"
               size="sm"
               onClick={() => onFilterChange({})}
-              className="hidden md:flex h-7 text-xs text-[#999] hover:text-[#333]"
+              className="hidden md:flex h-7 text-xs text-muted-foreground hover:text-foreground"
             >
               필터 초기화
             </Button>

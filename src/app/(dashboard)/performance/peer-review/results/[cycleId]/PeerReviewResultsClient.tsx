@@ -89,7 +89,7 @@ export default function PeerReviewResultsClient({ user, cycleId }: { user: Sessi
     setAiLoading(false)
   }
 
-  if (loading) return <div className="p-6 text-center text-[#999]">{tCommon('loading')}</div>
+  if (loading) return <div className="p-6 text-center text-muted-foreground">{tCommon('loading')}</div>
   if (!results || !results.summary) return <EmptyState />
 
   const radarData = Object.entries(results.summary.competencyAvg).map(([key, value]) => ({
@@ -104,16 +104,16 @@ export default function PeerReviewResultsClient({ user, cycleId }: { user: Sessi
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => router.back()} className="p-1 hover:bg-muted rounded-lg">
-            <ArrowLeft className="w-5 h-5 text-[#666]" />
+            <ArrowLeft className="w-5 h-5 text-muted-foreground" />
           </button>
           <Users className="w-6 h-6 text-primary" />
           <div>
             <h1 className="text-2xl font-bold text-foreground">{t('peerReview_keab2b0ea')}</h1>
-            <p className="text-sm text-[#666]">{results.summary.reviewerCount}명의 동료 평가 종합</p>
+            <p className="text-sm text-muted-foreground">{results.summary.reviewerCount}명의 동료 평가 종합</p>
           </div>
         </div>
         <button onClick={handleAiSummary} disabled={aiLoading}
-          className="flex items-center gap-2 px-4 py-2 border border-indigo-200 text-primary/90 rounded-lg text-sm font-medium hover:bg-indigo-100 disabled:opacity-50">
+          className="flex items-center gap-2 px-4 py-2 border border-indigo-200 text-primary/90 rounded-lg text-sm font-medium hover:bg-indigo-500/15 disabled:opacity-50">
           <Sparkles className="w-4 h-4" />
           {aiLoading ? t('aiAnalyzing') : 'AI 요약'}
         </button>
@@ -122,12 +122,12 @@ export default function PeerReviewResultsClient({ user, cycleId }: { user: Sessi
       {/* KPI + Radar */}
       <div className="grid grid-cols-2 gap-6">
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">{t('kr_keca285ed_score')}</p>
-          <p className="text-4xl font-bold text-primary">{results.summary.averageScore} <span className="text-lg text-[#666]">/ 5.0</span></p>
+          <p className="text-xs text-muted-foreground mb-1">{t('kr_keca285ed_score')}</p>
+          <p className="text-4xl font-bold text-primary">{results.summary.averageScore} <span className="text-lg text-muted-foreground">/ 5.0</span></p>
           <div className="mt-4 space-y-2">
             {Object.entries(results.summary.competencyAvg).map(([key, val]) => (
               <div key={key} className="flex items-center justify-between">
-                <span className="text-sm text-[#555]">{COMPETENCY_LABELS[key] ?? key}</span>
+                <span className="text-sm text-muted-foreground">{COMPETENCY_LABELS[key] ?? key}</span>
                 <div className="flex items-center gap-2">
                   <div className="w-32 h-2 bg-border rounded-full overflow-hidden">
                     <div className="h-full bg-primary rounded-full" style={{ width: `${(val / 5) * 100}%` }} />
@@ -158,29 +158,29 @@ export default function PeerReviewResultsClient({ user, cycleId }: { user: Sessi
 
       {/* AI Summary */}
       {aiSummary && (
-        <div className="bg-indigo-100 rounded-xl border border-indigo-200 p-5 space-y-3">
+        <div className="bg-indigo-500/15 rounded-xl border border-indigo-200 p-5 space-y-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-primary/90" />
             <span className="text-sm font-semibold text-primary/90">{t('kr_ai_keca285ed_analytics')}</span>
           </div>
-          <p className="text-sm text-[#333]">{aiSummary.summary}</p>
+          <p className="text-sm text-foreground">{aiSummary.summary}</p>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h4 className="text-xs font-medium text-emerald-600 mb-2">{t('kr_keab095ec')}</h4>
               <ul className="space-y-1">{aiSummary.strengths.map((s, i) => (
-                <li key={i} className="text-xs text-[#333]">• {s}</li>
+                <li key={i} className="text-xs text-foreground">• {s}</li>
               ))}</ul>
             </div>
             <div>
               <h4 className="text-xs font-medium text-amber-700 mb-2">{t('kr_keab09ceb_kec9881ec')}</h4>
               <ul className="space-y-1">{aiSummary.development_areas.map((d, i) => (
-                <li key={i} className="text-xs text-[#333]">• {d}</li>
+                <li key={i} className="text-xs text-foreground">• {d}</li>
               ))}</ul>
             </div>
           </div>
           <div className="border-t border-indigo-200 pt-2">
             <h4 className="text-xs font-medium text-primary/90 mb-1">{t('kr_kecbd94ec_keca09cec')}</h4>
-            <p className="text-xs text-[#333]">{aiSummary.coaching_suggestion}</p>
+            <p className="text-xs text-foreground">{aiSummary.coaching_suggestion}</p>
           </div>
         </div>
       )}
@@ -191,8 +191,8 @@ export default function PeerReviewResultsClient({ user, cycleId }: { user: Sessi
         <div className="space-y-3">
           {results.evaluations.filter((e) => e.comment).map((e, i) => (
             <div key={e.id} className="bg-background rounded-lg px-4 py-3">
-              <p className="text-sm text-[#333]">{e.comment}</p>
-              <p className="text-xs text-[#999] mt-2">
+              <p className="text-sm text-foreground">{e.comment}</p>
+              <p className="text-xs text-muted-foreground mt-2">
                 리뷰어 {i + 1} · {new Date(e.submittedAt).toLocaleDateString('ko-KR')}
               </p>
             </div>

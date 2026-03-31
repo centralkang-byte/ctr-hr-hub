@@ -18,7 +18,7 @@ const badgeVariants = cva(
         success:
           "bg-tertiary-container/30 text-on-tertiary-container",
         warning:
-          "bg-amber-50 text-amber-700",
+          "bg-amber-500/10 text-amber-700",
         danger:
           "bg-destructive/10 text-destructive",
         info:

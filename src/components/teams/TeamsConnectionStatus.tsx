@@ -68,12 +68,12 @@ export function TeamsConnectionStatus({
         <CardTitle className="flex items-center gap-2 text-lg">
           연결 상태
           {connected ? (
-            <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">
+            <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-200">
               <CheckCircle2 className="mr-1 h-3 w-3" />
               연결됨
             </Badge>
           ) : (
-            <Badge variant="outline" className="text-[#666]">
+            <Badge variant="outline" className="text-muted-foreground">
               <XCircle className="mr-1 h-3 w-3" />
               미연결
             </Badge>
@@ -84,12 +84,12 @@ export function TeamsConnectionStatus({
         {connected && (
           <div className="rounded-xl border border-border p-4 space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-[#666]">Tenant ID</span>
+              <span className="text-muted-foreground">Tenant ID</span>
               <span className="font-mono tabular-nums text-xs">{config.tenantId}</span>
             </div>
             {config.connectedAt && (
               <div className="flex justify-between text-sm">
-                <span className="text-[#666]">연결 일시</span>
+                <span className="text-muted-foreground">연결 일시</span>
                 <span>{new Date(config.connectedAt).toLocaleString('ko-KR')}</span>
               </div>
             )}
@@ -100,7 +100,7 @@ export function TeamsConnectionStatus({
           <div
             className={`rounded-lg border p-3 text-sm ${
               testResult.success
-                ? 'border-emerald-200 bg-emerald-100 text-emerald-700'
+                ? 'border-emerald-200 bg-emerald-500/15 text-emerald-700'
                 : 'border-destructive/20 bg-destructive/10 text-destructive'
             }`}
           >

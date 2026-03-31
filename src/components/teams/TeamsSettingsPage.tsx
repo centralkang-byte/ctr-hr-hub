@@ -129,7 +129,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
                 <Wifi className="h-4 w-4" /> 연결됨
               </span>
             ) : (
-              <span className="flex items-center gap-1.5 text-sm text-[#999]">
+              <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <WifiOff className="h-4 w-4" /> 미연결
               </span>
             )}
@@ -147,7 +147,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
             className={`px-4 py-2.5 text-sm font-medium transition-colors ${
               activeTab === i
                 ? 'border-b-2 border-primary text-primary'
-                : 'text-[#666] hover:text-[#333]'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             {tab}
@@ -185,7 +185,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
               <div className="flex items-center justify-between">
                 <div>
                   <Label className="text-sm font-medium">봇 활성화</Label>
-                  <p className="text-xs text-[#666]">
+                  <p className="text-xs text-muted-foreground">
                     Teams에서 휴가, 급여, 근태 조회 명령을 사용할 수 있습니다.
                   </p>
                 </div>
@@ -200,7 +200,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
               <div className="flex items-center justify-between">
                 <div>
                   <Label className="text-sm font-medium">프레전스 동기화</Label>
-                  <p className="text-xs text-[#666]">
+                  <p className="text-xs text-muted-foreground">
                     Teams 재석 상태를 HR Hub와 동기화합니다.
                   </p>
                 </div>
@@ -225,7 +225,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
                 <div className="flex items-center justify-between">
                   <div>
                     <Label className="text-sm font-medium">다이제스트 발송</Label>
-                    <p className="text-xs text-[#666]">
+                    <p className="text-xs text-muted-foreground">
                       매주 선택한 요일/시간에 HR 주간 요약을 Teams 채널에 포스팅합니다.
                     </p>
                   </div>
@@ -252,7 +252,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
                             className={`h-8 w-8 rounded-full text-xs font-medium transition-colors ${
                               config.digestDay === i
                                 ? 'bg-primary text-white'
-                                : 'bg-muted text-[#555] hover:bg-border'
+                                : 'bg-muted text-muted-foreground hover:bg-border'
                             }`}
                           >
                             {label}

@@ -220,7 +220,7 @@ export default function SelfEvalClient({
   if (loading) {
     return (
       <div className="p-6">
-        <div className="flex items-center justify-center h-64 text-[#666]">
+        <div className="flex items-center justify-center h-64 text-muted-foreground">
           {tc('loading')}...
         </div>
       </div>
@@ -233,7 +233,7 @@ export default function SelfEvalClient({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('selfEval')}</h1>
-          <p className="text-sm text-[#666] mt-1">{t('kr_kec9e90ea_kec84b1ea_kebb08f_ke')}</p>
+          <p className="text-sm text-muted-foreground mt-1">{t('kr_kec9e90ea_kec84b1ea_kebb08f_ke')}</p>
         </div>
         <select
           value={selectedCycleId}
@@ -248,7 +248,7 @@ export default function SelfEvalClient({
       </div>
 
       {isSubmitted && (
-        <div className="flex items-center gap-2 p-4 rounded-xl border border-emerald-200 bg-emerald-100">
+        <div className="flex items-center gap-2 p-4 rounded-xl border border-emerald-200 bg-emerald-500/15">
           <CheckCircle2 className="w-5 h-5 text-emerald-600" />
           <span className="text-sm font-medium text-emerald-700">{t('selfEval_keab080_keca09cec')}</span>
         </div>
@@ -266,7 +266,7 @@ export default function SelfEvalClient({
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-foreground">{goal.title}</p>
-                    <p className="text-xs text-[#999]">가중치: {goal.weight}%</p>
+                    <p className="text-xs text-muted-foreground">가중치: {goal.weight}%</p>
                   </div>
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((score) => (
@@ -280,7 +280,7 @@ export default function SelfEvalClient({
                         className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                           goalScores[goal.id]?.score === score
                             ? 'bg-primary text-white'
-                            : 'bg-muted text-[#666] hover:bg-border'
+                            : 'bg-muted text-muted-foreground hover:bg-border'
                         } ${isSubmitted ? 'cursor-not-allowed opacity-60' : ''}`}
                       >
                         {score}
@@ -288,7 +288,7 @@ export default function SelfEvalClient({
                     ))}
                   </div>
                 </div>
-                <p className="text-xs text-[#999]">{SCORE_LABELS[goalScores[goal.id]?.score ?? 3]}</p>
+                <p className="text-xs text-muted-foreground">{SCORE_LABELS[goalScores[goal.id]?.score ?? 3]}</p>
                 <input
                   type="text"
                   placeholder={t('enterComment')}
@@ -298,7 +298,7 @@ export default function SelfEvalClient({
                     ...prev,
                     [goal.id]: { ...prev[goal.id], comment: e.target.value },
                   }))}
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999] disabled:bg-background"
+                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground disabled:bg-background"
                 />
               </div>
             ))}
@@ -318,7 +318,7 @@ export default function SelfEvalClient({
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-foreground">{comp.name}</p>
-                    <p className="text-xs text-[#999]">{comp.category}</p>
+                    <p className="text-xs text-muted-foreground">{comp.category}</p>
                   </div>
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((score) => (
@@ -332,7 +332,7 @@ export default function SelfEvalClient({
                         className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                           compScores[comp.id]?.score === score
                             ? 'bg-primary text-white'
-                            : 'bg-muted text-[#666] hover:bg-border'
+                            : 'bg-muted text-muted-foreground hover:bg-border'
                         } ${isSubmitted ? 'cursor-not-allowed opacity-60' : ''}`}
                       >
                         {score}
@@ -340,7 +340,7 @@ export default function SelfEvalClient({
                     ))}
                   </div>
                 </div>
-                <p className="text-xs text-[#999]">{SCORE_LABELS[compScores[comp.id]?.score ?? 3]}</p>
+                <p className="text-xs text-muted-foreground">{SCORE_LABELS[compScores[comp.id]?.score ?? 3]}</p>
               </div>
             ))}
           </div>
@@ -355,7 +355,7 @@ export default function SelfEvalClient({
             <button
               onClick={handleAiSuggest}
               disabled={aiLoading}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-100 text-primary/90 hover:bg-indigo-200 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-500/15 text-primary/90 hover:bg-indigo-200 transition-colors disabled:opacity-50"
             >
               <Sparkles className="w-3.5 h-3.5" />
               {aiLoading ? t('aiGenerating') : 'AI 코멘트 제안'}
@@ -368,7 +368,7 @@ export default function SelfEvalClient({
           value={overallComment}
           onChange={(e) => setOverallComment(e.target.value)}
           placeholder="이번 평가 주기에 대한 종합 의견을 작성하세요..."
-          className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-[#999] disabled:bg-background resize-none"
+          className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground disabled:bg-background resize-none"
         />
       </div>
 
@@ -378,7 +378,7 @@ export default function SelfEvalClient({
           <button
             onClick={() => handleSave('DRAFT')}
             disabled={submitting}
-            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm font-medium text-[#333] hover:bg-background disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground hover:bg-background disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             {t('kr_kec9e84ec_save')}

@@ -41,7 +41,7 @@ export function GlobalOverrideBadge({ isOverride, companyId, endpoint, onChanged
   if (!isOverride) {
     return (
       <div className="flex items-center gap-3">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-[#666]">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
           <Globe className="h-3.5 w-3.5" />
           글로벌 기본값 사용 중
         </span>
@@ -60,7 +60,7 @@ export function GlobalOverrideBadge({ isOverride, companyId, endpoint, onChanged
 
   return (
     <div className="flex items-center gap-3">
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700">
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-500/15 px-3 py-1 text-xs font-medium text-emerald-700">
         <Pencil className="h-3.5 w-3.5" />
         커스텀 설정 적용 중
       </span>
@@ -79,7 +79,7 @@ export function GlobalOverrideBadge({ isOverride, companyId, endpoint, onChanged
           <button
             type="button"
             onClick={() => setShowConfirm(false)}
-            className="rounded-lg px-2.5 py-1 text-xs text-[#666] hover:bg-muted"
+            className="rounded-lg px-2.5 py-1 text-xs text-muted-foreground hover:bg-muted"
           >
             취소
           </button>
@@ -88,7 +88,7 @@ export function GlobalOverrideBadge({ isOverride, companyId, endpoint, onChanged
         <button
           type="button"
           onClick={() => setShowConfirm(true)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-[#666] hover:bg-background"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-background"
         >
           <RotateCcw className="h-3.5 w-3.5" />
           글로벌로 복귀

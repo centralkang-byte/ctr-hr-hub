@@ -253,8 +253,8 @@ export function InterviewFormClient({
 
       <div
         style={{
-          backgroundColor: '#FFFFFF',
-          border: '1px solid #E8E8E8',
+          backgroundColor: 'hsl(var(--card))',
+          border: '1px solid hsl(var(--border))',
           borderRadius: 12,
           padding: 24,
           maxWidth: 640,
@@ -263,7 +263,7 @@ export function InterviewFormClient({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {/* Applicant Select */}
           <div>
-            <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
+            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))', fontWeight: 600 }}>
               {t('selectApplicant')}
             </Label>
             <Select
@@ -291,7 +291,7 @@ export function InterviewFormClient({
 
           {/* Interviewer Search */}
           <div style={{ position: 'relative' }}>
-            <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
+            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))', fontWeight: 600 }}>
               {t('interviewerFormLabel')}
             </Label>
             {selectedEmployeeName ? (
@@ -307,10 +307,10 @@ export function InterviewFormClient({
                   style={{
                     padding: '8px 12px',
                     borderRadius: 8,
-                    border: '1px solid #E8E8E8',
+                    border: '1px solid hsl(var(--border))',
                     flex: 1,
                     fontSize: 14,
-                    color: '#1A1A1A',
+                    color: 'hsl(var(--foreground))',
                     backgroundColor: '#FAFAFA',
                   }}
                 >
@@ -338,7 +338,7 @@ export function InterviewFormClient({
                       left: 10,
                       top: '50%',
                       transform: 'translateY(-50%)',
-                      color: '#999',
+                      color: 'hsl(var(--muted-foreground))',
                     }}
                   />
                   <Input
@@ -360,8 +360,8 @@ export function InterviewFormClient({
                       left: 0,
                       right: 0,
                       zIndex: 50,
-                      backgroundColor: '#FFFFFF',
-                      border: '1px solid #E8E8E8',
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
                       borderRadius: 8,
                       boxShadow: '0 4px 12px rgba(15,23,42,0.08)',
                       maxHeight: 200,
@@ -374,7 +374,7 @@ export function InterviewFormClient({
                         style={{
                           padding: 12,
                           textAlign: 'center',
-                          color: '#999',
+                          color: 'hsl(var(--muted-foreground))',
                           fontSize: 13,
                         }}
                       >
@@ -385,7 +385,7 @@ export function InterviewFormClient({
                         style={{
                           padding: 12,
                           textAlign: 'center',
-                          color: '#999',
+                          color: 'hsl(var(--muted-foreground))',
                           fontSize: 13,
                         }}
                       >
@@ -406,7 +406,7 @@ export function InterviewFormClient({
                             background: 'none',
                             cursor: 'pointer',
                             fontSize: 14,
-                            color: '#1A1A1A',
+                            color: 'hsl(var(--foreground))',
                             borderBottom: '1px solid #F5F5F5',
                             transition: 'background 0.15s ease',
                           }}
@@ -433,7 +433,7 @@ export function InterviewFormClient({
 
           {/* Scheduled At */}
           <div>
-            <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
+            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))', fontWeight: 600 }}>
               {t('scheduledAtLabel')}
             </Label>
             <Input
@@ -446,7 +446,7 @@ export function InterviewFormClient({
 
           {/* Duration */}
           <div>
-            <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
+            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))', fontWeight: 600 }}>
               {t('durationLabel')}
             </Label>
             <Input
@@ -464,7 +464,7 @@ export function InterviewFormClient({
           {/* Type + Round row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
-              <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
+              <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))', fontWeight: 600 }}>
                 {t('interviewTypeLabel')}
               </Label>
               <Select
@@ -484,7 +484,7 @@ export function InterviewFormClient({
               </Select>
             </div>
             <div>
-              <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
+              <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))', fontWeight: 600 }}>
                 {t('roundLabel')}
               </Label>
               <Select
@@ -507,7 +507,7 @@ export function InterviewFormClient({
 
           {/* Location */}
           <div>
-            <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
+            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))', fontWeight: 600 }}>
               {t('locationFormLabel')}
             </Label>
             <Input
@@ -520,7 +520,7 @@ export function InterviewFormClient({
 
           {/* Meeting Link */}
           <div>
-            <Label style={{ fontSize: 14, color: '#1A1A1A', fontWeight: 600 }}>
+            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))', fontWeight: 600 }}>
               {t('meetingLinkLabel')}
             </Label>
             <Input

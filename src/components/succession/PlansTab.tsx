@@ -212,7 +212,7 @@ export default function PlansTab() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">직책명 *</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">직책명 *</label>
               <input
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
                 value={form.positionTitle}
@@ -220,7 +220,7 @@ export default function PlansTab() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">중요도 *</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">중요도 *</label>
               <select
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                 value={form.criticality}
@@ -232,7 +232,7 @@ export default function PlansTab() {
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium text-[#333] mb-1 block">비고</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">비고</label>
               <textarea
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                 rows={3}

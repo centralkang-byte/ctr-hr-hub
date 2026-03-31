@@ -66,11 +66,11 @@ export default function CompensationClient({ user }: { user: SessionUser }) {
       {/* ─── 페이지 헤더 ─── */}
       <div className="flex items-center justify-between">
         <div>
-          <nav className="text-xs text-[#999] mb-1">{tMenu('settings')} / {tMenu('compensation')}</nav>
+          <nav className="text-xs text-muted-foreground mb-1">{tMenu('settings')} / {tMenu('compensation')}</nav>
           <h1 className="text-2xl font-bold text-foreground">{t('salaryAdjustment')}</h1>
         </div>
         <div className="flex items-center gap-3">
-          <label className="text-sm text-[#555]">{t('evaluationCycle')}:</label>
+          <label className="text-sm text-muted-foreground">{t('evaluationCycle')}:</label>
           <select
             className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
             value={selectedCycleId}

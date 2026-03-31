@@ -130,11 +130,11 @@ export function ImpactAnalysisPanel({ diff, selectedNode, baseline = DEFAULT_BAS
                     </span>
                   </div>
                   <div className="mt-2 flex items-center gap-1.5">
-                    <span className="truncate rounded bg-amber-100 px-1.5 py-0.5 text-[11px] text-amber-700">
+                    <span className="truncate rounded bg-amber-500/15 px-1.5 py-0.5 text-[11px] text-amber-700">
                       {move.fromParentName}
                     </span>
                     <ArrowRight size={11} className="flex-shrink-0 text-muted-foreground" />
-                    <span className="truncate rounded bg-emerald-100 px-1.5 py-0.5 text-[11px] text-emerald-700">
+                    <span className="truncate rounded bg-emerald-500/15 px-1.5 py-0.5 text-[11px] text-emerald-700">
                       {move.toParentName}
                     </span>
                   </div>

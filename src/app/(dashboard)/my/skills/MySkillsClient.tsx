@@ -62,7 +62,7 @@ const LEVEL_LABELS: Record<number, { label: string; color: string }> = {
 // ── 갭 색상 ──────────────────────────────────────────────
 
 function getGapColor(gap: number | null) {
-  if (gap === null) return 'text-[#999]'
+  if (gap === null) return 'text-muted-foreground'
   if (gap >= 2) return 'text-red-500'
   if (gap === 1) return 'text-amber-500'
   if (gap === 0) return 'text-emerald-600'
@@ -72,8 +72,8 @@ function getGapColor(gap: number | null) {
 function getGapBg(gap: number | null) {
   if (gap === null) return 'bg-background'
   if (gap >= 2) return 'bg-destructive/10'
-  if (gap === 1) return 'bg-amber-100'
-  if (gap === 0) return 'bg-emerald-100'
+  if (gap === 1) return 'bg-amber-500/15'
+  if (gap === 0) return 'bg-emerald-500/15'
   return 'bg-primary/10'
 }
 
@@ -98,7 +98,7 @@ function LevelSelector({
             className={`flex flex-col items-center px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
               selected
                 ? 'border-primary bg-primary/10 text-primary'
-                : 'border-border text-[#666] hover:border-primary hover:bg-primary/10'
+                : 'border-border text-muted-foreground hover:border-primary hover:bg-primary/10'
             }`}
           >
             <span className="text-base font-bold">{l}</span>
@@ -211,7 +211,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">나의 역량 자기평가</h1>
-          <p className="text-sm text-[#666] mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             역량별 현재 수준을 자기평가하고, 개발 방향을 확인하세요.
           </p>
         </div>
@@ -227,7 +227,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
           </select>
           <button
             onClick={() => setShowRadar(!showRadar)}
-            className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-[#555] hover:bg-background"
+            className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background"
           >
             <Radar className="w-4 h-4" />
             레이더 차트
@@ -238,14 +238,14 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
       {/* 진행률 KPI */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">평가 완료</p>
-          <p className="text-3xl font-bold text-foreground">{completedCount}<span className="text-lg font-normal text-[#999]">/{totalCount}</span></p>
+          <p className="text-xs text-muted-foreground mb-1">평가 완료</p>
+          <p className="text-3xl font-bold text-foreground">{completedCount}<span className="text-lg font-normal text-muted-foreground">/{totalCount}</span></p>
           <div className="mt-2 bg-muted rounded-full h-2">
             <div className="bg-primary h-2 rounded-full" style={{ width: `${completionRate}%` }} />
           </div>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">미달 역량</p>
+          <p className="text-xs text-muted-foreground mb-1">미달 역량</p>
           <p className="text-3xl font-bold text-red-500">
             {competencies.filter((c) => {
               const a = assessments[c.id]
@@ -256,7 +256,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
           <p className="text-xs text-red-500 mt-1">기대 수준 미달</p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">강점 역량</p>
+          <p className="text-xs text-muted-foreground mb-1">강점 역량</p>
           <p className="text-3xl font-bold text-emerald-600">
             {competencies.filter((c) => {
               const a = assessments[c.id]
@@ -324,11 +324,11 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
                   <div className="flex items-center gap-3">
                     <BookOpen className="w-5 h-5 text-primary" />
                     <span className="font-semibold text-foreground">{category.name}</span>
-                    <span className="text-xs text-[#666]">
+                    <span className="text-xs text-muted-foreground">
                       {items.filter((c) => assessments[c.id]).length}/{items.length} 완료
                     </span>
                   </div>
-                  {expanded ? <ChevronUp className="w-4 h-4 text-[#666]" /> : <ChevronDown className="w-4 h-4 text-[#666]" />}
+                  {expanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
                 </button>
 
                 {expanded && (
@@ -349,7 +349,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
                                 )}
                               </div>
                               {expectedLevel != null && (
-                                <span className="text-xs text-[#666]">
+                                <span className="text-xs text-muted-foreground">
                                   기대 수준: {expectedLevel} ({LEVEL_LABELS[expectedLevel]?.label ?? '-'})
                                 </span>
                               )}
@@ -390,7 +390,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
 
                           {/* 레벨 설명 */}
                           {a && c.levels.find((l) => l.level === a.selfLevel) && (
-                            <p className="mt-1 text-xs text-[#666]">
+                            <p className="mt-1 text-xs text-muted-foreground">
                               {c.levels.find((l) => l.level === a.selfLevel)?.description}
                             </p>
                           )}
@@ -410,7 +410,7 @@ export default function MySkillsClient({user, competencies, requirementMap, grad
         <button
           onClick={() => handleSave(false)}
           disabled={saving || !isDirty}
-          className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-[#555] hover:bg-background disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
           임시저장

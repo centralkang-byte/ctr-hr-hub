@@ -168,7 +168,7 @@ export default function PayStubDetailClient({ user: _user, runId }: PayStubDetai
           <ArrowLeft className="h-4 w-4 mr-1" />
           {tCommon('back')}
         </Button>
-        <div className="text-center py-16 text-[#666]">{t('notFound')}</div>
+        <div className="text-center py-16 text-muted-foreground">{t('notFound')}</div>
       </div>
     )
   }
@@ -190,7 +190,7 @@ export default function PayStubDetailClient({ user: _user, runId }: PayStubDetai
           <ArrowLeft className="h-4 w-4 mr-1" />
           {tCommon('back')}
         </Button>
-        <div className="text-center py-16 text-[#666]">{t('notFound')}</div>
+        <div className="text-center py-16 text-muted-foreground">{t('notFound')}</div>
       </div>
     )
   }
@@ -210,7 +210,7 @@ export default function PayStubDetailClient({ user: _user, runId }: PayStubDetai
                 {t('titleWithMonth', { month: item.run.yearMonth })}
               </h1>
             </div>
-            <p className="text-sm text-[#666] mt-0.5">{item.run.name}</p>
+            <p className="text-sm text-muted-foreground mt-0.5">{item.run.name}</p>
           </div>
         </div>
         <Button onClick={handleDownloadPdf} variant="outline" className="gap-1">
@@ -223,13 +223,13 @@ export default function PayStubDetailClient({ user: _user, runId }: PayStubDetai
       <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
           <div>
-            <p className="text-[#666]">{t('payPeriod')}</p>
+            <p className="text-muted-foreground">{t('payPeriod')}</p>
             <p className="font-medium">
               {item.run.periodStart.split('T')[0]} ~ {item.run.periodEnd.split('T')[0]}
             </p>
           </div>
           <div>
-            <p className="text-[#666]">{t('payDate')}</p>
+            <p className="text-muted-foreground">{t('payDate')}</p>
             <p className="font-medium">
               {item.run.paidAt?.split('T')[0] ?? item.run.payDate?.split('T')[0] ?? '-'}
             </p>

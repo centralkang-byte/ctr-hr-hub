@@ -56,11 +56,11 @@ interface BenefitClaim {
 }
 
 const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  pending: { label: '승인대기', color: 'bg-amber-100 text-amber-700 border-amber-300', icon: <Clock className="w-3 h-3" /> },
-  approved: { label: '승인', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: <CheckCircle2 className="w-3 h-3" /> },
+  pending: { label: '승인대기', color: 'bg-amber-500/15 text-amber-700 border-amber-300', icon: <Clock className="w-3 h-3" /> },
+  approved: { label: '승인', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200', icon: <CheckCircle2 className="w-3 h-3" /> },
   rejected: { label: '반려', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: <XCircle className="w-3 h-3" /> },
   paid: { label: '지급완료', color: 'bg-primary/10 text-primary/90 border-primary/20', icon: <CheckCircle2 className="w-3 h-3" /> },
-  cancelled: { label: '취소', color: 'bg-background text-[#555] border-border', icon: null },
+  cancelled: { label: '취소', color: 'bg-background text-muted-foreground border-border', icon: null },
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -137,7 +137,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
       <div className={`${MODAL_STYLES.content.md}`}>
         <div className="flex items-center justify-between p-5 border-b border-border">
           <h2 className="text-lg font-semibold text-foreground">{'benefit.apply'}</h2>
-          <button onClick={onClose} className="text-[#999] hover:text-[#555] text-xl leading-none">✕</button>
+          <button onClick={onClose} className="text-muted-foreground hover:text-muted-foreground text-xl leading-none">✕</button>
         </div>
 
         <form onSubmit={guardedSubmit} className="p-5 space-y-4">
@@ -149,7 +149,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
           )}
 
           <div>
-            <label className="text-sm font-medium text-[#333] mb-1 block">복리후생 항목 *</label>
+            <label className="text-sm font-medium text-foreground mb-1 block">복리후생 항목 *</label>
             <select
               value={selectedPlanId}
               onChange={(e) => setSelectedPlanId(e.target.value)}
@@ -164,7 +164,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
               ))}
             </select>
             {selectedPlan && (
-              <p className="text-xs text-[#666] mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {selectedPlan.benefitType === 'fixed_amount' ? '고정금액' : '실비 상환'}
                 {selectedPlan.requiresProof && ' · 증빙 필수'}
               </p>
@@ -172,9 +172,9 @@ function ClaimModal({ plans, onClose, onSubmit }: {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-[#333] mb-1 block">신청 금액 *</label>
+            <label className="text-sm font-medium text-foreground mb-1 block">신청 금액 *</label>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-[#666]">{selectedPlan?.currency === 'USD' ? '$' : '₩'}</span>
+              <span className="text-sm text-muted-foreground">{selectedPlan?.currency === 'USD' ? '$' : '₩'}</span>
               <input
                 type="number"
                 value={claimAmount}
@@ -185,14 +185,14 @@ function ClaimModal({ plans, onClose, onSubmit }: {
               />
             </div>
             {selectedPlan?.maxAmount && (
-              <p className="text-xs text-[#666] mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 한도: {formatCurrency(selectedPlan.maxAmount, selectedPlan.currency)}
               </p>
             )}
           </div>
 
           <div>
-            <label className="text-sm font-medium text-[#333] mb-1 block">이벤트 날짜</label>
+            <label className="text-sm font-medium text-foreground mb-1 block">이벤트 날짜</label>
             <input
               type="date"
               value={eventDate}
@@ -202,7 +202,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-[#333] mb-1 block">상세 내용</label>
+            <label className="text-sm font-medium text-foreground mb-1 block">상세 내용</label>
             <input
               type="text"
               value={eventDetail}
@@ -213,10 +213,10 @@ function ClaimModal({ plans, onClose, onSubmit }: {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-[#333] mb-1 block">
+            <label className="text-sm font-medium text-foreground mb-1 block">
               증빙 서류 {selectedPlan?.requiresProof && <span className="text-red-500">*</span>}
             </label>
-            <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-border rounded-lg cursor-pointer hover:bg-background text-sm text-[#666]">
+            <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-border rounded-lg cursor-pointer hover:bg-background text-sm text-muted-foreground">
               <Upload className="w-4 h-4" />
               파일 첨부
               <input type="file" multiple onChange={handleFileChange} className="hidden" />
@@ -224,7 +224,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
             {proofFiles.length > 0 && (
               <div className="mt-2 space-y-1">
                 {proofFiles.map((f, i) => (
-                  <div key={i} className="flex items-center gap-2 text-xs text-[#555]">
+                  <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
                     <FileText className="w-3 h-3" />
                     {f.split('/').pop()}
                     <button
@@ -245,7 +245,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-card border border-border hover:bg-background text-[#333] rounded-lg text-sm font-medium"
+            className="px-4 py-2 bg-card border border-border hover:bg-background text-foreground rounded-lg text-sm font-medium"
           >
             {'취소'}
           </button>
@@ -314,7 +314,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <nav className="text-xs text-[#999] mb-1">나의 공간</nav>
+          <nav className="text-xs text-muted-foreground mb-1">나의 공간</nav>
           <h1 className="text-2xl font-bold text-foreground">{'나의 복리후생'}</h1>
         </div>
         <button
@@ -344,8 +344,8 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
               return (
                 <div key={item.planId}>
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-sm font-medium text-[#333]">{item.planName}</span>
-                    <span className="text-xs text-[#666]">
+                    <span className="text-sm font-medium text-foreground">{item.planName}</span>
+                    <span className="text-xs text-muted-foreground">
                       {formatCurrency(item.used, item.currency)}
                       {item.maxAmount ? ` / ${formatCurrency(item.maxAmount, item.currency)}` : ''}
                     </span>
@@ -390,11 +390,11 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground">{claim.benefitPlan.name}</p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <p className="text-xs text-[#666]">
+                      <p className="text-xs text-muted-foreground">
                         {format(new Date(claim.createdAt), 'MM/dd', { locale: ko })}
                       </p>
                       {claim.eventDetail && (
-                        <span className="text-xs text-[#999]">· {claim.eventDetail}</span>
+                        <span className="text-xs text-muted-foreground">· {claim.eventDetail}</span>
                       )}
                     </div>
                   </div>

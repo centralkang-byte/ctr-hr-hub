@@ -18,7 +18,7 @@ export function BurnoutBadge({ isCritical }: BurnoutBadgeProps) {
         'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
         isCritical
           ? 'border border-destructive/20 bg-destructive/10 text-destructive'
-          : 'border border-orange-200 bg-orange-50 text-orange-700',
+          : 'border border-orange-200 bg-orange-500/10 text-orange-700',
       )}
     >
       {isCritical ? 'CRITICAL' : 'WARNING'}

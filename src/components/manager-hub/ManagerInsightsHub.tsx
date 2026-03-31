@@ -122,7 +122,7 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
       value: summary?.avgOvertimeHours ?? 0,
       icon: Clock,
       color: 'text-yellow-600',
-      bgColor: 'bg-yellow-50',
+      bgColor: 'bg-yellow-500/10',
       suffix: 'h',
     },
     {
@@ -130,7 +130,7 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
       value: summary?.incompleteOneOnOnes ?? 0,
       icon: MessageSquare,
       color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
+      bgColor: 'bg-purple-500/10',
       suffix: '건',
     },
   ]
@@ -226,7 +226,7 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
                       alert.severity === 'HIGH'
                         ? 'border-destructive/20 bg-destructive/10'
                         : alert.severity === 'MEDIUM'
-                          ? 'border-amber-300 bg-amber-100'
+                          ? 'border-amber-300 bg-amber-500/15'
                           : 'border-border bg-background'
                     }`}
                   >
@@ -237,7 +237,7 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
                             ? 'text-destructive'
                             : alert.severity === 'MEDIUM'
                               ? 'text-amber-800'
-                              : 'text-[#333]'
+                              : 'text-foreground'
                         }`}
                       >
                         {alert.employeeName}
@@ -263,7 +263,7 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
                           ? 'text-destructive'
                           : alert.severity === 'MEDIUM'
                             ? 'text-amber-700'
-                            : 'text-[#666]'
+                            : 'text-muted-foreground'
                       }`}
                     >
                       {alert.message}
@@ -336,7 +336,7 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
           <CardContent>
             <div className="space-y-3">
               {(summary?.incompleteOneOnOnes ?? 0) > 0 && (
-                <div className="rounded-lg border border-purple-200 bg-purple-50 p-3">
+                <div className="rounded-lg border border-purple-200 bg-purple-500/10 p-3">
                   <p className="text-sm font-medium text-purple-800">
                     1:1 미팅 진행 필요
                   </p>
@@ -347,7 +347,7 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
                 </div>
               )}
               {(summary?.avgOvertimeHours ?? 0) > 5 && (
-                <div className="rounded-lg border border-amber-300 bg-amber-100 p-3">
+                <div className="rounded-lg border border-amber-300 bg-amber-500/15 p-3">
                   <p className="text-sm font-medium text-amber-800">
                     초과근무 관리 필요
                   </p>

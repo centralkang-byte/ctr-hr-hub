@@ -177,7 +177,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
             {row.emsBlock}
           </Badge>
         ) : (
-          <span className="text-[#999]">-</span>
+          <span className="text-muted-foreground">-</span>
         ),
     },
     {
@@ -189,7 +189,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
       key: 'recommendedPct',
       header: '추천%',
       render: (row) => (
-        <span className="text-xs text-[#666]">
+        <span className="text-xs text-muted-foreground">
           {row.minPct}~{row.maxPct}%
         </span>
       ),
@@ -210,7 +210,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
               max={100}
               step={0.5}
             />
-            <span className="text-xs text-[#666]">%</span>
+            <span className="text-xs text-muted-foreground">%</span>
             {outOfRange && (
               <AlertTriangle className="h-4 w-4 text-amber-500" />
             )}
@@ -249,37 +249,37 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
       {/* ─── 예산 요약 카드 ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">대상 인원</p>
+          <p className="text-xs text-muted-foreground mb-1">대상 인원</p>
           <p className="text-3xl font-bold text-foreground">{budget.headcount}명</p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">현재 총 연봉</p>
+          <p className="text-xs text-muted-foreground mb-1">현재 총 연봉</p>
           <p className="text-xl font-bold text-foreground">
             {formatCurrency(budget.totalCurrentSalary)}
           </p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">총 인상액</p>
+          <p className="text-xs text-muted-foreground mb-1">총 인상액</p>
           <p className="text-xl font-bold text-emerald-600">
             +{formatCurrency(budget.totalIncrease)}
           </p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-[#666] mb-1">평균 인상률</p>
+          <p className="text-xs text-muted-foreground mb-1">평균 인상률</p>
           <p className="text-3xl font-bold text-primary">{budget.avgIncreasePct}%</p>
         </div>
       </div>
 
       {/* ─── AI 추천 결과 패널 ─── */}
       {aiResult && (
-        <div className="bg-indigo-100 border border-indigo-200 rounded-xl p-4">
+        <div className="bg-indigo-500/15 border border-indigo-200 rounded-xl p-4">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="h-4 w-4 text-primary" />
               <h4 className="text-sm font-semibold text-indigo-900">
                 AI 추천 결과 — {rows.find((r) => r.id === aiResult.employeeId)?.name ?? ''}
               </h4>
-              <Badge className="bg-indigo-100 text-primary/90 border-indigo-200 text-xs">
+              <Badge className="bg-indigo-500/15 text-primary/90 border-indigo-200 text-xs">
                 {aiResult.data.recommendedPct}%
               </Badge>
             </div>

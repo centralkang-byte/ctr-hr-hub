@@ -42,7 +42,7 @@ export function SettingsPageLayout({
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold text-foreground">{title}</h2>
-          <p className="mt-1 text-sm text-[#666]">{description}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -53,7 +53,7 @@ export function SettingsPageLayout({
       {/* 법인 선택 + 오버라이드 뱃지 */}
       <div className="mb-6 flex flex-wrap items-center gap-4 rounded-xl border border-border bg-background px-4 py-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-[#555]">법인:</span>
+          <span className="text-sm font-medium text-muted-foreground">법인:</span>
           <CompanySelector
             selectedCompanyId={companyId}
             onCompanyChange={handleCompanyChange}

@@ -54,7 +54,7 @@ export function MethodologyTab({
           <p className="text-sm text-muted-foreground">{t('kr_mbo_bei_kebb984ec_goals_kec889')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
+          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
         )}
       </div>
 

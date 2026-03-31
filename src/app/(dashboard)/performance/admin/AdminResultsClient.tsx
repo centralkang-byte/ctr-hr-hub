@@ -107,7 +107,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
   }
 
   if (loading) {
-    return <div className="p-6 flex items-center justify-center h-64 text-[#666]">{tc('loading')}...</div>
+    return <div className="p-6 flex items-center justify-center h-64 text-muted-foreground">{tc('loading')}...</div>
   }
 
   return (
@@ -117,7 +117,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('adminResults')}</h1>
-          <p className="text-sm text-[#666] mt-1">{t('kr_keca084ec_kec84b1ea_keab2b0ea_')}</p>
+          <p className="text-sm text-muted-foreground mt-1">{t('kr_keca084ec_kec84b1ea_keab2b0ea_')}</p>
         </div>
         <div className="flex items-center gap-3">
           <select
@@ -141,7 +141,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
       {/* Block distribution */}
       <div className="rounded-xl border border-border bg-card p-5">
         <h2 className="text-base font-semibold text-foreground flex items-center gap-2 mb-3">
-          <BarChart3 className="w-4 h-4 text-[#666]" />
+          <BarChart3 className="w-4 h-4 text-muted-foreground" />
           {t('kr_kebb894eb_kebb684ed')}
         </h2>
         <div className="flex items-end gap-2">
@@ -152,7 +152,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
                 className="w-12 bg-primary rounded-t-lg mt-1"
                 style={{ height: `${Math.max(count * 20, 8)}px` }}
               />
-              <span className="text-xs text-[#666] mt-1">{block}</span>
+              <span className="text-xs text-muted-foreground mt-1">{block}</span>
             </div>
           ))}
         </div>
@@ -195,7 +195,7 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
                 <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{r.finalResult.performanceScore?.toFixed(1) ?? '-'}</td>
                 <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{r.finalResult.competencyScore?.toFixed(1) ?? '-'}</td>
                 <td className={cn(TABLE_STYLES.cell, "text-center")}>
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.finalResult.calibrated ? 'bg-indigo-100 text-primary/90' : 'bg-primary/10 text-primary/90'}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.finalResult.calibrated ? 'bg-indigo-500/15 text-primary/90' : 'bg-primary/10 text-primary/90'}`}>
                     {r.finalResult.emsBlock ?? '-'}
                   </span>
                 </td>
@@ -211,21 +211,21 @@ export default function AdminResultsClient({ user }: { user: SessionUser }) {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="px-3 py-1.5 border border-border rounded-lg text-sm text-[#666] disabled:opacity-50 hover:bg-background"
+            className="px-3 py-1.5 border border-border rounded-lg text-sm text-muted-foreground disabled:opacity-50 hover:bg-background"
           >
             {t('prev')}
           </button>
-          <span className="text-sm text-[#666]">{page} / {totalPages}</span>
+          <span className="text-sm text-muted-foreground">{page} / {totalPages}</span>
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
-            className="px-3 py-1.5 border border-border rounded-lg text-sm text-[#666] disabled:opacity-50 hover:bg-background"
+            className="px-3 py-1.5 border border-border rounded-lg text-sm text-muted-foreground disabled:opacity-50 hover:bg-background"
           >
             {t('next')}
           </button>
         </div>
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-[#333] hover:bg-background">
+          <button className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-foreground hover:bg-background">
             <Download className="w-4 h-4" />
             {t('kr_kec9791ec_keb8ba4ec')}
           </button>

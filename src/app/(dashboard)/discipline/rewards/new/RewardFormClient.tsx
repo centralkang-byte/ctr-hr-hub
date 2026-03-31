@@ -127,7 +127,7 @@ export default function RewardFormClient({ user }: Props) {
           onClick={() => router.back()}
           className="p-2 border border-border rounded-lg hover:bg-background transition-colors"
         >
-          <ChevronLeft className="w-4 h-4 text-[#666]" />
+          <ChevronLeft className="w-4 h-4 text-muted-foreground" />
         </button>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
