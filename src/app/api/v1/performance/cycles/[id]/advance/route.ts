@@ -15,7 +15,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
-import { TRANSITIONS, addOverdueFlag, daysSinceDeadline } from '@/lib/performance/pipeline'
+import { addOverdueFlag, daysSinceDeadline, getNextStatus } from '@/lib/performance/pipeline'
 import { getPerformanceSetting } from '@/lib/settings/get-setting'
 import type { SessionUser } from '@/types'
 
@@ -43,7 +43,7 @@ export const PUT = withPermission(
     }
 
     const currentStatus = cycle.status as string
-    const nextStatus = TRANSITIONS[currentStatus]
+    const nextStatus = getNextStatus(currentStatus, cycle.half)
 
     if (!nextStatus) {
       throw badRequest(

@@ -1,15 +1,17 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Save, Send, Star, ArrowLeft, Loader2, CheckCircle2, XCircle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { useUnsavedChanges } from '@/hooks/useUnsavedChanges'
+import { cn } from '@/lib/utils'
 import type { SessionUser } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+
+const COMMENT_SOFT_LIMIT = 500
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -51,7 +53,7 @@ function StarRating({ value, onChange, disabled }: { value: number; onChange: (v
 
 // ─── Main Component ───────────────────────────────────────
 
-export default function MyEvaluationClient({user }: {
+export default function MyEvaluationClient({user: _user }: {
   user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
@@ -69,6 +71,8 @@ export default function MyEvaluationClient({user }: {
     const [submitting, setSubmitting] = useState(false)
     const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
     const abortRef = useRef<AbortController | null>(null)
+    const [isDirty, setIsDirty] = useState(false)
+    useUnsavedChanges(isDirty)
 
     // ─── Fetch cycles
     useEffect(() => {
@@ -84,7 +88,7 @@ export default function MyEvaluationClient({user }: {
             } catch { setError(t('cycleListLoadFailed')) }
         }
         load()
-    }, [])
+    }, [t])
 
     // ─── Fetch evaluation data
     const fetchEvalData = useCallback(async () => {
@@ -97,7 +101,13 @@ export default function MyEvaluationClient({user }: {
             ])
             setGoals(goalsRes.data)
             if (evalRes) {
-                setEvalData(evalRes.data)
+                // Ensure goalScores/beiScores are initialized for all goals/BEI items
+                const data = evalRes.data
+                const gs = { ...data.goalScores }
+                for (const g of goalsRes.data) { if (!gs[g.id]) gs[g.id] = { score: 3, comment: '' } }
+                const bs = { ...data.beiScores }
+                for (const b of BEI_ITEMS) { if (!bs[b.key]) bs[b.key] = { score: 3, comment: '' } }
+                setEvalData({ ...data, goalScores: gs, beiScores: bs })
             } else {
                 // Initialize empty
                 const gs: Record<string, { score: number; comment: string }> = {}
@@ -108,7 +118,7 @@ export default function MyEvaluationClient({user }: {
             }
         } catch { setError(t('dataLoadFailed')) }
         finally { setLoading(false) }
-    }, [selectedCycleId])
+    }, [selectedCycleId, t])
 
     useEffect(() => { fetchEvalData() }, [fetchEvalData])
 
@@ -119,8 +129,18 @@ export default function MyEvaluationClient({user }: {
         saveTimerRef.current = setTimeout(() => { handleSave('DRAFT', true) }, 2000)
     }
 
+    // Check if any comment exceeds soft limit
+    const hasOverlengthComment = evalData?.goalScores && evalData?.beiScores ? (
+        Object.values(evalData.goalScores).some((s) => s.comment.length > COMMENT_SOFT_LIMIT)
+        || Object.values(evalData.beiScores).some((s) => s.comment.length > COMMENT_SOFT_LIMIT)
+    ) : false
+
     async function handleSave(status: 'DRAFT' | 'SUBMITTED', isAutoSave = false) {
         if (!evalData || !selectedCycleId) return
+        if (hasOverlengthComment && !isAutoSave) {
+            toast({ title: `코멘트를 ${COMMENT_SOFT_LIMIT}자 이내로 수정해주세요.`, variant: 'destructive' })
+            return
+        }
         if (status === 'SUBMITTED' && !isAutoSave) {
             // Validate all fields
             const allGoalsScored = Object.values(evalData.goalScores).every((s) => s.score > 0)
@@ -145,6 +165,7 @@ export default function MyEvaluationClient({user }: {
                         status,
                     })
                     setSaveStatus('saved')
+                    setIsDirty(false)
                     setEvalData((p) => p ? { ...p, status: 'SUBMITTED' } : p)
                     setTimeout(() => setSaveStatus('idle'), 3000)
                 } catch (err) {
@@ -173,6 +194,7 @@ export default function MyEvaluationClient({user }: {
                 status,
             })
             setSaveStatus('saved')
+            setIsDirty(false)
             if (status === 'SUBMITTED') {
                 setEvalData((p) => p ? { ...p, status: 'SUBMITTED' } : p)
             }
@@ -191,6 +213,7 @@ export default function MyEvaluationClient({user }: {
             if (!p) return p
             return { ...p, goalScores: { ...p.goalScores, [goalId]: { ...p.goalScores[goalId], [field]: value } } }
         })
+        setIsDirty(true)
         scheduleAutoSave()
     }
 
@@ -199,6 +222,7 @@ export default function MyEvaluationClient({user }: {
             if (!p) return p
             return { ...p, beiScores: { ...p.beiScores, [key]: { ...p.beiScores[key], [field]: value } } }
         })
+        setIsDirty(true)
         scheduleAutoSave()
     }
 
@@ -262,8 +286,8 @@ export default function MyEvaluationClient({user }: {
                         )}
                         <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
                             className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
-                            {!cycles?.length && <EmptyState />}
-              {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                            {!cycles?.length && <option value="">{t('kr_kec9584ec_selfeval_keab8b0ea_k')}</option>}
+                            {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                     </div>
                 </div>
@@ -338,14 +362,17 @@ export default function MyEvaluationClient({user }: {
                                                     <p className="text-sm font-medium text-foreground">{goal.title}</p>
                                                     <p className="text-xs text-muted-foreground">가중치: {goal.weight}%</p>
                                                 </div>
-                                                <StarRating value={evalData?.goalScores[goal.id]?.score ?? 3}
+                                                <StarRating value={evalData?.goalScores?.[goal.id]?.score ?? 3}
                                                     onChange={(v) => updateGoalScore(goal.id, 'score', v)} disabled={isSubmitted} />
                                             </div>
                                             <textarea rows={2} disabled={isSubmitted}
-                                                value={evalData?.goalScores[goal.id]?.comment ?? ''}
+                                                value={evalData?.goalScores?.[goal.id]?.comment ?? ''}
                                                 onChange={(e) => updateGoalScore(goal.id, 'comment', e.target.value)}
                                                 placeholder="달성 내용을 기술하세요..."
                                                 className="w-full resize-none rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:bg-muted" />
+                                            <span className={cn("mt-1 block text-right text-xs", (evalData?.goalScores?.[goal.id]?.comment ?? '').length > COMMENT_SOFT_LIMIT ? "text-destructive" : "text-muted-foreground")}>
+                                                {(evalData?.goalScores?.[goal.id]?.comment ?? '').length}/{COMMENT_SOFT_LIMIT}
+                                            </span>
                                         </div>
                                     ))}
                                 </div>
@@ -369,14 +396,17 @@ export default function MyEvaluationClient({user }: {
                                                 <div>
                                                     <p className="text-sm font-medium text-foreground">{bei.label} ({bei.labelEn})</p>
                                                 </div>
-                                                <StarRating value={evalData?.beiScores[bei.key]?.score ?? 3}
+                                                <StarRating value={evalData?.beiScores?.[bei.key]?.score ?? 3}
                                                     onChange={(v) => updateBeiScore(bei.key, 'score', v)} disabled={isSubmitted} />
                                             </div>
                                             <textarea rows={2} disabled={isSubmitted}
-                                                value={evalData?.beiScores[bei.key]?.comment ?? ''}
+                                                value={evalData?.beiScores?.[bei.key]?.comment ?? ''}
                                                 onChange={(e) => updateBeiScore(bei.key, 'comment', e.target.value)}
                                                 placeholder="근거를 기술하세요..."
                                                 className="w-full resize-none rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:bg-muted" />
+                                            <span className={cn("mt-1 block text-right text-xs", (evalData?.beiScores?.[bei.key]?.comment ?? '').length > COMMENT_SOFT_LIMIT ? "text-destructive" : "text-muted-foreground")}>
+                                                {(evalData?.beiScores?.[bei.key]?.comment ?? '').length}/{COMMENT_SOFT_LIMIT}
+                                            </span>
                                         </div>
                                     ))}
                                 </div>
@@ -390,11 +420,11 @@ export default function MyEvaluationClient({user }: {
                         {/* Actions */}
                         {!isSubmitted && (
                             <div className="mt-6 flex items-center justify-end gap-3">
-                                <button onClick={() => handleSave('DRAFT')} disabled={submitting}
+                                <button onClick={() => handleSave('DRAFT')} disabled={submitting || hasOverlengthComment}
                                     className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-40 transition-colors">
                                     <Save className="h-4 w-4" /> {t('kr_kec9e84ec')}
                                 </button>
-                                <button onClick={() => handleSave('SUBMITTED')} disabled={submitting}
+                                <button onClick={() => handleSave('SUBMITTED')} disabled={submitting || hasOverlengthComment}
                                     className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40 transition-colors">
                                     <Send className="h-4 w-4" /> {submitting ? tCommon('loading') : tCommon('submit')}
                                 </button>

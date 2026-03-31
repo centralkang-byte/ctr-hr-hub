@@ -1,7 +1,6 @@
 'use client'
 
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import { useCallback, useEffect, useState } from 'react'
@@ -20,6 +19,7 @@ import {
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
+import { CycleTimeline } from '@/components/performance/CycleTimeline'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -27,10 +27,12 @@ interface CycleInfo {
   id: string
   name: string
   status: string
+  half: string
   startDate: string
   endDate: string
   goalDeadline: string | null
   evalDeadline: string | null
+  isResultPublished?: boolean
 }
 
 interface GoalItem {
@@ -81,7 +83,6 @@ function formatDate(dateStr: string | null): string {
 
 export default function PerformanceClient({
  user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
   const t = useTranslations('performance')
   const [cycles, setCycles] = useState<CycleInfo[]>([])
   const [activeCycle, setActiveCycle] = useState<CycleInfo | null>(null)
@@ -221,6 +222,18 @@ export default function PerformanceClient({
             )}
           </div>
         </div>
+
+        {/* Cycle Timeline */}
+        {activeCycle && (
+          <div className="mb-8">
+            <CycleTimeline
+              currentStatus={activeCycle.status}
+              role={user.role}
+              cycleHalf={activeCycle.half ?? 'H2'}
+              nextDeadline={activeCycle.evalDeadline ?? activeCycle.goalDeadline ?? activeCycle.endDate}
+            />
+          </div>
+        )}
 
         {/* Quick Stats */}
         <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">

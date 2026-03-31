@@ -2,7 +2,6 @@
 
 import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import { useCallback, useEffect, useState, memo } from 'react'
@@ -43,7 +42,6 @@ const MeritRowComponent = memo(function MeritRowComponent({
 }: {
     row: MeritRow; onUpdate: (employeeId: string, appliedPct: number, reason: string) => void
 }) {
-    const tCommon = useTranslations('common')
     const [localPct, setLocalPct] = useState(row.appliedPct)
     const [localReason, setLocalReason] = useState(row.exceptionReason)
     const isOutOfRange = localPct < row.recommendedPct * 0.5 || localPct > row.recommendedPct * 1.5
@@ -74,7 +72,7 @@ const MeritRowComponent = memo(function MeritRowComponent({
                 )}
             </td>
             <td className={cn(TABLE_STYLES.cellRight, "font-medium text-foreground")}>
-                {isOutOfRange && <span className="mr-1 text-red-500">🚨</span>}
+                {isOutOfRange && <span className="mr-1 inline-flex items-center text-destructive"><AlertTriangle aria-hidden="true" className="h-3.5 w-3.5" /><span className="sr-only">경고</span></span>}
                 {fmtKRW(newSalary)}
             </td>
         </tr>
@@ -113,7 +111,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
             } catch { setError(t('cycleLoadFailed')) }
         }
         load()
-    }, [])
+    }, [t])
 
     const fetchData = useCallback(async () => {
         if (!selectedCycleId) return
@@ -127,7 +125,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
             if (recRes) setRows(recRes.data ?? [])
         } catch { setError(t('dataLoadFailed')) }
         finally { setLoading(false) }
-    }, [selectedCycleId])
+    }, [selectedCycleId, t])
 
     useEffect(() => { fetchData() }, [fetchData])
 

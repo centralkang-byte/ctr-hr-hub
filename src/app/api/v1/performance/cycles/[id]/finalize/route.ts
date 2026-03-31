@@ -13,11 +13,12 @@ import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import type { SessionUser } from '@/types'
+import { getNextStatus } from '@/lib/performance/pipeline'
 
 bootstrapEventHandlers()
 
 // ─── POST /api/v1/performance/cycles/[id]/finalize ───────
-// Finalize cycle: CALIBRATION → CLOSED
+// Finalize cycle: CALIBRATION → next status (uses pipeline)
 
 export const POST = withPermission(
   async (req: NextRequest, context, user: SessionUser) => {
@@ -28,7 +29,12 @@ export const POST = withPermission(
     })
     if (!cycle) throw notFound('성과 주기를 찾을 수 없습니다.')
     if (cycle.status !== 'CALIBRATION') {
-      throw badRequest('캘리브레이션 단계에서만 확정할 수 있습니다.')
+      throw badRequest('피플세션 단계에서만 확정할 수 있습니다.')
+    }
+
+    const nextStatus = getNextStatus('CALIBRATION', cycle.half)
+    if (!nextStatus) {
+      throw badRequest('다음 단계가 정의되지 않았습니다.')
     }
 
     // Check all calibration sessions are completed
@@ -41,12 +47,12 @@ export const POST = withPermission(
     })
 
     if (pendingSessions > 0) {
-      throw badRequest(`미완료 캘리브레이션 세션이 ${pendingSessions}건 있습니다.`)
+      throw badRequest(`미완료 피플세션이 ${pendingSessions}건 있습니다.`)
     }
 
     const updated = await prisma.performanceCycle.update({
       where: { id },
-      data: { status: 'CLOSED' },
+      data: { status: nextStatus },
     })
 
     const { ip, userAgent } = extractRequestMeta(req.headers)
@@ -56,7 +62,7 @@ export const POST = withPermission(
       resourceType: 'performanceCycle',
       resourceId: id,
       companyId: user.companyId,
-      changes: { previousStatus: 'CALIBRATION', newStatus: 'CLOSED' },
+      changes: { previousStatus: 'CALIBRATION', newStatus: nextStatus },
       ip,
       userAgent,
     })
@@ -77,7 +83,7 @@ export const POST = withPermission(
       cycleId:   updated.id,
       companyId: updated.companyId,
       fromPhase: 'CALIBRATION',
-      toPhase:   'CLOSED',
+      toPhase:   nextStatus,
       cycleName: updated.name,
       year:      updated.year,
       half:      updated.half,

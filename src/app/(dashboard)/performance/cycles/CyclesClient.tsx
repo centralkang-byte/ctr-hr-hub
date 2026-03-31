@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, ChevronRight, Settings2, Clock, ShieldAlert } from 'lucide-react'
+import { Plus, ChevronRight, Settings2, Clock, ShieldAlert, CheckCircle2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { STATUS_VARIANT } from '@/lib/styles/status'
 import type { SessionUser } from '@/types'
@@ -69,7 +69,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
             setCycles(res.data)
         } catch { setError(tCommon('loadFailed')) }
         finally { setLoading(false) }
-    }, [])
+    }, [tCommon])
 
     useEffect(() => { fetchCycles() }, [fetchCycles])
 
@@ -141,7 +141,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                                                 <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{cycle.startDate?.slice(0, 10)} ~ {cycle.endDate?.slice(0, 10)}</span>
                                                 {cycle.participantCount != null && <span>대상: {cycle.participantCount}명</span>}
                                                 {cycle.peerReviewEnabled && (
-                                                    <span>동료평가: ✅ ({cycle.peerReviewMinCount}~{cycle.peerReviewMaxCount}명)</span>
+                                                    <span className="inline-flex items-center gap-1">동료평가: <CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5 text-emerald-600" /><span className="sr-only">활성</span> ({cycle.peerReviewMinCount}~{cycle.peerReviewMaxCount}명)</span>
                                                 )}
                                                 {cycle.checkInMode && <span>체크인: {cycle.checkInMode === 'MANDATORY' ? '필수' : '권장'}</span>}
                                             </div>

@@ -128,6 +128,27 @@ export function maskPeerReviews(
     }))
 }
 
+// ─── Mask Cycle for Employee ────────────────────────────
+// EMPLOYEE must never see COMP_REVIEW / COMP_COMPLETED status.
+// Also provides isResultPublished to prevent premature result rendering
+// when maskedStatus=CLOSED but actual status is still in comp review.
+
+const HIDDEN_CYCLE_STATUSES = new Set(['COMP_REVIEW', 'COMP_COMPLETED'])
+
+export interface CycleForMasking {
+    status: string
+    [key: string]: unknown
+}
+
+export function maskCycleForEmployee<T extends CycleForMasking>(
+    cycle: T,
+): T & { isResultPublished: boolean } {
+    if (HIDDEN_CYCLE_STATUSES.has(cycle.status)) {
+        return { ...cycle, status: 'CLOSED', isResultPublished: false }
+    }
+    return { ...cycle, isResultPublished: cycle.status === 'CLOSED' || cycle.status === 'COMP_COMPLETED' }
+}
+
 // ─── Grade Label Mapping ────────────────────────────────
 
 // Settings-connected: grade labels per company (defaults below)

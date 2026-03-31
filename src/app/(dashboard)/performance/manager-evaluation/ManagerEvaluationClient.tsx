@@ -2,15 +2,18 @@
 
 import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
-import { useCallback, useEffect, useState, memo } from 'react'
-import { Star, Send, Save, AlertTriangle, CheckCircle2, Clock, X, ArrowLeft, ShieldAlert, Users } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
+import { Star, Send, Save, AlertTriangle, CheckCircle2, Clock, X, ArrowLeft, Users } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { getGradeLabel } from '@/lib/performance/data-masking'
+import { useUnsavedChanges } from '@/hooks/useUnsavedChanges'
+import { cn } from '@/lib/utils'
 import type { SessionUser } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+
+const COMMENT_SOFT_LIMIT = 500
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -54,7 +57,7 @@ const CTR_VALUES = [
 
 // ─── Main Component ───────────────────────────────────────
 
-export default function ManagerEvaluationClient({user }: {
+export default function ManagerEvaluationClient({user: _user }: {
   user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
@@ -77,7 +80,7 @@ export default function ManagerEvaluationClient({user }: {
             } catch { setError(t('cycleLoadFailed')) }
         }
         load()
-    }, [])
+    }, [t])
 
     const fetchTeam = useCallback(async () => {
         if (!selectedCycleId) return
@@ -124,7 +127,7 @@ export default function ManagerEvaluationClient({user }: {
                         <h1 className="text-2xl font-bold text-foreground">{t('managerEvalTitle')}</h1>
                         <p className="mt-1 text-sm text-muted-foreground">
                             내 팀원: {teamMembers.length}명 | 평가 완료: {completedCount}/{teamMembers.length}
-                            {overdueCount > 0 && <span className="ml-2 text-red-500">| Overdue: {overdueCount}명 🚨</span>}
+                            {overdueCount > 0 && <span className="ml-2 inline-flex items-center gap-1 text-destructive">| Overdue: {overdueCount}명 <AlertTriangle aria-hidden="true" className="h-3.5 w-3.5 inline" /><span className="sr-only">경고</span></span>}
                         </p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
@@ -180,7 +183,10 @@ export default function ManagerEvaluationClient({user }: {
                                             <p className="mt-1 text-xs text-muted-foreground">{member.department}</p>
                                             <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
                                                 <span>MBO: {member.selfEval?.performanceScore?.toFixed(1) ?? '-'}</span>
-                                                <span>자기평가: {member.selfEval?.status === 'SUBMITTED' ? '✅' : '🟡'}</span>
+                                                <span className="inline-flex items-center gap-1">자기평가: {member.selfEval?.status === 'SUBMITTED'
+                                                    ? <><CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5 text-emerald-600" /><span className="sr-only">완료</span></>
+                                                    : <><Clock aria-hidden="true" className="h-3.5 w-3.5 text-amber-500" /><span className="sr-only">미완료</span></>}
+                                                </span>
                                                 <span>동료평가: {member.peerReviewProgress}</span>
                                             </div>
                                             {hasOverdue && (
@@ -236,7 +242,12 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
     const [beiScores, setBeiScores] = useState<Record<string, { score: number; comment: string }>>({})
     const [finalGrade, setFinalGrade] = useState('')
     const [saving, setSaving] = useState(false)
+    const [isDirty, setIsDirty] = useState(false)
     const [peerResults, setPeerResults] = useState<Array<{ reviewerName: string; overallComment: string | null; scoreChallenge: number; scoreTrust: number; scoreResponsibility: number; scoreRespect: number }>>([])
+    useUnsavedChanges(isDirty)
+
+    const hasOverlengthComment = Object.values(goalScores).some((s) => s.comment.length > COMMENT_SOFT_LIMIT)
+        || Object.values(beiScores).some((s) => s.comment.length > COMMENT_SOFT_LIMIT)
 
     useEffect(() => {
         // Initialize scores
@@ -261,6 +272,10 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
     const totalScore = Math.round(((mboAvg * 60 + beiAvg * 40) / 100) * 100) / 100
 
     async function handleSave(status: 'DRAFT' | 'SUBMITTED') {
+        if (hasOverlengthComment) {
+            toast({ title: `코멘트를 ${COMMENT_SOFT_LIMIT}자 이내로 수정해주세요.`, variant: 'destructive' })
+            return
+        }
         if (!(status === 'SUBMITTED')) return
         confirm({ title: t('evaluation_keba5bc_ked9995ec_confirmed_ked9b84ec_kec8898ec_keca09ced'), onConfirm: async () => {
             setSaving(true)
@@ -271,6 +286,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                     competencyScores: Object.entries(beiScores).map(([key, s]) => ({ competencyId: key, ...s })),
                     originalGradeEnum: finalGrade,
                 })
+                setIsDirty(false)
                 onSaved()
             } catch { toast({ title: t('saveFailed'), variant: 'destructive' }) }
             finally { setSaving(false) }
@@ -316,11 +332,14 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                                     <div className="flex items-center gap-3">
                                         <span className="text-xs text-muted-foreground">{t('kr_keba7a4eb_score')}</span>
                                         <Stars value={goalScores[goal.id]?.score ?? 3}
-                                            onChange={(v) => setGoalScores((p) => ({ ...p, [goal.id]: { ...p[goal.id], score: v } }))} disabled={false} />
+                                            onChange={(v) => { setGoalScores((p) => ({ ...p, [goal.id]: { ...p[goal.id], score: v } })); setIsDirty(true) }} disabled={false} />
                                     </div>
                                     <input type="text" placeholder={tCommon('enterComment')} value={goalScores[goal.id]?.comment ?? ''}
-                                        onChange={(e) => setGoalScores((p) => ({ ...p, [goal.id]: { ...p[goal.id], comment: e.target.value } }))}
+                                        onChange={(e) => { setGoalScores((p) => ({ ...p, [goal.id]: { ...p[goal.id], comment: e.target.value } })); setIsDirty(true) }}
                                         className="w-full rounded-lg border border-border px-3 py-1.5 text-sm focus:border-primary focus:outline-none" />
+                                    <span className={cn("mt-1 block text-right text-xs", (goalScores[goal.id]?.comment ?? '').length > COMMENT_SOFT_LIMIT ? "text-destructive" : "text-muted-foreground")}>
+                                        {(goalScores[goal.id]?.comment ?? '').length}/{COMMENT_SOFT_LIMIT}
+                                    </span>
                                 </div>
                             ))}
                         </div>
@@ -333,11 +352,14 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                                     <div className="flex items-center justify-between">
                                         <span className="text-sm font-medium text-foreground">{v.label}</span>
                                         <Stars value={beiScores[v.key]?.score ?? 3}
-                                            onChange={(val) => setBeiScores((p) => ({ ...p, [v.key]: { ...p[v.key], score: val } }))} disabled={false} />
+                                            onChange={(val) => { setBeiScores((p) => ({ ...p, [v.key]: { ...p[v.key], score: val } })); setIsDirty(true) }} disabled={false} />
                                     </div>
                                     <input type="text" placeholder={tCommon('enterComment')} value={beiScores[v.key]?.comment ?? ''}
-                                        onChange={(e) => setBeiScores((p) => ({ ...p, [v.key]: { ...p[v.key], comment: e.target.value } }))}
+                                        onChange={(e) => { setBeiScores((p) => ({ ...p, [v.key]: { ...p[v.key], comment: e.target.value } })); setIsDirty(true) }}
                                         className="w-full rounded-lg border border-border px-3 py-1.5 text-sm focus:border-primary focus:outline-none" />
+                                    <span className={cn("mt-1 block text-right text-xs", (beiScores[v.key]?.comment ?? '').length > COMMENT_SOFT_LIMIT ? "text-destructive" : "text-muted-foreground")}>
+                                        {(beiScores[v.key]?.comment ?? '').length}/{COMMENT_SOFT_LIMIT}
+                                    </span>
                                 </div>
                             ))}
                         </div>
@@ -391,16 +413,17 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
 
                     {/* Actions */}
                     <div className="flex justify-end gap-3 border-t border-border pt-4">
-                        <button onClick={() => handleSave('DRAFT')} disabled={saving}
+                        <button onClick={() => handleSave('DRAFT')} disabled={saving || hasOverlengthComment}
                             className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-40">
                             <Save className="h-4 w-4" /> {t('kr_kec9e84ec')}
                         </button>
-                        <button onClick={() => handleSave('SUBMITTED')} disabled={saving}
+                        <button onClick={() => handleSave('SUBMITTED')} disabled={saving || hasOverlengthComment}
                             className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40">
                             <Send className="h-4 w-4" /> {saving ? '확정 중...' : '평가 확정'}
                         </button>
                     </div>
                 </div>
+                <ConfirmDialog {...dialogProps} />
             </div>
         </div>
     )
@@ -431,7 +454,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
     }, [member.employeeId, cycleId])
 
     function toggleCandidate(id: string) {
-        setSelected((p) => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n })
+        setSelected((p) => { const n = new Set(p); if (n.has(id)) n.delete(id); else n.add(id); return n })
     }
 
     async function handleNominate() {

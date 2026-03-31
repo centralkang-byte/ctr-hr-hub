@@ -14,11 +14,12 @@ import { TABLE_STYLES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
+import { getNextStatus, getPipelineSteps, CYCLE_STATUS_LABELS } from '@/lib/performance/pipeline'
 
 // ─── Types ────────────────────────────────────────────────
 
 interface CycleDetail {
-    id: string; name: string; status: string
+    id: string; name: string; status: string; half: string
     startDate: string; endDate: string
     checkInMode: string | null; peerReviewEnabled: boolean
     peerReviewMinCount: number | null; peerReviewMaxCount: number | null
@@ -30,14 +31,6 @@ interface Participant {
     peerReviewProgress: string; overdueFlags: string[] | null; reviewStatus: string
 }
 
-// PIPELINE_STATES is defined inside the component (needs t())
-
-const TRANSITIONS: Record<string, string> = {
-    DRAFT: 'ACTIVE', ACTIVE: 'CHECK_IN', CHECK_IN: 'EVAL_OPEN',
-    EVAL_OPEN: 'CALIBRATION', CALIBRATION: 'FINALIZED', FINALIZED: 'CLOSED',
-    CLOSED: 'COMP_REVIEW', COMP_REVIEW: 'COMP_COMPLETED',
-}
-
 // ─── Component ────────────────────────────────────────────
 
 export default function CycleDetailClient({user, cycleId }: { user: SessionUser; cycleId: string }) {
@@ -46,17 +39,12 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
     const router = useRouter()
     const isHrAdmin = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
 
-    const PIPELINE_STATES = [
-        { key: 'DRAFT', label: t('draft') },
-        { key: 'ACTIVE', label: t('goals_settings') },
-        { key: 'CHECK_IN', label: t('kr_kecb2b4ed') },
-        { key: 'EVAL_OPEN', label: t('evaluation_kec8ba4ec') },
-        { key: 'CALIBRATION', label: t('calibration') },
-        { key: 'FINALIZED', label: t('confirmed') },
-        { key: 'CLOSED', label: t('ended') },
-        { key: 'COMP_REVIEW', label: t('kr_kebb3b4ec_keab280ed') },
-        { key: 'COMP_COMPLETED', label: t('kr_kebb3b4ec_complete') },
-    ]
+    // 동적 파이프라인: cycle.half에 따라 H1(4단계) vs H2(7단계)
+    const cycleHalf = cycle?.half ?? 'H2'
+    const PIPELINE_STATES = getPipelineSteps(cycleHalf).map((key) => ({
+        key,
+        label: CYCLE_STATUS_LABELS[key]?.ko?.split('(')[0] ?? key,
+    }))
 
     const [cycle, setCycle] = useState<CycleDetail | null>(null)
     const [participants, setParticipants] = useState<Participant[]>([])
@@ -84,7 +72,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
 
     async function handleAdvance() {
         if (!cycle) return
-        const nextState = TRANSITIONS[cycle.status]
+        const nextState = getNextStatus(cycle.status, cycle.half)
         if (!nextState) return
 
         const overdueCount = participants.filter((p) => p.overdueFlags && p.overdueFlags.length > 0).length
@@ -141,7 +129,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
     }
 
     const currentIdx = PIPELINE_STATES.findIndex((s) => s.key === cycle.status)
-    const nextState = TRANSITIONS[cycle.status]
+    const nextState = getNextStatus(cycle.status, cycle.half)
     const overdueParticipants = participants.filter((p) => p.overdueFlags && p.overdueFlags.length > 0)
     const departments = [...new Set(participants.map((p) => p.employee.department?.name ?? '미지정'))]
     const filteredParticipants = deptFilter ? participants.filter((p) =>

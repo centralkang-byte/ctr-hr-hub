@@ -12,6 +12,7 @@ import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import type { CycleStatus, CycleHalf } from '@/generated/prisma/client'
+import { maskCycleForEmployee } from '@/lib/performance/data-masking'
 
 // ─── Schemas ──────────────────────────────────────────────
 
@@ -19,7 +20,7 @@ const searchSchema = z.object({
   page: z.coerce.number().int().positive().default(DEFAULT_PAGE),
   limit: z.coerce.number().int().positive().max(100).default(DEFAULT_PAGE_SIZE),
   year: z.coerce.number().int().optional(),
-  status: z.enum(['DRAFT', 'ACTIVE', 'EVAL_OPEN', 'CALIBRATION', 'CLOSED']).optional(),
+  status: z.enum(['DRAFT', 'ACTIVE', 'CHECK_IN', 'EVAL_OPEN', 'CALIBRATION', 'FINALIZED', 'CLOSED', 'COMP_REVIEW', 'COMP_COMPLETED']).optional(),
 })
 
 const createSchema = z.object({
@@ -71,7 +72,12 @@ export const GET = withPermission(
       prisma.performanceCycle.count({ where }),
     ])
 
-    return apiPaginated(cycles, buildPagination(page, limit, total))
+    // EMPLOYEE: 보상 단계 마스킹 (COMP_REVIEW/COMP_COMPLETED → CLOSED + isResultPublished)
+    const maskedCycles = user.role === 'EMPLOYEE'
+      ? cycles.map(maskCycleForEmployee)
+      : cycles.map(c => ({ ...c, isResultPublished: c.status === 'CLOSED' || c.status === 'COMP_COMPLETED' }))
+
+    return apiPaginated(maskedCycles, buildPagination(page, limit, total))
   },
   perm(MODULE.PERFORMANCE, ACTION.VIEW),
 )
