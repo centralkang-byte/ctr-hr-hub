@@ -18,6 +18,14 @@ npm run lint 2>&1 | tail -20
 
 새 warning 없음 확인.
 
+## 2.5. DB Schema Sync
+
+```bash
+npx prisma migrate status 2>&1 | tail -5
+```
+
+Must show "Database schema is up to date". Report if drift detected.
+
 ## 3. 패턴 준수 확인
 
 `git diff --name-only`로 변경된 파일을 확인하고, 파일 유형별로 규칙 준수를 체크하세요.
@@ -46,15 +54,37 @@ npm run lint 2>&1 | tail -20
 - [ ] Client: `toast()` 에러 표시
 - [ ] 빈 catch 블록 없음
 
-## 4. 결과 요약
+## 4. UI Visual QA (when UI files changed)
+
+Run only if `git diff --name-only` includes `*Client.tsx` or `src/components/**`.
+
+### Tool Selection Guide
+
+| Scenario | Tool | Why |
+|----------|------|-----|
+| Quick check during dev | Claude Preview (`preview_inspect`) | Computed style: exact color/spacing measurement |
+| Systematic QA | `/gstack` or `/qa` | Reports, multi-page, responsive |
+| Complex interactions | Computer Use (Claude in Chrome) | Drag-and-drop, nested modals, real login flows |
+| Design token verification | Claude Preview `preview_inspect` | Hex values, padding, font-size direct check |
+
+### Checklist (any tool)
+- [ ] Navigate changed pages + screenshot
+- [ ] DESIGN.md token compliance (cross-check with rules/design.md)
+- [ ] Multi-role test: super@ctr.co.kr + employee-a@ctr.co.kr minimum
+- [ ] 3-state check: loading skeleton, error toast, empty state
+- [ ] Responsive: desktop (1280px) + mobile (375px)
+
+## 5. 결과 요약
 
 위 체크리스트 결과를 아래 형식으로 보고하세요:
 
-| 검증 항목 | 결과 | 비고 |
-|-----------|------|------|
-| tsc --noEmit | ✅/❌ | 에러 수 |
-| lint | ✅/❌ | warning 수 |
-| page.tsx 패턴 | ✅/❌ | 미준수 파일 |
-| Client 패턴 | ✅/❌ | 미준수 항목 |
-| API route 패턴 | ✅/❌ | 미준수 항목 |
-| 에러 처리 | ✅/❌ | 미준수 항목 |
+| Check | Result | Remarks |
+|-------|--------|---------|
+| tsc --noEmit | ✅/❌ | error count |
+| lint | ✅/❌ | warning count |
+| prisma migrate status | ✅/❌ | drift detected? |
+| page.tsx patterns | ✅/❌ | non-compliant files |
+| Client patterns | ✅/❌ | non-compliant items |
+| API route patterns | ✅/❌ | non-compliant items |
+| Error handling | ✅/❌ | non-compliant items |
+| UI visual QA | ✅/❌/N/A | design token issues |

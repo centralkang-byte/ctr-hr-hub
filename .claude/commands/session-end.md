@@ -45,3 +45,7 @@
 ## 다음 세션 TODO
 - 이어서 할 작업
 ```
+
+---
+
+> For full session wrap-up (commit + STATUS + deploy): use `/wrap-up`

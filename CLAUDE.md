@@ -37,13 +37,15 @@ For non-trivial features or architecture changes:
 
 | Category | Technology |
 |----------|------------|
-| Framework | Next.js 15 (App Router, `force-dynamic` dashboard layout) |
-| Language | TypeScript 5 (strict mode, `@/*` → `./src/*`) |
-| ORM | Prisma 7 with `@prisma/adapter-pg` |
+> Versions: see `package.json`. Do not hardcode versions here.
+
+| Framework | Next.js (App Router, `force-dynamic` dashboard layout) |
+| Language | TypeScript (strict mode, `@/*` → `./src/*`) |
+| ORM | Prisma with `@prisma/adapter-pg` |
 | Database | PostgreSQL (Supabase) with pgvector |
-| Auth | NextAuth 4 — Azure AD SSO + Credentials (dev) |
-| UI | Radix UI + Tailwind CSS 3 + shadcn/ui (`cn()`) |
-| Forms | React Hook Form + Zod 4 |
+| Auth | NextAuth — Azure AD SSO + Credentials (dev) |
+| UI | Radix UI + Tailwind CSS + shadcn/ui (`cn()`) |
+| Forms | React Hook Form + Zod |
 | i18n | next-intl — 5 locales × 14+ namespaces |
 | Cache | Redis (ioredis) + SWR |
 | AI | Anthropic SDK (Claude) + OpenAI embeddings |
@@ -68,19 +70,12 @@ npx tsx scripts/run-qa-seed.ts
 
 ## Coding Conventions
 
-### Component Pattern
-- Client Components: `*Client.tsx` with `'use client'` directive
-- Server pages: `page.tsx` wraps Client component with Suspense
-- Styling: `cn()` from `@/lib/utils` for className merging
-- Icons: `lucide-react` exclusively
-- Timezone: Always use `src/lib/timezone.ts` — never raw `new Date()` for display
+Detailed rules in `.claude/rules/` (auto-loaded when editing matching files).
 
-### Auth & RBAC
-- Roles: `SUPER_ADMIN`, `HR_ADMIN`, `EXECUTIVE`, `MANAGER`, `EMPLOYEE`
-- Auth chain: Employee → SsoIdentity → EmployeeRole → Role → RolePermissions
-- Manager relationship: `Position.reportsToPositionId` (NOT direct managerId)
-- Active records: `endDate: null` convention
-- RLS: `withRLS()` wrapper sets Postgres session variables
+- **Timezone:** Always use `src/lib/timezone.ts` — never raw `new Date()` for display
+- **Roles:** `SUPER_ADMIN`, `HR_ADMIN`, `EXECUTIVE`, `MANAGER`, `EMPLOYEE`
+- **Manager lookup:** `Position.reportsToPositionId` (NOT direct managerId)
+- **Active records:** `endDate: null` convention
 
 ---
 
@@ -107,7 +102,7 @@ Dev login: `NEXT_PUBLIC_SHOW_TEST_ACCOUNTS=true`
 ```
 - src/components/layout/*       (Sidebar, MobileDrawer)
 - src/config/navigation.ts      (Sidebar IA)
-- messages/*.json                (i18n translations)
+- messages/*.json                (i18n — adding new keys OK, editing/deleting existing keys FORBIDDEN)
 - prisma/seed.ts                 (Master seed orchestrator)
 - prisma/schema.prisma           (Requires migration plan)
 - src/middleware.ts              (Auth middleware)
@@ -118,9 +113,7 @@ Dev login: `NEXT_PUBLIC_SHOW_TEST_ACCOUNTS=true`
 
 ## Design System
 
-Always read `DESIGN.md` before making any visual or UI decisions.
-All font choices, colors, spacing, and aesthetic direction are defined there.
-Do not deviate without explicit user approval.
+See `DESIGN.md`. Token enforcement via `rules/design.md` (auto-loaded on UI file edits).
 In QA mode, flag any code that doesn't match DESIGN.md.
 
 ## Gotchas
@@ -129,11 +122,21 @@ In QA mode, flag any code that doesn't match DESIGN.md.
 - Pure function extraction: Business logic coupled to Prisma must be extracted into pure functions for testability.
 - UI error states: Always handle loading/error/empty states in Client components.
 
-## Verification
+## Verification & Workflow
 
-After any implementation:
-1. `npx tsc --noEmit` — 0 errors
-2. `npm run lint` — no new warnings
-3. `npx prisma migrate status` — "Database schema is up to date!" 확인 (migration drift 방지)
-4. Preview/screenshot for UI changes
-5. DB verification for seed/migration changes
+### Dev Flow
+Implement → `/verify` → UI QA (if UI changed) → `/wrap-up` (commit + STATUS + deploy)
+
+### /verify (code checks)
+1. **Code:** `npx tsc --noEmit` + `npm run lint` (pre-commit hook auto-runs)
+2. **DB:** `npx prisma migrate status` — must show "up to date"
+3. **Patterns:** Changed files checked against `rules/`
+
+### UI QA (when UI files changed)
+- **Quick check:** Claude Preview — `preview_inspect` for exact token measurement
+- **Systematic QA:** `/gstack` — multi-page, responsive, multi-role
+- **Complex interactions:** Computer Use — drag-and-drop, nested modals, real login flows
+- Multi-role: super@ctr.co.kr + employee-a@ctr.co.kr minimum
+
+### /wrap-up (session end)
+Bundles: commit → STATUS.md update → Vercel deploy. See `/wrap-up` for details.
