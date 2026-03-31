@@ -11,6 +11,9 @@ import { apiClient } from '@/lib/api'
 import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import type { SessionUser } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import dynamic from 'next/dynamic'
+
+const GrowthJourneyChart = dynamic(() => import('@/components/performance/GrowthJourneyChart'), { ssr: false })
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -222,6 +225,11 @@ export default function MyResultClient({user }: {
                                 </div>
                             </div>
                             <p className="mt-3 text-xs text-muted-foreground">(MBO {result.mboWeight}% + BEI {result.beiWeight}%)</p>
+                        </div>
+
+                        {/* Growth Journey Chart */}
+                        <div className="mb-6">
+                            <GrowthJourneyChart />
                         </div>
 
                         {/* MBO Results */}
