@@ -6,7 +6,7 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
+import { badRequest, notFound, conflict, handlePrismaError } from '@/lib/errors'
 import { withAuth, hasPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
@@ -71,6 +71,19 @@ export const POST = withAuth(
     }
 
     const data = parsed.data
+
+    // 1H: 중복 평가 방지 — 동일 면접관이 동일 면접에 이중 평가 불가
+    const existingEval = await prisma.interviewEvaluation.findFirst({
+      where: { scheduleId: id, evaluatorId: user.employeeId },
+    })
+    if (existingEval) {
+      throw conflict('이미 해당 면접에 대한 평가를 제출하셨습니다.')
+    }
+
+    // 1H: CANCELLED/NO_SHOW 면접은 평가 불가
+    if (schedule.status === 'CANCELLED' || schedule.status === 'NO_SHOW') {
+      throw badRequest('취소되었거나 불참 처리된 면접은 평가할 수 없습니다.')
+    }
 
     try {
       // Create evaluation and optionally update schedule status in a transaction

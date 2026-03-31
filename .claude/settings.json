@@ -2,12 +2,13 @@
   "hooks": {
     "SessionStart": [
       {
-        "command": ".claude/hooks/session-start.sh"
-      }
-    ],
-    "PreCommit": [
-      {
-        "command": ".claude/hooks/pre-commit.sh"
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/session-start.sh"
+          }
+        ]
       }
     ]
   }

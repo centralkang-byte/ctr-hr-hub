@@ -10,6 +10,7 @@ import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { validateStageTransition } from '@/lib/recruitment/stage-machine'
 import type { SessionUser } from '@/types'
 
 // ─── Stage Change Schema ─────────────────────────────────
@@ -77,6 +78,16 @@ export const PUT = withPermission(
 
     const { stage, rejectionReason } = parsed.data
 
+    // State machine validation
+    const transition = validateStageTransition({
+      currentStage: existing.stage as Parameters<typeof validateStageTransition>[0]['currentStage'],
+      targetStage: stage,
+      rejectionReason,
+    })
+    if (!transition.allowed) {
+      throw badRequest(transition.error ?? '허용되지 않는 단계 전환입니다.')
+    }
+
     try {
       const updated = await prisma.$transaction(async (tx) => {
         const application = await tx.application.update({
@@ -107,6 +118,12 @@ export const PUT = withPermission(
           await tx.position.update({
             where: { id: existing.posting.positionId },
             data: { isFilled: true },
+          })
+        } else if (existing.stage === 'HIRED' && stage !== 'HIRED' && existing.posting.positionId) {
+          // Admin override: HIRED에서 다른 단계로 변경 시 Position.isFilled 리셋
+          await tx.position.update({
+            where: { id: existing.posting.positionId },
+            data: { isFilled: false },
           })
         }
 

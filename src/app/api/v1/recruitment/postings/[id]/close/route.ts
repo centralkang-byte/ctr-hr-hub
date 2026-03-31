@@ -31,6 +31,13 @@ export const PUT = withPermission(
       throw badRequest('진행중(OPEN) 상태의 공고만 마감할 수 있습니다.')
     }
 
+    // 1G: RBAC — HR_ADMIN 이상 또는 공고 작성자만 마감 가능
+    const isCreator = existing.recruiterId === user.employeeId
+    const isHrPlus = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
+    if (!isCreator && !isHrPlus) {
+      throw badRequest('마감 권한이 없습니다. 공고 작성자 또는 HR 관리자만 마감할 수 있습니다.')
+    }
+
     const updated = await prisma.jobPosting.update({
       where: { id },
       data: {

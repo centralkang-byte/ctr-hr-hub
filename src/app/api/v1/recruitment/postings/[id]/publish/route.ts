@@ -31,6 +31,24 @@ export const PUT = withPermission(
       throw badRequest('초안(DRAFT) 상태의 공고만 게시할 수 있습니다.')
     }
 
+    // 1G: RBAC — HR_ADMIN 이상 또는 공고 작성자만 게시 가능
+    const isCreator = existing.recruiterId === user.employeeId
+    const isHrPlus = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
+    if (!isCreator && !isHrPlus) {
+      throw badRequest('게시 권한이 없습니다. 공고 작성자 또는 HR 관리자만 게시할 수 있습니다.')
+    }
+
+    // 1H: 필수 필드 검증 — departmentId, jobGradeId, recruiterId 필수
+    if (!existing.departmentId) {
+      throw badRequest('부서를 지정해야 게시할 수 있습니다.')
+    }
+    if (!existing.jobGradeId) {
+      throw badRequest('직급을 지정해야 게시할 수 있습니다.')
+    }
+    if (!existing.recruiterId) {
+      throw badRequest('채용 담당자를 지정해야 게시할 수 있습니다.')
+    }
+
     const updated = await prisma.jobPosting.update({
       where: { id },
       data: {

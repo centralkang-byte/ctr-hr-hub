@@ -15,11 +15,11 @@ import { notFound, badRequest, conflict, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
-import { createAssignment } from '@/lib/assignments'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import { mapRequisitionTypeToEmploymentType } from '@/lib/ats/employment-type-mapper'
+import type { PrismaTx } from '@/lib/prisma-rls'
 import type { SessionUser } from '@/types'
 
 bootstrapEventHandlers()
@@ -47,24 +47,6 @@ export const POST = withPermission(
   ) => {
     const { id } = await context.params
 
-    // 🚨 IDEMPOTENCY GUARD: If already HIRED with existing Employee → return existing
-    const alreadyConverted = await prisma.application.findFirst({
-      where: {
-        id,
-        stage: 'HIRED',
-        convertedEmployeeId: { not: null },
-      },
-      select: { convertedEmployeeId: true },
-    })
-    if (alreadyConverted?.convertedEmployeeId) {
-      // Return existing employee without creating duplicate (200, not 201)
-      return apiSuccess({
-        employeeId: alreadyConverted.convertedEmployeeId,
-        alreadyConverted: true,
-        message: '이미 직원으로 전환된 지원서입니다.',
-      })
-    }
-
     // stage가 HIRED이고 아직 convertedEmployeeId가 없는 지원서
     const application = await prisma.application.findFirst({
       where: {
@@ -77,7 +59,25 @@ export const POST = withPermission(
         posting: { select: { companyId: true, departmentId: true, jobGradeId: true, jobCategoryId: true, employmentType: true } },
       },
     })
-    if (!application) throw notFound('지원서를 찾을 수 없거나 이미 전환된 지원서입니다.')
+    if (!application) {
+      // B4: Idempotency — 이미 전환된 경우 기존 결과 반환
+      const alreadyConverted = await prisma.application.findFirst({
+        where: {
+          id,
+          stage: 'HIRED',
+          convertedEmployeeId: { not: null },
+        },
+        select: { convertedEmployeeId: true },
+      })
+      if (alreadyConverted?.convertedEmployeeId) {
+        return apiSuccess({
+          employeeId: alreadyConverted.convertedEmployeeId,
+          alreadyConverted: true,
+          message: '이미 직원으로 전환된 지원서입니다.',
+        })
+      }
+      throw notFound('지원서를 찾을 수 없거나 이미 전환된 지원서입니다.')
+    }
 
     // companyId scope 검증
     const postingCompanyId = application.posting?.companyId
@@ -120,59 +120,76 @@ export const POST = withPermission(
       throw badRequest('jobCategoryId(직군)는 필수입니다. 공고에 직무 카테고리가 설정되어 있지 않으므로 요청에 포함해 주세요.')
     }
 
-    // 사번 중복 체크
-    if (employeeNo) {
-      const existing = await prisma.employee.findFirst({
-        where: {
-          employeeNo,
-          deletedAt: null,
-          assignments: { some: { companyId: targetCompanyId, isPrimary: true, endDate: null } },
-        },
-      })
-      if (existing) throw conflict('이미 사용 중인 사번입니다.')
-    }
-
-    const generatedNo = employeeNo ?? await generateEmployeeNo(targetCompanyId)
+    // Track B B-1h: Map ATS posting employmentType (lowercase) to Prisma enum
+    const resolvedEmploymentType = employmentType ?? mapRequisitionTypeToEmploymentType(application.posting?.employmentType)
 
     try {
-      // Create employee record (without assignment fields)
-      const emp = await prisma.employee.create({
-        data: {
-          name: application.applicant.name,
-          email: application.applicant.email,
-          employeeNo: generatedNo,
-          hireDate: new Date(startDate),
-        },
+      // B4: 모든 쓰기 작업을 단일 트랜잭션으로 묶어 원자성 보장
+      const newEmployee = await prisma.$transaction(async (tx: PrismaTx) => {
+        // B4: Idempotency guard — 트랜잭션 내부에서 재확인 (concurrent request 방어)
+        const freshApp = await tx.application.findFirst({
+          where: { id, convertedEmployeeId: null },
+          select: { id: true },
+        })
+        if (!freshApp) throw conflict('이미 전환 처리 중이거나 전환된 지원서입니다.')
+
+        // B4: 사번 생성을 트랜잭션 내부에서 수행 (race condition 방어)
+        let generatedNo = employeeNo
+        if (!generatedNo) {
+          generatedNo = await generateEmployeeNoTx(tx, targetCompanyId)
+        } else {
+          // 사번 중복 체크
+          const existing = await tx.employee.findFirst({
+            where: {
+              employeeNo: generatedNo,
+              deletedAt: null,
+              assignments: { some: { companyId: targetCompanyId, isPrimary: true, endDate: null } },
+            },
+          })
+          if (existing) throw conflict('이미 사용 중인 사번입니다.')
+        }
+
+        // 1. Create employee record
+        const emp = await tx.employee.create({
+          data: {
+            name: application.applicant.name,
+            email: application.applicant.email,
+            employeeNo: generatedNo,
+            hireDate: new Date(startDate),
+          },
+        })
+
+        // 2. Create initial assignment (inlined — createAssignment uses its own tx)
+        await tx.employeeAssignment.create({
+          data: {
+            employeeId: emp.id,
+            effectiveDate: new Date(startDate),
+            endDate: null,
+            changeType: 'HIRE',
+            companyId: targetCompanyId,
+            departmentId: resolvedDepartmentId,
+            jobGradeId: resolvedJobGradeId,
+            jobCategoryId: resolvedJobCategoryId,
+            employmentType: resolvedEmploymentType,
+            status: 'ACTIVE',
+            isPrimary: true,
+          },
+        })
+
+        // 3. B4: Atomic lock — convertedEmployeeId: null 조건으로 중복 전환 방어
+        const updated = await tx.application.updateMany({
+          where: { id, convertedEmployeeId: null },
+          data: {
+            convertedEmployeeId: emp.id,
+            convertedAt: new Date(),
+          },
+        })
+        if (updated.count === 0) throw conflict('이미 전환 처리 중이거나 전환된 지원서입니다.')
+
+        return emp
       })
 
-      // Create initial assignment (handles its own transaction internally)
-      // Track B B-1h: Map ATS posting employmentType (lowercase) to Prisma enum
-      const resolvedEmploymentType = employmentType ?? mapRequisitionTypeToEmploymentType(application.posting?.employmentType)
-      await createAssignment({
-        employeeId: emp.id,
-        effectiveDate: new Date(startDate),
-        changeType: 'HIRE',
-        companyId: targetCompanyId,
-        departmentId: resolvedDepartmentId,
-        jobGradeId: resolvedJobGradeId,
-        jobCategoryId: resolvedJobCategoryId,
-        employmentType: resolvedEmploymentType,
-        status: 'ACTIVE',
-        isPrimary: true,
-      })
-
-      // Link application to the new employee
-      await prisma.application.update({
-        where: { id },
-        data: {
-          convertedEmployeeId: emp.id,
-          convertedAt: new Date(),
-        },
-      })
-
-      const newEmployee = emp
-
-      // E-3: Emit EMPLOYEE_HIRED event → triggers auto-onboarding pipeline
+      // B4: eventBus.publish는 트랜잭션 커밋 이후 실행
       void eventBus.publish(DOMAIN_EVENTS.EMPLOYEE_HIRED, {
         ctx: {
           companyId: targetCompanyId,
@@ -211,11 +228,11 @@ export const POST = withPermission(
 
 // ─── Helper ───────────────────────────────────────────────
 
-async function generateEmployeeNo(companyId: string): Promise<string> {
+async function generateEmployeeNoTx(tx: PrismaTx, companyId: string): Promise<string> {
   const year = new Date().getFullYear()
   const prefix = `EMP-${year}-`
 
-  const last = await prisma.employee.findFirst({
+  const last = await tx.employee.findFirst({
     where: {
       employeeNo: { startsWith: prefix },
       assignments: { some: { companyId, isPrimary: true, endDate: null } },

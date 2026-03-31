@@ -9,7 +9,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
 const checkSchema = z.object({
@@ -31,7 +31,7 @@ interface DuplicateMatch {
 }
 
 export const POST = withPermission(
-  async (req: NextRequest, _context: { params: Promise<Record<string, string>> }, _user: SessionUser) => {
+  async (req: NextRequest, _context: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const body: unknown = await req.json()
     const parsed = checkSchema.safeParse(body)
     if (!parsed.success) {
@@ -42,9 +42,14 @@ export const POST = withPermission(
     const matches: DuplicateMatch[] = []
     const seenIds = new Set<string>()
 
+    // Company isolation: Applicant has no companyId, filter via applications → posting
+    const companyFilter = user.role === ROLE.SUPER_ADMIN
+      ? {}
+      : { applications: { some: { posting: { companyId: user.companyId } } } }
+
     // ── Tier 1: 이메일 정확 매칭 (score = 1.0) ─────────────────
-    const emailMatch = await prisma.applicant.findUnique({
-      where: { email },
+    const emailMatch = await prisma.applicant.findFirst({
+      where: { email, ...companyFilter },
       select: {
         id: true,
         name: true,
@@ -79,6 +84,7 @@ export const POST = withPermission(
         where: {
           phone,
           NOT: { id: { in: [...seenIds] } },
+          ...companyFilter,
         },
         select: {
           id: true,
@@ -120,6 +126,7 @@ export const POST = withPermission(
             name: { equals: name, mode: 'insensitive' },
             birthDate: dob,
             NOT: { id: { in: [...seenIds] } },
+            ...companyFilter,
           },
           select: {
             id: true,

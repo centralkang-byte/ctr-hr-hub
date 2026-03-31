@@ -131,39 +131,38 @@ export const POST = withPermission(
 
     try {
       const result = await prisma.$transaction(async (tx) => {
-        // Upsert applicant by email
-        const applicant = await tx.applicant.upsert({
+        // Find existing applicant by email (create-only — never update existing data)
+        let applicant = await tx.applicant.findUnique({
           where: { email },
-          create: {
-            name,
-            email,
-            phone: phone ?? null,
-            source,
-            resumeKey: resumeKey ?? null,
-            portfolioUrl: portfolioUrl ?? null,
-            memo: memo ?? null,
-          },
-          update: {
-            name,
-            phone: phone ?? undefined,
-            resumeKey: resumeKey ?? undefined,
-            portfolioUrl: portfolioUrl ?? undefined,
-            memo: memo ?? undefined,
-          },
         })
 
-        // Check if applicant already applied to this posting
-        const existingApplication = await tx.application.findUnique({
-          where: {
-            postingId_applicantId: {
-              postingId,
-              applicantId: applicant.id,
+        if (applicant) {
+          // Check if applicant already applied to this posting
+          const existingApplication = await tx.application.findUnique({
+            where: {
+              postingId_applicantId: {
+                postingId,
+                applicantId: applicant.id,
+              },
             },
-          },
-        })
+          })
 
-        if (existingApplication) {
-          throw conflict('이 지원자는 이미 해당 공고에 지원하였습니다.')
+          if (existingApplication) {
+            throw conflict('이 지원자는 이미 해당 공고에 지원하였습니다.')
+          }
+        } else {
+          // Create new applicant
+          applicant = await tx.applicant.create({
+            data: {
+              name,
+              email,
+              phone: phone ?? null,
+              source,
+              resumeKey: resumeKey ?? null,
+              portfolioUrl: portfolioUrl ?? null,
+              memo: memo ?? null,
+            },
+          })
         }
 
         // Create application

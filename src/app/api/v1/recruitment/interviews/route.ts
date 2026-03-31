@@ -6,7 +6,7 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
+import { badRequest, conflict, handlePrismaError } from '@/lib/errors'
 import { withPermission, withAuth, hasPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
@@ -124,6 +124,30 @@ export const POST = withPermission(
 
     if (!application) {
       throw badRequest('지원서를 찾을 수 없거나 접근 권한이 없습니다.')
+    }
+
+    // 1H: 과거 날짜 면접 스케줄링 차단
+    const scheduledDate = new Date(data.scheduledAt)
+    if (scheduledDate <= new Date()) {
+      throw badRequest('과거 날짜에는 면접을 스케줄링할 수 없습니다.')
+    }
+
+    // 1H: 면접관 이중 예약 방지
+    const endTime = new Date(scheduledDate.getTime() + data.durationMinutes * 60 * 1000)
+    const overlapping = await prisma.interviewSchedule.findFirst({
+      where: {
+        interviewerId: data.interviewerId,
+        status: 'SCHEDULED',
+        scheduledAt: { lt: endTime },
+        AND: {
+          scheduledAt: {
+            gte: new Date(scheduledDate.getTime() - data.durationMinutes * 60 * 1000),
+          },
+        },
+      },
+    })
+    if (overlapping) {
+      throw conflict('해당 면접관의 다른 면접 일정과 시간이 겹칩니다.')
     }
 
     try {

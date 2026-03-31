@@ -6,7 +6,7 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiError } from '@/lib/api'
-import { badRequest, unauthorized } from '@/lib/errors'
+import { badRequest, unauthorized, conflict } from '@/lib/errors'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
@@ -29,6 +29,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const parsed = checkinSchema.safeParse(body)
     if (!parsed.success) throw badRequest('잘못된 요청입니다.', { issues: parsed.error.issues })
+
+    // 동일 주차 중복 체크
+    const existing = await prisma.onboardingCheckin.findFirst({
+      where: { employeeId: user.employeeId, checkinWeek: parsed.data.checkinWeek },
+    })
+    if (existing) {
+      throw conflict('이미 해당 주차의 체크인이 제출되었습니다.')
+    }
 
     const checkin = await prisma.onboardingCheckin.create({
       data: {

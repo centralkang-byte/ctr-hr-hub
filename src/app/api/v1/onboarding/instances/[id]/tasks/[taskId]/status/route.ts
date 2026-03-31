@@ -72,17 +72,11 @@ export const PUT = withPermission(
                 include: { task: true },
             })
 
-            // 🚨 Trap 8: Synchronous check inside $transaction
-            if (targetStatus === 'DONE') {
-                const allTasks = await tx.employeeOnboardingTask.findMany({
-                    where: { employeeOnboardingId: onboardingId },
-                    include: { task: true },
-                })
-
-                const requiredTasks = allTasks.filter((t) => t.task.isRequired)
-                const allRequiredDone = requiredTasks.every((t) => t.status === 'DONE')
-
-                if (allRequiredDone) {
+            // 1I: 최초 태스크 액션 시 NOT_STARTED → IN_PROGRESS 전환
+            // (COMPLETED 전환은 sign-off에서만 처리)
+            if (targetStatus === 'IN_PROGRESS' || targetStatus === 'DONE') {
+                const onboarding = task.employeeOnboarding
+                if (onboarding.status === 'NOT_STARTED') {
                     await tx.employeeOnboarding.update({
                         where: { id: onboardingId },
                         data: { status: 'IN_PROGRESS' },

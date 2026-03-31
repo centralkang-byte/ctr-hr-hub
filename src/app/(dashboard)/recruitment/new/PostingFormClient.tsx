@@ -79,7 +79,15 @@ export default function PostingFormClient({
     deadlineDate: z.string().optional(),
     recruiterId: z.string().optional(),
     requiredCompetencies: z.string().optional(),
-  })
+  }).refine(
+    (data) => {
+      const min = typeof data.salaryRangeMin === 'number' ? data.salaryRangeMin : null
+      const max = typeof data.salaryRangeMax === 'number' ? data.salaryRangeMax : null
+      if (min !== null && max !== null && min > max) return false
+      return true
+    },
+    { message: t('validationSalaryRange') ?? '최소 급여가 최대 급여보다 클 수 없습니다.', path: ['salaryRangeMax'] },
+  )
 
   type FormData = z.input<typeof formSchema>
 
