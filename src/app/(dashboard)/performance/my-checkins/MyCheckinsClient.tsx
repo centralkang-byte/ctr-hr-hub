@@ -8,11 +8,12 @@ import { toast } from '@/hooks/use-toast'
 import { useCallback, useEffect, useState } from 'react'
 import { CheckCircle2, Circle, Clock, ClipboardCheck, ArrowLeft } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import type { SessionUser } from '@/types'
 
 // ─── Types ────────────────────────────────────────────────
 
-interface CycleOption { id: string; name: string; status: string; checkInMode: string | null }
+interface CycleOption { id: string; name: string; status: string; half: string; checkInMode: string | null }
 interface CheckinStatus {
     hasOneOnOne: boolean; hasManagerNote: boolean; goalsUpdated: number; goalsTotal: number
     checkInMode: string; deadline: string | null; completed: boolean
@@ -91,7 +92,8 @@ export default function MyCheckinsClient({user }: {
 
     // Route guard
     const isCheckInPeriod = cycleStatus === 'CHECK_IN'
-    const isBlocked = cycleStatus !== '' && !['CHECK_IN', 'EVAL_OPEN', 'CALIBRATION', 'FINALIZED', 'CLOSED'].includes(cycleStatus)
+    const selectedHalf = cycles.find(c => c.id === selectedCycleId)?.half ?? 'H2'
+    const isBlocked = cycleStatus !== '' && !getAllowedStatuses('checkin', selectedHalf).includes(cycleStatus)
 
     if (isBlocked) {
         return (

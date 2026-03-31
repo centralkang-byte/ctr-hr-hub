@@ -8,13 +8,14 @@ import { toast } from '@/hooks/use-toast'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Plus, Pencil, Trash2, Lock, AlertTriangle, Target, X } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import { STATUS_VARIANT } from '@/lib/styles/status'
 import type { SessionUser } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
 
-interface CycleOption { id: string; name: string; status: string }
+interface CycleOption { id: string; name: string; status: string; half: string }
 interface GoalItem {
     id: string; title: string; description: string | null; weight: number
     kpiMetrics: string | null; targetDate: string | null; status: string
@@ -135,7 +136,8 @@ export default function MyGoalsClient({user }: {
     // ─── Derived state (GEMINI FIX #1: integer arithmetic only)
     const totalWeight = goals.reduce((sum, g) => sum + Number(g.weight), 0)
     const canSubmit = totalWeight === 100 && goals.some((g) => g.status === 'DRAFT')
-    const allowedStatuses = ['ACTIVE', 'CHECK_IN', 'EVAL_OPEN', 'CALIBRATION', 'COMP_REVIEW', 'COMP_COMPLETED', 'FINALIZED', 'CLOSED']
+    const selectedHalf = cycles.find(c => c.id === selectedCycleId)?.half ?? 'H2'
+    const allowedStatuses = getAllowedStatuses('goals', selectedHalf)
     const isViewOnly = !['ACTIVE'].includes(cycleStatus)
     const isBlocked = !allowedStatuses.includes(cycleStatus) && cycleStatus !== ''
 

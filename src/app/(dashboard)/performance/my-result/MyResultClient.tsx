@@ -8,12 +8,13 @@ import { toast } from '@/hooks/use-toast'
 import { useCallback, useEffect, useState } from 'react'
 import { Award, Target, TrendingUp, Users, CheckCircle2, Clock, Info, ArrowLeft, Shield } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import type { SessionUser } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
 
-interface CycleOption { id: string; name: string; status: string }
+interface CycleOption { id: string; name: string; status: string; half: string }
 
 interface ReviewResult {
     reviewId: string
@@ -78,7 +79,7 @@ export default function MyResultClient({user }: {
         async function load() {
             try {
                 const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
-                const resultCycles = res.data.filter((c) => ['FINALIZED', 'CLOSED', 'COMP_REVIEW', 'COMP_COMPLETED'].includes(c.status))
+                const resultCycles = res.data.filter((c) => getAllowedStatuses('result', c.half ?? 'H2').includes(c.status))
                 setCycles(resultCycles)
                 if (resultCycles.length > 0) {
                     setSelectedCycleId(resultCycles[0].id)
@@ -124,7 +125,8 @@ export default function MyResultClient({user }: {
     }
 
     // Route guard
-    const allowedStatuses = ['FINALIZED', 'CLOSED', 'COMP_REVIEW', 'COMP_COMPLETED']
+    const selectedHalf = cycles.find(c => c.id === selectedCycleId)?.half ?? 'H2'
+    const allowedStatuses = getAllowedStatuses('result', selectedHalf)
     const isBlocked = cycleStatus !== '' && !allowedStatuses.includes(cycleStatus)
 
     if (isBlocked) {

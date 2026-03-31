@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Save, Send, Sparkles, Users, ChevronRight, CheckCircle2, Clock } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import type { SessionUser } from '@/types'
 import type { EvaluationSettings } from '@/types/settings'
 import AiDraftModal from '@/components/performance/AiDraftModal'
@@ -14,7 +15,7 @@ import { toast } from '@/hooks/use-toast'
 
 // ─── Types ────────────────────────────────────────────────
 
-interface CycleOption { id: string; name: string; status: string }
+interface CycleOption { id: string; name: string; status: string; half: string }
 
 interface TeamMemberEval {
   employee: { id: string; name: string; employeeCode: string; department: { name: string } | null; jobGrade: { name: string } | null }
@@ -83,7 +84,7 @@ export default function ManagerEvalClient({ user }: { user: SessionUser }) {
     async function fetchCycles() {
       try {
         const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
-        const evalCycles = res.data.filter((c) => c.status === 'EVAL_OPEN' || c.status === 'CLOSED')
+        const evalCycles = res.data.filter((c) => getAllowedStatuses('evaluation', c.half ?? 'H2').includes(c.status))
         setCycles(evalCycles)
         if (evalCycles.length > 0) setSelectedCycleId(evalCycles[0].id)
       } catch (err) { toast({ title: '평가 주기 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }

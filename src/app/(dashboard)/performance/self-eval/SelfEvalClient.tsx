@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Save, Send, Sparkles, CheckCircle2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS } from '@/lib/styles'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
@@ -18,6 +19,7 @@ interface CycleOption {
   id: string
   name: string
   status: string
+  half: string
 }
 
 interface GoalItem {
@@ -87,7 +89,7 @@ export default function SelfEvalClient({
     async function fetchCycles() {
       try {
         const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
-        const evalOpenCycles = res.data.filter((c) => c.status === 'EVAL_OPEN' || c.status === 'CLOSED')
+        const evalOpenCycles = res.data.filter((c) => getAllowedStatuses('evaluation', c.half ?? 'H2').includes(c.status))
         setCycles(evalOpenCycles)
         if (evalOpenCycles.length > 0) setSelectedCycleId(evalOpenCycles[0].id)
       } catch (err) {

@@ -6,6 +6,7 @@ import { toast } from '@/hooks/use-toast'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Save, Send, Star, ArrowLeft, Loader2, CheckCircle2, XCircle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import { useUnsavedChanges } from '@/hooks/useUnsavedChanges'
 import { cn } from '@/lib/utils'
 import type { SessionUser } from '@/types'
@@ -15,7 +16,7 @@ const COMMENT_SOFT_LIMIT = 500
 
 // ─── Types ────────────────────────────────────────────────
 
-interface CycleOption { id: string; name: string; status: string; evalDeadline?: string }
+interface CycleOption { id: string; name: string; status: string; half: string; evalDeadline?: string }
 interface GoalItem { id: string; title: string; weight: number; achievementScore: number | null }
 
 interface BeiItem { key: string; label: string; labelEn: string }
@@ -79,7 +80,7 @@ export default function MyEvaluationClient({user: _user }: {
         async function load() {
             try {
                 const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
-                const evalCycles = res.data.filter((c) => ['EVAL_OPEN', 'CALIBRATION', 'FINALIZED', 'CLOSED'].includes(c.status))
+                const evalCycles = res.data.filter((c) => getAllowedStatuses('evaluation', c.half ?? 'H2').includes(c.status))
                 setCycles(evalCycles)
                 if (evalCycles.length > 0) {
                     setSelectedCycleId(evalCycles[0].id)
@@ -244,7 +245,8 @@ export default function MyEvaluationClient({user: _user }: {
     const totalScore = Math.round(((mboAvg * mboWeight + beiAvg * beiWeight) / 100) * 100) / 100
 
     // Route guard
-    const isBlocked = cycleStatus !== '' && !['EVAL_OPEN', 'CALIBRATION', 'FINALIZED', 'CLOSED'].includes(cycleStatus)
+    const selectedHalf = cycles.find(c => c.id === selectedCycleId)?.half ?? 'H2'
+    const isBlocked = cycleStatus !== '' && !getAllowedStatuses('evaluation', selectedHalf).includes(cycleStatus)
 
     if (isBlocked) {
         return (

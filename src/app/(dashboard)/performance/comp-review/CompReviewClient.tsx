@@ -7,6 +7,7 @@ import { toast } from '@/hooks/use-toast'
 import { useCallback, useEffect, useState, memo } from 'react'
 import { DollarSign, Users, TrendingUp, AlertTriangle, Download, ShieldAlert, ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import { getGradeLabel } from '@/lib/performance/data-masking'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
@@ -15,7 +16,7 @@ import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
 
-interface CycleOption { id: string; name: string; status: string }
+interface CycleOption { id: string; name: string; status: string; half: string }
 
 interface DashboardStats {
     totalEmployees: number; avgMeritPct: number; totalBudget: number; exceptionCount: number
@@ -105,7 +106,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
         async function load() {
             try {
                 const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
-                const valid = res.data.filter((c) => ['COMP_REVIEW', 'COMP_COMPLETED'].includes(c.status))
+                const valid = res.data.filter((c) => getAllowedStatuses('compensation', c.half ?? 'H2').includes(c.status))
                 setCycles(valid)
                 if (valid.length > 0) { setSelectedCycleId(valid[0].id); setCycleStatus(valid[0].status) }
             } catch { setError(t('cycleLoadFailed')) }
@@ -194,7 +195,8 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
     }
 
     // Route guard
-    const isBlocked = cycleStatus !== '' && !['COMP_REVIEW', 'COMP_COMPLETED'].includes(cycleStatus)
+    const selectedHalf = cycles.find(c => c.id === selectedCycleId)?.half ?? 'H2'
+    const isBlocked = cycleStatus !== '' && !getAllowedStatuses('compensation', selectedHalf).includes(cycleStatus)
     if (isBlocked) {
         return (
             <div className="flex min-h-[60vh] items-center justify-center p-6">

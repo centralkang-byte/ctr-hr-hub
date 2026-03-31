@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus, Sparkles, CheckCircle2, AlertTriangle, Grid3X3 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import type { SessionUser } from '@/types'
 import EmployeeInsightPanel from '@/components/performance/EmployeeInsightPanel'
 import BiasDetectionBanner from '@/components/performance/BiasDetectionBanner'
@@ -14,7 +15,7 @@ import { toast } from '@/hooks/use-toast'
 
 // ─── Types ────────────────────────────────────────────────
 
-interface CycleOption { id: string; name: string; status: string }
+interface CycleOption { id: string; name: string; status: string; half: string }
 
 interface CalibSession {
   id: string
@@ -119,7 +120,7 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
     async function fetchCycles() {
       try {
         const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
-        const calibCycles = res.data.filter((c) => c.status === 'CALIBRATION' || c.status === 'CLOSED')
+        const calibCycles = res.data.filter((c) => getAllowedStatuses('calibration', c.half ?? 'H2').includes(c.status))
         setCycles(calibCycles)
         if (calibCycles.length > 0) setSelectedCycleId(calibCycles[0].id)
       } catch (err) { toast({ title: '평가 주기 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }); setLoading(false) }

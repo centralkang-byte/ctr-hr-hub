@@ -85,6 +85,11 @@ export function getAllowedStatuses(phase: string, half: string): string[] {
             return all.has('COMP_REVIEW') ? ['COMP_REVIEW', 'COMP_COMPLETED'] : []
         case 'checkin':     // 체크인 — 독립 활동이지만 ACTIVE 이후
             return pipeline.filter((_, i) => i >= 1)
+        case 'calibration': { // 피플세션 — H2만, CALIBRATION 이후
+            const calIdx = pipeline.indexOf('CALIBRATION')
+            if (calIdx === -1) return []  // H1에는 CALIBRATION 없음
+            return pipeline.filter((_, i) => i >= calIdx)
+        }
         default:
             return pipeline
     }

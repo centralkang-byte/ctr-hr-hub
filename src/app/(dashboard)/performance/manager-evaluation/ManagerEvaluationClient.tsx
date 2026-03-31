@@ -7,6 +7,7 @@ import { toast } from '@/hooks/use-toast'
 import { useCallback, useEffect, useState } from 'react'
 import { Star, Send, Save, AlertTriangle, CheckCircle2, Clock, X, ArrowLeft, Users } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import { getGradeLabel } from '@/lib/performance/data-masking'
 import { useUnsavedChanges } from '@/hooks/useUnsavedChanges'
 import { cn } from '@/lib/utils'
@@ -17,7 +18,7 @@ const COMMENT_SOFT_LIMIT = 500
 
 // ─── Types ────────────────────────────────────────────────
 
-interface CycleOption { id: string; name: string; status: string }
+interface CycleOption { id: string; name: string; status: string; half: string }
 
 interface TeamMember {
     employeeId: string; name: string; department: string; jobGrade: string
@@ -74,7 +75,7 @@ export default function ManagerEvaluationClient({user: _user }: {
         async function load() {
             try {
                 const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
-                const evalCycles = res.data.filter((c) => ['EVAL_OPEN', 'CALIBRATION', 'FINALIZED', 'CLOSED'].includes(c.status))
+                const evalCycles = res.data.filter((c) => getAllowedStatuses('evaluation', c.half ?? 'H2').includes(c.status))
                 setCycles(evalCycles)
                 if (evalCycles.length > 0) { setSelectedCycleId(evalCycles[0].id); setCycleStatus(evalCycles[0].status) }
             } catch { setError(t('cycleLoadFailed')) }
@@ -101,7 +102,8 @@ export default function ManagerEvaluationClient({user: _user }: {
     }
 
     // Route guard
-    const isBlocked = cycleStatus !== '' && !['EVAL_OPEN', 'CALIBRATION', 'FINALIZED', 'CLOSED'].includes(cycleStatus)
+    const selectedHalf = cycles.find(c => c.id === selectedCycleId)?.half ?? 'H2'
+    const isBlocked = cycleStatus !== '' && !getAllowedStatuses('evaluation', selectedHalf).includes(cycleStatus)
     if (isBlocked) {
         return (
             <div className="flex min-h-[60vh] items-center justify-center p-6">
