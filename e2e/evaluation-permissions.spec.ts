@@ -5,28 +5,8 @@
 // Each role should only access resources within their scope.
 // ═══════════════════════════════════════════════════════════
 
-import { test, expect, type Page } from '@playwright/test'
-import { authFile, assertPageLoads } from './helpers/auth'
-import { waitForPageReady } from './helpers/wait-helpers'
-
-// ─── Helper: assert a page route is blocked ─────────────────
-
-async function assertBlocked(page: Page, path: string) {
-  await page.goto(path)
-  await waitForPageReady(page)
-
-  const url = page.url()
-  const isForbiddenPath = url.includes(path)
-  const isRedirectedAway =
-    url.includes('error=forbidden') ||
-    url.includes('/login') ||
-    !isForbiddenPath
-
-  expect(
-    isRedirectedAway,
-    `Expected ${path} to be blocked but URL was: ${url}`,
-  ).toBe(true)
-}
+import { test, expect } from '@playwright/test'
+import { authFile, assertPageLoads, assertBlocked } from './helpers/auth'
 
 // ─── EMPLOYEE boundaries ────────────────────────────────────
 

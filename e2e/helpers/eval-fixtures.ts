@@ -56,11 +56,17 @@ async function parseApiResponse(response: { ok: () => boolean; status: () => num
   const status = response.status()
   const body = await response.json().catch(() => ({})) as Record<string, unknown>
 
+  // API error format: { error: { message: string, code?: string } }
+  const errorObj = body.error as { message?: string; code?: string } | string | undefined
+  const errorMessage = typeof errorObj === 'string'
+    ? errorObj
+    : errorObj?.message ?? undefined
+
   return {
     status,
     ok: response.ok(),
     data: body.data as Record<string, unknown> | undefined,
-    error: body.error as string | undefined,
+    error: errorMessage,
     body,
   }
 }
@@ -159,6 +165,33 @@ export async function advanceTo(
       currentStatus = newStatus as CycleStatus
     }
   }
+}
+
+// ─── Goal Management ────────────────────────────────────────
+
+interface CreateGoalParams {
+  cycleId: string
+  title: string
+  weight: number
+  description?: string
+}
+
+/**
+ * Create an MBO goal for the current user in a cycle.
+ * Returns the goal ID.
+ */
+export async function createGoal(
+  request: APIRequestContext,
+  params: CreateGoalParams,
+): Promise<string> {
+  const res = await request.post('/api/v1/performance/goals', { data: params })
+  const { ok, data, status, error } = await parseApiResponse(res)
+
+  if (!ok || !data) {
+    throw new Error(`createGoal failed (${status}): ${error ?? 'unknown'}`)
+  }
+
+  return (data as { id: string }).id
 }
 
 // ─── Evaluation Submission ──────────────────────────────────

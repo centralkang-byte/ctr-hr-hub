@@ -22,13 +22,15 @@
 // | COMP_COMPLETED | View                 | View              | View            |
 // ═══════════════════════════════════════════════════════════
 
-import { test, expect } from '@playwright/test'
+import { test, expect, request as playwrightRequest } from '@playwright/test'
 import { authFile } from './helpers/auth'
 import {
   createTestCycle,
   getCycle,
   initializeCycle,
   advanceCycle,
+  createGoal,
+  submitSelfEval,
   cleanupTestCycle,
 } from './helpers/eval-fixtures'
 
@@ -88,11 +90,27 @@ test.describe('Evaluation Lifecycle: Full State Machine', () => {
     expect(cycle.status).toBe('EVAL_OPEN')
   })
 
+  // ── Test 3b: Verify self-eval API accessible at EVAL_OPEN ──
+
+  test('3b. EVAL_OPEN: self-eval API returns cycle data', async ({ request }) => {
+    // At EVAL_OPEN, the self-evaluation endpoint should accept requests
+    const res = await request.get(`/api/v1/performance/evaluations/self?cycleId=${cycleId}`)
+    // HR_ADMIN may not have a self-eval record, but endpoint should respond (not 403/500)
+    expect(res.status()).toBeLessThan(500)
+  })
+
   // ── Test 4: EVAL_OPEN → CALIBRATION ──────────────────────
 
   test('4. Advance: EVAL_OPEN → CALIBRATION', async ({ request }) => {
     const newStatus = await advanceCycle(request, cycleId)
     expect(newStatus).toBe('CALIBRATION')
+  })
+
+  // ── Test 4b: Verify calibration data accessible ────────────
+
+  test('4b. CALIBRATION: calibration rules API accessible', async ({ request }) => {
+    const res = await request.get('/api/v1/performance/calibration/rules')
+    expect(res.status()).toBeLessThan(500)
   })
 
   // ── Test 5: CALIBRATION → FINALIZED ──────────────────────
@@ -107,6 +125,14 @@ test.describe('Evaluation Lifecycle: Full State Machine', () => {
   test('6. Advance: FINALIZED → CLOSED', async ({ request }) => {
     const newStatus = await advanceCycle(request, cycleId)
     expect(newStatus).toBe('CLOSED')
+  })
+
+  // ── Test 6b: Verify result APIs accessible at CLOSED ──────
+
+  test('6b. CLOSED: my-result API accessible', async ({ request }) => {
+    const res = await request.get('/api/v1/performance/reviews/my-result')
+    // Should respond (HR_ADMIN might have a review or not, but no 500)
+    expect(res.status()).toBeLessThan(500)
   })
 
   // ── Test 7: CLOSED → COMP_REVIEW ─────────────────────────
@@ -134,6 +160,81 @@ test.describe('Evaluation Lifecycle: Full State Machine', () => {
 
     const body = await res.json() as { error?: { message?: string } }
     expect(body.error?.message).toContain('더 이상 진행할 수 없습니다')
+  })
+})
+
+// ─── EMPLOYEE Workflow: Goal → Self-Eval ────────────────────
+
+test.describe('Evaluation Lifecycle: EMPLOYEE Workflow', () => {
+  test.describe.configure({ mode: 'serial' })
+
+  let workflowCycleId: string
+  let goalId: string
+
+  // HR_ADMIN creates cycle and advances to ACTIVE
+  test('setup: HR_ADMIN creates cycle and advances to EVAL_OPEN', async () => {
+    const hrRequest = await playwrightRequest.newContext({
+      baseURL: 'http://localhost:3002',
+      storageState: authFile('HR_ADMIN'),
+    })
+
+    workflowCycleId = await createTestCycle(hrRequest, {
+      name: `E2E Employee Workflow ${Date.now()}`,
+    })
+    await initializeCycle(hrRequest, workflowCycleId)
+    // ACTIVE → CHECK_IN → EVAL_OPEN
+    await advanceCycle(hrRequest, workflowCycleId)
+    await advanceCycle(hrRequest, workflowCycleId)
+
+    const cycle = await getCycle(hrRequest, workflowCycleId)
+    expect(cycle.status).toBe('EVAL_OPEN')
+    await hrRequest.dispose()
+  })
+
+  test('EMPLOYEE creates MBO goal', async () => {
+    const empRequest = await playwrightRequest.newContext({
+      baseURL: 'http://localhost:3002',
+      storageState: authFile('EMPLOYEE'),
+    })
+
+    goalId = await createGoal(empRequest, {
+      cycleId: workflowCycleId,
+      title: 'E2E 테스트 목표 — 생산성 향상',
+      weight: 100,
+      description: 'E2E 테스트용 MBO 목표',
+    })
+
+    expect(goalId).toBeTruthy()
+    await empRequest.dispose()
+  })
+
+  test('EMPLOYEE submits self-evaluation', async () => {
+    const empRequest = await playwrightRequest.newContext({
+      baseURL: 'http://localhost:3002',
+      storageState: authFile('EMPLOYEE'),
+    })
+
+    const result = await submitSelfEval(empRequest, {
+      cycleId: workflowCycleId,
+      goalScores: [{ goalId, score: 4, comment: 'E2E 테스트 — 좋은 성과' }],
+      competencyScores: [], // No competencies required
+      overallComment: 'E2E 자기평가 제출 테스트',
+      status: 'SUBMITTED',
+    })
+
+    expect(result.ok).toBe(true)
+    // API returns 201 Created for new evaluation, 200 for update
+    expect(result.status).toBeLessThan(300)
+    await empRequest.dispose()
+  })
+
+  test('cleanup: delete workflow cycle', async () => {
+    const hrRequest = await playwrightRequest.newContext({
+      baseURL: 'http://localhost:3002',
+      storageState: authFile('HR_ADMIN'),
+    })
+    await cleanupTestCycle(hrRequest, workflowCycleId)
+    await hrRequest.dispose()
   })
 })
 

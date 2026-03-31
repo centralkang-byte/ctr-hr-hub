@@ -62,6 +62,29 @@ export async function loginAs(
   }
 }
 
+// ─── assertBlocked ──────────────────────────────────────
+/**
+ * Assert that a page route is blocked (redirects to forbidden or login).
+ * Used by RBAC and permission boundary tests.
+ */
+export async function assertBlocked(page: Page, path: string) {
+  await page.goto(path)
+  // Wait for page to settle
+  await page.waitForLoadState('domcontentloaded', { timeout: 15000 })
+
+  const url = page.url()
+  const isForbiddenPath = url.includes(path)
+  const isRedirectedAway =
+    url.includes('error=forbidden') ||
+    url.includes('/login') ||
+    !isForbiddenPath
+
+  expect(
+    isRedirectedAway,
+    `Expected ${path} to be blocked but URL was: ${url}`,
+  ).toBe(true)
+}
+
 // ─── assertPageLoads ─────────────────────────────────────
 /**
  * Assert that a page loads without showing the error boundary.
