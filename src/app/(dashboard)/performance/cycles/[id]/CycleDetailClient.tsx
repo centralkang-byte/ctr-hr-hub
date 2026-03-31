@@ -39,14 +39,14 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
     const router = useRouter()
     const isHrAdmin = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
 
+    const [cycle, setCycle] = useState<CycleDetail | null>(null)
+
     // 동적 파이프라인: cycle.half에 따라 H1(4단계) vs H2(7단계)
     const cycleHalf = cycle?.half ?? 'H2'
     const PIPELINE_STATES = getPipelineSteps(cycleHalf).map((key) => ({
         key,
         label: CYCLE_STATUS_LABELS[key]?.ko?.split('(')[0] ?? key,
     }))
-
-    const [cycle, setCycle] = useState<CycleDetail | null>(null)
     const [participants, setParticipants] = useState<Participant[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
