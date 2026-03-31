@@ -79,6 +79,25 @@ interface EvaluationRow {
   recommendation: string
 }
 
+interface EvalDetailItem {
+  id: string
+  overallScore: number
+  competencyScores: Record<string, number>
+  strengths: string | null
+  concerns: string | null
+  recommendation: string
+  comment: string | null
+  submittedAt: string
+  evaluator: { id: string; name: string }
+}
+
+interface EvalDetailData {
+  interviewerName: string
+  applicantName: string
+  scheduledAt: string
+  evaluations: EvalDetailItem[]
+}
+
 // ─── Constants ──────────────────────────────────────────────
 
 const INTERVIEW_TYPE_KEYS: Record<string, string> = {
@@ -431,6 +450,11 @@ export function InterviewListClient({
   const [evalOpen, setEvalOpen] = useState(false)
   const [evalTarget, setEvalTarget] = useState<InterviewRow | null>(null)
 
+  // Evaluation read-only detail view
+  const [evalDetailOpen, setEvalDetailOpen] = useState(false)
+  const [evalDetailData, setEvalDetailData] = useState<EvalDetailData | null>(null)
+  const [evalDetailLoading, setEvalDetailLoading] = useState(false)
+
   // ─── Options (use t() for labels) ─────────────────────
   const STATUS_OPTIONS = [
     { value: 'ALL', label: '전체 상태' },
@@ -468,9 +492,36 @@ export function InterviewListClient({
     void fetchInterviews()
   }, [fetchInterviews])
 
-  const handleOpenEval = (row: InterviewRow) => {
-    setEvalTarget(row)
-    setEvalOpen(true)
+  const handleOpenEval = async (row: InterviewRow) => {
+    const evalCount = row.interviewEvaluations?.length ?? 0
+    if (evalCount > 0) {
+      // 평가가 있으면 읽기 전용 뷰
+      setEvalDetailLoading(true)
+      setEvalDetailOpen(true)
+      try {
+        const res = await apiClient.get<{
+          interviewer: { name: string }
+          application: { applicant: { name: string } }
+          scheduledAt: string
+          interviewEvaluations: EvalDetailItem[]
+        }>(`/api/v1/recruitment/interviews/${row.id}`)
+        setEvalDetailData({
+          interviewerName: res.data.interviewer.name,
+          applicantName: res.data.application.applicant.name,
+          scheduledAt: res.data.scheduledAt,
+          evaluations: res.data.interviewEvaluations,
+        })
+      } catch (err) {
+        toast({ title: '평가 조회 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        setEvalDetailOpen(false)
+      } finally {
+        setEvalDetailLoading(false)
+      }
+    } else {
+      // 평가가 없으면 작성 모달
+      setEvalTarget(row)
+      setEvalOpen(true)
+    }
   }
 
   const columns: DataTableColumn<InterviewRow>[] = [
@@ -697,7 +748,7 @@ export function InterviewListClient({
         />
       </div>
 
-      {/* Evaluation Modal */}
+      {/* Evaluation Modal (write) */}
       <EvaluationModal
         open={evalOpen}
         onOpenChange={setEvalOpen}
@@ -705,6 +756,92 @@ export function InterviewListClient({
         userId={user.employeeId}
         onSubmitted={fetchInterviews}
       />
+
+      {/* Evaluation Detail Dialog (read-only) */}
+      <Dialog open={evalDetailOpen} onOpenChange={setEvalDetailOpen}>
+        <DialogContent style={{ maxWidth: 560, borderRadius: 16, padding: 0 }}>
+          <DialogHeader style={{ padding: '24px 24px 0' }}>
+            <DialogTitle style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))' }}>
+              {t('evalDetailTitle')}
+            </DialogTitle>
+            {evalDetailData && (
+              <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', marginTop: 4 }}>
+                {evalDetailData.applicantName} · {evalDetailData.interviewerName} ·{' '}
+                {format(new Date(evalDetailData.scheduledAt), 'yyyy-MM-dd HH:mm')}
+              </p>
+            )}
+          </DialogHeader>
+          <div style={{ padding: '20px 24px', maxHeight: 480, overflowY: 'auto' }}>
+            {evalDetailLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : evalDetailData?.evaluations.map((ev) => (
+              <div key={ev.id} className="mb-4 last:mb-0 p-4 rounded-xl bg-muted/30 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-foreground">{ev.evaluator.name}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {format(new Date(ev.submittedAt), 'yyyy-MM-dd HH:mm')}
+                  </span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">{t('evalOverallScore')}: </span>
+                    <span className="font-bold text-foreground">{ev.overallScore}/5</span>
+                  </div>
+                  {ev.recommendation && (
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        padding: '2px 10px',
+                        borderRadius: 4,
+                        fontSize: 12,
+                        fontWeight: 600,
+                        backgroundColor: RECOMMENDATION_COLORS[ev.recommendation]?.bg ?? '#F5F5F5',
+                        color: RECOMMENDATION_COLORS[ev.recommendation]?.text ?? '#666',
+                      }}
+                    >
+                      {RECOMMENDATION_KEYS[ev.recommendation] ? t(RECOMMENDATION_KEYS[ev.recommendation]) : ev.recommendation}
+                    </span>
+                  )}
+                </div>
+                {ev.competencyScores && Object.keys(ev.competencyScores).length > 0 && (
+                  <div className="flex flex-wrap gap-3">
+                    {Object.entries(ev.competencyScores).map(([key, score]) => (
+                      <span key={key} className="text-xs text-muted-foreground">
+                        {key}: <span className="font-medium text-foreground">{score}/5</span>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                {ev.strengths && (
+                  <div>
+                    <span className="text-xs font-medium text-muted-foreground">{t('evalStrengths')}</span>
+                    <p className="text-sm text-foreground mt-1">{ev.strengths}</p>
+                  </div>
+                )}
+                {ev.concerns && (
+                  <div>
+                    <span className="text-xs font-medium text-muted-foreground">{t('evalConcerns')}</span>
+                    <p className="text-sm text-foreground mt-1">{ev.concerns}</p>
+                  </div>
+                )}
+                {ev.comment && (
+                  <div>
+                    <span className="text-xs font-medium text-muted-foreground">{t('evalComment')}</span>
+                    <p className="text-sm text-foreground mt-1">{ev.comment}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <DialogFooter style={{ padding: '0 24px 24px' }}>
+            <Button variant="outline" onClick={() => setEvalDetailOpen(false)} style={{ borderRadius: 8 }}>
+              {t('closeButton')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

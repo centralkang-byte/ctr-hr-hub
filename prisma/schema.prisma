@@ -1923,6 +1923,7 @@ model OnboardingTask {
   dueDaysAfter Int                    @map("due_days_after")
   sortOrder    Int                    @map("sort_order")
   isRequired   Boolean                @default(true) @map("is_required")
+  isSignOffTask Boolean               @default(false) @map("is_sign_off_task")
   category     OnboardingTaskCategory
 
   template                OnboardingTemplate       @relation(fields: [templateId], references: [id])

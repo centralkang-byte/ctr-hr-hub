@@ -143,6 +143,16 @@ export const PUT = withPermission(
 
     const data = parsed.data
 
+    // 2C: 평가가 존재하는 면접은 취소 불가
+    if (data.status === 'CANCELLED') {
+      const evalCount = await prisma.interviewEvaluation.count({
+        where: { scheduleId: id },
+      })
+      if (evalCount > 0) {
+        throw badRequest('평가가 제출된 면접은 취소할 수 없습니다.')
+      }
+    }
+
     try {
       const updated = await prisma.interviewSchedule.update({
         where: { id },
@@ -221,15 +231,17 @@ export const DELETE = withPermission(
       throw notFound('면접 일정을 찾을 수 없습니다.')
     }
 
-    // Delete evaluations first, then the schedule (hard delete)
-    await prisma.$transaction([
-      prisma.interviewEvaluation.deleteMany({
-        where: { scheduleId: id },
-      }),
-      prisma.interviewSchedule.delete({
-        where: { id },
-      }),
-    ])
+    // 2C: 평가가 존재하는 면접은 삭제 불가
+    const evalCount = await prisma.interviewEvaluation.count({
+      where: { scheduleId: id },
+    })
+    if (evalCount > 0) {
+      throw badRequest('평가가 제출된 면접은 삭제할 수 없습니다. 먼저 평가를 삭제해 주세요.')
+    }
+
+    await prisma.interviewSchedule.delete({
+      where: { id },
+    })
 
     const { ip, userAgent } = extractRequestMeta(req.headers)
     logAudit({

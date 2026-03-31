@@ -2,6 +2,7 @@
 
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
@@ -94,6 +95,7 @@ export default function PostingDetailClient({
   const [data, setData] = useState<PostingDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
+  const [closeConfirmOpen, setCloseConfirmOpen] = useState(false)
 
   const fetchDetail = useCallback(async () => {
     setLoading(true)
@@ -212,7 +214,7 @@ export default function PostingDetailClient({
           {data.status === 'OPEN' && (
             <>
               <button
-                onClick={handleClose}
+                onClick={() => setCloseConfirmOpen(true)}
                 disabled={actionLoading}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-orange-500/100 hover:bg-orange-600 text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
               >
@@ -402,6 +404,17 @@ export default function PostingDetailClient({
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={closeConfirmOpen}
+        onOpenChange={setCloseConfirmOpen}
+        title={t('closePostingConfirmTitle')}
+        description={t('closePostingConfirmDesc', { count: data._count.applications })}
+        confirmLabel={t('closePostingButton')}
+        cancelLabel={tCommon('cancel')}
+        variant="destructive"
+        onConfirm={handleClose}
+      />
     </div>
   )
 }

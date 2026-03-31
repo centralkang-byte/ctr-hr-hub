@@ -69,8 +69,7 @@ export async function checkSignOffEligibility(onboardingId: string): Promise<Sig
 
     // Filter required tasks, excluding the sign-off task itself
     const requiredTasks = onboarding.tasks.filter((t) => {
-        const isSignOffTask = t.task.title.includes('Sign-off') || t.task.title.includes('서명')
-        return t.task.isRequired && !isSignOffTask
+        return t.task.isRequired && !t.task.isSignOffTask
     })
 
     const requiredDoneTasks = requiredTasks.filter((t) => t.status === 'DONE')
@@ -136,8 +135,7 @@ export async function executeSignOff(
         if (!onboarding) throw new Error('Onboarding not found')
 
         const requiredTasks = onboarding.tasks.filter((t) => {
-            const isSignOff = t.task.title.includes('Sign-off') || t.task.title.includes('서명')
-            return t.task.isRequired && !isSignOff
+            return t.task.isRequired && !t.task.isSignOffTask
         })
         const allDone = requiredTasks.every((t) => t.status === 'DONE')
         if (!allDone) throw new Error('Not all required tasks are completed')
@@ -155,9 +153,7 @@ export async function executeSignOff(
         })
 
         // 3. Mark the sign-off task itself as DONE
-        const signOffTask = onboarding.tasks.find((t) =>
-            t.task.title.includes('Sign-off') || t.task.title.includes('서명'),
-        )
+        const signOffTask = onboarding.tasks.find((t) => t.task.isSignOffTask)
         if (signOffTask) {
             await tx.employeeOnboardingTask.update({
                 where: { id: signOffTask.id },

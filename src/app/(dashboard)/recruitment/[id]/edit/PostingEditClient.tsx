@@ -14,7 +14,7 @@ import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { ChevronLeft, Briefcase, Sparkles, Loader2 } from 'lucide-react'
+import { ChevronLeft, Briefcase, Sparkles, Loader2, AlertTriangle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS, BUTTON_SIZES } from '@/lib/styles'
@@ -34,6 +34,7 @@ interface EmployeeOption {
 interface PostingDetail {
   id: string
   title: string
+  status: string
   description: string
   requirements: string | null
   preferred: string | null
@@ -108,6 +109,7 @@ export default function PostingEditClient({
   const [grades, setGrades] = useState<RefOption[]>([])
   const [categories, setCategories] = useState<RefOption[]>([])
   const [employees, setEmployees] = useState<EmployeeOption[]>([])
+  const [postingStatus, setPostingStatus] = useState<string>('DRAFT')
 
   const {
     register,
@@ -146,6 +148,7 @@ export default function PostingEditClient({
       setEmployees(empRes.data)
 
       const p = postingRes.data
+      setPostingStatus(p.status)
       reset({
         title: p.title,
         description: p.description,
@@ -258,8 +261,14 @@ export default function PostingEditClient({
         </div>
       </div>
 
+      {postingStatus !== 'DRAFT' && (
+        <div className="flex items-center gap-3 p-4 mb-6 rounded-xl bg-warning/10 text-warning">
+          <AlertTriangle className="w-5 h-5 shrink-0" />
+          <p className="text-sm font-medium">{t('editNonDraftWarning')}</p>
+        </div>
+      )}
+
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       <form onSubmit={handleSubmit(onSubmit as any)}>
         <div className="bg-card border border-border rounded-xl p-6 mb-6">
           <h2 className="text-base font-bold text-foreground mb-4 tracking-[-0.02em]">{t('basicInfo')}</h2>
