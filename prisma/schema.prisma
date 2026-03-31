@@ -375,6 +375,35 @@ enum CycleHalf {
   ANNUAL
 }
 
+// ─── Phase B: QuarterlyReview Enums ─────────────────────
+
+enum Quarter {
+  Q1 // Jan-Mar
+  Q2 // Apr-Jun
+  Q3 // Jul-Sep
+  Q4 // Oct-Dec
+}
+
+enum QuarterlyReviewStatus {
+  DRAFT
+  IN_PROGRESS
+  EMPLOYEE_DONE
+  MANAGER_DONE
+  COMPLETED
+}
+
+enum SentimentType {
+  POSITIVE
+  NEUTRAL
+  CONCERN
+}
+
+enum GoalTrackingStatus {
+  ON_TRACK
+  AT_RISK
+  BEHIND
+}
+
 enum CycleStatus {
   // Existing 5 states — DO NOT RENAME (breaks Prisma migrate)
   DRAFT          // GP#4: acts as SETUP (개시)
@@ -801,6 +830,7 @@ model Company {
   mboGoals               MboGoal[]
   performanceEvaluations PerformanceEvaluation[]
   oneOnOnes              OneOnOne[]
+  quarterlyReviews       QuarterlyReview[]
   recognitions           Recognition[]
   calibrationRules       CalibrationRule[]
   calibrationSessions    CalibrationSession[]
@@ -1319,8 +1349,10 @@ model Employee {
   performanceEvalsGiven PerformanceEvaluation[] @relation("EvalEvaluator")
 
   // CFR
-  oneOnOnesAsEmployee  OneOnOne[]        @relation("OneOnOneEmployee")
-  oneOnOnesAsManager   OneOnOne[]        @relation("OneOnOneManager")
+  oneOnOnesAsEmployee          OneOnOne[]          @relation("OneOnOneEmployee")
+  oneOnOnesAsManager           OneOnOne[]          @relation("OneOnOneManager")
+  quarterlyReviewsAsEmployee   QuarterlyReview[]   @relation("QuarterlyReviewEmployee")
+  quarterlyReviewsAsManager    QuarterlyReview[]   @relation("QuarterlyReviewManager")
   recognitionsSent     Recognition[]     @relation("RecognitionSender")
   recognitionsReceived Recognition[]     @relation("RecognitionReceiver")
   recognitionLikes     RecognitionLike[]
@@ -2445,6 +2477,7 @@ model PerformanceCycle {
   peerReviewNominations  PeerReviewNomination[]
   performanceReviews     PerformanceReview[]
   oneOnOnes              OneOnOne[]                @relation("CycleOneOnOnes")
+  quarterlyReviews       QuarterlyReview[]         @relation("CycleQuarterlyReviews")
   createdAt              DateTime                 @default(now()) @map("created_at")
 
   @@map("performance_cycles")
@@ -2474,9 +2507,10 @@ model MboGoal {
   cycle     PerformanceCycle @relation(fields: [cycleId], references: [id])
   employee  Employee         @relation("MboGoalEmployee", fields: [employeeId], references: [id])
   approver  Employee?        @relation("MboGoalApprover", fields: [approvedById], references: [id])
-  company   Company          @relation(fields: [companyId], references: [id])
-  companyId String           @map("company_id")
-  progress  MboProgress[]
+  company           Company                 @relation(fields: [companyId], references: [id])
+  companyId         String                  @map("company_id")
+  progress          MboProgress[]
+  quarterlyProgress QuarterlyGoalProgress[]
 
   @@index([employeeId, cycleId])
   @@map("mbo_goals")
@@ -2583,6 +2617,80 @@ model OneOnOne {
   @@index([companyId, employeeId])
   @@index([companyId, scheduledAt])
   @@map("one_on_ones")
+}
+
+// ═══════════════════════════════════════════════════════════
+// Phase B: QuarterlyReview — 분기 체크인 (사이클 독립, 듀얼 제출)
+// ═══════════════════════════════════════════════════════════
+
+model QuarterlyReview {
+  id          String                 @id @default(uuid())
+  companyId   String                 @map("company_id")
+  employeeId  String                 @map("employee_id")
+  managerId   String                 @map("manager_id")
+  year        Int
+  quarter     Quarter
+  cycleId     String?                @map("cycle_id")
+  status      QuarterlyReviewStatus  @default(DRAFT)
+
+  // ── Employee Sections ──
+  goalHighlights       String?   @map("goal_highlights")
+  challenges           String?
+  developmentNeeds     String?   @map("development_needs")
+  employeeComments     String?   @map("employee_comments")
+  employeeSubmittedAt  DateTime? @map("employee_submitted_at")
+
+  // ── Manager Sections ──
+  managerFeedback      String?        @map("manager_feedback")
+  coachingNotes        String?        @map("coaching_notes")
+  developmentPlan      String?        @map("development_plan")
+  overallSentiment     SentimentType? @map("overall_sentiment")
+  managerSubmittedAt   DateTime?      @map("manager_submitted_at")
+
+  // ── Shared ──
+  actionItems          Json?     @map("action_items")
+
+  // ── AI ──
+  aiSummary            String?   @map("ai_summary")
+
+  // ── Audit ──
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  // ── Relations ──
+  company      Company           @relation(fields: [companyId], references: [id])
+  employee     Employee          @relation("QuarterlyReviewEmployee", fields: [employeeId], references: [id])
+  manager      Employee          @relation("QuarterlyReviewManager", fields: [managerId], references: [id])
+  cycle        PerformanceCycle? @relation("CycleQuarterlyReviews", fields: [cycleId], references: [id])
+  goalProgress QuarterlyGoalProgress[]
+
+  @@unique([employeeId, companyId, year, quarter])
+  @@index([companyId, year, quarter])
+  @@index([managerId, year, quarter])
+  @@map("quarterly_reviews")
+}
+
+model QuarterlyGoalProgress {
+  id                 String  @id @default(uuid())
+  quarterlyReviewId  String  @map("quarterly_review_id")
+  goalId             String  @map("goal_id")
+
+  // ── Snapshot (생성 시 MboGoal에서 냉동) ──
+  snapshotTitle      String  @map("snapshot_title")
+  snapshotWeight     Int     @default(0) @map("snapshot_weight")
+  snapshotTarget     String? @map("snapshot_target")
+
+  // ── Progress ──
+  progressPct        Int                 @default(0)
+  employeeComment    String?             @map("employee_comment")
+  managerComment     String?             @map("manager_comment")
+  trackingStatus     GoalTrackingStatus? @map("tracking_status")
+
+  quarterlyReview    QuarterlyReview @relation(fields: [quarterlyReviewId], references: [id], onDelete: Cascade)
+  goal               MboGoal         @relation(fields: [goalId], references: [id])
+
+  @@unique([quarterlyReviewId, goalId])
+  @@map("quarterly_goal_progress")
 }
 
 model Recognition {
