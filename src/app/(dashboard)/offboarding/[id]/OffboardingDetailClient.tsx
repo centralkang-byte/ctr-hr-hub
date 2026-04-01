@@ -85,12 +85,25 @@ interface OffboardingDetail {
   handoverToId: string | null
   status: string
   isExitInterviewCompleted: boolean
+  isItAccountDeactivated: boolean
+  isSeveranceCalculated: boolean
+  isDoNotRehire: boolean
+  doNotRehireReason: string | null
   startedAt: string
   completedAt: string | null
+  daysRemaining: number
   employee: { id: string; name: string; companyId: string }
   checklist: { id: string; name: string }
   handoverTo: { id: string; name: string } | null
   offboardingTasks: OffboardingTaskRow[]
+  progress: {
+    done: number
+    total: number
+    blocked: number
+    inProgress: number
+    pending: number
+    percentage: number
+  }
 }
 
 interface SatisfactionDetail {
@@ -225,26 +238,18 @@ export function OffboardingDetailClient({
   const [aiLoading, setAiLoading] = useState(false)
 
   // ─── Fetch offboarding detail ───
-  const fetchDetail = useCallback(() => {
+  const fetchDetail = useCallback(async () => {
     setLoading(true)
-    apiClient
-      .get<OffboardingDetail>(`/api/v1/offboarding/dashboard/${offboardingId}`)
-      .then((res) => {
-        setDetail(res.data)
-      })
-      .catch(() => {
-        apiClient
-          .getList<OffboardingDetail>('/api/v1/offboarding/dashboard', {
-            limit: 250,
-          })
-          .then((res) => {
-            const found = res.data.find((d) => d.id === offboardingId)
-            if (found) setDetail(found)
-          })
-          .catch(() => setDetail(null))
-      })
-      .finally(() => setLoading(false))
-  }, [offboardingId])
+    try {
+      const res = await apiClient.get<OffboardingDetail>(`/api/v1/offboarding/instances/${offboardingId}`)
+      setDetail(res.data)
+    } catch {
+      toast({ title: t('loadFailed'), variant: 'destructive' })
+      setDetail(null)
+    } finally {
+      setLoading(false)
+    }
+  }, [offboardingId, t])
 
   // ─── Fetch exit interview ───
   const fetchInterview = useCallback(() => {
@@ -379,6 +384,7 @@ export function OffboardingDetailClient({
   const completedCount = sortedTasks.filter((tsk) => tsk.status === 'DONE').length
   const totalCount = sortedTasks.length
   const isInProgress = detail.status === 'IN_PROGRESS'
+  const isHrOrSuperAdmin = user.role === 'HR_ADMIN' || user.role === 'SUPER_ADMIN'
 
   return (
     <div className="space-y-6 p-6">
@@ -398,16 +404,23 @@ export function OffboardingDetailClient({
         />
       </div>
 
-      {/* ─── Progress bar ─── */}
+      {/* ─── Progress + Gating Status ─── */}
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className="pt-6 space-y-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">
               {t('progressCount', { completed: completedCount, total: totalCount })}
             </span>
-            <Badge variant={isInProgress ? 'default' : 'secondary'}>
-              {isInProgress ? t('inProgress') : detail.status === 'COMPLETED' ? t('completed') : t('cancelled')}
-            </Badge>
+            <div className="flex items-center gap-2">
+              {detail.daysRemaining !== undefined && detail.daysRemaining <= 7 && isInProgress && (
+                <Badge variant="destructive">
+                  D-{Math.max(0, detail.daysRemaining)}
+                </Badge>
+              )}
+              <Badge variant={isInProgress ? 'default' : 'secondary'}>
+                {isInProgress ? t('inProgress') : detail.status === 'COMPLETED' ? t('completed') : t('cancelled')}
+              </Badge>
+            </div>
           </div>
           <div className="w-full bg-muted rounded-full h-2.5">
             <div
@@ -417,6 +430,60 @@ export function OffboardingDetailClient({
               }}
             />
           </div>
+
+          {/* Gating checklist */}
+          {isInProgress && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+              <GateItem
+                label={t('gateRequiredTasks')}
+                done={completedCount === totalCount}
+              />
+              <GateItem
+                label={t('gateItAccount')}
+                done={detail.isItAccountDeactivated}
+                onToggle={isHrOrSuperAdmin ? async () => {
+                  await apiClient.patch(`/api/v1/offboarding/instances/${offboardingId}`, {
+                    isItAccountDeactivated: !detail.isItAccountDeactivated,
+                  })
+                  fetchDetail()
+                } : undefined}
+              />
+              <GateItem
+                label={t('gateExitInterview')}
+                done={detail.isExitInterviewCompleted}
+              />
+              <GateItem
+                label={t('gateHandover')}
+                done={!detail.handoverToId || sortedTasks
+                  .filter((tsk) => tsk.completedById?.toString() === detail.handoverToId)
+                  .every((tsk) => tsk.status === 'DONE')}
+              />
+            </div>
+          )}
+
+          {/* Complete button */}
+          {isInProgress && isHrOrSuperAdmin && (
+            <div className="flex justify-end pt-2">
+              <Button
+                onClick={async () => {
+                  try {
+                    await apiClient.post(`/api/v1/offboarding/instances/${offboardingId}/complete`)
+                    toast({ title: t('completeSuccess') })
+                    fetchDetail()
+                  } catch (err) {
+                    toast({
+                      title: t('completeFailed'),
+                      description: err instanceof Error ? err.message : '',
+                      variant: 'destructive',
+                    })
+                  }
+                }}
+              >
+                <CheckCircle2 className="mr-1.5 h-4 w-4" />
+                {t('completeOffboarding')}
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -525,22 +592,40 @@ export function OffboardingDetailClient({
         {/* Tab 2: Handover */}
         <TabsContent value="handover" className="mt-4">
           <div className="space-y-4">
+            {/* Handover Person */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">{t('handoverPerson')}</CardTitle>
               </CardHeader>
               <CardContent>
                 {detail.handoverTo ? (
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ctr-primary/10">
-                      <User className="h-5 w-5 text-ctr-primary" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-ctr-primary/10">
+                        <User className="h-5 w-5 text-ctr-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{detail.handoverTo.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {t('handoverAssigned')}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium">{detail.handoverTo.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {t('handoverAssigned')}
-                      </p>
-                    </div>
+                    {isInProgress && isHrOrSuperAdmin && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={async () => {
+                          await apiClient.patch(`/api/v1/offboarding/instances/${offboardingId}`, {
+                            handoverToId: null,
+                          })
+                          toast({ title: t('handoverCleared') })
+                          fetchDetail()
+                        }}
+                      >
+                        {t('clearHandover')}
+                      </Button>
+                    )}
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">
@@ -550,25 +635,97 @@ export function OffboardingDetailClient({
               </CardContent>
             </Card>
 
+            {/* Handover Tasks (filtered) */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">{t('handoverDocuments')}</CardTitle>
-                <CardDescription>
-                  {t('handoverDocumentsDesc')}
-                </CardDescription>
+                <CardTitle className="text-base">{t('handoverTasks')}</CardTitle>
+                <CardDescription>{t('handoverTasksDesc')}</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-border p-8 text-center">
-                  <Upload className="h-8 w-8 text-muted-foreground/60 mb-2" />
-                  <p className="text-sm text-muted-foreground">
-                    {t('fileUploadPending')}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {t('fileUploadNote')}
-                  </p>
-                </div>
+                {(() => {
+                  const handoverTasks = sortedTasks.filter(
+                    (tsk) => tsk.task.assigneeType === 'MANAGER' || (detail.handoverToId && tsk.completedById?.toString() === detail.handoverToId),
+                  )
+                  if (handoverTasks.length === 0) {
+                    return (
+                      <p className="text-sm text-muted-foreground text-center py-4">
+                        {t('noHandoverTasks')}
+                      </p>
+                    )
+                  }
+                  const handoverDone = handoverTasks.filter((tsk) => tsk.status === 'DONE').length
+                  return (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                        <span>{t('handoverProgress', { done: handoverDone, total: handoverTasks.length })}</span>
+                        <div className="flex-1 bg-muted rounded-full h-1.5">
+                          <div
+                            className="bg-emerald-500 h-1.5 rounded-full transition-all"
+                            style={{ width: `${handoverTasks.length > 0 ? (handoverDone / handoverTasks.length) * 100 : 0}%` }}
+                          />
+                        </div>
+                      </div>
+                      {handoverTasks.map((tsk) => (
+                        <div
+                          key={tsk.id}
+                          className={`flex items-center justify-between rounded-xl px-4 py-3 ${
+                            tsk.status === 'DONE' ? 'bg-emerald-500/5' : 'bg-muted/50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <CheckCircle2
+                              className={`h-4 w-4 ${tsk.status === 'DONE' ? 'text-emerald-600' : 'text-muted-foreground/40'}`}
+                            />
+                            <span className={`text-sm ${tsk.status === 'DONE' ? 'line-through text-muted-foreground' : ''}`}>
+                              {tsk.task.title}
+                            </span>
+                          </div>
+                          <Badge className={ASSIGNEE_COLORS[tsk.task.assigneeType] ?? 'bg-muted'}>
+                            {ASSIGNEE_LABELS[tsk.task.assigneeType] ?? tsk.task.assigneeType}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                })()}
               </CardContent>
             </Card>
+
+            {/* Do Not Rehire Flag */}
+            {isHrOrSuperAdmin && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">{t('doNotRehireTitle')}</CardTitle>
+                  <CardDescription>{t('doNotRehireDesc')}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={detail.isDoNotRehire}
+                        onCheckedChange={async (checked) => {
+                          const reason = checked ? prompt(t('doNotRehireReasonPrompt')) : null
+                          await apiClient.patch(`/api/v1/offboarding/instances/${offboardingId}`, {
+                            isDoNotRehire: checked,
+                            doNotRehireReason: reason,
+                          })
+                          toast({ title: checked ? t('doNotRehireSet') : t('doNotRehireCleared') })
+                          fetchDetail()
+                        }}
+                      />
+                      <Label className="text-sm">
+                        {detail.isDoNotRehire ? t('doNotRehireActive') : t('doNotRehireInactive')}
+                      </Label>
+                    </div>
+                    {detail.doNotRehireReason && (
+                      <span className="text-xs text-muted-foreground">
+                        {t('doNotRehireReasonLabel')}: {detail.doNotRehireReason}
+                      </span>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </TabsContent>
 
@@ -955,5 +1112,33 @@ export function OffboardingDetailClient({
         </TabsContent>
       </Tabs>
     </div>
+  )
+}
+
+// ─── GateItem Component ────────────────────────────────────
+
+function GateItem({
+  label,
+  done,
+  onToggle,
+}: {
+  label: string
+  done: boolean
+  onToggle?: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      disabled={!onToggle}
+      className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors ${
+        done
+          ? 'bg-emerald-500/10 text-emerald-700'
+          : 'bg-amber-500/10 text-amber-700'
+      } ${onToggle ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
+    >
+      <CheckCircle2 className={`h-3.5 w-3.5 ${done ? 'text-emerald-600' : 'text-amber-500'}`} />
+      {label}
+    </button>
   )
 }
