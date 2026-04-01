@@ -1746,7 +1746,10 @@
         "cycleLabel": "Performance Cycle (Optional)",
         "create": "Create"
       }
-    }
+    },
+    "checkinDeprecation": "Transitioned to Quarterly Reviews",
+    "checkinDeprecationDesc": "Mid-cycle check-ins have been replaced by Quarterly Reviews. Please update your goal progress in Quarterly Reviews.",
+    "goToQuarterlyReview": "Go to Quarterly Review"
   },
   "recruitment": {
     "title": "Recruitment",
@@ -5711,10 +5714,22 @@
       "body": "{name}, you have {remainingDays} days of leave remaining. {daysUntilAnniversary} days until your anniversary. We recommend using your leave."
     },
     "recruitment": {
-      "offerSent": { "title": "Offer Sent", "body": "An offer has been sent to {applicantName} for [{postingTitle}]." },
-      "offerAccepted": { "title": "Offer Accepted", "body": "{applicantName} has accepted the offer for [{postingTitle}]." },
-      "offerDeclined": { "title": "Offer Declined", "body": "{applicantName} has declined the offer for [{postingTitle}]. Reason: {declineReason}" },
-      "interviewScheduled": { "title": "Interview Scheduled", "body": "Interview for [{postingTitle}] with {applicantName} has been scheduled at {scheduledAt} ({timezone})." }
+      "offerSent": {
+        "title": "Offer Sent",
+        "body": "An offer has been sent to {applicantName} for [{postingTitle}]."
+      },
+      "offerAccepted": {
+        "title": "Offer Accepted",
+        "body": "{applicantName} has accepted the offer for [{postingTitle}]."
+      },
+      "offerDeclined": {
+        "title": "Offer Declined",
+        "body": "{applicantName} has declined the offer for [{postingTitle}]. Reason: {declineReason}"
+      },
+      "interviewScheduled": {
+        "title": "Interview Scheduled",
+        "body": "Interview for [{postingTitle}] with {applicantName} has been scheduled at {scheduledAt} ({timezone})."
+      }
     }
   }
 }

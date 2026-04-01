@@ -1625,36 +1625,131 @@
       "myTitle": "Mi revisión trimestral",
       "adminTitle": "Gestión de revisión trimestral",
       "description": "Revisar el desempeño trimestral e intercambiar retroalimentación",
-      "status": { "DRAFT": "Borrador", "IN_PROGRESS": "En progreso", "EMPLOYEE_DONE": "Empleado enviado", "MANAGER_DONE": "Gerente enviado", "COMPLETED": "Completado" },
-      "sentiment": { "POSITIVE": "Positivo", "NEUTRAL": "Neutral", "CONCERN": "Preocupación" },
-      "tracking": { "ON_TRACK": "En curso", "AT_RISK": "En riesgo", "BEHIND": "Retrasado" },
-      "dashboard": { "totalReviews": "Total de revisiones", "completionRate": "Tasa de finalización", "employeeSubmitted": "Empleado enviado", "overdue": "Pendiente" },
-      "filter": { "year": "Año", "quarter": "Trimestre", "status": "Estado", "allStatuses": "Todos los estados", "allQuarters": "Todos los trimestres" },
-      "quarter": { "Q1": "T1", "Q2": "T2", "Q3": "T3", "Q4": "T4" },
-      "section": { "goalProgress": "Progreso de objetivos", "employeeReflection": "Reflexión del empleado", "managerFeedback": "Retroalimentación del gerente", "actionItems": "Plan de acción" },
+      "status": {
+        "DRAFT": "Borrador",
+        "IN_PROGRESS": "En progreso",
+        "EMPLOYEE_DONE": "Empleado enviado",
+        "MANAGER_DONE": "Gerente enviado",
+        "COMPLETED": "Completado"
+      },
+      "sentiment": {
+        "POSITIVE": "Positivo",
+        "NEUTRAL": "Neutral",
+        "CONCERN": "Preocupación"
+      },
+      "tracking": {
+        "ON_TRACK": "En curso",
+        "AT_RISK": "En riesgo",
+        "BEHIND": "Retrasado"
+      },
+      "dashboard": {
+        "totalReviews": "Total de revisiones",
+        "completionRate": "Tasa de finalización",
+        "employeeSubmitted": "Empleado enviado",
+        "overdue": "Pendiente"
+      },
+      "filter": {
+        "year": "Año",
+        "quarter": "Trimestre",
+        "status": "Estado",
+        "allStatuses": "Todos los estados",
+        "allQuarters": "Todos los trimestres"
+      },
+      "quarter": {
+        "Q1": "T1",
+        "Q2": "T2",
+        "Q3": "T3",
+        "Q4": "T4"
+      },
+      "section": {
+        "goalProgress": "Progreso de objetivos",
+        "employeeReflection": "Reflexión del empleado",
+        "managerFeedback": "Retroalimentación del gerente",
+        "actionItems": "Plan de acción"
+      },
       "field": {
-        "goalHighlights": "Logros clave", "goalHighlightsPlaceholder": "Describe tus logros principales este trimestre",
-        "challenges": "Desafíos", "challengesPlaceholder": "Describe las dificultades u obstáculos",
-        "developmentNeeds": "Necesidades de desarrollo", "developmentNeedsPlaceholder": "Describe las áreas que necesitan crecimiento",
-        "employeeComments": "Comentarios adicionales", "employeeCommentsPlaceholder": "Cualquier otro pensamiento que quieras compartir",
-        "managerFeedback": "Retroalimentación del gerente", "managerFeedbackPlaceholder": "Proporciona retroalimentación sobre el desempeño",
-        "coachingNotes": "Notas de coaching", "coachingNotesPlaceholder": "Proporciona consejos específicos para mejorar",
-        "developmentPlan": "Plan de desarrollo", "developmentPlanPlaceholder": "Describe planes para el crecimiento futuro",
-        "progressPct": "Progreso", "employeeComment": "Comentario del empleado", "managerComment": "Comentario del gerente"
+        "goalHighlights": "Logros clave",
+        "goalHighlightsPlaceholder": "Describe tus logros principales este trimestre",
+        "challenges": "Desafíos",
+        "challengesPlaceholder": "Describe las dificultades u obstáculos",
+        "developmentNeeds": "Necesidades de desarrollo",
+        "developmentNeedsPlaceholder": "Describe las áreas que necesitan crecimiento",
+        "employeeComments": "Comentarios adicionales",
+        "employeeCommentsPlaceholder": "Cualquier otro pensamiento que quieras compartir",
+        "managerFeedback": "Retroalimentación del gerente",
+        "managerFeedbackPlaceholder": "Proporciona retroalimentación sobre el desempeño",
+        "coachingNotes": "Notas de coaching",
+        "coachingNotesPlaceholder": "Proporciona consejos específicos para mejorar",
+        "developmentPlan": "Plan de desarrollo",
+        "developmentPlanPlaceholder": "Describe planes para el crecimiento futuro",
+        "progressPct": "Progreso",
+        "employeeComment": "Comentario del empleado",
+        "managerComment": "Comentario del gerente"
       },
-      "action": { "save": "Guardar borrador", "submitEmployee": "Enviar revisión", "submitManager": "Enviar retroalimentación", "reopen": "Reabrir", "bulkCreate": "Crear en masa", "viewDetail": "Ver detalle", "backToList": "Volver a la lista" },
+      "action": {
+        "save": "Guardar borrador",
+        "submitEmployee": "Enviar revisión",
+        "submitManager": "Enviar retroalimentación",
+        "reopen": "Reabrir",
+        "bulkCreate": "Crear en masa",
+        "viewDetail": "Ver detalle",
+        "backToList": "Volver a la lista"
+      },
       "confirm": {
-        "submitTitle": "¿Enviar esta revisión?", "submitEmployeeDesc": "No podrás editar después de enviar. Se enviará a tu gerente.",
+        "submitTitle": "¿Enviar esta revisión?",
+        "submitEmployeeDesc": "No podrás editar después de enviar. Se enviará a tu gerente.",
         "submitManagerDesc": "No podrás editar después de enviar. La revisión se completará.",
-        "reopenTitle": "¿Reabrir esta revisión?", "reopenDesc": "El empleado y el gerente podrán editar de nuevo.",
-        "bulkCreateTitle": "¿Crear revisiones trimestrales en masa?", "bulkCreateDesc": "Se crearán revisiones para {count} empleados."
+        "reopenTitle": "¿Reabrir esta revisión?",
+        "reopenDesc": "El empleado y el gerente podrán editar de nuevo.",
+        "bulkCreateTitle": "¿Crear revisiones trimestrales en masa?",
+        "bulkCreateDesc": "Se crearán revisiones para {count} empleados."
       },
-      "toast": { "saveSuccess": "Borrador guardado", "submitSuccess": "Revisión enviada", "reopenSuccess": "Revisión reabierta", "bulkCreateSuccess": "{count} revisiones creadas", "loadFailed": "Error al cargar revisiones", "saveFailed": "Error al guardar", "submitFailed": "Error al enviar" },
-      "empty": { "title": "Sin revisiones trimestrales", "description": "No se encontraron revisiones para este período" },
-      "table": { "employee": "Empleado", "manager": "Gerente", "quarterCol": "Trimestre", "status": "Estado", "sentiment": "Sentimiento", "submittedAt": "Fecha de envío", "updatedAt": "Actualizado" },
-      "actionItem": { "description": "Descripción", "descriptionPlaceholder": "Ingresa la descripción del plan", "dueDate": "Fecha límite", "assignee": "Responsable", "addItem": "Agregar ítem", "completed": "Completado", "employee": "Empleado", "manager": "Gerente" },
-      "bulkCreate": { "title": "Crear revisiones trimestrales en masa", "description": "Crear revisiones trimestrales para empleados seleccionados", "selectEmployees": "Seleccionar empleados", "selectedCount": "{count} seleccionados", "yearLabel": "Año", "quarterLabel": "Trimestre", "cycleLabel": "Ciclo de desempeño (Opcional)", "create": "Crear" }
-    }
+      "toast": {
+        "saveSuccess": "Borrador guardado",
+        "submitSuccess": "Revisión enviada",
+        "reopenSuccess": "Revisión reabierta",
+        "bulkCreateSuccess": "{count} revisiones creadas",
+        "loadFailed": "Error al cargar revisiones",
+        "saveFailed": "Error al guardar",
+        "submitFailed": "Error al enviar"
+      },
+      "empty": {
+        "title": "Sin revisiones trimestrales",
+        "description": "No se encontraron revisiones para este período"
+      },
+      "table": {
+        "employee": "Empleado",
+        "manager": "Gerente",
+        "quarterCol": "Trimestre",
+        "status": "Estado",
+        "sentiment": "Sentimiento",
+        "submittedAt": "Fecha de envío",
+        "updatedAt": "Actualizado"
+      },
+      "actionItem": {
+        "description": "Descripción",
+        "descriptionPlaceholder": "Ingresa la descripción del plan",
+        "dueDate": "Fecha límite",
+        "assignee": "Responsable",
+        "addItem": "Agregar ítem",
+        "completed": "Completado",
+        "employee": "Empleado",
+        "manager": "Gerente"
+      },
+      "bulkCreate": {
+        "title": "Crear revisiones trimestrales en masa",
+        "description": "Crear revisiones trimestrales para empleados seleccionados",
+        "selectEmployees": "Seleccionar empleados",
+        "selectedCount": "{count} seleccionados",
+        "yearLabel": "Año",
+        "quarterLabel": "Trimestre",
+        "cycleLabel": "Ciclo de desempeño (Opcional)",
+        "create": "Crear"
+      }
+    },
+    "checkinDeprecation": "Transición a Revisiones Trimestrales",
+    "checkinDeprecationDesc": "Los check-ins de medio ciclo han sido reemplazados por Revisiones Trimestrales. Actualice el progreso de sus objetivos en Revisiones Trimestrales.",
+    "goToQuarterlyReview": "Ir a Revisión Trimestral"
   },
   "recruitment": {
     "title": "Recruitment",
@@ -5601,10 +5696,22 @@
       "body": "{name}, le quedan {remainingDays} días de vacaciones. Faltan {daysUntilAnniversary} días para su aniversario. Le recomendamos usar sus vacaciones."
     },
     "recruitment": {
-      "offerSent": { "title": "Oferta enviada", "body": "Se ha enviado una oferta a {applicantName} para [{postingTitle}]." },
-      "offerAccepted": { "title": "Oferta aceptada", "body": "{applicantName} ha aceptado la oferta para [{postingTitle}]." },
-      "offerDeclined": { "title": "Oferta rechazada", "body": "{applicantName} ha rechazado la oferta para [{postingTitle}]. Motivo: {declineReason}" },
-      "interviewScheduled": { "title": "Entrevista programada", "body": "La entrevista para [{postingTitle}] con {applicantName} ha sido programada para {scheduledAt} ({timezone})." }
+      "offerSent": {
+        "title": "Oferta enviada",
+        "body": "Se ha enviado una oferta a {applicantName} para [{postingTitle}]."
+      },
+      "offerAccepted": {
+        "title": "Oferta aceptada",
+        "body": "{applicantName} ha aceptado la oferta para [{postingTitle}]."
+      },
+      "offerDeclined": {
+        "title": "Oferta rechazada",
+        "body": "{applicantName} ha rechazado la oferta para [{postingTitle}]. Motivo: {declineReason}"
+      },
+      "interviewScheduled": {
+        "title": "Entrevista programada",
+        "body": "La entrevista para [{postingTitle}] con {applicantName} ha sido programada para {scheduledAt} ({timezone})."
+      }
     }
   },
   "header": {

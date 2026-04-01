@@ -16,6 +16,7 @@ import {
   TrendingUp,
   TrendingDown,
   ArrowUpRight,
+  ClipboardCheck,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { WidgetSkeleton } from '@/components/shared/WidgetSkeleton'
@@ -41,6 +42,7 @@ interface HrAdminSummary {
   turnoverRate: number
   openPositions: number
   pendingLeaves: number
+  quarterlyReviewStats?: { total: number; completed: number; pending: number; completionRate: number }
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -160,6 +162,54 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
 
         {/* Right sidebar — compact above-fold cards only */}
         <div className="space-y-4">
+          {/* 분기 리뷰 현황 */}
+          <Card>
+            <CardHeader className="pb-2 pt-4">
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <ClipboardCheck className="h-4 w-4 text-primary" />
+                분기 리뷰 현황
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 pb-4">
+              {(() => {
+                const stats = summary?.quarterlyReviewStats
+                if (!stats || stats.total === 0) {
+                  return (
+                    <p className="text-sm text-muted-foreground">
+                      이번 분기 리뷰가 아직 생성되지 않았습니다
+                    </p>
+                  )
+                }
+                return (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">완료율</span>
+                      <span className="text-sm font-bold text-foreground">
+                        {stats.completionRate}%
+                      </span>
+                    </div>
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
+                      <div
+                        className="h-1.5 rounded-full bg-primary transition-all"
+                        style={{ width: `${stats.completionRate}%` }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>완료 {stats.completed}건</span>
+                      <span>전체 {stats.total}건</span>
+                    </div>
+                  </>
+                )
+              })()}
+              <Link
+                href="/performance/quarterly-reviews"
+                className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
+              >
+                분기 리뷰 관리 →
+              </Link>
+            </CardContent>
+          </Card>
+
           {/* 승인 대기 현황 */}
           <Card className="bg-primary/5">
             <CardHeader className="pb-2 pt-4">

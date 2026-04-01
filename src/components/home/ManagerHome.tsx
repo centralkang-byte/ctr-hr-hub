@@ -14,6 +14,7 @@ import {
   TrendingUp,
   CheckSquare,
   UserCheck,
+  ClipboardCheck,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -34,6 +35,7 @@ interface ManagerSummary {
   newHires?: number
   pendingLeaves?: number
   scheduledOneOnOnes?: number
+  quarterlyReviewStats?: { total: number; completed: number; pending: number }
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -128,6 +130,56 @@ export function ManagerHome({ user }: ManagerHomeProps) {
                 </div>
                 <Badge variant="secondary" className="text-[10px]">{summary?.scheduledOneOnOnes ?? 0}건</Badge>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* 분기 리뷰 현황 */}
+          <Card>
+            <CardHeader className="pb-2 pt-4">
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <ClipboardCheck className="h-4 w-4 text-primary" />
+                분기 리뷰
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 pb-4">
+              {(() => {
+                const stats = summary?.quarterlyReviewStats
+                if (!stats || stats.total === 0) {
+                  return (
+                    <p className="text-sm text-muted-foreground">
+                      이번 분기 리뷰가 아직 생성되지 않았습니다
+                    </p>
+                  )
+                }
+                const pct = Math.round((stats.completed / stats.total) * 100)
+                return (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">완료</span>
+                      <span className="text-sm font-bold text-foreground">
+                        {stats.completed}/{stats.total}
+                      </span>
+                    </div>
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
+                      <div
+                        className="h-1.5 rounded-full bg-primary transition-all"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    {stats.pending > 0 && (
+                      <p className="text-xs text-amber-600">
+                        {stats.pending}명 미완료
+                      </p>
+                    )}
+                  </>
+                )
+              })()}
+              <Link
+                href="/performance/quarterly-reviews"
+                className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
+              >
+                팀 분기 리뷰 관리 →
+              </Link>
             </CardContent>
           </Card>
 

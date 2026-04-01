@@ -1746,7 +1746,10 @@
         "cycleLabel": "평가 사이클 (선택)",
         "create": "생성"
       }
-    }
+    },
+    "checkinDeprecation": "분기 리뷰로 전환되었습니다",
+    "checkinDeprecationDesc": "중간 체크인이 분기 리뷰로 전환되었습니다. 분기 리뷰에서 목표 진행 상황을 업데이트해 주세요.",
+    "goToQuarterlyReview": "분기 리뷰로 이동"
   },
   "recruitment": {
     "title": "채용 관리",

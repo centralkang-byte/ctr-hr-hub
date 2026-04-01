@@ -1,14 +1,13 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import { useCallback, useEffect, useState } from 'react'
-import { CheckCircle2, Circle, Clock, ClipboardCheck, ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
+import { CheckCircle2, Circle, Clock, ClipboardCheck, ArrowRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { apiClient } from '@/lib/api'
-import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import type { SessionUser } from '@/types'
 
 // ─── Types ────────────────────────────────────────────────
@@ -90,21 +89,22 @@ export default function MyCheckinsClient({user }: {
         finally { setSaving(null) }
     }
 
-    // Route guard
+    // CHECK_IN was removed from H1/H2 pipelines — show deprecation banner always
     const isCheckInPeriod = cycleStatus === 'CHECK_IN'
-    const selectedHalf = cycles.find(c => c.id === selectedCycleId)?.half ?? 'H2'
-    const isBlocked = cycleStatus !== '' && !getAllowedStatuses('checkin', selectedHalf).includes(cycleStatus)
 
-    if (isBlocked) {
+    // Deprecation: show full-page notice (CHECK_IN can never be reached in current pipeline)
+    if (!isCheckInPeriod) {
         return (
             <div className="flex min-h-[60vh] items-center justify-center p-6">
-                <div className="text-center">
-                    <ClipboardCheck className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-                    <h2 className="mb-2 text-lg font-semibold text-foreground">{t('kr_kecb2b4ed_keab8b0ea_kec9584eb')}</h2>
-                    <p className="text-sm text-muted-foreground">{t('kr_kecb2b4ed_check_in_keb8ba8ea_k')}</p>
-                    <a href="/performance" className="mt-4 inline-flex items-center gap-1 text-sm text-primary hover:underline">
-                        <ArrowLeft className="h-4 w-4" /> {t('kr_keb8f8cec')}
-                    </a>
+                <div className="mx-auto max-w-md rounded-2xl bg-amber-500/10 p-6 text-center">
+                    <ClipboardCheck className="mx-auto mb-4 h-12 w-12 text-amber-600" />
+                    <h2 className="mb-2 text-lg font-semibold text-foreground">{t('checkinDeprecation')}</h2>
+                    <p className="mb-4 text-sm text-muted-foreground">{t('checkinDeprecationDesc')}</p>
+                    <Link href="/performance/my-quarterly-review">
+                        <Button className="gap-1.5">
+                            {t('goToQuarterlyReview')} <ArrowRight className="h-4 w-4" />
+                        </Button>
+                    </Link>
                 </div>
             </div>
         )
@@ -130,8 +130,8 @@ export default function MyCheckinsClient({user }: {
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
                         className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
-                        {!cycles?.length && <EmptyState />}
-              {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        {!cycles?.length && <option value="" disabled>{tCommon('noData')}</option>}
+                        {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                 </div>
 

@@ -15,10 +15,12 @@ import {
   LogOut,
   Award,
   TrendingUp,
+  ClipboardCheck,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { UnifiedTaskHub } from './UnifiedTaskHub'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
@@ -35,6 +37,7 @@ interface EmployeeSummary {
   totalEmployees: number
   leaveBalance: { policy: string; remaining: number; used: number; total: number }[]
   attendanceThisMonth: number
+  quarterlyReview?: { id: string | null; status: string | null }
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -97,6 +100,64 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
 
         {/* Right sidebar */}
         <div className="space-y-4">
+          {/* 분기 리뷰 — D-7: sidebar 첫 번째 위치 */}
+          <Card>
+            <CardHeader className="pb-2 pt-4">
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <ClipboardCheck className="h-4 w-4 text-primary" />
+                분기 리뷰
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pb-4">
+              {(() => {
+                const qr = summary?.quarterlyReview
+                if (!qr || !qr.status) {
+                  return (
+                    <p className="text-sm text-muted-foreground">
+                      이번 분기 리뷰가 아직 생성되지 않았습니다
+                    </p>
+                  )
+                }
+                const statusMap: Record<string, { label: string; variant: 'info' | 'warning' | 'success' | 'neutral' }> = {
+                  DRAFT: { label: '작성 대기', variant: 'info' },
+                  IN_PROGRESS: { label: '작성 중', variant: 'warning' },
+                  EMPLOYEE_DONE: { label: '제출 완료', variant: 'success' },
+                  MANAGER_DONE: { label: '매니저 검토 완료', variant: 'info' },
+                  COMPLETED: { label: '완료', variant: 'success' },
+                }
+                const s = statusMap[qr.status] ?? { label: qr.status, variant: 'neutral' as const }
+                return (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">상태</span>
+                      <StatusBadge variant={s.variant}>{s.label}</StatusBadge>
+                    </div>
+                    {(qr.status === 'DRAFT' || qr.status === 'IN_PROGRESS') && (
+                      <Link href="/performance/my-quarterly-review">
+                        <Button size="sm" className="w-full gap-1.5">
+                          {qr.status === 'DRAFT' ? '작성하기' : '이어서 작성하기'}
+                        </Button>
+                      </Link>
+                    )}
+                    {qr.status === 'EMPLOYEE_DONE' && (
+                      <p className="text-center text-xs text-muted-foreground">매니저 피드백 대기 중</p>
+                    )}
+                    {qr.status === 'MANAGER_DONE' && (
+                      <p className="text-center text-xs text-muted-foreground">최종 확정 대기 중</p>
+                    )}
+                    {qr.status === 'COMPLETED' && qr.id && (
+                      <Link href={`/performance/quarterly-reviews/${qr.id}`}>
+                        <Button size="sm" variant="outline" className="w-full">
+                          결과 보기
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                )
+              })()}
+            </CardContent>
+          </Card>
+
           {/* 나의 현황 */}
           <Card className="border-border shadow-none">
             <CardHeader className="pb-2 pt-4">

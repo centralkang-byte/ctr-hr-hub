@@ -5,7 +5,27 @@ import { isAppError, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
+
+// ─── Helpers ────────────────────────────────────────────────
+
+function getCurrentQuarter(now: Date): { year: number; quarter: 'Q1' | 'Q2' | 'Q3' | 'Q4' } {
+  const q = Math.ceil((now.getMonth() + 1) / 3) as 1 | 2 | 3 | 4
+  return { year: now.getFullYear(), quarter: `Q${q}` as 'Q1' | 'Q2' | 'Q3' | 'Q4' }
+}
+
+function aggregateQrStats(groups: { status: string; _count: { _all: number } }[]) {
+  let total = 0
+  let completed = 0
+  for (const g of groups) {
+    total += g._count._all
+    if (g.status === 'COMPLETED') completed += g._count._all
+  }
+  return { total, completed, pending: total - completed }
+}
+
+// ─── Route ──────────────────────────────────────────────────
 
 export const GET = withCache(withPermission(
   async (
@@ -18,6 +38,7 @@ export const GET = withCache(withPermission(
       const now = new Date()
       const thirtyDaysAgo = new Date()
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+      const { year: qrYear, quarter: qrQuarter } = getCurrentQuarter(now)
 
       // Common: total employees
       const totalEmployees = await prisma.employeeAssignment.count({
@@ -25,10 +46,9 @@ export const GET = withCache(withPermission(
       })
 
       if (user.role === ROLE.EMPLOYEE) {
-        // Employee-specific KPIs — 병렬 처리
         const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
 
-        const [leaveBalance, attendanceCount] = await Promise.all([
+        const [leaveBalance, attendanceCount, qrReview] = await Promise.all([
           prisma.employeeLeaveBalance.findMany({
             where: { employeeId: user.employeeId },
             include: { policy: { select: { name: true } } },
@@ -36,10 +56,12 @@ export const GET = withCache(withPermission(
           prisma.attendance.count({
             where: {
               employeeId: user.employeeId,
-              workDate: {
-                gte: new Date(`${thisMonth}-01`),
-              },
+              workDate: { gte: new Date(`${thisMonth}-01`) },
             },
+          }),
+          prisma.quarterlyReview.findFirst({
+            where: { employeeId: user.employeeId, year: qrYear, quarter: qrQuarter },
+            select: { id: true, status: true },
           }),
         ])
 
@@ -53,51 +75,38 @@ export const GET = withCache(withPermission(
             total: Number(lb.grantedDays),
           })),
           attendanceThisMonth: attendanceCount,
+          quarterlyReview: qrReview
+            ? { id: qrReview.id, status: qrReview.status }
+            : { id: null, status: null },
         })
       }
 
       if (user.role === ROLE.MANAGER) {
-        // 2-step: find manager's positionId, then count direct reports
-        const managerAsgn = await prisma.employeeAssignment.findFirst({
-          where: { employeeId: user.employeeId, isPrimary: true, endDate: null },
-          select: { positionId: true },
-        })
-        const directReportAsgnList = managerAsgn?.positionId
-          ? await prisma.employeeAssignment.findMany({
-              where: {
-                position: { reportsToPositionId: managerAsgn.positionId },
-                isPrimary: true,
-                endDate: null,
+        // C-1 fix: canonical helper (includes secondary assignments)
+        const reportIds = await getDirectReportIds(user.employeeId)
+
+        const [teamCount, pendingLeaves, scheduledOneOnOnes, qrGroups] = await Promise.all([
+          prisma.employee.count({
+            where: {
+              id: { in: reportIds },
+              assignments: {
+                some: { companyId, status: 'ACTIVE', isPrimary: true, endDate: null },
               },
-              select: { employeeId: true },
-            })
-          : []
-        const reportIds = directReportAsgnList.map((a: any) => a.employeeId) // eslint-disable-line @typescript-eslint/no-explicit-any
-
-        const teamCount = await prisma.employee.count({
-          where: {
-            id: { in: reportIds },
-            assignments: {
-              some: { companyId, status: 'ACTIVE', isPrimary: true, endDate: null },
             },
-          },
-        })
-
-        const pendingLeaves = await prisma.leaveRequest.count({
-          where: {
-            companyId,
-            status: 'PENDING',
-            employeeId: { in: reportIds },
-          },
-        })
-
-        const scheduledOneOnOnes = await prisma.oneOnOne.count({
-          where: {
-            managerId: user.employeeId,
-            companyId,
-            status: 'SCHEDULED',
-          },
-        })
+          }),
+          prisma.leaveRequest.count({
+            where: { companyId, status: 'PENDING', employeeId: { in: reportIds } },
+          }),
+          prisma.oneOnOne.count({
+            where: { managerId: user.employeeId, companyId, status: 'SCHEDULED' },
+          }),
+          // H-1 fix: single groupBy query for QR stats
+          prisma.quarterlyReview.groupBy({
+            by: ['status'],
+            where: { employeeId: { in: reportIds }, year: qrYear, quarter: qrQuarter },
+            _count: { _all: true },
+          }),
+        ])
 
         return apiSuccess({
           role: 'MANAGER',
@@ -105,26 +114,20 @@ export const GET = withCache(withPermission(
           teamCount,
           pendingLeaves,
           scheduledOneOnOnes,
+          quarterlyReviewStats: aggregateQrStats(qrGroups),
         })
       }
 
-      // HR_ADMIN / SUPER_ADMIN — 4 independent count queries parallelized
-      const [newHires, terminations, openPositions, pendingLeaves] = await Promise.all([
+      // HR_ADMIN / SUPER_ADMIN
+      const [newHires, terminations, openPositions, pendingLeaves, qrGroups] = await Promise.all([
         prisma.employee.count({
           where: {
             hireDate: { gte: thirtyDaysAgo },
-            assignments: {
-              some: { companyId, isPrimary: true, endDate: null },
-            },
+            assignments: { some: { companyId, isPrimary: true, endDate: null } },
           },
         }),
         prisma.employeeAssignment.count({
-          where: {
-            companyId,
-            status: 'TERMINATED',
-            isPrimary: true,
-            updatedAt: { gte: thirtyDaysAgo },
-          },
+          where: { companyId, status: 'TERMINATED', isPrimary: true, updatedAt: { gte: thirtyDaysAgo } },
         }),
         prisma.jobPosting.count({
           where: { companyId, status: 'OPEN', deletedAt: null },
@@ -132,12 +135,19 @@ export const GET = withCache(withPermission(
         prisma.leaveRequest.count({
           where: { companyId, status: 'PENDING' },
         }),
+        prisma.quarterlyReview.groupBy({
+          by: ['status'],
+          where: { companyId, year: qrYear, quarter: qrQuarter },
+          _count: { _all: true },
+        }),
       ])
 
       const turnoverRate =
         totalEmployees > 0
           ? Math.round((terminations / totalEmployees) * 1000) / 10
           : 0
+
+      const qrStats = aggregateQrStats(qrGroups)
 
       return apiSuccess({
         role: user.role,
@@ -147,6 +157,12 @@ export const GET = withCache(withPermission(
         turnoverRate,
         openPositions,
         pendingLeaves,
+        quarterlyReviewStats: {
+          ...qrStats,
+          completionRate: qrStats.total > 0
+            ? Math.round((qrStats.completed / qrStats.total) * 100)
+            : 0,
+        },
       })
     } catch (error) {
       if (isAppError(error)) throw error

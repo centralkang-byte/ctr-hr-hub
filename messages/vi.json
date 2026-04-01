@@ -1625,36 +1625,131 @@
       "myTitle": "Đánh giá quý của tôi",
       "adminTitle": "Quản lý đánh giá quý",
       "description": "Xem xét hiệu suất hàng quý và trao đổi phản hồi",
-      "status": { "DRAFT": "Bản nháp", "IN_PROGRESS": "Đang thực hiện", "EMPLOYEE_DONE": "Nhân viên đã nộp", "MANAGER_DONE": "Quản lý đã nộp", "COMPLETED": "Hoàn thành" },
-      "sentiment": { "POSITIVE": "Tích cực", "NEUTRAL": "Trung lập", "CONCERN": "Quan ngại" },
-      "tracking": { "ON_TRACK": "Đúng tiến độ", "AT_RISK": "Có rủi ro", "BEHIND": "Chậm tiến độ" },
-      "dashboard": { "totalReviews": "Tổng đánh giá", "completionRate": "Tỷ lệ hoàn thành", "employeeSubmitted": "Nhân viên đã nộp", "overdue": "Chưa hoàn thành" },
-      "filter": { "year": "Năm", "quarter": "Quý", "status": "Trạng thái", "allStatuses": "Tất cả trạng thái", "allQuarters": "Tất cả quý" },
-      "quarter": { "Q1": "Quý 1", "Q2": "Quý 2", "Q3": "Quý 3", "Q4": "Quý 4" },
-      "section": { "goalProgress": "Tiến độ mục tiêu", "employeeReflection": "Phản ánh nhân viên", "managerFeedback": "Phản hồi quản lý", "actionItems": "Kế hoạch hành động" },
+      "status": {
+        "DRAFT": "Bản nháp",
+        "IN_PROGRESS": "Đang thực hiện",
+        "EMPLOYEE_DONE": "Nhân viên đã nộp",
+        "MANAGER_DONE": "Quản lý đã nộp",
+        "COMPLETED": "Hoàn thành"
+      },
+      "sentiment": {
+        "POSITIVE": "Tích cực",
+        "NEUTRAL": "Trung lập",
+        "CONCERN": "Quan ngại"
+      },
+      "tracking": {
+        "ON_TRACK": "Đúng tiến độ",
+        "AT_RISK": "Có rủi ro",
+        "BEHIND": "Chậm tiến độ"
+      },
+      "dashboard": {
+        "totalReviews": "Tổng đánh giá",
+        "completionRate": "Tỷ lệ hoàn thành",
+        "employeeSubmitted": "Nhân viên đã nộp",
+        "overdue": "Chưa hoàn thành"
+      },
+      "filter": {
+        "year": "Năm",
+        "quarter": "Quý",
+        "status": "Trạng thái",
+        "allStatuses": "Tất cả trạng thái",
+        "allQuarters": "Tất cả quý"
+      },
+      "quarter": {
+        "Q1": "Quý 1",
+        "Q2": "Quý 2",
+        "Q3": "Quý 3",
+        "Q4": "Quý 4"
+      },
+      "section": {
+        "goalProgress": "Tiến độ mục tiêu",
+        "employeeReflection": "Phản ánh nhân viên",
+        "managerFeedback": "Phản hồi quản lý",
+        "actionItems": "Kế hoạch hành động"
+      },
       "field": {
-        "goalHighlights": "Thành tích chính", "goalHighlightsPlaceholder": "Mô tả thành tích chính trong quý",
-        "challenges": "Thách thức", "challengesPlaceholder": "Mô tả khó khăn hoặc trở ngại",
-        "developmentNeeds": "Nhu cầu phát triển", "developmentNeedsPlaceholder": "Mô tả lĩnh vực cần phát triển",
-        "employeeComments": "Ý kiến bổ sung", "employeeCommentsPlaceholder": "Nội dung khác muốn chia sẻ",
-        "managerFeedback": "Phản hồi quản lý", "managerFeedbackPlaceholder": "Cung cấp phản hồi về hiệu suất nhân viên",
-        "coachingNotes": "Ghi chú huấn luyện", "coachingNotesPlaceholder": "Đưa ra lời khuyên cụ thể để cải thiện",
-        "developmentPlan": "Kế hoạch phát triển", "developmentPlanPlaceholder": "Lập kế hoạch phát triển tương lai",
-        "progressPct": "Tiến độ", "employeeComment": "Nhận xét nhân viên", "managerComment": "Nhận xét quản lý"
+        "goalHighlights": "Thành tích chính",
+        "goalHighlightsPlaceholder": "Mô tả thành tích chính trong quý",
+        "challenges": "Thách thức",
+        "challengesPlaceholder": "Mô tả khó khăn hoặc trở ngại",
+        "developmentNeeds": "Nhu cầu phát triển",
+        "developmentNeedsPlaceholder": "Mô tả lĩnh vực cần phát triển",
+        "employeeComments": "Ý kiến bổ sung",
+        "employeeCommentsPlaceholder": "Nội dung khác muốn chia sẻ",
+        "managerFeedback": "Phản hồi quản lý",
+        "managerFeedbackPlaceholder": "Cung cấp phản hồi về hiệu suất nhân viên",
+        "coachingNotes": "Ghi chú huấn luyện",
+        "coachingNotesPlaceholder": "Đưa ra lời khuyên cụ thể để cải thiện",
+        "developmentPlan": "Kế hoạch phát triển",
+        "developmentPlanPlaceholder": "Lập kế hoạch phát triển tương lai",
+        "progressPct": "Tiến độ",
+        "employeeComment": "Nhận xét nhân viên",
+        "managerComment": "Nhận xét quản lý"
       },
-      "action": { "save": "Lưu nháp", "submitEmployee": "Nộp đánh giá", "submitManager": "Nộp phản hồi", "reopen": "Mở lại", "bulkCreate": "Tạo hàng loạt", "viewDetail": "Xem chi tiết", "backToList": "Quay lại danh sách" },
+      "action": {
+        "save": "Lưu nháp",
+        "submitEmployee": "Nộp đánh giá",
+        "submitManager": "Nộp phản hồi",
+        "reopen": "Mở lại",
+        "bulkCreate": "Tạo hàng loạt",
+        "viewDetail": "Xem chi tiết",
+        "backToList": "Quay lại danh sách"
+      },
       "confirm": {
-        "submitTitle": "Nộp đánh giá này?", "submitEmployeeDesc": "Không thể chỉnh sửa sau khi nộp. Sẽ được gửi cho quản lý.",
+        "submitTitle": "Nộp đánh giá này?",
+        "submitEmployeeDesc": "Không thể chỉnh sửa sau khi nộp. Sẽ được gửi cho quản lý.",
         "submitManagerDesc": "Không thể chỉnh sửa sau khi nộp. Đánh giá sẽ hoàn thành.",
-        "reopenTitle": "Mở lại đánh giá?", "reopenDesc": "Nhân viên và quản lý có thể chỉnh sửa lại.",
-        "bulkCreateTitle": "Tạo đánh giá quý hàng loạt?", "bulkCreateDesc": "Sẽ tạo đánh giá cho {count} nhân viên."
+        "reopenTitle": "Mở lại đánh giá?",
+        "reopenDesc": "Nhân viên và quản lý có thể chỉnh sửa lại.",
+        "bulkCreateTitle": "Tạo đánh giá quý hàng loạt?",
+        "bulkCreateDesc": "Sẽ tạo đánh giá cho {count} nhân viên."
       },
-      "toast": { "saveSuccess": "Đã lưu nháp", "submitSuccess": "Đã nộp đánh giá", "reopenSuccess": "Đã mở lại đánh giá", "bulkCreateSuccess": "Đã tạo {count} đánh giá", "loadFailed": "Không thể tải đánh giá", "saveFailed": "Lưu thất bại", "submitFailed": "Nộp thất bại" },
-      "empty": { "title": "Không có đánh giá quý", "description": "Không tìm thấy đánh giá trong kỳ này" },
-      "table": { "employee": "Nhân viên", "manager": "Quản lý", "quarterCol": "Quý", "status": "Trạng thái", "sentiment": "Đánh giá", "submittedAt": "Ngày nộp", "updatedAt": "Ngày cập nhật" },
-      "actionItem": { "description": "Nội dung", "descriptionPlaceholder": "Nhập nội dung kế hoạch", "dueDate": "Hạn chót", "assignee": "Người phụ trách", "addItem": "Thêm mục", "completed": "Hoàn thành", "employee": "Nhân viên", "manager": "Quản lý" },
-      "bulkCreate": { "title": "Tạo đánh giá quý hàng loạt", "description": "Tạo đánh giá quý cho nhiều nhân viên cùng lúc", "selectEmployees": "Chọn nhân viên", "selectedCount": "Đã chọn {count} người", "yearLabel": "Năm", "quarterLabel": "Quý", "cycleLabel": "Chu kỳ đánh giá (Tùy chọn)", "create": "Tạo" }
-    }
+      "toast": {
+        "saveSuccess": "Đã lưu nháp",
+        "submitSuccess": "Đã nộp đánh giá",
+        "reopenSuccess": "Đã mở lại đánh giá",
+        "bulkCreateSuccess": "Đã tạo {count} đánh giá",
+        "loadFailed": "Không thể tải đánh giá",
+        "saveFailed": "Lưu thất bại",
+        "submitFailed": "Nộp thất bại"
+      },
+      "empty": {
+        "title": "Không có đánh giá quý",
+        "description": "Không tìm thấy đánh giá trong kỳ này"
+      },
+      "table": {
+        "employee": "Nhân viên",
+        "manager": "Quản lý",
+        "quarterCol": "Quý",
+        "status": "Trạng thái",
+        "sentiment": "Đánh giá",
+        "submittedAt": "Ngày nộp",
+        "updatedAt": "Ngày cập nhật"
+      },
+      "actionItem": {
+        "description": "Nội dung",
+        "descriptionPlaceholder": "Nhập nội dung kế hoạch",
+        "dueDate": "Hạn chót",
+        "assignee": "Người phụ trách",
+        "addItem": "Thêm mục",
+        "completed": "Hoàn thành",
+        "employee": "Nhân viên",
+        "manager": "Quản lý"
+      },
+      "bulkCreate": {
+        "title": "Tạo đánh giá quý hàng loạt",
+        "description": "Tạo đánh giá quý cho nhiều nhân viên cùng lúc",
+        "selectEmployees": "Chọn nhân viên",
+        "selectedCount": "Đã chọn {count} người",
+        "yearLabel": "Năm",
+        "quarterLabel": "Quý",
+        "cycleLabel": "Chu kỳ đánh giá (Tùy chọn)",
+        "create": "Tạo"
+      }
+    },
+    "checkinDeprecation": "Đã chuyển sang Đánh giá Quý",
+    "checkinDeprecationDesc": "Kiểm tra giữa kỳ đã được thay thế bằng Đánh giá Quý. Vui lòng cập nhật tiến độ mục tiêu trong Đánh giá Quý.",
+    "goToQuarterlyReview": "Đi đến Đánh giá Quý"
   },
   "recruitment": {
     "title": "Recruitment",
@@ -5601,10 +5696,22 @@
       "body": "{name}, bạn còn {remainingDays} ngày phép. Còn {daysUntilAnniversary} ngày đến ngày kỷ niệm. Khuyến nghị sử dụng phép."
     },
     "recruitment": {
-      "offerSent": { "title": "Đã gửi đề nghị", "body": "Đã gửi đề nghị tuyển dụng [{postingTitle}] cho {applicantName}." },
-      "offerAccepted": { "title": "Đề nghị được chấp nhận", "body": "{applicantName} đã chấp nhận đề nghị [{postingTitle}]." },
-      "offerDeclined": { "title": "Đề nghị bị từ chối", "body": "{applicantName} đã từ chối đề nghị [{postingTitle}]. Lý do: {declineReason}" },
-      "interviewScheduled": { "title": "Lịch phỏng vấn đã đặt", "body": "Phỏng vấn [{postingTitle}] với {applicantName} đã được lên lịch vào {scheduledAt} ({timezone})." }
+      "offerSent": {
+        "title": "Đã gửi đề nghị",
+        "body": "Đã gửi đề nghị tuyển dụng [{postingTitle}] cho {applicantName}."
+      },
+      "offerAccepted": {
+        "title": "Đề nghị được chấp nhận",
+        "body": "{applicantName} đã chấp nhận đề nghị [{postingTitle}]."
+      },
+      "offerDeclined": {
+        "title": "Đề nghị bị từ chối",
+        "body": "{applicantName} đã từ chối đề nghị [{postingTitle}]. Lý do: {declineReason}"
+      },
+      "interviewScheduled": {
+        "title": "Lịch phỏng vấn đã đặt",
+        "body": "Phỏng vấn [{postingTitle}] với {applicantName} đã được lên lịch vào {scheduledAt} ({timezone})."
+      }
     }
   },
   "header": {
