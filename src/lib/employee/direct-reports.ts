@@ -62,3 +62,62 @@ export async function getManagerIdByPosition(employeeId: string): Promise<string
 
   return managerAsgn?.employeeId ?? null
 }
+
+/**
+ * Batch-resolve manager IDs for multiple employees.
+ * Uses 2 batch queries instead of N individual lookups.
+ * Returns Map<employeeId, managerId>.
+ */
+export async function resolveManagerIds(
+  employeeIds: string[],
+): Promise<Map<string, string>> {
+  if (employeeIds.length === 0) return new Map()
+
+  // 1. Batch-fetch primary assignments with position hierarchy
+  const assignments = await prisma.employeeAssignment.findMany({
+    where: { employeeId: { in: employeeIds }, isPrimary: true, endDate: null },
+    select: {
+      employeeId: true,
+      position: { select: { reportsToPositionId: true } },
+    },
+  })
+
+  // Collect unique reportsToPositionIds
+  const reportsToIds = [
+    ...new Set(
+      assignments
+        .map((a) => a.position?.reportsToPositionId)
+        .filter((id): id is string => id !== null),
+    ),
+  ]
+
+  if (reportsToIds.length === 0) return new Map()
+
+  // 2. Batch-fetch who holds those manager positions
+  const managerAssignments = await prisma.employeeAssignment.findMany({
+    where: { positionId: { in: reportsToIds }, endDate: null },
+    select: { positionId: true, employeeId: true },
+  })
+
+  // Build positionId → managerId map (first holder wins)
+  const positionToManager = new Map<string, string>()
+  for (const ma of managerAssignments) {
+    if (ma.positionId && !positionToManager.has(ma.positionId)) {
+      positionToManager.set(ma.positionId, ma.employeeId)
+    }
+  }
+
+  // Build employeeId → managerId result
+  const result = new Map<string, string>()
+  for (const asgn of assignments) {
+    const reportsTo = asgn.position?.reportsToPositionId
+    if (reportsTo) {
+      const managerId = positionToManager.get(reportsTo)
+      if (managerId) {
+        result.set(asgn.employeeId, managerId)
+      }
+    }
+  }
+
+  return result
+}

@@ -31,6 +31,10 @@ import { mboGoalSubmittedHandler } from './handlers/mbo-goal-submitted.handler'
 import { mboGoalReviewedHandler } from './handlers/mbo-goal-reviewed.handler'
 import { selfEvalSubmittedHandler } from './handlers/self-eval-submitted.handler'
 import { managerEvalSubmittedHandler } from './handlers/manager-eval-submitted.handler'
+import { quarterlyReviewCreatedHandler } from './handlers/quarterly-review-created.handler'
+import { quarterlyReviewSubmittedHandler } from './handlers/quarterly-review-submitted.handler'
+import { quarterlyReviewCompletedHandler } from './handlers/quarterly-review-completed.handler'
+import { quarterlyReviewReopenedHandler } from './handlers/quarterly-review-reopened.handler'
 
 let bootstrapped = false
 
@@ -72,6 +76,12 @@ export function bootstrapEventHandlers(): void {
   // Session D ✔️
   // PERFORMANCE_CYCLE_FINALIZED — publishing done in advance/finalize routes.
   // No dedicated handler needed: downstream consumers subscribe directly to the event bus.
+
+  // ── Quarterly Review Events (Phase B-2) ─────────────────────
+  eventBus.subscribe(quarterlyReviewCreatedHandler)
+  eventBus.subscribe(quarterlyReviewSubmittedHandler)
+  eventBus.subscribe(quarterlyReviewCompletedHandler)
+  eventBus.subscribe(quarterlyReviewReopenedHandler)
 
   bootstrapped = true
 }

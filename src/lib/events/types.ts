@@ -68,6 +68,12 @@ export const DOMAIN_EVENTS = {
   // F-2: Delegation
   DELEGATION_STARTED: 'DELEGATION_STARTED',
   DELEGATION_ENDED: 'DELEGATION_ENDED',
+
+  // Phase B-2: Quarterly Review
+  QUARTERLY_REVIEW_CREATED: 'QUARTERLY_REVIEW_CREATED',
+  QUARTERLY_REVIEW_SUBMITTED: 'QUARTERLY_REVIEW_SUBMITTED',
+  QUARTERLY_REVIEW_COMPLETED: 'QUARTERLY_REVIEW_COMPLETED',
+  QUARTERLY_REVIEW_REOPENED: 'QUARTERLY_REVIEW_REOPENED',
 } as const
 
 export type DomainEventName = typeof DOMAIN_EVENTS[keyof typeof DOMAIN_EVENTS]
@@ -527,6 +533,46 @@ export interface DelegationEndedPayload {
   endedAt: string
 }
 
+// ── Quarterly Review Events ─────────────────────────────────
+
+export interface QuarterlyReviewCreatedPayload {
+  ctx: EventContext
+  reviewId: string
+  employeeId: string
+  managerId: string
+  companyId: string
+  year: number
+  quarter: string  // Quarter enum value
+}
+
+export interface QuarterlyReviewSubmittedPayload {
+  ctx: EventContext
+  reviewId: string
+  employeeId: string
+  companyId: string
+  submitterRole: 'EMPLOYEE' | 'MANAGER'
+  newStatus: string  // QuarterlyReviewStatus enum value
+}
+
+export interface QuarterlyReviewCompletedPayload {
+  ctx: EventContext
+  reviewId: string
+  employeeId: string
+  managerId: string
+  companyId: string
+  year: number
+  quarter: string
+}
+
+export interface QuarterlyReviewReopenedPayload {
+  ctx: EventContext
+  reviewId: string
+  employeeId: string
+  companyId: string
+  reopenedById: string
+  reason: string
+}
+
 // ------------------------------------
 // Discriminated Union (Event Map)
 // ------------------------------------
@@ -575,6 +621,11 @@ export interface DomainEventMap {
   // F-2: Delegation
   DELEGATION_STARTED: DelegationStartedPayload
   DELEGATION_ENDED: DelegationEndedPayload
+  // Phase B-2: Quarterly Review
+  QUARTERLY_REVIEW_CREATED: QuarterlyReviewCreatedPayload
+  QUARTERLY_REVIEW_SUBMITTED: QuarterlyReviewSubmittedPayload
+  QUARTERLY_REVIEW_COMPLETED: QuarterlyReviewCompletedPayload
+  QUARTERLY_REVIEW_REOPENED: QuarterlyReviewReopenedPayload
 }
 
 /** 타입-안전 이벤트 봉투 */
