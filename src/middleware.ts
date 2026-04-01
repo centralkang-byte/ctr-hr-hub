@@ -90,6 +90,7 @@ const ROUTE_ACL: RouteRule[] = [
   // Performance & Compensation admin (section 6)
   { prefix: '/performance/admin', allowedRoles: HR_UP },
   { prefix: '/performance/goals', allowedRoles: MANAGER_UP },
+  { prefix: '/performance/quarterly-reviews', allowedRoles: HR_UP },
   { prefix: '/performance/calibration', allowedRoles: HR_UP },
   { prefix: '/performance/results', allowedRoles: HR_UP },
   { prefix: '/performance/peer-review', allowedRoles: MANAGER_UP },

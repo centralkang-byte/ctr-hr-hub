@@ -260,6 +260,15 @@ export const NAVIGATION: NavSection[] = [
         subGroup: 'growth',
       },
       {
+        key: 'my-quarterly-review',
+        labelKey: 'nav.mySpace.quarterlyReview',
+        label: '분기 리뷰',
+        href: '/performance/my-quarterly-review',
+        icon: ClipboardCheck,
+        module: MODULE.PERFORMANCE,
+        subGroup: 'growth',
+      },
+      {
         key: 'my-skills',
         labelKey: 'nav.mySpace.skills',
         label: '스킬 자기평가',
@@ -511,6 +520,14 @@ export const NAVIGATION: NavSection[] = [
         label: '성과 관리',
         href: '/performance/admin',
         icon: Target,
+        module: MODULE.PERFORMANCE,
+      },
+      {
+        key: 'quarterly-reviews',
+        labelKey: 'nav.performance.quarterlyReview',
+        label: '분기 리뷰',
+        href: '/performance/quarterly-reviews',
+        icon: ClipboardCheck,
         module: MODULE.PERFORMANCE,
       },
       {
