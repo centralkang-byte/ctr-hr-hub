@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Plus, Sparkles, CheckCircle2, AlertTriangle, Grid3X3 } from 'lucide-react'
+import { Plus, Sparkles, CheckCircle2, AlertTriangle, Layers } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import type { SessionUser } from '@/types'
@@ -12,6 +12,10 @@ import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { toast } from '@/hooks/use-toast'
+import CalibrationBlockGrid from './components/CalibrationBlockGrid'
+import CalibrationBatchToolbar from './components/CalibrationBatchToolbar'
+import CalibrationBatchSaveDialog from './components/CalibrationBatchSaveDialog'
+import { useBatchAdjustmentState } from './hooks/useBatchAdjustmentState'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -65,20 +69,6 @@ interface AdjItem {
   adjustedCompetencyScore: number
 }
 
-// ─── EMS 9-Block Labels ──────────────────────────────────
-
-const BLOCK_LABELS: Record<number, { label: string; color: string }> = {
-  1: { label: '1A', color: 'bg-destructive/10 text-destructive' },
-  2: { label: '2A', color: 'bg-amber-500/15 text-amber-700' },
-  3: { label: '3A', color: 'bg-emerald-500/15 text-emerald-700' },
-  4: { label: '1B', color: 'bg-amber-500/15 text-amber-700' },
-  5: { label: '2B', color: 'bg-primary/10 text-primary/90' },
-  6: { label: '3B', color: 'bg-emerald-500/15 text-emerald-700' },
-  7: { label: '1C', color: 'bg-indigo-500/15 text-primary/90' },
-  8: { label: '2C', color: 'bg-emerald-500/15 text-emerald-700' },
-  9: { label: '3C', color: 'bg-primary/10 text-primary/90' },
-}
-
 const STATUS_MAP: Record<string, { label: string; style: string }> = {
   CALIBRATION_DRAFT: { label: '임시저장', style: 'bg-muted text-muted-foreground' },
   CALIBRATION_IN_PROGRESS: { label: '진행 중', style: 'bg-amber-500/15 text-amber-700' },
@@ -113,6 +103,30 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
   const [adjPerfScore, setAdjPerfScore] = useState(3)
   const [adjCompScore, setAdjCompScore] = useState(3)
   const [adjReason, setAdjReason] = useState('')
+
+  // Batch mode
+  const [batchMode, setBatchMode] = useState(false)
+  const [showSaveDialog, setShowSaveDialog] = useState(false)
+
+  // ─── Batch adjustment hook ───────────────────────────
+
+  const handleBatchSaveComplete = useCallback(() => {
+    if (selectedSession) loadSession(selectedSession.id)
+  }, [selectedSession]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const batch = useBatchAdjustmentState(
+    selectedSession?.evaluations ?? [],
+    selectedSession?.id ?? null,
+    handleBatchSaveComplete,
+  )
+
+  // beforeunload 경고
+  useEffect(() => {
+    if (!batch.hasUnsavedChanges) return
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault() }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [batch.hasUnsavedChanges])
 
   // ─── Fetch cycles ────────────────────────────────────
 
@@ -255,85 +269,17 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
     setInsightEmployeeName(ev.employee.name)
   }, [])
 
-  // ─── Build 9-Block Grid ─────────────────────────────
+  // ─── Batch mode toggle ──────────────────────────────
 
-  const buildBlockGrid = () => {
-    if (!selectedSession) return null
-    const grid: Record<number, EvalItem[]> = {}
-    for (let i = 1; i <= 9; i++) grid[i] = []
-
-    for (const ev of selectedSession.evaluations) {
-      const blockNum = ev.emsBlock ? parseInt(ev.emsBlock.replace(/[^\d]/g, '')) || 5 : 5
-      if (grid[blockNum]) grid[blockNum].push(ev)
-    }
-
-    // 3x3 grid: rows = competency (high to low), cols = performance (low to high)
-    const gridLayout = [
-      [7, 8, 9], // High competency
-      [4, 5, 6], // Mid
-      [1, 2, 3], // Low competency
-    ]
-
-    return (
-      <div className="space-y-2">
-        <div className="flex items-center gap-2 mb-3">
-          <Grid3X3 className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-medium text-foreground">EMS 9-Block Matrix</span>
-        </div>
-        <div className="grid grid-cols-3 gap-1">
-          {gridLayout.flat().map((blockNum) => {
-            const blockInfo = BLOCK_LABELS[blockNum]
-            const items = grid[blockNum] ?? []
-            return (
-              <div
-                key={blockNum}
-                className={`rounded-lg border border-border p-2 min-h-[80px] ${items.length > 0 ? 'bg-card' : 'bg-background'}`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${blockInfo?.color ?? ''}`}>
-                    {blockInfo?.label ?? blockNum}
-                  </span>
-                  <span className="text-xs text-muted-foreground">{items.length}명</span>
-                </div>
-                <div className="space-y-0.5">
-                  {items.slice(0, 3).map((ev) => (
-                    <div
-                      key={ev.employeeId}
-                      className="flex items-center gap-1 text-xs bg-card border border-border rounded-md px-1.5 py-0.5 cursor-pointer hover:border-primary hover:bg-primary/10 transition-colors"
-                      onClick={() => handleEmployeeChipClick(ev)}
-                    >
-                      <span
-                        className="truncate max-w-[60px]"
-                        title={ev.employee.name}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setAdjEmployee(ev)
-                          setAdjPerfScore(ev.performanceScore ?? 3)
-                          setAdjCompScore(ev.competencyScore ?? 3)
-                        }}
-                      >
-                        {ev.employee.name}
-                      </span>
-                      {readinessMap[ev.employeeId] === 'READY_NOW' && <span className="flex-shrink-0">🟢</span>}
-                      {readinessMap[ev.employeeId] === 'READY_1_2_YEARS' && <span className="flex-shrink-0">🟡</span>}
-                      {readinessMap[ev.employeeId] === 'READY_3_PLUS_YEARS' && <span className="flex-shrink-0">🔴</span>}
-                    </div>
-                  ))}
-                  {items.length > 3 && (
-                    <span className="text-xs text-muted-foreground">+{items.length - 3}명</span>
-                  )}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-        <div className="flex justify-between text-xs text-muted-foreground mt-1">
-          <span>{t('kr_kec84b1ea_low')}</span>
-          <span>{t('kr_kec84b1ea_high')}</span>
-        </div>
-      </div>
-    )
-  }
+  const handleToggleBatchMode = useCallback(() => {
+    setBatchMode((prev) => {
+      if (prev) {
+        // 배치 모드 OFF 시 선택 초기화 (pending은 유지)
+        batch.clearSelection()
+      }
+      return !prev
+    })
+  }, [batch])
 
   if (loading) {
     return <div className="p-4 flex items-center justify-center h-64 text-muted-foreground">{tc('loading')}...</div>
@@ -449,16 +395,55 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
               )}
 
               {/* 9-Block Grid */}
-              <div className="rounded-xl border border-border bg-card p-5">
-                {buildBlockGrid()}
+              <div className="rounded-2xl bg-card p-5">
+                <CalibrationBlockGrid
+                  evaluations={selectedSession.evaluations}
+                  batchMode={batchMode}
+                  pendingChanges={batch.pendingChanges}
+                  selectedIds={batch.selectedIds}
+                  readinessMap={readinessMap}
+                  onToggleSelect={batch.toggleSelect}
+                  onEmployeeChipClick={handleEmployeeChipClick}
+                  onAdjEmployeeClick={(ev) => {
+                    setAdjEmployee(ev)
+                    setAdjPerfScore(ev.performanceScore ?? 3)
+                    setAdjCompScore(ev.competencyScore ?? 3)
+                  }}
+                  onDragMove={batch.moveSingle}
+                  onSelectAllInBlock={batch.selectAllInBlock}
+                />
               </div>
 
-              {/* AI Analysis button */}
+              {/* Batch Toolbar */}
+              {batchMode && (
+                <CalibrationBatchToolbar
+                  selectedCount={batch.selectedIds.size}
+                  pendingCount={batch.pendingCount}
+                  onMoveToBlock={batch.moveSelected}
+                  onClearSelection={batch.clearSelection}
+                  onClearAll={batch.clearAll}
+                  onOpenSaveDialog={() => setShowSaveDialog(true)}
+                />
+              )}
+
+              {/* Action buttons */}
               <div className="flex items-center gap-3">
+                <button
+                  onClick={handleToggleBatchMode}
+                  className={cn(
+                    'flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-colors',
+                    batchMode
+                      ? 'bg-primary text-white'
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80',
+                  )}
+                >
+                  <Layers className="w-4 h-4" />
+                  {t('calibrationBatch.batchMode')}
+                </button>
                 <button
                   onClick={handleAiAnalysis}
                   disabled={aiLoading}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-indigo-500/15 text-primary/90 hover:bg-indigo-200 disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-indigo-500/15 text-primary/90 hover:bg-indigo-200 disabled:opacity-50"
                 >
                   <Sparkles className="w-4 h-4" />
                   {aiLoading ? t('aiAnalyzing') : 'AI 캘리브레이션 분석'}
@@ -575,6 +560,19 @@ export default function CalibrationClient({ user }: { user: SessionUser }) {
         </div>
       </div>
     </div>
+
+    {/* 배치 저장 다이얼로그 */}
+    <CalibrationBatchSaveDialog
+      open={showSaveDialog}
+      onOpenChange={setShowSaveDialog}
+      pendingChanges={batch.pendingChanges}
+      distribution={batch.mergedDistribution}
+      isSaving={batch.isSaving}
+      onSave={(reason) => {
+        batch.saveBatch(reason)
+        setShowSaveDialog(false)
+      }}
+    />
 
     {/* 직원 통합 사이드패널 */}
     <EmployeeInsightPanel
