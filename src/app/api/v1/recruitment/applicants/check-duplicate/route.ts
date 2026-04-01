@@ -159,12 +159,34 @@ export const POST = withPermission(
       }
     }
 
-    // 중복 로그 기록 (백그라운드 — 현재 applicant ID 없으므로 나중에 연결)
-    // POST 시점에는 신규 지원자 ID가 없어 로그 생략, 실제 등록 후 처리
+    // ── Do-Not-Rehire 체크 ─────────────────────────────────
+    // 이메일로 기존 퇴직 직원 중 재고용 방지 플래그 확인
+    const doNotRehire = await prisma.employeeOffboarding.findFirst({
+      where: {
+        isDoNotRehire: true,
+        status: 'COMPLETED',
+        employee: {
+          user: { email },
+        },
+      },
+      select: {
+        doNotRehireReason: true,
+        completedAt: true,
+        employee: { select: { name: true } },
+      },
+    })
 
     return apiSuccess({
       hasDuplicates: matches.length > 0,
       matches,
+      doNotRehire: doNotRehire
+        ? {
+            flagged: true,
+            employeeName: doNotRehire.employee?.name ?? '—',
+            reason: doNotRehire.doNotRehireReason,
+            offboardedAt: doNotRehire.completedAt,
+          }
+        : null,
     })
   },
   perm(MODULE.RECRUITMENT, ACTION.VIEW),

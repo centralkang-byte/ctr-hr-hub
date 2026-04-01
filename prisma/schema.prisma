@@ -1309,6 +1309,7 @@ model Employee {
   offboardingHandoverTo       EmployeeOffboarding[]     @relation("OffboardingHandover")
   offboardingTasksCompleted   EmployeeOffboardingTask[] @relation("OffboardingTaskCompleter")
   offboardingTaskAssignments  EmployeeOffboardingTask[] @relation("OffboardingTaskAssignee")
+  offboardingDocsUploaded     OffboardingDocument[]     @relation("OffboardingDocUploader")
   exitInterviewsAsEmployee    ExitInterview[]           @relation("ExitInterviewEmployee")
   exitInterviewsAsInterviewer ExitInterview[]           @relation("ExitInterviewInterviewer")
   assetReturns                AssetReturn[]
@@ -1727,6 +1728,9 @@ model EmployeeOffboarding {
   isSeveranceCalculated    Boolean           @default(false) @map("severance_calculated")
   isItAccountDeactivated   Boolean           @default(false) @map("it_account_deactivated")
   isExitInterviewCompleted Boolean           @default(false) @map("exit_interview_completed")
+  isDoNotRehire            Boolean           @default(false) @map("do_not_rehire")
+  doNotRehireReason        String?           @map("do_not_rehire_reason")
+  doNotRehireSetById       String?           @map("do_not_rehire_set_by_id")
   startedAt              DateTime          @map("started_at")
   completedAt            DateTime?         @map("completed_at")
   createdAt              DateTime          @default(now()) @map("created_at")
@@ -1738,7 +1742,25 @@ model EmployeeOffboarding {
   exitInterviews   ExitInterview[]
   assetReturns     AssetReturn[]
 
+  documents        OffboardingDocument[]
+
   @@map("employee_offboarding")
+}
+
+model OffboardingDocument {
+  id              String   @id @default(uuid())
+  offboardingId   String   @map("offboarding_id")
+  type            String   // CONSENT | HANDOVER | EXIT | NDA | OTHER
+  fileName        String   @map("file_name")
+  fileKey         String   @map("file_key") // S3 key
+  fileSize        Int?     @map("file_size")
+  uploadedById    String   @map("uploaded_by_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  offboarding  EmployeeOffboarding @relation(fields: [offboardingId], references: [id])
+  uploadedBy   Employee            @relation("OffboardingDocUploader", fields: [uploadedById], references: [id])
+
+  @@map("offboarding_documents")
 }
 
 /// 직원별 오프보딩 작업 인스턴스 (OffboardingTask 기반)

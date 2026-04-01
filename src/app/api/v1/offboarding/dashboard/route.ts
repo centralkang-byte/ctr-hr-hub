@@ -95,6 +95,84 @@ export const GET = withPermission(
       }
     })
 
+    // ── Analytics: 퇴직 원인 분석 + 트렌드 ────────────────
+
+    const companyWhere = companyId
+      ? { employee: { assignments: { some: { companyId, isPrimary: true } } } }
+      : {}
+
+    // 이직 원인 분석 (ExitInterview.primaryReason groupBy)
+    const exitReasonGroups = await prisma.exitInterview.groupBy({
+      by: ['primaryReason'],
+      where: { ...companyWhere as Prisma.ExitInterviewWhereInput },
+      _count: { id: true },
+    })
+
+    const exitReasonBreakdown = exitReasonGroups.map((g) => ({
+      reason: g.primaryReason,
+      count: g._count.id,
+    }))
+
+    // Would Recommend 비율
+    const [recommendYes, recommendTotal] = await Promise.all([
+      prisma.exitInterview.count({
+        where: { wouldRecommend: true, ...companyWhere as Prisma.ExitInterviewWhereInput },
+      }),
+      prisma.exitInterview.count({
+        where: { wouldRecommend: { not: null }, ...companyWhere as Prisma.ExitInterviewWhereInput },
+      }),
+    ])
+
+    // 평균 만족도
+    const satisfactionAgg = await prisma.exitInterview.aggregate({
+      where: { satisfactionScore: { not: null }, ...companyWhere as Prisma.ExitInterviewWhereInput },
+      _avg: { satisfactionScore: true },
+      _count: { satisfactionScore: true },
+    })
+
+    // 평균 재직기간 (COMPLETED offboardings)
+    const completedOffboardings = await prisma.employeeOffboarding.findMany({
+      where: { status: 'COMPLETED', ...companyWhere },
+      select: {
+        lastWorkingDate: true,
+        employee: { select: { hireDate: true } },
+      },
+      take: 500,
+    })
+
+    let avgTenureDays = 0
+    if (completedOffboardings.length > 0) {
+      const totalDays = completedOffboardings.reduce((sum, ob) => {
+        if (!ob.employee?.hireDate) return sum
+        const diff = (ob.lastWorkingDate.getTime() - ob.employee.hireDate.getTime()) / 86_400_000
+        return sum + Math.max(0, diff)
+      }, 0)
+      avgTenureDays = Math.round(totalDays / completedOffboardings.length)
+    }
+
+    // 월별 퇴직 트렌드 (최근 12개월)
+    const twelveMonthsAgo = new Date()
+    twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12)
+
+    const monthlyOffboardings = await prisma.employeeOffboarding.findMany({
+      where: {
+        status: 'COMPLETED',
+        completedAt: { gte: twelveMonthsAgo },
+        ...companyWhere,
+      },
+      select: { completedAt: true, resignType: true },
+    })
+
+    const monthlyTrend: Record<string, { total: number; voluntary: number; involuntary: number }> = {}
+    for (const ob of monthlyOffboardings) {
+      if (!ob.completedAt) continue
+      const key = `${ob.completedAt.getFullYear()}-${String(ob.completedAt.getMonth() + 1).padStart(2, '0')}`
+      if (!monthlyTrend[key]) monthlyTrend[key] = { total: 0, voluntary: 0, involuntary: 0 }
+      monthlyTrend[key].total++
+      if (ob.resignType === 'VOLUNTARY') monthlyTrend[key].voluntary++
+      else monthlyTrend[key].involuntary++
+    }
+
     const { NextResponse } = await import('next/server')
     return NextResponse.json({
       data: enriched,
@@ -104,6 +182,20 @@ export const GET = withPermission(
         totalUrgent,
         exitInterviewPending,
         resignTypeBreakdown,
+      },
+      analytics: {
+        exitReasonBreakdown,
+        wouldRecommendRate: recommendTotal > 0
+          ? Math.round((recommendYes / recommendTotal) * 100)
+          : null,
+        avgSatisfactionScore: satisfactionAgg._avg.satisfactionScore
+          ? Math.round(satisfactionAgg._avg.satisfactionScore * 10) / 10
+          : null,
+        exitInterviewCount: satisfactionAgg._count.satisfactionScore,
+        avgTenureDays,
+        avgTenureYears: avgTenureDays > 0 ? Math.round((avgTenureDays / 365) * 10) / 10 : 0,
+        monthlyTrend,
+        completedCount: completedOffboardings.length,
       },
     })
   },

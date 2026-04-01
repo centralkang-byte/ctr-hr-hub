@@ -4,10 +4,12 @@
 // ═══════════════════════════════════════════════════════════
 
 import { type NextRequest } from 'next/server'
+import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { notFound, forbidden } from '@/lib/errors'
+import { notFound, forbidden, badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
+import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { isDirectManager } from '@/lib/auth/manager-check'
 import type { SessionUser } from '@/types'
@@ -155,4 +157,97 @@ export const GET = withPermission(
         })
     },
     perm(MODULE.OFFBOARDING, ACTION.VIEW),
+)
+
+// ─── PATCH Schema ────────────────────────────────────────
+
+const patchSchema = z.object({
+    isItAccountDeactivated: z.boolean().optional(),
+    isExitInterviewCompleted: z.boolean().optional(),
+    handoverToId: z.string().uuid().nullable().optional(),
+    isDoNotRehire: z.boolean().optional(),
+    doNotRehireReason: z.string().nullable().optional(),
+}).refine(
+    (data) => Object.keys(data).length > 0,
+    { message: '변경할 필드를 하나 이상 입력해주세요.' },
+)
+
+// ─── PATCH /api/v1/offboarding/instances/[id] ────────────
+// 게이팅 플래그 토글 + 인수자 변경 + do-not-rehire 설정
+
+export const PATCH = withPermission(
+    async (req: NextRequest, ctx, user: SessionUser) => {
+        const { id } = await ctx.params
+
+        const existing = await prisma.employeeOffboarding.findFirst({
+            where: {
+                id,
+                ...(user.role !== ROLE.SUPER_ADMIN
+                    ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
+                    : {}),
+            },
+            select: { id: true, status: true, employeeId: true },
+        })
+
+        if (!existing) throw notFound('오프보딩 기록을 찾을 수 없습니다.')
+
+        if (existing.status !== 'IN_PROGRESS') {
+            throw badRequest(`현재 상태(${existing.status})에서는 수정할 수 없습니다.`)
+        }
+
+        const body: unknown = await req.json()
+        const parsed = patchSchema.safeParse(body)
+        if (!parsed.success) {
+            throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
+        }
+
+        const data: Record<string, unknown> = {}
+
+        if (parsed.data.isItAccountDeactivated !== undefined) {
+            data.isItAccountDeactivated = parsed.data.isItAccountDeactivated
+        }
+        if (parsed.data.isExitInterviewCompleted !== undefined) {
+            data.isExitInterviewCompleted = parsed.data.isExitInterviewCompleted
+        }
+        if (parsed.data.handoverToId !== undefined) {
+            data.handoverToId = parsed.data.handoverToId
+        }
+        if (parsed.data.isDoNotRehire !== undefined) {
+            data.isDoNotRehire = parsed.data.isDoNotRehire
+            data.doNotRehireReason = parsed.data.doNotRehireReason ?? null
+            data.doNotRehireSetById = parsed.data.isDoNotRehire ? user.employeeId : null
+        }
+
+        try {
+            const updated = await prisma.employeeOffboarding.update({
+                where: { id },
+                data,
+                select: {
+                    id: true,
+                    isItAccountDeactivated: true,
+                    isExitInterviewCompleted: true,
+                    handoverToId: true,
+                    isDoNotRehire: true,
+                    doNotRehireReason: true,
+                },
+            })
+
+            const { ip, userAgent } = extractRequestMeta(req.headers)
+            logAudit({
+                actorId: user.employeeId,
+                action: 'offboarding.update_flags',
+                resourceType: 'employee_offboarding',
+                resourceId: id,
+                companyId: user.companyId,
+                changes: parsed.data,
+                ip,
+                userAgent,
+            })
+
+            return apiSuccess(updated)
+        } catch (error) {
+            throw handlePrismaError(error)
+        }
+    },
+    perm(MODULE.OFFBOARDING, ACTION.UPDATE),
 )

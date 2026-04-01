@@ -64,7 +64,34 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
         const requiredTasks = offboarding.offboardingTasks.filter((t) => t.task.isRequired)
         const allRequiredDone = requiredTasks.every((t) => t.status === 'DONE')
         if (!allRequiredDone) {
-            throw new Error('Not all required tasks are completed')
+            const pendingTasks = requiredTasks
+                .filter((t) => t.status !== 'DONE')
+                .map((t) => t.task.title)
+            throw new Error(`필수 태스크 미완료: ${pendingTasks.join(', ')}`)
+        }
+
+        // 2a. GATE: IT 계정 비활성화 확인
+        if (!offboarding.isItAccountDeactivated) {
+            throw new Error('IT 계정 비활성화가 완료되지 않았습니다. IT 담당자에게 확인하세요.')
+        }
+
+        // 2b. GATE: 퇴직면담 완료 확인
+        if (!offboarding.isExitInterviewCompleted) {
+            throw new Error('퇴직면담이 완료되지 않았습니다. HR 담당자가 면담을 진행해주세요.')
+        }
+
+        // 2c. GATE: 인수인계 확인 (인수자가 지정된 경우)
+        if (offboarding.handoverToId) {
+            const handoverTasks = offboarding.offboardingTasks.filter(
+                (t) => t.assigneeId === offboarding.handoverToId && t.task.isRequired,
+            )
+            const allHandoverDone = handoverTasks.length === 0 || handoverTasks.every((t) => t.status === 'DONE')
+            if (!allHandoverDone) {
+                const pendingHandover = handoverTasks
+                    .filter((t) => t.status !== 'DONE')
+                    .map((t) => t.task.title)
+                throw new Error(`인수인계 태스크 미완료: ${pendingHandover.join(', ')}`)
+            }
         }
 
         // 3. Handle unreturned assets
