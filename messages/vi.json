@@ -1962,6 +1962,8 @@
     "stageShortINTERVIEW_2": "2nd Interview",
     "stageShortFINAL": "Final",
     "stageShortOFFER": "Offer",
+    "stageShortOFFER_ACCEPTED": "Chấp nhận",
+    "stageShortOFFER_DECLINED": "Từ chối",
     "stageShortHIRED": "Hired",
     "stageShortREJECTED": "Rejected",
     "boardTitle": "Recruitment Board",

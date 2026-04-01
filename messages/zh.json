@@ -1980,6 +1980,8 @@
     "stageShortINTERVIEW_2": "2nd Interview",
     "stageShortFINAL": "Final",
     "stageShortOFFER": "Offer",
+    "stageShortOFFER_ACCEPTED": "已接受",
+    "stageShortOFFER_DECLINED": "已拒绝",
     "stageShortHIRED": "Hired",
     "stageShortREJECTED": "Rejected",
     "boardTitle": "Recruitment Board",

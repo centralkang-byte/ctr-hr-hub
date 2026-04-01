@@ -89,6 +89,8 @@ const STAGE_LABEL_KEYS: Record<string, string> = {
   INTERVIEW_2: 'stageShortINTERVIEW_2',
   FINAL: 'stageShortFINAL',
   OFFER: 'stageShortOFFER',
+  OFFER_ACCEPTED: 'stageShortOFFER_ACCEPTED',
+  OFFER_DECLINED: 'stageShortOFFER_DECLINED',
   HIRED: 'stageShortHIRED',
   REJECTED: 'stageShortREJECTED',
 }
@@ -100,6 +102,8 @@ const STAGE_COLORS: Record<string, string> = {
   INTERVIEW_2: '#2196F3',
   FINAL: '#FF9800',
   OFFER: '#5E81F4',
+  OFFER_ACCEPTED: '#059669',
+  OFFER_DECLINED: '#D97706',
   HIRED: '#5E81F4',
   REJECTED: '#F44336',
 }

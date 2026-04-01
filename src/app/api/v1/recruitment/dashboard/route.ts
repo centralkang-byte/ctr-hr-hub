@@ -19,6 +19,8 @@ const STAGE_LABELS: Record<string, string> = {
   INTERVIEW_2: '2차면접',
   FINAL: '최종심사',
   OFFER: '오퍼',
+  OFFER_ACCEPTED: '오퍼 수락',
+  OFFER_DECLINED: '오퍼 거절',
   HIRED: '합격',
   REJECTED: '탈락',
 }
@@ -30,6 +32,8 @@ const STAGE_ORDER = [
   'INTERVIEW_2',
   'FINAL',
   'OFFER',
+  'OFFER_ACCEPTED',
+  'OFFER_DECLINED',
   'HIRED',
   'REJECTED',
 ] as const

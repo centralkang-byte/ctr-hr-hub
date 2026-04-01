@@ -2054,6 +2054,8 @@
     "stageShortINTERVIEW_2": "2차면접",
     "stageShortFINAL": "최종",
     "stageShortOFFER": "오퍼",
+    "stageShortOFFER_ACCEPTED": "수락",
+    "stageShortOFFER_DECLINED": "거절",
     "stageShortHIRED": "합격",
     "stageShortREJECTED": "불합격",
     "boardTitle": "채용 보드",
