@@ -1619,7 +1619,134 @@
     "months": "월",
     "start": "시작",
     "hours": "시간",
-    "savedSuccess": "저장되었습니다"
+    "savedSuccess": "저장되었습니다",
+    "quarterlyReview": {
+      "title": "분기 리뷰",
+      "myTitle": "나의 분기 리뷰",
+      "adminTitle": "분기 리뷰 관리",
+      "description": "분기별 성과를 점검하고 피드백을 주고받습니다",
+      "status": {
+        "DRAFT": "작성 전",
+        "IN_PROGRESS": "작성 중",
+        "EMPLOYEE_DONE": "직원 제출",
+        "MANAGER_DONE": "매니저 제출",
+        "COMPLETED": "완료"
+      },
+      "sentiment": {
+        "POSITIVE": "긍정적",
+        "NEUTRAL": "보통",
+        "CONCERN": "우려"
+      },
+      "tracking": {
+        "ON_TRACK": "정상 진행",
+        "AT_RISK": "위험",
+        "BEHIND": "지연"
+      },
+      "dashboard": {
+        "totalReviews": "전체 리뷰",
+        "completionRate": "완료율",
+        "employeeSubmitted": "직원 제출 완료",
+        "overdue": "미완료"
+      },
+      "filter": {
+        "year": "연도",
+        "quarter": "분기",
+        "status": "상태",
+        "allStatuses": "전체 상태",
+        "allQuarters": "전체 분기"
+      },
+      "quarter": {
+        "Q1": "1분기",
+        "Q2": "2분기",
+        "Q3": "3분기",
+        "Q4": "4분기"
+      },
+      "section": {
+        "goalProgress": "목표 진행 현황",
+        "employeeReflection": "직원 회고",
+        "managerFeedback": "매니저 피드백",
+        "actionItems": "액션 아이템"
+      },
+      "field": {
+        "goalHighlights": "핵심 성과",
+        "goalHighlightsPlaceholder": "이번 분기 주요 성과를 작성하세요",
+        "challenges": "도전 과제",
+        "challengesPlaceholder": "어려움이나 장애 요인을 작성하세요",
+        "developmentNeeds": "성장 필요 영역",
+        "developmentNeedsPlaceholder": "개발이 필요한 역량이나 영역을 작성하세요",
+        "employeeComments": "추가 의견",
+        "employeeCommentsPlaceholder": "기타 공유하고 싶은 내용을 작성하세요",
+        "managerFeedback": "매니저 피드백",
+        "managerFeedbackPlaceholder": "직원의 성과에 대한 피드백을 작성하세요",
+        "coachingNotes": "코칭 노트",
+        "coachingNotesPlaceholder": "개선을 위한 구체적인 조언을 작성하세요",
+        "developmentPlan": "육성 계획",
+        "developmentPlanPlaceholder": "향후 성장을 위한 계획을 작성하세요",
+        "progressPct": "진행률",
+        "employeeComment": "직원 코멘트",
+        "managerComment": "매니저 코멘트"
+      },
+      "action": {
+        "save": "임시 저장",
+        "submitEmployee": "리뷰 제출",
+        "submitManager": "피드백 제출",
+        "reopen": "재개",
+        "bulkCreate": "일괄 생성",
+        "viewDetail": "상세 보기",
+        "backToList": "목록으로"
+      },
+      "confirm": {
+        "submitTitle": "리뷰를 제출하시겠습니까?",
+        "submitEmployeeDesc": "제출 후에는 수정할 수 없습니다. 매니저에게 전달됩니다.",
+        "submitManagerDesc": "제출 후에는 수정할 수 없습니다. 리뷰가 완료됩니다.",
+        "reopenTitle": "리뷰를 재개하시겠습니까?",
+        "reopenDesc": "직원과 매니저가 다시 수정할 수 있게 됩니다.",
+        "bulkCreateTitle": "분기 리뷰를 일괄 생성하시겠습니까?",
+        "bulkCreateDesc": "{count}명의 리뷰가 생성됩니다."
+      },
+      "toast": {
+        "saveSuccess": "임시 저장되었습니다",
+        "submitSuccess": "리뷰가 제출되었습니다",
+        "reopenSuccess": "리뷰가 재개되었습니다",
+        "bulkCreateSuccess": "{count}건의 리뷰가 생성되었습니다",
+        "loadFailed": "리뷰를 불러올 수 없습니다",
+        "saveFailed": "저장에 실패했습니다",
+        "submitFailed": "제출에 실패했습니다"
+      },
+      "empty": {
+        "title": "분기 리뷰가 없습니다",
+        "description": "해당 기간에 생성된 리뷰가 없습니다"
+      },
+      "table": {
+        "employee": "직원",
+        "manager": "매니저",
+        "quarterCol": "분기",
+        "status": "상태",
+        "sentiment": "감성",
+        "submittedAt": "제출일",
+        "updatedAt": "수정일"
+      },
+      "actionItem": {
+        "description": "내용",
+        "descriptionPlaceholder": "액션 아이템 내용을 입력하세요",
+        "dueDate": "기한",
+        "assignee": "담당",
+        "addItem": "항목 추가",
+        "completed": "완료",
+        "employee": "직원",
+        "manager": "매니저"
+      },
+      "bulkCreate": {
+        "title": "분기 리뷰 일괄 생성",
+        "description": "선택한 직원들의 분기 리뷰를 한 번에 생성합니다",
+        "selectEmployees": "직원 선택",
+        "selectedCount": "{count}명 선택됨",
+        "yearLabel": "연도",
+        "quarterLabel": "분기",
+        "cycleLabel": "평가 사이클 (선택)",
+        "create": "생성"
+      }
+    }
   },
   "recruitment": {
     "title": "채용 관리",
@@ -1790,6 +1917,8 @@
     "stageINTERVIEW_2": "2차면접",
     "stageFINAL": "최종심사",
     "stageOFFER": "오퍼",
+    "stageOFFER_ACCEPTED": "오퍼 수락",
+    "stageOFFER_DECLINED": "오퍼 거절",
     "stageHIRED": "합격",
     "stageREJECTED": "탈락",
     "sourceDIRECT": "직접지원",
@@ -1825,6 +1954,16 @@
     "offeredDateLabel": "제안일",
     "expectedStartDateLabel": "입사 예정일",
     "confirmButton": "확인",
+    "offerAcceptTitle": "오퍼 수락 확인",
+    "offerDeclineTitle": "오퍼 거절 확인",
+    "offerAcceptConfirmMessage": "이 지원자의 오퍼 수락을 처리합니다. 수락 후 채용 전환 단계로 진행할 수 있습니다.",
+    "offerDeclineConfirmMessage": "이 지원자의 오퍼 거절을 처리합니다. 거절 사유를 입력해주세요.",
+    "offerDeclineReasonPlaceholder": "거절 사유 (예: 처우 조건 불일치, 타사 입사 등)",
+    "offerAcceptButton": "수락 처리",
+    "offerDeclineButton": "거절 처리",
+    "offerAcceptedSuccess": "오퍼가 수락 처리되었습니다.",
+    "offerDeclinedSuccess": "오퍼가 거절 처리되었습니다.",
+    "offerResponseFailed": "오퍼 응답 처리에 실패했습니다.",
     "interviewFormTitle": "면접 등록",
     "interviewFormDescription": "새로운 면접 일정을 등록합니다",
     "backToList": "목록으로",
@@ -5015,7 +5154,8 @@
       "internalJobs": "사내 채용",
       "notificationSettings": "알림 설정",
       "directory": "구성원 검색",
-      "orgChart": "조직도"
+      "orgChart": "조직도",
+      "quarterlyReview": "분기 리뷰"
     },
     "team": {
       "label": "팀 관리",
@@ -5079,7 +5219,8 @@
       "results": "성과 결과",
       "peerReview": "동료 평가",
       "compensation": "보상 관리",
-      "benefits": "복리후생 관리"
+      "benefits": "복리후생 관리",
+      "quarterlyReview": "분기 리뷰"
     },
     "payroll": {
       "label": "급여",
@@ -5566,6 +5707,24 @@
     "leavePromotion": {
       "title": "연차 사용 권장",
       "body": "{name}님, 잔여 연차가 {remainingDays}일입니다. 입사일까지 {daysUntilAnniversary}일 남았습니다. 연차 사용을 권장드립니다."
+    },
+    "recruitment": {
+      "offerSent": {
+        "title": "오퍼 발송",
+        "body": "{applicantName}님에게 [{postingTitle}] 오퍼가 발송되었습니다."
+      },
+      "offerAccepted": {
+        "title": "오퍼 수락",
+        "body": "{applicantName}님이 [{postingTitle}] 오퍼를 수락했습니다."
+      },
+      "offerDeclined": {
+        "title": "오퍼 거절",
+        "body": "{applicantName}님이 [{postingTitle}] 오퍼를 거절했습니다. 사유: {declineReason}"
+      },
+      "interviewScheduled": {
+        "title": "면접 일정 등록",
+        "body": "[{postingTitle}] {applicantName}님 면접이 {scheduledAt} ({timezone})에 예정되었습니다."
+      }
     }
   }
 }

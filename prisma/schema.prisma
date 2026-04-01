@@ -350,6 +350,8 @@ enum ApplicationStage {
   INTERVIEW_2
   FINAL
   OFFER
+  OFFER_ACCEPTED
+  OFFER_DECLINED
   HIRED
   REJECTED
 }
@@ -2289,6 +2291,8 @@ model Application {
   offeredSalary       Decimal?         @map("offered_salary")
   offeredDate         DateTime?        @map("offered_date")
   expectedStartDate   DateTime?        @map("expected_start_date")
+  offerRespondedAt    DateTime?        @map("offer_responded_at")
+  offerDeclineReason  String?          @map("offer_decline_reason")
   appliedAt           DateTime         @map("applied_at")
   updatedAt           DateTime         @updatedAt @map("updated_at")
 
@@ -2315,6 +2319,7 @@ model InterviewSchedule {
   status             InterviewStatus
   calendarEventId    String?         @map("calendar_event_id")
   teamsAutoScheduled Boolean         @default(false) @map("teams_auto_scheduled")
+  timezone           String?         @map("timezone")
   createdAt          DateTime        @default(now()) @map("created_at")
 
   application          Application           @relation(fields: [applicationId], references: [id])

@@ -31,6 +31,10 @@ import { mboGoalSubmittedHandler } from './handlers/mbo-goal-submitted.handler'
 import { mboGoalReviewedHandler } from './handlers/mbo-goal-reviewed.handler'
 import { selfEvalSubmittedHandler } from './handlers/self-eval-submitted.handler'
 import { managerEvalSubmittedHandler } from './handlers/manager-eval-submitted.handler'
+import { offerSentHandler } from './handlers/offer-sent.handler'
+import { offerAcceptedHandler } from './handlers/offer-accepted.handler'
+import { offerDeclinedHandler } from './handlers/offer-declined.handler'
+import { interviewScheduledHandler } from './handlers/interview-scheduled.handler'
 import { quarterlyReviewCreatedHandler } from './handlers/quarterly-review-created.handler'
 import { quarterlyReviewSubmittedHandler } from './handlers/quarterly-review-submitted.handler'
 import { quarterlyReviewCompletedHandler } from './handlers/quarterly-review-completed.handler'
@@ -76,6 +80,12 @@ export function bootstrapEventHandlers(): void {
   // Session D ✔️
   // PERFORMANCE_CYCLE_FINALIZED — publishing done in advance/finalize routes.
   // No dedicated handler needed: downstream consumers subscribe directly to the event bus.
+
+  // ── Recruitment Events ────────────────────────────────────
+  eventBus.subscribe(offerSentHandler)
+  eventBus.subscribe(offerAcceptedHandler)
+  eventBus.subscribe(offerDeclinedHandler)
+  eventBus.subscribe(interviewScheduledHandler)
 
   // ── Quarterly Review Events (Phase B-2) ─────────────────────
   eventBus.subscribe(quarterlyReviewCreatedHandler)

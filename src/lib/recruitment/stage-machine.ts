@@ -6,10 +6,10 @@
 //
 // State Machine Diagram:
 //
-//   APPLIED ──→ SCREENING ──→ INTERVIEW_1 ──→ INTERVIEW_2 ──→ FINAL ──→ OFFER ──→ HIRED
-//     │              │             │                │            │          │
-//     │              │             ├── (skip) ──────┤            │          │
-//     ├── (skip) ────┘             │                │            │          │
+//   APPLIED ──→ SCREENING ──→ INTERVIEW_1 ──→ INTERVIEW_2 ──→ FINAL ──→ OFFER ──→ OFFER_ACCEPTED ──→ HIRED
+//     │              │             │                │            │          │            │
+//     │              │             ├── (skip) ──────┤            │          │            │
+//     ├── (skip) ────┘             │                │            │          ├──→ OFFER_DECLINED
 //     │                            ├── (skip) ──────────────────→┤          │
 //     │                            │                │            │          │
 //     ↓              ↓             ↓                ↓            ↓          ↓
@@ -47,14 +47,16 @@ export interface StageTransitionResult {
 // ─── Transitions ──────────────────────────────────────────
 
 const TRANSITIONS: Record<ApplicationStage, ApplicationStage[]> = {
-  APPLIED:     ['SCREENING', 'INTERVIEW_1', 'REJECTED'],
-  SCREENING:   ['INTERVIEW_1', 'REJECTED'],
-  INTERVIEW_1: ['INTERVIEW_2', 'FINAL', 'REJECTED'],
-  INTERVIEW_2: ['FINAL', 'REJECTED'],
-  FINAL:       ['OFFER', 'REJECTED'],
-  OFFER:       ['HIRED', 'REJECTED'],
-  HIRED:       [],       // terminal
-  REJECTED:    [],       // terminal
+  APPLIED:        ['SCREENING', 'INTERVIEW_1', 'REJECTED'],
+  SCREENING:      ['INTERVIEW_1', 'REJECTED'],
+  INTERVIEW_1:    ['INTERVIEW_2', 'FINAL', 'REJECTED'],
+  INTERVIEW_2:    ['FINAL', 'REJECTED'],
+  FINAL:          ['OFFER', 'REJECTED'],
+  OFFER:          ['OFFER_ACCEPTED', 'OFFER_DECLINED', 'REJECTED'],
+  OFFER_ACCEPTED: ['HIRED'],
+  OFFER_DECLINED: [],    // terminal
+  HIRED:          [],    // terminal
+  REJECTED:       [],    // terminal
 }
 
 // ─── Core Validator ───────────────────────────────────────
@@ -96,5 +98,5 @@ export function validateStageTransition(input: StageTransitionInput): StageTrans
  * Check if a stage is terminal (no further transitions possible).
  */
 export function isTerminalStage(stage: ApplicationStage): boolean {
-  return stage === 'HIRED' || stage === 'REJECTED'
+  return stage === 'HIRED' || stage === 'REJECTED' || stage === 'OFFER_DECLINED'
 }

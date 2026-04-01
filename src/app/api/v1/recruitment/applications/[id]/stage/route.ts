@@ -24,6 +24,8 @@ const stageSchema = z
       'INTERVIEW_2',
       'FINAL',
       'OFFER',
+      'OFFER_ACCEPTED',
+      'OFFER_DECLINED',
       'HIRED',
       'REJECTED',
     ]),
@@ -65,9 +67,12 @@ export const PUT = withPermission(
       throw notFound('해당 지원 내역을 찾을 수 없습니다. applications/[id]의 id는 Application ID입니다.')
     }
 
-    // Cannot change from HIRED (one-way terminal state)
+    // Cannot change from terminal states
     if (existing.stage === 'HIRED') {
       throw badRequest('이미 채용 완료된 지원자의 단계는 변경할 수 없습니다.')
+    }
+    if (existing.stage === 'OFFER_DECLINED') {
+      throw badRequest('오퍼를 거절한 지원자의 단계는 변경할 수 없습니다.')
     }
 
     const body: unknown = await req.json()

@@ -13,6 +13,8 @@ import {
   GitBranch,
   X,
   Loader2,
+  CheckCircle2,
+  XCircle,
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { toast } from '@/hooks/use-toast'
@@ -30,6 +32,8 @@ const STAGES = [
   'INTERVIEW_2',
   'FINAL',
   'OFFER',
+  'OFFER_ACCEPTED',
+  'OFFER_DECLINED',
   'HIRED',
   'REJECTED',
 ] as const
@@ -43,6 +47,8 @@ const STAGE_KEYS: Record<string, string> = {
   INTERVIEW_2: 'stageINTERVIEW_2',
   FINAL: 'stageFINAL',
   OFFER: 'stageOFFER',
+  OFFER_ACCEPTED: 'stageOFFER_ACCEPTED',
+  OFFER_DECLINED: 'stageOFFER_DECLINED',
   HIRED: 'stageHIRED',
   REJECTED: 'stageREJECTED',
 }
@@ -54,6 +60,8 @@ const STAGE_BORDER_COLORS: Record<string, string> = {
   INTERVIEW_2: '#2196F3',
   FINAL: '#FF9800',
   OFFER: '#5E81F4',
+  OFFER_ACCEPTED: '#059669',
+  OFFER_DECLINED: '#D97706',
   HIRED: '#5E81F4',
   REJECTED: '#F44336',
 }
@@ -65,6 +73,8 @@ const STAGE_HEADER_BG: Record<string, string> = {
   INTERVIEW_2: 'bg-primary/5',
   FINAL: 'bg-orange-500/10',
   OFFER: 'bg-primary/10',
+  OFFER_ACCEPTED: 'bg-emerald-500/10',
+  OFFER_DECLINED: 'bg-amber-500/10',
   HIRED: 'bg-primary/10',
   REJECTED: 'bg-destructive/5',
 }
@@ -133,6 +143,13 @@ export default function PipelineClient({ user, postingId }: Props) {
     applicationId: '',
     form: { offeredSalary: '', offeredDate: '', expectedStartDate: '' },
   })
+
+  const [offerResponseModal, setOfferResponseModal] = useState<{
+    open: boolean
+    applicationId: string
+    response: 'ACCEPT' | 'DECLINE' | null
+    declineReason: string
+  }>({ open: false, applicationId: '', response: null, declineReason: '' })
 
   const [modalSubmitting, setModalSubmitting] = useState(false)
 
@@ -226,6 +243,17 @@ export default function PipelineClient({ user, postingId }: Props) {
       return
     }
 
+    // If OFFER_ACCEPTED or OFFER_DECLINED → show offer response modal
+    if (targetStage === 'OFFER_ACCEPTED' || targetStage === 'OFFER_DECLINED') {
+      setOfferResponseModal({
+        open: true,
+        applicationId,
+        response: targetStage === 'OFFER_ACCEPTED' ? 'ACCEPT' : 'DECLINE',
+        declineReason: '',
+      })
+      return
+    }
+
     // Normal stage change
     await changeStage(applicationId, targetStage)
   }
@@ -311,6 +339,34 @@ export default function PipelineClient({ user, postingId }: Props) {
       applicationId: '',
       form: { offeredSalary: '', offeredDate: '', expectedStartDate: '' },
     })
+  }
+
+  const handleOfferResponseSubmit = async () => {
+    const { applicationId, response, declineReason } = offerResponseModal
+    if (!response) return
+    if (response === 'DECLINE' && !declineReason.trim()) return
+
+    setModalSubmitting(true)
+    const newStage = response === 'ACCEPT' ? 'OFFER_ACCEPTED' : 'OFFER_DECLINED'
+
+    // Optimistic update
+    setApplications((prev) =>
+      prev.map((a) => (a.id === applicationId ? { ...a, stage: newStage } : a)),
+    )
+
+    try {
+      await apiClient.patch(`/api/v1/recruitment/applications/${applicationId}/offer`, {
+        response,
+        ...(declineReason.trim() ? { declineReason: declineReason.trim() } : {}),
+      })
+      toast({ title: response === 'ACCEPT' ? t('offerAcceptedSuccess') : t('offerDeclinedSuccess') })
+    } catch {
+      fetchData()
+      toast({ title: t('offerResponseFailed'), variant: 'destructive' })
+    } finally {
+      setModalSubmitting(false)
+      setOfferResponseModal({ open: false, applicationId: '', response: null, declineReason: '' })
+    }
   }
 
   // ─── AI Score badge ──────────────────────────────────
@@ -486,6 +542,83 @@ export default function PipelineClient({ user, postingId }: Props) {
               >
                 {modalSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 {t('confirmButton')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Offer Response Modal (Accept/Decline) */}
+      {offerResponseModal.open && (
+        <div className={MODAL_STYLES.container}>
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() =>
+              setOfferResponseModal({ open: false, applicationId: '', response: null, declineReason: '' })
+            }
+          />
+          <div className="relative bg-card border border-border rounded-xl p-6 w-full max-w-md shadow-lg animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between mb-4">
+              <h2
+                className="text-lg font-bold text-foreground"
+                style={{ letterSpacing: '-0.02em' }}
+              >
+                {offerResponseModal.response === 'ACCEPT' ? t('offerAcceptTitle') : t('offerDeclineTitle')}
+              </h2>
+              <button
+                onClick={() =>
+                  setOfferResponseModal({ open: false, applicationId: '', response: null, declineReason: '' })
+                }
+                className="p-1 rounded-lg hover:bg-muted transition-colors duration-150"
+              >
+                <X className="w-5 h-5 text-muted-foreground" />
+              </button>
+            </div>
+
+            {offerResponseModal.response === 'ACCEPT' ? (
+              <div className="flex items-center gap-3 p-4 bg-emerald-500/10 rounded-lg mb-4">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                <p className="text-sm text-foreground">{t('offerAcceptConfirmMessage')}</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-3 p-4 bg-amber-500/10 rounded-lg mb-4">
+                  <XCircle className="w-5 h-5 text-amber-600 shrink-0" />
+                  <p className="text-sm text-foreground">{t('offerDeclineConfirmMessage')}</p>
+                </div>
+                <textarea
+                  value={offerResponseModal.declineReason}
+                  onChange={(e) =>
+                    setOfferResponseModal((prev) => ({ ...prev, declineReason: e.target.value }))
+                  }
+                  placeholder={t('offerDeclineReasonPlaceholder')}
+                  rows={3}
+                  className="w-full px-4 py-3 text-sm border border-border rounded-lg resize-none focus:outline-none focus:border-primary transition-colors duration-150"
+                />
+              </>
+            )}
+
+            <div className="flex items-center justify-end gap-2 mt-4">
+              <button
+                onClick={() =>
+                  setOfferResponseModal({ open: false, applicationId: '', response: null, declineReason: '' })
+                }
+                className="px-4 py-2 text-sm font-medium text-muted-foreground border border-border rounded-lg hover:bg-background transition-colors duration-150"
+              >
+                {t('cancelButton')}
+              </button>
+              <button
+                onClick={handleOfferResponseSubmit}
+                disabled={
+                  modalSubmitting ||
+                  (offerResponseModal.response === 'DECLINE' && !offerResponseModal.declineReason.trim())
+                }
+                className={`inline-flex items-center gap-2 ${BUTTON_SIZES.md} ${
+                  offerResponseModal.response === 'ACCEPT' ? 'bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl' : 'bg-amber-600 hover:bg-amber-700 text-white rounded-xl'
+                } disabled:opacity-50`}
+              >
+                {modalSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                {offerResponseModal.response === 'ACCEPT' ? t('offerAcceptButton') : t('offerDeclineButton')}
               </button>
             </div>
           </div>

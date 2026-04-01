@@ -1619,7 +1619,60 @@
     "totalNominations": "合计 Nominations",
     "nominationCount": "# Nominations",
     "avgScore": "Avg 分数",
-    "recognitionCount": "表彰次数"
+    "recognitionCount": "表彰次数",
+    "quarterlyReview": {
+      "title": "季度评审",
+      "myTitle": "我的季度评审",
+      "adminTitle": "季度评审管理",
+      "description": "审查季度绩效并交换反馈",
+      "status": {
+        "DRAFT": "草稿",
+        "IN_PROGRESS": "进行中",
+        "EMPLOYEE_DONE": "员工已提交",
+        "MANAGER_DONE": "经理已提交",
+        "COMPLETED": "已完成"
+      },
+      "sentiment": { "POSITIVE": "积极", "NEUTRAL": "中立", "CONCERN": "关注" },
+      "tracking": { "ON_TRACK": "正常", "AT_RISK": "有风险", "BEHIND": "落后" },
+      "dashboard": { "totalReviews": "评审总数", "completionRate": "完成率", "employeeSubmitted": "员工已提交", "overdue": "未完成" },
+      "filter": { "year": "年份", "quarter": "季度", "status": "状态", "allStatuses": "所有状态", "allQuarters": "所有季度" },
+      "quarter": { "Q1": "第一季度", "Q2": "第二季度", "Q3": "第三季度", "Q4": "第四季度" },
+      "section": { "goalProgress": "目标进展", "employeeReflection": "员工反思", "managerFeedback": "经理反馈", "actionItems": "行动计划" },
+      "field": {
+        "goalHighlights": "核心成果",
+        "goalHighlightsPlaceholder": "描述本季度的主要成果",
+        "challenges": "挑战",
+        "challengesPlaceholder": "描述遇到的困难或障碍",
+        "developmentNeeds": "发展需求",
+        "developmentNeedsPlaceholder": "描述需要成长的领域",
+        "employeeComments": "补充意见",
+        "employeeCommentsPlaceholder": "其他想分享的内容",
+        "managerFeedback": "经理反馈",
+        "managerFeedbackPlaceholder": "对员工绩效提供反馈",
+        "coachingNotes": "辅导笔记",
+        "coachingNotesPlaceholder": "提供具体的改进建议",
+        "developmentPlan": "培养计划",
+        "developmentPlanPlaceholder": "制定未来成长计划",
+        "progressPct": "进度",
+        "employeeComment": "员工评论",
+        "managerComment": "经理评论"
+      },
+      "action": { "save": "暂存", "submitEmployee": "提交评审", "submitManager": "提交反馈", "reopen": "重新开放", "bulkCreate": "批量创建", "viewDetail": "查看详情", "backToList": "返回列表" },
+      "confirm": {
+        "submitTitle": "确认提交评审？",
+        "submitEmployeeDesc": "提交后无法修改，将发送给经理。",
+        "submitManagerDesc": "提交后无法修改，评审将完成。",
+        "reopenTitle": "重新开放评审？",
+        "reopenDesc": "员工和经理可以再次编辑。",
+        "bulkCreateTitle": "批量创建季度评审？",
+        "bulkCreateDesc": "将为{count}名员工创建评审。"
+      },
+      "toast": { "saveSuccess": "已暂存", "submitSuccess": "评审已提交", "reopenSuccess": "评审已重新开放", "bulkCreateSuccess": "已创建{count}条评审", "loadFailed": "加载评审失败", "saveFailed": "保存失败", "submitFailed": "提交失败" },
+      "empty": { "title": "没有季度评审", "description": "该时期没有评审记录" },
+      "table": { "employee": "员工", "manager": "经理", "quarterCol": "季度", "status": "状态", "sentiment": "评价", "submittedAt": "提交日期", "updatedAt": "更新日期" },
+      "actionItem": { "description": "内容", "descriptionPlaceholder": "输入行动计划内容", "dueDate": "截止日期", "assignee": "负责人", "addItem": "添加项目", "completed": "已完成", "employee": "员工", "manager": "经理" },
+      "bulkCreate": { "title": "批量创建季度评审", "description": "一次性为选定员工创建季度评审", "selectEmployees": "选择员工", "selectedCount": "已选{count}人", "yearLabel": "年份", "quarterLabel": "季度", "cycleLabel": "绩效周期（可选）", "create": "创建" }
+    }
   },
   "recruitment": {
     "title": "Recruitment",
@@ -1790,6 +1843,8 @@
     "stageINTERVIEW_2": "2nd Interview",
     "stageFINAL": "Final Review",
     "stageOFFER": "Offer",
+    "stageOFFER_ACCEPTED": "接受录用",
+    "stageOFFER_DECLINED": "拒绝录用",
     "stageHIRED": "Hired",
     "stageREJECTED": "Rejected",
     "sourceDIRECT": "Direct",
@@ -1825,6 +1880,16 @@
     "offeredDateLabel": "Offer Date",
     "expectedStartDateLabel": "Expected Start Date",
     "confirmButton": "Confirm",
+    "offerAcceptTitle": "确认接受录用",
+    "offerDeclineTitle": "确认拒绝录用",
+    "offerAcceptConfirmMessage": "处理该候选人的录用接受。接受后可以进入入职阶段。",
+    "offerDeclineConfirmMessage": "处理该候选人的录用拒绝。请输入拒绝原因。",
+    "offerDeclineReasonPlaceholder": "拒绝原因（例：薪资条件不符、已入职其他公司等）",
+    "offerAcceptButton": "接受处理",
+    "offerDeclineButton": "拒绝处理",
+    "offerAcceptedSuccess": "录用已接受。",
+    "offerDeclinedSuccess": "录用已拒绝。",
+    "offerResponseFailed": "录用回复处理失败。",
     "interviewFormTitle": "Register Interview",
     "interviewFormDescription": "Register a new interview schedule",
     "backToList": "Back to List",
@@ -5015,7 +5080,8 @@
       "internalJobs": "内部招聘",
       "notificationSettings": "通知设置",
       "directory": "员工目录",
-      "orgChart": "组织架构"
+      "orgChart": "组织架构",
+      "quarterlyReview": "季度评审"
     },
     "team": {
       "label": "团队管理",
@@ -5063,6 +5129,7 @@
       "pulse": "脉搏调查",
       "compensation": "薪酬管理",
       "benefits": "福利管理",
+      "quarterlyReview": "季度评审",
       "training": "培训/发展",
       "succession": "继任计划",
       "skillMatrix": "技能矩阵"
@@ -5548,6 +5615,12 @@
     "leavePromotion": {
       "title": "建议休假",
       "body": "{name}，您还有{remainingDays}天年假未使用，距入职周年还有{daysUntilAnniversary}天，建议您安排休假。"
+    },
+    "recruitment": {
+      "offerSent": { "title": "录用通知已发送", "body": "已向{applicantName}发送[{postingTitle}]录用通知。" },
+      "offerAccepted": { "title": "录用已接受", "body": "{applicantName}已接受[{postingTitle}]的录用。" },
+      "offerDeclined": { "title": "录用已拒绝", "body": "{applicantName}已拒绝[{postingTitle}]的录用。原因：{declineReason}" },
+      "interviewScheduled": { "title": "面试已安排", "body": "[{postingTitle}] {applicantName}的面试已安排在 {scheduledAt} ({timezone})。" }
     }
   },
   "header": {

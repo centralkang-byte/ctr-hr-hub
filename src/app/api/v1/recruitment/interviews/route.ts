@@ -10,6 +10,9 @@ import { badRequest, conflict, handlePrismaError } from '@/lib/errors'
 import { withPermission, withAuth, hasPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
+import { eventBus } from '@/lib/events/event-bus'
+import { DOMAIN_EVENTS } from '@/lib/events/types'
+import { getCompanyTimezone } from '@/lib/recruitment/timezone-lookup'
 import type { SessionUser } from '@/types'
 
 // ─── Validation Schemas ──────────────────────────────────
@@ -150,6 +153,9 @@ export const POST = withPermission(
       throw conflict('해당 면접관의 다른 면접 일정과 시간이 겹칩니다.')
     }
 
+    // Resolve timezone from interviewer's company
+    const timezone = await getCompanyTimezone(application.posting.companyId)
+
     try {
       const record = await prisma.interviewSchedule.create({
         data: {
@@ -162,6 +168,7 @@ export const POST = withPermission(
           interviewType: data.interviewType ?? null,
           round: data.round ?? null,
           status: 'SCHEDULED',
+          timezone,
         },
         include: {
           application: {
@@ -183,6 +190,25 @@ export const POST = withPermission(
             select: { interviewEvaluations: true },
           },
         },
+      })
+
+      // Domain event: 면접 스케줄링
+      eventBus.publish(DOMAIN_EVENTS.INTERVIEW_SCHEDULED, {
+        ctx: {
+          companyId: application.posting.companyId,
+          actorId: user.employeeId,
+          occurredAt: new Date(),
+        },
+        interviewId: record.id,
+        applicationId: data.applicationId,
+        interviewerId: data.interviewerId,
+        interviewerName: record.interviewer.name,
+        applicantName: record.application.applicant.name,
+        applicantEmail: record.application.applicant.email ?? '',
+        postingTitle: record.application.posting.title,
+        companyId: application.posting.companyId,
+        scheduledAt: record.scheduledAt,
+        timezone,
       })
 
       const { ip, userAgent } = extractRequestMeta(req.headers)

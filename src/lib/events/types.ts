@@ -69,6 +69,12 @@ export const DOMAIN_EVENTS = {
   DELEGATION_STARTED: 'DELEGATION_STARTED',
   DELEGATION_ENDED: 'DELEGATION_ENDED',
 
+  // Recruitment module
+  OFFER_SENT: 'OFFER_SENT',
+  OFFER_ACCEPTED: 'OFFER_ACCEPTED',
+  OFFER_DECLINED: 'OFFER_DECLINED',
+  INTERVIEW_SCHEDULED: 'INTERVIEW_SCHEDULED',
+
   // Phase B-2: Quarterly Review
   QUARTERLY_REVIEW_CREATED: 'QUARTERLY_REVIEW_CREATED',
   QUARTERLY_REVIEW_SUBMITTED: 'QUARTERLY_REVIEW_SUBMITTED',
@@ -533,6 +539,52 @@ export interface DelegationEndedPayload {
   endedAt: string
 }
 
+// ── Recruitment Events ──────────────────────────────────────
+
+export interface OfferSentPayload {
+  ctx: EventContext
+  applicationId: string
+  applicantName: string
+  applicantEmail: string
+  postingTitle: string
+  companyId: string
+  offeredSalary: number
+  expectedStartDate: string
+}
+
+export interface OfferAcceptedPayload {
+  ctx: EventContext
+  applicationId: string
+  applicantName: string
+  applicantEmail: string
+  postingTitle: string
+  companyId: string
+}
+
+export interface OfferDeclinedPayload {
+  ctx: EventContext
+  applicationId: string
+  applicantName: string
+  applicantEmail: string
+  postingTitle: string
+  companyId: string
+  declineReason?: string
+}
+
+export interface InterviewScheduledPayload {
+  ctx: EventContext
+  interviewId: string
+  applicationId: string
+  interviewerId: string
+  interviewerName: string
+  applicantName: string
+  applicantEmail: string
+  postingTitle: string
+  companyId: string
+  scheduledAt: Date
+  timezone: string
+}
+
 // ── Quarterly Review Events ─────────────────────────────────
 
 export interface QuarterlyReviewCreatedPayload {
@@ -621,6 +673,11 @@ export interface DomainEventMap {
   // F-2: Delegation
   DELEGATION_STARTED: DelegationStartedPayload
   DELEGATION_ENDED: DelegationEndedPayload
+  // Recruitment
+  OFFER_SENT: OfferSentPayload
+  OFFER_ACCEPTED: OfferAcceptedPayload
+  OFFER_DECLINED: OfferDeclinedPayload
+  INTERVIEW_SCHEDULED: InterviewScheduledPayload
   // Phase B-2: Quarterly Review
   QUARTERLY_REVIEW_CREATED: QuarterlyReviewCreatedPayload
   QUARTERLY_REVIEW_SUBMITTED: QuarterlyReviewSubmittedPayload

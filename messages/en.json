@@ -1619,7 +1619,134 @@
     "months": "month",
     "start": "Start",
     "hours": "Hours",
-    "savedSuccess": "save completed."
+    "savedSuccess": "save completed.",
+    "quarterlyReview": {
+      "title": "Quarterly Review",
+      "myTitle": "My Quarterly Review",
+      "adminTitle": "Quarterly Review Management",
+      "description": "Review quarterly performance and exchange feedback",
+      "status": {
+        "DRAFT": "Draft",
+        "IN_PROGRESS": "In Progress",
+        "EMPLOYEE_DONE": "Employee Submitted",
+        "MANAGER_DONE": "Manager Submitted",
+        "COMPLETED": "Completed"
+      },
+      "sentiment": {
+        "POSITIVE": "Positive",
+        "NEUTRAL": "Neutral",
+        "CONCERN": "Concern"
+      },
+      "tracking": {
+        "ON_TRACK": "On Track",
+        "AT_RISK": "At Risk",
+        "BEHIND": "Behind"
+      },
+      "dashboard": {
+        "totalReviews": "Total Reviews",
+        "completionRate": "Completion Rate",
+        "employeeSubmitted": "Employee Submitted",
+        "overdue": "Overdue"
+      },
+      "filter": {
+        "year": "Year",
+        "quarter": "Quarter",
+        "status": "Status",
+        "allStatuses": "All Statuses",
+        "allQuarters": "All Quarters"
+      },
+      "quarter": {
+        "Q1": "Q1",
+        "Q2": "Q2",
+        "Q3": "Q3",
+        "Q4": "Q4"
+      },
+      "section": {
+        "goalProgress": "Goal Progress",
+        "employeeReflection": "Employee Reflection",
+        "managerFeedback": "Manager Feedback",
+        "actionItems": "Action Items"
+      },
+      "field": {
+        "goalHighlights": "Key Achievements",
+        "goalHighlightsPlaceholder": "Describe your key achievements this quarter",
+        "challenges": "Challenges",
+        "challengesPlaceholder": "Describe difficulties or obstacles you faced",
+        "developmentNeeds": "Development Needs",
+        "developmentNeedsPlaceholder": "Describe areas where you need growth",
+        "employeeComments": "Additional Comments",
+        "employeeCommentsPlaceholder": "Any other thoughts you'd like to share",
+        "managerFeedback": "Manager Feedback",
+        "managerFeedbackPlaceholder": "Provide feedback on the employee's performance",
+        "coachingNotes": "Coaching Notes",
+        "coachingNotesPlaceholder": "Provide specific advice for improvement",
+        "developmentPlan": "Development Plan",
+        "developmentPlanPlaceholder": "Outline plans for future growth",
+        "progressPct": "Progress",
+        "employeeComment": "Employee Comment",
+        "managerComment": "Manager Comment"
+      },
+      "action": {
+        "save": "Save Draft",
+        "submitEmployee": "Submit Review",
+        "submitManager": "Submit Feedback",
+        "reopen": "Reopen",
+        "bulkCreate": "Bulk Create",
+        "viewDetail": "View Detail",
+        "backToList": "Back to List"
+      },
+      "confirm": {
+        "submitTitle": "Submit this review?",
+        "submitEmployeeDesc": "You cannot edit after submission. It will be sent to your manager.",
+        "submitManagerDesc": "You cannot edit after submission. The review will be completed.",
+        "reopenTitle": "Reopen this review?",
+        "reopenDesc": "Employee and manager will be able to edit again.",
+        "bulkCreateTitle": "Create quarterly reviews in bulk?",
+        "bulkCreateDesc": "Reviews for {count} employees will be created."
+      },
+      "toast": {
+        "saveSuccess": "Draft saved",
+        "submitSuccess": "Review submitted",
+        "reopenSuccess": "Review reopened",
+        "bulkCreateSuccess": "{count} reviews created",
+        "loadFailed": "Failed to load reviews",
+        "saveFailed": "Failed to save",
+        "submitFailed": "Failed to submit"
+      },
+      "empty": {
+        "title": "No quarterly reviews",
+        "description": "No reviews found for this period"
+      },
+      "table": {
+        "employee": "Employee",
+        "manager": "Manager",
+        "quarterCol": "Quarter",
+        "status": "Status",
+        "sentiment": "Sentiment",
+        "submittedAt": "Submitted",
+        "updatedAt": "Updated"
+      },
+      "actionItem": {
+        "description": "Description",
+        "descriptionPlaceholder": "Enter action item description",
+        "dueDate": "Due Date",
+        "assignee": "Assignee",
+        "addItem": "Add Item",
+        "completed": "Completed",
+        "employee": "Employee",
+        "manager": "Manager"
+      },
+      "bulkCreate": {
+        "title": "Bulk Create Quarterly Reviews",
+        "description": "Create quarterly reviews for selected employees at once",
+        "selectEmployees": "Select Employees",
+        "selectedCount": "{count} selected",
+        "yearLabel": "Year",
+        "quarterLabel": "Quarter",
+        "cycleLabel": "Performance Cycle (Optional)",
+        "create": "Create"
+      }
+    }
   },
   "recruitment": {
     "title": "Recruitment",
@@ -1790,6 +1917,8 @@
     "stageINTERVIEW_2": "2nd Interview",
     "stageFINAL": "Final Review",
     "stageOFFER": "Offer",
+    "stageOFFER_ACCEPTED": "Offer Accepted",
+    "stageOFFER_DECLINED": "Offer Declined",
     "stageHIRED": "Hired",
     "stageREJECTED": "Rejected",
     "sourceDIRECT": "Direct",
@@ -1825,6 +1954,16 @@
     "offeredDateLabel": "Offer Date",
     "expectedStartDateLabel": "Expected Start Date",
     "confirmButton": "Confirm",
+    "offerAcceptTitle": "Confirm Offer Acceptance",
+    "offerDeclineTitle": "Confirm Offer Decline",
+    "offerAcceptConfirmMessage": "Process the offer acceptance for this applicant. After acceptance, you can proceed to the hiring stage.",
+    "offerDeclineConfirmMessage": "Process the offer decline for this applicant. Please enter the reason for decline.",
+    "offerDeclineReasonPlaceholder": "Decline reason (e.g., compensation mismatch, accepted another offer)",
+    "offerAcceptButton": "Accept",
+    "offerDeclineButton": "Decline",
+    "offerAcceptedSuccess": "Offer has been accepted.",
+    "offerDeclinedSuccess": "Offer has been declined.",
+    "offerResponseFailed": "Failed to process offer response.",
     "interviewFormTitle": "Register Interview",
     "interviewFormDescription": "Register a new interview schedule",
     "backToList": "Back to List",
@@ -5015,7 +5154,8 @@
       "internalJobs": "Internal Jobs",
       "notificationSettings": "Notification Settings",
       "directory": "People Directory",
-      "orgChart": "Org Chart"
+      "orgChart": "Org Chart",
+      "quarterlyReview": "Quarterly Review"
     },
     "team": {
       "label": "Team",
@@ -5079,7 +5219,8 @@
       "results": "Performance Results",
       "peerReview": "Peer Review",
       "compensation": "Compensation",
-      "benefits": "Benefits Admin"
+      "benefits": "Benefits Admin",
+      "quarterlyReview": "Quarterly Review"
     },
     "payroll": {
       "label": "Payroll",
@@ -5566,6 +5707,12 @@
     "leavePromotion": {
       "title": "Use Your Leave",
       "body": "{name}, you have {remainingDays} days of leave remaining. {daysUntilAnniversary} days until your anniversary. We recommend using your leave."
+    },
+    "recruitment": {
+      "offerSent": { "title": "Offer Sent", "body": "An offer has been sent to {applicantName} for [{postingTitle}]." },
+      "offerAccepted": { "title": "Offer Accepted", "body": "{applicantName} has accepted the offer for [{postingTitle}]." },
+      "offerDeclined": { "title": "Offer Declined", "body": "{applicantName} has declined the offer for [{postingTitle}]. Reason: {declineReason}" },
+      "interviewScheduled": { "title": "Interview Scheduled", "body": "Interview for [{postingTitle}] with {applicantName} has been scheduled at {scheduledAt} ({timezone})." }
     }
   }
 }
