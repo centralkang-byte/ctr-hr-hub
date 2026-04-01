@@ -454,6 +454,13 @@ enum GoalStatus {
   REJECTED
 }
 
+enum GoalRevisionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
 enum EvalType {
   SELF
   MANAGER
@@ -833,6 +840,7 @@ model Company {
   performanceEvaluations PerformanceEvaluation[]
   oneOnOnes              OneOnOne[]
   quarterlyReviews       QuarterlyReview[]
+  goalRevisions          GoalRevision[]
   recognitions           Recognition[]
   calibrationRules       CalibrationRule[]
   calibrationSessions    CalibrationSession[]
@@ -1529,6 +1537,10 @@ model Employee {
   leaveOfAbsences            LeaveOfAbsence[]  @relation("LOAEmployee")
   leaveOfAbsenceApprovals    LeaveOfAbsence[]  @relation("LOAApprover")
   leaveOfAbsenceRejections   LeaveOfAbsence[]  @relation("LOARejecter")
+
+  // Phase C: Goal Revision
+  goalRevisionsProposed      GoalRevision[]    @relation("GoalRevisionProposer")
+  goalRevisionsReviewed      GoalRevision[]    @relation("GoalRevisionReviewer")
 
   @@index([deletedAt])
   @@index([hireDate])
@@ -2539,6 +2551,7 @@ model MboGoal {
   companyId         String                  @map("company_id")
   progress          MboProgress[]
   quarterlyProgress QuarterlyGoalProgress[]
+  revisions         GoalRevision[]
 
   @@index([employeeId, cycleId])
   @@map("mbo_goals")
@@ -2691,6 +2704,7 @@ model QuarterlyReview {
   manager      Employee          @relation("QuarterlyReviewManager", fields: [managerId], references: [id])
   cycle        PerformanceCycle? @relation("CycleQuarterlyReviews", fields: [cycleId], references: [id])
   goalProgress QuarterlyGoalProgress[]
+  goalRevisions GoalRevision[]
 
   @@unique([employeeId, companyId, year, quarter])
   @@index([companyId, year, quarter])
@@ -2714,11 +2728,72 @@ model QuarterlyGoalProgress {
   managerComment     String?             @map("manager_comment")
   trackingStatus     GoalTrackingStatus? @map("tracking_status")
 
+  // ── Phase C: 목표 수정 승인 시 진행률 입력된 QGP 보호
+  isRevisedMidQuarter Boolean            @default(false) @map("is_revised_mid_quarter")
+
   quarterlyReview    QuarterlyReview @relation(fields: [quarterlyReviewId], references: [id], onDelete: Cascade)
   goal               MboGoal         @relation(fields: [goalId], references: [id])
 
   @@unique([quarterlyReviewId, goalId])
   @@map("quarterly_goal_progress")
+}
+
+// ================================================================
+// Phase C: Goal Revision (목표 버저닝 — APPROVED 목표의 수정 이력)
+// ================================================================
+
+model GoalRevision {
+  id              String   @id @default(uuid())
+  goalId          String   @map("goal_id")
+  version         Int      // 1-based, 목표당 자동 증가 (SELECT FOR UPDATE로 채번)
+
+  // ── 변경 전 (snapshot)
+  prevTitle       String   @map("prev_title")
+  prevDescription String?  @map("prev_description")
+  prevWeight      Decimal  @map("prev_weight") @db.Decimal(5, 2)
+  prevTargetMetric String? @map("prev_target_metric")
+  prevTargetValue  String? @map("prev_target_value")
+
+  // ── 변경 후 (제안)
+  newTitle        String   @map("new_title")
+  newDescription  String?  @map("new_description")
+  newWeight       Decimal  @map("new_weight") @db.Decimal(5, 2)
+  newTargetMetric String?  @map("new_target_metric")
+  newTargetValue  String?  @map("new_target_value")
+
+  // ── 메타
+  reason          String   // 수정 사유 (직원 작성, 필수)
+  status          GoalRevisionStatus @default(PENDING)
+  proposedById    String   @map("proposed_by_id")
+  reviewedById    String?  @map("reviewed_by_id")
+  reviewComment   String?  @map("review_comment")
+  reviewedAt      DateTime? @map("reviewed_at")
+
+  // ── QuarterlyReview 연동 (optional)
+  quarterlyReviewId String? @map("quarterly_review_id")
+
+  // ── Batch 연동 (여러 목표 동시 수정)
+  batchId         String?  @map("batch_id")
+
+  // ── FK
+  companyId       String   @map("company_id")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // ── Relations
+  goal            MboGoal          @relation(fields: [goalId], references: [id], onDelete: Restrict)
+  proposedBy      Employee         @relation("GoalRevisionProposer", fields: [proposedById], references: [id])
+  reviewedBy      Employee?        @relation("GoalRevisionReviewer", fields: [reviewedById], references: [id])
+  quarterlyReview QuarterlyReview? @relation(fields: [quarterlyReviewId], references: [id])
+  company         Company          @relation(fields: [companyId], references: [id])
+
+  @@unique([goalId, version])
+  @@index([goalId])
+  @@index([proposedById])
+  @@index([companyId, status])
+  @@index([batchId])
+  @@map("goal_revisions")
 }
 
 model Recognition {

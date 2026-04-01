@@ -80,6 +80,11 @@ export const DOMAIN_EVENTS = {
   QUARTERLY_REVIEW_SUBMITTED: 'QUARTERLY_REVIEW_SUBMITTED',
   QUARTERLY_REVIEW_COMPLETED: 'QUARTERLY_REVIEW_COMPLETED',
   QUARTERLY_REVIEW_REOPENED: 'QUARTERLY_REVIEW_REOPENED',
+
+  // Phase C: Goal Revision
+  GOAL_REVISION_PROPOSED: 'GOAL_REVISION_PROPOSED',
+  GOAL_REVISION_APPROVED: 'GOAL_REVISION_APPROVED',
+  GOAL_REVISION_REJECTED: 'GOAL_REVISION_REJECTED',
 } as const
 
 export type DomainEventName = typeof DOMAIN_EVENTS[keyof typeof DOMAIN_EVENTS]
@@ -625,6 +630,35 @@ export interface QuarterlyReviewReopenedPayload {
   reason: string
 }
 
+// ── Phase C: Goal Revision Events ───────────────────────
+
+export interface GoalRevisionProposedPayload {
+  ctx: EventContext
+  revisionId: string
+  goalId: string
+  employeeId: string
+  managerId: string
+  companyId: string
+  cycleId: string
+  version: number
+  reason: string
+  batchId?: string
+  quarterlyReviewId?: string
+}
+
+export interface GoalRevisionReviewedPayload {
+  ctx: EventContext
+  revisionId: string
+  goalId: string
+  employeeId: string
+  reviewerId: string
+  companyId: string
+  cycleId: string
+  decision: 'APPROVED' | 'REJECTED'
+  comment?: string
+  batchId?: string
+}
+
 // ------------------------------------
 // Discriminated Union (Event Map)
 // ------------------------------------
@@ -683,6 +717,10 @@ export interface DomainEventMap {
   QUARTERLY_REVIEW_SUBMITTED: QuarterlyReviewSubmittedPayload
   QUARTERLY_REVIEW_COMPLETED: QuarterlyReviewCompletedPayload
   QUARTERLY_REVIEW_REOPENED: QuarterlyReviewReopenedPayload
+  // Phase C: Goal Revision
+  GOAL_REVISION_PROPOSED: GoalRevisionProposedPayload
+  GOAL_REVISION_APPROVED: GoalRevisionReviewedPayload
+  GOAL_REVISION_REJECTED: GoalRevisionReviewedPayload
 }
 
 /** 타입-안전 이벤트 봉투 */

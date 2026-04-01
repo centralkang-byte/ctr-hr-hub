@@ -37,6 +37,16 @@ async function findGoal(id: string, user: SessionUser) {
         orderBy: { createdAt: 'desc' },
         select: { id: true, progressPct: true, note: true, createdById: true, createdAt: true },
       },
+      _count: { select: { revisions: true } },
+      revisions: {
+        orderBy: { version: 'desc' as const },
+        take: 3,
+        select: {
+          id: true, version: true, status: true, reason: true,
+          newTitle: true, newWeight: true, batchId: true, createdAt: true,
+          proposedBy: { select: { id: true, name: true } },
+        },
+      },
     },
   })
   if (!goal) throw notFound('해당 목표를 찾을 수 없습니다.')

@@ -62,6 +62,7 @@ export const GET = withPermission(
             take: 3,
             select: { id: true, progressPct: true, note: true, createdAt: true },
           },
+          _count: { select: { revisions: true } },
         },
       }),
       prisma.mboGoal.count({ where }),

@@ -5,12 +5,14 @@ import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Plus, Pencil, Trash2, TrendingUp } from 'lucide-react'
+import { Plus, Pencil, Trash2, TrendingUp, FileEdit, History } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser, MboGoal } from '@/types'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import { ProposeRevisionDialog } from '@/components/performance/goals/ProposeRevisionDialog'
+import { RevisionHistorySheet } from '@/components/performance/goals/RevisionHistorySheet'
 
 
 // ─── Status config ────────────────────────────────────────
@@ -52,6 +54,8 @@ export default function GoalsClient({
   const [progressForm, setProgressForm] = useState<ProgressForm | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const { confirm, dialogProps } = useConfirmDialog()
+  const [revisionDialogGoals, setRevisionDialogGoals] = useState<MboGoal[]>([])
+  const [revisionHistoryGoal, setRevisionHistoryGoal] = useState<{ id: string; title: string } | null>(null)
 
   // ─── Fetch cycles ─────────────────────────────────────
 
@@ -278,20 +282,41 @@ export default function GoalsClient({
                       </button>
                     )}
                     {goal.status === 'APPROVED' && (
-                      <button
-                        onClick={() =>
-                          setProgressForm({
-                            goalId: goal.id,
-                            progressPct: pct,
-                            note: '',
-                          })
-                        }
-                        className="inline-flex items-center gap-1 rounded-md border border-primary px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/10 transition-colors"
-                      >
-                        <TrendingUp className="h-3 w-3" />
-                        {t('recordProgress')}
-                      </button>
+                      <>
+                        <button
+                          onClick={() =>
+                            setProgressForm({
+                              goalId: goal.id,
+                              progressPct: pct,
+                              note: '',
+                            })
+                          }
+                          className="inline-flex items-center gap-1 rounded-lg border border-primary px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/10 transition-colors"
+                        >
+                          <TrendingUp className="h-3 w-3" />
+                          {t('recordProgress')}
+                        </button>
+                        {!goal.isLocked && (
+                          <button
+                            onClick={() => setRevisionDialogGoals([goal])}
+                            className="inline-flex items-center gap-1 rounded-lg border border-border/15 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
+                          >
+                            <FileEdit className="h-3 w-3" />
+                            {t('goalRevision.proposeRevision')}
+                          </button>
+                        )}
+                      </>
                     )}
+                    {/* Revision history badge */}
+                    {(goal as MboGoal & { _count?: { revisions: number } })._count?.revisions ? (
+                      <button
+                        onClick={() => setRevisionHistoryGoal({ id: goal.id, title: goal.title })}
+                        className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-muted-foreground hover:bg-muted transition-colors"
+                      >
+                        <History className="h-3 w-3" />
+                        {t('goalRevision.revisionHistoryCount', { count: (goal as MboGoal & { _count?: { revisions: number } })._count?.revisions ?? 0 })}
+                      </button>
+                    ) : null}
                   </div>
 
                   {/* Inline progress form */}
@@ -385,6 +410,31 @@ export default function GoalsClient({
         )}
       </div>
     <ConfirmDialog {...dialogProps} />
+
+    {/* Goal Revision Dialog */}
+    <ProposeRevisionDialog
+      open={revisionDialogGoals.length > 0}
+      onOpenChange={(open) => { if (!open) setRevisionDialogGoals([]) }}
+      goals={revisionDialogGoals.map((g) => ({
+        id: g.id,
+        title: g.title,
+        description: g.description,
+        weight: Number(g.weight),
+        targetMetric: g.targetMetric,
+        targetValue: g.targetValue,
+      }))}
+      onSuccess={fetchGoals}
+    />
+
+    {/* Revision History Sheet */}
+    {revisionHistoryGoal && (
+      <RevisionHistorySheet
+        open={!!revisionHistoryGoal}
+        onOpenChange={(open) => { if (!open) setRevisionHistoryGoal(null) }}
+        goalId={revisionHistoryGoal.id}
+        goalTitle={revisionHistoryGoal.title}
+      />
+    )}
     </div>
   </>
   )

@@ -39,6 +39,8 @@ import { quarterlyReviewCreatedHandler } from './handlers/quarterly-review-creat
 import { quarterlyReviewSubmittedHandler } from './handlers/quarterly-review-submitted.handler'
 import { quarterlyReviewCompletedHandler } from './handlers/quarterly-review-completed.handler'
 import { quarterlyReviewReopenedHandler } from './handlers/quarterly-review-reopened.handler'
+import { goalRevisionProposedHandler } from './handlers/goal-revision-proposed.handler'
+import { goalRevisionApprovedHandler, goalRevisionRejectedHandler } from './handlers/goal-revision-reviewed.handler'
 
 let bootstrapped = false
 
@@ -92,6 +94,11 @@ export function bootstrapEventHandlers(): void {
   eventBus.subscribe(quarterlyReviewSubmittedHandler)
   eventBus.subscribe(quarterlyReviewCompletedHandler)
   eventBus.subscribe(quarterlyReviewReopenedHandler)
+
+  // ── Goal Revision Events (Phase C) ─────────────────────
+  eventBus.subscribe(goalRevisionProposedHandler)
+  eventBus.subscribe(goalRevisionApprovedHandler)
+  eventBus.subscribe(goalRevisionRejectedHandler)
 
   bootstrapped = true
 }

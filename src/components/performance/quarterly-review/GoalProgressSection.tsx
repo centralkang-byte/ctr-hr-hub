@@ -18,6 +18,7 @@ interface GoalProgressItem {
   employeeComment: string | null
   managerComment: string | null
   trackingStatus: string | null
+  isRevisedMidQuarter?: boolean
 }
 
 interface Props {
@@ -94,6 +95,13 @@ export default function GoalProgressSection({ items, canEditEmployee, canEditMan
               </span>
             )}
           </div>
+
+          {/* Phase C: 목표 수정됨 경고 배너 */}
+          {item.isRevisedMidQuarter && (
+            <div className="rounded-2xl bg-amber-500/10 px-3 py-2 text-xs text-amber-700">
+              {t('revisedMidQuarter')}
+            </div>
+          )}
 
           {item.snapshotTarget && (
             <p className="text-xs text-muted-foreground">목표: {item.snapshotTarget}</p>
