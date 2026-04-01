@@ -16,14 +16,7 @@ import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import { addOverdueFlag, daysSinceDeadline, getNextStatus } from '@/lib/performance/pipeline'
-import { getPerformanceSetting } from '@/lib/settings/get-setting'
 import type { SessionUser } from '@/types'
-
-interface EvalMethodologyConfig {
-  methodology?: string  // '360' | 'top-down' | 'mbo'
-  includePeerReview?: boolean
-  includeCheckIn?: boolean
-}
 
 bootstrapEventHandlers()
 
@@ -58,14 +51,6 @@ export const PUT = withPermission(
         actorId: user.employeeId,
         occurredAt: now,
       }
-
-      // Settings-connected: evaluation methodology affects stage transitions
-      const evalMethodology = await getPerformanceSetting<EvalMethodologyConfig>(
-        'evaluation-methodology',
-        cycle.companyId,
-      )
-      const includePeerReview = evalMethodology?.includePeerReview ?? evalMethodology?.methodology === '360'
-      const includeCheckIn = evalMethodology?.includeCheckIn ?? true
 
       // ════════════════════════════════════════════════════
       // STEP-SPECIFIC OVERDUE PROCESSING (runs inside transaction)

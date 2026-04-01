@@ -54,6 +54,8 @@ import { seedPayrollOtherGaps } from './seeds/34-payroll-other-gaps'
 import { seedWorkLocations } from './seeds/40-work-locations'
 import { seedConcurrentAssignments } from './seeds/41-concurrent-assignments'
 import { seedQuarterlyReviews } from './seeds/44-quarterly-reviews'
+import { seedGoalRevisions } from './seeds/45-goal-revisions'
+import { seedCalibrationQA } from './seeds/46-calibration-qa'
 
 // Load DATABASE_URL from .env.local or .env
 const DATABASE_URL = process.env.DATABASE_URL
@@ -3646,6 +3648,12 @@ async function main() {
 
   // Phase B: Quarterly reviews for QA accounts
   await seedQuarterlyReviews(prisma)
+
+  // Phase C: Goal revisions QA data
+  await seedGoalRevisions(prisma)
+
+  // Calibration batch adjustment QA data
+  await seedCalibrationQA(prisma)
 }
 
 main()
