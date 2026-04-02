@@ -7,6 +7,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useEffect, useState, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Loader2, Plus, CalendarDays, Trash2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
@@ -33,7 +34,10 @@ interface DesignatedLeaveTabProps {
   companyId: string | null
 }
 
+const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const
+
 export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
+  const t = useTranslations('settings')
   const [days, setDays] = useState<DesignatedDay[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
@@ -60,7 +64,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
 
   const handleCreate = async () => {
     if (!newDate || !newName.trim()) {
-      toast({ title: '날짜와 명칭을 입력해주세요.', variant: 'destructive' })
+      toast({ title: t('common.dateAndNameRequired'), variant: 'destructive' })
       return
     }
     setSubmitting(true)
@@ -70,15 +74,15 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
         name: newName.trim(),
         ...(companyId ? { companyId } : {}),
       })
-      toast({ title: '지정연차가 추가되었습니다.' })
+      toast({ title: t('common.addSuccess', { name: '' }) })
       setDialogOpen(false)
       setNewDate('')
       setNewName('')
       void fetchDays()
     } catch (err) {
       toast({
-        title: '추가 실패',
-        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        title: t('common.addFailed'),
+        description: err instanceof Error ? err.message : t('common.retryMessage'),
         variant: 'destructive',
       })
     } finally {
@@ -89,12 +93,12 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
   const handleDelete = async (id: string) => {
     try {
       await apiClient.delete(`/api/v1/leave/designated-days/${id}`)
-      toast({ title: '삭제되었습니다.' })
+      toast({ title: t('common.deleteSuccess') })
       void fetchDays()
     } catch (err) {
       toast({
-        title: '삭제 실패',
-        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        title: t('common.deleteFailed'),
+        description: err instanceof Error ? err.message : t('common.retryMessage'),
         variant: 'destructive',
       })
     }
@@ -104,8 +108,8 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
     const d = new Date(dateStr)
     const month = d.getMonth() + 1
     const day = d.getDate()
-    const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][d.getDay()]
-    return `${month}월 ${day}일 (${dayOfWeek})`
+    const dayOfWeek = t(`designatedLeave.dayNames.${DAY_KEYS[d.getDay()]}`)
+    return `${month}/${day} (${dayOfWeek})`
   }
 
   if (loading) {
@@ -129,9 +133,9 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-foreground">지정연차</h3>
+          <h3 className="text-base font-semibold text-foreground">{t('designatedLeave.title')}</h3>
           <p className="text-sm text-muted-foreground">
-            회사가 지정한 연차 사용일을 관리합니다. 해당 날짜에 전 직원 연차 1일이 자동 차감됩니다.
+            {t('designatedLeave.description')}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -142,7 +146,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
             className="h-9 rounded-lg border border-border px-3 text-sm bg-card"
           >
             {[selectedYear - 1, selectedYear, selectedYear + 1].map((y) => (
-              <option key={y} value={y}>{y}년</option>
+              <option key={y} value={y}>{t('designatedLeave.yearUnit', { year: y })}</option>
             ))}
           </select>
           <Button
@@ -154,7 +158,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
             }}
           >
             <Plus className="mr-1 h-4 w-4" />
-            추가
+            {t('common.add')}
           </Button>
         </div>
       </div>
@@ -163,7 +167,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
       {days.length === 0 ? (
         <div className="py-16 text-center text-sm text-muted-foreground">
           <CalendarDays className="mx-auto h-10 w-10 text-border mb-2" />
-          <p>{selectedYear}년에 등록된 지정연차가 없습니다.</p>
+          <p>{t('designatedLeave.emptyState', { year: selectedYear })}</p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -172,7 +176,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
             const items = grouped[month]
             return (
               <div key={month}>
-                <h4 className="text-sm font-semibold text-muted-foreground mb-2">{month}월</h4>
+                <h4 className="text-sm font-semibold text-muted-foreground mb-2">{t('designatedLeave.monthUnit', { month })}</h4>
                 <div className="space-y-1">
                   {items.map((d) => (
                     <div
@@ -198,7 +202,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
           })}
 
           <div className="pt-2 border-t border-border text-sm text-muted-foreground">
-            합계: <span className="font-semibold">{days.length}일</span>
+            {t('designatedLeave.totalDays', { count: days.length })}
           </div>
         </div>
       )}
@@ -207,11 +211,11 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-[400px]">
           <DialogHeader>
-            <DialogTitle>지정연차 추가</DialogTitle>
+            <DialogTitle>{t('designatedLeave.addTitle')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">날짜</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">{t('designatedLeave.dateLabel')}</label>
               <Input
                 type="date"
                 value={newDate}
@@ -219,23 +223,23 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">명칭</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">{t('designatedLeave.nameLabel')}</label>
               <Input
-                placeholder="예: 여름 집단휴가, 설 연휴 사이"
+                placeholder={t('designatedLeave.namePlaceholder')}
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>취소</Button>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>{t('common.cancel')}</Button>
             <Button
               className={BUTTON_VARIANTS.primary}
               onClick={handleCreate}
               disabled={submitting}
             >
               {submitting && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
-              추가
+              {t('common.add')}
             </Button>
           </DialogFooter>
         </DialogContent>

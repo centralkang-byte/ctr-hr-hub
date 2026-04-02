@@ -125,7 +125,7 @@ export const GET = withPermission(
 
     // 평균 만족도
     const satisfactionAgg = await prisma.exitInterview.aggregate({
-      where: { satisfactionScore: { not: null }, ...companyWhere as Prisma.ExitInterviewWhereInput },
+      where: { ...companyWhere as Prisma.ExitInterviewWhereInput },
       _avg: { satisfactionScore: true },
       _count: { satisfactionScore: true },
     })
@@ -188,10 +188,10 @@ export const GET = withPermission(
         wouldRecommendRate: recommendTotal > 0
           ? Math.round((recommendYes / recommendTotal) * 100)
           : null,
-        avgSatisfactionScore: satisfactionAgg._avg.satisfactionScore
+        avgSatisfactionScore: satisfactionAgg._avg?.satisfactionScore
           ? Math.round(satisfactionAgg._avg.satisfactionScore * 10) / 10
           : null,
-        exitInterviewCount: satisfactionAgg._count.satisfactionScore,
+        exitInterviewCount: typeof satisfactionAgg._count === 'object' ? satisfactionAgg._count.satisfactionScore : 0,
         avgTenureDays,
         avgTenureYears: avgTenureDays > 0 ? Math.round((avgTenureDays / 365) * 10) / 10 : 0,
         monthlyTrend,

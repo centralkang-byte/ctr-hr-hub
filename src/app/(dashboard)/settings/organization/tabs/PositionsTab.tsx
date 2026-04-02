@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -31,6 +32,7 @@ interface JobGrade {
 const NONE = '__none__'
 
 export function PositionsTab({ companyId }: Props) {
+  const t = useTranslations('settings')
   const [positions, setPositions] = useState<Position[]>([])
   const [grades, setGrades] = useState<JobGrade[]>([])
   const [loading, setLoading] = useState(true)
@@ -65,7 +67,7 @@ export function PositionsTab({ companyId }: Props) {
 
   const handleAdd = async () => {
     if (!addForm.code.trim() || !addForm.name.trim()) {
-      toast({ title: '코드와 직위명은 필수입니다', variant: 'destructive' })
+      toast({ title: t('common.codeAndPositionRequired'), variant: 'destructive' })
       return
     }
     const res = await fetch('/api/v1/positions', {
@@ -79,13 +81,13 @@ export function PositionsTab({ companyId }: Props) {
       }),
     })
     if (res.ok) {
-      toast({ title: '직위가 추가되었습니다' })
+      toast({ title: t('common.addSuccess', { name: '' }) })
       setShowAdd(false)
       setAddForm({ code: '', name: '', nameEn: '', reportsToPositionId: NONE, jobGradeId: NONE })
       fetchPositions()
     } else {
       const err = await res.json()
-      toast({ title: '추가 실패', description: err.error?.message, variant: 'destructive' })
+      toast({ title: t('common.addFailed'), description: err.error?.message, variant: 'destructive' })
     }
   }
 
@@ -102,24 +104,24 @@ export function PositionsTab({ companyId }: Props) {
       }),
     })
     if (res.ok) {
-      toast({ title: '수정되었습니다' })
+      toast({ title: t('common.updateSuccess') })
       setEditingId(null)
       fetchPositions()
     } else {
       const err = await res.json()
-      toast({ title: '수정 실패', description: err.error?.message, variant: 'destructive' })
+      toast({ title: t('common.updateFailed'), description: err.error?.message, variant: 'destructive' })
     }
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('이 직위를 삭제하시겠습니까?')) return
+    if (!confirm(t('common.deleteConfirm', { name: t('positions.colName') }))) return
     const res = await fetch(`/api/v1/positions/${id}`, { method: 'DELETE' })
     if (res.ok) {
-      toast({ title: '삭제되었습니다' })
+      toast({ title: t('common.deleteSuccess') })
       fetchPositions()
     } else {
       const err = await res.json()
-      toast({ title: '삭제 실패', description: err.error?.message, variant: 'destructive' })
+      toast({ title: t('common.deleteFailed'), description: err.error?.message, variant: 'destructive' })
     }
   }
 
@@ -141,30 +143,30 @@ export function PositionsTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-foreground">직위 관리</h3>
-          <p className="text-sm text-muted-foreground">{positions.length}개 직위 등록 · 법인별 보직(직책) 목록</p>
+          <h3 className="text-base font-semibold text-foreground">{t('positions.title')}</h3>
+          <p className="text-sm text-muted-foreground">{t('positions.description', { count: positions.length })}</p>
         </div>
         <Button size="sm" onClick={() => setShowAdd(true)}>
-          <Plus className="mr-1 h-4 w-4" /> 직위 추가
+          <Plus className="mr-1 h-4 w-4" /> {t('positions.addNew')}
         </Button>
       </div>
 
       {showAdd && (
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
-          <p className="text-sm font-medium">새 직위 추가</p>
+          <p className="text-sm font-medium">{t('positions.addNewForm')}</p>
           <div className="grid grid-cols-2 gap-2">
             <Input
-              placeholder="코드 (예: POS-TL)"
+              placeholder={t('positions.codePlaceholder')}
               value={addForm.code}
               onChange={e => setAddForm(p => ({ ...p, code: e.target.value }))}
             />
             <Input
-              placeholder="직위명 (예: 팀장)"
+              placeholder={t('positions.namePlaceholder')}
               value={addForm.name}
               onChange={e => setAddForm(p => ({ ...p, name: e.target.value }))}
             />
             <Input
-              placeholder="영문명 (예: Team Lead)"
+              placeholder={t('positions.nameEnPlaceholder')}
               value={addForm.nameEn}
               onChange={e => setAddForm(p => ({ ...p, nameEn: e.target.value }))}
             />
@@ -172,9 +174,9 @@ export function PositionsTab({ companyId }: Props) {
               value={addForm.reportsToPositionId}
               onValueChange={v => setAddForm(p => ({ ...p, reportsToPositionId: v }))}
             >
-              <SelectTrigger><SelectValue placeholder="상위 직위 (선택)" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t('positions.reportsToPlaceholder')} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value={NONE}>없음</SelectItem>
+                <SelectItem value={NONE}>{t('common.none')}</SelectItem>
                 {positions.map(p => (
                   <SelectItem key={p.id} value={p.id}>{p.name} ({p.code})</SelectItem>
                 ))}
@@ -184,9 +186,9 @@ export function PositionsTab({ companyId }: Props) {
               value={addForm.jobGradeId}
               onValueChange={v => setAddForm(p => ({ ...p, jobGradeId: v }))}
             >
-              <SelectTrigger><SelectValue placeholder="연결 직급 (선택)" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t('positions.linkedGradePlaceholder')} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value={NONE}>없음</SelectItem>
+                <SelectItem value={NONE}>{t('common.none')}</SelectItem>
                 {grades.map(g => (
                   <SelectItem key={g.id} value={g.id}>{g.name} ({g.code})</SelectItem>
                 ))}
@@ -194,8 +196,8 @@ export function PositionsTab({ companyId }: Props) {
             </Select>
           </div>
           <div className="flex gap-2">
-            <Button size="sm" onClick={handleAdd}>저장</Button>
-            <Button size="sm" variant="outline" onClick={() => setShowAdd(false)}>취소</Button>
+            <Button size="sm" onClick={handleAdd}>{t('common.save')}</Button>
+            <Button size="sm" variant="outline" onClick={() => setShowAdd(false)}>{t('common.cancel')}</Button>
           </div>
         </div>
       )}
@@ -204,18 +206,18 @@ export function PositionsTab({ companyId }: Props) {
         <table className={TABLE_STYLES.table}>
           <thead className={TABLE_STYLES.header}>
             <tr>
-              <th className={TABLE_STYLES.headerCell}>코드</th>
-              <th className={TABLE_STYLES.headerCell}>직위명</th>
-              <th className={TABLE_STYLES.headerCell}>상위 직위</th>
-              <th className={TABLE_STYLES.headerCell}>연결 직급</th>
+              <th className={TABLE_STYLES.headerCell}>{t('positions.colCode')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('positions.colName')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('positions.colReportsTo')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('positions.colLinkedGrade')}</th>
               <th className={TABLE_STYLES.headerCell} style={{ width: 80 }}></th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">로딩 중...</td></tr>
+              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">{t('common.loading')}</td></tr>
             ) : positions.length === 0 ? (
-              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">등록된 직위가 없습니다</td></tr>
+              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">{t('positions.emptyState')}</td></tr>
             ) : positions.map((p) => (
               <tr key={p.id} className={TABLE_STYLES.row}>
                 <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>
@@ -227,7 +229,7 @@ export function PositionsTab({ companyId }: Props) {
                   {editingId === p.id ? (
                     <div className="space-y-1">
                       <Input className="h-7 text-sm" value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} />
-                      <Input className="h-7 text-sm text-muted-foreground" placeholder="영문명" value={editForm.nameEn} onChange={e => setEditForm(f => ({ ...f, nameEn: e.target.value }))} />
+                      <Input className="h-7 text-sm text-muted-foreground" placeholder={t('positions.nameEnPlaceholder')} value={editForm.nameEn} onChange={e => setEditForm(f => ({ ...f, nameEn: e.target.value }))} />
                     </div>
                   ) : (
                     <div>
@@ -244,7 +246,7 @@ export function PositionsTab({ companyId }: Props) {
                     >
                       <SelectTrigger className="h-7 text-sm"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={NONE}>없음</SelectItem>
+                        <SelectItem value={NONE}>{t('common.none')}</SelectItem>
                         {otherPositions(p.id).map(op => (
                           <SelectItem key={op.id} value={op.id}>{op.name}</SelectItem>
                         ))}
@@ -260,7 +262,7 @@ export function PositionsTab({ companyId }: Props) {
                     >
                       <SelectTrigger className="h-7 text-sm"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={NONE}>없음</SelectItem>
+                        <SelectItem value={NONE}>{t('common.none')}</SelectItem>
                         {grades.map(g => (
                           <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
                         ))}
@@ -275,8 +277,8 @@ export function PositionsTab({ companyId }: Props) {
                 <td className={TABLE_STYLES.cell}>
                   {editingId === p.id ? (
                     <div className="flex gap-1">
-                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => handleUpdate(p.id)}>저장</Button>
-                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setEditingId(null)}>취소</Button>
+                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => handleUpdate(p.id)}>{t('common.save')}</Button>
+                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setEditingId(null)}>{t('common.cancel')}</Button>
                     </div>
                   ) : (
                     <div className="flex gap-1">

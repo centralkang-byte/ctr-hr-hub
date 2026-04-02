@@ -12,7 +12,7 @@
 // Idempotent: uses upsert. Safe to re-run.
 // ================================================================
 
-import { PrismaClient } from '../../src/generated/prisma/client'
+import { Prisma, PrismaClient } from '../../src/generated/prisma/client'
 
 function deterministicUUID(namespace: string, key: string): string {
     const str = `${namespace}:${key}`
@@ -251,7 +251,7 @@ export async function seedQuarterlyReviews(prisma: PrismaClient) {
                     actionItems: seed.status === 'COMPLETED' ? [
                         { item: '다음 분기 목표 수립', assignee: 'EMPLOYEE', dueDate: `${seed.year}-${seed.quarter === 'Q1' ? '04' : '07'}-15`, completed: false },
                         { item: '역량 개발 계획 확정', assignee: 'MANAGER', dueDate: `${seed.year}-${seed.quarter === 'Q1' ? '04' : '07'}-10`, completed: false },
-                    ] : null,
+                    ] : Prisma.JsonNull,
                 },
             })
 

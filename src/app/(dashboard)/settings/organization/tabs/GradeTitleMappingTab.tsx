@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -32,10 +33,10 @@ interface GradeTitleMappingRow {
   }
 }
 
-const GRADE_TYPE_LABELS: Record<string, string> = {
-  STAFF: 'L (일반)',
-  SPECIALIST: 'S (전문)',
-  EXECUTIVE: 'E (경영)',
+const GRADE_TYPE_LABEL_KEYS: Record<string, string> = {
+  STAFF: 'gradeTitleMappings.gradeTypeStaff',
+  SPECIALIST: 'gradeTitleMappings.gradeTypeSpecialist',
+  EXECUTIVE: 'gradeTitleMappings.gradeTypeExecutive',
 }
 
 const GRADE_TYPE_COLORS: Record<string, string> = {
@@ -51,6 +52,7 @@ const GRADE_TYPE_PREFIX: Record<string, string> = {
 }
 
 export function GradeTitleMappingTab({ companyId }: Props) {
+  const t = useTranslations('settings')
   const [mappings, setMappings] = useState<GradeTitleMappingRow[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('all')
@@ -87,7 +89,7 @@ export function GradeTitleMappingTab({ companyId }: Props) {
 
   const handleAdd = async () => {
     if (!addForm.titleName) {
-      toast({ title: '호칭명은 필수입니다', variant: 'destructive' })
+      toast({ title: t('common.titleNameRequired'), variant: 'destructive' })
       return
     }
     const gradeCode = getNextGradeCode(addForm.gradeType)
@@ -106,13 +108,13 @@ export function GradeTitleMappingTab({ companyId }: Props) {
       }),
     })
     if (res.ok) {
-      toast({ title: '직급-호칭이 추가되었습니다' })
+      toast({ title: t('common.addSuccess', { name: '' }) })
       setShowAdd(false)
       setAddForm({ gradeType: 'STAFF', titleName: '', titleNameEn: '' })
       fetchMappings()
     } else {
       const err = await res.json()
-      toast({ title: '추가 실패', description: err.error?.message, variant: 'destructive' })
+      toast({ title: t('common.addFailed'), description: err.error?.message, variant: 'destructive' })
     }
   }
 
@@ -123,24 +125,24 @@ export function GradeTitleMappingTab({ companyId }: Props) {
       body: JSON.stringify(editForm),
     })
     if (res.ok) {
-      toast({ title: '수정되었습니다' })
+      toast({ title: t('common.updateSuccess') })
       setEditingId(null)
       fetchMappings()
     } else {
       const err = await res.json()
-      toast({ title: '수정 실패', description: err.error?.message, variant: 'destructive' })
+      toast({ title: t('common.updateFailed'), description: err.error?.message, variant: 'destructive' })
     }
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('이 직급-호칭 매핑을 삭제하시겠습니까?')) return
+    if (!confirm(t('common.deleteConfirm', { name: t('gradeTitleMappings.title') }))) return
     const res = await fetch(`/api/v1/settings/grade-title-mappings?id=${id}`, { method: 'DELETE' })
     if (res.ok) {
-      toast({ title: '삭제되었습니다' })
+      toast({ title: t('common.deleteSuccess') })
       fetchMappings()
     } else {
       const err = await res.json()
-      toast({ title: '삭제 실패', description: err.error?.message, variant: 'destructive' })
+      toast({ title: t('common.deleteFailed'), description: err.error?.message, variant: 'destructive' })
     }
   }
 
@@ -159,12 +161,12 @@ export function GradeTitleMappingTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-foreground">직급-호칭 매핑</h3>
+          <h3 className="text-base font-semibold text-foreground">{t('gradeTitleMappings.title')}</h3>
           <p className="text-sm text-muted-foreground">
-            {mappings.length}개 매핑
-            {Object.entries(groupCounts).map(([type, count]) => (
-              ` · ${GRADE_TYPE_PREFIX[type] ?? type}: ${count}개`
-            )).join('')}
+            {t('gradeTitleMappings.description', { count: mappings.length })}
+            {Object.entries(groupCounts).map(([type, count]) =>
+              t('gradeTitleMappings.groupCountItem', { prefix: GRADE_TYPE_PREFIX[type] ?? type, count })
+            ).join('')}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -173,39 +175,39 @@ export function GradeTitleMappingTab({ companyId }: Props) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">전체</SelectItem>
-              <SelectItem value="STAFF">L (일반)</SelectItem>
-              <SelectItem value="SPECIALIST">S (전문)</SelectItem>
-              <SelectItem value="EXECUTIVE">E (경영)</SelectItem>
+              <SelectItem value="all">{t('common.all')}</SelectItem>
+              <SelectItem value="STAFF">{t('gradeTitleMappings.gradeTypeStaff')}</SelectItem>
+              <SelectItem value="SPECIALIST">{t('gradeTitleMappings.gradeTypeSpecialist')}</SelectItem>
+              <SelectItem value="EXECUTIVE">{t('gradeTitleMappings.gradeTypeExecutive')}</SelectItem>
             </SelectContent>
           </Select>
           <Button size="sm" onClick={() => setShowAdd(true)}>
-            <Plus className="mr-1 h-4 w-4" /> 추가
+            <Plus className="mr-1 h-4 w-4" /> {t('common.add')}
           </Button>
         </div>
       </div>
 
       {showAdd && (
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
-          <p className="text-sm font-medium">새 직급-호칭 추가</p>
+          <p className="text-sm font-medium">{t('gradeTitleMappings.addNew')}</p>
           <div className="grid grid-cols-4 gap-2">
             <Select value={addForm.gradeType} onValueChange={v => setAddForm(p => ({ ...p, gradeType: v }))}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="STAFF">L (일반)</SelectItem>
-                <SelectItem value="SPECIALIST">S (전문)</SelectItem>
-                <SelectItem value="EXECUTIVE">E (경영)</SelectItem>
+                <SelectItem value="STAFF">{t('gradeTitleMappings.gradeTypeStaff')}</SelectItem>
+                <SelectItem value="SPECIALIST">{t('gradeTitleMappings.gradeTypeSpecialist')}</SelectItem>
+                <SelectItem value="EXECUTIVE">{t('gradeTitleMappings.gradeTypeExecutive')}</SelectItem>
               </SelectContent>
             </Select>
             <div className="flex items-center text-sm text-muted-foreground">
-              코드: <span className="ml-1 font-mono font-medium text-primary">{getNextGradeCode(addForm.gradeType)}</span> (자동)
+              {t('gradeTitleMappings.codeLabel')} <span className="ml-1 font-mono font-medium text-primary">{getNextGradeCode(addForm.gradeType)}</span> ({t('gradeTitleMappings.codeAuto')})
             </div>
-            <Input placeholder="호칭명 (예: 매니저)" value={addForm.titleName} onChange={e => setAddForm(p => ({ ...p, titleName: e.target.value }))} />
-            <Input placeholder="호칭 영문명" value={addForm.titleNameEn} onChange={e => setAddForm(p => ({ ...p, titleNameEn: e.target.value }))} />
+            <Input placeholder={t('gradeTitleMappings.titleNamePlaceholder')} value={addForm.titleName} onChange={e => setAddForm(p => ({ ...p, titleName: e.target.value }))} />
+            <Input placeholder={t('gradeTitleMappings.titleNameEnPlaceholder')} value={addForm.titleNameEn} onChange={e => setAddForm(p => ({ ...p, titleNameEn: e.target.value }))} />
           </div>
           <div className="flex gap-2">
-            <Button size="sm" onClick={handleAdd}>저장</Button>
-            <Button size="sm" variant="outline" onClick={() => setShowAdd(false)}>취소</Button>
+            <Button size="sm" onClick={handleAdd}>{t('common.save')}</Button>
+            <Button size="sm" variant="outline" onClick={() => setShowAdd(false)}>{t('common.cancel')}</Button>
           </div>
         </div>
       )}
@@ -214,23 +216,23 @@ export function GradeTitleMappingTab({ companyId }: Props) {
         <table className={TABLE_STYLES.table}>
           <thead className={TABLE_STYLES.header}>
             <tr>
-              <th className={TABLE_STYLES.headerCell}>구분</th>
-              <th className={TABLE_STYLES.headerCell}>직급 코드</th>
-              <th className={TABLE_STYLES.headerCell}>호칭</th>
-              <th className={TABLE_STYLES.headerCell}>호칭 영문</th>
+              <th className={TABLE_STYLES.headerCell}>{t('gradeTitleMappings.colType')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('gradeTitleMappings.colGradeCode')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('gradeTitleMappings.colTitle')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('gradeTitleMappings.colTitleEn')}</th>
               <th className={TABLE_STYLES.headerCell} style={{ width: 80 }}></th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">로딩 중...</td></tr>
+              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">{t('common.loading')}</td></tr>
             ) : mappings.length === 0 ? (
-              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">등록된 매핑이 없습니다. 직급-호칭을 추가하세요.</td></tr>
+              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">{t('gradeTitleMappings.emptyState')}</td></tr>
             ) : mappings.map((m) => (
               <tr key={m.id} className={TABLE_STYLES.row}>
                 <td className={TABLE_STYLES.cell}>
                   <span className={cn('inline-block rounded px-2 py-0.5 text-xs font-medium', GRADE_TYPE_COLORS[m.jobGrade.gradeType] ?? 'bg-muted text-muted-foreground')}>
-                    {GRADE_TYPE_LABELS[m.jobGrade.gradeType] ?? m.jobGrade.gradeType}
+                    {t(GRADE_TYPE_LABEL_KEYS[m.jobGrade.gradeType] ?? m.jobGrade.gradeType)}
                   </span>
                 </td>
                 <td className={`${TABLE_STYLES.cell} font-mono font-medium text-primary`}>{m.jobGrade.code}</td>
@@ -247,8 +249,8 @@ export function GradeTitleMappingTab({ companyId }: Props) {
                 <td className={TABLE_STYLES.cell}>
                   {editingId === m.id ? (
                     <div className="flex gap-1">
-                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => handleUpdate(m.id)}>저장</Button>
-                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setEditingId(null)}>취소</Button>
+                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => handleUpdate(m.id)}>{t('common.save')}</Button>
+                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setEditingId(null)}>{t('common.cancel')}</Button>
                     </div>
                   ) : (
                     <div className="flex gap-1">

@@ -20,8 +20,9 @@ export const offerSentHandler: DomainEventHandler<'OFFER_SENT'> = {
             isPrimary: true,
           },
         },
-        user: { role: { in: ['HR_ADMIN', 'SUPER_ADMIN'] } },
-        status: 'ACTIVE',
+        employeeRoles: { some: { role: { code: { in: ['HR_ADMIN', 'SUPER_ADMIN'] } }, endDate: null } },
+        deletedAt: null,
+        resignDate: null,
       },
       select: { id: true },
     })

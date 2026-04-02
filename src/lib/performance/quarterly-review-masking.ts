@@ -34,13 +34,13 @@ const MANAGER_FIELDS = [
 ] as const
 
 function nullifyFields<T extends AnyReview>(review: T, fields: readonly string[]): T {
-  const masked = { ...review }
+  const masked: AnyReview = { ...review }
   for (const field of fields) {
     if (field in masked) {
       masked[field] = null
     }
   }
-  return masked
+  return masked as T
 }
 
 function maskGoalProgressForEmployee<T extends AnyReview>(review: T): T {

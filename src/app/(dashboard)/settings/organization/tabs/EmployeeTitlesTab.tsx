@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,6 +22,7 @@ interface EmployeeTitle {
 }
 
 export function EmployeeTitlesTab({ companyId }: Props) {
+  const t = useTranslations('settings')
   const [titles, setTitles] = useState<EmployeeTitle[]>([])
   const [loading, setLoading] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -40,7 +42,7 @@ export function EmployeeTitlesTab({ companyId }: Props) {
 
   const handleAdd = async () => {
     if (!addForm.code || !addForm.name) {
-      toast({ title: '코드와 이름은 필수입니다', variant: 'destructive' })
+      toast({ title: t('common.codeAndNameRequired'), variant: 'destructive' })
       return
     }
     const maxRank = titles.length > 0 ? Math.max(...titles.map(t => t.rankOrder)) + 1 : 1
@@ -50,13 +52,13 @@ export function EmployeeTitlesTab({ companyId }: Props) {
       body: JSON.stringify({ ...addForm, rankOrder: maxRank }),
     })
     if (res.ok) {
-      toast({ title: '호칭이 추가되었습니다' })
+      toast({ title: t('common.addSuccess', { name: '' }) })
       setShowAdd(false)
       setAddForm({ code: '', name: '', nameEn: '', isExecutive: false })
       fetchTitles()
     } else {
       const err = await res.json()
-      toast({ title: '추가 실패', description: err.error?.message, variant: 'destructive' })
+      toast({ title: t('common.addFailed'), description: err.error?.message, variant: 'destructive' })
     }
   }
 
@@ -67,24 +69,24 @@ export function EmployeeTitlesTab({ companyId }: Props) {
       body: JSON.stringify(editForm),
     })
     if (res.ok) {
-      toast({ title: '수정되었습니다' })
+      toast({ title: t('common.updateSuccess') })
       setEditingId(null)
       fetchTitles()
     } else {
       const err = await res.json()
-      toast({ title: '수정 실패', description: err.error?.message, variant: 'destructive' })
+      toast({ title: t('common.updateFailed'), description: err.error?.message, variant: 'destructive' })
     }
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('이 호칭을 삭제하시겠습니까?')) return
+    if (!confirm(t('common.deleteConfirm', { name: t('employeeTitles.colTitle') }))) return
     const res = await fetch(`/api/v1/settings/employee-titles?id=${id}`, { method: 'DELETE' })
     if (res.ok) {
-      toast({ title: '삭제되었습니다' })
+      toast({ title: t('common.deleteSuccess') })
       fetchTitles()
     } else {
       const err = await res.json()
-      toast({ title: '삭제 실패', description: err.error?.message, variant: 'destructive' })
+      toast({ title: t('common.deleteFailed'), description: err.error?.message, variant: 'destructive' })
     }
   }
 
@@ -97,29 +99,29 @@ export function EmployeeTitlesTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-foreground">호칭 관리</h3>
-          <p className="text-sm text-muted-foreground">{titles.length}개 호칭 등록 · 직급과 독립적으로 관리</p>
+          <h3 className="text-base font-semibold text-foreground">{t('employeeTitles.title')}</h3>
+          <p className="text-sm text-muted-foreground">{t('employeeTitles.description', { count: titles.length })}</p>
         </div>
         <Button size="sm" onClick={() => setShowAdd(true)}>
-          <Plus className="mr-1 h-4 w-4" /> 추가
+          <Plus className="mr-1 h-4 w-4" /> {t('common.add')}
         </Button>
       </div>
 
       {showAdd && (
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
-          <p className="text-sm font-medium">새 호칭 추가</p>
+          <p className="text-sm font-medium">{t('employeeTitles.addNew')}</p>
           <div className="grid grid-cols-4 gap-2">
-            <Input placeholder="코드 (예: CEO)" value={addForm.code} onChange={e => setAddForm(p => ({ ...p, code: e.target.value }))} />
-            <Input placeholder="이름 (예: 대표이사)" value={addForm.name} onChange={e => setAddForm(p => ({ ...p, name: e.target.value }))} />
-            <Input placeholder="영문명 (예: CEO)" value={addForm.nameEn} onChange={e => setAddForm(p => ({ ...p, nameEn: e.target.value }))} />
+            <Input placeholder={t('employeeTitles.codePlaceholder')} value={addForm.code} onChange={e => setAddForm(p => ({ ...p, code: e.target.value }))} />
+            <Input placeholder={t('employeeTitles.namePlaceholder')} value={addForm.name} onChange={e => setAddForm(p => ({ ...p, name: e.target.value }))} />
+            <Input placeholder={t('employeeTitles.nameEnPlaceholder')} value={addForm.nameEn} onChange={e => setAddForm(p => ({ ...p, nameEn: e.target.value }))} />
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={addForm.isExecutive} onChange={e => setAddForm(p => ({ ...p, isExecutive: e.target.checked }))} />
-              임원급
+              {t('common.executive')}
             </label>
           </div>
           <div className="flex gap-2">
-            <Button size="sm" onClick={handleAdd}>저장</Button>
-            <Button size="sm" variant="outline" onClick={() => setShowAdd(false)}>취소</Button>
+            <Button size="sm" onClick={handleAdd}>{t('common.save')}</Button>
+            <Button size="sm" variant="outline" onClick={() => setShowAdd(false)}>{t('common.cancel')}</Button>
           </div>
         </div>
       )}
@@ -128,46 +130,46 @@ export function EmployeeTitlesTab({ companyId }: Props) {
         <table className={TABLE_STYLES.table}>
           <thead className={TABLE_STYLES.header}>
             <tr>
-              <th className={TABLE_STYLES.headerCell}>코드</th>
-              <th className={TABLE_STYLES.headerCell}>호칭</th>
-              <th className={TABLE_STYLES.headerCell}>영문명</th>
-              <th className={TABLE_STYLES.headerCell}>구분</th>
+              <th className={TABLE_STYLES.headerCell}>{t('employeeTitles.colCode')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('employeeTitles.colTitle')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('employeeTitles.colNameEn')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('employeeTitles.colType')}</th>
               <th className={TABLE_STYLES.headerCell} style={{ width: 80 }}></th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">로딩 중...</td></tr>
+              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">{t('common.loading')}</td></tr>
             ) : titles.length === 0 ? (
-              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">등록된 호칭이 없습니다</td></tr>
-            ) : titles.map((t) => (
-              <tr key={t.id} className={TABLE_STYLES.row}>
-                <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{t.code}</td>
+              <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">{t('employeeTitles.emptyState')}</td></tr>
+            ) : titles.map((ti) => (
+              <tr key={ti.id} className={TABLE_STYLES.row}>
+                <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{ti.code}</td>
                 <td className={TABLE_STYLES.cell}>
-                  {editingId === t.id ? (
+                  {editingId === ti.id ? (
                     <Input className="h-7 text-sm" value={editForm.name ?? ''} onChange={e => setEditForm(p => ({ ...p, name: e.target.value }))} />
-                  ) : t.name}
+                  ) : ti.name}
                 </td>
                 <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>
-                  {editingId === t.id ? (
+                  {editingId === ti.id ? (
                     <Input className="h-7 text-sm" value={editForm.nameEn ?? ''} onChange={e => setEditForm(p => ({ ...p, nameEn: e.target.value }))} />
-                  ) : t.nameEn ?? '—'}
+                  ) : ti.nameEn ?? '—'}
                 </td>
                 <td className={TABLE_STYLES.cell}>
-                  <span className={cn('inline-block rounded px-2 py-0.5 text-xs font-medium', t.isExecutive ? 'bg-amber-500/15 text-amber-700' : 'bg-muted text-muted-foreground')}>
-                    {t.isExecutive ? '임원급' : '일반'}
+                  <span className={cn('inline-block rounded px-2 py-0.5 text-xs font-medium', ti.isExecutive ? 'bg-amber-500/15 text-amber-700' : 'bg-muted text-muted-foreground')}>
+                    {ti.isExecutive ? t('common.executive') : t('common.general')}
                   </span>
                 </td>
                 <td className={TABLE_STYLES.cell}>
-                  {editingId === t.id ? (
+                  {editingId === ti.id ? (
                     <div className="flex gap-1">
-                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => handleUpdate(t.id)}>저장</Button>
-                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setEditingId(null)}>취소</Button>
+                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => handleUpdate(ti.id)}>{t('common.save')}</Button>
+                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setEditingId(null)}>{t('common.cancel')}</Button>
                     </div>
                   ) : (
                     <div className="flex gap-1">
-                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => startEdit(t)}><Pencil className="h-3.5 w-3.5" /></Button>
-                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500" onClick={() => handleDelete(t.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => startEdit(ti)}><Pencil className="h-3.5 w-3.5" /></Button>
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500" onClick={() => handleDelete(ti.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
                     </div>
                   )}
                 </td>

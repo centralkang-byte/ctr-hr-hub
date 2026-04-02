@@ -49,23 +49,23 @@ const TIMEZONE_OPTIONS = [
 ]
 
 const LOCATION_TYPES = [
-  { value: 'OFFICE', label: '사무소' },
-  { value: 'PLANT', label: '공장' },
-  { value: 'WAREHOUSE', label: '물류센터' },
-  { value: 'BRANCH_OFFICE', label: '지사' },
+  { value: 'OFFICE', labelKey: 'locations.locationType.OFFICE' },
+  { value: 'PLANT', labelKey: 'locations.locationType.PLANT' },
+  { value: 'WAREHOUSE', labelKey: 'locations.locationType.WAREHOUSE' },
+  { value: 'BRANCH_OFFICE', labelKey: 'locations.locationType.BRANCH_OFFICE' },
 ]
 
 const COUNTRY_OPTIONS = [
-  { value: 'KR', label: '한국 (KR)' },
-  { value: 'CN', label: '중국 (CN)' },
-  { value: 'US', label: '미국 (US)' },
-  { value: 'MX', label: '멕시코 (MX)' },
-  { value: 'VN', label: '베트남 (VN)' },
-  { value: 'RU', label: '러시아 (RU)' },
-  { value: 'PL', label: '폴란드 (PL)' },
-  { value: 'CL', label: '칠레 (CL)' },
-  { value: 'TH', label: '태국 (TH)' },
-  { value: 'ID', label: '인도네시아 (ID)' },
+  { value: 'KR', labelKey: 'locations.countries.KR' },
+  { value: 'CN', labelKey: 'locations.countries.CN' },
+  { value: 'US', labelKey: 'locations.countries.US' },
+  { value: 'MX', labelKey: 'locations.countries.MX' },
+  { value: 'VN', labelKey: 'locations.countries.VN' },
+  { value: 'RU', labelKey: 'locations.countries.RU' },
+  { value: 'PL', labelKey: 'locations.countries.PL' },
+  { value: 'CL', labelKey: 'locations.countries.CL' },
+  { value: 'TH', labelKey: 'locations.countries.TH' },
+  { value: 'ID', labelKey: 'locations.countries.ID' },
 ]
 
 // ─── Form State ──────────────────────────────────────────
@@ -96,6 +96,7 @@ const emptyForm: FormData = {
 
 export function LocationsTab({ companyId }: Props) {
   const t = useTranslations('common')
+  const ts = useTranslations('settings')
   const [locations, setLocations] = useState<WorkLocation[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -147,7 +148,7 @@ export function LocationsTab({ companyId }: Props) {
 
   const handleSave = async () => {
     if (!form.code || !form.name || !form.timezone) {
-      toast({ title: '필수 항목을 입력해주세요.', variant: 'destructive' })
+      toast({ title: t('requiredFields'), variant: 'destructive' })
       return
     }
     setSaving(true)
@@ -162,7 +163,7 @@ export function LocationsTab({ companyId }: Props) {
           address: form.address || undefined,
           locationType: form.locationType || undefined,
         })
-        toast({ title: '근무지가 수정되었습니다.' })
+        toast({ title: ts('locations.updateSuccess') })
       } else {
         await apiClient.post('/api/v1/locations', {
           ...form,
@@ -171,14 +172,14 @@ export function LocationsTab({ companyId }: Props) {
           address: form.address || undefined,
           companyId: companyId || undefined,
         })
-        toast({ title: '근무지가 등록되었습니다.' })
+        toast({ title: ts('locations.createSuccess') })
       }
       setShowModal(false)
       fetchLocations()
     } catch (err) {
       toast({
-        title: editingId ? '수정 실패' : '등록 실패',
-        description: err instanceof Error ? err.message : '오류가 발생했습니다.',
+        title: editingId ? t('updateFailed') : ts('locations.registerFailed'),
+        description: err instanceof Error ? err.message : t('errorOccurred'),
         variant: 'destructive',
       })
     } finally {
@@ -190,16 +191,16 @@ export function LocationsTab({ companyId }: Props) {
     try {
       if (!loc.deletedAt) {
         await apiClient.delete(`/api/v1/locations/${loc.id}`)
-        toast({ title: `${loc.name} 비활성화됨` })
+        toast({ title: ts('locations.deactivated', { name: loc.name }) })
       } else {
         await apiClient.put(`/api/v1/locations/${loc.id}`, { deletedAt: null })
-        toast({ title: `${loc.name} 활성화됨` })
+        toast({ title: ts('locations.activated', { name: loc.name }) })
       }
       fetchLocations()
     } catch (err) {
       toast({
-        title: '상태 변경 실패',
-        description: err instanceof Error ? err.message : '오류가 발생했습니다.',
+        title: t('statusChangeFailed'),
+        description: err instanceof Error ? err.message : t('errorOccurred'),
         variant: 'destructive',
       })
     }
@@ -218,19 +219,19 @@ export function LocationsTab({ companyId }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-foreground">근무지 목록</h3>
-          <p className="text-sm text-muted-foreground">등록된 근무지 {locations.length}개</p>
+          <h3 className="text-base font-semibold text-foreground">{ts('locations.title')}</h3>
+          <p className="text-sm text-muted-foreground">{ts('locations.description', { count: locations.length })}</p>
         </div>
         <button onClick={openCreate} className={`${BUTTON_VARIANTS.primary} ${BUTTON_SIZES.md} inline-flex items-center`}>
           <Plus className="mr-1.5 h-4 w-4" />
-          근무지 추가
+          {ts('locations.addNew')}
         </button>
       </div>
 
       {/* Search */}
       <input
         type="text"
-        placeholder="코드, 이름, 도시로 검색..."
+        placeholder={ts('locations.searchPlaceholder')}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="w-full max-w-sm rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
@@ -242,14 +243,14 @@ export function LocationsTab({ companyId }: Props) {
           <table className={TABLE_STYLES.table}>
             <thead className={TABLE_STYLES.header}>
               <tr>
-                <th className={TABLE_STYLES.headerCell}>코드</th>
-                <th className={TABLE_STYLES.headerCell}>이름</th>
-                {!companyId && <th className={TABLE_STYLES.headerCell}>법인</th>}
-                <th className={TABLE_STYLES.headerCell}>국가</th>
-                <th className={TABLE_STYLES.headerCell}>도시</th>
-                <th className={TABLE_STYLES.headerCell}>유형</th>
-                <th className={TABLE_STYLES.headerCell}>상태</th>
-                <th className={TABLE_STYLES.headerCell}>관리</th>
+                <th className={TABLE_STYLES.headerCell}>{ts('locations.colCode')}</th>
+                <th className={TABLE_STYLES.headerCell}>{ts('locations.colName')}</th>
+                {!companyId && <th className={TABLE_STYLES.headerCell}>{ts('locations.colCompany')}</th>}
+                <th className={TABLE_STYLES.headerCell}>{ts('locations.colCountry')}</th>
+                <th className={TABLE_STYLES.headerCell}>{ts('locations.colCity')}</th>
+                <th className={TABLE_STYLES.headerCell}>{ts('locations.colType')}</th>
+                <th className={TABLE_STYLES.headerCell}>{ts('locations.colStatus')}</th>
+                <th className={TABLE_STYLES.headerCell}>{ts('locations.colManage')}</th>
               </tr>
             </thead>
             <tbody>
@@ -292,7 +293,7 @@ export function LocationsTab({ companyId }: Props) {
                     <button
                       onClick={() => openEdit(loc)}
                       className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-primary"
-                      title="수정"
+                      title={t('edit')}
                     >
                       <Pencil className="h-4 w-4" />
                     </button>
@@ -305,8 +306,8 @@ export function LocationsTab({ companyId }: Props) {
       ) : (
         <div className="rounded-xl border border-dashed border-border py-12 text-center">
           <MapPin className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
-          <p className="text-sm font-medium text-foreground">등록된 근무지가 없습니다</p>
-          <p className="mt-1 text-xs text-muted-foreground">위의 &apos;근무지 추가&apos; 버튼으로 등록하세요</p>
+          <p className="text-sm font-medium text-foreground">{ts('locations.emptyState')}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{ts('locations.emptyHint')}</p>
         </div>
       )}
 
@@ -316,7 +317,7 @@ export function LocationsTab({ companyId }: Props) {
           <div className="w-full max-w-lg rounded-xl bg-card p-6 shadow-lg">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-foreground">
-                {editingId ? '근무지 수정' : '근무지 추가'}
+                {editingId ? ts('locations.editTitle') : ts('locations.createTitle')}
               </h3>
               <button onClick={() => setShowModal(false)} className="text-muted-foreground hover:text-foreground">
                 <X className="h-5 w-5" />
@@ -327,7 +328,7 @@ export function LocationsTab({ companyId }: Props) {
               {/* Code (only on create) */}
               {!editingId && (
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-foreground">코드 *</label>
+                  <label className="mb-1 block text-sm font-medium text-foreground">{ts('locations.formCode')}</label>
                   <input
                     type="text"
                     value={form.code}
@@ -341,17 +342,16 @@ export function LocationsTab({ companyId }: Props) {
               {/* Name */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-foreground">이름 (한국어) *</label>
+                  <label className="mb-1 block text-sm font-medium text-foreground">{ts('locations.formNameKo')}</label>
                   <input
                     type="text"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="서울 본사"
                     className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-foreground">이름 (영문)</label>
+                  <label className="mb-1 block text-sm font-medium text-foreground">{ts('locations.formNameEn')}</label>
                   <input
                     type="text"
                     value={form.nameEn}
@@ -365,24 +365,23 @@ export function LocationsTab({ companyId }: Props) {
               {/* Country + City */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-foreground">국가 *</label>
+                  <label className="mb-1 block text-sm font-medium text-foreground">{ts('locations.formCountry')}</label>
                   <select
                     value={form.country}
                     onChange={(e) => setForm({ ...form, country: e.target.value })}
                     className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
                   >
                     {COUNTRY_OPTIONS.map((c) => (
-                      <option key={c.value} value={c.value}>{c.label}</option>
+                      <option key={c.value} value={c.value}>{ts(c.labelKey)}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-foreground">도시</label>
+                  <label className="mb-1 block text-sm font-medium text-foreground">{ts('locations.formCity')}</label>
                   <input
                     type="text"
                     value={form.city}
                     onChange={(e) => setForm({ ...form, city: e.target.value })}
-                    placeholder="서울"
                     className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
                   />
                 </div>
@@ -391,7 +390,7 @@ export function LocationsTab({ companyId }: Props) {
               {/* Timezone + Type */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-foreground">타임존 *</label>
+                  <label className="mb-1 block text-sm font-medium text-foreground">{ts('locations.formTimezone')}</label>
                   <select
                     value={form.timezone}
                     onChange={(e) => setForm({ ...form, timezone: e.target.value })}
@@ -403,14 +402,14 @@ export function LocationsTab({ companyId }: Props) {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-foreground">유형</label>
+                  <label className="mb-1 block text-sm font-medium text-foreground">{ts('locations.formType')}</label>
                   <select
                     value={form.locationType}
                     onChange={(e) => setForm({ ...form, locationType: e.target.value })}
                     className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
                   >
                     {LOCATION_TYPES.map((lt) => (
-                      <option key={lt.value} value={lt.value}>{lt.label}</option>
+                      <option key={lt.value} value={lt.value}>{ts(lt.labelKey)}</option>
                     ))}
                   </select>
                 </div>
@@ -418,12 +417,11 @@ export function LocationsTab({ companyId }: Props) {
 
               {/* Address */}
               <div>
-                <label className="mb-1 block text-sm font-medium text-foreground">주소</label>
+                <label className="mb-1 block text-sm font-medium text-foreground">{ts('locations.formAddress')}</label>
                 <input
                   type="text"
                   value={form.address}
                   onChange={(e) => setForm({ ...form, address: e.target.value })}
-                  placeholder="경남 창원시 의창구..."
                   className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none"
                 />
               </div>

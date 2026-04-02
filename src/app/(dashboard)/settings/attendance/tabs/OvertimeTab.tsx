@@ -55,6 +55,7 @@ const COUNTRY_RATES = [
 
 export function OvertimeTab({ companyId }: OvertimeTabProps) {
   const t = useTranslations('settings')
+  const tc = useTranslations('common')
 
   const {
     settings,
@@ -100,36 +101,33 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
   }
 
   const rateRows: { key: keyof OvertimeSettings['multipliers']; label: string; desc: string }[] = [
-    { key: 'weekdayOt', label: t('overtime_keca3bcea'), desc: '평일 법정근로시간 초과 시' },
-    { key: 'weekend', label: '휴일근로', desc: '주말/휴일 근무 시' },
-    { key: 'holiday', label: '공휴일근로', desc: '법정 공휴일 근무 시' },
-    { key: 'night', label: '야간 할증', desc: '야간근무 시간대 가산' },
+    { key: 'weekdayOt', label: t('overtime.weekdayOtLabel'), desc: t('overtime.weekdayOtDesc') },
+    { key: 'weekend', label: t('overtime.weekendLabel'), desc: t('overtime.weekendDesc') },
+    { key: 'holiday', label: t('overtime.holidayLabel'), desc: t('overtime.holidayDesc') },
+    { key: 'night', label: t('overtime.nightLabel'), desc: t('overtime.nightDesc') },
   ]
 
   return (
     <div className="space-y-6">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-foreground">{t('kr_kecb488ea')}</h3>
-        <p className="text-sm text-muted-foreground">
-          {t('kr_kec82acec_kec8898eb_kebb0b0ec_')}
-        </p>
+        <h3 className="text-base font-semibold text-foreground">{t('overtime.title')}</h3>
       </div>
 
       {/* Info banner */}
       <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-500/10 p-4">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
         <div>
-          <p className="text-xs font-medium text-amber-800">{t('company_kebb384_kec8898eb_kebb0b0ec_keb8ba4eb')}</p>
+          <p className="text-xs font-medium text-amber-800">{t('overtime.infoBannerTitle')}</p>
           <p className="mt-0.5 text-xs text-amber-700">
-            {t('kr_kr_kec97b0ec_1_5kebb0b0_ru_2_0')}
+            {t('overtime.infoBannerDesc')}
           </p>
         </div>
       </div>
 
       {/* 사전 승인 */}
       <SettingFieldWithOverride
-        label="사전 승인 필수"
-        description="초과근무 전 관리자 승인을 필수로 요구합니다"
+        label={t('overtime.requiresApproval')}
+        description={t('overtime.requiresApprovalDesc')}
         status={isOverridden ? 'custom' : 'global'}
         companySelected={!!companyId}
       >
@@ -140,14 +138,14 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
             onChange={(e) => setSettings((p) => ({ ...p, requiresApproval: e.target.checked }))}
             className="h-4 w-4 rounded border-border text-primary"
           />
-          <span className="text-foreground">{t('kr_kec82acec_approve_ked999cec')}</span>
+          <span className="text-foreground">{t('overtime.approvalActivated')}</span>
         </label>
       </SettingFieldWithOverride>
 
       {/* 야간근무 시간대 */}
       <SettingFieldWithOverride
-        label="야간근무 시간대"
-        description="야간근무 수당이 적용되는 시간대"
+        label={t('overtime.nightTimeRange')}
+        description={t('overtime.nightTimeRangeDesc')}
         status={isOverridden ? 'custom' : 'global'}
         companySelected={!!companyId}
       >
@@ -160,7 +158,7 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
             onChange={(e) => setSettings((p) => ({ ...p, nightStartHour: Number(e.target.value) }))}
             className="w-20 text-center"
           />
-          <span className="text-sm text-muted-foreground">시 ~</span>
+          <span className="text-sm text-muted-foreground">{t('overtime.hourRange')}</span>
           <Input
             type="number"
             min={0}
@@ -169,20 +167,20 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
             onChange={(e) => setSettings((p) => ({ ...p, nightEndHour: Number(e.target.value) }))}
             className="w-20 text-center"
           />
-          <span className="text-sm text-muted-foreground">시</span>
+          <span className="text-sm text-muted-foreground">{t('overtime.hourSuffix')}</span>
         </div>
       </SettingFieldWithOverride>
 
       {/* 수당 배율 테이블 */}
       <div>
-        <h4 className="mb-3 text-sm font-semibold text-foreground">{t('kr_kec8898eb_keab384ec_kebb0b0ec')}</h4>
+        <h4 className="mb-3 text-sm font-semibold text-foreground">{t('overtime.rateTableTitle')}</h4>
         <div className={TABLE_STYLES.wrapper}>
           <table className={TABLE_STYLES.table}>
             <thead>
               <tr className={TABLE_STYLES.header}>
-                <th className={TABLE_STYLES.headerCell}>{t('kr_keab7bceb_kec9ca0ed')}</th>
-                <th className={TABLE_STYLES.headerCell}>{t('description')}</th>
-                <th className={TABLE_STYLES.headerCell}>배율</th>
+                <th className={TABLE_STYLES.headerCell}>{t('overtime.workTypeCol')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('overtime.descriptionCol')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('overtime.multiplier')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -210,15 +208,15 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
 
       {/* 법인별 참고 배율 */}
       <div>
-        <h4 className="mb-3 text-sm font-semibold text-foreground">{t('company_kebb384_kecb0b8ea_kebb0b0ec')}</h4>
+        <h4 className="mb-3 text-sm font-semibold text-foreground">{t('overtime.companyRates')}</h4>
         <div className={TABLE_STYLES.wrapper}>
           <table className={TABLE_STYLES.table}>
             <thead>
               <tr className={TABLE_STYLES.header}>
-                <th className={TABLE_STYLES.headerCell}>{t('company')}</th>
-                <th className={TABLE_STYLES.headerCell}>연장</th>
-                <th className={TABLE_STYLES.headerCell}>야간 가산</th>
-                <th className={TABLE_STYLES.headerCell}>휴일</th>
+                <th className={TABLE_STYLES.headerCell}>{t('overtime.colCompany')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('overtime.colExtension')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('overtime.colNightBonus')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('overtime.colHoliday')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -236,7 +234,7 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
           </table>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          * 위 참고 배율은 각국 근로기준법 기본값입니다. 법인별 CompanySelector를 통해 오버라이드할 수 있습니다.
+          {t('overtime.companyRatesNote')}
         </p>
       </div>
 
@@ -244,7 +242,7 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
         {hasChanges && (
           <Button variant="outline" onClick={revert} disabled={saving}>
             <RotateCcw className="mr-2 h-4 w-4" />
-            되돌리기
+            {tc('revert')}
           </Button>
         )}
         <Button

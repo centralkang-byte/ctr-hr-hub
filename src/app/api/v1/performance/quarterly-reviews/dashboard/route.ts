@@ -10,6 +10,7 @@ import { forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { Quarter } from '@/generated/prisma/enums'
 
 // ─── Validation ─────────────────────────────────────────────
 
@@ -39,7 +40,7 @@ export const GET = withPermission(
       managerId?: string
       companyId?: string
       year: number
-      quarter?: string
+      quarter?: Quarter
     }
 
     let baseWhere: WhereClause
@@ -49,20 +50,20 @@ export const GET = withPermission(
         managerId: user.employeeId,
         companyId: user.companyId,
         year,
-        ...(quarter ? { quarter } : {}),
+        ...(quarter ? { quarter: quarter as Quarter } : {}),
       }
     } else if (user.role === ROLE.SUPER_ADMIN) {
       // SUPER_ADMIN: companyId filter optional
       baseWhere = {
         year,
-        ...(quarter ? { quarter } : {}),
+        ...(quarter ? { quarter: quarter as Quarter } : {}),
       }
     } else {
       // HR_ADMIN, EXECUTIVE
       baseWhere = {
         companyId: user.companyId,
         year,
-        ...(quarter ? { quarter } : {}),
+        ...(quarter ? { quarter: quarter as Quarter } : {}),
       }
     }
 
@@ -93,8 +94,13 @@ export const GET = withPermission(
     ])
 
     // Compute summary metrics
-    const totalReviews = statusDist.reduce((sum, s) => sum + s._count, 0)
-    const completedCount = statusDist.find((s) => s.status === 'COMPLETED')?._count ?? 0
+    const getCount = (item: { _count: number | { _all: number } }): number =>
+      typeof item._count === 'number' ? item._count : (item._count._all ?? 0)
+
+    const totalReviews = statusDist.reduce((sum, s) => sum + getCount(s), 0)
+    const completedCount = statusDist.find((s) => s.status === 'COMPLETED')
+      ? getCount(statusDist.find((s) => s.status === 'COMPLETED')!)
+      : 0
     const completionRate = totalReviews > 0
       ? Math.round((completedCount / totalReviews) * 10000) / 100
       : 0
@@ -102,17 +108,17 @@ export const GET = withPermission(
     // Transform distributions
     const statusDistribution = statusDist.map((s) => ({
       status: s.status,
-      count: s._count,
+      count: getCount(s),
     }))
 
     const sentimentDistribution = sentimentDist.map((s) => ({
       sentiment: s.overallSentiment,
-      count: s._count,
+      count: getCount(s),
     }))
 
     const goalTrackingDistribution = goalTrackingDist.map((g) => ({
       trackingStatus: g.trackingStatus,
-      count: g._count,
+      count: getCount(g),
     }))
 
     return apiSuccess({

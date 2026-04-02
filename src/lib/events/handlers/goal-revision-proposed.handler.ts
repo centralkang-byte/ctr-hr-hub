@@ -33,7 +33,7 @@ export const goalRevisionProposedHandler: DomainEventHandler<'GOAL_REVISION_PROP
                   position: {
                     select: {
                       reportsToPositionId: true,
-                      reportsToPosition: {
+                      reportsTo: {
                         select: {
                           assignments: {
                             where: { endDate: null, isPrimary: true },
@@ -53,7 +53,7 @@ export const goalRevisionProposedHandler: DomainEventHandler<'GOAL_REVISION_PROP
         },
       })
 
-      const managerId = goal?.employee?.assignments?.[0]?.position?.reportsToPosition?.assignments?.[0]?.employeeId
+      const managerId = goal?.employee?.assignments?.[0]?.position?.reportsTo?.assignments?.[0]?.employeeId
 
       if (managerId) {
         const batchLabel = payload.batchId ? ' (배치 수정)' : ''

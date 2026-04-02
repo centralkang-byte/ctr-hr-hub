@@ -166,13 +166,13 @@ export const POST = withPermission(
         isDoNotRehire: true,
         status: 'COMPLETED',
         employee: {
-          user: { email },
+          email,
         },
       },
       select: {
         doNotRehireReason: true,
         completedAt: true,
-        employee: { select: { name: true } },
+        employee: { select: { name: true, id: true } },
       },
     })
 
@@ -182,7 +182,7 @@ export const POST = withPermission(
       doNotRehire: doNotRehire
         ? {
             flagged: true,
-            employeeName: doNotRehire.employee?.name ?? '—',
+            employeeName: doNotRehire.employee.name ?? '—',
             reason: doNotRehire.doNotRehireReason,
             offboardedAt: doNotRehire.completedAt,
           }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Plus, Pencil, Trash2, GripVertical } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,10 +23,10 @@ interface JobGrade {
   companyId: string
 }
 
-const GRADE_TYPE_LABELS: Record<string, string> = {
-  STAFF: '일반직',
-  SPECIALIST: '전문직',
-  EXECUTIVE: '임원',
+const GRADE_TYPE_LABEL_KEYS: Record<string, string> = {
+  STAFF: 'jobGrades.gradeTypeStaff',
+  SPECIALIST: 'jobGrades.gradeTypeSpecialist',
+  EXECUTIVE: 'jobGrades.gradeTypeExecutive',
 }
 
 const GRADE_TYPE_COLORS: Record<string, string> = {
@@ -35,6 +36,7 @@ const GRADE_TYPE_COLORS: Record<string, string> = {
 }
 
 export function JobGradesTab({ companyId }: Props) {
+  const t = useTranslations('settings')
   const [grades, setGrades] = useState<JobGrade[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('all')
@@ -57,7 +59,7 @@ export function JobGradesTab({ companyId }: Props) {
 
   const handleAdd = async () => {
     if (!addForm.code || !addForm.name) {
-      toast({ title: '코드와 이름은 필수입니다', variant: 'destructive' })
+      toast({ title: t('common.codeAndNameRequired'), variant: 'destructive' })
       return
     }
     const maxRank = grades.length > 0 ? Math.max(...grades.map(g => g.rankOrder)) + 1 : 1
@@ -71,13 +73,13 @@ export function JobGradesTab({ companyId }: Props) {
       }),
     })
     if (res.ok) {
-      toast({ title: '직급이 추가되었습니다' })
+      toast({ title: t('common.addSuccess', { name: '' }) })
       setShowAdd(false)
       setAddForm({ code: '', name: '', nameEn: '', gradeType: 'STAFF', minPromotionYears: '' })
       fetchGrades()
     } else {
       const err = await res.json()
-      toast({ title: '추가 실패', description: err.error?.message, variant: 'destructive' })
+      toast({ title: t('common.addFailed'), description: err.error?.message, variant: 'destructive' })
     }
   }
 
@@ -88,24 +90,24 @@ export function JobGradesTab({ companyId }: Props) {
       body: JSON.stringify(editForm),
     })
     if (res.ok) {
-      toast({ title: '수정되었습니다' })
+      toast({ title: t('common.updateSuccess') })
       setEditingId(null)
       fetchGrades()
     } else {
       const err = await res.json()
-      toast({ title: '수정 실패', description: err.error?.message, variant: 'destructive' })
+      toast({ title: t('common.updateFailed'), description: err.error?.message, variant: 'destructive' })
     }
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('이 직급을 삭제하시겠습니까?')) return
+    if (!confirm(t('common.deleteConfirm', { name: t('jobGrades.title') }))) return
     const res = await fetch(`/api/v1/settings/job-grades?id=${id}`, { method: 'DELETE' })
     if (res.ok) {
-      toast({ title: '삭제되었습니다' })
+      toast({ title: t('common.deleteSuccess') })
       fetchGrades()
     } else {
       const err = await res.json()
-      toast({ title: '삭제 실패', description: err.error?.message, variant: 'destructive' })
+      toast({ title: t('common.deleteFailed'), description: err.error?.message, variant: 'destructive' })
     }
   }
 
@@ -118,8 +120,8 @@ export function JobGradesTab({ companyId }: Props) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-foreground">직급 체계</h3>
-          <p className="text-sm text-muted-foreground">{grades.length}개 직급 등록 · 법인별 가변 설정</p>
+          <h3 className="text-base font-semibold text-foreground">{t('jobGrades.title')}</h3>
+          <p className="text-sm text-muted-foreground">{t('jobGrades.description', { count: grades.length })}</p>
         </div>
         <div className="flex items-center gap-2">
           <Select value={filter} onValueChange={setFilter}>
@@ -127,38 +129,38 @@ export function JobGradesTab({ companyId }: Props) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">전체</SelectItem>
-              <SelectItem value="STAFF">일반직</SelectItem>
-              <SelectItem value="SPECIALIST">전문직</SelectItem>
-              <SelectItem value="EXECUTIVE">임원</SelectItem>
+              <SelectItem value="all">{t('common.all')}</SelectItem>
+              <SelectItem value="STAFF">{t('jobGrades.gradeTypeStaff')}</SelectItem>
+              <SelectItem value="SPECIALIST">{t('jobGrades.gradeTypeSpecialist')}</SelectItem>
+              <SelectItem value="EXECUTIVE">{t('jobGrades.gradeTypeExecutive')}</SelectItem>
             </SelectContent>
           </Select>
           <Button size="sm" onClick={() => setShowAdd(true)}>
-            <Plus className="mr-1 h-4 w-4" /> 추가
+            <Plus className="mr-1 h-4 w-4" /> {t('common.add')}
           </Button>
         </div>
       </div>
 
       {showAdd && (
         <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
-          <p className="text-sm font-medium">새 직급 추가</p>
+          <p className="text-sm font-medium">{t('jobGrades.addNew')}</p>
           <div className="grid grid-cols-5 gap-2">
-            <Input placeholder="코드 (예: L3)" value={addForm.code} onChange={e => setAddForm(p => ({ ...p, code: e.target.value }))} />
-            <Input placeholder="이름 (예: 매니저)" value={addForm.name} onChange={e => setAddForm(p => ({ ...p, name: e.target.value }))} />
-            <Input placeholder="영문명" value={addForm.nameEn} onChange={e => setAddForm(p => ({ ...p, nameEn: e.target.value }))} />
+            <Input placeholder={t('jobGrades.codePlaceholder')} value={addForm.code} onChange={e => setAddForm(p => ({ ...p, code: e.target.value }))} />
+            <Input placeholder={t('jobGrades.namePlaceholder')} value={addForm.name} onChange={e => setAddForm(p => ({ ...p, name: e.target.value }))} />
+            <Input placeholder={t('jobGrades.nameEnPlaceholder')} value={addForm.nameEn} onChange={e => setAddForm(p => ({ ...p, nameEn: e.target.value }))} />
             <Select value={addForm.gradeType} onValueChange={v => setAddForm(p => ({ ...p, gradeType: v }))}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="STAFF">일반직</SelectItem>
-                <SelectItem value="SPECIALIST">전문직</SelectItem>
-                <SelectItem value="EXECUTIVE">임원</SelectItem>
+                <SelectItem value="STAFF">{t('jobGrades.gradeTypeStaff')}</SelectItem>
+                <SelectItem value="SPECIALIST">{t('jobGrades.gradeTypeSpecialist')}</SelectItem>
+                <SelectItem value="EXECUTIVE">{t('jobGrades.gradeTypeExecutive')}</SelectItem>
               </SelectContent>
             </Select>
-            <Input placeholder="최소 승진연한" type="number" value={addForm.minPromotionYears} onChange={e => setAddForm(p => ({ ...p, minPromotionYears: e.target.value }))} />
+            <Input placeholder={t('jobGrades.minPromotionPlaceholder')} type="number" value={addForm.minPromotionYears} onChange={e => setAddForm(p => ({ ...p, minPromotionYears: e.target.value }))} />
           </div>
           <div className="flex gap-2">
-            <Button size="sm" onClick={handleAdd}>저장</Button>
-            <Button size="sm" variant="outline" onClick={() => setShowAdd(false)}>취소</Button>
+            <Button size="sm" onClick={handleAdd}>{t('common.save')}</Button>
+            <Button size="sm" variant="outline" onClick={() => setShowAdd(false)}>{t('common.cancel')}</Button>
           </div>
         </div>
       )}
@@ -168,19 +170,19 @@ export function JobGradesTab({ companyId }: Props) {
           <thead className={TABLE_STYLES.header}>
             <tr>
               <th className={TABLE_STYLES.headerCell} style={{ width: 40 }}></th>
-              <th className={TABLE_STYLES.headerCell}>코드</th>
-              <th className={TABLE_STYLES.headerCell}>이름</th>
-              <th className={TABLE_STYLES.headerCell}>영문명</th>
-              <th className={TABLE_STYLES.headerCell}>구분</th>
-              <th className={TABLE_STYLES.headerCell}>최소 승진연한</th>
+              <th className={TABLE_STYLES.headerCell}>{t('jobGrades.colCode')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('jobGrades.colName')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('jobGrades.colNameEn')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('jobGrades.colType')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('jobGrades.colMinPromotion')}</th>
               <th className={TABLE_STYLES.headerCell} style={{ width: 80 }}></th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7} className="py-8 text-center text-sm text-muted-foreground">로딩 중...</td></tr>
+              <tr><td colSpan={7} className="py-8 text-center text-sm text-muted-foreground">{t('common.loading')}</td></tr>
             ) : grades.length === 0 ? (
-              <tr><td colSpan={7} className="py-8 text-center text-sm text-muted-foreground">등록된 직급이 없습니다</td></tr>
+              <tr><td colSpan={7} className="py-8 text-center text-sm text-muted-foreground">{t('jobGrades.emptyState')}</td></tr>
             ) : grades.map((g) => (
               <tr key={g.id} className={TABLE_STYLES.row}>
                 <td className={TABLE_STYLES.cell}><GripVertical className="h-4 w-4 text-muted-foreground" /></td>
@@ -197,17 +199,17 @@ export function JobGradesTab({ companyId }: Props) {
                 </td>
                 <td className={TABLE_STYLES.cell}>
                   <span className={cn('inline-block rounded px-2 py-0.5 text-xs font-medium', GRADE_TYPE_COLORS[g.gradeType] ?? 'bg-muted text-muted-foreground')}>
-                    {GRADE_TYPE_LABELS[g.gradeType] ?? g.gradeType}
+                    {t(GRADE_TYPE_LABEL_KEYS[g.gradeType] ?? g.gradeType)}
                   </span>
                 </td>
                 <td className={`${TABLE_STYLES.cell} text-center text-muted-foreground`}>
-                  {g.minPromotionYears != null ? `${g.minPromotionYears}년` : '—'}
+                  {g.minPromotionYears != null ? t('jobGrades.yearsUnit', { count: g.minPromotionYears }) : '—'}
                 </td>
                 <td className={TABLE_STYLES.cell}>
                   {editingId === g.id ? (
                     <div className="flex gap-1">
-                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => handleUpdate(g.id)}>저장</Button>
-                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setEditingId(null)}>취소</Button>
+                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => handleUpdate(g.id)}>{t('common.save')}</Button>
+                      <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setEditingId(null)}>{t('common.cancel')}</Button>
                     </div>
                   ) : (
                     <div className="flex gap-1">

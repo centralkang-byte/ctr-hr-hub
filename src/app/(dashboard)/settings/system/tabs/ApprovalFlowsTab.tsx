@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Plus, GitBranch, ChevronDown, ChevronUp, Check, X, Loader2 } from 'lucide-react'
 import { ApprovalFlowEditor } from '@/components/settings/ApprovalFlowEditor'
 import { toast } from '@/hooks/use-toast'
@@ -8,25 +9,25 @@ import type { ApprovalFlowData, ApprovalModule, ApproverRole } from '@/types/set
 
 interface Props { companyId: string | null }
 
-const MODULE_OPTIONS: { value: ApprovalModule | 'all'; label: string }[] = [
-  { value: 'all', label: '전체' },
-  { value: 'leave', label: '휴가' },
-  { value: 'payroll', label: '급여' },
-  { value: 'recruitment', label: '채용' },
-  { value: 'attendance', label: '근태' },
-  { value: 'discipline', label: '징계' },
-  { value: 'certificate', label: '증명서' },
-  { value: 'promotion', label: '승진' },
-  { value: 'benefits', label: '복리후생' },
-  { value: 'offboarding', label: '퇴직/사직' },
-  { value: 'personnel_order', label: '인사발령' },
-  { value: 'probation', label: '수습 전환' },
-  { value: 'contract_conversion', label: '계약 전환' },
-  { value: 'general', label: '일반' },
+const MODULE_OPTIONS: { value: ApprovalModule | 'all'; labelKey: string }[] = [
+  { value: 'all', labelKey: 'common.all' },
+  { value: 'leave', labelKey: 'approvalFlows.modules.leave' },
+  { value: 'payroll', labelKey: 'approvalFlows.modules.payroll' },
+  { value: 'recruitment', labelKey: 'approvalFlows.modules.recruitment' },
+  { value: 'attendance', labelKey: 'approvalFlows.modules.attendance' },
+  { value: 'discipline', labelKey: 'approvalFlows.modules.discipline' },
+  { value: 'certificate', labelKey: 'approvalFlows.modules.certificate' },
+  { value: 'promotion', labelKey: 'approvalFlows.modules.promotion' },
+  { value: 'benefits', labelKey: 'approvalFlows.modules.benefits' },
+  { value: 'offboarding', labelKey: 'approvalFlows.modules.offboarding' },
+  { value: 'personnel_order', labelKey: 'approvalFlows.modules.personnel_order' },
+  { value: 'probation', labelKey: 'approvalFlows.modules.probation' },
+  { value: 'contract_conversion', labelKey: 'approvalFlows.modules.contract_conversion' },
+  { value: 'general', labelKey: 'approvalFlows.modules.general' },
 ]
 
-const MODULE_LABELS: Record<string, string> = Object.fromEntries(
-  MODULE_OPTIONS.filter(o => o.value !== 'all').map(o => [o.value, o.label])
+const MODULE_LABEL_KEYS: Record<string, string> = Object.fromEntries(
+  MODULE_OPTIONS.filter(o => o.value !== 'all').map(o => [o.value, o.labelKey])
 )
 
 function emptyFlow(module: ApprovalModule, companyId: string | null): ApprovalFlowData {
@@ -44,6 +45,7 @@ function emptyFlow(module: ApprovalModule, companyId: string | null): ApprovalFl
 }
 
 export function ApprovalFlowsTab({ companyId }: Props) {
+  const t = useTranslations('settings')
   const [flows, setFlows] = useState<ApprovalFlowData[]>([])
   const [loading, setLoading] = useState(true)
   const [moduleFilter, setModuleFilter] = useState<ApprovalModule | 'all'>('all')
@@ -58,11 +60,11 @@ export function ApprovalFlowsTab({ companyId }: Props) {
       const params = new URLSearchParams()
       if (companyId) params.set('companyId', companyId)
       const res = await fetch(`/api/v1/settings/approval-flows?${params}`)
-      if (!res.ok) throw new Error('로드 실패')
+      if (!res.ok) throw new Error(t('common.loadFailed'))
       const json = await res.json()
       setFlows(json.data ?? [])
     } catch {
-      toast({ title: '로드 실패', description: '결재 플로우를 불러올 수 없습니다.', variant: 'destructive' })
+      toast({ title: t('common.loadFailed'), description: t('approvalFlows.loadFailedDesc'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -87,35 +89,35 @@ export function ApprovalFlowsTab({ companyId }: Props) {
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       if (!res.ok) {
         const err = await res.json().catch(() => ({}))
-        throw new Error(err.message ?? '저장 실패')
+        throw new Error(err.message ?? t('common.saveFailed'))
       }
-      toast({ title: '저장되었습니다' })
+      toast({ title: t('common.saveSuccess') })
       setEditingFlow(null)
       setCreatingModule(null)
       setExpandedId(null)
       await fetchFlows()
     } catch (err) {
-      toast({ title: '저장 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('common.saveFailed'), description: err instanceof Error ? err.message : t('common.retryMessage'), variant: 'destructive' })
     } finally {
       setSaving(false)
     }
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('이 결재 플로우를 삭제하시겠습니까?')) return
+    if (!confirm(t('approvalFlows.deleteConfirm'))) return
     try {
       const res = await fetch(`/api/v1/settings/approval-flows?id=${id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error()
-      toast({ title: '삭제되었습니다' })
+      toast({ title: t('common.deleteSuccess') })
       await fetchFlows()
     } catch {
-      toast({ title: '삭제 실패', variant: 'destructive' })
+      toast({ title: t('common.deleteFailed'), variant: 'destructive' })
     }
   }
 
   const roleLabel = (role: ApproverRole | null) => {
-    const map: Record<string, string> = { direct_manager: '직속 팀장', dept_head: '부서장', hr_admin: 'HR 담당', finance: '경영관리', ceo: '대표이사' }
-    return role ? map[role] ?? role : '—'
+    if (!role) return '—'
+    return t(`approvalFlows.roles.${role}` as Parameters<typeof t>[0])
   }
 
   // 모듈별 그룹
@@ -137,10 +139,10 @@ export function ApprovalFlowsTab({ companyId }: Props) {
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-foreground">결재 플로우</h3>
+          <h3 className="text-base font-semibold text-foreground">{t('approvalFlows.title')}</h3>
           <p className="text-sm text-muted-foreground">
-            모듈별 전결 규정 설정 ({flows.length}개 플로우)
-            {companyId ? '' : ' · 글로벌'}
+            {t('approvalFlows.description', { count: flows.length })}
+            {companyId ? '' : ` · ${t('common.global')}`}
           </p>
         </div>
       </div>
@@ -157,7 +159,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                 : 'bg-muted text-muted-foreground hover:bg-muted'
             }`}
           >
-            {opt.label}
+            {t(opt.labelKey)}
           </button>
         ))}
       </div>
@@ -195,21 +197,21 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-semibold text-foreground">
-                            {MODULE_LABELS[flow.module] ?? flow.module}
+                            {t(MODULE_LABEL_KEYS[flow.module] ?? flow.module)}
                           </span>
                           <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
                             !flow.deletedAt
                               ? 'bg-emerald-500/10 text-emerald-600'
                               : 'bg-muted text-muted-foreground/60'
                           }`}>
-                            {!flow.deletedAt ? '활성' : '비활성'}
+                            {!flow.deletedAt ? t('common.active') : t('common.inactive')}
                           </span>
                           {!flow.companyId && (
-                            <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">글로벌</span>
+                            <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">{t('common.global')}</span>
                           )}
                         </div>
                         <p className="truncate text-xs text-muted-foreground">
-                          {flow.name} · {flow.steps.length}단계
+                          {flow.name} · {t('approvalFlows.stepsCount', { count: flow.steps.length })}
                           {flow.steps.length > 0 && ` (${flow.steps.map(s => roleLabel(s.approverRole as ApproverRole | null)).join(' → ')})`}
                         </p>
                       </div>
@@ -225,7 +227,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                               <input
                                 value={editingFlow.name}
                                 onChange={e => setEditingFlow({ ...editingFlow, name: e.target.value })}
-                                placeholder="플로우 이름"
+                                placeholder={t('approvalFlows.flowNamePlaceholder')}
                                 className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                               />
                             </div>
@@ -240,14 +242,14 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                                 className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-50"
                               >
                                 {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
-                                저장
+                                {t('common.save')}
                               </button>
                               <button
                                 onClick={() => { setEditingFlow(null); setExpandedId(null) }}
                                 className="flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-xs font-medium text-muted-foreground hover:bg-muted"
                               >
                                 <X className="h-3 w-3" />
-                                취소
+                                {t('common.cancel')}
                               </button>
                             </div>
                           </>
@@ -259,13 +261,13 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                                 onClick={() => setEditingFlow({ ...flow })}
                                 className="rounded-lg bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary/90"
                               >
-                                편집
+                                {t('common.edit')}
                               </button>
                               <button
                                 onClick={() => handleDelete(flow.id)}
                                 className="rounded-lg border border-border px-4 py-2 text-xs font-medium text-destructive hover:bg-destructive/10"
                               >
-                                삭제
+                                {t('common.delete')}
                               </button>
                             </div>
                           </>
@@ -281,7 +283,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
           {/* 미설정 모듈 */}
           {moduleFilter === 'all' && unconfiguredModules.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground pt-2">미설정 모듈</p>
+              <p className="text-xs font-medium text-muted-foreground pt-2">{t('approvalFlows.unconfiguredModules')}</p>
               {unconfiguredModules.map(mod => {
                 const isCreating = creatingModule === mod
 
@@ -291,12 +293,12 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                       <div className="px-4 py-3 space-y-3">
                         <div className="flex items-center gap-2">
                           <GitBranch className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm font-semibold text-foreground">{MODULE_LABELS[mod]}</span>
+                          <span className="text-sm font-semibold text-foreground">{t(MODULE_LABEL_KEYS[mod] ?? mod)}</span>
                         </div>
                         <input
                           value={editingFlow.name}
                           onChange={e => setEditingFlow({ ...editingFlow, name: e.target.value })}
-                          placeholder="플로우 이름 (예: 휴가 승인)"
+                          placeholder={t('approvalFlows.flowNameExPlaceholder')}
                           className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                         />
                         <ApprovalFlowEditor flow={editingFlow} onChange={setEditingFlow} />
@@ -307,14 +309,14 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                             className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-50"
                           >
                             {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
-                            생성
+                            {t('common.create')}
                           </button>
                           <button
                             onClick={() => { setCreatingModule(null); setEditingFlow(null) }}
                             className="flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-xs font-medium text-muted-foreground hover:bg-muted"
                           >
                             <X className="h-3 w-3" />
-                            취소
+                            {t('common.cancel')}
                           </button>
                         </div>
                       </div>
@@ -323,7 +325,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                         type="button"
                         onClick={() => {
                           const newFlow = emptyFlow(mod, companyId)
-                          newFlow.name = `${MODULE_LABELS[mod]} 승인`
+                          newFlow.name = `${MODULE_LABEL_KEYS[mod]} approval`
                           setCreatingModule(mod)
                           setEditingFlow(newFlow)
                         }}
@@ -333,8 +335,8 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                           <Plus className="h-4 w-4 text-muted-foreground" />
                         </div>
                         <div className="text-left">
-                          <span className="text-sm font-medium text-muted-foreground">{MODULE_LABELS[mod]}</span>
-                          <p className="text-xs text-muted-foreground">플로우 미설정 — 클릭하여 생성</p>
+                          <span className="text-sm font-medium text-muted-foreground">{t(MODULE_LABEL_KEYS[mod] ?? mod)}</span>
+                          <p className="text-xs text-muted-foreground">{t('approvalFlows.unconfiguredDesc')}</p>
                         </div>
                       </button>
                     )}
@@ -348,18 +350,18 @@ export function ApprovalFlowsTab({ companyId }: Props) {
           {filteredFlows.length === 0 && !loading && moduleFilter !== 'all' && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <GitBranch className="mb-3 h-8 w-8 text-border" />
-              <p className="text-sm text-muted-foreground">{MODULE_LABELS[moduleFilter]} 모듈에 설정된 플로우가 없습니다.</p>
+              <p className="text-sm text-muted-foreground">{t('approvalFlows.noFlowForModule', { module: t(MODULE_LABEL_KEYS[moduleFilter] ?? moduleFilter) })}</p>
               <button
                 onClick={() => {
                   const newFlow = emptyFlow(moduleFilter as ApprovalModule, companyId)
-                  newFlow.name = `${MODULE_LABELS[moduleFilter]} 승인`
+                  newFlow.name = `${MODULE_LABEL_KEYS[moduleFilter]} approval`
                   setCreatingModule(moduleFilter as ApprovalModule)
                   setEditingFlow(newFlow)
                   setModuleFilter('all')
                 }}
                 className="mt-2 text-xs font-medium text-primary hover:underline"
               >
-                플로우 생성
+                {t('approvalFlows.createFlow')}
               </button>
             </div>
           )}

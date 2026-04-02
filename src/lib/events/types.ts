@@ -465,6 +465,7 @@ export interface CalibrationAdjustedPayload {
   originalGrade: string
   adjustedGrade: string
   reason: string
+  batchId?: string
 }
 
 export interface CalibrationApprovedPayload {

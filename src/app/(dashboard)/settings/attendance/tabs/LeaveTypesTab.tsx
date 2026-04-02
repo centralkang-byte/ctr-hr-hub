@@ -38,24 +38,23 @@ interface LeaveTypeDef {
   _count?: { yearBalances: number }
 }
 
-// 카테고리 한글 레이블
-const CATEGORY_LABELS: Record<string, string> = {
-  annual: '연차',
-  family_event: '경조',
-  maternity: '출산/육아',
-  health: '건강',
-  military: '병역',
-  other: '기타',
+const CATEGORY_LABEL_KEYS: Record<string, string> = {
+  annual: 'leaveTypes.categories.annual',
+  family_event: 'leaveTypes.categories.family_event',
+  maternity: 'leaveTypes.categories.maternity',
+  health: 'leaveTypes.categories.health',
+  military: 'leaveTypes.categories.military',
+  other: 'leaveTypes.categories.other',
 }
 
-const COUNTING_METHOD_LABELS: Record<string, string> = {
-  business_day: '영업일',
-  calendar_day: '역일',
+const COUNTING_METHOD_LABEL_KEYS: Record<string, string> = {
+  business_day: 'leaveTypes.countingMethods.business_day',
+  calendar_day: 'leaveTypes.countingMethods.calendar_day',
 }
 
-const SUBCATEGORY_LABELS: Record<string, string> = {
-  celebration: '경사',
-  condolence: '조사',
+const SUBCATEGORY_LABEL_KEYS: Record<string, string> = {
+  celebration: 'leaveTypes.subcategories.celebration',
+  condolence: 'leaveTypes.subcategories.condolence',
 }
 
 interface LeaveTypesTabProps {
@@ -65,6 +64,7 @@ interface LeaveTypesTabProps {
 export function LeaveTypesTab({
   companyId }: LeaveTypesTabProps) {
   const t = useTranslations('settings')
+  const tc = useTranslations('common')
   const [typeDefs, setTypeDefs] = useState<LeaveTypeDef[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedType, setSelectedType] = useState<LeaveTypeDef | null>(null)
@@ -90,22 +90,22 @@ export function LeaveTypesTab({
   }
 
   // Split by global (companyId = null) vs company-specific
-  const globalTypes = typeDefs.filter((t) => !t.companyId)
-  const companyTypes = typeDefs.filter((t) => t.companyId)
+  const globalTypes = typeDefs.filter((td) => !td.companyId)
+  const companyTypes = typeDefs.filter((td) => td.companyId)
 
   return (
     <div>
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-foreground">{'휴가 유형'}</h3>
+          <h3 className="text-base font-semibold text-foreground">{t('leaveTypes.title')}</h3>
           <p className="text-sm text-muted-foreground">
-            글로벌 표준 유형 {globalTypes.length}개{companyTypes.length > 0 ? ` + 법인 커스텀 ${companyTypes.length}개` : ''}
+            {t('leaveTypes.globalCount', { global: globalTypes.length })}{companyTypes.length > 0 ? t('leaveTypes.companyCount', { company: companyTypes.length }) : ''}
           </p>
         </div>
         <Button className={BUTTON_VARIANTS.primary}>
           <Plus className="mr-2 h-4 w-4" />
-          {'유형 추가'}
+          {t('leaveTypes.addNew')}
         </Button>
       </div>
 
@@ -114,14 +114,14 @@ export function LeaveTypesTab({
         <table className={TABLE_STYLES.table}>
           <thead>
             <tr className={TABLE_STYLES.header}>
-              <th className={TABLE_STYLES.headerCell}>{'코드'}</th>
-              <th className={TABLE_STYLES.headerCell}>{'유형'}</th>
-              <th className={TABLE_STYLES.headerCell}>{'카테고리'}</th>
-              <th className={TABLE_STYLES.headerCell}>{'일수 산정'}</th>
-              <th className={TABLE_STYLES.headerCell}>{'유급'}</th>
-              <th className={TABLE_STYLES.headerCell}>{'반차'}</th>
-              <th className={TABLE_STYLES.headerCell}>{'최대 연속일'}</th>
-              <th className={TABLE_STYLES.headerCell}>{'범위'}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('leaveTypes.colCode')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('leaveTypes.colType')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('leaveTypes.colCategory')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('leaveTypes.colCountingMethod')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('leaveTypes.colPaid')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('leaveTypes.colHalfDay')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('leaveTypes.colMaxConsecutive')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('leaveTypes.colScope')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -139,21 +139,21 @@ export function LeaveTypesTab({
                 <td className="px-4 py-3 text-center">
                   {type.category ? (
                     <span className="inline-flex rounded-full bg-violet-500/10 px-2 py-0.5 text-xs font-medium text-violet-700">
-                      {CATEGORY_LABELS[type.category] ?? type.category}
+                      {t(CATEGORY_LABEL_KEYS[type.category] ?? type.category)}
                     </span>
                   ) : <span className="text-xs text-muted-foreground">—</span>}
                 </td>
                 <td className="px-4 py-3 text-center text-sm text-foreground">
-                  {COUNTING_METHOD_LABELS[type.countingMethod] ?? type.countingMethod}
+                  {t(COUNTING_METHOD_LABEL_KEYS[type.countingMethod] ?? type.countingMethod)}
                 </td>
                 <td className="px-4 py-3 text-center">
-                  <BoolBadge value={type.isPaid} trueLabel="유급" falseLabel="무급" />
+                  <BoolBadge value={type.isPaid} trueLabel={t('leaveTypes.paid')} falseLabel={t('leaveTypes.unpaid')} />
                 </td>
                 <td className="px-4 py-3 text-center">
                   <BoolBadge value={type.allowHalfDay} />
                 </td>
                 <td className="px-4 py-3 text-center text-sm text-foreground">
-                  {type.maxConsecutiveDays ? `${type.maxConsecutiveDays}일` : '—'}
+                  {type.maxConsecutiveDays ? t('leaveTypes.daysUnit', { count: type.maxConsecutiveDays }) : '—'}
                 </td>
                 <td className="px-4 py-3 text-center">
                   <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -161,7 +161,7 @@ export function LeaveTypesTab({
                       ? 'bg-primary/5 text-primary'
                       : 'bg-orange-500/10 text-orange-600'
                   }`}>
-                    {!type.companyId ? '글로벌' : '법인'}
+                    {!type.companyId ? tc('global') : tc('company')}
                   </span>
                 </td>
               </tr>
@@ -173,9 +173,9 @@ export function LeaveTypesTab({
       {typeDefs.length === 0 && (
         <div className="rounded-xl border border-dashed border-border py-12 text-center">
           <Briefcase className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
-          <p className="text-sm font-medium text-foreground">{'등록된 휴가 유형이 없습니다'}</p>
+          <p className="text-sm font-medium text-foreground">{t('leaveTypes.emptyTitle')}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            {'시드 데이터를 실행하거나 유형을 직접 추가하세요'}
+            {t('leaveTypes.emptyDesc')}
           </p>
         </div>
       )}
@@ -217,12 +217,14 @@ function LeaveTypeDetailPanel({
   type: LeaveTypeDef
   onClose: () => void
 }) {
+  const t = useTranslations('settings')
+  const tc = useTranslations('common')
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
       <div className="relative w-full max-w-md bg-card p-6 shadow-lg animate-in slide-in-from-right duration-200">
         <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-foreground">{'휴가 유형 상세'}</h3>
+          <h3 className="text-lg font-semibold text-foreground">{t('leaveTypes.detailTitle')}</h3>
           <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground">
             <X className="h-5 w-5" />
           </button>
@@ -230,56 +232,56 @@ function LeaveTypeDetailPanel({
 
         <div className="space-y-4">
           {/* 기본 정보 */}
-          <DetailRow label="코드" value={type.code} />
-          <DetailRow label="유형명" value={type.name} />
-          {type.nameEn && <DetailRow label="영문명" value={type.nameEn} />}
-          <DetailRow label="유급/무급" value={type.isPaid ? '유급' : '무급'} />
-          <DetailRow label="반차 허용" value={type.allowHalfDay ? '허용' : '불허'} />
-          <DetailRow label="증빙 필수" value={type.requiresProof ? '필수' : '불필요'} />
-          <DetailRow label="최대 연속일" value={type.maxConsecutiveDays ? `${type.maxConsecutiveDays}일` : '제한 없음'} />
-          <DetailRow label="최소 사전 신청" value={type.minAdvanceDays ? `${type.minAdvanceDays}일 전` : '당일 가능'} />
-          <DetailRow label="범위" value={!type.companyId ? '글로벌' : '법인 커스텀'} />
-          <DetailRow label="표시 순서" value={String(type.displayOrder)} />
+          <DetailRow label={t('leaveTypes.labelCode')} value={type.code} />
+          <DetailRow label={t('leaveTypes.labelTypeName')} value={type.name} />
+          {type.nameEn && <DetailRow label={t('leaveTypes.labelNameEn')} value={type.nameEn} />}
+          <DetailRow label={t('leaveTypes.labelPaidUnpaid')} value={type.isPaid ? t('leaveTypes.paid') : t('leaveTypes.unpaid')} />
+          <DetailRow label={t('leaveTypes.labelHalfDay')} value={type.allowHalfDay ? t('leaveTypes.allowed') : t('leaveTypes.notAllowed')} />
+          <DetailRow label={t('leaveTypes.labelRequiresProof')} value={type.requiresProof ? t('leaveTypes.required') : t('leaveTypes.notRequired')} />
+          <DetailRow label={t('leaveTypes.labelMaxConsecutive')} value={type.maxConsecutiveDays ? t('leaveTypes.daysUnit', { count: type.maxConsecutiveDays }) : t('leaveTypes.noLimit')} />
+          <DetailRow label={t('leaveTypes.labelMinAdvance')} value={type.minAdvanceDays ? t('leaveTypes.daysAdvance', { count: type.minAdvanceDays }) : t('leaveTypes.sameDayOk')} />
+          <DetailRow label={t('leaveTypes.labelScope')} value={!type.companyId ? tc('global') : t('leaveTypes.companyCustom')} />
+          <DetailRow label={t('leaveTypes.labelDisplayOrder')} value={String(type.displayOrder)} />
 
           {/* 규정 상세 */}
           <div className="border-t border-border pt-4">
-            <h4 className="mb-3 text-sm font-semibold text-foreground">{'규정 상세'}</h4>
+            <h4 className="mb-3 text-sm font-semibold text-foreground">{t('leaveTypes.regulationDetail')}</h4>
             <div className="space-y-3">
               <DetailRow
-                label="카테고리"
-                value={type.category ? (CATEGORY_LABELS[type.category] ?? type.category) : '미지정'}
+                label={t('leaveTypes.labelCategory')}
+                value={type.category ? t(CATEGORY_LABEL_KEYS[type.category] ?? type.category) : '—'}
               />
               {type.subcategory && (
                 <DetailRow
-                  label="세부분류"
-                  value={SUBCATEGORY_LABELS[type.subcategory] ?? type.subcategory}
+                  label={t('leaveTypes.labelSubcategory')}
+                  value={t(SUBCATEGORY_LABEL_KEYS[type.subcategory] ?? type.subcategory)}
                 />
               )}
               <DetailRow
-                label="일수 산정"
-                value={COUNTING_METHOD_LABELS[type.countingMethod] ?? type.countingMethod}
+                label={t('leaveTypes.labelCountingMethod')}
+                value={t(COUNTING_METHOD_LABEL_KEYS[type.countingMethod] ?? type.countingMethod)}
               />
               <DetailRow
-                label="공휴일 포함"
-                value={type.includesHolidays ? '포함 (통산)' : '미포함'}
+                label={t('leaveTypes.labelIncludesHolidays')}
+                value={type.includesHolidays ? t('leaveTypes.includesHolidays') : t('leaveTypes.excludesHolidays')}
               />
               <DetailRow
-                label="분할 사용"
-                value={type.isSplittable ? '가능' : '불가'}
+                label={t('leaveTypes.labelSplittable')}
+                value={type.isSplittable ? t('leaveTypes.splittableYes') : t('leaveTypes.splittableNo')}
               />
               {type.splitDeadlineDays != null && (
-                <DetailRow label="분할 사용 기한" value={`${type.splitDeadlineDays}일 이내`} />
+                <DetailRow label={t('leaveTypes.labelSplitDeadline')} value={t('leaveTypes.daysWithin', { count: type.splitDeadlineDays })} />
               )}
               {type.maxPerYear != null && (
-                <DetailRow label="연간 최대 횟수" value={`${type.maxPerYear}회`} />
+                <DetailRow label={t('leaveTypes.labelMaxPerYear')} value={t('leaveTypes.timesUnit', { count: type.maxPerYear })} />
               )}
               {type.paidDaysPerYear != null && (
-                <DetailRow label="유급 일수" value={`${type.paidDaysPerYear}일`} />
+                <DetailRow label={t('leaveTypes.labelPaidDays')} value={t('leaveTypes.daysUnit', { count: type.paidDaysPerYear })} />
               )}
               {type.condolenceAmount != null && (
                 <DetailRow
-                  label="경조금"
-                  value={`${type.condolenceAmount.toLocaleString()}원`}
+                  label={t('leaveTypes.labelCondolence')}
+                  value={t('leaveTypes.wonUnit', { amount: type.condolenceAmount.toLocaleString() })}
                 />
               )}
             </div>

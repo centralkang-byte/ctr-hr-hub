@@ -19,8 +19,9 @@ export const offerDeclinedHandler: DomainEventHandler<'OFFER_DECLINED'> = {
             isPrimary: true,
           },
         },
-        user: { role: { in: ['HR_ADMIN', 'SUPER_ADMIN'] } },
-        status: 'ACTIVE',
+        employeeRoles: { some: { role: { code: { in: ['HR_ADMIN', 'SUPER_ADMIN'] } }, endDate: null } },
+        deletedAt: null,
+        resignDate: null,
       },
       select: { id: true },
     })
