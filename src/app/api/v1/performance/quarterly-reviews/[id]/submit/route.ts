@@ -145,5 +145,5 @@ export const PUT = withPermission(
       submittedAt: updated.employeeSubmittedAt ?? updated.managerSubmittedAt,
     })
   },
-  perm(MODULE.PERFORMANCE, ACTION.UPDATE),
+  perm(MODULE.PERFORMANCE, ACTION.CREATE), // EMPLOYEE + MANAGER can submit own sections
 )

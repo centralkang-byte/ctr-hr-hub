@@ -158,12 +158,12 @@ export async function seedQuarterlyReviews(prisma: PrismaClient) {
     ]
 
     for (const email of qaEmails) {
-        const user = await prisma.user.findFirst({
+        const emp = await prisma.employee.findFirst({
             where: { email },
-            select: { employee: { select: { id: true, employeeNo: true } } },
+            select: { id: true, employeeNo: true },
         })
-        if (user?.employee) {
-            emailToEmployee.set(email, user.employee)
+        if (emp) {
+            emailToEmployee.set(email, emp)
         }
     }
 

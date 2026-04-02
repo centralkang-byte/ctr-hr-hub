@@ -18,8 +18,9 @@ import {
   reopenReview,
 } from './helpers/qr-fixtures'
 
-// Use a unique quarter to avoid seed data collisions
-const TEST_YEAR = 2099
+// Use a unique year per test run to avoid collisions (no DELETE API available)
+// Year range: 2050-2098 (avoid seed data 2025-2026 and stay within int range)
+const TEST_YEAR = 2050 + (Math.floor(Date.now() / 1000) % 48)
 const TEST_QUARTER = 'Q1' as const
 
 // Known QA accounts (from seed)
@@ -137,5 +138,6 @@ test.describe('QuarterlyReview Lifecycle', () => {
       expect(detail.employeeSubmittedAt).toBeNull()
       expect(detail.managerSubmittedAt).toBeNull()
     })
+
   })
 })

@@ -11,7 +11,8 @@ import { test, expect } from '@playwright/test'
 import { authFile } from './helpers/auth'
 
 const BASE = '/api/v1/performance/quarterly-reviews'
-const BULK_YEAR = 2098
+// Unique year per run to avoid collisions (no DELETE API)
+const BULK_YEAR = 2050 + (Math.floor(Date.now() / 1000) % 48)
 const BULK_QUARTER = 'Q3'
 
 test.describe('QuarterlyReview Bulk Create', () => {

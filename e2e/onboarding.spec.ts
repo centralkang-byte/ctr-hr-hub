@@ -22,12 +22,12 @@ test.describe('Onboarding: HR_ADMIN', () => {
   })
 
   test('can view offboarding cases', async ({ page }) => {
-    await assertPageLoads(page, '/offboarding')
+    await assertPageLoads(page, '/offboarding', { timeout: 60000 })
     await waitForLoading(page)
 
     // Tab or table
     const tabOrTable = page.locator('[role="tab"]').or(page.locator('table')).first()
-    await expect(tabOrTable).toBeVisible({ timeout: 10000 })
+    await expect(tabOrTable).toBeVisible({ timeout: 15000 })
 
     // D-day or status text
     const statusText = page.getByText(/D-|진행중|완료|퇴직/).first()

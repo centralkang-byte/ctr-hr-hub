@@ -130,6 +130,8 @@ export const POST = withPermission(
                 data: empGoals.map((g) => ({
                   quarterlyReviewId: review.id,
                   goalId: g.id,
+                  snapshotTitle: g.title,
+                  snapshotWeight: Number(g.weight),
                   progressPct: 0,
                 })),
               })

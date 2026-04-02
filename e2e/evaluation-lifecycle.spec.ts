@@ -47,6 +47,7 @@ test.describe('Evaluation Lifecycle: Full State Machine', () => {
   test.beforeAll(async ({ request }) => {
     cycleId = await createTestCycle(request, {
       name: `E2E Lifecycle ${Date.now()}`,
+      half: 'H2', // H2 pipeline has all 9 states
     })
   })
 
@@ -70,19 +71,9 @@ test.describe('Evaluation Lifecycle: Full State Machine', () => {
     expect(after.status).toBe('ACTIVE')
   })
 
-  // ── Test 2: ACTIVE → CHECK_IN ────────────────────────────
+  // ── Test 2: ACTIVE → EVAL_OPEN (H2 pipeline: no CHECK_IN) ──
 
-  test('2. Advance: ACTIVE → CHECK_IN', async ({ request }) => {
-    const newStatus = await advanceCycle(request, cycleId)
-    expect(newStatus).toBe('CHECK_IN')
-
-    const cycle = await getCycle(request, cycleId)
-    expect(cycle.status).toBe('CHECK_IN')
-  })
-
-  // ── Test 3: CHECK_IN → EVAL_OPEN ─────────────────────────
-
-  test('3. Advance: CHECK_IN → EVAL_OPEN', async ({ request }) => {
+  test('2. Advance: ACTIVE → EVAL_OPEN', async ({ request }) => {
     const newStatus = await advanceCycle(request, cycleId)
     expect(newStatus).toBe('EVAL_OPEN')
 
@@ -90,18 +81,30 @@ test.describe('Evaluation Lifecycle: Full State Machine', () => {
     expect(cycle.status).toBe('EVAL_OPEN')
   })
 
-  // ── Test 3b: Verify self-eval API accessible at EVAL_OPEN ──
+  // ── Test 2b: Verify self-eval API accessible at EVAL_OPEN ──
 
-  test('3b. EVAL_OPEN: self-eval API returns cycle data', async ({ request }) => {
-    // At EVAL_OPEN, the self-evaluation endpoint should accept requests
+  test('2b. EVAL_OPEN: self-eval API returns cycle data', async ({ request }) => {
     const res = await request.get(`/api/v1/performance/evaluations/self?cycleId=${cycleId}`)
-    // HR_ADMIN may not have a self-eval record, but endpoint should respond (not 403/500)
     expect(res.status()).toBeLessThan(500)
   })
 
-  // ── Test 4: EVAL_OPEN → CALIBRATION ──────────────────────
+  // ── Test 3: EVAL_OPEN → CLOSED ──────────────────────────
 
-  test('4. Advance: EVAL_OPEN → CALIBRATION', async ({ request }) => {
+  test('3. Advance: EVAL_OPEN → CLOSED', async ({ request }) => {
+    const newStatus = await advanceCycle(request, cycleId)
+    expect(newStatus).toBe('CLOSED')
+  })
+
+  // ── Test 3b: Verify result APIs accessible at CLOSED ──────
+
+  test('3b. CLOSED: my-result API accessible', async ({ request }) => {
+    const res = await request.get('/api/v1/performance/reviews/my-result')
+    expect(res.status()).toBeLessThan(500)
+  })
+
+  // ── Test 4: CLOSED → CALIBRATION ──────────────────────────
+
+  test('4. Advance: CLOSED → CALIBRATION', async ({ request }) => {
     const newStatus = await advanceCycle(request, cycleId)
     expect(newStatus).toBe('CALIBRATION')
   })
@@ -113,38 +116,16 @@ test.describe('Evaluation Lifecycle: Full State Machine', () => {
     expect(res.status()).toBeLessThan(500)
   })
 
-  // ── Test 5: CALIBRATION → FINALIZED ──────────────────────
+  // ── Test 5: CALIBRATION → COMP_REVIEW ─────────────────────
 
-  test('5. Advance: CALIBRATION → FINALIZED', async ({ request }) => {
-    const newStatus = await advanceCycle(request, cycleId)
-    expect(newStatus).toBe('FINALIZED')
-  })
-
-  // ── Test 6: FINALIZED → CLOSED ───────────────────────────
-
-  test('6. Advance: FINALIZED → CLOSED', async ({ request }) => {
-    const newStatus = await advanceCycle(request, cycleId)
-    expect(newStatus).toBe('CLOSED')
-  })
-
-  // ── Test 6b: Verify result APIs accessible at CLOSED ──────
-
-  test('6b. CLOSED: my-result API accessible', async ({ request }) => {
-    const res = await request.get('/api/v1/performance/reviews/my-result')
-    // Should respond (HR_ADMIN might have a review or not, but no 500)
-    expect(res.status()).toBeLessThan(500)
-  })
-
-  // ── Test 7: CLOSED → COMP_REVIEW ─────────────────────────
-
-  test('7. Advance: CLOSED → COMP_REVIEW', async ({ request }) => {
+  test('5. Advance: CALIBRATION → COMP_REVIEW', async ({ request }) => {
     const newStatus = await advanceCycle(request, cycleId)
     expect(newStatus).toBe('COMP_REVIEW')
   })
 
-  // ── Test 8: COMP_REVIEW → COMP_COMPLETED (terminal) ──────
+  // ── Test 6: COMP_REVIEW → COMP_COMPLETED (terminal) ──────
 
-  test('8. Advance: COMP_REVIEW → COMP_COMPLETED', async ({ request }) => {
+  test('6. Advance: COMP_REVIEW → COMP_COMPLETED', async ({ request }) => {
     const newStatus = await advanceCycle(request, cycleId)
     expect(newStatus).toBe('COMP_COMPLETED')
 
@@ -152,9 +133,9 @@ test.describe('Evaluation Lifecycle: Full State Machine', () => {
     expect(cycle.status).toBe('COMP_COMPLETED')
   })
 
-  // ── Test 9: Terminal state — cannot advance further ───────
+  // ── Test 7: Terminal state — cannot advance further ───────
 
-  test('9. Terminal: COMP_COMPLETED cannot advance', async ({ request }) => {
+  test('7. Terminal: COMP_COMPLETED cannot advance', async ({ request }) => {
     const res = await request.put(`/api/v1/performance/cycles/${cycleId}/advance`)
     expect(res.status()).toBe(400)
 
@@ -180,10 +161,10 @@ test.describe('Evaluation Lifecycle: EMPLOYEE Workflow', () => {
 
     workflowCycleId = await createTestCycle(hrRequest, {
       name: `E2E Employee Workflow ${Date.now()}`,
+      half: 'H1', // H1: DRAFT → ACTIVE → EVAL_OPEN → CLOSED
     })
     await initializeCycle(hrRequest, workflowCycleId)
-    // ACTIVE → CHECK_IN → EVAL_OPEN
-    await advanceCycle(hrRequest, workflowCycleId)
+    // ACTIVE → EVAL_OPEN (H1 pipeline: single advance)
     await advanceCycle(hrRequest, workflowCycleId)
 
     const cycle = await getCycle(hrRequest, workflowCycleId)
