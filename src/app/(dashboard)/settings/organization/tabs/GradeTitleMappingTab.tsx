@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { TABLE_STYLES } from '@/lib/styles'
 import { toast } from '@/hooks/use-toast'
+import { apiClient } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
 interface Props { companyId: string | null }
@@ -63,13 +64,17 @@ export function GradeTitleMappingTab({ companyId }: Props) {
 
   const fetchMappings = useCallback(async () => {
     setLoading(true)
-    const params = new URLSearchParams()
-    if (filter !== 'all') params.set('gradeType', filter)
-    if (companyId) params.set('companyId', companyId)
-    const res = await fetch(`/api/v1/settings/grade-title-mappings?${params}`)
-    const json = await res.json()
-    if (json.data) setMappings(json.data)
-    setLoading(false)
+    try {
+      const params: Record<string, string | undefined> = {}
+      if (filter !== 'all') params.gradeType = filter
+      if (companyId) params.companyId = companyId
+      const { data } = await apiClient.get<GradeTitleMappingRow[]>('/api/v1/settings/grade-title-mappings', params)
+      setMappings(data)
+    } catch {
+      toast({ title: t('common.loadFailed'), variant: 'destructive' })
+    } finally {
+      setLoading(false)
+    }
   }, [filter, companyId])
 
   useEffect(() => { fetchMappings() }, [fetchMappings])
@@ -95,54 +100,43 @@ export function GradeTitleMappingTab({ companyId }: Props) {
     const gradeCode = getNextGradeCode(addForm.gradeType)
     const maxRank = mappings.length > 0 ? Math.max(...mappings.map(m => m.jobGrade.rankOrder)) + 1 : 1
 
-    const res = await fetch('/api/v1/settings/grade-title-mappings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    try {
+      await apiClient.post('/api/v1/settings/grade-title-mappings', {
         gradeCode,
         gradeType: addForm.gradeType,
         rankOrder: maxRank,
         titleName: addForm.titleName,
         titleNameEn: addForm.titleNameEn || undefined,
         ...(companyId ? { companyId } : {}),
-      }),
-    })
-    if (res.ok) {
+      })
       toast({ title: t('common.addSuccess', { name: '' }) })
       setShowAdd(false)
       setAddForm({ gradeType: 'STAFF', titleName: '', titleNameEn: '' })
       fetchMappings()
-    } else {
-      const err = await res.json()
-      toast({ title: t('common.addFailed'), description: err.error?.message, variant: 'destructive' })
+    } catch (err) {
+      toast({ title: t('common.addFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 
   const handleUpdate = async (id: string) => {
-    const res = await fetch(`/api/v1/settings/grade-title-mappings?id=${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(editForm),
-    })
-    if (res.ok) {
+    try {
+      await apiClient.put(`/api/v1/settings/grade-title-mappings?id=${id}`, editForm)
       toast({ title: t('common.updateSuccess') })
       setEditingId(null)
       fetchMappings()
-    } else {
-      const err = await res.json()
-      toast({ title: t('common.updateFailed'), description: err.error?.message, variant: 'destructive' })
+    } catch (err) {
+      toast({ title: t('common.updateFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm(t('common.deleteConfirm', { name: t('gradeTitleMappings.title') }))) return
-    const res = await fetch(`/api/v1/settings/grade-title-mappings?id=${id}`, { method: 'DELETE' })
-    if (res.ok) {
+    try {
+      await apiClient.delete(`/api/v1/settings/grade-title-mappings?id=${id}`)
       toast({ title: t('common.deleteSuccess') })
       fetchMappings()
-    } else {
-      const err = await res.json()
-      toast({ title: t('common.deleteFailed'), description: err.error?.message, variant: 'destructive' })
+    } catch (err) {
+      toast({ title: t('common.deleteFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 

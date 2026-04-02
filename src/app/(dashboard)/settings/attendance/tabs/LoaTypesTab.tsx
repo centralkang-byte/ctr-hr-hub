@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { TABLE_STYLES } from '@/lib/styles'
 import { toast } from '@/hooks/use-toast'
+import { apiClient } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
@@ -92,12 +93,16 @@ export function LoaTypesTab({ companyId }: Props) {
 
   const fetchTypes = useCallback(async () => {
     setLoading(true)
-    const params = new URLSearchParams()
-    if (companyId) params.set('companyId', companyId)
-    const res = await fetch(`/api/v1/leave-of-absence/types?${params}`)
-    const json = await res.json()
-    if (json.data) setTypes(json.data)
-    setLoading(false)
+    try {
+      const params: Record<string, string | undefined> = {}
+      if (companyId) params.companyId = companyId
+      const { data } = await apiClient.get<LoaTypeRow[]>('/api/v1/leave-of-absence/types', params)
+      setTypes(data)
+    } catch {
+      toast({ title: t('common.loadFailed'), variant: 'destructive' })
+    } finally {
+      setLoading(false)
+    }
   }, [companyId])
 
   useEffect(() => { fetchTypes() }, [fetchTypes])
@@ -111,10 +116,8 @@ export function LoaTypesTab({ companyId }: Props) {
       toast({ title: t('loaTypes.typeNameRequired'), variant: 'destructive' })
       return
     }
-    const res = await fetch('/api/v1/leave-of-absence/types', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    try {
+      await apiClient.post('/api/v1/leave-of-absence/types', {
         code: addForm.code,
         name: addForm.name,
         nameEn: addForm.nameEn || undefined,
@@ -131,24 +134,19 @@ export function LoaTypesTab({ companyId }: Props) {
         proofDescription: addForm.proofDescription || undefined,
         advanceNoticeDays: addForm.advanceNoticeDays ? Number(addForm.advanceNoticeDays) : null,
         reinstatementGuaranteed: addForm.reinstatementGuaranteed,
-      }),
-    })
-    if (res.ok) {
+      })
       toast({ title: t('loaTypes.addSuccess') })
       setShowAdd(false)
       setAddForm({ ...emptyForm, code: '' })
       fetchTypes()
-    } else {
-      const err = await res.json()
-      toast({ title: t('common.addFailed'), description: err.error?.message, variant: 'destructive' })
+    } catch (err) {
+      toast({ title: t('common.addFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 
   const handleUpdate = async (id: string) => {
-    const res = await fetch(`/api/v1/leave-of-absence/types/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    try {
+      await apiClient.put(`/api/v1/leave-of-absence/types/${id}`, {
         name: editForm.name,
         nameEn: editForm.nameEn || null,
         category: editForm.category,
@@ -164,27 +162,23 @@ export function LoaTypesTab({ companyId }: Props) {
         proofDescription: editForm.proofDescription || null,
         advanceNoticeDays: editForm.advanceNoticeDays ? Number(editForm.advanceNoticeDays) : null,
         reinstatementGuaranteed: editForm.reinstatementGuaranteed,
-      }),
-    })
-    if (res.ok) {
+      })
       toast({ title: t('common.updateSuccess') })
       setEditingId(null)
       fetchTypes()
-    } else {
-      const err = await res.json()
-      toast({ title: t('common.updateFailed'), description: err.error?.message, variant: 'destructive' })
+    } catch (err) {
+      toast({ title: t('common.updateFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm(t('common.deleteConfirm', { name: t('loaTypes.colTypeName') }))) return
-    const res = await fetch(`/api/v1/leave-of-absence/types/${id}`, { method: 'DELETE' })
-    if (res.ok) {
+    try {
+      await apiClient.delete(`/api/v1/leave-of-absence/types/${id}`)
       toast({ title: t('common.deleteSuccess') })
       fetchTypes()
-    } else {
-      const err = await res.json()
-      toast({ title: t('common.deleteFailed'), description: err.error?.message, variant: 'destructive' })
+    } catch (err) {
+      toast({ title: t('common.deleteFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 

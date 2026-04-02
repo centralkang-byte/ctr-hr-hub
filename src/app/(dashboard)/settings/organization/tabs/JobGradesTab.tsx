@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { TABLE_STYLES } from '@/lib/styles'
 import { toast } from '@/hooks/use-toast'
+import { apiClient } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
 interface Props { companyId: string | null }
@@ -47,12 +48,16 @@ export function JobGradesTab({ companyId }: Props) {
 
   const fetchGrades = useCallback(async () => {
     setLoading(true)
-    const params = new URLSearchParams()
-    if (filter !== 'all') params.set('gradeType', filter)
-    const res = await fetch(`/api/v1/settings/job-grades?${params}`)
-    const json = await res.json()
-    if (json.data) setGrades(json.data)
-    setLoading(false)
+    try {
+      const params: Record<string, string | undefined> = {}
+      if (filter !== 'all') params.gradeType = filter
+      const { data } = await apiClient.get<JobGrade[]>('/api/v1/settings/job-grades', params)
+      setGrades(data)
+    } catch {
+      toast({ title: t('common.loadFailed'), variant: 'destructive' })
+    } finally {
+      setLoading(false)
+    }
   }, [filter])
 
   useEffect(() => { fetchGrades() }, [fetchGrades])
@@ -63,51 +68,40 @@ export function JobGradesTab({ companyId }: Props) {
       return
     }
     const maxRank = grades.length > 0 ? Math.max(...grades.map(g => g.rankOrder)) + 1 : 1
-    const res = await fetch('/api/v1/settings/job-grades', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    try {
+      await apiClient.post('/api/v1/settings/job-grades', {
         ...addForm,
         rankOrder: maxRank,
         minPromotionYears: addForm.minPromotionYears ? Number(addForm.minPromotionYears) : null,
-      }),
-    })
-    if (res.ok) {
+      })
       toast({ title: t('common.addSuccess', { name: '' }) })
       setShowAdd(false)
       setAddForm({ code: '', name: '', nameEn: '', gradeType: 'STAFF', minPromotionYears: '' })
       fetchGrades()
-    } else {
-      const err = await res.json()
-      toast({ title: t('common.addFailed'), description: err.error?.message, variant: 'destructive' })
+    } catch (err) {
+      toast({ title: t('common.addFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 
   const handleUpdate = async (id: string) => {
-    const res = await fetch(`/api/v1/settings/job-grades?id=${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(editForm),
-    })
-    if (res.ok) {
+    try {
+      await apiClient.put(`/api/v1/settings/job-grades?id=${id}`, editForm)
       toast({ title: t('common.updateSuccess') })
       setEditingId(null)
       fetchGrades()
-    } else {
-      const err = await res.json()
-      toast({ title: t('common.updateFailed'), description: err.error?.message, variant: 'destructive' })
+    } catch (err) {
+      toast({ title: t('common.updateFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm(t('common.deleteConfirm', { name: t('jobGrades.title') }))) return
-    const res = await fetch(`/api/v1/settings/job-grades?id=${id}`, { method: 'DELETE' })
-    if (res.ok) {
+    try {
+      await apiClient.delete(`/api/v1/settings/job-grades?id=${id}`)
       toast({ title: t('common.deleteSuccess') })
       fetchGrades()
-    } else {
-      const err = await res.json()
-      toast({ title: t('common.deleteFailed'), description: err.error?.message, variant: 'destructive' })
+    } catch (err) {
+      toast({ title: t('common.deleteFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 

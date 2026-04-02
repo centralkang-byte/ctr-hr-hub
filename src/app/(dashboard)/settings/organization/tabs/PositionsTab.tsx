@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { TABLE_STYLES } from '@/lib/styles'
 import { toast } from '@/hooks/use-toast'
+import { apiClient } from '@/lib/api'
 
 interface Props { companyId: string | null }
 
@@ -48,18 +49,25 @@ export function PositionsTab({ companyId }: Props) {
 
   const fetchPositions = useCallback(async () => {
     setLoading(true)
-    const params = new URLSearchParams()
-    if (companyId) params.set('companyId', companyId)
-    const res = await fetch(`/api/v1/positions?${params}`)
-    const json = await res.json()
-    if (json.data) setPositions(json.data)
-    setLoading(false)
+    try {
+      const params: Record<string, string | undefined> = {}
+      if (companyId) params.companyId = companyId
+      const { data } = await apiClient.get<Position[]>('/api/v1/positions', params)
+      setPositions(data)
+    } catch {
+      toast({ title: t('common.loadFailed'), variant: 'destructive' })
+    } finally {
+      setLoading(false)
+    }
   }, [companyId])
 
   const fetchGrades = useCallback(async () => {
-    const res = await fetch('/api/v1/settings/job-grades')
-    const json = await res.json()
-    if (json.data) setGrades(json.data)
+    try {
+      const { data } = await apiClient.get<JobGrade[]>('/api/v1/settings/job-grades')
+      setGrades(data)
+    } catch {
+      // grades는 보조 데이터 — 실패 시 빈 배열 유지
+    }
   }, [])
 
   useEffect(() => { fetchPositions() }, [fetchPositions])
@@ -70,58 +78,47 @@ export function PositionsTab({ companyId }: Props) {
       toast({ title: t('common.codeAndPositionRequired'), variant: 'destructive' })
       return
     }
-    const res = await fetch('/api/v1/positions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    try {
+      await apiClient.post('/api/v1/positions', {
         ...addForm,
         companyId,
         reportsToPositionId: addForm.reportsToPositionId === NONE ? null : addForm.reportsToPositionId,
         jobGradeId: addForm.jobGradeId === NONE ? null : addForm.jobGradeId,
-      }),
-    })
-    if (res.ok) {
+      })
       toast({ title: t('common.addSuccess', { name: '' }) })
       setShowAdd(false)
       setAddForm({ code: '', name: '', nameEn: '', reportsToPositionId: NONE, jobGradeId: NONE })
       fetchPositions()
-    } else {
-      const err = await res.json()
-      toast({ title: t('common.addFailed'), description: err.error?.message, variant: 'destructive' })
+    } catch (err) {
+      toast({ title: t('common.addFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 
   const handleUpdate = async (id: string) => {
-    const res = await fetch(`/api/v1/positions/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    try {
+      await apiClient.put(`/api/v1/positions/${id}`, {
         titleKo: editForm.name,
         titleEn: editForm.nameEn || null,
         code: editForm.code,
         reportsToPositionId: editForm.reportsToPositionId === NONE ? null : editForm.reportsToPositionId,
         jobGradeId: editForm.jobGradeId === NONE ? null : editForm.jobGradeId,
-      }),
-    })
-    if (res.ok) {
+      })
       toast({ title: t('common.updateSuccess') })
       setEditingId(null)
       fetchPositions()
-    } else {
-      const err = await res.json()
-      toast({ title: t('common.updateFailed'), description: err.error?.message, variant: 'destructive' })
+    } catch (err) {
+      toast({ title: t('common.updateFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm(t('common.deleteConfirm', { name: t('positions.colName') }))) return
-    const res = await fetch(`/api/v1/positions/${id}`, { method: 'DELETE' })
-    if (res.ok) {
+    try {
+      await apiClient.delete(`/api/v1/positions/${id}`)
       toast({ title: t('common.deleteSuccess') })
       fetchPositions()
-    } else {
-      const err = await res.json()
-      toast({ title: t('common.deleteFailed'), description: err.error?.message, variant: 'destructive' })
+    } catch (err) {
+      toast({ title: t('common.deleteFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 

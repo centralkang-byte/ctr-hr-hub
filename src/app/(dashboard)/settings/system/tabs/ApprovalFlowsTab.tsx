@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Plus, GitBranch, ChevronDown, ChevronUp, Check, X, Loader2 } from 'lucide-react'
 import { ApprovalFlowEditor } from '@/components/settings/ApprovalFlowEditor'
 import { toast } from '@/hooks/use-toast'
+import { apiClient } from '@/lib/api'
 import type { ApprovalFlowData, ApprovalModule, ApproverRole } from '@/types/settings'
 
 interface Props { companyId: string | null }
@@ -57,12 +58,10 @@ export function ApprovalFlowsTab({ companyId }: Props) {
   const fetchFlows = useCallback(async () => {
     setLoading(true)
     try {
-      const params = new URLSearchParams()
-      if (companyId) params.set('companyId', companyId)
-      const res = await fetch(`/api/v1/settings/approval-flows?${params}`)
-      if (!res.ok) throw new Error(t('common.loadFailed'))
-      const json = await res.json()
-      setFlows(json.data ?? [])
+      const params: Record<string, string | undefined> = {}
+      if (companyId) params.companyId = companyId
+      const { data } = await apiClient.get<ApprovalFlowData[]>('/api/v1/settings/approval-flows', params)
+      setFlows(data ?? [])
     } catch {
       toast({ title: t('common.loadFailed'), description: t('approvalFlows.loadFailedDesc'), variant: 'destructive' })
     } finally {
@@ -86,10 +85,10 @@ export function ApprovalFlowsTab({ companyId }: Props) {
         ? { name: flow.name, description: flow.description, companyId: flow.companyId, module: flow.module, steps: flow.steps.map(s => ({ approverType: s.approverType, approverRole: s.approverRole, approverUserId: s.approverUserId, isRequired: s.isRequired, autoApproveDays: s.autoApproveDays })) }
         : { id: flow.id, name: flow.name, description: flow.description, module: flow.module, deletedAt: flow.deletedAt, steps: flow.steps.map(s => ({ approverType: s.approverType, approverRole: s.approverRole, approverUserId: s.approverUserId, isRequired: s.isRequired, autoApproveDays: s.autoApproveDays })) }
 
-      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error(err.message ?? t('common.saveFailed'))
+      if (isNew) {
+        await apiClient.post(url, body)
+      } else {
+        await apiClient.put(url, body)
       }
       toast({ title: t('common.saveSuccess') })
       setEditingFlow(null)
@@ -106,8 +105,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
   const handleDelete = async (id: string) => {
     if (!confirm(t('approvalFlows.deleteConfirm'))) return
     try {
-      const res = await fetch(`/api/v1/settings/approval-flows?id=${id}`, { method: 'DELETE' })
-      if (!res.ok) throw new Error()
+      await apiClient.delete(`/api/v1/settings/approval-flows?id=${id}`)
       toast({ title: t('common.deleteSuccess') })
       await fetchFlows()
     } catch {

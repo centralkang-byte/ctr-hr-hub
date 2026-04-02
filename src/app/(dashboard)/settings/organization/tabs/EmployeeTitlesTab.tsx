@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { TABLE_STYLES } from '@/lib/styles'
 import { toast } from '@/hooks/use-toast'
+import { apiClient } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
 interface Props { companyId: string | null }
@@ -32,10 +33,14 @@ export function EmployeeTitlesTab({ companyId }: Props) {
 
   const fetchTitles = useCallback(async () => {
     setLoading(true)
-    const res = await fetch('/api/v1/settings/employee-titles')
-    const json = await res.json()
-    if (json.data) setTitles(json.data)
-    setLoading(false)
+    try {
+      const { data } = await apiClient.get<EmployeeTitle[]>('/api/v1/settings/employee-titles')
+      setTitles(data)
+    } catch {
+      toast({ title: t('common.loadFailed'), variant: 'destructive' })
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   useEffect(() => { fetchTitles() }, [fetchTitles])
@@ -46,47 +51,36 @@ export function EmployeeTitlesTab({ companyId }: Props) {
       return
     }
     const maxRank = titles.length > 0 ? Math.max(...titles.map(t => t.rankOrder)) + 1 : 1
-    const res = await fetch('/api/v1/settings/employee-titles', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...addForm, rankOrder: maxRank }),
-    })
-    if (res.ok) {
+    try {
+      await apiClient.post('/api/v1/settings/employee-titles', { ...addForm, rankOrder: maxRank })
       toast({ title: t('common.addSuccess', { name: '' }) })
       setShowAdd(false)
       setAddForm({ code: '', name: '', nameEn: '', isExecutive: false })
       fetchTitles()
-    } else {
-      const err = await res.json()
-      toast({ title: t('common.addFailed'), description: err.error?.message, variant: 'destructive' })
+    } catch (err) {
+      toast({ title: t('common.addFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 
   const handleUpdate = async (id: string) => {
-    const res = await fetch(`/api/v1/settings/employee-titles?id=${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(editForm),
-    })
-    if (res.ok) {
+    try {
+      await apiClient.put(`/api/v1/settings/employee-titles?id=${id}`, editForm)
       toast({ title: t('common.updateSuccess') })
       setEditingId(null)
       fetchTitles()
-    } else {
-      const err = await res.json()
-      toast({ title: t('common.updateFailed'), description: err.error?.message, variant: 'destructive' })
+    } catch (err) {
+      toast({ title: t('common.updateFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm(t('common.deleteConfirm', { name: t('employeeTitles.colTitle') }))) return
-    const res = await fetch(`/api/v1/settings/employee-titles?id=${id}`, { method: 'DELETE' })
-    if (res.ok) {
+    try {
+      await apiClient.delete(`/api/v1/settings/employee-titles?id=${id}`)
       toast({ title: t('common.deleteSuccess') })
       fetchTitles()
-    } else {
-      const err = await res.json()
-      toast({ title: t('common.deleteFailed'), description: err.error?.message, variant: 'destructive' })
+    } catch (err) {
+      toast({ title: t('common.deleteFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 
