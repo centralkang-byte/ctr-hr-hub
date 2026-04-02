@@ -45,6 +45,10 @@ test.describe('QuarterlyReview Bulk Create', () => {
         },
       })
 
+      if (!res.ok()) {
+        const errBody = await res.json().catch(() => ({}))
+        console.error('bulk-create failed:', res.status(), JSON.stringify(errBody))
+      }
       expect(res.ok()).toBeTruthy()
       const body = await res.json() as { data: { created: number; skipped: number; total: number } }
       expect(body.data.created).toBe(teamEmployeeIds.length)

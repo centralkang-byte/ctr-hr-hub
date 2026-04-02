@@ -122,10 +122,15 @@ export const POST = withPermission(
       throw badRequest('매니저를 결정할 수 없습니다. 직속 상관 또는 HR 담당자가 지정되어 있지 않습니다.')
     }
 
-    // ── 2. 대상 직원 검증 ──
+    // ── 2. 대상 직원 검증 (company via assignment) ──
     const employee = await prisma.employee.findFirst({
-      where: { id: employeeId, companyId: user.companyId },
-      select: { id: true, companyId: true },
+      where: {
+        id: employeeId,
+        assignments: {
+          some: { isPrimary: true, endDate: null, position: { companyId: user.companyId } },
+        },
+      },
+      select: { id: true },
     })
     if (!employee) {
       throw badRequest('해당 직원을 찾을 수 없거나 소속 법인이 다릅니다.')

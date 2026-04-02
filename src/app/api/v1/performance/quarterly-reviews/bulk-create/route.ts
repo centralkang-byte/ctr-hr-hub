@@ -32,9 +32,14 @@ export const POST = withPermission(
     const body = bulkCreateSchema.parse(await req.json())
     const { employeeIds, year, quarter, cycleId } = body
 
-    // 1. Verify all employees belong to user's company
+    // 1. Verify all employees belong to user's company (via assignment)
     const validEmployees = await prisma.employee.findMany({
-      where: { id: { in: employeeIds }, companyId: user.companyId },
+      where: {
+        id: { in: employeeIds },
+        assignments: {
+          some: { isPrimary: true, endDate: null, position: { companyId: user.companyId } },
+        },
+      },
       select: { id: true },
     })
     const validIds = new Set(validEmployees.map((e) => e.id))
@@ -154,5 +159,5 @@ export const POST = withPermission(
 
     return apiSuccess({ created, skipped, total: employeeIds.length })
   },
-  perm(MODULE.PERFORMANCE, ACTION.APPROVE),
+  perm(MODULE.PERFORMANCE, ACTION.CREATE),
 )

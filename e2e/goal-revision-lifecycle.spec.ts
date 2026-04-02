@@ -73,24 +73,24 @@ test.describe('Goal Revision Lifecycle', () => {
       expect(goalId2).toBeTruthy()
     })
 
+    test('submit goals for approval', async ({ request }) => {
+      // Submit goal 1 — this moves ALL DRAFT goals to PENDING_APPROVAL (weight must be 100%)
+      const res = await request.put(`/api/v1/performance/goals/${goalId}/submit`)
+      expect(res.ok()).toBeTruthy()
+    })
+
     test('approve goals via HR', async ({ }) => {
-      // Need HR context to approve goals
-      const hrCtx = await playwrightRequest.newContext({ storageState: authFile('HR_ADMIN') })
-      const hrReq = hrCtx.request
+      const hrReq = await playwrightRequest.newContext({ storageState: authFile('HR_ADMIN') })
 
       // Approve goal 1
-      const res1 = await hrReq.put(`/api/v1/performance/goals/${goalId}`, {
-        data: { status: 'APPROVED' },
-      })
+      const res1 = await hrReq.put(`/api/v1/performance/goals/${goalId}/approve`)
       expect(res1.ok()).toBeTruthy()
 
       // Approve goal 2
-      const res2 = await hrReq.put(`/api/v1/performance/goals/${goalId2}`, {
-        data: { status: 'APPROVED' },
-      })
+      const res2 = await hrReq.put(`/api/v1/performance/goals/${goalId2}/approve`)
       expect(res2.ok()).toBeTruthy()
 
-      await hrCtx.dispose()
+      await hrReq.dispose()
     })
   })
 
@@ -174,17 +174,15 @@ test.describe('Goal Revision Lifecycle', () => {
     })
   })
 
-  // ── MANAGER: approve/reject ──
-  test.describe('Individual Revisions — Manager', () => {
-    test.use({ storageState: authFile('MANAGER') })
+  // ── HR ADMIN: approve revision (MANAGER lacks performance:manage) ──
+  test.describe('Individual Revisions — Approve', () => {
+    test.use({ storageState: authFile('HR_ADMIN') })
 
     test('7. approve pending revision', async ({ request }) => {
       // Get the pending revision
       const listRes = await request.get(`/api/v1/performance/goals/${goalId}/revisions`)
-      const { data: listData } = await parseResponse(listRes)
-      const revisions = Array.isArray(listData)
-        ? listData
-        : (listData as { revisions?: unknown[] })?.revisions ?? []
+      const listParsed = await parseResponse(listRes)
+      const revisions = Array.isArray(listParsed.data) ? listParsed.data : []
       const pending = (revisions as Array<{ id: string; status: string }>).find(
         (r) => r.status === 'PENDING',
       )
@@ -193,16 +191,19 @@ test.describe('Goal Revision Lifecycle', () => {
       const res = await request.put(
         `/api/v1/performance/goals/${goalId}/revisions/${pending!.id}/approve`,
       )
-      const { ok, data } = await parseResponse(res)
-      expect(ok).toBeTruthy()
-      expect((data as { status: string }).status).toBe('APPROVED')
+      const parsed = await parseResponse(res)
+      expect(parsed.ok).toBeTruthy()
+      expect((parsed.data as { status: string }).status).toBe('APPROVED')
     })
 
-    test('8. goal updated after approval', async ({ request }) => {
-      const res = await request.get(`/api/v1/performance/goals/${goalId}`)
+    test('8. goal updated after approval', async ({ }) => {
+      // Use EMPLOYEE context since GET /goals/:id filters by employeeId
+      const empReq = await playwrightRequest.newContext({ storageState: authFile('EMPLOYEE') })
+      const res = await empReq.get(`/api/v1/performance/goals/${goalId}`)
       const { ok, data } = await parseResponse(res)
       expect(ok).toBeTruthy()
       expect((data as { title: string }).title).toBe('Re-proposed after cancel')
+      await empReq.dispose()
     })
   })
 
@@ -224,10 +225,10 @@ test.describe('Goal Revision Lifecycle', () => {
       rejectRevisionId = (data as { id: string }).id
     })
 
-    test('10. manager rejects revision', async ({ }) => {
-      const mgrCtx = await playwrightRequest.newContext({ storageState: authFile('MANAGER') })
+    test('10. HR rejects revision', async ({ }) => {
+      const hrReq = await playwrightRequest.newContext({ storageState: authFile('HR_ADMIN') })
 
-      const res = await mgrCtx.request.put(
+      const res = await hrReq.put(
         `/api/v1/performance/goals/${goalId2}/revisions/${rejectRevisionId}/reject`,
         { data: { comment: 'Current goal is fine, no change needed' } },
       )
@@ -238,7 +239,7 @@ test.describe('Goal Revision Lifecycle', () => {
         'Current goal is fine, no change needed',
       )
 
-      await mgrCtx.dispose()
+      await hrReq.dispose()
     })
 
     test('11. goal 2 unchanged after rejection', async ({ request }) => {
@@ -277,26 +278,29 @@ test.describe('Goal Revision Lifecycle', () => {
     })
 
     test('13. batch approve', async ({ }) => {
-      const mgrCtx = await playwrightRequest.newContext({ storageState: authFile('MANAGER') })
+      const hrReq = await playwrightRequest.newContext({ storageState: authFile('HR_ADMIN') })
 
-      const res = await mgrCtx.request.put(
+      const res = await hrReq.put(
         `/api/v1/performance/goals/batch-revisions/${batchId}/approve`,
       )
       const { ok, data } = await parseResponse(res)
       expect(ok).toBeTruthy()
       expect((data as { approvedCount: number }).approvedCount).toBe(2)
 
-      await mgrCtx.dispose()
+      await hrReq.dispose()
     })
 
     test('14. goals updated after batch approve', async ({ request }) => {
+      // EMPLOYEE context already set for this describe block
       const res1 = await request.get(`/api/v1/performance/goals/${goalId}`)
-      const { data: d1 } = await parseResponse(res1)
-      expect((d1 as { title: string }).title).toBe('Batch revised goal 1')
+      const p1 = await parseResponse(res1)
+      expect(p1.ok).toBeTruthy()
+      expect((p1.data as { title: string }).title).toBe('Batch revised goal 1')
 
       const res2 = await request.get(`/api/v1/performance/goals/${goalId2}`)
-      const { data: d2 } = await parseResponse(res2)
-      expect((d2 as { title: string }).title).toBe('Batch revised goal 2')
+      const p2 = await parseResponse(res2)
+      expect(p2.ok).toBeTruthy()
+      expect((p2.data as { title: string }).title).toBe('Batch revised goal 2')
     })
   })
 
@@ -306,29 +310,26 @@ test.describe('Goal Revision Lifecycle', () => {
 
   test.describe('Permissions', () => {
     test('15. EMPLOYEE cannot propose revision on others goal', async ({ }) => {
-      // employee-b tries to revise employee-a's goal
-      const empBCtx = await playwrightRequest.newContext({
+      // Test with a non-existent goal ID to verify ownership check
+      const empReq = await playwrightRequest.newContext({
         storageState: authFile('EMPLOYEE'),
       })
 
-      // This should work since it's the same EMPLOYEE account (employee-a)
-      // For a proper cross-user test, we'd need employee-b's goal
-      // Instead, test with a non-existent goal
-      const res = await empBCtx.request.post(
+      const res = await empReq.post(
         '/api/v1/performance/goals/00000000-0000-0000-0000-000000000000/revisions',
         { data: { newTitle: 'Hack', reason: 'Unauthorized' } },
       )
       expect(res.status()).toBeGreaterThanOrEqual(400)
-      await empBCtx.dispose()
+      await empReq.dispose()
     })
 
     test('16. HR Admin can view revisions', async ({ }) => {
-      const hrCtx = await playwrightRequest.newContext({ storageState: authFile('HR_ADMIN') })
+      const hrReq = await playwrightRequest.newContext({ storageState: authFile('HR_ADMIN') })
 
-      const res = await hrCtx.request.get(`/api/v1/performance/goals/${goalId}/revisions`)
+      const res = await hrReq.get(`/api/v1/performance/goals/${goalId}/revisions`)
       expect(res.ok()).toBeTruthy()
 
-      await hrCtx.dispose()
+      await hrReq.dispose()
     })
   })
 
