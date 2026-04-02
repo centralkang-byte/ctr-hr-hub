@@ -13,14 +13,12 @@ import { SettingsSubPageLayout } from '@/components/settings/SettingsSubPageLayo
 // Tab components
 import { CompanyInfoTab } from './tabs/CompanyInfoTab'
 import { DepartmentsTab } from './tabs/DepartmentsTab'
-import { JobGradesTab } from './tabs/JobGradesTab'
 import { JobFamiliesTab } from './tabs/JobFamiliesTab'
 import { AssignmentRulesTab } from './tabs/AssignmentRulesTab'
 import { ProbationTab } from './tabs/ProbationTab'
 import { CustomFieldsTab } from './tabs/CustomFieldsTab'
 import { CodeManagementTab } from './tabs/CodeManagementTab'
 import { LocationsTab } from './tabs/LocationsTab'
-import { EmployeeTitlesTab } from './tabs/EmployeeTitlesTab'
 import { GradeTitleMappingTab } from './tabs/GradeTitleMappingTab'
 import { PositionsTab } from './tabs/PositionsTab'
 
@@ -41,10 +39,6 @@ function OrganizationSettingsContent() {
         return <PositionsTab companyId={companyId} />
       case 'grade-title-mappings':
         return <GradeTitleMappingTab companyId={companyId} />
-      case 'job-grades':
-        return <JobGradesTab companyId={companyId} />
-      case 'employee-titles':
-        return <EmployeeTitlesTab companyId={companyId} />
       case 'job-families':
         return <JobFamiliesTab companyId={companyId} />
       case 'assignment-rules':

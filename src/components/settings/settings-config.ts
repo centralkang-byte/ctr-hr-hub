@@ -18,7 +18,7 @@ export type SettingsCategoryKey =
   | 'recruitment'
   | 'system'
 
-export type OrganizationTabSlug = 'company-info' | 'departments' | 'positions' | 'grade-title-mappings' | 'job-grades' | 'employee-titles' | 'job-families' | 'assignment-rules' | 'probation' | 'custom-fields' | 'code-management' | 'locations'
+export type OrganizationTabSlug = 'company-info' | 'departments' | 'positions' | 'grade-title-mappings' | 'job-families' | 'assignment-rules' | 'probation' | 'custom-fields' | 'code-management' | 'locations'
 export type AttendanceTabSlug = 'work-schedules' | 'weekly-hours' | 'shift-patterns' | 'leave-types' | 'leave-accrual' | 'leave-promotion' | 'designated-leave' | 'holidays' | 'overtime' | 'loa-types'
 export type PayrollTabSlug = 'earnings' | 'deductions' | 'tax-free' | 'salary-bands' | 'merit-matrix' | 'bonus-rules' | 'pay-schedule' | 'currency'
 export type PerformanceTabSlug = 'cycle' | 'methodology' | 'grade-scale' | 'distribution' | 'calibration' | 'cfr' | 'competency'
@@ -63,8 +63,6 @@ export const SETTINGS_CATEGORIES: SettingsCategoryConfig[] = [
       { slug: 'departments', label: '부서 구조', description: '부서 트리, 코드 체계' },
       { slug: 'positions', label: '직위 관리', description: '법인별 직위(보직) 목록 및 보고 체계' },
       { slug: 'grade-title-mappings', label: '직급-호칭 매핑', description: '법인별 직급↔호칭 매핑 (L/E/S 체계)' },
-      { slug: 'job-grades', label: '직급 체계 (레거시)', description: '직급 목록, 승진 순서, 체류 연수' },
-      { slug: 'employee-titles', label: '호칭 관리 (레거시)', description: '법인별 호칭 목록 (직급과 독립)' },
       { slug: 'job-families', label: '직종/직무', description: 'Job Family, Job Profile' },
       { slug: 'assignment-rules', label: '발령 규칙', description: '발령 유형, 승인 절차' },
       { slug: 'probation', label: '수습 기간', description: '기간, 평가 기준, 자동 전환' },
