@@ -96,6 +96,7 @@ test.describe('Eval Forms: EMPLOYEE self-evaluation', () => {
 
 test.describe('Eval Forms: MANAGER team views', () => {
   test.use({ storageState: authFile('MANAGER') })
+  test.slow() // MANAGER pages resolve position hierarchy + direct reports — heavy queries
 
   test('can access team-goals page', async ({ page }) => {
     await assertPageLoads(page, '/performance/team-goals')

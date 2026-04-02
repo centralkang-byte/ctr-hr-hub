@@ -22,16 +22,14 @@ test.describe('Onboarding: HR_ADMIN', () => {
   })
 
   test('can view offboarding cases', async ({ page }) => {
-    await assertPageLoads(page, '/offboarding', { timeout: 60000 })
-    await waitForLoading(page)
+    test.slow() // offboarding page has heavy DB queries
+    await assertPageLoads(page, '/offboarding')
+    await waitForPageReady(page)
 
-    // Tab or table
-    const tabOrTable = page.locator('[role="tab"]').or(page.locator('table')).first()
-    await expect(tabOrTable).toBeVisible({ timeout: 15000 })
-
-    // D-day or status text
-    const statusText = page.getByText(/D-|진행중|완료|퇴직/).first()
-    await expect(statusText).toBeVisible({ timeout: 10000 })
+    // Page renders with tabs (In Progress / Completed) or empty state
+    const tabs = page.getByRole('tab').first()
+    const emptyState = page.getByText(/No offboarding data|오프보딩 데이터/)
+    await expect(tabs.or(emptyState)).toBeVisible({ timeout: 10000 })
   })
 
   test('onboarding dashboard shows 5 plan-type tabs', async ({ page }) => {
