@@ -7,6 +7,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import {
   ArrowUpDown,
@@ -147,7 +148,7 @@ function getInitials(name: string): string {
 function Avatar({ name, photoUrl, size = 'md' }: { name: string; photoUrl?: string | null; size?: 'sm' | 'md' | 'lg' }) {
   const sizeClass = size === 'lg' ? 'h-20 w-20 text-2xl' : size === 'sm' ? 'h-8 w-8 text-xs' : 'h-12 w-12 text-base'
   if (photoUrl) {
-    return <img src={photoUrl} alt={name} className={`${sizeClass} rounded-full object-cover`} />
+    return <Image src={photoUrl} alt={name} width={80} height={80} unoptimized className={`${sizeClass} rounded-full object-cover`} />
   }
   return (
     <div className={`${sizeClass} flex items-center justify-center rounded-full bg-ctr-primary-light font-semibold text-ctr-primary`}>

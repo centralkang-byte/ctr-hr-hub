@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import {
   ChevronLeft,
   ChevronRight,
@@ -542,9 +543,12 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
                       >
                         <div className="flex items-center gap-2.5">
                           {emp.photoUrl ? (
-                            <img
+                            <Image
                               src={emp.photoUrl}
                               alt={emp.name}
+                              width={32}
+                              height={32}
+                              unoptimized
                               className="h-8 w-8 rounded-full object-cover"
                             />
                           ) : (

@@ -5,6 +5,7 @@
 // 구성원 상세 좌측 프로필 영역
 // ═══════════════════════════════════════════════════════════
 
+import Image from 'next/image'
 import { Mail, Phone, Calendar, MapPin, Shield, AlertCircle } from 'lucide-react'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 
@@ -100,9 +101,12 @@ export function ProfileSidebar({
           title={statusLabel}
         >
           {photoUrl ? (
-            <img
+            <Image
               src={photoUrl}
               alt={name}
+              width={72}
+              height={72}
+              unoptimized
               className="w-[72px] h-[72px] rounded-full object-cover"
             />
           ) : (
