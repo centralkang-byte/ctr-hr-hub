@@ -93,6 +93,25 @@ export function ProfileSidebar({
   const subtitle = [title, position].filter(Boolean).join(' · ')
 
   return (
+    <>
+    {/* Mobile compact header — visible below lg */}
+    <div className="flex items-center gap-3 rounded-2xl bg-card shadow-sm p-4 lg:hidden">
+      <div className={`relative shrink-0 rounded-full ${ringClass} ring-offset-2`} title={statusLabel}>
+        {photoUrl ? (
+          <Image src={photoUrl} alt={name} width={40} height={40} unoptimized className="w-10 h-10 rounded-full object-cover" />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-ctr-primary-light flex items-center justify-center text-sm font-semibold text-ctr-primary">
+            {getInitials(name)}
+          </div>
+        )}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-bold text-foreground truncate">{name}</p>
+        {subtitle && <p className="text-xs text-primary truncate">{subtitle}</p>}
+        <p className="text-xs text-muted-foreground truncate">{[company, team].filter(Boolean).join(' · ')}</p>
+      </div>
+    </div>
+
     <aside className="w-72 shrink-0 border-r border-border bg-card p-6 hidden lg:block">
       {/* Avatar + Name */}
       <div className="text-center mb-6">
@@ -205,5 +224,6 @@ export function ProfileSidebar({
         )}
       </div>
     </aside>
+    </>
   )
 }

@@ -441,7 +441,7 @@ export function EmployeeNewClient({
         </Select>
       </Field>
       {mappedTitle && (
-        <Field label="호칭">
+        <Field label={t('employeeTitle')}>
           <Input value={mappedTitle.employeeTitle.name} readOnly className="bg-muted" />
         </Field>
       )}

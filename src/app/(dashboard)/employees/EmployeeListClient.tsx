@@ -459,7 +459,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
     },
     {
       key: 'title',
-      header: '호칭',
+      header: t('employeeTitle'),
       render: (row) => row.title?.name ?? '-',
     },
     {

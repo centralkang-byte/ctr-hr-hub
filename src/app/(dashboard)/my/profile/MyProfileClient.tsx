@@ -4,17 +4,18 @@ import { EmptyState } from '@/components/ui/EmptyState'
 
 import { useTranslations } from 'next-intl'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import {
-  User, Briefcase, DollarSign, FileText, Camera, CheckCircle2, XCircle,
+  User, Briefcase, DollarSign, FileText, Camera, Pencil,
   Edit3, Save, X, Globe, Building, AlertCircle,
   Calendar, Clock, Award
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
-import { CARD_STYLES, BUTTON_SIZES, BUTTON_VARIANTS,  MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
+import { CARD_STYLES, BUTTON_SIZES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
 import { extractPrimaryAssignment } from '@/lib/employee/extract-primary-assignment'
+import { ProfileChangeRequestDialog, ChangeRequestHistory } from '@/components/employees/ProfileChangeRequestDialog'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -202,11 +203,10 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
   // Sub-states for Compensation
   const [showCompensation, setShowCompensation] = useState(false)
 
-  // Change request dialog
-  const [changeReqField, setChangeReqField] = useState<string | null>(null)
-  const [changeReqValue, setChangeReqValue] = useState('')
-  const [changeReqReason, setChangeReqReason] = useState('')
-  const [savingChangeReq, setSavingChangeReq] = useState(false)
+  // Change request dialog (AR-2: state isolated in ProfileChangeRequestDialog)
+  const [changeReqField, setChangeReqField] = useState<'phone' | 'emergencyContact' | 'emergencyContactPhone' | 'name' | null>(null)
+  const [changeRequests, setChangeRequests] = useState<{ id: string; fieldName: string; oldValue: string | null; newValue: string; status: string; rejectionReason: string | null; reviewedAt: string | null; reviewer: { id: string; name: string } | null; createdAt: string }[]>([])
+  const [changeReqCurrentValue, setChangeReqCurrentValue] = useState('')
 
   const asgn = extractPrimaryAssignment(employee.assignments as unknown as Record<string, unknown>[]) as Assignment | undefined
 
@@ -256,23 +256,20 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
     if (updated.data) setVisibility(updated.data)
   }, [])
 
-  // ── Change request ──
-  const submitChangeRequest = useCallback(async () => {
-    if (!changeReqField || !changeReqValue.trim()) return
-    setSavingChangeReq(true)
-    const res = await apiClient.post('/api/v1/profile/change-requests', {
-      fieldName: changeReqField,
-      newValue: changeReqValue.trim(),
-      reason: changeReqReason.trim() || undefined,
-    })
-    setSavingChangeReq(false)
-    if (res.data) {
-      toast({ title: t('changeReqDone'), description: t('changeReqDesc') })
-      setChangeReqField(null)
-      setChangeReqValue('')
-      setChangeReqReason('')
-    }
-  }, [changeReqField, changeReqValue, changeReqReason, t])
+  // ── Change request history fetch ──
+  const fetchChangeRequests = useCallback(async () => {
+    try {
+      const res = await apiClient.get<typeof changeRequests>('/api/v1/profile/change-requests')
+      if (res.data) setChangeRequests(res.data)
+    } catch { /* silent — non-critical */ }
+  }, [])
+
+  useEffect(() => { fetchChangeRequests() }, [fetchChangeRequests])
+
+  // Helper: check if field has pending request
+  const hasPendingRequest = useCallback((field: string) => {
+    return changeRequests.some((r) => r.fieldName === field && r.status === 'CHANGE_PENDING')
+  }, [changeRequests])
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
@@ -409,20 +406,30 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                 <h2 className="text-base font-semibold text-foreground">인사 정보</h2>
               </div>
               <div className="grid grid-cols-2 gap-y-4 gap-x-6">
-                {[
+                {([
                   { label: '사원번호', value: employee.employeeNo },
                   { label: '입사일', value: formatDate(employee.hireDate) },
                   { label: '성별', value: employee.gender ?? '-' },
                   { label: '생년월일', value: formatDate(employee.birthDate) },
                   { label: '이메일 (회사)', value: employee.email },
-                  { label: '연락처 (개인)', value: employee.phone ?? '-', action: () => { setChangeReqField('phone'); setChangeReqValue(''); setChangeReqReason('') } },
-                ].map(({ label, value, action }) => (
-                  <div key={label} className="border-b border-border pb-2 last:border-0 last:pb-0">
+                  { label: '연락처 (개인)', value: employee.phone ?? '-', fieldKey: 'phone' as const },
+                ] as { label: string; value: string; fieldKey?: 'phone' | 'emergencyContact' | 'emergencyContactPhone' | 'name' }[]).map(({ label, value, fieldKey }) => (
+                  <div key={label} className="border-b border-border/30 pb-2 last:border-0 last:pb-0">
                     <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
                     <div className="flex justify-between items-center">
-                      <p className="text-sm text-foreground font-medium">{value}</p>
-                      {action && (
-                        <button onClick={action} className="text-xs text-primary hover:underline">수정 요청</button>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-foreground font-medium">{value}</p>
+                        {fieldKey && hasPendingRequest(fieldKey) && (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/15 text-amber-700">대기중</span>
+                        )}
+                      </div>
+                      {fieldKey && (
+                        <button
+                          onClick={() => { setChangeReqField(fieldKey); setChangeReqCurrentValue(value) }}
+                          className="flex items-center gap-1 text-xs text-primary hover:underline"
+                        >
+                          <Pencil className="w-3 h-3" /> 수정 요청
+                        </button>
                       )}
                     </div>
                   </div>
@@ -529,6 +536,13 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                 </div>
               )}
             </div>
+
+            {/* 수정 요청 내역 */}
+            {changeRequests.length > 0 && (
+              <div className={`${CARD_STYLES.kpi} shadow-sm border border-border/30`}>
+                <ChangeRequestHistory requests={changeRequests} />
+              </div>
+            )}
 
             {/* 공개 설정 위젯 */}
             <div className={`${CARD_STYLES.kpi} shadow-sm border border-border`}>
@@ -761,53 +775,14 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
       )}
 
       {/* ── Modal: Change Request ── */}
-      {changeReqField && (
-        <div className={MODAL_STYLES.container}>
-          <div className="bg-card rounded-xl shadow-lg w-full max-w-md p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-foreground">정보 변경 요청</h3>
-              <button onClick={() => setChangeReqField(null)} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
-            </div>
-            <p className="text-sm text-muted-foreground bg-muted p-3 rounded-lg border border-border">
-              핵심 인사 정보 변경은 HR 담당자의 승인 후 최종 반영됩니다.
-            </p>
-            <div className="space-y-3 mt-2">
-              <div>
-                <label className="text-sm font-medium text-foreground block mb-1">새로운 값 명시</label>
-                <input
-                  value={changeReqValue}
-                  onChange={(e) => setChangeReqValue(e.target.value)}
-                  placeholder={tCommon('placeholderChangeNewValue')}
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-foreground block mb-1">변경 사유 (선택)</label>
-                <textarea
-                  value={changeReqReason}
-                  onChange={(e) => setChangeReqReason(e.target.value)}
-                  maxLength={500}
-                  rows={3}
-                  placeholder={tCommon('placeholderChangeReason')}
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
-                />
-              </div>
-            </div>
-            <div className="flex gap-2 pt-4 border-t border-border">
-              <button
-                onClick={submitChangeRequest}
-                disabled={savingChangeReq || !changeReqValue.trim()}
-                className={`flex-1 inline-flex items-center justify-center gap-1.5 ${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary} disabled:opacity-50`}
-              >
-                <CheckCircle2 className="w-4 h-4" /> 요청 제출
-              </button>
-              <button onClick={() => setChangeReqField(null)} className="flex-1 border border-border text-muted-foreground py-2 rounded-xl text-sm font-medium flex items-center justify-center gap-1.5 hover:bg-muted">
-                <XCircle className="w-4 h-4" /> 취소
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Change Request Dialog (AR-2: isolated form state) */}
+      <ProfileChangeRequestDialog
+        open={changeReqField !== null}
+        onOpenChange={(open) => { if (!open) setChangeReqField(null) }}
+        fieldKey={changeReqField ?? 'phone'}
+        currentValue={changeReqCurrentValue}
+        onSuccess={fetchChangeRequests}
+      />
 
     </div>
   )

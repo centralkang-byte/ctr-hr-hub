@@ -499,6 +499,7 @@
     "birthDate": "Date of Birth",
     "gender": "Gender",
     "jobCategory": "Job Category",
+    "employeeTitle": "Chức danh",
     "team": "Team",
     "profilePhoto": "Profile Photo",
     "statusActive": "Active",

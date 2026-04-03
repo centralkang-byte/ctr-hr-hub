@@ -319,123 +319,146 @@ export function EmployeeDetailClient({
   )
 
   // Grade↔Title 매핑: 해당 법인만 필터
-  const companyMappings = gradeTitleMappings.filter((m) => m.jobGrade.companyId === employee.companyId)
-  const mappedTitle = companyMappings.find((m) => m.jobGrade.id === editData.jobGradeId) ?? null
+  const companyMappings = useMemo(
+    () => gradeTitleMappings.filter((m) => m.jobGrade.companyId === employee.companyId),
+    [gradeTitleMappings, employee.companyId],
+  )
+  const mappedTitle = useMemo(
+    () => companyMappings.find((m) => m.jobGrade.id === editData.jobGradeId) ?? null,
+    [companyMappings, editData.jobGradeId],
+  )
 
   // ─── Tab 1: 기본정보 ────────────────────────────────────────
 
   const renderBasicInfo = () => {
     if (editing) {
       return (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {editError && (
-            <p className="rounded-md border border-destructive/50 bg-destructive/10 px-4 py-2 text-sm text-destructive">
+            <p className="rounded-2xl bg-destructive/10 px-4 py-2 text-sm text-destructive">
               {editError}
             </p>
           )}
-          <div className="grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2">
-            {/* Personal */}
-            <div className="space-y-1.5">
-              <Label>{t('nameKorean')} <span className="text-destructive">*</span></Label>
-              <Input value={editData.name} onChange={(e) => setEditData((p) => ({ ...p, name: e.target.value }))} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>{t('nameEn')}</Label>
-              <Input value={editData.nameEn} onChange={(e) => setEditData((p) => ({ ...p, nameEn: e.target.value }))} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>{t('email')} <span className="text-destructive">*</span></Label>
-              <Input type="email" value={editData.email} onChange={(e) => setEditData((p) => ({ ...p, email: e.target.value }))} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>{t('phone')}</Label>
-              <Input value={editData.phone} onChange={(e) => setEditData((p) => ({ ...p, phone: e.target.value }))} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>{t('birthDate')}</Label>
-              <Input type="date" value={editData.birthDate} onChange={(e) => setEditData((p) => ({ ...p, birthDate: e.target.value }))} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>{t('gender')}</Label>
-              <Select value={editData.gender || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, gender: v === '__NONE__' ? '' : v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
-                  <SelectItem value="M">{t('male')}</SelectItem>
-                  <SelectItem value="F">{t('female')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>{t('nationality')}</Label>
-              <Input value={editData.nationality} onChange={(e) => setEditData((p) => ({ ...p, nationality: e.target.value }))} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>{t('emergencyContactName')}</Label>
-              <Input value={editData.emergencyContact} onChange={(e) => setEditData((p) => ({ ...p, emergencyContact: e.target.value }))} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>{t('emergencyContactPhone')}</Label>
-              <Input value={editData.emergencyContactPhone} onChange={(e) => setEditData((p) => ({ ...p, emergencyContactPhone: e.target.value }))} />
-            </div>
-            {/* Employment */}
-            <div className="space-y-1.5">
-              <Label>{t('department')}</Label>
-              <Select value={editData.departmentId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, departmentId: v === '__NONE__' ? '' : v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-                  {filteredDepts.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label>{t('jobGrade')}</Label>
-              <Select value={editData.jobGradeId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, jobGradeId: v === '__NONE__' ? '' : v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-                  {companyMappings.map((m) => (
-                    <SelectItem key={m.jobGrade.id} value={m.jobGrade.id}>
-                      {m.jobGrade.code} ({m.employeeTitle.name})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {mappedTitle && (
+
+          {/* Section 1: Personal Information */}
+          <div className="rounded-2xl shadow-sm bg-card p-6 space-y-5">
+            <h3 className="text-base font-bold text-foreground tracking-ctr">{t('personalInfo')}</h3>
+            <div className="grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2">
               <div className="space-y-1.5">
-                <Label>호칭</Label>
-                <Input value={mappedTitle.employeeTitle.name} readOnly className="bg-muted" />
+                <Label>{t('nameKorean')} <span className="text-destructive">*</span></Label>
+                <Input value={editData.name} onChange={(e) => setEditData((p) => ({ ...p, name: e.target.value }))} />
               </div>
-            )}
-            <div className="space-y-1.5">
-              <Label>{t('jobCategory')}</Label>
-              <Select value={editData.jobCategoryId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, jobCategoryId: v === '__NONE__' ? '' : v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-                  {jobCategories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <div className="space-y-1.5">
+                <Label>{t('nameEn')}</Label>
+                <Input value={editData.nameEn} onChange={(e) => setEditData((p) => ({ ...p, nameEn: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t('email')} <span className="text-destructive">*</span></Label>
+                <Input type="email" value={editData.email} onChange={(e) => setEditData((p) => ({ ...p, email: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t('phone')}</Label>
+                <Input value={editData.phone} onChange={(e) => setEditData((p) => ({ ...p, phone: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t('birthDate')}</Label>
+                <Input type="date" value={editData.birthDate} onChange={(e) => setEditData((p) => ({ ...p, birthDate: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t('gender')}</Label>
+                <Select value={editData.gender || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, gender: v === '__NONE__' ? '' : v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
+                    <SelectItem value="M">{t('male')}</SelectItem>
+                    <SelectItem value="F">{t('female')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t('nationality')}</Label>
+                <Input value={editData.nationality} onChange={(e) => setEditData((p) => ({ ...p, nationality: e.target.value }))} />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>{t('employmentType')}</Label>
-              <Select value={editData.employmentType} onValueChange={(v) => setEditData((p) => ({ ...p, employmentType: v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {Object.entries(EMPLOYMENT_TYPE_LABELS).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
-                </SelectContent>
-              </Select>
+          </div>
+
+          {/* Section 2: Emergency Contact */}
+          <div className="rounded-2xl shadow-sm bg-card p-6 space-y-5">
+            <h3 className="text-base font-bold text-foreground tracking-ctr">{t('emergencyContactName')}</h3>
+            <div className="grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label>{t('emergencyContactName')}</Label>
+                <Input value={editData.emergencyContact} onChange={(e) => setEditData((p) => ({ ...p, emergencyContact: e.target.value }))} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t('emergencyContactPhone')}</Label>
+                <Input value={editData.emergencyContactPhone} onChange={(e) => setEditData((p) => ({ ...p, emergencyContactPhone: e.target.value }))} />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>{tc('status')}</Label>
-              <Select value={editData.status} onValueChange={(v) => setEditData((p) => ({ ...p, status: v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {Object.entries(STATUS_LABELS).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
-                </SelectContent>
-              </Select>
+          </div>
+
+          {/* Section 3: Employment Information */}
+          <div className="rounded-2xl shadow-sm bg-card p-6 space-y-5">
+            <h3 className="text-base font-bold text-foreground tracking-ctr">{t('employmentInfo')}</h3>
+            <div className="grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label>{t('department')}</Label>
+                <Select value={editData.departmentId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, departmentId: v === '__NONE__' ? '' : v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
+                    {filteredDepts.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t('jobGrade')}</Label>
+                <Select value={editData.jobGradeId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, jobGradeId: v === '__NONE__' ? '' : v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
+                    {companyMappings.map((m) => (
+                      <SelectItem key={m.jobGrade.id} value={m.jobGrade.id}>
+                        {m.jobGrade.code} ({m.employeeTitle.name})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {mappedTitle && (
+                <div className="space-y-1.5">
+                  <Label>{t('employeeTitle')}</Label>
+                  <Input value={mappedTitle.employeeTitle.name} readOnly className="bg-muted" />
+                </div>
+              )}
+              <div className="space-y-1.5">
+                <Label>{t('jobCategory')}</Label>
+                <Select value={editData.jobCategoryId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, jobCategoryId: v === '__NONE__' ? '' : v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
+                    {jobCategories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t('employmentType')}</Label>
+                <Select value={editData.employmentType} onValueChange={(v) => setEditData((p) => ({ ...p, employmentType: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(EMPLOYMENT_TYPE_LABELS).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>{tc('status')}</Label>
+                <Select value={editData.status} onValueChange={(v) => setEditData((p) => ({ ...p, status: v }))}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(STATUS_LABELS).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
           <div className="flex gap-2 pt-2">
@@ -475,7 +498,7 @@ export function EmployeeDetailClient({
             <InfoRow label={t('employeeCode')} value={<span className="font-mono tabular-nums">{employee.employeeNo}</span>} />
             <InfoRow label={t('companyEntity')} value={employee.company?.name} />
             <InfoRow label={t('department')} value={employee.department?.name} />
-            {employee.title && <InfoRow label="호칭" value={employee.title.name} />}
+            {employee.title && <InfoRow label={t('employeeTitle')} value={employee.title.name} />}
             {employee.position && <InfoRow label="직위" value={employee.position.titleKo} />}
             {canViewGrade && <InfoRow label={t('jobGrade')} value={employee.jobGrade?.name} />}
             <InfoRow label={t('jobCategory')} value={employee.jobCategory?.name} />

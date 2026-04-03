@@ -499,6 +499,7 @@
     "birthDate": "생년월일",
     "gender": "성별",
     "jobCategory": "직군",
+    "employeeTitle": "호칭",
     "team": "팀",
     "profilePhoto": "프로필 사진",
     "statusActive": "재직",

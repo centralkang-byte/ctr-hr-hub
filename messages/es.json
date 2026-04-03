@@ -499,6 +499,7 @@
     "birthDate": "Date of Birth",
     "gender": "Gender",
     "jobCategory": "Job Category",
+    "employeeTitle": "Título",
     "team": "Team",
     "profilePhoto": "Profile Photo",
     "statusActive": "Active",
