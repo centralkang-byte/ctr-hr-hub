@@ -76,7 +76,6 @@ function ClaimModal({ plans, onClose, onSubmit }: {
   onClose: () => void
   onSubmit: () => void
 }) {
-  const tCommon = useTranslations('common')
   const [selectedPlanId, setSelectedPlanId] = useState('')
   const [claimAmount, setClaimAmount] = useState('')
   const [eventDate, setEventDate] = useState('')

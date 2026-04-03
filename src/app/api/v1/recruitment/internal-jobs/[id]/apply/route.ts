@@ -23,6 +23,7 @@ export const POST = withAuth(
       where: { id, deletedAt: null },
     })
     if (!posting) throw notFound('공고를 찾을 수 없습니다.')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (!(posting as any).isInternal) throw badRequest('내부 채용 공고가 아닙니다.')
     if (posting.status !== 'OPEN') throw badRequest('현재 지원 가능한 공고가 아닙니다.')
 

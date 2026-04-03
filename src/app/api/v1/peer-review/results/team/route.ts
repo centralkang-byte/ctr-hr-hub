@@ -63,7 +63,7 @@ export const GET = withPermission(
     for (const n of nominations) {
       const empId = n.employeeId
       if (!employeeMap.has(empId)) {
-        const minEmp = toMinimalEmployee(n.employee as any)
+        const minEmp = toMinimalEmployee(n.employee as unknown)
         employeeMap.set(empId, {
           employee: {
             id: minEmp?.id ?? n.employee.id,

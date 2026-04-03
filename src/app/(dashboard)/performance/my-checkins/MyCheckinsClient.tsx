@@ -23,7 +23,7 @@ interface GoalProgress {
 
 // ─── Component ────────────────────────────────────────────
 
-export default function MyCheckinsClient({user }: {
+export default function MyCheckinsClient({user: _user }: {
   user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')

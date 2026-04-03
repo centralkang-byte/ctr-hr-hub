@@ -98,7 +98,8 @@ export async function generateP4Report(companyId: string, year: number, quarter:
 
   const byDepartment = employees.reduce(
     (acc, emp) => {
-      const dept = (extractPrimaryAssignment(emp.assignments ?? []) as Record<string, any>)?.department?.name ?? '미분류'
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const dept = (extractPrimaryAssignment(emp.assignments ?? []) as any)?.department?.name ?? '미분류'
       if (!acc[dept]) {
         acc[dept] = { department: dept, headcount: 0, employeeIds: [] }
       }
@@ -159,8 +160,10 @@ export async function generate57TReport(companyId: string, year: number) {
   const byJobCategory = employees.reduce(
     (acc, emp) => {
       const ruPrimary = extractPrimaryAssignment(emp.assignments ?? [])
-      const catKey = (ruPrimary as Record<string, any>)?.jobCategory?.code ?? 'UNKNOWN'
-      const catName = (ruPrimary as Record<string, any>)?.jobCategory?.name ?? '미분류'
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const catKey = (ruPrimary as any)?.jobCategory?.code ?? 'UNKNOWN'
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const catName = (ruPrimary as any)?.jobCategory?.name ?? '미분류'
       if (!acc[catKey]) {
         acc[catKey] = {
           categoryCode: catKey,

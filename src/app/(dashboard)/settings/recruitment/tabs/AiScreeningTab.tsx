@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { AiScreeningSetting, AiScreeningFeatureEntry } from '@/types/process-settings'
 import { BUTTON_VARIANTS } from '@/lib/styles'
-import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 

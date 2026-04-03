@@ -8,7 +8,6 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { useTranslations } from 'next-intl'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card'
 import { User, MessageSquare, Mail, Phone } from 'lucide-react'

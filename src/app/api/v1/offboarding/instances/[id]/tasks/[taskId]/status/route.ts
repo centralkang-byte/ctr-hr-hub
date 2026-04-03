@@ -58,7 +58,8 @@ export const PUT = withPermission(
         if (!task) throw notFound('태스크를 찾을 수 없습니다.')
 
         // Company scoping
-        const taskCompanyId = (extractPrimaryAssignment(task.employeeOffboarding.employee?.assignments ?? []) as Record<string, any>)?.companyId
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const taskCompanyId = (extractPrimaryAssignment(task.employeeOffboarding.employee?.assignments ?? []) as any)?.companyId
         if (user.role !== ROLE.SUPER_ADMIN && taskCompanyId && taskCompanyId !== user.companyId) {
             throw forbidden('다른 법인의 태스크에 접근할 수 없습니다.')
         }

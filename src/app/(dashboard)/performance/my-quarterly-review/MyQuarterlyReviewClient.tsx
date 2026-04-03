@@ -8,7 +8,6 @@ import { toast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
 import { Card } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
 import { Loader2, ArrowRight } from 'lucide-react'
 import ReviewStatusBadge from '@/components/performance/quarterly-review/ReviewStatusBadge'
 

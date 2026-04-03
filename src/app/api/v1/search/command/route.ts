@@ -76,8 +76,10 @@ export const GET = withPermission(
             name: e.name,
             employeeNo: e.employeeNo,
             email: e.email,
-            department: (asgn as Record<string, any>)?.department?.name ?? null,
-            position: (asgn as Record<string, any>)?.jobGrade?.name ?? null,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            department: (asgn as any)?.department?.name ?? null,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            position: (asgn as any)?.jobGrade?.name ?? null,
           }
         }),
         documents: documents.map((d) => ({

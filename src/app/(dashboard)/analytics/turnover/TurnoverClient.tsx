@@ -5,8 +5,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 
 import React, { useEffect, useState, useCallback } from 'react'
 import {
-  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  ResponsiveContainer, PieChart, Pie, Cell, ReferenceLine,
+  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,   ResponsiveContainer, PieChart, Pie, Cell, ReferenceLine,
 } from 'recharts'
 import { TrendingDown, Calendar, AlertTriangle, Users, Shield, Clock, ChevronDown, ChevronUp } from 'lucide-react'
 import { KpiCard } from '@/components/analytics/KpiCard'

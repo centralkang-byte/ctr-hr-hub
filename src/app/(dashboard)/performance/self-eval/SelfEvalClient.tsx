@@ -64,7 +64,6 @@ const SCORE_LABELS = ['', '매우 부족', '부족', '보통', '우수', '탁월
 
 export default function SelfEvalClient({
  user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
   const t = useTranslations('performance')
   const tc = useTranslations('common')
 

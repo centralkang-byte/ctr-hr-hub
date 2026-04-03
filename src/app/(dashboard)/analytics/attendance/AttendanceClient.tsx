@@ -5,9 +5,7 @@ import { toast } from '@/hooks/use-toast'
 
 import React, { useEffect, useState, useCallback } from 'react'
 import {
-  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  ResponsiveContainer, ReferenceLine,
-} from 'recharts'
+  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,   ResponsiveContainer, } from 'recharts'
 import { CalendarDays, AlertTriangle, Clock, Users } from 'lucide-react'
 import { KpiCard } from '@/components/analytics/KpiCard'
 import { ChartCard } from '@/components/analytics/ChartCard'

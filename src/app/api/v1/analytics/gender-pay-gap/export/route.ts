@@ -117,6 +117,7 @@ export const GET = withRateLimit(withPermission(
       const baseSalary = latestCompMap.get(emp.id)
       if (baseSalary == null) continue
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const a = extractPrimaryAssignment(emp.assignments ?? []) as Record<string, any>
 
       let groupId: string = ''

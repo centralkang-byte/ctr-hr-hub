@@ -11,7 +11,7 @@ import { toast } from '@/hooks/use-toast'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save, Send, Building2, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, Save, Send, AlertTriangle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES, BUTTON_VARIANTS } from '@/lib/styles'
@@ -82,7 +82,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
     setSaving(true)
     setError('')
     try {
-      const res = await apiClient.post<{ id: string }>('/api/v1/recruitment/requisitions', {
+      const _res = await apiClient.post<{ id: string }>('/api/v1/recruitment/requisitions', {
         ...form,
         positionId: form.positionId || undefined,
         targetDate: form.targetDate || undefined,

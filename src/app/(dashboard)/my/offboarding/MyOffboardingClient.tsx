@@ -17,12 +17,10 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { useState, useEffect, useCallback } from 'react'
 import {
   CheckCircle2,
-  Clock,
-  CircleDot,
+    CircleDot,
   Circle,
   Loader2,
-  AlertTriangle,
-  Info,
+    Info,
   CalendarDays,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'

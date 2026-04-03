@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { Loader2, Calendar } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { TABLE_STYLES } from '@/lib/styles'
-import { useTranslations } from 'next-intl'
 
 interface Cycle { id: string; name: string; type: string; status: string; startDate: string; endDate: string }
 interface Props { companyId: string | null }

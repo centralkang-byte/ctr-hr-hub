@@ -285,7 +285,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                                         <span className="text-xs text-muted-foreground">{fmtDate(step.decidedAt)}</span>
                                     </div>
                                     {step.comment && (
-                                        <p className="text-sm text-muted-foreground mt-0.5">"{step.comment}"</p>
+                                        <p className="text-sm text-muted-foreground mt-0.5">&quot;{step.comment}&quot;</p>
                                     )}
                                 </div>
                             </div>

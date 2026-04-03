@@ -112,7 +112,6 @@ interface Props {
 
 export default function ApplicantListClient({
  user, postingId }: Props) {
-  const tCommon = useTranslations('common')
   const t = useTranslations('recruitment')
   const router = useRouter()
   const [data, setData] = useState<ApplicationRecord[]>([])

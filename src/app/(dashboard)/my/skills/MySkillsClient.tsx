@@ -9,8 +9,7 @@ import { toast } from '@/hooks/use-toast'
 import { useState, useEffect, useCallback } from 'react'
 import { apiClient } from '@/lib/api'
 import {
-  Target, ChevronDown, ChevronUp, CheckCircle2, Clock, AlertCircle,
-  Radar, Save, Send, BookOpen,
+  ChevronDown, ChevronUp, CheckCircle2,   Radar, Save, Send, BookOpen,
 } from 'lucide-react'
 import { BUTTON_VARIANTS, CHART_THEME } from '@/lib/styles'
 import type { SessionUser } from '@/types'

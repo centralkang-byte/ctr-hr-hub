@@ -167,6 +167,7 @@ export const GET = withPermission(
       const comp = latestCompMap.get(emp.id)
       if (!comp) continue // skip employees with no compensation data
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const a = extractPrimaryAssignment(emp.assignments ?? []) as Record<string, any>
 
       // Determine group

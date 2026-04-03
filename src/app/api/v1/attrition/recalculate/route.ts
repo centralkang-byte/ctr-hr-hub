@@ -48,7 +48,8 @@ export const POST = withPermission(
         throw notFound('직원을 찾을 수 없습니다.')
       }
 
-      const employeeCompanyId = ((extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>)?.companyId as string | undefined) ?? companyId
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const employeeCompanyId = ((extractPrimaryAssignment(employee.assignments ?? []) as any)?.companyId as string | undefined) ?? companyId
 
       const result = await calculateAttritionRisk(employeeId)
 

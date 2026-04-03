@@ -76,7 +76,8 @@ export const GET = withPermission(
       },
     })
     const primary = extractPrimaryAssignment(employee?.assignments ?? [])
-    const gradeCode = (primary as Record<string, any>)?.jobGrade?.code ?? null
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const gradeCode = (primary as any)?.jobGrade?.code ?? null
 
     const requirements = await prisma.competencyRequirement.findMany({
       where: {

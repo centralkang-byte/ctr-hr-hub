@@ -184,7 +184,6 @@ interface Step1Props {
 }
 
 function Step1Dependents({ dependents, onChange }: Step1Props) {
-  const tCommon = useTranslations('common')
   const addDependent = () => {
     const newDep: Dependent = {
       id: `new-${Date.now()}`,
@@ -413,7 +412,7 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
 
           <div className="bg-amber-500/15 rounded-xl p-4 text-sm text-amber-700">
             <p className="font-medium mb-1">파싱 기능 준비 중</p>
-            <p>아래 "직접 입력" 탭에서 금액을 직접 입력해 주세요.</p>
+            <p>아래 &quot;직접 입력&quot; 탭에서 금액을 직접 입력해 주세요.</p>
           </div>
         </div>
       )}

@@ -57,7 +57,9 @@ export const POST = withPermission(
         if (!onboarding) throw notFound('Onboarding instance not found')
 
         const empPrimary = extractPrimaryAssignment(onboarding.employee?.assignments ?? [])
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mgrPrimary = extractPrimaryAssignment((empPrimary as any)?.position?.reportsTo?.assignments ?? [])
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const managerId = (mgrPrimary as any)?.employeeId
         const isManager = user.employeeId === managerId
         const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN

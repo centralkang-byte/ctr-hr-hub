@@ -12,7 +12,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Plus, Search, Filter, ChevronRight, Clock, CheckCircle2,
-  XCircle, AlertTriangle, FileText, Building2,
+  XCircle, FileText, Building2,
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'

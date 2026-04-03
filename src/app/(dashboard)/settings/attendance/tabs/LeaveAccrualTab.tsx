@@ -57,7 +57,6 @@ const DEFAULT_SETTINGS = {
 
 export function LeaveAccrualTab({
   companyId }: LeaveAccrualTabProps) {
-  const t = useTranslations('settings')
   const [loading, setLoading] = useState(true)
   const [typeDefs, setTypeDefs] = useState<LeaveTypeDef[]>([])
   const [expandedId, setExpandedId] = useState<string | null>(null)

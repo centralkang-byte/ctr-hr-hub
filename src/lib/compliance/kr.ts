@@ -143,7 +143,8 @@ export async function getEmployeeWorkHours(companyId: string, weekStart: Date, p
       id: e.id,
       name: e.name,
       employeeNo: e.employeeNo,
-      departmentId: (extractPrimaryAssignment(e.assignments ?? []) as Record<string, any>)?.departmentId ?? null,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      departmentId: (extractPrimaryAssignment(e.assignments ?? []) as any)?.departmentId ?? null,
       weeklyHours: hours,
       status: classifyWorkHoursStatus(hours),
     }

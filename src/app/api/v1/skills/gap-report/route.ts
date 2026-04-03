@@ -79,7 +79,8 @@ export const GET = withPermission(
 
       for (const emp of employees) {
         const empPrimary = extractPrimaryAssignment(emp.assignments ?? [])
-        const grade = (empPrimary as Record<string, any>)?.jobGrade?.code ?? ''
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const grade = (empPrimary as any)?.jobGrade?.code ?? ''
         const expectedLevel = reqMap.get(`${c.id}_${grade}`) ?? null
         const assessment = emp.skillAssessments.find((a) => a.competencyId === c.id)
         const finalLevel = assessment?.finalLevel ?? assessment?.selfLevel ?? null
@@ -110,14 +111,16 @@ export const GET = withPermission(
 
     const departmentMatrix = departments.map((dept) => {
       const deptEmployees = employees.filter(
-        (e) => (extractPrimaryAssignment(e.assignments ?? []) as Record<string, any>)?.department?.id === dept.id,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (e) => (extractPrimaryAssignment(e.assignments ?? []) as any)?.department?.id === dept.id,
       )
 
       const scores = competencies.map((c) => {
         const deptGaps: number[] = []
         for (const emp of deptEmployees) {
           const deptEmpPrimary = extractPrimaryAssignment(emp.assignments ?? [])
-          const grade = (deptEmpPrimary as Record<string, any>)?.jobGrade?.code ?? ''
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const grade = (deptEmpPrimary as any)?.jobGrade?.code ?? ''
           const expectedLevel = reqMap.get(`${c.id}_${grade}`) ?? null
           const assessment = emp.skillAssessments.find((a) => a.competencyId === c.id)
           const finalLevel = assessment?.finalLevel ?? assessment?.selfLevel ?? null

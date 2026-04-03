@@ -265,7 +265,7 @@ export const GET = withPermission(
         const order = { RED: 0, YELLOW: 1, GREEN: 2 }
         return order[a.overallStatus] - order[b.overallStatus]
       }),
-      recommendations: recommendations.sort((a, b) => (a.severity === 'RED' ? -1 : 1)),
+      recommendations: recommendations.sort((a, _b) => (a.severity === 'RED' ? -1 : 1)),
     }
 
     return apiSuccess(response)

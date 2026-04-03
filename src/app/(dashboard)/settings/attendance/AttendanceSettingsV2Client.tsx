@@ -6,7 +6,7 @@
 // Gold-standard reference for H-2b~d (Payroll, Performance, etc.)
 // ═══════════════════════════════════════════════════════════
 
-import { useCallback, useEffect, useState, Suspense } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Loader2, Save } from 'lucide-react'
 import { apiClient } from '@/lib/api'
@@ -50,7 +50,8 @@ function WorkSchedulesTab({ companyId }: { companyId: string | null }) {
           ...prev,
           standardHoursPerDay: (d.standardHoursPerDay as number) ?? 8,
           standardDaysPerWeek: (d.standardDaysPerWeek as number) ?? 5,
-          flexEnabled: (d.flexWork as Record<string, unknown>)?.flexEnabled as boolean ?? false,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          flexEnabled: (d.flexWork as any)?.flexEnabled as boolean ?? false,
         }))
       }
       setLoading(false)

@@ -23,7 +23,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
-import { Card } from '@/components/ui/card'
 import {
   Select,
   SelectContent,
@@ -567,7 +566,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       </div>
 
       <DataTable
-        columns={columns as unknown as DataTableColumn<Record<string, unknown>>[]}
+        columns={columns as any as DataTableColumn<Record<string, unknown>>[]}
         data={requests as unknown as Record<string, unknown>[]}
         loading={loading}
         pagination={pagination}
@@ -657,7 +656,10 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                     <button
                       key={preset.id}
                       type="button"
-                      onClick={() => handlePresetChange(preset.id as any)}
+                      onClick={() => handlePresetChange(
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        preset.id as any
+                      )}
                       className={`px-3 py-2 text-sm font-medium rounded-md border transition-colors ${
                         presetType === preset.id
                           ? 'bg-foreground text-white border-foreground'

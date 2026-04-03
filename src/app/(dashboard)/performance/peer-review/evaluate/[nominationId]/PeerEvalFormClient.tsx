@@ -27,7 +27,6 @@ const SCORE_LABELS = ['매우 부족', '부족', '보통', '우수', '탁월']
 // ─── Component ───────────────────────────────────────────
 
 export default function PeerEvalFormClient({ user: _user, nominationId }: { user: SessionUser; nominationId: string }) {
-  const tCommon = useTranslations('common')
   const t = useTranslations('performance')
   const router = useRouter()
 

@@ -130,7 +130,8 @@ export async function recommendPeers(
       },
     })
 
-    const departmentId = (extractPrimaryAssignment(employee?.assignments ?? []) as Record<string, any>)?.departmentId
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const departmentId = (extractPrimaryAssignment(employee?.assignments ?? []) as any)?.departmentId
 
     if (departmentId) {
       const existingIds = new Set([

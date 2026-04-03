@@ -92,7 +92,8 @@ export const GET = withPermission(
           employeeNo: s.employee.employeeNo,
           department: assignment?.department?.name ?? '-',
           company: assignment?.company?.name ?? '-',
-          companyId: (assignment as Record<string, any>)?.companyId ?? user.companyId,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          companyId: (assignment as any)?.companyId ?? user.companyId,
           year: s.year,
           status: s.status,
           totalSalary: s.totalSalary.toString(),

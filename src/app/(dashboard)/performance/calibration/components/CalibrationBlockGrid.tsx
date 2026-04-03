@@ -20,7 +20,7 @@ import {
   type DragStartEvent,
 } from '@dnd-kit/core'
 import { cn } from '@/lib/utils'
-import { blockCodeToNum, blockNumToCode } from '../hooks/useBatchAdjustmentState'
+import { blockCodeToNum } from '../hooks/useBatchAdjustmentState'
 import type { PendingChange } from '../hooks/useBatchAdjustmentState'
 
 // ─── Types ──────────────────────────────────────────────────

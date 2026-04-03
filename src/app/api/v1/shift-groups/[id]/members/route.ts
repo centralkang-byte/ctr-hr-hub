@@ -68,8 +68,10 @@ export const GET = withPermission(
           employeeId: m.employeeId,
           employeeName: m.employee?.name,
           employeeNo: m.employee?.employeeNo,
-          departmentId: (extractPrimaryAssignment(m.employee?.assignments ?? []) as Record<string, any>)?.departmentId,
-          jobGradeId: (extractPrimaryAssignment(m.employee?.assignments ?? []) as Record<string, any>)?.jobGradeId,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          departmentId: (extractPrimaryAssignment(m.employee?.assignments ?? []) as any)?.departmentId,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          jobGradeId: (extractPrimaryAssignment(m.employee?.assignments ?? []) as any)?.jobGradeId,
           assignedAt: m.assignedAt,
         })),
       })

@@ -10,11 +10,11 @@ import { useTranslations } from 'next-intl'
 // CRAFTUI tokens applied throughout
 // ═══════════════════════════════════════════════════════════
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-    AlertTriangle, CheckCircle2, Circle, Clock, Frown, Loader2,
-    Lock, Meh, Play, Shield, Smile, SkipForward, UserCheck, ArrowLeft,
+    AlertTriangle, CheckCircle2, Circle, Clock, Loader2,
+    Lock, Play, Smile, SkipForward, ArrowLeft,
 } from 'lucide-react'
 import {
     Dialog, DialogContent, DialogDescription, DialogFooter,

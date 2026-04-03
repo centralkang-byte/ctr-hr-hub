@@ -59,7 +59,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
   const [rows, setRows] = useState<SimulationRow[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)
   const [loading, setLoading] = useState(false)
-  const [departmentFilter, setDepartmentFilter] = useState('')
+  const [departmentFilter, _setDepartmentFilter] = useState('')
   const [aiLoadingId, setAiLoadingId] = useState<string | null>(null)
   const [aiResult, setAiResult] = useState<{ employeeId: string; data: AiRecommendation } | null>(null)
 

@@ -7,7 +7,7 @@ import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import { EmptyState } from '@/components/ui/EmptyState'
 import {
-  CalendarDays, Plus, Loader2, AlertTriangle, Clock,
+  CalendarDays, Loader2, AlertTriangle, Clock,
   CheckCircle2, XCircle, ChevronLeft, ChevronRight,
 } from 'lucide-react'
 import type { SessionUser } from '@/types'

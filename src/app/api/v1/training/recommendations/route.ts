@@ -47,8 +47,10 @@ export const GET = withPermission(
     })
 
     const empPrimary = extractPrimaryAssignment(employee?.assignments ?? [])
-    const jobLevelCode = (empPrimary as Record<string, any>)?.jobGrade?.code ?? null
-    const companyId = (empPrimary as Record<string, any>)?.company?.id ?? user.companyId
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const jobLevelCode = (empPrimary as any)?.jobGrade?.code ?? null
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const companyId = (empPrimary as any)?.company?.id ?? user.companyId
 
     // 3. 역량 요건 조회 (직급별 기대 레벨)
     const requirements = await prisma.competencyRequirement.findMany({

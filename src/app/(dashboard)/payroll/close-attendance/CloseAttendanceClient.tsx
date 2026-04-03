@@ -79,7 +79,7 @@ export default function CloseAttendanceClient({ user }: Props) {
     const now = new Date()
     const [year, setYear] = useState(now.getFullYear())
     const [month, setMonth] = useState(now.getMonth() + 1)
-    const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null)
+    const [, setSelectedCompanyId] = useState<string | null>(null)
     const [statuses, setStatuses] = useState<Record<string, AttendanceStatus>>({})
     const [loading, setLoading] = useState(false)
     const [expandedEmp, setExpandedEmp] = useState<Record<string, boolean>>({})

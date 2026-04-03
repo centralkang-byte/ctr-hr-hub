@@ -83,7 +83,6 @@ type TabKey = (typeof TABS)[number]['key']
 // ─── Component ────────────────────────────────────────────
 
 export function MyDocumentsClient({ user: _user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
   const [activeTab, setActiveTab] = useState<TabKey>('documents')
   const [documents, setDocuments] = useState<EmployeeDocument[]>([])
   const [certRequests, setCertRequests] = useState<CertificateRequest[]>([])

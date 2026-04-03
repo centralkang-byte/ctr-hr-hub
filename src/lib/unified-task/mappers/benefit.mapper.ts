@@ -135,7 +135,8 @@ export const benefitClaimMapper: UnifiedTaskMapper<BenefitClaimWithRelations> = 
 
   toUnifiedTask(claim: BenefitClaimWithRelations): UnifiedTask {
     const statusMapped = mapBenefitStatus(claim.status)
-    const companyId = (extractPrimaryAssignment(claim.employee.assignments ?? []) as Record<string, any>)?.companyId ?? 'unknown'
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const companyId = (extractPrimaryAssignment(claim.employee.assignments ?? []) as any)?.companyId ?? 'unknown'
 
     return {
       id: `BenefitClaim:${claim.id}`,

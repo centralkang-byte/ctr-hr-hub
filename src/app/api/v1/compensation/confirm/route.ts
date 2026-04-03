@@ -70,7 +70,8 @@ export const POST = withPermission(
       // 직급 Map
       const jobGradeMap = new Map<string, string>()
       for (const emp of employees) {
-        const jgId = (extractPrimaryAssignment(emp.assignments ?? []) as Record<string, any>)?.jobGradeId
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const jgId = (extractPrimaryAssignment(emp.assignments ?? []) as any)?.jobGradeId
         if (jgId) jobGradeMap.set(emp.id, jgId)
       }
 

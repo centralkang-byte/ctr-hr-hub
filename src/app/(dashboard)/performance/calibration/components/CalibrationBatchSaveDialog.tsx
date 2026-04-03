@@ -162,7 +162,7 @@ export default function CalibrationBatchSaveDialog({
                   type="text"
                   placeholder={t('calibrationBatch.optionalReason')}
                   value={c.reason ?? ''}
-                  onChange={(e) => {
+                  onChange={(_e) => {
                     // 직접 Map 수정 대신 상위에서 관리 — 여기서는 read-only 표시
                     // TODO: 개별 사유 편집은 pendingChanges 업데이트 필요 시 훅 확장
                   }}

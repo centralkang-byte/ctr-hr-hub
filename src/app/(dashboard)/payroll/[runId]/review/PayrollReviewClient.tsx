@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation'
 import {
   AlertTriangle, CheckCircle2, ShieldX, ShieldCheck,
   X, Download, ChevronDown, ChevronUp, ArrowLeft,
-  TrendingUp, TrendingDown, Minus, Filter, Search,
+  TrendingUp, TrendingDown, Minus, Search,
   Users, DollarSign, AlertCircle, Clock,
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
@@ -169,8 +169,10 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
   }
 
   const primary = extractPrimaryAssignment(anomaly.employee.assignments ?? [])
-  const dept = (primary as Record<string, any>)?.department?.name ?? '—'
-  const pos = (primary as Record<string, any>)?.position?.titleKo ?? ''
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const dept = (primary as any)?.department?.name ?? '—'
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pos = (primary as any)?.position?.titleKo ?? ''
 
   if (anomaly.status !== 'OPEN') return null
 

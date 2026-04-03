@@ -101,6 +101,7 @@ export const GET = withPermission(
     let aiAssessment = null
 
     if (includeAi && (riskLevel === 'HIGH' || riskLevel === 'CRITICAL') && latestRisk) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const a = extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>
 
       const factors = latestRisk.scoreFactors as Array<{
@@ -170,6 +171,7 @@ export const GET = withPermission(
       }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const primaryAssignment = extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>
 
     return apiSuccess({

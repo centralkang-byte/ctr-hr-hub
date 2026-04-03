@@ -73,6 +73,7 @@ async function resolveAssigneeId(
           },
         })
         const empPrimary = extractPrimaryAssignment(empWithPos?.assignments ?? [])
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const managerId = (empPrimary as any)?.position?.reportsTo?.employees?.[0]?.id
         if (!managerId) console.warn(`[resolveAssigneeId] No manager found for employee ${employeeId}`)
         return managerId ?? null

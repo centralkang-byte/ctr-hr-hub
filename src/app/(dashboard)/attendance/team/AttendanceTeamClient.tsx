@@ -13,10 +13,7 @@ import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
-import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
 import type { SessionUser } from '@/types'
-import { TYPOGRAPHY } from '@/lib/styles'
 import { STATUS_VARIANT } from '@/lib/styles/status'
 
 // ─── Types ──────────────────────────────────────────────────

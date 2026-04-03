@@ -7,7 +7,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState } from 'react'
-import { Save, Bell, AlertTriangle } from 'lucide-react'
+import { Save, AlertTriangle } from 'lucide-react'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'

@@ -62,7 +62,8 @@ export async function POST(req: NextRequest) {
     return apiError(notFound('HR Hub에 등록되지 않은 사용자입니다.'))
   }
 
-  const senderCompanyId = (extractPrimaryAssignment(sender.employee.assignments ?? []) as Record<string, any>)?.companyId as string | undefined
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const senderCompanyId = (extractPrimaryAssignment(sender.employee.assignments ?? []) as any)?.companyId as string | undefined
 
   // Recognition 생성
   const recognition = await prisma.recognition.create({

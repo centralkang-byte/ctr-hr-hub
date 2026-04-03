@@ -103,7 +103,6 @@ interface Props {
 
 export default function PayrollPublishDashboardClient({user: _user, runId }: Props) {
   const t = useTranslations('payroll')
-  const tCommon = useTranslations('common')
 
     const router = useRouter()
     const [data, setData] = useState<PublishStatus | null>(null)
@@ -322,7 +321,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                                         </span>
                                     </div>
                                     {step.comment && (
-                                        <p className="text-sm text-muted-foreground mt-0.5 italic">"{step.comment}"</p>
+                                        <p className="text-sm text-muted-foreground mt-0.5 italic">&quot;{step.comment}&quot;</p>
                                     )}
                                 </div>
                             </div>

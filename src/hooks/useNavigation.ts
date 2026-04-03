@@ -115,7 +115,7 @@ export function useNavigation({
             return true
           })
           // NEW/beta 뱃지 제거 (사용자 요청)
-          .map(({ badge, ...item }) => item),
+          .map(({ badge: _badge, ...item }) => item),
       }))
       .filter((section) => section.items.length > 0)
   }, [user, countryCode])

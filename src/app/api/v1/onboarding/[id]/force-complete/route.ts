@@ -37,7 +37,8 @@ export const PUT = withPermission(
       },
     })
     if (!onboarding) throw notFound('온보딩 기록을 찾을 수 없습니다.')
-    const empCompanyId = (extractPrimaryAssignment(onboarding.employee.assignments ?? []) as Record<string, any>)?.companyId
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const empCompanyId = (extractPrimaryAssignment(onboarding.employee.assignments ?? []) as any)?.companyId
     if (
       user.role !== 'SUPER_ADMIN' &&
       empCompanyId !== user.companyId

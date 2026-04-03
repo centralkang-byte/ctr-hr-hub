@@ -88,7 +88,7 @@ function GoalModal({ initial, onSave, onClose, saving }: {
 
 // ─── Main Component ───────────────────────────────────────
 
-export default function MyGoalsClient({user }: {
+export default function MyGoalsClient({user: _user }: {
   user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')

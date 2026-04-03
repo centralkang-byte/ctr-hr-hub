@@ -66,7 +66,8 @@ export const GET = withPermission(
     // ── Build a map: departmentId → employeeIds ────────────
     const deptEmployeeMap = new Map<string, string[]>()
     for (const emp of activeEmployees) {
-      const deptId: string | null | undefined = (extractPrimaryAssignment(emp.assignments ?? []) as Record<string, any>)?.departmentId
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const deptId: string | null | undefined = (extractPrimaryAssignment(emp.assignments ?? []) as any)?.departmentId
       if (!deptId) continue
       const list = deptEmployeeMap.get(deptId) ?? []
       list.push(emp.id)

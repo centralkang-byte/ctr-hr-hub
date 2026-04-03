@@ -17,7 +17,6 @@ import {
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-import { ROLE } from '@/lib/constants'
 import { BUTTON_SIZES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
 import { STATUS_VARIANT } from '@/lib/styles/status'
 import { cn } from '@/lib/utils'
@@ -272,7 +271,6 @@ function SettlementDetailModal({
 
 export default function YearEndHRClient({user, defaultYear }: YearEndHRClientProps) {
   const t = useTranslations('payroll')
-  const tCommon = useTranslations('common')
 
   const [year, setYear] = useState(defaultYear)
   const [statusFilter, setStatusFilter] = useState<string>('all')

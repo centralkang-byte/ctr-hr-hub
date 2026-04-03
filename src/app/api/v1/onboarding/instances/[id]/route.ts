@@ -87,8 +87,10 @@ export const GET = withPermission(
         // 🚨 IDOR check: employee themselves, their manager, or HR_ADMIN
         const isEmployee = user.employeeId === onboarding.employeeId
         const empPrimary = extractPrimaryAssignment(onboarding.employee?.assignments ?? [])
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const managerAssignments = (empPrimary as any)?.position?.reportsTo?.assignments ?? []
         const mgrPrimary = extractPrimaryAssignment(managerAssignments)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const managerEmp = (mgrPrimary as any)?.employee
         const managerId = managerEmp?.id
         const isManager = user.employeeId === managerId
@@ -147,8 +149,11 @@ export const GET = withPermission(
                 name: onboarding.employee?.name,
                 email: onboarding.employee?.email,
                 hireDate: onboarding.employee?.hireDate,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 department: (empPrimary as any)?.department?.name,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 company: (empPrimary as any)?.company?.name,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 position: (empPrimary as any)?.position?.titleKo,
                 manager: managerId
                     ? { id: managerId, name: managerEmp?.name }

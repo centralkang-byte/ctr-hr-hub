@@ -150,7 +150,8 @@ export const POST = withPermission(
           feedbackText: data.feedbackText,
           suggestions: data.suggestions ?? null,
           isConfidential: data.isConfidential ?? true,
-          companyId: ((extractPrimaryAssignment(offboarding.employee.assignments ?? []) as Record<string, any>)?.companyId as string | undefined) ?? user.companyId,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          companyId: ((extractPrimaryAssignment(offboarding.employee.assignments ?? []) as any)?.companyId as string | undefined) ?? user.companyId,
         },
         include: { interviewer: { select: { id: true, name: true } } },
       })

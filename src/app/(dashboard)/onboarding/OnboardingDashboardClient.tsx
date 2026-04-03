@@ -10,7 +10,7 @@ import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { AlertTriangle, CheckCircle2, Clock, Frown, Lock, Meh, Smile } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Clock, Frown, Meh, Smile } from 'lucide-react'
 import {
   Dialog,
   DialogContent,

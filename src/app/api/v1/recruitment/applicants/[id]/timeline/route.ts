@@ -136,6 +136,7 @@ export const GET = withPermission(
           id: `app-${app.id}-rejected`,
           type: 'stage_change',
           label: 'REJECTED',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           description: (app as any).rejectionReason ?? undefined,
           postingTitle: app.posting.title,
           companyName: app.posting.company.name,

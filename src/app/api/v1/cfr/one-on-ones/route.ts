@@ -73,7 +73,7 @@ export const GET = withPermission(
     ])
 
     return apiPaginated(
-      meetings.map((m) => ({ ...m, employee: toMinimalEmployee(m.employee as any) })),
+      meetings.map((m) => ({ ...m, employee: toMinimalEmployee(m.employee as unknown) })),
       buildPagination(page, limit, total)
     )
   },

@@ -40,8 +40,7 @@ interface ProgressForm {
 // ─── Component ────────────────────────────────────────────
 
 export default function GoalsClient({
- user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
+ user: _user }: { user: SessionUser }) {
   const t = useTranslations('performance')
   const tc = useTranslations('common')
   const router = useRouter()

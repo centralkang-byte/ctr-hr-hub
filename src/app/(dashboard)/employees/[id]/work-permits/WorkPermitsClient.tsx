@@ -102,7 +102,7 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
     await loadPermits()
   }
 
-  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
+  const { guardedSubmit, isSubmitting: _isSubmitting } = useSubmitGuard(handleSubmit)
 
   const isExpiringSoon = (expiryDate: string | null) => {
     if (!expiryDate) return false

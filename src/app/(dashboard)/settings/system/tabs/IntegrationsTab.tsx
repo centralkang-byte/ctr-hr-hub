@@ -2,7 +2,6 @@
 
 // import { useState } from 'react'
 import { Info, Plug } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 

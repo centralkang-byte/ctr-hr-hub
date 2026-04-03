@@ -20,16 +20,6 @@ function toArrayBuffer(wb: XLSX.WorkBook): ArrayBuffer {
     return uint8.buffer.slice(uint8.byteOffset, uint8.byteOffset + uint8.byteLength)
 }
 
-function fmtNum(n: number): string {
-    if (n === 0) return '0'
-    return n.toLocaleString('ko-KR')
-}
-
-function fmtDiff(n: number): string {
-    if (n === 0) return '0'
-    return (n > 0 ? '+' : '') + n.toLocaleString('ko-KR')
-}
-
 function pctStr(rate: number): string {
     return (rate * 100).toFixed(1) + '%'
 }
@@ -111,7 +101,8 @@ function buildSimulationExcel(
     // ─── Sheet 1: 요약 ──────────────────────────────────────
 
     const modeLabel = summary.mode === 'SINGLE' ? '개별' : '일괄'
-    const adjRate = (summary.parameters as Record<string, unknown>)?.baseSalaryAdjustRate
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const adjRate = (summary.parameters as any)?.baseSalaryAdjustRate
     const rateLabel = adjRate !== undefined ? `기본급 인상률: ${((adjRate as number) * 100).toFixed(1)}%` : ''
 
     const summaryData: (string | number | null)[][] = [

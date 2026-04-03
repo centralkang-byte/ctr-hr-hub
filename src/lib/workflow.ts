@@ -105,8 +105,10 @@ async function resolveApprover(
         },
       })
       const empPrimary = extractPrimaryAssignment(employee?.assignments ?? [])
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mgrAssignments = (empPrimary as any)?.position?.reportsTo?.assignments ?? []
       const mgrPrimary = extractPrimaryAssignment(mgrAssignments)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const managerEmployee = (mgrPrimary as any)?.employee
       if (!managerEmployee) return null
       return {
@@ -171,7 +173,8 @@ async function resolveApprover(
         },
       })
       if (!employee) return null
-      const empCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>)?.companyId
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const empCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as any)?.companyId
 
       const hrAdmin = await prisma.employee.findFirst({
         where: {
@@ -228,7 +231,8 @@ async function resolveApprover(
         },
       })
       if (!employee) return null
-      const roleEmpCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>)?.companyId
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const roleEmpCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as any)?.companyId
 
       // Find the role by ID, then find an employee with that role
       const roleHolder = await prisma.employee.findFirst({

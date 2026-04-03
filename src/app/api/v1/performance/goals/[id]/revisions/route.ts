@@ -16,7 +16,7 @@ import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import type { SessionUser } from '@/types'
-import type { GoalStatus, GoalRevisionStatus } from '@/generated/prisma/client'
+import type { GoalRevisionStatus } from '@/generated/prisma/client'
 
 bootstrapEventHandlers()
 

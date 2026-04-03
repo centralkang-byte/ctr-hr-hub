@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
-import { useTranslations } from 'next-intl'
 
 interface NontaxableLimit {
   code: string
@@ -40,7 +39,6 @@ export function TaxFreeTab({
     try {
       const qs = companyId ? `?key=kr-nontaxable-limits&companyId=${companyId}` : '?key=kr-nontaxable-limits'
       const res = await apiClient.get(`/api/v1/process-settings/payroll${qs}`)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const items = (res as any)?.data ?? res ?? []
       const setting = Array.isArray(items) ? items[0] : null

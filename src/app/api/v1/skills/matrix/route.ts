@@ -85,7 +85,8 @@ export const GET = withPermission(
     // 매트릭스 구성
     const matrix = employees.map((emp) => {
       const empPrimary = extractPrimaryAssignment(emp.assignments ?? [])
-      const grade = (empPrimary as Record<string, any>)?.jobGrade?.code ?? ''
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const grade = (empPrimary as any)?.jobGrade?.code ?? ''
       const assessmentMap = new Map(emp.skillAssessments.map((a) => [a.competencyId, a]))
 
       return {
@@ -94,8 +95,10 @@ export const GET = withPermission(
           name: emp.name,
           nameEn: emp.nameEn,
           grade,
-          gradeLabel: (empPrimary as Record<string, any>)?.jobGrade?.name ?? '',
-          department: (empPrimary as Record<string, any>)?.department,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          gradeLabel: (empPrimary as any)?.jobGrade?.name ?? '',
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          department: (empPrimary as any)?.department,
         },
         scores: competencies.map((c) => {
           const assessment = assessmentMap.get(c.id)

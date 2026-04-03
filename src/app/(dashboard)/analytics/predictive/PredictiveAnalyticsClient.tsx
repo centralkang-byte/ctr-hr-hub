@@ -158,7 +158,6 @@ function SummaryCards({
   burnoutData: BurnoutRow[]
   teamData: TeamHealthRow[]
 }) {
-  const t = useTranslations('analytics')
   const highTurnover = turnoverData.filter((d) =>
     ['high', 'critical'].includes(d.latestScore?.riskLevel ?? '')
   ).length
@@ -227,7 +226,6 @@ function SummaryCards({
 // ─── 이직 예측 탭 ─────────────────────────────────────
 
 function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
-  const t = useTranslations('analytics')
   const chartData = ['critical', 'high', 'medium', 'low'].map((level) => ({
     level: RISK_CONFIG[level as RiskLevel].label,
     count: data.filter((d) => d.latestScore?.riskLevel === level).length,
@@ -354,7 +352,6 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
 // ─── 번아웃 탭 ───────────────────────────────────────
 
 function BurnoutTab({ data }: { data: BurnoutRow[] }) {
-  const t = useTranslations('analytics')
   const chartData = ['critical', 'high', 'medium', 'low'].map((level) => ({
     level: RISK_CONFIG[level as RiskLevel].label,
     count: data.filter((d) => d.latestScore?.riskLevel === level).length,
@@ -453,7 +450,6 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
 // ─── 팀 건강 탭 ─────────────────────────────────────
 
 function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
-  const t = useTranslations('analytics')
   const radarData = data.slice(0, 8).map((d) => ({
     team: d.departmentName.slice(0, 6),
     score: 100 - (d.latestScore?.overallScore ?? 0),
@@ -555,7 +551,6 @@ function WorkforceTab({
   turnoverData: TurnoverRiskRow[]
   burnoutData: BurnoutRow[]
 }) {
-  const t = useTranslations('analytics')
   const deptMap: Record<string, { turnoverHigh: number; burnoutHigh: number; total: number }> = {}
 
   for (const row of turnoverData) {
@@ -659,7 +654,6 @@ export default function PredictiveAnalyticsClient() {
   const t = useTranslations('analytics')
 
   const searchParams = useSearchParams()
-  const router = useRouter()
   const companyId = searchParams.get('company_id') ?? undefined
 
   const [activeTab, setActiveTab] = useState<TabKey>('turnover')

@@ -66,8 +66,8 @@ export const GET = withPermission(
     return apiPaginated(
       items.map((item) => ({
         ...item,
-        employee: toMinimalEmployee(item.employee as any),
-        nominee: toMinimalEmployee(item.nominee as any),
+        employee: toMinimalEmployee(item.employee as unknown),
+        nominee: toMinimalEmployee(item.nominee as unknown),
       })),
       buildPagination(page, size, total)
     )

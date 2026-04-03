@@ -4,8 +4,7 @@ import { useTranslations } from 'next-intl'
 
 import { useState, useEffect, useCallback } from 'react'
 import {
-  Globe, ChevronLeft, ChevronRight, TrendingUp, Users,
-  Banknote, AlertTriangle, RefreshCw, Settings, Upload
+  Globe, ChevronLeft, ChevronRight,   AlertTriangle, RefreshCw, Settings, Upload
 } from 'lucide-react'
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,

@@ -6,8 +6,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import React, { useEffect, useState, useCallback } from 'react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  ResponsiveContainer, AreaChart, Area,
-} from 'recharts'
+  ResponsiveContainer, } from 'recharts'
 import { Users, UserPlus, UserMinus, Calendar } from 'lucide-react'
 import { KpiCard } from '@/components/analytics/KpiCard'
 import { ChartCard } from '@/components/analytics/ChartCard'

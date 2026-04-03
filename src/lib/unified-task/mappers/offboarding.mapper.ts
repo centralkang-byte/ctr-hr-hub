@@ -164,7 +164,8 @@ class OffboardingTaskMapper
     const assignee = resolveOffboardingAssignee(task.assigneeType, offboarding)
     const status = mapOffboardingStatus(source.status)
     const priority = mapOffboardingPriority(source.status, dueDate)
-    const companyId = (extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>)?.companyId ?? ''
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const companyId = (extractPrimaryAssignment(employee.assignments ?? []) as any)?.companyId ?? ''
     const isBlocked = source.status === 'BLOCKED'
 
     // 남은 일수 계산 (마감 기준)

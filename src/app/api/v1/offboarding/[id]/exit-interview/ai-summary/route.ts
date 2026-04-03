@@ -64,7 +64,8 @@ export const POST = withPermission(
       interview.primaryReason,
       interview.satisfactionScore,
       interview.feedbackText,
-      ((extractPrimaryAssignment(offboarding.employee.assignments ?? []) as Record<string, any>)?.companyId as string | undefined) ?? user.companyId,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ((extractPrimaryAssignment(offboarding.employee.assignments ?? []) as any)?.companyId as string | undefined) ?? user.companyId,
       offboarding.employee.id,
     )
 

@@ -11,15 +11,12 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { TYPOGRAPHY } from '@/lib/styles/typography'
 import { STATUS_VARIANT } from '@/lib/styles/status'
 import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
-import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,

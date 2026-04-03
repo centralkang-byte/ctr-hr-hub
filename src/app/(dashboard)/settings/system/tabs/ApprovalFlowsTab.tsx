@@ -80,7 +80,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
     try {
       const isNew = flow.id.startsWith('new-')
       const url = '/api/v1/settings/approval-flows'
-      const method = isNew ? 'POST' : 'PUT'
+      const _method = isNew ? 'POST' : 'PUT'
       const body = isNew
         ? { name: flow.name, description: flow.description, companyId: flow.companyId, module: flow.module, steps: flow.steps.map(s => ({ approverType: s.approverType, approverRole: s.approverRole, approverUserId: s.approverUserId, isRequired: s.isRequired, autoApproveDays: s.autoApproveDays })) }
         : { id: flow.id, name: flow.name, description: flow.description, module: flow.module, deletedAt: flow.deletedAt, steps: flow.steps.map(s => ({ approverType: s.approverType, approverRole: s.approverRole, approverUserId: s.approverUserId, isRequired: s.isRequired, autoApproveDays: s.autoApproveDays })) }

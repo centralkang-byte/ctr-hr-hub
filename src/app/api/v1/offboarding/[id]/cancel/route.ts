@@ -84,7 +84,8 @@ export const PUT = withPermission(
           effectiveDate: new Date(),
           reason: '퇴직 처리 취소',
           approvedById: user.employeeId,
-          toCompanyId: (extractPrimaryAssignment(offboarding.employee.assignments ?? []) as Record<string, any>)?.companyId ?? undefined,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          toCompanyId: (extractPrimaryAssignment(offboarding.employee.assignments ?? []) as any)?.companyId ?? undefined,
         },
       })
     })

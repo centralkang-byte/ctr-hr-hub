@@ -64,7 +64,7 @@ const CTR_VALUES = [
 
 // ─── Main Component ───────────────────────────────────────
 
-export default function MyPeerReviewClient({user }: {
+export default function MyPeerReviewClient({user: _user }: {
   user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')

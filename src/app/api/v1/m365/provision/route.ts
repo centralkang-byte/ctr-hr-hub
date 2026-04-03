@@ -45,7 +45,8 @@ export const POST = withPermission(
       throw badRequest('해당 구성원을 찾을 수 없습니다.')
     }
 
-    const employeeCompanyId = ((extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>)?.companyId as string | undefined) ?? user.companyId
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const employeeCompanyId = ((extractPrimaryAssignment(employee.assignments ?? []) as any)?.companyId as string | undefined) ?? user.companyId
 
     // Non-super-admin must belong to same company
     if (user.role !== ROLE.SUPER_ADMIN && user.companyId !== employeeCompanyId) {

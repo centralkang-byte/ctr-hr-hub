@@ -4,14 +4,14 @@ import { useTranslations } from 'next-intl'
 
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, LayoutGrid, List, Building2, Users, Filter, X, Mail, Phone, MapPin, ExternalLink } from 'lucide-react'
+import { Search, LayoutGrid, List, Users, Filter, X, Mail, Phone, ExternalLink } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useDebounce } from '@/hooks/useDebounce'
 import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
@@ -355,7 +355,7 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
       </SheetHeader>
 
       {emp.bio && (
-        <p className="text-sm text-muted-foreground italic">"{emp.bio}"</p>
+        <p className="text-sm text-muted-foreground italic">&quot;{emp.bio}&quot;</p>
       )}
 
       <div className="space-y-2">

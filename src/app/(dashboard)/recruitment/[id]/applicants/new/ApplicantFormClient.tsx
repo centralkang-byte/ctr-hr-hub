@@ -48,7 +48,6 @@ interface Props {
 
 export default function ApplicantFormClient({
  user, postingId }: Props) {
-  const tCommon = useTranslations('common')
 
   const t = useTranslations('recruitment')
   const router = useRouter()

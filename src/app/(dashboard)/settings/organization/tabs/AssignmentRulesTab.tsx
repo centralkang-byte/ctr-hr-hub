@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { AssignmentRulesSetting } from '@/types/process-settings'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
-import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 

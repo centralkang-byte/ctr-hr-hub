@@ -33,10 +33,9 @@ import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── 동적 임계값: 최종 근무일까지 남은 일수 기반 ──────────
 
-interface OffboardingThresholds extends NudgeThresholds {
-  // NudgeThresholds의 repeatEveryDays가 0.5(12h)를 지원하지 않으므로
-  // 여기서는 1로 맞추되 maxNudges를 5로 높여 효과 유사하게 처리
-}
+// NudgeThresholds의 repeatEveryDays가 0.5(12h)를 지원하지 않으므로
+// 여기서는 1로 맞추되 maxNudges를 5로 높여 효과 유사하게 처리
+type OffboardingThresholds = NudgeThresholds
 
 function getThresholdsForOffboarding(
   daysUntilLastWorking: number,
@@ -204,7 +203,8 @@ export const offboardingOverdueRule: NudgeRule = {
       if (now < taskCutoff) continue
 
       // Recipient 판별
-      const positionId = (extractPrimaryAssignment(offboarding.employee.assignments ?? []) as Record<string, any>)?.positionId
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const positionId = (extractPrimaryAssignment(offboarding.employee.assignments ?? []) as any)?.positionId
       const recipientId = await resolveOffboardingRecipient(
         task.assigneeType,
         offboarding.employeeId,

@@ -111,7 +111,6 @@ interface DepartmentOption {
 // ─── Constants ──────────────────────────────────────────────
 
 const CHART_COLORS = ['#5E81F4', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899']
-const BAR_DEPT_COLORS: Record<string, string> = {}
 
 function getDeptColor(index: number): string {
   return CHART_COLORS[index % CHART_COLORS.length]
@@ -129,7 +128,6 @@ function getYearOptions(): number[] {
 export function LeaveAdminClient({ user }: { user: SessionUser }) {
   void user
 
-  const t = useTranslations('leave')
   const tc = useTranslations('common')
   const currentYear = new Date().getFullYear()
 

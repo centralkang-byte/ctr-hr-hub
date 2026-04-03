@@ -23,8 +23,7 @@ interface CycleOption {
 // ─── Component ────────────────────────────────────────────
 
 export default function NewGoalClient({
- user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
+ user: _user }: { user: SessionUser }) {
   const t = useTranslations('performance')
   const tc = useTranslations('common')
   const router = useRouter()
@@ -47,7 +46,6 @@ export default function NewGoalClient({
     register,
     handleSubmit,
     formState: { errors },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useForm<FormValues>({ resolver: zodResolver(formSchema) as any })
 
@@ -108,7 +106,6 @@ export default function NewGoalClient({
 
         {/* Form */}
         <form
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onSubmit={handleSubmit(onSubmit as any)}
           className="space-y-5 rounded-lg bg-card p-6"

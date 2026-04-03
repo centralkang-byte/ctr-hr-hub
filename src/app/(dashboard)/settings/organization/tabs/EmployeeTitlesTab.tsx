@@ -22,7 +22,7 @@ interface EmployeeTitle {
   companyId: string
 }
 
-export function EmployeeTitlesTab({ companyId }: Props) {
+export function EmployeeTitlesTab({ companyId: _companyId }: Props) {
   const t = useTranslations('settings')
   const [titles, setTitles] = useState<EmployeeTitle[]>([])
   const [loading, setLoading] = useState(true)

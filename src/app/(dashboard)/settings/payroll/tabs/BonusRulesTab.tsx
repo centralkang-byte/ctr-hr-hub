@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
 import { BUTTON_VARIANTS,  FORM_STYLES, TABLE_STYLES } from '@/lib/styles'
-import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
 
@@ -43,7 +42,6 @@ export function BonusRulesTab({
     try {
       const qs = companyId ? `?key=bonus-rules&companyId=${companyId}` : '?key=bonus-rules'
       const res = await apiClient.get(`/api/v1/process-settings/compensation${qs}`)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const items = (res as any)?.data ?? res ?? []
       const setting = Array.isArray(items) ? items[0] : null

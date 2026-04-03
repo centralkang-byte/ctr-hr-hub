@@ -8,7 +8,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Send } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
 import type { SessionUser, OnboardingCheckin } from '@/types'

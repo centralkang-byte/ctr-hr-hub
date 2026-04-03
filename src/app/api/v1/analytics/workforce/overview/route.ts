@@ -24,7 +24,7 @@ export const GET = withPermission(
     const now = new Date()
 
     // RLS: DB-level tenant isolation — withRLS sets session vars for all queries in this tx
-    const [activeAssignments, hireAssignments, exitAssignments, departments, jobGrades] =
+    const [activeAssignments, hireAssignments, exitAssignments, _departments, jobGrades] =
       await withRLS(buildRLSContext({ ...user, companyId: effectiveCompanyId ?? user.companyId }), (tx) =>
         Promise.all([
           // Active employees with relations

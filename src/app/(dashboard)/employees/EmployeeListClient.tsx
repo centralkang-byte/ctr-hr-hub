@@ -17,8 +17,7 @@ import {
   Building2,
   Calendar,
   ExternalLink,
-  Briefcase,
-  Mail,
+    Mail,
   Phone,
   MapPin,
 } from 'lucide-react'

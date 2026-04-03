@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 
 import { useState, useEffect } from 'react'
-import { BookOpen, CheckCircle2, Clock, AlertTriangle, Sparkles, ChevronRight } from 'lucide-react'
+import { BookOpen, CheckCircle2, Clock, AlertTriangle, Sparkles } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { apiClient } from '@/lib/api'
@@ -108,7 +108,6 @@ function daysUntil(dateStr?: string | null): number | null {
 
 export default function MyTrainingClient({ user: _user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
-  const t = useTranslations('mySpace')
   const { toast } = useToast()
   const [data, setData] = useState<MyTrainingData | null>(null)
   const [loading, setLoading] = useState(true)

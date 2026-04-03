@@ -8,8 +8,8 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import {
-  Shield, Plus, CheckCircle2, XCircle, Clock, Pause, AlertCircle,
-  ChevronDown, FileText,
+  Shield, Plus, CheckCircle2, Clock, Pause, AlertCircle,
+  FileText,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'

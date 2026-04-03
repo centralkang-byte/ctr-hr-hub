@@ -207,7 +207,8 @@ export const onboardingOverdueRule: NudgeRule = {
       if (now < taskCutoff) continue
 
       // FIX: Issue #4 — await async resolveRecipientId, pass positionId for MANAGER
-      const positionId = (extractPrimaryAssignment(onboarding.employee.assignments ?? []) as Record<string, any>)?.positionId
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const positionId = (extractPrimaryAssignment(onboarding.employee.assignments ?? []) as any)?.positionId
       const recipientId = await resolveRecipientId(
         task.assigneeType,
         onboarding.employeeId,

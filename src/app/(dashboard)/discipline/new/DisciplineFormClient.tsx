@@ -189,7 +189,6 @@ export default function DisciplineFormClient({ user }: Props) {
 
       {/* Form */}
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6 max-w-3xl">
         {/* Basic Info */}
         <div className="bg-card border border-border rounded-xl p-6">

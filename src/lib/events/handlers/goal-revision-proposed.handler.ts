@@ -5,7 +5,6 @@
 
 import { prisma } from '@/lib/prisma'
 import { sendNotification } from '@/lib/notifications'
-import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import type { DomainEventHandler, GoalRevisionProposedPayload, TxClient } from '../types'
 import { DOMAIN_EVENTS } from '../types'
 

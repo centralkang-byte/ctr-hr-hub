@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 import { useState, useCallback } from 'react'
 import {
   User, Briefcase, DollarSign, FileText, Camera, CheckCircle2, XCircle,
-  Edit3, Save, X, Plus, Trash2, Globe, Building, AlertCircle,
+  Edit3, Save, X, Globe, Building, AlertCircle,
   Calendar, Clock, Award
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
@@ -547,7 +547,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                     <div className="flex items-center gap-1.5">
                       <VisibilityBadge level={(visibility as any)[field]} />
                       <select
-                        value={(visibility as any)[field]}
+                        value={(visibility as any)[field] /* eslint-disable-line @typescript-eslint/no-explicit-any */}
                         onChange={(e) => saveVisibility(field as keyof ProfileVisibility, e.target.value)}
                         className="text-[10px] border border-border rounded px-1 py-0.5 focus:ring-1 focus:ring-primary/20 bg-card"
                       >

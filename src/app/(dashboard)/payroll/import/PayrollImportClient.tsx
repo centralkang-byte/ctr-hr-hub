@@ -6,7 +6,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { useState, useEffect, useRef } from 'react'
 import {
   Upload, FileSpreadsheet, Settings2, CheckCircle2, Clock,
-  ChevronRight, Plus, Trash2, Save, AlertCircle, Building2
+  ChevronRight, Plus, Save, AlertCircle, Building2
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'

@@ -6,7 +6,7 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, conflict, handlePrismaError, isAppError } from '@/lib/errors'
+import { notFound, conflict, handlePrismaError, isAppError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'

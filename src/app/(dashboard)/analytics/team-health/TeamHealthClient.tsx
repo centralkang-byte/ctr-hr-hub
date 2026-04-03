@@ -25,7 +25,6 @@ const SUB_ICONS = [
   { key: 'turnoverRisk', label: '이직 위험', icon: AlertTriangle },
   { key: 'burnoutRisk', label: '번아웃 위험', icon: Flame },
 ]
-const STATUS_COLORS = { GREEN: STATUS_FG.success, YELLOW: STATUS_FG.warning, RED: STATUS_FG.error }
 const STATUS_LABELS = { GREEN: '🟢', YELLOW: '🟡', RED: '🔴' }
 const RISK_COLORS = { HIGH: 'text-destructive bg-destructive/5', MEDIUM: 'text-amber-600 bg-amber-500/10', LOW: 'text-emerald-600 bg-emerald-500/10' }
 
@@ -79,7 +78,6 @@ export default function TeamHealthClient({ user: _user }: { user: SessionUser })
   }
 
   const scoreColor = SCORE_COLORS[data.scoreLevel] || '#94A3B8'
-  const dashOffset = 100 - data.score
 
   return (
     <div className="space-y-6">

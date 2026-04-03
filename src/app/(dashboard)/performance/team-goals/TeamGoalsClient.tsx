@@ -74,8 +74,7 @@ interface TeamMemberGoals {
 // ─── Component ────────────────────────────────────────────
 
 export default function TeamGoalsClient({
- user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
+ user: _user }: { user: SessionUser }) {
   const t = useTranslations('performance')
   const tc = useTranslations('common')
 

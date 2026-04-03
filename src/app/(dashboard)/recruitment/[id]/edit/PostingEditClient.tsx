@@ -61,7 +61,6 @@ interface Props {
 
 export default function PostingEditClient({
  user, id }: Props) {
-  const tCommon = useTranslations('common')
   const t = useTranslations('recruitment')
   const router = useRouter()
 

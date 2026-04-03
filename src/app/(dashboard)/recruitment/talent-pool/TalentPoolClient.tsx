@@ -63,7 +63,7 @@ function daysUntil(date: string): number {
   return Math.ceil((new Date(date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
 }
 
-export default function TalentPoolClient({user }: {
+export default function TalentPoolClient({user: _user }: {
   user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('recruitment')

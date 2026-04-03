@@ -32,7 +32,6 @@ interface NotificationItem {
 // ─── Component ──────────────────────────────────────────────
 
 export function NotificationsClient({ user: _user }: { user: SessionUser }) {
-  const t = useTranslations('notification')
   const tc = useTranslations('common')
 
   // ─── Filter tabs ────────────────────────────────────────────

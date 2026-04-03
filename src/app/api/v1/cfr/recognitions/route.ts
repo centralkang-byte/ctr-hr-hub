@@ -61,8 +61,8 @@ export const GET = withPermission(
 
     const feed = items.map((r) => ({
       id: r.id,
-      sender: toMinimalEmployee(r.sender as any),
-      receiver: toMinimalEmployee(r.receiver as any),
+      sender: toMinimalEmployee(r.sender as unknown),
+      receiver: toMinimalEmployee(r.receiver as unknown),
       coreValue: r.coreValue,
       message: r.message,
       createdAt: r.createdAt,

@@ -93,7 +93,6 @@ function formatDateTime(dateStr: string | null): string {
 // ─── Component ──────────────────────────────────────────────
 
 export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps) {
-  const t = useTranslations('employee')
   const tc = useTranslations('common')
 
   const EDITABLE_FIELDS: { key: EditableField; label: string }[] = [

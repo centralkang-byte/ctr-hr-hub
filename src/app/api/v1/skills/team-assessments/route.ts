@@ -109,14 +109,16 @@ export const GET = withPermission(
       period,
       teamMembers: teamMembers.map((m) => {
         const mPrimary = extractPrimaryAssignment(m.assignments ?? [])
-          const grade = (mPrimary as Record<string, any>)?.jobGrade?.code ?? ''
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const grade = (mPrimary as any)?.jobGrade?.code ?? ''
         const assessmentMap = new Map(m.skillAssessments.map((a) => [a.competencyId, a]))
         return {
           id: m.id,
           name: m.name,
           nameEn: m.nameEn,
           grade,
-          department: (mPrimary as Record<string, any>)?.department,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          department: (mPrimary as any)?.department,
           assessments: competencies.map((c) => {
             const assessment = assessmentMap.get(c.id)
             const expectedLevel = requirementMap.get(`${c.id}_${grade}`) ?? null

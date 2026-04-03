@@ -17,8 +17,7 @@ import {
   FileText,
   MessageSquare,
   Star,
-  Upload,
-  User,
+    User,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -158,7 +157,6 @@ export function OffboardingDetailClient({
 }: OffboardingDetailClientProps) {
   const router = useRouter()
   const t = useTranslations('offboarding')
-  const tCommon = useTranslations('common')
 
   const RESIGN_TYPE_LABELS: Record<string, string> = {
     VOLUNTARY: t('resignVoluntary'),

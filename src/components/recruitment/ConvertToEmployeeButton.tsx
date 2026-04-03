@@ -32,7 +32,7 @@ export default function ConvertToEmployeeButton({
   applicantEmail,
   postingDepartment,
   postingGrade,
-  postingCompanyId,
+  postingCompanyId: _postingCompanyId,
 }: Props) {
   const router = useRouter()
   const t = useTranslations('recruitment')

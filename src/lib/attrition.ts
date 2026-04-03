@@ -183,7 +183,8 @@ async function calculateManagerFactor(employeeId: string): Promise<number> {
 
   if (!employee) return 50
 
-  const hasReportsTo = !!(extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>)?.position?.reportsToPositionId
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const hasReportsTo = !!(extractPrimaryAssignment(employee.assignments ?? []) as any)?.position?.reportsToPositionId
 
   // No manager position assigned — higher uncertainty
   if (!hasReportsTo) return 50

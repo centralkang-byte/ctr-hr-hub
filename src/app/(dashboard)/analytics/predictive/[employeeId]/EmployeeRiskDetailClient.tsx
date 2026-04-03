@@ -111,7 +111,6 @@ function RiskBadge({ level }: { level: string }) {
 }
 
 function ScoreGauge({ score, riskLevel }: { score: number; riskLevel: string }) {
-  const t = useTranslations('analytics')
   const cfg = RISK_CONFIG[riskLevel] ?? RISK_CONFIG.low!
   return (
     <div className="relative flex items-center justify-center">
@@ -145,7 +144,6 @@ function RecommendedActions({ turnover, burnout }: {
   turnover: EmployeeRiskData['turnover']
   burnout: EmployeeRiskData['burnout']
 }) {
-  const t = useTranslations('analytics')
   const actions: { icon: string; text: string; priority: 'high' | 'medium' }[] = []
 
   if (turnover && ['high', 'critical'].includes(turnover.riskLevel)) {

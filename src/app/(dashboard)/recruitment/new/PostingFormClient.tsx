@@ -40,7 +40,6 @@ interface Props {
 
 export default function PostingFormClient({
  user }: Props) {
-  const tCommon = useTranslations('common')
 
   const t = useTranslations('recruitment')
   const router = useRouter()

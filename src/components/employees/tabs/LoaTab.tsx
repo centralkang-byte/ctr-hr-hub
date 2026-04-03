@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Shield, FileText, Clock, CheckCircle2, XCircle, AlertCircle, Pause } from 'lucide-react'
+import { Shield, Clock, CheckCircle2, XCircle, AlertCircle, Pause } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 

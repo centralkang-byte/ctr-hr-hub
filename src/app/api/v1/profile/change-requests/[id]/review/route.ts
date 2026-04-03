@@ -96,7 +96,8 @@ export const PUT = withPermission(
     // Company scope check (non-SUPER_ADMIN)
     if (
       user.role !== ROLE.SUPER_ADMIN &&
-      (extractPrimaryAssignment(changeRequest.employee.assignments ?? []) as Record<string, any>)?.companyId !== user.companyId
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (extractPrimaryAssignment(changeRequest.employee.assignments ?? []) as any)?.companyId !== user.companyId
     ) {
       throw notFound('변경 요청을 찾을 수 없습니다.')
     }
@@ -149,7 +150,8 @@ export const PUT = withPermission(
         action: 'PROFILE_CHANGE_APPROVE',
         resourceType: 'ProfileChangeRequest',
         resourceId: id,
-        companyId: (extractPrimaryAssignment(changeRequest.employee.assignments ?? []) as Record<string, any>)?.companyId as string,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        companyId: (extractPrimaryAssignment(changeRequest.employee.assignments ?? []) as any)?.companyId as string,
         changes: {
           fieldName: changeRequest.fieldName,
           oldValue: changeRequest.oldValue,
@@ -192,7 +194,8 @@ export const PUT = withPermission(
       action: 'PROFILE_CHANGE_REJECT',
       resourceType: 'ProfileChangeRequest',
       resourceId: id,
-      companyId: (extractPrimaryAssignment(changeRequest.employee.assignments ?? []) as Record<string, any>)?.companyId as string,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      companyId: (extractPrimaryAssignment(changeRequest.employee.assignments ?? []) as any)?.companyId as string,
       changes: {
         fieldName: changeRequest.fieldName,
         rejectionReason: rejectionReason!.trim(),

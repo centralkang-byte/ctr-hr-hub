@@ -14,7 +14,6 @@ import { calculateEmsBlock, DEFAULT_BLOCK_DEFINITIONS } from '@/lib/ems'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
-import { withRLS, buildRLSContext } from '@/lib/api/withRLS'
 import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
 import type { EvalType, EvalStatus, Prisma } from '@/generated/prisma/client'
@@ -99,7 +98,7 @@ export const GET = withPermission(
       companyId: user.companyId,
     }
 
-    const [evaluations, total] = await Promise.all([
+    const [evaluations, _total] = await Promise.all([
       prisma.performanceEvaluation.findMany({
         where,
         orderBy: { createdAt: 'desc' },

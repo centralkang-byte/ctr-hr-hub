@@ -49,7 +49,8 @@ export const POST = withPermission(
       })
       if (!employee) throw notFound('직원을 찾을 수 없습니다.')
 
-      const empCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>)?.companyId ?? user.companyId
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const empCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as any)?.companyId ?? user.companyId
 
       // 2. 이미 진행 중인 온보딩 확인
       const existing = await prisma.employeeOnboarding.findFirst({

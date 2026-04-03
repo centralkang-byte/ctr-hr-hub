@@ -172,7 +172,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 export function EmployeeDetailClient({
   user,
   employee: initialEmployee,
-  companies,
+  companies: _companies,
   departments,
   jobCategories,
   gradeTitleMappings,

@@ -11,7 +11,6 @@ import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
 
 interface Props { companyId: string | null }
 

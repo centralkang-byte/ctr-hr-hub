@@ -58,7 +58,7 @@ export const GET = withPermission(
       cycleId,
       evaluations: evaluations.map((e) => ({
         ...e,
-        evaluator: toMinimalEmployee(e.evaluator as any),
+        evaluator: toMinimalEmployee(e.evaluator as unknown),
       })),
       summary: null,
     })
@@ -91,7 +91,7 @@ export const GET = withPermission(
       cycleId,
       evaluations: evaluations.map((e) => ({
         ...e,
-        evaluator: toMinimalEmployee(e.evaluator as any),
+        evaluator: toMinimalEmployee(e.evaluator as unknown),
       })),
       summary: {
         reviewerCount: evaluations.length,

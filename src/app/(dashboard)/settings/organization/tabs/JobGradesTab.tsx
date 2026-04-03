@@ -36,7 +36,7 @@ const GRADE_TYPE_COLORS: Record<string, string> = {
   EXECUTIVE: 'bg-amber-500/15 text-amber-700',
 }
 
-export function JobGradesTab({ companyId }: Props) {
+export function JobGradesTab({ companyId: _companyId }: Props) {
   const t = useTranslations('settings')
   const [grades, setGrades] = useState<JobGrade[]>([])
   const [loading, setLoading] = useState(true)

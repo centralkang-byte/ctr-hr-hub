@@ -18,7 +18,6 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'
-import { Button } from '@/components/ui/button'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'

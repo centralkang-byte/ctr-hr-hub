@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { useState, useEffect, useCallback } from 'react'
 import {
   AlertTriangle, ChevronLeft, ChevronRight, RefreshCw,
-  ChevronDown, ChevronUp, ShieldAlert, CheckCircle2
+  ChevronDown, ChevronUp, CheckCircle2
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
@@ -43,7 +43,6 @@ const RULE_ICONS: Record<string, string> = {
 }
 
 export default function PayrollAnomaliesClient({ user: _user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
   const tPayroll = useTranslations('payrollPage')
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())

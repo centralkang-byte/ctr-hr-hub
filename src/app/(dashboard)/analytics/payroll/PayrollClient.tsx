@@ -5,7 +5,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 
 import React, { useEffect, useState, useCallback } from 'react'
 import {
-  BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  BarChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer, ComposedChart,
 } from 'recharts'
 import { Wallet, TrendingUp, User, AlertTriangle } from 'lucide-react'

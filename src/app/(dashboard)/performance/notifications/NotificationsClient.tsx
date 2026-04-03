@@ -6,7 +6,7 @@ import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import { useCallback, useEffect, useState } from 'react'
-import { Bell, CheckCircle2, Clock, Send, ShieldAlert, ArrowLeft } from 'lucide-react'
+import { Bell, Send, ArrowLeft } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import { getGradeLabel } from '@/lib/performance/data-masking'

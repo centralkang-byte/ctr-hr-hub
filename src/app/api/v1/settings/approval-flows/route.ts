@@ -40,11 +40,11 @@ const updateFlowSchema = z.object({
 export const GET = withPermission(
   async (req: NextRequest) => {
     const { searchParams } = new URL(req.url)
-    const module = searchParams.get('module')
+    const approvalModule = searchParams.get('module')
     const companyId = searchParams.get('companyId')
 
     const where: Record<string, unknown> = {}
-    if (module) where.module = module
+    if (approvalModule) where.module = approvalModule
     if (companyId) {
       // 법인 + 글로벌 모두
       where.OR = [{ companyId }, { companyId: null }]

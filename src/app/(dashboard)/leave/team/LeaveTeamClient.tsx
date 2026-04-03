@@ -105,7 +105,6 @@ function getTeamAbsenceCount(
 export function LeaveTeamClient({ user }: { user: SessionUser }) {
   void user
 
-  const t = useTranslations('leave')
   const tc = useTranslations('common')
 
   const STATUS_LABEL: Record<string, string> = {

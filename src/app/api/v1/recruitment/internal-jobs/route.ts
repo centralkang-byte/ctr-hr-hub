@@ -82,9 +82,13 @@ export const GET = withAuth(
       description: p.description,
       employmentType: p.employmentType,
       headcount: p.headcount,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       location: (p as any).location,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       workMode: (p as any).workMode,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       deadlineDate: (p as any).deadlineDate,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       salaryRangeMin: (p as any).salaryRangeMin ? Number((p as any).salaryRangeMin) : null, // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap
       salaryRangeMax: (p as any).salaryRangeMax ? Number((p as any).salaryRangeMax) : null, // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap
       salaryHidden: (p as any).salaryHidden,

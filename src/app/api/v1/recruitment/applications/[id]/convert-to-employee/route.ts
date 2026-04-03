@@ -95,7 +95,7 @@ export const POST = withPermission(
       throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
     }
 
-    const { employeeNo, startDate, companyId, departmentId, jobGradeId, jobCategoryId, buddyId, employmentType } = parsed.data
+    const { employeeNo, startDate, companyId, departmentId, jobGradeId, jobCategoryId, buddyId: _buddyId, employmentType } = parsed.data
 
     const targetCompanyId = companyId ?? postingCompanyId ?? user.companyId
 

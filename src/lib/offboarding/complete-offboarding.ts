@@ -95,7 +95,8 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
         }
 
         // 3. Handle unreturned assets
-        const countryCode = (extractPrimaryAssignment(offboarding.employee?.assignments ?? []) as Record<string, any>)?.company?.countryCode ?? 'KR'
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const countryCode = (extractPrimaryAssignment(offboarding.employee?.assignments ?? []) as any)?.company?.countryCode ?? 'KR'
         const unreturnedAssets = offboarding.assetReturns.filter((a) => a.status === 'PENDING' || a.status === 'UNRETURNED')
 
         for (const asset of unreturnedAssets) {
@@ -154,7 +155,8 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
         // 4. Settlement Phase A — 연차 잔여분 + 보상 이력 조회 (tx 내부)
         const employeeId = offboarding.employee!.id
         const lastWorkingDate = offboarding.lastWorkingDate
-        const companyIdForSettlement = (extractPrimaryAssignment(offboarding.employee!.assignments ?? []) as Record<string, any>)?.companyId ?? ''
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const companyIdForSettlement = (extractPrimaryAssignment(offboarding.employee!.assignments ?? []) as any)?.companyId ?? ''
 
         // 4a. Leave balance settlement (unused leave pay / negative leave deduction)
         const currentYear = lastWorkingDate.getFullYear()
@@ -245,7 +247,8 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
     if (offboardingData?.employee) {
         const empId = offboardingData.employee.id
         const lwDate = offboardingData.lastWorkingDate
-        const compId = (extractPrimaryAssignment(offboardingData.employee.assignments ?? []) as Record<string, any>)?.companyId ?? ''
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const compId = (extractPrimaryAssignment(offboardingData.employee.assignments ?? []) as any)?.companyId ?? ''
 
         // Severance (퇴직금)
         try {

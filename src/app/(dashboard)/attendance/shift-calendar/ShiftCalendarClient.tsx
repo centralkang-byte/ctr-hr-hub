@@ -14,8 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Calendar,
-  Users,
-  RefreshCw,
+    RefreshCw,
   Loader2,
   ArrowRightLeft,
 } from 'lucide-react'
@@ -35,7 +34,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { cn } from '@/lib/utils'
 import { TYPOGRAPHY } from '@/lib/styles/typography'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
