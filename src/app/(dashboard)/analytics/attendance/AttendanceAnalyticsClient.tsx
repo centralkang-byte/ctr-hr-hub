@@ -1,8 +1,6 @@
 'use client'
 
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Attendance Analytics Client
@@ -26,8 +24,6 @@ import type { AttendanceData } from '@/lib/analytics/types'
 import { CHART_THEME } from '@/lib/styles/chart'
 
 export default function AttendanceAnalyticsClient() {
-  const tCommon = useTranslations('common')
-
   const searchParams = useSearchParams()
   const companyId = searchParams.get('company_id') ?? undefined
   const t = useTranslations('analytics.attendancePage')

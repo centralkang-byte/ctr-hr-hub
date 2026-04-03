@@ -2,8 +2,6 @@
 
 import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 import React, { useEffect, useState, useCallback } from 'react'
 import {
@@ -20,8 +18,7 @@ import type { PayrollResponse } from '@/lib/analytics/types'
 import { CHART_THEME } from '@/lib/styles/chart'
 import type { SessionUser } from '@/types'
 
-export default function PayrollClient({ user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
+export default function PayrollClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('analytics')
 
   const [data, setData] = useState<PayrollResponse | null>(null)

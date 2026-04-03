@@ -1,7 +1,5 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Employee List Client
@@ -42,7 +40,6 @@ import { EmployeeFilterPanel, type FilterValues } from '@/components/employees/E
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, PaginationInfo, SortDirection } from '@/types'
-import { toast } from '@/hooks/use-toast'
 
 // ─── Types ──────────────────────────────────────────────────
 

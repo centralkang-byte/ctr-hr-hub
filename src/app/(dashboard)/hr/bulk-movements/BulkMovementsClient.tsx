@@ -23,7 +23,7 @@ const STEPS: { key: Step; label: string }[] = [
   { key: 'confirm', label: '실행 확인' },
 ]
 
-export default function BulkMovementsClient({ user }: { user: SessionUser }) {
+export default function BulkMovementsClient({ user: _user }: { user: SessionUser }) {
   const [step, setStep] = useState<Step>('select')
   const [selectedType, setSelectedType] = useState<MovementType | null>(null)
   const [file, setFile] = useState<File | null>(null)

@@ -1,8 +1,6 @@
 'use client'
 
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Attendance Admin Client
@@ -21,7 +19,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,

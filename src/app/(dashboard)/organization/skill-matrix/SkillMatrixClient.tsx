@@ -2,7 +2,6 @@
 
 import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 스킬 매트릭스 Client (B8-3)

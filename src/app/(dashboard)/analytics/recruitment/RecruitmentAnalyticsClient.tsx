@@ -1,8 +1,5 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Recruitment Analytics Client
@@ -28,8 +25,7 @@ import type { SessionUser } from '@/types'
 
 const STAGE_ORDER = ['APPLIED', 'SCREENING', 'INTERVIEW', 'OFFER', 'HIRED']
 
-export default function RecruitmentAnalyticsClient({ user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
+export default function RecruitmentAnalyticsClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('analytics.recruitmentPage')
 
   const searchParams = useSearchParams()

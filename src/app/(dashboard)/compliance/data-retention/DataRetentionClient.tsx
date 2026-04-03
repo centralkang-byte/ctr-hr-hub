@@ -1,8 +1,6 @@
 'use client'
 
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
@@ -23,7 +21,7 @@ interface RetentionPolicy {
   last_run_at: string | null
 }
 
-export default function DataRetentionClient({ user }: { user: SessionUser }) {
+export default function DataRetentionClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('compliance')
   const tc = useTranslations('common')
 

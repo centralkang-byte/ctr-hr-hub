@@ -1,7 +1,6 @@
 'use client'
 
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Employee New Client
@@ -27,7 +26,6 @@ import { Badge } from '@/components/ui/badge'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
 import type { SessionUser, DeptOption, RefOption } from '@/types'
-import { toast } from '@/hooks/use-toast'
 import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 // ─── Types ──────────────────────────────────────────────────

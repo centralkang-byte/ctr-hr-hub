@@ -1,7 +1,5 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import { useState, useCallback, useEffect } from 'react'
@@ -20,9 +18,7 @@ interface CycleOption {
   year: number
 }
 
-export default function CompensationClient({ user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
-
+export default function CompensationClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('compensation')
   const tMenu = useTranslations('menu')
 

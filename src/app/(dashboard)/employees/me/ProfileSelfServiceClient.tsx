@@ -1,7 +1,5 @@
 'use client'
 
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Self-Service Profile (내 프로필)

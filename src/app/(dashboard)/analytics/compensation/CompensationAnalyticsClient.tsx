@@ -1,8 +1,5 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Compensation Analytics Client
@@ -29,8 +26,7 @@ import type { SessionUser } from '@/types'
 
 const BAND_COLORS = ['#EF4444', '#10B981', '#F59E0B']
 
-export default function CompensationAnalyticsClient({ user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
+export default function CompensationAnalyticsClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('analytics.compensationPage')
 
   const searchParams = useSearchParams()

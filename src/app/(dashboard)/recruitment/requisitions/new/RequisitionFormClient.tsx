@@ -2,7 +2,6 @@
 
 import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
@@ -12,7 +11,7 @@ import { toast } from '@/hooks/use-toast'
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save, Send, Building2, Users, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, Save, Send, Building2, AlertTriangle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES, BUTTON_VARIANTS } from '@/lib/styles'

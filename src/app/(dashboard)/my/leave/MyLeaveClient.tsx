@@ -6,7 +6,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import {
   CalendarDays, Plus, Loader2, AlertTriangle, Clock,
   CheckCircle2, XCircle, ChevronLeft, ChevronRight,

@@ -1,6 +1,5 @@
 'use client'
 
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'

@@ -2,8 +2,6 @@
 
 import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 import React, { useEffect, useState, useCallback } from 'react'
 import { Heart, Clock, CalendarDays, Target, AlertTriangle, Flame } from 'lucide-react'
@@ -31,8 +29,7 @@ const STATUS_COLORS = { GREEN: STATUS_FG.success, YELLOW: STATUS_FG.warning, RED
 const STATUS_LABELS = { GREEN: '🟢', YELLOW: '🟡', RED: '🔴' }
 const RISK_COLORS = { HIGH: 'text-destructive bg-destructive/5', MEDIUM: 'text-amber-600 bg-amber-500/10', LOW: 'text-emerald-600 bg-emerald-500/10' }
 
-export default function TeamHealthClient({ user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
+export default function TeamHealthClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('analytics')
 
   const [data, setData] = useState<TeamHealthResponse | null>(null)

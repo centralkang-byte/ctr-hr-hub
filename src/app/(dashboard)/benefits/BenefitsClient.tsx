@@ -1,7 +1,5 @@
 'use client'
 
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 import { useTranslations } from 'next-intl'
 
@@ -10,12 +8,10 @@ import { Inbox, List, PieChart } from 'lucide-react'
 import type { SessionUser } from '@/types'
 import { BenefitApprovalTab } from './BenefitApprovalTab'
 import { BenefitBudgetTab } from './BenefitBudgetTab'
-import { EmptyState } from '@/components/ui/EmptyState'
 
 type Tab = 'pending' | 'all' | 'budget'
 
 export function BenefitsClient({ user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
   const t = useTranslations('benefits')
 
   const [activeTab, setActiveTab] = useState<Tab>('pending')

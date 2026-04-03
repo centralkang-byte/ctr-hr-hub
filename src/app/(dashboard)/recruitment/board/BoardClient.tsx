@@ -23,7 +23,6 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { MODAL_STYLES } from '@/lib/styles'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { toast } from '@/hooks/use-toast'
 
 // ─── Constants ──────────────────────────────────────────
 

@@ -1,6 +1,5 @@
 'use client'
 
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Offboarding Dashboard Client
@@ -49,7 +48,6 @@ import { EmptyState } from '@/components/shared/EmptyState'
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, PaginationInfo } from '@/types'
-import { toast } from '@/hooks/use-toast'
 
 // ─── Types ──────────────────────────────────────────────────
 

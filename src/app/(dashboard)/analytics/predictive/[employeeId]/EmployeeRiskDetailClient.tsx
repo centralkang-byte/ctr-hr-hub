@@ -2,8 +2,6 @@
 
 import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 개인 이직위험 + 번아웃 상세 분석 뷰
@@ -192,7 +190,6 @@ function RecommendedActions({ turnover, burnout }: {
 // ─── 메인 컴포넌트 ────────────────────────────────────
 
 export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: string }) {
-  const tCommon = useTranslations('common')
   const t = useTranslations('analytics')
   const [data, setData] = useState<EmployeeRiskData | null>(null)
   const [loading, setLoading] = useState(true)

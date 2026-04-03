@@ -1,7 +1,5 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Executive Report Client
@@ -19,8 +17,7 @@ import { AnalyticsPageLayout } from '@/components/analytics/AnalyticsPageLayout'
 import type { ExecutiveReport } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
 
-export default function ExecutiveReportClient({ user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
+export default function ExecutiveReportClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('analytics.executiveReportPage')
 
   const searchParams = useSearchParams()

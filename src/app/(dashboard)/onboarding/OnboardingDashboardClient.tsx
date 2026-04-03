@@ -27,7 +27,6 @@ import { ROLE } from '@/lib/constants'
 import type { SessionUser, PaginationInfo } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
 import { STATUS_VARIANT } from '@/lib/styles/status'
-import { toast } from '@/hooks/use-toast'
 
 // ─── Types ──────────────────────────────────────────────────
 

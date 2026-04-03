@@ -1,8 +1,5 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
@@ -14,9 +11,7 @@ import EmployeeRegistryTab from '@/components/compliance/cn/EmployeeRegistryTab'
 
 type TabKey = 'config' | 'report' | 'registry'
 
-export default function CnComplianceClient({ user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
-
+export default function CnComplianceClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('compliance')
   const [activeTab, setActiveTab] = useState<TabKey>('config')
 

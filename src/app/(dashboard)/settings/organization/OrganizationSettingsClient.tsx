@@ -1,9 +1,5 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'

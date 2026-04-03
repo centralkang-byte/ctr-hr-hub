@@ -1,8 +1,5 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Onboarding Check-in Form Client
 // 주간 체크인 제출: Mood, Energy, Belonging, Comment

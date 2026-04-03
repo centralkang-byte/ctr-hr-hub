@@ -2,11 +2,10 @@
 
 import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import { useCallback, useEffect, useState } from 'react'
-import { Award, Target, TrendingUp, Users, CheckCircle2, Clock, Info, ArrowLeft, Shield } from 'lucide-react'
+import { Award, Target, TrendingUp, CheckCircle2, Clock, Info, ArrowLeft, Shield } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import type { SessionUser } from '@/types'

@@ -1,7 +1,5 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
@@ -102,8 +100,7 @@ function parseFactors(
 // AttritionRiskClient
 // ═════════════════════════════════════════════════════════
 
-export default function AttritionRiskClient({ user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
+export default function AttritionRiskClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('analytics.attritionPage')
 
   const { toast } = useToast()

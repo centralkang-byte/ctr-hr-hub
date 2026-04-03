@@ -2,7 +2,6 @@
 
 import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 
 import { useState, useEffect } from 'react'
 import { BookOpen, CheckCircle2, Clock, AlertTriangle, Sparkles, ChevronRight } from 'lucide-react'

@@ -77,7 +77,7 @@ function getDaysLeft(endDate: string): number {
 
 // ─── Component ───────────────────────────────────────────
 
-export function DelegationSettingsClient({ user }: { user: SessionUser }) {
+export function DelegationSettingsClient({ user: _user }: { user: SessionUser }) {
   const [view, setView] = useState<ViewMode>('list')
   const [delegated, setDelegated] = useState<DelegationRecord[]>([])
   const [received, setReceived] = useState<DelegationRecord[]>([])

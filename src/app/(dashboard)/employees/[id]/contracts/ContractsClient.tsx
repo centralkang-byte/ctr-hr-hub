@@ -1,8 +1,6 @@
 'use client'
 
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 import { useState } from 'react'
 import { format, differenceInDays } from 'date-fns'
@@ -47,7 +45,6 @@ const CONTRACT_TYPE_COLORS: Record<string, string> = {
 }
 
 export default function ContractsClient({ employeeId, permissions }: Props) {
-  const tCommon = useTranslations('common')
   const t = useTranslations('employee')
   const tc = useTranslations('common')
 

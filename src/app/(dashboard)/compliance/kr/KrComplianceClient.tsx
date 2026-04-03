@@ -1,8 +1,5 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Korean Compliance Client Component
@@ -25,9 +22,7 @@ const TABS: { key: TabKey; labelKey: string }[] = [
   { key: 'severanceInterim', labelKey: 'kr.severanceInterim' },
 ]
 
-export default function KrComplianceClient({ user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
-
+export default function KrComplianceClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('compliance')
   const [activeTab, setActiveTab] = useState<TabKey>('workHours')
 

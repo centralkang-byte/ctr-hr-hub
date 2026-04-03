@@ -18,7 +18,6 @@ import {
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
-import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 

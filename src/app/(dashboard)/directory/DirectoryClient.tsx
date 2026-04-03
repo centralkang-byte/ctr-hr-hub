@@ -44,9 +44,9 @@ interface DirectoryClientProps {
 }
 
 
-export function DirectoryClient({ user, companies, departments, jobGrades }: DirectoryClientProps) {
-  const tCommon = useTranslations('common')
+export function DirectoryClient({ user: _user, companies, departments, jobGrades }: DirectoryClientProps) {
   const t = useTranslations('directory')
+  const tCommon = useTranslations('common')
 
   const router = useRouter()
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')

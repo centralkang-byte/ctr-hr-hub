@@ -20,8 +20,7 @@ import { CHART_THEME } from '@/lib/styles/chart'
 import { cn } from '@/lib/utils'
 import type { SessionUser } from '@/types'
 
-export default function TurnoverClient({ user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
+export default function TurnoverClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('analytics')
   const [data, setData] = useState<TurnoverResponse | null>(null)
   const [loading, setLoading] = useState(true)

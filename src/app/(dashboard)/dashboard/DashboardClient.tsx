@@ -43,7 +43,7 @@ interface Props {
 
 // ─── Component ──────────────────────────────────────────────
 
-export function DashboardClient({ user }: Props) {
+export function DashboardClient({ user: _user }: Props) {
   const t = useTranslations('analytics')
   const te = useTranslations('analytics.executive')
   const searchParams = useSearchParams()

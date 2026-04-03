@@ -1,9 +1,5 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Attendance Settings V2 (H-2a: All 8 tabs working)

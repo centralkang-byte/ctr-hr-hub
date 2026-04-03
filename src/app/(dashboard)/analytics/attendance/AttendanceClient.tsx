@@ -1,8 +1,6 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import React, { useEffect, useState, useCallback } from 'react'
@@ -20,8 +18,7 @@ import type { AttendanceResponse } from '@/lib/analytics/types'
 import { CHART_THEME } from '@/lib/styles'
 import type { SessionUser } from '@/types'
 
-export default function AttendanceClient({ user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
+export default function AttendanceClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('analytics')
 
   const [data, setData] = useState<AttendanceResponse | null>(null)

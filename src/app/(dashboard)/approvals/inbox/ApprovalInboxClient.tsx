@@ -2,8 +2,6 @@
 
 import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Approval Inbox Client (Stage 5-B)
@@ -37,7 +35,7 @@ import {
   AlertCircle,
   CheckCheck,
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { apiClient } from '@/lib/api'
@@ -90,7 +88,6 @@ interface RejectionModalProps {
 }
 
 function RejectionModal({ item, onClose, onConfirm }: RejectionModalProps) {
-  const tCommon = useTranslations('common')
   const [reason,     setReason]     = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error,      setError]      = useState('')
@@ -387,7 +384,7 @@ interface ApprovalInboxClientProps {
   user: SessionUser
 }
 
-export function ApprovalInboxClient({ user }: ApprovalInboxClientProps) {
+export function ApprovalInboxClient({ user: _user }: ApprovalInboxClientProps) {
   const tCommon = useTranslations('common')
   const [items,       setItems]       = useState<ApprovalItem[]>([])
   const [loading,     setLoading]     = useState(true)

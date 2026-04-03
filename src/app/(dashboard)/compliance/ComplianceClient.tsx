@@ -1,8 +1,5 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Compliance Dashboard Landing Page
@@ -33,9 +30,7 @@ interface GdprStats {
   dpiaRecords: number
 }
 
-export default function ComplianceClient({ user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
-
+export default function ComplianceClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('compliance')
   const [stats, setStats] = useState<GdprStats | null>(null)
   const [loading, setLoading] = useState(true)

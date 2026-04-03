@@ -1,8 +1,5 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Russia Compliance Client Component
@@ -18,9 +15,7 @@ import type { SessionUser } from '@/types'
 
 type TabKey = 'military' | 'kedo' | 'reports'
 
-export default function RuComplianceClient({ user }: { user: SessionUser }) {
-  const tCommon = useTranslations('common')
-
+export default function RuComplianceClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('compliance')
   const [activeTab, setActiveTab] = useState<TabKey>('military')
 

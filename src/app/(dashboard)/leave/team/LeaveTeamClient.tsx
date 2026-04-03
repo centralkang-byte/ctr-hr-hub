@@ -1,6 +1,5 @@
 'use client'
 
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Leave Team Client
@@ -11,7 +10,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Check, X, CalendarOff } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'

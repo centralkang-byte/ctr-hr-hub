@@ -14,7 +14,6 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { STATUS_VARIANT } from '@/lib/styles/status'
-import { EmptyState } from '@/components/ui/EmptyState'
 
 // ─── Label Maps ──────────────────────────────────────────
 

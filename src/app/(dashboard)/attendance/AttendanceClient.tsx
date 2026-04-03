@@ -1,6 +1,5 @@
 'use client'
 
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Attendance Client
@@ -10,15 +9,13 @@ import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { CheckCircle2, Clock, LogIn, LogOut } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-import { EmptyState } from '@/components/ui/EmptyState'
-import { toast } from '@/hooks/use-toast'
 import { STATUS_VARIANT } from '@/lib/styles/status'
 
 // ─── Types ──────────────────────────────────────────────────

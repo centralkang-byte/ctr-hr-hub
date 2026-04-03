@@ -3,8 +3,6 @@
 import { useTranslations } from 'next-intl'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Shift Calendar Client
