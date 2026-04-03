@@ -6134,7 +6134,10 @@
     "allGrades": "All Hạngs",
     "company": "Pháp nhân",
     "contact": "Contact",
-    "skills": "Skills"
+    "skills": "Skills",
+    "languages": "Ngôn ngữ",
+    "certifications": "Chứng chỉ",
+    "viewFullProfile": "Xem hồ sơ đầy đủ"
   },
   "notifications": {
     "pageTitle": "Notifications",

@@ -6165,7 +6165,10 @@
     "allGrades": "직급 전체",
     "company": "법인",
     "contact": "연락처",
-    "skills": "스킬"
+    "skills": "스킬",
+    "languages": "언어",
+    "certifications": "자격증",
+    "viewFullProfile": "전체 프로필 보기"
   },
   "notifications": {
     "pageTitle": "알림",

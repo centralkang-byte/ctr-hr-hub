@@ -6152,7 +6152,10 @@
     "allGrades": "All Grades",
     "company": "Company",
     "contact": "Contact",
-    "skills": "Skills"
+    "skills": "Skills",
+    "languages": "Languages",
+    "certifications": "Certifications",
+    "viewFullProfile": "View Full Profile"
   },
   "notifications": {
     "pageTitle": "Notifications",

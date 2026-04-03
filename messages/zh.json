@@ -6134,7 +6134,10 @@
     "allGrades": "All 等级s",
     "company": "法人",
     "contact": "Contact",
-    "skills": "Skills"
+    "skills": "Skills",
+    "languages": "语言",
+    "certifications": "资格证书",
+    "viewFullProfile": "查看完整个人资料"
   },
   "notifications": {
     "pageTitle": "Notifications",

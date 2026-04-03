@@ -6134,7 +6134,10 @@
     "allGrades": "All Grados",
     "company": "Entidad",
     "contact": "Contact",
-    "skills": "Skills"
+    "skills": "Skills",
+    "languages": "Idiomas",
+    "certifications": "Certificaciones",
+    "viewFullProfile": "Ver perfil completo"
   },
   "notifications": {
     "pageTitle": "Notifications",
