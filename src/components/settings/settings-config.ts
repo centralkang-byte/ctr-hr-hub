@@ -40,6 +40,7 @@ export interface SettingsTab {
   label: string
   description?: string
   isGlobalOnly?: boolean  // 🔒 cannot be overridden per company
+  hasGlobalDefault?: boolean  // ProcessSetting 기반: 글로벌 기본값 편집 허용
 }
 
 export interface SettingsCategoryConfig {
@@ -64,8 +65,8 @@ export const SETTINGS_CATEGORIES: SettingsCategoryConfig[] = [
       { slug: 'positions', label: '직위 관리', description: '법인별 직위(보직) 목록 및 보고 체계' },
       { slug: 'grade-title-mappings', label: '직급-호칭 매핑', description: '법인별 직급↔호칭 매핑 (L/E/S 체계)' },
       { slug: 'job-families', label: '직종/직무', description: 'Job Family, Job Profile' },
-      { slug: 'assignment-rules', label: '발령 규칙', description: '발령 유형, 승인 절차' },
-      { slug: 'probation', label: '수습 기간', description: '기간, 평가 기준, 자동 전환' },
+      { slug: 'assignment-rules', label: '발령 규칙', description: '발령 유형, 승인 절차', hasGlobalDefault: true },
+      { slug: 'probation', label: '수습 기간', description: '기간, 평가 기준, 자동 전환', hasGlobalDefault: true },
       { slug: 'custom-fields', label: '커스텀 필드', description: '사용자 정의 필드 관리' },
       { slug: 'code-management', label: '코드 관리', description: '시스템 코드/열거형' },
       { slug: 'locations', label: '근무지 관리', description: '공장/사무소 등 근무지 목록' },
@@ -85,7 +86,7 @@ export const SETTINGS_CATEGORIES: SettingsCategoryConfig[] = [
       { slug: 'leave-promotion', label: '연차촉진', description: '알림 시점, 미사용 소멸 규칙' },
       { slug: 'designated-leave', label: '지정연차', description: '법인별 지정 연차 사용일 관리' },
       { slug: 'holidays', label: '법정 공휴일', description: '나라별 공휴일 캘린더' },
-      { slug: 'overtime', label: '초과근무', description: '사전승인 필수 여부, 수당 배율' },
+      { slug: 'overtime', label: '초과근무', description: '사전승인 필수 여부, 수당 배율', hasGlobalDefault: true },
       { slug: 'loa-types', label: '휴직 유형', description: '육아/질병/가족돌봄 등 휴직 유형 관리' },
     ],
   },
@@ -112,11 +113,11 @@ export const SETTINGS_CATEGORIES: SettingsCategoryConfig[] = [
     icon: Target,
     tabs: [
       { slug: 'cycle', label: '평가 주기', description: '반기/연간/분기' },
-      { slug: 'methodology', label: '평가 방법론', description: 'MBO:BEI 비중 (레벨별)' },
+      { slug: 'methodology', label: '평가 방법론', description: 'MBO:BEI 비중 (레벨별)', hasGlobalDefault: true },
       { slug: 'grade-scale', label: '등급 체계', description: 'E/M+/M/B' },
-      { slug: 'distribution', label: '배분 가이드라인', description: '10/30/50/10 권장 비율' },
-      { slug: 'calibration', label: '캘리브레이션', description: '필수 여부, 참여 범위' },
-      { slug: 'cfr', label: 'CFR 설정', description: '1:1 최소 빈도, 피드백 익명' },
+      { slug: 'distribution', label: '배분 가이드라인', description: '10/30/50/10 권장 비율', hasGlobalDefault: true },
+      { slug: 'calibration', label: '캘리브레이션', description: '필수 여부, 참여 범위', hasGlobalDefault: true },
+      { slug: 'cfr', label: 'CFR 설정', description: '1:1 최소 빈도, 피드백 익명', hasGlobalDefault: true },
       { slug: 'competency', label: '역량 라이브러리', description: '핵심가치 13개 행동지표', isGlobalOnly: true },
     ],
   },
@@ -126,12 +127,12 @@ export const SETTINGS_CATEGORIES: SettingsCategoryConfig[] = [
     labelEn: 'Recruitment & Onboarding',
     icon: UserPlus,
     tabs: [
-      { slug: 'pipeline', label: '채용 파이프라인', description: '단계 수, 단계명' },
-      { slug: 'interview-form', label: '면접 평가항목', description: '평가표 기본 항목' },
+      { slug: 'pipeline', label: '채용 파이프라인', description: '단계 수, 단계명', hasGlobalDefault: true },
+      { slug: 'interview-form', label: '면접 평가항목', description: '평가표 기본 항목', hasGlobalDefault: true },
       { slug: 'ai-screening', label: 'AI 스크리닝', description: '사용 여부, 기준 점수', isGlobalOnly: true },
       { slug: 'onboarding-templates', label: '온보딩 템플릿', description: '체크리스트 기본 항목' },
       { slug: 'offboarding-checklist', label: '오프보딩 체크리스트', description: '장비 회수, IT 비활성화 등' },
-      { slug: 'probation-eval', label: '수습 평가', description: '평가 시점(30/60/90일), 기준' },
+      { slug: 'probation-eval', label: '수습 평가', description: '평가 시점(30/60/90일), 기준', hasGlobalDefault: true },
     ],
   },
   {
@@ -140,13 +141,13 @@ export const SETTINGS_CATEGORIES: SettingsCategoryConfig[] = [
     labelEn: 'System',
     icon: Settings,
     tabs: [
-      { slug: 'notification-channels', label: '알림 채널', description: '이메일/Teams/앱 푸시' },
+      { slug: 'notification-channels', label: '알림 채널', description: '이메일/Teams/앱 푸시', hasGlobalDefault: true },
       { slug: 'notification-rules', label: '알림 규칙', description: '이벤트별 알림 대상' },
-      { slug: 'locale', label: '언어/타임존', description: '법인별 기본 언어 + 타임존' },
+      { slug: 'locale', label: '언어/타임존', description: '법인별 기본 언어 + 타임존', hasGlobalDefault: true },
       { slug: 'roles', label: '역할/권한', description: 'RBAC 역할 정의', isGlobalOnly: true },
       { slug: 'approval-flows', label: '결재 플로우', description: '모듈별 전결 규정 설정' },
       { slug: 'audit', label: '감사 로그', description: '보존 기간, 조회 범위' },
-      { slug: 'data-retention', label: '데이터 보존', description: 'GDPR 삭제 주기, PII 마스킹' },
+      { slug: 'data-retention', label: '데이터 보존', description: 'GDPR 삭제 주기, PII 마스킹', hasGlobalDefault: true },
       { slug: 'integrations', label: '연동', description: 'Teams 웹훅, SSO/SAML, ERP, API 키' },
     ],
   },

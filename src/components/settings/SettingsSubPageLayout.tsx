@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { ChevronRight, Globe, Lock, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { CompanySelectionGuide } from './CompanySelectionGuide'
 import { CompanySettingSelector } from './CompanySettingSelector'
 import type { SettingsCategoryConfig, SettingsTabSlug } from './settings-config'
 
@@ -38,6 +39,7 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
 
   const currentTab = config.tabs.find((t) => t.slug === activeTab) ?? config.tabs[0]
   const isGlobalOnlyTab = currentTab?.isGlobalOnly ?? false
+  const hasGlobalDefault = currentTab?.hasGlobalDefault ?? false
   const Icon = config.icon
 
   // Hydration-safe: read sessionStorage after mount
@@ -57,8 +59,10 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
     router.push(`/settings/${config.key}?${params.toString()}`)
   }, [router, searchParams, config.key])
 
-  // Show banner: global mode + not dismissed + not a global-only tab
-  const showGlobalBanner = companyId === null && !bannerDismissed && !isGlobalOnlyTab
+  // Show guide: company-specific tab with no company selected
+  const showCompanyGuide = companyId === null && !isGlobalOnlyTab && !hasGlobalDefault
+  // Show banner: global mode + not dismissed + not a global-only tab (only for hasGlobalDefault tabs)
+  const showGlobalBanner = companyId === null && !bannerDismissed && !isGlobalOnlyTab && !showCompanyGuide
 
   // Resolve children: support both ReactNode and render-prop
   const resolvedChildren = typeof children === 'function' ? children(companyId) : children
@@ -138,24 +142,30 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
 
           {/* Content Area */}
           <div className="flex-1 p-6">
-            {/* Global mode info banner */}
-            {showGlobalBanner && (
-              <div className="mb-4 flex items-start gap-3 rounded-xl bg-primary/5 p-3">
-                <Globe className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-foreground">{t('globalBanner')}</p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">{t('globalBannerDesc')}</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleDismissBanner}
-                  className="shrink-0 rounded-lg p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </div>
+            {showCompanyGuide ? (
+              <CompanySelectionGuide />
+            ) : (
+              <>
+                {/* Global mode info banner (hasGlobalDefault tabs only) */}
+                {showGlobalBanner && (
+                  <div className="mb-4 flex items-start gap-3 rounded-xl bg-primary/5 p-3">
+                    <Globe className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-foreground">{t('globalBanner')}</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">{t('globalBannerDesc')}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleDismissBanner}
+                      className="shrink-0 rounded-lg p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                )}
+                {resolvedChildren}
+              </>
             )}
-            {resolvedChildren}
           </div>
         </div>
       </div>
