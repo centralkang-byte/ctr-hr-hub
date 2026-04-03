@@ -3615,7 +3615,8 @@
       "inBand": "薪酬带范围内",
       "overBand": "超出薪酬带上限",
       "compaRatio": "Compa-Ratio",
-      "compaRatioComparison": "Compa-Ratio 比较"
+      "compaRatioComparison": "Compa-Ratio 比较",
+      "loadError": "薪酬分析数据加载失败"
     },
     "attritionPage": {
       "title": "Attrition Risk Analysis",
@@ -3813,6 +3814,34 @@
       "tooltipLaborCost": "最近确认的各法人薪资合计（KRW换算）",
       "tooltipRecruitment": "当前进行中的招聘公告数",
       "tooltipOnboarding": "已完成入职 ÷ 总入职数 × 100"
+    },
+    "genderPayGap": {
+      "title": "性别薪酬差距分析",
+      "description": "按职级、职类、部门的性别薪酬比较分析",
+      "loadError": "性别薪酬差距数据加载失败",
+      "exportError": "导出失败",
+      "byJobGrade": "按职级",
+      "byJobCategory": "按职类",
+      "byDepartment": "按部门",
+      "allYears": "全部",
+      "yearSuffix": "年",
+      "csvExport": "CSV导出",
+      "maleCount": "男性人数",
+      "femaleCount": "女性人数",
+      "maleAvgSalary": "男性平均薪资",
+      "femaleAvgSalary": "女性平均薪资",
+      "overallGap": "总体差距",
+      "detailAnalysis": "{group} 详细分析",
+      "group": "组",
+      "malePersons": "男性 (人)",
+      "femalePersons": "女性 (人)",
+      "maleAvg": "男性平均",
+      "femaleAvg": "女性平均",
+      "gap": "差距",
+      "gapVisualization": "差距可视化",
+      "maleCompaRatio": "男性 Compa-Ratio",
+      "femaleCompaRatio": "女性 Compa-Ratio",
+      "difference": "差异"
     }
   },
   "notification": {
@@ -5206,7 +5235,55 @@
     "noCycle": "No Cycle",
     "simulation": "Simulation",
     "confirm": "Confirm",
-    "historyAnalysis": "History & Analysis"
+    "historyAnalysis": "History & Analysis",
+    "loadError": "薪酬数据加载失败",
+    "tryAgain": "请重试。",
+    "emptySimulation": "请先在模拟标签页中进行薪资调整后再确认。",
+    "targetCount": "目标人数",
+    "persons": "{count}人",
+    "totalCurrentSalary": "当前总薪资",
+    "totalIncrease": "总增加额",
+    "avgIncrease": "平均增长率",
+    "effectiveDate": "生效日期",
+    "employeeName": "员工姓名",
+    "department": "部门",
+    "currentSalary": "当前薪资",
+    "increaseRate": "增长率",
+    "newSalary": "新薪资",
+    "confirmAdjustment": "确认薪资调整",
+    "confirmTitle": "确认薪资调整",
+    "confirmDescription": "共{count}名员工的薪资将被调整。\n生效日期：{date}\n\n此操作不可撤销。是否继续？",
+    "cancel": "取消",
+    "confirming": "处理中...",
+    "confirmButton": "确认",
+    "confirmError": "薪资调整确认失败",
+    "moveToConfirm": "前往确认薪资调整 →",
+    "historyTitle": "薪资变更历史",
+    "compaRatioDistribution": "Compa-Ratio 分布",
+    "noHistory": "没有薪资变更历史。",
+    "historyLoadError": "历史加载失败",
+    "historyLoadErrorDesc": "无法加载薪资变更历史。",
+    "analysisLoadError": "分析加载失败",
+    "analysisLoadErrorDesc": "无法加载Compa-Ratio分布。",
+    "changeType": "类型",
+    "previousSalary": "原薪资",
+    "changedSalary": "变更薪资",
+    "noSimData": "没有模拟数据。请选择一个周期。",
+    "simulationLoadError": "模拟加载失败",
+    "simulationLoadErrorDesc": "无法加载数据。",
+    "targetHeadcount": "确认人数",
+    "aiRecommendation": "AI推荐结果",
+    "riskFactors": "风险因素",
+    "alternatives": "替代方案",
+    "changeTypes": {
+      "HIRE": "入职",
+      "ANNUAL_INCREASE": "年度调薪",
+      "PROMOTION": "晋升",
+      "MARKET_ADJUSTMENT": "市场调整",
+      "DEMOTION_COMP": "降级",
+      "TRANSFER_COMP": "调转",
+      "OTHER": "其他"
+    }
   },
   "payrollPage": {
     "title": "Payroll Processing",
@@ -5245,7 +5322,9 @@
     "netPay": "Net Pay",
     "unreadCount": "未阅读工资条 {count} 条",
     "momSame": "与上月相同",
-    "newBadge": "NEW"
+    "newBadge": "NEW",
+    "loadError": "工资单加载失败",
+    "loadErrorDesc": "无法加载数据。"
   },
   "payStubDetail": {
     "titleWithMonth": "{month} Pay Stub",
@@ -6197,5 +6276,20 @@
     "menu": "Menu",
     "employees": "员工s",
     "noResults": "No results found"
+  },
+  "totalRewards": {
+    "title": "总报酬明细",
+    "description": "包括基本工资、奖金、津贴、福利和奖励的年度总报酬概况",
+    "loadError": "加载总报酬数据失败",
+    "empty": "暂无总报酬数据。",
+    "annualTotal": "年度总报酬",
+    "baseSalary": "基本工资",
+    "bonuses": "奖金",
+    "allowances": "津贴",
+    "benefits": "福利",
+    "rewards": "奖励",
+    "composition": "报酬构成",
+    "yearlyTrend": "年度趋势",
+    "totalPaid": "总支付金额"
   }
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from '@/hooks/use-toast'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 
@@ -70,8 +71,8 @@ export default function PayrollMeClient({
       try {
         const res = await apiClient.get<PayslipItem[]>('/api/v1/payroll/me')
         setItems(res.data ?? [])
-      } catch {
-        // error handled
+      } catch (err) {
+        toast({ title: t('loadError'), description: err instanceof Error ? err.message : t('loadErrorDesc'), variant: 'destructive' })
       } finally {
         setLoading(false)
       }
@@ -129,7 +130,7 @@ export default function PayrollMeClient({
                     {item.run.yearMonth}
                   </h3>
                   {!isNew && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-500/15 text-primary/90 border border-indigo-200">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
                       {t('paid')}
                     </span>
                   )}

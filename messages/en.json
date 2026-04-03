@@ -3637,7 +3637,8 @@
       "inBand": "In Band",
       "overBand": "Over Band",
       "compaRatio": "Compa-Ratio",
-      "compaRatioComparison": "Compa-Ratio Comparison"
+      "compaRatioComparison": "Compa-Ratio Comparison",
+      "loadError": "Failed to load compensation analysis data"
     },
     "attritionPage": {
       "title": "Attrition Risk Analysis",
@@ -3813,7 +3814,35 @@
     "belowAverage": "Below Expectations",
     "calculating": "계산...",
     "caution": "Caution",
-    "warning": "Warning"
+    "warning": "Warning",
+    "genderPayGap": {
+      "title": "Gender Pay Gap Analysis",
+      "description": "Gender compensation comparison by job grade, category, and department",
+      "loadError": "Failed to load gender pay gap data",
+      "exportError": "Export failed",
+      "byJobGrade": "By Job Grade",
+      "byJobCategory": "By Job Category",
+      "byDepartment": "By Department",
+      "allYears": "All",
+      "yearSuffix": "",
+      "csvExport": "CSV Export",
+      "maleCount": "Male Count",
+      "femaleCount": "Female Count",
+      "maleAvgSalary": "Male Avg. Salary",
+      "femaleAvgSalary": "Female Avg. Salary",
+      "overallGap": "Overall Gap",
+      "detailAnalysis": "{group} Detailed Analysis",
+      "group": "Group",
+      "malePersons": "Male (persons)",
+      "femalePersons": "Female (persons)",
+      "maleAvg": "Male Avg.",
+      "femaleAvg": "Female Avg.",
+      "gap": "Gap",
+      "gapVisualization": "Gap Visualization",
+      "maleCompaRatio": "Male Compa-Ratio",
+      "femaleCompaRatio": "Female Compa-Ratio",
+      "difference": "Difference"
+    }
   },
   "notification": {
     "title": "Notifications",
@@ -5206,7 +5235,55 @@
     "noCycle": "No Cycle",
     "simulation": "Simulation",
     "confirm": "Confirm",
-    "historyAnalysis": "History & Analysis"
+    "historyAnalysis": "History & Analysis",
+    "loadError": "Failed to load compensation data",
+    "tryAgain": "Please try again.",
+    "emptySimulation": "Please proceed with salary adjustments in the Simulation tab before confirming.",
+    "targetCount": "Target Count",
+    "persons": "{count} persons",
+    "totalCurrentSalary": "Total Current Salary",
+    "totalIncrease": "Total Increase",
+    "avgIncrease": "Average Increase Rate",
+    "effectiveDate": "Effective Date",
+    "employeeName": "Employee Name",
+    "department": "Department",
+    "currentSalary": "Current Salary",
+    "increaseRate": "Increase Rate",
+    "newSalary": "New Salary",
+    "confirmAdjustment": "Confirm Salary Adjustment",
+    "confirmTitle": "Confirm Salary Adjustment",
+    "confirmDescription": "Salaries for {count} employees will be adjusted.\nEffective date: {date}\n\nThis action cannot be undone. Do you want to proceed?",
+    "cancel": "Cancel",
+    "confirming": "Processing...",
+    "confirmButton": "Confirm",
+    "confirmError": "Failed to confirm salary adjustment",
+    "moveToConfirm": "Go to Confirm Salary Adjustment →",
+    "historyTitle": "Salary Change History",
+    "compaRatioDistribution": "Compa-Ratio Distribution",
+    "noHistory": "No salary change history.",
+    "historyLoadError": "Failed to load history",
+    "historyLoadErrorDesc": "Unable to load salary change history.",
+    "analysisLoadError": "Failed to load analysis",
+    "analysisLoadErrorDesc": "Unable to load Compa-Ratio distribution.",
+    "changeType": "Type",
+    "previousSalary": "Previous Salary",
+    "changedSalary": "Changed Salary",
+    "noSimData": "No simulation data. Please select a cycle.",
+    "simulationLoadError": "Failed to load simulation",
+    "simulationLoadErrorDesc": "Unable to load data.",
+    "targetHeadcount": "Confirmed Headcount",
+    "aiRecommendation": "AI Recommendation",
+    "riskFactors": "Risk Factors",
+    "alternatives": "Alternatives",
+    "changeTypes": {
+      "HIRE": "Hire",
+      "ANNUAL_INCREASE": "Annual Increase",
+      "PROMOTION": "Promotion",
+      "MARKET_ADJUSTMENT": "Market Adjustment",
+      "DEMOTION_COMP": "Demotion",
+      "TRANSFER_COMP": "Transfer",
+      "OTHER": "Other"
+    }
   },
   "payrollPage": {
     "title": "Payroll Processing",
@@ -5245,7 +5322,9 @@
     "netPay": "Net Pay",
     "unreadCount": "{count} unread pay stub(s)",
     "momSame": "Same as last month",
-    "newBadge": "NEW"
+    "newBadge": "NEW",
+    "loadError": "Failed to load payslip",
+    "loadErrorDesc": "Unable to load data."
   },
   "payStubDetail": {
     "titleWithMonth": "{month} Pay Stub",
@@ -6197,5 +6276,20 @@
         "body": "Interview for [{postingTitle}] with {applicantName} has been scheduled at {scheduledAt} ({timezone})."
       }
     }
+  },
+  "totalRewards": {
+    "title": "Total Rewards Statement",
+    "description": "Annual total compensation including base salary, bonuses, allowances, benefits, and rewards",
+    "loadError": "Failed to load total rewards",
+    "empty": "No total rewards data available.",
+    "annualTotal": "Annual Total Compensation",
+    "baseSalary": "Base Salary",
+    "bonuses": "Bonuses",
+    "allowances": "Allowances",
+    "benefits": "Benefits",
+    "rewards": "Rewards",
+    "composition": "Compensation Composition",
+    "yearlyTrend": "Yearly Trend",
+    "totalPaid": "Total Paid"
   }
 }

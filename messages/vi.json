@@ -3615,7 +3615,8 @@
       "inBand": "Trong phạm vi",
       "overBand": "Vượt mức tối đa",
       "compaRatio": "Compa-Ratio",
-      "compaRatioComparison": "So sánh Compa-Ratio"
+      "compaRatioComparison": "So sánh Compa-Ratio",
+      "loadError": "Tải dữ liệu phân tích lương thưởng thất bại"
     },
     "attritionPage": {
       "title": "Attrition Risk Analysis",
@@ -3813,6 +3814,34 @@
       "tooltipLaborCost": "Tổng lương đã xác nhận theo pháp nhân (quy đổi KRW)",
       "tooltipRecruitment": "Số tin tuyển dụng đang mở",
       "tooltipOnboarding": "Hoàn thành onboarding ÷ Tổng onboarding × 100"
+    },
+    "genderPayGap": {
+      "title": "Phân tích chênh lệch lương theo giới tính",
+      "description": "So sánh lương thưởng theo giới tính theo cấp bậc, loại công việc và phòng ban",
+      "loadError": "Tải dữ liệu chênh lệch lương theo giới tính thất bại",
+      "exportError": "Xuất dữ liệu thất bại",
+      "byJobGrade": "Theo cấp bậc",
+      "byJobCategory": "Theo loại công việc",
+      "byDepartment": "Theo phòng ban",
+      "allYears": "Tất cả",
+      "yearSuffix": "năm",
+      "csvExport": "Xuất CSV",
+      "maleCount": "Số lượng nam",
+      "femaleCount": "Số lượng nữ",
+      "maleAvgSalary": "Lương trung bình nam",
+      "femaleAvgSalary": "Lương trung bình nữ",
+      "overallGap": "Chênh lệch tổng thể",
+      "detailAnalysis": "Phân tích chi tiết {group}",
+      "group": "Nhóm",
+      "malePersons": "Nam (người)",
+      "femalePersons": "Nữ (người)",
+      "maleAvg": "Trung bình nam",
+      "femaleAvg": "Trung bình nữ",
+      "gap": "Chênh lệch",
+      "gapVisualization": "Trực quan hóa chênh lệch",
+      "maleCompaRatio": "Compa-Ratio nam",
+      "femaleCompaRatio": "Compa-Ratio nữ",
+      "difference": "Sự khác biệt"
     }
   },
   "notification": {
@@ -5206,7 +5235,55 @@
     "noCycle": "No Cycle",
     "simulation": "Simulation",
     "confirm": "Confirm",
-    "historyAnalysis": "History & Analysis"
+    "historyAnalysis": "History & Analysis",
+    "loadError": "Tải dữ liệu lương thưởng thất bại",
+    "tryAgain": "Vui lòng thử lại.",
+    "emptySimulation": "Vui lòng thực hiện điều chỉnh lương trong tab Mô phỏng trước khi xác nhận.",
+    "targetCount": "Số lượng đối tượng",
+    "persons": "{count} người",
+    "totalCurrentSalary": "Tổng lương hiện tại",
+    "totalIncrease": "Tổng tăng",
+    "avgIncrease": "Tỷ lệ tăng trung bình",
+    "effectiveDate": "Ngày hiệu lực",
+    "employeeName": "Tên nhân viên",
+    "department": "Phòng ban",
+    "currentSalary": "Lương hiện tại",
+    "increaseRate": "Tỷ lệ tăng",
+    "newSalary": "Lương mới",
+    "confirmAdjustment": "Xác nhận điều chỉnh lương",
+    "confirmTitle": "Xác nhận điều chỉnh lương",
+    "confirmDescription": "Lương của {count} nhân viên sẽ được điều chỉnh.\nNgày hiệu lực: {date}\n\nThao tác này không thể hoàn tác. Bạn có muốn tiếp tục không?",
+    "cancel": "Hủy",
+    "confirming": "Đang xử lý...",
+    "confirmButton": "Xác nhận",
+    "confirmError": "Xác nhận điều chỉnh lương thất bại",
+    "moveToConfirm": "Đi tới xác nhận điều chỉnh lương →",
+    "historyTitle": "Lịch sử thay đổi lương",
+    "compaRatioDistribution": "Phân bố Compa-Ratio",
+    "noHistory": "Không có lịch sử thay đổi lương.",
+    "historyLoadError": "Tải lịch sử thất bại",
+    "historyLoadErrorDesc": "Không thể tải lịch sử thay đổi lương.",
+    "analysisLoadError": "Tải phân tích thất bại",
+    "analysisLoadErrorDesc": "Không thể tải phân bố Compa-Ratio.",
+    "changeType": "Loại",
+    "previousSalary": "Lương trước",
+    "changedSalary": "Lương thay đổi",
+    "noSimData": "Không có dữ liệu mô phỏng. Vui lòng chọn một chu kỳ.",
+    "simulationLoadError": "Tải mô phỏng thất bại",
+    "simulationLoadErrorDesc": "Không thể tải dữ liệu.",
+    "targetHeadcount": "Số người xác nhận",
+    "aiRecommendation": "Kết quả đề xuất AI",
+    "riskFactors": "Yếu tố rủi ro",
+    "alternatives": "Phương án thay thế",
+    "changeTypes": {
+      "HIRE": "Tuyển dụng",
+      "ANNUAL_INCREASE": "Tăng lương hàng năm",
+      "PROMOTION": "Thăng chức",
+      "MARKET_ADJUSTMENT": "Điều chỉnh thị trường",
+      "DEMOTION_COMP": "Giáng chức",
+      "TRANSFER_COMP": "Chuyển đổi",
+      "OTHER": "Khác"
+    }
   },
   "payrollPage": {
     "title": "Payroll Processing",
@@ -5245,7 +5322,9 @@
     "netPay": "Net Pay",
     "unreadCount": "{count} phiếu lương chưa đọc",
     "momSame": "Như tháng trước",
-    "newBadge": "MỚI"
+    "newBadge": "MỚI",
+    "loadError": "Tải phiếu lương thất bại",
+    "loadErrorDesc": "Không thể tải dữ liệu."
   },
   "payStubDetail": {
     "titleWithMonth": "{month} Pay Stub",
@@ -6197,5 +6276,20 @@
     "menu": "Menu",
     "employees": "Nhân viêns",
     "noResults": "No results found"
+  },
+  "totalRewards": {
+    "title": "Bảng Tổng Thù Lao",
+    "description": "Tổng quan thù lao hàng năm bao gồm lương cơ bản, thưởng, phụ cấp, phúc lợi và khen thưởng",
+    "loadError": "Không thể tải dữ liệu tổng thù lao",
+    "empty": "Không có dữ liệu tổng thù lao.",
+    "annualTotal": "Tổng Thù Lao Hàng Năm",
+    "baseSalary": "Lương Cơ Bản",
+    "bonuses": "Thưởng",
+    "allowances": "Phụ Cấp",
+    "benefits": "Phúc Lợi",
+    "rewards": "Khen Thưởng",
+    "composition": "Cơ Cấu Thù Lao",
+    "yearlyTrend": "Xu Hướng Theo Năm",
+    "totalPaid": "Tổng Đã Chi Trả"
   }
 }

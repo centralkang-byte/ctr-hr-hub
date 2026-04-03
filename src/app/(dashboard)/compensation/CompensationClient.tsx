@@ -44,7 +44,7 @@ export default function CompensationClient({ user: _user }: { user: SessionUser 
         setSelectedCycleId(res.data[0].id)
       }
     } catch (err) {
-      toast({ title: '보상 데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('loadError'), description: err instanceof Error ? err.message : t('tryAgain'), variant: 'destructive' })
     }
   }, [selectedCycleId])
 

@@ -61,15 +61,16 @@ interface GapData {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const GROUP_BY_LABELS: Record<string, string> = {
-  jobGrade: '직급별',
-  jobCategory: '직무별',
-  department: '부서별',
+const GROUP_BY_KEYS: Record<string, string> = {
+  jobGrade: 'byJobGrade',
+  jobCategory: 'byJobCategory',
+  department: 'byDepartment',
 }
 
 // ─── Component ──────────────────────────────────────────────
 
 export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
+  const t = useTranslations('analytics.genderPayGap')
   const tAnalytics = useTranslations('analytics.compensationPage')
   const [loading, setLoading] = useState(true)
   const [groupBy, setGroupBy] = useState<string>('jobGrade')
@@ -86,7 +87,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
       const res = await apiClient.get<GapData>('/api/v1/analytics/gender-pay-gap', params)
       setData(res.data)
     } catch (err) {
-      toast({ title: '성별 급여 격차 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('loadError'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
     setLoading(false)
   }, [groupBy, year])
@@ -111,7 +112,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
       a.click()
       URL.revokeObjectURL(url)
     } catch (err) {
-      toast({ title: '성별 급여 격차 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('exportError'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
     setExporting(false)
   }
@@ -145,8 +146,8 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{'성별 급여 격차 분석'}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{'직급·직무·부서별 성별 보상 비교 분석'}</p>
+          <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t('description')}</p>
         </div>
         <div className="flex items-center gap-3">
           <Select value={groupBy} onValueChange={setGroupBy}>
@@ -154,25 +155,25 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(GROUP_BY_LABELS).map(([k, v]) => (
-                <SelectItem key={k} value={k}>{v}</SelectItem>
+              {Object.entries(GROUP_BY_KEYS).map(([k, labelKey]) => (
+                <SelectItem key={k} value={k}>{t(labelKey)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Select value={year || 'ALL'} onValueChange={(v) => setYear(v === 'ALL' ? '' : v)}>
             <SelectTrigger className="w-28">
-              <SelectValue placeholder={'전체 연도'} />
+              <SelectValue placeholder={t('allYears')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">{'전체'}</SelectItem>
+              <SelectItem value="ALL">{t('allYears')}</SelectItem>
               {[2024, 2025, 2026].map((y) => (
-                <SelectItem key={y} value={String(y)}>{y}년</SelectItem>
+                <SelectItem key={y} value={String(y)}>{y}{t('yearSuffix')}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Button variant="outline" onClick={handleExport} disabled={exporting}>
             {exporting ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Download className="w-4 h-4 mr-1" />}
-            CSV 내보내기
+            {t('csvExport')}
           </Button>
         </div>
       </div>
@@ -185,43 +186,43 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 mb-1">
                   <Users className="w-4 h-4 text-primary" />
-                  <p className="text-xs text-muted-foreground">{'남성 인원'}</p>
+                  <p className="text-xs text-muted-foreground">{t('maleCount')}</p>
                 </div>
-                <p className="text-3xl font-bold text-foreground">{data.summary.totalMale}명</p>
+                <p className="text-3xl font-bold text-foreground">{data.summary.totalMale}</p>
               </CardContent>
             </Card>
             <Card className="">
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 mb-1">
                   <Users className="w-4 h-4 text-pink-400" />
-                  <p className="text-xs text-muted-foreground">{'여성 인원'}</p>
+                  <p className="text-xs text-muted-foreground">{t('femaleCount')}</p>
                 </div>
-                <p className="text-3xl font-bold text-foreground">{data.summary.totalFemale}명</p>
+                <p className="text-3xl font-bold text-foreground">{data.summary.totalFemale}</p>
               </CardContent>
             </Card>
             <Card className="">
               <CardContent className="p-5">
-                <p className="text-xs text-muted-foreground mb-1">{'남성 평균 급여'}</p>
+                <p className="text-xs text-muted-foreground mb-1">{t('maleAvgSalary')}</p>
                 <p className="text-2xl font-bold text-foreground">{formatCurrency(data.summary.overallMaleAvg)}</p>
               </CardContent>
             </Card>
             <Card className="">
               <CardContent className="p-5">
-                <p className="text-xs text-muted-foreground mb-1">{'여성 평균 급여'}</p>
+                <p className="text-xs text-muted-foreground mb-1">{t('femaleAvgSalary')}</p>
                 <p className="text-2xl font-bold text-foreground">{formatCurrency(data.summary.overallFemaleAvg)}</p>
               </CardContent>
             </Card>
-            <Card className="border-2" style={{ borderColor: Math.abs(data.summary.overallGapPercent) > 15 ? '#FCA5A5' : Math.abs(data.summary.overallGapPercent) > 5 ? '#FCD34D' : '#6EE7B7' }}>
+            <Card className={Math.abs(data.summary.overallGapPercent) > 15 ? 'bg-destructive/5' : Math.abs(data.summary.overallGapPercent) > 5 ? 'bg-amber-500/5' : 'bg-emerald-500/5'}>
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 mb-1">
                   {Math.abs(data.summary.overallGapPercent) > 15 ? (
-                    <AlertTriangle className="w-4 h-4 text-red-500" />
+                    <AlertTriangle className="w-4 h-4 text-destructive" />
                   ) : data.summary.overallGapPercent > 0 ? (
                     <TrendingDown className="w-4 h-4 text-amber-500" />
                   ) : (
                     <TrendingUp className="w-4 h-4 text-emerald-600" />
                   )}
-                  <p className="text-xs text-muted-foreground">{'전체 격차'}</p>
+                  <p className="text-xs text-muted-foreground">{t('overallGap')}</p>
                 </div>
                 <p className={`text-3xl font-bold ${getGapColor(data.summary.overallGapPercent)}`}>
                   {data.summary.overallGapPercent.toFixed(1)}%
@@ -235,7 +236,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
             <CardHeader>
               <CardTitle className="text-base font-semibold flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-primary" />
-                {GROUP_BY_LABELS[groupBy]} 상세 분석
+                {t('detailAnalysis', { group: t(GROUP_BY_KEYS[groupBy]) })}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -246,13 +247,13 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                   <table className={TABLE_STYLES.table}>
                     <thead className={TABLE_STYLES.header}>
                       <tr>
-                        <th className={TABLE_STYLES.headerCell}>{'그룹'}</th>
-                        <th className={TABLE_STYLES.headerCellRight}>{'남성 (명)'}</th>
-                        <th className={TABLE_STYLES.headerCellRight}>{'여성 (명)'}</th>
-                        <th className={TABLE_STYLES.headerCellRight}>{'남성 평균'}</th>
-                        <th className={TABLE_STYLES.headerCellRight}>{'여성 평균'}</th>
-                        <th className={TABLE_STYLES.headerCell}>{'격차'}</th>
-                        <th className={TABLE_STYLES.headerCell}>{'격차 시각화'}</th>
+                        <th className={TABLE_STYLES.headerCell}>{t('group')}</th>
+                        <th className={TABLE_STYLES.headerCellRight}>{t('malePersons')}</th>
+                        <th className={TABLE_STYLES.headerCellRight}>{t('femalePersons')}</th>
+                        <th className={TABLE_STYLES.headerCellRight}>{t('maleAvg')}</th>
+                        <th className={TABLE_STYLES.headerCellRight}>{t('femaleAvg')}</th>
+                        <th className={TABLE_STYLES.headerCell}>{t('gap')}</th>
+                        <th className={TABLE_STYLES.headerCell}>{t('gapVisualization')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
@@ -315,10 +316,10 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                   <table className={TABLE_STYLES.table}>
                     <thead className={TABLE_STYLES.header}>
                       <tr>
-                        <th className={TABLE_STYLES.headerCell}>{'그룹'}</th>
-                        <th className={TABLE_STYLES.headerCellRight}>{'남성 Compa-Ratio'}</th>
-                        <th className={TABLE_STYLES.headerCellRight}>{'여성 Compa-Ratio'}</th>
-                        <th className={TABLE_STYLES.headerCell}>{'차이'}</th>
+                        <th className={TABLE_STYLES.headerCell}>{t('group')}</th>
+                        <th className={TABLE_STYLES.headerCellRight}>{t('maleCompaRatio')}</th>
+                        <th className={TABLE_STYLES.headerCellRight}>{t('femaleCompaRatio')}</th>
+                        <th className={TABLE_STYLES.headerCell}>{t('difference')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">

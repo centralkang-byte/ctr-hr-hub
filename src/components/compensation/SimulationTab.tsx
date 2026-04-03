@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { Sparkles, AlertTriangle, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -55,6 +56,7 @@ interface SimulationTabProps {
 // ─── Component ───────────────────────────────────────────
 
 export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationTabProps) {
+  const t = useTranslations('compensation')
   const { toast } = useToast()
   const [rows, setRows] = useState<SimulationRow[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)
@@ -84,7 +86,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
         )
         setPagination(res.pagination ?? null)
       } catch {
-        toast({ title: '시뮬레이션 로드 실패', description: '데이터를 불러올 수 없습니다.', variant: 'destructive' })
+        toast({ title: t('simulationLoadError'), description: t('simulationLoadErrorDesc'), variant: 'destructive' })
       } finally {
         setLoading(false)
       }
@@ -124,7 +126,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
       handlePctChange(employeeId, res.data.recommendedPct)
       setAiResult({ employeeId, data: res.data })
     } catch {
-      toast({ title: 'AI 추천 실패', description: 'AI 서비스를 사용할 수 없습니다. 잠시 후 다시 시도해주세요.', variant: 'destructive' })
+      toast({ title: t('simulationLoadError'), description: t('tryAgain'), variant: 'destructive' })
     } finally {
       setAiLoadingId(null)
     }
@@ -248,50 +250,50 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
     <div className="space-y-4">
       {/* ─── 예산 요약 카드 ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-muted-foreground mb-1">대상 인원</p>
-          <p className="text-3xl font-bold text-foreground">{budget.headcount}명</p>
+        <div className="bg-card rounded-2xl shadow-sm p-6">
+          <p className="text-xs text-muted-foreground mb-1">{t('targetCount')}</p>
+          <p className="text-3xl font-bold text-foreground">{t('persons', { count: budget.headcount })}</p>
         </div>
-        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-muted-foreground mb-1">현재 총 연봉</p>
+        <div className="bg-card rounded-2xl shadow-sm p-6">
+          <p className="text-xs text-muted-foreground mb-1">{t('totalCurrentSalary')}</p>
           <p className="text-xl font-bold text-foreground">
             {formatCurrency(budget.totalCurrentSalary)}
           </p>
         </div>
-        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-muted-foreground mb-1">총 인상액</p>
+        <div className="bg-card rounded-2xl shadow-sm p-6">
+          <p className="text-xs text-muted-foreground mb-1">{t('totalIncrease')}</p>
           <p className="text-xl font-bold text-emerald-600">
             +{formatCurrency(budget.totalIncrease)}
           </p>
         </div>
-        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-muted-foreground mb-1">평균 인상률</p>
+        <div className="bg-card rounded-2xl shadow-sm p-6">
+          <p className="text-xs text-muted-foreground mb-1">{t('avgIncrease')}</p>
           <p className="text-3xl font-bold text-primary">{budget.avgIncreasePct}%</p>
         </div>
       </div>
 
       {/* ─── AI 추천 결과 패널 ─── */}
       {aiResult && (
-        <div className="bg-indigo-500/15 border border-indigo-200 rounded-xl p-4">
+        <div className="bg-primary/5 rounded-2xl p-4">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="h-4 w-4 text-primary" />
-              <h4 className="text-sm font-semibold text-indigo-900">
-                AI 추천 결과 — {rows.find((r) => r.id === aiResult.employeeId)?.name ?? ''}
+              <h4 className="text-sm font-semibold text-foreground">
+                {t('aiRecommendation')} — {rows.find((r) => r.id === aiResult.employeeId)?.name ?? ''}
               </h4>
-              <Badge className="bg-indigo-500/15 text-primary/90 border-indigo-200 text-xs">
+              <Badge className="bg-primary/10 text-primary border-primary/20 text-xs">
                 {aiResult.data.recommendedPct}%
               </Badge>
             </div>
-            <button onClick={() => setAiResult(null)} className="text-indigo-400 hover:text-primary">
+            <button onClick={() => setAiResult(null)} className="text-muted-foreground hover:text-foreground">
               <X className="h-4 w-4" />
             </button>
           </div>
-          <p className="text-sm text-indigo-800 mb-3">{aiResult.data.reasoning}</p>
+          <p className="text-sm text-muted-foreground mb-3">{aiResult.data.reasoning}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {aiResult.data.riskFactors.length > 0 && (
               <div>
-                <p className="text-xs font-medium text-primary/90 mb-1">위험 요인</p>
+                <p className="text-xs font-medium text-foreground mb-1">{t('riskFactors')}</p>
                 <ul className="space-y-1">
                   {aiResult.data.riskFactors.map((f, i) => (
                     <li key={i} className="text-xs text-primary flex items-start gap-1">
@@ -304,7 +306,7 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
             )}
             {aiResult.data.alternativeActions.length > 0 && (
               <div>
-                <p className="text-xs font-medium text-primary/90 mb-1">대안</p>
+                <p className="text-xs font-medium text-foreground mb-1">{t('alternatives')}</p>
                 <ul className="space-y-1">
                   {aiResult.data.alternativeActions.map((a, i) => (
                     <li key={i} className="text-xs text-primary">
@@ -319,14 +321,14 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
       )}
 
       {/* ─── DataTable ─── */}
-      <div className="bg-card rounded-xl border border-border">
+      <div className="bg-card rounded-2xl shadow-sm">
         <DataTable<SimulationRow>
           columns={columns}
           data={rows}
           pagination={pagination ?? undefined}
           onPageChange={fetchSimulation}
           loading={loading}
-          emptyMessage="시뮬레이션 데이터가 없습니다. 사이클을 선택해주세요."
+          emptyMessage={t('noSimData')}
           rowKey={(row) => row.id}
         />
       </div>
@@ -336,9 +338,9 @@ export default function SimulationTab({ cycleId, onPrepareConfirm }: SimulationT
         <Button
           onClick={handlePrepareConfirm}
           disabled={rows.length === 0}
-          className={`${BUTTON_VARIANTS.primary} px-6 py-2 rounded-lg font-medium text-sm`}
+          className="px-6 py-2"
         >
-          연봉 조정 확정으로 이동 →
+          {t('moveToConfirm')}
         </Button>
       </div>
     </div>

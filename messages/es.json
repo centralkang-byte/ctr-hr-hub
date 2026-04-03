@@ -3615,7 +3615,8 @@
       "inBand": "Dentro del rango",
       "overBand": "Sobre el máximo",
       "compaRatio": "Compa-Ratio",
-      "compaRatioComparison": "Comparación Compa-Ratio"
+      "compaRatioComparison": "Comparación Compa-Ratio",
+      "loadError": "Error al cargar datos de análisis de compensación"
     },
     "attritionPage": {
       "title": "Attrition Risk Analysis",
@@ -3813,6 +3814,34 @@
       "tooltipLaborCost": "Total de nómina confirmada por entidad (conversión KRW)",
       "tooltipRecruitment": "Vacantes de reclutamiento activas",
       "tooltipOnboarding": "Onboarding completado ÷ Total onboarding × 100"
+    },
+    "genderPayGap": {
+      "title": "Análisis de brecha salarial de género",
+      "description": "Comparación de compensación por género según grado, categoría y departamento",
+      "loadError": "Error al cargar datos de brecha salarial de género",
+      "exportError": "Error en la exportación",
+      "byJobGrade": "Por grado",
+      "byJobCategory": "Por categoría",
+      "byDepartment": "Por departamento",
+      "allYears": "Todos",
+      "yearSuffix": "",
+      "csvExport": "Exportar CSV",
+      "maleCount": "Cantidad masculina",
+      "femaleCount": "Cantidad femenina",
+      "maleAvgSalary": "Salario prom. masculino",
+      "femaleAvgSalary": "Salario prom. femenino",
+      "overallGap": "Brecha general",
+      "detailAnalysis": "Análisis detallado de {group}",
+      "group": "Grupo",
+      "malePersons": "Masculino (personas)",
+      "femalePersons": "Femenino (personas)",
+      "maleAvg": "Promedio masculino",
+      "femaleAvg": "Promedio femenino",
+      "gap": "Brecha",
+      "gapVisualization": "Visualización de brecha",
+      "maleCompaRatio": "Compa-Ratio masculino",
+      "femaleCompaRatio": "Compa-Ratio femenino",
+      "difference": "Diferencia"
     }
   },
   "notification": {
@@ -5206,7 +5235,55 @@
     "noCycle": "No Cycle",
     "simulation": "Simulation",
     "confirm": "Confirm",
-    "historyAnalysis": "History & Analysis"
+    "historyAnalysis": "History & Analysis",
+    "loadError": "Error al cargar datos de compensación",
+    "tryAgain": "Por favor, inténtelo de nuevo.",
+    "emptySimulation": "Realice los ajustes salariales en la pestaña de Simulación antes de confirmar.",
+    "targetCount": "Número de objetivos",
+    "persons": "{count} personas",
+    "totalCurrentSalary": "Salario total actual",
+    "totalIncrease": "Aumento total",
+    "avgIncrease": "Tasa de aumento promedio",
+    "effectiveDate": "Fecha de vigencia",
+    "employeeName": "Nombre del empleado",
+    "department": "Departamento",
+    "currentSalary": "Salario actual",
+    "increaseRate": "Tasa de aumento",
+    "newSalary": "Nuevo salario",
+    "confirmAdjustment": "Confirmar ajuste salarial",
+    "confirmTitle": "Confirmar ajuste salarial",
+    "confirmDescription": "Se ajustarán los salarios de {count} empleados.\nFecha de vigencia: {date}\n\nEsta acción no se puede deshacer. ¿Desea continuar?",
+    "cancel": "Cancelar",
+    "confirming": "Procesando...",
+    "confirmButton": "Confirmar",
+    "confirmError": "Error al confirmar el ajuste salarial",
+    "moveToConfirm": "Ir a confirmar ajuste salarial →",
+    "historyTitle": "Historial de cambios salariales",
+    "compaRatioDistribution": "Distribución de Compa-Ratio",
+    "noHistory": "No hay historial de cambios salariales.",
+    "historyLoadError": "Error al cargar historial",
+    "historyLoadErrorDesc": "No se pudo cargar el historial de cambios salariales.",
+    "analysisLoadError": "Error al cargar análisis",
+    "analysisLoadErrorDesc": "No se pudo cargar la distribución de Compa-Ratio.",
+    "changeType": "Tipo",
+    "previousSalary": "Salario anterior",
+    "changedSalary": "Salario modificado",
+    "noSimData": "No hay datos de simulación. Seleccione un ciclo.",
+    "simulationLoadError": "Error al cargar simulación",
+    "simulationLoadErrorDesc": "No se pudieron cargar los datos.",
+    "targetHeadcount": "Personal confirmado",
+    "aiRecommendation": "Recomendación de IA",
+    "riskFactors": "Factores de riesgo",
+    "alternatives": "Alternativas",
+    "changeTypes": {
+      "HIRE": "Contratación",
+      "ANNUAL_INCREASE": "Aumento anual",
+      "PROMOTION": "Promoción",
+      "MARKET_ADJUSTMENT": "Ajuste de mercado",
+      "DEMOTION_COMP": "Descenso",
+      "TRANSFER_COMP": "Transferencia",
+      "OTHER": "Otro"
+    }
   },
   "payrollPage": {
     "title": "Payroll Processing",
@@ -5245,7 +5322,9 @@
     "netPay": "Net Pay",
     "unreadCount": "{count} recibos de nómina sin leer",
     "momSame": "Igual al mes anterior",
-    "newBadge": "NUEVO"
+    "newBadge": "NUEVO",
+    "loadError": "Error al cargar la nómina",
+    "loadErrorDesc": "No se pudieron cargar los datos."
   },
   "payStubDetail": {
     "titleWithMonth": "{month} Pay Stub",
@@ -6197,5 +6276,20 @@
     "menu": "Menu",
     "employees": "Empleados",
     "noResults": "No results found"
+  },
+  "totalRewards": {
+    "title": "Estado de Compensación Total",
+    "description": "Resumen anual de compensación total incluyendo salario base, bonificaciones, asignaciones, beneficios y recompensas",
+    "loadError": "Error al cargar los datos de compensación total",
+    "empty": "No hay datos de compensación total disponibles.",
+    "annualTotal": "Compensación Total Anual",
+    "baseSalary": "Salario Base",
+    "bonuses": "Bonificaciones",
+    "allowances": "Asignaciones",
+    "benefits": "Beneficios",
+    "rewards": "Recompensas",
+    "composition": "Composición de Compensación",
+    "yearlyTrend": "Tendencia Anual",
+    "totalPaid": "Total Pagado"
   }
 }

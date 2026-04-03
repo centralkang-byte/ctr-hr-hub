@@ -3637,7 +3637,8 @@
       "inBand": "밴드 이내",
       "overBand": "밴드 상한 초과",
       "compaRatio": "Compa-Ratio",
-      "compaRatioComparison": "Compa-Ratio 비교"
+      "compaRatioComparison": "Compa-Ratio 비교",
+      "loadError": "보상 분석 데이터 로드 실패"
     },
     "attritionPage": {
       "title": "이탈 위험 분석",
@@ -3813,7 +3814,35 @@
     "belowAverage": "미흡",
     "calculating": "계산 중",
     "caution": "주의",
-    "warning": "경고"
+    "warning": "경고",
+    "genderPayGap": {
+      "title": "성별 급여 격차 분석",
+      "description": "직급·직무·부서별 성별 보상 비교 분석",
+      "loadError": "성별 급여 격차 로드 실패",
+      "exportError": "내보내기 실패",
+      "byJobGrade": "직급별",
+      "byJobCategory": "직무별",
+      "byDepartment": "부서별",
+      "allYears": "전체",
+      "yearSuffix": "년",
+      "csvExport": "CSV 내보내기",
+      "maleCount": "남성 인원",
+      "femaleCount": "여성 인원",
+      "maleAvgSalary": "남성 평균 급여",
+      "femaleAvgSalary": "여성 평균 급여",
+      "overallGap": "전체 격차",
+      "detailAnalysis": "{group} 상세 분석",
+      "group": "그룹",
+      "malePersons": "남성 (명)",
+      "femalePersons": "여성 (명)",
+      "maleAvg": "남성 평균",
+      "femaleAvg": "여성 평균",
+      "gap": "격차",
+      "gapVisualization": "격차 시각화",
+      "maleCompaRatio": "남성 Compa-Ratio",
+      "femaleCompaRatio": "여성 Compa-Ratio",
+      "difference": "차이"
+    }
   },
   "notification": {
     "title": "알림",
@@ -5219,7 +5248,55 @@
     "noCycle": "사이클 없음",
     "simulation": "시뮬레이션",
     "confirm": "확정",
-    "historyAnalysis": "이력/분석"
+    "historyAnalysis": "이력/분석",
+    "loadError": "보상 데이터 로드 실패",
+    "tryAgain": "다시 시도해 주세요.",
+    "emptySimulation": "시뮬레이션 탭에서 연봉 조정을 진행한 후 확정해주세요.",
+    "targetCount": "대상 인원",
+    "persons": "{count}명",
+    "totalCurrentSalary": "현재 총 연봉",
+    "totalIncrease": "총 인상액",
+    "avgIncrease": "평균 인상률",
+    "effectiveDate": "적용일",
+    "employeeName": "직원명",
+    "department": "부서",
+    "currentSalary": "현재 연봉",
+    "increaseRate": "인상률",
+    "newSalary": "신규 연봉",
+    "confirmAdjustment": "연봉 조정 확정",
+    "confirmTitle": "연봉 조정 확정",
+    "confirmDescription": "총 {count}명의 연봉이 조정됩니다.\n적용일: {date}\n\n이 작업은 되돌릴 수 없습니다. 진행하시겠습니까?",
+    "cancel": "취소",
+    "confirming": "처리 중...",
+    "confirmButton": "확정",
+    "confirmError": "연봉 조정 확정 실패",
+    "moveToConfirm": "연봉 조정 확정으로 이동 →",
+    "historyTitle": "연봉 변경 이력",
+    "compaRatioDistribution": "Compa-Ratio 분포",
+    "noHistory": "연봉 변경 이력이 없습니다.",
+    "historyLoadError": "이력 로드 실패",
+    "historyLoadErrorDesc": "연봉 변경 이력을 불러올 수 없습니다.",
+    "analysisLoadError": "분석 로드 실패",
+    "analysisLoadErrorDesc": "Compa-Ratio 분포를 불러올 수 없습니다.",
+    "changeType": "유형",
+    "previousSalary": "이전 연봉",
+    "changedSalary": "변경 연봉",
+    "noSimData": "시뮬레이션 데이터가 없습니다. 사이클을 선택해주세요.",
+    "simulationLoadError": "시뮬레이션 로드 실패",
+    "simulationLoadErrorDesc": "데이터를 불러올 수 없습니다.",
+    "targetHeadcount": "확정 인원",
+    "aiRecommendation": "AI 추천 결과",
+    "riskFactors": "위험 요인",
+    "alternatives": "대안",
+    "changeTypes": {
+      "HIRE": "입사",
+      "ANNUAL_INCREASE": "연봉 인상",
+      "PROMOTION": "승진",
+      "MARKET_ADJUSTMENT": "시장 조정",
+      "DEMOTION_COMP": "강등",
+      "TRANSFER_COMP": "전환",
+      "OTHER": "기타"
+    }
   },
   "payrollPage": {
     "title": "급여 정산",
@@ -5258,7 +5335,9 @@
     "netPay": "실수령액",
     "unreadCount": "미열람 명세서 {count}건",
     "momSame": "전월 동일",
-    "newBadge": "NEW"
+    "newBadge": "NEW",
+    "loadError": "급여 명세서 로드 실패",
+    "loadErrorDesc": "데이터를 불러올 수 없습니다."
   },
   "payStubDetail": {
     "titleWithMonth": "{month} 급여명세서",
@@ -6210,5 +6289,20 @@
         "body": "[{postingTitle}] {applicantName}님 면접이 {scheduledAt} ({timezone})에 예정되었습니다."
       }
     }
+  },
+  "totalRewards": {
+    "title": "총 보상 명세",
+    "description": "기본급, 상여금, 수당, 복리후생, 포상을 포함한 연간 총 보상 현황",
+    "loadError": "총 보상 데이터 로드 실패",
+    "empty": "총 보상 데이터가 없습니다.",
+    "annualTotal": "연간 총 보상",
+    "baseSalary": "기본급",
+    "bonuses": "상여금",
+    "allowances": "수당",
+    "benefits": "복리후생",
+    "rewards": "포상",
+    "composition": "보상 구성",
+    "yearlyTrend": "연도별 추이",
+    "totalPaid": "총 지급액"
   }
 }

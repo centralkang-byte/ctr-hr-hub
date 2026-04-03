@@ -14,6 +14,7 @@ import {
   BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts'
+import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
 import { AnalyticsPageLayout } from '@/components/analytics/AnalyticsPageLayout'
 import { ChartCard } from '@/components/analytics/ChartCard'
@@ -42,8 +43,8 @@ export default function CompensationAnalyticsClient({ user: _user }: { user: Ses
         company_id: companyId,
       })
       setData(res.data)
-    } catch {
-      // silently handle
+    } catch (err) {
+      toast({ title: t('loadError'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     } finally {
       setLoading(false)
     }

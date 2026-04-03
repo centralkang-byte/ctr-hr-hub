@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,6 +16,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { formatCurrency, calculateBudgetSummary } from '@/lib/compensation'
 import { apiClient } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
 import { TABLE_STYLES } from '@/lib/styles'
 
 interface ConfirmTabProps {
@@ -31,6 +33,7 @@ interface ConfirmTabProps {
 }
 
 export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: ConfirmTabProps) {
+  const t = useTranslations('compensation')
   const [showConfirm, setShowConfirm] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const [effectiveDate, setEffectiveDate] = useState(
@@ -56,8 +59,8 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
       })
       setShowConfirm(false)
       onConfirmDone()
-    } catch {
-      // ignore
+    } catch (err) {
+      toast({ title: t('confirmError'), description: err instanceof Error ? err.message : t('tryAgain'), variant: 'destructive' })
     } finally {
       setConfirming(false)
     }
@@ -65,10 +68,10 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
 
   if (adjustments.length === 0) {
     return (
-      <div className="bg-card rounded-xl border border-border p-12 text-center">
-        <CheckCircle2 className="mx-auto h-12 w-12 text-border mb-4" />
+      <div className="bg-card rounded-2xl shadow-sm p-12 text-center">
+        <CheckCircle2 className="mx-auto h-12 w-12 text-muted-foreground/30 mb-4" />
         <p className="text-muted-foreground text-sm">
-          시뮬레이션 탭에서 연봉 조정을 진행한 후 확정해주세요.
+          {t('emptySimulation')}
         </p>
       </div>
     )
@@ -78,25 +81,25 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
     <div className="space-y-6">
       {/* ─── 요약 ─── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-muted-foreground mb-1">확정 인원</p>
-          <p className="text-3xl font-bold text-foreground">{budget.headcount}명</p>
+        <div className="bg-card rounded-2xl shadow-sm p-6">
+          <p className="text-xs text-muted-foreground mb-1">{t('targetHeadcount')}</p>
+          <p className="text-3xl font-bold text-foreground">{t('persons', { count: budget.headcount })}</p>
         </div>
-        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-muted-foreground mb-1">총 인상액</p>
+        <div className="bg-card rounded-2xl shadow-sm p-6">
+          <p className="text-xs text-muted-foreground mb-1">{t('totalIncrease')}</p>
           <p className="text-xl font-bold text-emerald-600">
             +{formatCurrency(budget.totalIncrease)}
           </p>
         </div>
-        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-muted-foreground mb-1">평균 인상률</p>
+        <div className="bg-card rounded-2xl shadow-sm p-6">
+          <p className="text-xs text-muted-foreground mb-1">{t('avgIncrease')}</p>
           <p className="text-3xl font-bold text-primary">{budget.avgIncreasePct}%</p>
         </div>
-        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-muted-foreground mb-1">적용일</p>
+        <div className="bg-card rounded-2xl shadow-sm p-6">
+          <p className="text-xs text-muted-foreground mb-1">{t('effectiveDate')}</p>
           <input
             type="date"
-            className="w-full px-2 py-1 border border-border rounded text-sm mt-1 focus:ring-2 focus:ring-primary/10"
+            className="w-full px-2 py-1 border border-border/30 rounded-lg text-sm mt-1 focus:ring-2 focus:ring-primary/20"
             value={effectiveDate}
             onChange={(e) => setEffectiveDate(e.target.value)}
           />
@@ -108,11 +111,11 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
         <table className={TABLE_STYLES.table}>
           <thead>
             <tr className={TABLE_STYLES.header}>
-              <th className={TABLE_STYLES.headerCell}>직원명</th>
-              <th className={TABLE_STYLES.headerCell}>부서</th>
-              <th className={TABLE_STYLES.headerCellRight}>현재 연봉</th>
-              <th className={TABLE_STYLES.headerCellRight}>인상률</th>
-              <th className={TABLE_STYLES.headerCellRight}>신규 연봉</th>
+              <th className={TABLE_STYLES.headerCell}>{t('employeeName')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
+              <th className={TABLE_STYLES.headerCellRight}>{t('currentSalary')}</th>
+              <th className={TABLE_STYLES.headerCellRight}>{t('increaseRate')}</th>
+              <th className={TABLE_STYLES.headerCellRight}>{t('newSalary')}</th>
             </tr>
           </thead>
           <tbody>
@@ -139,10 +142,10 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
       <div className="flex justify-end">
         <Button
           onClick={() => setShowConfirm(true)}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-medium text-sm"
+          className="px-6 py-2"
         >
           <CheckCircle2 className="mr-2 h-4 w-4" />
-          연봉 조정 확정
+          {t('confirmAdjustment')}
         </Button>
       </div>
 
@@ -150,23 +153,18 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
       <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>연봉 조정 확정</AlertDialogTitle>
+            <AlertDialogTitle>{t('confirmTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              총 {budget.headcount}명의 연봉이 조정됩니다.
-              <br />
-              적용일: {effectiveDate}
-              <br />
-              <br />이 작업은 되돌릴 수 없습니다. 진행하시겠습니까?
+              {t('confirmDescription', { count: budget.headcount, date: effectiveDate })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={confirming}>취소</AlertDialogCancel>
+            <AlertDialogCancel disabled={confirming}>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirm}
               disabled={confirming}
-              className="bg-emerald-600 hover:bg-emerald-700"
             >
-              {confirming ? '처리 중...' : '확정'}
+              {confirming ? t('confirming') : t('confirmButton')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   BarChart,
   Bar,
@@ -43,19 +44,20 @@ interface DistributionItem {
 
 // ─── Change Type Labels ──────────────────────────────────
 
-const CHANGE_TYPE_LABELS: Record<string, string> = {
-  HIRE: '입사',
-  ANNUAL_INCREASE: '연봉 인상',
-  PROMOTION: '승진',
-  MARKET_ADJUSTMENT: '시장 조정',
-  DEMOTION_COMP: '강등',
-  TRANSFER_COMP: '전환',
-  OTHER: '기타',
+const CHANGE_TYPE_KEYS: Record<string, string> = {
+  HIRE: 'changeTypes.HIRE',
+  ANNUAL_INCREASE: 'changeTypes.ANNUAL_INCREASE',
+  PROMOTION: 'changeTypes.PROMOTION',
+  MARKET_ADJUSTMENT: 'changeTypes.MARKET_ADJUSTMENT',
+  DEMOTION_COMP: 'changeTypes.DEMOTION_COMP',
+  TRANSFER_COMP: 'changeTypes.TRANSFER_COMP',
+  OTHER: 'changeTypes.OTHER',
 }
 
 // ─── Component ───────────────────────────────────────────
 
 export default function HistoryTab() {
+  const t = useTranslations('compensation')
   const { toast } = useToast()
   const [history, setHistory] = useState<HistoryRow[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)
@@ -72,7 +74,7 @@ export default function HistoryTab() {
       setHistory(res.data)
       setPagination(res.pagination)
     } catch {
-      toast({ title: '이력 로드 실패', description: '연봉 변경 이력을 불러올 수 없습니다.', variant: 'destructive' })
+      toast({ title: t('historyLoadError'), description: t('historyLoadErrorDesc'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -85,7 +87,7 @@ export default function HistoryTab() {
       )
       setDistribution(res.data.distribution ?? [])
     } catch {
-      toast({ title: '분석 로드 실패', description: 'Compa-Ratio 분포를 불러올 수 없습니다.', variant: 'destructive' })
+      toast({ title: t('analysisLoadError'), description: t('analysisLoadErrorDesc'), variant: 'destructive' })
     }
   }, [toast])
 
@@ -97,34 +99,34 @@ export default function HistoryTab() {
   // ─── Table Columns ───────────────────────────────────
 
   const columns: DataTableColumn<HistoryRow>[] = [
-    { key: 'employeeName', header: '직원명' },
-    { key: 'departmentName', header: '부서' },
+    { key: 'employeeName', header: t('employeeName') },
+    { key: 'departmentName', header: t('department') },
     {
       key: 'changeType',
-      header: '유형',
+      header: t('changeType'),
       render: (row) => (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary/90 border border-primary/20">
-          {CHANGE_TYPE_LABELS[row.changeType] ?? row.changeType}
+          {CHANGE_TYPE_KEYS[row.changeType] ? t(CHANGE_TYPE_KEYS[row.changeType]) : row.changeType}
         </span>
       ),
     },
     {
       key: 'previousBaseSalary',
-      header: '이전 연봉',
+      header: t('previousSalary'),
       render: (row) => (
         <span className="text-sm text-muted-foreground">{formatCurrency(row.previousBaseSalary)}</span>
       ),
     },
     {
       key: 'newBaseSalary',
-      header: '변경 연봉',
+      header: t('changedSalary'),
       render: (row) => (
         <span className="text-sm font-medium">{formatCurrency(row.newBaseSalary)}</span>
       ),
     },
     {
       key: 'changePct',
-      header: '인상률',
+      header: t('increaseRate'),
       render: (row) => {
         const pct = Number(row.changePct)
         const color = pct > 0 ? 'text-emerald-600' : pct < 0 ? 'text-destructive' : 'text-muted-foreground'
@@ -138,7 +140,7 @@ export default function HistoryTab() {
     },
     {
       key: 'effectiveDate',
-      header: '적용일',
+      header: t('effectiveDate'),
       render: (row) =>
         new Date(row.effectiveDate).toLocaleDateString('ko-KR', {
           year: 'numeric',
@@ -160,8 +162,8 @@ export default function HistoryTab() {
     <div className="space-y-6">
       {/* ─── Compa-Ratio 분포 차트 ─── */}
       {chartData.length > 0 && (
-        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Compa-Ratio 분포</h3>
+        <div className="bg-card rounded-2xl shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">{t('compaRatioDistribution')}</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -192,9 +194,9 @@ export default function HistoryTab() {
       )}
 
       {/* ─── 이력 테이블 ─── */}
-      <div className="bg-card rounded-xl border border-border">
-        <div className="p-4 border-b border-border">
-          <h3 className="text-lg font-semibold text-foreground">연봉 변경 이력</h3>
+      <div className="bg-card rounded-2xl shadow-sm">
+        <div className="p-4">
+          <h3 className="text-lg font-semibold text-foreground">{t('historyTitle')}</h3>
         </div>
         <DataTable<HistoryRow>
           columns={columns}
@@ -202,7 +204,7 @@ export default function HistoryTab() {
           pagination={pagination ?? undefined}
           onPageChange={fetchHistory}
           loading={loading}
-          emptyMessage="연봉 변경 이력이 없습니다."
+          emptyMessage={t('noHistory')}
           rowKey={(row) => row.id}
         />
       </div>
