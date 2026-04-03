@@ -56,6 +56,7 @@ import { seedConcurrentAssignments } from './seeds/41-concurrent-assignments'
 import { seedQuarterlyReviews } from './seeds/44-quarterly-reviews'
 import { seedGoalRevisions } from './seeds/45-goal-revisions'
 import { seedCalibrationQA } from './seeds/46-calibration-qa'
+import { seedLaborContractSettings } from './seeds/47-labor-contract-settings'
 
 // Load DATABASE_URL from .env.local or .env
 const DATABASE_URL = process.env.DATABASE_URL
@@ -3654,6 +3655,9 @@ async function main() {
 
   // Calibration batch adjustment QA data
   await seedCalibrationQA(prisma)
+
+  // Labor & contract settings defaults (Phase 3)
+  await seedLaborContractSettings(prisma)
 }
 
 main()

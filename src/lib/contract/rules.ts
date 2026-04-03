@@ -1,4 +1,7 @@
 // 국가별 계약 관리 비즈니스 로직 (STEP 2.5)
+// Phase 3: CompanyProcessSetting 연동 — async 변형 추가, sync는 fallback 유지
+
+import { getContractRulesFromSettings } from '@/lib/settings/get-setting'
 
 export interface ContractRule {
   country_code: string
@@ -8,6 +11,7 @@ export interface ContractRule {
   probation_range: { min_days: number; max_days: number } // 수습 범위
 }
 
+// Hardcoded defaults — used as fallback when DB has no settings
 export const CONTRACT_RULES: Record<string, ContractRule> = {
   KR: {
     country_code: 'KR',
@@ -60,8 +64,19 @@ export const CONTRACT_RULES: Record<string, ContractRule> = {
   },
 }
 
+// Sync fallback — for non-async callers
 export function getContractRule(countryCode: string): ContractRule {
   return CONTRACT_RULES[countryCode] ?? CONTRACT_RULES['KR']
+}
+
+// Async variant — reads from CompanyProcessSetting with hardcoded fallback
+export async function getContractRuleFromSettings(
+  companyId?: string | null,
+  countryCode?: string,
+): Promise<ContractRule> {
+  const code = countryCode?.toUpperCase() ?? 'KR'
+  const rule = await getContractRulesFromSettings(companyId, code)
+  return { country_code: code, ...rule }
 }
 
 export function shouldAutoConvert(

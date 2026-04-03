@@ -16,12 +16,12 @@ export interface MeritRecommendation {
     isException: boolean
 }
 
-// Settings-connected: comparatio thresholds (defaults below)
+// Hardcoded defaults — used as sync fallback
 const COMPARATIO_LOW_THRESHOLD = 0.9
 const COMPARATIO_HIGH_THRESHOLD = 1.1
 
 /**
- * Calculate comparatio band from salary ratio.
+ * Calculate comparatio band from salary ratio (sync fallback).
  * GEMINI FIX #3: Division by zero → default to 1.0 (MID band).
  */
 export function getComparatioBand(comparatio: number): 'LOW' | 'MID' | 'HIGH' {
@@ -29,6 +29,9 @@ export function getComparatioBand(comparatio: number): 'LOW' | 'MID' | 'HIGH' {
     if (comparatio > COMPARATIO_HIGH_THRESHOLD) return 'HIGH'
     return 'MID'
 }
+
+/** Async variant — reads thresholds from CompanyProcessSetting (server-only).
+ *  Import from '@/lib/compensation-settings' or use dynamic import. */
 
 /**
  * Calculate comparatio safely.

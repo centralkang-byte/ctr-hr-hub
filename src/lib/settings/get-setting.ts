@@ -76,6 +76,59 @@ export async function getOrganizationSetting<T = Record<string, unknown>>(
   return getSettingValue<T>('ORGANIZATION', key, companyId)
 }
 
+export async function getCompensationSetting<T = Record<string, unknown>>(
+  key: string,
+  companyId?: string | null,
+): Promise<T | null> {
+  return getSettingValue<T>('COMPENSATION', key, companyId)
+}
+
+// ─── Compa-Ratio Thresholds (Phase 3) ───────────────────────
+
+import type { CompaRatioThresholdsSettings, ContractRulesSettings } from '@/types/process-settings'
+
+const DEFAULT_COMPA_THRESHOLDS: CompaRatioThresholdsSettings = {
+  bands: [
+    { label: 'VERY_LOW', maxRatio: 0.80, attritionScore: 90 },
+    { label: 'LOW', maxRatio: 0.90, attritionScore: 70 },
+    { label: 'BELOW_RANGE', maxRatio: 0.95, attritionScore: 50 },
+    { label: 'AT_RANGE', maxRatio: 1.05, attritionScore: 20 },
+    { label: 'HIGH', maxRatio: 1.20, attritionScore: 10 },
+    { label: 'VERY_HIGH', maxRatio: null, attritionScore: 5 },
+  ],
+  belowBandThreshold: 0.9,
+  aboveBandThreshold: 1.1,
+}
+
+export async function getCompaRatioThresholds(
+  companyId?: string | null,
+): Promise<CompaRatioThresholdsSettings> {
+  const val = await getCompensationSetting<CompaRatioThresholdsSettings>('compa-ratio-thresholds', companyId)
+  return val ?? DEFAULT_COMPA_THRESHOLDS
+}
+
+// ─── Contract Rules (Phase 3) ───────────────────────────────
+
+const DEFAULT_CONTRACT_RULES: ContractRulesSettings['rules'] = {
+  KR: { max_fixed_term_count: 0, max_fixed_term_months: 24, auto_convert_to_permanent: true, probation_range: { min_days: 90, max_days: 90 } },
+  CN: { max_fixed_term_count: 2, max_fixed_term_months: 0, auto_convert_to_permanent: true, probation_range: { min_days: 30, max_days: 180 } },
+  RU: { max_fixed_term_count: 0, max_fixed_term_months: 60, auto_convert_to_permanent: false, probation_range: { min_days: 90, max_days: 180 } },
+  VN: { max_fixed_term_count: 2, max_fixed_term_months: 72, auto_convert_to_permanent: true, probation_range: { min_days: 6, max_days: 180 } },
+  MX: { max_fixed_term_count: 0, max_fixed_term_months: 0, auto_convert_to_permanent: false, probation_range: { min_days: 30, max_days: 180 } },
+  US: { max_fixed_term_count: 0, max_fixed_term_months: 0, auto_convert_to_permanent: false, probation_range: { min_days: 90, max_days: 90 } },
+  PL: { max_fixed_term_count: 3, max_fixed_term_months: 33, auto_convert_to_permanent: true, probation_range: { min_days: 0, max_days: 90 } },
+}
+
+export async function getContractRulesFromSettings(
+  companyId?: string | null,
+  countryCode?: string,
+): Promise<ContractRulesSettings['rules'][string]> {
+  const val = await getOrganizationSetting<ContractRulesSettings>('contract-rules', companyId)
+  const code = countryCode?.toUpperCase() ?? 'KR'
+  const rules = val?.rules ?? DEFAULT_CONTRACT_RULES
+  return rules[code] ?? DEFAULT_CONTRACT_RULES['KR']
+}
+
 // ─── System Threshold Helpers (S-Fix-5) ─────────────────────
 
 /** Nudge rule timing thresholds (SYSTEM/nudge-rules) */

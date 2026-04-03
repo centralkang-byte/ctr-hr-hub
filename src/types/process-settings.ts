@@ -147,6 +147,31 @@ export type DataRetentionSettings = {
   auditLogRetentionDays: number
 }
 
+// ── Compensation settings (Phase 3) ──
+
+export type CompaRatioThresholdsSettings = {
+  bands: { label: string; maxRatio: number | null; attritionScore: number }[]
+  belowBandThreshold: number  // merit matrix / analytics "below" boundary (default: 0.9)
+  aboveBandThreshold: number  // merit matrix / analytics "above" boundary (default: 1.1)
+}
+
+// ── Organization settings (Phase 3) ──
+
+export type ContractRulesSettings = {
+  rules: Record<string, {
+    max_fixed_term_count: number
+    max_fixed_term_months: number
+    auto_convert_to_permanent: boolean
+    probation_range: { min_days: number; max_days: number }
+  }>
+}
+
+export type WorkHourAlertThresholdsSettings = {
+  caution: number
+  warning: number
+  blocked: number
+}
+
 // ── Organization settings (H-2d) ──
 
 export type AssignmentRuleEntry = {
@@ -237,6 +262,9 @@ export type ProcessSettingValue =
   | InterviewFormSetting
   | LocaleSetting
   | NotificationChannelsSetting
+  | CompaRatioThresholdsSettings
+  | ContractRulesSettings
+  | WorkHourAlertThresholdsSettings
   | Record<string, unknown>
 
 export type CompanyProcessSettingRow = {

@@ -10,6 +10,7 @@ import { withPermission } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { resolveCompanyId } from '@/lib/api/companyFilter'
+import { getCompaRatioThresholds } from '@/lib/settings/get-setting'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -168,9 +169,12 @@ export const GET = withPermission(
       employees: g.count,
     }))
 
-    // 8. 아웃라이어 (< 0.8 또는 > 1.2)
+    // 8. 아웃라이어 — thresholds from CompanyProcessSetting
+    const thresholds = await getCompaRatioThresholds(companyId)
+    const outlierLow = thresholds.bands[0]?.maxRatio ?? 0.8
+    const outlierHigh = thresholds.bands[thresholds.bands.length - 2]?.maxRatio ?? 1.2
     const outliers = compaData
-      .filter((e) => e.compaRatio < 0.8 || e.compaRatio > 1.2)
+      .filter((e) => e.compaRatio < outlierLow || e.compaRatio > outlierHigh)
       .sort((a, b) => Math.abs(b.compaRatio - 1.0) - Math.abs(a.compaRatio - 1.0))
       .slice(0, 20)
       .map((e) => ({
@@ -203,8 +207,8 @@ export const GET = withPermission(
       summary: {
         avg,
         median,
-        belowBand: compaData.filter((e) => e.compaRatio < 0.8).length,
-        aboveBand: compaData.filter((e) => e.compaRatio > 1.2).length,
+        belowBand: compaData.filter((e) => e.compaRatio < outlierLow).length,
+        aboveBand: compaData.filter((e) => e.compaRatio > outlierHigh).length,
         totalEmployees: activeEmployees.length,
         coveredEmployees: compaData.length,
       },

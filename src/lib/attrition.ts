@@ -4,6 +4,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { getCompaRatioThresholds } from '@/lib/settings/get-setting'
 
 // ─── Interfaces ──────────────────────────────────────────
 
@@ -101,12 +102,15 @@ async function calculateCompensationFactor(employeeId: string): Promise<number> 
     const midSalary = Number(salaryBand.midSalary)
     const compaRatio = midSalary > 0 ? currentSalary / midSalary : 1.0
 
-    if (compaRatio < 0.80) score = 90       // severely underpaid
-    else if (compaRatio < 0.90) score = 70
-    else if (compaRatio < 0.95) score = 50
-    else if (compaRatio <= 1.05) score = 20
-    else if (compaRatio <= 1.20) score = 10
-    else score = 5
+    // Read thresholds from CompanyProcessSetting (fallback to defaults)
+    const thresholds = await getCompaRatioThresholds(assignment?.companyId)
+    score = thresholds.bands[thresholds.bands.length - 1]?.attritionScore ?? 5
+    for (const band of thresholds.bands) {
+      if (band.maxRatio !== null && compaRatio < band.maxRatio) {
+        score = band.attritionScore
+        break
+      }
+    }
   } else {
     score = 40 // no band data — neutral-ish
   }

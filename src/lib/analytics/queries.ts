@@ -418,13 +418,18 @@ export async function getCompaRatioByGrade(companyId?: string) {
 
 export async function getCompaBandFit(companyId?: string) {
   const { clause, params } = companyWhere(companyId)
+  // Read thresholds from CompanyProcessSetting (fallback: 0.9 / 1.1)
+  const { getCompaRatioThresholds } = await import('@/lib/settings/get-setting')
+  const thresholds = await getCompaRatioThresholds(companyId)
+  const below = thresholds.belowBandThreshold
+  const above = thresholds.aboveBandThreshold
   return safeMvQuery(() => prisma.$queryRawUnsafe<
     { under: bigint; in_band: bigint; over: bigint }[]
   >(
     `SELECT
-      SUM(CASE WHEN avg_compa_ratio < 0.9 THEN employee_count ELSE 0 END)::bigint AS under,
-      SUM(CASE WHEN avg_compa_ratio >= 0.9 AND avg_compa_ratio <= 1.1 THEN employee_count ELSE 0 END)::bigint AS in_band,
-      SUM(CASE WHEN avg_compa_ratio > 1.1 THEN employee_count ELSE 0 END)::bigint AS over
+      SUM(CASE WHEN avg_compa_ratio < ${below} THEN employee_count ELSE 0 END)::bigint AS under,
+      SUM(CASE WHEN avg_compa_ratio >= ${below} AND avg_compa_ratio <= ${above} THEN employee_count ELSE 0 END)::bigint AS in_band,
+      SUM(CASE WHEN avg_compa_ratio > ${above} THEN employee_count ELSE 0 END)::bigint AS over
     FROM mv_compa_ratio_distribution
     WHERE avg_compa_ratio IS NOT NULL ${clause}`,
     ...params,
