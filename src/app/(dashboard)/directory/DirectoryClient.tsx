@@ -30,6 +30,8 @@ interface DirectoryEmployee {
   department: { id: string; name: string } | null
   jobGrade: { id: string; name: string; code: string } | null
   company: { id: string; code: string; name: string } | null
+  title: { id: string; name: string } | null
+  position: { id: string; titleKo: string } | null
   bio: string | null
   skills: string[]
   languages: unknown
@@ -244,7 +246,7 @@ export function DirectoryClient({ user: _user, companies, departments, jobGrades
                     />
                   </td>
                   <td className={TABLE_STYLES.cell + " font-medium"}>{emp.department?.name ?? '-'}</td>
-                  <td className={TABLE_STYLES.cellMuted}>{emp.jobGrade?.name ?? '-'}</td>
+                  <td className={TABLE_STYLES.cellMuted}>{emp.title?.name ?? emp.jobGrade?.name ?? '-'}</td>
                   <td className={TABLE_STYLES.cell}>
                     <Badge variant="outline" className="h-6 rounded-md bg-card border-border text-xs font-medium text-muted-foreground">
                       {emp.company?.code ?? '-'}
@@ -291,7 +293,7 @@ export function DirectoryClient({ user: _user, companies, departments, jobGrades
       {/* Profile Detail Panel */}
       <Sheet open={!!selectedEmployee} onOpenChange={(open) => !open && setSelectedEmployee(null)}>
         <SheetContent className="w-[420px] overflow-y-auto">
-          {selectedEmployee && <EmployeeDetailPanel emp={selectedEmployee} onViewProfile={(id) => router.push(`/employees/${id}`)} />}
+          {selectedEmployee && <EmployeeDetailPanel emp={selectedEmployee} onViewProfile={(id) => router.push(`/employees/${id}`)} t={t} />}
         </SheetContent>
       </Sheet>
     </div>
@@ -319,6 +321,9 @@ function EmployeeCard({ emp, onClick }: { emp: DirectoryEmployee; onClick: () =>
           companyName: emp.company?.name,
         }}
       />
+      {emp.title?.name && (
+        <p className="text-xs text-muted-foreground">{emp.title.name}</p>
+      )}
       {emp.skills.length > 0 && (
         <div className="flex gap-1 flex-wrap justify-center">
           {emp.skills.slice(0, 3).map((s) => (
@@ -330,9 +335,10 @@ function EmployeeCard({ emp, onClick }: { emp: DirectoryEmployee; onClick: () =>
   )
 }
 
-function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; onViewProfile: (id: string) => void }) {
+function EmployeeDetailPanel({ emp, onViewProfile, t }: { emp: DirectoryEmployee; onViewProfile: (id: string) => void; t: (key: string) => string }) {
   const certifications = emp.certifications as Array<{ name: string; issuer: string; date: string }> | null
   const languages = emp.languages as Array<{ language: string; level: string }> | null
+  const titlePosition = [emp.title?.name, emp.position?.titleKo].filter(Boolean).join(' · ')
 
   return (
     <div className="space-y-5">
@@ -352,6 +358,9 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
             companyName: emp.company?.name,
           }}
         />
+        {titlePosition && (
+          <p className="text-sm text-muted-foreground mt-1">{titlePosition}</p>
+        )}
       </SheetHeader>
 
       {emp.bio && (
@@ -373,7 +382,7 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
 
       {emp.skills.length > 0 && (
         <div>
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Skills</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{t('skills')}</p>
           <div className="flex flex-wrap gap-1.5">
             {emp.skills.map((s) => (
               <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-indigo-500/15 text-primary/90">{s}</span>
@@ -384,7 +393,7 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
 
       {languages && Array.isArray(languages) && languages.length > 0 && (
         <div>
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Languages</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{t('languages')}</p>
           <div className="space-y-1">
             {languages.map((l, i) => (
               <div key={i} className="flex items-center justify-between text-sm">
@@ -398,7 +407,7 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
 
       {certifications && Array.isArray(certifications) && certifications.length > 0 && (
         <div>
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Certifications</p>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{t('certifications')}</p>
           <div className="space-y-1">
             {certifications.map((c, i) => (
               <div key={i} className="text-sm text-muted-foreground">
@@ -418,7 +427,7 @@ function EmployeeDetailPanel({ emp, onViewProfile }: { emp: DirectoryEmployee; o
           onClick={() => onViewProfile(emp.id)}
         >
           <ExternalLink size={14} className="mr-1.5" />
-          View Full Profile
+          {t('viewFullProfile')}
         </Button>
       </div>
     </div>

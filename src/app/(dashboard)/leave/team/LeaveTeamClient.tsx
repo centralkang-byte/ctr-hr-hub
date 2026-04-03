@@ -27,6 +27,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import type { SessionUser } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { STATUS_VARIANT } from '@/lib/styles/status'
+import { formatDateShort } from '@/lib/format/date'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -60,13 +61,6 @@ const STATUS_BADGE: Record<string, string> = {
 }
 
 // ─── Helpers ────────────────────────────────────────────────
-
-function formatDate(d: string): string {
-  return new Date(d).toLocaleDateString('ko-KR', {
-    month: 'short',
-    day: 'numeric',
-  })
-}
 
 function getCurrentMonth(): string {
   const now = new Date()
@@ -340,8 +334,8 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-medium text-foreground">
-                              {formatDate(req.startDate)} ~{' '}
-                              {formatDate(req.endDate)}
+                              {formatDateShort(req.startDate)} ~{' '}
+                              {formatDateShort(req.endDate)}
                             </span>
                             <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-medium border border-border text-muted-foreground">
                               {LEAVE_TYPE_LABEL[req.leaveType] ?? req.leaveType}

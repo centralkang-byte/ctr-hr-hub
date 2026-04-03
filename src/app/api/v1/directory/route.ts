@@ -69,6 +69,8 @@ export const GET = withPermission(
               department: { select: { id: true, name: true } },
               jobGrade: { select: { id: true, name: true, code: true } },
               company: { select: { id: true, code: true, name: true } },
+              title: { select: { id: true, name: true } },
+              position: { select: { id: true, titleKo: true } },
             },
           },
           profileExtension: {
@@ -105,10 +107,12 @@ export const GET = withPermission(
         department: asgn?.department ?? null,
         jobGrade: asgn?.jobGrade ?? null,
         company: asgn?.company ?? null,
+        title: asgn?.title ?? null,
+        position: asgn?.position ? { id: asgn.position.id, titleKo: asgn.position.titleKo } : null,
         bio: canSee(vis?.bio) ? (emp.profileExtension?.bio ?? null) : null,
         skills: canSee(vis?.skills) ? (emp.profileExtension?.skills ?? []) : [],
-        languages: emp.profileExtension?.languages ?? null,
-        certifications: emp.profileExtension?.certifications ?? null,
+        languages: canSee(vis?.skills) ? (emp.profileExtension?.languages ?? null) : null,
+        certifications: canSee(vis?.skills) ? (emp.profileExtension?.certifications ?? null) : null,
       }
     })
 

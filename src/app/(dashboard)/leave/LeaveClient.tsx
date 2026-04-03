@@ -41,6 +41,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
+import { formatDateLocale } from '@/lib/format/date'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
 
@@ -394,12 +395,6 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     }
   }
 
-  // ─── Date formatting below ───
-
-  // ─── Date formatting ───
-  const formatDate = (date: string) =>
-    new Date(date).toLocaleDateString('ko-KR')
-
   // ─── DataTable columns ───
   const columns: DataTableColumn<LeaveRequestLocal>[] = [
     {
@@ -412,12 +407,12 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     {
       key: 'startDate',
       header: t('startDate'),
-      render: (row: LeaveRequestLocal) => formatDate(row.startDate),
+      render: (row: LeaveRequestLocal) => formatDateLocale(row.startDate),
     },
     {
       key: 'endDate',
       header: t('endDate'),
-      render: (row: LeaveRequestLocal) => formatDate(row.endDate),
+      render: (row: LeaveRequestLocal) => formatDateLocale(row.endDate),
     },
     {
       key: 'days',

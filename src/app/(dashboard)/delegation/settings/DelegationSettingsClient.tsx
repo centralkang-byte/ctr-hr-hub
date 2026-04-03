@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { apiClient } from '@/lib/api'
+import { formatDateLocale } from '@/lib/format/date'
 import type { SessionUser } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
@@ -65,11 +66,6 @@ interface DelegationRecord {
 type ViewMode = 'list' | 'create'
 
 // ─── Helpers ─────────────────────────────────────────────
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return `${d.getFullYear()}. ${d.getMonth() + 1}. ${d.getDate()}.`
-}
 
 function getDaysLeft(endDate: string): number {
   return Math.ceil((new Date(endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
@@ -281,7 +277,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                             </div>
                             <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
                               <CalendarDays className="h-3 w-3" />
-                              <span>{formatDate(d.startDate)} ~ {formatDate(d.endDate)}</span>
+                              <span>{formatDateLocale(d.startDate)} ~ {formatDateLocale(d.endDate)}</span>
                               {daysLeft > 0 && (
                                 <Badge
                                   variant="outline"
@@ -347,7 +343,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                         </div>
                         <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
                           <CalendarDays className="h-3 w-3" />
-                          <span>{formatDate(d.startDate)} ~ {formatDate(d.endDate)}</span>
+                          <span>{formatDateLocale(d.startDate)} ~ {formatDateLocale(d.endDate)}</span>
                           <Badge variant="outline" className="text-[9px] border-emerald-100 text-emerald-500">
                             {d.scope === 'ALL' ? '전체' : '휴가'}
                           </Badge>
@@ -392,7 +388,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                             {d.delegatee?.name ?? '알 수 없음'}
                           </span>
                           <span className="ml-2 text-[10px] text-muted-foreground/60">
-                            {formatDate(d.startDate)} ~ {formatDate(d.endDate)}
+                            {formatDateLocale(d.startDate)} ~ {formatDateLocale(d.endDate)}
                           </span>
                         </div>
                       </div>

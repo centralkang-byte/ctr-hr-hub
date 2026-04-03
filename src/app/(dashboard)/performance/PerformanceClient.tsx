@@ -20,6 +20,7 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 import { CycleTimeline } from '@/components/performance/CycleTimeline'
+import { formatDateLong } from '@/lib/format/date'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -70,15 +71,6 @@ const CYCLE_STATUS_STYLES: Record<string, string> = {
 
 // ─── Helpers ──────────────────────────────────────────────
 
-function formatDate(dateStr: string | null): string {
-  if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-}
-
 // ─── Component ────────────────────────────────────────────
 
 export default function PerformanceClient({
@@ -104,7 +96,7 @@ export default function PerformanceClient({
     ]
     for (const dl of deadlines) {
       if (dl.date && new Date(dl.date) > now) {
-        return `${dl.label}: ${formatDate(dl.date)}`
+        return `${dl.label}: ${formatDateLong(dl.date)}`
       }
     }
     return t('noDeadline')
@@ -520,7 +512,7 @@ export default function PerformanceClient({
                             </span>
                           </div>
                           <p className="text-xs text-muted-foreground">
-                            {formatDate(cycle.startDate)} ~ {formatDate(cycle.endDate)}
+                            {formatDateLong(cycle.startDate)} ~ {formatDateLong(cycle.endDate)}
                           </p>
                         </div>
                       ))}

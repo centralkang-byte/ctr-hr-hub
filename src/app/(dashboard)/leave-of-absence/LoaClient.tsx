@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { TABLE_STYLES } from '@/lib/styles'
+import { formatDateLocale } from '@/lib/format/date'
 import { toast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 import { ROLE } from '@/lib/constants'
@@ -70,11 +71,6 @@ const STATUS_COLORS: Record<string, string> = {
   COMPLETED: 'bg-tertiary-container/20 text-tertiary',
   REJECTED: 'bg-destructive/10 text-destructive',
   CANCELLED: 'bg-muted text-muted-foreground',
-}
-
-function formatDate(d: string | null) {
-  if (!d) return '—'
-  return new Date(d).toLocaleDateString('ko-KR')
 }
 
 export function LoaClient({ user }: Props) {
@@ -403,7 +399,7 @@ export function LoaClient({ user }: Props) {
                   </td>
                   <td className={TABLE_STYLES.cell}>
                     <p className="text-foreground">
-                      {formatDate(r.startDate)} ~ {formatDate(r.actualEndDate ?? r.expectedEndDate)}
+                      {formatDateLocale(r.startDate)} ~ {formatDateLocale(r.actualEndDate ?? r.expectedEndDate)}
                     </p>
                   </td>
                   <td className={TABLE_STYLES.cell}>
@@ -568,7 +564,7 @@ export function LoaClient({ user }: Props) {
                 <p className="text-sm font-medium">{actionTarget.employee.name} ({actionTarget.employee.employeeNo})</p>
                 <p className="text-sm text-muted-foreground">{actionTarget.type.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  {formatDate(actionTarget.startDate)} ~ {formatDate(actionTarget.expectedEndDate)}
+                  {formatDateLocale(actionTarget.startDate)} ~ {formatDateLocale(actionTarget.expectedEndDate)}
                 </p>
                 {actionTarget.reason && <p className="text-xs text-muted-foreground">사유: {actionTarget.reason}</p>}
               </div>
@@ -605,7 +601,7 @@ export function LoaClient({ user }: Props) {
               <div className="rounded-lg bg-background p-3 space-y-1">
                 <p className="text-sm font-medium">{returnTarget.type.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  휴직 기간: {formatDate(returnTarget.startDate)} ~ {formatDate(returnTarget.expectedEndDate)}
+                  휴직 기간: {formatDateLocale(returnTarget.startDate)} ~ {formatDateLocale(returnTarget.expectedEndDate)}
                 </p>
               </div>
               <div>
@@ -641,7 +637,7 @@ export function LoaClient({ user }: Props) {
                 <p className="text-sm font-medium">{completeTarget.employee.name} ({completeTarget.employee.employeeNo})</p>
                 <p className="text-sm text-muted-foreground">{completeTarget.type.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  휴직 기간: {formatDate(completeTarget.startDate)} ~ {formatDate(completeTarget.expectedEndDate)}
+                  휴직 기간: {formatDateLocale(completeTarget.startDate)} ~ {formatDateLocale(completeTarget.expectedEndDate)}
                 </p>
               </div>
               <div>

@@ -18,6 +18,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'
+import { formatDateLocale } from '@/lib/format/date'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
@@ -52,11 +53,6 @@ interface ChartDataPoint {
 
 function _isRiskRow(row: CheckinRow): boolean {
   return row.mood === 'STRUGGLING' || row.mood === 'BAD' || row.belonging <= 2
-}
-
-function formatDate(dateStr: string | null): string {
-  if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleDateString('ko-KR')
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -240,7 +236,7 @@ export function CheckinsAdminClient({ user: _user }: CheckinsAdminClientProps) {
         header: '제출일',
         render: (r) => {
           const row = r as unknown as CheckinRow
-          return <span className="text-sm text-muted-foreground">{formatDate(String(row.submittedAt))}</span>
+          return <span className="text-sm text-muted-foreground">{formatDateLocale(String(row.submittedAt))}</span>
         },
       },
     ],

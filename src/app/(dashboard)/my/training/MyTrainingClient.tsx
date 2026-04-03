@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
+import { formatDate } from '@/lib/format/date'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -91,11 +92,6 @@ const FORMAT_LABELS: Record<string, string> = {
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
   ENROLLED: { label: '수강대기', className: 'bg-amber-500/15 text-amber-700 border-amber-300' },
   IN_PROGRESS: { label: '수강중', className: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
-}
-
-function formatDate(dateStr?: string | null) {
-  if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })
 }
 
 function daysUntil(dateStr?: string | null): number | null {

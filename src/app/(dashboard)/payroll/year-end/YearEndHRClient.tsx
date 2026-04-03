@@ -21,6 +21,7 @@ import { BUTTON_SIZES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib
 import { STATUS_VARIANT } from '@/lib/styles/status'
 import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import { formatDate } from '@/lib/format/date'
 
 // ─── Types ─────────────────────────────────────────────────
 
@@ -89,15 +90,6 @@ function formatKRW(amount: string | number): string {
     currency: 'KRW',
     maximumFractionDigits: 0,
   }).format(num)
-}
-
-function formatDate(d: string | null | undefined): string {
-  if (!d) return '-'
-  return new Date(d).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
 }
 
 // ─── Status Badge ──────────────────────────────────────────

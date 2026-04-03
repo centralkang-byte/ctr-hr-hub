@@ -47,3 +47,40 @@ export function formatMonth(date: Date | string | null | undefined): string {
   if (isNaN(d.getTime())) return '-'
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
 }
+
+/** Date → "2026-03-12" (ISO date, internal/API key) */
+export function formatDateISO(date: Date | string | null | undefined): string {
+  if (!date) return '-'
+  const d = new Date(date)
+  if (isNaN(d.getTime())) return '-'
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+/** Date → "2026. 3. 12." (Korean locale default) */
+export function formatDateLocale(date: Date | string | null | undefined): string {
+  if (!date) return '-'
+  const d = new Date(date)
+  if (isNaN(d.getTime())) return '-'
+  return d.toLocaleDateString('ko-KR')
+}
+
+const DAY_NAMES_KO = ['일', '월', '화', '수', '목', '금', '토'] as const
+
+/** Date → "3월 12일 (수)" (short with day-of-week) */
+export function formatDateWithDay(date: Date | string | null | undefined): string {
+  if (!date) return '-'
+  const d = new Date(date)
+  if (isNaN(d.getTime())) return '-'
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${DAY_NAMES_KO[d.getDay()]})`
+}
+
+/** Date → "3/12 (수)" (compact with day-of-week) */
+export function formatDateCompactWithDay(date: Date | string | null | undefined): string {
+  if (!date) return '-'
+  const d = new Date(date)
+  if (isNaN(d.getTime())) return '-'
+  return `${d.getMonth() + 1}/${d.getDate()} (${DAY_NAMES_KO[d.getDay()]})`
+}

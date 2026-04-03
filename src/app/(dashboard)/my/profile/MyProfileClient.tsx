@@ -15,6 +15,7 @@ import { toast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES, BUTTON_SIZES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
 import { extractPrimaryAssignment } from '@/lib/employee/extract-primary-assignment'
+import { formatDate } from '@/lib/format/date'
 import { ProfileChangeRequestDialog, ChangeRequestHistory } from '@/components/employees/ProfileChangeRequestDialog'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -127,11 +128,6 @@ const VISIBILITY_LABELS: Record<string, string> = {
 const VISIBILITY_OPTIONS = ['public', 'team', 'manager', 'private'] as const
 
 // ─── Helpers ────────────────────────────────────────────────
-
-function formatDate(d: Date | string | null | undefined): string {
-  if (!d) return '-'
-  return new Date(d).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' })
-}
 
 function formatCurrency(amountStr: string | null | undefined, currency: string = 'KRW'): string {
   if (!amountStr || amountStr === '0') return '-'

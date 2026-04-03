@@ -27,6 +27,7 @@ import { EmptyState } from '@/components/shared/EmptyState'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { useSubmitGuard } from '@/hooks/useSubmitGuard'
+import { formatDate, formatDateTime } from '@/lib/format/date'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -70,25 +71,6 @@ type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
 
 // ─── Helpers ────────────────────────────────────────────────
 
-function formatDate(dateStr: string | null): string {
-  if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
-}
-
-function formatDateTime(dateStr: string | null): string {
-  if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
 
 // ─── Component ──────────────────────────────────────────────
 

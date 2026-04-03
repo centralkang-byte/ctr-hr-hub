@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2, Plus, Calendar } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { formatDateWithDay } from '@/lib/format/date'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
@@ -46,14 +47,6 @@ export function HolidaysTab({
       .catch(() => setHolidays([]))
       .finally(() => setLoading(false))
   }, [companyId, selectedYear])
-
-  const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr)
-    const month = d.getMonth() + 1
-    const day = d.getDate()
-    const dayOfWeek = ['일', '월', '화', '수', '목', '금', '토'][d.getDay()]
-    return `${month}월 ${day}일 (${dayOfWeek})`
-  }
 
   if (loading) {
     return (
@@ -120,7 +113,7 @@ export function HolidaysTab({
                         </div>
                         <div className="flex-1">
                           <div className="text-sm font-medium text-foreground">{holiday.name}</div>
-                          <div className="text-xs text-muted-foreground">{formatDate(holiday.date)}</div>
+                          <div className="text-xs text-muted-foreground">{formatDateWithDay(holiday.date)}</div>
                         </div>
                         {holiday.isSubstitute && (
                           <span className="rounded-full bg-orange-500/10 px-2 py-0.5 text-xs font-medium text-orange-600">

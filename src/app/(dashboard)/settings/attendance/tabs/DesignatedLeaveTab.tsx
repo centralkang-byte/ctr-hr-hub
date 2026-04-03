@@ -10,6 +10,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { Loader2, Plus, CalendarDays, Trash2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { formatDateCompactWithDay } from '@/lib/format/date'
 import { toast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -104,14 +105,6 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
     }
   }
 
-  const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr)
-    const month = d.getMonth() + 1
-    const day = d.getDate()
-    const dayOfWeek = t(`designatedLeave.dayNames.${DAY_KEYS[d.getDay()]}`)
-    return `${month}/${day} (${dayOfWeek})`
-  }
-
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -186,7 +179,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
                       <div className="flex items-center gap-3">
                         <CalendarDays className="h-4 w-4 text-primary" />
                         <span className="text-sm font-medium text-foreground">{d.name}</span>
-                        <span className="text-xs text-muted-foreground">{formatDate(d.date)}</span>
+                        <span className="text-xs text-muted-foreground">{formatDateCompactWithDay(d.date)}</span>
                       </div>
                       <button
                         onClick={() => handleDelete(d.id)}
