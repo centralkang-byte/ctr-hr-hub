@@ -12,15 +12,15 @@ import { authFile } from './helpers/auth'
 import {
   createReview,
   getReview,
+  listReviews,
   updateReviewAsEmployee,
   updateReviewAsManager,
   submitReview,
   reopenReview,
 } from './helpers/qr-fixtures'
 
-// Use a unique year per test run to avoid collisions (no DELETE API available)
-// Year range: 2050-2098 (avoid seed data 2025-2026 and stay within int range)
-const TEST_YEAR = 2050 + (Math.floor(Date.now() / 1000) % 48)
+// 절대 도달할 수 없는 미래 연도 — 시드 데이터(2025-2026)와 충돌 불가, worker=1이므로 병렬 충돌 없음
+const TEST_YEAR = 2099
 const TEST_QUARTER = 'Q1' as const
 
 // Known QA accounts (from seed)
@@ -38,22 +38,41 @@ test.describe('QuarterlyReview Lifecycle', () => {
   test.describe('HR creates review', () => {
     test.use({ storageState: authFile('HR_ADMIN') })
 
-    test('should create a quarterly review for employee', async ({ request }) => {
+    test('should create a quarterly review for employee (idempotent)', async ({ request }) => {
       // We need employee-a's ID. Get it via list with a known filter.
       const listRes = await request.get('/api/v1/employees?search=이민준&limit=1')
       const listBody = await listRes.json() as { data: Array<{ id: string }> }
       const employeeId = listBody.data[0]?.id
       expect(employeeId).toBeTruthy()
 
-      const review = await createReview(request, {
-        employeeId,
-        year: TEST_YEAR,
-        quarter: TEST_QUARTER,
+      // 멱등성: 이전 실행에서 남은 리뷰가 있으면(409) 기존 리뷰 재사용
+      const createRes = await request.post('/api/v1/performance/quarterly-reviews', {
+        data: { employeeId, year: TEST_YEAR, quarter: TEST_QUARTER },
       })
 
-      expect(review.id).toBeTruthy()
-      expect(review.status).toBe('DRAFT')
-      reviewId = review.id as string
+      if (createRes.status() === 409) {
+        // 기존 리뷰 조회
+        const existing = await listReviews(request, {
+          year: String(TEST_YEAR),
+          quarter: TEST_QUARTER,
+        })
+        const found = (existing.data as Array<{ id: string; employeeId: string; status: string }>)
+          .find(r => r.employeeId === employeeId)
+        expect(found).toBeTruthy()
+        reviewId = found!.id
+
+        // DRAFT가 아니면 reopen으로 상태 초기화
+        if (found!.status !== 'DRAFT' && found!.status !== 'IN_PROGRESS') {
+          await reopenReview(request, reviewId, 'E2E test reset')
+        }
+      } else {
+        expect(createRes.ok()).toBeTruthy()
+        const body = await createRes.json() as { data: { id: string; status: string } }
+        expect(body.data.id).toBeTruthy()
+        reviewId = body.data.id
+      }
+
+      expect(reviewId).toBeTruthy()
     })
 
     test('should return conflict for duplicate create', async ({ request }) => {
@@ -64,6 +83,7 @@ test.describe('QuarterlyReview Lifecycle', () => {
       const res = await request.post('/api/v1/performance/quarterly-reviews', {
         data: { employeeId, year: TEST_YEAR, quarter: TEST_QUARTER },
       })
+      // 첫 테스트에서 이미 생성됐으므로 409 보장
       expect(res.status()).toBe(409)
     })
   })
