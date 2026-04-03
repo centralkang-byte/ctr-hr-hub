@@ -40,7 +40,7 @@ const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'] as const
 
 // ─── Component ──────────────────────────────────────────────
 
-export default function MyQuarterlyReviewClient({ user }: Props) {
+export default function MyQuarterlyReviewClient({ user: _user }: Props) {
   const t = useTranslations('performance.quarterlyReview')
   const tc = useTranslations('common')
   const router = useRouter()

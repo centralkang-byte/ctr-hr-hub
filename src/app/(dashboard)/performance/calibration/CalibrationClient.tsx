@@ -77,7 +77,7 @@ const STATUS_MAP: Record<string, { label: string; style: string }> = {
 
 // ─── Component ────────────────────────────────────────────
 
-export default function CalibrationClient({ user }: { user: SessionUser }) {
+export default function CalibrationClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('performance')
   const tc = useTranslations('common')
 

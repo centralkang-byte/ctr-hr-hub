@@ -31,7 +31,7 @@ interface NotificationItem {
 
 // ─── Component ──────────────────────────────────────────────
 
-export function NotificationsClient({ user }: { user: SessionUser }) {
+export function NotificationsClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('notification')
   const tc = useTranslations('common')
 

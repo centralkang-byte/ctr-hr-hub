@@ -58,7 +58,7 @@ const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PeerReviewClient({ user }: { user: SessionUser }) {
+export default function PeerReviewClient({ user: _user }: { user: SessionUser }) {
   // ✅ ALL hooks at top — before any conditions
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')

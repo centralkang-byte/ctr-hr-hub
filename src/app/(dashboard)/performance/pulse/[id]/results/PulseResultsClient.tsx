@@ -43,7 +43,7 @@ const CHART_COLORS = ['#5E81F4', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#0
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PulseResultsClient({ user, id }: { user: SessionUser; id: string }) {
+export default function PulseResultsClient({ user: _user, id }: { user: SessionUser; id: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
   const router = useRouter()

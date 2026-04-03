@@ -42,7 +42,7 @@ const RULE_ICONS: Record<string, string> = {
   '급격한 변화': '⚡',
 }
 
-export default function PayrollAnomaliesClient({ user }: { user: SessionUser }) {
+export default function PayrollAnomaliesClient({ user: _user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const tPayroll = useTranslations('payrollPage')
   const now = new Date()

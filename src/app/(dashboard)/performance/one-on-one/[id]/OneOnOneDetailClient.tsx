@@ -54,7 +54,7 @@ const MEETING_TYPE_LABELS: Record<string, string> = {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function OneOnOneDetailClient({ user, id }: { user: SessionUser; id: string }) {
+export default function OneOnOneDetailClient({ user: _user, id }: { user: SessionUser; id: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
   const router = useRouter()

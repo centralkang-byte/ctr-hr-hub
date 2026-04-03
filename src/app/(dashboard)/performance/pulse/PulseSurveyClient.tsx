@@ -220,7 +220,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PulseSurveyClient({ user }: { user: SessionUser }) {
+export default function PulseSurveyClient({ user: _user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
 

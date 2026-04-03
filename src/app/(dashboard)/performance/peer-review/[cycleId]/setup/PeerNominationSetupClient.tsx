@@ -56,7 +56,7 @@ const STATUS_MAP: Record<string, { label: string; cls: string }> = {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PeerNominationSetupClient({ user, cycleId }: { user: SessionUser; cycleId: string }) {
+export default function PeerNominationSetupClient({ user: _user, cycleId }: { user: SessionUser; cycleId: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
   const router = useRouter()

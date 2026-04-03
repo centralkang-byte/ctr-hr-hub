@@ -32,7 +32,7 @@ interface DeptOption { id: string; name: string }
 
 // ─── Component ────────────────────────────────────────────
 
-export default function AdminResultsClient({ user }: { user: SessionUser }) {
+export default function AdminResultsClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('performance')
   const tc = useTranslations('common')
 

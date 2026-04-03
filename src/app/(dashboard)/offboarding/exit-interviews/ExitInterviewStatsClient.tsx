@@ -65,7 +65,7 @@ const REASON_COLORS: Record<string, string> = {
 
 // ─── Component ──────────────────────────────────────────────
 
-export function ExitInterviewStatsClient({ user }: { user: SessionUser }) {
+export function ExitInterviewStatsClient({ user: _user }: { user: SessionUser }) {
     const [stats, setStats] = useState<StatsData | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)

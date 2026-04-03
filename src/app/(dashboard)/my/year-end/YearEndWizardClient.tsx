@@ -641,7 +641,7 @@ function ResultRow({ label, value, indent, highlight }: {
 
 // ─── Main Wizard Component ─────────────────────────────────
 
-export function YearEndWizardClient({ user, year }: { user: SessionUser; year: number }) {
+export function YearEndWizardClient({ user: _user, year }: { user: SessionUser; year: number }) {
   const [step, setStep] = useState(0)
   const [settlement, setSettlement] = useState<Settlement | null>(null)
   const [loading, setLoading] = useState(true)

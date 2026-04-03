@@ -30,7 +30,7 @@ type EnrollmentRow = {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function TrainingEnrollmentsClient({ user }: { user: SessionUser }) {
+export default function TrainingEnrollmentsClient({ user: _user }: { user: SessionUser }) {
 //   const tCommon = useTranslations('common')
 
   const t = useTranslations('training')

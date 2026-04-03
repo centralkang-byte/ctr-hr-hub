@@ -62,7 +62,7 @@ function formatDate(dateStr: string | null): string {
 
 // ─── Component ──────────────────────────────────────────────
 
-export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
+export function CheckinsAdminClient({ user: _user }: CheckinsAdminClientProps) {
   const t = useTranslations('onboarding')
 
   const MOOD_MAP: Record<string, { emoji: string; label: string; value: number }> = {

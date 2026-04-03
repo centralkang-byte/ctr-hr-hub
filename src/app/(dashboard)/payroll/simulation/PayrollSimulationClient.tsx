@@ -136,7 +136,7 @@ function EmployeeExpandedDetail({ emp }: { emp: EmployeeSimResult }) {
 
 // ─── Main Component ──────────────────────────────────────
 
-export default function PayrollSimulationClient({ user, companies, departments }: {
+export default function PayrollSimulationClient({ user: _user, companies, departments }: {
   user: SessionUser; companies: Company[]; departments: Department[]
 }) {
   const tCommon = useTranslations('common')

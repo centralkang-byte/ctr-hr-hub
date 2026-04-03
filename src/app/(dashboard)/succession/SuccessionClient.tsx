@@ -12,7 +12,7 @@ import PlansTab from '@/components/succession/PlansTab'
 import SuccessionDashboard from '@/components/succession/SuccessionDashboard'
 import type { SessionUser } from '@/types'
 
-export default function SuccessionClient({ user }: { user: SessionUser }) {
+export default function SuccessionClient({ user: _user }: { user: SessionUser }) {
 //   const tCommon = useTranslations('common')
 
   const t = useTranslations('succession')

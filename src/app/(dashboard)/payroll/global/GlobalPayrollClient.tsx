@@ -59,7 +59,7 @@ const fmtBillion = (n: number) => {
   return fmt(n)
 }
 
-export default function GlobalPayrollClient({ user }: { user: SessionUser }) {
+export default function GlobalPayrollClient({ user: _user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())

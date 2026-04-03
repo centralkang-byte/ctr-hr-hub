@@ -87,7 +87,7 @@ interface LeaveRequest {
 
 // ─── 메인 컴포넌트 ─────────────────────────────────────────
 
-export function MyLeaveClient({ user }: { user: SessionUser }) {
+export function MyLeaveClient({ user: _user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('mySpace')
 

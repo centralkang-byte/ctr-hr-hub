@@ -13,7 +13,7 @@ import EnrollmentsTab from '@/components/training/EnrollmentsTab'
 import MandatoryConfigTab from '@/components/training/MandatoryConfigTab'
 import type { SessionUser } from '@/types'
 
-export default function TrainingClient({ user }: { user: SessionUser }) {
+export default function TrainingClient({ user: _user }: { user: SessionUser }) {
 //   const tCommon = useTranslations('common')
 
   const t = useTranslations('training')

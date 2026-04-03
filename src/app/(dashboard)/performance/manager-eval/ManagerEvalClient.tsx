@@ -51,7 +51,7 @@ const STATUS_BADGE: Record<string, string> = {
 
 // ─── Component ────────────────────────────────────────────
 
-export default function ManagerEvalClient({ user }: { user: SessionUser }) {
+export default function ManagerEvalClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('performance')
   const tc = useTranslations('common')
   const { confirm, dialogProps } = useConfirmDialog()

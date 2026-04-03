@@ -106,7 +106,7 @@ function daysUntil(dateStr?: string | null): number | null {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function MyTrainingClient({ user }: { user: SessionUser }) {
+export default function MyTrainingClient({ user: _user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('mySpace')
   const { toast } = useToast()

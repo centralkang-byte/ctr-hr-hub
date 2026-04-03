@@ -54,7 +54,7 @@ const COMPETENCY_LABELS: Record<string, string> = {
 
 // ─── Component ───────────────────────────────────────────
 
-export default function PeerReviewResultsClient({ user, cycleId }: { user: SessionUser; cycleId: string }) {
+export default function PeerReviewResultsClient({ user: _user, cycleId }: { user: SessionUser; cycleId: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
   const searchParams = useSearchParams()
