@@ -227,7 +227,7 @@ export default function CalibrationClient({ user: _user }: { user: SessionUser }
     } catch {
       toast({ title: t('kr_keca1b0ec_keca080ec_kec8ba4ed'), variant: 'destructive' })
     }
-  }, [adjEmployee, selectedSession, adjReason, adjPerfScore, adjCompScore, loadSession])
+  }, [adjEmployee, selectedSession, adjReason, adjPerfScore, adjCompScore, loadSession, t])
 
   // ─── AI Analysis ────────────────────────────────────
 

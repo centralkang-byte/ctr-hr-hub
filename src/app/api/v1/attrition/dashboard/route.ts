@@ -118,7 +118,9 @@ export const GET = withPermission(
         return {
           employeeId: r.employeeId,
           name: emp.name as string,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           department: ((extractPrimaryAssignment((emp as any).assignments ?? []) as Record<string, any>)?.department?.name as string | null) ?? null,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           grade: ((extractPrimaryAssignment((emp as any).assignments ?? []) as Record<string, any>)?.jobGrade?.name as string | null) ?? null,
           score: r.score,
           factors: r.scoreFactors,

@@ -5,7 +5,7 @@
 // 메뉴 검색 + 직원 검색 + 최근 방문 페이지
 // ═══════════════════════════════════════════════════════════
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import {
@@ -160,19 +160,25 @@ export function CommandPalette() {
   }, [debouncedQuery])
 
   // ─── Derived result lists ─────────────────────────────────────────────────
-  const filteredMenus: MenuResult[] = debouncedQuery
-    ? MENU_ITEMS.filter((item) => fuzzyMatch(item.label, debouncedQuery)).slice(0, 5)
-    : []
+  const filteredMenus = useMemo<MenuResult[]>(
+    () => debouncedQuery
+      ? MENU_ITEMS.filter((item) => fuzzyMatch(item.label, debouncedQuery)).slice(0, 5)
+      : [],
+    [debouncedQuery],
+  )
 
   // Flat list for keyboard navigation
   // Order: employees → menus  (when searching)
   //        recent pages       (when empty)
-  const flatList: { id: string; href: string }[] = debouncedQuery
-    ? [
-      ...employeeResults.map((e) => ({ id: `emp-${e.id}`, href: `/employees/${e.id}` })),
-      ...filteredMenus.map((m) => ({ id: m.id, href: m.href })),
-    ]
-    : recentPages.map((p) => ({ id: `recent-${p.path}`, href: p.path }))
+  const flatList = useMemo<{ id: string; href: string }[]>(() =>
+    debouncedQuery
+      ? [
+        ...employeeResults.map((e) => ({ id: `emp-${e.id}`, href: `/employees/${e.id}` })),
+        ...filteredMenus.map((m) => ({ id: m.id, href: m.href })),
+      ]
+      : recentPages.map((p) => ({ id: `recent-${p.path}`, href: p.path })),
+    [debouncedQuery, employeeResults, filteredMenus, recentPages],
+  )
 
   // ─── Navigation helper ────────────────────────────────────────────────────
   const navigate = useCallback(

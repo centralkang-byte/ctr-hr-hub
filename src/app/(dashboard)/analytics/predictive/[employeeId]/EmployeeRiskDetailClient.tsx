@@ -34,8 +34,6 @@ import { cn } from '@/lib/utils'
 
 // ─── 타입 ────────────────────────────────────────────────
 
-type RiskLevel = 'low' | 'medium' | 'high' | 'critical' | 'insufficient_data'
-
 interface Signal {
   signal: string
   weight: number

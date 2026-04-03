@@ -313,7 +313,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
     } finally {
       setLoading(false)
     }
-  }, [year, statusFilter])
+  }, [year, statusFilter, t])
 
   useEffect(() => {
     void fetchSettlements()
@@ -333,7 +333,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
         setConfirming(false)
       }
     },
-    [fetchSettlements],
+    [fetchSettlements, t],
   )
 
   const handleIssueReceipt = useCallback(async (id: string) => {
@@ -358,7 +358,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
     } finally {
       setIssuingReceipt(false)
     }
-  }, [])
+  }, [t])
 
   const handleBulkConfirm = useCallback(async () => {
     const confirmableIds = settlements
@@ -389,7 +389,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
     } finally {
       setBulkConfirming(false)
     }
-  }, [settlements, selectedIds, year, user.companyId, fetchSettlements])
+  }, [settlements, selectedIds, year, user.companyId, fetchSettlements, t])
 
   const handleBulkConfirmAll = useCallback(async () => {
     const confirmable = settlements.filter(
@@ -416,7 +416,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
         setBulkConfirming(false)
       }
     }})
-  }, [settlements, year, user.companyId, fetchSettlements])
+  }, [settlements, year, user.companyId, fetchSettlements, confirm, t])
 
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {

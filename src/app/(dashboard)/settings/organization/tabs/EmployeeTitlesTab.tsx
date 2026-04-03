@@ -41,7 +41,7 @@ export function EmployeeTitlesTab({ companyId: _companyId }: Props) {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => { fetchTitles() }, [fetchTitles])
 

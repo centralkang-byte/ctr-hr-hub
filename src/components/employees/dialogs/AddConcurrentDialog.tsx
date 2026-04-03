@@ -105,7 +105,7 @@ export default function AddConcurrentDialog({
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
-  const isSuperAdmin = userRole === ROLE.SUPER_ADMIN
+  const _isSuperAdmin = userRole === ROLE.SUPER_ADMIN
   const isHrAdmin = userRole === ROLE.HR_ADMIN
 
   // ─── Reset form on open ─────────────────────────────────

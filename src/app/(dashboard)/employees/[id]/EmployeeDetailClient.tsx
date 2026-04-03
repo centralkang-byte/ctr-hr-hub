@@ -281,6 +281,9 @@ export function EmployeeDetailClient({
     setSaving(true)
     setEditError(null)
     try {
+      const resolvedMapping = gradeTitleMappings
+        .filter((m) => m.jobGrade.companyId === employee.companyId)
+        .find((m) => m.jobGrade.id === editData.jobGradeId) ?? null
       const payload: Record<string, string | null> = {
         name: editData.name,
         nameEn: editData.nameEn || null,
@@ -293,7 +296,7 @@ export function EmployeeDetailClient({
         emergencyContactPhone: editData.emergencyContactPhone || null,
         departmentId: editData.departmentId,
         jobGradeId: editData.jobGradeId,
-        titleId: mappedTitle?.employeeTitle.id ?? null,
+        titleId: resolvedMapping?.employeeTitle.id ?? null,
         jobCategoryId: editData.jobCategoryId,
         employmentType: editData.employmentType,
         status: editData.status,
@@ -306,7 +309,7 @@ export function EmployeeDetailClient({
     } finally {
       setSaving(false)
     }
-  }, [editData, employee.id, t])
+  }, [editData, employee.id, employee.companyId, t, gradeTitleMappings])
 
   // ─── Filtered depts by company ───
   const filteredDepts = useMemo(

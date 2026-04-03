@@ -73,6 +73,7 @@ export interface MovementTemplate {
   description: string
   superAdminOnly: boolean
   columns: TemplateColumn[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rowSchema: z.ZodType<any>
   exampleRow: Record<string, string>
 }

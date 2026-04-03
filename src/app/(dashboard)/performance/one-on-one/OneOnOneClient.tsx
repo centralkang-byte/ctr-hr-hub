@@ -200,6 +200,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                       <div className="flex items-center gap-3">
                         <EmployeeCell
                           size="sm"
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
                           employee={isManager ? (m.employee as any) : { id: m.id, name: m.manager?.name ?? '', } }
                           trailing={
                             <p className="text-xs text-muted-foreground">

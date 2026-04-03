@@ -93,7 +93,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
     await loadContracts()
   }
 
-  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
+  const { guardedSubmit, isSubmitting: _isSubmitting } = useSubmitGuard(handleSubmit)
 
   const isExpiringSoon = (endDate: string | null) => {
     if (!endDate) return false

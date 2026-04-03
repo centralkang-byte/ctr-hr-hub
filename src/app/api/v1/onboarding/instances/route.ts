@@ -68,7 +68,9 @@ export const GET = withPermission(
                 id: inst.id,
                 employeeId: inst.employeeId,
                 employeeName: inst.employee?.name ?? '',
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 department: (extractPrimaryAssignment(inst.employee?.assignments ?? []) as any)?.department?.name ?? '',
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 company: (extractPrimaryAssignment(inst.employee?.assignments ?? []) as any)?.company?.name ?? '',
                 hireDate,
                 buddy: inst.buddy ? { id: inst.buddy.id, name: inst.buddy.name } : null,

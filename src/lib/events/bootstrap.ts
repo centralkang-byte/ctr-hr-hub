@@ -42,6 +42,7 @@ import { quarterlyReviewReopenedHandler } from './handlers/quarterly-review-reop
 import { goalRevisionProposedHandler } from './handlers/goal-revision-proposed.handler'
 import { goalRevisionApprovedHandler, goalRevisionRejectedHandler } from './handlers/goal-revision-reviewed.handler'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let bootstrapped = false
 
 /**

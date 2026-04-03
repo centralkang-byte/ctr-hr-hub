@@ -13,7 +13,6 @@ import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWith
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
-import { useTranslations } from 'next-intl'
 
 interface AccrualRule {
   minTenureMonths?: number

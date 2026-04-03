@@ -58,7 +58,7 @@ export function JobGradesTab({ companyId: _companyId }: Props) {
     } finally {
       setLoading(false)
     }
-  }, [filter])
+  }, [filter, t])
 
   useEffect(() => { fetchGrades() }, [fetchGrades])
 

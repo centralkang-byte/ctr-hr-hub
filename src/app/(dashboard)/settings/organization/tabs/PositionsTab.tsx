@@ -59,7 +59,7 @@ export function PositionsTab({ companyId }: Props) {
     } finally {
       setLoading(false)
     }
-  }, [companyId])
+  }, [companyId, t])
 
   const fetchGrades = useCallback(async () => {
     try {

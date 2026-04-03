@@ -75,7 +75,7 @@ export function GradeTitleMappingTab({ companyId }: Props) {
     } finally {
       setLoading(false)
     }
-  }, [filter, companyId])
+  }, [filter, companyId, t])
 
   useEffect(() => { fetchMappings() }, [fetchMappings])
 

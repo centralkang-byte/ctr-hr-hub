@@ -117,7 +117,7 @@ export function MyLeaveClient({ user: _user }: { user: SessionUser }) {
     } finally {
       setLoadingBalances(false)
     }
-  }, [year])
+  }, [year, tCommon])
 
   const loadRequests = useCallback(async () => {
     setLoadingRequests(true)

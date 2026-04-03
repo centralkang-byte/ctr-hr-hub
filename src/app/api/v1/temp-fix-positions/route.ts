@@ -23,6 +23,7 @@ export async function GET() {
     })
 
     return NextResponse.json({ managerPos: asgn.positionId, reports })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     return NextResponse.json({ error: err.message, stack: err.stack }, { status: 500 })
   }

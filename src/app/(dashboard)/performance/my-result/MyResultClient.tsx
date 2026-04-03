@@ -90,7 +90,7 @@ export default function MyResultClient({user }: {
             } catch { setError(t('cycleListLoadFailed')) }
         }
         load()
-    }, [])
+    }, [t])
 
     const fetchResult = useCallback(async () => {
         if (!selectedCycleId) return

@@ -163,6 +163,7 @@ export default function CompensationAnalyticsClient({ user: _user }: { user: Ses
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {data.distribution.map((r: any, i: number) => (
                     <tr key={i} className={TABLE_STYLES.row}>
                       <td className={TABLE_STYLES.cell}>{r.grade_name}</td>

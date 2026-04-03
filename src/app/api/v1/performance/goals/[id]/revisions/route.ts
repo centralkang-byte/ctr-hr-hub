@@ -32,7 +32,7 @@ const proposeSchema = z.object({
   quarterlyReviewId: z.string().uuid().optional(),
 }).refine(
   (data) => {
-    const { reason, quarterlyReviewId, ...changes } = data
+    const { reason: _reason, quarterlyReviewId: _quarterlyReviewId, ...changes } = data
     return Object.values(changes).some((v) => v !== undefined)
   },
   { message: '최소 하나의 필드를 변경해야 합니다.' },

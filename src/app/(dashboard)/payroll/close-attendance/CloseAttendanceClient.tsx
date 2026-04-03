@@ -79,7 +79,7 @@ export default function CloseAttendanceClient({ user }: Props) {
     const now = new Date()
     const [year, setYear] = useState(now.getFullYear())
     const [month, setMonth] = useState(now.getMonth() + 1)
-    const [, setSelectedCompanyId] = useState<string | null>(null)
+    const [, _setSelectedCompanyId] = useState<string | null>(null)
     const [statuses, setStatuses] = useState<Record<string, AttendanceStatus>>({})
     const [loading, setLoading] = useState(false)
     const [expandedEmp, setExpandedEmp] = useState<Record<string, boolean>>({})
@@ -103,7 +103,7 @@ export default function CloseAttendanceClient({ user }: Props) {
         } catch {
       toast({ title: tCommon('error'), description: t('kr_kecb298eb_keca491_kec98a4eb_ke'), variant: 'destructive' })
     }
-    }, [year, month])
+    }, [year, month, tCommon, t])
 
     useEffect(() => {
         setLoading(true)

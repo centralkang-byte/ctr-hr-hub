@@ -50,7 +50,7 @@ interface ChartDataPoint {
 
 // ─── Helpers ──────────────────────────────────────────────────
 
-function isRiskRow(row: CheckinRow): boolean {
+function _isRiskRow(row: CheckinRow): boolean {
   return row.mood === 'STRUGGLING' || row.mood === 'BAD' || row.belonging <= 2
 }
 
@@ -59,30 +59,32 @@ function formatDate(dateStr: string | null): string {
   return new Date(dateStr).toLocaleDateString('ko-KR')
 }
 
+// ─── Constants ──────────────────────────────────────────────
+
+const MOOD_MAP: Record<string, { emoji: string; label: string; value: number }> = {
+  GREAT: { emoji: '\u{1F603}', label: '최고', value: 5 },
+  GOOD: { emoji: '\u{1F642}', label: '좋음', value: 4 },
+  NEUTRAL: { emoji: '\u{1F610}', label: '보통', value: 3 },
+  STRUGGLING: { emoji: '\u{1F61F}', label: '힘듦', value: 2 },
+  BAD: { emoji: '\u{1F622}', label: '매우 힘듦', value: 1 },
+}
+
+const SENTIMENT_BADGE: Record<string, { label: string; className: string }> = {
+  POSITIVE: { label: '긍정적', className: 'bg-tertiary-container/20 text-tertiary' },
+  MIXED: { label: '혼합', className: 'bg-primary/10 text-primary' },
+  CONCERNING: { label: '우려', className: 'bg-destructive/5 text-red-500' },
+}
+
+const TREND_BADGE: Record<string, { label: string; className: string }> = {
+  IMPROVING: { label: '개선 중', className: 'bg-tertiary-container/20 text-tertiary' },
+  STABLE: { label: '안정적', className: 'bg-muted text-muted-foreground' },
+  DECLINING: { label: '하락 중', className: 'bg-destructive/5 text-red-500' },
+}
+
 // ─── Component ──────────────────────────────────────────────
 
 export function CheckinsAdminClient({ user: _user }: CheckinsAdminClientProps) {
   const t = useTranslations('onboarding')
-
-  const MOOD_MAP: Record<string, { emoji: string; label: string; value: number }> = {
-    GREAT: { emoji: '\u{1F603}', label: '최고', value: 5 },
-    GOOD: { emoji: '\u{1F642}', label: '좋음', value: 4 },
-    NEUTRAL: { emoji: '\u{1F610}', label: '보통', value: 3 },
-    STRUGGLING: { emoji: '\u{1F61F}', label: '힘듦', value: 2 },
-    BAD: { emoji: '\u{1F622}', label: '매우 힘듦', value: 1 },
-  }
-
-  const SENTIMENT_BADGE: Record<string, { label: string; className: string }> = {
-    POSITIVE: { label: '긍정적', className: 'bg-tertiary-container/20 text-tertiary' },
-    MIXED: { label: '혼합', className: 'bg-primary/10 text-primary' },
-    CONCERNING: { label: '우려', className: 'bg-destructive/5 text-red-500' },
-  }
-
-  const TREND_BADGE: Record<string, { label: string; className: string }> = {
-    IMPROVING: { label: '개선 중', className: 'bg-tertiary-container/20 text-tertiary' },
-    STABLE: { label: '안정적', className: 'bg-muted text-muted-foreground' },
-    DECLINING: { label: '하락 중', className: 'bg-destructive/5 text-red-500' },
-  }
 
   const [checkins, setCheckins] = useState<CheckinRow[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)

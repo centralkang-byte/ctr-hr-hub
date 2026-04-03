@@ -1,6 +1,5 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 
 // ═══════════════════════════════════════════════════════════
@@ -356,8 +355,6 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
       setUploading(false)
     }
   }
-
-  const allDeductions = [...INCOME_DEDUCTIONS, ...TAX_CREDIT_DEDUCTIONS]
 
   return (
     <div className="space-y-4">

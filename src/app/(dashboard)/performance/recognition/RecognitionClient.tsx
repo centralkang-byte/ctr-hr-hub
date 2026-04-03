@@ -227,8 +227,10 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                 return (
                   <div key={item.id} className="bg-card rounded-xl shadow-sm border border-border p-6">
                     <div className="flex items-center gap-2 mb-3">
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                       <EmployeeCell size="sm" employee={item.sender as any} />
                       <span className="text-muted-foreground">→</span>
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                       <EmployeeCell size="sm" employee={item.receiver as any} />
                     </div>
                     {config && (

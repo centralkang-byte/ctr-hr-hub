@@ -126,7 +126,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
         } finally {
             setLoading(false)
         }
-    }, [onboardingId])
+    }, [onboardingId, tCommon])
 
     useEffect(() => { fetchDetail() }, [fetchDetail])
 

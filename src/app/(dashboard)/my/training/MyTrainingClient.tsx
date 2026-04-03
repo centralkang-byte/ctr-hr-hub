@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { BookOpen, CheckCircle2, Clock, AlertTriangle, Sparkles } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -113,11 +113,7 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
   const [loading, setLoading] = useState(true)
   const [enrollingId, setEnrollingId] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true)
     try {
       const res = await apiClient.get<MyTrainingData>('/api/v1/training/my')
@@ -127,7 +123,11 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
     } finally {
       setLoading(false)
     }
-  }
+  }, [toast])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const handleEnroll = async (courseId: string) => {
     setEnrollingId(courseId)

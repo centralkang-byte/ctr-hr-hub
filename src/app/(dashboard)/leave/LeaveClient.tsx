@@ -566,6 +566,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       </div>
 
       <DataTable
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         columns={columns as any as DataTableColumn<Record<string, unknown>>[]}
         data={requests as unknown as Record<string, unknown>[]}
         loading={loading}

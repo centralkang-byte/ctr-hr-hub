@@ -101,7 +101,7 @@ export default function CandidateTimeline({ applicantId }: Props) {
         <div className="absolute left-4 top-0 bottom-0 w-px bg-border" />
 
         <div className="space-y-3">
-          {data.events.map((event, idx) => {
+          {data.events.map((event, _idx) => {
             const colorClass =
               EVENT_COLORS[event.label] ?? EVENT_COLORS[event.type] ?? EVENT_COLORS.default
 //             const isLast = idx === data.events.length - 1

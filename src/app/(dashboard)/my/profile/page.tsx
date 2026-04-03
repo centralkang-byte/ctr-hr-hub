@@ -107,6 +107,7 @@ export default async function MyProfilePage() {
         },
       })
       
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       employee = fallbackEmployee as any;
 
       // Add empty defaults for missing relations
@@ -135,6 +136,7 @@ export default async function MyProfilePage() {
   // ─── Date 직렬화 (Server→Client 경계 crossing) ────────────
   // Next.js App Router는 Date 객체를 직접 넘길 수 없음.
   // 문자열로 변환 후 Client Component에서 new Date()로 복원.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const primaryAsgn = (employee as any).assignments?.[0]
   const division = getDivisionName(primaryAsgn?.department ?? null)
 
@@ -142,16 +144,19 @@ export default async function MyProfilePage() {
     ...employee,
     hireDate:  employee.hireDate?.toISOString() ?? new Date().toISOString(),
     birthDate: employee.birthDate?.toISOString() ?? null,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     employeeHistories: employee.employeeHistories?.map((h: any) => ({
       ...h,
       effectiveDate: h.effectiveDate?.toISOString() ?? new Date().toISOString(),
       createdAt: h.createdAt?.toISOString() ?? new Date().toISOString(),
     })) ?? [],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     compensationHistories: employee.compensationHistories?.map((h: any) => ({
       ...h,
       effectiveDate: h.effectiveDate?.toISOString() ?? new Date().toISOString(),
       newBaseSalary: h.newBaseSalary ? h.newBaseSalary.toString() : '0' // Convert Decimal to string
     })) ?? [],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     employeeDocuments: employee.employeeDocuments?.map((d: any) => ({
       ...d,
       createdAt: d.createdAt?.toISOString() ?? new Date().toISOString()
@@ -160,6 +165,7 @@ export default async function MyProfilePage() {
 
   return (
     <Suspense fallback={<ListPageSkeleton />}>
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <MyProfileClient user={user} employee={serialized as any} division={division} />
     </Suspense>
   )

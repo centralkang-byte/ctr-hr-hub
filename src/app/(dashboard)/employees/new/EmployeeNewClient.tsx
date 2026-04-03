@@ -185,7 +185,7 @@ export function EmployeeNewClient({
   const mappedTitle = companyMappings.find((m) => m.jobGrade.id === data.jobGradeId) ?? null
 
   // ─── Validation per step ───
-  function validateStep(stepNum: number, wizardData: WizardData): string | null {
+  const validateStep = useCallback((stepNum: number, wizardData: WizardData): string | null => {
     if (stepNum === 0) {
       if (!wizardData.name.trim()) return t('validationNameRequired')
       if (!wizardData.email.trim()) return t('validationEmailRequired')
@@ -203,7 +203,7 @@ export function EmployeeNewClient({
       if (!wizardData.jobCategoryId) return t('validationJobCategoryRequired')
     }
     return null
-  }
+  }, [t])
 
   // ─── Field update helper ───
   const set = useCallback((key: keyof WizardData, value: string) => {
@@ -243,7 +243,7 @@ export function EmployeeNewClient({
     }
     setError(null)
     setStep((s) => s + 1)
-  }, [step, data])
+  }, [step, data, validateStep])
 
   const goBack = useCallback(() => {
     setError(null)
@@ -285,7 +285,7 @@ export function EmployeeNewClient({
     } finally {
       setSubmitting(false)
     }
-  }, [data, router, t])
+  }, [data, router, t, mappedTitle])
 
   // ─── Render steps ───
 

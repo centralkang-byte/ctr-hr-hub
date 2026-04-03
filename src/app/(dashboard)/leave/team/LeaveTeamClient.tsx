@@ -10,9 +10,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Check, X, CalendarOff } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
-import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Dialog,
@@ -244,7 +242,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
       revertOptimistic(requestId)
       toast({ title: tc('error'), description: '반려 처리 중 오류가 발생했습니다', variant: 'destructive' })
     }
-  }, [rejectTargetId, rejectionReason, scheduleRowFadeAndRefresh, revertOptimistic])
+  }, [rejectTargetId, rejectionReason, scheduleRowFadeAndRefresh, revertOptimistic, tc])
 
   // ─── Loading skeleton ───
   if (loading) {

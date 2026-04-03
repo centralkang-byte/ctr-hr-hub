@@ -109,7 +109,7 @@ export default function TeamSkillsClient({user: _user }: {
       }
     }
     setEvalItems(initial)
-  }, [currentMember?.id])
+  }, [currentMember?.id, currentMember])
 
   const handleSave = async () => {
     if (!currentMember) return

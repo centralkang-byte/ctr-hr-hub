@@ -78,7 +78,7 @@ export function DirectoryClient({ user: _user, companies, departments, jobGrades
     } finally {
       setLoading(false)
     }
-  }, [debouncedSearch, selectedCompany, selectedDept, selectedGrade, page])
+  }, [debouncedSearch, selectedCompany, selectedDept, selectedGrade, page, tCommon])
 
   useEffect(() => {
     setPage(1)

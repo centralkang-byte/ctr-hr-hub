@@ -215,7 +215,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
     const updated = await apiClient.put<ProfileExtension>('/api/v1/employees/me/profile-extension', { bio: bioValue })
     if (updated.data) { setExt((prev) => ({ ...prev, bio: updated.data!.bio })); setEditingBio(false); toast({ title: tCommon('saved') }) }
     else toast({ title: tCommon('saveFailed'), description: tCommon('errorDesc'), variant: 'destructive' })
-  }, [bioValue])
+  }, [bioValue, tCommon])
 
   // ── Skill save ──
   const addSkill = useCallback(async () => {
@@ -272,7 +272,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
       setChangeReqValue('')
       setChangeReqReason('')
     }
-  }, [changeReqField, changeReqValue, changeReqReason])
+  }, [changeReqField, changeReqValue, changeReqReason, t])
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
@@ -545,6 +545,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                   <div key={field} className="flex items-center justify-between">
                     <p className="text-xs text-muted-foreground">{label}</p>
                     <div className="flex items-center gap-1.5">
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                       <VisibilityBadge level={(visibility as any)[field]} />
                       <select
                         value={(visibility as any)[field] /* eslint-disable-line @typescript-eslint/no-explicit-any */}

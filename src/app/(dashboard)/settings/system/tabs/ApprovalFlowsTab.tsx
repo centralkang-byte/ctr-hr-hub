@@ -67,7 +67,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
     } finally {
       setLoading(false)
     }
-  }, [companyId])
+  }, [companyId, t])
 
   useEffect(() => { fetchFlows() }, [fetchFlows])
 

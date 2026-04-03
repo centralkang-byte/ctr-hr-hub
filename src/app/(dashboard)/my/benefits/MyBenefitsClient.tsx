@@ -265,7 +265,6 @@ function ClaimModal({ plans, onClose, onSubmit }: {
 
 export function MyBenefitsClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
-  const t = useTranslations('mySpace')
 
   const [plans, setPlans] = useState<BenefitPlan[]>([])
   const [summary, setSummary] = useState<UsageSummaryItem[]>([])

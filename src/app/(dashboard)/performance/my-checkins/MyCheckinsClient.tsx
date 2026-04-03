@@ -50,7 +50,7 @@ export default function MyCheckinsClient({user: _user }: {
             } catch { setError(t('cycleListLoadFailed')) }
         }
         load()
-    }, [])
+    }, [t])
 
     const fetchData = useCallback(async () => {
         if (!selectedCycleId) return
@@ -67,7 +67,7 @@ export default function MyCheckinsClient({user: _user }: {
             setProgressInputs(pi)
         } catch { setError(t('dataLoadFailed')) }
         finally { setLoading(false) }
-    }, [selectedCycleId])
+    }, [selectedCycleId, t])
 
     useEffect(() => { fetchData() }, [fetchData])
 

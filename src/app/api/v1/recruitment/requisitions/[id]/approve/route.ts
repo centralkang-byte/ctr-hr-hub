@@ -123,6 +123,7 @@ export const POST = withPermission(
             requirements: requisition.requirements
               ? JSON.stringify(requisition.requirements)
               : null,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             employmentType: (empTypeMap[requisition.employmentType] ?? 'FULL_TIME') as any,
             headcount: requisition.headcount,
             status: 'DRAFT',

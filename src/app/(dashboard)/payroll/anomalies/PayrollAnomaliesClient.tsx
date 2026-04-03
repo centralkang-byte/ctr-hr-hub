@@ -70,7 +70,7 @@ export default function PayrollAnomaliesClient({ user: _user }: { user: SessionU
   const toggle = (rule: string) => setExpanded(e => ({ ...e, [rule]: !e[rule] }))
 
   const renderDetail = (anomaly: Anomaly) => {
-    const { rule, details } = anomaly
+    const { rule: _rule, details } = anomaly
     if (details.length === 0) return null
 
     const sample = details[0] as Record<string, unknown>

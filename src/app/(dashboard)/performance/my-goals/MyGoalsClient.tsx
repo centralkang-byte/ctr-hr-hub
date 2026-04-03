@@ -117,7 +117,7 @@ export default function MyGoalsClient({user: _user }: {
             } catch { setError(t('cycleListLoadFailed')) }
         }
         load()
-    }, [])
+    }, [t])
 
     // ─── Fetch goals
     const fetchGoals = useCallback(async () => {

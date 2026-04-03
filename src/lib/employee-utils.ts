@@ -37,6 +37,7 @@ export const EMPLOYEE_MINIMAL_SELECT = {
  * Convert any Prisma employee query result to MinimalEmployee.
  * Defensive: handles null/undefined/malformed data without crashing.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function toMinimalEmployee(raw: any): MinimalEmployee | null {
   try {
     if (!raw || !raw.id || !raw.name) return null
@@ -75,6 +76,7 @@ export function toMinimalEmployee(raw: any): MinimalEmployee | null {
 /**
  * Batch convert for list APIs.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function toMinimalEmployees(rawList: any[]): MinimalEmployee[] {
   return rawList.map(toMinimalEmployee).filter((e): e is MinimalEmployee => e !== null)
 }

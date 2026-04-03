@@ -93,7 +93,7 @@ export default function MyPeerReviewClient({user: _user }: {
             } catch { setError(t('cycleListLoadFailed')) }
         }
         load()
-    }, [])
+    }, [t])
 
     const fetchAssignments = useCallback(async () => {
         if (!selectedCycleId) return

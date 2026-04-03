@@ -94,7 +94,6 @@ function EmployeeQuickPanel({
   employeeId: string
   onViewFull: () => void
 }) {
-  const t = useTranslations('employee')
   const [employee, setEmployee] = useState<EmployeeDetail | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -303,19 +302,19 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
   }, [router, pathname, searchParams])
 
   // ─── Translated label maps ───
-  const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
+  const EMPLOYMENT_TYPE_LABELS: Record<string, string> = useMemo(() => ({
     FULL_TIME: t('fullTime'),
     CONTRACT: t('contract'),
     DISPATCH: t('dispatch'),
     INTERN: t('intern'),
-  }
+  }), [t])
 
-  const STATUS_LABELS: Record<string, string> = {
+  const STATUS_LABELS: Record<string, string> = useMemo(() => ({
     ACTIVE: t('statusActive'),
     ON_LEAVE: t('statusOnLeave'),
     RESIGNED: t('statusResigned'),
     TERMINATED: t('statusTerminated'),
-  }
+  }), [t])
 
   // ─── Filter state ───
   const [search, setSearch] = useState('')

@@ -55,7 +55,7 @@ export default function NotificationsClient({user }: {
             } catch { setError(t('cycleLoadFailed')) }
         }
         load()
-    }, [])
+    }, [t])
 
     const fetchItems = useCallback(async () => {
         if (!selectedCycleId) return

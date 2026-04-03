@@ -31,6 +31,7 @@ export const GET = withPermission(
               in: ['IN_PROGRESS', 'COMPLETED'] as OnboardingProgressStatus[],
             },
           }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ...(planType ? { planType: planType as any} : {}),
       ...(companyId
         ? {

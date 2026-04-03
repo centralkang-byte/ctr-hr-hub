@@ -7,6 +7,7 @@
 
 import {
   useCallback,
+  useMemo,
   useRef,
   useState,
   useEffect,
@@ -73,12 +74,12 @@ export function HrChatbot() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  const welcomeMessage: ChatMessage = {
+  const welcomeMessage: ChatMessage = useMemo(() => ({
     id: 'welcome',
     role: 'assistant',
     content: t('chatbotWelcome'),
     createdAt: new Date(),
-  }
+  }), [t])
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -123,7 +124,7 @@ export function HrChatbot() {
       setMessages([welcomeMessage])
       setCurrentSessionId(null)
     }
-  }, [])
+  }, [t, welcomeMessage])
 
   const loadSession = useCallback(async (sessionId: string) => {
     try {
@@ -145,7 +146,7 @@ export function HrChatbot() {
     } catch {
       // silently fail
     }
-  }, [])
+  }, [welcomeMessage])
 
   const handleSubmit = useCallback(
     async (e: FormEvent) => {

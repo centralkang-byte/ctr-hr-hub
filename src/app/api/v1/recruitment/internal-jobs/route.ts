@@ -91,6 +91,7 @@ export const GET = withAuth(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       salaryRangeMin: (p as any).salaryRangeMin ? Number((p as any).salaryRangeMin) : null, // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap
       salaryRangeMax: (p as any).salaryRangeMax ? Number((p as any).salaryRangeMax) : null, // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma type gap
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       salaryHidden: (p as any).salaryHidden,
       company: p.company,
       department: p.department,
