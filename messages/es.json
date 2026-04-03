@@ -5051,7 +5051,12 @@
       "infoBannerTitle": "Los multiplicadores varían por empresa",
       "infoBannerDesc": "KR: Extensión 1.5x / RU: 2.0x / VN: Nocturno +0.3x / MX: Extensión 2.0x",
       "approvalActivated": "Pre-aprobación activada"
-    }
+    },
+    "globalBanner": "Viendo configuración global (predeterminada)",
+    "globalBannerDesc": "Seleccione una empresa en la esquina superior derecha para ver configuraciones específicas.",
+    "selectCompany": "Seleccione una empresa",
+    "selectCompanyDesc": "Seleccione una empresa para ver y gestionar su configuración específica.",
+    "searchResultCount": "{count} resultados"
   },
   "ai": {
     "generated": "AI Generated",

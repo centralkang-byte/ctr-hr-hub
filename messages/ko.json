@@ -5064,7 +5064,12 @@
       "infoBannerTitle": "법인별 수당 배율이 다릅니다",
       "infoBannerDesc": "KR: 연장 1.5배 / RU: 2.0배 / VN: 야간 +0.3배 / MX: 연장 2.0배",
       "approvalActivated": "사전 승인 활성화"
-    }
+    },
+    "globalBanner": "글로벌 (기본) 설정 보기 중",
+    "globalBannerDesc": "법인별 설정을 확인하려면 우측 상단에서 법인을 선택하세요.",
+    "selectCompany": "법인을 선택해 주세요",
+    "selectCompanyDesc": "법인을 선택하면 해당 법인의 설정을 확인하고 변경할 수 있습니다.",
+    "searchResultCount": "{count}건"
   },
   "ai": {
     "generated": "AI 생성",

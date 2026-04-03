@@ -5051,7 +5051,12 @@
       "infoBannerTitle": "各法人加班倍率不同",
       "infoBannerDesc": "KR: 延长1.5倍 / RU: 2.0倍 / VN: 夜间+0.3倍 / MX: 延长2.0倍",
       "approvalActivated": "启用事前审批"
-    }
+    },
+    "globalBanner": "正在查看全局（默认）设置",
+    "globalBannerDesc": "请在右上角选择法人以查看法人专属设置。",
+    "selectCompany": "请选择法人",
+    "selectCompanyDesc": "选择法人后可查看和修改该法人的专属设置。",
+    "searchResultCount": "{count}条"
   },
   "ai": {
     "generated": "AI Generated",

@@ -5051,7 +5051,12 @@
       "infoBannerTitle": "Hệ số phụ cấp khác nhau theo công ty",
       "infoBannerDesc": "KR: Ngoài giờ 1.5x / RU: 2.0x / VN: Ban đêm +0.3x / MX: Ngoài giờ 2.0x",
       "approvalActivated": "Kích hoạt phê duyệt trước"
-    }
+    },
+    "globalBanner": "Đang xem cài đặt toàn cầu (mặc định)",
+    "globalBannerDesc": "Chọn công ty ở góc trên bên phải để xem cài đặt riêng.",
+    "selectCompany": "Vui lòng chọn công ty",
+    "selectCompanyDesc": "Chọn công ty để xem và quản lý cài đặt riêng của công ty đó.",
+    "searchResultCount": "{count} kết quả"
   },
   "ai": {
     "generated": "AI Generated",

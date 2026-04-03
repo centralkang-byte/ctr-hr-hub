@@ -5051,7 +5051,12 @@
       "infoBannerTitle": "Pay multipliers differ by company",
       "infoBannerDesc": "KR: Extended 1.5x / RU: 2.0x / VN: Night +0.3x / MX: Extended 2.0x",
       "approvalActivated": "Pre-approval activated"
-    }
+    },
+    "globalBanner": "Viewing global (default) settings",
+    "globalBannerDesc": "Select a company in the top-right to view company-specific settings.",
+    "selectCompany": "Select a company",
+    "selectCompanyDesc": "Select a company to view and manage its specific settings.",
+    "searchResultCount": "{count} results"
   },
   "ai": {
     "generated": "AI Generated",
