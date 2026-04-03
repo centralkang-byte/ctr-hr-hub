@@ -134,3 +134,20 @@ export const analysisSearchSchema = z.object({
   departmentId: z.string().uuid().optional(),
   jobGradeId: z.string().uuid().optional(),
 })
+
+// ─── Compensation Letter ────────────────────────────────
+
+export const letterGenerateSchema = z.object({
+  cycleId: z.string().uuid(),
+  employeeIds: z.array(z.string().uuid()).min(1).max(500),
+})
+
+export const letterSendSchema = z.object({
+  letterIds: z.array(z.string().uuid()).min(1).max(500),
+})
+
+export const letterSearchSchema = z.object({
+  cycleId: z.string().uuid(),
+  page: z.coerce.number().int().positive().default(DEFAULT_PAGE),
+  limit: z.coerce.number().int().positive().max(100).default(DEFAULT_PAGE_SIZE),
+})

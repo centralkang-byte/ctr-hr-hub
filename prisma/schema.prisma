@@ -846,6 +846,7 @@ model Company {
   calibrationSessions    CalibrationSession[]
   salaryBands            SalaryBand[]
   compensationHistories  CompensationHistory[]
+  compensationLetters    CompensationLetter[]
   salaryAdjustmentMatrix SalaryAdjustmentMatrix[]
   benefitPolicies        BenefitPolicy[]
   allowanceRecords       AllowanceRecord[]
@@ -1378,6 +1379,8 @@ model Employee {
   // Compensation
   compensationHistories CompensationHistory[] @relation("CompensationEmployee")
   compensationApprovals CompensationHistory[] @relation("CompensationApprover")
+  compensationLetters          CompensationLetter[] @relation("CompLetterEmployee")
+  compensationLetterGenerated  CompensationLetter[] @relation("CompLetterGenerator")
   allowanceRecords      AllowanceRecord[]     @relation("AllowanceEmployee")
   allowanceApprovals    AllowanceRecord[]     @relation("AllowanceApprover")
 
@@ -2951,7 +2954,42 @@ model CompensationHistory {
   company  Company   @relation(fields: [companyId], references: [id])
   approver Employee? @relation("CompensationApprover", fields: [approvedById], references: [id])
 
+  letters    CompensationLetter[]
+
   @@map("compensation_history")
+}
+
+enum CompensationLetterStatus {
+  GENERATED
+  SENT
+  FAILED
+}
+
+model CompensationLetter {
+  id                    String                   @id @default(uuid())
+  companyId             String                   @map("company_id")
+  employeeId            String                   @map("employee_id")
+  compensationHistoryId String                   @map("compensation_history_id")
+  cycleId               String?                  @map("cycle_id")
+  version               Int                      @default(1)
+  s3Key                 String                   @map("s3_key")
+  filename              String
+  status                CompensationLetterStatus @default(GENERATED)
+  invalidatedAt         DateTime?                @map("invalidated_at")
+  sentAt                DateTime?                @map("sent_at")
+  sentToEmail           String?                  @map("sent_to_email")
+  failureReason         String?                  @map("failure_reason")
+  generatedById         String                   @map("generated_by_id")
+  createdAt             DateTime                 @default(now()) @map("created_at")
+
+  company             Company             @relation(fields: [companyId], references: [id])
+  employee            Employee            @relation("CompLetterEmployee", fields: [employeeId], references: [id])
+  compensationHistory CompensationHistory @relation(fields: [compensationHistoryId], references: [id])
+  generatedBy         Employee            @relation("CompLetterGenerator", fields: [generatedById], references: [id])
+
+  @@unique([compensationHistoryId, version])
+  @@index([companyId, cycleId])
+  @@map("compensation_letters")
 }
 
 model SalaryAdjustmentMatrix {

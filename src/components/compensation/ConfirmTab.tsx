@@ -57,6 +57,7 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
           changeType: 'ANNUAL_INCREASE',
         })),
       })
+      toast({ title: t('confirmSuccess'), description: t('confirmSuccessDesc') })
       setShowConfirm(false)
       onConfirmDone()
     } catch (err) {

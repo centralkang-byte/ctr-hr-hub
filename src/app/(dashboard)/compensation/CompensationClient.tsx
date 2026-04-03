@@ -5,10 +5,11 @@ import { toast } from '@/hooks/use-toast'
 import { useState, useCallback, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Calculator, CheckCircle2, BarChart3 } from 'lucide-react'
+import { Calculator, CheckCircle2, BarChart3, FileText } from 'lucide-react'
 import SimulationTab from '@/components/compensation/SimulationTab'
 import ConfirmTab from '@/components/compensation/ConfirmTab'
 import HistoryTab from '@/components/compensation/HistoryTab'
+import LetterTab from '@/components/compensation/LetterTab'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 
@@ -24,7 +25,7 @@ export default function CompensationClient({ user: _user }: { user: SessionUser 
 
   const [cycles, setCycles] = useState<CycleOption[]>([])
   const [selectedCycleId, setSelectedCycleId] = useState<string>('')
-  const [activeTab, setActiveTab] = useState<'simulation' | 'confirm' | 'history'>('simulation')
+  const [activeTab, setActiveTab] = useState<'simulation' | 'confirm' | 'history' | 'letter'>('simulation')
   const [pendingAdjustments, setPendingAdjustments] = useState<Array<{
     employeeId: string
     employeeName: string
@@ -84,7 +85,7 @@ export default function CompensationClient({ user: _user }: { user: SessionUser 
       </div>
 
       {/* ─── 탭 ─── */}
-      <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'simulation' | 'confirm' | 'history')}>
+      <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'simulation' | 'confirm' | 'history' | 'letter')}>
         <TabsList className="mb-4">
           <TabsTrigger value="simulation">
             <Calculator className="mr-1.5 h-4 w-4" />
@@ -102,6 +103,10 @@ export default function CompensationClient({ user: _user }: { user: SessionUser 
           <TabsTrigger value="history">
             <BarChart3 className="mr-1.5 h-4 w-4" />
             {t('historyAnalysis')}
+          </TabsTrigger>
+          <TabsTrigger value="letter">
+            <FileText className="mr-1.5 h-4 w-4" />
+            {t('letter')}
           </TabsTrigger>
         </TabsList>
 
@@ -125,6 +130,10 @@ export default function CompensationClient({ user: _user }: { user: SessionUser 
 
         <TabsContent value="history" className="mt-0">
           <HistoryTab />
+        </TabsContent>
+
+        <TabsContent value="letter" className="mt-0">
+          <LetterTab cycleId={selectedCycleId} />
         </TabsContent>
       </Tabs>
     </div>

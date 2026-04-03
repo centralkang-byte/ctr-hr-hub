@@ -41,6 +41,7 @@ import { quarterlyReviewCompletedHandler } from './handlers/quarterly-review-com
 import { quarterlyReviewReopenedHandler } from './handlers/quarterly-review-reopened.handler'
 import { goalRevisionProposedHandler } from './handlers/goal-revision-proposed.handler'
 import { goalRevisionApprovedHandler, goalRevisionRejectedHandler } from './handlers/goal-revision-reviewed.handler'
+import { compApprovedHandler } from './handlers/comp-approved.handler'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let bootstrapped = false
@@ -100,6 +101,9 @@ export function bootstrapEventHandlers(): void {
   eventBus.subscribe(goalRevisionProposedHandler)
   eventBus.subscribe(goalRevisionApprovedHandler)
   eventBus.subscribe(goalRevisionRejectedHandler)
+
+  // ── Compensation Events ──────────────────────────────────
+  eventBus.subscribe(compApprovedHandler)
 
   bootstrapped = true
 }
