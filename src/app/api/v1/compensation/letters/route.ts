@@ -11,10 +11,28 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { letterGenerateSchema, letterSearchSchema } from '@/lib/schemas/compensation'
-import { generateCompensationLetterPdf } from '@/lib/documents/compensation-letter-pdf'
+import { generateCompensationLetterPdf, buildLetterData } from '@/lib/documents/compensation-letter-pdf'
 import { uploadBuffer, buildS3Key } from '@/lib/s3'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
+
+// ─── Helpers ────────────────────────────────────────────────
+
+const UPLOAD_CHUNK_SIZE = 50
+
+async function processInChunks<T, R>(
+  items: T[],
+  chunkSize: number,
+  fn: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = []
+  for (let i = 0; i < items.length; i += chunkSize) {
+    const chunk = items.slice(i, i + chunkSize)
+    const chunkResults = await Promise.all(chunk.map(fn))
+    results.push(...chunkResults)
+  }
+  return results
+}
 
 // ─── GET /api/v1/compensation/letters ───────────────────
 // 사이클별 통보서 목록 (유효한 최신 버전만)
@@ -104,12 +122,13 @@ export const POST = withPermission(
 
     try {
       // 1. CompensationHistory 배치 조회
+      const historyWhere: Record<string, unknown> = { companyId, cycleId }
+      if (employeeIds && employeeIds.length > 0) {
+        historyWhere.employeeId = { in: employeeIds }
+      }
+
       const histories = await prisma.compensationHistory.findMany({
-        where: {
-          companyId,
-          cycleId,
-          employeeId: { in: employeeIds },
-        },
+        where: historyWhere,
         orderBy: { effectiveDate: 'desc' },
         select: {
           id: true,
@@ -148,9 +167,10 @@ export const POST = withPermission(
           latestHistoryMap.set(h.employeeId, h)
         }
       }
+      const latestHistories = [...latestHistoryMap.values()]
 
-      // 2. 기존 유효 레터 invalidate
-      const historyIds = [...latestHistoryMap.values()].map((h) => h.id)
+      // 2. 기존 유효 레터 조회 (버전 확인용)
+      const historyIds = latestHistories.map((h) => h.id)
       const existingLetters = await prisma.compensationLetter.findMany({
         where: {
           compensationHistoryId: { in: historyIds },
@@ -160,66 +180,55 @@ export const POST = withPermission(
       })
 
       const existingMap = new Map<string, number>()
-      if (existingLetters.length > 0) {
-        await prisma.compensationLetter.updateMany({
-          where: { id: { in: existingLetters.map((l) => l.id) } },
-          data: { invalidatedAt: new Date() },
-        })
-        for (const l of existingLetters) {
-          existingMap.set(l.compensationHistoryId, l.version)
-        }
+      for (const l of existingLetters) {
+        existingMap.set(l.compensationHistoryId, l.version)
       }
 
-      // 3. PDF 생성 + S3 업로드 + DB 생성
-      let generated = 0
-      let regenerated = 0
-
-      for (const history of latestHistoryMap.values()) {
+      // 3. S3 업로드 선행 (50건씩 청크 병렬)
+      const uploadResults = await processInChunks(latestHistories, UPLOAD_CHUNK_SIZE, async (history) => {
         const primaryAssignment = extractPrimaryAssignment(history.employee.assignments ?? [])
-
-        const pdfData = {
-          companyName: history.company.name,
-          employeeName: history.employee.name,
-          employeeNo: history.employee.employeeNo,
-          departmentName: primaryAssignment?.department?.name ?? '-',
-          positionName: primaryAssignment?.position?.titleKo ?? '-',
-          previousBaseSalary: Number(history.previousBaseSalary),
-          newBaseSalary: Number(history.newBaseSalary),
-          changePct: Number(history.changePct),
-          changeType: history.changeType,
-          effectiveDate: history.effectiveDate.toISOString().split('T')[0],
-          currency: history.currency,
-          approverName: history.approver?.name ?? '-',
-        }
-
+        const pdfData = buildLetterData(history, primaryAssignment)
         const buffer = generateCompensationLetterPdf(pdfData)
         const fileUuid = randomUUID()
-        const filename = `comp-letter-${history.employee.employeeNo}-v${(existingMap.get(history.id) ?? 0) + 1}.html`
+        const prevVersion = existingMap.get(history.id) ?? 0
+        const newVersion = prevVersion + 1
+        const filename = `comp-letter-${history.employee.employeeNo}-v${newVersion}.html`
         const s3Key = buildS3Key(companyId, 'compensation-letters', history.id, `${fileUuid}.html`)
 
         await uploadBuffer(s3Key, buffer, 'text/html')
 
-        const prevVersion = existingMap.get(history.id)
-        const newVersion = (prevVersion ?? 0) + 1
+        return {
+          companyId,
+          employeeId: history.employeeId,
+          compensationHistoryId: history.id,
+          cycleId,
+          version: newVersion,
+          s3Key,
+          filename,
+          generatedById: user.employeeId,
+          isRegenerated: prevVersion > 0,
+        }
+      })
 
-        await prisma.compensationLetter.create({
-          data: {
-            companyId,
-            employeeId: history.employeeId,
-            compensationHistoryId: history.id,
-            cycleId,
-            version: newVersion,
-            s3Key,
-            filename,
-            generatedById: user.employeeId,
-          },
-        })
+      // 4. DB 트랜잭션: invalidate + createMany
+      const invalidateIds = existingLetters.map((l) => l.id)
+      await prisma.$transaction(async (tx) => {
+        if (invalidateIds.length > 0) {
+          await tx.compensationLetter.updateMany({
+            where: { id: { in: invalidateIds } },
+            data: { invalidatedAt: new Date() },
+          })
+        }
+        for (const data of uploadResults) {
+          const { isRegenerated: _, ...createData } = data
+          await tx.compensationLetter.create({ data: createData })
+        }
+      })
 
-        if (prevVersion) regenerated++
-        else generated++
-      }
+      const generated = uploadResults.filter((r) => !r.isRegenerated).length
+      const regenerated = uploadResults.filter((r) => r.isRegenerated).length
 
-      // 4. 감사 로그
+      // 5. 감사 로그
       logAudit({
         actorId: user.employeeId,
         action: 'compensation.letter.generate',

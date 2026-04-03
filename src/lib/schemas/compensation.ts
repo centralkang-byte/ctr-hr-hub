@@ -139,7 +139,7 @@ export const analysisSearchSchema = z.object({
 
 export const letterGenerateSchema = z.object({
   cycleId: z.string().uuid(),
-  employeeIds: z.array(z.string().uuid()).min(1).max(500),
+  employeeIds: z.array(z.string().uuid()).max(500).optional(),
 })
 
 export const letterSendSchema = z.object({

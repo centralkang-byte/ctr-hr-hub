@@ -11,12 +11,24 @@ import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { letterSendSchema } from '@/lib/schemas/compensation'
 import { sendEmail } from '@/lib/email'
-import { generateCompensationLetterPdf } from '@/lib/documents/compensation-letter-pdf'
+import { generateCompensationLetterPdf, buildLetterData } from '@/lib/documents/compensation-letter-pdf'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
+// ─── Helpers ────────────────────────────────────────────────
+
+const SEND_CHUNK_SIZE = 10
+
+interface SendResult {
+  letterId: string
+  employeeName: string
+  success: boolean
+  email?: string
+  reason?: string
+}
+
 // ─── POST /api/v1/compensation/letters/send ─────────────
-// 배치 이메일 발송 (유효한 레터만)
+// 배치 이메일 발송 (유효한 레터만, 10건씩 병렬)
 
 export const POST = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
@@ -37,7 +49,6 @@ export const POST = withPermission(
         },
         select: {
           id: true,
-          compensationHistoryId: true,
           employee: {
             select: {
               name: true,
@@ -70,66 +81,78 @@ export const POST = withPermission(
 
       if (letters.length === 0) throw badRequest('발송 가능한 통보서가 없습니다.')
 
-      let sent = 0
-      let failed = 0
-      const failures: Array<{ letterId: string; employeeName: string; reason: string }> = []
+      // 10건씩 청크 병렬 발송
+      const allResults: SendResult[] = []
 
-      for (const letter of letters) {
-        const email = letter.employee.email
-        if (!email) {
-          // 이메일 없는 직원
-          await prisma.compensationLetter.update({
-            where: { id: letter.id },
-            data: { status: 'FAILED', failureReason: '직원 이메일 주소가 등록되어 있지 않습니다.' },
-          })
-          failures.push({ letterId: letter.id, employeeName: letter.employee.name, reason: '이메일 미등록' })
-          failed++
-          continue
-        }
+      for (let i = 0; i < letters.length; i += SEND_CHUNK_SIZE) {
+        const chunk = letters.slice(i, i + SEND_CHUNK_SIZE)
+        const chunkResults = await Promise.all(
+          chunk.map(async (letter): Promise<SendResult> => {
+            const email = letter.employee.email
+            if (!email) {
+              return {
+                letterId: letter.id,
+                employeeName: letter.employee.name,
+                success: false,
+                reason: '이메일 미등록',
+              }
+            }
 
-        // 이메일 본문용 HTML 재생성
-        const h = letter.compensationHistory
-        const primaryAssignment = extractPrimaryAssignment(letter.employee.assignments ?? [])
-        const htmlBuffer = generateCompensationLetterPdf({
-          companyName: h.company.name,
-          employeeName: letter.employee.name,
-          employeeNo: letter.employee.employeeNo,
-          departmentName: primaryAssignment?.department?.name ?? '-',
-          positionName: primaryAssignment?.position?.titleKo ?? '-',
-          previousBaseSalary: Number(h.previousBaseSalary),
-          newBaseSalary: Number(h.newBaseSalary),
-          changePct: Number(h.changePct),
-          changeType: h.changeType,
-          effectiveDate: h.effectiveDate.toISOString().split('T')[0],
-          currency: h.currency,
-          approverName: h.approver?.name ?? '-',
+            const h = letter.compensationHistory
+            const primaryAssignment = extractPrimaryAssignment(letter.employee.assignments ?? [])
+            const pdfData = buildLetterData(
+              { ...h, employee: letter.employee },
+              primaryAssignment,
+            )
+            const htmlBuffer = generateCompensationLetterPdf(pdfData)
+
+            const result = await sendEmail({
+              to: email,
+              subject: `[${h.company.name}] 연봉 조정 통보서`,
+              htmlBody: htmlBuffer.toString('utf-8'),
+            })
+
+            return {
+              letterId: letter.id,
+              employeeName: letter.employee.name,
+              success: result.success,
+              email,
+              reason: result.success ? undefined : '이메일 발송 실패 (SES 오류)',
+            }
+          }),
+        )
+        allResults.push(...chunkResults)
+      }
+
+      // DB 배치 업데이트
+      const successes = allResults.filter((r) => r.success)
+      const failures = allResults.filter((r) => !r.success)
+
+      if (successes.length > 0) {
+        await prisma.compensationLetter.updateMany({
+          where: { id: { in: successes.map((r) => r.letterId) } },
+          data: { status: 'SENT', sentAt: new Date(), failureReason: null },
         })
+        // sentToEmail은 건별로 다르므로 개별 업데이트
+        await Promise.all(
+          successes.map((r) =>
+            prisma.compensationLetter.update({
+              where: { id: r.letterId },
+              data: { sentToEmail: r.email },
+            }),
+          ),
+        )
+      }
 
-        const result = await sendEmail({
-          to: email,
-          subject: `[${h.company.name}] 연봉 조정 통보서`,
-          htmlBody: htmlBuffer.toString('utf-8'),
-        })
-
-        if (result.success) {
+      if (failures.length > 0) {
+        for (const f of failures) {
           await prisma.compensationLetter.update({
-            where: { id: letter.id },
+            where: { id: f.letterId },
             data: {
-              status: 'SENT',
-              sentAt: new Date(),
-              sentToEmail: email,
-              failureReason: null,
+              status: 'FAILED',
+              failureReason: f.reason ?? '알 수 없는 오류',
             },
           })
-          sent++
-        } else {
-          const reason = '이메일 발송 실패 (SES 오류)'
-          await prisma.compensationLetter.update({
-            where: { id: letter.id },
-            data: { status: 'FAILED', failureReason: reason },
-          })
-          failures.push({ letterId: letter.id, employeeName: letter.employee.name, reason })
-          failed++
         }
       }
 
@@ -141,12 +164,20 @@ export const POST = withPermission(
         resourceId: `batch-${letterIds.length}`,
         companyId: user.companyId,
         sensitivityLevel: 'HIGH',
-        changes: { sent, failed, totalRequested: letterIds.length },
+        changes: { sent: successes.length, failed: failures.length, totalRequested: letterIds.length },
         ip,
         userAgent,
       })
 
-      return apiSuccess({ sent, failed, failures })
+      return apiSuccess({
+        sent: successes.length,
+        failed: failures.length,
+        failures: failures.map((f) => ({
+          letterId: f.letterId,
+          employeeName: f.employeeName,
+          reason: f.reason ?? '알 수 없는 오류',
+        })),
+      })
     } catch (error) {
       throw handlePrismaError(error)
     }

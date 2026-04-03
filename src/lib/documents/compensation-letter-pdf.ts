@@ -19,6 +19,28 @@ export interface CompensationLetterData {
   approverName: string
 }
 
+// ─── History → LetterData 변환 헬퍼 ────────────────────────
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function buildLetterData(history: any, primaryAssignment: any): CompensationLetterData {
+  return {
+    companyName: history.company?.name ?? '-',
+    employeeName: history.employee?.name ?? '-',
+    employeeNo: history.employee?.employeeNo ?? '-',
+    departmentName: primaryAssignment?.department?.name ?? '-',
+    positionName: primaryAssignment?.position?.titleKo ?? '-',
+    previousBaseSalary: Number(history.previousBaseSalary),
+    newBaseSalary: Number(history.newBaseSalary),
+    changePct: Number(history.changePct),
+    changeType: history.changeType,
+    effectiveDate: history.effectiveDate instanceof Date
+      ? history.effectiveDate.toISOString().split('T')[0]
+      : String(history.effectiveDate).split('T')[0],
+    currency: history.currency,
+    approverName: history.approver?.name ?? '-',
+  }
+}
+
 // ─── 통화 포맷 ──────────────────────────────────────────────
 
 const CURRENCY_FORMATTERS: Record<string, Intl.NumberFormat> = {

@@ -117,14 +117,10 @@ export default function LetterTab({ cycleId }: Props) {
   const handleGenerate = async () => {
     setGenerating(true)
     try {
-      // cycleId에 해당하는 모든 확정된 직원에 대해 생성
-      const employeeIds = letters.length > 0
-        ? letters.map((l) => l.employeeId)
-        : [] // 첫 생성 시에는 서버가 cycleId 기준으로 자동 조회
-
+      // employeeIds 생략 시 서버가 cycleId 기준 전체 확정 직원 자동 조회
       const res = await apiClient.post<{ generated: number; regenerated: number }>(
         '/api/v1/compensation/letters',
-        { cycleId, employeeIds },
+        { cycleId },
       )
       toast({
         title: t('generateSuccess', { count: res.data.generated + res.data.regenerated }),
