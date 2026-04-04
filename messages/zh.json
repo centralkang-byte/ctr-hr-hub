@@ -5395,7 +5395,23 @@
       "rejectReason": "拒绝原因",
       "rejectReasonPlaceholder": "请输入拒绝原因",
       "approveComment": "审批备注（可选）",
-      "duplicateGuard": "该员工已有进行中的申请"
+      "duplicateGuard": "该员工已有进行中的申请",
+      "description": "管理常规周期以外的个别薪资调整申请。",
+      "searchPlaceholder": "搜索员工姓名...",
+      "filterAllReasons": "全部原因",
+      "newRequestTitle": "新建非周期薪酬调整申请",
+      "emptyDescription": "没有符合条件的申请。请更改筛选条件或创建新申请。",
+      "emptyAction": "创建新申请",
+      "breadcrumb": { "list": "薪酬 / 非周期调整", "new": "薪酬 / 非周期调整 / 新建", "detail": "薪酬 / 非周期调整 / 详情" },
+      "reason": { "PROMOTION": "晋升", "RETENTION": "留任", "MARKET_ADJUSTMENT": "市场调整", "ROLE_CHANGE": "角色变更", "EQUITY": "公平性调整", "EQUITY_ADJUSTMENT": "公平性调整", "PERFORMANCE": "绩效驱动", "OTHER": "其他" },
+      "table": { "employee": "员工", "reason": "原因", "salary": "当前 → 拟定薪资", "changePct": "变动%", "status": "状态", "initiator": "申请人", "date": "日期" },
+      "section": { "employee": "目标员工", "adjustment": "调整信息", "justification": "理由与依据", "compensation": "薪酬信息", "approvalWorkflow": "审批流程", "rejectForm": "输入拒绝原因" },
+      "detail": { "name": "姓名", "department": "部门", "grade": "职级", "currentSalary": "当前薪资", "proposedSalary": "拟定薪资", "changePct": "变动率", "effectiveDate": "生效日期", "reasonCategory": "原因类别：", "notFound": "未找到该申请。", "initiator": "申请人：{name}", "createdAt": "创建日期：{date}", "trigger": "自动触发：{source}" },
+      "validation": { "selectEmployee": "请选择员工", "selectReason": "请选择原因", "enterSalary": "请输入拟定薪资", "selectDate": "请选择生效日期" },
+      "approval": { "timeline": "审批历史", "step": "第{stepNumber}步", "pending": "待审批", "approved": "已批准", "rejected": "已拒绝", "autoApproved": "自动批准", "noComment": "无备注", "skipped": "已跳过" },
+      "toast": { "created": "申请已创建", "submitted": "已提交审批", "approved": "申请已批准", "rejected": "申请已拒绝", "cancelled": "申请已取消", "revised": "申请已转为修改状态", "loadError": "加载失败", "salaryDrift": "基本薪资已变更，请更新申请。", "saveFailed": "保存失败", "actionFailed": "操作失败", "retryMessage": "请重试。", "draftSaved": "草稿已保存", "submitComplete": "已提交审批", "approveComplete": "已批准", "rejectComplete": "已拒绝", "cancelComplete": "已取消", "reviseMode": "已切换至修改模式" },
+      "form": { "employee": "目标员工", "reasonCategory": "原因类别", "currentSalary": "当前基本薪资", "proposedSalary": "拟定基本薪资", "proposedSalaryLabel": "拟定薪资（年薪）", "changePct": "变动率", "change": "变动", "effectiveDate": "生效日期", "reason": "详细理由", "compaRatioBefore": "当前Compa-Ratio", "compaRatioAfter": "拟定Compa-Ratio", "searchEmployee": "搜索员工...", "searchLabel": "搜索员工", "searchPlaceholder": "按姓名或工号搜索...", "searching": "搜索中...", "noResults": "无搜索结果", "selectReason": "请选择原因", "justificationPlaceholder": "请详细说明调整理由...", "rejectPlaceholder": "请输入拒绝原因..." },
+      "actions": { "saveDraft": "保存草稿", "submit": "提交审批", "approve": "批准", "reject": "拒绝", "cancel": "取消申请", "cancelAction": "取消", "revise": "修改后重新提交", "reviseResubmit": "修改后重新申请", "edit": "修改", "confirmReject": "确认拒绝" }
     }
   },
   "payrollPage": {
@@ -5968,6 +5984,7 @@
       "results": "绩效 结果s",
       "peerReview": "同事评估",
       "compensation": "Compensation",
+      "offCycle": "非周期调整",
       "benefits": "Benefits 管理员"
     },
     "payroll": {

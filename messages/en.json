@@ -5395,7 +5395,127 @@
       "rejectReason": "Rejection Reason",
       "rejectReasonPlaceholder": "Enter rejection reason",
       "approveComment": "Approval Comment (optional)",
-      "duplicateGuard": "An active request already exists for this employee"
+      "duplicateGuard": "An active request already exists for this employee",
+      "description": "Manage individual salary adjustment requests outside the regular cycle.",
+      "searchPlaceholder": "Search employee name...",
+      "filterAllReasons": "All Reasons",
+      "newRequestTitle": "New Off-Cycle Compensation Request",
+      "emptyDescription": "No requests match the current filters. Try changing filters or create a new request.",
+      "emptyAction": "Create New Request",
+      "breadcrumb": {
+        "list": "Compensation / Off-Cycle",
+        "new": "Compensation / Off-Cycle / New Request",
+        "detail": "Compensation / Off-Cycle / Detail"
+      },
+      "reason": {
+        "PROMOTION": "Promotion",
+        "RETENTION": "Retention",
+        "MARKET_ADJUSTMENT": "Market Adjustment",
+        "ROLE_CHANGE": "Role Change",
+        "EQUITY": "Equity Adjustment",
+        "EQUITY_ADJUSTMENT": "Equity Adjustment",
+        "PERFORMANCE": "Performance-Based",
+        "OTHER": "Other"
+      },
+      "table": {
+        "employee": "Employee",
+        "reason": "Reason",
+        "salary": "Current → Proposed",
+        "changePct": "Change %",
+        "status": "Status",
+        "initiator": "Requester",
+        "date": "Date"
+      },
+      "section": {
+        "employee": "Target Employee",
+        "adjustment": "Adjustment Details",
+        "justification": "Justification",
+        "compensation": "Compensation Details",
+        "approvalWorkflow": "Approval Workflow",
+        "rejectForm": "Rejection Reason"
+      },
+      "detail": {
+        "name": "Name",
+        "department": "Department",
+        "grade": "Grade",
+        "currentSalary": "Current Salary",
+        "proposedSalary": "Proposed Salary",
+        "changePct": "Change %",
+        "effectiveDate": "Effective Date",
+        "reasonCategory": "Reason Category:",
+        "notFound": "Request not found.",
+        "initiator": "Requester: {name}",
+        "createdAt": "Created: {date}",
+        "trigger": "Auto-trigger: {source}"
+      },
+      "validation": {
+        "selectEmployee": "Please select an employee",
+        "selectReason": "Please select a reason",
+        "enterSalary": "Please enter proposed salary",
+        "selectDate": "Please select an effective date"
+      },
+      "approval": {
+        "timeline": "Approval History",
+        "step": "Step {stepNumber}",
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "autoApproved": "Auto-approved",
+        "noComment": "No comment",
+        "skipped": "Skipped"
+      },
+      "toast": {
+        "created": "Request created",
+        "submitted": "Submitted for approval",
+        "approved": "Request approved",
+        "rejected": "Request rejected",
+        "cancelled": "Request cancelled",
+        "revised": "Request reopened for revision",
+        "loadError": "Failed to load requests",
+        "salaryDrift": "Base salary has changed. Please update the request.",
+        "saveFailed": "Save failed",
+        "actionFailed": "Action failed",
+        "retryMessage": "Please try again.",
+        "draftSaved": "Draft saved",
+        "submitComplete": "Submitted for approval",
+        "approveComplete": "Approved",
+        "rejectComplete": "Rejected",
+        "cancelComplete": "Cancelled",
+        "reviseMode": "Switched to edit mode"
+      },
+      "form": {
+        "employee": "Target Employee",
+        "reasonCategory": "Reason Category",
+        "currentSalary": "Current Base Salary",
+        "proposedSalary": "Proposed Base Salary",
+        "proposedSalaryLabel": "Proposed Salary (Annual)",
+        "changePct": "Change %",
+        "change": "Change",
+        "effectiveDate": "Effective Date",
+        "reason": "Justification",
+        "compaRatioBefore": "Current Compa-Ratio",
+        "compaRatioAfter": "Proposed Compa-Ratio",
+        "searchEmployee": "Search employee...",
+        "searchLabel": "Search Employee",
+        "searchPlaceholder": "Search by name or ID...",
+        "searching": "Searching...",
+        "noResults": "No results found",
+        "selectReason": "Select reason",
+        "justificationPlaceholder": "Please describe the reason for this adjustment in detail...",
+        "rejectPlaceholder": "Enter rejection reason..."
+      },
+      "actions": {
+        "saveDraft": "Save Draft",
+        "submit": "Submit for Approval",
+        "approve": "Approve",
+        "reject": "Reject",
+        "cancel": "Cancel Request",
+        "cancelAction": "Cancel",
+        "revise": "Revise & Resubmit",
+        "reviseResubmit": "Revise & Resubmit",
+        "edit": "Edit",
+        "confirmReject": "Confirm Rejection"
+      }
     }
   },
   "payrollPage": {
@@ -5882,6 +6002,7 @@
       "results": "Performance Results",
       "peerReview": "Peer Review",
       "compensation": "Compensation",
+      "offCycle": "Off-Cycle Adjustment",
       "benefits": "Benefits Admin",
       "quarterlyReview": "Quarterly Review"
     },

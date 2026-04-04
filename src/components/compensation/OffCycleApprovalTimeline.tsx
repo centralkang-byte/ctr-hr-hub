@@ -5,6 +5,7 @@
 // 승인 워크플로우 타임라인 (수직)
 // ═══════════════════════════════════════════════════════════
 
+import { useTranslations } from 'next-intl'
 import { Check, Clock, X, Circle } from 'lucide-react'
 import { STATUS_VARIANT, type StatusVariant } from '@/lib/styles/status'
 import { cn } from '@/lib/utils'
@@ -30,11 +31,11 @@ interface OffCycleApprovalTimelineProps {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const STEP_STATUS_MAP: Record<ApprovalStepStatus, { variant: StatusVariant; label: string }> = {
-  PENDING: { variant: 'warning', label: '대기' }, // TODO: i18n
-  APPROVED: { variant: 'success', label: '승인' }, // TODO: i18n
-  REJECTED: { variant: 'error', label: '반려' }, // TODO: i18n
-  SKIPPED: { variant: 'neutral', label: '건너뜀' }, // TODO: i18n
+const STEP_VARIANT_MAP: Record<ApprovalStepStatus, StatusVariant> = {
+  PENDING: 'warning',
+  APPROVED: 'success',
+  REJECTED: 'error',
+  SKIPPED: 'neutral',
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -66,13 +67,15 @@ function formatDateTime(dateStr: string): string {
 // ─── Component ──────────────────────────────────────────────
 
 export default function OffCycleApprovalTimeline({ steps, className }: OffCycleApprovalTimelineProps) {
+  const t = useTranslations('compensation')
   if (!steps.length) return null
 
   return (
     <div className={cn('space-y-0', className)}>
       {steps.map((step, idx) => {
         const isLast = idx === steps.length - 1
-        const { variant, label } = STEP_STATUS_MAP[step.status] ?? STEP_STATUS_MAP.PENDING
+        const variant = STEP_VARIANT_MAP[step.status] ?? 'warning'
+        const label = t(`offCycle.approval.${step.status.toLowerCase()}`)
 
         return (
           <div key={step.id} className="relative flex gap-4">

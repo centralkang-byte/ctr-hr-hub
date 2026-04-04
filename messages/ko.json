@@ -5408,7 +5408,127 @@
       "rejectReason": "반려 사유",
       "rejectReasonPlaceholder": "반려 사유를 입력하세요",
       "approveComment": "승인 코멘트 (선택)",
-      "duplicateGuard": "해당 직원에 대해 이미 진행 중인 요청이 있습니다"
+      "duplicateGuard": "해당 직원에 대해 이미 진행 중인 요청이 있습니다",
+      "description": "정기 보상 외 개별 급여 조정 요청을 관리합니다.",
+      "searchPlaceholder": "직원 이름 검색...",
+      "filterAllReasons": "전체 사유",
+      "newRequestTitle": "새 Off-Cycle 보상 요청",
+      "emptyDescription": "조건에 맞는 요청이 없습니다. 필터를 변경하거나 새 요청을 생성하세요.",
+      "emptyAction": "새 요청 생성",
+      "breadcrumb": {
+        "list": "보상 / Off-Cycle 조정",
+        "new": "보상 / Off-Cycle 조정 / 새 요청",
+        "detail": "보상 / Off-Cycle 조정 / 상세"
+      },
+      "reason": {
+        "PROMOTION": "승진",
+        "RETENTION": "리텐션",
+        "MARKET_ADJUSTMENT": "시장 조정",
+        "ROLE_CHANGE": "역할 변경",
+        "EQUITY": "형평성 조정",
+        "EQUITY_ADJUSTMENT": "형평성 조정",
+        "PERFORMANCE": "성과 기반",
+        "OTHER": "기타"
+      },
+      "table": {
+        "employee": "직원",
+        "reason": "사유",
+        "salary": "현재 → 제안 급여",
+        "changePct": "변동%",
+        "status": "상태",
+        "initiator": "요청자",
+        "date": "날짜"
+      },
+      "section": {
+        "employee": "대상 직원",
+        "adjustment": "조정 정보",
+        "justification": "사유 및 근거",
+        "compensation": "보상 정보",
+        "approvalWorkflow": "승인 워크플로우",
+        "rejectForm": "반려 사유 입력"
+      },
+      "detail": {
+        "name": "이름",
+        "department": "부서",
+        "grade": "직급",
+        "currentSalary": "현재 급여",
+        "proposedSalary": "제안 급여",
+        "changePct": "변동률",
+        "effectiveDate": "시행일",
+        "reasonCategory": "사유 카테고리:",
+        "notFound": "요청을 찾을 수 없습니다.",
+        "initiator": "요청자: {name}",
+        "createdAt": "생성일: {date}",
+        "trigger": "자동 트리거: {source}"
+      },
+      "validation": {
+        "selectEmployee": "직원을 선택해 주세요",
+        "selectReason": "사유를 선택해 주세요",
+        "enterSalary": "제안 급여를 입력해 주세요",
+        "selectDate": "시행일을 선택해 주세요"
+      },
+      "approval": {
+        "timeline": "승인 이력",
+        "step": "{stepNumber}단계",
+        "pending": "대기 중",
+        "approved": "승인됨",
+        "rejected": "반려됨",
+        "autoApproved": "자동 승인",
+        "noComment": "코멘트 없음",
+        "skipped": "건너뜀"
+      },
+      "toast": {
+        "created": "요청이 생성되었습니다",
+        "submitted": "승인 요청되었습니다",
+        "approved": "요청이 승인되었습니다",
+        "rejected": "요청이 반려되었습니다",
+        "cancelled": "요청이 취소되었습니다",
+        "revised": "요청이 수정 상태로 전환되었습니다",
+        "loadError": "요청 목록을 불러오지 못했습니다",
+        "salaryDrift": "기존 연봉 정보가 변경되었습니다. 요청서를 갱신하세요.",
+        "saveFailed": "저장 실패",
+        "actionFailed": "처리 실패",
+        "retryMessage": "다시 시도해 주세요.",
+        "draftSaved": "초안 저장 완료",
+        "submitComplete": "승인 요청 완료",
+        "approveComplete": "승인 완료",
+        "rejectComplete": "반려 처리 완료",
+        "cancelComplete": "취소 완료",
+        "reviseMode": "수정 모드로 전환"
+      },
+      "form": {
+        "employee": "대상 직원",
+        "reasonCategory": "사유 구분",
+        "currentSalary": "현재 기본급",
+        "proposedSalary": "제안 기본급",
+        "proposedSalaryLabel": "제안 급여 (연봉)",
+        "changePct": "변동률",
+        "change": "변동",
+        "effectiveDate": "시행일",
+        "reason": "상세 사유",
+        "compaRatioBefore": "현재 Compa-Ratio",
+        "compaRatioAfter": "제안 Compa-Ratio",
+        "searchEmployee": "직원 검색...",
+        "searchLabel": "직원 검색",
+        "searchPlaceholder": "이름 또는 사번으로 검색...",
+        "searching": "검색 중...",
+        "noResults": "검색 결과가 없습니다",
+        "selectReason": "사유를 선택하세요",
+        "justificationPlaceholder": "조정 사유를 상세히 설명해 주세요...",
+        "rejectPlaceholder": "반려 사유를 입력해 주세요..."
+      },
+      "actions": {
+        "saveDraft": "초안 저장",
+        "submit": "승인 요청",
+        "approve": "승인",
+        "reject": "반려",
+        "cancel": "요청 취소",
+        "cancelAction": "취소",
+        "revise": "수정 후 재제출",
+        "reviseResubmit": "수정 후 재요청",
+        "edit": "수정",
+        "confirmReject": "반려 확인"
+      }
     }
   },
   "payrollPage": {
@@ -5895,6 +6015,7 @@
       "results": "성과 결과",
       "peerReview": "동료 평가",
       "compensation": "보상 관리",
+      "offCycle": "비정기 조정",
       "benefits": "복리후생 관리",
       "quarterlyReview": "분기 리뷰"
     },

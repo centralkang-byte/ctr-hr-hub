@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Edit3, Send, XCircle, CheckCircle2, RotateCcw, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -66,17 +67,6 @@ interface Props {
   requestId: string
 }
 
-// ─── Constants ──────────────────────────────────────────────
-
-const REASON_LABEL: Record<ReasonCategory, string> = {
-  PROMOTION: '승진', // TODO: i18n
-  RETENTION: '리텐션', // TODO: i18n
-  EQUITY_ADJUSTMENT: '형평성 조정', // TODO: i18n
-  ROLE_CHANGE: '역할 변경', // TODO: i18n
-  MARKET_ADJUSTMENT: '시장 조정', // TODO: i18n
-  PERFORMANCE: '성과 기반', // TODO: i18n
-}
-
 // ─── Helpers ────────────────────────────────────────────────
 
 function computeCompaRatio(salary: number, midSalary: number): number {
@@ -96,6 +86,7 @@ function formatDate(dateStr: string): string {
 
 export default function OffCycleDetailClient({ user, requestId }: Props) {
   const router = useRouter()
+  const t = useTranslations('compensation')
 
   const [detail, setDetail] = useState<OffCycleDetail | null>(null)
   const [loading, setLoading] = useState(true)
@@ -112,14 +103,14 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
       setDetail(res.data)
     } catch (err) {
       toast({
-        title: '데이터 로드 실패', // TODO: i18n
-        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        title: t('offCycle.toast.loadError'),
+        description: err instanceof Error ? err.message : t('offCycle.toast.retryMessage'),
         variant: 'destructive',
       })
     } finally {
       setLoading(false)
     }
-  }, [requestId])
+  }, [requestId, t])
 
   useEffect(() => {
     fetchDetail()
@@ -139,11 +130,11 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
       await apiClient.post(`/api/v1/compensation/off-cycle/${requestId}/action`, body)
 
       const messages: Record<string, string> = {
-        submit: '승인 요청 완료', // TODO: i18n
-        approve: '승인 완료', // TODO: i18n
-        reject: '반려 처리 완료', // TODO: i18n
-        cancel: '취소 완료', // TODO: i18n
-        revise: '수정 모드로 전환', // TODO: i18n
+        submit: t('offCycle.toast.submitComplete'),
+        approve: t('offCycle.toast.approveComplete'),
+        reject: t('offCycle.toast.rejectComplete'),
+        cancel: t('offCycle.toast.cancelComplete'),
+        revise: t('offCycle.toast.reviseMode'),
       }
       toast({ title: messages[action] ?? '처리 완료' })
 
@@ -156,8 +147,8 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
       setRejectComment('')
     } catch (err) {
       toast({
-        title: '처리 실패', // TODO: i18n
-        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        title: t('offCycle.toast.actionFailed'),
+        description: err instanceof Error ? err.message : t('offCycle.toast.retryMessage'),
         variant: 'destructive',
       })
     } finally {
@@ -186,7 +177,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
   if (!detail) {
     return (
       <div className="p-6">
-        <p className="text-muted-foreground">요청을 찾을 수 없습니다.</p> {/* TODO: i18n */}
+        <p className="text-muted-foreground">{t('offCycle.detail.notFound')}</p>
       </div>
     )
   }
@@ -210,10 +201,10 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
           </Button>
           <div>
             <nav className="text-xs text-muted-foreground mb-1">
-              보상 / Off-Cycle 조정 / 상세 {/* TODO: i18n */}
+              {t('offCycle.breadcrumb.detail')}
             </nav>
             <h1 className="text-2xl font-bold text-foreground">
-              Off-Cycle 보상 요청 {/* TODO: i18n */}
+              {t('offCycle.title')}
             </h1>
           </div>
         </div>
@@ -225,7 +216,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
         <div className="flex items-center gap-2 rounded-2xl bg-[#EEF2FF] p-4">
           <Zap className="h-4 w-4 text-primary" />
           <span className="text-sm text-foreground">
-            자동 트리거: {detail.triggerSource} {/* TODO: i18n */}
+            {t('offCycle.detail.trigger', { source: detail.triggerSource })}
           </span>
         </div>
       )}
@@ -233,19 +224,19 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
       {/* ─── 직원 정보 카드 ─── */}
       <div className="rounded-2xl bg-surface-container-lowest shadow-sm p-6 space-y-3">
         <h2 className="text-lg font-semibold text-foreground">
-          대상 직원 {/* TODO: i18n */}
+          {t('offCycle.section.employee')}
         </h2>
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <p className="text-xs text-muted-foreground">이름</p> {/* TODO: i18n */}
+            <p className="text-xs text-muted-foreground">{t('offCycle.detail.name')}</p>
             <p className="font-medium text-foreground">{detail.employeeName}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">부서</p> {/* TODO: i18n */}
+            <p className="text-xs text-muted-foreground">{t('offCycle.detail.department')}</p>
             <p className="font-medium text-foreground">{detail.department}</p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">직급</p> {/* TODO: i18n */}
+            <p className="text-xs text-muted-foreground">{t('offCycle.detail.grade')}</p>
             <p className="font-medium text-foreground">{detail.jobGrade}</p>
           </div>
         </div>
@@ -254,24 +245,24 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
       {/* ─── 보상 정보 카드 ─── */}
       <div className="rounded-2xl bg-surface-container-lowest shadow-sm p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">
-          보상 정보 {/* TODO: i18n */}
+          {t('offCycle.section.compensation')}
         </h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <p className="text-xs text-muted-foreground">현재 급여</p> {/* TODO: i18n */}
+            <p className="text-xs text-muted-foreground">{t('offCycle.detail.currentSalary')}</p>
             <p className="font-mono tabular-nums font-semibold text-foreground">
               {formatCurrency(detail.currentSalary)}
             </p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">제안 급여</p> {/* TODO: i18n */}
+            <p className="text-xs text-muted-foreground">{t('offCycle.detail.proposedSalary')}</p>
             <p className="font-mono tabular-nums font-semibold text-foreground">
               {formatCurrency(detail.proposedSalary)}
             </p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">변동률</p> {/* TODO: i18n */}
+            <p className="text-xs text-muted-foreground">{t('offCycle.detail.changePct')}</p>
             <p className={cn(
               'font-mono tabular-nums font-semibold',
               detail.changePct > 0 ? 'text-[#059669]' : detail.changePct < 0 ? 'text-[#DC2626]' : 'text-muted-foreground',
@@ -280,7 +271,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
             </p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground">시행일</p> {/* TODO: i18n */}
+            <p className="text-xs text-muted-foreground">{t('offCycle.detail.effectiveDate')}</p>
             <p className="font-mono tabular-nums font-medium text-foreground">
               {formatDate(detail.effectiveDate)}
             </p>
@@ -291,14 +282,14 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
         {currentCompaRatio !== null && proposedCompaRatio !== null && (
           <div className="flex items-center gap-6 pt-2">
             <div>
-              <p className="text-xs text-muted-foreground">현재 Compa-Ratio</p> {/* TODO: i18n */}
+              <p className="text-xs text-muted-foreground">{t('offCycle.form.compaRatioBefore')}</p>
               <p className="font-mono tabular-nums font-semibold text-foreground">
                 {currentCompaRatio.toFixed(1)}%
               </p>
             </div>
             <span className="text-muted-foreground">→</span>
             <div>
-              <p className="text-xs text-muted-foreground">제안 Compa-Ratio</p> {/* TODO: i18n */}
+              <p className="text-xs text-muted-foreground">{t('offCycle.form.compaRatioAfter')}</p>
               <p className={cn(
                 'font-mono tabular-nums font-semibold',
                 proposedCompaRatio > 120 ? 'text-[#DC2626]' : 'text-foreground',
@@ -323,9 +314,9 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
         {/* 사유 */}
         <div className="pt-2 space-y-2">
           <div className="flex items-center gap-2">
-            <p className="text-xs text-muted-foreground">사유 카테고리:</p> {/* TODO: i18n */}
+            <p className="text-xs text-muted-foreground">{t('offCycle.detail.reasonCategory')}</p>
             <span className="inline-flex items-center rounded-full bg-surface-container-low px-2.5 py-0.5 text-xs font-medium text-foreground">
-              {REASON_LABEL[detail.reasonCategory] ?? detail.reasonCategory}
+              {t(`offCycle.reason.${detail.reasonCategory}`)}
             </span>
           </div>
           {detail.justification && (
@@ -339,7 +330,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
       {/* ─── 반려 사유 ─── */}
       {detail.rejectionComment && detail.status === 'REJECTED' && (
         <div className="rounded-2xl bg-[#FEF2F2] p-4 space-y-1">
-          <p className="text-sm font-medium text-[#DC2626]">반려 사유</p> {/* TODO: i18n */}
+          <p className="text-sm font-medium text-[#DC2626]">{t('offCycle.rejectReason')}</p>
           <p className="text-sm text-foreground">{detail.rejectionComment}</p>
         </div>
       )}
@@ -348,7 +339,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
       {detail.approvalSteps.length > 0 && (
         <div className="rounded-2xl bg-surface-container-lowest shadow-sm p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">
-            승인 워크플로우 {/* TODO: i18n */}
+            {t('offCycle.section.approvalWorkflow')}
           </h2>
           <OffCycleApprovalTimeline steps={detail.approvalSteps} />
         </div>
@@ -358,10 +349,10 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
       {showRejectForm && (
         <div className="rounded-2xl bg-surface-container-lowest shadow-sm p-6 space-y-4">
           <h2 className="text-lg font-semibold text-foreground">
-            반려 사유 입력 {/* TODO: i18n */}
+            {t('offCycle.section.rejectForm')}
           </h2>
           <Textarea
-            placeholder="반려 사유를 입력해 주세요..." // TODO: i18n
+            placeholder={t('offCycle.form.rejectPlaceholder')}
             value={rejectComment}
             onChange={(e) => setRejectComment(e.target.value)}
             rows={3}
@@ -376,7 +367,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
               }}
               className="rounded-xl"
             >
-              취소 {/* TODO: i18n */}
+              {t('offCycle.actions.cancelAction')}
             </Button>
             <Button
               variant="destructive"
@@ -385,7 +376,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
               className="rounded-xl"
             >
               <XCircle className="mr-1.5 h-4 w-4" />
-              반려 확인 {/* TODO: i18n */}
+              {t('offCycle.actions.confirmReject')}
             </Button>
           </div>
         </div>
@@ -403,7 +394,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
               className="rounded-xl"
             >
               <XCircle className="mr-1.5 h-4 w-4" />
-              취소 {/* TODO: i18n */}
+              {t('offCycle.actions.cancelAction')}
             </Button>
             <Button
               variant="outline"
@@ -412,7 +403,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
               className="rounded-xl"
             >
               <Edit3 className="mr-1.5 h-4 w-4" />
-              수정 {/* TODO: i18n */}
+              {t('offCycle.actions.edit')}
             </Button>
             <Button
               onClick={() => handleAction('submit')}
@@ -421,7 +412,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
               size="lg"
             >
               <Send className="mr-1.5 h-4 w-4" />
-              승인 요청 {/* TODO: i18n */}
+              {t('offCycle.actions.submit')}
             </Button>
           </>
         )}
@@ -436,7 +427,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
               className="rounded-xl text-[#DC2626] border-[#DC2626]/30 hover:bg-[#FEF2F2]"
             >
               <XCircle className="mr-1.5 h-4 w-4" />
-              반려 {/* TODO: i18n */}
+              {t('offCycle.actions.reject')}
             </Button>
             <Button
               onClick={() => handleAction('approve')}
@@ -445,7 +436,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
               size="lg"
             >
               <CheckCircle2 className="mr-1.5 h-4 w-4" />
-              승인 {/* TODO: i18n */}
+              {t('offCycle.actions.approve')}
             </Button>
           </>
         )}
@@ -460,7 +451,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
               className="rounded-xl"
             >
               <XCircle className="mr-1.5 h-4 w-4" />
-              취소 {/* TODO: i18n */}
+              {t('offCycle.actions.cancelAction')}
             </Button>
             <Button
               onClick={() => handleAction('revise')}
@@ -469,7 +460,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
               size="lg"
             >
               <RotateCcw className="mr-1.5 h-4 w-4" />
-              수정 후 재요청 {/* TODO: i18n */}
+              {t('offCycle.actions.reviseResubmit')}
             </Button>
           </>
         )}
@@ -477,8 +468,8 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
 
       {/* ─── 메타 정보 ─── */}
       <div className="flex items-center gap-4 text-xs text-muted-foreground pt-2">
-        <span>요청자: {detail.initiatorName}</span> {/* TODO: i18n */}
-        <span>생성일: {formatDate(detail.createdAt)}</span> {/* TODO: i18n */}
+        <span>{t('offCycle.detail.initiator', { name: detail.initiatorName })}</span>
+        <span>{t('offCycle.detail.createdAt', { date: formatDate(detail.createdAt) })}</span>
       </div>
     </div>
   )

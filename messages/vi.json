@@ -5395,7 +5395,23 @@
       "rejectReason": "Lý do từ chối",
       "rejectReasonPlaceholder": "Nhập lý do từ chối",
       "approveComment": "Nhận xét (tùy chọn)",
-      "duplicateGuard": "Đã có yêu cầu đang xử lý cho nhân viên này"
+      "duplicateGuard": "Đã có yêu cầu đang xử lý cho nhân viên này",
+      "description": "Quản lý yêu cầu điều chỉnh lương ngoài chu kỳ thường.",
+      "searchPlaceholder": "Tìm kiếm nhân viên...",
+      "filterAllReasons": "Tất cả lý do",
+      "newRequestTitle": "Yêu cầu điều chỉnh lương ngoài kỳ mới",
+      "emptyDescription": "Không có yêu cầu phù hợp. Hãy thay đổi bộ lọc hoặc tạo yêu cầu mới.",
+      "emptyAction": "Tạo yêu cầu mới",
+      "breadcrumb": { "list": "Lương / Ngoài kỳ", "new": "Lương / Ngoài kỳ / Mới", "detail": "Lương / Ngoài kỳ / Chi tiết" },
+      "reason": { "PROMOTION": "Thăng chức", "RETENTION": "Giữ chân", "MARKET_ADJUSTMENT": "Điều chỉnh thị trường", "ROLE_CHANGE": "Thay đổi vai trò", "EQUITY": "Điều chỉnh công bằng", "EQUITY_ADJUSTMENT": "Điều chỉnh công bằng", "PERFORMANCE": "Dựa trên hiệu suất", "OTHER": "Khác" },
+      "table": { "employee": "Nhân viên", "reason": "Lý do", "salary": "Hiện tại → Đề xuất", "changePct": "Thay đổi %", "status": "Trạng thái", "initiator": "Người yêu cầu", "date": "Ngày" },
+      "section": { "employee": "Nhân viên mục tiêu", "adjustment": "Thông tin điều chỉnh", "justification": "Lý do và căn cứ", "compensation": "Thông tin lương", "approvalWorkflow": "Quy trình phê duyệt", "rejectForm": "Nhập lý do từ chối" },
+      "detail": { "name": "Tên", "department": "Phòng ban", "grade": "Cấp bậc", "currentSalary": "Lương hiện tại", "proposedSalary": "Lương đề xuất", "changePct": "Tỷ lệ thay đổi", "effectiveDate": "Ngày hiệu lực", "reasonCategory": "Danh mục lý do:", "notFound": "Không tìm thấy yêu cầu.", "initiator": "Người yêu cầu: {name}", "createdAt": "Ngày tạo: {date}", "trigger": "Tự động kích hoạt: {source}" },
+      "validation": { "selectEmployee": "Vui lòng chọn nhân viên", "selectReason": "Vui lòng chọn lý do", "enterSalary": "Vui lòng nhập lương đề xuất", "selectDate": "Vui lòng chọn ngày hiệu lực" },
+      "approval": { "timeline": "Lịch sử phê duyệt", "step": "Bước {stepNumber}", "pending": "Chờ xử lý", "approved": "Đã phê duyệt", "rejected": "Đã từ chối", "autoApproved": "Tự động phê duyệt", "noComment": "Không có nhận xét", "skipped": "Đã bỏ qua" },
+      "toast": { "created": "Đã tạo yêu cầu", "submitted": "Đã gửi phê duyệt", "approved": "Yêu cầu đã được phê duyệt", "rejected": "Yêu cầu đã bị từ chối", "cancelled": "Yêu cầu đã bị hủy", "revised": "Yêu cầu đã chuyển sang chế độ sửa", "loadError": "Tải thất bại", "salaryDrift": "Lương cơ bản đã thay đổi. Vui lòng cập nhật.", "saveFailed": "Lưu thất bại", "actionFailed": "Thao tác thất bại", "retryMessage": "Vui lòng thử lại.", "draftSaved": "Đã lưu bản nháp", "submitComplete": "Đã gửi phê duyệt", "approveComplete": "Đã phê duyệt", "rejectComplete": "Đã từ chối", "cancelComplete": "Đã hủy", "reviseMode": "Đã chuyển sang chế độ sửa" },
+      "form": { "employee": "Nhân viên mục tiêu", "reasonCategory": "Danh mục lý do", "currentSalary": "Lương cơ bản hiện tại", "proposedSalary": "Lương cơ bản đề xuất", "proposedSalaryLabel": "Lương đề xuất (năm)", "changePct": "Tỷ lệ thay đổi", "change": "Thay đổi", "effectiveDate": "Ngày hiệu lực", "reason": "Lý do chi tiết", "compaRatioBefore": "Compa-Ratio hiện tại", "compaRatioAfter": "Compa-Ratio đề xuất", "searchEmployee": "Tìm nhân viên...", "searchLabel": "Tìm nhân viên", "searchPlaceholder": "Tìm theo tên hoặc mã NV...", "searching": "Đang tìm...", "noResults": "Không có kết quả", "selectReason": "Chọn lý do", "justificationPlaceholder": "Vui lòng mô tả chi tiết lý do điều chỉnh...", "rejectPlaceholder": "Nhập lý do từ chối..." },
+      "actions": { "saveDraft": "Lưu nháp", "submit": "Gửi phê duyệt", "approve": "Phê duyệt", "reject": "Từ chối", "cancel": "Hủy yêu cầu", "cancelAction": "Hủy", "revise": "Sửa và gửi lại", "reviseResubmit": "Sửa và gửi lại", "edit": "Sửa", "confirmReject": "Xác nhận từ chối" }
     }
   },
   "payrollPage": {
@@ -5967,6 +5983,7 @@
       "results": "Hiệu suất Kết quảs",
       "peerReview": "Peer Đánh giá",
       "compensation": "Compensation",
+      "offCycle": "Điều chỉnh ngoài kỳ",
       "benefits": "Benefits Quản trị viên",
       "quarterlyReview": "Đánh giá quý"
     },

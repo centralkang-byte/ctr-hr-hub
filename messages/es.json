@@ -5395,7 +5395,23 @@
       "rejectReason": "Motivo de rechazo",
       "rejectReasonPlaceholder": "Ingrese el motivo",
       "approveComment": "Comentario (opcional)",
-      "duplicateGuard": "Ya existe una solicitud activa para este empleado"
+      "duplicateGuard": "Ya existe una solicitud activa para este empleado",
+      "description": "Gestione solicitudes de ajuste salarial individual fuera del ciclo regular.",
+      "searchPlaceholder": "Buscar empleado...",
+      "filterAllReasons": "Todos los motivos",
+      "newRequestTitle": "Nueva solicitud de ajuste fuera de ciclo",
+      "emptyDescription": "No hay solicitudes que coincidan. Cambie los filtros o cree una nueva solicitud.",
+      "emptyAction": "Crear nueva solicitud",
+      "breadcrumb": { "list": "Compensación / Fuera de ciclo", "new": "Compensación / Fuera de ciclo / Nueva", "detail": "Compensación / Fuera de ciclo / Detalle" },
+      "reason": { "PROMOTION": "Promoción", "RETENTION": "Retención", "MARKET_ADJUSTMENT": "Ajuste de mercado", "ROLE_CHANGE": "Cambio de rol", "EQUITY": "Ajuste de equidad", "EQUITY_ADJUSTMENT": "Ajuste de equidad", "PERFORMANCE": "Basado en desempeño", "OTHER": "Otro" },
+      "table": { "employee": "Empleado", "reason": "Motivo", "salary": "Actual → Propuesto", "changePct": "Cambio %", "status": "Estado", "initiator": "Solicitante", "date": "Fecha" },
+      "section": { "employee": "Empleado objetivo", "adjustment": "Información del ajuste", "justification": "Justificación", "compensation": "Información salarial", "approvalWorkflow": "Flujo de aprobación", "rejectForm": "Motivo del rechazo" },
+      "detail": { "name": "Nombre", "department": "Departamento", "grade": "Grado", "currentSalary": "Salario actual", "proposedSalary": "Salario propuesto", "changePct": "Variación %", "effectiveDate": "Fecha efectiva", "reasonCategory": "Categoría:", "notFound": "Solicitud no encontrada.", "initiator": "Solicitante: {name}", "createdAt": "Creado: {date}", "trigger": "Auto-trigger: {source}" },
+      "validation": { "selectEmployee": "Seleccione un empleado", "selectReason": "Seleccione un motivo", "enterSalary": "Ingrese el salario propuesto", "selectDate": "Seleccione la fecha efectiva" },
+      "approval": { "timeline": "Historial de aprobación", "step": "Paso {stepNumber}", "pending": "Pendiente", "approved": "Aprobado", "rejected": "Rechazado", "autoApproved": "Auto-aprobado", "noComment": "Sin comentario", "skipped": "Omitido" },
+      "toast": { "created": "Solicitud creada", "submitted": "Enviada para aprobación", "approved": "Solicitud aprobada", "rejected": "Solicitud rechazada", "cancelled": "Solicitud cancelada", "revised": "Solicitud reabierta para revisión", "loadError": "Error al cargar", "salaryDrift": "El salario base ha cambiado. Actualice la solicitud.", "saveFailed": "Error al guardar", "actionFailed": "Error en la acción", "retryMessage": "Intente de nuevo.", "draftSaved": "Borrador guardado", "submitComplete": "Enviada para aprobación", "approveComplete": "Aprobada", "rejectComplete": "Rechazada", "cancelComplete": "Cancelada", "reviseMode": "Cambiado a modo edición" },
+      "form": { "employee": "Empleado objetivo", "reasonCategory": "Categoría del motivo", "currentSalary": "Salario base actual", "proposedSalary": "Salario base propuesto", "proposedSalaryLabel": "Salario propuesto (anual)", "changePct": "Variación %", "change": "Variación", "effectiveDate": "Fecha efectiva", "reason": "Justificación detallada", "compaRatioBefore": "Compa-Ratio actual", "compaRatioAfter": "Compa-Ratio propuesto", "searchEmployee": "Buscar empleado...", "searchLabel": "Buscar empleado", "searchPlaceholder": "Buscar por nombre o ID...", "searching": "Buscando...", "noResults": "Sin resultados", "selectReason": "Seleccione motivo", "justificationPlaceholder": "Describa en detalle el motivo del ajuste...", "rejectPlaceholder": "Ingrese el motivo del rechazo..." },
+      "actions": { "saveDraft": "Guardar borrador", "submit": "Enviar para aprobación", "approve": "Aprobar", "reject": "Rechazar", "cancel": "Cancelar solicitud", "cancelAction": "Cancelar", "revise": "Revisar y reenviar", "reviseResubmit": "Revisar y reenviar", "edit": "Editar", "confirmReject": "Confirmar rechazo" }
     }
   },
   "payrollPage": {
@@ -5967,6 +5983,7 @@
       "results": "Rendimiento Resultados",
       "peerReview": "Peer Revisión",
       "compensation": "Compensation",
+      "offCycle": "Ajuste fuera de ciclo",
       "benefits": "Benefits Administrador",
       "quarterlyReview": "Revisión trimestral"
     },

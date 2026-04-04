@@ -547,6 +547,14 @@ export const NAVIGATION: NavSection[] = [
         module: MODULE.COMPENSATION,
       },
       {
+        key: 'off-cycle',
+        labelKey: 'nav.performance.offCycle',
+        label: '비정기 조정',
+        href: '/compensation/off-cycle',
+        icon: Sparkles,
+        module: MODULE.COMPENSATION,
+      },
+      {
         key: 'benefits-admin',
         labelKey: 'nav.performance.benefits',
         label: '복리후생 관리',

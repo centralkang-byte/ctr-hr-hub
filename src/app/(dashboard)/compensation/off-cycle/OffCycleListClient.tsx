@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { Plus, Filter, ArrowUpDown, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -45,35 +46,6 @@ interface Props {
   user: SessionUser
 }
 
-// ─── Constants ──────────────────────────────────────────────
-
-const STATUS_TABS: { value: StatusTab; label: string }[] = [
-  { value: 'ALL', label: '전체' }, // TODO: i18n
-  { value: 'DRAFT', label: '초안' }, // TODO: i18n
-  { value: 'PENDING_APPROVAL', label: '승인 대기' }, // TODO: i18n
-  { value: 'APPROVED', label: '승인' }, // TODO: i18n
-  { value: 'REJECTED', label: '반려' }, // TODO: i18n
-]
-
-const REASON_OPTIONS: { value: ReasonCategory | 'ALL'; label: string }[] = [
-  { value: 'ALL', label: '전체 사유' }, // TODO: i18n
-  { value: 'PROMOTION', label: '승진' }, // TODO: i18n
-  { value: 'RETENTION', label: '리텐션' }, // TODO: i18n
-  { value: 'EQUITY_ADJUSTMENT', label: '형평성 조정' }, // TODO: i18n
-  { value: 'ROLE_CHANGE', label: '역할 변경' }, // TODO: i18n
-  { value: 'MARKET_ADJUSTMENT', label: '시장 조정' }, // TODO: i18n
-  { value: 'PERFORMANCE', label: '성과 기반' }, // TODO: i18n
-]
-
-const REASON_LABEL: Record<ReasonCategory, string> = {
-  PROMOTION: '승진', // TODO: i18n
-  RETENTION: '리텐션', // TODO: i18n
-  EQUITY_ADJUSTMENT: '형평성 조정', // TODO: i18n
-  ROLE_CHANGE: '역할 변경', // TODO: i18n
-  MARKET_ADJUSTMENT: '시장 조정', // TODO: i18n
-  PERFORMANCE: '성과 기반', // TODO: i18n
-}
-
 // ─── Component ──────────────────────────────────────────────
 
 export default function OffCycleListClient({ user }: Props) {
@@ -88,6 +60,26 @@ export default function OffCycleListClient({ user }: Props) {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
 
   const canCreate = ['SUPER_ADMIN', 'HR_ADMIN', 'MANAGER'].includes(user.role)
+
+  const t = useTranslations('compensation')
+
+  const STATUS_TABS: { value: StatusTab; label: string }[] = [
+    { value: 'ALL', label: t('offCycle.all') },
+    { value: 'DRAFT', label: t('offCycle.status.DRAFT') },
+    { value: 'PENDING_APPROVAL', label: t('offCycle.status.PENDING_APPROVAL') },
+    { value: 'APPROVED', label: t('offCycle.status.APPROVED') },
+    { value: 'REJECTED', label: t('offCycle.status.REJECTED') },
+  ]
+
+  const REASON_OPTIONS: { value: ReasonCategory | 'ALL'; label: string }[] = [
+    { value: 'ALL', label: t('offCycle.filterAllReasons') },
+    { value: 'PROMOTION', label: t('offCycle.reason.PROMOTION') },
+    { value: 'RETENTION', label: t('offCycle.reason.RETENTION') },
+    { value: 'EQUITY_ADJUSTMENT', label: t('offCycle.reason.EQUITY_ADJUSTMENT') },
+    { value: 'ROLE_CHANGE', label: t('offCycle.reason.ROLE_CHANGE') },
+    { value: 'MARKET_ADJUSTMENT', label: t('offCycle.reason.MARKET_ADJUSTMENT') },
+    { value: 'PERFORMANCE', label: t('offCycle.reason.PERFORMANCE') },
+  ]
 
   const fetchRequests = useCallback(async () => {
     try {
@@ -108,14 +100,14 @@ export default function OffCycleListClient({ user }: Props) {
       setRequests(res.data)
     } catch (err) {
       toast({
-        title: '목록 로드 실패', // TODO: i18n
-        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        title: t('offCycle.toast.loadError'),
+        description: err instanceof Error ? err.message : t('offCycle.toast.retryMessage'),
         variant: 'destructive',
       })
     } finally {
       setLoading(false)
     }
-  }, [statusTab, reasonFilter, searchQuery, sortField, sortDir])
+  }, [statusTab, reasonFilter, searchQuery, sortField, sortDir, t])
 
   useEffect(() => {
     fetchRequests()
@@ -149,13 +141,13 @@ export default function OffCycleListClient({ user }: Props) {
       <div className="flex items-center justify-between">
         <div>
           <nav className="text-xs text-muted-foreground mb-1">
-            보상 / Off-Cycle 조정 {/* TODO: i18n */}
+            {t('offCycle.breadcrumb.list')}
           </nav>
           <h1 className="text-2xl font-bold text-foreground">
-            Off-Cycle 보상 조정 {/* TODO: i18n */}
+            {t('offCycle.title')}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            정기 보상 외 개별 급여 조정 요청을 관리합니다. {/* TODO: i18n */}
+            {t('offCycle.description')}
           </p>
         </div>
         {canCreate && (
@@ -165,7 +157,7 @@ export default function OffCycleListClient({ user }: Props) {
             size="lg"
           >
             <Plus className="mr-1.5 h-4 w-4" />
-            새 요청 {/* TODO: i18n */}
+            {t('offCycle.newRequest')}
           </Button>
         )}
       </div>
@@ -189,7 +181,7 @@ export default function OffCycleListClient({ user }: Props) {
         <div className="relative flex-1 min-w-[240px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="직원 이름 검색..." // TODO: i18n
+            placeholder={t('offCycle.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 rounded-lg"
@@ -218,12 +210,12 @@ export default function OffCycleListClient({ user }: Props) {
         <TableSkeleton rows={8} cols={7} />
       ) : requests.length === 0 ? (
         <EmptyState
-          title="Off-Cycle 요청이 없습니다" // TODO: i18n
-          description="조건에 맞는 요청이 없습니다. 필터를 변경하거나 새 요청을 생성하세요." // TODO: i18n
+          title={t('offCycle.empty')}
+          description={t('offCycle.emptyDescription')}
           action={
             canCreate
               ? {
-                  label: '새 요청 생성', // TODO: i18n
+                  label: t('offCycle.emptyAction'),
                   onClick: () => router.push('/compensation/off-cycle/new'),
                 }
               : undefined
@@ -235,35 +227,35 @@ export default function OffCycleListClient({ user }: Props) {
             <thead>
               <tr className="bg-surface-container-high/50">
                 <th className="text-left px-5 py-3 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  직원 {/* TODO: i18n */}
+                  {t('offCycle.table.employee')}
                 </th>
                 <th className="text-left px-5 py-3 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  사유 {/* TODO: i18n */}
+                  {t('offCycle.table.reason')}
                 </th>
                 <th className="text-right px-5 py-3 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  현재 → 제안 급여 {/* TODO: i18n */}
+                  {t('offCycle.table.salary')}
                 </th>
                 <th
                   className="text-right px-5 py-3 text-2xs font-semibold uppercase tracking-widest text-muted-foreground cursor-pointer select-none"
                   onClick={() => handleSort('changePct')}
                 >
                   <span className="inline-flex items-center gap-1">
-                    변동% {/* TODO: i18n */}
+                    {t('offCycle.table.changePct')}
                     <ArrowUpDown className="h-3 w-3" />
                   </span>
                 </th>
                 <th className="text-center px-5 py-3 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  상태 {/* TODO: i18n */}
+                  {t('offCycle.table.status')}
                 </th>
                 <th className="text-left px-5 py-3 text-2xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  요청자 {/* TODO: i18n */}
+                  {t('offCycle.table.initiator')}
                 </th>
                 <th
                   className="text-right px-5 py-3 text-2xs font-semibold uppercase tracking-widest text-muted-foreground cursor-pointer select-none"
                   onClick={() => handleSort('createdAt')}
                 >
                   <span className="inline-flex items-center gap-1">
-                    날짜 {/* TODO: i18n */}
+                    {t('offCycle.table.date')}
                     <ArrowUpDown className="h-3 w-3" />
                   </span>
                 </th>
@@ -282,7 +274,7 @@ export default function OffCycleListClient({ user }: Props) {
                   </td>
                   <td className="px-5 py-3">
                     <span className="inline-flex items-center rounded-full bg-surface-container-low px-2 py-0.5 text-xs font-medium text-foreground">
-                      {REASON_LABEL[req.reasonCategory] ?? req.reasonCategory}
+                      {t(`offCycle.reason.${req.reasonCategory}`)}
                     </span>
                   </td>
                   <td className="px-5 py-3 text-right font-mono tabular-nums text-foreground">

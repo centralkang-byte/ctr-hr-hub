@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, Save, Send, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -41,17 +42,6 @@ interface Props {
   user: SessionUser
 }
 
-// ─── Constants ──────────────────────────────────────────────
-
-const REASON_OPTIONS: { value: ReasonCategory; label: string }[] = [
-  { value: 'PROMOTION', label: '승진' }, // TODO: i18n
-  { value: 'RETENTION', label: '리텐션' }, // TODO: i18n
-  { value: 'EQUITY_ADJUSTMENT', label: '형평성 조정' }, // TODO: i18n
-  { value: 'ROLE_CHANGE', label: '역할 변경' }, // TODO: i18n
-  { value: 'MARKET_ADJUSTMENT', label: '시장 조정' }, // TODO: i18n
-  { value: 'PERFORMANCE', label: '성과 기반' }, // TODO: i18n
-]
-
 // ─── Helpers ────────────────────────────────────────────────
 
 function computeCompaRatio(salary: number, midSalary: number): number {
@@ -64,6 +54,7 @@ function computeCompaRatio(salary: number, midSalary: number): number {
 export default function OffCycleNewClient({ user: _user }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const t = useTranslations('compensation')
 
   // URL pre-fill params
   const preEmployeeId = searchParams.get('employeeId') ?? ''
@@ -81,6 +72,15 @@ export default function OffCycleNewClient({ user: _user }: Props) {
   const [effectiveDate, setEffectiveDate] = useState<string>('')
   const [justification, setJustification] = useState('')
   const [submitting, setSubmitting] = useState(false)
+
+  const REASON_OPTIONS: { value: ReasonCategory; label: string }[] = [
+    { value: 'PROMOTION', label: t('offCycle.reason.PROMOTION') },
+    { value: 'RETENTION', label: t('offCycle.reason.RETENTION') },
+    { value: 'EQUITY_ADJUSTMENT', label: t('offCycle.reason.EQUITY_ADJUSTMENT') },
+    { value: 'ROLE_CHANGE', label: t('offCycle.reason.ROLE_CHANGE') },
+    { value: 'MARKET_ADJUSTMENT', label: t('offCycle.reason.MARKET_ADJUSTMENT') },
+    { value: 'PERFORMANCE', label: t('offCycle.reason.PERFORMANCE') },
+  ]
 
   // ─── Pre-fill from URL ───
   useEffect(() => {
@@ -139,19 +139,19 @@ export default function OffCycleNewClient({ user: _user }: Props) {
   // ─── Submit ───
   const handleSave = async (submitForApproval: boolean) => {
     if (!selectedEmployee) {
-      toast({ title: '직원을 선택해 주세요', variant: 'destructive' }) // TODO: i18n
+      toast({ title: t('offCycle.validation.selectEmployee'), variant: 'destructive' })
       return
     }
     if (!reasonCategory) {
-      toast({ title: '사유를 선택해 주세요', variant: 'destructive' }) // TODO: i18n
+      toast({ title: t('offCycle.validation.selectReason'), variant: 'destructive' })
       return
     }
     if (!proposed || proposed <= 0) {
-      toast({ title: '제안 급여를 입력해 주세요', variant: 'destructive' }) // TODO: i18n
+      toast({ title: t('offCycle.validation.enterSalary'), variant: 'destructive' })
       return
     }
     if (!effectiveDate) {
-      toast({ title: '시행일을 선택해 주세요', variant: 'destructive' }) // TODO: i18n
+      toast({ title: t('offCycle.validation.selectDate'), variant: 'destructive' })
       return
     }
 
@@ -170,13 +170,13 @@ export default function OffCycleNewClient({ user: _user }: Props) {
         body,
       )
       toast({
-        title: submitForApproval ? '승인 요청 완료' : '초안 저장 완료', // TODO: i18n
+        title: submitForApproval ? t('offCycle.toast.submitComplete') : t('offCycle.toast.draftSaved'),
       })
       router.push(`/compensation/off-cycle/${res.data.id}`)
     } catch (err) {
       toast({
-        title: '저장 실패', // TODO: i18n
-        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        title: t('offCycle.toast.saveFailed'),
+        description: err instanceof Error ? err.message : t('offCycle.toast.retryMessage'),
         variant: 'destructive',
       })
     } finally {
@@ -198,10 +198,10 @@ export default function OffCycleNewClient({ user: _user }: Props) {
         </Button>
         <div>
           <nav className="text-xs text-muted-foreground mb-1">
-            보상 / Off-Cycle 조정 / 새 요청 {/* TODO: i18n */}
+            {t('offCycle.breadcrumb.new')}
           </nav>
           <h1 className="text-2xl font-bold text-foreground">
-            새 Off-Cycle 보상 요청 {/* TODO: i18n */}
+            {t('offCycle.newRequestTitle')}
           </h1>
         </div>
       </div>
@@ -209,18 +209,18 @@ export default function OffCycleNewClient({ user: _user }: Props) {
       {/* ─── 직원 선택 ─── */}
       <div className="rounded-2xl bg-surface-container-lowest shadow-sm p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">
-          대상 직원 {/* TODO: i18n */}
+          {t('offCycle.section.employee')}
         </h2>
 
         <div className="relative">
           <Label htmlFor="employee-search" className="text-sm text-muted-foreground mb-1.5 block">
-            직원 검색 {/* TODO: i18n */}
+            {t('offCycle.form.searchLabel')}
           </Label>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               id="employee-search"
-              placeholder="이름 또는 사번으로 검색..." // TODO: i18n
+              placeholder={t('offCycle.form.searchPlaceholder')}
               value={employeeSearch}
               onChange={(e) => handleEmployeeSearch(e.target.value)}
               onFocus={() => searchResults.length > 0 && setShowResults(true)}
@@ -234,11 +234,11 @@ export default function OffCycleNewClient({ user: _user }: Props) {
             <div className="absolute z-10 mt-1 w-full rounded-2xl bg-surface-container-lowest shadow-md border border-border/15 overflow-hidden">
               {searching ? (
                 <div className="px-4 py-3 text-sm text-muted-foreground">
-                  검색 중... {/* TODO: i18n */}
+                  {t('offCycle.form.searching')}
                 </div>
               ) : searchResults.length === 0 ? (
                 <div className="px-4 py-3 text-sm text-muted-foreground">
-                  검색 결과가 없습니다 {/* TODO: i18n */}
+                  {t('offCycle.form.noResults')}
                 </div>
               ) : (
                 searchResults.map((emp) => (
@@ -270,7 +270,7 @@ export default function OffCycleNewClient({ user: _user }: Props) {
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-muted-foreground">현재 급여</p> {/* TODO: i18n */}
+                <p className="text-xs text-muted-foreground">{t('offCycle.detail.currentSalary')}</p>
                 <p className="font-mono tabular-nums font-semibold text-foreground">
                   {formatCurrency(selectedEmployee.currentSalary)}
                 </p>
@@ -292,19 +292,19 @@ export default function OffCycleNewClient({ user: _user }: Props) {
       {/* ─── 조정 정보 ─── */}
       <div className="rounded-2xl bg-surface-container-lowest shadow-sm p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">
-          조정 정보 {/* TODO: i18n */}
+          {t('offCycle.section.adjustment')}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* 사유 카테고리 */}
           <div className="space-y-1.5">
-            <Label className="text-sm text-muted-foreground">사유 카테고리</Label> {/* TODO: i18n */}
+            <Label className="text-sm text-muted-foreground">{t('offCycle.form.reasonCategory')}</Label>
             <Select
               value={reasonCategory}
               onValueChange={(val) => setReasonCategory(val as ReasonCategory)}
             >
               <SelectTrigger className="rounded-lg">
-                <SelectValue placeholder="사유를 선택하세요" /> {/* TODO: i18n */}
+                <SelectValue placeholder={t('offCycle.form.selectReason')} />
               </SelectTrigger>
               <SelectContent>
                 {REASON_OPTIONS.map((opt) => (
@@ -318,7 +318,7 @@ export default function OffCycleNewClient({ user: _user }: Props) {
 
           {/* 시행일 */}
           <div className="space-y-1.5">
-            <Label className="text-sm text-muted-foreground">시행일</Label> {/* TODO: i18n */}
+            <Label className="text-sm text-muted-foreground">{t('offCycle.form.effectiveDate')}</Label>
             <Input
               type="date"
               value={effectiveDate}
@@ -329,7 +329,7 @@ export default function OffCycleNewClient({ user: _user }: Props) {
 
           {/* 제안 급여 */}
           <div className="space-y-1.5">
-            <Label className="text-sm text-muted-foreground">제안 급여 (연봉)</Label> {/* TODO: i18n */}
+            <Label className="text-sm text-muted-foreground">{t('offCycle.form.proposedSalaryLabel')}</Label>
             <Input
               type="number"
               placeholder="0"
@@ -341,7 +341,7 @@ export default function OffCycleNewClient({ user: _user }: Props) {
 
           {/* 변동 표시 */}
           <div className="space-y-1.5">
-            <Label className="text-sm text-muted-foreground">변동</Label> {/* TODO: i18n */}
+            <Label className="text-sm text-muted-foreground">{t('offCycle.form.change')}</Label>
             <div className="flex items-center gap-4 h-10 px-3 rounded-lg bg-surface-container-low">
               {proposed > 0 && currentSalary > 0 ? (
                 <>
@@ -368,7 +368,7 @@ export default function OffCycleNewClient({ user: _user }: Props) {
         {currentCompaRatio !== null && (
           <div className="flex gap-6 pt-2">
             <div>
-              <p className="text-xs text-muted-foreground">현재 Compa-Ratio</p> {/* TODO: i18n */}
+              <p className="text-xs text-muted-foreground">{t('offCycle.form.compaRatioBefore')}</p>
               <p className="font-mono tabular-nums font-semibold text-foreground">
                 {currentCompaRatio.toFixed(1)}%
               </p>
@@ -377,7 +377,7 @@ export default function OffCycleNewClient({ user: _user }: Props) {
               <>
                 <div className="text-muted-foreground flex items-center">→</div>
                 <div>
-                  <p className="text-xs text-muted-foreground">제안 Compa-Ratio</p> {/* TODO: i18n */}
+                  <p className="text-xs text-muted-foreground">{t('offCycle.form.compaRatioAfter')}</p>
                   <p className={cn(
                     'font-mono tabular-nums font-semibold',
                     proposedCompaRatio > 120 ? 'text-[#DC2626]' : 'text-foreground',
@@ -394,10 +394,10 @@ export default function OffCycleNewClient({ user: _user }: Props) {
       {/* ─── 사유 설명 ─── */}
       <div className="rounded-2xl bg-surface-container-lowest shadow-sm p-6 space-y-4">
         <h2 className="text-lg font-semibold text-foreground">
-          사유 및 근거 {/* TODO: i18n */}
+          {t('offCycle.section.justification')}
         </h2>
         <Textarea
-          placeholder="조정 사유를 상세히 설명해 주세요..." // TODO: i18n
+          placeholder={t('offCycle.form.justificationPlaceholder')}
           value={justification}
           onChange={(e) => setJustification(e.target.value)}
           rows={5}
@@ -413,7 +413,7 @@ export default function OffCycleNewClient({ user: _user }: Props) {
           className="rounded-xl"
           disabled={submitting}
         >
-          취소 {/* TODO: i18n */}
+          {t('offCycle.actions.cancelAction')}
         </Button>
         <Button
           variant="outline"
@@ -422,7 +422,7 @@ export default function OffCycleNewClient({ user: _user }: Props) {
           disabled={submitting}
         >
           <Save className="mr-1.5 h-4 w-4" />
-          초안 저장 {/* TODO: i18n */}
+          {t('offCycle.actions.saveDraft')}
         </Button>
         <Button
           onClick={() => handleSave(true)}
@@ -431,7 +431,7 @@ export default function OffCycleNewClient({ user: _user }: Props) {
           disabled={submitting}
         >
           <Send className="mr-1.5 h-4 w-4" />
-          승인 요청 {/* TODO: i18n */}
+          {t('offCycle.actions.submit')}
         </Button>
       </div>
     </div>

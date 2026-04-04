@@ -5,6 +5,7 @@
 // Off-Cycle 보상 요청 상태 뱃지
 // ═══════════════════════════════════════════════════════════
 
+import { useTranslations } from 'next-intl'
 import { STATUS_VARIANT, type StatusVariant } from '@/lib/styles/status'
 import { cn } from '@/lib/utils'
 
@@ -19,18 +20,20 @@ interface OffCycleStatusBadgeProps {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const STATUS_MAP: Record<OffCycleStatus, { variant: StatusVariant; label: string }> = {
-  DRAFT: { variant: 'neutral', label: '초안' }, // TODO: i18n
-  PENDING_APPROVAL: { variant: 'warning', label: '승인 대기' }, // TODO: i18n
-  APPROVED: { variant: 'success', label: '승인' }, // TODO: i18n
-  REJECTED: { variant: 'error', label: '반려' }, // TODO: i18n
-  CANCELLED: { variant: 'neutral', label: '취소' }, // TODO: i18n
+const STATUS_VARIANT_MAP: Record<OffCycleStatus, StatusVariant> = {
+  DRAFT: 'neutral',
+  PENDING_APPROVAL: 'warning',
+  APPROVED: 'success',
+  REJECTED: 'error',
+  CANCELLED: 'neutral',
 }
 
 // ─── Component ──────────────────────────────────────────────
 
 export default function OffCycleStatusBadge({ status, className }: OffCycleStatusBadgeProps) {
-  const { variant, label } = STATUS_MAP[status] ?? STATUS_MAP.DRAFT
+  const t = useTranslations('compensation')
+  const variant = STATUS_VARIANT_MAP[status] ?? 'neutral'
+  const label = t(`offCycle.status.${status}`)
 
   return (
     <span
