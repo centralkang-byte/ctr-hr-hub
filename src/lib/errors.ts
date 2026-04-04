@@ -80,6 +80,7 @@ export function handlePrismaError(error: unknown): AppError {
     case 'P2014':
       return badRequest('관계 제약 조건을 위반했습니다.')
     default:
+      console.error('[handlePrismaError] Unhandled:', prismaError.code, prismaError.message ?? error)
       return new AppError(500, 'INTERNAL_ERROR', '데이터베이스 오류가 발생했습니다.')
   }
 }

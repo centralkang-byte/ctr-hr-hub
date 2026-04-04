@@ -12,8 +12,8 @@ export interface OffCycleRequest {
   status: string
   employeeId: string
   reasonCategory: string
-  currentSalary: number
-  proposedSalary: number
+  currentBaseSalary: number
+  proposedBaseSalary: number
   changePct: number
   effectiveDate: string
 }
@@ -21,10 +21,9 @@ export interface OffCycleRequest {
 interface CreateParams {
   employeeId: string
   reasonCategory?: string
-  proposedSalary?: number
+  proposedBaseSalary?: number
   effectiveDate?: string
-  justification?: string
-  submitForApproval?: boolean
+  reason?: string
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -39,18 +38,20 @@ export async function createOffCycleDraft(
   request: APIRequestContext,
   params: CreateParams,
 ): Promise<OffCycleRequest> {
-  const salary = params.proposedSalary ?? 50_000_000 + (Date.now() % 100_000)
-  const res = await request.post(BASE_URL, {
-    data: {
-      employeeId: params.employeeId,
-      reasonCategory: params.reasonCategory ?? 'PROMOTION',
-      proposedSalary: salary,
-      effectiveDate: params.effectiveDate ?? '2026-06-01',
-      justification: params.justification ?? 'E2E test off-cycle request',
-      submitForApproval: params.submitForApproval ?? false,
-    },
-  })
+  const salary = params.proposedBaseSalary ?? 50_000_000 + (Date.now() % 100_000)
+  const effectiveDate = params.effectiveDate ?? '2026-06-01T00:00:00.000Z'
+  const postData = {
+    employeeId: params.employeeId,
+    reasonCategory: params.reasonCategory ?? 'PROMOTION',
+    proposedBaseSalary: salary,
+    effectiveDate,
+    reason: params.reason ?? 'E2E test off-cycle request',
+  }
+  const res = await request.post(BASE_URL, { data: postData })
   const body = await res.json()
+  if (res.status() !== 201 && res.status() !== 409) {
+    console.error(`[off-cycle-fixtures] POST failed: ${res.status()}`, JSON.stringify(body).slice(0, 300))
+  }
   if (res.status() === 409) {
     // Duplicate guard — cancel existing and retry
     const listRes = await request.get(BASE_URL, {
@@ -65,16 +66,7 @@ export async function createOffCycleDraft(
     if (existing) {
       await cancelOffCycle(request, existing.id)
       // Retry
-      const retryRes = await request.post(BASE_URL, {
-        data: {
-          employeeId: params.employeeId,
-          reasonCategory: params.reasonCategory ?? 'PROMOTION',
-          proposedSalary: salary,
-          effectiveDate: params.effectiveDate ?? '2026-06-01',
-          justification: params.justification ?? 'E2E test off-cycle request',
-          submitForApproval: params.submitForApproval ?? false,
-        },
-      })
+      const retryRes = await request.post(BASE_URL, { data: postData })
       const retryBody = await retryRes.json()
       return retryBody.data
     }

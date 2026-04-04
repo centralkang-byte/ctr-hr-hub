@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Edit3, Send, XCircle, CheckCircle2, RotateCcw, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -29,25 +29,25 @@ type ReasonCategory = 'PROMOTION' | 'RETENTION' | 'EQUITY_ADJUSTMENT' | 'ROLE_CH
 interface ApprovalStep {
   id: string
   stepNumber: number
-  roleName: string
-  approverName?: string
+  roleRequired: string
+  approverName?: string | null
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'SKIPPED'
-  comment?: string
-  decidedAt?: string
+  comment?: string | null
+  decidedAt?: string | null
 }
 
 interface OffCycleDetail {
   id: string
   employeeId: string
   employeeName: string
-  department: string
-  jobGrade: string
+  department: { id: string; name: string } | null
+  jobGrade: { id: string; name: string } | null
   reasonCategory: ReasonCategory
-  currentSalary: number
-  proposedSalary: number
+  currentBaseSalary: number
+  proposedBaseSalary: number
   changePct: number
   effectiveDate: string
-  justification: string
+  reason: string | null
   status: OffCycleStatus
   initiatorId: string
   initiatorName: string
@@ -58,8 +58,7 @@ interface OffCycleDetail {
     maxSalary: number
   }
   approvalSteps: ApprovalStep[]
-  rejectionComment?: string
-  triggerSource?: string
+  triggerEventType?: string | null
 }
 
 interface Props {
@@ -74,19 +73,20 @@ function computeCompaRatio(salary: number, midSalary: number): number {
   return (salary / midSalary) * 100
 }
 
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  })
-}
-
 // ─── Component ──────────────────────────────────────────────
 
 export default function OffCycleDetailClient({ user, requestId }: Props) {
   const router = useRouter()
   const t = useTranslations('compensation')
+  const locale = useLocale()
+
+  const formatDate = (dateStr: string): string => {
+    return new Date(dateStr).toLocaleDateString(locale, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+  }
 
   const [detail, setDetail] = useState<OffCycleDetail | null>(null)
   const [loading, setLoading] = useState(true)
@@ -122,12 +122,15 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
 
     try {
       setActionLoading(true)
-      const body: Record<string, unknown> = { action }
+      const body: Record<string, unknown> = {}
       if (action === 'reject' && rejectComment.trim()) {
         body.comment = rejectComment.trim()
       }
+      if (action === 'approve' && rejectComment.trim()) {
+        body.comment = rejectComment.trim()
+      }
 
-      await apiClient.post(`/api/v1/compensation/off-cycle/${requestId}/action`, body)
+      await apiClient.post(`/api/v1/compensation/off-cycle/${requestId}/${action}`, body)
 
       const messages: Record<string, string> = {
         submit: t('offCycle.toast.submitComplete'),
@@ -157,7 +160,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
   }
 
   // ─── Role-based visibility ───
-  const isOwner = detail?.initiatorId === user.id
+  const isOwner = detail?.initiatorId === user.employeeId
   const isApprover = detail?.status === 'PENDING_APPROVAL' && (
     user.role === 'SUPER_ADMIN' ||
     user.role === 'HR_ADMIN' ||
@@ -183,8 +186,9 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
   }
 
   const band = detail.salaryBand
-  const currentCompaRatio = band ? computeCompaRatio(detail.currentSalary, band.midSalary) : null
-  const proposedCompaRatio = band ? computeCompaRatio(detail.proposedSalary, band.midSalary) : null
+  const currentCompaRatio = band ? computeCompaRatio(detail.currentBaseSalary, band.midSalary) : null
+  const proposedCompaRatio = band ? computeCompaRatio(detail.proposedBaseSalary, band.midSalary) : null
+  const rejectionComment = detail.approvalSteps.find((s) => s.status === 'REJECTED')?.comment
 
   return (
     <div className="p-6 space-y-6 max-w-4xl">
@@ -212,11 +216,11 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
       </div>
 
       {/* ─── 트리거 정보 ─── */}
-      {detail.triggerSource && (
-        <div className="flex items-center gap-2 rounded-2xl bg-[#EEF2FF] p-4">
+      {detail.triggerEventType && (
+        <div className="flex items-center gap-2 rounded-2xl bg-primary/10 p-4">
           <Zap className="h-4 w-4 text-primary" />
           <span className="text-sm text-foreground">
-            {t('offCycle.detail.trigger', { source: detail.triggerSource })}
+            {t('offCycle.detail.trigger', { source: detail.triggerEventType })}
           </span>
         </div>
       )}
@@ -233,11 +237,11 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t('offCycle.detail.department')}</p>
-            <p className="font-medium text-foreground">{detail.department}</p>
+            <p className="font-medium text-foreground">{detail.department?.name ?? '-'}</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t('offCycle.detail.grade')}</p>
-            <p className="font-medium text-foreground">{detail.jobGrade}</p>
+            <p className="font-medium text-foreground">{detail.jobGrade?.name ?? '-'}</p>
           </div>
         </div>
       </div>
@@ -252,13 +256,13 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
           <div>
             <p className="text-xs text-muted-foreground">{t('offCycle.detail.currentSalary')}</p>
             <p className="font-mono tabular-nums font-semibold text-foreground">
-              {formatCurrency(detail.currentSalary)}
+              {formatCurrency(detail.currentBaseSalary)}
             </p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t('offCycle.detail.proposedSalary')}</p>
             <p className="font-mono tabular-nums font-semibold text-foreground">
-              {formatCurrency(detail.proposedSalary)}
+              {formatCurrency(detail.proposedBaseSalary)}
             </p>
           </div>
           <div>
@@ -303,11 +307,11 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
         {/* PayBandChart */}
         {band && (
           <PayBandChart
-            currentSalary={detail.currentSalary}
+            currentSalary={detail.currentBaseSalary}
             minSalary={band.minSalary}
             midSalary={band.midSalary}
             maxSalary={band.maxSalary}
-            comparisonSalary={detail.proposedSalary}
+            comparisonSalary={detail.proposedBaseSalary}
           />
         )}
 
@@ -319,19 +323,19 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
               {t(`offCycle.reason.${detail.reasonCategory}`)}
             </span>
           </div>
-          {detail.justification && (
+          {detail.reason && (
             <div className="rounded-2xl bg-surface-container-low p-4 text-sm text-foreground">
-              {detail.justification}
+              {detail.reason}
             </div>
           )}
         </div>
       </div>
 
       {/* ─── 반려 사유 ─── */}
-      {detail.rejectionComment && detail.status === 'REJECTED' && (
-        <div className="rounded-2xl bg-[#FEF2F2] p-4 space-y-1">
-          <p className="text-sm font-medium text-[#DC2626]">{t('offCycle.rejectReason')}</p>
-          <p className="text-sm text-foreground">{detail.rejectionComment}</p>
+      {rejectionComment && detail.status === 'REJECTED' && (
+        <div className="rounded-2xl bg-destructive/10 p-4 space-y-1">
+          <p className="text-sm font-medium text-destructive">{t('offCycle.rejectReason')}</p>
+          <p className="text-sm text-foreground">{rejectionComment}</p>
         </div>
       )}
 
@@ -424,7 +428,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
               variant="outline"
               onClick={() => setShowRejectForm(true)}
               disabled={actionLoading}
-              className="rounded-xl text-[#DC2626] border-[#DC2626]/30 hover:bg-[#FEF2F2]"
+              className="rounded-xl text-destructive border-destructive/30 hover:bg-destructive/10"
             >
               <XCircle className="mr-1.5 h-4 w-4" />
               {t('offCycle.actions.reject')}

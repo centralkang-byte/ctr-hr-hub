@@ -90,7 +90,7 @@ test.describe('Off-Cycle: API Lifecycle', () => {
     const draft = await createOffCycleDraft(request, {
       employeeId,
       reasonCategory: 'RETENTION',
-      proposedSalary: 55_000_000 + (Date.now() % 100_000),
+      proposedBaseSalary: 55_000_000 + (Date.now() % 100_000),
     })
     await submitOffCycle(request, draft.id)
 
@@ -190,10 +190,9 @@ test.describe('Off-Cycle: RBAC - EMPLOYEE', () => {
       data: {
         employeeId: 'fake-id',
         reasonCategory: 'PROMOTION',
-        proposedSalary: 50_000_000,
-        effectiveDate: '2026-06-01',
-        justification: 'test',
-        submitForApproval: false,
+        proposedBaseSalary: 50_000_000,
+        effectiveDate: '2026-06-01T00:00:00.000Z',
+        reason: 'test',
       },
     })
     expect([401, 403]).toContain(res.status())

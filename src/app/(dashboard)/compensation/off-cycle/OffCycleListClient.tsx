@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { Plus, Filter, ArrowUpDown, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -30,10 +30,9 @@ type ReasonCategory = 'PROMOTION' | 'RETENTION' | 'EQUITY_ADJUSTMENT' | 'ROLE_CH
 interface OffCycleRequest {
   id: string
   employeeName: string
-  department: string
   reasonCategory: ReasonCategory
-  currentSalary: number
-  proposedSalary: number
+  currentBaseSalary: number
+  proposedBaseSalary: number
   changePct: number
   status: OffCycleStatus
   initiatorName: string
@@ -50,6 +49,7 @@ interface Props {
 
 export default function OffCycleListClient({ user }: Props) {
   const router = useRouter()
+  const locale = useLocale()
 
   const [requests, setRequests] = useState<OffCycleRequest[]>([])
   const [loading, setLoading] = useState(true)
@@ -123,7 +123,7 @@ export default function OffCycleListClient({ user }: Props) {
   }
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('ko-KR', {
+    return new Date(dateStr).toLocaleDateString(locale, {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
@@ -270,7 +270,6 @@ export default function OffCycleListClient({ user }: Props) {
                 >
                   <td className="px-5 py-3">
                     <div className="font-medium text-foreground">{req.employeeName}</div>
-                    <div className="text-xs text-muted-foreground">{req.department}</div>
                   </td>
                   <td className="px-5 py-3">
                     <span className="inline-flex items-center rounded-full bg-surface-container-low px-2 py-0.5 text-xs font-medium text-foreground">
@@ -278,9 +277,9 @@ export default function OffCycleListClient({ user }: Props) {
                     </span>
                   </td>
                   <td className="px-5 py-3 text-right font-mono tabular-nums text-foreground">
-                    <span className="text-muted-foreground">{formatCurrency(req.currentSalary)}</span>
+                    <span className="text-muted-foreground">{formatCurrency(req.currentBaseSalary)}</span>
                     <span className="mx-1 text-muted-foreground">→</span>
-                    <span className="font-medium">{formatCurrency(req.proposedSalary)}</span>
+                    <span className="font-medium">{formatCurrency(req.proposedBaseSalary)}</span>
                   </td>
                   <td className={cn(
                     'px-5 py-3 text-right font-mono tabular-nums font-medium',

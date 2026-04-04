@@ -5334,58 +5334,9 @@
         "REJECTED": "Từ chối",
         "CANCELLED": "Đã hủy"
       },
-      "reason": {
-        "PROMOTION": "Thăng chức",
-        "RETENTION": "Giữ chân",
-        "MARKET_ADJUSTMENT": "Điều chỉnh thị trường",
-        "ROLE_CHANGE": "Thay đổi vai trò",
-        "EQUITY": "Điều chỉnh công bằng",
-        "OTHER": "Khác"
-      },
       "initiator": {
         "MANAGER": "Đề xuất quản lý",
         "HR": "HR khởi tạo"
-      },
-      "form": {
-        "employee": "Nhân viên",
-        "reasonCategory": "Loại lý do",
-        "currentSalary": "Lương cơ bản hiện tại",
-        "proposedSalary": "Lương đề xuất",
-        "changePct": "Tỷ lệ thay đổi",
-        "effectiveDate": "Ngày hiệu lực",
-        "reason": "Lý do chi tiết",
-        "compaRatioBefore": "Tỷ lệ hiện tại",
-        "compaRatioAfter": "Tỷ lệ đề xuất",
-        "searchEmployee": "Tìm nhân viên...",
-        "selectReason": "Chọn lý do"
-      },
-      "actions": {
-        "saveDraft": "Lưu nháp",
-        "submit": "Gửi duyệt",
-        "approve": "Phê duyệt",
-        "reject": "Từ chối",
-        "cancel": "Hủy yêu cầu",
-        "revise": "Sửa và gửi lại",
-        "edit": "Sửa"
-      },
-      "approval": {
-        "timeline": "Lịch sử duyệt",
-        "step": "Bước {stepNumber}",
-        "pending": "Đang chờ",
-        "approved": "Đã duyệt",
-        "rejected": "Từ chối",
-        "autoApproved": "Tự động duyệt",
-        "noComment": "Không có nhận xét"
-      },
-      "toast": {
-        "created": "Đã tạo yêu cầu",
-        "submitted": "Đã gửi duyệt",
-        "approved": "Đã phê duyệt",
-        "rejected": "Đã từ chối",
-        "cancelled": "Đã hủy",
-        "revised": "Đã mở lại để sửa",
-        "loadError": "Không tải được",
-        "salaryDrift": "Lương đã thay đổi. Vui lòng cập nhật."
       },
       "empty": "Không có yêu cầu điều chỉnh",
       "triggerNotice": "Yêu cầu này được đề xuất do sự kiện {eventType}",
@@ -5409,7 +5360,7 @@
       "detail": { "name": "Tên", "department": "Phòng ban", "grade": "Cấp bậc", "currentSalary": "Lương hiện tại", "proposedSalary": "Lương đề xuất", "changePct": "Tỷ lệ thay đổi", "effectiveDate": "Ngày hiệu lực", "reasonCategory": "Danh mục lý do:", "notFound": "Không tìm thấy yêu cầu.", "initiator": "Người yêu cầu: {name}", "createdAt": "Ngày tạo: {date}", "trigger": "Tự động kích hoạt: {source}" },
       "validation": { "selectEmployee": "Vui lòng chọn nhân viên", "selectReason": "Vui lòng chọn lý do", "enterSalary": "Vui lòng nhập lương đề xuất", "selectDate": "Vui lòng chọn ngày hiệu lực" },
       "approval": { "timeline": "Lịch sử phê duyệt", "step": "Bước {stepNumber}", "pending": "Chờ xử lý", "approved": "Đã phê duyệt", "rejected": "Đã từ chối", "autoApproved": "Tự động phê duyệt", "noComment": "Không có nhận xét", "skipped": "Đã bỏ qua" },
-      "toast": { "created": "Đã tạo yêu cầu", "submitted": "Đã gửi phê duyệt", "approved": "Yêu cầu đã được phê duyệt", "rejected": "Yêu cầu đã bị từ chối", "cancelled": "Yêu cầu đã bị hủy", "revised": "Yêu cầu đã chuyển sang chế độ sửa", "loadError": "Tải thất bại", "salaryDrift": "Lương cơ bản đã thay đổi. Vui lòng cập nhật.", "saveFailed": "Lưu thất bại", "actionFailed": "Thao tác thất bại", "retryMessage": "Vui lòng thử lại.", "draftSaved": "Đã lưu bản nháp", "submitComplete": "Đã gửi phê duyệt", "approveComplete": "Đã phê duyệt", "rejectComplete": "Đã từ chối", "cancelComplete": "Đã hủy", "reviseMode": "Đã chuyển sang chế độ sửa" },
+      "toast": { "created": "Đã tạo yêu cầu", "submitted": "Đã gửi phê duyệt", "approved": "Yêu cầu đã được phê duyệt", "rejected": "Yêu cầu đã bị từ chối", "cancelled": "Yêu cầu đã bị hủy", "revised": "Yêu cầu đã chuyển sang chế độ sửa", "loadError": "Tải thất bại", "salaryDrift": "Lương cơ bản đã thay đổi. Vui lòng cập nhật.", "saveFailed": "Lưu thất bại", "actionFailed": "Thao tác thất bại", "retryMessage": "Vui lòng thử lại.", "draftSaved": "Đã lưu bản nháp", "submitComplete": "Đã gửi phê duyệt", "approveComplete": "Đã phê duyệt", "rejectComplete": "Đã từ chối", "cancelComplete": "Đã hủy", "reviseMode": "Đã chuyển sang chế độ sửa", "submitAfterCreateFailed": "Bản nháp đã lưu nhưng gửi thất bại. Vui lòng gửi lại từ danh sách." },
       "form": { "employee": "Nhân viên mục tiêu", "reasonCategory": "Danh mục lý do", "currentSalary": "Lương cơ bản hiện tại", "proposedSalary": "Lương cơ bản đề xuất", "proposedSalaryLabel": "Lương đề xuất (năm)", "changePct": "Tỷ lệ thay đổi", "change": "Thay đổi", "effectiveDate": "Ngày hiệu lực", "reason": "Lý do chi tiết", "compaRatioBefore": "Compa-Ratio hiện tại", "compaRatioAfter": "Compa-Ratio đề xuất", "searchEmployee": "Tìm nhân viên...", "searchLabel": "Tìm nhân viên", "searchPlaceholder": "Tìm theo tên hoặc mã NV...", "searching": "Đang tìm...", "noResults": "Không có kết quả", "selectReason": "Chọn lý do", "justificationPlaceholder": "Vui lòng mô tả chi tiết lý do điều chỉnh...", "rejectPlaceholder": "Nhập lý do từ chối..." },
       "actions": { "saveDraft": "Lưu nháp", "submit": "Gửi phê duyệt", "approve": "Phê duyệt", "reject": "Từ chối", "cancel": "Hủy yêu cầu", "cancelAction": "Hủy", "revise": "Sửa và gửi lại", "reviseResubmit": "Sửa và gửi lại", "edit": "Sửa", "confirmReject": "Xác nhận từ chối" }
     }

@@ -17,11 +17,11 @@ type ApprovalStepStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'SKIPPED'
 interface ApprovalStep {
   id: string
   stepNumber: number
-  roleName: string
-  approverName?: string
+  roleRequired: string
+  approverName?: string | null
   status: ApprovalStepStatus
-  comment?: string
-  decidedAt?: string
+  comment?: string | null
+  decidedAt?: string | null
 }
 
 interface OffCycleApprovalTimelineProps {
@@ -93,7 +93,7 @@ export default function OffCycleApprovalTimeline({ steps, className }: OffCycleA
             <div className={cn('pb-6', isLast && 'pb-0')}>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-foreground">
-                  {step.stepNumber}. {step.roleName}
+                  {step.stepNumber}. {step.roleRequired}
                 </span>
                 <span
                   className={cn(

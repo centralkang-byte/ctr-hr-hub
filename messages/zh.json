@@ -5334,58 +5334,9 @@
         "REJECTED": "已拒绝",
         "CANCELLED": "已取消"
       },
-      "reason": {
-        "PROMOTION": "晋升",
-        "RETENTION": "留任",
-        "MARKET_ADJUSTMENT": "市场调整",
-        "ROLE_CHANGE": "角色变更",
-        "EQUITY": "公平调整",
-        "OTHER": "其他"
-      },
       "initiator": {
         "MANAGER": "经理提案",
         "HR": "HR发起"
-      },
-      "form": {
-        "employee": "目标员工",
-        "reasonCategory": "原因类别",
-        "currentSalary": "当前基本工资",
-        "proposedSalary": "建议基本工资",
-        "changePct": "变动率",
-        "effectiveDate": "生效日期",
-        "reason": "详细理由",
-        "compaRatioBefore": "当前比率",
-        "compaRatioAfter": "建议比率",
-        "searchEmployee": "搜索员工...",
-        "selectReason": "请选择原因"
-      },
-      "actions": {
-        "saveDraft": "保存草稿",
-        "submit": "提交审批",
-        "approve": "批准",
-        "reject": "拒绝",
-        "cancel": "取消申请",
-        "revise": "修改并重新提交",
-        "edit": "编辑"
-      },
-      "approval": {
-        "timeline": "审批记录",
-        "step": "第{stepNumber}步",
-        "pending": "待处理",
-        "approved": "已批准",
-        "rejected": "已拒绝",
-        "autoApproved": "自动批准",
-        "noComment": "无备注"
-      },
-      "toast": {
-        "created": "申请已创建",
-        "submitted": "已提交审批",
-        "approved": "申请已批准",
-        "rejected": "申请已拒绝",
-        "cancelled": "申请已取消",
-        "revised": "申请已重新打开",
-        "loadError": "加载失败",
-        "salaryDrift": "基本工资已变更，请更新申请"
       },
       "empty": "暂无非周期调整申请",
       "triggerNotice": "此申请因{eventType}事件而建议",
@@ -5409,7 +5360,7 @@
       "detail": { "name": "姓名", "department": "部门", "grade": "职级", "currentSalary": "当前薪资", "proposedSalary": "拟定薪资", "changePct": "变动率", "effectiveDate": "生效日期", "reasonCategory": "原因类别：", "notFound": "未找到该申请。", "initiator": "申请人：{name}", "createdAt": "创建日期：{date}", "trigger": "自动触发：{source}" },
       "validation": { "selectEmployee": "请选择员工", "selectReason": "请选择原因", "enterSalary": "请输入拟定薪资", "selectDate": "请选择生效日期" },
       "approval": { "timeline": "审批历史", "step": "第{stepNumber}步", "pending": "待审批", "approved": "已批准", "rejected": "已拒绝", "autoApproved": "自动批准", "noComment": "无备注", "skipped": "已跳过" },
-      "toast": { "created": "申请已创建", "submitted": "已提交审批", "approved": "申请已批准", "rejected": "申请已拒绝", "cancelled": "申请已取消", "revised": "申请已转为修改状态", "loadError": "加载失败", "salaryDrift": "基本薪资已变更，请更新申请。", "saveFailed": "保存失败", "actionFailed": "操作失败", "retryMessage": "请重试。", "draftSaved": "草稿已保存", "submitComplete": "已提交审批", "approveComplete": "已批准", "rejectComplete": "已拒绝", "cancelComplete": "已取消", "reviseMode": "已切换至修改模式" },
+      "toast": { "created": "申请已创建", "submitted": "已提交审批", "approved": "申请已批准", "rejected": "申请已拒绝", "cancelled": "申请已取消", "revised": "申请已转为修改状态", "loadError": "加载失败", "salaryDrift": "基本薪资已变更，请更新申请。", "saveFailed": "保存失败", "actionFailed": "操作失败", "retryMessage": "请重试。", "draftSaved": "草稿已保存", "submitComplete": "已提交审批", "approveComplete": "已批准", "rejectComplete": "已拒绝", "cancelComplete": "已取消", "reviseMode": "已切换至修改模式", "submitAfterCreateFailed": "草稿已保存，但提交失败。请从列表中重新提交。" },
       "form": { "employee": "目标员工", "reasonCategory": "原因类别", "currentSalary": "当前基本薪资", "proposedSalary": "拟定基本薪资", "proposedSalaryLabel": "拟定薪资（年薪）", "changePct": "变动率", "change": "变动", "effectiveDate": "生效日期", "reason": "详细理由", "compaRatioBefore": "当前Compa-Ratio", "compaRatioAfter": "拟定Compa-Ratio", "searchEmployee": "搜索员工...", "searchLabel": "搜索员工", "searchPlaceholder": "按姓名或工号搜索...", "searching": "搜索中...", "noResults": "无搜索结果", "selectReason": "请选择原因", "justificationPlaceholder": "请详细说明调整理由...", "rejectPlaceholder": "请输入拒绝原因..." },
       "actions": { "saveDraft": "保存草稿", "submit": "提交审批", "approve": "批准", "reject": "拒绝", "cancel": "取消申请", "cancelAction": "取消", "revise": "修改后重新提交", "reviseResubmit": "修改后重新申请", "edit": "修改", "confirmReject": "确认拒绝" }
     }
