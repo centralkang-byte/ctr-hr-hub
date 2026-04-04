@@ -17,7 +17,6 @@ import { getGradeLabel } from '@/lib/performance/data-masking'
 import {
     getMeritRecommendation,
     getCurrentSalary,
-    getSalaryBandMidpoint,
     calculateComparatio,
 } from '@/lib/performance/merit-matrix'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
@@ -67,6 +66,29 @@ export const GET = withPermission(
                 },
             })
 
+            // ── Batch salary band query (N+1 방어) ──────────────
+            const gradeIds = [...new Set(
+                reviews
+                    .map(r => extractPrimaryAssignment(r.employee.assignments)?.jobGradeId)
+                    .filter((id): id is string => !!id)
+            )]
+            const salaryBands = gradeIds.length > 0
+                ? await prisma.salaryBand.findMany({
+                    where: {
+                        jobGradeId: { in: gradeIds },
+                        companyId: cycle.companyId,
+                        effectiveTo: null,
+                        deletedAt: null,
+                    },
+                    select: { jobGradeId: true, minSalary: true, midSalary: true, maxSalary: true },
+                })
+                : []
+            const bandMap = new Map(
+                salaryBands.map(b => [b.jobGradeId, {
+                    min: Number(b.minSalary), mid: Number(b.midSalary), max: Number(b.maxSalary),
+                }])
+            )
+
             const recommendations = []
             const skipped = []
             let totalBudgetImpact = 0
@@ -87,10 +109,9 @@ export const GET = withPermission(
                     review.employeeId, cycle.companyId, prisma,
                 )
 
-                // Get midpoint for comparatio
-                const midpoint = await getSalaryBandMidpoint(
-                    assignment?.jobGradeId ?? null, cycle.companyId, prisma,
-                )
+                // Get band from batch Map (O(1) lookup)
+                const band = bandMap.get(assignment?.jobGradeId ?? '')
+                const midpoint = band?.mid ?? 0
                 const comparatio = calculateComparatio(currentSalary, midpoint)
 
                 // Look up merit matrix
@@ -121,6 +142,10 @@ export const GET = withPermission(
                     meritRecommendedPct: merit.meritRecommendedPct,
                     projectedIncrease,
                     projectedNewSalary,
+                    // Salary band for PayBandChart
+                    bandMin: band?.min ?? null,
+                    bandMid: band?.mid ?? null,
+                    bandMax: band?.max ?? null,
                 })
             }
 

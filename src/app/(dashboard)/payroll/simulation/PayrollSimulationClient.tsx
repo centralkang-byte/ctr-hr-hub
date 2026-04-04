@@ -15,6 +15,7 @@ import type {
   SearchEmployee, SimResponse, EmployeeSimResult,
   SaveScenarioPayload, ScenarioDetail, SaveableMode,
 } from './types'
+import PayBandChart from '@/components/compensation/PayBandChart'
 import DifferentialTab from './DifferentialTab'
 import CompaRatioTab from './CompaRatioTab'
 import HiringTab from './HiringTab'
@@ -156,7 +157,11 @@ export default function PayrollSimulationClient({ user: _user, companies, depart
   const [scenarioSheetOpen, setScenarioSheetOpen] = useState(false)
   const [compareData, setCompareData] = useState<{ left: ScenarioDetail; right: ScenarioDetail } | null>(null)
 
-  // Single mode state
+  // Single mode state — salary band for PayBandChart
+  const [salaryBandData, setSalaryBandData] = useState<{
+    min: number; mid: number; max: number
+  } | null>(null)
+
   const [selectedEmployee, setSelectedEmployee] = useState<SearchEmployee | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<SearchEmployee[]>([])
@@ -188,6 +193,20 @@ export default function PayrollSimulationClient({ user: _user, companies, depart
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [])
+
+  // Fetch salary band when employee is selected
+  useEffect(() => {
+    if (!selectedEmployee) { setSalaryBandData(null); return }
+    apiClient.get<{
+      salaryBand: { minSalary: number; midSalary: number; maxSalary: number } | null
+    }>(`/api/v1/employees/${selectedEmployee.id}/compensation`)
+      .then((res) => {
+        const band = res.data.salaryBand
+        if (band) setSalaryBandData({ min: band.minSalary, mid: band.midSalary, max: band.maxSalary })
+        else setSalaryBandData(null)
+      })
+      .catch(() => setSalaryBandData(null))
+  }, [selectedEmployee])
 
   // Debounced search
   const doSearch = useCallback(async (q: string) => {
@@ -639,6 +658,20 @@ export default function PayrollSimulationClient({ user: _user, companies, depart
                     : undefined} variant="cost" />
                 <KPICard label={t('kpiNetChange')} value={signedKRW(totals.netDifference)} rate={pctStr(totals.netChangeRate)} variant="neutral" />
               </div>
+
+              {/* Pay Band Position (single mode) */}
+              {mode === 'SINGLE' && salaryBandData && selectedEmployee && (
+                <div className={CARD_STYLES.padded}>
+                  <h3 className="text-sm font-semibold text-foreground mb-3">{t('salaryBandPosition')}</h3>
+                  <PayBandChart
+                    currentSalary={selectedEmployee.currentSalary}
+                    minSalary={salaryBandData.min}
+                    midSalary={salaryBandData.mid}
+                    maxSalary={salaryBandData.max}
+                    comparisonSalary={result.employees[0]?.simulated?.baseSalary}
+                  />
+                </div>
+              )}
 
               {/* Chart (single mode) */}
               {chartData && (

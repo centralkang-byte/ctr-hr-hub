@@ -9,6 +9,7 @@ import { DollarSign, Users, TrendingUp, AlertTriangle, Download, ShieldAlert, Ar
 import { apiClient } from '@/lib/api'
 import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import { getGradeLabel } from '@/lib/performance/data-masking'
+import PayBandChart from '@/components/compensation/PayBandChart'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
@@ -27,6 +28,8 @@ interface MeritRow {
     employeeId: string; name: string; department: string; gradeEnum: string
     currentSalary: number; comparatio: number; recommendedPct: number
     appliedPct: number; newSalary: number; isException: boolean; exceptionReason: string
+    // Salary band for PayBandChart compact (from recommendations API)
+    bandMin?: number | null; bandMid?: number | null; bandMax?: number | null
 }
 
 type TabKey = 'dashboard' | 'table' | 'exceptions'
@@ -75,6 +78,20 @@ const MeritRowComponent = memo(function MeritRowComponent({
             <td className={cn(TABLE_STYLES.cellRight, "font-medium text-foreground")}>
                 {isOutOfRange && <span className="mr-1 inline-flex items-center text-destructive"><AlertTriangle aria-hidden="true" className="h-3.5 w-3.5" /><span className="sr-only">경고</span></span>}
                 {fmtKRW(newSalary)}
+            </td>
+            <td className={cn(TABLE_STYLES.cell, "w-32")}>
+                {row.bandMin != null && row.bandMid != null && row.bandMax != null ? (
+                    <PayBandChart
+                        compact
+                        currentSalary={row.currentSalary}
+                        minSalary={row.bandMin}
+                        midSalary={row.bandMid}
+                        maxSalary={row.bandMax}
+                        comparisonSalary={newSalary}
+                    />
+                ) : (
+                    <span className="text-xs text-muted-foreground">-</span>
+                )}
             </td>
         </tr>
     )
@@ -311,6 +328,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                                                     <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kecb694ec')}</th>
                                                     <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_keca081ec')}</th>
                                                     <th className={TABLE_STYLES.headerCellRight}>{t('kr_kec8388ec')}</th>
+                                                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('salaryBand')}</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

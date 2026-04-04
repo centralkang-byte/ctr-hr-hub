@@ -8,6 +8,7 @@
 import Image from 'next/image'
 import { Mail, Phone, Calendar, MapPin, Shield, AlertCircle } from 'lucide-react'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
+import PayBandChart from '@/components/compensation/PayBandChart'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -42,6 +43,15 @@ interface ProfileSidebarProps {
     department: string | null
   } | null
   onManagerClick?: (id: string) => void
+  /** 급여 밴드 데이터 (Tier 2 — canViewGrade 게이트) */
+  compensationData?: {
+    currentSalary: number
+    bandMin: number
+    bandMid: number
+    bandMax: number
+  } | null
+  /** compensation 데이터 로딩 중 여부 (CLS 방어용 skeleton) */
+  compensationLoading?: boolean
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -88,6 +98,8 @@ export function ProfileSidebar({
   emergencyContactPhone,
   manager,
   onManagerClick,
+  compensationData,
+  compensationLoading,
 }: ProfileSidebarProps) {
   const ringClass = STATUS_RING[status] ?? ''
   const subtitle = [title, position].filter(Boolean).join(' · ')
@@ -189,10 +201,25 @@ export function ProfileSidebar({
         {(canViewGrade && grade) || (canViewSensitive && (emergencyContact || emergencyContactPhone)) ? (
           <div className="py-4 space-y-2.5">
             {canViewGrade && grade && (
-              <div className="flex items-center gap-2">
-                <Shield size={15} className="text-[#999] shrink-0" strokeWidth={1.5} />
-                <span className="text-xs text-[#999]">직급</span>
-                <span className="text-sm text-[#333] font-medium">{grade}</span>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Shield size={15} className="text-[#999] shrink-0" strokeWidth={1.5} />
+                  <span className="text-xs text-[#999]">직급</span>
+                  <span className="text-sm text-[#333] font-medium">{grade}</span>
+                </div>
+                {/* 급여 밴드 compact — CLS 방어: skeleton → chart */}
+                {compensationLoading && (
+                  <div className="h-2 bg-muted rounded-full animate-pulse" />
+                )}
+                {!compensationLoading && compensationData && (
+                  <PayBandChart
+                    compact
+                    currentSalary={compensationData.currentSalary}
+                    minSalary={compensationData.bandMin}
+                    midSalary={compensationData.bandMid}
+                    maxSalary={compensationData.bandMax}
+                  />
+                )}
               </div>
             )}
             {canViewSensitive && (emergencyContact || emergencyContactPhone) && (

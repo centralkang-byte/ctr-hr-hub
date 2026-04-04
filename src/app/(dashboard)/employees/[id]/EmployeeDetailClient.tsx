@@ -5,7 +5,7 @@
 // 직원 프로필 5탭: 프로필/발령이력/급여정보/근태현황/평가결과
 // ═══════════════════════════════════════════════════════════
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
@@ -223,6 +223,34 @@ export function EmployeeDetailClient({
   })
   const [saving, setSaving] = useState(false)
   const [editError, setEditError] = useState<string | null>(null)
+
+  // ─── Compensation band data for ProfileSidebar (Tier 2) ───
+  const [compensationData, setCompensationData] = useState<{
+    currentSalary: number; bandMin: number; bandMid: number; bandMax: number
+  } | null>(null)
+  const [compensationLoading, setCompensationLoading] = useState(canViewGrade)
+
+  useEffect(() => {
+    if (!canViewGrade) return
+    setCompensationLoading(true)
+    apiClient.get<{
+      latestComp: { newBaseSalary: number } | null
+      salaryBand: { minSalary: number; midSalary: number; maxSalary: number } | null
+    }>(`/api/v1/employees/${employee.id}/compensation`)
+      .then((res) => {
+        const { latestComp, salaryBand } = res.data
+        if (latestComp && salaryBand) {
+          setCompensationData({
+            currentSalary: latestComp.newBaseSalary,
+            bandMin: salaryBand.minSalary,
+            bandMid: salaryBand.midSalary,
+            bandMax: salaryBand.maxSalary,
+          })
+        }
+      })
+      .catch(() => { /* 밴드 데이터 로드 실패 — silent (보조 정보) */ })
+      .finally(() => setCompensationLoading(false))
+  }, [canViewGrade, employee.id])
 
   // ─── Offboarding wizard state ───
   const [offboardingOpen, setOffboardingOpen] = useState(false)
@@ -544,6 +572,8 @@ export function EmployeeDetailClient({
         emergencyContact={employee.emergencyContact}
         emergencyContactPhone={employee.emergencyContactPhone}
         manager={employee.manager ?? null}
+        compensationData={compensationData}
+        compensationLoading={compensationLoading}
         onManagerClick={(id) => router.push(`/employees/${id}`)}
       />
 

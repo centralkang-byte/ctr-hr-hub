@@ -17,6 +17,8 @@ interface PayBandChartProps {
   maxSalary: number
   currency?: string
   compact?: boolean
+  /** 비교용 급여 (시뮬레이션 후 / merit 조정 후). 있으면 hollow dot으로 표시 */
+  comparisonSalary?: number
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -27,6 +29,7 @@ export default function PayBandChart({
   midSalary,
   maxSalary,
   compact = false,
+  comparisonSalary,
 }: PayBandChartProps) {
   const t = useTranslations('compensation')
 
@@ -35,13 +38,16 @@ export default function PayBandChart({
   const range = maxSalary - minSalary
   const position = Math.max(0, Math.min(100, ((currentSalary - minSalary) / range) * 100))
   const midPosition = ((midSalary - minSalary) / range) * 100
+  const comparisonPosition = comparisonSalary != null
+    ? Math.max(0, Math.min(100, ((comparisonSalary - minSalary) / range) * 100))
+    : null
 
-  // Determine color based on position
-  const getColor = () => {
-    if (currentSalary < minSalary) return 'bg-destructive'
-    if (currentSalary > maxSalary) return 'bg-purple-500'
-    if (currentSalary < midSalary * 0.95) return 'bg-amber-500'
-    if (currentSalary > midSalary * 1.05) return 'bg-primary'
+  // Determine color based on salary position relative to band
+  const getColor = (salary: number) => {
+    if (salary < minSalary) return 'bg-destructive'
+    if (salary > maxSalary) return 'bg-purple-500'
+    if (salary < midSalary * 0.95) return 'bg-amber-500'
+    if (salary > midSalary * 1.05) return 'bg-primary'
     return 'bg-emerald-500'
   }
 
@@ -56,9 +62,17 @@ export default function PayBandChart({
           />
           {/* Current position */}
           <div
-            className={`absolute top-[-2px] h-[10px] w-[10px] rounded-full ${getColor()} ring-2 ring-white shadow-sm`}
+            className={`absolute top-[-2px] h-[10px] w-[10px] rounded-full ${getColor(currentSalary)} ring-2 ring-white shadow-sm`}
             style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
           />
+          {/* Comparison position (hollow dot) */}
+          {comparisonPosition != null && comparisonSalary != null && (
+            <div
+              className={`absolute top-[-2px] h-[10px] w-[10px] rounded-full border-2 ${getColor(comparisonSalary).replace('bg-', 'border-')} bg-transparent`}
+              style={{ left: `${comparisonPosition}%`, transform: 'translateX(-50%)' }}
+              title={`${t('simulatedPosition')}: ${formatCurrency(comparisonSalary)}`}
+            />
+          )}
         </div>
       </div>
     )
@@ -76,9 +90,17 @@ export default function PayBandChart({
         />
         {/* Current position marker */}
         <div
-          className={`absolute top-[-3px] h-[14px] w-[14px] rounded-full ${getColor()} ring-2 ring-white shadow-md`}
+          className={`absolute top-[-3px] h-[14px] w-[14px] rounded-full ${getColor(currentSalary)} ring-2 ring-white shadow-md`}
           style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
         />
+        {/* Comparison position marker (hollow dot) */}
+        {comparisonPosition != null && comparisonSalary != null && (
+          <div
+            className={`absolute top-[-3px] h-[14px] w-[14px] rounded-full border-2 ${getColor(comparisonSalary).replace('bg-', 'border-')} bg-transparent`}
+            style={{ left: `${comparisonPosition}%`, transform: 'translateX(-50%)' }}
+            title={`${t('simulatedPosition')}: ${formatCurrency(comparisonSalary)}`}
+          />
+        )}
       </div>
       {/* Labels */}
       <div className="flex justify-between text-[10px] text-muted-foreground font-mono tabular-nums">
@@ -86,6 +108,14 @@ export default function PayBandChart({
         <span className="text-foreground font-medium">{t('currentSalary')}: {formatCurrency(currentSalary)}</span>
         <span>{formatCurrency(maxSalary)}</span>
       </div>
+      {comparisonSalary != null && (
+        <div className="text-[10px] text-muted-foreground font-mono tabular-nums text-center">
+          <span className="inline-flex items-center gap-1">
+            <span className="inline-block h-2 w-2 rounded-full border-2 border-current bg-transparent" />
+            {t('simulatedPosition')}: {formatCurrency(comparisonSalary)}
+          </span>
+        </div>
+      )}
     </div>
   )
 }

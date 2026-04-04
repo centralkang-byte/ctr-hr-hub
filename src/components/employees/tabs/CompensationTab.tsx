@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { apiClient } from '@/lib/api'
 import { TABLE_STYLES } from '@/lib/styles'
+import PayBandChart from '@/components/compensation/PayBandChart'
 
 // ─── Types ──────────────────────────────────────────────────
 // Note: AllowanceRecord schema does NOT have isTaxable or startDate/endDate.
@@ -66,48 +67,6 @@ const ALLOWANCE_TYPE_LABELS: Record<string, string> = {
 
 function getAllowanceLabel(type: string): string {
   return ALLOWANCE_TYPE_LABELS[type] ?? type
-}
-
-// ─── Band Position Bar ───────────────────────────────────────
-
-function SalaryBandBar({
-  current,
-  min,
-  mid,
-  max,
-  currency,
-}: {
-  current: number
-  min: number
-  mid: number
-  max: number
-  currency: string
-}) {
-  const range = max - min
-  const pct = range > 0 ? Math.max(0, Math.min(100, ((current - min) / range) * 100)) : 0
-
-  return (
-    <div className="mt-2">
-      <div className="relative h-3 rounded-full bg-border">
-        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#D1FAE5] via-[#5E81F4] to-[#D1FAE5]" />
-        {/* mid marker */}
-        <div
-          className="absolute top-0 h-full w-0.5 bg-card/80"
-          style={{ left: `${range > 0 ? ((mid - min) / range) * 100 : 50}%` }}
-        />
-        {/* current position dot */}
-        <div
-          className="absolute top-1/2 -translate-y-1/2 h-5 w-5 rounded-full bg-foreground border-2 border-white shadow-md"
-          style={{ left: `calc(${pct}% - 10px)` }}
-        />
-      </div>
-      <div className="mt-1.5 flex justify-between text-xs text-muted-foreground">
-        <span>최소 {formatCurrency(min, currency)}</span>
-        <span className="text-muted-foreground">중간 {formatCurrency(mid, currency)}</span>
-        <span>최대 {formatCurrency(max, currency)}</span>
-      </div>
-    </div>
-  )
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -238,12 +197,11 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
               <span className="ml-2 text-muted-foreground font-normal">({jobGrade.name})</span>
             )}
           </h4>
-          <SalaryBandBar
-            current={latestComp.newBaseSalary}
-            min={salaryBand.minSalary}
-            mid={salaryBand.midSalary}
-            max={salaryBand.maxSalary}
-            currency={salaryBand.currency}
+          <PayBandChart
+            currentSalary={latestComp.newBaseSalary}
+            minSalary={salaryBand.minSalary}
+            midSalary={salaryBand.midSalary}
+            maxSalary={salaryBand.maxSalary}
           />
           {latestComp.compaRatio !== null && (
             <p className="mt-3 text-xs text-muted-foreground">
