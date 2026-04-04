@@ -102,7 +102,7 @@ export const GET = withPermission(
       }
     })
 
-    return apiPaginated(data, total, page, limit)
+    return apiPaginated(data, { page, limit, total, totalPages: Math.ceil(total / limit) })
   },
   perm(MODULE.COMPENSATION, ACTION.VIEW),
 )

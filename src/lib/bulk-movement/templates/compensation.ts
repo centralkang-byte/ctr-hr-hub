@@ -10,7 +10,7 @@ const columns: TemplateColumn[] = [
   { key: '사유', field: 'reason', required: false, description: '변경 사유', example: '2026년 연봉조정' },
 ]
 
-const COMP_CHANGE_TYPES = ['ANNUAL_INCREASE', 'PROMOTION', 'MARKET_ADJUSTMENT', 'DEMOTION_COMP', 'TRANSFER_COMP', 'OTHER'] as const
+const COMP_CHANGE_TYPES = ['ANNUAL_INCREASE', 'PROMOTION', 'MARKET_ADJUSTMENT', 'DEMOTION_COMP', 'TRANSFER_COMP', 'RETENTION', 'ROLE_CHANGE', 'EQUITY', 'OTHER'] as const
 
 const rowSchema = z.object({
   사번: z.string().min(1, '사번이 필요합니다'),

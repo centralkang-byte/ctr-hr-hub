@@ -89,6 +89,14 @@ const DEFAULT_FLOWS: FlowDef[] = [
       { approverRole: 'dept_head' },
     ],
   },
+  {
+    module: 'off_cycle_comp',
+    name: '비정기 급여 조정 승인',
+    steps: [
+      { approverRole: 'direct_manager' },
+      { approverRole: 'hr_admin' },
+    ],
+  },
 ]
 
 export async function seedApprovalFlowDefaults(prisma: PrismaClient) {

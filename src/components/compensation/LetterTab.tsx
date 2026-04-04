@@ -78,7 +78,7 @@ export default function LetterTab({ cycleId }: Props) {
         limit: 100,
       })
       setLetters(res.data)
-      setTotal(res.total ?? res.data.length)
+      setTotal(res.pagination?.total ?? res.data.length)
     } catch (err) {
       toast({
         title: t('loadError'),

@@ -5320,7 +5320,83 @@
     "sentAt": "Enviado",
     "actions": "Acciones",
     "confirmSuccess": "Ajustes salariales confirmados.",
-    "confirmSuccessDesc": "Puede generar cartas de compensación en la pestaña Cartas."
+    "confirmSuccessDesc": "Puede generar cartas de compensación en la pestaña Cartas.",
+    "offCycle": {
+      "title": "Ajuste salarial fuera de ciclo",
+      "newRequest": "Nueva solicitud",
+      "editRequest": "Editar solicitud",
+      "all": "Todos",
+      "myPending": "Mis pendientes",
+      "status": {
+        "DRAFT": "Borrador",
+        "PENDING_APPROVAL": "Pendiente",
+        "APPROVED": "Aprobado",
+        "REJECTED": "Rechazado",
+        "CANCELLED": "Cancelado"
+      },
+      "reason": {
+        "PROMOTION": "Promoción",
+        "RETENTION": "Retención",
+        "MARKET_ADJUSTMENT": "Ajuste de mercado",
+        "ROLE_CHANGE": "Cambio de rol",
+        "EQUITY": "Ajuste de equidad",
+        "OTHER": "Otro"
+      },
+      "initiator": {
+        "MANAGER": "Propuesta del gerente",
+        "HR": "Iniciado por RRHH"
+      },
+      "form": {
+        "employee": "Empleado",
+        "reasonCategory": "Categoría",
+        "currentSalary": "Salario base actual",
+        "proposedSalary": "Salario propuesto",
+        "changePct": "% de cambio",
+        "effectiveDate": "Fecha efectiva",
+        "reason": "Justificación",
+        "compaRatioBefore": "Ratio actual",
+        "compaRatioAfter": "Ratio propuesto",
+        "searchEmployee": "Buscar empleado...",
+        "selectReason": "Seleccionar razón"
+      },
+      "actions": {
+        "saveDraft": "Guardar borrador",
+        "submit": "Enviar para aprobación",
+        "approve": "Aprobar",
+        "reject": "Rechazar",
+        "cancel": "Cancelar solicitud",
+        "revise": "Revisar y reenviar",
+        "edit": "Editar"
+      },
+      "approval": {
+        "timeline": "Historial de aprobación",
+        "step": "Paso {stepNumber}",
+        "pending": "Pendiente",
+        "approved": "Aprobado",
+        "rejected": "Rechazado",
+        "autoApproved": "Aprobado automáticamente",
+        "noComment": "Sin comentario"
+      },
+      "toast": {
+        "created": "Solicitud creada",
+        "submitted": "Enviada para aprobación",
+        "approved": "Solicitud aprobada",
+        "rejected": "Solicitud rechazada",
+        "cancelled": "Solicitud cancelada",
+        "revised": "Reabierta para revisión",
+        "loadError": "Error al cargar",
+        "salaryDrift": "El salario ha cambiado. Actualice la solicitud."
+      },
+      "empty": "No hay solicitudes de ajuste",
+      "triggerNotice": "Esta solicitud fue sugerida por un evento de {eventType}",
+      "bandPosition": "Posición en banda",
+      "compensationDetail": "Detalle de compensación",
+      "employeeInfo": "Info del empleado",
+      "rejectReason": "Motivo de rechazo",
+      "rejectReasonPlaceholder": "Ingrese el motivo",
+      "approveComment": "Comentario (opcional)",
+      "duplicateGuard": "Ya existe una solicitud activa para este empleado"
+    }
   },
   "payrollPage": {
     "title": "Payroll Processing",

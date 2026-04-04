@@ -42,6 +42,9 @@ import { quarterlyReviewReopenedHandler } from './handlers/quarterly-review-reop
 import { goalRevisionProposedHandler } from './handlers/goal-revision-proposed.handler'
 import { goalRevisionApprovedHandler, goalRevisionRejectedHandler } from './handlers/goal-revision-reviewed.handler'
 import { compApprovedHandler } from './handlers/comp-approved.handler'
+import { offCycleSubmittedHandler } from './handlers/off-cycle-submitted.handler'
+import { offCycleApprovedHandler } from './handlers/off-cycle-approved.handler'
+import { offCycleRejectedHandler } from './handlers/off-cycle-rejected.handler'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let bootstrapped = false
@@ -104,6 +107,11 @@ export function bootstrapEventHandlers(): void {
 
   // ── Compensation Events ──────────────────────────────────
   eventBus.subscribe(compApprovedHandler)
+
+  // ── Off-Cycle Compensation Events ───────────────────────
+  eventBus.subscribe(offCycleSubmittedHandler)
+  eventBus.subscribe(offCycleApprovedHandler)
+  eventBus.subscribe(offCycleRejectedHandler)
 
   bootstrapped = true
 }

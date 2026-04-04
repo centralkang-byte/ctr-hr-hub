@@ -195,7 +195,7 @@ export interface OnboardingSettings {
 
 // ─── 승인 플로우 ─────────────────────────────────────────────
 
-export type ApprovalModule = 'benefits' | 'recruitment' | 'leave' | 'promotion' | 'general' | 'payroll' | 'discipline' | 'attendance' | 'certificate' | 'offboarding' | 'personnel_order' | 'probation' | 'contract_conversion'
+export type ApprovalModule = 'benefits' | 'recruitment' | 'leave' | 'promotion' | 'general' | 'payroll' | 'discipline' | 'attendance' | 'certificate' | 'offboarding' | 'personnel_order' | 'probation' | 'contract_conversion' | 'off_cycle_comp'
 export type ApproverType = 'role' | 'specific_user'
 export type ApproverRole = 'direct_manager' | 'hr_admin' | 'dept_head' | 'finance' | 'ceo'
 

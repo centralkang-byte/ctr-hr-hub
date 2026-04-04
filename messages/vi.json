@@ -5320,7 +5320,83 @@
     "sentAt": "Ngày gửi",
     "actions": "Hành động",
     "confirmSuccess": "Đã xác nhận điều chỉnh lương.",
-    "confirmSuccessDesc": "Bạn có thể tạo thư thông báo trong tab Thư thông báo."
+    "confirmSuccessDesc": "Bạn có thể tạo thư thông báo trong tab Thư thông báo.",
+    "offCycle": {
+      "title": "Điều chỉnh lương ngoài kỳ",
+      "newRequest": "Yêu cầu mới",
+      "editRequest": "Sửa yêu cầu",
+      "all": "Tất cả",
+      "myPending": "Chờ tôi duyệt",
+      "status": {
+        "DRAFT": "Bản nháp",
+        "PENDING_APPROVAL": "Chờ duyệt",
+        "APPROVED": "Đã duyệt",
+        "REJECTED": "Từ chối",
+        "CANCELLED": "Đã hủy"
+      },
+      "reason": {
+        "PROMOTION": "Thăng chức",
+        "RETENTION": "Giữ chân",
+        "MARKET_ADJUSTMENT": "Điều chỉnh thị trường",
+        "ROLE_CHANGE": "Thay đổi vai trò",
+        "EQUITY": "Điều chỉnh công bằng",
+        "OTHER": "Khác"
+      },
+      "initiator": {
+        "MANAGER": "Đề xuất quản lý",
+        "HR": "HR khởi tạo"
+      },
+      "form": {
+        "employee": "Nhân viên",
+        "reasonCategory": "Loại lý do",
+        "currentSalary": "Lương cơ bản hiện tại",
+        "proposedSalary": "Lương đề xuất",
+        "changePct": "Tỷ lệ thay đổi",
+        "effectiveDate": "Ngày hiệu lực",
+        "reason": "Lý do chi tiết",
+        "compaRatioBefore": "Tỷ lệ hiện tại",
+        "compaRatioAfter": "Tỷ lệ đề xuất",
+        "searchEmployee": "Tìm nhân viên...",
+        "selectReason": "Chọn lý do"
+      },
+      "actions": {
+        "saveDraft": "Lưu nháp",
+        "submit": "Gửi duyệt",
+        "approve": "Phê duyệt",
+        "reject": "Từ chối",
+        "cancel": "Hủy yêu cầu",
+        "revise": "Sửa và gửi lại",
+        "edit": "Sửa"
+      },
+      "approval": {
+        "timeline": "Lịch sử duyệt",
+        "step": "Bước {stepNumber}",
+        "pending": "Đang chờ",
+        "approved": "Đã duyệt",
+        "rejected": "Từ chối",
+        "autoApproved": "Tự động duyệt",
+        "noComment": "Không có nhận xét"
+      },
+      "toast": {
+        "created": "Đã tạo yêu cầu",
+        "submitted": "Đã gửi duyệt",
+        "approved": "Đã phê duyệt",
+        "rejected": "Đã từ chối",
+        "cancelled": "Đã hủy",
+        "revised": "Đã mở lại để sửa",
+        "loadError": "Không tải được",
+        "salaryDrift": "Lương đã thay đổi. Vui lòng cập nhật."
+      },
+      "empty": "Không có yêu cầu điều chỉnh",
+      "triggerNotice": "Yêu cầu này được đề xuất do sự kiện {eventType}",
+      "bandPosition": "Vị trí trong dải lương",
+      "compensationDetail": "Chi tiết lương",
+      "employeeInfo": "Thông tin nhân viên",
+      "rejectReason": "Lý do từ chối",
+      "rejectReasonPlaceholder": "Nhập lý do từ chối",
+      "approveComment": "Nhận xét (tùy chọn)",
+      "duplicateGuard": "Đã có yêu cầu đang xử lý cho nhân viên này"
+    }
   },
   "payrollPage": {
     "title": "Payroll Processing",

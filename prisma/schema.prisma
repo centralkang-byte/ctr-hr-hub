@@ -502,9 +502,40 @@ enum CompensationChangeType {
   MARKET_ADJUSTMENT
   DEMOTION_COMP
   TRANSFER_COMP
+  RETENTION
+  ROLE_CHANGE
+  EQUITY
   OTHER
 
   @@map("CompensationChangeType")
+}
+
+enum OffCycleRequestStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  CANCELLED
+
+  @@map("OffCycleRequestStatus")
+}
+
+enum OffCycleReasonCategory {
+  PROMOTION
+  RETENTION
+  MARKET_ADJUSTMENT
+  ROLE_CHANGE
+  EQUITY
+  OTHER
+
+  @@map("OffCycleReasonCategory")
+}
+
+enum OffCycleInitiatorType {
+  MANAGER
+  HR
+
+  @@map("OffCycleInitiatorType")
 }
 
 enum BenefitCategory {
@@ -847,6 +878,7 @@ model Company {
   salaryBands            SalaryBand[]
   compensationHistories  CompensationHistory[]
   compensationLetters    CompensationLetter[]
+  offCycleCompRequests   OffCycleCompRequest[]
   salaryAdjustmentMatrix SalaryAdjustmentMatrix[]
   benefitPolicies        BenefitPolicy[]
   allowanceRecords       AllowanceRecord[]
@@ -1381,6 +1413,9 @@ model Employee {
   compensationApprovals CompensationHistory[] @relation("CompensationApprover")
   compensationLetters          CompensationLetter[] @relation("CompLetterEmployee")
   compensationLetterGenerated  CompensationLetter[] @relation("CompLetterGenerator")
+  offCycleRequests             OffCycleCompRequest[] @relation("OffCycleEmployee")
+  offCycleInitiated            OffCycleCompRequest[] @relation("OffCycleInitiator")
+  offCycleApprovals            OffCycleApprovalStep[] @relation("OffCycleApprover")
   allowanceRecords      AllowanceRecord[]     @relation("AllowanceEmployee")
   allowanceApprovals    AllowanceRecord[]     @relation("AllowanceApprover")
 
@@ -2950,11 +2985,16 @@ model CompensationHistory {
   exceptionReason    String?                @map("exception_reason")
   payrollRunId       String?                @map("payroll_run_id")
 
+  // Off-cycle: 미래 시행일 배치 반영
+  isScheduled        Boolean                @default(false) @map("is_scheduled")
+  appliedAt          DateTime?              @map("applied_at")
+
   employee Employee  @relation("CompensationEmployee", fields: [employeeId], references: [id])
   company  Company   @relation(fields: [companyId], references: [id])
   approver Employee? @relation("CompensationApprover", fields: [approvedById], references: [id])
 
-  letters    CompensationLetter[]
+  letters            CompensationLetter[]
+  offCycleRequest    OffCycleCompRequest?
 
   @@map("compensation_history")
 }
@@ -2990,6 +3030,72 @@ model CompensationLetter {
   @@unique([compensationHistoryId, version])
   @@index([companyId, cycleId])
   @@map("compensation_letters")
+}
+
+// Off-Cycle Compensation Request — 비정기 급여 조정 요청 + 승인 워크플로
+model OffCycleCompRequest {
+  id                    String                  @id @default(uuid())
+  companyId             String                  @map("company_id")
+  employeeId            String                  @map("employee_id")
+  initiatorId           String                  @map("initiator_id")
+  initiatorType         OffCycleInitiatorType   @map("initiator_type")
+
+  // 보상 상세
+  reasonCategory        OffCycleReasonCategory  @map("reason_category")
+  reason                String?
+  currentBaseSalary     Decimal                 @map("current_base_salary")
+  proposedBaseSalary    Decimal                 @map("proposed_base_salary")
+  currency              String                  @default("KRW")
+  changePct             Decimal                 @map("change_pct")
+  effectiveDate         DateTime                @map("effective_date")
+  proposedCompaRatio    Decimal?                @map("proposed_compa_ratio")
+
+  // 상태머신
+  status                OffCycleRequestStatus   @default(DRAFT)
+  currentStep           Int                     @default(0) @map("current_step")
+  totalSteps            Int                     @default(0) @map("total_steps")
+  submittedAt           DateTime?               @map("submitted_at")
+  completedAt           DateTime?               @map("completed_at")
+
+  // 승인 완료 시 CompensationHistory 연결
+  compensationHistoryId String?                 @unique @map("compensation_history_id")
+
+  // 자동 트리거 맥락 (승진/전적 등)
+  triggerEventType      String?                 @map("trigger_event_type")
+  triggerEventId        String?                 @map("trigger_event_id")
+
+  createdAt             DateTime                @default(now()) @map("created_at")
+  updatedAt             DateTime                @updatedAt @map("updated_at")
+
+  company               Company                 @relation(fields: [companyId], references: [id])
+  employee              Employee                @relation("OffCycleEmployee", fields: [employeeId], references: [id])
+  initiator             Employee                @relation("OffCycleInitiator", fields: [initiatorId], references: [id])
+  compensationHistory   CompensationHistory?    @relation(fields: [compensationHistoryId], references: [id])
+  approvalSteps         OffCycleApprovalStep[]
+
+  @@index([companyId, status])
+  @@index([employeeId])
+  @@index([initiatorId])
+  @@map("off_cycle_comp_requests")
+}
+
+model OffCycleApprovalStep {
+  id           String                    @id @default(uuid())
+  requestId    String                    @map("request_id")
+  stepNumber   Int                       @map("step_number")
+  roleRequired String                    @map("role_required")
+  approverId   String?                   @map("approver_id")
+  status       PayrollApprovalStepStatus @default(PENDING)
+  comment      String?
+  decidedAt    DateTime?                 @map("decided_at")
+  createdAt    DateTime                  @default(now()) @map("created_at")
+
+  request      OffCycleCompRequest       @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  approver     Employee?                 @relation("OffCycleApprover", fields: [approverId], references: [id])
+
+  @@unique([requestId, stepNumber])
+  @@index([requestId])
+  @@map("off_cycle_approval_steps")
 }
 
 model SalaryAdjustmentMatrix {

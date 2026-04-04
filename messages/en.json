@@ -5320,7 +5320,83 @@
     "sentAt": "Sent",
     "actions": "Actions",
     "confirmSuccess": "Compensation adjustments confirmed.",
-    "confirmSuccessDesc": "You can generate compensation letters in the Letters tab."
+    "confirmSuccessDesc": "You can generate compensation letters in the Letters tab.",
+    "offCycle": {
+      "title": "Off-Cycle Compensation Adjustment",
+      "newRequest": "New Request",
+      "editRequest": "Edit Request",
+      "all": "All",
+      "myPending": "My Pending",
+      "status": {
+        "DRAFT": "Draft",
+        "PENDING_APPROVAL": "Pending Approval",
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected",
+        "CANCELLED": "Cancelled"
+      },
+      "reason": {
+        "PROMOTION": "Promotion",
+        "RETENTION": "Retention",
+        "MARKET_ADJUSTMENT": "Market Adjustment",
+        "ROLE_CHANGE": "Role Change",
+        "EQUITY": "Equity Adjustment",
+        "OTHER": "Other"
+      },
+      "initiator": {
+        "MANAGER": "Manager Proposal",
+        "HR": "HR Initiated"
+      },
+      "form": {
+        "employee": "Target Employee",
+        "reasonCategory": "Reason Category",
+        "currentSalary": "Current Base Salary",
+        "proposedSalary": "Proposed Base Salary",
+        "changePct": "Change %",
+        "effectiveDate": "Effective Date",
+        "reason": "Justification",
+        "compaRatioBefore": "Current Compa-Ratio",
+        "compaRatioAfter": "Proposed Compa-Ratio",
+        "searchEmployee": "Search employee...",
+        "selectReason": "Select reason"
+      },
+      "actions": {
+        "saveDraft": "Save Draft",
+        "submit": "Submit for Approval",
+        "approve": "Approve",
+        "reject": "Reject",
+        "cancel": "Cancel Request",
+        "revise": "Revise & Resubmit",
+        "edit": "Edit"
+      },
+      "approval": {
+        "timeline": "Approval History",
+        "step": "Step {stepNumber}",
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "autoApproved": "Auto-approved",
+        "noComment": "No comment"
+      },
+      "toast": {
+        "created": "Request created",
+        "submitted": "Submitted for approval",
+        "approved": "Request approved",
+        "rejected": "Request rejected",
+        "cancelled": "Request cancelled",
+        "revised": "Request reopened for revision",
+        "loadError": "Failed to load requests",
+        "salaryDrift": "Base salary has changed. Please update the request."
+      },
+      "empty": "No off-cycle requests found",
+      "triggerNotice": "This request was suggested due to a {eventType} event",
+      "bandPosition": "Band Position",
+      "compensationDetail": "Compensation Details",
+      "employeeInfo": "Employee Info",
+      "rejectReason": "Rejection Reason",
+      "rejectReasonPlaceholder": "Enter rejection reason",
+      "approveComment": "Approval Comment (optional)",
+      "duplicateGuard": "An active request already exists for this employee"
+    }
   },
   "payrollPage": {
     "title": "Payroll Processing",

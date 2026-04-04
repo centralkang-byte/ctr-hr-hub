@@ -99,6 +99,9 @@ export const compensationConfirmSchema = z.object({
             'MARKET_ADJUSTMENT',
             'DEMOTION_COMP',
             'TRANSFER_COMP',
+            'RETENTION',
+            'ROLE_CHANGE',
+            'EQUITY',
             'OTHER',
           ])
           .default('ANNUAL_INCREASE'),
@@ -121,6 +124,9 @@ export const historySearchSchema = z.object({
       'MARKET_ADJUSTMENT',
       'DEMOTION_COMP',
       'TRANSFER_COMP',
+      'RETENTION',
+      'ROLE_CHANGE',
+      'EQUITY',
       'OTHER',
     ])
     .optional(),
@@ -148,6 +154,44 @@ export const letterSendSchema = z.object({
 
 export const letterSearchSchema = z.object({
   cycleId: z.string().uuid(),
+  page: z.coerce.number().int().positive().default(DEFAULT_PAGE),
+  limit: z.coerce.number().int().positive().max(100).default(DEFAULT_PAGE_SIZE),
+})
+
+// ─── Off-Cycle Compensation ────────────────────────────
+
+const OFF_CYCLE_REASON_CATEGORIES = ['PROMOTION', 'RETENTION', 'MARKET_ADJUSTMENT', 'ROLE_CHANGE', 'EQUITY', 'OTHER'] as const
+
+export const offCycleCreateSchema = z.object({
+  employeeId: z.string().uuid(),
+  reasonCategory: z.enum(OFF_CYCLE_REASON_CATEGORIES),
+  reason: z.string().max(500).optional(),
+  proposedBaseSalary: z.number().positive(),
+  effectiveDate: z.string().datetime(),
+  triggerEventType: z.string().optional(),
+  triggerEventId: z.string().uuid().optional(),
+})
+
+export const offCycleUpdateSchema = z.object({
+  reasonCategory: z.enum(OFF_CYCLE_REASON_CATEGORIES).optional(),
+  reason: z.string().max(500).optional(),
+  proposedBaseSalary: z.number().positive().optional(),
+  effectiveDate: z.string().datetime().optional(),
+})
+
+export const offCycleApproveSchema = z.object({
+  comment: z.string().max(500).optional(),
+})
+
+export const offCycleRejectSchema = z.object({
+  comment: z.string().min(1, '반려 사유를 입력해야 합니다.').max(500),
+})
+
+export const offCycleSearchSchema = z.object({
+  status: z.enum(['DRAFT', 'PENDING_APPROVAL', 'APPROVED', 'REJECTED', 'CANCELLED']).optional(),
+  employeeId: z.string().uuid().optional(),
+  reasonCategory: z.enum(OFF_CYCLE_REASON_CATEGORIES).optional(),
+  initiatorType: z.enum(['MANAGER', 'HR']).optional(),
   page: z.coerce.number().int().positive().default(DEFAULT_PAGE),
   limit: z.coerce.number().int().positive().max(100).default(DEFAULT_PAGE_SIZE),
 })

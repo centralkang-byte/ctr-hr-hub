@@ -5320,7 +5320,83 @@
     "sentAt": "发送日期",
     "actions": "操作",
     "confirmSuccess": "薪酬调整已确认。",
-    "confirmSuccessDesc": "您可以在通知书标签页中生成薪酬调整通知书。"
+    "confirmSuccessDesc": "您可以在通知书标签页中生成薪酬调整通知书。",
+    "offCycle": {
+      "title": "非周期薪酬调整",
+      "newRequest": "新建申请",
+      "editRequest": "编辑申请",
+      "all": "全部",
+      "myPending": "待我审批",
+      "status": {
+        "DRAFT": "草稿",
+        "PENDING_APPROVAL": "待审批",
+        "APPROVED": "已批准",
+        "REJECTED": "已拒绝",
+        "CANCELLED": "已取消"
+      },
+      "reason": {
+        "PROMOTION": "晋升",
+        "RETENTION": "留任",
+        "MARKET_ADJUSTMENT": "市场调整",
+        "ROLE_CHANGE": "角色变更",
+        "EQUITY": "公平调整",
+        "OTHER": "其他"
+      },
+      "initiator": {
+        "MANAGER": "经理提案",
+        "HR": "HR发起"
+      },
+      "form": {
+        "employee": "目标员工",
+        "reasonCategory": "原因类别",
+        "currentSalary": "当前基本工资",
+        "proposedSalary": "建议基本工资",
+        "changePct": "变动率",
+        "effectiveDate": "生效日期",
+        "reason": "详细理由",
+        "compaRatioBefore": "当前比率",
+        "compaRatioAfter": "建议比率",
+        "searchEmployee": "搜索员工...",
+        "selectReason": "请选择原因"
+      },
+      "actions": {
+        "saveDraft": "保存草稿",
+        "submit": "提交审批",
+        "approve": "批准",
+        "reject": "拒绝",
+        "cancel": "取消申请",
+        "revise": "修改并重新提交",
+        "edit": "编辑"
+      },
+      "approval": {
+        "timeline": "审批记录",
+        "step": "第{stepNumber}步",
+        "pending": "待处理",
+        "approved": "已批准",
+        "rejected": "已拒绝",
+        "autoApproved": "自动批准",
+        "noComment": "无备注"
+      },
+      "toast": {
+        "created": "申请已创建",
+        "submitted": "已提交审批",
+        "approved": "申请已批准",
+        "rejected": "申请已拒绝",
+        "cancelled": "申请已取消",
+        "revised": "申请已重新打开",
+        "loadError": "加载失败",
+        "salaryDrift": "基本工资已变更，请更新申请"
+      },
+      "empty": "暂无非周期调整申请",
+      "triggerNotice": "此申请因{eventType}事件而建议",
+      "bandPosition": "薪资带位置",
+      "compensationDetail": "薪酬详情",
+      "employeeInfo": "员工信息",
+      "rejectReason": "拒绝原因",
+      "rejectReasonPlaceholder": "请输入拒绝原因",
+      "approveComment": "审批备注（可选）",
+      "duplicateGuard": "该员工已有进行中的申请"
+    }
   },
   "payrollPage": {
     "title": "Payroll Processing",

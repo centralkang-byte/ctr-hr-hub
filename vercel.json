@@ -5,6 +5,7 @@
   "outputDirectory": ".next",
   "crons": [
     { "path": "/api/v1/cron/nudge-batch", "schedule": "0 1 * * *" },
-    { "path": "/api/v1/cron/loa-return-reminder", "schedule": "0 0 * * *" }
+    { "path": "/api/v1/cron/loa-return-reminder", "schedule": "0 0 * * *" },
+    { "path": "/api/v1/cron/apply-scheduled-comp", "schedule": "0 15 * * *" }
   ]
 }

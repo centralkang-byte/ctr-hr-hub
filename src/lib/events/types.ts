@@ -85,6 +85,11 @@ export const DOMAIN_EVENTS = {
   GOAL_REVISION_PROPOSED: 'GOAL_REVISION_PROPOSED',
   GOAL_REVISION_APPROVED: 'GOAL_REVISION_APPROVED',
   GOAL_REVISION_REJECTED: 'GOAL_REVISION_REJECTED',
+
+  // Off-Cycle Compensation
+  OFF_CYCLE_COMP_SUBMITTED: 'OFF_CYCLE_COMP_SUBMITTED',
+  OFF_CYCLE_COMP_APPROVED: 'OFF_CYCLE_COMP_APPROVED',
+  OFF_CYCLE_COMP_REJECTED: 'OFF_CYCLE_COMP_REJECTED',
 } as const
 
 export type DomainEventName = typeof DOMAIN_EVENTS[keyof typeof DOMAIN_EVENTS]
@@ -660,6 +665,43 @@ export interface GoalRevisionReviewedPayload {
   batchId?: string
 }
 
+// ── Off-Cycle Compensation Events ────────────────────────
+
+export interface OffCycleCompSubmittedPayload {
+  ctx: EventContext
+  requestId: string
+  employeeId: string
+  initiatorId: string
+  companyId: string
+  reasonCategory: string
+  proposedBaseSalary: number
+  changePct: number
+  effectiveDate: Date
+  firstApproverId?: string
+}
+
+export interface OffCycleCompApprovedPayload {
+  ctx: EventContext
+  requestId: string
+  employeeId: string
+  initiatorId: string
+  companyId: string
+  proposedBaseSalary: number
+  changePct: number
+  effectiveDate: Date
+  compensationHistoryId?: string
+}
+
+export interface OffCycleCompRejectedPayload {
+  ctx: EventContext
+  requestId: string
+  employeeId: string
+  initiatorId: string
+  companyId: string
+  rejectedById: string
+  rejectionReason?: string
+}
+
 // ------------------------------------
 // Discriminated Union (Event Map)
 // ------------------------------------
@@ -722,6 +764,10 @@ export interface DomainEventMap {
   GOAL_REVISION_PROPOSED: GoalRevisionProposedPayload
   GOAL_REVISION_APPROVED: GoalRevisionReviewedPayload
   GOAL_REVISION_REJECTED: GoalRevisionReviewedPayload
+  // Off-Cycle Compensation
+  OFF_CYCLE_COMP_SUBMITTED: OffCycleCompSubmittedPayload
+  OFF_CYCLE_COMP_APPROVED: OffCycleCompApprovedPayload
+  OFF_CYCLE_COMP_REJECTED: OffCycleCompRejectedPayload
 }
 
 /** 타입-안전 이벤트 봉투 */

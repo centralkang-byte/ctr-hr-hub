@@ -5,6 +5,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { parseDateOnly } from '@/lib/timezone'
+import { sendNotification } from '@/lib/notifications'
 import type { MovementType, ValidatedRow } from './types'
 
 // Prisma 7 interactive transaction client 타입
@@ -12,6 +13,47 @@ type TxClient = Omit<
   typeof prisma,
   '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
 >
+
+// ── HR Admin 비정기 보상 알림 ──────────────────────────────
+async function notifyHrAdminsForOffCycle(
+  companyId: string,
+  employeeId: string,
+  employeeName: string,
+  reason: 'PROMOTION' | 'ROLE_CHANGE',
+) {
+  const hrAdmins = await prisma.employee.findMany({
+    where: {
+      assignments: {
+        some: { companyId, endDate: null, isPrimary: true },
+      },
+      employeeRoles: {
+        some: { role: { code: { in: ['HR_ADMIN', 'SUPER_ADMIN'] } }, endDate: null },
+      },
+      deletedAt: null,
+      resignDate: null,
+    },
+    select: { id: true },
+  })
+
+  const reasonLabel = reason === 'PROMOTION' ? '승진' : '법인전환'
+  for (const hr of hrAdmins) {
+    sendNotification({
+      employeeId: hr.id,
+      triggerType: 'offCycleComp.bulkTrigger',
+      title: '비정기 급여 조정 검토 필요',
+      body: `${employeeName}의 ${reasonLabel} 발령에 따른 급여 조정을 검토해 주세요.`,
+      titleKey: 'notifications.offCycleComp.bulkTrigger.title',
+      bodyKey: 'notifications.offCycleComp.bulkTrigger.body',
+      bodyParams: {
+        employeeName,
+        reason: reasonLabel,
+      },
+      link: `/compensation/off-cycle/new?employeeId=${employeeId}&reason=${reason}`,
+      priority: 'normal',
+      companyId,
+    })
+  }
+}
 
 // ── 현재 active assignment 조회 (트랜잭션 내부용) ──────────
 async function getActiveAssignment(tx: TxClient, employeeId: string) {
@@ -100,6 +142,9 @@ async function executePromotion(tx: TxClient, row: ValidatedRow) {
       reason: data.reason ?? null,
     },
   })
+
+  // HR Admin에 비정기 보상 검토 알림 (fire-and-forget)
+  notifyHrAdminsForOffCycle(current.companyId, row.employeeId, row.employeeName, 'PROMOTION')
 }
 
 // ── 법인 전환 (ENTITY TRANSFER / COMPANY_TRANSFER) ─────────
@@ -133,6 +178,9 @@ async function executeEntityTransfer(tx: TxClient, row: ValidatedRow) {
       reason: data.reason ?? null,
     },
   })
+
+  // HR Admin에 비정기 보상 검토 알림 (fire-and-forget, 전입 법인 기준)
+  notifyHrAdminsForOffCycle(data.companyId, row.employeeId, row.employeeName, 'ROLE_CHANGE')
 }
 
 // ── 퇴직 (TERMINATION) ────────────────────────────────────
