@@ -41,17 +41,17 @@ interface InternalJob {
   createdAt: string
 }
 
-const EMP_TYPE_LABELS: Record<string, string> = {
-  FULL_TIME: '정규직',
-  CONTRACT: '계약직',
-  DISPATCH: '파견직',
-  INTERN: '인턴',
+const EMP_TYPE_KEYS: Record<string, string> = {
+  FULL_TIME: 'empType.fullTime',
+  CONTRACT: 'empType.contract',
+  DISPATCH: 'empType.dispatch',
+  INTERN: 'empType.intern',
 }
 
-const WORK_MODE_LABELS: Record<string, string> = {
-  OFFICE: '사무실',
-  REMOTE: '원격',
-  HYBRID: '하이브리드',
+const WORK_MODE_KEYS: Record<string, string> = {
+  OFFICE: 'workMode.office',
+  REMOTE: 'workMode.remote',
+  HYBRID: 'workMode.hybrid',
 }
 
 const URGENCY_COLORS: Record<string, string> = {
@@ -60,18 +60,19 @@ const URGENCY_COLORS: Record<string, string> = {
   low: 'bg-sky-500/10 text-sky-700',
 }
 
-const STAGE_LABELS: Record<string, string> = {
-  APPLIED: '서류접수',
-  SCREENING: '서류심사',
-  INTERVIEW_1: '1차 면접',
-  INTERVIEW_2: '2차 면접',
-  FINAL: '최종 면접',
-  OFFER: '오퍼',
-  HIRED: '합격',
-  REJECTED: '불합격',
+const STAGE_KEYS: Record<string, string> = {
+  APPLIED: 'stage.applied',
+  SCREENING: 'stage.screening',
+  INTERVIEW_1: 'stage.interview1',
+  INTERVIEW_2: 'stage.interview2',
+  FINAL: 'stage.final',
+  OFFER: 'stage.offer',
+  HIRED: 'stage.hired',
+  REJECTED: 'stage.rejected',
 }
 
 export default function InternalJobsClient({ user: _user }: { user: SessionUser }) {
+  const t = useTranslations('internalJobs')
   const tCommon = useTranslations('common')
   const [items, setItems] = useState<InternalJob[]>([])
   const [loading, setLoading] = useState(true)
@@ -88,6 +89,8 @@ export default function InternalJobsClient({ user: _user }: { user: SessionUser 
       if (companyId) params.companyId = companyId
       const res = await apiClient.getList<InternalJob>('/api/v1/recruitment/internal-jobs', params)
       setItems(res.data ?? [])
+    } catch (err) {
+      toast({ title: t('fetchError'), description: err instanceof Error ? err.message : undefined, variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -102,7 +105,7 @@ export default function InternalJobsClient({ user: _user }: { user: SessionUser 
       await apiClient.post(`/api/v1/recruitment/internal-jobs/${jobId}/apply`, {})
       await load()
     } catch (e: unknown) {
-      toast({ title: e instanceof Error ? e.message : '지원 중 오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: e instanceof Error ? e.message : t('applyError'), variant: 'destructive' })
     } finally {
       setApplying(null)
     }
@@ -117,9 +120,9 @@ export default function InternalJobsClient({ user: _user }: { user: SessionUser 
     <div className="p-6 space-y-6">
       {/* 헤더 */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">사내 공개 채용</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          그룹 내 공개된 내부 채용 공고입니다. 관심 있는 포지션에 지원하세요.
+          {t('description')}
         </p>
       </div>
 
@@ -130,7 +133,7 @@ export default function InternalJobsClient({ user: _user }: { user: SessionUser 
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="공고명 또는 부서 검색..."
+            placeholder={t('searchPlaceholder')}
             className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
           />
         </div>
@@ -139,7 +142,7 @@ export default function InternalJobsClient({ user: _user }: { user: SessionUser 
           onChange={(e) => setCompanyId(e.target.value)}
           className="px-3 py-2 border border-border rounded-lg text-sm text-muted-foreground focus:ring-2 focus:ring-primary/10 focus:border-primary"
         >
-          <option value="">전체 법인</option>
+          <option value="">{t('allCompanies')}</option>
           {companies.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
@@ -159,7 +162,7 @@ export default function InternalJobsClient({ user: _user }: { user: SessionUser 
           {items.map((job) => {
             const isExpanded = expandedId === job.id
             const urgencyColor = URGENCY_COLORS[job.urgency] ?? URGENCY_COLORS.normal
-            const urgencyLabel = job.urgency === 'urgent' ? '긴급' : job.urgency === 'normal' ? '보통' : '낮음'
+            const urgencyLabel = job.urgency === 'urgent' ? t('urgency.urgent') : job.urgency === 'normal' ? t('urgency.normal') : t('urgency.low')
 
             return (
               <div
@@ -176,10 +179,10 @@ export default function InternalJobsClient({ user: _user }: { user: SessionUser 
                           {urgencyLabel}
                         </span>
                         <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary/90 font-medium">
-                          내부 채용
+                          {t('badge.internal')}
                         </span>
                         <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                          {EMP_TYPE_LABELS[job.employmentType] ?? job.employmentType}
+                          {EMP_TYPE_KEYS[job.employmentType] ? t(EMP_TYPE_KEYS[job.employmentType]) : job.employmentType}
                         </span>
                       </div>
 
@@ -206,13 +209,13 @@ export default function InternalJobsClient({ user: _user }: { user: SessionUser 
                         {job.workMode && (
                           <>
                             <span>·</span>
-                            <span>{WORK_MODE_LABELS[job.workMode] ?? job.workMode}</span>
+                            <span>{WORK_MODE_KEYS[job.workMode] ? t(WORK_MODE_KEYS[job.workMode]) : job.workMode}</span>
                           </>
                         )}
                         <span>·</span>
                         <span className="flex items-center gap-1">
                           <Users size={13} />
-                          {job.headcount}명
+                          {t('headcount', { count: job.headcount })}
                         </span>
                       </div>
 
@@ -220,14 +223,13 @@ export default function InternalJobsClient({ user: _user }: { user: SessionUser 
                       <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                         {!job.salaryHidden && job.salaryRangeMin && job.salaryRangeMax && (
                           <span>
-                            급여: {(job.salaryRangeMin / 10000).toFixed(0)}만
-                            ~ {(job.salaryRangeMax / 10000).toFixed(0)}만원
+                            {t('salary', { min: (job.salaryRangeMin / 10000).toFixed(0), max: (job.salaryRangeMax / 10000).toFixed(0) })}
                           </span>
                         )}
                         {job.deadlineDate && (
                           <span className="flex items-center gap-1">
                             <Clock size={12} />
-                            마감: {new Date(job.deadlineDate).toLocaleDateString('ko-KR')}
+                            {t('deadline', { date: new Date(job.deadlineDate).toLocaleDateString('ko-KR') })}
                           </span>
                         )}
                       </div>
@@ -238,7 +240,7 @@ export default function InternalJobsClient({ user: _user }: { user: SessionUser 
                       {job.alreadyApplied ? (
                         <div className="flex items-center gap-1 px-3 py-1.5 bg-emerald-500/15 text-emerald-700 rounded-lg text-sm font-medium">
                           <CheckCircle2 size={14} />
-                          {STAGE_LABELS[job.myStage ?? ''] ?? '지원완료'}
+                          {STAGE_KEYS[job.myStage ?? ''] ? t(STAGE_KEYS[job.myStage ?? '']) : t('stage.applied')}
                         </div>
                       ) : (
                         <button
@@ -247,14 +249,14 @@ export default function InternalJobsClient({ user: _user }: { user: SessionUser 
                           className={`flex items-center gap-1.5 px-3 py-1.5 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
                         >
                           <ArrowRight size={14} />
-                          {applying === job.id ? '지원 중...' : '지원하기'}
+                          {applying === job.id ? t('applying') : t('apply')}
                         </button>
                       )}
                       <button
                         onClick={() => setExpandedId(isExpanded ? null : job.id)}
                         className="flex items-center gap-1 text-xs text-muted-foreground hover:text-muted-foreground"
                       >
-                        상세 보기
+                        {t('viewDetails')}
                         <ChevronDown
                           size={13}
                           className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`}
@@ -272,7 +274,7 @@ export default function InternalJobsClient({ user: _user }: { user: SessionUser 
                     </p>
                     {job.position && (
                       <p className="mt-3 text-xs text-muted-foreground">
-                        포지션: [{job.position.code}] {job.position.titleKo}
+                        {t('position')}: [{job.position.code}] {job.position.titleKo}
                       </p>
                     )}
                   </div>

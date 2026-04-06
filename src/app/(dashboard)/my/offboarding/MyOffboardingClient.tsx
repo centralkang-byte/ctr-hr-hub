@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 
 // ═══════════════════════════════════════════════════════════
@@ -60,12 +61,12 @@ interface OffboardingData {
 
 // ─── Constants ────────────────────────────────────────────
 
-const ASSIGNEE_LABEL: Record<string, string> = {
-  EMPLOYEE: '본인',
-  MANAGER:  '매니저',
-  HR:       'HR팀',
-  IT:       'IT팀',
-  FINANCE:  '재무팀',
+const ASSIGNEE_KEYS: Record<string, string> = {
+  EMPLOYEE: 'assignee.employee',
+  MANAGER:  'assignee.manager',
+  HR:       'assignee.hr',
+  IT:       'assignee.it',
+  FINANCE:  'assignee.finance',
 }
 
 // ─── Task Row ─────────────────────────────────────────────
@@ -78,6 +79,7 @@ interface TaskRowProps {
 }
 
 function TaskRow({ task, isActive, onComplete, processing }: TaskRowProps) {
+  const t = useTranslations('myOffboarding')
   const isDone      = task.status === 'DONE'
   const isEmployee  = task.assigneeType === 'EMPLOYEE'
   const isBusy      = processing === task.id
@@ -111,10 +113,10 @@ function TaskRow({ task, isActive, onComplete, processing }: TaskRowProps) {
               {task.title}
             </p>
             {task.isOverdue && !isDone && (
-              <Badge className="h-4 bg-destructive/50 px-1.5 text-[10px] text-white">지연</Badge>
+              <Badge className="h-4 bg-destructive/50 px-1.5 text-[10px] text-white">{t('overdue')}</Badge>
             )}
             {!task.isRequired && (
-              <Badge variant="outline" className="h-4 px-1.5 text-[10px] text-muted-foreground">선택</Badge>
+              <Badge variant="outline" className="h-4 px-1.5 text-[10px] text-muted-foreground">{t('optional')}</Badge>
             )}
           </div>
 
@@ -125,14 +127,14 @@ function TaskRow({ task, isActive, onComplete, processing }: TaskRowProps) {
 
           {/* Meta row */}
           <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <span>담당: {ASSIGNEE_LABEL[task.assigneeType] ?? task.assigneeType}</span>
+            <span>{t('assignedTo')}: {ASSIGNEE_KEYS[task.assigneeType] ? t(ASSIGNEE_KEYS[task.assigneeType]) : task.assigneeType}</span>
             {isDone && task.completedAt ? (
               <span className="text-primary">
-                완료: {new Date(task.completedAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
+                {t('completedOn')}: {new Date(task.completedAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
               </span>
             ) : (
               <span className={task.isOverdue ? 'text-red-500' : ''}>
-                마감: {dueDateStr}
+                {t('dueDate')}: {dueDateStr}
               </span>
             )}
           </div>
@@ -150,7 +152,7 @@ function TaskRow({ task, isActive, onComplete, processing }: TaskRowProps) {
                 ? <Loader2 className="h-3 w-3 animate-spin" />
                 : <CheckCircle2 className="h-3 w-3" />
               }
-              완료 처리
+              {t('markComplete')}
             </Button>
           )}
         </div>
@@ -181,6 +183,7 @@ function DDayBadge({ dDay }: { dDay: number }) {
 // ─── Main Component ───────────────────────────────────────
 
 export function MyOffboardingClient() {
+  const t = useTranslations('myOffboarding')
   const [data,       setData]       = useState<OffboardingData | null>(null)
   const [loading,    setLoading]    = useState(true)
   const [noProcess,  setNoProcess]  = useState(false)
@@ -253,7 +256,7 @@ export function MyOffboardingClient() {
           <Info className="mb-3 h-10 w-10 text-muted-foreground opacity-60" />
           <EmptyState />
           <p className="mt-2 max-w-xs text-xs text-muted-foreground">
-            퇴직 관련 문의는 HR팀에 연락해주세요.
+            {t('emptyDesc')}
           </p>
         </CardContent>
       </Card>
@@ -275,10 +278,10 @@ export function MyOffboardingClient() {
       <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-xl font-bold text-foreground">나의 퇴직 처리</h1>
+            <h1 className="text-xl font-bold text-foreground">{t('title')}</h1>
             <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
               <CalendarDays className="h-4 w-4" />
-              최종 근무일: {lastWorkStr}
+              {t('lastWorkingDate')}: {lastWorkStr}
             </div>
           </div>
           <DDayBadge dDay={data.dDay} />
@@ -287,9 +290,9 @@ export function MyOffboardingClient() {
         {/* Progress bar */}
         <div className="mt-5 space-y-2">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-medium text-foreground">전체 진행률</span>
+            <span className="font-medium text-foreground">{t('overallProgress')}</span>
             <span className="text-muted-foreground">
-              {data.completed}/{data.total} 완료
+              {t('progressCount', { done: data.completed, total: data.total })}
             </span>
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-border">
@@ -322,30 +325,30 @@ export function MyOffboardingClient() {
         <CardHeader className="pb-2 pt-4">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
             <Info className="h-4 w-4 text-primary" />
-            참고 정보
+            {t('referenceInfo')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 pb-4">
           {data.reference.annualLeaveRemaining !== null && (
             <div className="flex items-start gap-2 text-xs text-muted-foreground">
               <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-              잔여 연차: <span className="font-semibold text-foreground">
-                {data.reference.annualLeaveRemaining}일
+              {t('ref.remainingLeave')}: <span className="font-semibold text-foreground">
+                {t('ref.days', { count: data.reference.annualLeaveRemaining })}
               </span>
-              — 최종 근무일 전 사용을 권장합니다.
+              — {t('ref.useBeforeLastDay')}
             </div>
           )}
           <div className="flex items-start gap-2 text-xs text-muted-foreground">
             <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-            4대보험 상실 신고는 퇴직일 기준 14일 이내 처리됩니다.
+            {t('ref.insuranceNotice')}
           </div>
           <div className="flex items-start gap-2 text-xs text-muted-foreground">
             <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-            건강보험 임의 계속 가입을 원하시면 HR팀에 문의하세요.
+            {t('ref.healthInsuranceContinuation')}
           </div>
           <div className="flex items-start gap-2 text-xs text-muted-foreground">
             <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-            퇴직금은 최종 근무일 기준 14일 이내 지급됩니다.
+            {t('ref.severanceNotice')}
           </div>
         </CardContent>
       </Card>

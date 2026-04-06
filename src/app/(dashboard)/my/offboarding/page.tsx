@@ -6,14 +6,15 @@
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import { MyOffboardingClient } from './MyOffboardingClient'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
-export const metadata = {
-  title: '나의 퇴직처리 — CTR HR Hub',
-  description: '나의 퇴직 처리 진행 현황과 할 일을 확인하세요.',
+export async function generateMetadata() {
+  const t = await getTranslations('myOffboarding')
+  return { title: t('title') }
 }
 
 export default async function MyOffboardingPage() {

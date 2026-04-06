@@ -258,7 +258,8 @@
     "requiredFields": "필수 항목을 입력해주세요.",
     "updateFailed": "수정 실패",
     "statusChangeFailed": "상태 변경 실패",
-    "errorOccurred": "오류가 발생했습니다."
+    "errorOccurred": "오류가 발생했습니다.",
+    "currentValue": "현재 값"
   },
   "auth": {
     "login": "로그인",
@@ -2286,7 +2287,8 @@
     "evalStrengths": "강점",
     "evalConcerns": "우려사항",
     "evalComment": "코멘트",
-    "closeButton": "닫기"
+    "closeButton": "닫기",
+    "validationSalaryRange": "최소 급여는 최대 급여보다 작아야 합니다"
   },
   "offboarding": {
     "title": "퇴직 관리",
@@ -5502,7 +5504,8 @@
         "edit": "수정",
         "confirmReject": "반려 확인"
       }
-    }
+    },
+    "simulatedPosition": "시뮬레이션 위치"
   },
   "payrollPage": {
     "title": "급여 정산",
@@ -5722,7 +5725,8 @@
     "ctrCoreValue": "CTR 핵심가치",
     "reason": "포상 사유",
     "dateInfo": "일자 정보",
-    "registeredDate": "등록일"
+    "registeredDate": "등록일",
+    "awardedById": "수여자"
   },
   "rewardForm": {
     "title": "포상 등록",
@@ -6519,6 +6523,130 @@
       "langCount": "언어 {count}개",
       "skills": "스킬",
       "skillCount": "개 보유"
+    },
+    "profile": {
+      "tabs": {
+        "overview": "개요",
+        "career": "직무 및 이력",
+        "compensation": "보상 및 급여",
+        "documents": "문서"
+      },
+      "visibility": {
+        "public": "전체 공개",
+        "team": "팀원만",
+        "manager": "매니저만",
+        "private": "비공개"
+      },
+      "changeType": {
+        "HIRE": "입사",
+        "PROMOTION": "승진",
+        "TRANSFER": "부서 이동",
+        "DEMOTION": "강등",
+        "ANNUAL_INCREASE": "정규 인상",
+        "MARKET_ADJUSTMENT": "시장 조정",
+        "RESIGN": "퇴사"
+      },
+      "docType": {
+        "CONTRACT": "계약서",
+        "ID_CARD": "신분증 사본",
+        "CERTIFICATE": "증명서",
+        "RESUME": "이력서",
+        "HANDOVER": "인수인계서",
+        "OTHER": "기타"
+      },
+      "statusActive": "재직중",
+      "hrInfo": "인사 정보",
+      "field": {
+        "employeeNo": "사원번호",
+        "hireDate": "입사일",
+        "gender": "성별",
+        "birthDate": "생년월일",
+        "companyEmail": "이메일 (회사)",
+        "personalPhone": "연락처 (개인)"
+      },
+      "pending": "대기중",
+      "changeRequest": "수정 요청",
+      "bio": "자기소개",
+      "emptyBio": "아직 작성된 자기소개가 없습니다.",
+      "skills": "보유 스킬",
+      "emptySkills": "등록된 스킬이 없습니다.",
+      "add": "추가",
+      "emergencyContact": "비상연락처",
+      "addAction": "추가하기",
+      "emptyEmergencyContact": "등록된 비상연락처가 없습니다.",
+      "primary": "주요",
+      "visibilitySettings": "공개 범위 설정",
+      "visibilityField": {
+        "personalPhone": "내 연락처",
+        "birthDate": "생일 정보",
+        "skills": "보유 스킬"
+      },
+      "careerTimeline": "사내 발령 타임라인",
+      "emptyCareerTitle": "이력 없음",
+      "emptyCareerDesc": "등록된 인사 발령 기록이 없습니다.",
+      "noDept": "부서 미지정",
+      "noGrade": "직급 미지정",
+      "currentSalary": "현재 계약 연봉",
+      "noRecord": "기록 없음",
+      "showSalary": "금액 보기",
+      "hideSalary": "숨기기",
+      "lastUpdated": "최근 업데이트",
+      "currency": "지급 통화",
+      "salaryHistory": "연봉 변동 이력",
+      "emptyCompensationDesc": "보상 이력이 존재하지 않습니다.",
+      "col": {
+        "effectiveDate": "적용일",
+        "type": "유형",
+        "amount": "금액"
+      },
+      "contractsAndCerts": "계약 및 증명서",
+      "requestCertificate": "증명서 발급 신청",
+      "emptyDocsTitle": "문서 없음",
+      "emptyDocsDesc": "등록된 인사 문서가 없습니다.",
+      "addEmergencyContact": "비상연락처 추가",
+      "ecField": {
+        "name": "이름",
+        "relationship": "관계",
+        "phone": "전화번호"
+      },
+      "ecPlaceholder": {
+        "name": "홍길동",
+        "relationship": "배우자, 부모님 등",
+        "phone": "010-0000-0000"
+      },
+      "setPrimary": "주요 연락처로 설정",
+      "avatarComingSoonTitle": "준비 중",
+      "avatarComingSoonDesc": "아바타 업로드는 곧 지원됩니다."
+    },
+    "leave": {
+      "title": "휴가 관리",
+      "balance": "잔여 연차",
+      "used": "사용",
+      "remaining": "잔여",
+      "total": "총",
+      "applyLeave": "휴가 신청",
+      "leaveType": "휴가 유형",
+      "startDate": "시작일",
+      "endDate": "종료일",
+      "reason": "사유",
+      "status": {
+        "pending": "대기",
+        "approved": "승인",
+        "rejected": "반려",
+        "cancelled": "취소"
+      },
+      "cancel": "신청 취소",
+      "history": "휴가 사용 내역",
+      "empty": {
+        "title": "휴가 내역이 없습니다",
+        "description": "아직 휴가 사용 내역이 없습니다."
+      },
+      "error": {
+        "loadFailed": "휴가 정보를 불러오지 못했습니다.",
+        "applyFailed": "휴가 신청에 실패했습니다.",
+        "cancelFailed": "휴가 취소에 실패했습니다."
+      },
+      "designatedLeave": "지정연차"
     }
   },
   "directory": {
@@ -6705,5 +6833,531 @@
     "affiliation": "소속:",
     "comeBackOn": "{date}에 다시 접근해 주세요.",
     "noAssignment": "발령 정보가 없습니다. 관리자에게 문의해 주세요."
+  },
+  "myBenefits": {
+    "pageTitle": "나의 복리후생",
+    "breadcrumb": "나의 공간",
+    "applyBenefit": "복리후생 신청",
+    "applyAction": "신청",
+    "usageSummary": "사용 현황",
+    "pendingAmount": "대기중",
+    "claimHistory": "신청 내역",
+    "loadError": "복리후생 정보를 불러오지 못했습니다.",
+    "errorDesc": "요청 처리 중 오류가 발생했습니다.",
+    "emptyTitle": "신청 내역이 없습니다",
+    "emptyDesc": "아직 복리후생 신청 내역이 없습니다.",
+    "status": {
+      "pending": "승인대기",
+      "approved": "승인",
+      "rejected": "반려",
+      "paid": "지급완료",
+      "cancelled": "취소"
+    },
+    "category": {
+      "family": "경조금",
+      "health": "건강",
+      "education": "교육",
+      "lifestyle": "생활",
+      "financial": "금융"
+    },
+    "form": {
+      "planLabel": "복리후생 항목",
+      "selectPlanPlaceholder": "항목을 선택하세요",
+      "fixedAmount": "고정금액",
+      "reimbursement": "실비 상환",
+      "proofRequired": "증빙 필수",
+      "claimAmount": "신청 금액",
+      "limit": "한도",
+      "max": "최대",
+      "eventDate": "이벤트 날짜",
+      "eventDetail": "상세 내용",
+      "eventDetailPlaceholder": "예: 본인 결혼",
+      "proofDocuments": "증빙 서류",
+      "attachFile": "파일 첨부"
+    },
+    "validation": {
+      "selectPlan": "복리후생 항목을 선택해 주세요.",
+      "enterAmount": "신청 금액을 입력해 주세요.",
+      "attachProof": "증빙 서류를 첨부해 주세요."
+    }
+  },
+  "yearEnd": {
+    "pageTitle": "{year}년 연말정산",
+    "steps": {
+      "dependents": "부양가족 확인",
+      "deductions": "공제항목 입력",
+      "additional": "추가공제",
+      "result": "결과 확인"
+    },
+    "relationship": {
+      "self": "본인",
+      "spouse": "배우자",
+      "child": "자녀",
+      "parent": "부모",
+      "grandparent": "조부모",
+      "sibling": "형제자매"
+    },
+    "deduction": {
+      "credit_card": "신용카드 사용액",
+      "debit_card": "체크카드 사용액",
+      "cash_receipt": "현금영수증 사용액",
+      "medical_credit": "의료비",
+      "education_credit": "본인 교육비",
+      "child_education_credit": "자녀 교육비 (1인당)",
+      "donation_credit": "기부금",
+      "rent_credit": "월세 (연간 총액)",
+      "housing_savings": "주택마련저축 납입액",
+      "housing_loan_interest": "주택임차차입금 이자"
+    },
+    "step1": {
+      "title": "부양가족 확인",
+      "description": "인적공제를 받을 부양가족 정보를 입력하세요.",
+      "addDependent": "부양가족 추가",
+      "relationship": "관계",
+      "name": "이름",
+      "enterName": "이름 입력",
+      "birthDate": "생년월일",
+      "disabled": "장애인",
+      "senior": "경로우대 (70세 이상)",
+      "deductionGuideTitle": "인적공제 안내",
+      "deductionGuideBody": "기본공제: 1인당 150만원 / 장애인 추가: 200만원 / 경로우대 추가: 100만원"
+    },
+    "step2": {
+      "title": "공제항목 입력",
+      "description": "홈택스 간소화자료를 업로드하거나 직접 입력하세요.",
+      "tabUpload": "홈택스 간소화자료 업로드",
+      "tabManual": "직접 입력",
+      "uploadTitle": "홈택스 간소화자료 PDF 업로드",
+      "uploadGuide": "국세청 홈택스 → 연말정산 → 소득·세액공제자료 조회/발급",
+      "uploading": "업로드 중...",
+      "selectPdf": "PDF 파일 선택",
+      "parsingNotReady": "파싱 기능 준비 중",
+      "parsingNotReadyDesc": "아래 \"직접 입력\" 탭에서 금액을 직접 입력해 주세요.",
+      "incomeDeductionHeader": "신용카드 등 소득공제",
+      "taxCreditHeader": "세액공제 항목"
+    },
+    "step3": {
+      "title": "추가공제 입력",
+      "description": "홈택스 간소화자료에 포함되지 않는 공제 항목입니다.",
+      "housingHeader": "주택 관련 공제",
+      "housingGuideTitle": "주택마련저축 공제 안내",
+      "housingGuideBody": "총급여 7,000만원 이하 무주택 세대주만 공제 가능합니다. (납입액의 40%, 연한도 240만원)"
+    },
+    "step4": {
+      "title": "결과 확인",
+      "description": "{year}년 연말정산 예상 결과입니다.",
+      "calculating": "계산 중...",
+      "recalculate": "재계산",
+      "breakdownHeader": "11단계 세액 계산 내역",
+      "submittedTitle": "제출 완료",
+      "submittedDesc": "HR에서 검토 중입니다. 결과는 이메일로 안내드립니다.",
+      "submitting": "제출 중...",
+      "submit": "연말정산 제출"
+    },
+    "result": {
+      "totalSalary": "① 총급여",
+      "earnedIncomeDeduction": "② 근로소득공제",
+      "earnedIncome": "③ 근로소득금액",
+      "totalIncomeDeduction": "④ 소득공제 합계",
+      "taxableBase": "⑤ 과세표준",
+      "calculatedTax": "⑦ 산출세액 (세율 {rate}%)",
+      "totalTaxCredit": "⑧ 세액공제 합계",
+      "determinedTax": "⑨ 결정세액",
+      "prepaidTax": "⑩ 기납부세액 (원천징수)",
+      "finalSettlement": "⑪ 환급 예정 / 추가납부",
+      "refund": "환급",
+      "additionalPayment": "추가납부",
+      "localTax": "지방소득세 (소득세의 10%)"
+    },
+    "status": {
+      "submitted": "제출완료"
+    },
+    "nav": {
+      "previous": "이전",
+      "next": "다음",
+      "saving": "저장 중..."
+    },
+    "error": {
+      "loadFailed": "연말정산 정보를 불러오지 못했습니다.",
+      "uploadFailed": "파일 업로드에 실패했습니다.",
+      "saveDependentsFailed": "부양가족 저장 중 오류가 발생했습니다.",
+      "saveDeductionsFailed": "공제항목 저장 중 오류가 발생했습니다.",
+      "calculateFailed": "계산 중 오류가 발생했습니다.",
+      "submitFailed": "제출 중 오류가 발생했습니다."
+    },
+    "loading": "연말정산 정보를 불러오는 중...",
+    "close": "닫기",
+    "pageDescription": "4단계 위자드를 완료하고 제출하세요"
+  },
+  "myDocuments": {
+    "pageTitle": "내 문서함",
+    "pageDescription": "개인 문서를 관리하세요",
+    "tabs": {
+      "all": "전체",
+      "contracts": "계약서",
+      "certificates": "증명서",
+      "payslips": "급여명세서",
+      "other": "기타"
+    },
+    "upload": "문서 업로드",
+    "download": "다운로드",
+    "delete": "삭제",
+    "preview": "미리보기",
+    "fileName": "파일명",
+    "fileType": "유형",
+    "uploadDate": "업로드일",
+    "fileSize": "파일 크기",
+    "status": {
+      "active": "유효",
+      "expired": "만료",
+      "pending": "대기"
+    },
+    "empty": {
+      "title": "문서가 없습니다",
+      "description": "업로드된 문서가 없습니다.",
+      "noDocuments": "등록된 문서가 없습니다",
+      "noDocumentsDesc": "HR에서 등록한 문서가 여기에 표시됩니다.",
+      "noCertificates": "증명서 발급 요청 내역이 없습니다",
+      "noCertificatesDesc": "위 '증명서 신청' 버튼으로 재직증명서/경력증명서를 요청할 수 있습니다."
+    },
+    "error": {
+      "loadFailed": "문서를 불러오지 못했습니다.",
+      "uploadFailed": "문서 업로드에 실패했습니다.",
+      "deleteFailed": "문서 삭제에 실패했습니다.",
+      "downloadFailed": "다운로드 실패",
+      "downloadFailedDesc": "파일을 다운로드할 수 없습니다.",
+      "requestFailed": "신청 실패",
+      "retryLater": "잠시 후 다시 시도해주세요."
+    },
+    "confirm": {
+      "deleteTitle": "문서 삭제",
+      "deleteMessage": "이 문서를 삭제하시겠습니까?"
+    },
+    "requestCertificate": "증명서 발급 요청",
+    "certificateType": {
+      "employment": "재직증명서",
+      "career": "경력증명서",
+      "salary": "급여증명서",
+      "retirement": "퇴직증명서"
+    },
+    "action": {
+      "requestCert": "증명서 신청",
+      "cancel": "취소",
+      "submit": "신청하기",
+      "submitting": "신청 중...",
+      "download": "다운로드"
+    },
+    "dialog": {
+      "title": "증명서 발급 신청",
+      "certTypeLabel": "증명서 유형",
+      "purposeLabel": "용도 (선택)",
+      "purposePlaceholder": "예: 은행 대출 신청용"
+    },
+    "toast": {
+      "requestSuccess": "증명서 신청 완료",
+      "requestSuccessDesc": "HR 담당자 승인 후 발급됩니다."
+    }
+  },
+  "internalJobs": {
+    "pageTitle": "사내 공고",
+    "pageDescription": "사내 채용 및 이동 기회를 확인하세요",
+    "tabs": {
+      "all": "전체",
+      "open": "진행중",
+      "closed": "마감",
+      "applied": "지원완료"
+    },
+    "department": "부서",
+    "location": "근무지",
+    "postedDate": "게시일",
+    "deadline": "마감일",
+    "requirements": "자격요건",
+    "responsibilities": "주요업무",
+    "apply": "지원하기",
+    "applied": "지원완료",
+    "withdraw": "지원 취소",
+    "status": {
+      "open": "진행중",
+      "closed": "마감",
+      "filled": "선발완료"
+    },
+    "applicationStatus": {
+      "submitted": "제출완료",
+      "reviewing": "검토중",
+      "interview": "면접",
+      "accepted": "합격",
+      "rejected": "불합격"
+    },
+    "empty": {
+      "title": "공고가 없습니다",
+      "description": "현재 진행 중인 사내 공고가 없습니다."
+    },
+    "error": {
+      "loadFailed": "공고를 불러오지 못했습니다.",
+      "applyFailed": "지원에 실패했습니다.",
+      "withdrawFailed": "지원 취소에 실패했습니다."
+    },
+    "detail": "상세보기",
+    "myApplications": "나의 지원 현황",
+    "title": "사내 공개 채용",
+    "description": "그룹 내 공개된 내부 채용 공고입니다. 관심 있는 포지션에 지원하세요.",
+    "searchPlaceholder": "공고명 또는 부서 검색...",
+    "allCompanies": "전체 법인",
+    "fetchError": "공고 목록 로드 실패",
+    "applyError": "지원 중 오류가 발생했습니다.",
+    "applying": "지원 중...",
+    "viewDetails": "상세 보기",
+    "position": "포지션",
+    "headcount": "{count}명",
+    "salary": "급여: {min}만 ~ {max}만원",
+    "badge": {
+      "internal": "내부 채용"
+    },
+    "urgency": {
+      "urgent": "긴급",
+      "normal": "보통",
+      "low": "낮음"
+    },
+    "stage": {
+      "applied": "서류접수"
+    }
+  },
+  "notificationPrefs": {
+    "pageTitle": "알림 설정",
+    "pageDescription": "알림 수신 방법을 설정하세요",
+    "channels": {
+      "email": "이메일",
+      "push": "푸시 알림",
+      "inApp": "앱 내 알림"
+    },
+    "categories": {
+      "leave": "휴가",
+      "attendance": "근태",
+      "payroll": "급여",
+      "approval": "결재",
+      "announcement": "공지사항",
+      "system": "시스템"
+    },
+    "frequency": {
+      "realtime": "실시간",
+      "daily": "일간 요약",
+      "weekly": "주간 요약",
+      "off": "끄기"
+    },
+    "save": "설정 저장",
+    "saved": "설정이 저장되었습니다",
+    "error": {
+      "loadFailed": "알림 설정을 불러오지 못했습니다.",
+      "saveFailed": "설정 저장에 실패했습니다."
+    },
+    "quietHours": {
+      "title": "방해금지 시간",
+      "excludeUrgent": "urgent 알림 제외",
+      "description": "설정된 시간 동안 긴급(urgent) 외 알림은 조용히 처리됩니다"
+    },
+    "quietHoursDesc": "이 시간에는 푸시 알림을 보내지 않습니다",
+    "from": "시작",
+    "to": "종료",
+    "title": "알림 설정",
+    "fetchError": "알림 설정 로드 실패",
+    "saveError": "저장 실패",
+    "saving": "저장 중...",
+    "toggleOn": "켜기",
+    "toggleOff": "끄기",
+    "channel": {
+      "event": "이벤트",
+      "inApp": "인앱",
+      "email": "이메일",
+      "teams": "Teams"
+    }
+  },
+  "myTraining": {
+    "pageTitle": "교육 이수 현황",
+    "pageDescription": "필수 교육 및 자기개발 과정을 관리하세요",
+    "tabs": {
+      "all": "전체",
+      "required": "필수",
+      "optional": "선택",
+      "completed": "이수완료"
+    },
+    "courseName": "과정명",
+    "provider": "교육기관",
+    "duration": "교육시간",
+    "deadline": "이수기한",
+    "completedDate": "이수일",
+    "certificate": "수료증",
+    "progress": "진행률",
+    "status": {
+      "notStarted": "미시작",
+      "inProgress": "진행중",
+      "completed": "이수완료",
+      "overdue": "기한초과"
+    },
+    "startCourse": "수강 시작",
+    "continueCourse": "이어서 수강",
+    "viewCertificate": "수료증 보기",
+    "empty": {
+      "title": "등록된 교육이 없습니다",
+      "description": "현재 배정된 교육 과정이 없습니다."
+    },
+    "error": {
+      "loadFailed": "교육 정보를 불러오지 못했습니다."
+    },
+    "hours": "{count}시간",
+    "mandatory": "필수",
+    "elective": "선택",
+    "fetchError": "교육 현황 로드 실패",
+    "breadcrumb": "나의 공간",
+    "title": "내 교육 현황",
+    "expiringSoon": "이수 만료 임박 ({count}건)",
+    "expiresInDays": "{days}일 후 만료",
+    "kpi": {
+      "requiredPending": "미이수 필수",
+      "enrollmentNeeded": "신청 필요",
+      "recommended": "추천 과정",
+      "completed": "이수 완료"
+    },
+    "section": {
+      "requiredPending": "미이수 필수 교육",
+      "enrollmentNeeded": "신청 필요 과정",
+      "recommended": "스킬 갭 기반 추천 과정",
+      "history": "이수 이력",
+      "historyRecent": "(최근 20건)"
+    },
+    "badge": {
+      "required": "필수",
+      "recommended": "추천",
+      "mandatory": "필수"
+    },
+    "deadlineLabel": "마감: {date}",
+    "emptyHistory": "이수 이력이 없습니다.",
+    "scoreValue": "{score}점",
+    "table": {
+      "courseName": "과정명",
+      "category": "분류",
+      "completedAt": "이수일",
+      "validUntil": "유효기간",
+      "score": "점수"
+    },
+    "action": {
+      "startCourse": "학습 시작",
+      "completeCourse": "이수 완료",
+      "enroll": "수강 신청",
+      "enrollShort": "신청",
+      "enrolling": "신청 중..."
+    }
+  },
+  "mySkills": {
+    "pageTitle": "스킬 관리",
+    "pageDescription": "보유 스킬과 역량을 관리하세요",
+    "tabs": {
+      "all": "전체",
+      "technical": "기술",
+      "soft": "소프트스킬",
+      "language": "언어"
+    },
+    "skillName": "스킬명",
+    "category": "카테고리",
+    "level": {
+      "beginner": "초급",
+      "intermediate": "중급",
+      "advanced": "고급",
+      "expert": "전문가",
+      "basic": "기본",
+      "proficient": "우수"
+    },
+    "endorsements": "추천",
+    "endorsedBy": "추천인",
+    "addSkill": "스킬 추가",
+    "editSkill": "스킬 수정",
+    "removeSkill": "스킬 삭제",
+    "selfAssessment": "자기 평가",
+    "managerAssessment": "매니저 평가",
+    "empty": {
+      "title": "등록된 스킬이 없습니다",
+      "description": "프로필에 스킬을 추가해보세요."
+    },
+    "error": {
+      "loadFailed": "스킬 정보를 불러오지 못했습니다.",
+      "saveFailed": "스킬 저장에 실패했습니다."
+    },
+    "suggestedSkills": "추천 스킬",
+    "skillGap": "스킬 갭 분석",
+    "title": "나의 역량 자기평가",
+    "description": "역량별 현재 수준을 자기평가하고, 개발 방향을 확인하세요.",
+    "radarChart": "레이더 차트",
+    "radarChartTitle": "역량 레이더 차트",
+    "expected": "기대 수준",
+    "actual": "자기평가",
+    "kpi": {
+      "completed": "평가 완료",
+      "belowExpected": "미달 역량",
+      "belowExpectedDesc": "기대 수준 미달",
+      "strength": "강점 역량",
+      "meetsExpected": "기대 수준 이상"
+    },
+    "categoryProgress": "{done}/{total} 완료",
+    "expectedLevel": "기대 수준",
+    "gapBehind": "갭 -{gap}",
+    "gapMet": "충족",
+    "gapAhead": "+{gap}",
+    "toastSubmitted": "자기평가가 제출되었습니다.",
+    "saveDraft": "임시저장",
+    "submit": "제출"
+  },
+  "myOffboarding": {
+    "pageTitle": "퇴직 절차",
+    "pageDescription": "퇴직 관련 절차를 확인하세요",
+    "steps": {
+      "resignation": "사직서 제출",
+      "handover": "업무 인수인계",
+      "equipment": "장비 반납",
+      "exit": "퇴직 면담",
+      "settlement": "퇴직금 정산"
+    },
+    "status": {
+      "pending": "대기",
+      "inProgress": "진행중",
+      "completed": "완료",
+      "skipped": "해당없음"
+    },
+    "resignationDate": "퇴사 예정일",
+    "lastWorkingDay": "마지막 근무일",
+    "handoverPerson": "인수자",
+    "handoverDoc": "인수인계서",
+    "equipmentList": "반납 장비 목록",
+    "exitSurvey": "퇴직 설문",
+    "exitInterview": "퇴직 면담",
+    "severancePay": "퇴직금",
+    "remainingLeave": "잔여 연차",
+    "checklist": "체크리스트",
+    "progress": "진행률",
+    "empty": {
+      "title": "퇴직 절차 없음",
+      "description": "현재 진행 중인 퇴직 절차가 없습니다."
+    },
+    "error": {
+      "loadFailed": "퇴직 절차 정보를 불러오지 못했습니다."
+    },
+    "title": "나의 퇴직 처리",
+    "lastWorkingDate": "최종 근무일",
+    "overallProgress": "전체 진행률",
+    "progressCount": "{done}/{total} 완료",
+    "emptyDesc": "퇴직 관련 문의는 HR팀에 연락해주세요.",
+    "overdue": "지연",
+    "optional": "선택",
+    "assignedTo": "담당",
+    "completedOn": "완료",
+    "dueDate": "마감",
+    "markComplete": "완료 처리",
+    "referenceInfo": "참고 정보",
+    "ref": {
+      "remainingLeave": "잔여 연차",
+      "days": "{count}일",
+      "useBeforeLastDay": "최종 근무일 전 사용을 권장합니다.",
+      "insuranceNotice": "4대보험 상실 신고는 퇴직일 기준 14일 이내 처리됩니다.",
+      "healthInsuranceContinuation": "건강보험 임의 계속 가입을 원하시면 HR팀에 문의하세요.",
+      "severanceNotice": "퇴직금은 최종 근무일 기준 14일 이내 지급됩니다."
+    }
   }
 }

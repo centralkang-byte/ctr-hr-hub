@@ -11,6 +11,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   FileText,
   Users,
@@ -97,20 +98,33 @@ interface CalculationResult {
 
 // ─── Constants ─────────────────────────────────────────────
 
-const RELATIONSHIP_OPTIONS = ['본인', '배우자', '자녀', '부모', '조부모', '형제자매']
+const RELATIONSHIP_OPTIONS = [
+  { value: '본인', labelKey: 'relationship.self' },
+  { value: '배우자', labelKey: 'relationship.spouse' },
+  { value: '자녀', labelKey: 'relationship.child' },
+  { value: '부모', labelKey: 'relationship.parent' },
+  { value: '조부모', labelKey: 'relationship.grandparent' },
+  { value: '형제자매', labelKey: 'relationship.sibling' },
+] as const
 
 const STEPS = [
-  { label: '부양가족 확인', icon: Users },
-  { label: '공제항목 입력', icon: FileText },
-  { label: '추가공제', icon: Plus },
-  { label: '결과 확인', icon: Calculator },
-]
+  { labelKey: 'steps.dependents', icon: Users },
+  { labelKey: 'steps.deductions', icon: FileText },
+  { labelKey: 'steps.additional', icon: Plus },
+  { labelKey: 'steps.result', icon: Calculator },
+] as const
 
 const INCOME_DEDUCTIONS: DeductionInput[] = [
   { configCode: 'credit_card', category: 'income_deduction', name: '신용카드 사용액', amount: 0 },
   { configCode: 'debit_card', category: 'income_deduction', name: '체크카드 사용액', amount: 0 },
   { configCode: 'cash_receipt', category: 'income_deduction', name: '현금영수증 사용액', amount: 0 },
 ]
+
+const INCOME_DEDUCTION_NAME_KEYS: Record<string, string> = {
+  credit_card: 'deduction.credit_card',
+  debit_card: 'deduction.debit_card',
+  cash_receipt: 'deduction.cash_receipt',
+}
 
 const TAX_CREDIT_DEDUCTIONS: DeductionInput[] = [
   { configCode: 'medical_credit', category: 'tax_credit', name: '의료비', amount: 0 },
@@ -120,10 +134,23 @@ const TAX_CREDIT_DEDUCTIONS: DeductionInput[] = [
   { configCode: 'rent_credit', category: 'tax_credit', name: '월세 (연간 총액)', amount: 0 },
 ]
 
+const TAX_CREDIT_NAME_KEYS: Record<string, string> = {
+  medical_credit: 'deduction.medical_credit',
+  education_credit: 'deduction.education_credit',
+  child_education_credit: 'deduction.child_education_credit',
+  donation_credit: 'deduction.donation_credit',
+  rent_credit: 'deduction.rent_credit',
+}
+
 const ADDITIONAL_DEDUCTIONS: DeductionInput[] = [
   { configCode: 'housing_savings', category: 'income_deduction', name: '주택마련저축 납입액', amount: 0 },
   { configCode: 'housing_loan_interest', category: 'income_deduction', name: '주택임차차입금 이자', amount: 0 },
 ]
+
+const ADDITIONAL_NAME_KEYS: Record<string, string> = {
+  housing_savings: 'deduction.housing_savings',
+  housing_loan_interest: 'deduction.housing_loan_interest',
+}
 
 // ─── Formatting helpers ────────────────────────────────────
 
@@ -146,6 +173,7 @@ function formatAmountInput(value: number): string {
 // ─── Step Indicator ────────────────────────────────────────
 
 function StepIndicator({ current }: { current: number }) {
+  const t = useTranslations('yearEnd')
   return (
     <div className="flex items-center gap-0 mb-8">
       {STEPS.map((step, i) => {
@@ -162,7 +190,7 @@ function StepIndicator({ current }: { current: number }) {
                 {isDone ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-4 h-4" />}
               </div>
               <span className={`text-xs font-medium whitespace-nowrap ${isActive ? 'text-primary' : isDone ? 'text-emerald-600' : 'text-muted-foreground'}`}>
-                {step.label}
+                {t(step.labelKey)}
               </span>
             </div>
             {i < STEPS.length - 1 && (
@@ -183,6 +211,8 @@ interface Step1Props {
 }
 
 function Step1Dependents({ dependents, onChange }: Step1Props) {
+  const t = useTranslations('yearEnd')
+
   const addDependent = () => {
     const newDep: Dependent = {
       id: `new-${Date.now()}`,
@@ -215,15 +245,15 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">부양가족 확인</h2>
-          <p className="text-sm text-muted-foreground mt-0.5">인적공제를 받을 부양가족 정보를 입력하세요.</p>
+          <h2 className="text-lg font-semibold text-foreground">{t('step1.title')}</h2>
+          <p className="text-sm text-muted-foreground mt-0.5">{t('step1.description')}</p>
         </div>
         <button
           onClick={addDependent}
           className={`flex items-center gap-1.5 ${BUTTON_VARIANTS.primary} px-3 py-2 rounded-lg text-sm font-medium`}
         >
           <Plus className="w-4 h-4" />
-          부양가족 추가
+          {t('step1.addDependent')}
         </button>
       </div>
 
@@ -234,7 +264,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
               <div className="flex-1 grid grid-cols-2 gap-3">
                 {/* Relationship */}
                 <div>
-                  <label className="text-xs font-medium text-foreground mb-1 block">관계</label>
+                  <label className="text-xs font-medium text-foreground mb-1 block">{t('step1.relationship')}</label>
                   <select
                     value={dep.relationship}
                     onChange={(e) => updateDependent(index, { relationship: e.target.value })}
@@ -242,27 +272,27 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
                     className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 disabled:bg-muted disabled:text-muted-foreground"
                   >
                     {RELATIONSHIP_OPTIONS.map((r) => (
-                      <option key={r} value={r}>{r}</option>
+                      <option key={r.value} value={r.value}>{t(r.labelKey)}</option>
                     ))}
                   </select>
                 </div>
 
                 {/* Name */}
                 <div>
-                  <label className="text-xs font-medium text-foreground mb-1 block">이름</label>
+                  <label className="text-xs font-medium text-foreground mb-1 block">{t('step1.name')}</label>
                   <input
                     type="text"
                     value={dep.name}
                     onChange={(e) => updateDependent(index, { name: e.target.value })}
                     disabled={dep.relationship === '본인'}
-                    placeholder={'enterTitle'}
+                    placeholder={t('step1.enterName')}
                     className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground disabled:bg-muted disabled:text-muted-foreground"
                   />
                 </div>
 
                 {/* Birth Date */}
                 <div>
-                  <label className="text-xs font-medium text-foreground mb-1 block">생년월일</label>
+                  <label className="text-xs font-medium text-foreground mb-1 block">{t('step1.birthDate')}</label>
                   <input
                     type="date"
                     value={dep.birthDate ? dep.birthDate.substring(0, 10) : ''}
@@ -280,7 +310,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
                       onChange={(e) => updateDependent(index, { isDisabled: e.target.checked })}
                       className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
                     />
-                    <span className="text-sm text-muted-foreground">장애인</span>
+                    <span className="text-sm text-muted-foreground">{t('step1.disabled')}</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
@@ -289,7 +319,7 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
                       onChange={(e) => updateDependent(index, { isSenior: e.target.checked })}
                       className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
                     />
-                    <span className="text-sm text-muted-foreground">경로우대 (70세 이상)</span>
+                    <span className="text-sm text-muted-foreground">{t('step1.senior')}</span>
                   </label>
                 </div>
               </div>
@@ -313,8 +343,8 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
       </div>
 
       <div className="bg-primary/10 rounded-xl p-4 text-sm text-emerald-700">
-        <p className="font-medium mb-1">인적공제 안내</p>
-        <p>기본공제: 1인당 150만원 / 장애인 추가: 200만원 / 경로우대 추가: 100만원</p>
+        <p className="font-medium mb-1">{t('step1.deductionGuideTitle')}</p>
+        <p>{t('step1.deductionGuideBody')}</p>
       </div>
     </div>
   )
@@ -330,6 +360,7 @@ interface Step2Props {
 }
 
 function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }: Step2Props) {
+  const t = useTranslations('yearEnd')
   const [activeTab, setActiveTab] = useState<'upload' | 'manual'>('manual')
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
@@ -350,7 +381,7 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
       })
       onDocumentUploaded()
     } catch {
-      setUploadError('파일 업로드에 실패했습니다.')
+      setUploadError(t('error.uploadFailed'))
     } finally {
       setUploading(false)
     }
@@ -359,8 +390,8 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-lg font-semibold text-foreground">공제항목 입력</h2>
-        <p className="text-sm text-muted-foreground mt-0.5">홈택스 간소화자료를 업로드하거나 직접 입력하세요.</p>
+        <h2 className="text-lg font-semibold text-foreground">{t('step2.title')}</h2>
+        <p className="text-sm text-muted-foreground mt-0.5">{t('step2.description')}</p>
       </div>
 
       {/* Tabs */}
@@ -370,14 +401,14 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
           className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors
             ${activeTab === 'upload' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
         >
-          홈택스 간소화자료 업로드
+          {t('step2.tabUpload')}
         </button>
         <button
           onClick={() => setActiveTab('manual')}
           className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors
             ${activeTab === 'manual' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
         >
-          직접 입력
+          {t('step2.tabManual')}
         </button>
       </div>
 
@@ -385,11 +416,11 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
         <div className="space-y-4">
           <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary transition-colors">
             <Upload className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-            <p className="text-sm font-medium text-foreground mb-1">홈택스 간소화자료 PDF 업로드</p>
-            <p className="text-xs text-muted-foreground mb-4">국세청 홈택스 → 연말정산 → 소득·세액공제자료 조회/발급</p>
+            <p className="text-sm font-medium text-foreground mb-1">{t('step2.uploadTitle')}</p>
+            <p className="text-xs text-muted-foreground mb-4">{t('step2.uploadGuide')}</p>
             <label className={`cursor-pointer inline-flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg text-sm font-medium`}>
               {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-              {uploading ? '업로드 중...' : 'PDF 파일 선택'}
+              {uploading ? t('step2.uploading') : t('step2.selectPdf')}
               <input
                 type="file"
                 accept=".pdf"
@@ -408,8 +439,8 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
           )}
 
           <div className="bg-amber-500/15 rounded-xl p-4 text-sm text-amber-700">
-            <p className="font-medium mb-1">파싱 기능 준비 중</p>
-            <p>아래 &quot;직접 입력&quot; 탭에서 금액을 직접 입력해 주세요.</p>
+            <p className="font-medium mb-1">{t('step2.parsingNotReady')}</p>
+            <p>{t('step2.parsingNotReadyDesc')}</p>
           </div>
         </div>
       )}
@@ -419,12 +450,12 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
           {/* Income deductions */}
           <div className="bg-card rounded-xl border border-border">
             <div className="px-5 py-3.5 border-b border-border">
-              <h3 className="text-sm font-semibold text-foreground">신용카드 등 소득공제</h3>
+              <h3 className="text-sm font-semibold text-foreground">{t('step2.incomeDeductionHeader')}</h3>
             </div>
             <div className="p-5 space-y-4">
               {INCOME_DEDUCTIONS.map((item) => (
                 <div key={item.configCode}>
-                  <label className="text-sm font-medium text-foreground mb-1 block">{item.name}</label>
+                  <label className="text-sm font-medium text-foreground mb-1 block">{t(INCOME_DEDUCTION_NAME_KEYS[item.configCode])}</label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">₩</span>
                     <input
@@ -444,12 +475,12 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
           {/* Tax credits */}
           <div className="bg-card rounded-xl border border-border">
             <div className="px-5 py-3.5 border-b border-border">
-              <h3 className="text-sm font-semibold text-foreground">세액공제 항목</h3>
+              <h3 className="text-sm font-semibold text-foreground">{t('step2.taxCreditHeader')}</h3>
             </div>
             <div className="p-5 space-y-4">
               {TAX_CREDIT_DEDUCTIONS.map((item) => (
                 <div key={item.configCode}>
-                  <label className="text-sm font-medium text-foreground mb-1 block">{item.name}</label>
+                  <label className="text-sm font-medium text-foreground mb-1 block">{t(TAX_CREDIT_NAME_KEYS[item.configCode])}</label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">₩</span>
                     <input
@@ -479,21 +510,22 @@ interface Step3Props {
 }
 
 function Step3Additional({ amounts, onChange }: Step3Props) {
+  const t = useTranslations('yearEnd')
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-lg font-semibold text-foreground">추가공제 입력</h2>
-        <p className="text-sm text-muted-foreground mt-0.5">홈택스 간소화자료에 포함되지 않는 공제 항목입니다.</p>
+        <h2 className="text-lg font-semibold text-foreground">{t('step3.title')}</h2>
+        <p className="text-sm text-muted-foreground mt-0.5">{t('step3.description')}</p>
       </div>
 
       <div className="bg-card rounded-xl border border-border">
         <div className="px-5 py-3.5 border-b border-border">
-          <h3 className="text-sm font-semibold text-foreground">주택 관련 공제</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t('step3.housingHeader')}</h3>
         </div>
         <div className="p-5 space-y-4">
           {ADDITIONAL_DEDUCTIONS.map((item) => (
             <div key={item.configCode}>
-              <label className="text-sm font-medium text-foreground mb-1 block">{item.name}</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">{t(ADDITIONAL_NAME_KEYS[item.configCode])}</label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">₩</span>
                 <input
@@ -511,8 +543,8 @@ function Step3Additional({ amounts, onChange }: Step3Props) {
       </div>
 
       <div className="bg-primary/10 rounded-xl p-4 text-sm text-emerald-700">
-        <p className="font-medium mb-1">주택마련저축 공제 안내</p>
-        <p>총급여 7,000만원 이하 무주택 세대주만 공제 가능합니다. (납입액의 40%, 연한도 240만원)</p>
+        <p className="font-medium mb-1">{t('step3.housingGuideTitle')}</p>
+        <p>{t('step3.housingGuideBody')}</p>
       </div>
     </div>
   )
@@ -530,6 +562,7 @@ interface Step4Props {
 }
 
 function Step4Result({ settlement, onCalculate, onSubmit, calculating, submitting, calcResult }: Step4Props) {
+  const t = useTranslations('yearEnd')
   const data = calcResult ?? settlement
   const isSubmitted = settlement.status === 'submitted' || settlement.status === 'hr_review' || settlement.status === 'confirmed'
 
@@ -541,8 +574,8 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">결과 확인</h2>
-          <p className="text-sm text-muted-foreground mt-0.5">{settlement.year}년 연말정산 예상 결과입니다.</p>
+          <h2 className="text-lg font-semibold text-foreground">{t('step4.title')}</h2>
+          <p className="text-sm text-muted-foreground mt-0.5">{t('step4.description', { year: settlement.year })}</p>
         </div>
         {!isSubmitted && (
           <button
@@ -551,7 +584,7 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
             className="flex items-center gap-2 bg-card border border-primary text-primary hover:bg-primary/10 px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
           >
             {calculating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calculator className="w-4 h-4" />}
-            {calculating ? '계산 중...' : '재계산'}
+            {calculating ? t('step4.calculating') : t('step4.recalculate')}
           </button>
         )}
       </div>
@@ -559,25 +592,25 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
       {/* 11-step breakdown table */}
       <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="px-5 py-3.5 border-b border-border">
-          <h3 className="text-sm font-semibold text-foreground">11단계 세액 계산 내역</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t('step4.breakdownHeader')}</h3>
         </div>
         <div className="divide-y divide-border">
-          <ResultRow label="① 총급여" value={data.totalSalary} />
-          <ResultRow label="② 근로소득공제" value={data.earnedIncomeDeduction} indent />
-          <ResultRow label="③ 근로소득금액" value={data.earnedIncome} highlight />
-          <ResultRow label="④ 소득공제 합계" value={data.totalIncomeDeduction} indent />
-          <ResultRow label="⑤ 과세표준" value={data.taxableBase} highlight />
+          <ResultRow label={t('result.totalSalary')} value={data.totalSalary} />
+          <ResultRow label={t('result.earnedIncomeDeduction')} value={data.earnedIncomeDeduction} indent />
+          <ResultRow label={t('result.earnedIncome')} value={data.earnedIncome} highlight />
+          <ResultRow label={t('result.totalIncomeDeduction')} value={data.totalIncomeDeduction} indent />
+          <ResultRow label={t('result.taxableBase')} value={data.taxableBase} highlight />
           <ResultRow
-            label={`⑦ 산출세액 (세율 ${((data.taxRate ?? 0) * 100).toFixed(0)}%)`}
+            label={t('result.calculatedTax', { rate: ((data.taxRate ?? 0) * 100).toFixed(0) })}
             value={data.calculatedTax}
           />
-          <ResultRow label="⑧ 세액공제 합계" value={data.totalTaxCredit} indent />
-          <ResultRow label="⑨ 결정세액" value={data.determinedTax} highlight />
-          <ResultRow label="⑩ 기납부세액 (원천징수)" value={data.prepaidTax} indent />
+          <ResultRow label={t('result.totalTaxCredit')} value={data.totalTaxCredit} indent />
+          <ResultRow label={t('result.determinedTax')} value={data.determinedTax} highlight />
+          <ResultRow label={t('result.prepaidTax')} value={data.prepaidTax} indent />
           <div className="px-5 py-4 flex items-center justify-between bg-muted">
-            <span className="text-sm font-semibold text-foreground">⑪ 환급 예정 / 추가납부</span>
+            <span className="text-sm font-semibold text-foreground">{t('result.finalSettlement')}</span>
             <span className={`text-lg font-bold ${isRefund ? 'text-emerald-600' : isAdditional ? 'text-destructive' : 'text-foreground'}`}>
-              {isRefund ? '환급 ' : isAdditional ? '추가납부 ' : ''}
+              {isRefund ? t('result.refund') + ' ' : isAdditional ? t('result.additionalPayment') + ' ' : ''}
               {formatKRW(Math.abs(finalNum))}
             </span>
           </div>
@@ -586,7 +619,7 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
 
       {/* Local tax */}
       <div className="bg-background rounded-xl border border-border px-5 py-3.5 flex items-center justify-between">
-        <span className="text-sm text-muted-foreground">지방소득세 (소득세의 10%)</span>
+        <span className="text-sm text-muted-foreground">{t('result.localTax')}</span>
         <span className="text-sm font-semibold text-foreground">{formatKRW(data.localTaxSettlement ?? '0')}</span>
       </div>
 
@@ -595,8 +628,8 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
         <div className="flex items-center gap-2 bg-emerald-500/15 text-emerald-700 border border-emerald-200 rounded-xl px-5 py-4">
           <CheckCircle2 className="w-5 h-5" />
           <div>
-            <p className="text-sm font-semibold">제출 완료</p>
-            <p className="text-xs mt-0.5">HR에서 검토 중입니다. 결과는 이메일로 안내드립니다.</p>
+            <p className="text-sm font-semibold">{t('step4.submittedTitle')}</p>
+            <p className="text-xs mt-0.5">{t('step4.submittedDesc')}</p>
           </div>
         </div>
       )}
@@ -609,7 +642,7 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
           className={`w-full flex items-center justify-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-3 rounded-xl font-semibold disabled:opacity-50`}
         >
           {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-          {submitting ? '제출 중...' : '연말정산 제출'}
+          {submitting ? t('step4.submitting') : t('step4.submit')}
         </button>
       )}
     </div>
@@ -638,6 +671,7 @@ function ResultRow({ label, value, indent, highlight }: {
 // ─── Main Wizard Component ─────────────────────────────────
 
 export function YearEndWizardClient({ user: _user, year }: { user: SessionUser; year: number }) {
+  const t = useTranslations('yearEnd')
   const [step, setStep] = useState(0)
   const [settlement, setSettlement] = useState<Settlement | null>(null)
   const [loading, setLoading] = useState(true)
@@ -670,11 +704,11 @@ export function YearEndWizardClient({ user: _user, year }: { user: SessionUser; 
         setDeductionAmounts(amounts)
       }
     } catch {
-      setError('연말정산 정보를 불러오지 못했습니다.')
+      setError(t('error.loadFailed'))
     } finally {
       setLoading(false)
     }
-  }, [year])
+  }, [year, t])
 
   useEffect(() => {
     void loadSettlement()
@@ -700,7 +734,7 @@ export function YearEndWizardClient({ user: _user, year }: { user: SessionUser; 
         })),
       })
     } catch {
-      setError('부양가족 저장 중 오류가 발생했습니다.')
+      setError(t('error.saveDependentsFailed'))
     } finally {
       setSaving(false)
     }
@@ -725,7 +759,7 @@ export function YearEndWizardClient({ user: _user, year }: { user: SessionUser; 
         deductions: deductionsToSave,
       })
     } catch {
-      setError('공제항목 저장 중 오류가 발생했습니다.')
+      setError(t('error.saveDeductionsFailed'))
     } finally {
       setSaving(false)
     }
@@ -741,7 +775,7 @@ export function YearEndWizardClient({ user: _user, year }: { user: SessionUser; 
         setCalcResult(res.data.settlement)
       }
     } catch {
-      setError('계산 중 오류가 발생했습니다.')
+      setError(t('error.calculateFailed'))
     } finally {
       setCalculating(false)
     }
@@ -757,7 +791,7 @@ export function YearEndWizardClient({ user: _user, year }: { user: SessionUser; 
         setSettlement(res.data)
       }
     } catch {
-      setError('제출 중 오류가 발생했습니다.')
+      setError(t('error.submitFailed'))
     } finally {
       setSubmitting(false)
     }
@@ -798,7 +832,7 @@ export function YearEndWizardClient({ user: _user, year }: { user: SessionUser; 
       <div className="p-6 flex items-center justify-center min-h-64">
         <div className="flex flex-col items-center gap-3 text-muted-foreground">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p className="text-sm">연말정산 정보를 불러오는 중...</p>
+          <p className="text-sm">{t('loading')}</p>
         </div>
       </div>
     )
@@ -823,13 +857,13 @@ export function YearEndWizardClient({ user: _user, year }: { user: SessionUser; 
       <div className="flex items-center gap-3">
         <FileText className="w-6 h-6 text-primary" />
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{year}년 연말정산</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">4단계 위자드를 완료하고 제출하세요</p>
+          <h1 className="text-2xl font-bold text-foreground">{t('pageTitle', { year })}</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{t('pageDescription')}</p>
         </div>
         {isSubmitted && (
           <span className="ml-auto inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-700 border border-emerald-200">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            제출완료
+            {t('status.submitted')}
           </span>
         )}
       </div>
@@ -839,7 +873,7 @@ export function YearEndWizardClient({ user: _user, year }: { user: SessionUser; 
         <div className="flex items-center gap-2 text-destructive text-sm bg-destructive/10 border border-destructive/20 rounded-xl px-4 py-3">
           <AlertTriangle className="w-4 h-4 flex-shrink-0" />
           {error}
-          <button onClick={() => setError(null)} className="ml-auto text-xs underline">닫기</button>
+          <button onClick={() => setError(null)} className="ml-auto text-xs underline">{t('close')}</button>
         </div>
       )}
 
@@ -888,7 +922,7 @@ export function YearEndWizardClient({ user: _user, year }: { user: SessionUser; 
           className="flex items-center gap-2 bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-40"
         >
           <ChevronLeft className="w-4 h-4" />
-          이전
+          {t('nav.previous')}
         </button>
 
         <span className="text-sm text-muted-foreground">
@@ -902,7 +936,7 @@ export function YearEndWizardClient({ user: _user, year }: { user: SessionUser; 
             className={`flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50`}
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-            {saving ? '저장 중...' : '다음'}
+            {saving ? t('nav.saving') : t('nav.next')}
             {!saving && <ChevronRight className="w-4 h-4" />}
           </button>
         ) : (

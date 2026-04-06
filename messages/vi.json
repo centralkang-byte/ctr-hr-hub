@@ -258,7 +258,8 @@
     "requiredFields": "Vui lòng điền các trường bắt buộc.",
     "updateFailed": "Cập nhật thất bại",
     "statusChangeFailed": "Thay đổi trạng thái thất bại",
-    "errorOccurred": "Đã xảy ra lỗi."
+    "errorOccurred": "Đã xảy ra lỗi.",
+    "currentValue": "[TODO:vi] 현재 값"
   },
   "auth": {
     "login": "Login",
@@ -2286,7 +2287,8 @@
     "evalStrengths": "Điểm mạnh",
     "evalConcerns": "Điểm yếu",
     "evalComment": "Nhận xét",
-    "closeButton": "Đóng"
+    "closeButton": "Đóng",
+    "validationSalaryRange": "[TODO:vi] 최소 급여는 최대 급여보다 작아야 합니다"
   },
   "offboarding": {
     "title": "Offboarding",
@@ -4894,7 +4896,10 @@
       "colTitle": "Chức danh",
       "colNameEn": "Tên tiếng Anh",
       "colType": "Loại",
-      "emptyState": "Chưa có chức danh nào được đăng ký"
+      "emptyState": "Chưa có chức danh nào được đăng ký",
+      "codePlaceholder": "[TODO:vi] 코드 (예: CEO)",
+      "namePlaceholder": "[TODO:vi] 이름 (예: 대표이사)",
+      "nameEnPlaceholder": "[TODO:vi] 영문명 (예: CEO)"
     },
     "gradeTitleMappings": {
       "title": "Ánh xạ Bậc-Chức danh",
@@ -4909,7 +4914,10 @@
       "emptyState": "Chưa có ánh xạ. Vui lòng thêm ánh xạ bậc-chức danh.",
       "gradeTypeStaff": "L (Nhân viên)",
       "gradeTypeSpecialist": "S (Chuyên gia)",
-      "gradeTypeExecutive": "E (Lãnh đạo)"
+      "gradeTypeExecutive": "E (Lãnh đạo)",
+      "groupCountItem": "[TODO:vi]  · {prefix}: {count}개",
+      "titleNamePlaceholder": "[TODO:vi] 호칭명 (예: 매니저)",
+      "titleNameEnPlaceholder": "[TODO:vi] 호칭 영문명"
     },
     "jobGrades": {
       "title": "Hệ thống Bậc lương",
@@ -4924,7 +4932,11 @@
       "gradeTypeStaff": "Nhân viên",
       "gradeTypeSpecialist": "Chuyên gia",
       "gradeTypeExecutive": "Lãnh đạo",
-      "yearsUnit": "{count} năm"
+      "yearsUnit": "{count} năm",
+      "codePlaceholder": "[TODO:vi] 코드 (예: L3)",
+      "namePlaceholder": "[TODO:vi] 이름 (예: 매니저)",
+      "nameEnPlaceholder": "[TODO:vi] 영문명",
+      "minPromotionPlaceholder": "[TODO:vi] 최소 승진연한"
     },
     "positions": {
       "title": "Quản lý Chức vụ",
@@ -4937,7 +4949,10 @@
       "colLinkedGrade": "Bậc liên kết",
       "reportsToPlaceholder": "Chức vụ cấp trên (Tùy chọn)",
       "linkedGradePlaceholder": "Bậc liên kết (Tùy chọn)",
-      "emptyState": "Chưa có chức vụ nào được đăng ký"
+      "emptyState": "Chưa có chức vụ nào được đăng ký",
+      "codePlaceholder": "[TODO:vi] 코드 (예: POS-TL)",
+      "namePlaceholder": "[TODO:vi] 직위명 (예: 팀장)",
+      "nameEnPlaceholder": "[TODO:vi] 영문명 (예: Team Lead)"
     },
     "designatedLeave": {
       "title": "Ngày nghỉ chỉ định",
@@ -5489,7 +5504,8 @@
         "edit": "Sửa",
         "confirmReject": "Xác nhận từ chối"
       }
-    }
+    },
+    "simulatedPosition": "[TODO:vi] 시뮬레이션 위치"
   },
   "payrollPage": {
     "title": "Payroll Processing",
@@ -5709,7 +5725,8 @@
     "ctrCoreValue": "CTR Core Value",
     "reason": "Reason",
     "dateInfo": "Date Information",
-    "registeredDate": "Registered Date"
+    "registeredDate": "Registered Date",
+    "awardedById": "[TODO:vi] 수여자"
   },
   "rewardForm": {
     "title": "Register Reward",
@@ -6488,6 +6505,138 @@
       "langCount": "{count} ngôn ngữ",
       "skills": "Kỹ năng",
       "skillCount": "kỹ năng"
+    },
+    "profile": {
+      "tabs": {
+        "overview": "Tổng quan",
+        "career": "Nghề nghiệp & Lịch sử",
+        "compensation": "Lương thưởng",
+        "documents": "Tài liệu"
+      },
+      "visibility": {
+        "public": "Công khai",
+        "team": "Chỉ nhóm",
+        "manager": "Chỉ quản lý",
+        "private": "Riêng tư"
+      },
+      "changeType": {
+        "HIRE": "Tuyển dụng",
+        "PROMOTION": "Thăng chức",
+        "TRANSFER": "Chuyển đổi",
+        "DEMOTION": "Giáng chức",
+        "ANNUAL_INCREASE": "Tăng lương hàng năm",
+        "MARKET_ADJUSTMENT": "Điều chỉnh thị trường",
+        "RESIGN": "Từ chức"
+      },
+      "docType": {
+        "CONTRACT": "Hợp đồng",
+        "ID_CARD": "Bản sao CMND",
+        "CERTIFICATE": "Chứng nhận",
+        "RESUME": "Sơ yếu lý lịch",
+        "HANDOVER": "Biên bản bàn giao",
+        "OTHER": "Khác"
+      },
+      "statusActive": "Đang làm việc",
+      "hrInfo": "Thông tin nhân sự",
+      "field": {
+        "employeeNo": "Mã nhân viên",
+        "hireDate": "Ngày vào làm",
+        "gender": "Giới tính",
+        "birthDate": "Ngày sinh",
+        "companyEmail": "Email (Công ty)",
+        "personalPhone": "Điện thoại (Cá nhân)"
+      },
+      "pending": "Đang chờ",
+      "changeRequest": "Yêu cầu thay đổi",
+      "bio": "Giới thiệu bản thân",
+      "emptyBio": "Chưa có giới thiệu bản thân.",
+      "skills": "Kỹ năng",
+      "emptySkills": "Chưa có kỹ năng nào được đăng ký.",
+      "add": "Thêm",
+      "emergencyContact": "Liên hệ khẩn cấp",
+      "addAction": "Thêm",
+      "emptyEmergencyContact": "Chưa có liên hệ khẩn cấp nào.",
+      "primary": "Chính",
+      "visibilitySettings": "Cài đặt hiển thị",
+      "visibilityField": {
+        "email": "Email",
+        "phone": "Điện thoại",
+        "birthDate": "Ngày sinh",
+        "address": "Địa chỉ",
+        "personalPhone": "[TODO:vi] 내 연락처",
+        "skills": "[TODO:vi] 보유 스킬"
+      },
+      "careerTimeline": "Lịch sử nghề nghiệp",
+      "emptyCareerTitle": "Chưa có lịch sử nghề nghiệp",
+      "emptyCareerDesc": "Lịch sử nghề nghiệp sẽ hiển thị tại đây.",
+      "noDept": "Không có phòng ban",
+      "noGrade": "Không có cấp bậc",
+      "currentSalary": "Lương hiện tại",
+      "noRecord": "Không có hồ sơ",
+      "showSalary": "Hiển thị lương",
+      "hideSalary": "Ẩn lương",
+      "lastUpdated": "Cập nhật lần cuối",
+      "currency": "Tiền tệ",
+      "salaryHistory": "Lịch sử lương",
+      "emptyCompensationDesc": "Thông tin lương thưởng sẽ hiển thị tại đây.",
+      "col": {
+        "date": "Ngày",
+        "type": "Loại",
+        "department": "Phòng ban",
+        "position": "Chức vụ",
+        "note": "Ghi chú",
+        "effectiveDate": "Ngày hiệu lực",
+        "amount": "Số tiền",
+        "reason": "Lý do"
+      },
+      "contractsAndCerts": "Hợp đồng & Chứng nhận",
+      "requestCertificate": "Yêu cầu chứng nhận",
+      "emptyDocsTitle": "Không có tài liệu",
+      "emptyDocsDesc": "Tài liệu sẽ hiển thị tại đây.",
+      "addEmergencyContact": "Thêm liên hệ khẩn cấp",
+      "ecField": {
+        "name": "Họ tên",
+        "relationship": "Mối quan hệ",
+        "phone": "Số điện thoại"
+      },
+      "ecPlaceholder": {
+        "name": "Nhập họ tên",
+        "relationship": "VD: Vợ/Chồng, Cha mẹ",
+        "phone": "Nhập số điện thoại"
+      },
+      "setPrimary": "Đặt làm liên hệ chính",
+      "avatarComingSoonTitle": "Sắp ra mắt",
+      "avatarComingSoonDesc": "Chức năng tải ảnh đại diện sẽ sớm khả dụng."
+    },
+    "leave": {
+      "title": "Quản lý nghỉ phép",
+      "balance": "Số ngày phép còn lại",
+      "used": "Đã sử dụng",
+      "remaining": "Còn lại",
+      "total": "Tổng",
+      "applyLeave": "Đăng ký nghỉ phép",
+      "leaveType": "Loại nghỉ phép",
+      "startDate": "Ngày bắt đầu",
+      "endDate": "Ngày kết thúc",
+      "reason": "Lý do",
+      "status": {
+        "pending": "Đang chờ",
+        "approved": "Đã duyệt",
+        "rejected": "Từ chối",
+        "cancelled": "Đã hủy"
+      },
+      "cancel": "Hủy đơn",
+      "history": "Lịch sử nghỉ phép",
+      "empty": {
+        "title": "Không có hồ sơ nghỉ phép",
+        "description": "Chưa có lịch sử nghỉ phép."
+      },
+      "error": {
+        "loadFailed": "Không thể tải thông tin nghỉ phép.",
+        "applyFailed": "Đăng ký nghỉ phép thất bại.",
+        "cancelFailed": "Hủy nghỉ phép thất bại."
+      },
+      "designatedLeave": "[TODO:vi] 지정연차"
     }
   },
   "directory": {
@@ -6692,5 +6841,531 @@
     "affiliation": "Trực thuộc:",
     "comeBackOn": "Vui lòng quay lại vào {date}.",
     "noAssignment": "Không có thông tin bổ nhiệm. Vui lòng liên hệ quản trị viên."
+  },
+  "myBenefits": {
+    "pageTitle": "Phúc lợi của tôi",
+    "breadcrumb": "Không gian của tôi",
+    "applyBenefit": "Đăng ký phúc lợi",
+    "applyAction": "Đăng ký",
+    "usageSummary": "Tình hình sử dụng",
+    "pendingAmount": "Đang chờ",
+    "claimHistory": "Lịch sử đăng ký",
+    "loadError": "Không thể tải thông tin phúc lợi.",
+    "errorDesc": "Đã xảy ra lỗi khi xử lý yêu cầu.",
+    "emptyTitle": "Chưa có lịch sử đăng ký",
+    "emptyDesc": "Bạn chưa có yêu cầu phúc lợi nào.",
+    "status": {
+      "pending": "Đang chờ",
+      "approved": "Đã duyệt",
+      "rejected": "Từ chối",
+      "paid": "Đã thanh toán",
+      "cancelled": "Đã hủy"
+    },
+    "category": {
+      "family": "Sự kiện gia đình",
+      "health": "Sức khỏe",
+      "education": "Giáo dục",
+      "lifestyle": "Đời sống",
+      "financial": "Tài chính"
+    },
+    "form": {
+      "planLabel": "Chương trình phúc lợi",
+      "selectPlanPlaceholder": "Chọn chương trình",
+      "fixedAmount": "Số tiền cố định",
+      "reimbursement": "Hoàn tiền",
+      "proofRequired": "Yêu cầu chứng từ",
+      "claimAmount": "Số tiền đăng ký",
+      "limit": "Hạn mức",
+      "max": "Tối đa",
+      "eventDate": "Ngày sự kiện",
+      "eventDetail": "Chi tiết",
+      "eventDetailPlaceholder": "VD: Kết hôn",
+      "proofDocuments": "Tài liệu chứng minh",
+      "attachFile": "Đính kèm tệp"
+    },
+    "validation": {
+      "selectPlan": "Vui lòng chọn chương trình phúc lợi.",
+      "enterAmount": "Vui lòng nhập số tiền đăng ký.",
+      "attachProof": "Vui lòng đính kèm tài liệu chứng minh."
+    }
+  },
+  "yearEnd": {
+    "pageTitle": "Quyết toán thuế cuối năm {year}",
+    "steps": {
+      "dependents": "Xác nhận người phụ thuộc",
+      "deductions": "Nhập khoản khấu trừ",
+      "additional": "Khấu trừ bổ sung",
+      "result": "Xem kết quả"
+    },
+    "relationship": {
+      "self": "Bản thân",
+      "spouse": "Vợ/Chồng",
+      "child": "Con",
+      "parent": "Cha mẹ",
+      "grandparent": "Ông bà",
+      "sibling": "Anh chị em"
+    },
+    "deduction": {
+      "credit_card": "Chi tiêu thẻ tín dụng",
+      "debit_card": "Chi tiêu thẻ ghi nợ",
+      "cash_receipt": "Chi tiêu hóa đơn tiền mặt",
+      "medical_credit": "Chi phí y tế",
+      "education_credit": "Học phí (bản thân)",
+      "child_education_credit": "Học phí con (mỗi người)",
+      "donation_credit": "Quyên góp",
+      "rent_credit": "Tiền thuê hàng tháng (tổng năm)",
+      "housing_savings": "Tiền gửi tiết kiệm nhà ở",
+      "housing_loan_interest": "Lãi vay nhà ở"
+    },
+    "step1": {
+      "title": "Xác nhận người phụ thuộc",
+      "description": "Nhập thông tin người phụ thuộc để được khấu trừ cá nhân.",
+      "addDependent": "Thêm người phụ thuộc",
+      "relationship": "Mối quan hệ",
+      "name": "Họ tên",
+      "enterName": "Nhập họ tên",
+      "birthDate": "Ngày sinh",
+      "disabled": "Người khuyết tật",
+      "senior": "Người cao tuổi (70+)",
+      "deductionGuideTitle": "Hướng dẫn khấu trừ cá nhân",
+      "deductionGuideBody": "Cơ bản: 1,5 triệu KRW/người / Khuyết tật: +2 triệu KRW / Cao tuổi: +1 triệu KRW"
+    },
+    "step2": {
+      "title": "Nhập khoản khấu trừ",
+      "description": "Tải lên dữ liệu Hometax hoặc nhập thủ công.",
+      "tabUpload": "Tải lên dữ liệu Hometax",
+      "tabManual": "Nhập thủ công",
+      "uploadTitle": "Tải lên PDF Hometax",
+      "uploadGuide": "NTS Hometax → Quyết toán cuối năm → Tra cứu/Phát hành dữ liệu khấu trừ",
+      "uploading": "Đang tải lên...",
+      "selectPdf": "Chọn tệp PDF",
+      "parsingNotReady": "Tính năng phân tích đang chuẩn bị",
+      "parsingNotReadyDesc": "Vui lòng nhập số tiền thủ công trong tab \"Nhập thủ công\" bên dưới.",
+      "incomeDeductionHeader": "Khấu trừ thu nhập thẻ tín dụng",
+      "taxCreditHeader": "Mục tín dụng thuế"
+    },
+    "step3": {
+      "title": "Khấu trừ bổ sung",
+      "description": "Các khoản khấu trừ không có trong dữ liệu Hometax.",
+      "housingHeader": "Khấu trừ liên quan nhà ở",
+      "housingGuideTitle": "Hướng dẫn khấu trừ tiết kiệm nhà ở",
+      "housingGuideBody": "Chỉ áp dụng cho chủ hộ không sở hữu nhà với tổng lương ≤70 triệu KRW. (40% khoản đóng góp, giới hạn 2,4 triệu KRW/năm)"
+    },
+    "step4": {
+      "title": "Xem kết quả",
+      "description": "Kết quả dự kiến quyết toán thuế cuối năm {year}.",
+      "calculating": "Đang tính toán...",
+      "recalculate": "Tính lại",
+      "breakdownHeader": "Chi tiết tính thuế 11 bước",
+      "submittedTitle": "Đã nộp",
+      "submittedDesc": "HR đang xem xét. Kết quả sẽ được thông báo qua email.",
+      "submitting": "Đang nộp...",
+      "submit": "Nộp quyết toán thuế"
+    },
+    "result": {
+      "totalSalary": "① Tổng lương",
+      "earnedIncomeDeduction": "② Khấu trừ thu nhập",
+      "earnedIncome": "③ Số tiền thu nhập",
+      "totalIncomeDeduction": "④ Tổng khấu trừ thu nhập",
+      "taxableBase": "⑤ Cơ sở tính thuế",
+      "calculatedTax": "⑦ Thuế tính (thuế suất {rate}%)",
+      "totalTaxCredit": "⑧ Tổng tín dụng thuế",
+      "determinedTax": "⑨ Thuế xác định",
+      "prepaidTax": "⑩ Thuế đã nộp (khấu trừ tại nguồn)",
+      "finalSettlement": "⑪ Hoàn thuế / Nộp thêm",
+      "refund": "Hoàn thuế",
+      "additionalPayment": "Nộp thêm",
+      "localTax": "Thuế thu nhập địa phương (10% thuế thu nhập)"
+    },
+    "status": {
+      "submitted": "Đã nộp"
+    },
+    "nav": {
+      "previous": "Trước",
+      "next": "Tiếp",
+      "saving": "Đang lưu..."
+    },
+    "error": {
+      "loadFailed": "Không thể tải thông tin quyết toán cuối năm.",
+      "uploadFailed": "Tải tệp lên thất bại.",
+      "saveDependentsFailed": "Lỗi khi lưu người phụ thuộc.",
+      "saveDeductionsFailed": "Lỗi khi lưu khoản khấu trừ.",
+      "calculateFailed": "Lỗi khi tính toán.",
+      "submitFailed": "Lỗi khi nộp."
+    },
+    "loading": "Đang tải thông tin quyết toán cuối năm...",
+    "close": "Đóng",
+    "pageDescription": "Hoàn thành trình hướng dẫn 4 bước và nộp"
+  },
+  "myDocuments": {
+    "pageTitle": "Tài liệu của tôi",
+    "pageDescription": "Quản lý tài liệu cá nhân của bạn",
+    "tabs": {
+      "all": "Tất cả",
+      "contracts": "Hợp đồng",
+      "certificates": "Chứng nhận",
+      "payslips": "Phiếu lương",
+      "other": "Khác"
+    },
+    "upload": "Tải lên tài liệu",
+    "download": "Tải xuống",
+    "delete": "Xóa",
+    "preview": "Xem trước",
+    "fileName": "Tên tệp",
+    "fileType": "Loại",
+    "uploadDate": "Ngày tải lên",
+    "fileSize": "Kích thước tệp",
+    "status": {
+      "active": "Có hiệu lực",
+      "expired": "Hết hạn",
+      "pending": "Đang chờ"
+    },
+    "empty": {
+      "title": "Không có tài liệu",
+      "description": "Chưa có tài liệu nào được tải lên.",
+      "noDocuments": "[TODO:vi] 등록된 문서가 없습니다",
+      "noDocumentsDesc": "[TODO:vi] HR에서 등록한 문서가 여기에 표시됩니다.",
+      "noCertificates": "[TODO:vi] 증명서 발급 요청 내역이 없습니다",
+      "noCertificatesDesc": "[TODO:vi] 위 '증명서 신청' 버튼으로 재직증명서/경력증명서를 요청할 수 있습니다."
+    },
+    "error": {
+      "loadFailed": "Không thể tải tài liệu.",
+      "uploadFailed": "Tải lên tài liệu thất bại.",
+      "deleteFailed": "Xóa tài liệu thất bại.",
+      "downloadFailed": "[TODO:vi] 다운로드 실패",
+      "downloadFailedDesc": "[TODO:vi] 파일을 다운로드할 수 없습니다.",
+      "requestFailed": "[TODO:vi] 신청 실패",
+      "retryLater": "[TODO:vi] 잠시 후 다시 시도해주세요."
+    },
+    "confirm": {
+      "deleteTitle": "Xóa tài liệu",
+      "deleteMessage": "Bạn có chắc chắn muốn xóa tài liệu này?"
+    },
+    "requestCertificate": "Yêu cầu chứng nhận",
+    "certificateType": {
+      "employment": "Giấy xác nhận việc làm",
+      "career": "Giấy xác nhận kinh nghiệm",
+      "salary": "Giấy xác nhận lương",
+      "retirement": "Giấy xác nhận nghỉ hưu"
+    },
+    "action": {
+      "requestCert": "[TODO:vi] 증명서 신청",
+      "cancel": "[TODO:vi] 취소",
+      "submit": "[TODO:vi] 신청하기",
+      "submitting": "[TODO:vi] 신청 중...",
+      "download": "[TODO:vi] 다운로드"
+    },
+    "dialog": {
+      "title": "[TODO:vi] 증명서 발급 신청",
+      "certTypeLabel": "[TODO:vi] 증명서 유형",
+      "purposeLabel": "[TODO:vi] 용도 (선택)",
+      "purposePlaceholder": "[TODO:vi] 예: 은행 대출 신청용"
+    },
+    "toast": {
+      "requestSuccess": "[TODO:vi] 증명서 신청 완료",
+      "requestSuccessDesc": "[TODO:vi] HR 담당자 승인 후 발급됩니다."
+    }
+  },
+  "internalJobs": {
+    "pageTitle": "Tuyển dụng nội bộ",
+    "pageDescription": "Xem các cơ hội việc làm và chuyển đổi nội bộ",
+    "tabs": {
+      "all": "Tất cả",
+      "open": "Đang mở",
+      "closed": "Đã đóng",
+      "applied": "Đã ứng tuyển"
+    },
+    "department": "Phòng ban",
+    "location": "Địa điểm",
+    "postedDate": "Ngày đăng",
+    "deadline": "Hạn chót",
+    "requirements": "Yêu cầu",
+    "responsibilities": "Trách nhiệm",
+    "apply": "Ứng tuyển",
+    "applied": "Đã ứng tuyển",
+    "withdraw": "Rút đơn ứng tuyển",
+    "status": {
+      "open": "Đang mở",
+      "closed": "Đã đóng",
+      "filled": "Đã tuyển"
+    },
+    "applicationStatus": {
+      "submitted": "Đã nộp",
+      "reviewing": "Đang xem xét",
+      "interview": "Phỏng vấn",
+      "accepted": "Đã chấp nhận",
+      "rejected": "Không đạt"
+    },
+    "empty": {
+      "title": "Không có vị trí",
+      "description": "Hiện không có vị trí tuyển dụng nội bộ."
+    },
+    "error": {
+      "loadFailed": "Không thể tải tin tuyển dụng.",
+      "applyFailed": "Ứng tuyển thất bại.",
+      "withdrawFailed": "Rút đơn thất bại."
+    },
+    "detail": "Xem chi tiết",
+    "myApplications": "Đơn ứng tuyển của tôi",
+    "title": "[TODO:vi] 사내 공개 채용",
+    "description": "[TODO:vi] 그룹 내 공개된 내부 채용 공고입니다. 관심 있는 포지션에 지원하세요.",
+    "searchPlaceholder": "[TODO:vi] 공고명 또는 부서 검색...",
+    "allCompanies": "[TODO:vi] 전체 법인",
+    "fetchError": "[TODO:vi] 공고 목록 로드 실패",
+    "applyError": "[TODO:vi] 지원 중 오류가 발생했습니다.",
+    "applying": "[TODO:vi] 지원 중...",
+    "viewDetails": "[TODO:vi] 상세 보기",
+    "position": "[TODO:vi] 포지션",
+    "headcount": "[TODO:vi] {count}명",
+    "salary": "[TODO:vi] 급여: {min}만 ~ {max}만원",
+    "badge": {
+      "internal": "[TODO:vi] 내부 채용"
+    },
+    "urgency": {
+      "urgent": "[TODO:vi] 긴급",
+      "normal": "[TODO:vi] 보통",
+      "low": "[TODO:vi] 낮음"
+    },
+    "stage": {
+      "applied": "[TODO:vi] 서류접수"
+    }
+  },
+  "notificationPrefs": {
+    "pageTitle": "Cài đặt thông báo",
+    "pageDescription": "Cấu hình cách bạn nhận thông báo",
+    "channels": {
+      "email": "Email",
+      "push": "Thông báo đẩy",
+      "inApp": "Thông báo trong ứng dụng"
+    },
+    "categories": {
+      "leave": "Nghỉ phép",
+      "attendance": "Chấm công",
+      "payroll": "Lương",
+      "approval": "Phê duyệt",
+      "announcement": "Thông báo",
+      "system": "Hệ thống"
+    },
+    "frequency": {
+      "realtime": "Thời gian thực",
+      "daily": "Tóm tắt hàng ngày",
+      "weekly": "Tóm tắt hàng tuần",
+      "off": "Tắt"
+    },
+    "save": "Lưu cài đặt",
+    "saved": "Đã lưu cài đặt",
+    "error": {
+      "loadFailed": "Không thể tải cài đặt thông báo.",
+      "saveFailed": "Lưu cài đặt thất bại."
+    },
+    "quietHours": {
+      "title": "[TODO:vi] 방해금지 시간",
+      "excludeUrgent": "[TODO:vi] urgent 알림 제외",
+      "description": "[TODO:vi] 설정된 시간 동안 긴급(urgent) 외 알림은 조용히 처리됩니다"
+    },
+    "quietHoursDesc": "Thông báo đẩy sẽ không được gửi trong khoảng thời gian này",
+    "from": "Từ",
+    "to": "Đến",
+    "title": "[TODO:vi] 알림 설정",
+    "fetchError": "[TODO:vi] 알림 설정 로드 실패",
+    "saveError": "[TODO:vi] 저장 실패",
+    "saving": "[TODO:vi] 저장 중...",
+    "toggleOn": "[TODO:vi] 켜기",
+    "toggleOff": "[TODO:vi] 끄기",
+    "channel": {
+      "event": "[TODO:vi] 이벤트",
+      "inApp": "[TODO:vi] 인앱",
+      "email": "[TODO:vi] 이메일",
+      "teams": "[TODO:vi] Teams"
+    }
+  },
+  "myTraining": {
+    "pageTitle": "Hồ sơ đào tạo",
+    "pageDescription": "Quản lý đào tạo bắt buộc và các khóa phát triển nghề nghiệp",
+    "tabs": {
+      "all": "Tất cả",
+      "required": "Bắt buộc",
+      "optional": "Tự chọn",
+      "completed": "Đã hoàn thành"
+    },
+    "courseName": "Tên khóa học",
+    "provider": "Đơn vị đào tạo",
+    "duration": "Thời lượng",
+    "deadline": "Hạn hoàn thành",
+    "completedDate": "Ngày hoàn thành",
+    "certificate": "Chứng chỉ",
+    "progress": "Tiến độ",
+    "status": {
+      "notStarted": "Chưa bắt đầu",
+      "inProgress": "Đang học",
+      "completed": "Đã hoàn thành",
+      "overdue": "Quá hạn"
+    },
+    "startCourse": "Bắt đầu khóa học",
+    "continueCourse": "Tiếp tục khóa học",
+    "viewCertificate": "Xem chứng chỉ",
+    "empty": {
+      "title": "Không có khóa đào tạo",
+      "description": "Bạn chưa được phân công khóa đào tạo nào."
+    },
+    "error": {
+      "loadFailed": "Không thể tải hồ sơ đào tạo."
+    },
+    "hours": "{count} giờ",
+    "mandatory": "Bắt buộc",
+    "elective": "Tự chọn",
+    "fetchError": "[TODO:vi] 교육 현황 로드 실패",
+    "breadcrumb": "[TODO:vi] 나의 공간",
+    "title": "[TODO:vi] 내 교육 현황",
+    "expiringSoon": "[TODO:vi] 이수 만료 임박 ({count}건)",
+    "expiresInDays": "[TODO:vi] {days}일 후 만료",
+    "kpi": {
+      "requiredPending": "[TODO:vi] 미이수 필수",
+      "enrollmentNeeded": "[TODO:vi] 신청 필요",
+      "recommended": "[TODO:vi] 추천 과정",
+      "completed": "[TODO:vi] 이수 완료"
+    },
+    "section": {
+      "requiredPending": "[TODO:vi] 미이수 필수 교육",
+      "enrollmentNeeded": "[TODO:vi] 신청 필요 과정",
+      "recommended": "[TODO:vi] 스킬 갭 기반 추천 과정",
+      "history": "[TODO:vi] 이수 이력",
+      "historyRecent": "[TODO:vi] (최근 20건)"
+    },
+    "badge": {
+      "required": "[TODO:vi] 필수",
+      "recommended": "[TODO:vi] 추천",
+      "mandatory": "[TODO:vi] 필수"
+    },
+    "deadlineLabel": "[TODO:vi] 마감: {date}",
+    "emptyHistory": "[TODO:vi] 이수 이력이 없습니다.",
+    "scoreValue": "[TODO:vi] {score}점",
+    "table": {
+      "courseName": "[TODO:vi] 과정명",
+      "category": "[TODO:vi] 분류",
+      "completedAt": "[TODO:vi] 이수일",
+      "validUntil": "[TODO:vi] 유효기간",
+      "score": "[TODO:vi] 점수"
+    },
+    "action": {
+      "startCourse": "[TODO:vi] 학습 시작",
+      "completeCourse": "[TODO:vi] 이수 완료",
+      "enroll": "[TODO:vi] 수강 신청",
+      "enrollShort": "[TODO:vi] 신청",
+      "enrolling": "[TODO:vi] 신청 중..."
+    }
+  },
+  "mySkills": {
+    "pageTitle": "Quản lý kỹ năng",
+    "pageDescription": "Quản lý kỹ năng và năng lực của bạn",
+    "tabs": {
+      "all": "Tất cả",
+      "technical": "Kỹ thuật",
+      "soft": "Kỹ năng mềm",
+      "language": "Ngôn ngữ"
+    },
+    "skillName": "Tên kỹ năng",
+    "category": "Danh mục",
+    "level": {
+      "beginner": "Sơ cấp",
+      "intermediate": "Trung cấp",
+      "advanced": "Cao cấp",
+      "expert": "Chuyên gia",
+      "basic": "[TODO:vi] 기본",
+      "proficient": "[TODO:vi] 우수"
+    },
+    "endorsements": "Đề xuất",
+    "endorsedBy": "Người đề xuất",
+    "addSkill": "Thêm kỹ năng",
+    "editSkill": "Sửa kỹ năng",
+    "removeSkill": "Xóa kỹ năng",
+    "selfAssessment": "Tự đánh giá",
+    "managerAssessment": "Đánh giá của quản lý",
+    "empty": {
+      "title": "Chưa có kỹ năng",
+      "description": "Thêm kỹ năng vào hồ sơ của bạn."
+    },
+    "error": {
+      "loadFailed": "Không thể tải thông tin kỹ năng.",
+      "saveFailed": "Lưu kỹ năng thất bại."
+    },
+    "suggestedSkills": "Kỹ năng gợi ý",
+    "skillGap": "Phân tích khoảng cách kỹ năng",
+    "title": "[TODO:vi] 나의 역량 자기평가",
+    "description": "[TODO:vi] 역량별 현재 수준을 자기평가하고, 개발 방향을 확인하세요.",
+    "radarChart": "[TODO:vi] 레이더 차트",
+    "radarChartTitle": "[TODO:vi] 역량 레이더 차트",
+    "expected": "[TODO:vi] 기대 수준",
+    "actual": "[TODO:vi] 자기평가",
+    "kpi": {
+      "completed": "[TODO:vi] 평가 완료",
+      "belowExpected": "[TODO:vi] 미달 역량",
+      "belowExpectedDesc": "[TODO:vi] 기대 수준 미달",
+      "strength": "[TODO:vi] 강점 역량",
+      "meetsExpected": "[TODO:vi] 기대 수준 이상"
+    },
+    "categoryProgress": "[TODO:vi] {done}/{total} 완료",
+    "expectedLevel": "[TODO:vi] 기대 수준",
+    "gapBehind": "[TODO:vi] 갭 -{gap}",
+    "gapMet": "[TODO:vi] 충족",
+    "gapAhead": "[TODO:vi] +{gap}",
+    "toastSubmitted": "[TODO:vi] 자기평가가 제출되었습니다.",
+    "saveDraft": "[TODO:vi] 임시저장",
+    "submit": "[TODO:vi] 제출"
+  },
+  "myOffboarding": {
+    "pageTitle": "Quy trình thôi việc",
+    "pageDescription": "Xem quy trình thôi việc của bạn",
+    "steps": {
+      "resignation": "Nộp đơn từ chức",
+      "handover": "Bàn giao công việc",
+      "equipment": "Trả thiết bị",
+      "exit": "Phỏng vấn thôi việc",
+      "settlement": "Thanh toán trợ cấp"
+    },
+    "status": {
+      "pending": "Đang chờ",
+      "inProgress": "Đang tiến hành",
+      "completed": "Hoàn thành",
+      "skipped": "Không áp dụng"
+    },
+    "resignationDate": "Ngày dự kiến nghỉ việc",
+    "lastWorkingDay": "Ngày làm việc cuối cùng",
+    "handoverPerson": "Người nhận bàn giao",
+    "handoverDoc": "Tài liệu bàn giao",
+    "equipmentList": "Danh sách thiết bị trả",
+    "exitSurvey": "Khảo sát thôi việc",
+    "exitInterview": "Phỏng vấn thôi việc",
+    "severancePay": "Trợ cấp thôi việc",
+    "remainingLeave": "Phép còn lại",
+    "checklist": "Danh sách kiểm tra",
+    "progress": "Tiến độ",
+    "empty": {
+      "title": "Không có quy trình thôi việc",
+      "description": "Hiện không có quy trình thôi việc nào đang tiến hành."
+    },
+    "error": {
+      "loadFailed": "Không thể tải thông tin quy trình thôi việc."
+    },
+    "title": "[TODO:vi] 나의 퇴직 처리",
+    "lastWorkingDate": "[TODO:vi] 최종 근무일",
+    "overallProgress": "[TODO:vi] 전체 진행률",
+    "progressCount": "[TODO:vi] {done}/{total} 완료",
+    "emptyDesc": "[TODO:vi] 퇴직 관련 문의는 HR팀에 연락해주세요.",
+    "overdue": "[TODO:vi] 지연",
+    "optional": "[TODO:vi] 선택",
+    "assignedTo": "[TODO:vi] 담당",
+    "completedOn": "[TODO:vi] 완료",
+    "dueDate": "[TODO:vi] 마감",
+    "markComplete": "[TODO:vi] 완료 처리",
+    "referenceInfo": "[TODO:vi] 참고 정보",
+    "ref": {
+      "remainingLeave": "[TODO:vi] 잔여 연차",
+      "days": "[TODO:vi] {count}일",
+      "useBeforeLastDay": "[TODO:vi] 최종 근무일 전 사용을 권장합니다.",
+      "insuranceNotice": "[TODO:vi] 4대보험 상실 신고는 퇴직일 기준 14일 이내 처리됩니다.",
+      "healthInsuranceContinuation": "[TODO:vi] 건강보험 임의 계속 가입을 원하시면 HR팀에 문의하세요.",
+      "severanceNotice": "[TODO:vi] 퇴직금은 최종 근무일 기준 14일 이내 지급됩니다."
+    }
   }
 }

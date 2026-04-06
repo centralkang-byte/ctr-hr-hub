@@ -54,18 +54,6 @@ interface BenefitClaim {
   benefitPlan: { id: string; name: string; category: string; benefitType: string; currency: string }
 }
 
-const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  pending: { label: '승인대기', color: 'bg-amber-500/15 text-amber-700 border-amber-300', icon: <Clock className="w-3 h-3" /> },
-  approved: { label: '승인', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200', icon: <CheckCircle2 className="w-3 h-3" /> },
-  rejected: { label: '반려', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: <XCircle className="w-3 h-3" /> },
-  paid: { label: '지급완료', color: 'bg-primary/10 text-primary/90 border-primary/20', icon: <CheckCircle2 className="w-3 h-3" /> },
-  cancelled: { label: '취소', color: 'bg-background text-muted-foreground border-border', icon: null },
-}
-
-const CATEGORY_LABELS: Record<string, string> = {
-  family: '경조금', health: '건강', education: '교육', lifestyle: '생활', financial: '금융',
-}
-
 const formatCurrency = (amount: number, currency: string) =>
   currency === 'KRW' ? `₩${amount.toLocaleString()}` : `$${amount.toLocaleString()}`
 
@@ -76,6 +64,13 @@ function ClaimModal({ plans, onClose, onSubmit }: {
   onClose: () => void
   onSubmit: () => void
 }) {
+  const t = useTranslations('myBenefits')
+  const tCommon = useTranslations('common')
+
+  const CATEGORY_LABELS: Record<string, string> = {
+    family: t('category.family'), health: t('category.health'), education: t('category.education'), lifestyle: t('category.lifestyle'), financial: t('category.financial'),
+  }
+
   const [selectedPlanId, setSelectedPlanId] = useState('')
   const [claimAmount, setClaimAmount] = useState('')
   const [eventDate, setEventDate] = useState('')
@@ -102,10 +97,10 @@ function ClaimModal({ plans, onClose, onSubmit }: {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!selectedPlanId) { setError('복리후생 항목을 선택해 주세요.'); return }
-    if (!claimAmount || Number(claimAmount) <= 0) { setError('신청 금액을 입력해 주세요.'); return }
+    if (!selectedPlanId) { setError(t('validation.selectPlan')); return }
+    if (!claimAmount || Number(claimAmount) <= 0) { setError(t('validation.enterAmount')); return }
     if (selectedPlan?.requiresProof && proofFiles.length === 0) {
-      setError('증빙 서류를 첨부해 주세요.'); return
+      setError(t('validation.attachProof')); return
     }
 
     setSubmitting(true)
@@ -121,7 +116,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
       onSubmit()
       onClose()
     } catch (err: unknown) {
-      const msg = (err as { message?: string })?.message ?? 'errorDesc'
+      const msg = (err as { message?: string })?.message ?? t('errorDesc')
       setError(msg)
     } finally {
       setSubmitting(false)
@@ -134,7 +129,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
     <div className={MODAL_STYLES.container}>
       <div className={`${MODAL_STYLES.content.md}`}>
         <div className="flex items-center justify-between p-5 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">{'benefit.apply'}</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t('applyBenefit')}</h2>
           <button onClick={onClose} className="text-muted-foreground hover:text-muted-foreground text-xl leading-none">✕</button>
         </div>
 
@@ -147,30 +142,30 @@ function ClaimModal({ plans, onClose, onSubmit }: {
           )}
 
           <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">복리후생 항목 *</label>
+            <label className="text-sm font-medium text-foreground mb-1 block">{t('form.planLabel')} *</label>
             <select
               value={selectedPlanId}
               onChange={(e) => setSelectedPlanId(e.target.value)}
               className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
             >
-              <option value="">항목을 선택하세요</option>
+              <option value="">{t('form.selectPlanPlaceholder')}</option>
               {plans.map((p) => (
                 <option key={p.id} value={p.id}>
                   [{CATEGORY_LABELS[p.category] ?? p.category}] {p.name}
-                  {p.maxAmount ? ` (최대 ${formatCurrency(p.maxAmount, p.currency)})` : ''}
+                  {p.maxAmount ? ` (${t('form.max')} ${formatCurrency(p.maxAmount, p.currency)})` : ''}
                 </option>
               ))}
             </select>
             {selectedPlan && (
               <p className="text-xs text-muted-foreground mt-1">
-                {selectedPlan.benefitType === 'fixed_amount' ? '고정금액' : '실비 상환'}
-                {selectedPlan.requiresProof && ' · 증빙 필수'}
+                {selectedPlan.benefitType === 'fixed_amount' ? t('form.fixedAmount') : t('form.reimbursement')}
+                {selectedPlan.requiresProof && ` · ${t('form.proofRequired')}`}
               </p>
             )}
           </div>
 
           <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">신청 금액 *</label>
+            <label className="text-sm font-medium text-foreground mb-1 block">{t('form.claimAmount')} *</label>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">{selectedPlan?.currency === 'USD' ? '$' : '₩'}</span>
               <input
@@ -184,13 +179,13 @@ function ClaimModal({ plans, onClose, onSubmit }: {
             </div>
             {selectedPlan?.maxAmount && (
               <p className="text-xs text-muted-foreground mt-1">
-                한도: {formatCurrency(selectedPlan.maxAmount, selectedPlan.currency)}
+                {t('form.limit')}: {formatCurrency(selectedPlan.maxAmount, selectedPlan.currency)}
               </p>
             )}
           </div>
 
           <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">이벤트 날짜</label>
+            <label className="text-sm font-medium text-foreground mb-1 block">{t('form.eventDate')}</label>
             <input
               type="date"
               value={eventDate}
@@ -200,23 +195,23 @@ function ClaimModal({ plans, onClose, onSubmit }: {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">상세 내용</label>
+            <label className="text-sm font-medium text-foreground mb-1 block">{t('form.eventDetail')}</label>
             <input
               type="text"
               value={eventDetail}
               onChange={(e) => setEventDetail(e.target.value)}
-              placeholder="예: 본인 결혼"
+              placeholder={t('form.eventDetailPlaceholder')}
               className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
             />
           </div>
 
           <div>
             <label className="text-sm font-medium text-foreground mb-1 block">
-              증빙 서류 {selectedPlan?.requiresProof && <span className="text-red-500">*</span>}
+              {t('form.proofDocuments')} {selectedPlan?.requiresProof && <span className="text-red-500">*</span>}
             </label>
             <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-border rounded-lg cursor-pointer hover:bg-background text-sm text-muted-foreground">
               <Upload className="w-4 h-4" />
-              파일 첨부
+              {t('form.attachFile')}
               <input type="file" multiple onChange={handleFileChange} className="hidden" />
             </label>
             {proofFiles.length > 0 && (
@@ -230,7 +225,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
                       onClick={() => setProofFiles((prev) => prev.filter((_, j) => j !== i))}
                       className="text-red-500 hover:underline ml-auto"
                     >
-                      삭제
+                      {tCommon('delete')}
                     </button>
                   </div>
                 ))}
@@ -245,7 +240,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
             onClick={onClose}
             className="px-4 py-2 bg-card border border-border hover:bg-background text-foreground rounded-lg text-sm font-medium"
           >
-            {'취소'}
+            {tCommon('cancel')}
           </button>
           <button
             onClick={(e) => { e.preventDefault(); void handleSubmit(e as unknown as React.FormEvent) }}
@@ -253,7 +248,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
             className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2`}
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-            {submitting ? '로딩 중...' : 'apply'}
+            {submitting ? tCommon('loading') : t('applyAction')}
           </button>
         </div>
       </div>
@@ -264,7 +259,16 @@ function ClaimModal({ plans, onClose, onSubmit }: {
 // ─── 메인 컴포넌트 ─────────────────────────────────────────
 
 export function MyBenefitsClient({ user }: { user: SessionUser }) {
+  const t = useTranslations('myBenefits')
   const tCommon = useTranslations('common')
+
+  const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+    pending: { label: t('status.pending'), color: 'bg-amber-500/15 text-amber-700 border-amber-300', icon: <Clock className="w-3 h-3" /> },
+    approved: { label: t('status.approved'), color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200', icon: <CheckCircle2 className="w-3 h-3" /> },
+    rejected: { label: t('status.rejected'), color: 'bg-destructive/10 text-destructive border-destructive/20', icon: <XCircle className="w-3 h-3" /> },
+    paid: { label: t('status.paid'), color: 'bg-primary/10 text-primary/90 border-primary/20', icon: <CheckCircle2 className="w-3 h-3" /> },
+    cancelled: { label: t('status.cancelled'), color: 'bg-background text-muted-foreground border-border', icon: null },
+  }
 
   const [plans, setPlans] = useState<BenefitPlan[]>([])
   const [summary, setSummary] = useState<UsageSummaryItem[]>([])
@@ -291,11 +295,11 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
       const raw = claimsRes as unknown as { data: BenefitClaim[]; pagination: unknown }
       setClaims(raw.data ?? [])
     } catch {
-      setError('복리후생 정보를 불러오지 못했습니다.')
+      setError(t('loadError'))
     } finally {
       setLoading(false)
     }
-  }, [year])
+  }, [year, t])
 
   useEffect(() => { void load() }, [load])
 
@@ -311,15 +315,15 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <nav className="text-xs text-muted-foreground mb-1">나의 공간</nav>
-          <h1 className="text-2xl font-bold text-foreground">{'나의 복리후생'}</h1>
+          <nav className="text-xs text-muted-foreground mb-1">{t('breadcrumb')}</nav>
+          <h1 className="text-2xl font-bold text-foreground">{t('pageTitle')}</h1>
         </div>
         <button
           onClick={() => setShowModal(true)}
           className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}
         >
           <Plus className="w-4 h-4" />
-          {'복리후생 신청'}
+          {t('applyBenefit')}
         </button>
       </div>
 
@@ -332,7 +336,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
 
       {summary.length > 0 && (
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <h2 className="text-base font-semibold text-foreground mb-4">📊 {year}{tCommon('unit.year')} {'사용 현황'}</h2>
+          <h2 className="text-base font-semibold text-foreground mb-4">📊 {year}{tCommon('unit.year')} {t('usageSummary')}</h2>
           <div className="space-y-4">
             {summary.map((item) => {
               const total = item.maxAmount ?? 0
@@ -357,7 +361,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
                   )}
                   {item.pending > 0 && (
                     <p className="text-xs text-amber-700 mt-1">
-                      대기중: {formatCurrency(item.pending, item.currency)}
+                      {t('pendingAmount')}: {formatCurrency(item.pending, item.currency)}
                     </p>
                   )}
                 </div>
@@ -369,14 +373,14 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
 
       <div className="bg-card rounded-xl border border-border">
         <div className="p-5 border-b border-border">
-          <h2 className="text-base font-semibold text-foreground">{'신청 내역'}</h2>
+          <h2 className="text-base font-semibold text-foreground">{t('claimHistory')}</h2>
         </div>
         {claims.length === 0 ? (
           <EmptyState
             icon={Gift}
-            title={'신청 내역이 없습니다'}
-            description={'아직 복리후생 신청 내역이 없습니다.'}
-            action={{ label: '복리후생 신청', onClick: () => setShowModal(true) }}
+            title={t('emptyTitle')}
+            description={t('emptyDesc')}
+            action={{ label: t('applyBenefit'), onClick: () => setShowModal(true) }}
           />
         ) : (
           <div className="divide-y divide-border">

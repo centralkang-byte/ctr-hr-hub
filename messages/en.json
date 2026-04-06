@@ -258,7 +258,8 @@
     "requiredFields": "Please fill in required fields.",
     "updateFailed": "Update failed",
     "statusChangeFailed": "Status change failed",
-    "errorOccurred": "An error occurred."
+    "errorOccurred": "An error occurred.",
+    "currentValue": "[TODO:en] 현재 값"
   },
   "auth": {
     "login": "Login",
@@ -2286,7 +2287,8 @@
     "evalStrengths": "Strengths",
     "evalConcerns": "Concerns",
     "evalComment": "Comment",
-    "closeButton": "Close"
+    "closeButton": "Close",
+    "validationSalaryRange": "[TODO:en] 최소 급여는 최대 급여보다 작아야 합니다"
   },
   "offboarding": {
     "title": "Offboarding",
@@ -4894,7 +4896,10 @@
       "colTitle": "Title",
       "colNameEn": "English Name",
       "colType": "Type",
-      "emptyState": "No titles registered"
+      "emptyState": "No titles registered",
+      "codePlaceholder": "[TODO:en] 코드 (예: CEO)",
+      "namePlaceholder": "[TODO:en] 이름 (예: 대표이사)",
+      "nameEnPlaceholder": "[TODO:en] 영문명 (예: CEO)"
     },
     "gradeTitleMappings": {
       "title": "Grade-Title Mapping",
@@ -4909,7 +4914,10 @@
       "emptyState": "No mappings found. Please add grade-title mappings.",
       "gradeTypeStaff": "L (Staff)",
       "gradeTypeSpecialist": "S (Specialist)",
-      "gradeTypeExecutive": "E (Executive)"
+      "gradeTypeExecutive": "E (Executive)",
+      "groupCountItem": "[TODO:en]  · {prefix}: {count}개",
+      "titleNamePlaceholder": "[TODO:en] 호칭명 (예: 매니저)",
+      "titleNameEnPlaceholder": "[TODO:en] 호칭 영문명"
     },
     "jobGrades": {
       "title": "Grade System",
@@ -4924,7 +4932,11 @@
       "gradeTypeStaff": "Staff",
       "gradeTypeSpecialist": "Specialist",
       "gradeTypeExecutive": "Executive",
-      "yearsUnit": "{count} years"
+      "yearsUnit": "{count} years",
+      "codePlaceholder": "[TODO:en] 코드 (예: L3)",
+      "namePlaceholder": "[TODO:en] 이름 (예: 매니저)",
+      "nameEnPlaceholder": "[TODO:en] 영문명",
+      "minPromotionPlaceholder": "[TODO:en] 최소 승진연한"
     },
     "positions": {
       "title": "Position Management",
@@ -4937,7 +4949,10 @@
       "colLinkedGrade": "Linked Grade",
       "reportsToPlaceholder": "Parent Position (Optional)",
       "linkedGradePlaceholder": "Linked Grade (Optional)",
-      "emptyState": "No positions registered"
+      "emptyState": "No positions registered",
+      "codePlaceholder": "[TODO:en] 코드 (예: POS-TL)",
+      "namePlaceholder": "[TODO:en] 직위명 (예: 팀장)",
+      "nameEnPlaceholder": "[TODO:en] 영문명 (예: Team Lead)"
     },
     "designatedLeave": {
       "title": "Designated Leave Days",
@@ -5489,7 +5504,8 @@
         "edit": "Edit",
         "confirmReject": "Confirm Rejection"
       }
-    }
+    },
+    "simulatedPosition": "[TODO:en] 시뮬레이션 위치"
   },
   "payrollPage": {
     "title": "Payroll Processing",
@@ -5709,7 +5725,8 @@
     "ctrCoreValue": "CTR Core Value",
     "reason": "Reason",
     "dateInfo": "Date Information",
-    "registeredDate": "Registered Date"
+    "registeredDate": "Registered Date",
+    "awardedById": "[TODO:en] 수여자"
   },
   "rewardForm": {
     "title": "Register Reward",
@@ -6506,6 +6523,138 @@
       "langCount": "{count} langs",
       "skills": "Skills",
       "skillCount": " skills"
+    },
+    "profile": {
+      "tabs": {
+        "overview": "Overview",
+        "career": "Career & History",
+        "compensation": "Compensation",
+        "documents": "Documents"
+      },
+      "visibility": {
+        "public": "Public",
+        "team": "Team Only",
+        "manager": "Manager Only",
+        "private": "Private"
+      },
+      "changeType": {
+        "HIRE": "Hire",
+        "PROMOTION": "Promotion",
+        "TRANSFER": "Transfer",
+        "DEMOTION": "Demotion",
+        "ANNUAL_INCREASE": "Annual Increase",
+        "MARKET_ADJUSTMENT": "Market Adjustment",
+        "RESIGN": "Resignation"
+      },
+      "docType": {
+        "CONTRACT": "Contract",
+        "ID_CARD": "ID Card Copy",
+        "CERTIFICATE": "Certificate",
+        "RESUME": "Resume",
+        "HANDOVER": "Handover Document",
+        "OTHER": "Other"
+      },
+      "statusActive": "Active",
+      "hrInfo": "HR Information",
+      "field": {
+        "employeeNo": "Employee No.",
+        "hireDate": "Hire Date",
+        "gender": "Gender",
+        "birthDate": "Date of Birth",
+        "companyEmail": "Email (Company)",
+        "personalPhone": "Phone (Personal)"
+      },
+      "pending": "Pending",
+      "changeRequest": "Change Request",
+      "bio": "Bio",
+      "emptyBio": "No bio has been written yet.",
+      "skills": "Skills",
+      "emptySkills": "No skills registered.",
+      "add": "Add",
+      "emergencyContact": "Emergency Contact",
+      "addAction": "Add",
+      "emptyEmergencyContact": "No emergency contact registered.",
+      "primary": "Primary",
+      "visibilitySettings": "Visibility Settings",
+      "visibilityField": {
+        "email": "Email",
+        "phone": "Phone",
+        "birthDate": "Date of Birth",
+        "address": "Address",
+        "personalPhone": "[TODO:en] 내 연락처",
+        "skills": "[TODO:en] 보유 스킬"
+      },
+      "careerTimeline": "Career Timeline",
+      "emptyCareerTitle": "No Career History",
+      "emptyCareerDesc": "Career history will appear here.",
+      "noDept": "No Department",
+      "noGrade": "No Grade",
+      "currentSalary": "Current Salary",
+      "noRecord": "No Record",
+      "showSalary": "Show Salary",
+      "hideSalary": "Hide Salary",
+      "lastUpdated": "Last Updated",
+      "currency": "Currency",
+      "salaryHistory": "Salary History",
+      "emptyCompensationDesc": "Compensation information will appear here.",
+      "col": {
+        "date": "Date",
+        "type": "Type",
+        "department": "Department",
+        "position": "Position",
+        "note": "Note",
+        "effectiveDate": "Effective Date",
+        "amount": "Amount",
+        "reason": "Reason"
+      },
+      "contractsAndCerts": "Contracts & Certificates",
+      "requestCertificate": "Request Certificate",
+      "emptyDocsTitle": "No Documents",
+      "emptyDocsDesc": "Documents will appear here.",
+      "addEmergencyContact": "Add Emergency Contact",
+      "ecField": {
+        "name": "Name",
+        "relationship": "Relationship",
+        "phone": "Phone Number"
+      },
+      "ecPlaceholder": {
+        "name": "Enter name",
+        "relationship": "e.g., Spouse, Parent",
+        "phone": "Enter phone number"
+      },
+      "setPrimary": "Set as Primary",
+      "avatarComingSoonTitle": "Coming Soon",
+      "avatarComingSoonDesc": "Profile photo upload will be available soon."
+    },
+    "leave": {
+      "title": "Leave Management",
+      "balance": "Leave Balance",
+      "used": "Used",
+      "remaining": "Remaining",
+      "total": "Total",
+      "applyLeave": "Apply for Leave",
+      "leaveType": "Leave Type",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "reason": "Reason",
+      "status": {
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "cancelled": "Cancelled"
+      },
+      "cancel": "Cancel Request",
+      "history": "Leave History",
+      "empty": {
+        "title": "No Leave Records",
+        "description": "No leave history yet."
+      },
+      "error": {
+        "loadFailed": "Failed to load leave information.",
+        "applyFailed": "Leave application failed.",
+        "cancelFailed": "Failed to cancel leave."
+      },
+      "designatedLeave": "[TODO:en] 지정연차"
     }
   },
   "directory": {
@@ -6692,5 +6841,531 @@
     "affiliation": "Affiliation:",
     "comeBackOn": "Please come back on {date}.",
     "noAssignment": "No assignment information found. Please contact your administrator."
+  },
+  "myBenefits": {
+    "pageTitle": "My Benefits",
+    "breadcrumb": "My Space",
+    "applyBenefit": "Apply for Benefit",
+    "applyAction": "Apply",
+    "usageSummary": "Usage Summary",
+    "pendingAmount": "Pending",
+    "claimHistory": "Claim History",
+    "loadError": "Failed to load benefit information.",
+    "errorDesc": "An error occurred while processing the request.",
+    "emptyTitle": "No claim history",
+    "emptyDesc": "You have no benefit claims yet.",
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "paid": "Paid",
+      "cancelled": "Cancelled"
+    },
+    "category": {
+      "family": "Family Events",
+      "health": "Health",
+      "education": "Education",
+      "lifestyle": "Lifestyle",
+      "financial": "Financial"
+    },
+    "form": {
+      "planLabel": "Benefit Plan",
+      "selectPlanPlaceholder": "Select a plan",
+      "fixedAmount": "Fixed Amount",
+      "reimbursement": "Reimbursement",
+      "proofRequired": "Proof required",
+      "claimAmount": "Claim Amount",
+      "limit": "Limit",
+      "max": "Max",
+      "eventDate": "Event Date",
+      "eventDetail": "Details",
+      "eventDetailPlaceholder": "e.g. Own wedding",
+      "proofDocuments": "Supporting Documents",
+      "attachFile": "Attach File"
+    },
+    "validation": {
+      "selectPlan": "Please select a benefit plan.",
+      "enterAmount": "Please enter a claim amount.",
+      "attachProof": "Please attach supporting documents."
+    }
+  },
+  "yearEnd": {
+    "pageTitle": "{year} Year-End Tax Settlement",
+    "steps": {
+      "dependents": "Verify Dependents",
+      "deductions": "Enter Deductions",
+      "additional": "Additional Deductions",
+      "result": "Review Results"
+    },
+    "relationship": {
+      "self": "Self",
+      "spouse": "Spouse",
+      "child": "Child",
+      "parent": "Parent",
+      "grandparent": "Grandparent",
+      "sibling": "Sibling"
+    },
+    "deduction": {
+      "credit_card": "Credit Card Spending",
+      "debit_card": "Debit Card Spending",
+      "cash_receipt": "Cash Receipt Spending",
+      "medical_credit": "Medical Expenses",
+      "education_credit": "Education (Self)",
+      "child_education_credit": "Child Education (per child)",
+      "donation_credit": "Donations",
+      "rent_credit": "Monthly Rent (Annual Total)",
+      "housing_savings": "Housing Savings Contributions",
+      "housing_loan_interest": "Housing Loan Interest"
+    },
+    "step1": {
+      "title": "Verify Dependents",
+      "description": "Enter dependent information for personal deductions.",
+      "addDependent": "Add Dependent",
+      "relationship": "Relationship",
+      "name": "Name",
+      "enterName": "Enter name",
+      "birthDate": "Date of Birth",
+      "disabled": "Disabled",
+      "senior": "Senior (70+)",
+      "deductionGuideTitle": "Personal Deduction Guide",
+      "deductionGuideBody": "Basic: ₩1.5M per person / Disabled: +₩2M / Senior: +₩1M"
+    },
+    "step2": {
+      "title": "Enter Deductions",
+      "description": "Upload Hometax simplified data or enter manually.",
+      "tabUpload": "Upload Hometax Data",
+      "tabManual": "Enter Manually",
+      "uploadTitle": "Upload Hometax Simplified PDF",
+      "uploadGuide": "NTS Hometax → Year-End Settlement → Income/Tax Deduction Data",
+      "uploading": "Uploading...",
+      "selectPdf": "Select PDF File",
+      "parsingNotReady": "Parsing not ready",
+      "parsingNotReadyDesc": "Please enter amounts manually in the \"Enter Manually\" tab below.",
+      "incomeDeductionHeader": "Credit Card Income Deductions",
+      "taxCreditHeader": "Tax Credit Items"
+    },
+    "step3": {
+      "title": "Additional Deductions",
+      "description": "Deductions not included in Hometax simplified data.",
+      "housingHeader": "Housing-Related Deductions",
+      "housingGuideTitle": "Housing Savings Deduction Guide",
+      "housingGuideBody": "Only for non-homeowner household heads with total salary ≤₩70M. (40% of contributions, annual limit ₩2.4M)"
+    },
+    "step4": {
+      "title": "Review Results",
+      "description": "Estimated year-end tax settlement results for {year}.",
+      "calculating": "Calculating...",
+      "recalculate": "Recalculate",
+      "breakdownHeader": "11-Step Tax Calculation Breakdown",
+      "submittedTitle": "Submitted",
+      "submittedDesc": "HR is reviewing. Results will be sent via email.",
+      "submitting": "Submitting...",
+      "submit": "Submit Tax Settlement"
+    },
+    "result": {
+      "totalSalary": "① Total Salary",
+      "earnedIncomeDeduction": "② Earned Income Deduction",
+      "earnedIncome": "③ Earned Income Amount",
+      "totalIncomeDeduction": "④ Total Income Deductions",
+      "taxableBase": "⑤ Taxable Base",
+      "calculatedTax": "⑦ Calculated Tax (Rate {rate}%)",
+      "totalTaxCredit": "⑧ Total Tax Credits",
+      "determinedTax": "⑨ Determined Tax",
+      "prepaidTax": "⑩ Prepaid Tax (Withholding)",
+      "finalSettlement": "⑪ Refund / Additional Payment",
+      "refund": "Refund",
+      "additionalPayment": "Additional Payment",
+      "localTax": "Local Income Tax (10% of income tax)"
+    },
+    "status": {
+      "submitted": "Submitted"
+    },
+    "nav": {
+      "previous": "Previous",
+      "next": "Next",
+      "saving": "Saving..."
+    },
+    "error": {
+      "loadFailed": "Failed to load year-end settlement info.",
+      "uploadFailed": "File upload failed.",
+      "saveDependentsFailed": "Error saving dependents.",
+      "saveDeductionsFailed": "Error saving deductions.",
+      "calculateFailed": "Calculation error.",
+      "submitFailed": "Submission error."
+    },
+    "loading": "Loading year-end settlement info...",
+    "close": "Close",
+    "pageDescription": "Complete the 4-step wizard and submit"
+  },
+  "myDocuments": {
+    "pageTitle": "My Documents",
+    "pageDescription": "Manage your personal documents",
+    "tabs": {
+      "all": "All",
+      "contracts": "Contracts",
+      "certificates": "Certificates",
+      "payslips": "Payslips",
+      "other": "Other"
+    },
+    "upload": "Upload Document",
+    "download": "Download",
+    "delete": "Delete",
+    "preview": "Preview",
+    "fileName": "File Name",
+    "fileType": "Type",
+    "uploadDate": "Upload Date",
+    "fileSize": "File Size",
+    "status": {
+      "active": "Active",
+      "expired": "Expired",
+      "pending": "Pending"
+    },
+    "empty": {
+      "title": "No Documents",
+      "description": "No documents have been uploaded.",
+      "noDocuments": "[TODO:en] 등록된 문서가 없습니다",
+      "noDocumentsDesc": "[TODO:en] HR에서 등록한 문서가 여기에 표시됩니다.",
+      "noCertificates": "[TODO:en] 증명서 발급 요청 내역이 없습니다",
+      "noCertificatesDesc": "[TODO:en] 위 '증명서 신청' 버튼으로 재직증명서/경력증명서를 요청할 수 있습니다."
+    },
+    "error": {
+      "loadFailed": "Failed to load documents.",
+      "uploadFailed": "Document upload failed.",
+      "deleteFailed": "Failed to delete document.",
+      "downloadFailed": "[TODO:en] 다운로드 실패",
+      "downloadFailedDesc": "[TODO:en] 파일을 다운로드할 수 없습니다.",
+      "requestFailed": "[TODO:en] 신청 실패",
+      "retryLater": "[TODO:en] 잠시 후 다시 시도해주세요."
+    },
+    "confirm": {
+      "deleteTitle": "Delete Document",
+      "deleteMessage": "Are you sure you want to delete this document?"
+    },
+    "requestCertificate": "Request Certificate",
+    "certificateType": {
+      "employment": "Employment Certificate",
+      "career": "Career Certificate",
+      "salary": "Salary Certificate",
+      "retirement": "Retirement Certificate"
+    },
+    "action": {
+      "requestCert": "[TODO:en] 증명서 신청",
+      "cancel": "[TODO:en] 취소",
+      "submit": "[TODO:en] 신청하기",
+      "submitting": "[TODO:en] 신청 중...",
+      "download": "[TODO:en] 다운로드"
+    },
+    "dialog": {
+      "title": "[TODO:en] 증명서 발급 신청",
+      "certTypeLabel": "[TODO:en] 증명서 유형",
+      "purposeLabel": "[TODO:en] 용도 (선택)",
+      "purposePlaceholder": "[TODO:en] 예: 은행 대출 신청용"
+    },
+    "toast": {
+      "requestSuccess": "[TODO:en] 증명서 신청 완료",
+      "requestSuccessDesc": "[TODO:en] HR 담당자 승인 후 발급됩니다."
+    }
+  },
+  "internalJobs": {
+    "pageTitle": "Internal Jobs",
+    "pageDescription": "Browse internal job openings and transfer opportunities",
+    "tabs": {
+      "all": "All",
+      "open": "Open",
+      "closed": "Closed",
+      "applied": "Applied"
+    },
+    "department": "Department",
+    "location": "Location",
+    "postedDate": "Posted Date",
+    "deadline": "Deadline",
+    "requirements": "Requirements",
+    "responsibilities": "Responsibilities",
+    "apply": "Apply",
+    "applied": "Applied",
+    "withdraw": "Withdraw Application",
+    "status": {
+      "open": "Open",
+      "closed": "Closed",
+      "filled": "Filled"
+    },
+    "applicationStatus": {
+      "submitted": "Submitted",
+      "reviewing": "Under Review",
+      "interview": "Interview",
+      "accepted": "Accepted",
+      "rejected": "Rejected"
+    },
+    "empty": {
+      "title": "No Openings",
+      "description": "There are no internal job openings at this time."
+    },
+    "error": {
+      "loadFailed": "Failed to load job postings.",
+      "applyFailed": "Application failed.",
+      "withdrawFailed": "Failed to withdraw application."
+    },
+    "detail": "View Details",
+    "myApplications": "My Applications",
+    "title": "[TODO:en] 사내 공개 채용",
+    "description": "[TODO:en] 그룹 내 공개된 내부 채용 공고입니다. 관심 있는 포지션에 지원하세요.",
+    "searchPlaceholder": "[TODO:en] 공고명 또는 부서 검색...",
+    "allCompanies": "[TODO:en] 전체 법인",
+    "fetchError": "[TODO:en] 공고 목록 로드 실패",
+    "applyError": "[TODO:en] 지원 중 오류가 발생했습니다.",
+    "applying": "[TODO:en] 지원 중...",
+    "viewDetails": "[TODO:en] 상세 보기",
+    "position": "[TODO:en] 포지션",
+    "headcount": "[TODO:en] {count}명",
+    "salary": "[TODO:en] 급여: {min}만 ~ {max}만원",
+    "badge": {
+      "internal": "[TODO:en] 내부 채용"
+    },
+    "urgency": {
+      "urgent": "[TODO:en] 긴급",
+      "normal": "[TODO:en] 보통",
+      "low": "[TODO:en] 낮음"
+    },
+    "stage": {
+      "applied": "[TODO:en] 서류접수"
+    }
+  },
+  "notificationPrefs": {
+    "pageTitle": "Notification Settings",
+    "pageDescription": "Configure how you receive notifications",
+    "channels": {
+      "email": "Email",
+      "push": "Push Notifications",
+      "inApp": "In-App Notifications"
+    },
+    "categories": {
+      "leave": "Leave",
+      "attendance": "Attendance",
+      "payroll": "Payroll",
+      "approval": "Approvals",
+      "announcement": "Announcements",
+      "system": "System"
+    },
+    "frequency": {
+      "realtime": "Real-time",
+      "daily": "Daily Digest",
+      "weekly": "Weekly Digest",
+      "off": "Off"
+    },
+    "save": "Save Settings",
+    "saved": "Settings saved",
+    "error": {
+      "loadFailed": "Failed to load notification settings.",
+      "saveFailed": "Failed to save settings."
+    },
+    "quietHours": {
+      "title": "[TODO:en] 방해금지 시간",
+      "excludeUrgent": "[TODO:en] urgent 알림 제외",
+      "description": "[TODO:en] 설정된 시간 동안 긴급(urgent) 외 알림은 조용히 처리됩니다"
+    },
+    "quietHoursDesc": "Push notifications will not be sent during these hours",
+    "from": "From",
+    "to": "To",
+    "title": "[TODO:en] 알림 설정",
+    "fetchError": "[TODO:en] 알림 설정 로드 실패",
+    "saveError": "[TODO:en] 저장 실패",
+    "saving": "[TODO:en] 저장 중...",
+    "toggleOn": "[TODO:en] 켜기",
+    "toggleOff": "[TODO:en] 끄기",
+    "channel": {
+      "event": "[TODO:en] 이벤트",
+      "inApp": "[TODO:en] 인앱",
+      "email": "[TODO:en] 이메일",
+      "teams": "[TODO:en] Teams"
+    }
+  },
+  "myTraining": {
+    "pageTitle": "Training Records",
+    "pageDescription": "Manage mandatory training and professional development courses",
+    "tabs": {
+      "all": "All",
+      "required": "Required",
+      "optional": "Optional",
+      "completed": "Completed"
+    },
+    "courseName": "Course Name",
+    "provider": "Provider",
+    "duration": "Duration",
+    "deadline": "Deadline",
+    "completedDate": "Completed Date",
+    "certificate": "Certificate",
+    "progress": "Progress",
+    "status": {
+      "notStarted": "Not Started",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "overdue": "Overdue"
+    },
+    "startCourse": "Start Course",
+    "continueCourse": "Continue Course",
+    "viewCertificate": "View Certificate",
+    "empty": {
+      "title": "No Training Courses",
+      "description": "You have no assigned training courses."
+    },
+    "error": {
+      "loadFailed": "Failed to load training records."
+    },
+    "hours": "{count} hours",
+    "mandatory": "Mandatory",
+    "elective": "Elective",
+    "fetchError": "[TODO:en] 교육 현황 로드 실패",
+    "breadcrumb": "[TODO:en] 나의 공간",
+    "title": "[TODO:en] 내 교육 현황",
+    "expiringSoon": "[TODO:en] 이수 만료 임박 ({count}건)",
+    "expiresInDays": "[TODO:en] {days}일 후 만료",
+    "kpi": {
+      "requiredPending": "[TODO:en] 미이수 필수",
+      "enrollmentNeeded": "[TODO:en] 신청 필요",
+      "recommended": "[TODO:en] 추천 과정",
+      "completed": "[TODO:en] 이수 완료"
+    },
+    "section": {
+      "requiredPending": "[TODO:en] 미이수 필수 교육",
+      "enrollmentNeeded": "[TODO:en] 신청 필요 과정",
+      "recommended": "[TODO:en] 스킬 갭 기반 추천 과정",
+      "history": "[TODO:en] 이수 이력",
+      "historyRecent": "[TODO:en] (최근 20건)"
+    },
+    "badge": {
+      "required": "[TODO:en] 필수",
+      "recommended": "[TODO:en] 추천",
+      "mandatory": "[TODO:en] 필수"
+    },
+    "deadlineLabel": "[TODO:en] 마감: {date}",
+    "emptyHistory": "[TODO:en] 이수 이력이 없습니다.",
+    "scoreValue": "[TODO:en] {score}점",
+    "table": {
+      "courseName": "[TODO:en] 과정명",
+      "category": "[TODO:en] 분류",
+      "completedAt": "[TODO:en] 이수일",
+      "validUntil": "[TODO:en] 유효기간",
+      "score": "[TODO:en] 점수"
+    },
+    "action": {
+      "startCourse": "[TODO:en] 학습 시작",
+      "completeCourse": "[TODO:en] 이수 완료",
+      "enroll": "[TODO:en] 수강 신청",
+      "enrollShort": "[TODO:en] 신청",
+      "enrolling": "[TODO:en] 신청 중..."
+    }
+  },
+  "mySkills": {
+    "pageTitle": "Skills Management",
+    "pageDescription": "Manage your skills and competencies",
+    "tabs": {
+      "all": "All",
+      "technical": "Technical",
+      "soft": "Soft Skills",
+      "language": "Languages"
+    },
+    "skillName": "Skill Name",
+    "category": "Category",
+    "level": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced",
+      "expert": "Expert",
+      "basic": "[TODO:en] 기본",
+      "proficient": "[TODO:en] 우수"
+    },
+    "endorsements": "Endorsements",
+    "endorsedBy": "Endorsed By",
+    "addSkill": "Add Skill",
+    "editSkill": "Edit Skill",
+    "removeSkill": "Remove Skill",
+    "selfAssessment": "Self Assessment",
+    "managerAssessment": "Manager Assessment",
+    "empty": {
+      "title": "No Skills Listed",
+      "description": "Add skills to your profile."
+    },
+    "error": {
+      "loadFailed": "Failed to load skills.",
+      "saveFailed": "Failed to save skill."
+    },
+    "suggestedSkills": "Suggested Skills",
+    "skillGap": "Skill Gap Analysis",
+    "title": "[TODO:en] 나의 역량 자기평가",
+    "description": "[TODO:en] 역량별 현재 수준을 자기평가하고, 개발 방향을 확인하세요.",
+    "radarChart": "[TODO:en] 레이더 차트",
+    "radarChartTitle": "[TODO:en] 역량 레이더 차트",
+    "expected": "[TODO:en] 기대 수준",
+    "actual": "[TODO:en] 자기평가",
+    "kpi": {
+      "completed": "[TODO:en] 평가 완료",
+      "belowExpected": "[TODO:en] 미달 역량",
+      "belowExpectedDesc": "[TODO:en] 기대 수준 미달",
+      "strength": "[TODO:en] 강점 역량",
+      "meetsExpected": "[TODO:en] 기대 수준 이상"
+    },
+    "categoryProgress": "[TODO:en] {done}/{total} 완료",
+    "expectedLevel": "[TODO:en] 기대 수준",
+    "gapBehind": "[TODO:en] 갭 -{gap}",
+    "gapMet": "[TODO:en] 충족",
+    "gapAhead": "[TODO:en] +{gap}",
+    "toastSubmitted": "[TODO:en] 자기평가가 제출되었습니다.",
+    "saveDraft": "[TODO:en] 임시저장",
+    "submit": "[TODO:en] 제출"
+  },
+  "myOffboarding": {
+    "pageTitle": "Offboarding",
+    "pageDescription": "Review your offboarding process",
+    "steps": {
+      "resignation": "Submit Resignation",
+      "handover": "Knowledge Transfer",
+      "equipment": "Return Equipment",
+      "exit": "Exit Interview",
+      "settlement": "Severance Settlement"
+    },
+    "status": {
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "skipped": "N/A"
+    },
+    "resignationDate": "Resignation Date",
+    "lastWorkingDay": "Last Working Day",
+    "handoverPerson": "Handover Recipient",
+    "handoverDoc": "Handover Document",
+    "equipmentList": "Equipment Return List",
+    "exitSurvey": "Exit Survey",
+    "exitInterview": "Exit Interview",
+    "severancePay": "Severance Pay",
+    "remainingLeave": "Remaining Leave",
+    "checklist": "Checklist",
+    "progress": "Progress",
+    "empty": {
+      "title": "No Offboarding Process",
+      "description": "There is no active offboarding process."
+    },
+    "error": {
+      "loadFailed": "Failed to load offboarding information."
+    },
+    "title": "[TODO:en] 나의 퇴직 처리",
+    "lastWorkingDate": "[TODO:en] 최종 근무일",
+    "overallProgress": "[TODO:en] 전체 진행률",
+    "progressCount": "[TODO:en] {done}/{total} 완료",
+    "emptyDesc": "[TODO:en] 퇴직 관련 문의는 HR팀에 연락해주세요.",
+    "overdue": "[TODO:en] 지연",
+    "optional": "[TODO:en] 선택",
+    "assignedTo": "[TODO:en] 담당",
+    "completedOn": "[TODO:en] 완료",
+    "dueDate": "[TODO:en] 마감",
+    "markComplete": "[TODO:en] 완료 처리",
+    "referenceInfo": "[TODO:en] 참고 정보",
+    "ref": {
+      "remainingLeave": "[TODO:en] 잔여 연차",
+      "days": "[TODO:en] {count}일",
+      "useBeforeLastDay": "[TODO:en] 최종 근무일 전 사용을 권장합니다.",
+      "insuranceNotice": "[TODO:en] 4대보험 상실 신고는 퇴직일 기준 14일 이내 처리됩니다.",
+      "healthInsuranceContinuation": "[TODO:en] 건강보험 임의 계속 가입을 원하시면 HR팀에 문의하세요.",
+      "severanceNotice": "[TODO:en] 퇴직금은 최종 근무일 기준 14일 이내 지급됩니다."
+    }
   }
 }

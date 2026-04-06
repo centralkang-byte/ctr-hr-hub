@@ -109,21 +109,10 @@ interface MyProfileClientProps {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const TABS = [
-  { id: 'overview', label: '개요', icon: User },
-  { id: 'career', label: '직무 및 이력', icon: Briefcase },
-  { id: 'compensation', label: '보상 및 급여', icon: DollarSign },
-  { id: 'documents', label: '문서', icon: FileText },
-] as const
+const TAB_IDS = ['overview', 'career', 'compensation', 'documents'] as const
+const TAB_ICONS = { overview: User, career: Briefcase, compensation: DollarSign, documents: FileText } as const
 
-type TabId = (typeof TABS)[number]['id']
-
-const VISIBILITY_LABELS: Record<string, string> = {
-  public: '전체 공개',
-  team: '팀원만',
-  manager: '매니저만',
-  private: '비공개',
-}
+type TabId = (typeof TAB_IDS)[number]
 
 const VISIBILITY_OPTIONS = ['public', 'team', 'manager', 'private'] as const
 
@@ -135,43 +124,22 @@ function formatCurrency(amountStr: string | null | undefined, currency: string =
   return new Intl.NumberFormat('ko-KR', { style: 'currency', currency }).format(amount)
 }
 
-function translateChangeType(type: string): string {
-  const map: Record<string, string> = {
-    HIRE: '입사',
-    PROMOTION: '승진',
-    TRANSFER: '부서 이동',
-    DEMOTION: '강등',
-    ANNUAL_INCREASE: '정규 인상',
-    MARKET_ADJUSTMENT: '시장 조정',
-    RESIGN: '퇴사',
-  }
-  return map[type] || type
+const CHANGE_TYPE_KEYS: Record<string, string> = {
+  HIRE: 'HIRE', PROMOTION: 'PROMOTION', TRANSFER: 'TRANSFER',
+  DEMOTION: 'DEMOTION', ANNUAL_INCREASE: 'ANNUAL_INCREASE',
+  MARKET_ADJUSTMENT: 'MARKET_ADJUSTMENT', RESIGN: 'RESIGN',
 }
 
-function translateDocType(type: string): string {
-  const map: Record<string, string> = {
-    CONTRACT: '계약서',
-    ID_CARD: '신분증 사본',
-    CERTIFICATE: '증명서',
-    RESUME: '이력서',
-    HANDOVER: '인수인계서',
-    OTHER: '기타'
-  }
-  return map[type] || type
+const DOC_TYPE_KEYS: Record<string, string> = {
+  CONTRACT: 'CONTRACT', ID_CARD: 'ID_CARD', CERTIFICATE: 'CERTIFICATE',
+  RESUME: 'RESUME', HANDOVER: 'HANDOVER', OTHER: 'OTHER',
 }
 
-function VisibilityBadge({ level }: { level: string }) {
-  const colors: Record<string, string> = {
-    public: 'bg-emerald-500/15 text-emerald-700',
-    team: 'bg-indigo-500/15 text-primary/90',
-    manager: 'bg-amber-500/15 text-amber-700',
-    private: 'bg-muted text-muted-foreground',
-  }
-  return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${colors[level] ?? colors.private}`}>
-      {VISIBILITY_LABELS[level] ?? level}
-    </span>
-  )
+const VISIBILITY_BADGE_COLORS: Record<string, string> = {
+  public: 'bg-emerald-500/15 text-emerald-700',
+  team: 'bg-indigo-500/15 text-primary/90',
+  manager: 'bg-amber-500/15 text-amber-700',
+  private: 'bg-muted text-muted-foreground',
 }
 
 // ─── Main Component ─────────────────────────────────────────
@@ -179,6 +147,22 @@ function VisibilityBadge({ level }: { level: string }) {
 export function MyProfileClient({ user: _user, employee, division }: MyProfileClientProps) {
   const tCommon = useTranslations('common')
   const t = useTranslations('mySpace')
+
+  const translateChangeType = useCallback((type: string) => {
+    const key = CHANGE_TYPE_KEYS[type]
+    return key ? t(`profile.changeType.${key}`) : type
+  }, [t])
+
+  const translateDocType = useCallback((type: string) => {
+    const key = DOC_TYPE_KEYS[type]
+    return key ? t(`profile.docType.${key}`) : type
+  }, [t])
+
+  const visibilityLabel = useCallback((level: string) => {
+    return VISIBILITY_OPTIONS.includes(level as typeof VISIBILITY_OPTIONS[number])
+      ? t(`profile.visibility.${level}`)
+      : level
+  }, [t])
 
   const [activeTab, setActiveTab] = useState<TabId>('overview')
   const [ext, setExt] = useState<ProfileExtension>(
@@ -279,7 +263,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
             {employee.name.slice(0, 1)}
           </div>
           <button
-            onClick={() => toast({ title: '준비 중', description: '아바타 업로드는 곧 지원됩니다.' })}
+            onClick={() => toast({ title: t('profile.avatarComingSoonTitle'), description: t('profile.avatarComingSoonDesc') })}
             className="absolute -bottom-2 -right-2 w-8 h-8 bg-card border border-border rounded-full flex items-center justify-center shadow-sm hover:bg-background text-muted-foreground hover:text-primary transition-colors"
           >
             <Camera className="w-4 h-4" />
@@ -301,7 +285,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
             </div>
             <div className="text-right">
               <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary/90">
-                재직중
+                {t('profile.statusActive')}
               </span>
             </div>
           </div>
@@ -315,20 +299,21 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
 
       {/* Modern Tabs */}
       <div className="flex space-x-1 bg-muted p-1 rounded-xl">
-        {TABS.map((tab) => {
-          const isActive = activeTab === tab.id
+        {TAB_IDS.map((tabId) => {
+          const isActive = activeTab === tabId
+          const Icon = TAB_ICONS[tabId]
           return (
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              key={tabId}
+              onClick={() => setActiveTab(tabId)}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all ${
-                isActive 
-                  ? 'bg-card text-primary/90 shadow-sm' 
+                isActive
+                  ? 'bg-card text-primary/90 shadow-sm'
                   : 'text-muted-foreground hover:text-foreground hover:bg-border/50'
               }`}
             >
-              <tab.icon className={`w-4 h-4 ${isActive ? 'text-primary' : ''}`} />
-              {tab.label}
+              <Icon className={`w-4 h-4 ${isActive ? 'text-primary' : ''}`} />
+              {t(`profile.tabs.${tabId}`)}
             </button>
           )
         })}
@@ -399,16 +384,16 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
             {/* 기본 정보 / 인사 정보 */}
             <div className={CARD_STYLES.padded}>
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-base font-semibold text-foreground">인사 정보</h2>
+                <h2 className="text-base font-semibold text-foreground">{t('profile.hrInfo')}</h2>
               </div>
               <div className="grid grid-cols-2 gap-y-4 gap-x-6">
                 {([
-                  { label: '사원번호', value: employee.employeeNo },
-                  { label: '입사일', value: formatDate(employee.hireDate) },
-                  { label: '성별', value: employee.gender ?? '-' },
-                  { label: '생년월일', value: formatDate(employee.birthDate) },
-                  { label: '이메일 (회사)', value: employee.email },
-                  { label: '연락처 (개인)', value: employee.phone ?? '-', fieldKey: 'phone' as const },
+                  { label: t('profile.field.employeeNo'), value: employee.employeeNo },
+                  { label: t('profile.field.hireDate'), value: formatDate(employee.hireDate) },
+                  { label: t('profile.field.gender'), value: employee.gender ?? '-' },
+                  { label: t('profile.field.birthDate'), value: formatDate(employee.birthDate) },
+                  { label: t('profile.field.companyEmail'), value: employee.email },
+                  { label: t('profile.field.personalPhone'), value: employee.phone ?? '-', fieldKey: 'phone' as const },
                 ] as { label: string; value: string; fieldKey?: 'phone' | 'emergencyContact' | 'emergencyContactPhone' | 'name' }[]).map(({ label, value, fieldKey }) => (
                   <div key={label} className="border-b border-border/30 pb-2 last:border-0 last:pb-0">
                     <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
@@ -416,7 +401,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                       <div className="flex items-center gap-2">
                         <p className="text-sm text-foreground font-medium">{value}</p>
                         {fieldKey && hasPendingRequest(fieldKey) && (
-                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/15 text-amber-700">대기중</span>
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/15 text-amber-700">{t('profile.pending')}</span>
                         )}
                       </div>
                       {fieldKey && (
@@ -424,7 +409,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                           onClick={() => { setChangeReqField(fieldKey); setChangeReqCurrentValue(value) }}
                           className="flex items-center gap-1 text-xs text-primary hover:underline"
                         >
-                          <Pencil className="w-3 h-3" /> 수정 요청
+                          <Pencil className="w-3 h-3" /> {t('profile.changeRequest')}
                         </button>
                       )}
                     </div>
@@ -436,10 +421,10 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
             {/* 자기소개 */}
             <div className={CARD_STYLES.padded}>
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-base font-semibold text-foreground">자기소개</h2>
+                <h2 className="text-base font-semibold text-foreground">{t('profile.bio')}</h2>
                 {!editingBio && (
                   <button onClick={() => { setEditingBio(true); setBioValue(ext.bio ?? '') }} className="flex items-center gap-1 text-sm text-primary hover:underline">
-                    <Edit3 className="w-3.5 h-3.5" /> 편집
+                    <Edit3 className="w-3.5 h-3.5" /> {tCommon('edit')}
                   </button>
                 )}
               </div>
@@ -457,24 +442,24 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                     <p className="text-xs text-muted-foreground">{bioValue.length}/500</p>
                     <div className="flex gap-2">
                       <button onClick={saveBio} className={`flex items-center gap-1 ${BUTTON_VARIANTS.primary} px-3 py-1.5 rounded-lg text-sm font-medium`}>
-                        <Save className="w-3.5 h-3.5" /> 저장
+                        <Save className="w-3.5 h-3.5" /> {tCommon('save')}
                       </button>
                       <button onClick={() => setEditingBio(false)} className="flex items-center gap-1 border border-border text-muted-foreground px-3 py-1.5 rounded-lg text-sm hover:bg-muted">
-                        <X className="w-3.5 h-3.5" /> 취소
+                        <X className="w-3.5 h-3.5" /> {tCommon('cancel')}
                       </button>
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-                  {ext.bio ? ext.bio : <span className="text-muted-foreground italic">아직 작성된 자기소개가 없습니다.</span>}
+                  {ext.bio ? ext.bio : <span className="text-muted-foreground italic">{t('profile.emptyBio')}</span>}
                 </div>
               )}
             </div>
 
             {/* 스킬 */}
             <div className={CARD_STYLES.padded}>
-              <h2 className="text-base font-semibold text-foreground mb-4">보유 스킬</h2>
+              <h2 className="text-base font-semibold text-foreground mb-4">{t('profile.skills')}</h2>
               <div className="flex flex-wrap gap-2 mb-4">
                 {ext.skills.map((skill) => (
                   <span key={skill} className="flex items-center gap-1.5 bg-primary/10 text-primary/90 px-3 py-1.5 rounded-full text-sm font-medium border border-primary/20 shadow-sm">
@@ -484,7 +469,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                     </button>
                   </span>
                 ))}
-                {ext.skills.length === 0 && <p className="text-sm text-muted-foreground">등록된 스킬이 없습니다.</p>}
+                {ext.skills.length === 0 && <p className="text-sm text-muted-foreground">{t('profile.emptySkills')}</p>}
               </div>
               <div className="flex gap-2">
                 <input
@@ -496,7 +481,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                   className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/20"
                 />
                 <button onClick={addSkill} className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg text-sm font-medium shadow-sm`}>
-                  추가
+                  {t('profile.add')}
                 </button>
               </div>
             </div>
@@ -508,20 +493,20 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
               <div className="flex items-center justify-between border-b border-border pb-3 mb-3">
                 <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
                   <AlertCircle className="w-4 h-4 text-amber-500" />
-                  비상연락처
+                  {t('profile.emergencyContact')}
                 </h2>
-                <button onClick={() => setShowEcForm(true)} className="text-xs text-primary hover:underline font-medium">추가하기</button>
+                <button onClick={() => setShowEcForm(true)} className="text-xs text-primary hover:underline font-medium">{t('profile.addAction')}</button>
               </div>
               
               {emergencyContacts.length === 0 ? (
-                <p className="text-xs text-muted-foreground py-2 text-center">등록된 비상연락처가 없습니다.</p>
+                <p className="text-xs text-muted-foreground py-2 text-center">{t('profile.emptyEmergencyContact')}</p>
               ) : (
                 <div className="space-y-3">
                   {emergencyContacts.map((c) => (
                     <div key={c.id} className="group relative pr-6">
                       <div className="flex items-center gap-2 mb-0.5">
                         <p className="text-sm font-medium text-foreground">{c.name}</p>
-                        {c.isPrimary && <span className="text-[10px] bg-amber-500/15 text-amber-700 px-1.5 py-0.5 rounded-sm">주요</span>}
+                        {c.isPrimary && <span className="text-[10px] bg-amber-500/15 text-amber-700 px-1.5 py-0.5 rounded-sm">{t('profile.primary')}</span>}
                       </div>
                       <p className="text-xs text-muted-foreground">{c.relationship} · {c.phone}</p>
                       <button onClick={() => deleteEmergencyContact(c.id)} className="absolute right-0 top-1/2 -translate-y-1/2 text-border hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity p-1">
@@ -544,26 +529,29 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
             <div className={`${CARD_STYLES.kpi} shadow-sm border border-border`}>
               <div className="flex items-center gap-1.5 border-b border-border pb-3 mb-3">
                 <Globe className="w-4 h-4 text-violet-500" />
-                <h2 className="text-sm font-semibold text-foreground">공개 범위 설정</h2>
+                <h2 className="text-sm font-semibold text-foreground">{t('profile.visibilitySettings')}</h2>
               </div>
               <div className="space-y-3">
                 {([
-                  { label: '내 연락처', field: 'personalPhone' },
-                  { label: '생일 정보', field: 'birthDate' },
-                  { label: '보유 스킬', field: 'skills' },
+                  { label: t('profile.visibilityField.personalPhone'), field: 'personalPhone' },
+                  { label: t('profile.visibilityField.birthDate'), field: 'birthDate' },
+                  { label: t('profile.visibilityField.skills'), field: 'skills' },
                 ]).map(({ label, field }) => (
                   <div key={field} className="flex items-center justify-between">
                     <p className="text-xs text-muted-foreground">{label}</p>
                     <div className="flex items-center gap-1.5">
                       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                      <VisibilityBadge level={(visibility as any)[field]} />
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${VISIBILITY_BADGE_COLORS[(visibility as any)[field]] ?? VISIBILITY_BADGE_COLORS.private}`}>
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        {visibilityLabel((visibility as unknown as Record<string, string>)[field])}
+                      </span>
                       <select
                         value={(visibility as any)[field] /* eslint-disable-line @typescript-eslint/no-explicit-any */}
                         onChange={(e) => saveVisibility(field as keyof ProfileVisibility, e.target.value)}
                         className="text-[10px] border border-border rounded px-1 py-0.5 focus:ring-1 focus:ring-primary/20 bg-card"
                       >
                         {VISIBILITY_OPTIONS.map((opt) => (
-                          <option key={opt} value={opt}>{VISIBILITY_LABELS[opt]}</option>
+                          <option key={opt} value={opt}>{visibilityLabel(opt)}</option>
                         ))}
                       </select>
                     </div>
@@ -579,9 +567,9 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
       {/* ── Tab: Career (직무 및 발령 이력) ── */}
       {activeTab === 'career' && (
         <div className={CARD_STYLES.padded}>
-          <h2 className="text-lg font-semibold text-foreground mb-6">사내 발령 타임라인</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-6">{t('profile.careerTimeline')}</h2>
           {employee.employeeHistories.length === 0 ? (
-            <EmptyState title="이력 없음" description="등록된 인사 발령 기록이 없습니다." />
+            <EmptyState title={t('profile.emptyCareerTitle')} description={t('profile.emptyCareerDesc')} />
           ) : (
             <div className="space-y-8 relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-[#EDF1FE] before:via-[#5E81F4]/20 before:to-transparent">
               {employee.employeeHistories.map((hist) => (
@@ -598,7 +586,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                        <span className="text-xs text-muted-foreground font-medium">{formatDate(hist.effectiveDate)}</span>
                     </div>
                     <h3 className="text-sm font-bold text-foreground mb-1">
-                      {hist.toDept?.name ?? '부서 미지정'} · {hist.toGrade?.name ?? '직급 미지정'}
+                      {hist.toDept?.name ?? t('profile.noDept')} · {hist.toGrade?.name ?? t('profile.noGrade')}
                     </h3>
                     <p className="text-xs text-muted-foreground">
                       {hist.toCompany?.name ?? (extractPrimaryAssignment(employee.assignments as unknown as Record<string, unknown>[]) as Assignment | undefined)?.company?.name ?? 'CTR Group'}
@@ -621,12 +609,12 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
             <div className="flex justify-between items-start relative z-10">
               <div>
                 <p className="text-sm text-white/70 font-medium mb-1 flex items-center gap-1.5">
-                  현재 계약 연봉
+                  {t('profile.currentSalary')}
                 </p>
                 <div className="flex items-baseline gap-3">
                   {showCompensation ? (
                     <h2 className="text-3xl font-bold tracking-tight">
-                      {employee.compensationHistories[0] ? formatCurrency(employee.compensationHistories[0].newBaseSalary, employee.compensationHistories[0].currency) : '기록 없음'}
+                      {employee.compensationHistories[0] ? formatCurrency(employee.compensationHistories[0].newBaseSalary, employee.compensationHistories[0].currency) : t('profile.noRecord')}
                     </h2>
                   ) : (
                     <h2 className="text-3xl font-bold text-white/40 tracking-widest mt-1">
@@ -642,33 +630,33 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                 onClick={() => setShowCompensation(!showCompensation)}
                 className="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-white/10 flex items-center gap-1.5 backdrop-blur-sm"
               >
-                {showCompensation ? '숨기기' : '금액 보기'}
+                {showCompensation ? t('profile.hideSalary') : t('profile.showSalary')}
               </button>
             </div>
             <div className="mt-8 pt-4 border-t border-white/10 flex gap-6 text-sm relative z-10">
               <div>
-                <p className="text-white/50 text-xs mb-0.5">최근 업데이트</p>
+                <p className="text-white/50 text-xs mb-0.5">{t('profile.lastUpdated')}</p>
                 <p className="font-medium">{formatDate(employee.compensationHistories[0]?.effectiveDate)}</p>
               </div>
               <div>
-                <p className="text-white/50 text-xs mb-0.5">지급 통화</p>
+                <p className="text-white/50 text-xs mb-0.5">{t('profile.currency')}</p>
                 <p className="font-medium">{employee.compensationHistories[0]?.currency ?? 'KRW'}</p>
               </div>
             </div>
           </div>
 
           <div className={CARD_STYLES.padded}>
-            <h3 className="text-base font-semibold text-foreground mb-4">연봉 변동 이력</h3>
+            <h3 className="text-base font-semibold text-foreground mb-4">{t('profile.salaryHistory')}</h3>
             {employee.compensationHistories.length === 0 ? (
-               <EmptyState title="기록 없음" description="보상 이력이 존재하지 않습니다." />
+               <EmptyState title={t('profile.noRecord')} description={t('profile.emptyCompensationDesc')} />
             ) : (
               <div className={TABLE_STYLES.wrapper}>
                 <table className={TABLE_STYLES.table}>
                   <thead>
                     <tr className={TABLE_STYLES.header}>
-                      <th className={TABLE_STYLES.headerCell}>적용일</th>
-                      <th className={TABLE_STYLES.headerCell}>유형</th>
-                      <th className={TABLE_STYLES.headerCell + " text-right"}>금액</th>
+                      <th className={TABLE_STYLES.headerCell}>{t('profile.col.effectiveDate')}</th>
+                      <th className={TABLE_STYLES.headerCell}>{t('profile.col.type')}</th>
+                      <th className={TABLE_STYLES.headerCell + " text-right"}>{t('profile.col.amount')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -697,14 +685,14 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
       {activeTab === 'documents' && (
         <div className={CARD_STYLES.padded}>
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-foreground">계약 및 증명서</h2>
+            <h2 className="text-lg font-semibold text-foreground">{t('profile.contractsAndCerts')}</h2>
             <button className={`${BUTTON_VARIANTS.secondary} text-xs px-3 py-1.5`}>
-              증명서 발급 신청
+              {t('profile.requestCertificate')}
             </button>
           </div>
           
           {employee.employeeDocuments.length === 0 ? (
-             <EmptyState title="문서 없음" description="등록된 인사 문서가 없습니다." />
+             <EmptyState title={t('profile.emptyDocsTitle')} description={t('profile.emptyDocsDesc')} />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {employee.employeeDocuments.map((doc) => (
@@ -732,15 +720,15 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
         <div className={MODAL_STYLES.container}>
           <div className="bg-card rounded-xl shadow-lg w-full max-w-md p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-foreground">비상연락처 추가</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t('profile.addEmergencyContact')}</h3>
               <button onClick={() => setShowEcForm(false)} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
             </div>
             <div className="space-y-3">
               {(
                 [
-                  { label: '이름', key: 'name', placeholder: '홍길동' },
-                  { label: '관계', key: 'relationship', placeholder: '배우자, 부모님 등' },
-                  { label: '전화번호', key: 'phone', placeholder: '010-0000-0000' },
+                  { label: t('profile.ecField.name'), key: 'name', placeholder: t('profile.ecPlaceholder.name') },
+                  { label: t('profile.ecField.relationship'), key: 'relationship', placeholder: t('profile.ecPlaceholder.relationship') },
+                  { label: t('profile.ecField.phone'), key: 'phone', placeholder: t('profile.ecPlaceholder.phone') },
                 ] as const
               ).map(({ label, key, placeholder }) => (
                 <div key={key}>
@@ -755,7 +743,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
               ))}
               <label className="flex items-center gap-2 text-sm text-foreground pt-2 cursor-pointer">
                 <input type="checkbox" checked={ecForm.isPrimary} onChange={(e) => setEcForm((prev) => ({ ...prev, isPrimary: e.target.checked }))} className="w-4 h-4 rounded border-border text-primary cursor-pointer" />
-                주요 연락처로 설정
+                {t('profile.setPrimary')}
               </label>
             </div>
             <div className="flex gap-2 pt-4 border-t border-border">
