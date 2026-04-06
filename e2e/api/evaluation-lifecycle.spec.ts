@@ -23,7 +23,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { test, expect, request as playwrightRequest } from '@playwright/test'
-import { authFile } from './helpers/auth'
+import { authFile } from '../helpers/auth'
 import {
   createTestCycle,
   getCycle,
@@ -32,7 +32,7 @@ import {
   createGoal,
   submitSelfEval,
   cleanupTestCycle,
-} from './helpers/eval-fixtures'
+} from '../helpers/eval-fixtures'
 
 // ─── Shared state across sequential tests ───────────────────
 

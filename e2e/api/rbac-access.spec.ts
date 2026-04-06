@@ -9,7 +9,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { test } from '@playwright/test'
-import { authFile, assertPageLoads, assertBlocked } from './helpers/auth'
+import { authFile, assertPageLoads, assertBlocked } from '../helpers/auth'
 
 // ─── EMPLOYEE ────────────────────────────────────────────────
 

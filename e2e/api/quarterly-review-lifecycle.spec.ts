@@ -8,7 +8,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { test, expect } from '@playwright/test'
-import { authFile } from './helpers/auth'
+import { authFile } from '../helpers/auth'
 import {
   createReview,
   getReview,
@@ -17,7 +17,7 @@ import {
   updateReviewAsManager,
   submitReview,
   reopenReview,
-} from './helpers/qr-fixtures'
+} from '../helpers/qr-fixtures'
 
 // 절대 도달할 수 없는 미래 연도 — 시드 데이터(2025-2026)와 충돌 불가, worker=1이므로 병렬 충돌 없음
 const TEST_YEAR = 2099

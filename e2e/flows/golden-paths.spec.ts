@@ -11,7 +11,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { test, expect } from '@playwright/test'
-import { authFile, assertPageLoads } from './helpers/auth'
+import { authFile, assertPageLoads } from '../helpers/auth'
 
 // ─── GP1: Employee Self-Service ──────────────────────────
 

@@ -4,8 +4,8 @@
 // ═══════════════════════════════════════════════════════════
 
 import { test, expect } from '@playwright/test'
-import { authFile, assertPageLoads } from './helpers/auth'
-import { waitForLoading, waitForPageReady, waitForTableRows } from './helpers/wait-helpers'
+import { authFile, assertPageLoads } from '../helpers/auth'
+import { waitForLoading, waitForPageReady, waitForTableRows } from '../helpers/wait-helpers'
 
 // ─── EMPLOYEE tests ──────────────────────────────────────
 

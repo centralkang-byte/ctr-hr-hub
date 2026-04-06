@@ -10,8 +10,8 @@
 // ═══════════════════════════════════════════════════════════
 
 import { test, expect } from '@playwright/test'
-import { authFile, assertPageLoads } from './helpers/auth'
-import { waitForPageReady, waitForLoading } from './helpers/wait-helpers'
+import { authFile, assertPageLoads } from '../helpers/auth'
+import { waitForPageReady, waitForLoading } from '../helpers/wait-helpers'
 
 // ─── EMPLOYEE: Self-evaluation page ─────────────────────────
 

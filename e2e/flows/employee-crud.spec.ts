@@ -5,8 +5,8 @@
 // ═══════════════════════════════════════════════════════════
 
 import { test, expect } from '@playwright/test'
-import { authFile, assertPageLoads } from './helpers/auth'
-import { waitForTableRows, waitForLoading, waitForPageReady } from './helpers/wait-helpers'
+import { authFile, assertPageLoads } from '../helpers/auth'
+import { waitForTableRows, waitForLoading, waitForPageReady } from '../helpers/wait-helpers'
 
 // ─── HR_ADMIN tests ──────────────────────────────────────
 

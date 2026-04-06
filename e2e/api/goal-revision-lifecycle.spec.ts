@@ -11,8 +11,8 @@
 // ═══════════════════════════════════════════════════════════
 
 import { test, expect, request as playwrightRequest } from '@playwright/test'
-import { authFile } from './helpers/auth'
-import { createTestCycle, advanceTo, createGoal, cleanupTestCycle } from './helpers/eval-fixtures'
+import { authFile } from '../helpers/auth'
+import { createTestCycle, advanceTo, createGoal, cleanupTestCycle } from '../helpers/eval-fixtures'
 
 // ─── Helpers ──────────────────────────────────────────────────
 

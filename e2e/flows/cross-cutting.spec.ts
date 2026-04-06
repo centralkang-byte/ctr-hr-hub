@@ -6,8 +6,8 @@
 // ═══════════════════════════════════════════════════════════
 
 import { test, expect } from '@playwright/test'
-import { authFile, assertPageLoads } from './helpers/auth'
-import { waitForLoading, waitForPageReady } from './helpers/wait-helpers'
+import { authFile, assertPageLoads } from '../helpers/auth'
+import { waitForLoading, waitForPageReady } from '../helpers/wait-helpers'
 
 test.describe('Cross-Cutting Features', () => {
   test.use({ storageState: authFile('HR_ADMIN') })

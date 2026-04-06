@@ -9,7 +9,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { test, expect } from '@playwright/test'
-import { authFile } from './helpers/auth'
+import { authFile } from '../helpers/auth'
 
 const BASE = '/api/v1/performance/quarterly-reviews'
 

@@ -4,8 +4,8 @@
 // ═══════════════════════════════════════════════════════════
 
 import { test, expect } from '@playwright/test'
-import { authFile, assertPageLoads } from './helpers/auth'
-import { waitForLoading } from './helpers/wait-helpers'
+import { authFile, assertPageLoads } from '../helpers/auth'
+import { waitForLoading } from '../helpers/wait-helpers'
 import {
   createOffCycleDraft,
   submitOffCycle,
@@ -14,7 +14,7 @@ import {
   cancelOffCycle,
   reviseOffCycle,
   getOffCycleDetail,
-} from './helpers/off-cycle-fixtures'
+} from '../helpers/off-cycle-fixtures'
 
 const BASE_URL = '/api/v1/compensation/off-cycle'
 

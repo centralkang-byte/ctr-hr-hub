@@ -10,11 +10,11 @@
 // ═══════════════════════════════════════════════════════════
 
 import { test, expect, request as playwrightRequest } from '@playwright/test'
-import { authFile } from './helpers/auth'
+import { authFile } from '../helpers/auth'
 import {
   getCalibrationSessions,
   submitBatchAdjust,
-} from './helpers/calibration-fixtures'
+} from '../helpers/calibration-fixtures'
 
 // ─── State ────────────────────────────────────────────────────
 
