@@ -11,7 +11,7 @@ export default defineConfig({
   fullyParallel: false,    // Run sequentially (tests may share state)
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
-  workers: 1,              // Single worker for smoke tests
+  workers: process.env.CI ? 2 : 2,   // Step 1: conservative parallelization (was 1)
   reporter: [
     ['html', { open: 'never' }],
     ['list'],
