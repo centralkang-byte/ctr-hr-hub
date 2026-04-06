@@ -57,6 +57,7 @@ import { seedQuarterlyReviews } from './seeds/44-quarterly-reviews'
 import { seedGoalRevisions } from './seeds/45-goal-revisions'
 import { seedCalibrationQA } from './seeds/46-calibration-qa'
 import { seedLaborContractSettings } from './seeds/47-labor-contract-settings'
+import { seedEdgeCasePersonas } from './seeds/49-edge-case-personas'
 
 // Load DATABASE_URL from .env.local or .env
 const DATABASE_URL = process.env.DATABASE_URL
@@ -3658,6 +3659,9 @@ async function main() {
 
   // Labor & contract settings defaults (Phase 3)
   await seedLaborContractSettings(prisma)
+
+  // Edge case personas (30 personas for UAT)
+  await seedEdgeCasePersonas(prisma)
 }
 
 main()
