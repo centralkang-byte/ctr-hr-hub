@@ -93,7 +93,7 @@ export default function MyEvaluationClient({user: _user }: {
 
     // ─── Fetch evaluation data
     const fetchEvalData = useCallback(async () => {
-        if (!selectedCycleId) return
+        if (!selectedCycleId) { setLoading(false); return }
         setLoading(true); setError('')
         try {
             const [evalRes, goalsRes] = await Promise.all([

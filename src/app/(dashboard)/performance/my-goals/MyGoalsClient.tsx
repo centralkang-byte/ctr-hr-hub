@@ -121,7 +121,7 @@ export default function MyGoalsClient({user: _user }: {
 
     // ─── Fetch goals
     const fetchGoals = useCallback(async () => {
-        if (!selectedCycleId) return
+        if (!selectedCycleId) { setLoading(false); return }
         setLoading(true); setError('')
         try {
             const res = await apiClient.getList<GoalItem>('/api/v1/performance/goals', { cycleId: selectedCycleId, page: 1, limit: 50 })

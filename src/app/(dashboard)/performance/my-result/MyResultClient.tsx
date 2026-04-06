@@ -93,7 +93,7 @@ export default function MyResultClient({user }: {
     }, [t])
 
     const fetchResult = useCallback(async () => {
-        if (!selectedCycleId) return
+        if (!selectedCycleId) { setLoading(false); return }
         setLoading(true); setError('')
         try {
             const [resultRes, peerRes] = await Promise.all([

@@ -100,7 +100,7 @@ export default function SelfEvalClient({
   // ─── Fetch evaluation data ──────────────────────────
 
   const fetchEvalData = useCallback(async () => {
-    if (!selectedCycleId) return
+    if (!selectedCycleId) { setLoading(false); return }
     setLoading(true)
     try {
       const res = await apiClient.get<{

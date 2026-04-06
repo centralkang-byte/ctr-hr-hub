@@ -51,7 +51,7 @@ export default function TeamResultsClient({
   }, [])
 
   const fetchResults = useCallback(async () => {
-    if (!selectedCycleId) return
+    if (!selectedCycleId) { setLoading(false); return }
     setLoading(true)
     try {
       const res = await apiClient.get<TeamResult[]>('/api/v1/performance/results/team', { cycleId: selectedCycleId })

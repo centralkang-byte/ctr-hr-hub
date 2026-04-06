@@ -330,11 +330,11 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
       )}
 
       {/* ── Create Dialog ───────────────────────────────────── */}
-      {showCreate && (
-        <PayrollCreateDialog
-          onCreated={() => { setShowCreate(false); void fetchDashboard() }}
-        />
-      )}
+      <PayrollCreateDialog
+        open={showCreate}
+        onOpenChange={setShowCreate}
+        onCreated={() => { setShowCreate(false); void fetchDashboard() }}
+      />
     </div>
   )
 }

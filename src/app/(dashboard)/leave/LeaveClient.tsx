@@ -100,6 +100,8 @@ const statusBadgeClass: Record<string, string> = {
   CANCELLED: 'bg-muted text-muted-foreground',
 }
 
+const SINGLE_DAY_PRESETS = new Set(['AM', 'PM', 'QUARTER'])
+
 // ─── Component ──────────────────────────────────────────────
 
 export function LeaveClient({ user }: { user: SessionUser }) {
@@ -188,18 +190,13 @@ export function LeaveClient({ user }: { user: SessionUser }) {
   // Handle Preset Changes
   const handlePresetChange = (preset: 'FULL' | 'AM' | 'PM' | 'QUARTER' | 'CUSTOM') => {
     setPresetType(preset)
-    
-    // Auto-update values when switching presets (if dates are set)
-    if (preset !== 'CUSTOM') {
+
+    if (SINGLE_DAY_PRESETS.has(preset)) {
+      // AM/PM/QUARTER: force single day
       if (watchedStart) {
-        setValue('endDate', watchedStart) // Make end date match start date for single days
+        setValue('endDate', watchedStart)
       }
-      
       switch (preset) {
-        case 'FULL':
-          setValue('days', 1)
-          setValue('halfDayType', undefined)
-          break
         case 'AM':
           setValue('days', 0.5)
           setValue('halfDayType', 'AM')
@@ -210,11 +207,19 @@ export function LeaveClient({ user }: { user: SessionUser }) {
           break
         case 'QUARTER':
           setValue('days', 0.25)
-          setValue('halfDayType', undefined) // Quarter might not need AM/PM, adjust if needed
+          setValue('halfDayType', undefined)
           break
       }
+    } else if (preset === 'FULL') {
+      // FULL: allow multi-day, auto-calculate
+      setValue('halfDayType', undefined)
+      if (watchedStart && watchedEnd && watchedStart !== watchedEnd) {
+        setValue('days', calculateBusinessDays(watchedStart, watchedEnd))
+      } else {
+        setValue('days', 1)
+      }
     } else {
-      // Switched to Custom: recalculate business days if we have both dates
+      // CUSTOM: recalculate business days if we have both dates
       if (watchedStart && watchedEnd) {
         setValue('days', calculateBusinessDays(watchedStart, watchedEnd))
       }
@@ -224,11 +229,11 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
   useEffect(() => {
     if (watchedStart && watchedEnd) {
-      if (presetType === 'CUSTOM') {
+      if (presetType === 'CUSTOM' || presetType === 'FULL') {
         const calc = calculateBusinessDays(watchedStart, watchedEnd)
         setValue('days', calc)
       } else if (watchedStart !== watchedEnd) {
-        // Enforce start = end for presets if they somehow get out of sync
+        // Enforce start = end for single-day presets (AM/PM/QUARTER)
         setValue('endDate', watchedStart)
       }
     }
@@ -327,8 +332,13 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       } else {
         // default back to FULL when an annual leave is selected
         setPresetType('FULL')
-        setValue('days', 1)
         setValue('halfDayType', undefined)
+        // Recalculate if dates already set for multi-day
+        if (watchedStart && watchedEnd && watchedStart !== watchedEnd) {
+          setValue('days', calculateBusinessDays(watchedStart, watchedEnd))
+        } else {
+          setValue('days', 1)
+        }
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -671,7 +681,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
             {/* startDate */}
             <div className="space-y-2">
-              <Label htmlFor="leave-start">{presetType === 'CUSTOM' ? t('startDate') : '휴가 일자'}</Label>
+              <Label htmlFor="leave-start">{presetType === 'CUSTOM' || presetType === 'FULL' ? t('startDate') : '휴가 일자'}</Label>
               <Controller
                 control={control}
                 name="startDate"
@@ -698,7 +708,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                           if (date) {
                             const dateStr = format(date, "yyyy-MM-dd")
                             field.onChange(dateStr)
-                            if (presetType !== 'CUSTOM') {
+                            if (SINGLE_DAY_PRESETS.has(presetType)) {
                               setValue('endDate', dateStr)
                             }
                           } else {
@@ -717,8 +727,8 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               )}
             </div>
 
-            {/* endDate - ONLY SHOW IF CUSTOM */}
-            {presetType === 'CUSTOM' && (
+            {/* endDate - show for CUSTOM and FULL (multi-day) */}
+            {(presetType === 'CUSTOM' || presetType === 'FULL') && (
               <div className="space-y-2">
                 <Label htmlFor="leave-end">{t('endDate')}</Label>
                 <Controller
@@ -756,8 +766,8 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               </div>
             )}
 
-            {/* days - ONLY SHOW IF CUSTOM */}
-            {presetType === 'CUSTOM' && (
+            {/* days - show for CUSTOM (editable) and FULL (read-only, auto-calculated) */}
+            {(presetType === 'CUSTOM' || presetType === 'FULL') && (
               <div className="space-y-2">
                 <Label htmlFor="leave-days">{t('days')}</Label>
               <Input
@@ -765,6 +775,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                 type="number"
                 step="0.25"
                 min="0.25"
+                readOnly={presetType === 'FULL'}
                 {...register('days')}
               />
               {errors.days && (

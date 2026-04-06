@@ -131,11 +131,12 @@ export default function TeamGoalsClient({
   // ─── Fetch team goals ─────────────────────────────────
 
   const fetchTeamGoals = useCallback(async () => {
-    if (!selectedCycleId) return
+    if (!selectedCycleId) { setLoading(false); return }
     setLoading(true)
     try {
       const res = await apiClient.get<TeamMemberGoals[]>(
-        `/api/v1/performance/team-goals?cycleId=${selectedCycleId}`,
+        '/api/v1/performance/team-goals',
+        { cycleId: selectedCycleId },
       )
       setMembers(res.data)
     } catch (err) {

@@ -95,7 +95,7 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
   // ─── Fetch team evaluations ─────────────────────────
 
   const fetchTeam = useCallback(async () => {
-    if (!selectedCycleId) return
+    if (!selectedCycleId) { setLoading(false); return }
     setLoading(true)
     try {
       const res = await apiClient.get<EvalPayload>('/api/v1/performance/evaluations/manager', { cycleId: selectedCycleId })

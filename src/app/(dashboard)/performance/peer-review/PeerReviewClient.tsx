@@ -91,7 +91,7 @@ export default function PeerReviewClient({ user: _user }: { user: SessionUser })
   }, [selectedCycleId, tCommon])
 
   const fetchData = useCallback(async () => {
-    if (!selectedCycleId) return
+    if (!selectedCycleId) { setLoading(false); return }
     setLoading(true)
     setError('')
     try {

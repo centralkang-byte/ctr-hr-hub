@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { format, startOfMonth, endOfMonth } from 'date-fns'
-import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -10,7 +9,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -32,11 +30,12 @@ const RUN_TYPE_LABELS: Record<string, string> = {
 }
 
 interface PayrollCreateDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
   onCreated: () => void
 }
 
-export default function PayrollCreateDialog({ onCreated }: PayrollCreateDialogProps) {
-  const [open, setOpen] = useState(false)
+export default function PayrollCreateDialog({ open, onOpenChange, onCreated }: PayrollCreateDialogProps) {
   const [loading, setLoading] = useState(false)
   const [runType, setRunType] = useState('MONTHLY')
 
@@ -61,7 +60,7 @@ export default function PayrollCreateDialog({ onCreated }: PayrollCreateDialogPr
         periodEnd: endOfMonth(periodDate).toISOString(),
         payDate: form.get('payDate') || undefined,
       })
-      setOpen(false)
+      onOpenChange(false)
       onCreated()
     } catch {
       // error handled by apiClient
@@ -71,13 +70,7 @@ export default function PayrollCreateDialog({ onCreated }: PayrollCreateDialogPr
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className={BUTTON_VARIANTS.primary}>
-          <Plus className="h-4 w-4 mr-1" />
-          급여 실행 생성
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>급여 실행 생성</DialogTitle>
@@ -122,7 +115,7 @@ export default function PayrollCreateDialog({ onCreated }: PayrollCreateDialogPr
             <Input id="payDate" name="payDate" type="date" />
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               취소
             </Button>
             <Button
