@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
@@ -60,24 +60,17 @@ interface PublishStatus {
     }>
 }
 
-const fmt = (n: number | string | null | undefined) => {
-    if (n == null) return '—'
-    return Number(n).toLocaleString('ko-KR') + '원'
-}
-
-const fmtDate = (d: string | null | undefined) => {
-    if (!d) return '—'
-    return new Date(d).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-}
+// fmt, fmtDate은 컴포넌트 내부에서 t()와 locale을 사용하도록 이동
 
 // ─── Progress Bar ────────────────────────────────────────
 
 function ViewProgressBar({ viewed, total }: { viewed: number; total: number }) {
+    const t = useTranslations('payroll')
     const pct = total > 0 ? Math.round((viewed / total) * 100) : 0
     return (
         <div>
             <div className="flex items-center justify-between mb-1.5">
-                <span className="text-sm text-muted-foreground">열람률</span>
+                <span className="text-sm text-muted-foreground">{t('publishPage.viewRate')}</span>
                 <span className="text-sm font-bold text-foreground">{pct}%</span>
             </div>
             <div className="h-3 w-full bg-border rounded-full overflow-hidden">
@@ -87,8 +80,8 @@ function ViewProgressBar({ viewed, total }: { viewed: number; total: number }) {
                 />
             </div>
             <div className="flex justify-between mt-1 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> 열람 {viewed}명</span>
-                <span className="flex items-center gap-1"><EyeOff className="h-3 w-3" /> 미열람 {total - viewed}명</span>
+                <span className="flex items-center gap-1"><Eye className="h-3 w-3" /> {t('publishPage.viewed', { count: viewed })}</span>
+                <span className="flex items-center gap-1"><EyeOff className="h-3 w-3" /> {t('publishPage.unviewed', { count: total - viewed })}</span>
             </div>
         </div>
     )
@@ -103,6 +96,16 @@ interface Props {
 
 export default function PayrollPublishDashboardClient({user: _user, runId }: Props) {
   const t = useTranslations('payroll')
+  const locale = useLocale()
+
+  const fmt = (n: number | string | null | undefined) => {
+      if (n == null) return '—'
+      return t('fmt.amountWon', { n: Number(n).toLocaleString() })
+  }
+  const fmtDate = (d: string | null | undefined) => {
+      if (!d) return '—'
+      return new Date(d).toLocaleString(locale, { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  }
 
     const router = useRouter()
     const [data, setData] = useState<PublishStatus | null>(null)
@@ -116,7 +119,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
             const res = await apiClient.get<PublishStatus>(`/api/v1/payroll/${runId}/publish-status`)
             setData(res.data)
         } catch (err) {
-            toast({ title: '발행 현황 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+            toast({ title: t('publishPage.loadFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
         } finally {
             setLoading(false)
         }
@@ -135,7 +138,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
             setNotifyResult(res.data.message)
             await fetchData()
         } catch (err) {
-            toast({ title: '재알림 발송 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+            toast({ title: t('publishPage.notifyFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
         } finally {
             setNotifying(false)
         }
@@ -206,7 +209,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-sm text-muted-foreground hover:bg-muted disabled:opacity-40"
                     >
                         {notifying ? <Loader2 className="h-4 w-4 animate-spin" /> : <Bell className="h-4 w-4" />}
-                        미열람자 재알림 ({payslipStats.unviewed}명)
+                        {t('publishPage.resendReminder', { count: payslipStats.unviewed })}
                     </button>
                 </div>
                 <ViewProgressBar viewed={payslipStats.viewed} total={payslipStats.total} />
@@ -313,7 +316,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <p className="text-sm font-medium text-foreground">{step.approverName ?? step.roleRequired}</p>
                                         <span className={`text-xs px-1.5 py-0.5 rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-500/15 text-emerald-700' : 'bg-destructive/10 text-destructive'}`}>
-                                            {step.status === 'APPROVED' ? '승인' : '반려'}
+                                            {step.status === 'APPROVED' ? t('publishPage.approvedLabel') : t('publishPage.rejectedLabel')}
                                         </span>
                                         <span className="text-xs text-muted-foreground flex items-center gap-1">
                                             <Clock className="h-3 w-3" />

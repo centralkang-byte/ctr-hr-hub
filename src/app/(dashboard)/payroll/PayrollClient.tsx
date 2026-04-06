@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { useLocale } from 'next-intl'
 import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
@@ -52,13 +54,7 @@ interface DashboardData {
   }
 }
 
-const MONTHS_KO = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월']
-
-const fmt = (n: number) => {
-  if (n >= 1_0000_0000) return `${(n / 1_0000_0000).toFixed(1)}억원`
-  if (n >= 1_0000) return `${(n / 1_0000).toFixed(0)}만원`
-  return n.toLocaleString('ko-KR') + '원'
-}
+// fmt 함수는 컴포넌트 내부에서 t()를 사용하도록 이동
 
 // ─── KPI Card ───────────────────────────────────────────────
 
@@ -119,8 +115,17 @@ interface Props {
 }
 
 export default function PayrollDashboardClient({ user: _user }: Props) {
+  const t = useTranslations('payroll')
+  const locale = useLocale()
   const router = useRouter()
   const now = new Date()
+
+  // 금액 포매팅 (i18n)
+  const fmt = (n: number) => {
+    if (n >= 1_0000_0000) return t('fmt.amountEok', { n: (n / 1_0000_0000).toFixed(1) })
+    if (n >= 1_0000) return t('fmt.amountMan', { n: (n / 1_0000).toFixed(0) })
+    return t('fmt.amountWon', { n: n.toLocaleString() })
+  }
 
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth() + 1)
@@ -134,7 +139,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
       const res = await apiClient.get<DashboardData>(`/api/v1/payroll/dashboard?year=${year}&month=${month}`)
       setData(res.data)
     } catch (err) {
-      toast({ title: '급여 대시보드 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('dashboard.loadFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -174,8 +179,8 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
             <Wallet className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground tracking-[-0.02em]">{'급여 관리'}</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{'전체 법인 파이프라인 현황'}</p>
+            <h1 className="text-2xl font-bold text-foreground tracking-[-0.02em]">{t('dashboard.title')}</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">{t('dashboard.subtitle')}</p>
           </div>
         </div>
 
@@ -186,7 +191,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
               <ChevronLeft className="h-4 w-4" />
             </button>
             <span className="text-sm font-semibold text-foreground px-2 min-w-24 text-center">
-              {year}년 {MONTHS_KO[month - 1]}
+              {new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long' }).format(new Date(year, month - 1))}
             </span>
             <button onClick={nextMonth} className="p-1 rounded-lg hover:bg-muted text-muted-foreground">
               <ChevronRight className="h-4 w-4" />
@@ -202,7 +207,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary/85 text-white text-sm font-semibold"
           >
             <Plus className="h-4 w-4" />
-            {'급여 실행 생성'}
+            {t('dashboard.createRun')}
           </button>
         </div>
       </div>
@@ -219,11 +224,11 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
           {/* ── KPI Summary Cards ──────────────────────────── */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <KpiCard
-              label="총 실수령액"
+              label={t('dashboard.totalNetPay')}
               value={fmt(data.summary.totalNetPay)}
               sub={data.summary.prevTotalNet > 0
-                ? `전월 대비 ${data.summary.momChangePercent > 0 ? '+' : ''}${data.summary.momChangePercent}%`
-                : '전월 데이터 없음'
+                ? t('dashboard.momChange', { pct: `${data.summary.momChangePercent > 0 ? '+' : ''}${data.summary.momChangePercent}` })
+                : t('dashboard.noPrevData')
               }
               icon={
                 data.summary.momChangePercent > 0
@@ -237,26 +242,26 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
             />
 
             <KpiCard
-              label="완료 법인"
-              value={`${data.summary.completedCompanies} / ${data.summary.totalCompanies}개`}
-              sub="승인 또는 지급 완료"
+              label={t('dashboard.completedCompanies')}
+              value={t('dashboard.completedCount', { completed: data.summary.completedCompanies, total: data.summary.totalCompanies })}
+              sub={t('dashboard.approvedOrPaid')}
               icon={<CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />}
               accent="bg-emerald-500/15"
             />
 
             <KpiCard
-              label="미처리 이상 항목"
-              value={`${data.summary.openAnomalies}건`}
-              sub={data.summary.openAnomalies > 0 ? '검토 필요' : '모두 해결됨 ✅'}
+              label={t('dashboard.openAnomalies')}
+              value={t('dashboard.anomalyCount', { count: data.summary.openAnomalies })}
+              sub={data.summary.openAnomalies > 0 ? t('dashboard.reviewNeeded') : t('dashboard.allResolved')}
               icon={<AlertTriangle className="h-3.5 w-3.5 text-amber-500" />}
               accent="bg-amber-500/15"
               onClick={data.summary.openAnomalies > 0 ? () => router.push('/payroll/anomalies') : undefined}
             />
 
             <KpiCard
-              label={`결재 대기 / 마감 임박`}
-              value={`${data.summary.pendingApprovals}건 / ${data.summary.alertCount}개`}
-              sub={`결재 / D-3 법인`}
+              label={t('dashboard.pendingApprovals')}
+              value={t('dashboard.pendingCount', { pending: data.summary.pendingApprovals, alerts: data.summary.alertCount })}
+              sub={t('dashboard.approvalAndDeadline')}
               icon={<Clock className="h-3.5 w-3.5 text-violet-500" />}
               accent="bg-purple-500/10"
               onClick={data.summary.pendingApprovals > 0 ? () => router.push('/approvals/inbox') : undefined}
@@ -267,14 +272,14 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
           <div className="bg-card rounded-xl border border-border p-5">
             <div className="flex items-center gap-2 mb-4">
               <LayoutGrid className="h-4 w-4 text-primary" />
-              <h2 className="font-semibold text-foreground">{'파이프라인 현황'}</h2>
-              <span className="ml-1 text-xs text-muted-foreground">{'— 각 배지를 클릭하면 해당 단계로 이동합니다'}</span>
+              <h2 className="font-semibold text-foreground">{t('dashboard.pipelineStatus')}</h2>
+              <span className="ml-1 text-xs text-muted-foreground">{t('dashboard.pipelineTip')}</span>
             </div>
 
             {data.pipelines.length === 0 ? (
               <div className="py-8 text-center text-muted-foreground text-sm">
                 <Users className="h-8 w-8 mx-auto mb-2 text-border" />
-                {'이 월에 급여 실행이 없습니다. 급여 실행을 생성해 주세요.'}
+                {t('dashboard.emptyPayroll')}
               </div>
             ) : (
               <PayrollPipeline pipelines={data.pipelines} />
@@ -293,33 +298,33 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
           <div>
             <h2 className="font-semibold text-foreground mb-3 flex items-center gap-2">
               <Play className="h-4 w-4 text-primary" />
-              {'빠른 실행'}
+              {t('dashboard.quickActions')}
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <QuickAction
                 icon={<Calendar className="h-5 w-5 text-primary/90" />}
-                label="근태 마감"
+                label={t('dashboard.closeAttendance')}
                 sub="STEP 1 → 2"
                 onClick={() => router.push('/payroll/close-attendance')}
                 accent="bg-indigo-500/15"
               />
               <QuickAction
                 icon={<AlertTriangle className="h-5 w-5 text-amber-500" />}
-                label="이상 검토"
+                label={t('dashboard.anomalyReview')}
                 sub="STEP 3"
                 onClick={() => router.push('/payroll/anomalies')}
                 accent="bg-amber-500/15"
               />
               <QuickAction
                 icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
-                label="승인 대기"
-                sub="STEP 4 — 승인함으로"
+                label={t('dashboard.pendingApproval')}
+                sub="STEP 4"
                 onClick={() => router.push('/approvals/inbox?module=PAYROLL')}
                 accent="bg-indigo-500/15"
               />
               <QuickAction
                 icon={<Wallet className="h-5 w-5 text-emerald-600" />}
-                label="수동 조정"
+                label={t('dashboard.manualAdjust')}
                 sub="STEP 2.5"
                 onClick={() => router.push('/payroll/adjustments')}
                 accent="bg-emerald-500/15"

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Calculator, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,6 +20,7 @@ export default function SeveranceCalculator({
   employeeId,
   employeeName,
 }: SeveranceCalculatorProps) {
+  const t = useTranslations('payroll')
   const [result, setResult] = useState<SeveranceDetail | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -47,13 +49,13 @@ export default function SeveranceCalculator({
       <div className="flex items-center gap-2 mb-4">
         <Calculator className="h-5 w-5 text-primary" />
         <h3 className="text-sm font-semibold text-foreground">
-          퇴직금 계산{employeeName ? ` — ${employeeName}` : ''}
+          {employeeName ? t('severance.titleWithName', { name: employeeName }) : t('severance.title')}
         </h3>
       </div>
 
       <form onSubmit={handleSubmit} className="flex items-end gap-3 mb-4">
         <div className="flex-1">
-          <Label htmlFor="terminationDate">퇴직 예정일</Label>
+          <Label htmlFor="terminationDate">{t('severance.terminationDate')}</Label>
           <Input id="terminationDate" name="terminationDate" type="date" required />
         </div>
         <Button
@@ -61,7 +63,7 @@ export default function SeveranceCalculator({
           disabled={loading}
           className={BUTTON_VARIANTS.primary}
         >
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : '계산'}
+          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('severance.calculate')}
         </Button>
       </form>
 
@@ -70,21 +72,21 @@ export default function SeveranceCalculator({
           {/* 기본 정보 */}
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-muted-foreground">입사일</p>
+              <p className="text-muted-foreground">{t('severance.hireDate')}</p>
               <p className="font-medium">{result.hireDate.split('T')[0]}</p>
             </div>
             <div>
-              <p className="text-muted-foreground">퇴직일</p>
+              <p className="text-muted-foreground">{t('severance.terminationDateLabel')}</p>
               <p className="font-medium">{result.terminationDate.split('T')[0]}</p>
             </div>
             <div>
-              <p className="text-muted-foreground">재직일수</p>
-              <p className="font-medium">{result.tenureDays}일 ({result.tenureYears}년)</p>
+              <p className="text-muted-foreground">{t('severance.tenureDaysLabel')}</p>
+              <p className="font-medium">{t('severance.tenureDays', { days: result.tenureDays, years: result.tenureYears })}</p>
             </div>
             <div>
-              <p className="text-muted-foreground">퇴직금 대상</p>
+              <p className="text-muted-foreground">{t('severance.eligibility')}</p>
               <p className={`font-medium ${result.isEligible ? 'text-emerald-600' : 'text-destructive'}`}>
-                {result.isEligible ? '해당' : '비해당 (1년 미만)'}
+                {result.isEligible ? t('severance.eligible') : t('severance.notEligible')}
               </p>
             </div>
           </div>
@@ -92,15 +94,15 @@ export default function SeveranceCalculator({
           {/* 3개월 평균임금 테이블 */}
           {result.recentThreeMonths.length > 0 && (
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">최근 3개월 급여</p>
+              <p className="text-xs font-medium text-muted-foreground mb-2">{t('severance.recentThreeMonths')}</p>
               <table className={TABLE_STYLES.table}>
                 <thead>
                   <tr className={TABLE_STYLES.header}>
-                    <th className={TABLE_STYLES.headerCell}>월</th>
-                    <th className={TABLE_STYLES.headerCellRight}>기본급</th>
-                    <th className={TABLE_STYLES.headerCellRight}>초과근무</th>
-                    <th className={TABLE_STYLES.headerCellRight}>수당</th>
-                    <th className={TABLE_STYLES.headerCellRight}>합계</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('severance.month')}</th>
+                    <th className={TABLE_STYLES.headerCellRight}>{t('severance.baseSalaryCol')}</th>
+                    <th className={TABLE_STYLES.headerCellRight}>{t('severance.overtimeCol')}</th>
+                    <th className={TABLE_STYLES.headerCellRight}>{t('severance.allowancesCol')}</th>
+                    <th className={TABLE_STYLES.headerCellRight}>{t('severance.totalCol')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -116,7 +118,7 @@ export default function SeveranceCalculator({
                 </tbody>
                 <tfoot>
                   <tr className="bg-background font-semibold">
-                    <td className="px-3 py-2" colSpan={4}>3개월 평균임금</td>
+                    <td className="px-3 py-2" colSpan={4}>{t('severance.averageMonthlyPay')}</td>
                     <td className="text-right px-3 py-2">{formatCurrency(result.averageMonthlyPay)}</td>
                   </tr>
                 </tfoot>
@@ -128,19 +130,19 @@ export default function SeveranceCalculator({
           {result.isEligible && (
             <div className="bg-primary/10 rounded-xl p-4 space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">퇴직금</span>
+                <span className="text-muted-foreground">{t('severance.severancePay')}</span>
                 <span className="font-medium">{formatCurrency(result.severancePay)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">퇴직소득세</span>
+                <span className="text-muted-foreground">{t('severance.retirementIncomeTax')}</span>
                 <span className="text-destructive">-{formatCurrency(result.incomeTax)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">지방소득세</span>
+                <span className="text-muted-foreground">{t('severance.retirementLocalTax')}</span>
                 <span className="text-destructive">-{formatCurrency(result.localIncomeTax)}</span>
               </div>
               <div className="flex justify-between text-sm font-bold pt-2 border-t border-primary/20">
-                <span className="text-primary/90">실지급액</span>
+                <span className="text-primary/90">{t('severance.netSeverancePay')}</span>
                 <span className="text-primary/90">{formatCurrency(result.netSeverancePay)}</span>
               </div>
             </div>

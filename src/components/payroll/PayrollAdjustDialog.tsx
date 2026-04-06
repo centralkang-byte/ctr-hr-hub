@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -40,6 +41,8 @@ export default function PayrollAdjustDialog({
   item,
   onAdjusted,
 }: PayrollAdjustDialogProps) {
+  const t = useTranslations('payroll')
+  const tc = useTranslations('common')
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -72,52 +75,52 @@ export default function PayrollAdjustDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>급여 수동 조정 — {item.employeeName}</DialogTitle>
+          <DialogTitle>{t('adjustDialog.title', { name: item.employeeName })}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>기본급</Label>
+              <Label>{t('basePay')}</Label>
               <Input name="baseSalary" type="number" defaultValue={item.baseSalary} />
-              <p className="text-xs text-muted-foreground mt-0.5">현재: {formatCurrency(item.baseSalary)}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{t('adjustDialog.current', { amount: formatCurrency(item.baseSalary) })}</p>
             </div>
             <div>
-              <Label>초과근무수당</Label>
+              <Label>{t('overtimePay')}</Label>
               <Input name="overtimePay" type="number" defaultValue={item.overtimePay} />
             </div>
             <div>
-              <Label>상여금</Label>
+              <Label>{t('bonusPay')}</Label>
               <Input name="bonus" type="number" defaultValue={item.bonus} />
             </div>
             <div>
-              <Label>수당</Label>
+              <Label>{t('allowances')}</Label>
               <Input name="allowances" type="number" defaultValue={item.allowances} />
             </div>
             <div>
-              <Label>공제액 (수동)</Label>
+              <Label>{t('adjustDialog.manualDeduction')}</Label>
               <Input name="deductions" type="number" defaultValue={item.deductions} />
             </div>
           </div>
           <div>
-            <Label htmlFor="adjustmentReason">조정 사유 *</Label>
+            <Label htmlFor="adjustmentReason">{t('adjustDialog.adjustmentReason')}</Label>
             <Textarea
               id="adjustmentReason"
               name="adjustmentReason"
               required
-              placeholder={'조정 사유를 입력하세요'}
+              placeholder={t('adjustDialog.reasonPlaceholder')}
               rows={2}
             />
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              취소
+              {tc('cancel')}
             </Button>
             <Button
               type="submit"
               disabled={loading}
               className={BUTTON_VARIANTS.primary}
             >
-              {loading ? '저장 중...' : '저장'}
+              {loading ? t('adjustDialog.saving') : t('adjustDialog.save')}
             </Button>
           </div>
         </form>

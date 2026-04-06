@@ -109,8 +109,7 @@ interface WhitelistEntry {
 
 // ─── Utilities ──────────────────────────────────────────
 
-const fmt = (n: number | null | undefined) =>
-  n == null ? '—' : n.toLocaleString('ko-KR') + '원'
+// fmt 함수는 컴포넌트 내부에서 t()를 사용하도록 이동 — fmtWithT 참조
 
 const fmtPct = (n: number) => {
   const sign = n > 0 ? '+' : ''
@@ -123,21 +122,21 @@ const SEVERITY_CONFIG = {
     bg: 'bg-destructive/5',
     badge: 'bg-destructive/10 text-destructive border-destructive/20',
     icon: <AlertTriangle className="h-4 w-4 text-red-500" />,
-    label: '위험',
+    labelKey: 'reviewPage.severityError' as const,
   },
   WARNING: {
     border: 'border-l-4 border-amber-500',
     bg: 'bg-amber-500/10',
     badge: 'bg-amber-500/15 text-amber-700 border-amber-300',
     icon: <AlertTriangle className="h-4 w-4 text-amber-500" />,
-    label: '경고',
+    labelKey: 'reviewPage.severityWarning' as const,
   },
   INFO: {
     border: 'border-l-4 border-blue-400',
     bg: 'bg-primary/5',
     badge: 'bg-primary/10 text-primary border-primary/20',
     icon: <AlertCircle className="h-4 w-4 text-blue-400" />,
-    label: '정보',
+    labelKey: 'reviewPage.severityInfo' as const,
   },
 }
 
@@ -150,6 +149,8 @@ interface AnomalyCardProps {
 }
 
 function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
+  const t = useTranslations('payroll')
+  const tCommon = useTranslations('common')
   const cfg = SEVERITY_CONFIG[anomaly.severity]
   const [loading, setLoading] = useState(false)
   const [showWhitelistModal, setShowWhitelistModal] = useState(false)
@@ -162,7 +163,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
       await apiClient.put(`/api/v1/payroll/${runId}/anomalies/${anomaly.id}/resolve`, { resolution, note })
       onResolved()
     } catch (err) {
-      toast({ title: '이상 항목 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('reviewPage.anomalyFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -189,7 +190,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
                 </span>
                 <span className="text-xs text-muted-foreground">{dept}{pos ? ` / ${pos}` : ''}</span>
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border ${cfg.badge}`}>
-                  {cfg.label}
+                  {t(cfg.labelKey)}
                 </span>
               </div>
               <p className="text-sm text-muted-foreground mt-1">{anomaly.description}</p>
@@ -200,13 +201,13 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
         {(anomaly.currentValue || anomaly.previousValue) && (
           <div className="flex items-center gap-6 text-xs text-muted-foreground bg-background rounded-lg p-3">
             {anomaly.currentValue != null && (
-              <span>{'이번 달:'} <strong className="text-foreground">{Number(anomaly.currentValue).toLocaleString()}</strong></span>
+              <span>{t('reviewPage.thisMonth')} <strong className="text-foreground">{Number(anomaly.currentValue).toLocaleString()}</strong></span>
             )}
             {anomaly.previousValue != null && (
-              <span>전월: <strong className="text-foreground">{Number(anomaly.previousValue).toLocaleString()}</strong></span>
+              <span>{t('reviewPage.prevMonth')} <strong className="text-foreground">{Number(anomaly.previousValue).toLocaleString()}</strong></span>
             )}
             {anomaly.threshold && (
-              <span>{'기준:'} <strong className="text-amber-500">{anomaly.threshold}</strong></span>
+              <span>{t('reviewPage.threshold')} <strong className="text-amber-500">{anomaly.threshold}</strong></span>
             )}
           </div>
         )}
@@ -218,20 +219,20 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-700 text-xs font-semibold hover:bg-emerald-200 transition-colors disabled:opacity-50"
           >
             <CheckCircle2 className="h-3.5 w-3.5" />
-            {'정상 확인'}
+            {t('reviewPage.confirmNormal')}
           </button>
           <button
             onClick={() => router.push(`/payroll/adjustments`)}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-muted-foreground text-xs font-medium hover:bg-muted transition-colors"
           >
-            {'수정 →'}
+            {t('reviewPage.editLink')}
           </button>
           <button
             onClick={() => setShowWhitelistModal(true)}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-muted-foreground text-xs font-medium hover:bg-muted transition-colors"
           >
             <ShieldX className="h-3.5 w-3.5" />
-            {'예외 등록'}
+            {t('reviewPage.addException')}
           </button>
         </div>
       </div>
@@ -240,14 +241,14 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
         <div className={MODAL_STYLES.container}>
           <div className="bg-card rounded-xl shadow-lg w-full max-w-md">
             <div className="p-5 border-b border-border flex items-center justify-between">
-              <h3 className="font-semibold text-foreground">{'예외 등록'}</h3>
+              <h3 className="font-semibold text-foreground">{t('reviewPage.exceptionTitle')}</h3>
               <button onClick={() => setShowWhitelistModal(false)} className="text-muted-foreground hover:text-foreground">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div className="p-5 space-y-3">
               <p className="text-sm text-muted-foreground">
-                <strong>{anomaly.employee.name}</strong>{'의'} <strong>{anomaly.ruleCode}</strong> {'규칙을 예외 처리합니다.'}
+                {t('reviewPage.exceptionDesc', { name: anomaly.employee.name, rule: anomaly.ruleCode })}
               </p>
               <textarea
                 value={whitelistNote}
@@ -262,7 +263,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
                 onClick={() => setShowWhitelistModal(false)}
                 className="px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:bg-muted"
               >
-                {'취소'}
+                {tCommon('cancel')}
               </button>
               <button
                 onClick={async () => {
@@ -273,7 +274,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
                 className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 disabled:opacity-50"
               >
                 <ShieldCheck className="h-4 w-4 inline mr-1" />
-                {'예외 등록'}
+                {t('reviewPage.addException')}
               </button>
             </div>
           </div>
@@ -304,6 +305,7 @@ interface SidePanelProps {
 }
 
 function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
+  const t = useTranslations('payroll')
   return (
     <div className="fixed inset-0 z-40 flex">
       <div className="flex-1 bg-black/20" onClick={onClose} />
@@ -322,13 +324,13 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
           <div className="p-4 space-y-4">
             {/* 지급 */}
             <div>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{'지급'}</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{t('reviewPage.earnings')}</p>
               <div className="space-y-1.5">
                 {[
-                  ['기본급', detail.baseSalary],
-                  ['연장수당', detail.overtimePay],
-                  ['상여금', detail.bonus],
-                  ['수당', detail.allowances],
+                  [t('basePay'), detail.baseSalary],
+                  [t('overtimePay'), detail.overtimePay],
+                  [t('bonusPay'), detail.bonus],
+                  [t('allowances'), detail.allowances],
                 ].map(([label, value]) => (
                   Number(value) > 0 && (
                     <div key={label as string} className="flex justify-between text-sm">
@@ -338,7 +340,7 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
                   )
                 ))}
                 <div className="border-t border-border pt-1.5 flex justify-between text-sm font-semibold">
-                  <span className="text-emerald-600">지급합계</span>
+                  <span className="text-emerald-600">{t('reviewPage.earningsTotal')}</span>
                   <span className="text-emerald-600">{detail.grossPay.toLocaleString()}</span>
                 </div>
               </div>
@@ -346,9 +348,9 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
 
             {/* 공제 */}
             <div>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{'공제합계'}</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{t('reviewPage.deductionsTotal')}</p>
               <div className="border-t border-border pt-1.5 flex justify-between text-sm font-semibold">
-                <span className="text-destructive">공제합계</span>
+                <span className="text-destructive">{t('reviewPage.deductionsTotal')}</span>
                 <span className="text-destructive">-{detail.deductions.toLocaleString()}</span>
               </div>
             </div>
@@ -356,31 +358,30 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
             {/* 실수령액 */}
             <div className="bg-tertiary-container/10 rounded-xl p-4">
               <div className="flex justify-between items-center">
-                <span className="font-semibold text-foreground">{'실수령액'}</span>
-                <span className="text-xl font-bold text-emerald-600">{detail.netPay.toLocaleString()}원</span>
+                <span className="font-semibold text-foreground">{t('reviewPage.netPayLabel')}</span>
+                <span className="text-xl font-bold text-emerald-600">{t('reviewPage.netPayAmount', { amount: detail.netPay.toLocaleString() })}</span>
               </div>
             </div>
 
             {detail.isManuallyAdjusted && (
               <div className="bg-amber-500/15 rounded-lg p-3 text-xs text-amber-700">
-                ✏️ 수동 조정: {detail.adjustmentReason}
+                ✏️ {t('reviewPage.adjustmentNote', { reason: detail.adjustmentReason ?? '' })}
               </div>
             )}
 
             {/* 전월 비교 */}
             {row.previousNet != null && (
               <div className="border-t border-border pt-3">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{'전월 비교'}</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{t('reviewPage.prevComparison')}</p>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">{'전월 실수령'}</span>
-                    <span>{row.previousNet.toLocaleString()}원</span>
+                    <span className="text-muted-foreground">{t('reviewPage.prevNetPay')}</span>
+                    <span>{t('fmt.amountWon', { n: row.previousNet!.toLocaleString() })}</span>
                   </div>
                   <div className="flex justify-between font-semibold">
-                    <span className="text-muted-foreground">{'변동률'}</span>
+                    <span className="text-muted-foreground">{t('reviewPage.changeRate')}</span>
                     <span className={row.diffNet > 0 ? 'text-emerald-600' : row.diffNet < 0 ? 'text-destructive' : 'text-muted-foreground'}>
-                      {row.diffNet > 0 ? '+' : ''}{row.diffNet.toLocaleString()}원
-                      &nbsp;({fmtPct(row.diffPercent)})
+                      {t('reviewPage.changeAmount', { amount: `${row.diffNet > 0 ? '+' : ''}${row.diffNet.toLocaleString()}`, pct: fmtPct(row.diffPercent) })}
                     </span>
                   </div>
                 </div>
@@ -391,28 +392,28 @@ function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
           <div className="p-4">
             <div className="space-y-3">
               {[
-                ['현재 실수령', row.currentNet],
-                ['기본급', row.currentBaseSalary],
-                ['전월 실수령', row.previousNet ?? '—'],
+                [t('reviewPage.currentNetPay'), row.currentNet],
+                [t('basePay'), row.currentBaseSalary],
+                [t('reviewPage.prevNetPay'), row.previousNet ?? '—'],
               ].map(([label, value]) => (
                 <div key={label as string} className="flex justify-between text-sm">
                   <span className="text-muted-foreground">{label as string}</span>
                   <span className="font-medium text-foreground">
-                    {typeof value === 'number' ? value.toLocaleString() + '원' : String(value)}
+                    {typeof value === 'number' ? t('fmt.amountWon', { n: value.toLocaleString() }) : String(value)}
                   </span>
                 </div>
               ))}
               {row.diffNet !== 0 && (
                 <div className="flex justify-between text-sm font-semibold">
-                  <span className="text-muted-foreground">{'변동률'}</span>
+                  <span className="text-muted-foreground">{t('reviewPage.changeRate')}</span>
                   <span className={row.diffNet > 0 ? 'text-emerald-600' : 'text-destructive'}>
-                    {row.diffNet > 0 ? '+' : ''}{row.diffNet.toLocaleString()}원 ({fmtPct(row.diffPercent)})
+                    {t('reviewPage.changeAmount', { amount: `${row.diffNet > 0 ? '+' : ''}${row.diffNet.toLocaleString()}`, pct: fmtPct(row.diffPercent) })}
                   </span>
                 </div>
               )}
               {row.changeReason && (
                 <div className="text-xs text-muted-foreground bg-background rounded-lg p-2 mt-2">
-                  사유: {row.changeReason}
+                  {t('reviewPage.reason', { reason: row.changeReason ?? '' })}
                 </div>
               )}
             </div>
@@ -433,8 +434,11 @@ interface Props {
 export default function PayrollReviewClient({user: _user, runId }: Props) {
   const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
-
   const router = useRouter()
+
+  // 금액 포매팅 (i18n)
+  const fmt = (n: number | null | undefined) =>
+    n == null ? '—' : t('fmt.amountWon', { n: n.toLocaleString() })
   const [run, setRun] = useState<PayrollRunInfo | null>(null)
   const [anomalies, setAnomalies] = useState<Anomaly[]>([])
   const [anomalySummary, setAnomalySummary] = useState<AnomalySummary | null>(null)
@@ -472,7 +476,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       const res = await apiClient.get<PayrollRunInfo>(`/api/v1/payroll/runs/${runId}`)
       setRun(res.data)
     } catch (err) {
-      toast({ title: '급여 실행 정보 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('reviewPage.loadRunFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }, [runId])
 
@@ -484,7 +488,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       setAnomalies(res.data.anomalies)
       setAnomalySummary(res.data.summary)
     } catch (err) {
-      toast({ title: '이상 항목 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('reviewPage.loadAnomalyFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }, [runId])
 
@@ -499,7 +503,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       setComparisonRows(res.data.rows)
       setComparisonSummary(res.data.summary)
     } catch (err) {
-      toast({ title: '비교 데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('reviewPage.loadComparisonFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }, [runId, sortBy, sortOrder, deptFilter, anomalyOnly])
 
@@ -512,7 +516,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       )
       setWhitelistEntries(res.data.items ?? [])
     } catch (err) {
-      toast({ title: '화이트리스트 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('reviewPage.loadWhitelistFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }, [run?.id])
 
@@ -547,7 +551,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       await fetchAnomalies()
       await fetchRun()
     } catch (err) {
-      toast({ title: '일괄 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('reviewPage.bulkFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     } finally {
       setBulkResolving(false)
     }
@@ -560,7 +564,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       setShowSubmitModal(false)
       router.push('/payroll')
     } catch (err) {
-      toast({ title: '결재 요청 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('reviewPage.approvalRequestFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     } finally {
       setSubmitting(false)
     }
@@ -571,7 +575,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       await apiClient.delete(`/api/v1/payroll/whitelist/${anomalyId}`)
       await fetchWhitelist()
     } catch (err) {
-      toast({ title: '화이트리스트 삭제 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('reviewPage.removeWhitelistFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
   }
 
@@ -622,14 +626,14 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
         <button
           onClick={() => setShowSubmitModal(true)}
           disabled={!allResolved}
-          title={!allResolved ? `미처리 이상항목 ${anomalySummary?.open ?? 0}건이 있습니다` : '승인 요청'}
+          title={!allResolved ? t('reviewPage.submitTooltip', { count: anomalySummary?.open ?? 0 }) : t('reviewPage.approvalRequest')}
           className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors ${allResolved
               ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
               : 'bg-border text-muted-foreground cursor-not-allowed'
             }`}
         >
           <CheckCircle2 className="h-4 w-4" />
-          승인 요청
+          {t('reviewPage.approvalRequest')}
           {!allResolved && anomalySummary && (
             <span className="bg-white/20 rounded-full px-1.5 text-xs">{anomalySummary.open}</span>
           )}
@@ -661,9 +665,9 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
         <div className="bg-amber-500/15 border border-amber-300 rounded-xl p-4 flex items-center gap-3">
           <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0" />
           <p className="text-sm text-amber-700 font-medium">
-            이상 항목 {anomalySummary.open}건 — 모두 처리해야 승인 요청이 가능합니다.
+            {t('reviewPage.alertBanner', { count: anomalySummary.open })}
             {anomalySummary.bySeverity.CRITICAL > 0 && (
-              <span className="ml-2 text-destructive">위험 {anomalySummary.bySeverity.CRITICAL}건 포함</span>
+              <span className="ml-2 text-destructive">{t('reviewPage.alertCritical', { count: anomalySummary.bySeverity.CRITICAL })}</span>
             )}
           </p>
         </div>
@@ -679,10 +683,10 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       {/* Tabs */}
       <div className="border-b border-border flex gap-6">
         {([
-          ['anomalies', `이상항목 (${anomalySummary?.open ?? 0})`],
-          ['comparison', `전체직원 (${run.headcount ?? 0})`],
-          ['whitelist', `예외목록 (${whitelistEntries.length})`],
-        ] as const).map(([tab, label]) => (
+          ['anomalies', t('reviewPage.anomaliesTab', { count: anomalySummary?.open ?? 0 })],
+          ['comparison', t('reviewPage.comparisonTab', { count: run.headcount ?? 0 })],
+          ['whitelist', t('reviewPage.whitelistTab', { count: whitelistEntries.length })],
+        ] as ['anomalies' | 'comparison' | 'whitelist', string][]).map(([tab, label]) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -701,17 +705,17 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
               <div className="flex items-center gap-3 text-xs">
                 {anomalySummary.bySeverity.CRITICAL > 0 && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-destructive/10 text-destructive border border-destructive/20">
-                    <AlertTriangle className="h-3 w-3" /> 위험 {anomalySummary.bySeverity.CRITICAL}
+                    <AlertTriangle className="h-3 w-3" /> {t('reviewPage.critical', { count: anomalySummary.bySeverity.CRITICAL })}
                   </span>
                 )}
                 {anomalySummary.bySeverity.WARNING > 0 && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-700 border border-amber-300">
-                    <AlertTriangle className="h-3 w-3" /> 경고 {anomalySummary.bySeverity.WARNING}
+                    <AlertTriangle className="h-3 w-3" /> {t('reviewPage.warning', { count: anomalySummary.bySeverity.WARNING })}
                   </span>
                 )}
                 {anomalySummary.bySeverity.INFO > 0 && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
-                    <AlertCircle className="h-3 w-3" /> 정보 {anomalySummary.bySeverity.INFO}
+                    <AlertCircle className="h-3 w-3" /> {t('reviewPage.info', { count: anomalySummary.bySeverity.INFO })}
                   </span>
                 )}
               </div>
@@ -721,7 +725,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                   disabled={bulkResolving}
                   className="text-xs px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:bg-muted disabled:opacity-50"
                 >
-                  정보 항목 {infoCount}건 일괄 확인
+                  {t('reviewPage.bulkConfirmInfo', { count: infoCount })}
                 </button>
               )}
             </div>
@@ -888,7 +892,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                         {row.currentNet.toLocaleString()}
                       </td>
                       <td className={cn(TABLE_STYLES.cellRight, "text-muted-foreground")}>
-                        {row.previousNet != null ? row.previousNet.toLocaleString() : '신규'}
+                        {row.previousNet != null ? row.previousNet.toLocaleString() : t('reviewPage.newEmployee')}
                       </td>
                       <td className={TABLE_STYLES.cellRight}>
                         {row.previousNet != null ? (
@@ -980,10 +984,10 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
             <div className="p-5 space-y-4">
               <div className="bg-background rounded-xl p-4 space-y-2 text-sm">
                 {[
-                  ['대상 월', run.yearMonth],
-                  ['인원', `${run.headcount ?? 0}명`],
-                  ['총 실수령액', fmt(Number(run.totalNet ?? 0))],
-                  ['수동 조정', `${run.adjustmentCount ?? 0}건`],
+                  [t('reviewPage.summaryMonth'), run.yearMonth],
+                  [t('kr_kec9db8ec'), t('reviewPage.summaryHeadcount', { count: run.headcount ?? 0 })],
+                  [t('netPay'), fmt(Number(run.totalNet ?? 0))],
+                  [t('adjustments'), t('reviewPage.summaryAdjustments', { count: run.adjustmentCount ?? 0 })],
                 ].map(([label, value]) => (
                   <div key={label as string} className="flex justify-between">
                     <span className="text-muted-foreground">{label as string}</span>
@@ -1014,7 +1018,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
                 disabled={submitting}
                 className="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold disabled:opacity-50"
               >
-                {submitting ? '요청 중...' : '승인 요청 발송'}
+                {submitting ? t('reviewPage.requesting') : t('reviewPage.approvalRequestSend')}
               </button>
             </div>
           </div>

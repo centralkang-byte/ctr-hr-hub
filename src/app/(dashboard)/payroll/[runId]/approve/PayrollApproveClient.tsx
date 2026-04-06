@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { toast } from '@/hooks/use-toast'
 
 // ═══════════════════════════════════════════════════════════
@@ -60,27 +60,25 @@ interface ApprovalStatus {
 }
 
 const STEP_STATUS_CONFIG = {
-    APPROVED: { icon: <CheckCircle2 className="h-5 w-5 text-emerald-600" />, bg: 'bg-emerald-500/15', label: '승인' },
-    REJECTED: { icon: <XCircle className="h-5 w-5 text-destructive" />, bg: 'bg-destructive/10', label: '반려' },
-    PENDING: { icon: <Clock className="h-5 w-5 text-amber-500" />, bg: 'bg-amber-500/15', label: '🟡 대기' },
+    APPROVED: { icon: <CheckCircle2 className="h-5 w-5 text-emerald-600" />, bg: 'bg-emerald-500/15', labelKey: 'approvePage.approved' as const },
+    REJECTED: { icon: <XCircle className="h-5 w-5 text-destructive" />, bg: 'bg-destructive/10', labelKey: 'approvePage.rejected' as const },
+    PENDING: { icon: <Clock className="h-5 w-5 text-amber-500" />, bg: 'bg-amber-500/15', labelKey: 'approvePage.pending' as const },
 }
 
-const fmt = (n: number | string | null | undefined) => {
-    if (n == null) return '—'
-    return Number(n).toLocaleString('ko-KR') + '원'
-}
-
-const fmtDate = (d: string | null | undefined) => {
-    if (!d) return '—'
-    return new Date(d).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-}
+// fmt, fmtDate은 컴포넌트 내부에서 t()와 locale을 사용하도록 이동
 
 // ─── Approval Progress Bar ───────────────────────────────
 
 function ApprovalProgressBar({ chain, currentStep }: { chain: ApprovalChainStep[]; currentStep: number }) {
+    const t = useTranslations('payroll')
+    const locale = useLocale()
+    const fmtDate = (d: string | null | undefined) => {
+        if (!d) return '—'
+        return new Date(d).toLocaleString(locale, { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    }
     return (
         <div className={CARD_STYLES.padded}>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">{'결재 진행 현황'}</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">{t('approvePage.progressTitle')}</p>
             <div className="flex items-center gap-0">
                 {chain.map((step, idx) => {
                     const cfg = STEP_STATUS_CONFIG[step.status]
@@ -94,7 +92,7 @@ function ApprovalProgressBar({ chain, currentStep }: { chain: ApprovalChainStep[
                                 <p className="mt-1.5 text-[11px] font-medium text-foreground text-center truncate max-w-20">
                                     {step.approverName ?? step.roleRequired}
                                 </p>
-                                <p className="text-[10px] text-muted-foreground text-center">{cfg.label}</p>
+                                <p className="text-[10px] text-muted-foreground text-center">{t(cfg.labelKey)}</p>
                                 {step.decidedAt && (
                                     <p className="text-[10px] text-muted-foreground">{fmtDate(step.decidedAt)}</p>
                                 )}
@@ -120,7 +118,17 @@ interface Props {
 export default function PayrollApproveClient({ user: _user, runId }: Props) {
   const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
   const { confirm, dialogProps } = useConfirmDialog()
+
+  const fmt = (n: number | string | null | undefined) => {
+      if (n == null) return '—'
+      return t('fmt.amountWon', { n: Number(n).toLocaleString() })
+  }
+  const fmtDate = (d: string | null | undefined) => {
+      if (!d) return '—'
+      return new Date(d).toLocaleString(locale, { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  }
 
     const router = useRouter()
     const [run, setRun] = useState<RunInfo | null>(null)
@@ -140,7 +148,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             setRun(runRes.data)
             setApproval(approvalRes.data)
         } catch (err) {
-            toast({ title: '결재 정보 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+            toast({ title: t('approvePage.loadFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
         } finally {
             setLoading(false)
         }
@@ -159,7 +167,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                 router.push('/payroll')
             }
         } catch (err) {
-            toast({ title: '승인 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+            toast({ title: t('approvePage.approveFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
         } finally {
             setSubmitting(false)
         }
@@ -167,9 +175,9 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
 
     const handleApprove = () => {
         confirm({
-            title: '승인 확인',
-            description: '이 급여 결재를 승인하시겠습니까? 승인 후에는 취소할 수 없습니다.',
-            confirmLabel: '승인',
+            title: t('approvePage.confirmTitle'),
+            description: t('approvePage.confirmDesc'),
+            confirmLabel: t('approvePage.confirmLabel'),
             variant: 'default',
             onConfirm: doApprove,
         })
@@ -182,7 +190,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             await apiClient.post(`/api/v1/payroll/${runId}/reject`, { comment: rejectComment })
             router.push('/approvals/inbox')
         } catch (err) {
-            toast({ title: '반려 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+            toast({ title: t('approvePage.rejectFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
         } finally {
             setSubmitting(false)
             setShowReject(false)
@@ -241,7 +249,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                 {[
                     { label: t('kr_keb8c80ec_kec9db8ec'), value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-primary/90" /> },
                     { label: t('netPay'), value: fmt(Number(run.totalNet ?? 0)), icon: <DollarSign className="h-4 w-4 text-emerald-600" /> },
-                    { label: t('kr_kec9db4ec_ked95adeb'), value: run.allAnomaliesResolved ? '없음 ✅' : '있음 ⚠️', icon: <AlertTriangle className="h-4 w-4 text-amber-500" /> },
+                    { label: t('kr_kec9db4ec_ked95adeb'), value: run.allAnomaliesResolved ? t('approvePage.unresolvedNo') : t('approvePage.unresolvedYes'), icon: <AlertTriangle className="h-4 w-4 text-amber-500" /> },
                     { label: t('adjustments'), value: `${run.adjustmentCount ?? 0}건`, icon: <CheckCircle2 className="h-4 w-4 text-muted-foreground" /> },
                 ].map((kpi) => (
                     <div key={kpi.label} className={CARD_STYLES.padded}>
@@ -280,7 +288,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                                     <div className="flex items-center gap-2">
                                         <p className="text-sm font-medium text-foreground">{step.approverName ?? step.roleRequired}</p>
                                         <span className={`text-xs px-1.5 py-0.5 rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-500/15 text-emerald-700' : 'bg-destructive/10 text-destructive'}`}>
-                                            {STEP_STATUS_CONFIG[step.status].label}
+                                            {t(STEP_STATUS_CONFIG[step.status].labelKey)}
                                         </span>
                                         <span className="text-xs text-muted-foreground">{fmtDate(step.decidedAt)}</span>
                                     </div>
@@ -312,7 +320,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm disabled:opacity-50"
                         >
                             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-                            승인
+                            {t('approvePage.approveButton')}
                         </button>
                         <button
                             onClick={() => setShowReject(true)}
@@ -367,7 +375,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                                 disabled={!rejectComment.trim() || submitting}
                                 className="px-5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold disabled:opacity-50"
                             >
-                                {submitting ? '처리중...' : '반려 확인'}
+                                {submitting ? t('approvePage.processing') : t('approvePage.rejectConfirm')}
                             </button>
                         </div>
                     </div>

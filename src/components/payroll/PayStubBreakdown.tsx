@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { formatCurrency } from '@/lib/compensation'
 import type { PayrollItemDetail } from '@/lib/payroll/types'
 import { ArrowDown, ArrowUp, Minus } from 'lucide-react'
@@ -7,6 +8,29 @@ import { ArrowDown, ArrowUp, Minus } from 'lucide-react'
 interface PayStubBreakdownProps {
   detail: PayrollItemDetail
 }
+
+// ─── Module-scope earning/deduction field configs ───
+const EARNING_FIELDS = [
+  { labelKey: 'basePay', field: 'baseSalary' },
+  { labelKey: 'stub.fixedOT', field: 'fixedOvertimeAllowance' },
+  { labelKey: 'stub.mealAllowance', field: 'mealAllowance' },
+  { labelKey: 'stub.transportAllowance', field: 'transportAllowance' },
+  { labelKey: 'overtimePay', field: 'overtimePay' },
+  { labelKey: 'stub.nightShiftPay', field: 'nightShiftPay' },
+  { labelKey: 'stub.holidayPay', field: 'holidayPay' },
+  { labelKey: 'bonusPay', field: 'bonuses' },
+  { labelKey: 'stub.otherEarnings', field: 'otherEarnings' },
+] as const
+
+const DEDUCTION_FIELDS = [
+  { labelKey: 'nationalPension', field: 'nationalPension' },
+  { labelKey: 'healthInsurance', field: 'healthInsurance' },
+  { labelKey: 'stub.longTermCare', field: 'longTermCare' },
+  { labelKey: 'employmentInsurance', field: 'employmentInsurance' },
+  { labelKey: 'incomeTax', field: 'incomeTax' },
+  { labelKey: 'localTax', field: 'localIncomeTax' },
+  { labelKey: 'stub.otherDeductions', field: 'otherDeductions' },
+] as const
 
 // ─── Change Indicator ───
 function ChangeIndicator({ current, previous }: { current: number; previous?: number }) {
@@ -31,6 +55,7 @@ function ChangeIndicator({ current, previous }: { current: number; previous?: nu
 }
 
 export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
+  const t = useTranslations('payroll')
   const {
     earnings, deductions, overtime, grossPay, totalDeductions, netPay,
     customAllowances, customDeductions, previousMonth,
@@ -43,35 +68,29 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
   const netRatio = grossPay > 0 ? (netPay / grossPay) * 100 : 0
   const deductionRatio = 100 - netRatio
 
-  const earningItems = [
-    { label: '기본급', value: earnings.baseSalary, prev: prevEarnings?.baseSalary },
-    { label: '고정초과근무수당', value: earnings.fixedOvertimeAllowance, prev: prevEarnings?.fixedOvertimeAllowance },
-    { label: '식비', value: earnings.mealAllowance, prev: prevEarnings?.mealAllowance },
-    { label: '교통비', value: earnings.transportAllowance, prev: prevEarnings?.transportAllowance },
-    { label: '연장근무수당', value: earnings.overtimePay, prev: prevEarnings?.overtimePay },
-    { label: '야간근무수당', value: earnings.nightShiftPay, prev: prevEarnings?.nightShiftPay },
-    { label: '휴일근무수당', value: earnings.holidayPay, prev: prevEarnings?.holidayPay },
-    { label: '상여금', value: earnings.bonuses, prev: prevEarnings?.bonuses },
-    { label: '기타수당', value: earnings.otherEarnings, prev: prevEarnings?.otherEarnings },
-  ].filter((i) => i.value > 0)
+  const earningItems = EARNING_FIELDS
+    .map((f) => ({
+      labelKey: f.labelKey,
+      value: (earnings as unknown as Record<string, number>)[f.field] ?? 0,
+      prev: prevEarnings ? (prevEarnings as unknown as Record<string, number>)[f.field] : undefined,
+    }))
+    .filter((i) => i.value > 0)
 
-  const deductionItems = [
-    { label: '국민연금', value: deductions.nationalPension, prev: prevDeductions?.nationalPension },
-    { label: '건강보험', value: deductions.healthInsurance, prev: prevDeductions?.healthInsurance },
-    { label: '장기요양보험', value: deductions.longTermCare, prev: prevDeductions?.longTermCare },
-    { label: '고용보험', value: deductions.employmentInsurance, prev: prevDeductions?.employmentInsurance },
-    { label: '소득세', value: deductions.incomeTax, prev: prevDeductions?.incomeTax },
-    { label: '지방소득세', value: deductions.localIncomeTax, prev: prevDeductions?.localIncomeTax },
-    { label: '기타공제', value: deductions.otherDeductions, prev: prevDeductions?.otherDeductions },
-  ].filter((i) => i.value > 0)
+  const deductionItems = DEDUCTION_FIELDS
+    .map((f) => ({
+      labelKey: f.labelKey,
+      value: (deductions as unknown as Record<string, number>)[f.field] ?? 0,
+      prev: prevDeductions ? (prevDeductions as unknown as Record<string, number>)[f.field] : undefined,
+    }))
+    .filter((i) => i.value > 0)
 
   return (
     <div className="space-y-6">
       {/* 실수령/공제 비율 바 */}
       <div>
         <div className="flex justify-between text-xs text-muted-foreground mb-1">
-          <span>실수령 {netRatio.toFixed(1)}%</span>
-          <span>공제 {deductionRatio.toFixed(1)}%</span>
+          <span>{t('stub.netPayRatio', { pct: netRatio.toFixed(1) })}</span>
+          <span>{t('stub.deductionRatio', { pct: deductionRatio.toFixed(1) })}</span>
         </div>
         <div className="h-3 rounded-full bg-border overflow-hidden flex">
           <div
@@ -87,14 +106,14 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
 
       {/* 실수령액 + 전월비교 */}
       <div className="text-center py-4 bg-primary/10 rounded-xl">
-        <p className="text-xs text-primary mb-1">실수령액</p>
+        <p className="text-xs text-primary mb-1">{t('netPay')}</p>
         <p className="text-3xl font-bold text-primary/90">
           {formatCurrency(netPay)}
           <ChangeIndicator current={netPay} previous={previousMonth?.netPay} />
         </p>
         {previousMonth && (
           <p className="text-xs text-muted-foreground mt-1">
-            전월 {formatCurrency(previousMonth.netPay)}
+            {t('stub.previousMonth', { amount: formatCurrency(previousMonth.netPay) })}
           </p>
         )}
       </div>
@@ -103,12 +122,12 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
         {/* 지급항목 */}
         <div>
           <h4 className="text-sm font-semibold text-foreground mb-3 pb-2 border-b border-border">
-            지급항목
+            {t('stub.earnings')}
           </h4>
           <div className="space-y-2">
             {earningItems.map((item) => (
-              <div key={item.label} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{item.label}</span>
+              <div key={item.labelKey} className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{t(item.labelKey)}</span>
                 <span className="font-medium text-foreground">
                   {formatCurrency(item.value)}
                   <ChangeIndicator current={item.value} previous={item.prev} />
@@ -120,7 +139,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
             {customAllowances && customAllowances.length > 0 && (
               <>
                 <div className="border-t border-dashed border-border pt-2 mt-2">
-                  <p className="text-xs text-muted-foreground mb-1.5">추가 수당</p>
+                  <p className="text-xs text-muted-foreground mb-1.5">{t('stub.customAllowance')}</p>
                 </div>
                 {customAllowances.map((item) => (
                   <div key={item.code} className="flex justify-between text-sm">
@@ -128,7 +147,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
                       {item.name}
                       {item.isTaxExempt && (
                         <span className="inline-flex items-center px-1 py-0 rounded text-[10px] bg-emerald-500/15 text-emerald-600 border border-emerald-200">
-                          비과세
+                          {t('stub.taxExempt')}
                         </span>
                       )}
                     </span>
@@ -141,7 +160,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
             )}
 
             <div className="flex justify-between text-sm font-semibold pt-2 border-t border-border">
-              <span className="text-foreground">총 지급액</span>
+              <span className="text-foreground">{t('grossPay')}</span>
               <span className="text-emerald-600">
                 {formatCurrency(grossPay)}
                 <ChangeIndicator current={grossPay} previous={previousMonth?.grossPay} />
@@ -153,12 +172,12 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
         {/* 공제항목 */}
         <div>
           <h4 className="text-sm font-semibold text-foreground mb-3 pb-2 border-b border-border">
-            공제항목
+            {t('stub.deductions')}
           </h4>
           <div className="space-y-2">
             {deductionItems.map((item) => (
-              <div key={item.label} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{item.label}</span>
+              <div key={item.labelKey} className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{t(item.labelKey)}</span>
                 <span className="font-medium text-destructive">
                   -{formatCurrency(item.value)}
                 </span>
@@ -169,14 +188,14 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
             {customDeductions && customDeductions.length > 0 && (
               <>
                 <div className="border-t border-dashed border-border pt-2 mt-2">
-                  <p className="text-xs text-muted-foreground mb-1.5">추가 공제</p>
+                  <p className="text-xs text-muted-foreground mb-1.5">{t('stub.customDeduction')}</p>
                 </div>
                 {customDeductions.map((item) => (
                   <div key={item.code} className="flex justify-between text-sm">
                     <span className="text-muted-foreground">
                       {item.name}
                       <span className="text-[10px] text-muted-foreground ml-1">
-                        ({item.category === 'STATUTORY' ? '법정' : '선택'})
+                        ({item.category === 'STATUTORY' ? t('stub.statutory') : t('stub.voluntary')})
                       </span>
                     </span>
                     <span className="font-medium text-destructive">
@@ -188,7 +207,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
             )}
 
             <div className="flex justify-between text-sm font-semibold pt-2 border-t border-border">
-              <span className="text-foreground">총 공제액</span>
+              <span className="text-foreground">{t('deductions')}</span>
               <span className="text-destructive">
                 -{formatCurrency(totalDeductions)}
                 <ChangeIndicator current={totalDeductions} previous={previousMonth?.totalDeductions} />
@@ -202,40 +221,40 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
       {overtime.totalOvertimeHours > 0 && (
         <div>
           <h4 className="text-sm font-semibold text-foreground mb-3 pb-2 border-b border-border">
-            초과근무 상세
+            {t('stub.overtimeDetail')}
           </h4>
           <div className="bg-background rounded-lg p-4 space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">통상시급</span>
+              <span className="text-muted-foreground">{t('stub.hourlyWage')}</span>
               <span className="font-medium">{formatCurrency(overtime.hourlyWage)}</span>
             </div>
             {overtime.weekdayOTHours > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">평일 연장 (×1.5)</span>
-                <span className="font-medium">{overtime.weekdayOTHours}시간</span>
+                <span className="text-muted-foreground">{t('stub.weekdayOT')}</span>
+                <span className="font-medium">{t('format.hours', { n: overtime.weekdayOTHours })}</span>
               </div>
             )}
             {overtime.weekendHours > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">휴일근로 (×1.5)</span>
-                <span className="font-medium">{overtime.weekendHours}시간</span>
+                <span className="text-muted-foreground">{t('stub.weekendWork')}</span>
+                <span className="font-medium">{t('format.hours', { n: overtime.weekendHours })}</span>
               </div>
             )}
             {overtime.holidayHours > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">공휴일근로 (×2.0)</span>
-                <span className="font-medium">{overtime.holidayHours}시간</span>
+                <span className="text-muted-foreground">{t('stub.holidayWork')}</span>
+                <span className="font-medium">{t('format.hours', { n: overtime.holidayHours })}</span>
               </div>
             )}
             {overtime.nightHours > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">야간근로 (×0.5)</span>
-                <span className="font-medium">{overtime.nightHours}시간</span>
+                <span className="text-muted-foreground">{t('stub.nightWork')}</span>
+                <span className="font-medium">{t('format.hours', { n: overtime.nightHours })}</span>
               </div>
             )}
             <div className="flex justify-between text-sm font-semibold pt-2 border-t border-border">
-              <span>합계</span>
-              <span>{overtime.totalOvertimeHours}시간</span>
+              <span>{t('stub.totalHours')}</span>
+              <span>{t('format.hours', { n: overtime.totalOvertimeHours })}</span>
             </div>
           </div>
         </div>
