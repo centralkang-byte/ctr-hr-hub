@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 
@@ -64,37 +64,57 @@ interface Props {
     user: SessionUser
 }
 
-const ADJUSTMENT_TYPE_LABELS: Record<string, { label: string; color: string; bg: string }> = {
-    RETROACTIVE: { label: '소급 지급', color: '#047857', bg: '#D1FAE5' },
-    BONUS: { label: '보너스', color: '#1D4ED8', bg: '#DBEAFE' },
-    CORRECTION: { label: '정상', color: '#B45309', bg: '#FEF3C7' },
-    DEDUCTION: { label: '공제합계', color: '#DC2626', bg: '#FEE2E2' },
-    OTHER: { label: '기타', color: '#6B7280', bg: '#F3F4F6' },
+const ADJUSTMENT_TYPE_LABEL_KEYS: Record<string, string> = {
+    RETROACTIVE: 'adj.typeRetroactive',
+    BONUS: 'adj.typeBonus',
+    CORRECTION: 'adj.typeRegular',
+    DEDUCTION: 'adj.typeDeduction',
+    OTHER: 'adj.typeOther',
 }
 
-const CATEGORIES = ['기본급', '초과근무수당', '식대', '교통비', '직책수당', '상여금', '복리후생', '기타']
-
-function TypeBadge({ type }: { type: string }) {
-    const info = ADJUSTMENT_TYPE_LABELS[type] ?? ADJUSTMENT_TYPE_LABELS.OTHER
-    return (
-        <span
-            className="inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold"
-            style={{ color: info.color, background: info.bg }}
-        >
-            {info.label}
-        </span>
-    )
+const ADJUSTMENT_TYPE_COLORS: Record<string, { color: string; bg: string }> = {
+    RETROACTIVE: { color: '#047857', bg: '#D1FAE5' },
+    BONUS: { color: '#1D4ED8', bg: '#DBEAFE' },
+    CORRECTION: { color: '#B45309', bg: '#FEF3C7' },
+    DEDUCTION: { color: '#DC2626', bg: '#FEE2E2' },
+    OTHER: { color: '#6B7280', bg: '#F3F4F6' },
 }
 
-function formatKRW(amount: number) {
-    const abs = Math.abs(amount)
-    const sign = amount >= 0 ? '+' : '−'
-    return `${sign}${abs.toLocaleString('ko-KR')}원`
+const CATEGORIES = [
+    { value: 'BASE_PAY', labelKey: 'adj.categoryBasePay' },
+    { value: 'OVERTIME_PAY', labelKey: 'adj.categoryOvertimePay' },
+    { value: 'MEAL_ALLOWANCE', labelKey: 'adj.categoryMealAllowance' },
+    { value: 'TRANSPORT_ALLOWANCE', labelKey: 'adj.categoryTransportAllowance' },
+    { value: 'POSITION_ALLOWANCE', labelKey: 'adj.categoryPositionAllowance' },
+    { value: 'BONUS', labelKey: 'adj.categoryBonus' },
+    { value: 'BENEFITS', labelKey: 'adj.categoryBenefits' },
+    { value: 'OTHER', labelKey: 'adj.categoryOther' },
+]
+
+const CATEGORY_DISPLAY_KEYS: Record<string, string> = {
+    'BASE_PAY': 'adj.categoryBasePay',
+    'OVERTIME_PAY': 'adj.categoryOvertimePay',
+    'MEAL_ALLOWANCE': 'adj.categoryMealAllowance',
+    'TRANSPORT_ALLOWANCE': 'adj.categoryTransportAllowance',
+    'POSITION_ALLOWANCE': 'adj.categoryPositionAllowance',
+    'BONUS': 'adj.categoryBonus',
+    'BENEFITS': 'adj.categoryBenefits',
+    'OTHER': 'adj.categoryOther',
+    // Legacy Korean values for backwards compat during migration
+    '기본급': 'adj.categoryBasePay',
+    '초과근무수당': 'adj.categoryOvertimePay',
+    '식대': 'adj.categoryMealAllowance',
+    '교통비': 'adj.categoryTransportAllowance',
+    '직책수당': 'adj.categoryPositionAllowance',
+    '상여금': 'adj.categoryBonus',
+    '복리후생': 'adj.categoryBenefits',
+    '기타': 'adj.categoryOther',
 }
 
 export default function AdjustmentsClient({user }: Props) {
   const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
   const { confirm, dialogProps } = useConfirmDialog()
 
     const [runs, setRuns] = useState<PayrollRun[]>([])
@@ -113,11 +133,17 @@ export default function AdjustmentsClient({user }: Props) {
     const [form, setForm] = useState({
         employeeId: '',
         type: 'BONUS' as Adjustment['type'],
-        category: t('baseSalary'),
+        category: 'BASE_PAY',
         description: '',
         amount: '',
         evidenceUrl: '',
     })
+
+    const formatKRW = (amount: number) => {
+        const abs = Math.abs(amount)
+        const sign = amount >= 0 ? '+' : '−'
+        return `${sign}${abs.toLocaleString(locale)}${t('adj.currencyUnit')}`
+    }
 
     // PayrollRun 목록 로드 (ADJUSTMENT 상태)
     const loadRuns = useCallback(async () => {
@@ -179,12 +205,12 @@ export default function AdjustmentsClient({user }: Props) {
             })
             if (res.ok) {
                 setShowForm(false)
-                setForm({ employeeId: '', type: 'BONUS', category: t('baseSalary'), description: '', amount: '', evidenceUrl: '' })
+                setForm({ employeeId: '', type: 'BONUS', category: 'BASE_PAY', description: '', amount: '', evidenceUrl: '' })
                 await loadAdjustments(selectedRun.id)
                 await loadRuns()
             } else {
                 const err = await res.json()
-                toast({ title: err.error?.message ?? '조정 추가 중 오류가 발생했습니다.', variant: 'destructive' })
+                toast({ title: err.error?.message ?? t('adj.errorAddingAdjustment'), variant: 'destructive' })
             }
         } finally {
             setSubmitting(false)
@@ -193,7 +219,7 @@ export default function AdjustmentsClient({user }: Props) {
 
     const handleDelete = async (adjustmentId: string) => {
         if (!selectedRun) return
-        confirm({ variant: 'destructive', title: t('kr_kec9db4_keca1b0ec_ked95adeb_ke'), onConfirm: async () => {
+        confirm({ variant: 'destructive', title: t('adj.confirmDelete'), onConfirm: async () => {
             const res = await fetch(`/api/v1/payroll/${selectedRun.id}/adjustments/${adjustmentId}`, {
                 method: 'DELETE',
             })
@@ -206,7 +232,7 @@ export default function AdjustmentsClient({user }: Props) {
 
     const handleComplete = async () => {
         if (!selectedRun) return
-        confirm({ title: t('kr_keca1b0ec_kec9984eb_kec9db4ec_'), onConfirm: async () => {
+        confirm({ title: t('adj.confirmComplete'), onConfirm: async () => {
             setCompleting(true)
             try {
                 const res = await fetch(`/api/v1/payroll/${selectedRun.id}/adjustments/complete`, {
@@ -214,12 +240,12 @@ export default function AdjustmentsClient({user }: Props) {
                 })
                 if (res.ok) {
                     const json = await res.json()
-                    toast({ title: `이상 검토로 전환 완료.\n이상 항목: ${json.data?.anomalyCount ?? 0}건` })
+                    toast({ title: t('adj.completeSuccess', { count: json.data?.anomalyCount ?? 0 }) })
                     setSelectedRun(null)
                     await loadRuns()
                 } else {
                     const err = await res.json()
-                toast({ title: err.error?.message ?? '오류가 발생했습니다.', variant: 'destructive' })
+                toast({ title: err.error?.message ?? t('adj.errorGeneral'), variant: 'destructive' })
             }
         } finally {
             setCompleting(false)
@@ -241,9 +267,9 @@ export default function AdjustmentsClient({user }: Props) {
         <div className="p-6 bg-background min-h-screen">
             {/* Header */}
             <div className="mb-6">
-                <nav className="text-xs text-muted-foreground mb-1">{t('kr_keab889ec_kec8898eb_keca1b0ec')}</nav>
+                <nav className="text-xs text-muted-foreground mb-1">{t('adj.breadcrumb')}</nav>
                 <h1 className="text-2xl font-bold text-foreground tracking-tight">{t('adjustmentsTitle')}</h1>
-                <p className="text-sm text-muted-foreground mt-0.5">{t('kr_kec868cea_keca780ea_kebb3b4eb_')}</p>
+                <p className="text-sm text-muted-foreground mt-0.5">{t('adj.subtitle')}</p>
             </div>
 
             <div className="flex gap-5">
@@ -251,7 +277,7 @@ export default function AdjustmentsClient({user }: Props) {
                 <div className="w-72 flex-shrink-0">
                     <div className="bg-card rounded-xl border border-border overflow-hidden">
                         <div className="px-4 py-3 border-b border-border">
-                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('kr_keca1b0ec_keb8c80ea_keab889ec')}</p>
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('adj.targetRunList')}</p>
                         </div>
                         <div className="divide-y divide-border">
                             {runs.length === 0 ? (
@@ -268,7 +294,7 @@ export default function AdjustmentsClient({user }: Props) {
                                             }`}
                                     >
                                         <p className="text-sm font-semibold text-foreground">{run.yearMonth}</p>
-                                        <p className="text-xs text-muted-foreground mt-0.5">조정 {run.adjustmentCount}건</p>
+                                        <p className="text-xs text-muted-foreground mt-0.5">{t('adj.adjustmentCount', { count: run.adjustmentCount })}</p>
                                     </button>
                                 ))
                             )}
@@ -282,7 +308,7 @@ export default function AdjustmentsClient({user }: Props) {
                         <div className="bg-card rounded-xl border border-border flex items-center justify-center h-64">
                             <div className="text-center">
                                 <FileText size={32} className="text-border mx-auto mb-3" />
-                                <p className="text-muted-foreground">{t('kr_keab889ec_kec8ba4ed_kec84a0ed')}</p>
+                                <p className="text-muted-foreground">{t('adj.selectRunPrompt')}</p>
                             </div>
                         </div>
                     ) : (
@@ -291,19 +317,19 @@ export default function AdjustmentsClient({user }: Props) {
                             {summary && (
                                 <div className="grid grid-cols-3 gap-4 mb-4">
                                     <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-                                        <p className="text-xs text-muted-foreground mb-1">{t('add_ked95a9ea')}</p>
+                                        <p className="text-xs text-muted-foreground mb-1">{t('adj.totalAdd')}</p>
                                         <p className="text-xl font-bold text-emerald-600">
-                                            +{summary.totalAdd.toLocaleString()}원
+                                            +{summary.totalAdd.toLocaleString(locale)}{t('adj.currencyUnit')}
                                         </p>
                                     </div>
                                     <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-                                        <p className="text-xs text-muted-foreground mb-1">{t('kr_keab3b5ec_ked95a9ea')}</p>
+                                        <p className="text-xs text-muted-foreground mb-1">{t('adj.totalDeduct')}</p>
                                         <p className="text-xl font-bold text-red-500">
-                                            −{summary.totalDeduct.toLocaleString()}원
+                                            −{summary.totalDeduct.toLocaleString(locale)}{t('adj.currencyUnit')}
                                         </p>
                                     </div>
                                     <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-                                        <p className="text-xs text-muted-foreground mb-1">{t('kr_kec889c_keca1b0ec')}</p>
+                                        <p className="text-xs text-muted-foreground mb-1">{t('adj.netAdjustment')}</p>
                                         <p className={`text-xl font-bold ${summary.netAdjustment >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                                             {formatKRW(summary.netAdjustment)}
                                         </p>
@@ -333,9 +359,9 @@ export default function AdjustmentsClient({user }: Props) {
                                             onChange={(e) => setFilterType(e.target.value)}
                                             className="pl-8 pr-6 py-2 border border-border rounded-lg text-sm bg-card appearance-none focus:border-primary"
                                         >
-                                            <option value="ALL">{t('all_kec9ca0ed')}</option>
-                                            {Object.entries(ADJUSTMENT_TYPE_LABELS).map(([k, v]) => (
-                                                <option key={k} value={k}>{v.label}</option>
+                                            <option value="ALL">{t('adj.allTypes')}</option>
+                                            {Object.entries(ADJUSTMENT_TYPE_LABEL_KEYS).map(([k, labelKey]) => (
+                                                <option key={k} value={k}>{t(labelKey)}</option>
                                             ))}
                                         </select>
                                         <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
@@ -347,7 +373,7 @@ export default function AdjustmentsClient({user }: Props) {
                                         className={`flex items-center gap-1.5 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-semibold transition-colors`}
                                     >
                                         <Plus size={15} />
-                                        {t('kr_keca1b0ec_add')}
+                                        {t('adj.addAdjustment')}
                                     </button>
                                     <button
                                         onClick={handleComplete}
@@ -355,7 +381,7 @@ export default function AdjustmentsClient({user }: Props) {
                                         className="flex items-center gap-1.5 px-4 py-2 border border-border hover:bg-muted text-foreground rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                                     >
                                         <ArrowRight size={15} />
-                                        {completing ? t('processing') : '이상 검토로 전환'}
+                                        {completing ? t('processing') : t('adj.switchToReview')}
                                     </button>
                                 </div>
                             </div>
@@ -374,27 +400,34 @@ export default function AdjustmentsClient({user }: Props) {
                                         <table className={TABLE_STYLES.table}>
                                             <thead>
                                                 <tr className={TABLE_STYLES.header}>
-                                                    <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
-                                                    <th className={TABLE_STYLES.headerCell}>{t('kr_kec9ca0ed')}</th>
-                                                    <th className={TABLE_STYLES.headerCell}>{t('kr_kecb9b4ed')}</th>
+                                                    <th className={TABLE_STYLES.headerCell}>{t('adj.colEmployee')}</th>
+                                                    <th className={TABLE_STYLES.headerCell}>{t('adj.colType')}</th>
+                                                    <th className={TABLE_STYLES.headerCell}>{t('adj.colCategory')}</th>
                                                     <th className={TABLE_STYLES.headerCell}>{t('description')}</th>
                                                     <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('amount')}</th>
-                                                    <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('kr_keca69deb')}</th>
+                                                    <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('adj.colEvidence')}</th>
                                                     <th className={TABLE_STYLES.headerCell} />
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {filteredAdj.map((adj) => (
+                                                {filteredAdj.map((adj) => {
+                                                    const typeColors = ADJUSTMENT_TYPE_COLORS[adj.type] ?? ADJUSTMENT_TYPE_COLORS.OTHER
+                                                    return (
                                                     <tr key={adj.id} className={cn(TABLE_STYLES.row, "group")}>
                                                         <td className={TABLE_STYLES.cell}>
                                                             <p className="font-medium text-foreground">{adj.employee.name}</p>
                                                             <p className="text-xs text-muted-foreground">{adj.employee.email}</p>
                                                         </td>
                                                         <td className={TABLE_STYLES.cell}>
-                                                            <TypeBadge type={adj.type} />
+                                                            <span
+                                                                className="inline-flex px-2 py-0.5 rounded-full text-[11px] font-semibold"
+                                                                style={{ color: typeColors.color, background: typeColors.bg }}
+                                                            >
+                                                                {t(ADJUSTMENT_TYPE_LABEL_KEYS[adj.type] ?? 'adj.typeOther')}
+                                                            </span>
                                                         </td>
                                                         <td className={TABLE_STYLES.cell}>
-                                                            <span className="text-muted-foreground">{adj.category}</span>
+                                                            <span className="text-muted-foreground">{t(CATEGORY_DISPLAY_KEYS[adj.category] ?? 'adj.categoryOther')}</span>
                                                         </td>
                                                         <td className={TABLE_STYLES.cell}>
                                                             <span className="text-foreground line-clamp-1">{adj.description}</span>
@@ -413,7 +446,7 @@ export default function AdjustmentsClient({user }: Props) {
                                                                     className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
                                                                 >
                                                                     <Upload size={11} />
-                                                                    {t('kr_ked8c8cec')}
+                                                                    {t('adj.viewFile')}
                                                                 </a>
                                                             ) : (
                                                                 <span className="text-xs text-border">—</span>
@@ -428,7 +461,8 @@ export default function AdjustmentsClient({user }: Props) {
                                                             </button>
                                                         </td>
                                                     </tr>
-                                                ))}
+                                                    )
+                                                })}
                                             </tbody>
                                         </table>
                                     </div>
@@ -444,7 +478,7 @@ export default function AdjustmentsClient({user }: Props) {
                 <div className={MODAL_STYLES.container}>
                     <div className="bg-card rounded-xl shadow-lg max-w-lg w-full mx-4 overflow-hidden">
                         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-                            <h2 className="text-lg font-bold text-foreground">{t('kr_keca1b0ec_add')}</h2>
+                            <h2 className="text-lg font-bold text-foreground">{t('adj.addAdjustment')}</h2>
                             <button onClick={() => setShowForm(false)} className="p-1 hover:bg-muted rounded-lg">
                                 <XCircle size={20} className="text-muted-foreground" />
                             </button>
@@ -452,7 +486,7 @@ export default function AdjustmentsClient({user }: Props) {
                         <form ref={formRef} onSubmit={handleCreate} className="px-6 py-5 space-y-4">
                             {/* Employee */}
                             <div>
-                                <label className="block text-xs font-semibold text-[#444] mb-1.5">{t('kr_keb8c80ec_keca781ec')}</label>
+                                <label className="block text-xs font-semibold text-[#444] mb-1.5">{t('adj.targetEmployee')}</label>
                                 <div className="relative">
                                     <select
                                         value={form.employeeId}
@@ -460,7 +494,7 @@ export default function AdjustmentsClient({user }: Props) {
                                         required
                                         className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 appearance-none"
                                     >
-                                        <option value="">{t('kr_keca781ec_kec84a0ed')}</option>
+                                        <option value="">{t('adj.selectEmployee')}</option>
                                         {employees.map((e) => (
                                             <option key={e.id} value={e.id}>{e.name} ({e.email})</option>
                                         ))}
@@ -472,29 +506,29 @@ export default function AdjustmentsClient({user }: Props) {
                             {/* Type + Category row */}
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-xs font-semibold text-[#444] mb-1.5">유형 *</label>
+                                    <label className="block text-xs font-semibold text-[#444] mb-1.5">{t('adj.typeLabel')}</label>
                                     <div className="relative">
                                         <select
                                             value={form.type}
                                             onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as Adjustment['type'] }))}
                                             className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary appearance-none"
                                         >
-                                            {Object.entries(ADJUSTMENT_TYPE_LABELS).map(([k, v]) => (
-                                                <option key={k} value={k}>{v.label}</option>
+                                            {Object.entries(ADJUSTMENT_TYPE_LABEL_KEYS).map(([k, labelKey]) => (
+                                                <option key={k} value={k}>{t(labelKey)}</option>
                                             ))}
                                         </select>
                                         <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-[#444] mb-1.5">{t('kr_keab889ec_ked95adeb')}</label>
+                                    <label className="block text-xs font-semibold text-[#444] mb-1.5">{t('adj.categoryLabel')}</label>
                                     <div className="relative">
                                         <select
                                             value={form.category}
                                             onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
                                             className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary appearance-none"
                                         >
-                                            {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                                            {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{t(c.labelKey)}</option>)}
                                         </select>
                                         <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                                     </div>
@@ -505,21 +539,21 @@ export default function AdjustmentsClient({user }: Props) {
                             <div>
                                 <label className="block text-xs font-semibold text-[#444] mb-1.5">
                                     {t('amount_krw')}
-                                    <span className="font-normal text-muted-foreground ml-1">{t('kr_kec9691ec_add_kec9d8cec_keab3b')}</span>
+                                    <span className="font-normal text-muted-foreground ml-1">{t('adj.amountHint')}</span>
                                 </label>
                                 <input
                                     type="number"
                                     value={form.amount}
                                     onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
                                     required
-                                    placeholder="예: 500000 또는 -200000"
+                                    placeholder={t('adj.exampleAmount')}
                                     className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10"
                                 />
                             </div>
 
                             {/* Description */}
                             <div>
-                                <label className="block text-xs font-semibold text-[#444] mb-1.5">{t('kr_kec82acec_description')}</label>
+                                <label className="block text-xs font-semibold text-[#444] mb-1.5">{t('adj.reasonLabel')}</label>
                                 <textarea
                                     value={form.description}
                                     onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
@@ -533,8 +567,8 @@ export default function AdjustmentsClient({user }: Props) {
                             {/* Evidence URL */}
                             <div>
                                 <label className="block text-xs font-semibold text-[#444] mb-1.5">
-                                    {t('kr_keca69deb_url')}
-                                    <span className="font-normal text-muted-foreground ml-1">{t('kr_kec84a0ed')}</span>
+                                    {t('adj.evidenceUrlLabel')}
+                                    <span className="font-normal text-muted-foreground ml-1">{t('adj.optional')}</span>
                                 </label>
                                 <input
                                     type="url"
@@ -559,7 +593,7 @@ export default function AdjustmentsClient({user }: Props) {
                                     disabled={submitting}
                                     className={`flex items-center gap-1.5 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-semibold disabled:opacity-50`}
                                 >
-                                    {submitting ? '저장 중...' : (
+                                    {submitting ? tCommon('saving') : (
                                         <>
                                             <CheckCircle2 size={14} />
                                             {t('save')}

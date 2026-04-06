@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Loader2, AlertCircle, TrendingDown, TrendingUp } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine, Cell } from 'recharts'
 import { apiClient } from '@/lib/api'
@@ -42,6 +42,7 @@ const BUCKET_COLORS: Record<string, string> = {
 export default function CompaRatioTab({ companies }: Props) {
   const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
 
   const [selectedCompanyId, setSelectedCompanyId] = useState('')
   const [loading, setLoading] = useState(true)
@@ -249,10 +250,10 @@ export default function CompaRatioTab({ companies }: Props) {
                       {o.compaRatio.toFixed(3)}
                     </td>
                     <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>
-                      {o.salary.toLocaleString('ko-KR')} {o.currency}
+                      {o.salary.toLocaleString(locale)} {o.currency}
                     </td>
                     <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-muted-foreground text-xs')}>
-                      {o.bandMin.toLocaleString('ko-KR')} ~ {o.bandMax.toLocaleString('ko-KR')}
+                      {o.bandMin.toLocaleString(locale)} ~ {o.bandMax.toLocaleString(locale)}
                     </td>
                     <td className={TABLE_STYLES.cell}>
                       <span className={cn(

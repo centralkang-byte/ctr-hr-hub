@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { X, GitCompareArrows } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import type { ScenarioDetail, SaveableMode } from './types'
@@ -19,20 +19,7 @@ interface Props {
   onClose: () => void
 }
 
-// ─── Formatters ─────────────────────────────────────────────
-
-const fmtKRW = (n: number) => `₩${Math.abs(n).toLocaleString('ko-KR')}`
-const signedKRW = (n: number) => n === 0 ? '₩0' : `${n > 0 ? '+' : '-'}${fmtKRW(n)}`
-const pctStr = (r: number) => `${r >= 0 ? '+' : ''}${(r * 100).toFixed(1)}%`
-const fmtDate = (d: string) => new Date(d).toLocaleDateString('ko-KR', {
-  year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
-})
-
-function diffColor(n: number) {
-  if (n > 0) return 'text-primary'
-  if (n < 0) return 'text-destructive'
-  return 'text-muted-foreground'
-}
+import { fmtKRW, signedKRW, pctStr, diffColor } from './formatters'
 
 const MODE_LABEL_KEYS: Record<SaveableMode, string> = {
   SINGLE: 'simModeSingle',
@@ -52,11 +39,11 @@ interface CompareRow {
   bold?: boolean
 }
 
-function CompareTable({ rows, headers }: { rows: CompareRow[]; headers: { item: string; scenarioA: string; scenarioB: string; diff: string } }) {
+function CompareTable({ rows, headers, locale }: { rows: CompareRow[]; headers: { item: string; scenarioA: string; scenarioB: string; diff: string }; locale: string }) {
   const fmt = (n: number, f?: string) => {
     if (f === 'pct') return pctStr(n)
-    if (f === 'count') return n.toLocaleString('ko-KR')
-    return fmtKRW(n)
+    if (f === 'count') return n.toLocaleString(locale)
+    return fmtKRW(n, locale)
   }
 
   return (
@@ -79,7 +66,7 @@ function CompareTable({ rows, headers }: { rows: CompareRow[]; headers: { item: 
                 <td className={cn(TABLE_STYLES.cell, 'text-right font-mono tabular-nums')}>{fmt(r.leftVal, r.format)}</td>
                 <td className={cn(TABLE_STYLES.cell, 'text-right font-mono tabular-nums')}>{fmt(r.rightVal, r.format)}</td>
                 <td className={cn(TABLE_STYLES.cell, 'text-right font-mono tabular-nums', diffColor(diff))}>
-                  {r.format === 'pct' ? pctStr(diff) : r.format === 'count' ? diff.toLocaleString('ko-KR') : signedKRW(diff)}
+                  {r.format === 'pct' ? pctStr(diff) : r.format === 'count' ? diff.toLocaleString(locale) : signedKRW(diff, locale)}
                 </td>
               </tr>
             )
@@ -94,6 +81,7 @@ function CompareTable({ rows, headers }: { rows: CompareRow[]; headers: { item: 
 
 function CompareSingleBulk({ left, right, headers }: { left: ScenarioDetail; right: ScenarioDetail; headers: { item: string; scenarioA: string; scenarioB: string; diff: string } }) {
   const t = useTranslations('payroll')
+  const locale = useLocale()
   const lTotals = (left.results as { summary?: { totals?: Record<string, number> } })?.summary?.totals ?? {}
   const rTotals = (right.results as { summary?: { totals?: Record<string, number> } })?.summary?.totals ?? {}
 
@@ -106,11 +94,12 @@ function CompareSingleBulk({ left, right, headers }: { left: ScenarioDetail; rig
     { label: t('simCompareDiffNet'), leftVal: lTotals.netDifference ?? 0, rightVal: rTotals.netDifference ?? 0 },
   ]
 
-  return <CompareTable rows={rows} headers={headers} />
+  return <CompareTable rows={rows} headers={headers} locale={locale} />
 }
 
 function CompareDifferential({ left, right, headers }: { left: ScenarioDetail; right: ScenarioDetail; headers: { item: string; scenarioA: string; scenarioB: string; diff: string } }) {
   const t = useTranslations('payroll')
+  const locale = useLocale()
   const lSummary = (left.results as { summary?: Record<string, unknown> })?.summary ?? {}
   const rSummary = (right.results as { summary?: Record<string, unknown> })?.summary ?? {}
   const lTotals = (lSummary.totals ?? {}) as Record<string, number>
@@ -135,11 +124,11 @@ function CompareDifferential({ left, right, headers }: { left: ScenarioDetail; r
 
   return (
     <div className="space-y-4">
-      <CompareTable rows={topRows} headers={headers} />
+      <CompareTable rows={topRows} headers={headers} locale={locale} />
       {gradeRows.length > 0 && (
         <>
           <h4 className="text-sm font-semibold text-foreground mt-4">{t('simCompareGradeCostTitle')}</h4>
-          <CompareTable rows={gradeRows} headers={headers} />
+          <CompareTable rows={gradeRows} headers={headers} locale={locale} />
         </>
       )}
     </div>
@@ -148,6 +137,7 @@ function CompareDifferential({ left, right, headers }: { left: ScenarioDetail; r
 
 function CompareHiring({ left, right, headers }: { left: ScenarioDetail; right: ScenarioDetail; headers: { item: string; scenarioA: string; scenarioB: string; diff: string } }) {
   const t = useTranslations('payroll')
+  const locale = useLocale()
   const lSummary = (left.results as { summary?: Record<string, number> })?.summary ?? {}
   const rSummary = (right.results as { summary?: Record<string, number> })?.summary ?? {}
 
@@ -159,11 +149,12 @@ function CompareHiring({ left, right, headers }: { left: ScenarioDetail; right: 
     { label: t('simCompareNewHireCount'), leftVal: (lSummary as Record<string, number>).newHireCount ?? 0, rightVal: (rSummary as Record<string, number>).newHireCount ?? 0, format: 'count' },
   ]
 
-  return <CompareTable rows={rows} headers={headers} />
+  return <CompareTable rows={rows} headers={headers} locale={locale} />
 }
 
 function CompareFx({ left, right, headers }: { left: ScenarioDetail; right: ScenarioDetail; headers: { item: string; scenarioA: string; scenarioB: string; diff: string } }) {
   const t = useTranslations('payroll')
+  const locale = useLocale()
   const lSummary = (left.results as { summary?: Record<string, number> })?.summary ?? {}
   const rSummary = (right.results as { summary?: Record<string, number> })?.summary ?? {}
 
@@ -176,7 +167,7 @@ function CompareFx({ left, right, headers }: { left: ScenarioDetail; right: Scen
     { label: t('simCompareDiffKRW'), leftVal: (lSummary as Record<string, number>).differenceKRW ?? 0, rightVal: (rSummary as Record<string, number>).differenceKRW ?? 0 },
   ]
 
-  return <CompareTable rows={rows} headers={headers} />
+  return <CompareTable rows={rows} headers={headers} locale={locale} />
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -184,6 +175,7 @@ function CompareFx({ left, right, headers }: { left: ScenarioDetail; right: Scen
 export default function ScenarioCompareView({ left, right, onClose }: Props) {
   const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
   const mode = left.mode as SaveableMode
 
   const headers = {
@@ -223,7 +215,7 @@ export default function ScenarioCompareView({ left, right, onClose }: Props) {
               </span>
               <span className="text-sm font-medium text-foreground truncate">{scenario.title}</span>
             </div>
-            <p className="text-xs text-muted-foreground">{fmtDate(scenario.createdAt)}</p>
+            <p className="text-xs text-muted-foreground">{new Date(scenario.createdAt).toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
             {scenario.description && (
               <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{scenario.description}</p>
             )}

@@ -2,12 +2,16 @@ import { Suspense } from 'react'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
 import PayrollImportClient from './PayrollImportClient'
 import type { SessionUser } from '@/types'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
-export const metadata = { title: '해외 급여 업로드 | CTR HR Hub' }
+export async function generateMetadata() {
+  const t = await getTranslations('payroll')
+  return { title: `${t('page.import')} | CTR HR Hub` }
+}
 
 export default async function PayrollImportPage() {
   const session = await getServerSession(authOptions)

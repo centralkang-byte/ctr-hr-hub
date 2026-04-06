@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { AlertTriangle, Calculator, Loader2, Save } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { apiClient } from '@/lib/api'
@@ -29,11 +29,7 @@ interface Props {
   onSaveScenario?: (payload: SaveScenarioPayload) => void
 }
 
-// ─── Formatters ─────────────────────────────────────────────
-
-const fmtKRW = (n: number) => `₩${Math.abs(n).toLocaleString('ko-KR')}`
-const signedKRW = (n: number) => n === 0 ? '₩0' : `${n > 0 ? '+' : '-'}${fmtKRW(n)}`
-const pctStr = (r: number) => `${r >= 0 ? '+' : ''}${(r * 100).toFixed(1)}%`
+import { fmtKRW, signedKRW, pctStr } from './formatters'
 
 // ─── KPI Card ───────────────────────────────────────────────
 
@@ -57,6 +53,7 @@ function KPICard({ label, value, diff, variant }: {
 export default function DifferentialTab({ companies, onSaveScenario }: Props) {
   const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
 
   const [selectedCompanyId, setSelectedCompanyId] = useState(companies[0]?.id ?? '')
   const [grades, setGrades] = useState<GradeInfo[]>([])
@@ -225,7 +222,7 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
             <div className="mt-2 space-y-1">
               {violations.employees.slice(0, 5).map((v, i) => (
                 <p key={i} className="text-xs text-destructive">
-                  {t('simDiffViolationDetail', { name: v.name, grade: v.grade, simulated: fmtKRW(v.simulatedSalary), max: fmtKRW(v.maxSalary) })}
+                  {t('simDiffViolationDetail', { name: v.name, grade: v.grade, simulated: fmtKRW(v.simulatedSalary, locale), max: fmtKRW(v.maxSalary, locale) })}
                   {v.capped && ` ${t('simDiffViolationCapped')}`}
                 </p>
               ))}
@@ -260,17 +257,17 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
             />
             <KPICard
               label={t('simDiffKpiCurrentGross')}
-              value={fmtKRW(summary.totals.currentGross)}
+              value={fmtKRW(summary.totals.currentGross, locale)}
             />
             <KPICard
               label={t('simDiffKpiSimGross')}
-              value={fmtKRW(summary.totals.simulatedGross)}
+              value={fmtKRW(summary.totals.simulatedGross, locale)}
               diff={pctStr(summary.totals.grossChangeRate)}
               variant="cost"
             />
             <KPICard
               label={t('simDiffKpiDiff')}
-              value={signedKRW(summary.totals.grossDifference)}
+              value={signedKRW(summary.totals.grossDifference, locale)}
               diff={pctStr(summary.totals.grossChangeRate)}
               variant="cost"
             />
@@ -315,13 +312,13 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
                       <td className={cn(TABLE_STYLES.cell, 'font-mono font-medium')}>{g.grade}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums')}>{t('simPersonUnit', { count: g.employeeCount })}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{(g.rate * 100).toFixed(1)}%</td>
-                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(g.currentGross)}</td>
-                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(g.simulatedGross)}</td>
+                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(g.currentGross, locale)}</td>
+                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(g.simulatedGross, locale)}</td>
                       <td className={cn(
                         TABLE_STYLES.cell, 'text-right tabular-nums font-mono',
                         g.difference > 0 ? 'text-primary' : g.difference < 0 ? 'text-destructive' : 'text-muted-foreground'
                       )}>
-                        {signedKRW(g.difference)}
+                        {signedKRW(g.difference, locale)}
                       </td>
                     </tr>
                   ))}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Calculator, Search, X, ChevronDown, ChevronRight, Download, Loader2, History, Save } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts'
@@ -24,24 +24,7 @@ import SaveScenarioDialog from './SaveScenarioDialog'
 import ScenarioListSheet from './ScenarioListSheet'
 import ScenarioCompareView from './ScenarioCompareView'
 
-// ─── Formatters ──────────────────────────────────────────
-
-const fmtN = (n: number) => n.toLocaleString('ko-KR')
-const fmtKRW = (n: number) => `₩${Math.abs(n).toLocaleString('ko-KR')}`
-const signedKRW = (n: number) => n === 0 ? '₩0' : `${n > 0 ? '+' : '-'}${fmtKRW(n)}`
-const pctStr = (r: number) => `${r >= 0 ? '+' : ''}${(r * 100).toFixed(1)}%`
-
-function diffColor(n: number) {
-  if (n > 0) return 'text-primary'
-  if (n < 0) return 'text-destructive'
-  return 'text-muted-foreground'
-}
-
-function diffArrow(n: number) {
-  if (n > 0) return '▲'
-  if (n < 0) return '▼'
-  return ''
-}
+import { fmtN, fmtKRW, signedKRW, pctStr, diffColor, diffArrow } from './formatters'
 
 // ─── KPI Card ────────────────────────────────────────────
 
@@ -67,19 +50,24 @@ function KPICard({ label, value, diff, rate, variant }: {
 
 // ─── Expandable Row ──────────────────────────────────────
 
-function DetailRow({ label, c, s }: { label: string; c: number; s: number }) {
+function DetailRow({ label, c, s, locale }: { label: string; c: number; s: number; locale: string }) {
   const d = s - c
   return (
     <tr className={TABLE_STYLES.row}>
       <td className={TABLE_STYLES.cell}>{label}</td>
-      <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(c)}</td>
-      <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(s)}</td>
-      <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(d))}>{signedKRW(d)}</td>
+      <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(c, locale)}</td>
+      <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(s, locale)}</td>
+      <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(d))}>{signedKRW(d, locale)}</td>
     </tr>
   )
 }
 
-function EmployeeExpandedDetail({ emp }: { emp: EmployeeSimResult }) {
+function EmployeeExpandedDetail({ emp, t, locale }: {
+  emp: EmployeeSimResult
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t: (key: string, params?: any) => string
+  locale: string
+}) {
   const c = emp.current
   const s = emp.simulated
   return (
@@ -90,41 +78,41 @@ function EmployeeExpandedDetail({ emp }: { emp: EmployeeSimResult }) {
             <table className={TABLE_STYLES.table}>
               <thead>
                 <tr className={TABLE_STYLES.header}>
-                  <th className={TABLE_STYLES.headerCell}>항목</th>
-                  <th className={cn(TABLE_STYLES.headerCell, "text-right")}>현재연봉</th>
-                  <th className={cn(TABLE_STYLES.headerCell, "text-right")}>시뮬레이션</th>
-                  <th className={cn(TABLE_STYLES.headerCell, "text-right")}>차이</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('sim.col.item')}</th>
+                  <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('sim.col.currentSalary')}</th>
+                  <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('sim.col.simulated')}</th>
+                  <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('sim.col.diff')}</th>
                 </tr>
               </thead>
               <tbody>
-                <DetailRow label="기본급" c={c.baseSalary} s={s.baseSalary} />
-                <DetailRow label="시간외수당" c={c.overtimePay} s={s.overtimePay} />
-                <DetailRow label="야간수당" c={c.nightPay} s={s.nightPay} />
-                <DetailRow label="식대" c={c.mealAllowance} s={s.mealAllowance} />
-                <DetailRow label="교통비" c={c.transportAllowance} s={s.transportAllowance} />
+                <DetailRow label={t('basePay')} c={c.baseSalary} s={s.baseSalary} locale={locale} />
+                <DetailRow label={t('overtimePay')} c={c.overtimePay} s={s.overtimePay} locale={locale} />
+                <DetailRow label={t('nightPay')} c={c.nightPay} s={s.nightPay} locale={locale} />
+                <DetailRow label={t('mealAllowance')} c={c.mealAllowance} s={s.mealAllowance} locale={locale} />
+                <DetailRow label={t('transportAllowance')} c={c.transportAllowance} s={s.transportAllowance} locale={locale} />
                 <tr className={cn(TABLE_STYLES.row, "bg-background font-semibold")}>
-                  <td className={TABLE_STYLES.cell}>{'총 지급액'}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(c.grossPay)}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(s.grossPay)}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(s.grossPay - c.grossPay))}>{signedKRW(s.grossPay - c.grossPay)}</td>
+                  <td className={TABLE_STYLES.cell}>{t('grossPay')}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(c.grossPay, locale)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(s.grossPay, locale)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(s.grossPay - c.grossPay))}>{signedKRW(s.grossPay - c.grossPay, locale)}</td>
                 </tr>
-                <DetailRow label="국민연금" c={c.nationalPension} s={s.nationalPension} />
-                <DetailRow label="건강보험" c={c.healthInsurance} s={s.healthInsurance} />
-                <DetailRow label="장기요양" c={c.longTermCare} s={s.longTermCare} />
-                <DetailRow label="고용보험" c={c.employmentInsurance} s={s.employmentInsurance} />
-                <DetailRow label="소득세" c={c.incomeTax} s={s.incomeTax} />
-                <DetailRow label="지방소득세" c={c.localIncomeTax} s={s.localIncomeTax} />
+                <DetailRow label={t('nationalPension')} c={c.nationalPension} s={s.nationalPension} locale={locale} />
+                <DetailRow label={t('healthInsurance')} c={c.healthInsurance} s={s.healthInsurance} locale={locale} />
+                <DetailRow label={t('longTermCare')} c={c.longTermCare} s={s.longTermCare} locale={locale} />
+                <DetailRow label={t('employmentInsurance')} c={c.employmentInsurance} s={s.employmentInsurance} locale={locale} />
+                <DetailRow label={t('incomeTax')} c={c.incomeTax} s={s.incomeTax} locale={locale} />
+                <DetailRow label={t('localIncomeTax')} c={c.localIncomeTax} s={s.localIncomeTax} locale={locale} />
                 <tr className={cn(TABLE_STYLES.row, "bg-background font-semibold")}>
-                  <td className={TABLE_STYLES.cell}>{'총 공제액'}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(c.totalDeductions)}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(s.totalDeductions)}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(s.totalDeductions - c.totalDeductions))}>{signedKRW(s.totalDeductions - c.totalDeductions)}</td>
+                  <td className={TABLE_STYLES.cell}>{t('totalDeductions')}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(c.totalDeductions, locale)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(s.totalDeductions, locale)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(s.totalDeductions - c.totalDeductions))}>{signedKRW(s.totalDeductions - c.totalDeductions, locale)}</td>
                 </tr>
                 <tr className={cn(TABLE_STYLES.row, "bg-primary/5 font-bold")}>
-                  <td className={TABLE_STYLES.cell}>{'실수령액'}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums text-primary")}>{fmtKRW(c.netPay)}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums text-primary")}>{fmtKRW(s.netPay)}</td>
-                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(s.netPay - c.netPay))}>{signedKRW(s.netPay - c.netPay)}</td>
+                  <td className={TABLE_STYLES.cell}>{t('netPay')}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums text-primary")}>{fmtKRW(c.netPay, locale)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums text-primary")}>{fmtKRW(s.netPay, locale)}</td>
+                  <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(s.netPay - c.netPay))}>{signedKRW(s.netPay - c.netPay, locale)}</td>
                 </tr>
               </tbody>
             </table>
@@ -142,6 +130,7 @@ export default function PayrollSimulationClient({ user: _user, companies, depart
 }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('payroll')
+  const locale = useLocale()
   const { toast } = useToast()
   const [mode, setMode] = useState<SimMode>('SINGLE')
   const [isLoading, setIsLoading] = useState(false)
@@ -313,11 +302,11 @@ export default function PayrollSimulationClient({ user: _user, companies, depart
       await apiClient.post('/api/v1/payroll/simulation/scenarios', {
         ...savePending, title, description: description || undefined,
       })
-      toast({ title: '시나리오가 저장되었습니다' })
+      toast({ title: t('sim.scenarioSaved') })
       setSaveDialogOpen(false)
       setSavePending(null)
     } catch {
-      toast({ title: '저장 실패', variant: 'destructive' })
+      toast({ title: t('sim.saveFailed'), variant: 'destructive' })
     } finally { setIsSaving(false) }
   }
 
@@ -357,8 +346,8 @@ export default function PayrollSimulationClient({ user: _user, companies, depart
     const c = result.employees[0].current
     const s = result.employees[0].simulated
     return [
-      { name: t('current'), 기본급: c.baseSalary, 수당: c.overtimePay + c.mealAllowance + c.transportAllowance, 상여: c.bonusAmount },
-      { name: t('simulated'), 기본급: s.baseSalary, 수당: s.overtimePay + s.mealAllowance + s.transportAllowance, 상여: s.bonusAmount },
+      { name: t('current'), basePay: c.baseSalary, allowance: c.overtimePay + c.mealAllowance + c.transportAllowance, bonus: c.bonusAmount },
+      { name: t('simulated'), basePay: s.baseSalary, allowance: s.overtimePay + s.mealAllowance + s.transportAllowance, bonus: s.bonusAmount },
     ]
   })() : null
 
@@ -444,7 +433,7 @@ export default function PayrollSimulationClient({ user: _user, companies, depart
                   <div>
                     <p className="text-sm font-medium text-foreground">{selectedEmployee.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {selectedEmployee.department} · {selectedEmployee.position} · {t('simCurrentLabel')} ₩{fmtN(selectedEmployee.currentSalary)}
+                      {selectedEmployee.department} · {selectedEmployee.position} · {t('simCurrentLabel')} ₩{fmtN(selectedEmployee.currentSalary, locale)}
                     </p>
                   </div>
                   <button onClick={() => setSelectedEmployee(null)} className="text-muted-foreground hover:text-red-500"><X className="w-4 h-4" /></button>
@@ -649,14 +638,14 @@ export default function PayrollSimulationClient({ user: _user, companies, depart
             <div className="space-y-6">
               {/* KPI Cards */}
               <div className="grid grid-cols-4 gap-4">
-                <KPICard label={t('kpiCurrentGross')} value={fmtKRW(totals.currentGross)} />
-                <KPICard label={t('kpiSimGross')} value={fmtKRW(totals.simulatedGross)}
-                  diff={signedKRW(totals.grossDifference)} rate={pctStr(totals.grossChangeRate)} variant="neutral" />
-                <KPICard label={t('kpiDeductionChange')} value={signedKRW(totals.simulatedTotalDeductions - totals.currentTotalDeductions)}
+                <KPICard label={t('kpiCurrentGross')} value={fmtKRW(totals.currentGross, locale)} />
+                <KPICard label={t('kpiSimGross')} value={fmtKRW(totals.simulatedGross, locale)}
+                  diff={signedKRW(totals.grossDifference, locale)} rate={pctStr(totals.grossChangeRate)} variant="neutral" />
+                <KPICard label={t('kpiDeductionChange')} value={signedKRW(totals.simulatedTotalDeductions - totals.currentTotalDeductions, locale)}
                   rate={totals.currentTotalDeductions > 0
                     ? pctStr((totals.simulatedTotalDeductions - totals.currentTotalDeductions) / totals.currentTotalDeductions)
                     : undefined} variant="cost" />
-                <KPICard label={t('kpiNetChange')} value={signedKRW(totals.netDifference)} rate={pctStr(totals.netChangeRate)} variant="neutral" />
+                <KPICard label={t('kpiNetChange')} value={signedKRW(totals.netDifference, locale)} rate={pctStr(totals.netChangeRate)} variant="neutral" />
               </div>
 
               {/* Pay Band Position (single mode) */}
@@ -680,13 +669,13 @@ export default function PayrollSimulationClient({ user: _user, companies, depart
                   <ResponsiveContainer width="100%" height={200}>
                     <BarChart data={chartData} layout="vertical" margin={{ left: 20 }}>
                       <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
-                      <XAxis type="number" tickFormatter={v => `₩${(v / 10000).toFixed(0)}만`} />
+                      <XAxis type="number" tickFormatter={v => `₩${fmtN(Math.round(v / 10000), locale)}만`} />
                       <YAxis type="category" dataKey="name" width={40} />
-                      <Tooltip formatter={(v) => v != null ? fmtKRW(Number(v)) : ''} />
+                      <Tooltip formatter={(v) => v != null ? fmtKRW(Number(v), locale) : ''} />
                       <Legend />
-                      <Bar dataKey="기본급" fill={CHART_THEME.colors[0]} stackId="a" />
-                      <Bar dataKey="수당" fill={CHART_THEME.colors[3]} stackId="a" />
-                      <Bar dataKey="상여" fill={CHART_THEME.colors[2]} stackId="a" />
+                      <Bar dataKey="basePay" name={t('basePay')} fill={CHART_THEME.colors[0]} stackId="a" />
+                      <Bar dataKey="allowance" name={t('sim.chart.allowance')} fill={CHART_THEME.colors[3]} stackId="a" />
+                      <Bar dataKey="bonus" name={t('sim.chart.bonus')} fill={CHART_THEME.colors[2]} stackId="a" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -712,10 +701,10 @@ export default function PayrollSimulationClient({ user: _user, companies, depart
                         {sm.byDepartment.map(dept => (
                           <tr key={dept.department} className={TABLE_STYLES.row}>
                             <td className={TABLE_STYLES.cell}>{dept.department}</td>
-                            <td className={cn(TABLE_STYLES.cell, "text-right")}>{dept.employeeCount}명</td>
-                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(dept.currentGross)}</td>
-                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(dept.simulatedGross)}</td>
-                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(dept.difference))}>{signedKRW(dept.difference)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right")}>{t('simPersonUnit', { count: dept.employeeCount })}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(dept.currentGross, locale)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(dept.simulatedGross, locale)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(dept.difference))}>{signedKRW(dept.difference, locale)}</td>
                             <td className={cn(TABLE_STYLES.cell, "text-right", diffColor(dept.difference))}>
                               {dept.currentGross > 0 ? pctStr(dept.difference / dept.currentGross) : '—'}
                             </td>
@@ -724,9 +713,9 @@ export default function PayrollSimulationClient({ user: _user, companies, depart
                         <tr className={cn(TABLE_STYLES.row, "bg-background font-semibold")}>
                           <td className={TABLE_STYLES.cell}>{tCommon('total')}</td>
                           <td className={cn(TABLE_STYLES.cell, "text-right")}>{sm.employeeCount}{tCommon('unit.person')}</td>
-                          <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(totals.currentGross)}</td>
-                          <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(totals.simulatedGross)}</td>
-                          <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(totals.grossDifference))}>{signedKRW(totals.grossDifference)}</td>
+                          <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(totals.currentGross, locale)}</td>
+                          <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(totals.simulatedGross, locale)}</td>
+                          <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(totals.grossDifference))}>{signedKRW(totals.grossDifference, locale)}</td>
                           <td className={cn(TABLE_STYLES.cell, "text-right", diffColor(totals.grossDifference))}>{pctStr(totals.grossChangeRate)}</td>
                         </tr>
                       </tbody>
@@ -737,14 +726,14 @@ export default function PayrollSimulationClient({ user: _user, companies, depart
 
               {/* Employee Detail Table */}
               <div className={CARD_STYLES.padded}>
-                <h3 className="text-sm font-semibold text-foreground mb-3">직원별 상세 ({result.employees.length}명)</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-3">{t('sim.employeeDetail', { count: result.employees.length })}</h3>
                 <div className={TABLE_STYLES.wrapper}>
                   <table className={TABLE_STYLES.table}>
                     <thead>
                       <tr className={TABLE_STYLES.header}>
                         <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
                         <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
-                        <th className={TABLE_STYLES.headerCell}>직위</th>
+                        <th className={TABLE_STYLES.headerCell}>{t('position')}</th>
                         <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('kr_ked9884ec_kec8ba4ec')}</th>
                         <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('kr_kec8b9ceb_kec8ba4ec')}</th>
                         <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('kr_kecb0a8ec')}</th>
@@ -765,14 +754,14 @@ export default function PayrollSimulationClient({ user: _user, companies, depart
                             </td>
                             <td className={TABLE_STYLES.cell}>{emp.department}</td>
                             <td className={TABLE_STYLES.cell}>{emp.position}</td>
-                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(emp.current.netPay)}</td>
-                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(emp.simulated.netPay)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(emp.current.netPay, locale)}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums")}>{fmtKRW(emp.simulated.netPay, locale)}</td>
                             <td className={cn(TABLE_STYLES.cell, "text-right font-mono tabular-nums", diffColor(netDiff))}>
-                              {diffArrow(netDiff)}{fmtKRW(Math.abs(netDiff))}
+                              {diffArrow(netDiff)}{fmtKRW(Math.abs(netDiff), locale)}
                             </td>
                             <td className={cn(TABLE_STYLES.cell, "text-right", diffColor(netDiff))}>{pctStr(netRate)}</td>
                           </tr>
-                            {isExp && <EmployeeExpandedDetail key={`${emp.id}-detail`} emp={emp} />}
+                            {isExp && <EmployeeExpandedDetail key={`${emp.id}-detail`} emp={emp} t={t} locale={locale} />}
                           </>
                         )
                       })}

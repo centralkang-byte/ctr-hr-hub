@@ -99,7 +99,7 @@ export const GET = withPermission(
     }
     if (bandBreaches.length > 0) {
       anomalies.push({
-        rule: '밴드 이탈',
+        rule: 'BAND_EXCEEDED',
         severity: 'high',
         description: `직급별 급여 밴드를 벗어난 직원 ${bandBreaches.length}명 발견`,
         affectedCount: bandBreaches.length,
@@ -141,7 +141,7 @@ export const GET = withPermission(
     }
     if (varianceAnomalies.length > 0) {
       anomalies.push({
-        rule: '내부 분산 과다',
+        rule: 'HIGH_INTERNAL_VARIANCE',
         severity: 'medium',
         description: `동일 법인·직급 내 급여 편차가 30% 초과하는 그룹 ${varianceAnomalies.length}개 발견`,
         affectedCount: varianceAnomalies.length,
@@ -192,7 +192,7 @@ export const GET = withPermission(
     }
     if (crossEntityAnomalies.length > 0) {
       anomalies.push({
-        rule: '법인간 격차',
+        rule: 'CROSS_ENTITY_GAP',
         severity: 'medium',
         description: `동일 직급 법인 간 인당 평균 급여가 2배 이상 차이나는 직급 ${crossEntityAnomalies.length}개 발견`,
         affectedCount: crossEntityAnomalies.length,
@@ -229,7 +229,7 @@ export const GET = withPermission(
     }
     if (suddenChanges.length > 0) {
       anomalies.push({
-        rule: '급격한 변화',
+        rule: 'MOM_CHANGE_30PCT',
         severity: 'high',
         description: `전월 대비 급여가 20% 이상 변동한 직원 ${suddenChanges.length}명 발견`,
         affectedCount: suddenChanges.length,

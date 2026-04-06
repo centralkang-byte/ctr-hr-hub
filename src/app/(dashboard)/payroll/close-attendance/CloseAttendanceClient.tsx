@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 
 import { useState, useEffect, useCallback } from 'react'
 import {
@@ -40,34 +40,47 @@ interface Props {
 }
 
 const COMPANY_LIST = [
-    { id: 'CTR', name: 'CTR (한국)' },
-    { id: 'CTR-CN', name: 'CTR-CN (중국)' },
-    { id: 'CTR-US', name: 'CTR-US (미국)' },
-    { id: 'CTR-VN', name: 'CTR-VN (베트남)' },
-    { id: 'CTR-EU', name: 'CTR-EU (폴란드)' },
-    { id: 'CTR-RU', name: 'CTR-RU (러시아)' },
+    { id: 'CTR', nameKey: 'closeAtt.companyCTR' },
+    { id: 'CTR-CN', nameKey: 'closeAtt.companyCTRCN' },
+    { id: 'CTR-US', nameKey: 'closeAtt.companyCTRUS' },
+    { id: 'CTR-VN', nameKey: 'closeAtt.companyCTRVN' },
+    { id: 'CTR-EU', nameKey: 'closeAtt.companyCTREU' },
+    { id: 'CTR-RU', nameKey: 'closeAtt.companyCTRRU' },
 ]
 
-const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }> = {
-    DRAFT: { label: 'DRAFT', color: '#555', bg: '#FAFAFA' },
-    ATTENDANCE_CLOSED: { label: '근태 마감', color: '#047857', bg: '#D1FAE5' },
-    CALCULATING: { label: '계산 중', color: '#B45309', bg: '#FEF3C7' },
-    ADJUSTMENT: { label: '조정 중', color: '#1D4ED8', bg: '#DBEAFE' },
-    REVIEW: { label: '검토 중', color: '#7C3AED', bg: '#EDE9FE' },
-    PENDING_APPROVAL: { label: '결재 대기', color: '#B45309', bg: '#FEF3C7' },
-    APPROVED: { label: '승인 완료', color: '#047857', bg: '#D1FAE5' },
-    PAID: { label: '지급 완료', color: '#059669', bg: '#D1FAE5' },
+const STATUS_LABEL_KEYS: Record<string, string> = {
+    DRAFT: 'closeAtt.statusDraft',
+    ATTENDANCE_CLOSED: 'closeAtt.statusClosed',
+    CALCULATING: 'closeAtt.statusCalculating',
+    ADJUSTMENT: 'closeAtt.statusAdjustment',
+    REVIEW: 'closeAtt.statusReview',
+    PENDING_APPROVAL: 'closeAtt.statusPendingApproval',
+    APPROVED: 'closeAtt.statusApproved',
+    PAID: 'closeAtt.statusPaid',
+}
+
+const STATUS_COLORS: Record<string, { color: string; bg: string }> = {
+    DRAFT: { color: '#555', bg: '#FAFAFA' },
+    ATTENDANCE_CLOSED: { color: '#047857', bg: '#D1FAE5' },
+    CALCULATING: { color: '#B45309', bg: '#FEF3C7' },
+    ADJUSTMENT: { color: '#1D4ED8', bg: '#DBEAFE' },
+    REVIEW: { color: '#7C3AED', bg: '#EDE9FE' },
+    PENDING_APPROVAL: { color: '#B45309', bg: '#FEF3C7' },
+    APPROVED: { color: '#047857', bg: '#D1FAE5' },
+    PAID: { color: '#059669', bg: '#D1FAE5' },
 }
 
 function StatusBadge({ status }: { status: string | null }) {
+    const t = useTranslations('payroll')
     if (!status) return <span className="text-xs text-muted-foreground">—</span>
-    const s = STATUS_LABELS[status] ?? { label: status, color: '#555', bg: '#FAFAFA' }
+    const s = STATUS_COLORS[status] ?? { color: '#555', bg: '#FAFAFA' }
+    const labelKey = STATUS_LABEL_KEYS[status]
     return (
         <span
             className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border"
             style={{ color: s.color, background: s.bg, borderColor: s.bg }}
         >
-            {s.label}
+            {labelKey ? t(labelKey) : status}
         </span>
     )
 }
@@ -75,6 +88,7 @@ function StatusBadge({ status }: { status: string | null }) {
 export default function CloseAttendanceClient({ user }: Props) {
     const tCommon = useTranslations('common')
     const t = useTranslations('payroll')
+    const locale = useLocale()
     const { confirm, dialogProps } = useConfirmDialog()
     const now = new Date()
     const [year, setYear] = useState(now.getFullYear())
@@ -179,7 +193,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                         className="px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary focus:ring-2 focus:ring-primary/10"
                     >
                         {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                            <option key={m} value={m}>{m}월</option>
+                            <option key={m} value={m}>{t('closeAtt.month', { month: m })}</option>
                         ))}
                     </select>
                     <select
@@ -188,7 +202,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                         className="px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary focus:ring-2 focus:ring-primary/10"
                     >
                         {[2024, 2025, 2026].map((y) => (
-                            <option key={y} value={y}>{y}년</option>
+                            <option key={y} value={y}>{t('closeAtt.year', { year: y })}</option>
                         ))}
                     </select>
                     <button
@@ -209,7 +223,8 @@ export default function CloseAttendanceClient({ user }: Props) {
             <div className="space-y-4">
                 {[user.companyId].filter(Boolean).map((companyId) => {
                     const status = statuses[companyId]
-                    const label = COMPANY_LIST.find((c) => c.id === companyId)?.name ?? companyId
+                    const companyEntry = COMPANY_LIST.find((c) => c.id === companyId)
+                    const label = companyEntry ? t(companyEntry.nameKey) : companyId
                     const isClosed = status?.payrollRunStatus === 'ATTENDANCE_CLOSED'
                     const isAlreadyCalculating = status?.payrollRunStatus && !['DRAFT', 'ATTENDANCE_CLOSED', null].includes(status.payrollRunStatus)
                     const confirmedPct = status ? Math.round((status.confirmedCount / Math.max(status.totalEmployees, 1)) * 100) : 0
@@ -263,7 +278,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                         <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
                                             <span>{t('kr_keab7bced_confirmed_status')}</span>
                                             <span className="font-semibold text-foreground">
-                                                {status.confirmedCount}/{status.totalEmployees}명 ({confirmedPct}%)
+                                                {t('closeAtt.confirmedRatio', { confirmed: status.confirmedCount, total: status.totalEmployees, pct: confirmedPct })}
                                             </span>
                                         </div>
                                         <div className="h-2 rounded-full bg-border overflow-hidden">
@@ -284,7 +299,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                                 <CheckCircle2 size={13} className="text-emerald-600" />
                                                 <p className="text-xs text-muted-foreground">{t('confirmed')}</p>
                                             </div>
-                                            <p className="text-xl font-bold text-foreground">{status.confirmedCount}명</p>
+                                            <p className="text-xl font-bold text-foreground">{t('closeAtt.personCount', { count: status.confirmedCount })}</p>
                                         </div>
                                         <div className="bg-background rounded-lg p-3">
                                             <div className="flex items-center gap-1.5 mb-1">
@@ -298,7 +313,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                                 <AlertTriangle size={13} className="text-red-500" />
                                                 <p className="text-xs text-muted-foreground">{t('kr_kebafb8ed')}</p>
                                             </div>
-                                            <p className="text-xl font-bold text-foreground">{status.unconfirmedCount}명</p>
+                                            <p className="text-xl font-bold text-foreground">{t('closeAtt.personCount', { count: status.unconfirmedCount })}</p>
                                         </div>
                                     </div>
 
@@ -312,7 +327,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                                 <div className="flex items-center gap-2">
                                                     <AlertTriangle size={14} className="text-amber-500" />
                                                     <span className="text-sm font-semibold text-amber-700">
-                                                        미확정 직원 {status.unconfirmedEmployees.length}명
+                                                        {t('closeAtt.unconfirmedEmployees', { count: status.unconfirmedEmployees.length })}
                                                     </span>
                                                 </div>
                                                 {expandedEmp[companyId] ? (
@@ -345,7 +360,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                         <div className="mt-3 flex items-center gap-2 text-xs text-emerald-600">
                                             <Lock size={12} />
                                             <span>
-                                                {new Date(status.attendanceClosedAt).toLocaleString('ko-KR')} 마감 완료
+                                                {new Date(status.attendanceClosedAt).toLocaleString(locale)} {t('closeAtt.closingComplete')}
                                             </span>
                                         </div>
                                     )}
@@ -354,7 +369,7 @@ export default function CloseAttendanceClient({ user }: Props) {
 
                             {!status && (
                                 <div className="p-5 flex items-center justify-center text-muted-foreground text-sm">
-                                    {loading ? '로딩 중...' : '데이터 없음'}
+                                    {loading ? tCommon('loading') : tCommon('noData')}
                                 </div>
                             )}
                         </div>
@@ -380,7 +395,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted-foreground">{t('kr_keb8c80ec_company')}</span>
                                     <span className="font-semibold text-foreground">
-                                        {COMPANY_LIST.find((c) => c.id === confirmModal.companyId)?.name ?? confirmModal.companyId}
+                                        {(() => { const ce = COMPANY_LIST.find((c) => c.id === confirmModal.companyId); return ce ? t(ce.nameKey) : confirmModal.companyId })()}
                                     </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
@@ -389,15 +404,15 @@ export default function CloseAttendanceClient({ user }: Props) {
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted-foreground">{t('all_keca781ec')}</span>
-                                    <span className="font-semibold">{confirmModal.status.totalEmployees}명</span>
+                                    <span className="font-semibold">{t('closeAtt.personCount', { count: confirmModal.status.totalEmployees })}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted-foreground">{t('confirmed_keca781ec')}</span>
-                                    <span className="font-semibold text-emerald-600">{confirmModal.status.confirmedCount}명</span>
+                                    <span className="font-semibold text-emerald-600">{t('closeAtt.personCount', { count: confirmModal.status.confirmedCount })}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted-foreground">{t('kr_kebafb8ed_keca781ec')}</span>
-                                    <span className="font-semibold text-red-500">{confirmModal.status.unconfirmedCount}명</span>
+                                    <span className="font-semibold text-red-500">{t('closeAtt.personCount', { count: confirmModal.status.unconfirmedCount })}</span>
                                 </div>
                             </div>
                             {confirmModal.status.unconfirmedCount > 0 && (
@@ -412,7 +427,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                         className="w-4 h-4 rounded border-border text-primary"
                                     />
                                     <span className="text-sm text-foreground">
-                                        미확정 직원 {confirmModal.status.unconfirmedCount}명 제외하고 마감
+                                        {t('closeAtt.closeExcluding', { count: confirmModal.status.unconfirmedCount })}
                                     </span>
                                 </label>
                             )}

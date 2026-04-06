@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 
 import { useState, useCallback, useEffect } from 'react'
 import {
@@ -66,12 +66,12 @@ interface YearEndHRClientProps {
 
 // ─── Helpers ───────────────────────────────────────────────
 
-const STATUS_LABELS: Record<string, string> = {
-  not_started: '미시작',
-  in_progress: '진행중',
-  submitted: '제출완료',
-  hr_review: 'HR검토중',
-  confirmed: '확정',
+const STATUS_LABEL_KEYS: Record<string, string> = {
+  not_started: 'yearEndHR.statusNotStarted',
+  in_progress: 'yearEndHR.statusInProgress',
+  submitted: 'yearEndHR.statusSubmitted',
+  hr_review: 'yearEndHR.statusHrReview',
+  confirmed: 'yearEndHR.statusConfirmed',
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -82,10 +82,10 @@ const STATUS_COLORS: Record<string, string> = {
   confirmed: STATUS_VARIANT.success,
 }
 
-function formatKRW(amount: string | number): string {
+function formatKRW(amount: string | number, locale: string): string {
   const num = typeof amount === 'string' ? parseInt(amount, 10) : amount
   if (isNaN(num)) return '₩0'
-  return new Intl.NumberFormat('ko-KR', {
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'KRW',
     maximumFractionDigits: 0,
@@ -95,12 +95,13 @@ function formatKRW(amount: string | number): string {
 // ─── Status Badge ──────────────────────────────────────────
 
 function StatusBadge({ status }: { status: string }) {
+  const t = useTranslations('payroll')
   const color = STATUS_COLORS[status] ?? STATUS_VARIANT.neutral
   return (
     <span
       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${color}`}
     >
-      {STATUS_LABELS[status] ?? status}
+      {t(STATUS_LABEL_KEYS[status] ?? 'yearEndHR.statusNotStarted')}
     </span>
   )
 }
@@ -122,6 +123,9 @@ function SettlementDetailModal({
   confirming: boolean
   issuingReceipt: boolean
 }) {
+  const t = useTranslations('payroll')
+  const tCommon = useTranslations('common')
+  const locale = useLocale()
   const finalNum = parseInt(settlement.finalSettlement, 10)
   const isRefund = finalNum >= 0
 
@@ -132,7 +136,7 @@ function SettlementDetailModal({
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div>
             <h2 className="text-lg font-semibold text-foreground">
-              {settlement.employeeName} — {settlement.year}년 연말정산
+              {settlement.employeeName} — {t('yearEndHR.title', { year: settlement.year })}
             </h2>
             <p className="text-sm text-muted-foreground mt-0.5">
               {settlement.department} &middot; {settlement.employeeNo}
@@ -154,12 +158,12 @@ function SettlementDetailModal({
             <StatusBadge status={settlement.status} />
             {settlement.submittedAt && (
               <span className="text-xs text-muted-foreground">
-                제출일: {formatDate(settlement.submittedAt)}
+                {t('yearEndHR.submittedDate')} {formatDate(settlement.submittedAt)}
               </span>
             )}
             {settlement.confirmedAt && (
               <span className="text-xs text-emerald-600">
-                확정일: {formatDate(settlement.confirmedAt)}
+                {t('yearEndHR.confirmedDate')} {formatDate(settlement.confirmedAt)}
               </span>
             )}
           </div>
@@ -167,19 +171,19 @@ function SettlementDetailModal({
           {/* Calculation Breakdown */}
           <div className="rounded-xl border border-border overflow-hidden">
             <div className="bg-background px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              {'소득세 계산 요약'}
+              {t('yearEndHR.taxSummary')}
             </div>
             <div className="divide-y divide-border">
               {[
-                { label: '① 총급여', value: settlement.totalSalary },
-                { label: '⑤ 과세표준', value: settlement.totalSalary },
-                { label: '⑦ 산출세액', value: settlement.determinedTax },
-                { label: '기록하기', value: settlement.prepaidTax },
+                { label: t('yearEndHR.totalSalary'), value: settlement.totalSalary },
+                { label: t('yearEndHR.taxableIncome'), value: settlement.totalSalary },
+                { label: t('yearEndHR.calculatedTax'), value: settlement.determinedTax },
+                { label: t('yearEndHR.record'), value: settlement.prepaidTax },
               ].map((row) => (
                 <div key={row.label} className="flex items-center justify-between px-4 py-2.5">
                   <span className="text-sm text-muted-foreground">{row.label}</span>
                   <span className="text-sm font-medium text-foreground">
-                    {formatKRW(row.value)}
+                    {formatKRW(row.value, locale)}
                   </span>
                 </div>
               ))}
@@ -197,15 +201,15 @@ function SettlementDetailModal({
             <p
               className={`text-sm font-semibold mb-1 ${isRefund ? 'text-emerald-700' : 'text-amber-700'}`}
             >
-              {isRefund ? '환급액' : '추가납부액'}
+              {isRefund ? t('yearEndHR.refundAmount') : t('yearEndHR.additionalPayment')}
             </p>
             <p
               className={`text-3xl font-bold ${isRefund ? 'text-emerald-600' : 'text-amber-600'}`}
             >
-              {formatKRW(Math.abs(finalNum))}
+              {formatKRW(Math.abs(finalNum), locale)}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              지방소득세 포함: {formatKRW(settlement.localTaxSettlement)}
+              {t('yearEndHR.includingLocalTax')} {formatKRW(settlement.localTaxSettlement, locale)}
             </p>
           </div>
 
@@ -214,7 +218,7 @@ function SettlementDetailModal({
             <div className="flex items-center gap-2 text-sm text-emerald-600">
               <CheckCircle2 className="h-4 w-4" />
               <span>
-                원천징수영수증 발행완료 ({formatDate(settlement.withholdingReceipt.issuedAt)})
+                {t('yearEndHR.withholdingIssued')} ({formatDate(settlement.withholdingReceipt.issuedAt)})
               </span>
             </div>
           )}
@@ -227,7 +231,7 @@ function SettlementDetailModal({
             onClick={onClose}
             className="px-4 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg"
           >
-            {'닫기'}
+            {tCommon('close')}
           </button>
           <div className="flex gap-2">
             {settlement.status === 'confirmed' && (
@@ -238,7 +242,7 @@ function SettlementDetailModal({
                 className="flex items-center gap-2 px-4 py-2 text-sm bg-card border border-border hover:bg-background text-foreground rounded-lg disabled:opacity-50"
               >
                 <Download className="h-4 w-4" />
-                {issuingReceipt ? '발행 중...' : '영수증 발행'}
+                {issuingReceipt ? t('yearEndHR.issuing') : t('yearEndHR.issueReceipt')}
               </button>
             )}
             {(settlement.status === 'submitted' || settlement.status === 'hr_review') && (
@@ -249,7 +253,7 @@ function SettlementDetailModal({
                 className={`flex items-center gap-2 px-4 py-2 text-sm ${BUTTON_VARIANTS.primary} rounded-lg disabled:opacity-50`}
               >
                 <CheckCircle2 className="h-4 w-4" />
-                {confirming ? '처리 중...' : '확정'}
+                {confirming ? tCommon('processing') : t('yearEndHR.confirm')}
               </button>
             )}
           </div>
@@ -263,6 +267,8 @@ function SettlementDetailModal({
 
 export default function YearEndHRClient({user, defaultYear }: YearEndHRClientProps) {
   const t = useTranslations('payroll')
+  const tCommon = useTranslations('common')
+  const locale = useLocale()
 
   const [year, setYear] = useState(defaultYear)
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -337,7 +343,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
       })
       if (!response.ok) {
         const json = await response.json() as { error?: { message?: string } }
-        throw new Error(json.error?.message ?? '영수증 발행에 실패했습니다.')
+        throw new Error(json.error?.message ?? t('yearEndHR.issueReceiptFailed'))
       }
       // Open the HTML receipt in a new tab for printing
       const blob = await response.blob()
@@ -362,7 +368,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
       .map((s) => s.id)
 
     if (confirmableIds.length === 0) {
-      setError('확정 가능한 정산이 없습니다.')
+      setError(t('yearEndHR.noConfirmableSettlements'))
       return
     }
 
@@ -388,11 +394,11 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
       (s) => s.status === 'submitted' || s.status === 'hr_review',
     )
     if (confirmable.length === 0) {
-      setError('확정 가능한 정산이 없습니다.')
+      setError(t('yearEndHR.noConfirmableSettlements'))
       return
     }
 
-    confirm({ title: `${confirmable.length}건의 정산을 일괄 확정하시겠습니까?`, onConfirm: async () => {
+    confirm({ title: t('yearEndHR.bulkConfirmTitle', { count: confirmable.length }), onConfirm: async () => {
       setBulkConfirming(true)
       try {
         await apiClient.post('/api/v1/year-end/hr/bulk-confirm', {
@@ -453,7 +459,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
         <div className="flex items-center gap-3">
           <FileText className="h-6 w-6 text-primary" />
           <h1 className="text-2xl font-bold text-foreground">
-            {year}년 연말정산 관리
+            {t('yearEndHR.pageTitle', { year })}
           </h1>
         </div>
         <div className="flex items-center gap-3">
@@ -465,7 +471,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
           >
             {YEAR_OPTIONS.map((y) => (
               <option key={y} value={y}>
-                {y}년
+                {t('yearEndHR.yearLabel', { year: y })}
               </option>
             ))}
           </select>
@@ -481,7 +487,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
               <CheckCircle2 className="h-4 w-4" />
               {bulkConfirming
                 ? t('processing')
-                : `일괄 확정 (${confirmableCount}건)`}
+                : t('yearEndHR.bulkConfirm', { count: confirmableCount })}
             </button>
           )}
         </div>
@@ -586,7 +592,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                   }}
                 />
               </th>
-              {['이름', '부서', '총급여', '환급/추가납부', '상태', '제출일', ''].map(
+              {[t('yearEndHR.colName'), t('yearEndHR.colDepartment'), t('yearEndHR.colTotalSalary'), t('yearEndHR.colRefundOrAdditional'), t('yearEndHR.colStatus'), t('yearEndHR.colSubmittedDate'), ''].map(
                 (h) => (
                   <th
                     key={h}
@@ -639,13 +645,13 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                     </td>
                     <td className={TABLE_STYLES.cell}>{s.department}</td>
                     <td className={cn(TABLE_STYLES.cell, "text-foreground font-medium")}>
-                      {formatKRW(s.totalSalary)}
+                      {formatKRW(s.totalSalary, locale)}
                     </td>
                     <td className={TABLE_STYLES.cell}>
                       <span
                         className={cn("font-semibold", isRefund ? 'text-emerald-600' : 'text-amber-600')}
                       >
-                        {isRefund ? '+' : '-'} {formatKRW(Math.abs(finalNum))}
+                        {isRefund ? '+' : '-'} {formatKRW(Math.abs(finalNum), locale)}
                       </span>
                     </td>
                     <td className={TABLE_STYLES.cell}>
@@ -701,7 +707,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
       {selectedIds.size > 0 && (
         <div className="mt-4 px-4 py-3 border border-border rounded-lg bg-muted/50 flex items-center justify-between">
           <span className="text-sm text-muted-foreground">
-            {selectedIds.size}건 선택됨
+            {t('yearEndHR.selectedCount', { count: selectedIds.size })}
           </span>
           <button
             type="button"
@@ -710,7 +716,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
             className={`flex items-center gap-2 px-4 py-2 text-sm ${BUTTON_VARIANTS.primary} rounded-lg disabled:opacity-50`}
           >
             <CheckCircle2 className="h-4 w-4" />
-            {bulkConfirming ? t('processing') : '선택 항목 확정'}
+            {bulkConfirming ? tCommon('processing') : t('yearEndHR.confirmSelected')}
           </button>
         </div>
       )}
