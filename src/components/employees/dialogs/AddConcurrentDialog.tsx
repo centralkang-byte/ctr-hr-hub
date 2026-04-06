@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -48,11 +49,11 @@ interface LookupItem {
 }
 
 const EMPLOYMENT_TYPES = [
-  { value: 'FULL_TIME', label: '정규직' },
-  { value: 'CONTRACT', label: '계약직' },
-  { value: 'PART_TIME', label: '파트타임' },
-  { value: 'INTERN', label: '인턴' },
-  { value: 'TEMPORARY', label: '임시직' },
+  { value: 'FULL_TIME', labelKey: 'concurrentEmploymentFullTime' },
+  { value: 'CONTRACT', labelKey: 'concurrentEmploymentContract' },
+  { value: 'PART_TIME', labelKey: 'concurrentEmploymentPartTime' },
+  { value: 'INTERN', labelKey: 'concurrentEmploymentIntern' },
+  { value: 'TEMPORARY', labelKey: 'concurrentEmploymentTemporary' },
 ] as const
 
 function getToday(): string {
@@ -86,6 +87,9 @@ export default function AddConcurrentDialog({
   userRole,
   userCompanyId,
 }: AddConcurrentDialogProps) {
+  const t = useTranslations('employee')
+  const tc = useTranslations('common')
+
   // Form state
   const [companyId, setCompanyId] = useState('')
   const [departmentId, setDepartmentId] = useState('')
@@ -204,11 +208,11 @@ export default function AddConcurrentDialog({
 
   const handleSubmit = async () => {
     if (!companyId) {
-      setError('법인을 선택해주세요.')
+      setError(t('concurrentCompanyRequired'))
       return
     }
     if (!effectiveDate) {
-      setError('발효일을 입력해주세요.')
+      setError(t('concurrentEffectiveDateRequired'))
       return
     }
 
@@ -226,12 +230,12 @@ export default function AddConcurrentDialog({
         reason: reason || undefined,
       })
 
-      toast({ title: '겸직이 추가되었습니다.' })
+      toast({ title: t('concurrentAddSuccess') })
       onSuccess()
       onOpenChange(false)
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : '겸직 추가 중 오류가 발생했습니다.'
+        err instanceof Error ? err.message : t('concurrentAddError')
       setError(message)
     } finally {
       setSubmitting(false)
@@ -244,16 +248,16 @@ export default function AddConcurrentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>겸직 추가</DialogTitle>
+          <DialogTitle>{t('concurrentAddTitle')}</DialogTitle>
           <DialogDescription>
-            새로운 겸직(부 발령)을 추가합니다.
+            {t('concurrentAddDescription')}
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
           {/* 법인 */}
           <div className="grid gap-2">
-            <Label htmlFor="company">법인 *</Label>
+            <Label htmlFor="company">{t('concurrentCompanyLabel')}</Label>
             {isHrAdmin ? (
               <Input
                 id="company"
@@ -267,10 +271,10 @@ export default function AddConcurrentDialog({
             ) : (
               <Select value={companyId || '__NONE__'} onValueChange={handleCompanyChange}>
                 <SelectTrigger id="company">
-                  <SelectValue placeholder="법인 선택" />
+                  <SelectValue placeholder={t('concurrentSelectCompany')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__NONE__">선택 안 함</SelectItem>
+                  <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
                   {companies.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       {getLabel(c)}
@@ -283,7 +287,7 @@ export default function AddConcurrentDialog({
 
           {/* 부서 */}
           <div className="grid gap-2">
-            <Label htmlFor="department">부서</Label>
+            <Label htmlFor="department">{t('concurrentDepartment')}</Label>
             <Select
               value={departmentId || '__NONE__'}
               onValueChange={(v) => {
@@ -294,10 +298,10 @@ export default function AddConcurrentDialog({
               disabled={!companyId}
             >
               <SelectTrigger id="department">
-                <SelectValue placeholder="부서 선택" />
+                <SelectValue placeholder={t('concurrentSelectDepartment')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__NONE__">선택 안 함</SelectItem>
+                <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
                 {departments.map((d) => (
                   <SelectItem key={d.id} value={d.id}>
                     {getLabel(d)}
@@ -309,16 +313,16 @@ export default function AddConcurrentDialog({
 
           {/* 직급 */}
           <div className="grid gap-2">
-            <Label htmlFor="jobGrade">직급</Label>
+            <Label htmlFor="jobGrade">{t('concurrentGrade')}</Label>
             <Select
               value={jobGradeId || '__NONE__'}
               onValueChange={(v) => setJobGradeId(v === '__NONE__' ? '' : v)}
             >
               <SelectTrigger id="jobGrade">
-                <SelectValue placeholder="직급 선택" />
+                <SelectValue placeholder={t('concurrentSelectGrade')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__NONE__">선택 안 함</SelectItem>
+                <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
                 {jobGrades.map((g) => (
                   <SelectItem key={g.id} value={g.id}>
                     {getLabel(g)}
@@ -330,17 +334,17 @@ export default function AddConcurrentDialog({
 
           {/* 직책/Position */}
           <div className="grid gap-2">
-            <Label htmlFor="position">직책</Label>
+            <Label htmlFor="position">{t('concurrentPosition')}</Label>
             <Select
               value={positionId || '__NONE__'}
               onValueChange={(v) => setPositionId(v === '__NONE__' ? '' : v)}
               disabled={!companyId}
             >
               <SelectTrigger id="position">
-                <SelectValue placeholder="직책 선택" />
+                <SelectValue placeholder={t('concurrentSelectPosition')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="__NONE__">선택 안 함</SelectItem>
+                <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
                 {positions.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
                     {getLabel(p)}
@@ -352,15 +356,15 @@ export default function AddConcurrentDialog({
 
           {/* 고용형태 */}
           <div className="grid gap-2">
-            <Label htmlFor="employmentType">고용형태</Label>
+            <Label htmlFor="employmentType">{t('concurrentEmploymentType')}</Label>
             <Select value={employmentType} onValueChange={setEmploymentType}>
               <SelectTrigger id="employmentType">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {EMPLOYMENT_TYPES.map((t) => (
-                  <SelectItem key={t.value} value={t.value}>
-                    {t.label}
+                {EMPLOYMENT_TYPES.map((et) => (
+                  <SelectItem key={et.value} value={et.value}>
+                    {t(et.labelKey)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -369,7 +373,7 @@ export default function AddConcurrentDialog({
 
           {/* 발효일 */}
           <div className="grid gap-2">
-            <Label htmlFor="effectiveDate">발효일 *</Label>
+            <Label htmlFor="effectiveDate">{t('concurrentEffectiveDate')}</Label>
             <Input
               id="effectiveDate"
               type="date"
@@ -380,10 +384,10 @@ export default function AddConcurrentDialog({
 
           {/* 사유 */}
           <div className="grid gap-2">
-            <Label htmlFor="reason">사유</Label>
+            <Label htmlFor="reason">{t('concurrentReason')}</Label>
             <Input
               id="reason"
-              placeholder="겸직 사유를 입력하세요"
+              placeholder={t('concurrentReasonPlaceholder')}
               value={reason}
               onChange={(e) => setReason(e.target.value)}
             />
@@ -401,14 +405,14 @@ export default function AddConcurrentDialog({
             onClick={() => onOpenChange(false)}
             disabled={submitting}
           >
-            취소
+            {t('cancel')}
           </Button>
           <Button
             className="bg-ctr-primary hover:bg-ctr-primary/90"
             onClick={handleSubmit}
             disabled={submitting}
           >
-            {submitting ? '처리 중...' : '추가'}
+            {submitting ? t('processing') : tc('add')}
           </Button>
         </DialogFooter>
       </DialogContent>

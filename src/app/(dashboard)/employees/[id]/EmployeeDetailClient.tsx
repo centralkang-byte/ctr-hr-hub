@@ -125,17 +125,13 @@ function formatDate(d: Date | string | null | undefined): string {
   return new Date(d).toLocaleDateString('ko-KR')
 }
 
-function calcTenure(hireDate: Date | string | null): string {
-  if (!hireDate) return '-'
+function calcTenure(hireDate: Date | string | null): { years: number; months: number } | null {
+  if (!hireDate) return null
   const start = new Date(hireDate)
   const now = new Date()
-  const years = now.getFullYear() - start.getFullYear()
-  const months = now.getMonth() - start.getMonth()
-  const total = years * 12 + months
-  if (total <= 0) return '0개월'
-  const y = Math.floor(total / 12)
-  const m = total % 12
-  return y > 0 ? `${y}년 ${m}개월` : `${m}개월`
+  const total = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth())
+  if (total <= 0) return { years: 0, months: 0 }
+  return { years: Math.floor(total / 12), months: total % 12 }
 }
 
 function getInitials(name: string): string {
@@ -527,7 +523,7 @@ export function EmployeeDetailClient({
             <InfoRow label={t('companyEntity')} value={employee.company?.name} />
             <InfoRow label={t('department')} value={employee.department?.name} />
             {employee.title && <InfoRow label={t('employeeTitle')} value={employee.title.name} />}
-            {employee.position && <InfoRow label="직위" value={employee.position.titleKo} />}
+            {employee.position && <InfoRow label={t('detailPositionLabel')} value={employee.position.titleKo} />}
             {canViewGrade && <InfoRow label={t('jobGrade')} value={employee.jobGrade?.name} />}
             <InfoRow label={t('jobCategory')} value={employee.jobCategory?.name} />
             {canViewSensitive && <InfoRow label={t('employmentType')} value={EMPLOYMENT_TYPE_LABELS[employee.employmentType] ?? employee.employmentType} />}
@@ -541,6 +537,15 @@ export function EmployeeDetailClient({
   }
 
   // ─── Render ─────────────────────────────────────────────────
+
+  const tenure = calcTenure(employee.hireDate)
+  const tenureText = tenure
+    ? tenure.years > 0
+      ? t('tenureYearsMonths', tenure)
+      : tenure.months > 0
+        ? t('tenureMonthsOnly', tenure)
+        : t('tenureZeroMonths')
+    : '-'
 
   return (
     <div className="flex h-full">
@@ -563,7 +568,7 @@ export function EmployeeDetailClient({
         phone={employee.phone}
         birthDate={employee.birthDate}
         hireDate={employee.hireDate}
-        tenureText={calcTenure(employee.hireDate)}
+        tenureText={tenureText}
         status={employee.status}
         statusLabel={STATUS_LABELS[employee.status] ?? employee.status}
         canViewGrade={canViewGrade}
@@ -601,29 +606,29 @@ export function EmployeeDetailClient({
             <TabsList className="mb-4">
               <TabsTrigger value="profile">
                 <User className="mr-1.5 h-4 w-4" />
-                프로필
+                {t('detailTabProfile')}
               </TabsTrigger>
               <TabsTrigger value="assignment-history">
                 <ArrowUpDown className="mr-1.5 h-4 w-4" />
-                발령이력
+                {t('detailTabAssignment')}
               </TabsTrigger>
               {isHrAdmin && (
                 <TabsTrigger value="compensation-info">
                   <Building2 className="mr-1.5 h-4 w-4" />
-                  급여정보
+                  {t('detailTabCompensation')}
                 </TabsTrigger>
               )}
               <TabsTrigger value="attendance">
                 <Clock className="mr-1.5 h-4 w-4" />
-                근태현황
+                {t('detailTabAttendance')}
               </TabsTrigger>
               <TabsTrigger value="loa">
                 <Shield className="mr-1.5 h-4 w-4" />
-                휴직
+                {t('detailTabLoa')}
               </TabsTrigger>
               <TabsTrigger value="performance">
                 <TrendingUp className="mr-1.5 h-4 w-4" />
-                평가결과
+                {t('detailTabPerformance')}
               </TabsTrigger>
             </TabsList>
 
@@ -634,14 +639,14 @@ export function EmployeeDetailClient({
                   <div className="mb-4 flex justify-end">
                     <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
                       <Pencil className="mr-1 h-4 w-4" />
-                      편집
+                      {t('detailEdit')}
                     </Button>
                   </div>
                 )}
                 {editing && (
                   <div className="mb-4 rounded-lg bg-amber-500/15 border border-amber-300 px-4 py-3">
                     <p className="text-xs text-amber-700">
-                      ⚠️ 소속정보(부서/직급/고용형태)는 발령 프로세스를 통해서만 변경 가능합니다.
+                      ⚠️ {t('detailAssignmentWarning')}
                     </p>
                   </div>
                 )}
@@ -682,8 +687,8 @@ export function EmployeeDetailClient({
               <div className="rounded-xl border border-border bg-card p-6">
                 <div className="flex flex-col items-center py-12 text-muted-foreground">
                   <TrendingUp className="h-10 w-10 mb-3 text-border" />
-                  <p className="text-sm font-medium text-muted-foreground">평가결과</p>
-                  <p className="text-xs mt-1">B3 세션에서 구현 예정입니다.</p>
+                  <p className="text-sm font-medium text-muted-foreground">{t('detailTabPerformance')}</p>
+                  <p className="text-xs mt-1">{t('detailPerformanceComingSoon')}</p>
                 </div>
               </div>
             </TabsContent>

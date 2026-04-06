@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -51,6 +52,8 @@ export default function EndConcurrentDialog({
   onOpenChange,
   onSuccess,
 }: EndConcurrentDialogProps) {
+  const t = useTranslations('employee')
+
   const [endDate, setEndDate] = useState(getToday)
   const [reason, setReason] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -68,12 +71,12 @@ export default function EndConcurrentDialog({
 
   const handleSubmit = async () => {
     if (!endDate) {
-      setError('종료일을 입력해주세요.')
+      setError(t('concurrentEndDateRequired'))
       return
     }
 
     if (endDate < assignment.effectiveDate) {
-      setError(`종료일은 발효일(${assignment.effectiveDate}) 이후여야 합니다.`)
+      setError(t('concurrentEndDateAfterStart', { date: assignment.effectiveDate }))
       return
     }
 
@@ -89,12 +92,12 @@ export default function EndConcurrentDialog({
         },
       )
 
-      toast({ title: '겸직이 종료되었습니다.' })
+      toast({ title: t('concurrentEndSuccess') })
       onSuccess()
       onOpenChange(false)
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : '겸직 종료 중 오류가 발생했습니다.'
+        err instanceof Error ? err.message : t('concurrentEndError')
       setError(message)
     } finally {
       setSubmitting(false)
@@ -105,16 +108,16 @@ export default function EndConcurrentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[420px]">
         <DialogHeader>
-          <DialogTitle>겸직 종료</DialogTitle>
+          <DialogTitle>{t('concurrentEndTitle')}</DialogTitle>
           <DialogDescription>
-            {label} 겸직을 종료합니다.
+            {label} {t('concurrentEndDescription')}
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
           {/* 종료일 */}
           <div className="grid gap-2">
-            <Label htmlFor="endDate">종료일 *</Label>
+            <Label htmlFor="endDate">{t('concurrentEndDateLabel')}</Label>
             <Input
               id="endDate"
               type="date"
@@ -126,10 +129,10 @@ export default function EndConcurrentDialog({
 
           {/* 사유 */}
           <div className="grid gap-2">
-            <Label htmlFor="endReason">사유</Label>
+            <Label htmlFor="endReason">{t('assignmentReason')}</Label>
             <Input
               id="endReason"
-              placeholder="종료 사유를 입력하세요"
+              placeholder={t('concurrentEndReasonPlaceholder')}
               value={reason}
               onChange={(e) => setReason(e.target.value)}
             />
@@ -147,14 +150,14 @@ export default function EndConcurrentDialog({
             onClick={() => onOpenChange(false)}
             disabled={submitting}
           >
-            취소
+            {t('cancel')}
           </Button>
           <Button
             variant="destructive"
             onClick={handleSubmit}
             disabled={submitting}
           >
-            {submitting ? '처리 중...' : '종료'}
+            {submitting ? t('processing') : t('assignmentEnd')}
           </Button>
         </DialogFooter>
       </DialogContent>

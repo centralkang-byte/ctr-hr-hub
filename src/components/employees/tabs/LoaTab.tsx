@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Shield, Clock, CheckCircle2, XCircle, AlertCircle, Pause } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -30,13 +31,13 @@ interface LoaRecord {
 }
 
 const STATUS_LABELS: Record<string, string> = {
-  REQUESTED: '신청',
-  APPROVED: '승인',
-  ACTIVE: '휴직중',
-  RETURN_REQUESTED: '복직신청',
-  COMPLETED: '복직완료',
-  REJECTED: '거부',
-  CANCELLED: '취소',
+  REQUESTED: 'loaStatusRequested',
+  APPROVED: 'loaStatusApproved',
+  ACTIVE: 'loaStatusActive',
+  RETURN_REQUESTED: 'loaStatusReturnRequested',
+  COMPLETED: 'loaStatusCompleted',
+  REJECTED: 'loaStatusRejected',
+  CANCELLED: 'loaStatusCancelled',
 }
 
 const STATUS_ICONS: Record<string, typeof Clock> = {
@@ -72,6 +73,7 @@ function calcDuration(start: string, end: string | null) {
 }
 
 export function LoaTab({ employeeId }: Props) {
+  const t = useTranslations('employee')
   const [records, setRecords] = useState<LoaRecord[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -103,7 +105,7 @@ export function LoaTab({ employeeId }: Props) {
       <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex flex-col items-center py-12 text-muted-foreground">
           <Shield className="h-10 w-10 mb-3 text-border" />
-          <p className="text-sm font-medium text-muted-foreground">휴직 이력이 없습니다</p>
+          <p className="text-sm font-medium text-muted-foreground">{t('loaNoHistory')}</p>
         </div>
       </div>
     )
@@ -116,14 +118,14 @@ export function LoaTab({ employeeId }: Props) {
   return (
     <div className="rounded-xl border border-border bg-card p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold text-foreground">휴직 이력</h3>
-        <span className="text-sm text-muted-foreground">{records.length}건</span>
+        <h3 className="text-base font-semibold text-foreground">{t('loaHistoryTitle')}</h3>
+        <span className="text-sm text-muted-foreground">{records.length}{t('loaCountSuffix')}</span>
       </div>
 
       {/* 활성 휴직 */}
       {active.length > 0 && (
         <div className="space-y-3">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">진행중</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('loaInProgress')}</p>
           {active.map(r => <LoaCard key={r.id} record={r} />)}
         </div>
       )}
@@ -131,7 +133,7 @@ export function LoaTab({ employeeId }: Props) {
       {/* 과거 이력 */}
       {past.length > 0 && (
         <div className="space-y-3">
-          {active.length > 0 && <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider pt-2">이전 이력</p>}
+          {active.length > 0 && <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider pt-2">{t('loaPastHistory')}</p>}
           {past.map(r => <LoaCard key={r.id} record={r} />)}
         </div>
       )}
@@ -140,6 +142,7 @@ export function LoaTab({ employeeId }: Props) {
 }
 
 function LoaCard({ record: r }: { record: LoaRecord }) {
+  const t = useTranslations('employee')
   const StatusIcon = STATUS_ICONS[r.status] ?? Clock
   const days = calcDuration(r.startDate, r.actualEndDate ?? r.expectedEndDate)
 
@@ -153,28 +156,28 @@ function LoaCard({ record: r }: { record: LoaRecord }) {
               'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
               r.type.category === 'STATUTORY' ? 'bg-primary/5 text-primary' : 'bg-muted/50 text-muted-foreground',
             )}>
-              {r.type.category === 'STATUTORY' ? '법정' : '약정'}
+              {r.type.category === 'STATUTORY' ? t('loaCategoryStatutory') : t('loaCategoryContractual')}
             </span>
             {r.splitSequence > 1 && (
-              <span className="text-xs text-muted-foreground">{r.splitSequence}차</span>
+              <span className="text-xs text-muted-foreground">{r.splitSequence}{t('loaSplitSuffix')}</span>
             )}
           </div>
           <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <span>{formatDate(r.startDate)} ~ {formatDate(r.actualEndDate ?? r.expectedEndDate)}</span>
-            <span className="text-xs">({days}일)</span>
+            <span className="text-xs">({days}{t('loaDaySuffix')})</span>
           </div>
           {r.reason && (
             <p className="mt-1 text-xs text-muted-foreground truncate">{r.reason}</p>
           )}
           {r.approver && (
             <p className="mt-1 text-xs text-muted-foreground">
-              승인: {r.approver.name} ({formatDate(r.approvedAt)})
+              {t('loaApproverLabel')}{r.approver.name} ({formatDate(r.approvedAt)})
             </p>
           )}
         </div>
         <Badge className={cn('shrink-0', STATUS_COLORS[r.status])}>
           <StatusIcon className="h-3 w-3 mr-1" />
-          {STATUS_LABELS[r.status] ?? r.status}
+          {t(STATUS_LABELS[r.status] ?? r.status)}
         </Badge>
       </div>
     </div>

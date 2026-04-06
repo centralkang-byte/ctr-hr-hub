@@ -76,23 +76,24 @@ type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
 
 export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps) {
   const tc = useTranslations('common')
+  const t = useTranslations('employee')
 
-  const EDITABLE_FIELDS: { key: EditableField; label: string }[] = [
-    { key: 'phone', label: '연락처' },
-    { key: 'emergencyContact', label: '비상 연락처 이름' },
-    { key: 'emergencyContactPhone', label: '비상 연락처 전화번호' },
+  const EDITABLE_FIELDS: { key: EditableField; labelKey: string }[] = [
+    { key: 'phone', labelKey: 'selfServicePhone' },
+    { key: 'emergencyContact', labelKey: 'selfServiceEmergencyName' },
+    { key: 'emergencyContactPhone', labelKey: 'selfServiceEmergencyPhone' },
   ]
 
   const FIELD_LABELS: Record<string, string> = {
-    phone: '연락처',
-    emergencyContact: '비상 연락처 이름',
-    emergencyContactPhone: '비상 연락처 전화번호',
+    phone: t('selfServicePhone'),
+    emergencyContact: t('selfServiceEmergencyName'),
+    emergencyContactPhone: t('selfServiceEmergencyPhone'),
   }
 
-  const STATUS_MAP: Record<string, { label: string; variant: BadgeVariant }> = {
-    CHANGE_PENDING: { label: '대기중', variant: 'outline' },
-    CHANGE_APPROVED: { label: '승인됨', variant: 'default' },
-    CHANGE_REJECTED: { label: '반려됨', variant: 'destructive' },
+  const STATUS_MAP: Record<string, { labelKey: string; variant: BadgeVariant }> = {
+    CHANGE_PENDING: { labelKey: 'selfServiceStatusPending', variant: 'outline' },
+    CHANGE_APPROVED: { labelKey: 'selfServiceStatusApproved', variant: 'default' },
+    CHANGE_REJECTED: { labelKey: 'selfServiceStatusRejected', variant: 'destructive' },
   }
 
   const [profile, setProfile] = useState<EmployeeProfile | null>(null)
@@ -141,7 +142,7 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
 
   async function handleSubmit() {
     if (!editField || !newValue.trim()) {
-      setErrorMsg('새 값 입력')
+      setErrorMsg(t('selfServiceEnterNewValueError'))
       return
     }
 
@@ -156,7 +157,7 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
       await fetchData()
     } catch (err) {
       setErrorMsg(
-        err instanceof Error ? err.message : '변경 요청 제출 실패',
+        err instanceof Error ? err.message : t('selfServiceSubmitError'),
       )
     } finally {
       setSubmitting(false)
@@ -170,7 +171,7 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
   if (loading) {
     return (
       <div className="space-y-6">
-        <PageHeader title={'내 프로필'} description={'개인 정보를 확인하고 변경을 요청합니다'} />
+        <PageHeader title={t('selfServiceMyProfile')} description={t('selfServiceDescription')} />
         <div className="grid gap-4 md:grid-cols-2">
           {[1, 2].map((i) => (
             <Skeleton key={i} className="h-48" />
@@ -183,8 +184,8 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
   if (!profile) {
     return (
       <div className="space-y-6">
-        <PageHeader title={'내 프로필'} />
-        <EmptyState title={'프로필 로드 실패'} />
+        <PageHeader title={t('selfServiceMyProfile')} />
+        <EmptyState title={t('selfServiceLoadError')} />
       </div>
     )
   }
@@ -195,43 +196,43 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
   return (
     <div className="space-y-6">
       <PageHeader
-        title={'내 프로필'}
-        description={'개인 정보를 확인하고 변경을 요청합니다'}
+        title={t('selfServiceMyProfile')}
+        description={t('selfServiceDescription')}
       />
 
       {/* ─── Profile Info (read-only) ─── */}
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">{'기본 정보'}</CardTitle>
+            <CardTitle className="text-lg">{t('selfServiceBasicInfo')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <InfoRow label={'이름'} value={profile.name} />
+            <InfoRow label={t('nameKorean')} value={profile.name} />
             {profile.nameEn && (
-              <InfoRow label={'영문 이름'} value={profile.nameEn} />
+              <InfoRow label={t('nameEn')} value={profile.nameEn} />
             )}
-            <InfoRow label={'사번'} value={profile.employeeNo} />
-            <InfoRow label={'이메일'} value={profile.email} />
-            <InfoRow label={'부서'} value={profile.department?.name ?? '-'} />
-            <InfoRow label={'직급'} value={profile.jobGrade?.name ?? '-'} />
-            <InfoRow label={'직군'} value={profile.jobCategory?.name ?? '-'} />
-            <InfoRow label={'입사일'} value={formatDate(profile.hireDate)} />
+            <InfoRow label={t('employeeCode')} value={profile.employeeNo} />
+            <InfoRow label={t('email')} value={profile.email} />
+            <InfoRow label={t('department')} value={profile.department?.name ?? '-'} />
+            <InfoRow label={t('jobGrade')} value={profile.jobGrade?.name ?? '-'} />
+            <InfoRow label={t('jobCategory')} value={profile.jobCategory?.name ?? '-'} />
+            <InfoRow label={t('hireDate')} value={formatDate(profile.hireDate)} />
           </CardContent>
         </Card>
 
         {/* ─── Editable Fields ─── */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">{'수정 가능 항목'}</CardTitle>
+            <CardTitle className="text-lg">{t('selfServiceEditableFields')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {EDITABLE_FIELDS.map(({ key, label }) => (
+            {EDITABLE_FIELDS.map(({ key, labelKey }) => (
               <div
                 key={key}
                 className="flex items-center justify-between rounded-md border p-3"
               >
                 <div>
-                  <p className="text-xs text-muted-foreground">{label}</p>
+                  <p className="text-xs text-muted-foreground">{t(labelKey)}</p>
                   <p className="text-sm font-medium">
                     {profile[key] || '-'}
                   </p>
@@ -242,7 +243,7 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
                   onClick={() => openEditDialog(key)}
                 >
                   <Pencil className="mr-1 h-3 w-3" />
-                  {'변경 요청'}
+                  {t('selfServiceChangeRequest')}
                 </Button>
               </div>
             ))}
@@ -253,18 +254,18 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
       {/* ─── Request History ─── */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">{'변경 요청 내역'}</CardTitle>
+          <CardTitle className="text-lg">{t('selfServiceChangeHistory')}</CardTitle>
         </CardHeader>
         <CardContent>
           {requests.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted-foreground">
-              {'변경 요청 내역이 없습니다'}
+              {t('selfServiceNoHistory')}
             </p>
           ) : (
             <div className="space-y-3">
               {requests.map((r) => {
-                const status = STATUS_MAP[r.status] ?? {
-                  label: r.status,
+                const statusEntry = STATUS_MAP[r.status] ?? {
+                  labelKey: null,
                   variant: 'outline' as BadgeVariant,
                 }
                 return (
@@ -277,17 +278,17 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
                         {FIELD_LABELS[r.fieldName] ?? r.fieldName}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {r.oldValue ?? `(${'값 없음'})`} → {r.newValue}
+                        {r.oldValue ?? `(${t('selfServiceNoValue')})`} → {r.newValue}
                       </p>
                       {r.rejectionReason && (
                         <p className="text-xs text-destructive">
-                          {'반려 사유'}: {r.rejectionReason}
+                          {t('selfServiceRejectionReason')}: {r.rejectionReason}
                         </p>
                       )}
                     </div>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
                       <span>{formatDateTime(r.createdAt)}</span>
-                      <Badge variant={status.variant}>{status.label}</Badge>
+                      <Badge variant={statusEntry.variant}>{statusEntry.labelKey ? t(statusEntry.labelKey) : r.status}</Badge>
                     </div>
                   </div>
                 )
@@ -302,20 +303,20 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {editField ? FIELD_LABELS[editField] : ''} {'변경 요청'}
+              {editField ? FIELD_LABELS[editField] : ''} {t('selfServiceChangeRequest')}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
-              <Label className="text-muted-foreground">{'현재 값'}</Label>
+              <Label className="text-muted-foreground">{t('selfServiceCurrentValue')}</Label>
               <Input value={currentFieldValue} readOnly className="mt-1 bg-muted" />
             </div>
             <div>
-              <Label>{'새 값'}</Label>
+              <Label>{t('selfServiceNewValue')}</Label>
               <Input
                 value={newValue}
                 onChange={(e) => setNewValue(e.target.value)}
-                placeholder={'새 값을 입력하세요...'}
+                placeholder={t('selfServiceEnterNewValue')}
                 className="mt-1"
               />
             </div>
@@ -332,7 +333,7 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
               {tc('cancel')}
             </Button>
             <Button onClick={guardedSubmit} disabled={submitting}>
-              {submitting ? '요청 중...' : '변경 요청'}
+              {submitting ? t('selfServiceRequesting') : t('selfServiceChangeRequest')}
             </Button>
           </DialogFooter>
         </DialogContent>
