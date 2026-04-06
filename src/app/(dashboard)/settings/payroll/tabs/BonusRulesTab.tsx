@@ -19,10 +19,10 @@ interface BonusSettings {
 
 const DEFAULTS: BonusSettings = {
   gradeMultipliers: [
-    { grade: 'E', label: '탁월', multiplier: 200 },
-    { grade: 'M_PLUS', label: '우수', multiplier: 150 },
+    { grade: 'O', label: '탁월', multiplier: 200 },
+    { grade: 'E', label: '우수', multiplier: 150 },
     { grade: 'M', label: '평균', multiplier: 100 },
-    { grade: 'B', label: '미흡', multiplier: 0 },
+    { grade: 'S', label: '미흡', multiplier: 0 },
   ],
   bonusType: 'MONTHLY_SALARY',
   maxMultiplier: 300,

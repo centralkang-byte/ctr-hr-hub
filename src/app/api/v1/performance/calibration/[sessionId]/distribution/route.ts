@@ -17,10 +17,10 @@ import type { SessionUser } from '@/types'
 
 // Fallback guideline percentages (overridden by CompanyProcessSetting if present)
 const DEFAULT_GRADE_GUIDELINES: Record<string, number> = {
-    E: 10,
-    M_PLUS: 30,
+    O: 10,
+    E: 30,
     M: 50,
-    B: 10,
+    S: 10,
 }
 const DEFAULT_DEVIATION_THRESHOLD = 5
 
@@ -54,7 +54,7 @@ async function getCalibrationDistributionSettings(companyId: string): Promise<{
 
     if (guidePcts && guidePcts.length === 4) {
         return {
-            guidelines: { E: guidePcts[0], M_PLUS: guidePcts[1], M: guidePcts[2], B: guidePcts[3] },
+            guidelines: { O: guidePcts[0], E: guidePcts[1], M: guidePcts[2], S: guidePcts[3] },
             deviationThreshold,
             forced,
         }
@@ -118,7 +118,7 @@ export const GET = withPermission(
             const total = reviews.length
 
             // Overall distribution
-            const gradeCount: Record<string, number> = { E: 0, M_PLUS: 0, M: 0, B: 0 }
+            const gradeCount: Record<string, number> = { O: 0, E: 0, M: 0, S: 0 }
             for (const review of reviews) {
                 const grade = (review.finalGrade ?? review.originalGrade ?? 'M') as string
                 if (gradeCount[grade] !== undefined) {
@@ -147,7 +147,7 @@ export const GET = withPermission(
                 const dept = extractPrimaryAssignment(review.employee?.assignments ?? [])?.department
                 if (!dept) continue
                 if (!deptMap.has(dept.id)) {
-                    deptMap.set(dept.id, { name: dept.name, grades: { E: 0, M_PLUS: 0, M: 0, B: 0 }, total: 0 })
+                    deptMap.set(dept.id, { name: dept.name, grades: { O: 0, E: 0, M: 0, S: 0 }, total: 0 })
                 }
                 const d = deptMap.get(dept.id)!
                 const grade = (review.finalGrade ?? review.originalGrade ?? 'M') as string

@@ -13,7 +13,7 @@ import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
-const GRADE_KEYS = ['E', 'M_PLUS', 'M', 'B'] as const
+const GRADE_KEYS = ['O', 'E', 'M', 'S'] as const
 const BAND_KEYS = ['LOW', 'MID', 'HIGH'] as const
 
 // ─── GET ──────────────────────────────────────────────────

@@ -23,7 +23,7 @@ export interface BurnoutResult {
   conditionsMet: number             // out of 3
 }
 
-const GRADE_ORDER = ['E', 'M_PLUS', 'M', 'B']
+const GRADE_ORDER = ['O', 'E', 'M', 'S']
 
 export function detectBurnout(input: BurnoutInput): BurnoutResult {
   const conditions: string[] = []

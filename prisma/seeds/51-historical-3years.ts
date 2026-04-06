@@ -251,7 +251,7 @@ export async function seedHistorical3Years(prisma: PrismaClient) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const evalBatch: any[] = []
 
-    const gradeDistribution = ['E', 'M_PLUS', 'M_PLUS', 'M_PLUS', 'M', 'M', 'M', 'M', 'M', 'B']
+    const gradeDistribution = ['O', 'E', 'E', 'E', 'M', 'M', 'M', 'M', 'M', 'S']
 
     for (const emp of ctrEmps) {
       const hireDate = new Date(emp.hireDate)

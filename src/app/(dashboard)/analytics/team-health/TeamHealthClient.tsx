@@ -138,7 +138,7 @@ export default function TeamHealthClient({ user: _user }: { user: SessionUser })
                   <td className={cn(TABLE_STYLES.cellRight, m.weeklyOvertime > 10 && 'text-destructive font-medium')}>{m.weeklyOvertime}h</td>
                   <td className={cn(TABLE_STYLES.cellRight, m.leaveUsageRate < 30 && 'text-amber-600 font-medium')}>{m.leaveUsageRate}%</td>
                   <td className={cn(TABLE_STYLES.cell, 'text-center')}>
-                    <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${m.lastGrade === 'B' ? 'bg-destructive/5 text-destructive' : 'bg-border text-foreground'}`}>
+                    <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${m.lastGrade === 'S' ? 'bg-destructive/5 text-destructive' : 'bg-border text-foreground'}`}>
                       {m.lastGrade}
                     </span>
                   </td>

@@ -153,10 +153,10 @@ export function maskCycleForEmployee<T extends CycleForMasking>(
 
 // Settings-connected: grade labels per company (defaults below)
 export const GRADE_LABELS: Record<string, { ko: string; en: string }> = {
-    E: { ko: '탁월(Exceeds)', en: 'Exceeds Expectations' },
-    M_PLUS: { ko: '우수(Meets+)', en: 'Meets+ Expectations' },
+    O: { ko: '탁월(Outstanding)', en: 'Outstanding' },
+    E: { ko: '우수(Exceeds)', en: 'Exceeds Expectations' },
     M: { ko: '보통(Meets)', en: 'Meets Expectations' },
-    B: { ko: '미흡(Below)', en: 'Below Expectations' },
+    S: { ko: '미흡(Sufficient)', en: 'Sufficient' },
 }
 
 export function getGradeLabel(gradeCode: string | null | undefined, lang: 'ko' | 'en' = 'ko'): string {

@@ -33,7 +33,7 @@ interface PeerCandidate {
     employeeId: string; name: string; department: string; jobGrade: string; relevanceScore: number
 }
 
-const GRADES = ['E', 'M_PLUS', 'M', 'B']
+const GRADES = ['O', 'E', 'M', 'S']
 
 // ─── Star Rating (reused pattern from D-2a) ───────────────
 

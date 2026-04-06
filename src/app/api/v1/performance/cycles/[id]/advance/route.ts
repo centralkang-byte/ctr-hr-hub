@@ -242,7 +242,7 @@ export const PUT = withPermission(
 
             if (managerEval) {
               // Resolve grade: enum fields take priority, fall back to performanceGrade string
-              const validGrades = ['E', 'M_PLUS', 'M', 'B'] as const
+              const validGrades = ['O', 'E', 'M', 'S'] as const
               type PGrade = typeof validGrades[number]
               const pgAsEnum = validGrades.includes(managerEval.performanceGrade as PGrade)
                 ? (managerEval.performanceGrade as PGrade)

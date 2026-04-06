@@ -22,8 +22,8 @@ import type { PerformanceGrade } from '@/generated/prisma/client'
 const adjustSchema = z.object({
     reviewId: z.string().uuid().optional(),
     employeeId: z.string().uuid().optional(),  // alias — resolved to reviewId via DB lookup
-    newGrade: z.enum(['E', 'M_PLUS', 'M', 'B']).optional(),
-    adjustedGrade: z.enum(['E', 'M_PLUS', 'M', 'B']).optional(),  // alias for newGrade
+    newGrade: z.enum(['O', 'E', 'M', 'S']).optional(),
+    adjustedGrade: z.enum(['O', 'E', 'M', 'S']).optional(),  // alias for newGrade
     reason: z.string().min(10, '조정 사유는 최소 10자 이상이어야 합니다.'),
 }).transform(({ employeeId: _employeeId, adjustedGrade, ...rest }) => ({
     ...rest,

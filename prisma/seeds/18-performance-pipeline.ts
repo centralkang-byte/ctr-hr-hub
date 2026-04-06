@@ -117,18 +117,18 @@ export async function seedPerformancePipeline(prisma: PrismaClient) {
 
     // Design spec v1.1 Section 13 — default merit matrix
     const meritData = [
-        { grade: 'E', band: 'LOW', min: 8, max: 10, rec: 9 },
-        { grade: 'E', band: 'MID', min: 6, max: 8, rec: 7 },
-        { grade: 'E', band: 'HIGH', min: 4, max: 6, rec: 5 },
-        { grade: 'M_PLUS', band: 'LOW', min: 5, max: 7, rec: 6 },
-        { grade: 'M_PLUS', band: 'MID', min: 4, max: 6, rec: 5 },
-        { grade: 'M_PLUS', band: 'HIGH', min: 3, max: 5, rec: 4 },
+        { grade: 'O', band: 'LOW', min: 8, max: 10, rec: 9 },
+        { grade: 'O', band: 'MID', min: 6, max: 8, rec: 7 },
+        { grade: 'O', band: 'HIGH', min: 4, max: 6, rec: 5 },
+        { grade: 'E', band: 'LOW', min: 5, max: 7, rec: 6 },
+        { grade: 'E', band: 'MID', min: 4, max: 6, rec: 5 },
+        { grade: 'E', band: 'HIGH', min: 3, max: 5, rec: 4 },
         { grade: 'M', band: 'LOW', min: 3, max: 5, rec: 4 },
         { grade: 'M', band: 'MID', min: 2, max: 4, rec: 3 },
         { grade: 'M', band: 'HIGH', min: 1, max: 3, rec: 2 },
-        { grade: 'B', band: 'LOW', min: 0, max: 2, rec: 1 },
-        { grade: 'B', band: 'MID', min: 0, max: 1, rec: 0.5 },
-        { grade: 'B', band: 'HIGH', min: 0, max: 0, rec: 0 },
+        { grade: 'S', band: 'LOW', min: 0, max: 2, rec: 1 },
+        { grade: 'S', band: 'MID', min: 0, max: 1, rec: 0.5 },
+        { grade: 'S', band: 'HIGH', min: 0, max: 0, rec: 0 },
     ]
 
     let meritCount = 0
