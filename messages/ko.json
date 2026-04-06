@@ -272,7 +272,21 @@
     "myProfile": "내 프로필",
     "sessionExpiring": "세션이 곧 만료됩니다",
     "sessionExpiringDesc": "작업 중인 데이터가 사라질 수 있습니다. 세션을 연장하시겠습니까?",
-    "extendSession": "세션 연장"
+    "extendSession": "세션 연장",
+    "ssoError": {
+      "OAuthSignin": "M365 로그인 시작 중 오류가 발생했습니다.",
+      "OAuthCallback": "M365 인증 콜백 처리 중 오류가 발생했습니다.",
+      "OAuthCreateAccount": "계정 생성 중 오류가 발생했습니다.",
+      "Callback": "인증 콜백 오류가 발생했습니다.",
+      "AccessDenied": "이메일 또는 비밀번호가 올바르지 않습니다.",
+      "CredentialsSignin": "이메일 또는 비밀번호가 올바르지 않습니다.",
+      "TooManyAttempts": "로그인 시도가 너무 많습니다. 1분 후 다시 시도하세요.",
+      "Configuration": "서버 설정 오류입니다. 관리자에게 문의하세요.",
+      "fallback": "로그인 오류: {code}"
+    },
+    "brandSlogan": "Central to your safe mobility",
+    "integratedHrSystem": "통합 인사관리 시스템",
+    "contactHr": "계정이 없거나 로그인이 불가한 경우 <emphasis>HR 담당자</emphasis>에게 문의해주세요."
   },
   "menu": {
     "home": "홈",
@@ -6493,5 +6507,36 @@
     "composition": "보상 구성",
     "yearlyTrend": "연도별 추이",
     "totalPaid": "총 지급액"
+  },
+  "errorPage": {
+    "error": {
+      "code": "오류 발생",
+      "title": "문제가 발생했습니다",
+      "description": "죄송합니다. 예기치 않은 오류가 발생했습니다.",
+      "action": "다시 시도하거나 홈으로 돌아가세요."
+    },
+    "notFound": {
+      "code": "404",
+      "title": "페이지를 찾을 수 없습니다",
+      "description": "요청하신 페이지가 존재하지 않거나 이동되었습니다.",
+      "action": "URL을 확인하거나 홈으로 돌아가세요."
+    },
+    "forbidden": {
+      "code": "403",
+      "title": "접근 권한이 없습니다",
+      "description": "이 페이지에 접근할 권한이 없습니다.",
+      "action": "관리자에게 문의하거나 홈으로 돌아가세요."
+    },
+    "errorCode": "오류 코드: {code}",
+    "retry": "다시 시도",
+    "goHome": "홈으로 돌아가기"
+  },
+  "preHire": {
+    "welcome": "{name}님, 환영합니다",
+    "notYetEffective": "발령일이 도래하지 않았습니다.",
+    "effectiveDate": "발령일:",
+    "affiliation": "소속:",
+    "comeBackOn": "{date}에 다시 접근해 주세요.",
+    "noAssignment": "발령 정보가 없습니다. 관리자에게 문의해 주세요."
   }
 }

@@ -9,6 +9,7 @@
     "lint": "next lint",
     "i18n:validate": "tsx scripts/validate-i18n-keys.ts",
     "i18n:fix": "tsx scripts/validate-i18n-keys.ts --fix",
+    "i18n:detect": "tsx scripts/detect-hardcoded-korean.ts",
     "qa:inventory": "tsx scripts/qa/inventory.ts",
     "postinstall": "prisma generate",
     "seed:dev": "npx tsx prisma/seed-dev.ts",

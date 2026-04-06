@@ -45,18 +45,18 @@ export default function GlobalError({
             Something went wrong
           </h2>
           <p style={{ fontSize: 14, color: '#666', marginBottom: 24 }}>
-            예기치 않은 오류가 발생했습니다. 다시 시도해주세요.
+            An unexpected error occurred. Please try again.
           </p>
           {error.digest && (
             <p style={{ fontSize: 12, color: '#999', marginBottom: 16 }}>
-              오류 코드: {error.digest}
+              Error code: {error.digest}
             </p>
           )}
           <button
             onClick={reset}
             style={{
               padding: '8px 20px',
-              backgroundColor: '#5E81F4',
+              backgroundColor: '#4a40e0',
               color: 'white',
               border: 'none',
               borderRadius: 8,
@@ -65,7 +65,7 @@ export default function GlobalError({
               cursor: 'pointer',
             }}
           >
-            다시 시도
+            Try again
           </button>
         </div>
       </body>

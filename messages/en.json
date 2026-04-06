@@ -272,7 +272,21 @@
     "myProfile": "My Profile",
     "sessionExpiring": "Session Expiring Soon",
     "sessionExpiringDesc": "Your session is about to expire. Unsaved work may be lost. Would you like to extend?",
-    "extendSession": "Extend Session"
+    "extendSession": "Extend Session",
+    "ssoError": {
+      "OAuthSignin": "An error occurred while starting M365 login.",
+      "OAuthCallback": "An error occurred during M365 authentication callback.",
+      "OAuthCreateAccount": "An error occurred while creating account.",
+      "Callback": "An authentication callback error occurred.",
+      "AccessDenied": "Email or password is incorrect.",
+      "CredentialsSignin": "Email or password is incorrect.",
+      "TooManyAttempts": "Too many login attempts. Please try again in 1 minute.",
+      "Configuration": "Server configuration error. Please contact administrator.",
+      "fallback": "Login error: {code}"
+    },
+    "brandSlogan": "Central to your safe mobility",
+    "integratedHrSystem": "Integrated HR Management System",
+    "contactHr": "If you cannot log in, please contact <emphasis>HR administrator</emphasis>."
   },
   "menu": {
     "home": "Home",
@@ -6480,5 +6494,36 @@
     "composition": "Compensation Composition",
     "yearlyTrend": "Yearly Trend",
     "totalPaid": "Total Paid"
+  },
+  "errorPage": {
+    "error": {
+      "code": "Error",
+      "title": "Something went wrong",
+      "description": "An unexpected error occurred.",
+      "action": "Please try again or go back to the home page."
+    },
+    "notFound": {
+      "code": "404",
+      "title": "Page not found",
+      "description": "The page you requested does not exist or has been moved.",
+      "action": "Check the URL or go back to the home page."
+    },
+    "forbidden": {
+      "code": "403",
+      "title": "Access denied",
+      "description": "You do not have permission to access this page.",
+      "action": "Contact your administrator or go back to the home page."
+    },
+    "errorCode": "Error code: {code}",
+    "retry": "Try again",
+    "goHome": "Go to home"
+  },
+  "preHire": {
+    "welcome": "Welcome, {name}",
+    "notYetEffective": "Your assignment date has not arrived yet.",
+    "effectiveDate": "Effective date:",
+    "affiliation": "Affiliation:",
+    "comeBackOn": "Please come back on {date}.",
+    "noAssignment": "No assignment information found. Please contact your administrator."
   }
 }
