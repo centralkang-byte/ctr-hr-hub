@@ -3,7 +3,7 @@
 // Helpers for creating/managing off-cycle requests in tests
 // ════════════════════════════════════════════════════════���══
 
-import type { APIRequestContext } from '@playwright/test'
+import type { APIRequestContext, APIResponse } from '@playwright/test'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -53,23 +53,30 @@ export async function createOffCycleDraft(
     console.error(`[off-cycle-fixtures] POST failed: ${res.status()}`, JSON.stringify(body).slice(0, 300))
   }
   if (res.status() === 409) {
-    // Duplicate guard — cancel existing and retry
-    const listRes = await request.get(BASE_URL, {
-      params: {
-        employeeId: params.employeeId,
-        status: 'DRAFT',
-        limit: 1,
-      },
-    })
-    const listBody = await listRes.json()
-    const existing = listBody.data?.[0]
+    // Duplicate guard — cancel existing DRAFT or PENDING_APPROVAL, then retry
+    let existing: OffCycleRequest | undefined
+    for (const s of ['DRAFT', 'PENDING_APPROVAL'] as const) {
+      const listRes = await request.get(BASE_URL, {
+        params: { employeeId: params.employeeId, status: s, limit: 1 },
+      })
+      const listBody = await listRes.json()
+      existing = listBody.data?.[0]
+      if (existing) break
+    }
     if (existing) {
-      await cancelOffCycle(request, existing.id)
-      // Retry
+      const cancelRes = await cancelOffCycle(request, existing.id)
+      if (cancelRes.status() >= 400) {
+        console.error(`[off-cycle-fixtures] cancel failed: ${cancelRes.status()}`)
+        return body.data
+      }
       const retryRes = await request.post(BASE_URL, { data: postData })
       const retryBody = await retryRes.json()
+      if (retryRes.status() !== 201) {
+        console.error(`[off-cycle-fixtures] retry failed: ${retryRes.status()}`, JSON.stringify(retryBody).slice(0, 300))
+      }
       return retryBody.data
     }
+    console.error('[off-cycle-fixtures] 409 but no DRAFT/PENDING_APPROVAL found')
   }
   return body.data
 }
@@ -112,12 +119,13 @@ export async function rejectOffCycle(
 
 /**
  * Cancel a DRAFT or PENDING_APPROVAL request.
+ * Returns the APIResponse for error checking by callers.
  */
 export async function cancelOffCycle(
   request: APIRequestContext,
   id: string,
-): Promise<void> {
-  await request.post(`${BASE_URL}/${id}/cancel`)
+): Promise<APIResponse> {
+  return request.post(`${BASE_URL}/${id}/cancel`)
 }
 
 /**
