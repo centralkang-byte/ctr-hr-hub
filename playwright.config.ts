@@ -8,10 +8,10 @@ import { defineConfig, devices } from '@playwright/test'
 export default defineConfig({
   testDir: './e2e',
   globalSetup: './e2e/global-setup.ts',
-  fullyParallel: false,    // Run sequentially (tests may share state)
+  fullyParallel: true,     // Step 3: non-serial describes distribute tests across workers
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
-  workers: process.env.CI ? 2 : 2,   // Step 1: conservative parallelization (was 1)
+  workers: process.env.CI ? 2 : 4,   // Step 3: CI=2 (ubuntu 2vCPU/7GB), local=4
   reporter: [
     ['html', { open: 'never' }],
     ['list'],

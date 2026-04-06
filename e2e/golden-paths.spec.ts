@@ -11,14 +11,14 @@
 // ═══════════════════════════════════════════════════════════
 
 import { test, expect } from '@playwright/test'
-import { loginAs, assertPageLoads } from './helpers/auth'
+import { authFile, assertPageLoads } from './helpers/auth'
 
 // ─── GP1: Employee Self-Service ──────────────────────────
 
 test.describe('Golden Path 1: Employee Self-Service', () => {
-  test('Employee can view dashboard and leave page', async ({ page }) => {
-    await loginAs(page, 'EMPLOYEE')
+  test.use({ storageState: authFile('EMPLOYEE') })
 
+  test('Employee can view dashboard and leave page', async ({ page }) => {
     // Dashboard / home loads
     await assertPageLoads(page, '/home')
 
@@ -33,9 +33,9 @@ test.describe('Golden Path 1: Employee Self-Service', () => {
 // ─── GP2: Manager Team View ─────────────────────────────
 
 test.describe('Golden Path 2: Manager Team View', () => {
-  test('Manager can view team and approval pages', async ({ page }) => {
-    await loginAs(page, 'MANAGER')
+  test.use({ storageState: authFile('MANAGER') })
 
+  test('Manager can view team and approval pages', async ({ page }) => {
     // Home
     await assertPageLoads(page, '/home')
 
@@ -53,9 +53,9 @@ test.describe('Golden Path 2: Manager Team View', () => {
 // ─── GP3: HR Admin Operations ───────────────────────────
 
 test.describe('Golden Path 3: HR Admin Operations', () => {
-  test('HR Admin can access employee list and payroll', async ({ page }) => {
-    await loginAs(page, 'HR_ADMIN')
+  test.use({ storageState: authFile('HR_ADMIN') })
 
+  test('HR Admin can access employee list and payroll', async ({ page }) => {
     // Employee directory
     await assertPageLoads(page, '/directory')
 
@@ -73,9 +73,9 @@ test.describe('Golden Path 3: HR Admin Operations', () => {
 // ─── GP4: Performance Cycle ─────────────────────────────
 
 test.describe('Golden Path 4: Performance Cycle', () => {
-  test('HR Admin can view performance dashboard and goals', async ({ page }) => {
-    await loginAs(page, 'HR_ADMIN')
+  test.use({ storageState: authFile('HR_ADMIN') })
 
+  test('HR Admin can view performance dashboard and goals', async ({ page }) => {
     // Performance main
     await assertPageLoads(page, '/performance')
 
@@ -93,9 +93,9 @@ test.describe('Golden Path 4: Performance Cycle', () => {
 // ─── GP5: Analytics & Insights ──────────────────────────
 
 test.describe('Golden Path 5: Analytics & Insights', () => {
-  test('HR Admin can view analytics dashboards', async ({ page }) => {
-    await loginAs(page, 'HR_ADMIN')
+  test.use({ storageState: authFile('HR_ADMIN') })
 
+  test('HR Admin can view analytics dashboards', async ({ page }) => {
     // Analytics overview
     await assertPageLoads(page, '/analytics')
 

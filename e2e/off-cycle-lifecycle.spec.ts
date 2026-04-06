@@ -54,6 +54,7 @@ test.describe('Off-Cycle: HR_ADMIN Pages', () => {
 // ─── HR_ADMIN: API Lifecycle ────────────────────────────────
 
 test.describe('Off-Cycle: API Lifecycle', () => {
+  test.describe.configure({ mode: 'serial' })
   test.use({ storageState: authFile('HR_ADMIN') })
 
   let employeeId: string
