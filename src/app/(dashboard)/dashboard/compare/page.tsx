@@ -1,13 +1,17 @@
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import { authOptions } from '@/lib/auth'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { CompareClient } from './CompareClient'
 import { HomeSkeleton } from '@/components/shared/PageSkeleton'
 
-export const metadata = { title: '글로벌 법인 비교 | CTR HR Hub' }
+export async function generateMetadata() {
+  const t = await getTranslations('home')
+  return { title: t('compare.pageTitle') + ' | CTR HR Hub' }
+}
 
 export default async function ComparePage() {
   const session = await getServerSession(authOptions)

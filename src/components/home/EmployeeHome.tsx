@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import {
   Clock,
@@ -43,6 +44,7 @@ interface EmployeeSummary {
 // ─── Component ────────────────────────────────────────────
 
 export function EmployeeHome({ user }: EmployeeHomeProps) {
+  const t = useTranslations('home')
   const [summary, setSummary] = useState<EmployeeSummary | null>(null)
 
   useEffect(() => {
@@ -52,8 +54,9 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
       .catch(() => {})
   }, [])
 
+  // TODO: Replace string matching with a proper typeCode/category field from API
   const annualLeave = summary?.leaveBalance?.find(
-    (lb) => lb.policy.includes('연차') || lb.policy.includes('Annual'),
+    (lb) => /연차|annual|年假|nghỉ phép năm|vacaciones/i.test(lb.policy),
   )
 
   return (
@@ -61,9 +64,9 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
       {/* ── Greeting ── */}
       <div>
         <h1 className="text-2xl font-bold text-foreground">
-          안녕하세요, {user.name}님 👋
+          {t('employee.greetingName', { name: user.name })}
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">오늘도 좋은 하루 되세요.</p>
+        <p className="mt-1 text-sm text-muted-foreground">{t('employee.goodDay')}</p>
       </div>
 
       {/* ── Quick Actions ── */}
@@ -73,22 +76,22 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
           className={`gap-1.5 ${BUTTON_VARIANTS.primary}`}
         >
           <LogIn className="h-4 w-4" />
-          출근
+          {t('employee.clockIn')}
         </Button>
         <Button size="sm" variant="outline" className="gap-1.5" disabled>
           <LogOut className="h-4 w-4" />
-          퇴근
+          {t('employee.clockOut')}
         </Button>
         <Link href="/leave">
           <Button size="sm" variant="outline" className="gap-1.5">
             <CalendarDays className="h-4 w-4" />
-            휴가신청
+            {t('employee.leaveRequest')}
           </Button>
         </Link>
         <Link href="/payroll/me">
           <Button size="sm" variant="outline" className="gap-1.5">
             <FileText className="h-4 w-4" />
-            급여명세서
+            {t('employee.payslip')}
           </Button>
         </Link>
       </div>
@@ -105,7 +108,7 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <ClipboardCheck className="h-4 w-4 text-primary" />
-                분기 리뷰
+                {t('employee.quarterlyReview')}
               </CardTitle>
             </CardHeader>
             <CardContent className="pb-4">
@@ -114,41 +117,41 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
                 if (!qr || !qr.status) {
                   return (
                     <p className="text-sm text-muted-foreground">
-                      이번 분기 리뷰가 아직 생성되지 않았습니다
+                      {t('employee.noReviewYet')}
                     </p>
                   )
                 }
                 const statusMap: Record<string, { label: string; variant: 'info' | 'warning' | 'success' | 'neutral' }> = {
-                  DRAFT: { label: '작성 대기', variant: 'info' },
-                  IN_PROGRESS: { label: '작성 중', variant: 'warning' },
-                  EMPLOYEE_DONE: { label: '제출 완료', variant: 'success' },
-                  MANAGER_DONE: { label: '매니저 검토 완료', variant: 'info' },
-                  COMPLETED: { label: '완료', variant: 'success' },
+                  DRAFT: { label: t('employee.statusDraft'), variant: 'info' },
+                  IN_PROGRESS: { label: t('employee.statusInProgress'), variant: 'warning' },
+                  EMPLOYEE_DONE: { label: t('employee.statusEmployeeDone'), variant: 'success' },
+                  MANAGER_DONE: { label: t('employee.statusManagerDone'), variant: 'info' },
+                  COMPLETED: { label: t('employee.statusCompleted'), variant: 'success' },
                 }
                 const s = statusMap[qr.status] ?? { label: qr.status, variant: 'neutral' as const }
                 return (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">상태</span>
+                      <span className="text-sm text-muted-foreground">{t('employee.status')}</span>
                       <StatusBadge variant={s.variant}>{s.label}</StatusBadge>
                     </div>
                     {(qr.status === 'DRAFT' || qr.status === 'IN_PROGRESS') && (
                       <Link href="/performance/my-quarterly-review">
                         <Button size="sm" className="w-full gap-1.5">
-                          {qr.status === 'DRAFT' ? '작성하기' : '이어서 작성하기'}
+                          {qr.status === 'DRAFT' ? t('employee.startWriting') : t('employee.continueWriting')}
                         </Button>
                       </Link>
                     )}
                     {qr.status === 'EMPLOYEE_DONE' && (
-                      <p className="text-center text-xs text-muted-foreground">매니저 피드백 대기 중</p>
+                      <p className="text-center text-xs text-muted-foreground">{t('employee.awaitingManagerFeedback')}</p>
                     )}
                     {qr.status === 'MANAGER_DONE' && (
-                      <p className="text-center text-xs text-muted-foreground">최종 확정 대기 중</p>
+                      <p className="text-center text-xs text-muted-foreground">{t('employee.awaitingFinalization')}</p>
                     )}
                     {qr.status === 'COMPLETED' && qr.id && (
                       <Link href={`/performance/quarterly-reviews/${qr.id}`}>
                         <Button size="sm" variant="outline" className="w-full">
-                          결과 보기
+                          {t('employee.viewResult')}
                         </Button>
                       </Link>
                     )}
@@ -162,7 +165,7 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
           <Card className="border-border shadow-none">
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="text-sm font-semibold text-foreground">
-                나의 현황
+                {t('employee.myStatus')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 pb-4">
@@ -170,10 +173,10 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="h-4 w-4" />
-                  이번 달 근무
+                  {t('employee.workDaysThisMonth')}
                 </div>
                 <span className="text-sm font-bold text-foreground">
-                  {summary?.attendanceThisMonth ?? '-'}일
+                  {t('employee.dayUnit', { count: summary?.attendanceThisMonth ?? '-' })}
                 </span>
               </div>
 
@@ -182,10 +185,10 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <CalendarDays className="h-4 w-4" />
-                    잔여 연차
+                    {t('employee.remainingAnnualLeave')}
                   </div>
                   <span className="text-sm font-bold text-primary">
-                    {annualLeave ? `${annualLeave.remaining}일` : '-'}
+                    {annualLeave ? t('employee.dayUnit', { count: annualLeave.remaining }) : '-'}
                   </span>
                 </div>
                 {annualLeave && (
@@ -207,10 +210,11 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <Award className="h-4 w-4 text-amber-500" />
-                최근 받은 칭찬
+                {t('employee.recentPraise')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 pb-4">
+              {/* TODO: replace with API data */}
               <div className="rounded-lg bg-muted p-3">
                 <p className="text-sm font-medium text-foreground">
                   &quot;프로젝트 기여에 감사합니다!&quot;
@@ -227,7 +231,7 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
                 href="/performance/recognition"
                 className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
               >
-                전체 보기 →
+                {t('employee.viewAll')}
               </Link>
             </CardContent>
           </Card>
@@ -237,7 +241,7 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <TrendingUp className="h-4 w-4 text-primary" />
-                MBO 달성률
+                {t('employee.mboAchievement')}
               </CardTitle>
             </CardHeader>
             <CardContent className="pb-4">
@@ -253,8 +257,8 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
                   />
                 </div>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>설정된 목표 5개</span>
-                  <Badge variant="outline" className="text-[10px]">진행 중</Badge>
+                  <span>{t('employee.goalsSet', { count: 5 })}</span>
+                  <Badge variant="outline" className="text-[10px]">{t('employee.inProgress')}</Badge>
                 </div>
               </div>
             </CardContent>

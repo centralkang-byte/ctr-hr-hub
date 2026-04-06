@@ -7,6 +7,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import {
   Users,
@@ -48,6 +49,7 @@ interface HrAdminSummary {
 // ─── Component ────────────────────────────────────────────
 
 export function HrAdminHome({ user }: HrAdminHomeProps) {
+  const t = useTranslations('home')
   const [summary, setSummary] = useState<HrAdminSummary | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -64,9 +66,9 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
       {/* ── Greeting ── */}
       <div>
         <h1 className={TYPOGRAPHY.pageTitle}>
-          안녕하세요, {user.name}님 👋
+          {t('employee.greetingName', { name: user.name })}
         </h1>
-        <p className={`mt-1 ${TYPOGRAPHY.caption}`}>전사 인사 현황을 확인하세요.</p>
+        <p className={`mt-1 ${TYPOGRAPHY.caption}`}>{t('hrAdmin.greetingDesc')}</p>
       </div>
 
       {/* ── AI Nudge Cards ── */}
@@ -85,7 +87,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
           <div className={CARD_STYLES.kpi}>
             <div className="flex items-center justify-between">
               <div>
-                <p className={TYPOGRAPHY.label}>전사 인원</p>
+                <p className={TYPOGRAPHY.label}>{t('hrAdmin.totalEmployees')}</p>
                 <p className={`mt-1 ${TYPOGRAPHY.stat}`}>
                   <AnimatedNumber value={summary?.totalEmployees ?? 0} />
                 </p>
@@ -96,7 +98,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
             </div>
             <div className="mt-3 flex items-center gap-1">
               <TrendingUp className="h-3 w-3 text-emerald-500" />
-              <span className="text-xs text-emerald-600 font-medium">+{summary?.newHires ?? 0} 이번 달</span>
+              <span className="text-xs text-emerald-600 font-medium">{t('hrAdmin.thisMonth', { count: summary?.newHires ?? 0 })}</span>
             </div>
           </div>
 
@@ -104,7 +106,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
           <div className={CARD_STYLES.kpi}>
             <div className="flex items-center justify-between">
               <div>
-                <p className={TYPOGRAPHY.label}>신규 입사</p>
+                <p className={TYPOGRAPHY.label}>{t('hrAdmin.newHires')}</p>
                 <p className={`mt-1 text-3xl font-bold tabular-nums text-emerald-600`}>
                   <AnimatedNumber value={summary?.newHires ?? 0} />
                 </p>
@@ -113,14 +115,14 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
                 <ArrowUpRight className="h-5 w-5 text-emerald-500" />
               </div>
             </div>
-            <p className={`mt-3 ${TYPOGRAPHY.caption}`}>최근 30일</p>
+            <p className={`mt-3 ${TYPOGRAPHY.caption}`}>{t('hrAdmin.last30Days')}</p>
           </div>
 
           {/* 퇴사자 */}
           <div className={CARD_STYLES.kpi}>
             <div className="flex items-center justify-between">
               <div>
-                <p className={TYPOGRAPHY.label}>퇴사자</p>
+                <p className={TYPOGRAPHY.label}>{t('hrAdmin.terminations')}</p>
                 <p className={`mt-1 text-3xl font-bold tabular-nums text-red-500`}>
                   <AnimatedNumber value={summary?.terminations ?? 0} />
                 </p>
@@ -129,14 +131,14 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
                 <TrendingDown className="h-5 w-5 text-red-400" />
               </div>
             </div>
-            <p className={`mt-3 ${TYPOGRAPHY.caption}`}>최근 30일</p>
+            <p className={`mt-3 ${TYPOGRAPHY.caption}`}>{t('hrAdmin.last30Days')}</p>
           </div>
 
           {/* 이직률 */}
           <div className={CARD_STYLES.kpi}>
             <div className="flex items-center justify-between">
               <div>
-                <p className={TYPOGRAPHY.label}>이직률</p>
+                <p className={TYPOGRAPHY.label}>{t('hrAdmin.turnoverRate')}</p>
                 <p className={`mt-1 ${TYPOGRAPHY.stat}`}>
                   <AnimatedNumber
                     value={summary?.turnoverRate ?? 0}
@@ -149,7 +151,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
               </div>
             </div>
             <p className={`mt-3 ${TYPOGRAPHY.caption}`}>
-              대기 휴가: {summary?.pendingLeaves ?? 0}건
+              {t('hrAdmin.pendingLeaveCount', { count: summary?.pendingLeaves ?? 0 })}
             </p>
           </div>
         </div>
@@ -167,7 +169,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <ClipboardCheck className="h-4 w-4 text-primary" />
-                분기 리뷰 현황
+                {t('hrAdmin.quarterlyReviewStatus')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 pb-4">
@@ -176,14 +178,14 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
                 if (!stats || stats.total === 0) {
                   return (
                     <p className="text-sm text-muted-foreground">
-                      이번 분기 리뷰가 아직 생성되지 않았습니다
+                      {t('hrAdmin.noReviewYet')}
                     </p>
                   )
                 }
                 return (
                   <>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">완료율</span>
+                      <span className="text-sm text-muted-foreground">{t('hrAdmin.completionRate')}</span>
                       <span className="text-sm font-bold text-foreground">
                         {stats.completionRate}%
                       </span>
@@ -195,8 +197,8 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
                       />
                     </div>
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>완료 {stats.completed}건</span>
-                      <span>전체 {stats.total}건</span>
+                      <span>{t('hrAdmin.completedCount', { count: stats.completed })}</span>
+                      <span>{t('hrAdmin.totalCount', { count: stats.total })}</span>
                     </div>
                   </>
                 )
@@ -205,7 +207,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
                 href="/performance/quarterly-reviews"
                 className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
               >
-                분기 리뷰 관리 →
+                {t('hrAdmin.manageReviews')}
               </Link>
             </CardContent>
           </Card>
@@ -215,27 +217,27 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <CheckSquare className="h-4 w-4 text-primary" />
-                승인 대기 현황
+                {t('hrAdmin.approvalQueue')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 pb-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">휴가 신청</span>
-                <StatusBadge variant="info">{summary?.pendingLeaves ?? 0}건</StatusBadge>
+                <span className="text-sm text-muted-foreground">{t('hrAdmin.leaveRequest')}</span>
+                <StatusBadge variant="info">{t('nudge.countBadge', { count: summary?.pendingLeaves ?? 0 })}</StatusBadge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">프로필 변경</span>
-                <StatusBadge variant="info">5건</StatusBadge>
+                <span className="text-sm text-muted-foreground">{t('hrAdmin.profileChange')}</span>
+                <StatusBadge variant="info">{t('nudge.countBadge', { count: 5 })}</StatusBadge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">급여 조정</span>
-                <StatusBadge variant="info">3건</StatusBadge>
+                <span className="text-sm text-muted-foreground">{t('hrAdmin.salaryAdjustment')}</span>
+                <StatusBadge variant="info">{t('nudge.countBadge', { count: 3 })}</StatusBadge>
               </div>
               <Link
                 href="/approvals/inbox"
                 className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
               >
-                승인함 바로가기 →
+                {t('hrAdmin.goToApprovals')}
               </Link>
             </CardContent>
           </Card>
@@ -245,27 +247,27 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <UserMinus className="h-4 w-4 text-amber-500" />
-                퇴직 진행 현황
+                {t('hrAdmin.offboardingStatus')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 pb-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">퇴직 예정</span>
-                <StatusBadge variant="warning">{summary?.terminations ?? 0}명</StatusBadge>
+                <span className="text-sm text-muted-foreground">{t('hrAdmin.upcomingTermination')}</span>
+                <StatusBadge variant="warning">{t('nudge.countBadge', { count: summary?.terminations ?? 0 })}</StatusBadge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">인수인계 진행 중</span>
-                <StatusBadge variant="warning">1명</StatusBadge>
+                <span className="text-sm text-muted-foreground">{t('hrAdmin.handoverInProgress')}</span>
+                <StatusBadge variant="warning">{t('nudge.countBadge', { count: 1 })}</StatusBadge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">이번 달 퇴직</span>
-                <StatusBadge variant="danger">{summary?.terminations ?? 0}명</StatusBadge>
+                <span className="text-sm text-muted-foreground">{t('hrAdmin.thisMonthTermination')}</span>
+                <StatusBadge variant="danger">{t('nudge.countBadge', { count: summary?.terminations ?? 0 })}</StatusBadge>
               </div>
               <Link
                 href="/offboarding"
                 className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
               >
-                퇴직관리 →
+                {t('hrAdmin.offboardingLink')}
               </Link>
             </CardContent>
           </Card>

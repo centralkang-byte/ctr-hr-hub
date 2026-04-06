@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import {
   Users,
@@ -41,6 +42,7 @@ interface ManagerSummary {
 // ─── Component ────────────────────────────────────────────
 
 export function ManagerHome({ user }: ManagerHomeProps) {
+  const t = useTranslations('home')
   const [summary, setSummary] = useState<ManagerSummary | null>(null)
 
   useEffect(() => {
@@ -55,9 +57,9 @@ export function ManagerHome({ user }: ManagerHomeProps) {
       {/* ── Greeting ── */}
       <div>
         <h1 className="text-2xl font-bold text-foreground">
-          안녕하세요, {user.name}님 👋
+          {t('employee.greetingName', { name: user.name })}
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">팀 현황을 한눈에 확인하세요.</p>
+        <p className="mt-1 text-sm text-muted-foreground">{t('manager.greetingDesc')}</p>
       </div>
 
       {/* ── Nudge Cards (proactive AI alerts) ── */}
@@ -75,32 +77,32 @@ export function ManagerHome({ user }: ManagerHomeProps) {
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <Users className="h-4 w-4 text-primary" />
-                팀 현황
+                {t('manager.teamStatus')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 pb-4">
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div>
                   <p className="text-xl font-bold text-primary">{summary ? summary.teamCount : '-'}</p>
-                  <p className="text-xs text-muted-foreground">전체</p>
+                  <p className="text-xs text-muted-foreground">{t('manager.total')}</p>
                 </div>
                 <div>
                   <p className="text-xl font-bold text-amber-500">{summary ? summary.pendingLeaves ?? 0 : '-'}</p>
-                  <p className="text-xs text-muted-foreground">휴가 대기</p>
+                  <p className="text-xs text-muted-foreground">{t('manager.pendingLeave')}</p>
                 </div>
                 <div>
                   <p className="text-xl font-bold text-muted-foreground">{summary ? summary.scheduledOneOnOnes ?? 0 : '-'}</p>
-                  <p className="text-xs text-muted-foreground">예정 1:1</p>
+                  <p className="text-xs text-muted-foreground">{t('manager.scheduled1on1')}</p>
                 </div>
               </div>
               <p className="text-xs text-muted-foreground">
-                전체 {summary?.teamCount ?? '-'}명
+                {t('manager.totalMembers', { count: summary?.teamCount ?? '-' })}
               </p>
               <Link
                 href="/attendance/team"
                 className="block text-center text-xs font-medium text-primary hover:underline"
               >
-                팀 근태 상세 →
+                {t('manager.teamAttendanceDetail')}
               </Link>
             </CardContent>
           </Card>
@@ -110,25 +112,25 @@ export function ManagerHome({ user }: ManagerHomeProps) {
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <CheckSquare className="h-4 w-4 text-red-500" />
-                승인 대기
+                {t('manager.pendingApproval')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2.5 pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <CalendarDays className="h-3.5 w-3.5" />
-                  휴가 신청
+                  {t('manager.leaveRequest')}
                 </div>
                 <Badge className="bg-destructive/50 text-[10px] text-white">
-                  {summary?.pendingLeaves ?? 0}건
+                  {t('nudge.countBadge', { count: summary?.pendingLeaves ?? 0 })}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <TrendingUp className="h-3.5 w-3.5" />
-                  MBO 목표 승인
+                  {t('manager.mboGoalApproval')}
                 </div>
-                <Badge variant="secondary" className="text-[10px]">{summary?.scheduledOneOnOnes ?? 0}건</Badge>
+                <Badge variant="secondary" className="text-[10px]">{t('nudge.countBadge', { count: summary?.scheduledOneOnOnes ?? 0 })}</Badge>
               </div>
             </CardContent>
           </Card>
@@ -138,7 +140,7 @@ export function ManagerHome({ user }: ManagerHomeProps) {
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <ClipboardCheck className="h-4 w-4 text-primary" />
-                분기 리뷰
+                {t('manager.quarterlyReview')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 pb-4">
@@ -147,7 +149,7 @@ export function ManagerHome({ user }: ManagerHomeProps) {
                 if (!stats || stats.total === 0) {
                   return (
                     <p className="text-sm text-muted-foreground">
-                      이번 분기 리뷰가 아직 생성되지 않았습니다
+                      {t('manager.noReviewYet')}
                     </p>
                   )
                 }
@@ -155,7 +157,7 @@ export function ManagerHome({ user }: ManagerHomeProps) {
                 return (
                   <>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">완료</span>
+                      <span className="text-sm text-muted-foreground">{t('manager.completed')}</span>
                       <span className="text-sm font-bold text-foreground">
                         {stats.completed}/{stats.total}
                       </span>
@@ -168,7 +170,7 @@ export function ManagerHome({ user }: ManagerHomeProps) {
                     </div>
                     {stats.pending > 0 && (
                       <p className="text-xs text-amber-600">
-                        {stats.pending}명 미완료
+                        {t('manager.incomplete', { count: stats.pending })}
                       </p>
                     )}
                   </>
@@ -178,7 +180,7 @@ export function ManagerHome({ user }: ManagerHomeProps) {
                 href="/performance/quarterly-reviews"
                 className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
               >
-                팀 분기 리뷰 관리 →
+                {t('manager.manageQuarterlyReview')}
               </Link>
             </CardContent>
           </Card>
@@ -188,10 +190,11 @@ export function ManagerHome({ user }: ManagerHomeProps) {
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <MessageSquare className="h-4 w-4 text-violet-500" />
-                1:1 미팅
+                {t('manager.oneOnOneMeeting')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 pb-4">
+              {/* TODO: replace with API data */}
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-foreground">박지수</p>
@@ -210,7 +213,7 @@ export function ManagerHome({ user }: ManagerHomeProps) {
                 href="/performance/one-on-one"
                 className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
               >
-                전체 보기 →
+                {t('manager.viewAllMeetings')}
               </Link>
             </CardContent>
           </Card>
@@ -220,29 +223,29 @@ export function ManagerHome({ user }: ManagerHomeProps) {
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <UserCheck className="h-4 w-4 text-primary" />
-                팀원 현황
+                {t('manager.teamMembers')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 pb-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">전체 팀원</span>
+                <span className="text-sm text-muted-foreground">{t('manager.totalTeamMembers')}</span>
                 <span className="text-lg font-bold text-primary">
-                  {summary?.teamCount ?? '-'}명
+                  {summary?.teamCount ?? '-'}{t('unitPerson')}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">신규 입사</span>
-                <span className="text-sm font-medium text-primary">{summary?.newHires ?? 0}명</span>
+                <span className="text-sm text-muted-foreground">{t('manager.newHires')}</span>
+                <span className="text-sm font-medium text-primary">{summary?.newHires ?? 0}{t('unitPerson')}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">승인 대기 휴가</span>
-                <span className="text-sm font-medium text-amber-500">{summary?.pendingLeaves ?? 0}건</span>
+                <span className="text-sm text-muted-foreground">{t('manager.pendingLeaveApproval')}</span>
+                <span className="text-sm font-medium text-amber-500">{t('nudge.countBadge', { count: summary?.pendingLeaves ?? 0 })}</span>
               </div>
               <Link
                 href="/manager-hub"
                 className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
               >
-                팀 전체 현황 →
+                {t('manager.teamOverview')}
               </Link>
             </CardContent>
           </Card>

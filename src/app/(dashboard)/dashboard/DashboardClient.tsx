@@ -65,8 +65,8 @@ export function DashboardClient({ user: _user }: Props) {
       setData(res.data ?? null)
     } catch (err) {
       toast({
-        title: '대시보드 데이터 로드 실패',
-        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        title: t('dashboardLoadFailed'),
+        description: err instanceof Error ? err.message : t('retryDescription'),
         variant: 'destructive',
       })
       setError(true)
@@ -128,7 +128,7 @@ export function DashboardClient({ user: _user }: Props) {
       <div>
         <h1 className="text-4xl font-bold text-foreground">Executive Dashboard</h1>
         <p className="text-base text-muted-foreground mt-1">
-          전사 인사 현황을 한눈에 파악하고 효율적으로 관리합니다.
+          {t('dashboardSubtitle')}
         </p>
       </div>
 
@@ -198,10 +198,10 @@ export function DashboardClient({ user: _user }: Props) {
             <ResponsiveContainer width="100%" height={280}>
               <AreaChart data={charts.headcountTrend}>
                 <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
-                <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + '월'} />
+                <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + t('monthSuffix')} />
                 <YAxis fontSize={11} />
                 <Tooltip
-                  labelFormatter={(v) => `${String(v).split('-')[1]}월`}
+                  labelFormatter={(v) => `${String(v).split('-')[1]}${t('monthSuffix')}`}
                   contentStyle={{ borderRadius: 12, fontSize: 12 }}
                 />
                 <Legend iconType="circle" iconSize={8} />
@@ -221,7 +221,7 @@ export function DashboardClient({ user: _user }: Props) {
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={charts.turnoverTrend}>
                 <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
-                <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + '월'} />
+                <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + t('monthSuffix')} />
                 <YAxis fontSize={11} unit="%" />
                 <Tooltip contentStyle={{ borderRadius: 12, fontSize: 12 }} />
                 <ReferenceLine y={TURNOVER_BENCHMARKS.manufacturing.value} label={TURNOVER_BENCHMARKS.manufacturing.label} stroke={CHART_COLORS.danger} strokeDasharray="5 5" />
@@ -237,7 +237,7 @@ export function DashboardClient({ user: _user }: Props) {
         </ChartCard>
 
         {/* 부서×월 이직률 Heatmap (4col) */}
-        <ChartCard title="부서별 이직률 히트맵" className="lg:col-span-4">
+        <ChartCard title={t('heatmapTitle')} className="lg:col-span-4">
           {data.departmentTurnoverHeatmap && data.departmentTurnoverHeatmap.length > 0 ? (
             <TurnoverHeatmap data={data.departmentTurnoverHeatmap} />
           ) : (
@@ -246,7 +246,7 @@ export function DashboardClient({ user: _user }: Props) {
         </ChartCard>
 
         {/* 채용 파이프라인 Funnel (4col) */}
-        <ChartCard title="채용 파이프라인" className="lg:col-span-4">
+        <ChartCard title={t('funnelTitle')} className="lg:col-span-4">
           {data.recruitmentFunnel && data.recruitmentFunnel.length > 0 ? (
             <RecruitmentFunnel data={data.recruitmentFunnel} />
           ) : (
@@ -258,7 +258,7 @@ export function DashboardClient({ user: _user }: Props) {
         <ChartCard title={te('riskAlerts')} className="lg:col-span-2">
           {riskAlerts.length === 0 ? (
             <div className="flex items-center justify-center h-48 text-sm text-muted-foreground">
-              감지된 위험 신호가 없습니다.
+              {t('noRiskSignals')}
             </div>
           ) : (
             <div className="space-y-3 max-h-[280px] overflow-y-auto">
@@ -319,7 +319,7 @@ export function DashboardClient({ user: _user }: Props) {
                 {companyComparison.map((c) => (
                   <tr key={c.companyId} className={TABLE_STYLES.row}>
                     <td className={TABLE_STYLES.cell}>{c.companyName}</td>
-                    <td className={TABLE_STYLES.cellRight}>{c.headcount}명</td>
+                    <td className={TABLE_STYLES.cellRight}>{c.headcount}{t('personSuffix')}</td>
                     <td className={cn(TABLE_STYLES.cellRight, c.turnoverRate > 5 && 'text-destructive')}>
                       {c.turnoverRate}%
                     </td>

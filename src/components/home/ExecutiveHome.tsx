@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   Users,
   TrendingDown,
@@ -41,6 +42,7 @@ interface ExecSummary {
 // ─── Component ────────────────────────────────────────────
 
 export function ExecutiveHome({ user }: ExecutiveHomeProps) {
+  const t = useTranslations('home')
   const [summary, setSummary] = useState<ExecSummary | null>(null)
 
   useEffect(() => {
@@ -55,10 +57,10 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
       {/* Greeting */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">
-          안녕하세요, {user.name}님 👋
+          {t('employee.greetingName', { name: user.name })}
         </h1>
         <p className="mt-1 text-base text-muted-foreground">
-          그룹 전체 인사 현황 요약입니다.
+          {t('executive.greetingDesc')}
         </p>
       </div>
 
@@ -75,7 +77,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-muted-foreground">전체 인원</p>
+                <p className="text-xs font-medium text-muted-foreground">{t('executive.totalHeadcount')}</p>
                 <p className="text-display-sm font-extrabold text-foreground">
                   {summary?.totalEmployees?.toLocaleString() ?? '-'}
                 </p>
@@ -85,7 +87,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
               </div>
             </div>
             <p className="mt-2 text-xs text-emerald-600">
-              전월 대비 +12명 (1.0%)
+              {t('executive.prevMonthDelta', { count: 12, pct: '1.0' })}
             </p>
           </CardContent>
         </Card>
@@ -95,7 +97,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-muted-foreground">이직률</p>
+                <p className="text-xs font-medium text-muted-foreground">{t('executive.turnoverRate')}</p>
                 <p className="text-display-sm font-extrabold text-foreground">
                   {summary?.turnoverRate ?? '-'}%
                 </p>
@@ -105,7 +107,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
               </div>
             </div>
             <p className="mt-2 text-xs text-emerald-600">
-              전월 대비 -0.3%p
+              {t('executive.prevMonthDeltaPct', { delta: '-0.3' })}
             </p>
           </CardContent>
         </Card>
@@ -115,7 +117,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-muted-foreground">성과 분포</p>
+                <p className="text-xs font-medium text-muted-foreground">{t('executive.performanceDistribution')}</p>
                 <p className="text-display-sm font-extrabold text-foreground">B+</p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-tertiary-container/20">
@@ -123,7 +125,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
               </div>
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              전사 평균 등급
+              {t('executive.companyAvgGrade')}
             </p>
           </CardContent>
         </Card>
@@ -133,7 +135,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-muted-foreground">인건비 비율</p>
+                <p className="text-xs font-medium text-muted-foreground">{t('executive.laborCostRatio')}</p>
                 <p className="text-display-sm font-extrabold text-foreground">32.1%</p>
               </div>
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10">
@@ -141,7 +143,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
               </div>
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              매출 대비 인건비
+              {t('executive.revenueBasedLaborCost')}
             </p>
           </CardContent>
         </Card>
@@ -154,10 +156,11 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-foreground">
               <Building2 className="mr-2 inline-block h-4 w-4" />
-              회사별 현황
+              {t('executive.companyOverview')}
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {/* TODO: replace with API data */}
             <div className="space-y-3">
               {[
                 { name: '씨티알모빌리티', count: 420, rate: '2.8%' },
@@ -180,7 +183,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-foreground">
-                      이직률
+                      {t('executive.turnoverRateLabel')}
                     </p>
                     <p
                       className={`text-xs font-bold ${
@@ -204,11 +207,12 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-foreground">
-                AI 전략 인사이트
+                {t('executive.aiStrategicInsight')}
               </CardTitle>
               <AiGeneratedBadge />
             </CardHeader>
             <CardContent>
+              {/* TODO: replace with API data */}
               <div className="space-y-3">
                 <div className="rounded-xl bg-destructive/5 p-3">
                   <p className="text-sm font-medium text-destructive">
@@ -237,10 +241,11 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-foreground">
                 <FileText className="mr-2 inline-block h-4 w-4" />
-                최근 보고서
+                {t('executive.recentReports')}
               </CardTitle>
             </CardHeader>
             <CardContent>
+              {/* TODO: replace with API data */}
               <div className="space-y-2">
                 {[
                   { title: '2026년 1분기 인사 현황 보고서', date: '2026-02-25' },

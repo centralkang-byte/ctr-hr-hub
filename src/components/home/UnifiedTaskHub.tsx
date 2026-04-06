@@ -14,6 +14,7 @@
 //   - WidgetSkeleton 재사용
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import {
   CalendarDays,
@@ -44,13 +45,13 @@ import type { UnifiedTask, UnifiedTaskListResponse } from '@/lib/unified-task/ty
 
 // ─── Constants ───────────────────────────────────────────
 
-const TYPE_LABEL: Record<string, string> = {
-  [UnifiedTaskType.LEAVE_APPROVAL]: '휴가',
-  [UnifiedTaskType.PERFORMANCE_REVIEW]: '성과',
-  [UnifiedTaskType.ONBOARDING_TASK]: '온보딩',
-  [UnifiedTaskType.OFFBOARDING_TASK]: '퇴직',
-  [UnifiedTaskType.PAYROLL_REVIEW]: '급여',
-  [UnifiedTaskType.BENEFIT_REQUEST]: '복리후생',
+const TYPE_LABEL_KEY: Record<string, string> = {
+  [UnifiedTaskType.LEAVE_APPROVAL]: 'taskHub.typeLeave',
+  [UnifiedTaskType.PERFORMANCE_REVIEW]: 'taskHub.typePerformance',
+  [UnifiedTaskType.ONBOARDING_TASK]: 'taskHub.typeOnboarding',
+  [UnifiedTaskType.OFFBOARDING_TASK]: 'taskHub.typeOffboarding',
+  [UnifiedTaskType.PAYROLL_REVIEW]: 'taskHub.typePayroll',
+  [UnifiedTaskType.BENEFIT_REQUEST]: 'taskHub.typeBenefit',
 }
 
 const TYPE_ICON: Record<string, React.ElementType> = {
@@ -73,12 +74,12 @@ const TYPE_ICON_COLOR: Record<string, string> = {
 
 // 필터 탭 정의
 const FILTER_TABS = [
-  { key: 'all', label: '전체' },
-  { key: UnifiedTaskType.LEAVE_APPROVAL, label: '휴가' },
-  { key: UnifiedTaskType.PERFORMANCE_REVIEW, label: '성과' },
-  { key: UnifiedTaskType.ONBOARDING_TASK, label: '온보딩' },
-  { key: UnifiedTaskType.OFFBOARDING_TASK, label: '퇴직' },
-  { key: UnifiedTaskType.PAYROLL_REVIEW, label: '급여' },
+  { key: 'all', labelKey: 'taskHub.filterAll' },
+  { key: UnifiedTaskType.LEAVE_APPROVAL, labelKey: 'taskHub.typeLeave' },
+  { key: UnifiedTaskType.PERFORMANCE_REVIEW, labelKey: 'taskHub.typePerformance' },
+  { key: UnifiedTaskType.ONBOARDING_TASK, labelKey: 'taskHub.typeOnboarding' },
+  { key: UnifiedTaskType.OFFBOARDING_TASK, labelKey: 'taskHub.typeOffboarding' },
+  { key: UnifiedTaskType.PAYROLL_REVIEW, labelKey: 'taskHub.typePayroll' },
 ]
 
 // ─── Types ────────────────────────────────────────────────
@@ -141,6 +142,7 @@ interface TaskCardProps {
 }
 
 function TaskCard({ task, user, onAction, processing }: TaskCardProps) {
+  const t = useTranslations('home')
   const Icon = TYPE_ICON[task.type] ?? ListChecks
   const iconColor = TYPE_ICON_COLOR[task.type] ?? 'text-muted-foreground'
   const dday = getDday(task.dueDate)
@@ -181,7 +183,7 @@ function TaskCard({ task, user, onAction, processing }: TaskCardProps) {
               variant="outline"
               className="h-5 rounded-md px-1.5 text-[10px] font-medium text-muted-foreground"
             >
-              {TYPE_LABEL[task.type] ?? task.type}
+              {t(TYPE_LABEL_KEY[task.type] ?? task.type)}
             </Badge>
             {dday && (
               <Badge variant="outline" className={`h-5 rounded-md px-1.5 text-[10px] font-medium ${ddayColor}`}>
@@ -201,10 +203,10 @@ function TaskCard({ task, user, onAction, processing }: TaskCardProps) {
                 className="h-7 gap-1 px-2 text-[11px] text-primary/90 hover:bg-primary/10 hover:text-primary/90"
                 disabled={isBusy}
                 onClick={() => onAction(task.id, 'approve', task.sourceId)}
-                title="승인"
+                title={t('taskHub.approve')}
               >
                 {isBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
-                <span className="hidden sm:inline">승인</span>
+                <span className="hidden sm:inline">{t('taskHub.approve')}</span>
               </Button>
               <Button
                 size="sm"
@@ -212,10 +214,10 @@ function TaskCard({ task, user, onAction, processing }: TaskCardProps) {
                 className="h-7 gap-1 px-2 text-[11px] text-red-500 hover:bg-destructive/10 hover:text-red-500"
                 disabled={isBusy}
                 onClick={() => onAction(task.id, 'reject', task.sourceId)}
-                title="반려"
+                title={t('taskHub.reject')}
               >
                 <XCircle className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">반려</span>
+                <span className="hidden sm:inline">{t('taskHub.reject')}</span>
               </Button>
             </>
           ) : isPending && task.actionUrl ? (
@@ -224,10 +226,10 @@ function TaskCard({ task, user, onAction, processing }: TaskCardProps) {
                 size="sm"
                 variant="ghost"
                 className="h-7 gap-1 px-2 text-[11px] text-muted-foreground hover:bg-muted"
-                title="이동"
+                title={t('taskHub.view')}
               >
                 <ExternalLink className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">보기</span>
+                <span className="hidden sm:inline">{t('taskHub.view')}</span>
               </Button>
             </Link>
           ) : null}
@@ -299,6 +301,7 @@ function GroupSection({
 // ─── Main Component ───────────────────────────────────────
 
 export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
+  const t = useTranslations('home')
   const [tasks, setTasks] = useState<UnifiedTask[]>([])
   const [countByType, setCountByType] = useState<Partial<Record<UnifiedTaskType, number>>>({})
   const [loading, setLoading] = useState(true)
@@ -386,7 +389,7 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
             <ListChecks className="h-4 w-4 text-primary" />
-            나의 할 일
+            {t('taskHub.myTasks')}
             {totalCount > 0 && (
               <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-white">
                 {totalCount}
@@ -397,7 +400,7 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
             href="/my/tasks"
             className="text-xs font-medium text-primary hover:underline"
           >
-            전체 보기 →
+            {t('taskHub.viewAll')}
           </Link>
         </div>
 
@@ -418,7 +421,7 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
                     : 'bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary'
                   }`}
               >
-                {tab.label}
+                {t(tab.labelKey)}
                 {count > 0 && (
                   <span className={`rounded-full px-1 text-[10px] ${activeFilter === tab.key ? 'bg-white/30 text-white' : 'bg-muted text-muted-foreground'
                     }`}>
@@ -443,13 +446,13 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
           /* Empty state */
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <PartyPopper className="mb-3 h-10 w-10 text-primary opacity-70" />
-            <p className="text-sm font-medium text-foreground">모든 할 일을 완료했습니다! 🎉</p>
-            <p className="mt-1 text-xs text-muted-foreground">처리할 항목이 없습니다.</p>
+            <p className="text-sm font-medium text-foreground">{t('taskHub.allDone')}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{t('taskHub.noItems')}</p>
           </div>
         ) : (
           <>
             <GroupSection
-              label="🔴 긴급"
+              label={`🔴 ${t('taskHub.groupUrgent')}`}
               tasks={urgent}
               user={user}
               onAction={handleAction}
@@ -457,7 +460,7 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
               accentColor="bg-destructive/50"
             />
             <GroupSection
-              label="📌 이번 주"
+              label={`📌 ${t('taskHub.groupThisWeek')}`}
               tasks={week}
               user={user}
               onAction={handleAction}
@@ -465,7 +468,7 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
               accentColor="bg-amber-500/100"
             />
             <GroupSection
-              label="📅 이번 달"
+              label={`📅 ${t('taskHub.groupThisMonth')}`}
               tasks={month}
               user={user}
               onAction={handleAction}
@@ -475,7 +478,7 @@ export function UnifiedTaskHub({ user }: UnifiedTaskHubProps) {
             {/* Completed section — collapsible */}
             {done.length > 0 && (
               <GroupSection
-                label="✅ 완료 (최근)"
+                label={`✅ ${t('taskHub.groupCompleted')}`}
                 tasks={done.slice(0, 10)}
                 user={user}
                 onAction={handleAction}
