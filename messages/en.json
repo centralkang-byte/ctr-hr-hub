@@ -91,7 +91,7 @@
       "title": "Attrition Risk Analysis"
     },
     "attritionRisk": "Attrition Risk",
-    "average": "Medium",
+    "average": "Average",
     "average_keab7bcec": "Average 근속",
     "avgAge": "Avg. Age",
     "avgOTMinutes": "Avg OT (min)",
@@ -659,44 +659,44 @@
     "trend": "Trend",
     "turnover": {
       "charts": {
-        "monthlyTrend": "월별 이직률 추이 (24개월)",
-        "turnoverRate": "이직률",
-        "industryAvg": "업계 평균",
-        "exitReasons": "퇴직 사유 분류",
-        "deptTurnover": "부서별 이직률",
-        "tenureDist": "근속별 이직 분포",
-        "exitCount": "퇴사자 수",
-        "predictionTop20": "이직 예측 고위험 Top 20",
-        "exitInterviewStats": "퇴직 면담 익명 통계"
+        "monthlyTrend": "Monthly Turnover Rate (24 months)",
+        "turnoverRate": "Turnover Rate",
+        "industryAvg": "Industry Average",
+        "exitReasons": "Exit Reason Breakdown",
+        "deptTurnover": "Turnover by Department",
+        "tenureDist": "Turnover by Tenure",
+        "exitCount": "Exit Count",
+        "predictionTop20": "High-Risk Turnover Prediction Top 20",
+        "exitInterviewStats": "Exit Interview Anonymous Statistics"
       },
       "risk": {
-        "high": "고위험",
-        "medium": "주의",
-        "low": "안전"
+        "high": "High Risk",
+        "medium": "Caution",
+        "low": "Safe"
       },
       "prediction": {
-        "analyzed": "분석 대상",
-        "highRisk": "고위험",
-        "mediumRisk": "주의",
-        "lowRisk": "안전",
-        "personCount": "{count}명",
-        "level": "수준",
-        "detail": "상세"
+        "analyzed": "Analyzed",
+        "highRisk": "High Risk",
+        "mediumRisk": "Caution",
+        "lowRisk": "Safe",
+        "personCount": "{count} persons",
+        "level": "Level",
+        "detail": "Detail"
       },
       "exitInterview": {
-        "privacyProtection": "개인정보 보호를 위해 5건 이상의 데이터가 있어야 통계를 표시합니다",
-        "currentCount": "현재: {count}건",
-        "reasonBreakdown": "퇴직 사유 비율",
-        "wouldRejoin": "재입사 의향",
-        "satisfactionTrend": "만족도 추이",
-        "insufficientDepts": "통계 미생성 부서: {departments} (5건 미만)"
+        "privacyProtection": "At least 5 exit interviews are required to display statistics for privacy protection",
+        "currentCount": "Current: {count} records",
+        "reasonBreakdown": "Exit Reason Breakdown",
+        "wouldRejoin": "Would Rejoin",
+        "satisfactionTrend": "Satisfaction Trend",
+        "insufficientDepts": "Departments with insufficient data: {departments} (< 5 records)"
       },
       "tooltips": {
-        "monthlyRate": "당월 퇴사자 ÷ 전월 말 재직자 × 100",
-        "annualRate": "최근 12개월 누적 퇴사자 ÷ 평균 재직자 수 × 100",
-        "regrettableRate": "성과 M+(충족 이상) 등급 퇴사자 ÷ M+ 전체 인원 × 100",
-        "avgTenure": "퇴사자의 평균 근속 연수",
-        "highRiskPrediction": "7개 변수 기반 이직 예측 모델에서 70점 이상"
+        "monthlyRate": "Monthly exits ÷ prior month headcount × 100",
+        "annualRate": "Rolling 12-month exits ÷ average headcount × 100",
+        "regrettableRate": "M+ (meets or above) grade exits ÷ total M+ headcount × 100",
+        "avgTenure": "Average tenure of exiting employees (years)",
+        "highRiskPrediction": "70+ score from 7-variable turnover prediction model"
       }
     },
     "turnoverPage": {
@@ -4459,7 +4459,7 @@
     "createChecklist": "Create Checklist",
     "createNewChecklist": "Create New Checklist",
     "dashboard": {
-      "allCompanies": "전체 법인"
+      "allCompanies": "All Companies"
     },
     "dashboardDescription": "Monitor offboarding progress and manage tasks.",
     "dashboardTitle": "Offboarding Status",
@@ -4483,8 +4483,8 @@
     "emptyDesc": "No employees need exit processing.",
     "emptyTitle": "No active offboarding",
     "exitInterview": {
-      "insufficientData": "데이터 부족",
-      "insufficientDataDesc": "통계를 생성하려면 최소 {min}건의 퇴직 면담이 필요합니다. 현재: {current}건"
+      "insufficientData": "Insufficient Data",
+      "insufficientDataDesc": "At least {min} exit interviews are needed to generate statistics. Current: {current} records"
     },
     "exitInterviewPrivacy": "Statistics require at least 5 interviews.",
     "exitInterviewPrivacyFull": "All statistics are anonymized. Personal information is excluded, and statistics are not generated for fewer than 5 interviews.",
@@ -4679,8 +4679,8 @@
     "crossboardingArrival": "Arrival Checklist",
     "crossboardingDeparture": "Departure Checklist",
     "dashboard": {
-      "allCompanies": "전체 법인",
-      "emotion": "감정"
+      "allCompanies": "All Companies",
+      "emotion": "Emotion"
     },
     "dashboardDescription": "Monitor onboarding progress for new hires.",
     "dashboardTitle": "Onboarding Status",
@@ -8122,7 +8122,7 @@
     "serviceYearsValue": "{years} years",
     "targetEmployee": "Target Employee",
     "title": "Reward Detail",
-    "loadFailed": "포상 상세 로드 실패"
+    "loadFailed": "Failed to load reward details"
   },
   "rewardForm": {
     "amountLabel": "Amount (KRW)",
@@ -8145,7 +8145,7 @@
     "submitting": "Registering...",
     "targetEmployee": "Target Employee",
     "title": "Register Reward",
-    "saveFailed": "포상 저장 실패"
+    "saveFailed": "Failed to save reward"
   },
   "rewardsPage": {
     "amountValue": "{amount} KRW",
@@ -8178,7 +8178,7 @@
     "searchPlaceholder": "Search by name or reward...",
     "title": "Rewards Management",
     "typeAll": "All Types",
-    "loadFailed": "포상 목록 로드 실패"
+    "loadFailed": "Failed to load rewards list"
   },
   "salary": {
     "addBand": "Add Salary Band",
@@ -9957,12 +9957,12 @@
       "retirement": "Retirement",
       "contractEnd": "Contract End"
     },
-    "cautionAlert": "48시간 초과 주의 알림",
-    "warningAlert": "50시간 초과 경고 알림",
-    "blockedAlert": "52시간 초과 차단 알림",
-    "blockedAlertDesc": "52시간 초과 시 출근 차단",
-    "expirationWarning": "연차 소멸 경고",
-    "expirationWarningDesc": "연차 소멸 전 알림 시점"
+    "cautionAlert": "48-hour overtime caution alert",
+    "warningAlert": "50-hour overtime warning alert",
+    "blockedAlert": "52-hour overtime block alert",
+    "blockedAlertDesc": "Block clock-in when exceeding 52 hours",
+    "expirationWarning": "Leave expiration warning",
+    "expirationWarningDesc": "Notification timing before leave expiration"
   },
   "shift": {
     "allGroups": "All Groups",
