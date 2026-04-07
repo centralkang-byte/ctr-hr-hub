@@ -21,19 +21,19 @@ interface GoalItem {
     achievementScore: number | null; isLocked: boolean | null
 }
 
-const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
-    DRAFT: { label: '임시저장', cls: STATUS_VARIANT.neutral },
-    PENDING_APPROVAL: { label: '승인 대기', cls: STATUS_VARIANT.warning },
-    APPROVED: { label: '승인됨', cls: STATUS_VARIANT.success },
-    REJECTED: { label: '반려', cls: STATUS_VARIANT.error },
+const STATUS_BADGE: Record<string, { labelKey: string; cls: string }> = {
+    DRAFT: { labelKey: 'myGoals.statusDraft', cls: STATUS_VARIANT.neutral },
+    PENDING_APPROVAL: { labelKey: 'myGoals.statusPendingApproval', cls: STATUS_VARIANT.warning },
+    APPROVED: { labelKey: 'myGoals.statusApproved', cls: STATUS_VARIANT.success },
+    REJECTED: { labelKey: 'myGoals.statusRejected', cls: STATUS_VARIANT.error },
 }
 
 // ─── Goal Modal ───────────────────────────────────────────
 
 interface GoalForm { title: string; description: string; kpiMetrics: string; weight: number; targetDate: string }
 
-function GoalModal({ initial, onSave, onClose, saving }: {
-    initial?: GoalForm; onSave: (f: GoalForm) => void; onClose: () => void; saving: boolean
+function GoalModal({ initial, onSave, onClose, saving, t }: {
+    initial?: GoalForm; onSave: (f: GoalForm) => void; onClose: () => void; saving: boolean; t: (key: string) => string
 }) {
     const [form, setForm] = useState<GoalForm>(initial ?? { title: '', description: '', kpiMetrics: '', weight: 20, targetDate: '' })
     const set = (k: keyof GoalForm, v: string | number) => setForm((p) => ({ ...p, [k]: v }))
@@ -42,43 +42,43 @@ function GoalModal({ initial, onSave, onClose, saving }: {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={onClose}>
             <div className="w-full max-w-lg rounded-xl bg-card p-6" onClick={(e) => e.stopPropagation()}>
                 <div className="mb-5 flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-foreground">{initial ? '목표 수정' : '목표 추가'}</h3>
+                    <h3 className="text-lg font-bold text-foreground">{initial ? t('myGoals.editGoal') : t('myGoals.addGoal')}</h3>
                     <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
                 </div>
                 <div className="space-y-4">
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-foreground">{'제목'} <span className="text-red-500">*</span></label>
+                        <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.titleLabel')} <span className="text-red-500">*</span></label>
                         <input value={form.title} onChange={(e) => set('title', e.target.value)} maxLength={100}
-                            className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" placeholder="목표 제목" />
+                            className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" placeholder={t('myGoals.titlePlaceholder')} />
                     </div>
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-foreground">{'설명'} <span className="text-red-500">*</span></label>
+                        <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.descLabel')} <span className="text-red-500">*</span></label>
                         <textarea value={form.description} onChange={(e) => set('description', e.target.value)} rows={3} maxLength={500}
-                            className="w-full resize-none rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" placeholder="목표 상세 설명" />
+                            className="w-full resize-none rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" placeholder={t('myGoals.descPlaceholder')} />
                     </div>
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-foreground">{'KPI 지표 (선택)'}</label>
+                        <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.kpiLabel')}</label>
                         <input value={form.kpiMetrics} onChange={(e) => set('kpiMetrics', e.target.value)}
-                            className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" placeholder="매출액, 수주잔고" />
+                            className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" placeholder={t('myGoals.kpiPlaceholder')} />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-foreground">{'가중치 (%)'} <span className="text-red-500">*</span></label>
+                            <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.weightLabel')} <span className="text-red-500">*</span></label>
                             <input type="number" min={5} max={100} step={5} value={form.weight} onChange={(e) => set('weight', Math.max(5, Math.min(100, Number(e.target.value))))}
                                 className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" />
                         </div>
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-foreground">{'마감일'} <span className="text-red-500">*</span></label>
+                            <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.deadlineLabel')} <span className="text-red-500">*</span></label>
                             <input type="date" value={form.targetDate} onChange={(e) => set('targetDate', e.target.value)}
                                 className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" />
                         </div>
                     </div>
                 </div>
                 <div className="mt-6 flex justify-end gap-3">
-                    <button onClick={onClose} className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground">{'취소'}</button>
+                    <button onClick={onClose} className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground">{t('myGoals.cancel')}</button>
                     <button onClick={() => onSave(form)} disabled={!form.title || !form.description || !form.targetDate || saving}
                         className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
-                        {saving ? '로딩 중...' : '저장'}
+                        {saving ? t('myGoals.loading') : t('myGoals.save')}
                     </button>
                 </div>
             </div>
@@ -126,7 +126,7 @@ export default function MyGoalsClient({user: _user }: {
         try {
             const res = await apiClient.getList<GoalItem>('/api/v1/performance/goals', { cycleId: selectedCycleId, page: 1, limit: 50 })
             setGoals(res.data)
-        } catch { setError('목표 목록을 불러오지 못했습니다.') }
+        } catch { setError(t('myGoals.loadFailed')) }
         finally { setLoading(false) }
     }, [selectedCycleId])
 
@@ -274,7 +274,7 @@ export default function MyGoalsClient({user: _user }: {
         {goals.map((goal) => {
                             const pct = Number(goal.achievementScore ?? 0)
                             const locked = goal.isLocked || goal.status === 'APPROVED'
-                            const badge = STATUS_BADGE[goal.status] ?? { label: goal.status, cls: STATUS_VARIANT.neutral }
+                            const badge = STATUS_BADGE[goal.status] ?? { labelKey: goal.status, cls: STATUS_VARIANT.neutral }
 
                             return (
                                 <div key={goal.id} className="rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/30">
@@ -284,7 +284,7 @@ export default function MyGoalsClient({user: _user }: {
                                                 <h3 className="text-base font-semibold text-foreground">{goal.title}</h3>
                                                 {locked && <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
                                                 <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${badge.cls}`}>
-                                                    {badge.label}
+                                                    {t(badge.labelKey as Parameters<typeof t>[0])}
                                                 </span>
                                             </div>
                                             {goal.description && <p className="text-sm text-muted-foreground line-clamp-2">{goal.description}</p>}
@@ -312,7 +312,7 @@ export default function MyGoalsClient({user: _user }: {
 
                                     {/* Meta */}
                                     <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                        <span>{goal.targetDate ? `마감: ${goal.targetDate.slice(0, 10)}` : ''}</span>
+                                        <span>{goal.targetDate ? t('myGoals.deadline', { date: goal.targetDate.slice(0, 10) }) : ''}</span>
                                         {!isViewOnly && !locked && (
                                             <div className="flex gap-2">
                                                 <button onClick={() => setModal({
@@ -341,14 +341,14 @@ export default function MyGoalsClient({user: _user }: {
                     <div className="mt-6 flex items-center justify-end rounded-xl border border-border bg-card p-4">
                         <button onClick={handleSubmitAll} disabled={!canSubmit || saving}
                             className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white disabled:opacity-40 hover:bg-primary/90 transition-colors">
-                            {saving ? '제출 중...' : '전체 제출'}
+                            {saving ? t('myGoals.submitting') : t('myGoals.submitAll')}
                         </button>
                     </div>
                 )}
             </div>
 
             {/* Modal */}
-            {modal && <GoalModal initial={modal.initial} onSave={handleSave} onClose={() => setModal(null)} saving={saving} />}
+            {modal && <GoalModal initial={modal.initial} onSave={handleSave} onClose={() => setModal(null)} saving={saving} t={(key: string) => t(key as Parameters<typeof t>[0])} />}
         <ConfirmDialog {...dialogProps} />
         </div>
     )

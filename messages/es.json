@@ -261,7 +261,8 @@
     "updateFailed": "Error al actualizar",
     "statusChangeFailed": "Error al cambiar estado",
     "errorOccurred": "Ha ocurrido un error.",
-    "currentValue": "[TODO:es] 현재 값"
+    "currentValue": "[TODO:es] 현재 값",
+    "retryMessage": "Por favor, inténtelo de nuevo."
   },
   "auth": {
     "login": "Login",
@@ -1198,10 +1199,42 @@
     "cycle": "Evaluation Cycle",
     "goal": "Goal",
     "evaluation": "Evaluation",
-    "selfEval": "Self Evaluation",
-    "managerEval": "Manager Evaluation",
+    "selfEval": {
+      "loadFailed": "Error al cargar la autoevaluación",
+      "saveFailed": "Error al guardar la autoevaluación",
+      "submitted": "Enviado exitosamente.",
+      "draftSaved": "Borrador guardado.",
+      "commentPlaceholder": "Escriba sus comentarios generales para este ciclo de evaluación..."
+    },
+    "managerEval": {
+      "cycleLoadFailed": "Error al cargar el ciclo de evaluación",
+      "settingsLoadFailed": "Error al cargar la configuración de evaluación",
+      "dataLoadFailed": "Error al cargar datos de evaluación del equipo",
+      "defaultEmployee": "Empleado",
+      "selfBadge": "Auto",
+      "managerBadge": "Gerente",
+      "weight": "Peso: {weight}%",
+      "mboWeightGrade": "Desempeño {weight}% ({grade})",
+      "beiWeightGrade": "Competencia {weight}% ({grade})",
+      "aiSuggest": "Sugerencia de comentario IA",
+      "commentPlaceholder": "Escriba sus comentarios de evaluación general para el miembro del equipo...",
+      "saveFirstForAi": "Guarde como borrador primero para generar el borrador de IA"
+    },
     "peerReview": "Peer Review",
-    "calibration": "Calibration",
+    "calibration": {
+      "cycleLoadFailed": "Error al cargar el ciclo de evaluación",
+      "sessionLoadFailed": "Error al cargar la sesión de calibración",
+      "detailLoadFailed": "Error al cargar el detalle de la sesión",
+      "sessionNamePlaceholder": "Nombre de la sesión",
+      "sessionInfo": "{department} · {count} ajustes",
+      "allCompany": "Toda la empresa",
+      "aiAnalysis": "Análisis de calibración IA",
+      "scoreAdjust": "Ajuste de puntuación: {name}",
+      "batchPartialFail": "{succeeded} guardados, {failed} fallidos",
+      "checkFailedItems": "Revise los elementos fallidos.",
+      "batchSuccess": "{count} ajustes por lotes completados",
+      "batchSaveFailed": "Error al guardar por lotes"
+    },
     "finalGrade": "Final Grade",
     "oneOnOne": "1:1 Meeting",
     "recognition": "Recognition",
@@ -1250,7 +1283,13 @@
     "submitted": "Submitted",
     "confirmed": "Confirmed",
     "weight": "Weight",
-    "score": "Score",
+    "score": {
+      "veryLacking": "Muy deficiente",
+      "lacking": "Deficiente",
+      "average": "Promedio",
+      "excellent": "Excelente",
+      "outstanding": "Sobresaliente"
+    },
     "comment": "Comment",
     "feedback": "Feedback",
     "goalTitle": "Goal Title",
@@ -1259,8 +1298,32 @@
     "progress": "Progress",
     "deadline": "Deadline",
     "teamGoals": "Team Goals",
-    "myGoals": "My Goals",
-    "newGoal": "New Goal",
+    "myGoals": {
+      "statusDraft": "Borrador",
+      "statusPendingApproval": "Pendiente de aprobación",
+      "statusApproved": "Aprobado",
+      "statusRejected": "Rechazado",
+      "editGoal": "Editar objetivo",
+      "addGoal": "Agregar objetivo",
+      "titleLabel": "Título",
+      "titlePlaceholder": "Título del objetivo",
+      "descLabel": "Descripción",
+      "descPlaceholder": "Descripción detallada del objetivo",
+      "kpiLabel": "Métricas KPI (Opcional)",
+      "kpiPlaceholder": "Ingresos, cartera de pedidos",
+      "weightLabel": "Peso (%)",
+      "deadlineLabel": "Fecha límite",
+      "cancel": "Cancelar",
+      "loading": "Cargando...",
+      "save": "Guardar",
+      "loadFailed": "No se pudieron cargar los objetivos.",
+      "deadline": "Vence: {date}",
+      "submitting": "Enviando...",
+      "submitAll": "Enviar todo"
+    },
+    "newGoal": {
+      "loadFailed": "Error al cargar datos"
+    },
     "editGoal": "Edit Goal",
     "deleteGoal": "Delete Goal",
     "goalStatus": "Goal Status",
@@ -1525,7 +1588,14 @@
     "kr_kebb894eb_kebb684ed": "Block Distribution",
     "kr_keca781ec": "Empleado",
     "department": "Departamento",
-    "grade": "Rango",
+    "grade": {
+      "exceedsPlus": "Excepcional (E+)",
+      "exceeds": "Sobresaliente (E)",
+      "meetsPlus": "Supera expectativas (M+)",
+      "meets": "Cumple expectativas (M)",
+      "below": "Necesita mejora (B)",
+      "belowMinus": "Insuficiente (B-)"
+    },
     "kr_kec9e90ea_kec84b1ea": "Self Rendimiento",
     "kr_keba7a4eb_kec84b1ea": "Gerente Rendimiento",
     "kr_kecb59cec_kec84b1ea": "Final Rendimiento",
@@ -1579,7 +1649,8 @@
       "perEmployeeReason": "Razón individual",
       "optionalReason": "Razón individual (opcional)",
       "confirmSave": "Confirmar y guardar",
-      "saving": "Guardando..."
+      "saving": "Guardando...",
+      "blockTooltip": "{block}: {count} personas ({pct}%)"
     },
     "kr_kebb380ea_keb82b4ec_kec9786ec": "No changes have been made.",
     "approve_kec9790_kec8ba4ed": "Fallido to approve.",
@@ -1908,7 +1979,10 @@
     "hours": "Horas",
     "savedSuccess": "save completed.",
     "adminResults": "Administrador Resultados",
-    "results": "Resultado",
+    "results": {
+      "loadFailed": "Error al cargar resultados de evaluación",
+      "weight": "Peso: {weight}%"
+    },
     "teamResults": "Equipo Resultados",
     "cyclesDesc": "Create and manage performance cycles",
     "noAccess": "Access denied",
@@ -2292,6 +2366,200 @@
       "messages": {
         "loadFailed": "Error al cargar gráfico de crecimiento"
       }
+    },
+    "performanceMain": {
+      "cycleLoadFailed": "Error al cargar el ciclo de evaluación",
+      "dataLoadFailed": "Error al cargar datos",
+      "retryMessage": "Por favor, inténtelo de nuevo."
+    },
+    "peerReviewStatus": {
+      "draft": "Sin iniciar",
+      "submitted": "Enviado",
+      "confirmed": "Confirmado"
+    },
+    "cycleDetail": {
+      "loadFailed": "No se pudieron cargar los datos del ciclo.",
+      "advanceConfirmWithOverdue": "Avanzar a {nextState}.\n\n⚠️ {overdueCount} participantes incompletos serán marcados como Atrasados.\n\nEsto no se puede deshacer. ¿Continuar?",
+      "advanceConfirm": "Avanzar a {nextState}.\n\nEsto no se puede deshacer. ¿Continuar?",
+      "unassigned": "Sin asignar",
+      "advancing": "Avanzando...",
+      "current": "Actual",
+      "next": "Siguiente",
+      "overdueStatus": "Incompletos: {count}",
+      "andMore": "...y {count} más",
+      "participantCount": "Participantes ({count})",
+      "mandatory": "Obligatorio",
+      "recommended": "Recomendado",
+      "peerReviewActive": "Activo ({min}~{max})",
+      "peerReviewInactive": "Inactivo",
+      "personCount": "{count}",
+      "peerReviewHeader": "Evaluación de pares",
+      "participantSummary": "Total: {total} | Normal: {normal} | Retrasado: {delayed}"
+    },
+    "retryMessage": "Por favor, inténtelo de nuevo.",
+    "ctrValue": {
+      "challenge": "Desafío (Challenge)",
+      "trust": "Confianza (Trust)",
+      "responsibility": "Responsabilidad (Responsibility)",
+      "respect": "Respeto (Respect)"
+    },
+    "myPeerReview": {
+      "statusSubmitted": "Enviado",
+      "statusDraft": "En progreso",
+      "loadFailed": "No se pudo cargar la lista de evaluación de pares.",
+      "assignmentSummary": "Compañeros por evaluar: {total} | Completados: {completed}/{total}",
+      "completedCount": "{completed}/{total} completados",
+      "continueWrite": "Continuar",
+      "startEval": "Iniciar evaluación",
+      "reviewTitle": "Evaluación de pares para {name}",
+      "valuePlaceholder": "Comentarios sobre {value} (opcional)",
+      "overallOpinion": "Opinión general (mín. 20 caracteres)",
+      "overallPlaceholder": "Escriba su opinión general sobre este compañero...",
+      "charMinCount": "{count} caracteres / mín. {min} caracteres"
+    },
+    "compReview": {
+      "krw": "KRW",
+      "warning": "Advertencia",
+      "confirmApproveWithExceptions": "Solicitar aprobación final.\n\n⚠️ Se incluyen {exceptionCount} excepción(es).\n\nNo se puede deshacer después de la aprobación.",
+      "confirmApprove": "Solicitar aprobación final.\n\nNo se puede deshacer después de la aprobación.",
+      "dashboardTab": "Panel",
+      "adjustTable": "Tabla de ajuste",
+      "exceptionsTab": "Excepciones ({count})",
+      "personCount": "{count}",
+      "caseCount": "{count}",
+      "saving": "Guardando...",
+      "saveChanges": "Guardar cambios",
+      "approving": "Aprobando...",
+      "requestApproval": "Solicitar aprobación final",
+      "noReason": "Sin motivo ingresado"
+    },
+    "myResult": {
+      "loadFailed": "No se pudieron cargar los resultados.",
+      "managerComment": "Comentario del gerente",
+      "peerResultTitle": "Resultados de evaluación de pares ({count} completados)",
+      "noComment": "(Sin comentario)",
+      "acknowledgedAt": "✅ Confirmado ({date})",
+      "autoConfirmWarning": "Se confirmará automáticamente antes del {deadline} si no se confirma. (D-{days})",
+      "acknowledgeButton": "Confirmar resultados"
+    },
+    "peerNomination": {
+      "sourceAiRecommended": "Recomendado por IA",
+      "sourceSelfNominated": "Auto-nominado",
+      "sourceManagerAssigned": "Asignado por gerente",
+      "sourceHrAssigned": "Asignado por RRHH",
+      "statusProposed": "Pendiente de revisión",
+      "statusApproved": "Aprobado",
+      "statusRejected": "Rechazado",
+      "statusCompleted": "Evaluación completada",
+      "loadNominationsFailed": "Error al cargar candidatos",
+      "searchEmployeeFailed": "Búsqueda de empleado fallida",
+      "loadRecommendationsFailed": "Error al cargar recomendaciones",
+      "nominateFailed": "Nominación fallida",
+      "confirmApproveTitle": "Confirmar aprobación",
+      "confirmApproveDesc": "¿Aprobar esta nominación de evaluación de pares? No se puede deshacer.",
+      "approve": "Aprobar",
+      "statusChangeFailed": "Error al cambiar estado",
+      "collaborationScore": "Puntuación de colaboración: {score}",
+      "nominationList": "Nominaciones actuales ({count})",
+      "collaboration": "Colab. {score}"
+    },
+    "competencyLabel": {
+      "collaboration": "Colaboración",
+      "communication": "Comunicación",
+      "reliability": "Confiabilidad",
+      "expertise": "Experiencia",
+      "initiative": "Iniciativa",
+      "respect": "Respeto",
+      "growth": "Crecimiento",
+      "impact": "Impacto"
+    },
+    "peerReviewResults": {
+      "loadFailed": "Error al cargar resultados",
+      "aiSummaryFailed": "Error al generar resumen IA",
+      "summary": "Resumen de {count} evaluaciones de pares",
+      "aiSummary": "Resumen IA",
+      "radarScore": "Puntuación",
+      "reviewerLabel": "Evaluador {number}"
+    },
+    "calibrationStatus": {
+      "draft": "Borrador",
+      "inProgress": "En progreso",
+      "completed": "Completado"
+    },
+    "managerEvaluation": {
+      "teamLoadFailed": "No se pudo cargar la lista del equipo.",
+      "teamSummary": "Mi equipo: {total} miembros | Evaluación completada: {completed}/{total}",
+      "overdueCount": "Vencidos: {count}",
+      "warning": "Advertencia",
+      "selfEvalLabel": "Autoevaluación",
+      "completed": "Completado",
+      "incomplete": "Incompleto",
+      "peerReviewLabel": "Evaluación de pares",
+      "edit": "Editar",
+      "evaluate": "Evaluar",
+      "peerResultLoadFailed": "Error al cargar los resultados de la evaluación de pares",
+      "commentTooLong": "Por favor, acorte los comentarios a {limit} caracteres.",
+      "evalTitle": "Evaluación de {name}",
+      "progressRate": "Progreso",
+      "reviewer": "Evaluador",
+      "confirmEval": "Confirmar evaluación",
+      "confirming": "Confirmando...",
+      "peerCandidateLoadFailed": "Error al cargar los candidatos de evaluación de pares",
+      "confirmNominate": "¿Nominar a {count} personas como evaluadores de pares?",
+      "nominateTitle": "Nominación de evaluador de pares de {name}",
+      "nominateGuide": "Seleccione 2-4 personas | Seleccionados: {selected}",
+      "relevanceScore": "Relevancia: {score}pts",
+      "nominating": "Nominando...",
+      "confirmNominateBtn": "Confirmar nominación"
+    },
+    "myEvaluation": {
+      "aiOverwriteConfirm": "El borrador de IA sobrescribirá los comentarios existentes. ¿Continuar?",
+      "aiApplied": "Borrador de IA aplicado. Revise y edite.",
+      "aiFailed": "Error al generar borrador de IA",
+      "mboSelfEvalHeading": "Autoevaluación MBO (Peso total: {weightSum}%)",
+      "mboPlaceholder": "Describa sus logros...",
+      "beiPlaceholder": "Describa la evidencia de respaldo..."
+    },
+    "peerQuestion": {
+      "collaboration": {
+        "label": "Colaboración y trabajo en equipo",
+        "desc": "Grado de comunicación proactiva y contribución a los objetivos del equipo"
+      },
+      "communication": {
+        "label": "Habilidades de comunicación",
+        "desc": "Capacidad de comunicarse de forma clara y efectiva"
+      },
+      "reliability": {
+        "label": "Confiabilidad",
+        "desc": "Grado de cumplimiento fiel de los roles y compromisos asignados"
+      },
+      "expertise": {
+        "label": "Experiencia",
+        "desc": "Nivel de conocimiento profesional y competencia en el trabajo asignado"
+      },
+      "initiative": {
+        "label": "Iniciativa",
+        "desc": "Grado de descubrimiento y resolución proactiva de tareas"
+      },
+      "respect": {
+        "label": "Respeto",
+        "desc": "Actitud de escuchar opiniones diversas y respeto mutuo"
+      },
+      "growth": {
+        "label": "Mentalidad de crecimiento",
+        "desc": "Voluntad de aprender y desarrollarse continuamente"
+      },
+      "impact": {
+        "label": "Impacto laboral",
+        "desc": "Impacto de los resultados del trabajo en el rendimiento organizacional"
+      }
+    },
+    "peerEvalForm": {
+      "loadFailed": "Error al cargar el formulario de evaluación",
+      "commentPlaceholder": "Escriba comentarios constructivos...",
+      "charCount": "{count} caracteres",
+      "submitting": "Enviando...",
+      "submit": "Enviar evaluación"
     }
   },
   "recruitment": {

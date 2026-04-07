@@ -107,7 +107,7 @@ export default function CalibrationBatchSaveDialog({
                     count > 0 ? 'bg-primary/15 text-primary' : 'bg-muted text-muted-foreground',
                   )}
                   style={{ width: `${Math.max(pct, 5)}%` }}
-                  title={`${BLOCK_LABELS[num]}: ${count}명 (${pct.toFixed(1)}%)`}
+                  title={t('calibrationBatch.blockTooltip', { block: BLOCK_LABELS[num], count, pct: pct.toFixed(1) })}
                 >
                   {count > 0 && BLOCK_LABELS[num]}
                 </div>

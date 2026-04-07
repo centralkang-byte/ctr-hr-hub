@@ -261,7 +261,8 @@
     "updateFailed": "修改失败",
     "statusChangeFailed": "状态更改失败",
     "errorOccurred": "发生错误。",
-    "currentValue": "[TODO:zh] 현재 값"
+    "currentValue": "[TODO:zh] 현재 값",
+    "retryMessage": "请重试。"
   },
   "auth": {
     "login": "Login",
@@ -1198,10 +1199,42 @@
     "cycle": "Evaluation Cycle",
     "goal": "Goal",
     "evaluation": "Evaluation",
-    "selfEval": "Self Evaluation",
-    "managerEval": "Manager Evaluation",
+    "selfEval": {
+      "loadFailed": "加载自我评估失败",
+      "saveFailed": "保存自我评估失败",
+      "submitted": "提交完成。",
+      "draftSaved": "已暂存。",
+      "commentPlaceholder": "请撰写本评估周期的综合意见..."
+    },
+    "managerEval": {
+      "cycleLoadFailed": "加载评估周期失败",
+      "settingsLoadFailed": "加载评估设置失败",
+      "dataLoadFailed": "加载团队评估数据失败",
+      "defaultEmployee": "员工",
+      "selfBadge": "自评",
+      "managerBadge": "上级",
+      "weight": "权重: {weight}%",
+      "mboWeightGrade": "业绩 {weight}% ({grade})",
+      "beiWeightGrade": "能力 {weight}% ({grade})",
+      "aiSuggest": "AI 评语建议",
+      "commentPlaceholder": "请撰写对团队成员的综合评价意见...",
+      "saveFirstForAi": "请先暂存后才能生成AI草稿"
+    },
     "peerReview": "Peer Review",
-    "calibration": "Calibration",
+    "calibration": {
+      "cycleLoadFailed": "加载评估周期失败",
+      "sessionLoadFailed": "加载校准会议失败",
+      "detailLoadFailed": "加载会议详情失败",
+      "sessionNamePlaceholder": "会议名称",
+      "sessionInfo": "{department} · 调整 {count}项",
+      "allCompany": "全公司",
+      "aiAnalysis": "AI 校准分析",
+      "scoreAdjust": "分数调整: {name}",
+      "batchPartialFail": "{succeeded}项保存, {failed}项失败",
+      "checkFailedItems": "请检查失败项目。",
+      "batchSuccess": "{count}项批量调整完成",
+      "batchSaveFailed": "批量保存失败"
+    },
     "finalGrade": "Final Grade",
     "oneOnOne": "1:1 Meeting",
     "recognition": "Recognition",
@@ -1250,7 +1283,13 @@
     "submitted": "Submitted",
     "confirmed": "Confirmed",
     "weight": "Weight",
-    "score": "Score",
+    "score": {
+      "veryLacking": "非常不足",
+      "lacking": "不足",
+      "average": "一般",
+      "excellent": "优秀",
+      "outstanding": "卓越"
+    },
     "comment": "Comment",
     "feedback": "Feedback",
     "goalTitle": "Goal Title",
@@ -1259,8 +1298,32 @@
     "progress": "Progress",
     "deadline": "Deadline",
     "teamGoals": "Team Goals",
-    "myGoals": "My Goals",
-    "newGoal": "New Goal",
+    "myGoals": {
+      "statusDraft": "草稿",
+      "statusPendingApproval": "待审批",
+      "statusApproved": "已批准",
+      "statusRejected": "已驳回",
+      "editGoal": "编辑目标",
+      "addGoal": "添加目标",
+      "titleLabel": "标题",
+      "titlePlaceholder": "目标标题",
+      "descLabel": "描述",
+      "descPlaceholder": "目标详细描述",
+      "kpiLabel": "KPI 指标（可选）",
+      "kpiPlaceholder": "销售额、订单积压",
+      "weightLabel": "权重 (%)",
+      "deadlineLabel": "截止日期",
+      "cancel": "取消",
+      "loading": "加载中...",
+      "save": "保存",
+      "loadFailed": "无法加载目标列表。",
+      "deadline": "截止: {date}",
+      "submitting": "提交中...",
+      "submitAll": "全部提交"
+    },
+    "newGoal": {
+      "loadFailed": "数据加载失败"
+    },
     "editGoal": "Edit Goal",
     "deleteGoal": "Delete Goal",
     "goalStatus": "Goal Status",
@@ -1525,7 +1588,14 @@
     "kr_kebb894eb_kebb684ed": "Block Distribution",
     "kr_keca781ec": "员工",
     "department": "部门",
-    "grade": "职级",
+    "grade": {
+      "exceedsPlus": "卓越 (E+)",
+      "exceeds": "优秀 (E)",
+      "meetsPlus": "超出预期 (M+)",
+      "meets": "达到预期 (M)",
+      "below": "需改进 (B)",
+      "belowMinus": "不足 (B-)"
+    },
     "kr_kec9e90ea_kec84b1ea": "Self 绩效",
     "kr_keba7a4eb_kec84b1ea": "经理 绩效",
     "kr_kecb59cec_kec84b1ea": "Final 绩效",
@@ -1579,7 +1649,8 @@
       "perEmployeeReason": "个人理由覆盖",
       "optionalReason": "个人理由（可选）",
       "confirmSave": "确认并保存",
-      "saving": "保存中..."
+      "saving": "保存中...",
+      "blockTooltip": "{block}: {count}人 ({pct}%)"
     },
     "kr_kebb380ea_keb82b4ec_kec9786ec": "No changes have been made.",
     "approve_kec9790_kec8ba4ed": "失败 to approve.",
@@ -1908,7 +1979,10 @@
     "hours": "小时",
     "savedSuccess": "save completed.",
     "adminResults": "管理员 结果s",
-    "results": "结果",
+    "results": {
+      "loadFailed": "加载评估结果失败",
+      "weight": "权重: {weight}%"
+    },
     "teamResults": "团队 结果s",
     "cyclesDesc": "Create and manage performance cycles",
     "noAccess": "Access denied",
@@ -2292,6 +2366,200 @@
       "messages": {
         "loadFailed": "成长图表加载失败"
       }
+    },
+    "performanceMain": {
+      "cycleLoadFailed": "加载评估周期失败",
+      "dataLoadFailed": "数据加载失败",
+      "retryMessage": "请重试。"
+    },
+    "peerReviewStatus": {
+      "draft": "未填写",
+      "submitted": "已提交",
+      "confirmed": "已确认"
+    },
+    "cycleDetail": {
+      "loadFailed": "无法加载周期数据。",
+      "advanceConfirmWithOverdue": "推进到{nextState}。\n\n⚠️ {overdueCount}名未完成参与者将被标记为逾期。\n\n此操作不可撤销。是否继续？",
+      "advanceConfirm": "推进到{nextState}。\n\n此操作不可撤销。是否继续？",
+      "unassigned": "未指定",
+      "advancing": "推进中...",
+      "current": "当前",
+      "next": "下一步",
+      "overdueStatus": "未完成: {count}人",
+      "andMore": "...及其他{count}人",
+      "participantCount": "参与者 ({count}人)",
+      "mandatory": "必须",
+      "recommended": "推荐",
+      "peerReviewActive": "已启用 ({min}~{max}人)",
+      "peerReviewInactive": "未启用",
+      "personCount": "{count}人",
+      "peerReviewHeader": "同事评价",
+      "participantSummary": "合计: {total}人 | 正常: {normal} | 延迟: {delayed}"
+    },
+    "retryMessage": "请重试。",
+    "ctrValue": {
+      "challenge": "挑战 (Challenge)",
+      "trust": "信任 (Trust)",
+      "responsibility": "责任 (Responsibility)",
+      "respect": "尊重 (Respect)"
+    },
+    "myPeerReview": {
+      "statusSubmitted": "已提交",
+      "statusDraft": "编写中",
+      "loadFailed": "无法加载同事评价列表。",
+      "assignmentSummary": "待评价同事: {total}人 | 已完成: {completed}/{total}",
+      "completedCount": "{completed}/{total} 已完成",
+      "continueWrite": "继续编写",
+      "startEval": "开始评价",
+      "reviewTitle": "对 {name} 的同事评价",
+      "valuePlaceholder": "关于{value}的意见（选填）",
+      "overallOpinion": "综合意见（最少20字）",
+      "overallPlaceholder": "请填写对同事的综合意见...",
+      "charMinCount": "{count}字 / 最少{min}字"
+    },
+    "compReview": {
+      "krw": "韩元",
+      "warning": "警告",
+      "confirmApproveWithExceptions": "申请最终批准。\n\n⚠️ 包含{exceptionCount}项例外。\n\n批准后无法撤销。",
+      "confirmApprove": "申请最终批准。\n\n批准后无法撤销。",
+      "dashboardTab": "仪表盘",
+      "adjustTable": "调整表",
+      "exceptionsTab": "例外列表 ({count})",
+      "personCount": "{count}人",
+      "caseCount": "{count}件",
+      "saving": "保存中...",
+      "saveChanges": "保存更改",
+      "approving": "审批中...",
+      "requestApproval": "申请最终批准",
+      "noReason": "未填写原因"
+    },
+    "myResult": {
+      "loadFailed": "无法加载结果。",
+      "managerComment": "经理评语",
+      "peerResultTitle": "同事评价结果（{count}人已完成）",
+      "noComment": "（无意见）",
+      "acknowledgedAt": "✅ 已确认 ({date})",
+      "autoConfirmWarning": "如果在{deadline}前未确认，将自动确认处理。(D-{days})",
+      "acknowledgeButton": "确认结果"
+    },
+    "peerNomination": {
+      "sourceAiRecommended": "AI推荐",
+      "sourceSelfNominated": "自荐",
+      "sourceManagerAssigned": "经理指定",
+      "sourceHrAssigned": "HR指定",
+      "statusProposed": "待审核",
+      "statusApproved": "已批准",
+      "statusRejected": "已拒绝",
+      "statusCompleted": "评价完成",
+      "loadNominationsFailed": "候选人列表加载失败",
+      "searchEmployeeFailed": "员工搜索失败",
+      "loadRecommendationsFailed": "推荐候选人加载失败",
+      "nominateFailed": "候选人推荐失败",
+      "confirmApproveTitle": "确认批准",
+      "confirmApproveDesc": "确认批准此同事评价提名？批准后无法取消。",
+      "approve": "批准",
+      "statusChangeFailed": "候选人状态更改失败",
+      "collaborationScore": "协作分数: {score}",
+      "nominationList": "当前提名列表 ({count}件)",
+      "collaboration": "协作 {score}"
+    },
+    "competencyLabel": {
+      "collaboration": "协作",
+      "communication": "沟通",
+      "reliability": "可靠性",
+      "expertise": "专业性",
+      "initiative": "主动性",
+      "respect": "尊重",
+      "growth": "成长",
+      "impact": "影响力"
+    },
+    "peerReviewResults": {
+      "loadFailed": "同事评价结果加载失败",
+      "aiSummaryFailed": "AI摘要生成失败",
+      "summary": "{count}名同事评价综合",
+      "aiSummary": "AI摘要",
+      "radarScore": "分数",
+      "reviewerLabel": "评价者 {number}"
+    },
+    "calibrationStatus": {
+      "draft": "草稿",
+      "inProgress": "进行中",
+      "completed": "已完成"
+    },
+    "managerEvaluation": {
+      "teamLoadFailed": "无法加载团队列表。",
+      "teamSummary": "我的团队: {total}人 | 评估完成: {completed}/{total}",
+      "overdueCount": "逾期: {count}人",
+      "warning": "警告",
+      "selfEvalLabel": "自评",
+      "completed": "已完成",
+      "incomplete": "未完成",
+      "peerReviewLabel": "同事评价",
+      "edit": "修改",
+      "evaluate": "评价",
+      "peerResultLoadFailed": "加载同事评价结果失败",
+      "commentTooLong": "请将评语修改为{limit}字以内。",
+      "evalTitle": "{name} 评价",
+      "progressRate": "进度",
+      "reviewer": "评价者",
+      "confirmEval": "确认评价",
+      "confirming": "确认中...",
+      "peerCandidateLoadFailed": "加载同事评价候选人失败",
+      "confirmNominate": "确定指名{count}人为同事评价者吗?",
+      "nominateTitle": "{name} 同事评价者指名",
+      "nominateGuide": "最少2人, 最多4人 | 已选: {selected}人",
+      "relevanceScore": "关联度: {score}分",
+      "nominating": "指名中...",
+      "confirmNominateBtn": "确认指名"
+    },
+    "myEvaluation": {
+      "aiOverwriteConfirm": "AI草稿将覆盖现有评语。继续吗?",
+      "aiApplied": "AI草稿已应用，请审查后修改。",
+      "aiFailed": "AI草稿生成失败",
+      "mboSelfEvalHeading": "MBO 自评 (权重合计: {weightSum}%)",
+      "mboPlaceholder": "请描述达成内容...",
+      "beiPlaceholder": "请描述根据..."
+    },
+    "peerQuestion": {
+      "collaboration": {
+        "label": "协作与团队合作",
+        "desc": "积极与同事沟通并为团队目标做出贡献的程度"
+      },
+      "communication": {
+        "label": "沟通能力",
+        "desc": "清晰有效沟通的能力"
+      },
+      "reliability": {
+        "label": "可靠性",
+        "desc": "忠实履行分配的角色和承诺的程度"
+      },
+      "expertise": {
+        "label": "专业性",
+        "desc": "对负责工作的专业知识和能力水平"
+      },
+      "initiative": {
+        "label": "主动性",
+        "desc": "主动发现和解决任务的程度"
+      },
+      "respect": {
+        "label": "尊重",
+        "desc": "倾听不同意见并相互尊重的态度"
+      },
+      "growth": {
+        "label": "成长意愿",
+        "desc": "持续学习和发展的意愿"
+      },
+      "impact": {
+        "label": "工作影响力",
+        "desc": "工作成果对组织业绩的影响"
+      }
+    },
+    "peerEvalForm": {
+      "loadFailed": "加载评价表单失败",
+      "commentPlaceholder": "请撰写建设性的反馈...",
+      "charCount": "{count}字",
+      "submitting": "提交中...",
+      "submit": "提交评价"
     }
   },
   "recruitment": {

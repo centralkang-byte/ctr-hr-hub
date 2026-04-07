@@ -50,10 +50,10 @@ interface TeamResult {
   }[]
 }
 
-const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
-  DRAFT: { label: '미작성', cls: STATUS_VARIANT.neutral },
-  SUBMITTED: { label: '제출 완료', cls: STATUS_VARIANT.info },
-  CONFIRMED: { label: '확정됨', cls: STATUS_VARIANT.success },
+const STATUS_BADGE: Record<string, { labelKey: string; cls: string }> = {
+  DRAFT: { labelKey: 'peerReviewStatus.draft', cls: STATUS_VARIANT.neutral },
+  SUBMITTED: { labelKey: 'peerReviewStatus.submitted', cls: STATUS_VARIANT.info },
+  CONFIRMED: { labelKey: 'peerReviewStatus.confirmed', cls: STATUS_VARIANT.success },
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -167,7 +167,7 @@ export default function PeerReviewClient({ user: _user }: { user: SessionUser })
                 <div className="flex items-center gap-3">
                   {r.evalStatus ? (
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${STATUS_BADGE[r.evalStatus]?.cls ?? ''}`}>
-                      {STATUS_BADGE[r.evalStatus]?.label ?? r.evalStatus}
+                      {STATUS_BADGE[r.evalStatus] ? t(STATUS_BADGE[r.evalStatus].labelKey as Parameters<typeof t>[0]) : r.evalStatus}
                     </span>
                   ) : (
                     <button onClick={() => router.push(`/performance/peer-review/evaluate/${r.nominationId}`)}

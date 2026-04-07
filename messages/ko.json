@@ -153,6 +153,7 @@
     "year": "연도",
     "previous": "이전",
     "retry": "다시 시도",
+    "retryMessage": "다시 시도해 주세요.",
     "complete": "완료",
     "select": "선택",
     "loadFailed": "불러오기 실패",
@@ -1198,10 +1199,42 @@
     "cycle": "평가 주기",
     "goal": "목표",
     "evaluation": "평가",
-    "selfEval": "자기 평가",
-    "managerEval": "상사 평가",
+    "selfEval": {
+      "loadFailed": "자기 평가 로드 실패",
+      "saveFailed": "자기 평가 저장 실패",
+      "submitted": "제출 완료되었습니다.",
+      "draftSaved": "임시 저장되었습니다.",
+      "commentPlaceholder": "이번 평가 주기에 대한 종합 의견을 작성하세요..."
+    },
+    "managerEval": {
+      "cycleLoadFailed": "평가 주기 로드 실패",
+      "settingsLoadFailed": "평가 설정 로드 실패",
+      "dataLoadFailed": "팀원 평가 데이터 로드 실패",
+      "defaultEmployee": "직원",
+      "selfBadge": "자기",
+      "managerBadge": "매니저",
+      "weight": "가중치: {weight}%",
+      "mboWeightGrade": "업적 {weight}% ({grade})",
+      "beiWeightGrade": "역량 {weight}% ({grade})",
+      "aiSuggest": "AI 코멘트 제안",
+      "commentPlaceholder": "팀원에 대한 종합 평가 의견을 작성하세요...",
+      "saveFirstForAi": "먼저 임시 저장 후 AI 초안을 생성할 수 있습니다"
+    },
     "peerReview": "다면 평가",
-    "calibration": "캘리브레이션",
+    "calibration": {
+      "cycleLoadFailed": "평가 주기 로드 실패",
+      "sessionLoadFailed": "캘리브레이션 세션 로드 실패",
+      "detailLoadFailed": "세션 상세 로드 실패",
+      "sessionNamePlaceholder": "세션 이름",
+      "sessionInfo": "{department} · 조정 {count}건",
+      "allCompany": "전사",
+      "aiAnalysis": "AI 캘리브레이션 분석",
+      "scoreAdjust": "점수 조정: {name}",
+      "batchPartialFail": "{succeeded}건 저장, {failed}건 실패",
+      "checkFailedItems": "실패 항목을 확인하세요.",
+      "batchSuccess": "{count}건 배치 조정 완료",
+      "batchSaveFailed": "배치 저장 실패"
+    },
     "finalGrade": "최종 등급",
     "oneOnOne": "1:1 미팅",
     "recognition": "칭찬/인정",
@@ -1250,7 +1283,13 @@
     "submitted": "제출됨",
     "confirmed": "확정됨",
     "weight": "가중치",
-    "score": "점수",
+    "score": {
+      "veryLacking": "매우 부족",
+      "lacking": "부족",
+      "average": "보통",
+      "excellent": "우수",
+      "outstanding": "탁월"
+    },
     "comment": "코멘트",
     "feedback": "피드백",
     "goalTitle": "목표 제목",
@@ -1259,8 +1298,32 @@
     "progress": "진행률",
     "deadline": "마감일",
     "teamGoals": "팀 목표",
-    "myGoals": "내 목표",
-    "newGoal": "새 목표",
+    "myGoals": {
+      "statusDraft": "임시저장",
+      "statusPendingApproval": "승인 대기",
+      "statusApproved": "승인됨",
+      "statusRejected": "반려",
+      "editGoal": "목표 수정",
+      "addGoal": "목표 추가",
+      "titleLabel": "제목",
+      "titlePlaceholder": "목표 제목",
+      "descLabel": "설명",
+      "descPlaceholder": "목표 상세 설명",
+      "kpiLabel": "KPI 지표 (선택)",
+      "kpiPlaceholder": "매출액, 수주잔고",
+      "weightLabel": "가중치 (%)",
+      "deadlineLabel": "마감일",
+      "cancel": "취소",
+      "loading": "로딩 중...",
+      "save": "저장",
+      "loadFailed": "목표 목록을 불러오지 못했습니다.",
+      "deadline": "마감: {date}",
+      "submitting": "제출 중...",
+      "submitAll": "전체 제출"
+    },
+    "newGoal": {
+      "loadFailed": "데이터 로드 실패"
+    },
     "editGoal": "목표 수정",
     "deleteGoal": "목표 삭제",
     "goalStatus": "목표 상태",
@@ -1482,7 +1545,10 @@
     "deleteCompetency": "역량 삭제",
     "deleteCompetencyConfirm": "\"{name}\"을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
     "adminResults": "전체 결과",
-    "results": "결과",
+    "results": {
+      "loadFailed": "평가 결과 로드 실패",
+      "weight": "가중치: {weight}%"
+    },
     "teamResults": "팀 결과",
     "cyclesTitle": "평가 사이클",
     "goalsTitle": "목표 관리",
@@ -1545,7 +1611,14 @@
     "kr_kebb894eb_kebb684ed": "블록 분포",
     "kr_keca781ec": "직원",
     "department": "부서",
-    "grade": "직급",
+    "grade": {
+      "exceedsPlus": "탁월 (E+)",
+      "exceeds": "우수 (E)",
+      "meetsPlus": "기대 이상 (M+)",
+      "meets": "기대 충족 (M)",
+      "below": "개선 필요 (B)",
+      "belowMinus": "미흡 (B-)"
+    },
     "kr_kec9e90ea_kec84b1ea": "자기 성과",
     "kr_keba7a4eb_kec84b1ea": "매니저 성과",
     "kr_kecb59cec_kec84b1ea": "최종 성과",
@@ -1599,7 +1672,8 @@
       "perEmployeeReason": "개별 사유 오버라이드",
       "optionalReason": "개별 사유 (선택)",
       "confirmSave": "확인 및 저장",
-      "saving": "저장 중..."
+      "saving": "저장 중...",
+      "blockTooltip": "{block}: {count}명 ({pct}%)"
     },
     "kr_kebb380ea_keb82b4ec_kec9786ec": "변경된 내용이 없습니다.",
     "approve_kec9790_kec8ba4ed": "승인에 실패했습니다.",
@@ -2292,6 +2366,200 @@
       "messages": {
         "loadFailed": "성장 차트 로드 실패"
       }
+    },
+    "performanceMain": {
+      "cycleLoadFailed": "평가 주기 로드 실패",
+      "dataLoadFailed": "데이터 로드 실패",
+      "retryMessage": "다시 시도해 주세요."
+    },
+    "peerReviewStatus": {
+      "draft": "미작성",
+      "submitted": "제출 완료",
+      "confirmed": "확정됨"
+    },
+    "cycleDetail": {
+      "loadFailed": "사이클 데이터를 불러오지 못했습니다.",
+      "advanceConfirmWithOverdue": "다음 단계({nextState})로 진행합니다.\n\n⚠️ 미완료 {overdueCount}명은 Overdue 처리됩니다.\n\n되돌릴 수 없습니다. 계속하시겠습니까?",
+      "advanceConfirm": "다음 단계({nextState})로 진행합니다.\n\n되돌릴 수 없습니다. 계속하시겠습니까?",
+      "unassigned": "미지정",
+      "advancing": "전환 중...",
+      "current": "현재",
+      "next": "다음",
+      "overdueStatus": "미완료 현황: {count}명",
+      "andMore": "...외 {count}명",
+      "participantCount": "참여자 ({count}명)",
+      "mandatory": "필수",
+      "recommended": "권장",
+      "peerReviewActive": "활성 ({min}~{max}명)",
+      "peerReviewInactive": "비활성",
+      "personCount": "{count}명",
+      "peerReviewHeader": "동료평가",
+      "participantSummary": "합계: {total}명 | 정상: {normal} | 지연: {delayed}"
+    },
+    "retryMessage": "다시 시도해 주세요.",
+    "ctrValue": {
+      "challenge": "도전 (Challenge)",
+      "trust": "신뢰 (Trust)",
+      "responsibility": "책임 (Responsibility)",
+      "respect": "존중 (Respect)"
+    },
+    "myPeerReview": {
+      "statusSubmitted": "제출 완료",
+      "statusDraft": "작성 중",
+      "loadFailed": "동료평가 목록을 불러오지 못했습니다.",
+      "assignmentSummary": "내가 평가해야 할 동료: {total}명 | 완료: {completed}/{total}",
+      "completedCount": "{completed}/{total} 완료",
+      "continueWrite": "이어서 작성",
+      "startEval": "평가 시작",
+      "reviewTitle": "{name} 님에 대한 동료평가",
+      "valuePlaceholder": "{value}에 대한 의견 (선택)",
+      "overallOpinion": "종합 의견 (최소 20자)",
+      "overallPlaceholder": "동료에 대한 종합적인 의견을 작성해주세요...",
+      "charMinCount": "{count}자 / 최소 {min}자"
+    },
+    "compReview": {
+      "krw": "원",
+      "warning": "경고",
+      "confirmApproveWithExceptions": "최종 승인을 요청합니다.\n\n⚠️ {exceptionCount}건의 예외가 포함되어 있습니다.\n\n승인 후에는 되돌릴 수 없습니다.",
+      "confirmApprove": "최종 승인을 요청합니다.\n\n승인 후에는 되돌릴 수 없습니다.",
+      "dashboardTab": "대시보드",
+      "adjustTable": "조정 테이블",
+      "exceptionsTab": "예외 목록 ({count})",
+      "personCount": "{count}명",
+      "caseCount": "{count}건",
+      "saving": "저장 중...",
+      "saveChanges": "변경사항 저장",
+      "approving": "승인 중...",
+      "requestApproval": "최종 승인 요청",
+      "noReason": "사유 미입력"
+    },
+    "myResult": {
+      "loadFailed": "결과를 불러오지 못했습니다.",
+      "managerComment": "매니저 코멘트",
+      "peerResultTitle": "동료평가 결과 ({count}명 평가 완료)",
+      "noComment": "(의견 없음)",
+      "acknowledgedAt": "✅ 확인 완료 ({date})",
+      "autoConfirmWarning": "{deadline}까지 확인하지 않으면 자동 확인 처리됩니다. (D-{days})",
+      "acknowledgeButton": "결과를 확인합니다"
+    },
+    "peerNomination": {
+      "sourceAiRecommended": "AI 추천",
+      "sourceSelfNominated": "자기 추천",
+      "sourceManagerAssigned": "매니저 지정",
+      "sourceHrAssigned": "HR 지정",
+      "statusProposed": "검토 대기",
+      "statusApproved": "승인",
+      "statusRejected": "거부",
+      "statusCompleted": "평가 완료",
+      "loadNominationsFailed": "후보자 목록 로드 실패",
+      "searchEmployeeFailed": "직원 검색 실패",
+      "loadRecommendationsFailed": "추천 후보 로드 실패",
+      "nominateFailed": "후보 추천 실패",
+      "confirmApproveTitle": "승인 확인",
+      "confirmApproveDesc": "이 피어 리뷰 지명을 승인하시겠습니까? 승인 후에는 취소할 수 없습니다.",
+      "approve": "승인",
+      "statusChangeFailed": "후보 상태 변경 실패",
+      "collaborationScore": "협업 점수: {score}",
+      "nominationList": "현재 지명 목록 ({count}건)",
+      "collaboration": "협업 {score}"
+    },
+    "competencyLabel": {
+      "collaboration": "협업",
+      "communication": "소통",
+      "reliability": "신뢰성",
+      "expertise": "전문성",
+      "initiative": "주도성",
+      "respect": "존중",
+      "growth": "성장",
+      "impact": "영향력"
+    },
+    "peerReviewResults": {
+      "loadFailed": "동료 평가 결과 로드 실패",
+      "aiSummaryFailed": "AI 요약 생성 실패",
+      "summary": "{count}명의 동료 평가 종합",
+      "aiSummary": "AI 요약",
+      "radarScore": "점수",
+      "reviewerLabel": "리뷰어 {number}"
+    },
+    "calibrationStatus": {
+      "draft": "임시저장",
+      "inProgress": "진행 중",
+      "completed": "완료"
+    },
+    "managerEvaluation": {
+      "teamLoadFailed": "팀원 목록을 불러오지 못했습니다.",
+      "teamSummary": "내 팀원: {total}명 | 평가 완료: {completed}/{total}",
+      "overdueCount": "Overdue: {count}명",
+      "warning": "경고",
+      "selfEvalLabel": "자기평가",
+      "completed": "완료",
+      "incomplete": "미완료",
+      "peerReviewLabel": "동료평가",
+      "edit": "수정",
+      "evaluate": "평가하기",
+      "peerResultLoadFailed": "동료 평가 결과 로드 실패",
+      "commentTooLong": "코멘트를 {limit}자 이내로 수정해주세요.",
+      "evalTitle": "{name} 평가",
+      "progressRate": "진행률",
+      "reviewer": "평가자",
+      "confirmEval": "평가 확정",
+      "confirming": "확정 중...",
+      "peerCandidateLoadFailed": "동료평가 후보 로드 실패",
+      "confirmNominate": "{count}명을 동료평가자로 지명하시겠습니까?",
+      "nominateTitle": "{name} 동료평가자 지명",
+      "nominateGuide": "최소 2명, 최대 4명 선택 | 선택: {selected}명",
+      "relevanceScore": "관련도: {score}점",
+      "nominating": "지명 중...",
+      "confirmNominateBtn": "지명 확정"
+    },
+    "myEvaluation": {
+      "aiOverwriteConfirm": "AI 초안이 기존 코멘트를 덮어씁니다. 계속하시겠습니까?",
+      "aiApplied": "AI 초안이 적용되었습니다. 검토 후 수정하세요.",
+      "aiFailed": "AI 초안 생성 실패",
+      "mboSelfEvalHeading": "MBO 자기평가 (가중치 합계: {weightSum}%)",
+      "mboPlaceholder": "달성 내용을 기술하세요...",
+      "beiPlaceholder": "근거를 기술하세요..."
+    },
+    "peerQuestion": {
+      "collaboration": {
+        "label": "협업 및 팀워크",
+        "desc": "동료와 적극적으로 소통하고 팀 목표 달성에 기여하는 정도"
+      },
+      "communication": {
+        "label": "소통 능력",
+        "desc": "명확하고 효과적으로 의사소통하는 능력"
+      },
+      "reliability": {
+        "label": "신뢰성",
+        "desc": "맡은 역할과 약속을 성실히 이행하는 정도"
+      },
+      "expertise": {
+        "label": "전문성",
+        "desc": "담당 업무에 대한 전문 지식과 역량 수준"
+      },
+      "initiative": {
+        "label": "주도성",
+        "desc": "능동적으로 과제를 발굴하고 해결하는 정도"
+      },
+      "respect": {
+        "label": "존중",
+        "desc": "다양한 의견을 경청하고 상호 존중하는 태도"
+      },
+      "growth": {
+        "label": "성장 의지",
+        "desc": "지속적으로 학습하고 발전하려는 의지"
+      },
+      "impact": {
+        "label": "업무 영향력",
+        "desc": "업무 결과가 조직 성과에 미치는 영향"
+      }
+    },
+    "peerEvalForm": {
+      "loadFailed": "평가 양식 로드 실패",
+      "commentPlaceholder": "건설적인 피드백을 작성해 주세요...",
+      "charCount": "{count}자",
+      "submitting": "제출 중...",
+      "submit": "평가 제출"
     }
   },
   "recruitment": {

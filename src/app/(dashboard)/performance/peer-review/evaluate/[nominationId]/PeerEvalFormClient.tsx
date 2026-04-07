@@ -12,17 +12,17 @@ import type { SessionUser } from '@/types'
 // ─── Peer Review Questions ──────────────────────────────
 
 const PEER_QUESTIONS = [
-  { key: 'collaboration', label: '협업 및 팀워크', desc: '동료와 적극적으로 소통하고 팀 목표 달성에 기여하는 정도' },
-  { key: 'communication', label: '소통 능력', desc: '명확하고 효과적으로 의사소통하는 능력' },
-  { key: 'reliability', label: '신뢰성', desc: '맡은 역할과 약속을 성실히 이행하는 정도' },
-  { key: 'expertise', label: '전문성', desc: '담당 업무에 대한 전문 지식과 역량 수준' },
-  { key: 'initiative', label: '주도성', desc: '능동적으로 과제를 발굴하고 해결하는 정도' },
-  { key: 'respect', label: '존중', desc: '다양한 의견을 경청하고 상호 존중하는 태도' },
-  { key: 'growth', label: '성장 의지', desc: '지속적으로 학습하고 발전하려는 의지' },
-  { key: 'impact', label: '업무 영향력', desc: '업무 결과가 조직 성과에 미치는 영향' },
+  { key: 'collaboration', labelKey: 'peerQuestion.collaboration.label', descKey: 'peerQuestion.collaboration.desc' },
+  { key: 'communication', labelKey: 'peerQuestion.communication.label', descKey: 'peerQuestion.communication.desc' },
+  { key: 'reliability', labelKey: 'peerQuestion.reliability.label', descKey: 'peerQuestion.reliability.desc' },
+  { key: 'expertise', labelKey: 'peerQuestion.expertise.label', descKey: 'peerQuestion.expertise.desc' },
+  { key: 'initiative', labelKey: 'peerQuestion.initiative.label', descKey: 'peerQuestion.initiative.desc' },
+  { key: 'respect', labelKey: 'peerQuestion.respect.label', descKey: 'peerQuestion.respect.desc' },
+  { key: 'growth', labelKey: 'peerQuestion.growth.label', descKey: 'peerQuestion.growth.desc' },
+  { key: 'impact', labelKey: 'peerQuestion.impact.label', descKey: 'peerQuestion.impact.desc' },
 ]
 
-const SCORE_LABELS = ['매우 부족', '부족', '보통', '우수', '탁월']
+const SCORE_LABELS = ['score.veryLacking', 'score.lacking', 'score.average', 'score.excellent', 'score.outstanding']
 
 // ─── Component ───────────────────────────────────────────
 
@@ -54,7 +54,7 @@ export default function PeerEvalFormClient({ user: _user, nominationId }: { user
         competencyScore: avgScore,
       })
       setSubmitted(true)
-    } catch (err) { toast({ title: '평가 양식 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('peerEvalForm.loadFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' }) }
     setSubmitting(false)
   }
 
@@ -91,8 +91,8 @@ export default function PeerEvalFormClient({ user: _user, nominationId }: { user
       <div className="space-y-4">
         {PEER_QUESTIONS.map((q) => (
           <div key={q.key} className="bg-card rounded-xl shadow-sm border border-border p-6">
-            <h3 className="text-sm font-semibold text-foreground">{q.label}</h3>
-            <p className="text-xs text-muted-foreground mt-1 mb-3">{q.desc}</p>
+            <h3 className="text-sm font-semibold text-foreground">{t(q.labelKey)}</h3>
+            <p className="text-xs text-muted-foreground mt-1 mb-3">{t(q.descKey)}</p>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((v) => (
                 <button key={v} onClick={() => setScore(q.key, v)}
@@ -102,7 +102,7 @@ export default function PeerEvalFormClient({ user: _user, nominationId }: { user
                       : 'bg-card text-muted-foreground border-border hover:bg-background'
                   }`}>
                   <div>{v}</div>
-                  <div className="text-xs mt-0.5 opacity-80">{SCORE_LABELS[v - 1]}</div>
+                  <div className="text-xs mt-0.5 opacity-80">{t(SCORE_LABELS[v - 1])}</div>
                 </button>
               ))}
             </div>
@@ -125,11 +125,11 @@ export default function PeerEvalFormClient({ user: _user, nominationId }: { user
         <textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          placeholder="건설적인 피드백을 작성해 주세요..."
+          placeholder={t('peerEvalForm.commentPlaceholder')}
           rows={5}
           className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
         />
-        <p className="text-xs text-muted-foreground mt-1 text-right">{comment.length}자</p>
+        <p className="text-xs text-muted-foreground mt-1 text-right">{t('peerEvalForm.charCount', { count: comment.length })}</p>
       </div>
 
       {/* Submit */}
@@ -137,7 +137,7 @@ export default function PeerEvalFormClient({ user: _user, nominationId }: { user
         <button onClick={handleSubmit} disabled={submitting || !allScored || comment.length < 10}
           className={`flex items-center gap-2 px-6 py-2.5 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}>
           <Send className="w-4 h-4" />
-          {submitting ? '제출 중...' : '평가 제출'}
+          {submitting ? t('peerEvalForm.submitting') : t('peerEvalForm.submit')}
         </button>
       </div>
     </div>

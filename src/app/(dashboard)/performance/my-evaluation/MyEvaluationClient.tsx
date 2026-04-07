@@ -19,12 +19,12 @@ const COMMENT_SOFT_LIMIT = 500
 interface CycleOption { id: string; name: string; status: string; half: string; evalDeadline?: string }
 interface GoalItem { id: string; title: string; weight: number; achievementScore: number | null }
 
-interface BeiItem { key: string; label: string; labelEn: string }
+interface BeiItem { key: string; labelKey: string; labelEn: string }
 const BEI_ITEMS: BeiItem[] = [
-    { key: 'challenge', label: '도전', labelEn: 'Challenge' },
-    { key: 'trust', label: '신뢰', labelEn: 'Trust' },
-    { key: 'responsibility', label: '책임', labelEn: 'Responsibility' },
-    { key: 'respect', label: '존중', labelEn: 'Respect' },
+    { key: 'challenge', labelKey: 'ctrValue.challenge', labelEn: 'Challenge' },
+    { key: 'trust', labelKey: 'ctrValue.trust', labelEn: 'Trust' },
+    { key: 'responsibility', labelKey: 'ctrValue.responsibility', labelEn: 'Responsibility' },
+    { key: 'respect', labelKey: 'ctrValue.respect', labelEn: 'Respect' },
 ]
 
 interface EvalData {
@@ -139,7 +139,7 @@ export default function MyEvaluationClient({user: _user }: {
     async function handleSave(status: 'DRAFT' | 'SUBMITTED', isAutoSave = false) {
         if (!evalData || !selectedCycleId) return
         if (hasOverlengthComment && !isAutoSave) {
-            toast({ title: `코멘트를 ${COMMENT_SOFT_LIMIT}자 이내로 수정해주세요.`, variant: 'destructive' })
+            toast({ title: t('managerEvaluation.commentTooLong', { limit: COMMENT_SOFT_LIMIT }), variant: 'destructive' })
             return
         }
         if (status === 'SUBMITTED' && !isAutoSave) {
@@ -242,7 +242,7 @@ export default function MyEvaluationClient({user: _user }: {
 
         if (hasExistingComments) {
             confirm({
-                title: 'AI 초안이 기존 코멘트를 덮어씁니다. 계속하시겠습니까?',
+                title: t('myEvaluation.aiOverwriteConfirm'),
                 onConfirm: () => executeAiDraft(),
             })
         } else {
@@ -268,7 +268,7 @@ export default function MyEvaluationClient({user: _user }: {
                     weight: g.weight,
                 })),
                 competencyScores: BEI_ITEMS.map(b => ({
-                    name: b.label,
+                    name: t(b.labelKey),
                     score: evalData.beiScores[b.key]?.score ?? 3,
                 })),
                 evalType: 'SELF' as const,
@@ -294,9 +294,9 @@ export default function MyEvaluationClient({user: _user }: {
 
             setEvalData(p => p ? { ...p, goalScores: newGoalScores, beiScores: newBeiScores } : p)
             setIsDirty(true)
-            toast({ title: 'AI 초안이 적용되었습니다. 검토 후 수정하세요.' })
+            toast({ title: t('myEvaluation.aiApplied') })
         } catch {
-            toast({ title: 'AI 초안 생성 실패', variant: 'destructive' })
+            toast({ title: t('myEvaluation.aiFailed'), variant: 'destructive' })
         } finally {
             setAiLoading(false)
         }
@@ -397,14 +397,14 @@ export default function MyEvaluationClient({user: _user }: {
                             <div className="flex items-center gap-2">
                                 <Sparkles className="h-5 w-5 text-primary" />
                                 <div>
-                                    <p className="text-sm font-medium text-foreground">{t('aiDraftTitle') || 'AI 코멘트 초안'}</p>
-                                    <p className="text-xs text-muted-foreground">{t('aiDraftDesc') || '점수 기반으로 자기평가 코멘트 초안을 생성합니다'}</p>
+                                    <p className="text-sm font-medium text-foreground">{t('aiDraftTitle')}</p>
+                                    <p className="text-xs text-muted-foreground">{t('aiDraftDesc')}</p>
                                 </div>
                             </div>
                             <button onClick={handleAiDraft} disabled={aiLoading}
                                 className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40 transition-colors">
                                 {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                                {aiLoading ? (t('aiGenerating') || '생성 중...') : (t('aiGenerate') || 'AI 초안 생성')}
+                                {aiLoading ? t('aiGenerating') : t('aiGenerate')}
                             </button>
                         </div>
                     </div>
@@ -443,7 +443,7 @@ export default function MyEvaluationClient({user: _user }: {
                         {activeTab === 'mbo' && (
                             <div className="rounded-xl border border-border bg-card">
                                 <div className="border-b border-border px-5 py-4">
-                                    <h2 className="text-base font-semibold text-foreground">MBO 자기평가 (가중치 합계: {goals.reduce((s, g) => s + Number(g.weight), 0)}%)</h2>
+                                    <h2 className="text-base font-semibold text-foreground">{t('myEvaluation.mboSelfEvalHeading', { weightSum: goals.reduce((s, g) => s + Number(g.weight), 0) })}</h2>
                                 </div>
                                 <div className="divide-y divide-border">
                                     {goals.map((goal) => (
@@ -451,7 +451,7 @@ export default function MyEvaluationClient({user: _user }: {
                                             <div className="flex items-center justify-between">
                                                 <div>
                                                     <p className="text-sm font-medium text-foreground">{goal.title}</p>
-                                                    <p className="text-xs text-muted-foreground">가중치: {goal.weight}%</p>
+                                                    <p className="text-xs text-muted-foreground">{t('managerEval.weight', { weight: goal.weight })}</p>
                                                 </div>
                                                 <StarRating value={evalData?.goalScores?.[goal.id]?.score ?? 3}
                                                     onChange={(v) => updateGoalScore(goal.id, 'score', v)} disabled={isSubmitted} />
@@ -459,7 +459,7 @@ export default function MyEvaluationClient({user: _user }: {
                                             <textarea rows={2} disabled={isSubmitted}
                                                 value={evalData?.goalScores?.[goal.id]?.comment ?? ''}
                                                 onChange={(e) => updateGoalScore(goal.id, 'comment', e.target.value)}
-                                                placeholder="달성 내용을 기술하세요..."
+                                                placeholder={t('myEvaluation.mboPlaceholder')}
                                                 className="w-full resize-none rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:bg-muted" />
                                             <span className={cn("mt-1 block text-right text-xs", (evalData?.goalScores?.[goal.id]?.comment ?? '').length > COMMENT_SOFT_LIMIT ? "text-destructive" : "text-muted-foreground")}>
                                                 {(evalData?.goalScores?.[goal.id]?.comment ?? '').length}/{COMMENT_SOFT_LIMIT}
@@ -485,7 +485,7 @@ export default function MyEvaluationClient({user: _user }: {
                                         <div key={bei.key} className="px-5 py-4 space-y-3">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <p className="text-sm font-medium text-foreground">{bei.label} ({bei.labelEn})</p>
+                                                    <p className="text-sm font-medium text-foreground">{t(bei.labelKey)} ({bei.labelEn})</p>
                                                 </div>
                                                 <StarRating value={evalData?.beiScores?.[bei.key]?.score ?? 3}
                                                     onChange={(v) => updateBeiScore(bei.key, 'score', v)} disabled={isSubmitted} />
@@ -493,7 +493,7 @@ export default function MyEvaluationClient({user: _user }: {
                                             <textarea rows={2} disabled={isSubmitted}
                                                 value={evalData?.beiScores?.[bei.key]?.comment ?? ''}
                                                 onChange={(e) => updateBeiScore(bei.key, 'comment', e.target.value)}
-                                                placeholder="근거를 기술하세요..."
+                                                placeholder={t('myEvaluation.beiPlaceholder')}
                                                 className="w-full resize-none rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none disabled:bg-muted" />
                                             <span className={cn("mt-1 block text-right text-xs", (evalData?.beiScores?.[bei.key]?.comment ?? '').length > COMMENT_SOFT_LIMIT ? "text-destructive" : "text-muted-foreground")}>
                                                 {(evalData?.beiScores?.[bei.key]?.comment ?? '').length}/{COMMENT_SOFT_LIMIT}

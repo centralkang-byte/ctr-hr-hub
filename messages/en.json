@@ -261,7 +261,8 @@
     "updateFailed": "Update failed",
     "statusChangeFailed": "Status change failed",
     "errorOccurred": "An error occurred.",
-    "currentValue": "[TODO:en] 현재 값"
+    "currentValue": "[TODO:en] 현재 값",
+    "retryMessage": "Please try again."
   },
   "auth": {
     "login": "Login",
@@ -1198,10 +1199,42 @@
     "cycle": "Evaluation Cycle",
     "goal": "Goal",
     "evaluation": "Evaluation",
-    "selfEval": "Self Evaluation",
-    "managerEval": "Manager Evaluation",
+    "selfEval": {
+      "loadFailed": "Failed to load self-evaluation",
+      "saveFailed": "Failed to save self-evaluation",
+      "submitted": "Submitted successfully.",
+      "draftSaved": "Draft saved.",
+      "commentPlaceholder": "Write your overall comments for this evaluation cycle..."
+    },
+    "managerEval": {
+      "cycleLoadFailed": "Failed to load evaluation cycle",
+      "settingsLoadFailed": "Failed to load evaluation settings",
+      "dataLoadFailed": "Failed to load team evaluation data",
+      "defaultEmployee": "Employee",
+      "selfBadge": "Self",
+      "managerBadge": "Manager",
+      "weight": "Weight: {weight}%",
+      "mboWeightGrade": "Performance {weight}% ({grade})",
+      "beiWeightGrade": "Competency {weight}% ({grade})",
+      "aiSuggest": "AI Comment Suggestion",
+      "commentPlaceholder": "Write your overall evaluation comments for the team member...",
+      "saveFirstForAi": "Save as draft first to generate AI draft"
+    },
     "peerReview": "Peer Review",
-    "calibration": "Calibration",
+    "calibration": {
+      "cycleLoadFailed": "Failed to load evaluation cycle",
+      "sessionLoadFailed": "Failed to load calibration session",
+      "detailLoadFailed": "Failed to load session detail",
+      "sessionNamePlaceholder": "Session name",
+      "sessionInfo": "{department} · {count} adjustments",
+      "allCompany": "All Company",
+      "aiAnalysis": "AI Calibration Analysis",
+      "scoreAdjust": "Score Adjustment: {name}",
+      "batchPartialFail": "{succeeded} saved, {failed} failed",
+      "checkFailedItems": "Please check failed items.",
+      "batchSuccess": "{count} batch adjustments completed",
+      "batchSaveFailed": "Batch save failed"
+    },
     "finalGrade": "Final Grade",
     "oneOnOne": "1:1 Meeting",
     "recognition": "Recognition",
@@ -1250,7 +1283,13 @@
     "submitted": "Submitted",
     "confirmed": "Confirmed",
     "weight": "Weight",
-    "score": "Score",
+    "score": {
+      "veryLacking": "Very Lacking",
+      "lacking": "Lacking",
+      "average": "Average",
+      "excellent": "Excellent",
+      "outstanding": "Outstanding"
+    },
     "comment": "Comment",
     "feedback": "Feedback",
     "goalTitle": "Goal Title",
@@ -1259,8 +1298,32 @@
     "progress": "Progress",
     "deadline": "Deadline",
     "teamGoals": "Team Goals",
-    "myGoals": "My Goals",
-    "newGoal": "New Goal",
+    "myGoals": {
+      "statusDraft": "Draft",
+      "statusPendingApproval": "Pending Approval",
+      "statusApproved": "Approved",
+      "statusRejected": "Rejected",
+      "editGoal": "Edit Goal",
+      "addGoal": "Add Goal",
+      "titleLabel": "Title",
+      "titlePlaceholder": "Goal title",
+      "descLabel": "Description",
+      "descPlaceholder": "Detailed description",
+      "kpiLabel": "KPI Metrics (Optional)",
+      "kpiPlaceholder": "Revenue, backlog",
+      "weightLabel": "Weight (%)",
+      "deadlineLabel": "Deadline",
+      "cancel": "Cancel",
+      "loading": "Loading...",
+      "save": "Save",
+      "loadFailed": "Failed to load goals.",
+      "deadline": "Due: {date}",
+      "submitting": "Submitting...",
+      "submitAll": "Submit All"
+    },
+    "newGoal": {
+      "loadFailed": "Failed to load data"
+    },
     "editGoal": "Edit Goal",
     "deleteGoal": "Delete Goal",
     "goalStatus": "Goal Status",
@@ -1482,7 +1545,10 @@
     "deleteCompetency": "Delete Competency",
     "deleteCompetencyConfirm": "Delete \"{name}\"? This action cannot be undone.",
     "adminResults": "Admin Results",
-    "results": "Results",
+    "results": {
+      "loadFailed": "Failed to load evaluation results",
+      "weight": "Weight: {weight}%"
+    },
     "teamResults": "Team Results",
     "cyclesTitle": "Performance Cycles",
     "goalsTitle": "Goals",
@@ -1545,7 +1611,14 @@
     "kr_kebb894eb_kebb684ed": "Block Distribution",
     "kr_keca781ec": "Employee",
     "department": "Department",
-    "grade": "Job Grade",
+    "grade": {
+      "exceedsPlus": "Exceptional (E+)",
+      "exceeds": "Exceeds (E)",
+      "meetsPlus": "Above Expectations (M+)",
+      "meets": "Meets Expectations (M)",
+      "below": "Below Expectations (B)",
+      "belowMinus": "Insufficient (B-)"
+    },
     "kr_kec9e90ea_kec84b1ea": "Self Performance",
     "kr_keba7a4eb_kec84b1ea": "Manager Performance",
     "kr_kecb59cec_kec84b1ea": "Final Performance",
@@ -1599,7 +1672,8 @@
       "perEmployeeReason": "Per-employee reason override",
       "optionalReason": "Individual reason (optional)",
       "confirmSave": "Confirm & Save",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "blockTooltip": "{block}: {count} people ({pct}%)"
     },
     "kr_kebb380ea_keb82b4ec_kec9786ec": "No changes have been made.",
     "approve_kec9790_kec8ba4ed": "Failed to approve.",
@@ -2292,6 +2366,200 @@
       "messages": {
         "loadFailed": "Failed to load growth chart"
       }
+    },
+    "performanceMain": {
+      "cycleLoadFailed": "Failed to load evaluation cycle",
+      "dataLoadFailed": "Failed to load data",
+      "retryMessage": "Please try again."
+    },
+    "peerReviewStatus": {
+      "draft": "Not Started",
+      "submitted": "Submitted",
+      "confirmed": "Confirmed"
+    },
+    "cycleDetail": {
+      "loadFailed": "Failed to load cycle data.",
+      "advanceConfirmWithOverdue": "Advance to {nextState}.\n\n⚠️ {overdueCount} incomplete participants will be marked Overdue.\n\nThis cannot be undone. Continue?",
+      "advanceConfirm": "Advance to {nextState}.\n\nThis cannot be undone. Continue?",
+      "unassigned": "Unassigned",
+      "advancing": "Advancing...",
+      "current": "Current",
+      "next": "Next",
+      "overdueStatus": "Incomplete: {count}",
+      "andMore": "...and {count} more",
+      "participantCount": "Participants ({count})",
+      "mandatory": "Mandatory",
+      "recommended": "Recommended",
+      "peerReviewActive": "Active ({min}~{max})",
+      "peerReviewInactive": "Inactive",
+      "personCount": "{count}",
+      "peerReviewHeader": "Peer Review",
+      "participantSummary": "Total: {total} | Normal: {normal} | Delayed: {delayed}"
+    },
+    "retryMessage": "Please try again.",
+    "ctrValue": {
+      "challenge": "Challenge",
+      "trust": "Trust",
+      "responsibility": "Responsibility",
+      "respect": "Respect"
+    },
+    "myPeerReview": {
+      "statusSubmitted": "Submitted",
+      "statusDraft": "In Progress",
+      "loadFailed": "Failed to load peer review list.",
+      "assignmentSummary": "Peers to review: {total} | Completed: {completed}/{total}",
+      "completedCount": "{completed}/{total} completed",
+      "continueWrite": "Continue",
+      "startEval": "Start Review",
+      "reviewTitle": "Peer Review for {name}",
+      "valuePlaceholder": "Comments on {value} (optional)",
+      "overallOpinion": "Overall Opinion (min. 20 characters)",
+      "overallPlaceholder": "Please write your overall opinion about this colleague...",
+      "charMinCount": "{count} chars / min. {min} chars"
+    },
+    "compReview": {
+      "krw": "KRW",
+      "warning": "Warning",
+      "confirmApproveWithExceptions": "Request final approval.\n\n⚠️ {exceptionCount} exception(s) included.\n\nThis cannot be undone after approval.",
+      "confirmApprove": "Request final approval.\n\nThis cannot be undone after approval.",
+      "dashboardTab": "Dashboard",
+      "adjustTable": "Adjustment Table",
+      "exceptionsTab": "Exceptions ({count})",
+      "personCount": "{count}",
+      "caseCount": "{count}",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "approving": "Approving...",
+      "requestApproval": "Request Final Approval",
+      "noReason": "No reason provided"
+    },
+    "myResult": {
+      "loadFailed": "Failed to load results.",
+      "managerComment": "Manager Comment",
+      "peerResultTitle": "Peer Review Results ({count} reviewers completed)",
+      "noComment": "(No comment)",
+      "acknowledgedAt": "✅ Acknowledged ({date})",
+      "autoConfirmWarning": "Will be auto-confirmed by {deadline} if not acknowledged. (D-{days})",
+      "acknowledgeButton": "Acknowledge Results"
+    },
+    "peerNomination": {
+      "sourceAiRecommended": "AI Recommended",
+      "sourceSelfNominated": "Self Nominated",
+      "sourceManagerAssigned": "Manager Assigned",
+      "sourceHrAssigned": "HR Assigned",
+      "statusProposed": "Pending Review",
+      "statusApproved": "Approved",
+      "statusRejected": "Rejected",
+      "statusCompleted": "Review Completed",
+      "loadNominationsFailed": "Failed to load nominations",
+      "searchEmployeeFailed": "Employee search failed",
+      "loadRecommendationsFailed": "Failed to load recommendations",
+      "nominateFailed": "Nomination failed",
+      "confirmApproveTitle": "Confirm Approval",
+      "confirmApproveDesc": "Approve this peer review nomination? This cannot be undone.",
+      "approve": "Approve",
+      "statusChangeFailed": "Failed to change nomination status",
+      "collaborationScore": "Collaboration score: {score}",
+      "nominationList": "Current Nominations ({count})",
+      "collaboration": "Collab. {score}"
+    },
+    "competencyLabel": {
+      "collaboration": "Collaboration",
+      "communication": "Communication",
+      "reliability": "Reliability",
+      "expertise": "Expertise",
+      "initiative": "Initiative",
+      "respect": "Respect",
+      "growth": "Growth",
+      "impact": "Impact"
+    },
+    "peerReviewResults": {
+      "loadFailed": "Failed to load peer review results",
+      "aiSummaryFailed": "Failed to generate AI summary",
+      "summary": "Summary of {count} peer reviews",
+      "aiSummary": "AI Summary",
+      "radarScore": "Score",
+      "reviewerLabel": "Reviewer {number}"
+    },
+    "calibrationStatus": {
+      "draft": "Draft",
+      "inProgress": "In Progress",
+      "completed": "Completed"
+    },
+    "managerEvaluation": {
+      "teamLoadFailed": "Failed to load team list.",
+      "teamSummary": "My team: {total} members | Evaluation completed: {completed}/{total}",
+      "overdueCount": "Overdue: {count}",
+      "warning": "Warning",
+      "selfEvalLabel": "Self-eval",
+      "completed": "Completed",
+      "incomplete": "Incomplete",
+      "peerReviewLabel": "Peer review",
+      "edit": "Edit",
+      "evaluate": "Evaluate",
+      "peerResultLoadFailed": "Failed to load peer review results",
+      "commentTooLong": "Please shorten comments to within {limit} characters.",
+      "evalTitle": "{name} Evaluation",
+      "progressRate": "Progress",
+      "reviewer": "Reviewer",
+      "confirmEval": "Confirm Evaluation",
+      "confirming": "Confirming...",
+      "peerCandidateLoadFailed": "Failed to load peer review candidates",
+      "confirmNominate": "Nominate {count} people as peer reviewers?",
+      "nominateTitle": "{name} Peer Reviewer Nomination",
+      "nominateGuide": "Select 2-4 people | Selected: {selected}",
+      "relevanceScore": "Relevance: {score}pt",
+      "nominating": "Nominating...",
+      "confirmNominateBtn": "Confirm Nomination"
+    },
+    "myEvaluation": {
+      "aiOverwriteConfirm": "AI draft will overwrite existing comments. Continue?",
+      "aiApplied": "AI draft applied. Please review and edit.",
+      "aiFailed": "AI draft generation failed",
+      "mboSelfEvalHeading": "MBO Self-Evaluation (Total weight: {weightSum}%)",
+      "mboPlaceholder": "Describe your achievements...",
+      "beiPlaceholder": "Describe supporting evidence..."
+    },
+    "peerQuestion": {
+      "collaboration": {
+        "label": "Collaboration & Teamwork",
+        "desc": "Degree of proactive communication and contribution to team goals"
+      },
+      "communication": {
+        "label": "Communication Skills",
+        "desc": "Ability to communicate clearly and effectively"
+      },
+      "reliability": {
+        "label": "Reliability",
+        "desc": "Degree of faithfully fulfilling assigned roles and commitments"
+      },
+      "expertise": {
+        "label": "Expertise",
+        "desc": "Level of professional knowledge and competency in assigned work"
+      },
+      "initiative": {
+        "label": "Initiative",
+        "desc": "Degree of proactively discovering and solving tasks"
+      },
+      "respect": {
+        "label": "Respect",
+        "desc": "Attitude of listening to diverse opinions and mutual respect"
+      },
+      "growth": {
+        "label": "Growth Mindset",
+        "desc": "Willingness to continuously learn and develop"
+      },
+      "impact": {
+        "label": "Work Impact",
+        "desc": "Impact of work results on organizational performance"
+      }
+    },
+    "peerEvalForm": {
+      "loadFailed": "Failed to load evaluation form",
+      "commentPlaceholder": "Please write constructive feedback...",
+      "charCount": "{count} chars",
+      "submitting": "Submitting...",
+      "submit": "Submit Evaluation"
     }
   },
   "recruitment": {

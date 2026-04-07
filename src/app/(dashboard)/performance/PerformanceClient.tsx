@@ -119,7 +119,7 @@ export default function PerformanceClient({
           res.data[0] ?? null
         setActiveCycle(active)
       } catch (err) {
-        toast({ title: '평가 주기 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        toast({ title: t('performanceMain.cycleLoadFailed'), description: err instanceof Error ? err.message : t('performanceMain.retryMessage'), variant: 'destructive' })
       }
     }
     fetchCycles()
@@ -148,7 +148,7 @@ export default function PerformanceClient({
       )
       setGoals(goalsRes.data)
     } catch (err) {
-      toast({ title: '데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('performanceMain.dataLoadFailed'), description: err instanceof Error ? err.message : t('performanceMain.retryMessage'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }

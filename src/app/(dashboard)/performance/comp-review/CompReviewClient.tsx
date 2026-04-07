@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 
@@ -36,7 +36,10 @@ type TabKey = 'dashboard' | 'table' | 'exceptions'
 
 // ─── Formats ──────────────────────────────────────────────
 
-function fmtKRW(v: number) { return Math.round(v).toLocaleString('ko-KR') + '원' }
+// fmtKRW is locale-aware — uses module-level locale variable set in component
+let _fmtLocale = 'ko-KR'
+let _fmtKrwLabel = '원'
+function fmtKRW(v: number) { return Math.round(v).toLocaleString(_fmtLocale) + _fmtKrwLabel }
 function fmtPct(v: number) { return v.toFixed(1) + '%' }
 
 // ─── MeritRow Component (GEMINI FIX #3: isolated state) ──
@@ -46,6 +49,7 @@ const MeritRowComponent = memo(function MeritRowComponent({
 }: {
     row: MeritRow; onUpdate: (employeeId: string, appliedPct: number, reason: string) => void
 }) {
+    const t = useTranslations('performance')
     const [localPct, setLocalPct] = useState(row.appliedPct)
     const [localReason, setLocalReason] = useState(row.exceptionReason)
     const isOutOfRange = localPct < row.recommendedPct * 0.5 || localPct > row.recommendedPct * 1.5
@@ -76,7 +80,7 @@ const MeritRowComponent = memo(function MeritRowComponent({
                 )}
             </td>
             <td className={cn(TABLE_STYLES.cellRight, "font-medium text-foreground")}>
-                {isOutOfRange && <span className="mr-1 inline-flex items-center text-destructive"><AlertTriangle aria-hidden="true" className="h-3.5 w-3.5" /><span className="sr-only">경고</span></span>}
+                {isOutOfRange && <span className="mr-1 inline-flex items-center text-destructive"><AlertTriangle aria-hidden="true" className="h-3.5 w-3.5" /><span className="sr-only">{t('compReview.warning')}</span></span>}
                 {fmtKRW(newSalary)}
             </td>
             <td className={cn(TABLE_STYLES.cell, "w-32")}>
@@ -102,6 +106,9 @@ const MeritRowComponent = memo(function MeritRowComponent({
 export default function CompReviewClient({user }: { user: SessionUser }) {
     const tCommon = useTranslations('common')
     const t = useTranslations('performance')
+    const locale = useLocale()
+    _fmtLocale = locale
+    _fmtKrwLabel = t('compReview.krw')
     const isHrAdmin = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
     const isExecutive = user.role === 'EXECUTIVE'
     const hasAccess = isHrAdmin || isExecutive
@@ -175,8 +182,8 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
     async function handleApprove() {
         const exceptionCount = rows.filter((r) => r.isException).length
         const msg = exceptionCount > 0
-            ? `최종 승인을 요청합니다.\n\n⚠️ ${exceptionCount}건의 예외가 포함되어 있습니다.\n\n승인 후에는 되돌릴 수 없습니다.`
-            : '최종 승인을 요청합니다.\n\n승인 후에는 되돌릴 수 없습니다.'
+            ? t('compReview.confirmApproveWithExceptions', { exceptionCount })
+            : t('compReview.confirmApprove')
         confirm({ title: msg, onConfirm: async () => {
             setApproving(true)
             try {
@@ -247,7 +254,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
 
                 {/* Tabs */}
                 <div className="mb-6 flex border-b border-border">
-                    {([['dashboard', '대시보드'], ['table', '조정 테이블'], ['exceptions', `예외 목록 (${exceptionRows.length})`]] as const).map(([key, label]) => (
+                    {([['dashboard', t('compReview.dashboardTab')], ['table', t('compReview.adjustTable')], ['exceptions', t('compReview.exceptionsTab', { count: exceptionRows.length })]] as const).map(([key, label]) => (
                         <button key={key} onClick={() => setTab(key as TabKey)}
                             className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === key ? 'border-primary text-primary' : 'border-transparent text-muted-foreground'}`}>
                             {label}
@@ -279,7 +286,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                                 <div className="grid grid-cols-4 gap-4">
                                     <div className="rounded-xl border border-border bg-card p-5">
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground"><Users className="h-3.5 w-3.5" /> {t('kr_keb8c80ec_kec9db8ec')}</div>
-                                        <p className="mt-2 text-2xl font-bold text-foreground">{stats.totalEmployees}명</p>
+                                        <p className="mt-2 text-2xl font-bold text-foreground">{t('compReview.personCount', { count: stats.totalEmployees })}</p>
                                     </div>
                                     <div className="rounded-xl border border-border bg-card p-5">
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground"><TrendingUp className="h-3.5 w-3.5" /> {t('average_kec9db8ec')}</div>
@@ -292,7 +299,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                                     <div className="rounded-xl border border-border bg-card p-5">
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground"><AlertTriangle className="h-3.5 w-3.5" /> {t('kr_kec9888ec_keab1b4ec')}</div>
                                         <p className={`mt-2 text-2xl font-bold ${stats.exceptionCount > 0 ? 'text-red-500' : 'text-foreground'}`}>
-                                            {stats.exceptionCount}건
+                                            {t('compReview.caseCount', { count: stats.exceptionCount })}
                                         </p>
                                     </div>
                                 </div>
@@ -303,7 +310,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                                     <div className="grid grid-cols-4 gap-4">
                                         {Object.entries(stats.gradeDistribution).map(([grade, data]) => (
                                             <div key={grade} className="rounded-lg bg-muted p-4 text-center">
-                                                <p className="text-xs text-muted-foreground">{getGradeLabel(grade)} ({data.count}명)</p>
+                                                <p className="text-xs text-muted-foreground">{getGradeLabel(grade)} ({t('compReview.personCount', { count: data.count })})</p>
                                                 <p className="mt-1 text-lg font-bold text-foreground">{fmtPct(data.avgMeritPct)}</p>
                                             </div>
                                         ))}
@@ -348,11 +355,11 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                                         </button>
                                         <button onClick={handleSave} disabled={saving}
                                             className="rounded-lg border border-primary px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 disabled:opacity-40">
-                                            {saving ? '저장 중...' : '변경사항 저장'}
+                                            {saving ? t('compReview.saving') : t('compReview.saveChanges')}
                                         </button>
                                         <button onClick={handleApprove} disabled={approving}
                                             className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40">
-                                            <CheckCircle2 className="h-4 w-4" /> {approving ? '승인 중...' : '최종 승인 요청'}
+                                            <CheckCircle2 className="h-4 w-4" /> {approving ? t('compReview.approving') : t('compReview.requestApproval')}
                                         </button>
                                     </div>
                                 )}
@@ -384,7 +391,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                                                     <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{getGradeLabel(row.gradeEnum)}</td>
                                                     <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{fmtPct(row.recommendedPct)}</td>
                                                     <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-red-500")}>{fmtPct(row.appliedPct)}</td>
-                                                    <td className={cn(TABLE_STYLES.cell, "text-amber-800")}>{row.exceptionReason || '사유 미입력'}</td>
+                                                    <td className={cn(TABLE_STYLES.cell, "text-amber-800")}>{row.exceptionReason || t('compReview.noReason')}</td>
                                                 </tr>
                                             ))}
                                         </tbody>

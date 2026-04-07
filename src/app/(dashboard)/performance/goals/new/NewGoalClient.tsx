@@ -60,7 +60,7 @@ export default function NewGoalClient({
         )
         setCycles(res.data)
       } catch (err) {
-        toast({ title: '데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        toast({ title: t('newGoal.loadFailed'), description: err instanceof Error ? err.message : t('performanceMain.retryMessage'), variant: 'destructive' })
       }
     }
     fetchCycles()

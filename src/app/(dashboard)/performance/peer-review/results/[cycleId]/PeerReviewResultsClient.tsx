@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 
@@ -42,14 +42,14 @@ interface AiSummary {
 }
 
 const COMPETENCY_LABELS: Record<string, string> = {
-  collaboration: '협업',
-  communication: '소통',
-  reliability: '신뢰성',
-  expertise: '전문성',
-  initiative: '주도성',
-  respect: '존중',
-  growth: '성장',
-  impact: '영향력',
+  collaboration: 'competencyLabel.collaboration',
+  communication: 'competencyLabel.communication',
+  reliability: 'competencyLabel.reliability',
+  expertise: 'competencyLabel.expertise',
+  initiative: 'competencyLabel.initiative',
+  respect: 'competencyLabel.respect',
+  growth: 'competencyLabel.growth',
+  impact: 'competencyLabel.impact',
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -57,6 +57,7 @@ const COMPETENCY_LABELS: Record<string, string> = {
 export default function PeerReviewResultsClient({ user: _user, cycleId }: { user: SessionUser; cycleId: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
+  const locale = useLocale()
   const searchParams = useSearchParams()
   const employeeId = searchParams.get('employeeId') ?? ''
   const router = useRouter()
@@ -73,9 +74,9 @@ export default function PeerReviewResultsClient({ user: _user, cycleId }: { user
         `/api/v1/peer-review/results?cycleId=${cycleId}&employeeId=${employeeId}`
       )
       setResults(res.data)
-    } catch (err) { toast({ title: '동료 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('peerReviewResults.loadFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' }) }
     setLoading(false)
-  }, [cycleId, employeeId])
+  }, [cycleId, employeeId, t, tCommon])
 
   useEffect(() => { fetchResults() }, [fetchResults])
 
@@ -84,7 +85,7 @@ export default function PeerReviewResultsClient({ user: _user, cycleId }: { user
     try {
       const res = await apiClient.post<AiSummary>('/api/v1/ai/peer-review-summary', { cycleId, employeeId })
       setAiSummary(res.data)
-    } catch (err) { toast({ title: '동료 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('peerReviewResults.aiSummaryFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' }) }
     setAiLoading(false)
   }
 
@@ -92,7 +93,7 @@ export default function PeerReviewResultsClient({ user: _user, cycleId }: { user
   if (!results || !results.summary) return <EmptyState />
 
   const radarData = Object.entries(results.summary.competencyAvg).map(([key, value]) => ({
-    competency: COMPETENCY_LABELS[key] ?? key,
+    competency: COMPETENCY_LABELS[key] ? t(COMPETENCY_LABELS[key]) : key,
     score: value,
     fullMark: 5,
   }))
@@ -108,13 +109,13 @@ export default function PeerReviewResultsClient({ user: _user, cycleId }: { user
           <Users className="w-6 h-6 text-primary" />
           <div>
             <h1 className="text-2xl font-bold text-foreground">{t('peerReview_keab2b0ea')}</h1>
-            <p className="text-sm text-muted-foreground">{results.summary.reviewerCount}명의 동료 평가 종합</p>
+            <p className="text-sm text-muted-foreground">{t('peerReviewResults.summary', { count: results.summary.reviewerCount })}</p>
           </div>
         </div>
         <button onClick={handleAiSummary} disabled={aiLoading}
           className="flex items-center gap-2 px-4 py-2 border border-indigo-200 text-primary/90 rounded-lg text-sm font-medium hover:bg-indigo-500/15 disabled:opacity-50">
           <Sparkles className="w-4 h-4" />
-          {aiLoading ? t('aiAnalyzing') : 'AI 요약'}
+          {aiLoading ? t('aiAnalyzing') : t('peerReviewResults.aiSummary')}
         </button>
       </div>
 
@@ -126,7 +127,7 @@ export default function PeerReviewResultsClient({ user: _user, cycleId }: { user
           <div className="mt-4 space-y-2">
             {Object.entries(results.summary.competencyAvg).map(([key, val]) => (
               <div key={key} className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">{COMPETENCY_LABELS[key] ?? key}</span>
+                <span className="text-sm text-muted-foreground">{COMPETENCY_LABELS[key] ? t(COMPETENCY_LABELS[key]) : key}</span>
                 <div className="flex items-center gap-2">
                   <div className="w-32 h-2 bg-border rounded-full overflow-hidden">
                     <div className="h-full bg-primary rounded-full" style={{ width: `${(val / 5) * 100}%` }} />
@@ -147,7 +148,7 @@ export default function PeerReviewResultsClient({ user: _user, cycleId }: { user
                   <PolarGrid stroke="#E8E8E8" />
                   <PolarAngleAxis dataKey="competency" tick={{ fontSize: 11, fill: '#555' }} />
                   <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fontSize: 10, fill: '#999' }} />
-                  <Radar name="점수" dataKey="score" stroke={CHART_THEME.colors[3]} fill={CHART_THEME.colors[3]} fillOpacity={0.3} />
+                  <Radar name={t('peerReviewResults.radarScore')} dataKey="score" stroke={CHART_THEME.colors[3]} fill={CHART_THEME.colors[3]} fillOpacity={0.3} />
                 </RadarChart>
               </ResponsiveContainer>
             </div>
@@ -192,7 +193,7 @@ export default function PeerReviewResultsClient({ user: _user, cycleId }: { user
             <div key={e.id} className="bg-background rounded-lg px-4 py-3">
               <p className="text-sm text-foreground">{e.comment}</p>
               <p className="text-xs text-muted-foreground mt-2">
-                리뷰어 {i + 1} · {new Date(e.submittedAt).toLocaleDateString('ko-KR')}
+                {t('peerReviewResults.reviewerLabel', { number: i + 1 })} · {new Date(e.submittedAt).toLocaleDateString(locale)}
               </p>
             </div>
           ))}

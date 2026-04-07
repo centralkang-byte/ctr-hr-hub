@@ -261,7 +261,8 @@
     "updateFailed": "Cập nhật thất bại",
     "statusChangeFailed": "Thay đổi trạng thái thất bại",
     "errorOccurred": "Đã xảy ra lỗi.",
-    "currentValue": "[TODO:vi] 현재 값"
+    "currentValue": "[TODO:vi] 현재 값",
+    "retryMessage": "Vui lòng thử lại."
   },
   "auth": {
     "login": "Login",
@@ -1198,10 +1199,42 @@
     "cycle": "Evaluation Cycle",
     "goal": "Goal",
     "evaluation": "Evaluation",
-    "selfEval": "Self Evaluation",
-    "managerEval": "Manager Evaluation",
+    "selfEval": {
+      "loadFailed": "Tải tự đánh giá thất bại",
+      "saveFailed": "Lưu tự đánh giá thất bại",
+      "submitted": "Đã gửi thành công.",
+      "draftSaved": "Đã lưu nháp.",
+      "commentPlaceholder": "Viết ý kiến tổng hợp cho chu kỳ đánh giá này..."
+    },
+    "managerEval": {
+      "cycleLoadFailed": "Tải chu kỳ đánh giá thất bại",
+      "settingsLoadFailed": "Tải cài đặt đánh giá thất bại",
+      "dataLoadFailed": "Tải dữ liệu đánh giá nhóm thất bại",
+      "defaultEmployee": "Nhân viên",
+      "selfBadge": "Tự đánh giá",
+      "managerBadge": "Quản lý",
+      "weight": "Trọng số: {weight}%",
+      "mboWeightGrade": "Thành tích {weight}% ({grade})",
+      "beiWeightGrade": "Năng lực {weight}% ({grade})",
+      "aiSuggest": "Gợi ý nhận xét AI",
+      "commentPlaceholder": "Viết nhận xét đánh giá tổng hợp cho thành viên nhóm...",
+      "saveFirstForAi": "Lưu nháp trước để tạo bản nháp AI"
+    },
     "peerReview": "Peer Review",
-    "calibration": "Calibration",
+    "calibration": {
+      "cycleLoadFailed": "Tải chu kỳ đánh giá thất bại",
+      "sessionLoadFailed": "Tải phiên hiệu chuẩn thất bại",
+      "detailLoadFailed": "Tải chi tiết phiên thất bại",
+      "sessionNamePlaceholder": "Tên phiên",
+      "sessionInfo": "{department} · {count} điều chỉnh",
+      "allCompany": "Toàn công ty",
+      "aiAnalysis": "Phân tích hiệu chuẩn AI",
+      "scoreAdjust": "Điều chỉnh điểm: {name}",
+      "batchPartialFail": "{succeeded} đã lưu, {failed} thất bại",
+      "checkFailedItems": "Vui lòng kiểm tra các mục thất bại.",
+      "batchSuccess": "{count} điều chỉnh hàng loạt hoàn thành",
+      "batchSaveFailed": "Lưu hàng loạt thất bại"
+    },
     "finalGrade": "Final Grade",
     "oneOnOne": "1:1 Meeting",
     "recognition": "Recognition",
@@ -1250,7 +1283,13 @@
     "submitted": "Submitted",
     "confirmed": "Confirmed",
     "weight": "Weight",
-    "score": "Score",
+    "score": {
+      "veryLacking": "Rất thiếu",
+      "lacking": "Thiếu",
+      "average": "Trung bình",
+      "excellent": "Xuất sắc",
+      "outstanding": "Vượt trội"
+    },
     "comment": "Comment",
     "feedback": "Feedback",
     "goalTitle": "Goal Title",
@@ -1259,8 +1298,32 @@
     "progress": "Progress",
     "deadline": "Deadline",
     "teamGoals": "Team Goals",
-    "myGoals": "My Goals",
-    "newGoal": "New Goal",
+    "myGoals": {
+      "statusDraft": "Bản nháp",
+      "statusPendingApproval": "Chờ phê duyệt",
+      "statusApproved": "Đã phê duyệt",
+      "statusRejected": "Bị từ chối",
+      "editGoal": "Sửa mục tiêu",
+      "addGoal": "Thêm mục tiêu",
+      "titleLabel": "Tiêu đề",
+      "titlePlaceholder": "Tiêu đề mục tiêu",
+      "descLabel": "Mô tả",
+      "descPlaceholder": "Mô tả chi tiết mục tiêu",
+      "kpiLabel": "Chỉ số KPI (Tùy chọn)",
+      "kpiPlaceholder": "Doanh thu, đơn hàng tồn",
+      "weightLabel": "Trọng số (%)",
+      "deadlineLabel": "Hạn chót",
+      "cancel": "Hủy",
+      "loading": "Đang tải...",
+      "save": "Lưu",
+      "loadFailed": "Không thể tải danh sách mục tiêu.",
+      "deadline": "Hạn: {date}",
+      "submitting": "Đang gửi...",
+      "submitAll": "Gửi tất cả"
+    },
+    "newGoal": {
+      "loadFailed": "Không thể tải dữ liệu"
+    },
     "editGoal": "Edit Goal",
     "deleteGoal": "Delete Goal",
     "goalStatus": "Goal Status",
@@ -1525,7 +1588,14 @@
     "kr_kebb894eb_kebb684ed": "Block Distribution",
     "kr_keca781ec": "Nhân viên",
     "department": "Phòng ban",
-    "grade": "Cấp bậc",
+    "grade": {
+      "exceedsPlus": "Xuất sắc (E+)",
+      "exceeds": "Giỏi (E)",
+      "meetsPlus": "Trên kỳ vọng (M+)",
+      "meets": "Đạt kỳ vọng (M)",
+      "below": "Cần cải thiện (B)",
+      "belowMinus": "Chưa đạt (B-)"
+    },
     "kr_kec9e90ea_kec84b1ea": "Self Hiệu suất",
     "kr_keba7a4eb_kec84b1ea": "Quản lý Hiệu suất",
     "kr_kecb59cec_kec84b1ea": "Final Hiệu suất",
@@ -1579,7 +1649,8 @@
       "perEmployeeReason": "Ghi đè lý do cá nhân",
       "optionalReason": "Lý do cá nhân (tùy chọn)",
       "confirmSave": "Xác nhận & Lưu",
-      "saving": "Đang lưu..."
+      "saving": "Đang lưu...",
+      "blockTooltip": "{block}: {count} người ({pct}%)"
     },
     "kr_kebb380ea_keb82b4ec_kec9786ec": "No changes have been made.",
     "approve_kec9790_kec8ba4ed": "Thất bại to approve.",
@@ -1908,7 +1979,10 @@
     "hours": "Giờ",
     "savedSuccess": "save completed.",
     "adminResults": "Quản trị viên Kết quảs",
-    "results": "Kết quả",
+    "results": {
+      "loadFailed": "Không thể tải kết quả đánh giá",
+      "weight": "Trọng số: {weight}%"
+    },
     "teamResults": "Nhóm Kết quảs",
     "cyclesDesc": "Create and manage performance cycles",
     "noAccess": "Access denied",
@@ -2292,6 +2366,200 @@
       "messages": {
         "loadFailed": "Tải biểu đồ tăng trưởng thất bại"
       }
+    },
+    "performanceMain": {
+      "cycleLoadFailed": "Không thể tải chu kỳ đánh giá",
+      "dataLoadFailed": "Không thể tải dữ liệu",
+      "retryMessage": "Vui lòng thử lại."
+    },
+    "peerReviewStatus": {
+      "draft": "Chưa viết",
+      "submitted": "Đã gửi",
+      "confirmed": "Đã xác nhận"
+    },
+    "cycleDetail": {
+      "loadFailed": "Không thể tải dữ liệu chu kỳ.",
+      "advanceConfirmWithOverdue": "Tiến sang {nextState}.\n\n⚠️ {overdueCount} người chưa hoàn thành sẽ bị đánh dấu Quá hạn.\n\nKhông thể hoàn tác. Tiếp tục?",
+      "advanceConfirm": "Tiến sang {nextState}.\n\nKhông thể hoàn tác. Tiếp tục?",
+      "unassigned": "Chưa chỉ định",
+      "advancing": "Đang chuyển...",
+      "current": "Hiện tại",
+      "next": "Tiếp theo",
+      "overdueStatus": "Chưa hoàn thành: {count}",
+      "andMore": "...và {count} người nữa",
+      "participantCount": "Người tham gia ({count})",
+      "mandatory": "Bắt buộc",
+      "recommended": "Khuyến nghị",
+      "peerReviewActive": "Đang hoạt động ({min}~{max})",
+      "peerReviewInactive": "Không hoạt động",
+      "personCount": "{count} người",
+      "peerReviewHeader": "Đánh giá đồng nghiệp",
+      "participantSummary": "Tổng: {total} | Bình thường: {normal} | Trễ: {delayed}"
+    },
+    "retryMessage": "Vui lòng thử lại.",
+    "ctrValue": {
+      "challenge": "Thách thức (Challenge)",
+      "trust": "Tin cậy (Trust)",
+      "responsibility": "Trách nhiệm (Responsibility)",
+      "respect": "Tôn trọng (Respect)"
+    },
+    "myPeerReview": {
+      "statusSubmitted": "Đã nộp",
+      "statusDraft": "Đang viết",
+      "loadFailed": "Không thể tải danh sách đánh giá đồng nghiệp.",
+      "assignmentSummary": "Đồng nghiệp cần đánh giá: {total} | Hoàn thành: {completed}/{total}",
+      "completedCount": "{completed}/{total} hoàn thành",
+      "continueWrite": "Tiếp tục viết",
+      "startEval": "Bắt đầu đánh giá",
+      "reviewTitle": "Đánh giá đồng nghiệp cho {name}",
+      "valuePlaceholder": "Nhận xét về {value} (tùy chọn)",
+      "overallOpinion": "Nhận xét tổng hợp (tối thiểu 20 ký tự)",
+      "overallPlaceholder": "Vui lòng viết nhận xét tổng hợp về đồng nghiệp...",
+      "charMinCount": "{count} ký tự / tối thiểu {min} ký tự"
+    },
+    "compReview": {
+      "krw": "KRW",
+      "warning": "Cảnh báo",
+      "confirmApproveWithExceptions": "Yêu cầu phê duyệt cuối cùng.\n\n⚠️ Bao gồm {exceptionCount} ngoại lệ.\n\nKhông thể hoàn tác sau khi phê duyệt.",
+      "confirmApprove": "Yêu cầu phê duyệt cuối cùng.\n\nKhông thể hoàn tác sau khi phê duyệt.",
+      "dashboardTab": "Bảng điều khiển",
+      "adjustTable": "Bảng điều chỉnh",
+      "exceptionsTab": "Ngoại lệ ({count})",
+      "personCount": "{count} người",
+      "caseCount": "{count} trường hợp",
+      "saving": "Đang lưu...",
+      "saveChanges": "Lưu thay đổi",
+      "approving": "Đang phê duyệt...",
+      "requestApproval": "Yêu cầu phê duyệt cuối",
+      "noReason": "Chưa nhập lý do"
+    },
+    "myResult": {
+      "loadFailed": "Không thể tải kết quả.",
+      "managerComment": "Nhận xét quản lý",
+      "peerResultTitle": "Kết quả đánh giá đồng nghiệp ({count} người đã hoàn thành)",
+      "noComment": "(Không có nhận xét)",
+      "acknowledgedAt": "✅ Đã xác nhận ({date})",
+      "autoConfirmWarning": "Sẽ tự động xác nhận vào {deadline} nếu không xác nhận. (D-{days})",
+      "acknowledgeButton": "Xác nhận kết quả"
+    },
+    "peerNomination": {
+      "sourceAiRecommended": "AI đề xuất",
+      "sourceSelfNominated": "Tự đề cử",
+      "sourceManagerAssigned": "Quản lý chỉ định",
+      "sourceHrAssigned": "HR chỉ định",
+      "statusProposed": "Chờ xem xét",
+      "statusApproved": "Đã duyệt",
+      "statusRejected": "Đã từ chối",
+      "statusCompleted": "Đánh giá hoàn thành",
+      "loadNominationsFailed": "Tải danh sách ứng viên thất bại",
+      "searchEmployeeFailed": "Tìm kiếm nhân viên thất bại",
+      "loadRecommendationsFailed": "Tải đề xuất thất bại",
+      "nominateFailed": "Đề cử thất bại",
+      "confirmApproveTitle": "Xác nhận phê duyệt",
+      "confirmApproveDesc": "Phê duyệt đề cử đánh giá đồng nghiệp này? Không thể hoàn tác sau khi phê duyệt.",
+      "approve": "Phê duyệt",
+      "statusChangeFailed": "Thay đổi trạng thái thất bại",
+      "collaborationScore": "Điểm hợp tác: {score}",
+      "nominationList": "Danh sách đề cử ({count})",
+      "collaboration": "Hợp tác {score}"
+    },
+    "competencyLabel": {
+      "collaboration": "Hợp tác",
+      "communication": "Giao tiếp",
+      "reliability": "Độ tin cậy",
+      "expertise": "Chuyên môn",
+      "initiative": "Chủ động",
+      "respect": "Tôn trọng",
+      "growth": "Phát triển",
+      "impact": "Ảnh hưởng"
+    },
+    "peerReviewResults": {
+      "loadFailed": "Tải kết quả đánh giá thất bại",
+      "aiSummaryFailed": "Tạo tóm tắt AI thất bại",
+      "summary": "Tổng hợp đánh giá từ {count} đồng nghiệp",
+      "aiSummary": "Tóm tắt AI",
+      "radarScore": "Điểm",
+      "reviewerLabel": "Người đánh giá {number}"
+    },
+    "calibrationStatus": {
+      "draft": "Bản nháp",
+      "inProgress": "Đang tiến hành",
+      "completed": "Hoàn thành"
+    },
+    "managerEvaluation": {
+      "teamLoadFailed": "Không thể tải danh sách nhóm.",
+      "teamSummary": "Nhóm của tôi: {total} thành viên | Đánh giá hoàn thành: {completed}/{total}",
+      "overdueCount": "Quá hạn: {count}",
+      "warning": "Cảnh báo",
+      "selfEvalLabel": "Tự đánh giá",
+      "completed": "Hoàn thành",
+      "incomplete": "Chưa hoàn thành",
+      "peerReviewLabel": "Đánh giá đồng nghiệp",
+      "edit": "Chỉnh sửa",
+      "evaluate": "Đánh giá",
+      "peerResultLoadFailed": "Tải kết quả đánh giá đồng nghiệp thất bại",
+      "commentTooLong": "Vui lòng rút ngắn nhận xét trong vòng {limit} ký tự.",
+      "evalTitle": "Đánh giá {name}",
+      "progressRate": "Tiến độ",
+      "reviewer": "Người đánh giá",
+      "confirmEval": "Xác nhận đánh giá",
+      "confirming": "Đang xác nhận...",
+      "peerCandidateLoadFailed": "Tải ứng viên đánh giá đồng nghiệp thất bại",
+      "confirmNominate": "Đề cử {count} người làm người đánh giá đồng nghiệp?",
+      "nominateTitle": "Đề cử người đánh giá đồng nghiệp cho {name}",
+      "nominateGuide": "Chọn 2-4 người | Đã chọn: {selected}",
+      "relevanceScore": "Mức liên quan: {score} điểm",
+      "nominating": "Đang đề cử...",
+      "confirmNominateBtn": "Xác nhận đề cử"
+    },
+    "myEvaluation": {
+      "aiOverwriteConfirm": "Bản nháp AI sẽ ghi đè nhận xét hiện tại. Tiếp tục?",
+      "aiApplied": "Bản nháp AI đã được áp dụng. Vui lòng xem xét và chỉnh sửa.",
+      "aiFailed": "Tạo bản nháp AI thất bại",
+      "mboSelfEvalHeading": "Tự đánh giá MBO (Tổng trọng số: {weightSum}%)",
+      "mboPlaceholder": "Mô tả thành tích của bạn...",
+      "beiPlaceholder": "Mô tả bằng chứng hỗ trợ..."
+    },
+    "peerQuestion": {
+      "collaboration": {
+        "label": "Hợp tác và làm việc nhóm",
+        "desc": "Mức độ giao tiếp chủ động và đóng góp vào mục tiêu nhóm"
+      },
+      "communication": {
+        "label": "Kỹ năng giao tiếp",
+        "desc": "Khả năng giao tiếp rõ ràng và hiệu quả"
+      },
+      "reliability": {
+        "label": "Độ tin cậy",
+        "desc": "Mức độ hoàn thành trung thực vai trò và cam kết được giao"
+      },
+      "expertise": {
+        "label": "Chuyên môn",
+        "desc": "Trình độ kiến thức chuyên môn và năng lực trong công việc được giao"
+      },
+      "initiative": {
+        "label": "Tính chủ động",
+        "desc": "Mức độ chủ động phát hiện và giải quyết công việc"
+      },
+      "respect": {
+        "label": "Tôn trọng",
+        "desc": "Thái độ lắng nghe các ý kiến đa dạng và tôn trọng lẫn nhau"
+      },
+      "growth": {
+        "label": "Tinh thần phát triển",
+        "desc": "Ý chí học hỏi và phát triển liên tục"
+      },
+      "impact": {
+        "label": "Tác động công việc",
+        "desc": "Tác động của kết quả công việc đối với hiệu suất tổ chức"
+      }
+    },
+    "peerEvalForm": {
+      "loadFailed": "Tải biểu mẫu đánh giá thất bại",
+      "commentPlaceholder": "Vui lòng viết phản hồi mang tính xây dựng...",
+      "charCount": "{count} ký tự",
+      "submitting": "Đang gửi...",
+      "submit": "Gửi đánh giá"
     }
   },
   "recruitment": {

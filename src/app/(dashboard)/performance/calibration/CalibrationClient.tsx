@@ -69,10 +69,10 @@ interface AdjItem {
   adjustedCompetencyScore: number
 }
 
-const STATUS_MAP: Record<string, { label: string; style: string }> = {
-  CALIBRATION_DRAFT: { label: '임시저장', style: 'bg-muted text-muted-foreground' },
-  CALIBRATION_IN_PROGRESS: { label: '진행 중', style: 'bg-amber-500/15 text-amber-700' },
-  CALIBRATION_COMPLETED: { label: '완료', style: 'bg-emerald-500/15 text-emerald-700' },
+const STATUS_MAP: Record<string, { labelKey: string; style: string }> = {
+  CALIBRATION_DRAFT: { labelKey: 'calibrationStatus.draft', style: 'bg-muted text-muted-foreground' },
+  CALIBRATION_IN_PROGRESS: { labelKey: 'calibrationStatus.inProgress', style: 'bg-amber-500/15 text-amber-700' },
+  CALIBRATION_COMPLETED: { labelKey: 'calibrationStatus.completed', style: 'bg-emerald-500/15 text-emerald-700' },
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -137,10 +137,10 @@ export default function CalibrationClient({ user: _user }: { user: SessionUser }
         const calibCycles = res.data.filter((c) => getAllowedStatuses('calibration', c.half ?? 'H2').includes(c.status))
         setCycles(calibCycles)
         if (calibCycles.length > 0) setSelectedCycleId(calibCycles[0].id)
-      } catch (err) { toast({ title: '평가 주기 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }); setLoading(false) }
+      } catch (err) { toast({ title: t('calibration.cycleLoadFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' }); setLoading(false) }
     }
     fetchCycles()
-  }, [])
+  }, [t]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─── Fetch sessions ─────────────────────────────────
 
@@ -150,9 +150,9 @@ export default function CalibrationClient({ user: _user }: { user: SessionUser }
     try {
       const res = await apiClient.getList<CalibSession>('/api/v1/performance/calibration/sessions', { cycleId: selectedCycleId })
       setSessions(res.data)
-    } catch (err) { toast({ title: '캘리브레이션 세션 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('calibration.sessionLoadFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' }) }
     finally { setLoading(false) }
-  }, [selectedCycleId])
+  }, [selectedCycleId, t])
 
   useEffect(() => { fetchSessions() }, [fetchSessions])
 
@@ -187,9 +187,9 @@ export default function CalibrationClient({ user: _user }: { user: SessionUser }
       if (res.data.evaluations && res.data.evaluations.length > 0) {
         loadReadinessData(res.data.evaluations.map((e: EvalItem) => e.employeeId))
       }
-    } catch (err) { toast({ title: '세션 상세 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('calibration.detailLoadFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' }) }
     finally { setDetailLoading(false) }
-  }, [loadReadinessData])
+  }, [loadReadinessData, t])
 
   // ─── Create session ─────────────────────────────────
 
@@ -320,7 +320,7 @@ export default function CalibrationClient({ user: _user }: { user: SessionUser }
               type="text"
               value={newSessionName}
               onChange={(e) => setNewSessionName(e.target.value)}
-              placeholder="세션 이름"
+              placeholder={t('calibration.sessionNamePlaceholder')}
               className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
             />
             <button
@@ -362,11 +362,11 @@ export default function CalibrationClient({ user: _user }: { user: SessionUser }
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium text-foreground">{s.name}</p>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${st?.style ?? ''}`}>
-                      {st?.label ?? s.status}
+                      {st?.labelKey ? t(st.labelKey) : s.status}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    {s.department?.name ?? '전사'} · 조정 {s._count.adjustments}건
+                    {t('calibration.sessionInfo', { department: s.department?.name ?? t('calibration.allCompany'), count: s._count.adjustments })}
                   </p>
                 </button>
               )
@@ -446,7 +446,7 @@ export default function CalibrationClient({ user: _user }: { user: SessionUser }
                   className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-indigo-500/15 text-primary/90 hover:bg-indigo-200 disabled:opacity-50"
                 >
                   <Sparkles className="w-4 h-4" />
-                  {aiLoading ? t('aiAnalyzing') : 'AI 캘리브레이션 분석'}
+                  {aiLoading ? t('aiAnalyzing') : t('calibration.aiAnalysis')}
                 </button>
               </div>
 
@@ -456,7 +456,7 @@ export default function CalibrationClient({ user: _user }: { user: SessionUser }
                   <div className="flex items-center justify-between">
                     <h3 className="text-base font-semibold text-foreground">
                       <AlertTriangle className="w-4 h-4 inline mr-1 text-amber-700" />
-                      점수 조정: {adjEmployee.employee.name}
+                      {t('calibration.scoreAdjust', { name: adjEmployee.employee.name })}
                     </h3>
                     <button onClick={() => setAdjEmployee(null)} className="text-sm text-muted-foreground hover:text-muted-foreground">{t('close')}</button>
                   </div>
