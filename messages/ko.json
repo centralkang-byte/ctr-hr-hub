@@ -1099,7 +1099,17 @@
     "policiesTitle": "휴가 정책",
     "calendarTitle": "휴가 캘린더",
     "emptyTitle": "휴가 신청이 없습니다",
-    "emptyDesc": "해당 기간의 휴가 신청 내역이 없습니다."
+    "emptyDesc": "해당 기간의 휴가 신청 내역이 없습니다.",
+    "category": {
+      "annual": "연차",
+      "health": "보건/건강",
+      "maternity": "출산휴가",
+      "paternity": "배우자출산",
+      "familyEvent": "경조",
+      "special": "특별휴가",
+      "compensatory": "보상휴가",
+      "other": "기타"
+    }
   },
   "terminal": {
     "title": "출퇴근 단말기",
@@ -7946,7 +7956,17 @@
         "applyFailed": "휴가 신청에 실패했습니다.",
         "cancelFailed": "휴가 취소에 실패했습니다."
       },
-      "designatedLeave": "지정연차"
+      "designatedLeave": "지정연차",
+      "category": {
+        "annual": "연차",
+        "health": "보건/건강",
+        "maternity": "출산휴가",
+        "paternity": "배우자출산",
+        "familyEvent": "경조",
+        "special": "특별휴가",
+        "compensatory": "보상휴가",
+        "other": "기타"
+      }
     }
   },
   "directory": {

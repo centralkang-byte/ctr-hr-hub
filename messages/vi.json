@@ -1099,7 +1099,17 @@
     "policiesTitle": "Leave Policies",
     "calendarTitle": "Leave Calendar",
     "emptyTitle": "No leave requests",
-    "emptyDesc": "No leave requests for this period."
+    "emptyDesc": "No leave requests for this period.",
+    "category": {
+      "annual": "Nghỉ phép năm",
+      "health": "Nghỉ ốm",
+      "maternity": "Nghỉ thai sản",
+      "paternity": "Nghỉ cha",
+      "familyEvent": "Nghỉ hiếu hỉ",
+      "special": "Nghỉ đặc biệt",
+      "compensatory": "Nghỉ bù",
+      "other": "Khác"
+    }
   },
   "terminal": {
     "title": "Time Terminals",
@@ -7936,7 +7946,17 @@
         "applyFailed": "Đăng ký nghỉ phép thất bại.",
         "cancelFailed": "Hủy nghỉ phép thất bại."
       },
-      "designatedLeave": "[TODO:vi] 지정연차"
+      "designatedLeave": "[TODO:vi] 지정연차",
+      "category": {
+        "annual": "Nghỉ phép năm",
+        "health": "Nghỉ ốm",
+        "maternity": "Nghỉ thai sản",
+        "paternity": "Nghỉ cha",
+        "familyEvent": "Nghỉ hiếu hỉ",
+        "special": "Nghỉ đặc biệt",
+        "compensatory": "Nghỉ bù",
+        "other": "Khác"
+      }
     }
   },
   "directory": {

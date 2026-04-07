@@ -64,7 +64,7 @@ export const leaveYearendBurnRule: NudgeRule = {
       },
       include: {
         leaveTypeDef: {
-          select: { name: true, category: true },
+          select: { name: true, code: true, category: true },
         },
       },
     })
@@ -72,8 +72,8 @@ export const leaveYearendBurnRule: NudgeRule = {
     const items: OverdueItem[] = []
 
     for (const b of balances) {
-      // 연차(annual) 카테고리만 소진 유도 대상
-      if (b.leaveTypeDef.category !== 'annual') continue
+      // 연차(annual) 코드만 소진 유도 대상
+      if (b.leaveTypeDef.code !== 'annual') continue
 
       const remaining = b.entitled + b.carriedOver + b.adjusted - b.used - b.pending
 

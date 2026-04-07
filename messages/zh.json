@@ -1099,7 +1099,17 @@
     "policiesTitle": "Leave Policies",
     "calendarTitle": "Leave Calendar",
     "emptyTitle": "No leave requests",
-    "emptyDesc": "No leave requests for this period."
+    "emptyDesc": "No leave requests for this period.",
+    "category": {
+      "annual": "年假",
+      "health": "病假/健康假",
+      "maternity": "产假",
+      "paternity": "陪产假",
+      "familyEvent": "庆吊假",
+      "special": "特别假",
+      "compensatory": "补休",
+      "other": "其他"
+    }
   },
   "terminal": {
     "title": "Time Terminals",
@@ -7937,7 +7947,17 @@
         "applyFailed": "休假申请失败。",
         "cancelFailed": "取消休假失败。"
       },
-      "designatedLeave": "[TODO:zh] 지정연차"
+      "designatedLeave": "[TODO:zh] 지정연차",
+      "category": {
+        "annual": "年假",
+        "health": "病假/健康假",
+        "maternity": "产假",
+        "paternity": "陪产假",
+        "familyEvent": "庆吊假",
+        "special": "特别假",
+        "compensatory": "补休",
+        "other": "其他"
+      }
     }
   },
   "directory": {

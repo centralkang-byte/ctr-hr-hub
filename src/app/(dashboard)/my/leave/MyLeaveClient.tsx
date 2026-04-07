@@ -31,13 +31,15 @@ interface LeaveTypeDef {
 }
 
 // 카테고리 표시 순서 및 라벨
-const CATEGORY_ORDER = ['annual', 'health', 'family_event', 'maternity', 'military', 'other'] as const
+const CATEGORY_ORDER = ['annual', 'sick', 'maternity', 'paternity', 'bereavement', 'special', 'compensatory', 'other'] as const
 const CATEGORY_LABELS: Record<string, { labelKey: string; icon: string }> = {
   annual:       { labelKey: 'leave.category.annual', icon: '📅' },
-  health:       { labelKey: 'leave.category.health', icon: '🏥' },
-  family_event: { labelKey: 'leave.category.familyEvent', icon: '🎊' },
+  sick:         { labelKey: 'leave.category.health', icon: '🏥' },
   maternity:    { labelKey: 'leave.category.maternity', icon: '👶' },
-  military:     { labelKey: 'leave.category.military', icon: '🎖️' },
+  paternity:    { labelKey: 'leave.category.paternity', icon: '👨‍👶' },
+  bereavement:  { labelKey: 'leave.category.familyEvent', icon: '🎊' },
+  special:      { labelKey: 'leave.category.special', icon: '⭐' },
+  compensatory: { labelKey: 'leave.category.compensatory', icon: '🔄' },
   other:        { labelKey: 'leave.category.other', icon: '📋' },
 }
 
@@ -47,7 +49,8 @@ function groupByCategory(
 ): { category: string; label: string; icon: string; items: YearBalance[] }[] {
   const groups: Record<string, YearBalance[]> = {}
   for (const b of balances) {
-    const cat = b.leaveTypeDef.category ?? 'other'
+    const rawCode = b.leaveTypeDef.code ?? 'other'
+    const cat = CATEGORY_LABELS[rawCode] ? rawCode : 'other'
     if (!groups[cat]) groups[cat] = []
     groups[cat].push(b)
   }

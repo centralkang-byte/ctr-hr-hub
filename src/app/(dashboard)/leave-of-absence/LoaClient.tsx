@@ -126,7 +126,7 @@ export function LoaClient({ user }: Props) {
       const res = await fetch(`/api/v1/leave-of-absence?${params}`)
       const json = await res.json()
       if (json.data) setRecords(json.data)
-      if (json.meta) setTotal(json.meta.total)
+      if (json.pagination) setTotal(json.pagination.total)
     } catch {
       toast({ title: '휴직 목록 로드 실패', variant: 'destructive' })
     } finally {

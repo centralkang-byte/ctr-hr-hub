@@ -10,12 +10,12 @@ import { prisma } from '@/lib/prisma'
 
 // LeaveType enum → LeaveTypeDef 매핑 기준
 const LEAVE_TYPE_TO_FILTER: Record<string, { category?: string; code?: string }> = {
-  ANNUAL:       { category: 'annual' },
+  ANNUAL:       { code: 'annual' },
   SICK:         { code: 'sick' },
-  MATERNITY:    { category: 'maternity' },
-  PATERNITY:    { code: 'childbirth_spouse' },
-  BEREAVEMENT:  { category: 'family_event' },  // 첫 번째 매칭 (부모사망 등)
-  SPECIAL:      { category: 'other' },
+  MATERNITY:    { code: 'maternity' },
+  PATERNITY:    { code: 'paternity' },
+  BEREAVEMENT:  { code: 'bereavement' },
+  SPECIAL:      { code: 'special' },
   COMPENSATORY: { code: 'compensatory' },
 }
 
@@ -67,7 +67,7 @@ export async function resolveByLeaveType(
 
   const typeDef = await client.leaveTypeDef.findFirst({
     where,
-    orderBy: { companyId: 'desc' },  // 회사 specific 우선
+    orderBy: { companyId: { sort: 'desc', nulls: 'last' } },  // 회사 specific 우선, 글로벌(null) fallback
     select: { id: true },
   })
 

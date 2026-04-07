@@ -1099,7 +1099,17 @@
     "policiesTitle": "Leave Policies",
     "calendarTitle": "Leave Calendar",
     "emptyTitle": "No leave requests",
-    "emptyDesc": "No leave requests for this period."
+    "emptyDesc": "No leave requests for this period.",
+    "category": {
+      "annual": "Annual Leave",
+      "health": "Health/Sick Leave",
+      "maternity": "Maternity Leave",
+      "paternity": "Paternity Leave",
+      "familyEvent": "Family Events",
+      "special": "Special Leave",
+      "compensatory": "Compensatory Leave",
+      "other": "Other"
+    }
   },
   "terminal": {
     "title": "Time Terminals",
@@ -7954,7 +7964,17 @@
         "applyFailed": "Leave application failed.",
         "cancelFailed": "Failed to cancel leave."
       },
-      "designatedLeave": "[TODO:en] 지정연차"
+      "designatedLeave": "[TODO:en] 지정연차",
+      "category": {
+        "annual": "Annual Leave",
+        "health": "Health/Sick Leave",
+        "maternity": "Maternity Leave",
+        "paternity": "Paternity Leave",
+        "familyEvent": "Family Events",
+        "special": "Special Leave",
+        "compensatory": "Compensatory Leave",
+        "other": "Other"
+      }
     }
   },
   "directory": {

@@ -1099,7 +1099,17 @@
     "policiesTitle": "Leave Policies",
     "calendarTitle": "Leave Calendar",
     "emptyTitle": "No leave requests",
-    "emptyDesc": "No leave requests for this period."
+    "emptyDesc": "No leave requests for this period.",
+    "category": {
+      "annual": "Vacaciones anuales",
+      "health": "Licencia médica",
+      "maternity": "Licencia maternidad",
+      "paternity": "Licencia paternidad",
+      "familyEvent": "Eventos familiares",
+      "special": "Licencia especial",
+      "compensatory": "Descanso compensatorio",
+      "other": "Otros"
+    }
   },
   "terminal": {
     "title": "Time Terminals",
@@ -7936,7 +7946,17 @@
         "applyFailed": "Error al solicitar permiso.",
         "cancelFailed": "Error al cancelar permiso."
       },
-      "designatedLeave": "[TODO:es] 지정연차"
+      "designatedLeave": "[TODO:es] 지정연차",
+      "category": {
+        "annual": "Vacaciones anuales",
+        "health": "Licencia médica",
+        "maternity": "Licencia maternidad",
+        "paternity": "Licencia paternidad",
+        "familyEvent": "Eventos familiares",
+        "special": "Licencia especial",
+        "compensatory": "Descanso compensatorio",
+        "other": "Otros"
+      }
     }
   },
   "directory": {

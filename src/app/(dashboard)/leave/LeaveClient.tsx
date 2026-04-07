@@ -244,7 +244,17 @@ export function LeaveClient({ user }: { user: SessionUser }) {
   const getRemainingDays = (b: LeaveBalanceLocal) =>
     b.remaining ?? (b.entitled + b.carriedOver + b.adjusted - b.used - b.pending)
 
-  const selectedBalance = balances.find((b) => b.leaveTypeDef?.id === watchedPolicyId || b.policy?.id === watchedPolicyId) ?? null
+  // policy의 leaveType → leaveTypeDef.code 매핑으로 balance를 찾음
+  const LEAVE_TYPE_TO_CODE: Record<string, string> = {
+    ANNUAL: 'annual', SICK: 'sick', MATERNITY: 'maternity',
+    PATERNITY: 'paternity', BEREAVEMENT: 'bereavement',
+    SPECIAL: 'special', COMPENSATORY: 'compensatory',
+  }
+  const selectedPolicy = policies.find(p => p.id === watchedPolicyId)
+  const expectedCode = selectedPolicy ? LEAVE_TYPE_TO_CODE[selectedPolicy.leaveType] : null
+  const selectedBalance = expectedCode
+    ? balances.find((b) => b.leaveTypeDef?.code === expectedCode) ?? null
+    : null
   const selectedRemaining = selectedBalance
     ? getRemainingDays(selectedBalance)
     : null
@@ -489,16 +499,22 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       )}
       {balances?.length > 0 && (() => {
         // 카테고리별 그룹핑
-        const CATEGORY_ORDER = ['annual', 'health', 'family_event', 'maternity', 'military', 'other']
-        const CATEGORY_LABELS: Record<string, string> = {
-          annual: '연차', health: '보건/건강', family_event: '경조',
-          maternity: '모성보호', military: '병역', other: '기타',
+        const CATEGORY_ORDER = ['annual', 'sick', 'maternity', 'paternity', 'bereavement', 'special', 'compensatory', 'other']
+        const CATEGORY_LABEL_KEYS: Record<string, string> = {
+          annual: 'category.annual', sick: 'category.health', maternity: 'category.maternity',
+          paternity: 'category.paternity', bereavement: 'category.familyEvent', special: 'category.special',
+          compensatory: 'category.compensatory', other: 'category.other',
         }
         const groups: Record<string, LeaveBalanceLocal[]> = {}
         for (const b of balances) {
-          const cat = b.leaveTypeDef?.category ?? 'other'
-          if (!groups[cat]) groups[cat] = []
-          groups[cat].push(b)
+          const cat = b.leaveTypeDef?.code ?? 'other'
+          if (!CATEGORY_LABEL_KEYS[cat]) {
+            if (!groups['other']) groups['other'] = []
+            groups['other'].push(b)
+          } else {
+            if (!groups[cat]) groups[cat] = []
+            groups[cat].push(b)
+          }
         }
         const orderedGroups = CATEGORY_ORDER.filter(c => groups[c]?.length)
 
@@ -507,7 +523,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
             {orderedGroups.map(cat => (
               <div key={cat}>
                 <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
-                  {CATEGORY_LABELS[cat] ?? cat}
+                  {CATEGORY_LABEL_KEYS[cat] ? t(CATEGORY_LABEL_KEYS[cat]) : cat}
                 </p>
                 <div className="flex gap-4 overflow-x-auto pb-1">
                   {groups[cat].map((b) => {
