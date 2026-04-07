@@ -125,8 +125,8 @@ export function ProposeRevisionDialog({ open, onOpenChange, goals, quarterlyRevi
       onSuccess()
     } catch (err) {
       toast({
-        title: '수정 제안 실패',
-        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        title: t('messages.proposeFailed'),
+        description: err instanceof Error ? err.message : t('messages.retryPlease'),
         variant: 'destructive',
       })
     } finally {
@@ -193,7 +193,7 @@ export function ProposeRevisionDialog({ open, onOpenChange, goals, quarterlyRevi
                 {/* Target */}
                 <div className="mb-2 grid grid-cols-2 gap-2">
                   <div>
-                    <label className="mb-1 block text-xs text-muted-foreground">목표 지표</label>
+                    <label className="mb-1 block text-xs text-muted-foreground">{t('targetMetric')}</label>
                     <input
                       type="text"
                       value={rev.newTargetMetric ?? ''}
@@ -204,7 +204,7 @@ export function ProposeRevisionDialog({ open, onOpenChange, goals, quarterlyRevi
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs text-muted-foreground">목표 값</label>
+                    <label className="mb-1 block text-xs text-muted-foreground">{t('targetValue')}</label>
                     <input
                       type="text"
                       value={rev.newTargetValue ?? ''}

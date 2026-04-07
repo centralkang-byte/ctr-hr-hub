@@ -55,10 +55,10 @@ export default function AdminResultsClient({ user: _user }: { user: SessionUser 
         setCycles(cycleRes.data)
         setDepartments(deptRes.data)
         if (cycleRes.data.length > 0) setSelectedCycleId(cycleRes.data[0].id)
-      } catch (err) { toast({ title: '관리자 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+      } catch (err) { toast({ title: t('admin.resultsLoadFailed'), description: err instanceof Error ? err.message : t('messages.tryAgain'), variant: 'destructive' }) }
     }
     init()
-  }, [])
+  }, [t])
 
   const { confirm, dialogProps } = useConfirmDialog()
 
@@ -74,9 +74,9 @@ export default function AdminResultsClient({ user: _user }: { user: SessionUser 
       const res = await apiClient.getList<AdminResult>('/api/v1/performance/results/admin', params)
       setResults(res.data)
       setTotalPages(res.pagination.totalPages)
-    } catch (err) { toast({ title: '관리자 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('admin.resultsLoadFailed'), description: err instanceof Error ? err.message : t('messages.tryAgain'), variant: 'destructive' }) }
     finally { setLoading(false) }
-  }, [selectedCycleId, selectedDeptId, page])
+  }, [selectedCycleId, selectedDeptId, page, t])
 
   useEffect(() => { fetchResults() }, [fetchResults])
 

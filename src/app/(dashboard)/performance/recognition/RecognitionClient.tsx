@@ -44,11 +44,11 @@ interface Employee {
 
 // ─── Constants ───────────────────────────────────────────
 
-const VALUE_CONFIG: Record<string, { label: string; emoji: string; bgDefault: string; borderDefault: string; textDefault: string; bgActive: string; textActive: string }> = {
-  CHALLENGE: { label: '도전', emoji: '🔴', bgDefault: 'bg-destructive/5', borderDefault: 'border-destructive/20', textDefault: 'text-red-500', bgActive: 'bg-destructive/50', textActive: 'text-white' },
-  TRUST: { label: '신뢰', emoji: '🟢', bgDefault: 'bg-primary/10', borderDefault: 'border-green-300', textDefault: 'text-primary', bgActive: 'bg-primary', textActive: 'text-white' },
-  RESPONSIBILITY: { label: '책임', emoji: '🟠', bgDefault: 'bg-amber-500/10', borderDefault: 'border-amber-200', textDefault: 'text-amber-500', bgActive: 'bg-amber-500/100', textActive: 'text-white' },
-  RESPECT: { label: '존중', emoji: '🔵', bgDefault: 'bg-primary/5', borderDefault: 'border-primary/20', textDefault: 'text-blue-500', bgActive: 'bg-primary/50', textActive: 'text-white' },
+const VALUE_CONFIG: Record<string, { labelKey: string; emoji: string; bgDefault: string; borderDefault: string; textDefault: string; bgActive: string; textActive: string }> = {
+  CHALLENGE: { labelKey: 'recognition_valueChallenge', emoji: '🔴', bgDefault: 'bg-destructive/5', borderDefault: 'border-destructive/20', textDefault: 'text-red-500', bgActive: 'bg-destructive/50', textActive: 'text-white' },
+  TRUST: { labelKey: 'recognition_valueTrust', emoji: '🟢', bgDefault: 'bg-primary/10', borderDefault: 'border-green-300', textDefault: 'text-primary', bgActive: 'bg-primary', textActive: 'text-white' },
+  RESPONSIBILITY: { labelKey: 'recognition_valueResponsibility', emoji: '🟠', bgDefault: 'bg-amber-500/10', borderDefault: 'border-amber-200', textDefault: 'text-amber-500', bgActive: 'bg-amber-500/100', textActive: 'text-white' },
+  RESPECT: { labelKey: 'recognition_valueRespect', emoji: '🔵', bgDefault: 'bg-primary/5', borderDefault: 'border-primary/20', textDefault: 'text-blue-500', bgActive: 'bg-primary/50', textActive: 'text-white' },
 }
 
 const VALUE_LABELS: Record<string, string> = { CHALLENGE: 'Challenge', TRUST: 'Trust', RESPONSIBILITY: 'Responsibility', RESPECT: 'Respect' }
@@ -92,17 +92,17 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
         setFeed(res.data.items)
       }
       setNextCursor(res.data.nextCursor)
-    } catch (err) { toast({ title: '리코그니션 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('messages.recognitionListLoadFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
     setLoading(false)
-  }, [valueFilter])
+  }, [valueFilter, t])
 
   const fetchStats = useCallback(async () => {
     if (!isAdmin) return
     try {
       const res = await apiClient.get<Stats>('/api/v1/cfr/recognitions/stats')
       setStats(res.data)
-    } catch (err) { toast({ title: '통계 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
-  }, [isAdmin])
+    } catch (err) { toast({ title: t('messages.statsLoadFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
+  }, [isAdmin, t])
 
   useEffect(() => { fetchFeed() }, [fetchFeed])
   useEffect(() => { if (activeTab === 'stats') fetchStats() }, [activeTab, fetchStats])
@@ -115,7 +115,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
           ? { ...item, likedByMe: res.data.liked, likeCount: res.data.likeCount }
           : item,
       ))
-    } catch (err) { toast({ title: '반응 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('messages.reactionFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
   }
 
   const searchEmployees = (query: string) => {
@@ -126,7 +126,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
       try {
         const res = await apiClient.getList<Employee>('/api/v1/employees', { search: query, limit: 10 })
         setSearchResults(res.data.filter((emp: Employee) => emp.id !== user.employeeId))
-      } catch (err) { toast({ title: '직원 검색 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+      } catch (err) { toast({ title: t('messages.employeeSearchFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
     }, 200)
   }
 
@@ -145,17 +145,17 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
       setMessage('')
       setSearchQuery('')
       fetchFeed()
-    } catch (err) { toast({ title: '리코그니션 등록 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('messages.recognitionCreateFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
     setCreating(false)
   }
 
   const formatTimeAgo = (dateStr: string) => {
     const diff = Date.now() - new Date(dateStr).getTime()
     const hours = Math.floor(diff / 3600000)
-    if (hours < 1) return '방금 전'
-    if (hours < 24) return `${hours}시간 전`
+    if (hours < 1) return t('recognition_justNow')
+    if (hours < 24) return t('recognition_hoursAgo', { hours })
     const days = Math.floor(hours / 24)
-    return `${days}일 전`
+    return t('recognition_daysAgo', { days })
   }
 
   return (
@@ -204,7 +204,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
           >
             <option value="">{tCommon('all')}</option>
             {Object.entries(VALUE_CONFIG).map(([key, config]) => (
-              <option key={key} value={key}>{config.emoji} {config.label}</option>
+              <option key={key} value={key}>{config.emoji} {t(config.labelKey)}</option>
             ))}
           </select>
         )}
@@ -235,7 +235,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                     </div>
                     {config && (
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mb-3 ${config.bgDefault} ${config.textDefault} border ${config.borderDefault}`}>
-                        {config.emoji} {config.label} ({VALUE_LABELS[item.coreValue]})
+                        {config.emoji} {t(config.labelKey)} ({VALUE_LABELS[item.coreValue]})
                       </span>
                     )}
                     <p className="text-sm text-foreground leading-relaxed mb-3">&quot;{item.message}&quot;</p>
@@ -286,7 +286,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={stats.valueDistribution.map((v) => ({ name: VALUE_CONFIG[v.value]?.label ?? v.value, value: v.count }))}
+                      data={stats.valueDistribution.map((v) => ({ name: VALUE_CONFIG[v.value]?.labelKey ? t(VALUE_CONFIG[v.value].labelKey) : v.value, value: v.count }))}
                       dataKey="value"
                       nameKey="name"
                       cx="50%"
@@ -316,8 +316,8 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                     <YAxis tick={{ fontSize: 12, fill: '#666' }} allowDecimals={false} />
                     <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
                     <Legend />
-                    <Bar dataKey="sent" name="보낸 수" fill={CHART_THEME.colors[3]} radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="received" name="받은 수" fill={CHART_THEME.colors[1]} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="sent" name={t('recognition_sentCount')} fill={CHART_THEME.colors[3]} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="received" name={t('recognition_receivedCount')} fill={CHART_THEME.colors[1]} radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -353,7 +353,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                       <span className="w-6 h-6 rounded-full bg-background text-xs text-muted-foreground font-medium flex items-center justify-center">{i + 1}</span>
                       <span className="text-sm text-foreground">{r.name}</span>
                     </div>
-                    <span className="text-sm font-medium text-primary">{r.count}건</span>
+                    <span className="text-sm font-medium text-primary">{t('recognition_countUnit', { count: r.count })}</span>
                   </div>
                 ))}
               </div>
@@ -370,7 +370,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                       <span className="w-6 h-6 rounded-full bg-background text-xs text-muted-foreground font-medium flex items-center justify-center">{i + 1}</span>
                       <span className="text-sm text-foreground">{r.name}</span>
                     </div>
-                    <span className="text-sm font-medium text-violet-500">{r.count}건</span>
+                    <span className="text-sm font-medium text-violet-500">{t('recognition_countUnit', { count: r.count })}</span>
                   </div>
                 ))}
               </div>
@@ -439,7 +439,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                           : `${config.bgDefault} ${config.textDefault} ${config.borderDefault}`
                       }`}
                     >
-                      {config.emoji} {config.label}
+                      {config.emoji} {t(config.labelKey)}
                       <span className="block text-xs opacity-70">{VALUE_LABELS[key]}</span>
                     </button>
                   ))}
@@ -452,7 +452,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="칭찬 메시지를 작성하세요..."
+                  placeholder={t('recognition_messagePlaceholder')}
                   rows={4}
                   maxLength={500}
                   className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
@@ -472,7 +472,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                 disabled={creating || !selectedReceiver || !selectedValue || message.length < 10}
                 className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
               >
-                {creating ? '보내는 중...' : '보내기'}
+                {creating ? t('recognition_sending') : t('recognition_send')}
               </button>
             </div>
           </div>

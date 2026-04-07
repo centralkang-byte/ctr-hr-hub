@@ -46,6 +46,7 @@ export function PerformanceAdminHubClient({ user, defaultTab }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const t = useTranslations('nav')
+  const tp = useTranslations('performance')
 
   const activeTab: PerformanceAdminTab =
     resolveDefaultTab(searchParams.get('tab')) ??
@@ -76,7 +77,7 @@ export function PerformanceAdminHubClient({ user, defaultTab }: Props) {
         <div className="border-b border-border overflow-x-auto">
           <TabsList className="h-auto bg-transparent p-0 w-full justify-start gap-0 rounded-none">
             {[
-              { value: 'overview',    label: '개요' },
+              { value: 'overview',    label: tp('admin.overview') },
               { value: 'goals',       label: tabLabel('goals', '목표 관리') },
               { value: 'results',     label: tabLabel('results', '성과 결과') },
               { value: 'peer-review', label: tabLabel('peerReview', '동료 평가') },

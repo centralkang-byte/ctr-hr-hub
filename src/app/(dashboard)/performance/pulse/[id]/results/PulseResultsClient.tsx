@@ -58,10 +58,10 @@ export default function PulseResultsClient({ user: _user, id }: { user: SessionU
       const res = await apiClient.get<SurveyResults>(`/api/v1/pulse/surveys/${id}/results`)
       setResults(res.data)
     } catch (err) {
-      toast({ title: '설문 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('messages.surveyResultsLoadFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' })
     }
     setLoading(false)
-  }, [id])
+  }, [id, t])
 
   useEffect(() => { fetchResults() }, [fetchResults])
 
@@ -71,7 +71,7 @@ export default function PulseResultsClient({ user: _user, id }: { user: SessionU
       const res = await apiClient.post<AiAnalysis>('/api/v1/ai/pulse-analysis', { surveyId: id })
       setAiAnalysis(res.data)
     } catch (err) {
-      toast({ title: '설문 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('messages.aiAnalysisFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' })
     }
     setAiLoading(false)
   }
@@ -89,14 +89,14 @@ export default function PulseResultsClient({ user: _user, id }: { user: SessionU
           </button>
           <BarChart3 className="w-6 h-6 text-primary" />
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{results.title} — 결과</h1>
-            <p className="text-sm text-muted-foreground">총 {results.totalRespondents}명 응답</p>
+            <h1 className="text-2xl font-bold text-foreground">{results.title} — {t('results')}</h1>
+            <p className="text-sm text-muted-foreground">{t('pulse.totalRespondents', { count: results.totalRespondents })}</p>
           </div>
         </div>
         <button onClick={handleAiAnalysis} disabled={aiLoading}
           className="flex items-center gap-2 px-4 py-2 border border-indigo-200 text-primary/90 rounded-lg text-sm font-medium hover:bg-indigo-500/15 disabled:opacity-50">
           <Sparkles className="w-4 h-4" />
-          {aiLoading ? t('aiAnalyzing') : 'AI 인사이트'}
+          {aiLoading ? t('aiAnalyzing') : t('pulse.aiInsight')}
         </button>
       </div>
 
@@ -143,7 +143,7 @@ export default function PulseResultsClient({ user: _user, id }: { user: SessionU
                 <span className="text-xs text-muted-foreground font-medium">Q{i + 1}</span>
                 <h3 className="text-sm font-semibold text-foreground mt-1">{q.questionText}</h3>
               </div>
-              <span className="text-xs text-muted-foreground">{q.responseCount}명 응답</span>
+              <span className="text-xs text-muted-foreground">{t('pulse.respondentCount', { count: q.responseCount })}</span>
             </div>
 
             {q.questionType === 'LIKERT' && q.distribution && (

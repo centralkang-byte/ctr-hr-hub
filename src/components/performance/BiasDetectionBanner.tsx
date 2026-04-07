@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
@@ -15,13 +16,13 @@ interface Props {
   onRunCheck?: () => void
 }
 
-const BIAS_TYPE_LABEL: Record<string, string> = {
-  central_tendency: '중심화 경향',
-  leniency: '관대화',
-  severity: '엄격화',
-  recency: '최근 편향',
-  tenure: '재직기간 편향',
-  gender: '성별 편향',
+const BIAS_TYPE_LABEL_KEY: Record<string, string> = {
+  central_tendency: 'bias.typeCentralTendency',
+  leniency: 'bias.typeLeniency',
+  severity: 'bias.typeSeverity',
+  recency: 'bias.typeRecency',
+  tenure: 'bias.typeTenure',
+  gender: 'bias.typeGender',
 }
 
 const SEVERITY_STYLE: Record<string, string> = {
@@ -31,6 +32,7 @@ const SEVERITY_STYLE: Record<string, string> = {
 }
 
 export default function BiasDetectionBanner({ cycleId, onRunCheck }: Props) {
+  const t = useTranslations('performance')
   const [logs, setLogs] = useState<BiasLog[]>([])
   const [expanded, setExpanded] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -60,7 +62,7 @@ export default function BiasDetectionBanner({ cycleId, onRunCheck }: Props) {
       await fetchLogs()
       onRunCheck?.()
     } catch {
-      toast({ title: '편향 감지 분석에 실패했습니다.', variant: 'destructive' })
+      toast({ title: t('bias.messages.checkFailed'), variant: 'destructive' })
     } finally {
       setChecking(false)
     }
@@ -69,13 +71,13 @@ export default function BiasDetectionBanner({ cycleId, onRunCheck }: Props) {
   if (loading) return null
   if (logs.length === 0) return (
     <div className="flex items-center justify-between bg-emerald-500/15 rounded-lg px-4 py-2.5 mb-4">
-      <p className="text-xs text-emerald-700">편향 감지: 현재 경고 없음</p>
+      <p className="text-xs text-emerald-700">{t('bias.noWarnings')}</p>
       <button
         onClick={handleRunCheck}
         disabled={checking}
         className="text-xs text-emerald-700 underline"
       >
-        {checking ? '분석 중...' : '재분석'}
+        {checking ? t('bias.analyzing') : t('bias.reanalyze')}
       </button>
     </div>
   )
@@ -89,14 +91,14 @@ export default function BiasDetectionBanner({ cycleId, onRunCheck }: Props) {
         <div className="flex items-center gap-2">
           <AlertTriangle className={`w-4 h-4 ${criticalCount > 0 ? 'text-destructive' : 'text-amber-700'}`} />
           <span className={`text-sm font-medium ${criticalCount > 0 ? 'text-destructive' : 'text-amber-700'}`}>
-            편향 감지 알림 ({logs.length}건)
-            {criticalCount > 0 && <span className="ml-1 text-xs">— Critical {criticalCount}건</span>}
-            {warningCount > 0 && <span className="ml-1 text-xs">— Warning {warningCount}건</span>}
+            {t('bias.alertTitle', { count: logs.length })}
+            {criticalCount > 0 && <span className="ml-1 text-xs">— Critical {criticalCount}</span>}
+            {warningCount > 0 && <span className="ml-1 text-xs">— Warning {warningCount}</span>}
           </span>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleRunCheck} disabled={checking} className="text-xs text-muted-foreground underline">
-            {checking ? '분석 중...' : '재분석'}
+            {checking ? t('bias.analyzing') : t('bias.reanalyze')}
           </button>
           <button onClick={() => setExpanded(!expanded)}>
             {expanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
@@ -112,7 +114,7 @@ export default function BiasDetectionBanner({ cycleId, onRunCheck }: Props) {
               </span>
               <div>
                 <span className="text-xs font-medium text-foreground">
-                  {BIAS_TYPE_LABEL[log.biasType] ?? log.biasType}
+                  {BIAS_TYPE_LABEL_KEY[log.biasType] ? t(BIAS_TYPE_LABEL_KEY[log.biasType]) : log.biasType}
                 </span>
                 <p className="text-xs text-muted-foreground">{log.description}</p>
               </div>

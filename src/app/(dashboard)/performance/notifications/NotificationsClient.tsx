@@ -63,9 +63,9 @@ export default function NotificationsClient({user }: {
         try {
             const res = await apiClient.get<NotifyItem[]>(`/api/v1/performance/cycles/${selectedCycleId}/participants`, { includeNotification: 'true' })
             setItems(res.data ?? [])
-        } catch { setError('통보 현황을 불러오지 못했습니다.') }
+        } catch { setError(t('notification.loadFailed')) }
         finally { setLoading(false) }
-    }, [selectedCycleId])
+    }, [selectedCycleId, t])
 
     useEffect(() => { fetchItems() }, [fetchItems])
 
@@ -88,7 +88,7 @@ export default function NotificationsClient({user }: {
 
     async function handleBulkNotify() {
         const pendingCount = items.filter((i) => !i.notifiedAt).length
-        confirm({ title: `미통보 ${pendingCount}명에게 일괄 통보하시겠습니까?`, onConfirm: async () => {
+        confirm({ title: t('notification.bulkNotifyConfirm', { count: pendingCount }), onConfirm: async () => {
             setBulkNotifying(true)
             try {
                 await apiClient.post(`/api/v1/performance/cycles/${selectedCycleId}/bulk-notify`)
@@ -151,14 +151,14 @@ export default function NotificationsClient({user }: {
                     <div>
                         <h1 className="text-2xl font-bold text-foreground">{t('kr_keab2b0ea_ked86b5eb_result_not')}</h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            전체: {total}명 | 통보 완료: {notified} | 미통보: {pending} | 확인 완료: {acknowledged}
+                            {t('notification.summaryStats', { total, notified, pending, acknowledged })}
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
                         {isHrAdmin && pending > 0 && (
                             <button onClick={handleBulkNotify} disabled={bulkNotifying}
                                 className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40">
-                                <Send className="h-4 w-4" /> {bulkNotifying ? '통보 중...' : '전체 일괄 통보'}
+                                <Send className="h-4 w-4" /> {bulkNotifying ? t('notification.notifying') : t('notification.bulkNotify')}
                             </button>
                         )}
                         <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
@@ -171,7 +171,7 @@ export default function NotificationsClient({user }: {
 
                 {/* Filter tabs */}
                 <div className="mb-4 flex gap-2">
-                    {([['all', '전체'], ['pending', '미통보'], ['waiting', '대기 중'], ['done', '확인 완료']] as const).map(([key, label]) => (
+                    {([['all', t('notification.filterAll')], ['pending', t('notification.filterPending')], ['waiting', t('notification.filterWaiting')], ['done', t('notification.filterDone')]] as const).map(([key, label]) => (
                         <button key={key} onClick={() => setFilter(key)}
                             className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${filter === key ? 'bg-primary text-white' : 'bg-card border border-border text-muted-foreground hover:bg-muted'}`}>
                             {label}
@@ -215,7 +215,7 @@ export default function NotificationsClient({user }: {
                                             <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{item.notifiedAt?.slice(0, 10) ?? '-'}</td>
                                             <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>
                                                 {item.acknowledgedAt ? (
-                                                    <span>{item.acknowledgedAt.slice(0, 10)}{item.isAutoAcknowledged ? ' (자동)' : ''}</span>
+                                                    <span>{item.acknowledgedAt.slice(0, 10)}{item.isAutoAcknowledged ? ` (${t('notification.auto')})` : ''}</span>
                                                 ) : '-'}
                                             </td>
                                             <td className={cn(TABLE_STYLES.cell, "text-center")}>
@@ -228,7 +228,7 @@ export default function NotificationsClient({user }: {
                                                 {!item.notifiedAt && (
                                                     <button onClick={() => handleNotify(item.reviewId)} disabled={notifying === item.reviewId}
                                                         className="rounded-lg bg-primary px-3 py-1 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-40">
-                                                        {notifying === item.reviewId ? '...' : '통보'}
+                                                        {notifying === item.reviewId ? '...' : t('notification.notify')}
                                                     </button>
                                                 )}
                                             </td>

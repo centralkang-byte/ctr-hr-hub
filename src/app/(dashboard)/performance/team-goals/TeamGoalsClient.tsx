@@ -122,7 +122,7 @@ export default function TeamGoalsClient({
           setSelectedCycleId(res.data[0].id)
         }
       } catch (err) {
-        toast({ title: '팀 목표 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        toast({ title: t('teamLoadFailed'), description: err instanceof Error ? err.message : t('messages.tryAgain'), variant: 'destructive' })
       }
     }
     fetchCycles()
@@ -140,7 +140,7 @@ export default function TeamGoalsClient({
       )
       setMembers(res.data)
     } catch (err) {
-      toast({ title: '팀 목표 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('teamLoadFailed'), description: err instanceof Error ? err.message : t('messages.tryAgain'), variant: 'destructive' })
       setMembers([])
     } finally {
       setLoading(false)

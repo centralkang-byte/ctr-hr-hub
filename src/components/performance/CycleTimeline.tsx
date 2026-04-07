@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import { CheckCircle2, Circle, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { getPipelineSteps, CYCLE_STATUS_LABELS } from '@/lib/performance/pipeline'
@@ -19,28 +20,28 @@ interface CycleTimelineProps {
 // EMPLOYEE에게 숨길 단계 (API에서 이미 마스킹하지만 UI에서도 방어)
 const EMPLOYEE_HIDDEN_STEPS = new Set(['COMP_REVIEW', 'COMP_COMPLETED'])
 
-// Role → Status → action item text
+// Role → Status → i18n key for action item text
 const ACTION_ITEMS: Record<string, Record<string, string>> = {
   EMPLOYEE: {
-    ACTIVE: '개인 MBO 목표를 설정하세요',
-    EVAL_OPEN: '자기평가를 제출하세요',
-    CLOSED: '평가 결과를 확인하세요',
+    ACTIVE: 'timeline.action.employeeActive',
+    EVAL_OPEN: 'timeline.action.employeeEvalOpen',
+    CLOSED: 'timeline.action.employeeClosed',
   },
   MANAGER: {
-    ACTIVE: '팀원 목표를 검토하세요',
-    EVAL_OPEN: '팀원 평가를 제출하세요',
-    CALIBRATION: '피플세션에 참여하세요',
-    CLOSED: '팀원에게 결과를 공유하세요',
-    COMP_REVIEW: '보상 추천을 입력하세요',
+    ACTIVE: 'timeline.action.managerActive',
+    EVAL_OPEN: 'timeline.action.managerEvalOpen',
+    CALIBRATION: 'timeline.action.managerCalibration',
+    CLOSED: 'timeline.action.managerClosed',
+    COMP_REVIEW: 'timeline.action.managerCompReview',
   },
   HR_ADMIN: {
-    DRAFT: '사이클을 구성하고 마감일을 설정하세요',
-    ACTIVE: '제출률을 모니터링하세요',
-    EVAL_OPEN: '평가 완료율을 모니터링하세요',
-    CALIBRATION: '피플세션을 진행하세요',
-    CLOSED: '전사 결과를 공시하세요',
-    COMP_REVIEW: '보상 매트릭스를 설계하세요',
-    COMP_COMPLETED: '급여 시스템에 연동하세요',
+    DRAFT: 'timeline.action.hrDraft',
+    ACTIVE: 'timeline.action.hrActive',
+    EVAL_OPEN: 'timeline.action.hrEvalOpen',
+    CALIBRATION: 'timeline.action.hrCalibration',
+    CLOSED: 'timeline.action.hrClosed',
+    COMP_REVIEW: 'timeline.action.hrCompReview',
+    COMP_COMPLETED: 'timeline.action.hrCompCompleted',
   },
 }
 
@@ -53,20 +54,21 @@ function getActionText(role: string, status: string): string | null {
   return ACTION_ITEMS[roleKey]?.[status] ?? null
 }
 
-function formatDeadline(dateStr: string): string {
+function formatDeadline(dateStr: string, t: (key: string, values?: Record<string, string | number | Date>) => string): string {
   const d = new Date(dateStr)
   const now = new Date()
   const diffDays = Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
   const dateLabel = `${d.getMonth() + 1}/${d.getDate()}`
-  if (diffDays < 0) return `${dateLabel} (${Math.abs(diffDays)}일 초과)`
-  if (diffDays === 0) return `${dateLabel} (오늘)`
-  if (diffDays <= 7) return `${dateLabel} (${diffDays}일 남음)`
+  if (diffDays < 0) return `${dateLabel} (${t('timeline.daysOverdue', { days: Math.abs(diffDays) })})`
+  if (diffDays === 0) return `${dateLabel} (${t('timeline.today')})`
+  if (diffDays <= 7) return `${dateLabel} (${t('timeline.daysLeft', { days: diffDays })})`
   return dateLabel
 }
 
 // ─── Component ──────────────────────────────────────────────
 
 export function CycleTimeline({ currentStatus, role, cycleHalf, nextDeadline }: CycleTimelineProps) {
+  const t = useTranslations('performance')
   // 동적 파이프라인: half에 따라 H1(4단계) vs H2(7단계)
   const steps = useMemo(() => {
     const pipeline = getPipelineSteps(cycleHalf)
@@ -124,13 +126,13 @@ export function CycleTimeline({ currentStatus, role, cycleHalf, nextDeadline }: 
         <div className="mt-4 flex items-center justify-between rounded-xl bg-muted/50 px-4 py-2.5">
           {action && (
             <span className="text-sm text-foreground">
-              <span className="mr-1.5 font-medium text-primary">할 일:</span>{action}
+              <span className="mr-1.5 font-medium text-primary">{t('timeline.toDo')}</span>{t(action)}
             </span>
           )}
           {nextDeadline && (
             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Clock className="h-3.5 w-3.5" aria-hidden="true" />
-              마감 {formatDeadline(nextDeadline)}
+              {t('timeline.deadline')} {formatDeadline(nextDeadline, t)}
             </span>
           )}
         </div>

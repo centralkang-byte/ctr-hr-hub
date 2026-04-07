@@ -48,13 +48,13 @@ export default function GrowthJourneyChart() {
                 const res = await apiClient.get<HistoryPoint[]>('/api/v1/performance/reviews/my-history')
                 setHistory(res.data)
             } catch {
-                toast({ title: '성과 이력 로드 실패', variant: 'destructive' })
+                toast({ title: t('growthChart.messages.loadFailed'), variant: 'destructive' })
             } finally {
                 setLoading(false)
             }
         }
         load()
-    }, [])
+    }, [t])
 
     if (loading) {
         return (
@@ -82,7 +82,7 @@ export default function GrowthJourneyChart() {
         label: h.label,
         MBO: h.mboScore,
         BEI: h.beiScore,
-        종합: h.totalScore,
+        total: h.totalScore,
     }))
 
     return (
@@ -100,7 +100,7 @@ export default function GrowthJourneyChart() {
                     </span>
                     {gradeDiff !== 0 && (
                         <span className="ml-1 text-xs text-muted-foreground">
-                            ({gradeDiff > 0 ? '등급 ↑' : '등급 ↓'})
+                            ({gradeDiff > 0 ? t('growthChart.gradeUp') : t('growthChart.gradeDown')})
                         </span>
                     )}
                 </div>
@@ -144,7 +144,7 @@ export default function GrowthJourneyChart() {
                             connectNulls
                         />
                         <Line
-                            type="monotone" dataKey="종합" name={t('totalScore') || '종합'}
+                            type="monotone" dataKey="total" name={t('totalScore') || '종합'}
                             stroke={CHART_THEME.colors[1]} strokeWidth={2.5}
                             dot={{ r: 5, fill: CHART_THEME.colors[1] }}
                             activeDot={{ r: 7 }}

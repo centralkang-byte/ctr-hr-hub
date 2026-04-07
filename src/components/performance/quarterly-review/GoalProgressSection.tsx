@@ -104,7 +104,7 @@ export default function GoalProgressSection({ items, canEditEmployee, canEditMan
           )}
 
           {item.snapshotTarget && (
-            <p className="text-xs text-muted-foreground">목표: {item.snapshotTarget}</p>
+            <p className="text-xs text-muted-foreground">{t('field.target')}: {item.snapshotTarget}</p>
           )}
 
           {/* Employee comment */}
@@ -148,7 +148,7 @@ export default function GoalProgressSection({ items, canEditEmployee, canEditMan
           {/* Manager tracking status selector */}
           {canEditManager && (
             <div className="flex items-center gap-2">
-              <label className="text-xs font-medium text-muted-foreground">상태:</label>
+              <label className="text-xs font-medium text-muted-foreground">{t('field.trackingStatusLabel')}:</label>
               {(['ON_TRACK', 'AT_RISK', 'BEHIND'] as const).map((status) => (
                 <button
                   key={status}
