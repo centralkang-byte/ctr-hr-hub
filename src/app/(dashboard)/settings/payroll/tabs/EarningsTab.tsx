@@ -30,7 +30,7 @@ export function EarningsTab({
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
-        <div><h3 className="text-base font-semibold text-foreground">{t('kr_keab889ec_ked95adeb')}</h3><p className="text-sm text-muted-foreground">수당/지급 항목 {items.length}개</p></div>
+        <div><h3 className="text-base font-semibold text-foreground">{t('kr_keab889ec_ked95adeb')}</h3><p className="text-sm text-muted-foreground">{t('earnings.subtitle', { count: items.length })}</p></div>
         <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />{t('kr_ked95adeb_add')}</Button>
       </div>
       {items.length > 0 ? (
@@ -48,8 +48,8 @@ export function EarningsTab({
                 <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{item.code}</td>
                 <td className={TABLE_STYLES.cell}>{item.name}</td>
                 <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>{item.category}</td>
-                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${item.isTaxable ? 'bg-destructive/5 text-destructive' : 'bg-tertiary-container/10 text-tertiary'}`}>{item.isTaxable ? '과세' : '비과세'}</span></td>
-                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!item.deletedAt ? 'bg-tertiary-container/10 text-tertiary' : 'bg-muted/50 text-muted-foreground/60'}`}>{!item.deletedAt ? '활성' : '비활성'}</span></td>
+                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${item.isTaxable ? 'bg-destructive/5 text-destructive' : 'bg-tertiary-container/10 text-tertiary'}`}>{item.isTaxable ? t('earnings.taxable') : t('earnings.taxFree')}</span></td>
+                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!item.deletedAt ? 'bg-tertiary-container/10 text-tertiary' : 'bg-muted/50 text-muted-foreground/60'}`}>{!item.deletedAt ? t('common.active') : t('common.inactive')}</span></td>
               </tr>
             ))}</tbody>
           </table>

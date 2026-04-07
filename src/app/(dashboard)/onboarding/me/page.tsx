@@ -3,6 +3,7 @@
 // 내 온보딩 셀프 뷰
 // ═══════════════════════════════════════════════════════════
 
+import { getTranslations } from 'next-intl/server'
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
@@ -10,6 +11,11 @@ import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import { OnboardingMeClient } from './OnboardingMeClient'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
+
+export async function generateMetadata() {
+  const t = await getTranslations('onboarding')
+  return { title: t('myOnboarding') }
+}
 
 export default async function OnboardingMePage() {
   const session = await getServerSession(authOptions)

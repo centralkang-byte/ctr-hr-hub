@@ -49,8 +49,8 @@ export default function PerformanceClient({ user: _user }: { user: SessionUser }
   if (error || !data) {
     return (
       <EmptyState
-        title="데이터를 불러올 수 없습니다"
-        description="인사이트 데이터를 불러오는 중 오류가 발생했습니다. 새로고침하거나 잠시 후 다시 시도해주세요."
+        title={t('error.loadFailed')}
+        description={t('error.loadFailedDescription')}
         action={{ label: t('retry'), onClick: () => fetchData() }}
       />
     )
@@ -66,15 +66,15 @@ export default function PerformanceClient({ user: _user }: { user: SessionUser }
       <AnalyticsFilterBar companies={companies} />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KpiCard {...kpis.currentCyclePhase} icon={Target} tooltip="현재 성과 관리 사이클 단계" />
-        <KpiCard {...kpis.evaluationCompletionRate} icon={CheckCircle2} tooltip="평가 완료된 직원 ÷ 평가 대상 전체 × 100" />
-        <KpiCard {...kpis.calibrationAdjustmentRate} icon={Scale} tooltip="캘리브레이션 과정에서 등급이 조정된 비율" />
-        <KpiCard {...kpis.goalSubmissionRate} icon={FileText} tooltip="목표 제출 완료한 직원 ÷ 목표 설정 대상 × 100" />
+        <KpiCard {...kpis.currentCyclePhase} icon={Target} tooltip={t('performance.tooltips.cyclePhase')} />
+        <KpiCard {...kpis.evaluationCompletionRate} icon={CheckCircle2} tooltip={t('performance.tooltips.evalCompletion')} />
+        <KpiCard {...kpis.calibrationAdjustmentRate} icon={Scale} tooltip={t('performance.tooltips.calibrationRate')} />
+        <KpiCard {...kpis.goalSubmissionRate} icon={FileText} tooltip={t('performance.tooltips.goalSubmission')} />
       </div>
 
       <ChartCard
-        title="📊 등급 분포 vs 가이드라인"
-        badge={hasBias ? '⚠️ 상위 편향 감지' : undefined}
+        title={t('performance.charts.gradeDistribution')}
+        badge={hasBias ? t('performance.charts.biasDetected') : undefined}
         badgeColor="bg-amber-500/10 text-amber-700 border-amber-200"
       >
         {charts.gradeDistribution.length === 0 ? <EmptyChart /> : (
@@ -85,15 +85,15 @@ export default function PerformanceClient({ user: _user }: { user: SessionUser }
               <YAxis fontSize={11} unit="%" />
               <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
               <Legend iconType="circle" iconSize={8} />
-              <Bar dataKey="actual" name="실제" fill={CHART_COLORS.primary} radius={[4, 4, 0, 0]} maxBarSize={40} />
-              <Bar dataKey="guideline" name="가이드라인" fill="#D1D5DB" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar dataKey="actual" name={t('performance.charts.actual')} fill={CHART_COLORS.primary} radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar dataKey="guideline" name={t('performance.charts.guideline')} fill="#D1D5DB" radius={[4, 4, 0, 0]} maxBarSize={40} />
             </BarChart>
           </ResponsiveContainer>
         )}
       </ChartCard>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartCard title="🏢 부서별 등급 분포">
+        <ChartCard title={t('performance.charts.deptGradeDist')}>
           {charts.departmentGradeDist.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={charts.departmentGradeDist}>
@@ -102,6 +102,7 @@ export default function PerformanceClient({ user: _user }: { user: SessionUser }
                 <YAxis fontSize={11} unit="%" domain={[0, 100]} />
                 <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
                 <Legend iconType="circle" iconSize={8} />
+                {/* i18n: intentional DB value match — dataKeys match API response fields */}
                 <Bar dataKey="탁월(E)" stackId="a" fill={CHART_COLORS.secondary[1]} maxBarSize={30} />
                 <Bar dataKey="우수(M+)" stackId="a" fill={CHART_COLORS.primary} maxBarSize={30} />
                 <Bar dataKey="보통(M)" stackId="a" fill={CHART_COLORS.warning} maxBarSize={30} />
@@ -111,7 +112,7 @@ export default function PerformanceClient({ user: _user }: { user: SessionUser }
           )}
         </ChartCard>
 
-        <ChartCard title="📈 평가 진행 현황">
+        <ChartCard title={t('performance.charts.evalProgress')}>
           {charts.evaluationProgress.length === 0 ? <EmptyChart /> : (
             <div className="space-y-4 py-2">
               {charts.evaluationProgress.map((stage) => {

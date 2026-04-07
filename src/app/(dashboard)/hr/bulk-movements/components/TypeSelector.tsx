@@ -5,6 +5,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import {
   ArrowRightLeft,
@@ -24,43 +25,44 @@ interface TypeSelectorProps {
 
 const TYPE_OPTIONS: {
   type: MovementType
-  label: string
-  description: string
+  labelKey: string
+  descriptionKey: string
   icon: typeof ArrowRightLeft
 }[] = [
   {
     type: 'transfer',
-    label: '부서이동',
-    description: '부서/팀 간 인사이동을 일괄 처리합니다',
+    labelKey: 'type.transfer',
+    descriptionKey: 'type.transferDesc',
     icon: ArrowRightLeft,
   },
   {
     type: 'promotion',
-    label: '승진',
-    description: '직급/직위 변경을 일괄 처리합니다',
+    labelKey: 'type.promotion',
+    descriptionKey: 'type.promotionDesc',
     icon: TrendingUp,
   },
   {
     type: 'entity-transfer',
-    label: '법인전환',
-    description: '소속 법인(회사) 변경을 일괄 처리합니다',
+    labelKey: 'type.entityTransfer',
+    descriptionKey: 'type.entityTransferDesc',
     icon: Building2,
   },
   {
     type: 'termination',
-    label: '퇴직',
-    description: '퇴직 처리를 일괄 진행합니다',
+    labelKey: 'type.termination',
+    descriptionKey: 'type.terminationDesc',
     icon: DoorOpen,
   },
   {
     type: 'compensation',
-    label: '급여변경',
-    description: '급여/보상 변경을 일괄 처리합니다',
+    labelKey: 'type.compensation',
+    descriptionKey: 'type.compensationDesc',
     icon: Coins,
   },
 ]
 
 export function TypeSelector({ onSelect }: TypeSelectorProps) {
+  const t = useTranslations('bulkMovement')
   const [selected, setSelected] = useState<MovementType | null>(null)
 
   return (
@@ -90,9 +92,9 @@ export function TypeSelector({ onSelect }: TypeSelectorProps) {
                   <Icon className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <p className="font-medium text-sm">{opt.label}</p>
+                  <p className="font-medium text-sm">{t(opt.labelKey)}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    {opt.description}
+                    {t(opt.descriptionKey)}
                   </p>
                 </div>
               </CardContent>
@@ -111,10 +113,10 @@ export function TypeSelector({ onSelect }: TypeSelectorProps) {
             }}
           >
             <Download className="h-4 w-4 mr-1.5" />
-            템플릿 다운로드
+            {t('button.downloadTemplate')}
           </Button>
           <Button size="sm" onClick={() => onSelect(selected)}>
-            다음 →
+            {t('button.next')}
           </Button>
         </div>
       )}

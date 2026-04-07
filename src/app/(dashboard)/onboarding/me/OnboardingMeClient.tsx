@@ -7,7 +7,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { CheckCircle2, Clock, User } from 'lucide-react'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { EmptyState } from '@/components/shared/EmptyState'
@@ -68,11 +68,11 @@ const ASSIGNEE_BADGE_STYLES: Record<string, string> = {
 
 // ─── Helpers ──────────────────────────────────────────────────
 
-function addDays(dateStr: string | null, days: number): string {
+function addDays(dateStr: string | null, days: number, locale: string): string {
   if (!dateStr) return '-'
   const d = new Date(dateStr)
   d.setDate(d.getDate() + days)
-  return d.toLocaleDateString('ko-KR')
+  return d.toLocaleDateString(locale)
 }
 
 function groupByCategory(tasks: OnboardingTaskRow[]): Record<string, OnboardingTaskRow[]> {
@@ -89,6 +89,7 @@ function groupByCategory(tasks: OnboardingTaskRow[]): Record<string, OnboardingT
 
 export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
   const t = useTranslations('onboarding')
+  const locale = useLocale()
 
   const [data, setData] = useState<MyOnboarding | null>(null)
   const [loading, setLoading] = useState(true)
@@ -314,7 +315,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
                       {/* Due date */}
                       <div className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />
-                        {addDays(data.startedAt, row.task.dueDaysAfter)}
+                        {addDays(data.startedAt, row.task.dueDaysAfter, locale)}
                       </div>
 
                       {/* Status */}

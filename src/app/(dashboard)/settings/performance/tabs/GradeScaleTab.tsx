@@ -30,7 +30,7 @@ export function GradeScaleTab({
     <div className="space-y-4">
       <div className="mb-4">
         <h3 className="text-base font-semibold text-foreground">{t('kr_keb93b1ea_kecb2b4ea')}</h3>
-        <p className="text-sm text-muted-foreground">{grades.length}단계 등급 체계</p>
+        <p className="text-sm text-muted-foreground">{t('gradeScale.subtitle', { count: grades.length })}</p>
       </div>
       {grades.length > 0 ? (
         <div className="space-y-3">
@@ -50,7 +50,7 @@ export function GradeScaleTab({
               </div>
             </div>
           ))}
-          <div className="mt-2 text-right text-sm text-muted-foreground">합계: {grades.reduce((s, g) => s + g.guidePct, 0)}%</div>
+          <div className="mt-2 text-right text-sm text-muted-foreground">{t('distribution.total', { pct: grades.reduce((s, g) => s + g.guidePct, 0) })}</div>
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-border py-12 text-center">

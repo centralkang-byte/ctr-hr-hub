@@ -9,7 +9,7 @@ import { ChartSkeleton } from '@/components/shared/PageSkeleton'
 
 export async function generateMetadata() {
   const t = await getTranslations('analytics')
-  return { title: t('attendanceAnalysis') }
+  return { title: t('attendance.pageTitle') }
 }
 
 export default async function AttendancePage() {
@@ -18,13 +18,13 @@ export default async function AttendancePage() {
     redirect('/login')
   }
   const user = session.user as SessionUser
-  const t = await getTranslations('settings')
+  const t = await getTranslations('analytics')
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">{t('analytics_attendanceHeading')}</h1>
-        <p className="text-sm text-muted-foreground mt-1">{t('analytics_attendanceDescription')}</p>
+        <h1 className="text-2xl font-bold text-foreground">{t('attendance.pageTitle')}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t('attendance.pageDescription')}</p>
       </div>
       <Suspense fallback={<ChartSkeleton />}>
         <AttendanceClient user={user} />

@@ -42,7 +42,7 @@ export function DepartmentsTab({
     <div className="space-y-4">
       <div className="mb-4">
         <h3 className="text-base font-semibold text-foreground">{t('department_keab5acec')}</h3>
-        <p className="text-sm text-muted-foreground">등록된 부서 {depts.length}개</p>
+        <p className="text-sm text-muted-foreground">{t('departments.subtitle', { count: depts.length })}</p>
       </div>
 
       {depts.length > 0 ? (

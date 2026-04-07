@@ -70,7 +70,7 @@ interface Props {
 export function ComplianceHubClient({ user, defaultTab }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const t = useTranslations('nav')
+  const t = useTranslations('compliance')
 
   // URL ?tab= 파라미터 우선, 없으면 defaultTab(경로 기반), 없으면 overview
   const activeTab: ComplianceTab =
@@ -92,31 +92,27 @@ export function ComplianceHubClient({ user, defaultTab }: Props) {
     [router, searchParams],
   )
 
-  const tabLabel = (key: string, fallback: string) => {
-    try { return t(`compliance.${key}`) } catch { return fallback }
-  }
-
   return (
     <div className="space-y-4">
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <div className="border-b border-border overflow-x-auto">
           <TabsList className="h-auto bg-transparent p-0 w-full justify-start gap-0 rounded-none">
             {[
-              { value: 'overview',       label: '개요' },
-              { value: 'gdpr',           label: tabLabel('gdpr', 'GDPR/개인정보') },
-              { value: 'data-retention', label: tabLabel('dataRetention', '데이터 보관') },
-              { value: 'pii-audit',      label: tabLabel('piiAudit', 'PII 감사') },
-              { value: 'dpia',           label: 'DPIA' },
-              { value: 'kr',             label: tabLabel('kr', '한국') },
-              { value: 'cn',             label: tabLabel('cn', '중국') },
-              { value: 'ru',             label: tabLabel('ru', '러시아') },
+              { value: 'overview',       labelKey: 'hub.tabs.overview' },
+              { value: 'gdpr',           labelKey: 'hub.tabs.gdpr' },
+              { value: 'data-retention', labelKey: 'hub.tabs.dataRetention' },
+              { value: 'pii-audit',      labelKey: 'hub.tabs.piiAudit' },
+              { value: 'dpia',           labelKey: 'hub.tabs.dpia' },
+              { value: 'kr',             labelKey: 'hub.tabs.kr' },
+              { value: 'cn',             labelKey: 'hub.tabs.cn' },
+              { value: 'ru',             labelKey: 'hub.tabs.ru' },
             ].map((tab) => (
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
                 className="rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium text-muted-foreground data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent hover:text-foreground"
               >
-                {tab.label}
+                {t(tab.labelKey)}
               </TabsTrigger>
             ))}
           </TabsList>

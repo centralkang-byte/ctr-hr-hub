@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Loader2, Calendar } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { TABLE_STYLES } from '@/lib/styles'
@@ -21,7 +22,7 @@ const STATUS_MAP: Record<string, { label: string; cls: string }> = {
 
 export function EvalCycleTab({
   companyId }: Props) {
-//   const t = useTranslations('settings')
+  const t = useTranslations('settings')
   const [cycles, setCycles] = useState<Cycle[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -39,16 +40,16 @@ export function EvalCycleTab({
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-foreground">{'평가 주기'}</h3>
-        <p className="text-sm text-muted-foreground">등록된 평가 사이클 {cycles.length}건</p>
+        <h3 className="text-base font-semibold text-foreground">{t('evalCycle.title')}</h3>
+        <p className="text-sm text-muted-foreground">{t('evalCycle.subtitle', { count: cycles.length })}</p>
       </div>
       {cycles.length > 0 ? (
         <div className={TABLE_STYLES.wrapper}>
           <table className={TABLE_STYLES.table}><thead><tr className={TABLE_STYLES.header}>
-            <th className={TABLE_STYLES.headerCell}>{'사이클명'}</th>
-            <th className={TABLE_STYLES.headerCell}>{'유형'}</th>
-            <th className={TABLE_STYLES.headerCell}>{'상태'}</th>
-            <th className={TABLE_STYLES.headerCell}>{'기간'}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('evalCycle.colName')}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('evalCycle.colType')}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('evalCycle.colStatus')}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('evalCycle.colPeriod')}</th>
           </tr></thead><tbody className="divide-y divide-border">{cycles.map((c) => {
             const s = STATUS_MAP[c.status] ?? { label: c.status, cls: 'bg-muted/50 text-muted-foreground' }
             return (
@@ -63,7 +64,7 @@ export function EvalCycleTab({
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-border py-12 text-center">
-          <Calendar className="mx-auto mb-3 h-8 w-8 text-muted-foreground" /><p className="text-sm font-medium text-foreground">{'등록된 평가 사이클이 없습니다'}</p>
+          <Calendar className="mx-auto mb-3 h-8 w-8 text-muted-foreground" /><p className="text-sm font-medium text-foreground">{t('evalCycle.emptyState')}</p>
         </div>
       )}
     </div>

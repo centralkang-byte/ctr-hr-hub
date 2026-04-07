@@ -65,8 +65,8 @@ export default function AttendanceAnalyticsClient() {
       <AnalyticsPageLayout title={t('title')}>
         <div className="py-20">
           <EmptyState
-            title={ta('dataLoadErrorTitle')}
-            description={ta('dataLoadErrorDesc')}
+            title={ta('error.loadFailed')}
+            description={ta('error.loadFailedDescription')}
             action={{ label: t('retry'), onClick: () => fetchData() }}
           />
         </div>

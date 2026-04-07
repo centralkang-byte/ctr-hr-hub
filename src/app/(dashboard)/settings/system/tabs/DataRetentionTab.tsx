@@ -50,28 +50,28 @@ export function DataRetentionTab({
         )}
       </div>
 
-      <SettingFieldWithOverride label="데이터 보존 기간" description="퇴사자 데이터 보존 기간" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('dataRetention.retentionLabel')} description={t('dataRetention.retentionDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.retentionMonths} onChange={(e) => setSettings((p) => ({ ...p, retentionMonths: Number(e.target.value) }))} className="w-20" />
           <span className="text-sm text-muted-foreground">{t('kr_keab09cec')}</span>
         </div>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="PII 마스킹" description="개인식별정보 자동 마스킹" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('dataRetention.piiLabel')} description={t('dataRetention.piiDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={settings.piiMasking} onChange={(e) => setSettings((p) => ({ ...p, piiMasking: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
           <span className="text-foreground">{t('kr_pii_keba788ec_ked999cec')}</span>
         </label>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="자동 삭제" description="보존 기간 경과 후 자동 삭제" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('dataRetention.autoDeleteLabel')} description={t('dataRetention.autoDeleteDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={settings.autoDeleteEnabled} onChange={(e) => setSettings((p) => ({ ...p, autoDeleteEnabled: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
           <span className="text-foreground">{t('kr_kec9e90eb_delete_ked999cec')}</span>
         </label>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="GDPR 준수" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('dataRetention.gdprLabel')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={settings.gdprCompliant} onChange={(e) => setSettings((p) => ({ ...p, gdprCompliant: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
           <span className="text-foreground">{t('kr_gdpr_keca095ec_keca480ec_kebaa')}</span>
@@ -83,7 +83,7 @@ export function DataRetentionTab({
           <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}{t('save')}
         </Button>
       </div>
     </div>

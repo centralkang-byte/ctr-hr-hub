@@ -76,34 +76,35 @@ interface EmployeeRiskData {
 
 // ─── 상수 ────────────────────────────────────────────────
 
-const RISK_CONFIG: Record<string, { label: string; bg: string; text: string; border: string; color: string }> = {
-  low:      { label: '낮음',     bg: 'bg-emerald-500/15', text: 'text-emerald-700', border: 'border-emerald-200', color: '#059669' },
-  medium:   { label: '보통',     bg: 'bg-amber-500/15', text: 'text-amber-700', border: 'border-amber-300', color: '#F59E0B' },
-  high:     { label: '높음',     bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20', color: '#EF4444' },
-  critical: { label: '위험',     bg: 'bg-orange-500/10', text: 'text-orange-700', border: 'border-orange-200', color: '#C2410C' },
-  insufficient_data: { label: '데이터 부족', bg: 'bg-background', text: 'text-muted-foreground', border: 'border-border', color: '#999' },
+const RISK_CONFIG: Record<string, { labelKey: string; bg: string; text: string; border: string; color: string }> = {
+  low:      { labelKey: 'predictive.riskLevels.low',     bg: 'bg-emerald-500/15', text: 'text-emerald-700', border: 'border-emerald-200', color: '#059669' },
+  medium:   { labelKey: 'predictive.riskLevels.medium',     bg: 'bg-amber-500/15', text: 'text-amber-700', border: 'border-amber-300', color: '#F59E0B' },
+  high:     { labelKey: 'predictive.riskLevels.high',     bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20', color: '#EF4444' },
+  critical: { labelKey: 'predictive.riskLevels.critical',     bg: 'bg-orange-500/10', text: 'text-orange-700', border: 'border-orange-200', color: '#C2410C' },
+  insufficient_data: { labelKey: 'predictive.riskLevels.insufficientData', bg: 'bg-background', text: 'text-muted-foreground', border: 'border-border', color: '#999' },
 }
 
 const SIGNAL_LABELS: Record<string, string> = {
-  overtime_signal: '초과근무',
-  leave_usage_signal: '연차 사용',
-  sentiment_signal: '감정 추이',
-  salary_band_signal: '급여 밴드',
-  promotion_stagnation_signal: '승진 정체',
-  skill_gap_signal: '스킬 갭',
-  training_signal: '교육 미이수',
-  exit_pattern_signal: '퇴직 패턴',
-  eval_trend_signal: '평가 추이',
-  tenure_signal: '재직 기간',
+  overtime_signal: 'predictive.signals.overtime',
+  leave_usage_signal: 'predictive.signals.leaveUsage',
+  sentiment_signal: 'predictive.signals.sentiment',
+  salary_band_signal: 'predictive.signals.salaryBand',
+  promotion_stagnation_signal: 'predictive.signals.promotionStagnation',
+  skill_gap_signal: 'predictive.signals.skillGap',
+  training_signal: 'predictive.signals.training',
+  exit_pattern_signal: 'predictive.signals.exitPattern',
+  eval_trend_signal: 'predictive.signals.evalTrend',
+  tenure_signal: 'predictive.signals.tenure',
 }
 
 // ─── 헬퍼 ────────────────────────────────────────────────
 
 function RiskBadge({ level }: { level: string }) {
+  const t = useTranslations('analytics')
   const cfg = RISK_CONFIG[level] ?? RISK_CONFIG.low!
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${cfg.bg} ${cfg.text} ${cfg.border}`}>
-      {cfg.label}
+      {t(cfg.labelKey)}
     </span>
   )
 }
@@ -142,28 +143,29 @@ function RecommendedActions({ turnover, burnout }: {
   turnover: EmployeeRiskData['turnover']
   burnout: EmployeeRiskData['burnout']
 }) {
-  const actions: { icon: string; text: string; priority: 'high' | 'medium' }[] = []
+  const t = useTranslations('analytics')
+  const actions: { icon: string; textKey: string; priority: 'high' | 'medium' }[] = []
 
   if (turnover && ['high', 'critical'].includes(turnover.riskLevel)) {
-    actions.push({ icon: '💬', text: 'oneOnOne_keca689ec_kec9888ec_kec9db4ec_kec9d98ed_ked8c8cec', priority: 'high' })
-    actions.push({ icon: '💰', text: 'kr_kebb3b4ec_kec8898ec_keab280ed_', priority: 'high' })
-    if (turnover.topFactors.includes('승진 정체')) {
-      actions.push({ icon: '📈', text: 'kr_keab2bdeb_keab09ceb_keab384ed_', priority: 'medium' })
+    actions.push({ icon: '💬', textKey: 'predictive.actions.oneOnOne', priority: 'high' })
+    actions.push({ icon: '💰', textKey: 'predictive.actions.compensationReview', priority: 'high' })
+    if (turnover.topFactors.includes('승진 정체')) { // i18n: intentional DB value match
+      actions.push({ icon: '📈', textKey: 'predictive.actions.careerPathReview', priority: 'medium' })
     }
   }
 
   if (burnout && ['high', 'critical'].includes(burnout.riskLevel)) {
-    actions.push({ icon: '🏖️', text: 'kr_kec97b0ec_kec82acec_keb8f85eb_', priority: 'high' })
-    actions.push({ icon: '⏱️', text: 'kr_kecb488ea_keca09ced_keca1b0ec_', priority: 'high' })
+    actions.push({ icon: '🏖️', textKey: 'predictive.actions.leaveRecommendation', priority: 'high' })
+    actions.push({ icon: '⏱️', textKey: 'predictive.actions.overtimeReduction', priority: 'high' })
   }
 
   if (actions.length === 0) {
-    actions.push({ icon: '✅', text: 'kr_ked9884ec_risk_kec8898ec_low_k', priority: 'medium' })
+    actions.push({ icon: '✅', textKey: 'predictive.actions.currentlyStable', priority: 'medium' })
   }
 
   return (
     <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-      <h3 className="text-base font-semibold text-foreground mb-4">{'kr_keab68cea_kec95a1ec'}</h3>
+      <h3 className="text-base font-semibold text-foreground mb-4">{t('predictive.recommendedActions')}</h3>
       <div className="space-y-3">
         {actions.map((action, i) => (
           <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${
@@ -171,9 +173,9 @@ function RecommendedActions({ turnover, burnout }: {
           }`}>
             <span className="text-lg">{action.icon}</span>
             <div>
-              <p className="text-sm text-foreground">{action.text}</p>
+              <p className="text-sm text-foreground">{t(action.textKey)}</p>
               {action.priority === 'high' && (
-                <span className="text-xs text-orange-700 font-medium">{'kr_keca689ec_keca1b0ec_ked9584ec'}</span>
+                <span className="text-xs text-orange-700 font-medium">{t('predictive.actions.immediateAction')}</span>
               )}
             </div>
           </div>
@@ -222,19 +224,19 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
     return (
       <div className="p-6">
         <Link href="/analytics/predictive" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6">
-          <ArrowLeft className="w-4 h-4" /> {t('kr_kec9888ec_kec95a0eb_keb8f8cec')}
+          <ArrowLeft className="w-4 h-4" /> {t('predictive.detail.backToList')}
         </Link>
         <EmptyState />
       </div>
     )
   }
 
-  // 레이더 차트 데이터 (이직 위험 신호)
+  // Radar chart data (turnover risk signals)
   const radarData = data.turnover
     ? (data.turnover.signals as unknown as Signal[])
         .filter((s) => s.available)
         .map((s) => ({
-          subject: SIGNAL_LABELS[s.signal] ?? s.signal,
+          subject: SIGNAL_LABELS[s.signal] ? t(SIGNAL_LABELS[s.signal]) : s.signal,
           score: s.score,
         }))
     : []
@@ -245,7 +247,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/analytics/predictive" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="w-4 h-4" /> {t('kr_kebaaa9eb')}
+            <ArrowLeft className="w-4 h-4" /> {t('predictive.detail.back')}
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-foreground">{data.employee.name}</h1>
@@ -264,7 +266,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
           ) : (
             <RefreshCw className="w-4 h-4" />
           )}
-          {recalculating ? '재계산 중...' : '실시간 재계산'}
+          {recalculating ? t('predictive.detail.recalculating') : t('predictive.detail.recalculate')}
         </button>
       </div>
 
@@ -274,14 +276,14 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <div className="flex items-center gap-2 mb-4">
             <TrendingDown className="w-5 h-5 text-red-500" />
-            <h3 className="text-base font-semibold text-foreground">{t('kr_kec9db4ec_kec9c84ed')}</h3>
+            <h3 className="text-base font-semibold text-foreground">{t('predictive.detail.turnoverRisk')}</h3>
             {data.turnover && <RiskBadge level={data.turnover.riskLevel} />}
           </div>
           {data.turnover ? (
             <div className="flex items-center gap-6">
               <ScoreGauge score={data.turnover.overallScore} riskLevel={data.turnover.riskLevel} />
               <div className="flex-1">
-                <p className="text-xs text-muted-foreground mb-2">{t('kr_keca3bcec_risk_kec9a94ec')}</p>
+                <p className="text-xs text-muted-foreground mb-2">{t('predictive.detail.mainRiskFactors')}</p>
                 <div className="space-y-1">
                   {data.turnover.topFactors.slice(0, 4).map((f) => (
                     <div key={f} className="flex items-center gap-2">
@@ -291,13 +293,13 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
                   ))}
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-3">
-                  계산일: {new Date(data.turnover.calculatedAt).toLocaleDateString('ko-KR')}
+                  {t('predictive.detail.calculatedDate', { date: new Date(data.turnover.calculatedAt).toLocaleDateString() })}
                 </p>
               </div>
             </div>
           ) : (
             <div className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
-              <Info className="w-4 h-4" /> {t('kr_keb8db0ec_insufficient_kec9eac')}
+              <Info className="w-4 h-4" /> {t('predictive.detail.insufficientData')}
             </div>
           )}
         </div>
@@ -306,14 +308,14 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <div className="flex items-center gap-2 mb-4">
             <Activity className="w-5 h-5 text-amber-500" />
-            <h3 className="text-base font-semibold text-foreground">{t('kr_kebb288ec_kec9c84ed')}</h3>
+            <h3 className="text-base font-semibold text-foreground">{t('predictive.detail.burnoutRisk')}</h3>
             {data.burnout && <RiskBadge level={data.burnout.riskLevel} />}
           </div>
           {data.burnout ? (
             <div className="flex items-center gap-6">
               <ScoreGauge score={data.burnout.overallScore} riskLevel={data.burnout.riskLevel} />
               <div className="flex-1">
-                <p className="text-xs text-muted-foreground mb-2">{t('kr_keca780ed_status')}</p>
+                <p className="text-xs text-muted-foreground mb-2">{t('predictive.detail.indicatorStatus')}</p>
                 <div className="space-y-2">
                   {(data.burnout.indicators as unknown as Indicator[])
                     .filter((i) => i.available)
@@ -340,7 +342,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
             </div>
           ) : (
             <div className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
-              <Info className="w-4 h-4" /> {t('kr_keb8db0ec_insufficient_kec9eac')}
+              <Info className="w-4 h-4" /> {t('predictive.detail.insufficientData')}
             </div>
           )}
         </div>
@@ -350,7 +352,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {radarData.length > 0 && (
           <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-            <h3 className="text-base font-semibold text-foreground mb-4">{t('kr_kec9db4ec_risk_kec8ba0ed_keba0')}</h3>
+            <h3 className="text-base font-semibold text-foreground mb-4">{t('predictive.detail.signalRadar')}</h3>
             <ResponsiveContainer width="100%" height={250}>
               <RadarChart data={radarData}>
                 <PolarGrid />
@@ -375,24 +377,24 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
       {data.turnover && (
         <div className="bg-card rounded-xl border border-border">
           <div className="px-5 py-4 border-b border-border">
-            <h3 className="text-base font-semibold text-foreground">{t('kr_kec9db4ec_risk_kec8ba0ed_kec83')}</h3>
+            <h3 className="text-base font-semibold text-foreground">{t('predictive.detail.signalDetailTable')}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className={TABLE_STYLES.table}>
               <thead className={TABLE_STYLES.header}>
                 <tr className={TABLE_STYLES.row}>
-                  <th className={TABLE_STYLES.headerCell}>{t('kr_kec8ba0ed')}</th>
-                  <th className={TABLE_STYLES.headerCell}>{t('kr_keab080ec')}</th>
-                  <th className={TABLE_STYLES.headerCell}>{t('score')}</th>
-                  <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
-                  <th className={TABLE_STYLES.headerCell}>{t('krw_kec8b9c_keb8db0ec')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('predictive.detail.signal')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('predictive.detail.weight')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('predictive.detail.score')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('predictive.detail.status')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('predictive.detail.rawData')}</th>
                 </tr>
               </thead>
               <tbody>
                 {(data.turnover.signals as unknown as Signal[]).map((signal) => (
                   <tr key={signal.signal} className={TABLE_STYLES.row}>
                     <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>
-                      {SIGNAL_LABELS[signal.signal] ?? signal.signal}
+                      {SIGNAL_LABELS[signal.signal] ? t(SIGNAL_LABELS[signal.signal]) : signal.signal}
                     </td>
                     <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>{Math.round(signal.weight * 100)}%</td>
                     <td className={TABLE_STYLES.cell}>
@@ -419,7 +421,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
                           ? 'bg-emerald-500/15 text-emerald-700'
                           : 'bg-background text-muted-foreground'
                       }`}>
-                        {signal.available ? '계산됨' : '데이터 없음'}
+                        {signal.available ? t('predictive.detail.calculated') : t('predictive.detail.noData')}
                       </span>
                     </td>
                     <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>

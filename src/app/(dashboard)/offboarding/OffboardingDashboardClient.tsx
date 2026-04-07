@@ -7,7 +7,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import {
   AlertTriangle,
   CheckCircle2,
@@ -126,6 +126,7 @@ const LIMIT_OPTIONS = [10, 20, 50]
 export function OffboardingDashboardClient({ user, companies = [] }: OffboardingDashboardClientProps) {
   const t = useTranslations('offboarding')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
 
   const STATUS_LABELS: Record<string, string> = {
     IN_PROGRESS: t('inProgress'),
@@ -322,10 +323,10 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
             }}
           >
             <SelectTrigger className="w-40">
-              <SelectValue placeholder="전체 법인" />
+              <SelectValue placeholder={t('dashboard.allCompanies')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__ALL__">전체 법인</SelectItem>
+              <SelectItem value="__ALL__">{t('dashboard.allCompanies')}</SelectItem>
               {companies.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   {c.code} — {c.name}
@@ -439,7 +440,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                       <TableCell>
                         <div className="flex flex-col">
                           <span>
-                            {new Date(row.lastWorkingDate).toLocaleDateString('ko-KR')}
+                            {new Date(row.lastWorkingDate).toLocaleDateString(locale)}
                           </span>
                           <DdayBadge
                             daysUntil={row.daysUntil}

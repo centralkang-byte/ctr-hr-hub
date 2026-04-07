@@ -3,6 +3,7 @@
 // HR 관리자 체크인 대시보드
 // ═══════════════════════════════════════════════════════════
 
+import { getTranslations } from 'next-intl/server'
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
@@ -10,6 +11,11 @@ import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import { CheckinsAdminClient } from './CheckinsAdminClient'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
+
+export async function generateMetadata() {
+  const t = await getTranslations('onboarding')
+  return { title: t('checkinAdmin') }
+}
 
 export default async function OnboardingCheckinsPage() {
   const session = await getServerSession(authOptions)

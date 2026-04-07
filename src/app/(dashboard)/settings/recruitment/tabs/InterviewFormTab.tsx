@@ -61,7 +61,7 @@ export function InterviewFormTab({
           <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}{t('save')}
         </Button>
       </div>
     </div>

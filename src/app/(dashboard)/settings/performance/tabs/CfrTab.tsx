@@ -50,7 +50,7 @@ export function CfrTab({
         )}
       </div>
 
-      <SettingFieldWithOverride label="1:1 최소 빈도" description="월간 최소 1:1 면담 횟수" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('cfr.minFreqLabel')} description={t('cfr.minFreqDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">{t('month')}</span>
           <Input type="number" value={settings.minFrequency} min={1} max={10} onChange={(e) => setSettings((p) => ({ ...p, minFrequency: Number(e.target.value) }))} className="w-20" />
@@ -58,21 +58,21 @@ export function CfrTab({
         </div>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="피드백 익명 여부" description="동료 피드백 익명 허용" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('cfr.anonymousLabel')} description={t('cfr.anonymousDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={settings.anonymous} onChange={(e) => setSettings((p) => ({ ...p, anonymous: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
           <span className="text-foreground">{t('kr_kec9db5eb_ked94bceb_ked9788ec')}</span>
         </label>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="리마인더" description="1:1 미완료 시 알림 주기" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('cfr.reminderLabel')} description={t('cfr.reminderDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.reminderDays} onChange={(e) => setSettings((p) => ({ ...p, reminderDays: Number(e.target.value) }))} className="w-20" />
           <span className="text-sm text-muted-foreground">{t('kr_kec9dbceb_keba6aceb')}</span>
         </div>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="피드백 카테고리" description="사용 가능한 피드백 분류" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('cfr.categoriesLabel')} description={t('cfr.categoriesDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex flex-wrap gap-2">{settings.feedbackCategories.map((cat, i) => (
           <span key={i} className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{cat}</span>
         ))}</div>
@@ -83,7 +83,7 @@ export function CfrTab({
           <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}{t('save')}
         </Button>
       </div>
     </div>

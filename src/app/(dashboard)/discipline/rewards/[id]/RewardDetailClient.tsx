@@ -79,7 +79,7 @@ export default function RewardDetailClient({ user, id }: Props) {
       const res = await apiClient.get<RewardDetail>(`/api/v1/rewards/${id}`)
       setData(res.data)
     } catch (err) {
-      toast({ title: '포상 상세 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('loadFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }

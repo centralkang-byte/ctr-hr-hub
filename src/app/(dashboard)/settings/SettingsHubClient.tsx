@@ -47,17 +47,20 @@ export function SettingsHubClient() {
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const resultListRef = useRef<HTMLDivElement>(null)
 
-  // Flat search: tab-level matching across all categories
+  // Flat search: tab-level matching across all categories (using translated text)
   const searchResults = useMemo<FlatSearchResult[]>(() => {
     const q = search.trim().toLowerCase()
     if (!q) return []
     const results: FlatSearchResult[] = []
     for (const category of SETTINGS_CATEGORIES) {
+      const catLabel = t(`categories.${category.key}`).toLowerCase()
       for (const tab of category.tabs) {
+        const tabLabel = t(`tabs.${tab.slug}`).toLowerCase()
+        const tabDesc = t(`tabs.${tab.slug}Desc`).toLowerCase()
         if (
-          tab.label.toLowerCase().includes(q) ||
-          tab.description?.toLowerCase().includes(q) ||
-          category.label.toLowerCase().includes(q) ||
+          tabLabel.includes(q) ||
+          tabDesc.includes(q) ||
+          catLabel.includes(q) ||
           category.labelEn.toLowerCase().includes(q)
         ) {
           results.push({ category, tab })
@@ -65,7 +68,7 @@ export function SettingsHubClient() {
       }
     }
     return results
-  }, [search])
+  }, [search, t])
 
   const hasSearch = search.trim().length > 0
 
@@ -162,16 +165,14 @@ export function SettingsHubClient() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium">
-                      {highlightMatch(result.tab.label, search.trim())}
+                      {highlightMatch(t(`tabs.${result.tab.slug}`), search.trim())}
                     </p>
-                    {result.tab.description && (
-                      <p className="truncate text-xs text-muted-foreground">
-                        {highlightMatch(result.tab.description, search.trim())}
-                      </p>
-                    )}
+                    <p className="truncate text-xs text-muted-foreground">
+                      {highlightMatch(t(`tabs.${result.tab.slug}Desc`), search.trim())}
+                    </p>
                   </div>
                   <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                    {result.category.label}
+                    {t(`categories.${result.category.key}`)}
                   </span>
                 </button>
               )

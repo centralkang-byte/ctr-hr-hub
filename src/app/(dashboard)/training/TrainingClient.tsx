@@ -42,7 +42,7 @@ export default function TrainingClient({ user: _user }: { user: SessionUser }) {
           </TabsTrigger>
           <TabsTrigger value="mandatory">
             <ShieldCheck className="mr-1.5 h-4 w-4" />
-            법정 의무교육
+            {t('mandatory')}
           </TabsTrigger>
         </TabsList>
 

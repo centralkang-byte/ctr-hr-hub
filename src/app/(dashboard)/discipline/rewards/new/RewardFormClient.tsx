@@ -89,7 +89,7 @@ export default function RewardFormClient({ user }: Props) {
       const res = await apiClient.getList<EmployeeOption>('/api/v1/employees', { limit: 100 })
       setEmployees(res.data)
     } catch (err) {
-      toast({ title: '포상 저장 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('saveFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' })
     }
   }, [])
 
@@ -110,7 +110,7 @@ export default function RewardFormClient({ user }: Props) {
       })
       router.push('/discipline/rewards')
     } catch (err) {
-      toast({ title: '포상 저장 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('saveFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' })
     } finally {
       setSubmitting(false)
     }

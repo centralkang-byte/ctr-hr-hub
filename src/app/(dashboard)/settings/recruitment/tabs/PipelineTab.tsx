@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { Save, RotateCcw, Loader2, GripVertical, ArrowUp, ArrowDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
@@ -23,13 +24,13 @@ const DEFAULTS: PipelineStageSetting = {
 
 export function PipelineTab({
   companyId }: Props) {
-//   const t = useTranslations('settings')
+  const t = useTranslations('settings')
   const { settings, setSettings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<PipelineStageSetting>({
     category: 'recruitment',
     key: 'pipeline-stages',
     companyId,
     defaults: DEFAULTS,
-    description: '채용 파이프라인 단계',
+    description: t('pipeline.description'),
     merge: (raw, defs) => ({
       stages: Array.isArray(raw.stages) ? (raw.stages as PipelineStageEntry[]) : defs.stages,
     }),
@@ -49,11 +50,11 @@ export function PipelineTab({
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-foreground">{'채용 파이프라인'}</h3>
-          <p className="text-sm text-muted-foreground">{settings.stages.length}단계 파이프라인</p>
+          <h3 className="text-base font-semibold text-foreground">{t('pipeline.title')}</h3>
+          <p className="text-sm text-muted-foreground">{t('pipeline.subtitle', { count: settings.stages.length })}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
+          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
         )}
       </div>
       <div className="space-y-2">{settings.stages.map((s, i) => (
@@ -71,10 +72,10 @@ export function PipelineTab({
 
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={revert} disabled={!hasChanges}>
-          <RotateCcw className="mr-2 h-4 w-4" />{'되돌리기'}
+          <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}{t('save')}
         </Button>
       </div>
     </div>

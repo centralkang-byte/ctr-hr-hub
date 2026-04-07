@@ -60,16 +60,16 @@ export function DistributionTab({
           </tr>
         ))}</tbody></table>
       </div>
-      <div className="text-right text-sm text-muted-foreground">합계: {settings.guidePcts.reduce((a, b) => a + b, 0)}%</div>
+      <div className="text-right text-sm text-muted-foreground">{t('distribution.total', { pct: settings.guidePcts.reduce((a, b) => a + b, 0) })}</div>
 
-      <SettingFieldWithOverride label="강제 배분" description="가이드라인을 필수로 적용할지 선택" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('distribution.forcedLabel')} description={t('distribution.forcedDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={settings.forced} onChange={(e) => setSettings((p) => ({ ...p, forced: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
           <span className="text-foreground">{t('kr_keab095ec_kebb0b0eb_keca081ec')}</span>
         </label>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="최소 참여 인원" description="배분 가이드라인 적용을 위한 최소 평가 대상 인원" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('distribution.minParticipantsLabel')} description={t('distribution.minParticipantsDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.minParticipants} onChange={(e) => setSettings((p) => ({ ...p, minParticipants: Number(e.target.value) }))} className="w-20" />
           <span className="text-sm text-muted-foreground">{t('persons_kec9db4ec')}</span>
@@ -81,7 +81,7 @@ export function DistributionTab({
           <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}{t('save')}
         </Button>
       </div>
     </div>

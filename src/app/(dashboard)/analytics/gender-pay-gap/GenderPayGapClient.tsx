@@ -118,7 +118,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
   }
 
   const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW', maximumFractionDigits: 0 }).format(amount)
+    new Intl.NumberFormat(undefined, { style: 'currency', currency: 'KRW', maximumFractionDigits: 0 }).format(amount)
 
   const getGapColor = (gap: number) => {
     if (Math.abs(gap) <= 5) return 'text-emerald-600'

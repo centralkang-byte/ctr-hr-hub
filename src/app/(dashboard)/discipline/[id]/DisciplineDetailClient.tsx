@@ -90,7 +90,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
       const res = await apiClient.get<DisciplinaryDetail>(`/api/v1/disciplinary/${id}`)
       setData(res.data)
     } catch (err) {
-      toast({ title: '징계 상세 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('loadFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -108,7 +108,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
       await fetchData()
       setAppealText('')
     } catch (err) {
-      toast({ title: '징계 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('processFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' })
     } finally {
       setAppealSubmitting(false)
     }

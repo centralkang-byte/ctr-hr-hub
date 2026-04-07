@@ -28,29 +28,29 @@ export function ProbationTab({
         <p className="text-sm text-muted-foreground">{t('probation_evaluation_keab8b0ec_kec9e90eb_keca084ed_settings')}</p>
       </div>
 
-      <SettingFieldWithOverride label="기본 수습 기간" description="신규 입사자의 기본 수습 기간" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('probation.durationLabel')} description={t('probation.durationDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.defaultDuration} onChange={(e) => setSettings((p) => ({ ...p, defaultDuration: Number(e.target.value) }))} className="w-24" />
           <span className="text-sm text-muted-foreground">{t('kr_keab09cec')}</span>
         </div>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="평가 시점" description="수습 기간 중 평가를 실시할 시점" status="global" companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('probation.evalTimingLabel')} description={t('probation.evalTimingDesc')} status="global" companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           {settings.evalTimings.map((d, i) => (
-            <span key={i} className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{d}일차</span>
+            <span key={i} className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{t('probation.dayN', { day: d })}</span>
           ))}
         </div>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="자동 정규직 전환" description="수습 기간 종료 후 자동 정규직 전환 여부" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('probation.autoConvertLabel')} description={t('probation.autoConvertDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={settings.autoConvert} onChange={(e) => setSettings((p) => ({ ...p, autoConvert: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
           <span className="text-foreground">{t('kr_kec8898ec_complete_kec8b9c_kec')}</span>
         </label>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="수습 연장" description="수습 기간 연장 허용 여부 및 최대 연장 기간" status="global" companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('probation.extensionLabel')} description={t('probation.extensionDesc')} status="global" companySelected={!!companyId}>
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={settings.extendable} onChange={(e) => setSettings((p) => ({ ...p, extendable: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />

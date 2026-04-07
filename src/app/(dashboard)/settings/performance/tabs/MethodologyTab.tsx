@@ -58,21 +58,21 @@ export function MethodologyTab({
         )}
       </div>
 
-      <SettingFieldWithOverride label="최대 목표 수" description="직원 1인당 설정 가능한 최대 목표 개수" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('methodology.maxGoalsLabel')} description={t('methodology.maxGoalsDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.maxGoals} min={1} max={20} onChange={(e) => setSettings((p) => ({ ...p, maxGoals: Number(e.target.value) }))} className="w-20" />
           <span className="text-sm text-muted-foreground">{t('kr_keab09c')}</span>
         </div>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="가중치 합계 검증" description="목표 가중치의 합이 반드시 100%여야 하는지" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('methodology.weightSumLabel')} description={t('methodology.weightSumDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={settings.weightSumRequired} onChange={(e) => setSettings((p) => ({ ...p, weightSumRequired: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
-          <span className="text-foreground">가중치 합계 {settings.weightSum}% 필수</span>
+          <span className="text-foreground">{t('methodology.weightSumRequired', { pct: settings.weightSum })}</span>
         </label>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="목표 카테고리" description="사용 가능한 목표 분류 항목" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('methodology.categoriesLabel')} description={t('methodology.categoriesDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex flex-wrap gap-2">
           {settings.categories.map((cat, i) => (
             <span key={i} className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{cat}</span>
@@ -85,7 +85,7 @@ export function MethodologyTab({
           <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}{t('save')}
         </Button>
       </div>
     </div>

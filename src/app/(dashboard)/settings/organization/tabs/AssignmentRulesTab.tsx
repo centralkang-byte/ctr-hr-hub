@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { Save, RotateCcw, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
@@ -23,13 +24,13 @@ const DEFAULTS: AssignmentRulesSetting = {
 
 export function AssignmentRulesTab({
   companyId }: Props) {
-//   const t = useTranslations('settings')
+  const t = useTranslations('settings')
   const { settings, setSettings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<AssignmentRulesSetting>({
     category: 'organization',
     key: 'assignment-rules',
     companyId,
     defaults: DEFAULTS,
-    description: '발령 유형별 승인 규칙',
+    description: t('assignmentRules.description'),
     merge: (raw, defs) => ({
       rules: Array.isArray(raw.rules) ? (raw.rules as AssignmentRulesSetting['rules']) : defs.rules,
     }),
@@ -47,11 +48,11 @@ export function AssignmentRulesTab({
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-foreground">{'발령 규칙'}</h3>
-          <p className="text-sm text-muted-foreground">{'발령 유형 및 승인 절차 설정'}</p>
+          <h3 className="text-base font-semibold text-foreground">{t('assignmentRules.title')}</h3>
+          <p className="text-sm text-muted-foreground">{t('assignmentRules.subtitle')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
+          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
         )}
       </div>
 
@@ -59,24 +60,24 @@ export function AssignmentRulesTab({
         <table className={TABLE_STYLES.table}>
           <thead className={TABLE_STYLES.header}>
             <tr>
-              <th className={TABLE_STYLES.headerCell}>{'코멘트'}</th>
-              <th className={TABLE_STYLES.headerCell}>{'유형'}</th>
-              <th className={TABLE_STYLES.headerCell}>{'설명'}</th>
-              <th className={TABLE_STYLES.headerCell}>{'승인 필요'}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('assignmentRules.colCode')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('assignmentRules.colType')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('assignmentRules.colDesc')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('assignmentRules.colApproval')}</th>
             </tr>
           </thead>
           <tbody>
-            {settings.rules.map((t, i) => (
-              <tr key={t.code} className={TABLE_STYLES.row}>
-                <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{t.code}</td>
-                <td className={TABLE_STYLES.cell}>{t.label}</td>
-                <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>{t.desc}</td>
+            {settings.rules.map((rule, i) => (
+              <tr key={rule.code} className={TABLE_STYLES.row}>
+                <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{rule.code}</td>
+                <td className={TABLE_STYLES.cell}>{rule.label}</td>
+                <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>{rule.desc}</td>
                 <td className={`${TABLE_STYLES.cell} text-center`}>
                   <button
                     onClick={() => toggleApproval(i)}
-                    className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${t.requiresApproval ? 'bg-primary/5 text-primary hover:bg-primary/10' : 'bg-muted/50 text-muted-foreground hover:bg-muted'}`}
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${rule.requiresApproval ? 'bg-primary/5 text-primary hover:bg-primary/10' : 'bg-muted/50 text-muted-foreground hover:bg-muted'}`}
                   >
-                    {t.requiresApproval ? '필수' : '불필요'}
+                    {rule.requiresApproval ? t('assignmentRules.required') : t('assignmentRules.notRequired')}
                   </button>
                 </td>
               </tr>
@@ -87,10 +88,10 @@ export function AssignmentRulesTab({
 
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={revert} disabled={!hasChanges}>
-          <RotateCcw className="mr-2 h-4 w-4" />{'되돌리기'}
+          <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}{t('save')}
         </Button>
       </div>
     </div>

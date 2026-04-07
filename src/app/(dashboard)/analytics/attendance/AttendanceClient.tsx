@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations, useLocale } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import { toast } from '@/hooks/use-toast'
 
 import React, { useEffect, useState, useCallback } from 'react'
@@ -18,8 +18,6 @@ import type { SessionUser } from '@/types'
 
 export default function AttendanceClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('analytics')
-  const ta = useTranslations('attendance')
-  const locale = useLocale()
 
   const [data, setData] = useState<AttendanceResponse | null>(null)
   const [loading, setLoading] = useState(true)
@@ -35,9 +33,9 @@ export default function AttendanceClient({ user: _user }: { user: SessionUser })
       if (res.ok) { const j = await res.json(); setData(j.data) }
       if (compRes.ok) { const c = await compRes.json(); setCompanies(c.data || []) }
     } catch (err) {
-      toast({ title: t('dataLoadFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
+      toast({ title: t('attendance.loadFailed'), description: err instanceof Error ? err.message : t('error.retryMessage'), variant: 'destructive' })
     } finally { setLoading(false) }
-  }, [t])
+  }, [])
 
   useEffect(() => { fetchData() }, [fetchData])
 
@@ -48,7 +46,7 @@ export default function AttendanceClient({ user: _user }: { user: SessionUser })
   const { kpis, charts } = data
 
   // Heatmap data processing
-  const heatmapDays = [ta('dayMon'), ta('dayTue'), ta('dayWed'), ta('dayThu'), ta('dayFri')]
+  const heatmapDays = ['월', '화', '수', '목', '금'] // i18n: intentional DB value match (weekday pattern keys)
   const heatmapHours = Array.from({ length: 13 }, (_, i) => i + 7) // 7~19
 
   const maxCount = Math.max(...charts.weekdayPattern.map((p) => p.count), 1)
@@ -58,36 +56,36 @@ export default function AttendanceClient({ user: _user }: { user: SessionUser })
       <AnalyticsFilterBar companies={companies} />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KpiCard {...kpis.leaveUsageRate} icon={CalendarDays} tooltip={t('leaveUsageTooltip')} />
-        <KpiCard {...kpis.weeklyOvertimeViolations} icon={AlertTriangle} tooltip={t('overtimeViolationsTooltip')} />
-        <KpiCard {...kpis.avgOvertimeHours} icon={Clock} tooltip={t('avgOvertimeTooltip')} />
-        <KpiCard {...kpis.negativeBalanceCount} icon={Users} tooltip={t('negativeBalanceTooltip')} />
+        <KpiCard {...kpis.leaveUsageRate} icon={CalendarDays} tooltip={t('attendance.tooltips.leaveUsageRate')} />
+        <KpiCard {...kpis.weeklyOvertimeViolations} icon={AlertTriangle} tooltip={t('attendance.tooltips.overtimeViolations')} />
+        <KpiCard {...kpis.avgOvertimeHours} icon={Clock} tooltip={t('attendance.tooltips.avgOvertime')} />
+        <KpiCard {...kpis.negativeBalanceCount} icon={Users} tooltip={t('attendance.tooltips.negativeBalance')} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartCard title={t('chartOvertimeTrend')}>
+        <ChartCard title={t('attendance.charts.overtimeTrend')}>
           {charts.overtimeTrend.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={charts.overtimeTrend}>
                 <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
-                <XAxis dataKey="month" fontSize={11} tickFormatter={(v: string) => new Intl.DateTimeFormat(locale, { month: 'short' }).format(new Date(v + '-01'))} />
-                <YAxis fontSize={11} label={{ value: t('kr_kebb684'), position: 'insideLeft', style: { fontSize: 11 } }} />
-                <Tooltip labelFormatter={(v) => new Intl.DateTimeFormat(locale, { month: 'long' }).format(new Date(String(v) + '-01'))} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
-                <Line type="monotone" dataKey="avgMinutes" name={t('avgOTMinutes')} stroke={CHART_COLORS.primary} strokeWidth={2} dot={{ r: 3 }} />
+                <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1]} />
+                <YAxis fontSize={11} label={{ value: t('attendance.charts.avgLabel'), position: 'insideLeft', style: { fontSize: 11 } }} />
+                <Tooltip labelFormatter={(v) => String(v).split('-')[1]} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
+                <Line type="monotone" dataKey="avgMinutes" name={t('attendance.charts.avgOTMinutes')} stroke={CHART_COLORS.primary} strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           )}
         </ChartCard>
 
-        <ChartCard title={t('chartViolationTrend')}>
+        <ChartCard title={t('attendance.charts.violationTrend')}>
           {charts.violationTrend.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={charts.violationTrend}>
                 <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
-                <XAxis dataKey="month" fontSize={11} tickFormatter={(v: string) => new Intl.DateTimeFormat(locale, { month: 'short' }).format(new Date(v + '-01'))} />
+                <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1]} />
                 <YAxis fontSize={11} />
-                <Tooltip labelFormatter={(v) => new Intl.DateTimeFormat(locale, { month: 'long' }).format(new Date(String(v) + '-01'))} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
-                <Bar dataKey="count" name={t('violationCount')} fill={CHART_COLORS.danger} radius={[4, 4, 0, 0]} maxBarSize={30} />
+                <Tooltip labelFormatter={(v) => String(v).split('-')[1]} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
+                <Bar dataKey="count" name={t('attendance.charts.violationCount')} fill={CHART_COLORS.danger} radius={[4, 4, 0, 0]} maxBarSize={30} />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -95,13 +93,13 @@ export default function AttendanceClient({ user: _user }: { user: SessionUser })
       </div>
 
       {/* Weekday pattern heatmap */}
-      <ChartCard title={t('chartWeekdayPattern')}>
-        {charts.weekdayPattern.length === 0 ? <EmptyChart message={t('noPatternData')} /> : (
+      <ChartCard title={t('attendance.charts.weekdayPattern')}>
+        {charts.weekdayPattern.length === 0 ? <EmptyChart message={t('attendance.charts.noPatternData')} /> : (
           <div className="overflow-x-auto">
             <div className="min-w-[600px]">
               <div className="flex items-center gap-1 mb-2 pl-12">
                 {heatmapHours.map((h) => (
-                  <span key={h} className="text-[10px] text-muted-foreground/60 w-8 text-center">{t('heatmapHourSuffix', { hour: h })}</span>
+                  <span key={h} className="text-[10px] text-muted-foreground/60 w-8 text-center">{h}</span>
                 ))}
               </div>
               {heatmapDays.map((day) => (
@@ -120,7 +118,7 @@ export default function AttendanceClient({ user: _user }: { user: SessionUser })
                       <div key={`${day}-${hour}`}
                         className="w-8 h-6 rounded-sm cursor-default"
                         style={{ backgroundColor: bgColor }}
-                        title={t('heatmapCellTooltip', { day, hour, count })}
+                        title={`${day} ${hour}: ${count}`}
                       />
                     )
                   })}

@@ -116,20 +116,21 @@ function getDeptCellStyle(avgGap: number | null) {
 }
 
 function GapLegend() {
+  const t = useTranslations('skills')
   const items = [
-    { color: 'bg-destructive/10 border border-destructive/20', label: '미달 (≥2)', text: 'text-destructive' },
-    { color: 'bg-amber-500/15 border border-amber-300', label: '부족 (1)', text: 'text-amber-700' },
-    { color: 'bg-emerald-500/15 border border-emerald-200', label: '충족 (0)', text: 'text-emerald-700' },
-    { color: 'bg-primary/10 border border-primary/20', label: '초과', text: 'text-primary' },
-    { color: 'bg-violet-100 border border-violet-200', label: '전문가 (5)', text: 'text-violet-800' },
-    { color: 'bg-muted border border-border', label: '미평가', text: 'text-muted-foreground' },
+    { color: 'bg-destructive/10 border border-destructive/20', labelKey: 'gap.critical', text: 'text-destructive' },
+    { color: 'bg-amber-500/15 border border-amber-300', labelKey: 'gap.below', text: 'text-amber-700' },
+    { color: 'bg-emerald-500/15 border border-emerald-200', labelKey: 'gap.meets', text: 'text-emerald-700' },
+    { color: 'bg-primary/10 border border-primary/20', labelKey: 'gap.exceeds', text: 'text-primary' },
+    { color: 'bg-violet-100 border border-violet-200', labelKey: 'gap.expert', text: 'text-violet-800' },
+    { color: 'bg-muted border border-border', labelKey: 'gap.unassessed', text: 'text-muted-foreground' },
   ]
   return (
     <div className="flex items-center gap-3 flex-wrap">
       {items.map((i) => (
-        <div key={i.label} className="flex items-center gap-1">
+        <div key={i.labelKey} className="flex items-center gap-1">
           <span className={`w-5 h-5 rounded text-xs flex items-center justify-center font-medium ${i.color} ${i.text}`}>A</span>
-          <span className="text-xs text-muted-foreground">{i.label}</span>
+          <span className="text-xs text-muted-foreground">{t(i.labelKey)}</span>
         </div>
       ))}
     </div>
@@ -147,6 +148,7 @@ function RadarModal({
   period: string
   onClose: () => void
 }) {
+  const t = useTranslations('skills')
   const [data, setData] = useState<RadarData | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -154,7 +156,7 @@ function RadarModal({
     setLoading(true)
     apiClient.get<RadarData>(`/api/v1/skills/radar?employeeId=${employeeId}&period=${period}`)
       .then((res) => setData(res.data))
-      .catch((err: unknown) => { toast({ title: '스킬 매트릭스 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) })
+      .catch((err: unknown) => { toast({ title: t('toast.loadFailed'), description: err instanceof Error ? err.message : t('toast.retryMessage'), variant: 'destructive' }) })
       .finally(() => setLoading(false))
   }, [employeeId, period])
 
@@ -164,7 +166,7 @@ function RadarModal({
         <div className="flex items-center justify-between p-5 border-b border-border">
           <div>
             <h2 className="text-lg font-semibold text-foreground">
-              {data?.employee.name ?? '직원'} 역량 레이더
+              {t('radar.title', { name: data?.employee.name ?? t('radar.employee') })}
             </h2>
             {data?.employee && (
               <p className="text-sm text-muted-foreground">{data.employee.grade} · {period}</p>
@@ -190,9 +192,9 @@ function RadarModal({
               {/* KPI 요약 */}
               <div className="grid grid-cols-3 gap-3 mb-4">
                 {[
-                  { label: '미달 역량', value: data.summary.criticalGaps, color: 'text-destructive' },
-                  { label: '강점 역량', value: data.summary.strengths, color: 'text-emerald-700' },
-                  { label: '달성률', value: `${data.summary.overallProgress}%`, color: 'text-primary' },
+                  { label: t('radar.criticalGaps'), value: data.summary.criticalGaps, color: 'text-destructive' },
+                  { label: t('radar.strengths'), value: data.summary.strengths, color: 'text-emerald-700' },
+                  { label: t('radar.achievementRate'), value: `${data.summary.overallProgress}%`, color: 'text-primary' },
                 ].map((k) => (
                   <div key={k.label} className="bg-background rounded-lg p-3 text-center">
                     <p className="text-xs text-muted-foreground">{k.label}</p>
@@ -208,7 +210,7 @@ function RadarModal({
                   <PolarAngleAxis dataKey="subject" tick={{ fontSize: 11, fill: '#555' }} />
                   <PolarRadiusAxis angle={90} domain={[0, 5]} tick={{ fontSize: 10, fill: '#999' }} />
                   <Radar
-                    name="기대 수준"
+                    name={t('radar.expectedLevel')}
                     dataKey="expected"
                     stroke="#E8E8E8"
                     fill="#E8E8E8"
@@ -216,7 +218,7 @@ function RadarModal({
                     strokeDasharray="4 2"
                   />
                   <Radar
-                    name="현재 수준"
+                    name={t('radar.currentLevel')}
                     dataKey="actual"
                     stroke={CHART_THEME.colors[3]}
                     fill={CHART_THEME.colors[3]}
@@ -271,7 +273,7 @@ export default function SkillMatrixClient({user: _user,
       setMatrixData(matrix.data)
       setGapReport(report.data)
     } catch (err) {
-      toast({ title: '스킬 매트릭스 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('toast.loadFailed'), description: err instanceof Error ? err.message : t('toast.retryMessage'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -295,7 +297,7 @@ export default function SkillMatrixClient({user: _user,
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('skillMatrixTitle')}</h1>
-          <p className="text-sm text-muted-foreground mt-1">팀/조직 역량 수준을 히트맵으로 확인하세요.</p>
+          <p className="text-sm text-muted-foreground mt-1">{t('skillMatrixDescription')}</p>
         </div>
         <div className="flex items-center gap-2">
           <select
@@ -303,7 +305,7 @@ export default function SkillMatrixClient({user: _user,
             onChange={(e) => setDeptId(e.target.value)}
             className="px-3 py-2 border border-border rounded-lg text-sm"
           >
-            <option value="all">전체 부서</option>
+            <option value="all">{t('filter.allDepartments')}</option>
             {departments.map((d) => (
               <option key={d.id} value={d.id}>{d.name}</option>
             ))}
@@ -324,10 +326,10 @@ export default function SkillMatrixClient({user: _user,
       {gapReport && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: '전체 직원', value: gapReport.totalEmployees, icon: Users, color: 'text-foreground' },
-            { label: '평가 완료율', value: `${gapReport.completionRate}%`, icon: BarChart2, color: 'text-primary' },
-            { label: '주요 갭 역량', value: gapReport.topGaps.length, icon: TrendingDown, color: 'text-destructive' },
-            { label: '강점 역량', value: gapReport.topStrengths.length, icon: TrendingUp, color: 'text-emerald-700' },
+            { label: t('kpi.totalEmployees'), value: gapReport.totalEmployees, icon: Users, color: 'text-foreground' },
+            { label: t('kpi.completionRate'), value: `${gapReport.completionRate}%`, icon: BarChart2, color: 'text-primary' },
+            { label: t('kpi.topGaps'), value: gapReport.topGaps.length, icon: TrendingDown, color: 'text-destructive' },
+            { label: t('kpi.strengths'), value: gapReport.topStrengths.length, icon: TrendingUp, color: 'text-emerald-700' },
           ].map((k) => (
             <div key={k.label} className="bg-card rounded-xl shadow-sm border border-border p-6">
               <div className="flex items-center justify-between mb-2">
@@ -344,20 +346,20 @@ export default function SkillMatrixClient({user: _user,
       <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="border-b border-border flex">
           {([
-            { key: 'matrix', label: '직원별 매트릭스' },
-            { key: 'dept', label: '부서별 집계' },
-            { key: 'report', label: '갭 리포트' },
-          ] as const).map((t) => (
+            { key: 'matrix', labelKey: 'tabs.matrix' },
+            { key: 'dept', labelKey: 'tabs.dept' },
+            { key: 'report', labelKey: 'tabs.report' },
+          ] as const).map((tab) => (
             <button
-              key={t.key}
-              onClick={() => setActiveTab(t.key)}
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
               className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === t.key
+                activeTab === tab.key
                   ? 'border-primary text-primary'
                   : 'border-transparent text-muted-foreground hover:text-foreground'
               }`}
             >
-              {t.label}
+              {t(tab.labelKey)}
             </button>
           ))}
         </div>
@@ -375,7 +377,7 @@ export default function SkillMatrixClient({user: _user,
                   <div className="flex items-center justify-between mb-3">
                     <GapLegend />
                     <span className="text-xs text-muted-foreground">
-                      셀 클릭 → 레이더 차트
+                      {t('matrix.cellClickHint')}
                     </span>
                   </div>
 
@@ -391,7 +393,7 @@ export default function SkillMatrixClient({user: _user,
                           {/* 카테고리 헤더 */}
                           <tr>
                             <th className={`${TABLE_STYLES.headerCell} border-r border-border w-36`} rowSpan={2}>
-                              직원
+                              {t('matrix.employee')}
                             </th>
                             {Object.values(catGroups).map((cat) => (
                               <th
@@ -437,8 +439,8 @@ export default function SkillMatrixClient({user: _user,
                                     onClick={() => setRadarTarget(emp.employeeId)}
                                     title={
                                       s.status === 'unassessed'
-                                        ? '미평가'
-                                        : `현재: ${s.finalLevel ?? '-'} / 기대: ${s.expectedLevel ?? '-'} (갭: ${s.gap ?? '-'})`
+                                        ? t('gap.unassessed')
+                                        : `${t('radar.currentLevel')}: ${s.finalLevel ?? '-'} / ${t('radar.expectedLevel')}: ${s.expectedLevel ?? '-'} (${t('report.avgGap')}: ${s.gap ?? '-'})`
                                     }
                                     className={`w-full h-9 flex items-center justify-center font-medium transition-opacity hover:opacity-80 ${getCellStyle(s.status)}`}
                                   >
@@ -462,14 +464,14 @@ export default function SkillMatrixClient({user: _user,
                     <GapLegend />
                   </div>
                   {gapReport.departmentMatrix.length === 0 ? (
-                    <div className="text-center py-12 text-muted-foreground">데이터가 없습니다.</div>
+                    <div className="text-center py-12 text-muted-foreground">{t('empty')}</div>
                   ) : (
                     <div className={`${TABLE_STYLES.wrapper} overflow-x-auto overflow-y-visible`}>
                       <table className={`${TABLE_STYLES.table} text-xs border-collapse min-w-[600px]`}>
                         <thead className={TABLE_STYLES.header}>
                           <tr>
                             <th className={`${TABLE_STYLES.headerCell} border-r border-border w-36`}>
-                              부서
+                              {t('matrix.department')}
                             </th>
                             {gapReport.allCompetencyGaps.map((c) => (
                               <th
@@ -487,7 +489,7 @@ export default function SkillMatrixClient({user: _user,
                             <tr key={row.department.id} className={TABLE_STYLES.row}>
                               <td className="px-3 py-2 border border-border whitespace-nowrap">
                                 <p className="font-medium text-foreground">{row.department.name}</p>
-                                <p className="text-muted-foreground">{row.memberCount}명</p>
+                                <p className="text-muted-foreground">{t('matrix.memberCount', { count: row.memberCount })}</p>
                               </td>
                               {gapReport.allCompetencyGaps.map((c) => {
                                 const s = row.scores.find((x) => x.competencyId === c.competencyId)
@@ -496,7 +498,7 @@ export default function SkillMatrixClient({user: _user,
                                   <td
                                     key={c.competencyId}
                                     className={`border border-border text-center h-9 font-medium ${getDeptCellStyle(avg)}`}
-                                    title={avg !== null ? `평균 갭: ${avg}` : '데이터 없음'}
+                                    title={avg !== null ? `${t('report.avgGap')}: ${avg}` : t('empty')}
                                   >
                                     {avg !== null ? (avg >= 0 ? `+${avg}` : `${avg}`) : '–'}
                                   </td>
@@ -518,7 +520,7 @@ export default function SkillMatrixClient({user: _user,
                   <div>
                     <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                       <AlertTriangle className="w-4 h-4 text-red-500" />
-                      개선 필요 역량 Top 5
+                      {t('report.topGapsTitle')}
                     </h3>
                     <div className="space-y-2">
                       {gapReport.topGaps.length === 0 ? (
@@ -528,11 +530,11 @@ export default function SkillMatrixClient({user: _user,
                           <span className="text-sm font-bold text-muted-foreground w-5">{i + 1}</span>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-foreground truncate">{g.competencyName}</p>
-                            <p className="text-xs text-muted-foreground">{g.category.name} · 평가율 {g.assessmentRate}%</p>
+                            <p className="text-xs text-muted-foreground">{g.category.name} · {t('report.assessmentRate', { rate: g.assessmentRate })}</p>
                           </div>
                           <div className="text-right">
                             <span className="px-2 py-0.5 rounded-full text-xs bg-destructive/10 text-destructive font-medium">
-                              갭 +{g.avgGap?.toFixed(1)}
+                              {t('report.gapValue', { value: g.avgGap?.toFixed(1) ?? '-' })}
                             </span>
                           </div>
                         </div>
@@ -544,7 +546,7 @@ export default function SkillMatrixClient({user: _user,
                   <div>
                     <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                       <TrendingUp className="w-4 h-4 text-emerald-600" />
-                      강점 역량 Top 5
+                      {t('report.topStrengthsTitle')}
                     </h3>
                     <div className="space-y-2">
                       {gapReport.topStrengths.length === 0 ? (
@@ -554,11 +556,11 @@ export default function SkillMatrixClient({user: _user,
                           <span className="text-sm font-bold text-muted-foreground w-5">{i + 1}</span>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-foreground truncate">{g.competencyName}</p>
-                            <p className="text-xs text-muted-foreground">{g.category.name} · 평가율 {g.assessmentRate}%</p>
+                            <p className="text-xs text-muted-foreground">{g.category.name} · {t('report.assessmentRate', { rate: g.assessmentRate })}</p>
                           </div>
                           <div className="text-right">
                             <span className="px-2 py-0.5 rounded-full text-xs bg-emerald-500/15 text-emerald-700 font-medium">
-                              초과 {g.avgGap?.toFixed(1)}
+                              {t('report.exceedValue', { value: g.avgGap?.toFixed(1) ?? '-' })}
                             </span>
                           </div>
                         </div>
@@ -570,7 +572,7 @@ export default function SkillMatrixClient({user: _user,
                   <div className="lg:col-span-2">
                     <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
                       <BookOpen className="w-4 h-4 text-primary/90" />
-                      교육 추천 (갭 기반)
+                      {t('report.trainingRecommendation')}
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                       {gapReport.topGaps.slice(0, 3).map((g) => (
@@ -579,9 +581,9 @@ export default function SkillMatrixClient({user: _user,
                           className="p-4 rounded-xl border border-indigo-100 bg-violet-500/10"
                         >
                           <p className="text-sm font-semibold text-primary/90 mb-1">{g.competencyName}</p>
-                          <p className="text-xs text-violet-500 mb-2">평균 갭: {g.avgGap?.toFixed(1)} / 대상: {g.assessed}명</p>
+                          <p className="text-xs text-violet-500 mb-2">{t('report.avgGap')}: {g.avgGap?.toFixed(1)} / {t('report.targetCount')}: {g.assessed}</p>
                           <p className="text-xs text-muted-foreground">
-                            {g.category.name} 역량 강화를 위한 교육 과정을 검토하세요.
+                            {t('report.trainingNote', { category: g.category.name })}
                           </p>
                         </div>
                       ))}

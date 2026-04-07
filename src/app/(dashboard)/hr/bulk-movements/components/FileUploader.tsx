@@ -5,17 +5,18 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { Upload, FileText, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { MovementType, ValidateResponse } from '@/lib/bulk-movement/types'
 
-const TYPE_LABELS: Record<MovementType, string> = {
-  transfer: '부서이동',
-  promotion: '승진',
-  'entity-transfer': '법인전환',
-  termination: '퇴직',
-  compensation: '급여변경',
+const TYPE_LABEL_KEYS: Record<MovementType, string> = {
+  transfer: 'type.transfer',
+  promotion: 'type.promotion',
+  'entity-transfer': 'type.entityTransfer',
+  termination: 'type.termination',
+  compensation: 'type.compensation',
 }
 
 interface FileUploaderProps {
@@ -24,6 +25,7 @@ interface FileUploaderProps {
 }
 
 export function FileUploader({ type, onValidateComplete }: FileUploaderProps) {
+  const t = useTranslations('bulkMovement')
   const [isDragging, setIsDragging] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -33,7 +35,7 @@ export function FileUploader({ type, onValidateComplete }: FileUploaderProps) {
   const handleFile = useCallback(
     async (file: File) => {
       if (!file.name.endsWith('.csv')) {
-        setError('CSV 파일만 업로드할 수 있습니다')
+        setError(t('upload.csvOnly'))
         return
       }
 
@@ -53,13 +55,13 @@ export function FileUploader({ type, onValidateComplete }: FileUploaderProps) {
 
         if (!res.ok) {
           const body = await res.json().catch(() => null)
-          throw new Error(body?.error ?? `서버 오류 (${res.status})`)
+          throw new Error(body?.error ?? t('upload.serverError', { status: res.status }))
         }
 
         const result: ValidateResponse = await res.json()
         onValidateComplete(result, file)
       } catch (err) {
-        setError(err instanceof Error ? err.message : '검증 중 오류가 발생했습니다')
+        setError(err instanceof Error ? err.message : t('upload.validationError'))
       } finally {
         setIsLoading(false)
       }
@@ -88,7 +90,7 @@ export function FileUploader({ type, onValidateComplete }: FileUploaderProps) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        <strong>{TYPE_LABELS[type]}</strong> 처리를 위한 CSV 파일을 업로드해주세요
+        {t('upload.instruction', { type: t(TYPE_LABEL_KEYS[type]) })}
       </p>
 
       {/* 드래그앤드롭 영역 */}
@@ -124,24 +126,24 @@ export function FileUploader({ type, onValidateComplete }: FileUploaderProps) {
         {isLoading ? (
           <div className="flex flex-col items-center gap-2">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">검증 중...</p>
+            <p className="text-sm text-muted-foreground">{t('upload.validating')}</p>
           </div>
         ) : fileName ? (
           <div className="flex flex-col items-center gap-2">
             <FileText className="h-8 w-8 text-primary" />
             <p className="text-sm font-medium">{fileName}</p>
             <p className="text-xs text-muted-foreground">
-              클릭하여 다른 파일 선택
+              {t('upload.clickToChange')}
             </p>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-2">
             <Upload className="h-8 w-8 text-muted-foreground" />
             <p className="text-sm font-medium">
-              CSV 파일을 드래그하거나 클릭하여 선택
+              {t('upload.dragOrClick')}
             </p>
             <p className="text-xs text-muted-foreground">
-              .csv 형식만 지원됩니다
+              {t('upload.csvOnlyFormat')}
             </p>
           </div>
         )}
@@ -158,7 +160,7 @@ export function FileUploader({ type, onValidateComplete }: FileUploaderProps) {
           }}
         >
           <FileText className="h-4 w-4 mr-1.5" />
-          템플릿 다운로드
+          {t('button.downloadTemplate')}
         </Button>
       </div>
 

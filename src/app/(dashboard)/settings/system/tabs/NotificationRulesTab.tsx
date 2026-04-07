@@ -30,7 +30,7 @@ export function NotificationRulesTab({
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
-        <div><h3 className="text-base font-semibold text-foreground">{t('notificationRules')}</h3><p className="text-sm text-muted-foreground">이벤트별 알림 대상 및 채널 ({triggers.length}건)</p></div>
+        <div><h3 className="text-base font-semibold text-foreground">{t('notificationRules')}</h3><p className="text-sm text-muted-foreground">{t('notificationRules.subtitle', { count: triggers.length })}</p></div>
         <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />{t('kr_keab79cec_add')}</Button>
       </div>
       {triggers.length > 0 ? (
@@ -49,7 +49,7 @@ export function NotificationRulesTab({
                 <td className={TABLE_STYLES.cell}><div className="flex gap-1">{(trig.channels ?? []).map((ch) => (
                   <span key={ch} className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">{ch}</span>
                 ))}</div></td>
-                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!trig.deletedAt ? 'bg-tertiary-container/10 text-tertiary' : 'bg-muted/50 text-muted-foreground/60'}`}>{!trig.deletedAt ? '활성' : '비활성'}</span></td>
+                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!trig.deletedAt ? 'bg-tertiary-container/10 text-tertiary' : 'bg-muted/50 text-muted-foreground/60'}`}>{!trig.deletedAt ? t('common.active') : t('common.inactive')}</span></td>
               </tr>
             ))}</tbody>
           </table>

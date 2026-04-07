@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Save, RotateCcw, Loader2 } from 'lucide-react'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
@@ -30,7 +31,7 @@ const DEFAULTS: BonusSettings = {
 
 export function BonusRulesTab({
   companyId }: Props) {
-//   const t = useTranslations('settings')
+  const t = useTranslations('settings')
   const [settings, setSettings] = useState<BonusSettings>(() => structuredClone(DEFAULTS))
   const [original, setOriginal] = useState<BonusSettings>(() => structuredClone(DEFAULTS))
   const [loading, setLoading] = useState(true)
@@ -77,12 +78,12 @@ export function BonusRulesTab({
         key: 'bonus-rules',
         value: settings,
         companyId: companyId ?? undefined,
-        description: '성과급 규칙',
+        description: t('bonusRules.description'),
       })
-      toast({ title: '저장되었습니다.', description: '성과급 규칙이 업데이트되었습니다.' })
+      toast({ title: t('savedSuccess'), description: t('bonusRules.updateSuccess') })
       setOriginal(structuredClone(settings))
     } catch {
-      toast({ title: '저장 실패', description: '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('saveFailed'), description: t('retry_ked95b4_keca3bcec'), variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -90,7 +91,7 @@ export function BonusRulesTab({
 
   const handleRevert = () => {
     setSettings(structuredClone(original))
-    toast({ title: '변경을 취소했습니다' })
+    toast({ title: t('changeCancelled') })
   }
 
   const hasChanges = JSON.stringify(settings) !== JSON.stringify(original)
@@ -101,28 +102,28 @@ export function BonusRulesTab({
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-foreground">{'성과급 규칙'}</h3>
-          <p className="text-sm text-muted-foreground">{'등급별 성과급 배율 설정'}</p>
+          <h3 className="text-base font-semibold text-foreground">{t('bonusRules.title')}</h3>
+          <p className="text-sm text-muted-foreground">{t('bonusRules.subtitle')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
+          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
         )}
       </div>
 
-      <SettingFieldWithOverride label="성과급 기준" description="성과급 산정 기준" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('bonusRules.basisLabel')} description={t('bonusRules.basisDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <select className={FORM_STYLES.select} value={settings.bonusType} onChange={(e) => setSettings((p) => ({ ...p, bonusType: e.target.value as BonusSettings['bonusType'] }))}>
-          <option value="MONTHLY_SALARY">{'월 기본급 기준'}</option>
-          <option value="ANNUAL_SALARY">{'연봉 기준'}</option>
-          <option value="FIXED_AMOUNT">{'정상'}</option>
+          <option value="MONTHLY_SALARY">{t('bonusRules.monthlySalary')}</option>
+          <option value="ANNUAL_SALARY">{t('bonusRules.annualSalary')}</option>
+          <option value="FIXED_AMOUNT">{t('bonusRules.fixedAmount')}</option>
         </select>
       </SettingFieldWithOverride>
 
       <div className={TABLE_STYLES.wrapper}>
         <table className={TABLE_STYLES.table}>
           <thead className={TABLE_STYLES.header}><tr>
-            <th className={TABLE_STYLES.headerCell}>{'등급'}</th>
-            <th className={TABLE_STYLES.headerCell}>{'라벨'}</th>
-            <th className={TABLE_STYLES.headerCellRight}>{'배율 (%)'}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('bonusRules.colGrade')}</th>
+            <th className={TABLE_STYLES.headerCell}>{t('bonusRules.colLabel')}</th>
+            <th className={TABLE_STYLES.headerCellRight}>{t('bonusRules.colMultiplier')}</th>
           </tr></thead>
           <tbody>{settings.gradeMultipliers.map((g, i) => (
             <tr key={g.grade} className={TABLE_STYLES.row}>
@@ -136,10 +137,10 @@ export function BonusRulesTab({
 
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={handleRevert} disabled={!hasChanges}>
-          <RotateCcw className="mr-2 h-4 w-4" />{'되돌리기'}
+          <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={handleSave} disabled={!hasChanges || saving}>
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}{t('save')}
         </Button>
       </div>
     </div>

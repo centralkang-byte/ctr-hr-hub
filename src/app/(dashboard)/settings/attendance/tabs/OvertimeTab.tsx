@@ -71,7 +71,7 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
     key: 'overtime-rules',
     companyId,
     defaults: DEFAULT_SETTINGS,
-    description: '초과근무 관리 규칙',
+    description: t('overtime.settingDescription'),
     merge: (raw, defaults) => ({
       requiresApproval: (raw.requiresApproval as boolean) ?? defaults.requiresApproval,
       multipliers: {

@@ -50,14 +50,14 @@ export function CalibrationTab({
         )}
       </div>
 
-      <SettingFieldWithOverride label="캘리브레이션 필수" description="평가 프로세스에서 캘리브레이션 단계를 필수로 할지" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('calibration.requiredLabel')} description={t('calibration.requiredDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={settings.required} onChange={(e) => setSettings((p) => ({ ...p, required: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
           <span className="text-foreground">{t('calibration_required')}</span>
         </label>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="참여 범위" description="캘리브레이션 회의 단위" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('calibration.scopeLabel')} description={t('calibration.scopeDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <select className={FORM_STYLES.select} value={settings.scope} onChange={(e) => setSettings((p) => ({ ...p, scope: e.target.value as CalibSettings['scope'] }))}>
           <option value="DEPARTMENT">{t('department_keb8ba8ec')}</option>
           <option value="DIVISION">{t('kr_kebb3b8eb_keb8ba8ec')}</option>
@@ -65,14 +65,14 @@ export function CalibrationTab({
         </select>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="최소 참여 인원" description="캘리브레이션 대상 최소 인원 수" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('calibration.minParticipantsLabel')} description={t('calibration.minParticipantsDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.minParticipants} onChange={(e) => setSettings((p) => ({ ...p, minParticipants: Number(e.target.value) }))} className="w-20" />
           <span className="text-sm text-muted-foreground">{t('persons_kec9db4ec')}</span>
         </div>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="관리자 직접 변경 허용" description="캘리브레이션 없이 관리자가 등급 직접 변경 가능" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('calibration.managerOverrideLabel')} description={t('calibration.managerOverrideDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={settings.allowManagerOverride} onChange={(e) => setSettings((p) => ({ ...p, allowManagerOverride: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
           <span className="text-foreground">{t('kr_keca781ec_kebb380ea_ked9788ec')}</span>
@@ -84,7 +84,7 @@ export function CalibrationTab({
           <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}{t('save')}
         </Button>
       </div>
     </div>

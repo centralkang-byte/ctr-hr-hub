@@ -4,6 +4,7 @@
 // ValidationPreview — 검증 결과 요약 + 에러/미리보기 테이블
 // ═══════════════════════════════════════════════════════════
 
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { CheckCircle2, AlertCircle, AlertTriangle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -22,6 +23,7 @@ interface ValidationPreviewProps {
 }
 
 export function ValidationPreview({ result }: ValidationPreviewProps) {
+  const t = useTranslations('bulkMovement')
   const errorCount = result.errors.filter((e) => e.severity === 'error').length
   const warningCount = result.errors.filter((e) => e.severity === 'warning').length
 
@@ -43,12 +45,12 @@ export function ValidationPreview({ result }: ValidationPreviewProps) {
           <div className="text-sm">
             <p className="font-medium">
               {result.valid
-                ? `검증 완료: ${result.validRows}/${result.totalRows}건 처리 가능`
-                : `검증 실패: ${errorCount}건의 오류가 발견되었습니다`}
+                ? t('validation.success', { valid: result.validRows, total: result.totalRows })
+                : t('validation.failed', { count: errorCount })}
             </p>
             {warningCount > 0 && (
               <p className="text-muted-foreground mt-0.5">
-                경고 {warningCount}건
+                {t('validation.warnings', { count: warningCount })}
               </p>
             )}
           </div>
@@ -60,17 +62,17 @@ export function ValidationPreview({ result }: ValidationPreviewProps) {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium">
-              오류 및 경고 목록
+              {t('validation.errorList')}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-16">행</TableHead>
-                  <TableHead className="w-24">컬럼</TableHead>
-                  <TableHead>메시지</TableHead>
-                  <TableHead className="w-20">구분</TableHead>
+                  <TableHead className="w-16">{t('validation.row')}</TableHead>
+                  <TableHead className="w-24">{t('validation.column')}</TableHead>
+                  <TableHead>{t('validation.message')}</TableHead>
+                  <TableHead className="w-20">{t('validation.severity')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -85,12 +87,12 @@ export function ValidationPreview({ result }: ValidationPreviewProps) {
                       {err.severity === 'error' ? (
                         <span className="inline-flex items-center gap-1 text-xs text-destructive">
                           <AlertCircle className="h-3.5 w-3.5" />
-                          오류
+                          {t('validation.error')}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-xs text-amber-600">
                           <AlertTriangle className="h-3.5 w-3.5" />
-                          경고
+                          {t('validation.warning')}
                         </span>
                       )}
                     </TableCell>
@@ -107,7 +109,7 @@ export function ValidationPreview({ result }: ValidationPreviewProps) {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium">
-              데이터 미리보기
+              {t('validation.preview')}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -115,11 +117,11 @@ export function ValidationPreview({ result }: ValidationPreviewProps) {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-12">#</TableHead>
-                  <TableHead className="w-24">사번</TableHead>
-                  <TableHead>이름</TableHead>
-                  <TableHead>현재 값</TableHead>
-                  <TableHead>변경 값</TableHead>
-                  <TableHead className="w-16">상태</TableHead>
+                  <TableHead className="w-24">{t('validation.employeeNo')}</TableHead>
+                  <TableHead>{t('validation.name')}</TableHead>
+                  <TableHead>{t('validation.currentValue')}</TableHead>
+                  <TableHead>{t('validation.newValue')}</TableHead>
+                  <TableHead className="w-16">{t('validation.status')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

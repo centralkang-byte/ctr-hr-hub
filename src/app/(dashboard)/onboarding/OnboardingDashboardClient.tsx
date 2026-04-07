@@ -9,7 +9,7 @@ import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { AlertTriangle, CheckCircle2, Clock, Frown, Meh, Smile } from 'lucide-react'
 import {
   Dialog,
@@ -75,20 +75,20 @@ const STATUS_BADGE_STYLES: Record<string, string> = {
   COMPLETED: STATUS_VARIANT.success,
 }
 
-const MOOD_CONFIG: Record<string, { icon: typeof Smile; color: string; label: string }> = {
-  GREAT: { icon: Smile, color: 'text-green-500', label: '매우 좋음' },
-  GOOD: { icon: Smile, color: 'text-tertiary', label: '좋음' },
-  NEUTRAL: { icon: Meh, color: 'text-amber-500', label: '보통' },
-  STRUGGLING: { icon: Frown, color: 'text-red-500', label: '힘듦' },
-  BAD: { icon: Frown, color: 'text-destructive', label: '나쁨' },
+const MOOD_CONFIG: Record<string, { icon: typeof Smile; color: string; labelKey: string }> = {
+  GREAT: { icon: Smile, color: 'text-green-500', labelKey: 'dashboard.moodGreat' },
+  GOOD: { icon: Smile, color: 'text-tertiary', labelKey: 'dashboard.moodGood' },
+  NEUTRAL: { icon: Meh, color: 'text-amber-500', labelKey: 'dashboard.moodNeutral' },
+  STRUGGLING: { icon: Frown, color: 'text-red-500', labelKey: 'dashboard.moodStruggling' },
+  BAD: { icon: Frown, color: 'text-destructive', labelKey: 'dashboard.moodBad' },
 }
 
 const PLAN_TYPE_TABS = [
-  { value: '', label: '전체' },
-  { value: 'ONBOARDING', label: '온보딩' },
-  { value: 'OFFBOARDING', label: '오프보딩' },
-  { value: 'CROSSBOARDING_DEPARTURE', label: '크로스보딩 출발' },
-  { value: 'CROSSBOARDING_ARRIVAL', label: '크로스보딩 도착' },
+  { value: '', labelKey: 'dashboard.planAll' },
+  { value: 'ONBOARDING', labelKey: 'dashboard.planOnboarding' },
+  { value: 'OFFBOARDING', labelKey: 'dashboard.planOffboarding' },
+  { value: 'CROSSBOARDING_DEPARTURE', labelKey: 'dashboard.planCrossboardingDeparture' },
+  { value: 'CROSSBOARDING_ARRIVAL', labelKey: 'dashboard.planCrossboardingArrival' },
 ]
 
 const LIMIT_OPTIONS = [10, 20, 50]
@@ -98,6 +98,7 @@ const LIMIT_OPTIONS = [10, 20, 50]
 export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDashboardClientProps) {
   const t = useTranslations('onboarding')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
   const router = useRouter()
 
   // ─── State ───
@@ -240,7 +241,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                 : 'text-muted-foreground hover:text-foreground'
               }`}
           >
-            {tab.label}
+            {t(tab.labelKey)}
           </button>
         ))}
       </div>
@@ -275,7 +276,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
             }}
             className="text-sm border border-border rounded-lg px-3 py-1.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
           >
-            <option value="">전체 법인</option>
+            <option value="">{t('dashboard.allCompanies')}</option>
             {companies.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.code} — {c.name}
@@ -306,7 +307,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
           <table className={TABLE_STYLES.table}>
             <thead>
               <tr className={TABLE_STYLES.header}>
-                {[t('employeeName'), t('hireDate'), t('buddy'), t('templateLabel'), t('progress'), t('statusLabel'), t('delayed'), '감정', ''].map(
+                {[t('employeeName'), t('hireDate'), t('buddy'), t('templateLabel'), t('progress'), t('statusLabel'), t('delayed'), t('dashboard.emotion'), ''].map(
                   (h) => (
                     <th key={h} className={TABLE_STYLES.headerCell + " whitespace-nowrap"}>{h}</th>
                   ),
@@ -346,7 +347,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                   <th className={TABLE_STYLES.headerCell + " whitespace-nowrap w-48"}>{t('progress')}</th>
                   <th className={TABLE_STYLES.headerCell + " whitespace-nowrap"}>{t('statusLabel')}</th>
                   <th className={TABLE_STYLES.headerCell + " whitespace-nowrap"}>{t('delayed')}</th>
-                  <th className={TABLE_STYLES.headerCell + " whitespace-nowrap"}>감정</th>
+                  <th className={TABLE_STYLES.headerCell + " whitespace-nowrap"}>{t('dashboard.emotion')}</th>
                   {isHrAdmin && <th className={TABLE_STYLES.headerCell + " whitespace-nowrap w-24"} />}
                 </tr>
               </thead>
@@ -363,7 +364,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                     <td className={TABLE_STYLES.cellMuted}>
                       {row.employee.hireDate
                         ? new Date(row.employee.hireDate).toLocaleDateString(
-                          'ko-KR',
+                          locale,
                         )
                         : '-'}
                     </td>
@@ -408,10 +409,10 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                         return (
                           <span
                             className={`inline-flex items-center gap-1 text-xs font-medium ${cfg.color}`}
-                            title={cfg.label}
+                            title={t(cfg.labelKey)}
                           >
                             <Icon className="h-4 w-4" />
-                            {cfg.label}
+                            {t(cfg.labelKey)}
                           </span>
                         )
                       })() : (
