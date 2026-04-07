@@ -73,12 +73,12 @@ Output will include prioritized findings (P0-P3). Action rules:
 
 **Long custom prompts** (when default review is insufficient):
 ```bash
-# Write prompt to file, then exec
+# Write prompt to file, then pipe to exec (MUST use pipe, NOT $(cat))
 cat > /tmp/codex-prompt.txt << 'EOF'
 Review these changes for: residual hardcoded Korean, unused imports,
 type mismatches, missing translations across 5 locales...
 EOF
-/opt/homebrew/bin/codex exec "$(cat /tmp/codex-prompt.txt)"
+cat /tmp/codex-prompt.txt | /opt/homebrew/bin/codex exec -
 ```
 
 **Timeout**: 180s max. If codex hangs, kill and use `general-purpose` Agent fallback.

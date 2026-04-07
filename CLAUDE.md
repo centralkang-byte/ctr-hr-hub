@@ -133,7 +133,7 @@ Two review gates in every task that is **planned** to touch 3+ files (judge by p
 
 **Gate 1 — Plan Review** (after writing plan, before ExitPlanMode):
 - Write plan summary to `/tmp/codex-prompt.txt`
-- Run: `/opt/homebrew/bin/codex exec "$(cat /tmp/codex-prompt.txt)"`
+- Run: `cat /tmp/codex-prompt.txt | /opt/homebrew/bin/codex exec -`
 - Incorporate HIGH findings into plan before approval
 
 **Gate 2 — Post-Implementation Review** (during `/verify`, after tsc+lint pass):
@@ -142,12 +142,16 @@ Two review gates in every task that is **planned** to touch 3+ files (judge by p
 
 **Codex CLI reference** (GPT-5.4, `/opt/homebrew/bin/codex`):
 ```bash
+# Gate 2: built-in review commands (no prompt needed)
 codex review --uncommitted          # review uncommitted changes
 codex review --base staging         # review branch diff
 codex review --commit <SHA>         # review specific commit
-codex exec "$(cat /tmp/prompt.txt)" # custom prompt (long text → file)
+
+# Gate 1: custom prompt via stdin pipe (MUST use pipe, NOT $(cat))
+cat /tmp/prompt.txt | codex exec -  # ✅ stable
+codex exec "$(cat /tmp/prompt.txt)" # ❌ shows "Reading additional input from stdin..."
 ```
-Timeout: 180s. If hang, kill and retry with shorter prompt.
+Timeout: 300s (codex exec scans full codebase).
 
 ### /verify (code checks)
 1. **Code:** `npx tsc --noEmit` + `npm run lint` (pre-commit hook auto-runs)
