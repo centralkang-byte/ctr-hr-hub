@@ -286,10 +286,10 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         return acc
       }, [] as LeavePolicyLocal[])
 
-      // Filter out "특별휴가" as requested
+      // i18n: DB policy name matching — "특별휴가" is a DB value, not for translation
       const filteredPolicies = uniquePolicies.filter(p => !p.name.includes("특별휴가"))
 
-      // Sort: "연차" containing policies to the top
+      // i18n: DB policy name matching — sort annual-type policies to top
       const sortedPolicies = filteredPolicies.sort((a, b) => {
         const aIsAnnual = a.name.includes('연차')
         const bIsAnnual = b.name.includes('연차')
@@ -337,6 +337,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     if (!watchedPolicyId || policies.length === 0) return
     const selected = policies.find(p => p.id === watchedPolicyId)
     if (selected) {
+      // i18n: DB policy name matching — preset toggle only for annual leave
       if (!selected.name.includes('연차')) {
         setPresetType('CUSTOM')
       } else {
@@ -392,11 +393,11 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       }
       await apiClient.post('/api/v1/leave/requests', payload)
       setDialogOpen(false)
-      toast({ title: tc('submitted'), description: '담당자 승인 후 확정됩니다.' })
+      toast({ title: tc('submitted'), description: t('submit.pendingApproval') })
       void fetchBalances()
       void fetchRequests()
     } catch (err) {
-      const msg = err instanceof Error ? err.message : '휴가 신청 중 오류가 발생했습니다.'
+      const msg = err instanceof Error ? err.message : t('submit.error')
       toast({ title: tc('error'), description: msg, variant: 'destructive' })
     } finally {
       setSaving(false)
@@ -640,7 +641,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               <div className="rounded-lg border border-border bg-background px-4 py-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">
-                    현재 잔여:{' '}
+                    {t('balancePreview.currentRemaining')}{' '}
                     <strong className="text-foreground">{selectedRemaining}{t('fullDay')}</strong>
                   </span>
                   {requestedDaysNum > 0 && projectedRemaining !== null && (
@@ -653,27 +654,28 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                           : 'text-primary'
                       }`}
                     >
-                      신청: {requestedDaysNum}{t('fullDay')} | 잔여: {projectedRemaining}{t('fullDay')}
+                      {t('balancePreview.requestAmount', { amount: requestedDaysNum, unit: t('fullDay'), remaining: projectedRemaining })}
                     </span>
                   )}
                 </div>
                 {projectedRemaining !== null && projectedRemaining < 0 && (
-                  <p className="mt-1 text-xs text-red-500">잔여 휴가가 부족합니다.</p>
+                  <p className="mt-1 text-xs text-red-500">{t('balancePreview.insufficientWarning')}</p>
                 )}
               </div>
             )}
 
             {/* ─── Preset Toggle ─── */}
+            {/* i18n: DB policy name matching — preset toggle only for annual leave */}
             {policies.find(p => p.id === watchedPolicyId)?.name.includes('연차') && (
               <div className="space-y-2">
-                <Label>휴가 유형 선택</Label>
+                <Label>{t('balancePreview.selectType')}</Label>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { id: 'FULL', label: '연차' },
-                    { id: 'AM', label: '오전 반차' },
-                    { id: 'PM', label: '오후 반차' },
-                    { id: 'QUARTER', label: '반반차' },
-                    { id: 'CUSTOM', label: '직접 입력' },
+                    { id: 'FULL', label: t('preset.annual') },
+                    { id: 'AM', label: t('preset.halfDayAM') },
+                    { id: 'PM', label: t('preset.halfDayPM') },
+                    { id: 'QUARTER', label: t('preset.quarterDay') },
+                    { id: 'CUSTOM', label: t('preset.custom') },
                   ].map((preset) => (
                     <button
                       key={preset.id}
@@ -697,7 +699,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
             {/* startDate */}
             <div className="space-y-2">
-              <Label htmlFor="leave-start">{presetType === 'CUSTOM' || presetType === 'FULL' ? t('startDate') : '휴가 일자'}</Label>
+              <Label htmlFor="leave-start">{presetType === 'CUSTOM' || presetType === 'FULL' ? t('startDate') : t('balancePreview.leaveDate')}</Label>
               <Controller
                 control={control}
                 name="startDate"
@@ -713,14 +715,14 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {field.value ? field.value : <span>{tc('selectPlaceholder') ?? '날짜 선택'}</span>}
+                        {field.value ? field.value : <span>{tc('selectPlaceholder')}</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0 z-[100]" align="start">
                       <Calendar
                         mode="single"
                         selected={field.value ? new Date(field.value) : undefined}
-                        onSelect={(date) => { 
+                        onSelect={(date) => {
                           if (date) {
                             const dateStr = format(date, "yyyy-MM-dd")
                             field.onChange(dateStr)
@@ -730,7 +732,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                           } else {
                             field.onChange('')
                           }
-                          setStartDateOpen(false) 
+                          setStartDateOpen(false)
                         }}
                         initialFocus
                       />
@@ -762,7 +764,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {field.value ? field.value : <span>{tc('selectPlaceholder') ?? '날짜 선택'}</span>}
+                          {field.value ? field.value : <span>{tc('selectPlaceholder')}</span>}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0 z-[100]" align="start">
