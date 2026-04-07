@@ -66,7 +66,6 @@ import {
   Globe,
   Calculator,
 //   Upload,
-  CheckCircle2,
   LogOut,
   BedDouble,
   type LucideIcon,
