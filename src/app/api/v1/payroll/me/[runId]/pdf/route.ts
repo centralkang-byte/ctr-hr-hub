@@ -9,9 +9,13 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { notFound } from '@/lib/errors'
 import { apiError } from '@/lib/api'
 import { generatePayStubPdf } from '@/lib/payroll/pdf'
+import { getRequestLocale } from '@/lib/server-i18n'
 
 export const GET = withPermission(
   async (_req, context, user) => {
+    await getRequestLocale()
+    // DD-3: Korean legal payslip must be in Korean
+    const pdfLocale = 'ko' as const
     const { runId } = await context.params
 
     const item = await prisma.payrollItem.findFirst({
@@ -54,7 +58,7 @@ export const GET = withPermission(
     if (!item) throw notFound('급여명세서를 찾을 수 없습니다.')
 
     try {
-      const pdfBuffer = await generatePayStubPdf(item as any) // eslint-disable-line @typescript-eslint/no-explicit-any
+      const pdfBuffer = await generatePayStubPdf(pdfLocale, item as any) // eslint-disable-line @typescript-eslint/no-explicit-any
       const uint8 = new Uint8Array(pdfBuffer)
 
       return new NextResponse(uint8, {

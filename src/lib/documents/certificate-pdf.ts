@@ -4,6 +4,9 @@
 // 패턴: src/lib/payroll/pdf.ts (HTML → Buffer)
 // ═══════════════════════════════════════════════════════════
 
+import { serverT } from '@/lib/server-i18n'
+import type { Locale } from '@/i18n/config'
+
 interface EmployeeInfo {
   name: string
   employeeNo: string
@@ -54,37 +57,50 @@ const CSS = `
 
 // ─── 재직증명서 ──────────────────────────────────────────────
 
-export function generateEmploymentCertPdf(
+export async function generateEmploymentCertPdf(
+  locale: Locale,
   employee: EmployeeInfo,
   company: CompanyInfo,
   purpose?: string,
-): Buffer {
+): Promise<Buffer> {
+  const t = (key: string) => serverT(locale, key)
+
+  const [lTitle, lSub, lName, lEmpNo, lBirth, lHire, lDept, lGrade, lPos, lPurpose, lDefaultPurpose, lCertify, lSeal] = await Promise.all([
+    t('documents.certificate.employment.title'), t('documents.certificate.employment.subtitle'),
+    t('documents.certificate.name'), t('documents.certificate.employeeNo'),
+    t('documents.certificate.birthDate'), t('documents.certificate.hireDate'),
+    t('documents.certificate.department'), t('documents.certificate.jobGrade'),
+    t('documents.certificate.position'), t('documents.certificate.purpose'),
+    t('documents.certificate.defaultPurpose'), t('documents.certificate.certify'), t('documents.certificate.seal'),
+  ])
+
+  const htmlLang = locale === 'ko' ? 'ko' : locale
   const html = `<!DOCTYPE html>
-<html lang="ko">
+<html lang="${htmlLang}">
 <head><meta charset="UTF-8"><style>${CSS}</style></head>
 <body>
   <div class="header">
-    <h1>재 직 증 명 서</h1>
-    <div class="sub">Certificate of Employment</div>
+    <h1>${lTitle}</h1>
+    <div class="sub">${lSub}</div>
   </div>
 
   <table>
-    <tr><th>성명</th><td>${employee.name}</td><th>사원번호</th><td>${employee.employeeNo}</td></tr>
-    <tr><th>생년월일</th><td>${formatDate(employee.birthDate)}</td><th>입사일</th><td>${formatDate(employee.hireDate)}</td></tr>
-    <tr><th>부서</th><td>${employee.departmentName}</td><th>직급</th><td>${employee.jobGradeName}</td></tr>
-    <tr><th>직위</th><td colspan="3">${employee.positionName}</td></tr>
+    <tr><th>${lName}</th><td>${employee.name}</td><th>${lEmpNo}</th><td>${employee.employeeNo}</td></tr>
+    <tr><th>${lBirth}</th><td>${formatDate(employee.birthDate)}</td><th>${lHire}</th><td>${formatDate(employee.hireDate)}</td></tr>
+    <tr><th>${lDept}</th><td>${employee.departmentName}</td><th>${lGrade}</th><td>${employee.jobGradeName}</td></tr>
+    <tr><th>${lPos}</th><td colspan="3">${employee.positionName}</td></tr>
   </table>
 
   <div class="purpose">
-    <strong>용도:</strong> ${purpose || '제출용'}
+    <strong>${lPurpose}:</strong> ${purpose || lDefaultPurpose}
   </div>
 
-  <p>위 사실을 증명합니다.</p>
+  <p>${lCertify}</p>
 
   <div class="footer">
     <div class="date">${todayFormatted()}</div>
     <div class="company">${company.name}</div>
-    <div class="seal">[직인]</div>
+    <div class="seal">${lSeal}</div>
   </div>
 </body>
 </html>`
@@ -94,41 +110,56 @@ export function generateEmploymentCertPdf(
 
 // ─── 경력증명서 ──────────────────────────────────────────────
 
-export function generateCareerCertPdf(
+export async function generateCareerCertPdf(
+  locale: Locale,
   employee: EmployeeInfo,
   company: CompanyInfo,
   assignments: AssignmentHistory[],
   purpose?: string,
-): Buffer {
+): Promise<Buffer> {
+  const t = (key: string) => serverT(locale, key)
+
+  const [lTitle, lSub, lName, lEmpNo, lBirth, lHire, lHistory, lDept, lPos, lStart, lEnd, lCurrent, lPurpose, lDefaultPurpose, lCertify, lSeal] = await Promise.all([
+    t('documents.certificate.career.title'), t('documents.certificate.career.subtitle'),
+    t('documents.certificate.name'), t('documents.certificate.employeeNo'),
+    t('documents.certificate.birthDate'), t('documents.certificate.hireDate'),
+    t('documents.certificate.career.history'), t('documents.certificate.career.department'),
+    t('documents.certificate.career.position'), t('documents.certificate.career.startDate'),
+    t('documents.certificate.career.endDate'), t('documents.certificate.career.current'),
+    t('documents.certificate.purpose'), t('documents.certificate.defaultPurpose'),
+    t('documents.certificate.certify'), t('documents.certificate.seal'),
+  ])
+
   const rows = assignments
     .map(
       (a) => `<tr>
         <td>${a.departmentName}</td>
         <td>${a.positionName}</td>
         <td>${formatDate(a.startDate)}</td>
-        <td>${a.endDate ? formatDate(a.endDate) : '재직 중'}</td>
+        <td>${a.endDate ? formatDate(a.endDate) : lCurrent}</td>
       </tr>`,
     )
     .join('\n')
 
+  const htmlLang = locale === 'ko' ? 'ko' : locale
   const html = `<!DOCTYPE html>
-<html lang="ko">
+<html lang="${htmlLang}">
 <head><meta charset="UTF-8"><style>${CSS}</style></head>
 <body>
   <div class="header">
-    <h1>경 력 증 명 서</h1>
-    <div class="sub">Certificate of Career</div>
+    <h1>${lTitle}</h1>
+    <div class="sub">${lSub}</div>
   </div>
 
   <table>
-    <tr><th>성명</th><td>${employee.name}</td><th>사원번호</th><td>${employee.employeeNo}</td></tr>
-    <tr><th>생년월일</th><td>${formatDate(employee.birthDate)}</td><th>입사일</th><td>${formatDate(employee.hireDate)}</td></tr>
+    <tr><th>${lName}</th><td>${employee.name}</td><th>${lEmpNo}</th><td>${employee.employeeNo}</td></tr>
+    <tr><th>${lBirth}</th><td>${formatDate(employee.birthDate)}</td><th>${lHire}</th><td>${formatDate(employee.hireDate)}</td></tr>
   </table>
 
-  <h3 style="margin-top:30px;">경력 사항</h3>
+  <h3 style="margin-top:30px;">${lHistory}</h3>
   <table>
     <thead>
-      <tr><th>부서</th><th>직위</th><th>시작일</th><th>종료일</th></tr>
+      <tr><th>${lDept}</th><th>${lPos}</th><th>${lStart}</th><th>${lEnd}</th></tr>
     </thead>
     <tbody>
       ${rows}
@@ -136,15 +167,15 @@ export function generateCareerCertPdf(
   </table>
 
   <div class="purpose">
-    <strong>용도:</strong> ${purpose || '제출용'}
+    <strong>${lPurpose}:</strong> ${purpose || lDefaultPurpose}
   </div>
 
-  <p>위 사실을 증명합니다.</p>
+  <p>${lCertify}</p>
 
   <div class="footer">
     <div class="date">${todayFormatted()}</div>
     <div class="company">${company.name}</div>
-    <div class="seal">[직인]</div>
+    <div class="seal">${lSeal}</div>
   </div>
 </body>
 </html>`

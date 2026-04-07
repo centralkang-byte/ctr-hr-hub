@@ -6148,7 +6148,117 @@
       "yearLabel": "{year}年"
     },
     "yearEndTitle": "Year-End Settlement",
-    "years": "year"
+    "years": "year",
+    "export": {
+      "comparison": {
+        "sheetTitle": "[TODO:zh] Month-over-Month Comparison",
+        "docTitle": "[TODO:zh] {yearMonth} Payroll Comparison",
+        "employeeNo": "[TODO:zh] Employee No.",
+        "name": "[TODO:zh] Name",
+        "department": "[TODO:zh] Department",
+        "currentNet": "[TODO:zh] {yearMonth} Net Pay",
+        "previousNet": "[TODO:zh] Previous Net Pay",
+        "diff": "[TODO:zh] Difference",
+        "diffPercent": "[TODO:zh] Change (%)",
+        "reason": "[TODO:zh] Reason",
+        "anomaly": "[TODO:zh] Anomaly",
+        "total": "[TODO:zh] Total",
+        "summarySheet": "[TODO:zh] Summary",
+        "summaryItem": "[TODO:zh] Item",
+        "summaryValue": "[TODO:zh] Value",
+        "summaryMonth": "[TODO:zh] Target Month",
+        "summaryCurrentTotal": "[TODO:zh] Total Net Pay (Current)",
+        "summaryPreviousTotal": "[TODO:zh] Total Net Pay (Previous)",
+        "summaryDiff": "[TODO:zh] Change Amount",
+        "summaryDiffPercent": "[TODO:zh] Change (%)",
+        "summaryIncreased": "[TODO:zh] Increased",
+        "summaryDecreased": "[TODO:zh] Decreased",
+        "summaryUnchanged": "[TODO:zh] Unchanged"
+      },
+      "ledger": {
+        "sheetTitle": "[TODO:zh] Payroll Ledger",
+        "docTitle": "[TODO:zh] {yearMonth} Payroll Ledger",
+        "employeeNo": "[TODO:zh] Emp. No.",
+        "name": "[TODO:zh] Name",
+        "department": "[TODO:zh] Department",
+        "jobGrade": "[TODO:zh] Grade",
+        "baseSalary": "[TODO:zh] Base Salary",
+        "overtimePay": "[TODO:zh] Overtime",
+        "nightPay": "[TODO:zh] Night Shift",
+        "holidayPay": "[TODO:zh] Holiday",
+        "positionAllowance": "[TODO:zh] Position Allow.",
+        "mealAllowance": "[TODO:zh] Meal",
+        "transportAllowance": "[TODO:zh] Transport",
+        "grossTotal": "[TODO:zh] Gross Total",
+        "nationalPension": "[TODO:zh] National Pension",
+        "healthInsurance": "[TODO:zh] Health Ins.",
+        "longTermCare": "[TODO:zh] Long-term Care",
+        "employmentInsurance": "[TODO:zh] Employment Ins.",
+        "incomeTax": "[TODO:zh] Income Tax",
+        "localIncomeTax": "[TODO:zh] Local Income Tax",
+        "deductionTotal": "[TODO:zh] Deduction Total",
+        "netPay": "[TODO:zh] Net Pay",
+        "total": "[TODO:zh] Total"
+      },
+      "journal": {
+        "sheetTitle": "[TODO:zh] Payroll Journal Entry",
+        "docTitle": "[TODO:zh] {yearMonth} Payroll Journal",
+        "department": "[TODO:zh] Department",
+        "total": "[TODO:zh] Total",
+        "mappingSheet": "[TODO:zh] Account Mapping",
+        "mappingItem": "[TODO:zh] Payroll Item",
+        "mappingCode": "[TODO:zh] Account Code",
+        "mappingName": "[TODO:zh] Account Name",
+        "accountNames": {
+          "salary": "[TODO:zh] Salary",
+          "allowances": "[TODO:zh] Allowances",
+          "welfare": "[TODO:zh] Welfare Benefits",
+          "socialInsurance": "[TODO:zh] Social Insurance",
+          "retirement": "[TODO:zh] Retirement Benefits"
+        }
+      },
+      "filename": {
+        "yearMonth": "[TODO:zh] {year}-{month}",
+        "comparison": "[TODO:zh] comparison",
+        "ledger": "[TODO:zh] ledger",
+        "journal": "[TODO:zh] journal"
+      }
+    },
+    "pdf": {
+      "title": "[TODO:zh] Pay Stub",
+      "name": "[TODO:zh] Name",
+      "employeeNo": "[TODO:zh] Employee No.",
+      "department": "[TODO:zh] Department",
+      "jobGrade": "[TODO:zh] Grade",
+      "payPeriod": "[TODO:zh] Pay Period",
+      "payDate": "[TODO:zh] Pay Date",
+      "earningItems": "[TODO:zh] Earnings",
+      "amount": "[TODO:zh] Amount",
+      "deductionItems": "[TODO:zh] Deductions",
+      "grossPay": "[TODO:zh] Gross Pay",
+      "totalDeductions": "[TODO:zh] Total Deductions",
+      "netPay": "[TODO:zh] Net Pay",
+      "footer": "[TODO:zh] This pay stub is an electronic document issued by {company}.",
+      "earnings": {
+        "baseSalary": "[TODO:zh] Base Salary",
+        "fixedOvertime": "[TODO:zh] Fixed Overtime",
+        "meal": "[TODO:zh] Meal Allowance",
+        "transport": "[TODO:zh] Transport Allowance",
+        "overtime": "[TODO:zh] Overtime Pay",
+        "nightShift": "[TODO:zh] Night Shift Pay",
+        "holiday": "[TODO:zh] Holiday Pay",
+        "bonus": "[TODO:zh] Bonus",
+        "other": "[TODO:zh] Other Allowances"
+      },
+      "deductions": {
+        "nationalPension": "[TODO:zh] National Pension",
+        "health": "[TODO:zh] Health Insurance",
+        "longTermCare": "[TODO:zh] Long-term Care Insurance",
+        "employment": "[TODO:zh] Employment Insurance",
+        "incomeTax": "[TODO:zh] Income Tax",
+        "localIncomeTax": "[TODO:zh] Local Income Tax"
+      }
+    }
   },
   "payrollMe": {
     "deductions": "Deductions",
@@ -10436,6 +10546,281 @@
       "deductions": "输入扣除项目",
       "dependents": "确认抚养家属",
       "result": "确认结果"
+    }
+  },
+  "teams": {
+    "leaveApproval": {
+      "title": "[TODO:zh] Leave Approval Request",
+      "subtitle": "[TODO:zh] Leave request from {name}",
+      "applicant": "[TODO:zh] Applicant",
+      "type": "[TODO:zh] Type",
+      "period": "[TODO:zh] Period",
+      "days": "[TODO:zh] Days",
+      "daysUnit": "[TODO:zh] {count} days",
+      "reason": "[TODO:zh] Reason",
+      "approve": "[TODO:zh] Approve",
+      "reject": "[TODO:zh] Reject",
+      "viewInHub": "[TODO:zh] View in HR Hub"
+    },
+    "evalReminder": {
+      "title": "[TODO:zh] Evaluation Deadline Reminder",
+      "evaluator": "[TODO:zh] Evaluator",
+      "pending": "[TODO:zh] Pending",
+      "pendingUnit": "[TODO:zh] {count} items",
+      "deadline": "[TODO:zh] Deadline",
+      "deadlineWarning": "[TODO:zh] Please complete evaluations by the deadline.",
+      "openInHub": "[TODO:zh] Open in HR Hub"
+    },
+    "attritionRisk": {
+      "title": "[TODO:zh] Attrition Risk Alert",
+      "riskScore": "[TODO:zh] Risk Score",
+      "department": "[TODO:zh] Department",
+      "factors": "[TODO:zh] Key factors: {factors}",
+      "viewDetail": "[TODO:zh] View Details"
+    },
+    "onboarding": {
+      "title": "[TODO:zh] Onboarding Task Due Soon",
+      "newHire": "[TODO:zh] New Hire",
+      "assignee": "[TODO:zh] Assignee",
+      "deadline": "[TODO:zh] Deadline",
+      "complete": "[TODO:zh] Complete",
+      "viewInHub": "[TODO:zh] View in HR Hub"
+    },
+    "chatbotEscalation": {
+      "title": "[TODO:zh] Chatbot Escalation",
+      "subtitle": "[TODO:zh] Inquiry from {name}",
+      "employee": "[TODO:zh] Employee",
+      "escalation": "[TODO:zh] Escalation",
+      "assign": "[TODO:zh] Assign Agent",
+      "viewInHub": "[TODO:zh] View in HR Hub"
+    },
+    "digest": {
+      "title": "[TODO:zh] Weekly HR Digest",
+      "newHires": "[TODO:zh] New Hires",
+      "onLeave": "[TODO:zh] On Leave",
+      "pendingEvals": "[TODO:zh] Pending Evals",
+      "attritionRisk": "[TODO:zh] Attrition Risk",
+      "pendingApprovals": "[TODO:zh] Pending Approvals",
+      "countPeople": "[TODO:zh] {count} people",
+      "countItems": "[TODO:zh] {count} items",
+      "openDashboard": "[TODO:zh] Open Dashboard",
+      "channelNotSet": "[TODO:zh] Teams channel is not configured.",
+      "weeklyTitle": "[TODO:zh] Weekly HR Digest ({range})",
+      "highlight": {
+        "newHires": "[TODO:zh] {count} new hires this week",
+        "attritionRisk": "[TODO:zh] {count} employees at risk of attrition — follow-up needed",
+        "pendingApprovals": "[TODO:zh] {count} pending leave approvals",
+        "pendingEvals": "[TODO:zh] {count} pending evaluations"
+      }
+    },
+    "recognition": {
+      "title": "[TODO:zh] Peer Recognition",
+      "coreValue": "[TODO:zh] Core Value",
+      "sender": "[TODO:zh] From",
+      "receiver": "[TODO:zh] To"
+    },
+    "bot": {
+      "noUserInfo": "[TODO:zh] Unable to verify user information.",
+      "noLinkedAccount": "[TODO:zh] No linked account found in HR Hub. Please log in to HR Hub first.",
+      "installed": "[TODO:zh] CTR HR Hub Bot has been installed. Try typing \"help\".",
+      "helpTitle": "[TODO:zh] CTR HR Hub Bot Commands",
+      "helpLeave": "[TODO:zh] `leave` — Check leave balance",
+      "helpPaystub": "[TODO:zh] `paystub` — View latest payslip",
+      "helpAttendance": "[TODO:zh] `attendance` — Check today's attendance",
+      "helpHelp": "[TODO:zh] `help` — Show this help message",
+      "leaveBalance": {
+        "title": "[TODO:zh] Leave Balance",
+        "empty": "[TODO:zh] No leave balance records found.",
+        "item": "[TODO:zh] - **{name}**: {remaining} days (total {granted}, used {used})"
+      },
+      "paystub": {
+        "title": "[TODO:zh] Latest Payslip",
+        "empty": "[TODO:zh] No payslip information available.",
+        "baseSalary": "[TODO:zh] Base Salary",
+        "grossPay": "[TODO:zh] Gross Pay",
+        "netPay": "[TODO:zh] Net Pay",
+        "detail": "[TODO:zh] For details, visit HR Hub > Payslips.",
+        "currencyUnit": "[TODO:zh] {amount} KRW"
+      },
+      "attendance": {
+        "title": "[TODO:zh] Today's Attendance",
+        "empty": "[TODO:zh] No attendance record for today.",
+        "clockIn": "[TODO:zh] Clock In",
+        "clockOut": "[TODO:zh] Clock Out",
+        "status": "[TODO:zh] Status",
+        "notIn": "[TODO:zh] Not clocked in",
+        "notOut": "[TODO:zh] Not clocked out"
+      }
+    },
+    "actions": {
+      "recorded": "[TODO:zh] Action has been recorded.",
+      "leaveNotFound": "[TODO:zh] Leave request not found.",
+      "alreadyProcessed": "[TODO:zh] This request has already been processed. (Status: {status})",
+      "leaveApproved": "[TODO:zh] Leave has been approved.",
+      "leaveRejected": "[TODO:zh] Leave has been rejected.",
+      "unknownAction": "[TODO:zh] Unknown action.",
+      "taskNotFound": "[TODO:zh] Onboarding task not found.",
+      "taskAlreadyDone": "[TODO:zh] This task has already been completed.",
+      "taskCompleted": "[TODO:zh] Onboarding task completed.",
+      "sessionNotFound": "[TODO:zh] Chatbot session not found.",
+      "agentAssigned": "[TODO:zh] Agent has been assigned."
+    },
+    "api": {
+      "authFailed": "[TODO:zh] Authentication failed",
+      "invalidJson": "[TODO:zh] Invalid JSON",
+      "invalidRequest": "[TODO:zh] Invalid request data",
+      "invalidRequestData": "[TODO:zh] Invalid request data.",
+      "noConfig": "[TODO:zh] No Teams configuration found.",
+      "disconnected": "[TODO:zh] Teams connection has been disconnected.",
+      "invalidId": "[TODO:zh] Invalid ID format.",
+      "webhookNotFound": "[TODO:zh] Webhook configuration not found.",
+      "senderMissing": "[TODO:zh] Sender information is missing.",
+      "userNotRegistered": "[TODO:zh] User is not registered in HR Hub."
+    },
+    "ui": {
+      "settings": {
+        "title": "[TODO:zh] Teams Integration",
+        "description": "[TODO:zh] Connect Microsoft Teams with HR Hub to configure notifications, bot, and weekly digest.",
+        "tabConnection": "[TODO:zh] Connection",
+        "tabChannel": "[TODO:zh] Channel",
+        "tabBot": "[TODO:zh] Bot",
+        "tabDigest": "[TODO:zh] Digest",
+        "save": "[TODO:zh] Save",
+        "saveSuccess": "[TODO:zh] Teams settings saved.",
+        "saveError": "[TODO:zh] An error occurred while saving.",
+        "loadError": "[TODO:zh] Failed to load Teams settings.",
+        "disconnectSuccess": "[TODO:zh] Teams connection disconnected.",
+        "disconnectError": "[TODO:zh] An error occurred while disconnecting."
+      },
+      "connection": {
+        "title": "[TODO:zh] Connection Status",
+        "connected": "[TODO:zh] Connected",
+        "disconnected": "[TODO:zh] Disconnected",
+        "connectedAt": "[TODO:zh] Connected at",
+        "testSuccess": "[TODO:zh] Connection successful — Tenant: {name}",
+        "testFail": "[TODO:zh] Connection failed: {error}",
+        "testBtn": "[TODO:zh] Test Connection",
+        "disconnectBtn": "[TODO:zh] Disconnect"
+      },
+      "channel": {
+        "title": "[TODO:zh] Teams Channel Selection",
+        "selectTeam": "[TODO:zh] Select Team",
+        "selectChannel": "[TODO:zh] Select Channel",
+        "teamPlaceholder": "[TODO:zh] Choose a team",
+        "channelPlaceholder": "[TODO:zh] Choose a channel",
+        "loadingTeams": "[TODO:zh] Loading teams...",
+        "loadingChannels": "[TODO:zh] Loading channels...",
+        "channelHelp": "[TODO:zh] Weekly digest and notifications will be sent to the selected channel.",
+        "errorTeams": "[TODO:zh] Failed to load teams.",
+        "errorChannels": "[TODO:zh] Failed to load channels."
+      },
+      "bot": {
+        "title": "[TODO:zh] Bot Settings",
+        "enabled": "[TODO:zh] Enable Bot",
+        "enabledDesc": "[TODO:zh] Use leave, payroll, and attendance commands in Teams.",
+        "presenceSync": "[TODO:zh] Presence Sync",
+        "presenceSyncDesc": "[TODO:zh] Sync Teams presence status with HR Hub."
+      },
+      "digestSettings": {
+        "title": "[TODO:zh] Weekly Digest",
+        "enabled": "[TODO:zh] Enable Digest",
+        "enabledDesc": "[TODO:zh] Post a weekly HR summary to the Teams channel on the selected day/time.",
+        "dayLabel": "[TODO:zh] Send Day",
+        "hourLabel": "[TODO:zh] Send Time",
+        "previewTitle": "[TODO:zh] Digest Preview",
+        "previewBtn": "[TODO:zh] Preview",
+        "sendBtn": "[TODO:zh] Send Manually",
+        "previewEmpty": "[TODO:zh] Click the preview button to see this week's digest.",
+        "loadError": "[TODO:zh] Failed to load digest.",
+        "sendSuccess": "[TODO:zh] Digest sent.",
+        "sendError": "[TODO:zh] Failed to send.",
+        "sendFetchError": "[TODO:zh] An error occurred while sending.",
+        "alerts": "[TODO:zh] Key Alerts",
+        "cardPreviewTitle": "[TODO:zh] Teams Card Preview"
+      },
+      "webhook": {
+        "sectionTitle": "[TODO:zh] Microsoft Teams Webhook Channels",
+        "addChannel": "[TODO:zh] Add Channel",
+        "noWebhooks": "[TODO:zh] No webhook channels registered",
+        "test": "[TODO:zh] Test",
+        "testSuccess": "[TODO:zh] Success",
+        "testFail": "[TODO:zh] Failed",
+        "deleteConfirm": "[TODO:zh] Delete this webhook configuration?",
+        "deleteAriaLabel": "[TODO:zh] Delete Webhook",
+        "noEvents": "[TODO:zh] No events selected",
+        "channelNamePlaceholder": "[TODO:zh] Channel name (e.g., HR-Alerts)",
+        "eventsToSend": "[TODO:zh] Events to Send",
+        "cancel": "[TODO:zh] Cancel",
+        "events": {
+          "overtime52h": "[TODO:zh] 52-hour block",
+          "overtime48h": "[TODO:zh] 48-hour warning",
+          "turnoverRisk": "[TODO:zh] Turnover Risk Critical",
+          "offerAccepted": "[TODO:zh] Offer Accepted",
+          "restructure": "[TODO:zh] Restructure Applied",
+          "leaveApproved": "[TODO:zh] Leave Approved",
+          "payslipIssued": "[TODO:zh] Payslip Issued",
+          "benefitApproved": "[TODO:zh] Benefit Approved",
+          "evalDeadline": "[TODO:zh] Evaluation Deadline"
+        }
+      },
+      "cardPreview": {
+        "label": "[TODO:zh] Preview"
+      }
+    }
+  },
+  "documents": {
+    "certificate": {
+      "employment": {
+        "title": "[TODO:zh] Certificate of Employment",
+        "subtitle": "[TODO:zh] Certificate of Employment"
+      },
+      "career": {
+        "title": "[TODO:zh] Certificate of Career",
+        "subtitle": "[TODO:zh] Certificate of Career",
+        "history": "[TODO:zh] Career History",
+        "department": "[TODO:zh] Department",
+        "position": "[TODO:zh] Position",
+        "startDate": "[TODO:zh] Start Date",
+        "endDate": "[TODO:zh] End Date",
+        "current": "[TODO:zh] Currently Employed"
+      },
+      "name": "[TODO:zh] Name",
+      "employeeNo": "[TODO:zh] Employee No.",
+      "birthDate": "[TODO:zh] Date of Birth",
+      "hireDate": "[TODO:zh] Hire Date",
+      "department": "[TODO:zh] Department",
+      "jobGrade": "[TODO:zh] Grade",
+      "position": "[TODO:zh] Position",
+      "purpose": "[TODO:zh] Purpose",
+      "defaultPurpose": "[TODO:zh] For submission",
+      "certify": "[TODO:zh] The above is hereby certified.",
+      "seal": "[TODO:zh] [Company Seal]"
+    },
+    "compensation": {
+      "title": "[TODO:zh] Compensation Adjustment Letter",
+      "subtitle": "[TODO:zh] Compensation Adjustment Letter",
+      "greeting": "[TODO:zh] Dear {name},",
+      "body": "[TODO:zh] We are pleased to inform you of the following compensation adjustment.",
+      "name": "[TODO:zh] Name",
+      "employeeNo": "[TODO:zh] Employee No.",
+      "department": "[TODO:zh] Department",
+      "position": "[TODO:zh] Position",
+      "adjustmentType": "[TODO:zh] Adjustment Type",
+      "previousSalary": "[TODO:zh] Previous Salary",
+      "newSalary": "[TODO:zh] New Salary",
+      "changeRate": "[TODO:zh] Change Rate",
+      "changeAmount": "[TODO:zh] Change Amount",
+      "effectiveDate": "[TODO:zh] Effective Date",
+      "bodyText": "[TODO:zh] This adjustment will take effect from the effective date above and will be reflected in the payroll from the pay date of the month in which the effective date falls.\nPlease contact the HR team if you have any questions regarding this letter.",
+      "approver": "[TODO:zh] Approved by: {name}",
+      "changeTypes": {
+        "ANNUAL_INCREASE": "[TODO:zh] Annual Increase",
+        "PROMOTION": "[TODO:zh] Promotion",
+        "MARKET_ADJUSTMENT": "[TODO:zh] Market Adjustment",
+        "MERIT_INCREASE": "[TODO:zh] Merit Increase",
+        "EQUITY_ADJUSTMENT": "[TODO:zh] Equity Adjustment",
+        "OTHER": "[TODO:zh] Other"
+      }
     }
   }
 }

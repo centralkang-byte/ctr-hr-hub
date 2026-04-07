@@ -12,14 +12,16 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { generateDigestData } from '@/lib/teams-digest'
 import { buildWeeklyDigestCard } from '@/lib/adaptive-cards'
 import { postToChannel } from '@/lib/microsoft-graph'
+import { getRequestLocale, serverT } from '@/lib/server-i18n'
 import type { SessionUser } from '@/types'
 
 // ─── GET — 다이제스트 미리보기 ──────────────────────────────
 
 export const GET = withPermission(
   async (_req: NextRequest, _context, user: SessionUser) => {
-    const data = await generateDigestData(user.companyId)
-    const card = buildWeeklyDigestCard(data)
+    const locale = await getRequestLocale()
+    const data = await generateDigestData(locale, user.companyId)
+    const card = await buildWeeklyDigestCard(locale, data)
 
     return apiSuccess({ digest: data, card })
   },
@@ -30,24 +32,26 @@ export const GET = withPermission(
 
 export const POST = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
+    const locale = await getRequestLocale()
+
     const integration = await prisma.teamsIntegration.findUnique({
       where: { companyId: user.companyId },
     })
 
     if (!integration?.teamId || !integration?.channelId) {
       return apiSuccess(
-        { success: false, message: 'Teams 채널이 설정되지 않았습니다.' },
+        { success: false, message: await serverT(locale, 'teams.digest.channelNotSet') },
         200,
       )
     }
 
-    const data = await generateDigestData(user.companyId)
-    const card = buildWeeklyDigestCard(data)
+    const data = await generateDigestData(locale, user.companyId)
+    const card = await buildWeeklyDigestCard(locale, data)
 
     const result = await postToChannel(
       integration.teamId,
       integration.channelId,
-      `주간 HR 다이제스트 (${data.weekRange})`,
+      await serverT(locale, 'teams.digest.weeklyTitle', { range: data.weekRange }),
       card,
     )
 

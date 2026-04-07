@@ -4,6 +4,8 @@
 // ═══════════════════════════════════════════════════════════
 
 import { env } from '@/lib/env'
+import { serverT } from '@/lib/server-i18n'
+import type { Locale } from '@/i18n/config'
 
 const APP_URL = env.NEXTAUTH_URL || 'https://hr.ctr.co.kr'
 
@@ -53,7 +55,7 @@ function factSet(facts: { title: string; value: string }[]) {
 
 // ─── 1. 휴가 승인 카드 ──────────────────────────────────────
 
-export function buildLeaveApprovalCard(data: {
+export async function buildLeaveApprovalCard(locale: Locale, data: {
   requestId: string
   employeeName: string
   leaveType: string
@@ -62,21 +64,26 @@ export function buildLeaveApprovalCard(data: {
   days: number
   reason?: string
 }) {
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
+
   return wrapCard(
     [
-      headerBlock('휴가 승인 요청', `${data.employeeName}님의 휴가 신청`),
+      headerBlock(
+        await t('teams.leaveApproval.title'),
+        await t('teams.leaveApproval.subtitle', { name: data.employeeName }),
+      ),
       factSet([
-        { title: '신청자', value: data.employeeName },
-        { title: '유형', value: data.leaveType },
-        { title: '기간', value: `${data.startDate} ~ ${data.endDate}` },
-        { title: '일수', value: `${data.days}일` },
-        ...(data.reason ? [{ title: '사유', value: data.reason }] : []),
+        { title: await t('teams.leaveApproval.applicant'), value: data.employeeName },
+        { title: await t('teams.leaveApproval.type'), value: data.leaveType },
+        { title: await t('teams.leaveApproval.period'), value: `${data.startDate} ~ ${data.endDate}` },
+        { title: await t('teams.leaveApproval.days'), value: await t('teams.leaveApproval.daysUnit', { count: data.days }) },
+        ...(data.reason ? [{ title: await t('teams.leaveApproval.reason'), value: data.reason }] : []),
       ]),
     ],
     [
       {
         type: 'Action.Submit',
-        title: '승인',
+        title: await t('teams.leaveApproval.approve'),
         style: 'positive',
         data: {
           action: 'approve',
@@ -86,7 +93,7 @@ export function buildLeaveApprovalCard(data: {
       },
       {
         type: 'Action.Submit',
-        title: '반려',
+        title: await t('teams.leaveApproval.reject'),
         style: 'destructive',
         data: {
           action: 'reject',
@@ -96,7 +103,7 @@ export function buildLeaveApprovalCard(data: {
       },
       {
         type: 'Action.OpenUrl',
-        title: 'HR Hub에서 보기',
+        title: await t('teams.leaveApproval.viewInHub'),
         url: `${APP_URL}/leave/admin`,
       },
     ],
@@ -105,23 +112,25 @@ export function buildLeaveApprovalCard(data: {
 
 // ─── 2. 평가 기한 알림 카드 ──────────────────────────────────
 
-export function buildPerfEvalReminderCard(data: {
+export async function buildPerfEvalReminderCard(locale: Locale, data: {
   cycleName: string
   dueDate: string
   pendingCount: number
   evaluatorName: string
 }) {
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
+
   return wrapCard(
     [
-      headerBlock('평가 기한 알림', `${data.cycleName}`),
+      headerBlock(await t('teams.evalReminder.title'), data.cycleName),
       factSet([
-        { title: '평가자', value: data.evaluatorName },
-        { title: '미완료', value: `${data.pendingCount}건` },
-        { title: '마감일', value: data.dueDate },
+        { title: await t('teams.evalReminder.evaluator'), value: data.evaluatorName },
+        { title: await t('teams.evalReminder.pending'), value: await t('teams.evalReminder.pendingUnit', { count: data.pendingCount }) },
+        { title: await t('teams.evalReminder.deadline'), value: data.dueDate },
       ]),
       {
         type: 'TextBlock',
-        text: '마감일까지 평가를 완료해 주세요.',
+        text: await t('teams.evalReminder.deadlineWarning'),
         wrap: true,
         color: 'Warning',
       },
@@ -129,7 +138,7 @@ export function buildPerfEvalReminderCard(data: {
     [
       {
         type: 'Action.OpenUrl',
-        title: 'HR Hub에서 열기',
+        title: await t('teams.evalReminder.openInHub'),
         url: `${APP_URL}/performance/results`,
       },
     ],
@@ -138,23 +147,25 @@ export function buildPerfEvalReminderCard(data: {
 
 // ─── 3. 이탈 위험 경고 카드 ──────────────────────────────────
 
-export function buildAttritionRiskCard(data: {
+export async function buildAttritionRiskCard(locale: Locale, data: {
   employeeName: string
   department: string
   riskScore: number
   riskFactors: string[]
   employeeId: string
 }) {
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
+
   return wrapCard(
     [
-      headerBlock('이탈 위험 경고', `${data.employeeName} (${data.department})`),
+      headerBlock(await t('teams.attritionRisk.title'), `${data.employeeName} (${data.department})`),
       factSet([
-        { title: '위험 점수', value: `${data.riskScore}/100` },
-        { title: '부서', value: data.department },
+        { title: await t('teams.attritionRisk.riskScore'), value: `${data.riskScore}/100` },
+        { title: await t('teams.attritionRisk.department'), value: data.department },
       ]),
       {
         type: 'TextBlock',
-        text: `주요 요인: ${data.riskFactors.join(', ')}`,
+        text: await t('teams.attritionRisk.factors', { factors: data.riskFactors.join(', ') }),
         wrap: true,
         size: 'Small',
       },
@@ -162,7 +173,7 @@ export function buildAttritionRiskCard(data: {
     [
       {
         type: 'Action.OpenUrl',
-        title: '상세 보기',
+        title: await t('teams.attritionRisk.viewDetail'),
         url: `${APP_URL}/analytics/attrition`,
       },
     ],
@@ -171,26 +182,28 @@ export function buildAttritionRiskCard(data: {
 
 // ─── 4. 온보딩 태스크 기한 카드 ──────────────────────────────
 
-export function buildOnboardingTaskCard(data: {
+export async function buildOnboardingTaskCard(locale: Locale, data: {
   taskId: string
   taskTitle: string
   employeeName: string
   dueDate: string
   assignee: string
 }) {
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
+
   return wrapCard(
     [
-      headerBlock('온보딩 태스크 마감 임박', data.taskTitle),
+      headerBlock(await t('teams.onboarding.title'), data.taskTitle),
       factSet([
-        { title: '신규입사자', value: data.employeeName },
-        { title: '담당자', value: data.assignee },
-        { title: '마감일', value: data.dueDate },
+        { title: await t('teams.onboarding.newHire'), value: data.employeeName },
+        { title: await t('teams.onboarding.assignee'), value: data.assignee },
+        { title: await t('teams.onboarding.deadline'), value: data.dueDate },
       ]),
     ],
     [
       {
         type: 'Action.Submit',
-        title: '완료하기',
+        title: await t('teams.onboarding.complete'),
         style: 'positive',
         data: {
           action: 'complete',
@@ -200,7 +213,7 @@ export function buildOnboardingTaskCard(data: {
       },
       {
         type: 'Action.OpenUrl',
-        title: 'HR Hub에서 보기',
+        title: await t('teams.onboarding.viewInHub'),
         url: `${APP_URL}/onboarding`,
       },
     ],
@@ -209,15 +222,20 @@ export function buildOnboardingTaskCard(data: {
 
 // ─── 5. 챗봇 에스컬레이션 카드 ──────────────────────────────
 
-export function buildChatbotEscalationCard(data: {
+export async function buildChatbotEscalationCard(locale: Locale, data: {
   sessionId: string
   employeeName: string
   question: string
   escalatedAt: string
 }) {
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
+
   return wrapCard(
     [
-      headerBlock('챗봇 에스컬레이션', `${data.employeeName}님 문의`),
+      headerBlock(
+        await t('teams.chatbotEscalation.title'),
+        await t('teams.chatbotEscalation.subtitle', { name: data.employeeName }),
+      ),
       {
         type: 'TextBlock',
         text: data.question,
@@ -225,14 +243,14 @@ export function buildChatbotEscalationCard(data: {
         maxLines: 3,
       },
       factSet([
-        { title: '직원', value: data.employeeName },
-        { title: '에스컬레이션', value: data.escalatedAt },
+        { title: await t('teams.chatbotEscalation.employee'), value: data.employeeName },
+        { title: await t('teams.chatbotEscalation.escalation'), value: data.escalatedAt },
       ]),
     ],
     [
       {
         type: 'Action.Submit',
-        title: '담당자 배정',
+        title: await t('teams.chatbotEscalation.assign'),
         style: 'positive',
         data: {
           action: 'assign',
@@ -242,7 +260,7 @@ export function buildChatbotEscalationCard(data: {
       },
       {
         type: 'Action.OpenUrl',
-        title: 'HR Hub에서 보기',
+        title: await t('teams.chatbotEscalation.viewInHub'),
         url: `${APP_URL}/hr-chat/sessions/${data.sessionId}`,
       },
     ],
@@ -251,7 +269,7 @@ export function buildChatbotEscalationCard(data: {
 
 // ─── 6. 주간 다이제스트 카드 ────────────────────────────────
 
-export function buildWeeklyDigestCard(data: {
+export async function buildWeeklyDigestCard(locale: Locale, data: {
   weekRange: string
   newHires: number
   onLeave: number
@@ -259,9 +277,11 @@ export function buildWeeklyDigestCard(data: {
   attritionRisks: number
   pendingApprovals: number
 }) {
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
+
   return wrapCard(
     [
-      headerBlock('주간 HR 다이제스트', data.weekRange),
+      headerBlock(await t('teams.digest.title'), data.weekRange),
       {
         type: 'ColumnSet',
         columns: [
@@ -269,37 +289,37 @@ export function buildWeeklyDigestCard(data: {
             type: 'Column',
             width: 'stretch',
             items: [
-              { type: 'TextBlock', text: '신규입사', size: 'Small', color: 'Accent' },
-              { type: 'TextBlock', text: `${data.newHires}명`, weight: 'Bolder', size: 'ExtraLarge' },
+              { type: 'TextBlock', text: await t('teams.digest.newHires'), size: 'Small', color: 'Accent' },
+              { type: 'TextBlock', text: await t('teams.digest.countPeople', { count: data.newHires }), weight: 'Bolder', size: 'ExtraLarge' },
             ],
           },
           {
             type: 'Column',
             width: 'stretch',
             items: [
-              { type: 'TextBlock', text: '휴가중', size: 'Small', color: 'Accent' },
-              { type: 'TextBlock', text: `${data.onLeave}명`, weight: 'Bolder', size: 'ExtraLarge' },
+              { type: 'TextBlock', text: await t('teams.digest.onLeave'), size: 'Small', color: 'Accent' },
+              { type: 'TextBlock', text: await t('teams.digest.countPeople', { count: data.onLeave }), weight: 'Bolder', size: 'ExtraLarge' },
             ],
           },
           {
             type: 'Column',
             width: 'stretch',
             items: [
-              { type: 'TextBlock', text: '평가 대기', size: 'Small', color: 'Warning' },
-              { type: 'TextBlock', text: `${data.pendingEvals}건`, weight: 'Bolder', size: 'ExtraLarge' },
+              { type: 'TextBlock', text: await t('teams.digest.pendingEvals'), size: 'Small', color: 'Warning' },
+              { type: 'TextBlock', text: await t('teams.digest.countItems', { count: data.pendingEvals }), weight: 'Bolder', size: 'ExtraLarge' },
             ],
           },
         ],
       },
       factSet([
-        { title: '이탈 위험', value: `${data.attritionRisks}명` },
-        { title: '승인 대기', value: `${data.pendingApprovals}건` },
+        { title: await t('teams.digest.attritionRisk'), value: await t('teams.digest.countPeople', { count: data.attritionRisks }) },
+        { title: await t('teams.digest.pendingApprovals'), value: await t('teams.digest.countItems', { count: data.pendingApprovals }) },
       ]),
     ],
     [
       {
         type: 'Action.OpenUrl',
-        title: '대시보드 열기',
+        title: await t('teams.digest.openDashboard'),
         url: `${APP_URL}/analytics`,
       },
     ],
@@ -308,15 +328,17 @@ export function buildWeeklyDigestCard(data: {
 
 // ─── 7. 칭찬/인정 카드 ──────────────────────────────────────
 
-export function buildRecognitionCard(data: {
+export async function buildRecognitionCard(locale: Locale, data: {
   senderName: string
   receiverName: string
   value: string
   message: string
 }) {
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
+
   return wrapCard(
     [
-      headerBlock('동료 칭찬', `${data.senderName} → ${data.receiverName}`),
+      headerBlock(await t('teams.recognition.title'), `${data.senderName} → ${data.receiverName}`),
       {
         type: 'TextBlock',
         text: `"${data.message}"`,
@@ -324,9 +346,9 @@ export function buildRecognitionCard(data: {
         style: 'default',
       },
       factSet([
-        { title: '핵심가치', value: data.value },
-        { title: '보낸 사람', value: data.senderName },
-        { title: '받는 사람', value: data.receiverName },
+        { title: await t('teams.recognition.coreValue'), value: data.value },
+        { title: await t('teams.recognition.sender'), value: data.senderName },
+        { title: await t('teams.recognition.receiver'), value: data.receiverName },
       ]),
     ],
   )

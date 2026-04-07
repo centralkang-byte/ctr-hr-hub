@@ -6147,7 +6147,117 @@
       "yearLabel": "Year {year}"
     },
     "yearEndTitle": "Year-End Settlement",
-    "years": "year"
+    "years": "year",
+    "export": {
+      "comparison": {
+        "sheetTitle": "Month-over-Month Comparison",
+        "docTitle": "{yearMonth} Payroll Comparison",
+        "employeeNo": "Employee No.",
+        "name": "Name",
+        "department": "Department",
+        "currentNet": "{yearMonth} Net Pay",
+        "previousNet": "Previous Net Pay",
+        "diff": "Difference",
+        "diffPercent": "Change (%)",
+        "reason": "Reason",
+        "anomaly": "Anomaly",
+        "total": "Total",
+        "summarySheet": "Summary",
+        "summaryItem": "Item",
+        "summaryValue": "Value",
+        "summaryMonth": "Target Month",
+        "summaryCurrentTotal": "Total Net Pay (Current)",
+        "summaryPreviousTotal": "Total Net Pay (Previous)",
+        "summaryDiff": "Change Amount",
+        "summaryDiffPercent": "Change (%)",
+        "summaryIncreased": "Increased",
+        "summaryDecreased": "Decreased",
+        "summaryUnchanged": "Unchanged"
+      },
+      "ledger": {
+        "sheetTitle": "Payroll Ledger",
+        "docTitle": "{yearMonth} Payroll Ledger",
+        "employeeNo": "Emp. No.",
+        "name": "Name",
+        "department": "Department",
+        "jobGrade": "Grade",
+        "baseSalary": "Base Salary",
+        "overtimePay": "Overtime",
+        "nightPay": "Night Shift",
+        "holidayPay": "Holiday",
+        "positionAllowance": "Position Allow.",
+        "mealAllowance": "Meal",
+        "transportAllowance": "Transport",
+        "grossTotal": "Gross Total",
+        "nationalPension": "National Pension",
+        "healthInsurance": "Health Ins.",
+        "longTermCare": "Long-term Care",
+        "employmentInsurance": "Employment Ins.",
+        "incomeTax": "Income Tax",
+        "localIncomeTax": "Local Income Tax",
+        "deductionTotal": "Deduction Total",
+        "netPay": "Net Pay",
+        "total": "Total"
+      },
+      "journal": {
+        "sheetTitle": "Payroll Journal Entry",
+        "docTitle": "{yearMonth} Payroll Journal",
+        "department": "Department",
+        "total": "Total",
+        "mappingSheet": "Account Mapping",
+        "mappingItem": "Payroll Item",
+        "mappingCode": "Account Code",
+        "mappingName": "Account Name",
+        "accountNames": {
+          "salary": "Salary",
+          "allowances": "Allowances",
+          "welfare": "Welfare Benefits",
+          "socialInsurance": "Social Insurance",
+          "retirement": "Retirement Benefits"
+        }
+      },
+      "filename": {
+        "yearMonth": "{year}-{month}",
+        "comparison": "comparison",
+        "ledger": "ledger",
+        "journal": "journal"
+      }
+    },
+    "pdf": {
+      "title": "Pay Stub",
+      "name": "Name",
+      "employeeNo": "Employee No.",
+      "department": "Department",
+      "jobGrade": "Grade",
+      "payPeriod": "Pay Period",
+      "payDate": "Pay Date",
+      "earningItems": "Earnings",
+      "amount": "Amount",
+      "deductionItems": "Deductions",
+      "grossPay": "Gross Pay",
+      "totalDeductions": "Total Deductions",
+      "netPay": "Net Pay",
+      "footer": "This pay stub is an electronic document issued by {company}.",
+      "earnings": {
+        "baseSalary": "Base Salary",
+        "fixedOvertime": "Fixed Overtime",
+        "meal": "Meal Allowance",
+        "transport": "Transport Allowance",
+        "overtime": "Overtime Pay",
+        "nightShift": "Night Shift Pay",
+        "holiday": "Holiday Pay",
+        "bonus": "Bonus",
+        "other": "Other Allowances"
+      },
+      "deductions": {
+        "nationalPension": "National Pension",
+        "health": "Health Insurance",
+        "longTermCare": "Long-term Care Insurance",
+        "employment": "Employment Insurance",
+        "incomeTax": "Income Tax",
+        "localIncomeTax": "Local Income Tax"
+      }
+    }
   },
   "payrollMe": {
     "deductions": "Deductions",
@@ -10435,6 +10545,281 @@
       "deductions": "Enter Deductions",
       "dependents": "Verify Dependents",
       "result": "Review Results"
+    }
+  },
+  "teams": {
+    "leaveApproval": {
+      "title": "Leave Approval Request",
+      "subtitle": "Leave request from {name}",
+      "applicant": "Applicant",
+      "type": "Type",
+      "period": "Period",
+      "days": "Days",
+      "daysUnit": "{count} days",
+      "reason": "Reason",
+      "approve": "Approve",
+      "reject": "Reject",
+      "viewInHub": "View in HR Hub"
+    },
+    "evalReminder": {
+      "title": "Evaluation Deadline Reminder",
+      "evaluator": "Evaluator",
+      "pending": "Pending",
+      "pendingUnit": "{count} items",
+      "deadline": "Deadline",
+      "deadlineWarning": "Please complete evaluations by the deadline.",
+      "openInHub": "Open in HR Hub"
+    },
+    "attritionRisk": {
+      "title": "Attrition Risk Alert",
+      "riskScore": "Risk Score",
+      "department": "Department",
+      "factors": "Key factors: {factors}",
+      "viewDetail": "View Details"
+    },
+    "onboarding": {
+      "title": "Onboarding Task Due Soon",
+      "newHire": "New Hire",
+      "assignee": "Assignee",
+      "deadline": "Deadline",
+      "complete": "Complete",
+      "viewInHub": "View in HR Hub"
+    },
+    "chatbotEscalation": {
+      "title": "Chatbot Escalation",
+      "subtitle": "Inquiry from {name}",
+      "employee": "Employee",
+      "escalation": "Escalation",
+      "assign": "Assign Agent",
+      "viewInHub": "View in HR Hub"
+    },
+    "digest": {
+      "title": "Weekly HR Digest",
+      "newHires": "New Hires",
+      "onLeave": "On Leave",
+      "pendingEvals": "Pending Evals",
+      "attritionRisk": "Attrition Risk",
+      "pendingApprovals": "Pending Approvals",
+      "countPeople": "{count} people",
+      "countItems": "{count} items",
+      "openDashboard": "Open Dashboard",
+      "channelNotSet": "Teams channel is not configured.",
+      "weeklyTitle": "Weekly HR Digest ({range})",
+      "highlight": {
+        "newHires": "{count} new hires this week",
+        "attritionRisk": "{count} employees at risk of attrition — follow-up needed",
+        "pendingApprovals": "{count} pending leave approvals",
+        "pendingEvals": "{count} pending evaluations"
+      }
+    },
+    "recognition": {
+      "title": "Peer Recognition",
+      "coreValue": "Core Value",
+      "sender": "From",
+      "receiver": "To"
+    },
+    "bot": {
+      "noUserInfo": "Unable to verify user information.",
+      "noLinkedAccount": "No linked account found in HR Hub. Please log in to HR Hub first.",
+      "installed": "CTR HR Hub Bot has been installed. Try typing \"help\".",
+      "helpTitle": "CTR HR Hub Bot Commands",
+      "helpLeave": "`leave` — Check leave balance",
+      "helpPaystub": "`paystub` — View latest payslip",
+      "helpAttendance": "`attendance` — Check today's attendance",
+      "helpHelp": "`help` — Show this help message",
+      "leaveBalance": {
+        "title": "Leave Balance",
+        "empty": "No leave balance records found.",
+        "item": "- **{name}**: {remaining} days (total {granted}, used {used})"
+      },
+      "paystub": {
+        "title": "Latest Payslip",
+        "empty": "No payslip information available.",
+        "baseSalary": "Base Salary",
+        "grossPay": "Gross Pay",
+        "netPay": "Net Pay",
+        "detail": "For details, visit HR Hub > Payslips.",
+        "currencyUnit": "{amount} KRW"
+      },
+      "attendance": {
+        "title": "Today's Attendance",
+        "empty": "No attendance record for today.",
+        "clockIn": "Clock In",
+        "clockOut": "Clock Out",
+        "status": "Status",
+        "notIn": "Not clocked in",
+        "notOut": "Not clocked out"
+      }
+    },
+    "actions": {
+      "recorded": "Action has been recorded.",
+      "leaveNotFound": "Leave request not found.",
+      "alreadyProcessed": "This request has already been processed. (Status: {status})",
+      "leaveApproved": "Leave has been approved.",
+      "leaveRejected": "Leave has been rejected.",
+      "unknownAction": "Unknown action.",
+      "taskNotFound": "Onboarding task not found.",
+      "taskAlreadyDone": "This task has already been completed.",
+      "taskCompleted": "Onboarding task completed.",
+      "sessionNotFound": "Chatbot session not found.",
+      "agentAssigned": "Agent has been assigned."
+    },
+    "api": {
+      "authFailed": "Authentication failed",
+      "invalidJson": "Invalid JSON",
+      "invalidRequest": "Invalid request data",
+      "invalidRequestData": "Invalid request data.",
+      "noConfig": "No Teams configuration found.",
+      "disconnected": "Teams connection has been disconnected.",
+      "invalidId": "Invalid ID format.",
+      "webhookNotFound": "Webhook configuration not found.",
+      "senderMissing": "Sender information is missing.",
+      "userNotRegistered": "User is not registered in HR Hub."
+    },
+    "ui": {
+      "settings": {
+        "title": "Teams Integration",
+        "description": "Connect Microsoft Teams with HR Hub to configure notifications, bot, and weekly digest.",
+        "tabConnection": "Connection",
+        "tabChannel": "Channel",
+        "tabBot": "Bot",
+        "tabDigest": "Digest",
+        "save": "Save",
+        "saveSuccess": "Teams settings saved.",
+        "saveError": "An error occurred while saving.",
+        "loadError": "Failed to load Teams settings.",
+        "disconnectSuccess": "Teams connection disconnected.",
+        "disconnectError": "An error occurred while disconnecting."
+      },
+      "connection": {
+        "title": "Connection Status",
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "connectedAt": "Connected at",
+        "testSuccess": "Connection successful — Tenant: {name}",
+        "testFail": "Connection failed: {error}",
+        "testBtn": "Test Connection",
+        "disconnectBtn": "Disconnect"
+      },
+      "channel": {
+        "title": "Teams Channel Selection",
+        "selectTeam": "Select Team",
+        "selectChannel": "Select Channel",
+        "teamPlaceholder": "Choose a team",
+        "channelPlaceholder": "Choose a channel",
+        "loadingTeams": "Loading teams...",
+        "loadingChannels": "Loading channels...",
+        "channelHelp": "Weekly digest and notifications will be sent to the selected channel.",
+        "errorTeams": "Failed to load teams.",
+        "errorChannels": "Failed to load channels."
+      },
+      "bot": {
+        "title": "Bot Settings",
+        "enabled": "Enable Bot",
+        "enabledDesc": "Use leave, payroll, and attendance commands in Teams.",
+        "presenceSync": "Presence Sync",
+        "presenceSyncDesc": "Sync Teams presence status with HR Hub."
+      },
+      "digestSettings": {
+        "title": "Weekly Digest",
+        "enabled": "Enable Digest",
+        "enabledDesc": "Post a weekly HR summary to the Teams channel on the selected day/time.",
+        "dayLabel": "Send Day",
+        "hourLabel": "Send Time",
+        "previewTitle": "Digest Preview",
+        "previewBtn": "Preview",
+        "sendBtn": "Send Manually",
+        "previewEmpty": "Click the preview button to see this week's digest.",
+        "loadError": "Failed to load digest.",
+        "sendSuccess": "Digest sent.",
+        "sendError": "Failed to send.",
+        "sendFetchError": "An error occurred while sending.",
+        "alerts": "Key Alerts",
+        "cardPreviewTitle": "Teams Card Preview"
+      },
+      "webhook": {
+        "sectionTitle": "Microsoft Teams Webhook Channels",
+        "addChannel": "Add Channel",
+        "noWebhooks": "No webhook channels registered",
+        "test": "Test",
+        "testSuccess": "Success",
+        "testFail": "Failed",
+        "deleteConfirm": "Delete this webhook configuration?",
+        "deleteAriaLabel": "Delete Webhook",
+        "noEvents": "No events selected",
+        "channelNamePlaceholder": "Channel name (e.g., HR-Alerts)",
+        "eventsToSend": "Events to Send",
+        "cancel": "Cancel",
+        "events": {
+          "overtime52h": "52-hour block",
+          "overtime48h": "48-hour warning",
+          "turnoverRisk": "Turnover Risk Critical",
+          "offerAccepted": "Offer Accepted",
+          "restructure": "Restructure Applied",
+          "leaveApproved": "Leave Approved",
+          "payslipIssued": "Payslip Issued",
+          "benefitApproved": "Benefit Approved",
+          "evalDeadline": "Evaluation Deadline"
+        }
+      },
+      "cardPreview": {
+        "label": "Preview"
+      }
+    }
+  },
+  "documents": {
+    "certificate": {
+      "employment": {
+        "title": "Certificate of Employment",
+        "subtitle": "Certificate of Employment"
+      },
+      "career": {
+        "title": "Certificate of Career",
+        "subtitle": "Certificate of Career",
+        "history": "Career History",
+        "department": "Department",
+        "position": "Position",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "current": "Currently Employed"
+      },
+      "name": "Name",
+      "employeeNo": "Employee No.",
+      "birthDate": "Date of Birth",
+      "hireDate": "Hire Date",
+      "department": "Department",
+      "jobGrade": "Grade",
+      "position": "Position",
+      "purpose": "Purpose",
+      "defaultPurpose": "For submission",
+      "certify": "The above is hereby certified.",
+      "seal": "[Company Seal]"
+    },
+    "compensation": {
+      "title": "Compensation Adjustment Letter",
+      "subtitle": "Compensation Adjustment Letter",
+      "greeting": "Dear {name},",
+      "body": "We are pleased to inform you of the following compensation adjustment.",
+      "name": "Name",
+      "employeeNo": "Employee No.",
+      "department": "Department",
+      "position": "Position",
+      "adjustmentType": "Adjustment Type",
+      "previousSalary": "Previous Salary",
+      "newSalary": "New Salary",
+      "changeRate": "Change Rate",
+      "changeAmount": "Change Amount",
+      "effectiveDate": "Effective Date",
+      "bodyText": "This adjustment will take effect from the effective date above and will be reflected in the payroll from the pay date of the month in which the effective date falls.\nPlease contact the HR team if you have any questions regarding this letter.",
+      "approver": "Approved by: {name}",
+      "changeTypes": {
+        "ANNUAL_INCREASE": "Annual Increase",
+        "PROMOTION": "Promotion",
+        "MARKET_ADJUSTMENT": "Market Adjustment",
+        "MERIT_INCREASE": "Merit Increase",
+        "EQUITY_ADJUSTMENT": "Equity Adjustment",
+        "OTHER": "Other"
+      }
     }
   }
 }

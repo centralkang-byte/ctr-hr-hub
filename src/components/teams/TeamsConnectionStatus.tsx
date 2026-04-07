@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { CheckCircle2, Loader2, XCircle, RefreshCw, Unplug } from 'lucide-react'
 
 import { apiClient } from '@/lib/api'
@@ -31,6 +32,7 @@ export function TeamsConnectionStatus({
   onDisconnect,
   onRefresh,
 }: Props) {
+  const t = useTranslations('teams')
   const { toast } = useToast()
   const [testing, setTesting] = useState(false)
   const [testResult, setTestResult] = useState<{
@@ -50,13 +52,13 @@ export function TeamsConnectionStatus({
       }>('/api/v1/teams/config/test', {})
       setTestResult(res.data)
       if (res.data.success) {
-        toast({ title: '성공', description: `연결 테스트 성공: ${res.data.tenantName}` })
+        toast({ title: t('ui.connection.testSuccess', { name: res.data.tenantName ?? '' }) })
       } else {
-        toast({ title: '실패', description: res.data.error ?? '연결 테스트 실패', variant: 'destructive' })
+        toast({ title: t('ui.connection.testFail', { error: res.data.error ?? '' }), variant: 'destructive' })
       }
     } catch {
-      setTestResult({ success: false, error: '연결 테스트 중 오류가 발생했습니다.' })
-      toast({ title: '오류', description: '연결 테스트 실패', variant: 'destructive' })
+      setTestResult({ success: false, error: t('ui.connection.testFail', { error: '' }) })
+      toast({ title: t('ui.connection.testFail', { error: '' }), variant: 'destructive' })
     } finally {
       setTesting(false)
     }
@@ -66,16 +68,16 @@ export function TeamsConnectionStatus({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          연결 상태
+          {t('ui.connection.title')}
           {connected ? (
             <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-200">
               <CheckCircle2 className="mr-1 h-3 w-3" />
-              연결됨
+              {t('ui.connection.connected')}
             </Badge>
           ) : (
             <Badge variant="outline" className="text-muted-foreground">
               <XCircle className="mr-1 h-3 w-3" />
-              미연결
+              {t('ui.connection.disconnected')}
             </Badge>
           )}
         </CardTitle>
@@ -89,7 +91,7 @@ export function TeamsConnectionStatus({
             </div>
             {config.connectedAt && (
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">연결 일시</span>
+                <span className="text-muted-foreground">{t('ui.connection.connectedAt')}</span>
                 <span>{new Date(config.connectedAt).toLocaleString('ko-KR')}</span>
               </div>
             )}
@@ -105,8 +107,8 @@ export function TeamsConnectionStatus({
             }`}
           >
             {testResult.success
-              ? `연결 성공 — 테넌트: ${testResult.tenantName}`
-              : `연결 실패: ${testResult.error}`}
+              ? t('ui.connection.testSuccess', { name: testResult.tenantName ?? '' })
+              : t('ui.connection.testFail', { error: testResult.error ?? '' })}
           </div>
         )}
 
@@ -117,13 +119,13 @@ export function TeamsConnectionStatus({
             ) : (
               <RefreshCw className="mr-2 h-4 w-4" />
             )}
-            연결 테스트
+            {t('ui.connection.testBtn')}
           </Button>
 
           {connected && (
             <Button variant="outline" onClick={onDisconnect} className="text-destructive hover:bg-destructive/10">
               <Unplug className="mr-2 h-4 w-4" />
-              연결 해제
+              {t('ui.connection.disconnectBtn')}
             </Button>
           )}
 

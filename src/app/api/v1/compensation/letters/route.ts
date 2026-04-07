@@ -14,6 +14,7 @@ import { letterGenerateSchema, letterSearchSchema } from '@/lib/schemas/compensa
 import { generateCompensationLetterPdf, buildLetterData } from '@/lib/documents/compensation-letter-pdf'
 import { uploadBuffer, buildS3Key } from '@/lib/s3'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { getRequestLocale } from '@/lib/server-i18n'
 import type { SessionUser } from '@/types'
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -112,6 +113,7 @@ export const GET = withPermission(
 
 export const POST = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
+    const locale = await getRequestLocale()
     const body: unknown = await req.json()
     const parsed = letterGenerateSchema.safeParse(body)
     if (!parsed.success) throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
@@ -188,7 +190,7 @@ export const POST = withPermission(
       const uploadResults = await processInChunks(latestHistories, UPLOAD_CHUNK_SIZE, async (history) => {
         const primaryAssignment = extractPrimaryAssignment(history.employee.assignments ?? [])
         const pdfData = buildLetterData(history, primaryAssignment)
-        const buffer = generateCompensationLetterPdf(pdfData)
+        const buffer = await generateCompensationLetterPdf(locale, pdfData)
         const fileUuid = randomUUID()
         const prevVersion = existingMap.get(history.id) ?? 0
         const newVersion = prevVersion + 1

@@ -13,17 +13,20 @@ import { buildRecognitionCard } from '@/lib/adaptive-cards'
 import { apiSuccess, apiError } from '@/lib/api'
 import { unauthorized, badRequest, notFound } from '@/lib/errors'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { getRequestLocale, serverT } from '@/lib/server-i18n'
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('authorization')
+  const locale = await getRequestLocale()
+
   if (!verifyBotSignature(authHeader)) {
-    return apiError(unauthorized('인증 실패'))
+    return apiError(unauthorized(await serverT(locale, 'teams.api.authFailed')))
   }
 
   const body: unknown = await req.json()
   const parsed = teamsRecognitionSchema.safeParse(body)
   if (!parsed.success) {
-    return apiError(badRequest('잘못된 요청 데이터'))
+    return apiError(badRequest(await serverT(locale, 'teams.api.invalidRequest')))
   }
 
   const { receiverAadId, value, message } = parsed.data
@@ -31,7 +34,7 @@ export async function POST(req: NextRequest) {
   // 보내는 사람: Authorization 헤더에서 봇이 전달한 sender 정보
   const senderAadId = req.headers.get('x-teams-sender-aad-id')
   if (!senderAadId) {
-    return apiError(badRequest('보내는 사람 정보가 없습니다.'))
+    return apiError(badRequest(await serverT(locale, 'teams.api.senderMissing')))
   }
 
   // SsoIdentity로 Employee 매핑
@@ -59,7 +62,7 @@ export async function POST(req: NextRequest) {
   ])
 
   if (!sender?.employee || !receiver?.employee) {
-    return apiError(notFound('HR Hub에 등록되지 않은 사용자입니다.'))
+    return apiError(notFound(await serverT(locale, 'teams.api.userNotRegistered')))
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -77,7 +80,7 @@ export async function POST(req: NextRequest) {
   })
 
   // 수신자에게 알림
-  const card = buildRecognitionCard({
+  const card = await buildRecognitionCard(locale, {
     senderName: sender.employee.name,
     receiverName: receiver.employee.name,
     value,

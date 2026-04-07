@@ -6147,7 +6147,117 @@
       "yearLabel": "Năm {year}"
     },
     "yearEndTitle": "Year-End Settlement",
-    "years": "year"
+    "years": "year",
+    "export": {
+      "comparison": {
+        "sheetTitle": "[TODO:vi] Month-over-Month Comparison",
+        "docTitle": "[TODO:vi] {yearMonth} Payroll Comparison",
+        "employeeNo": "[TODO:vi] Employee No.",
+        "name": "[TODO:vi] Name",
+        "department": "[TODO:vi] Department",
+        "currentNet": "[TODO:vi] {yearMonth} Net Pay",
+        "previousNet": "[TODO:vi] Previous Net Pay",
+        "diff": "[TODO:vi] Difference",
+        "diffPercent": "[TODO:vi] Change (%)",
+        "reason": "[TODO:vi] Reason",
+        "anomaly": "[TODO:vi] Anomaly",
+        "total": "[TODO:vi] Total",
+        "summarySheet": "[TODO:vi] Summary",
+        "summaryItem": "[TODO:vi] Item",
+        "summaryValue": "[TODO:vi] Value",
+        "summaryMonth": "[TODO:vi] Target Month",
+        "summaryCurrentTotal": "[TODO:vi] Total Net Pay (Current)",
+        "summaryPreviousTotal": "[TODO:vi] Total Net Pay (Previous)",
+        "summaryDiff": "[TODO:vi] Change Amount",
+        "summaryDiffPercent": "[TODO:vi] Change (%)",
+        "summaryIncreased": "[TODO:vi] Increased",
+        "summaryDecreased": "[TODO:vi] Decreased",
+        "summaryUnchanged": "[TODO:vi] Unchanged"
+      },
+      "ledger": {
+        "sheetTitle": "[TODO:vi] Payroll Ledger",
+        "docTitle": "[TODO:vi] {yearMonth} Payroll Ledger",
+        "employeeNo": "[TODO:vi] Emp. No.",
+        "name": "[TODO:vi] Name",
+        "department": "[TODO:vi] Department",
+        "jobGrade": "[TODO:vi] Grade",
+        "baseSalary": "[TODO:vi] Base Salary",
+        "overtimePay": "[TODO:vi] Overtime",
+        "nightPay": "[TODO:vi] Night Shift",
+        "holidayPay": "[TODO:vi] Holiday",
+        "positionAllowance": "[TODO:vi] Position Allow.",
+        "mealAllowance": "[TODO:vi] Meal",
+        "transportAllowance": "[TODO:vi] Transport",
+        "grossTotal": "[TODO:vi] Gross Total",
+        "nationalPension": "[TODO:vi] National Pension",
+        "healthInsurance": "[TODO:vi] Health Ins.",
+        "longTermCare": "[TODO:vi] Long-term Care",
+        "employmentInsurance": "[TODO:vi] Employment Ins.",
+        "incomeTax": "[TODO:vi] Income Tax",
+        "localIncomeTax": "[TODO:vi] Local Income Tax",
+        "deductionTotal": "[TODO:vi] Deduction Total",
+        "netPay": "[TODO:vi] Net Pay",
+        "total": "[TODO:vi] Total"
+      },
+      "journal": {
+        "sheetTitle": "[TODO:vi] Payroll Journal Entry",
+        "docTitle": "[TODO:vi] {yearMonth} Payroll Journal",
+        "department": "[TODO:vi] Department",
+        "total": "[TODO:vi] Total",
+        "mappingSheet": "[TODO:vi] Account Mapping",
+        "mappingItem": "[TODO:vi] Payroll Item",
+        "mappingCode": "[TODO:vi] Account Code",
+        "mappingName": "[TODO:vi] Account Name",
+        "accountNames": {
+          "salary": "[TODO:vi] Salary",
+          "allowances": "[TODO:vi] Allowances",
+          "welfare": "[TODO:vi] Welfare Benefits",
+          "socialInsurance": "[TODO:vi] Social Insurance",
+          "retirement": "[TODO:vi] Retirement Benefits"
+        }
+      },
+      "filename": {
+        "yearMonth": "[TODO:vi] {year}-{month}",
+        "comparison": "[TODO:vi] comparison",
+        "ledger": "[TODO:vi] ledger",
+        "journal": "[TODO:vi] journal"
+      }
+    },
+    "pdf": {
+      "title": "[TODO:vi] Pay Stub",
+      "name": "[TODO:vi] Name",
+      "employeeNo": "[TODO:vi] Employee No.",
+      "department": "[TODO:vi] Department",
+      "jobGrade": "[TODO:vi] Grade",
+      "payPeriod": "[TODO:vi] Pay Period",
+      "payDate": "[TODO:vi] Pay Date",
+      "earningItems": "[TODO:vi] Earnings",
+      "amount": "[TODO:vi] Amount",
+      "deductionItems": "[TODO:vi] Deductions",
+      "grossPay": "[TODO:vi] Gross Pay",
+      "totalDeductions": "[TODO:vi] Total Deductions",
+      "netPay": "[TODO:vi] Net Pay",
+      "footer": "[TODO:vi] This pay stub is an electronic document issued by {company}.",
+      "earnings": {
+        "baseSalary": "[TODO:vi] Base Salary",
+        "fixedOvertime": "[TODO:vi] Fixed Overtime",
+        "meal": "[TODO:vi] Meal Allowance",
+        "transport": "[TODO:vi] Transport Allowance",
+        "overtime": "[TODO:vi] Overtime Pay",
+        "nightShift": "[TODO:vi] Night Shift Pay",
+        "holiday": "[TODO:vi] Holiday Pay",
+        "bonus": "[TODO:vi] Bonus",
+        "other": "[TODO:vi] Other Allowances"
+      },
+      "deductions": {
+        "nationalPension": "[TODO:vi] National Pension",
+        "health": "[TODO:vi] Health Insurance",
+        "longTermCare": "[TODO:vi] Long-term Care Insurance",
+        "employment": "[TODO:vi] Employment Insurance",
+        "incomeTax": "[TODO:vi] Income Tax",
+        "localIncomeTax": "[TODO:vi] Local Income Tax"
+      }
+    }
   },
   "payrollMe": {
     "deductions": "Deductions",
@@ -10435,6 +10545,281 @@
       "deductions": "Nhập khoản khấu trừ",
       "dependents": "Xác nhận người phụ thuộc",
       "result": "Xem kết quả"
+    }
+  },
+  "teams": {
+    "leaveApproval": {
+      "title": "[TODO:vi] Leave Approval Request",
+      "subtitle": "[TODO:vi] Leave request from {name}",
+      "applicant": "[TODO:vi] Applicant",
+      "type": "[TODO:vi] Type",
+      "period": "[TODO:vi] Period",
+      "days": "[TODO:vi] Days",
+      "daysUnit": "[TODO:vi] {count} days",
+      "reason": "[TODO:vi] Reason",
+      "approve": "[TODO:vi] Approve",
+      "reject": "[TODO:vi] Reject",
+      "viewInHub": "[TODO:vi] View in HR Hub"
+    },
+    "evalReminder": {
+      "title": "[TODO:vi] Evaluation Deadline Reminder",
+      "evaluator": "[TODO:vi] Evaluator",
+      "pending": "[TODO:vi] Pending",
+      "pendingUnit": "[TODO:vi] {count} items",
+      "deadline": "[TODO:vi] Deadline",
+      "deadlineWarning": "[TODO:vi] Please complete evaluations by the deadline.",
+      "openInHub": "[TODO:vi] Open in HR Hub"
+    },
+    "attritionRisk": {
+      "title": "[TODO:vi] Attrition Risk Alert",
+      "riskScore": "[TODO:vi] Risk Score",
+      "department": "[TODO:vi] Department",
+      "factors": "[TODO:vi] Key factors: {factors}",
+      "viewDetail": "[TODO:vi] View Details"
+    },
+    "onboarding": {
+      "title": "[TODO:vi] Onboarding Task Due Soon",
+      "newHire": "[TODO:vi] New Hire",
+      "assignee": "[TODO:vi] Assignee",
+      "deadline": "[TODO:vi] Deadline",
+      "complete": "[TODO:vi] Complete",
+      "viewInHub": "[TODO:vi] View in HR Hub"
+    },
+    "chatbotEscalation": {
+      "title": "[TODO:vi] Chatbot Escalation",
+      "subtitle": "[TODO:vi] Inquiry from {name}",
+      "employee": "[TODO:vi] Employee",
+      "escalation": "[TODO:vi] Escalation",
+      "assign": "[TODO:vi] Assign Agent",
+      "viewInHub": "[TODO:vi] View in HR Hub"
+    },
+    "digest": {
+      "title": "[TODO:vi] Weekly HR Digest",
+      "newHires": "[TODO:vi] New Hires",
+      "onLeave": "[TODO:vi] On Leave",
+      "pendingEvals": "[TODO:vi] Pending Evals",
+      "attritionRisk": "[TODO:vi] Attrition Risk",
+      "pendingApprovals": "[TODO:vi] Pending Approvals",
+      "countPeople": "[TODO:vi] {count} people",
+      "countItems": "[TODO:vi] {count} items",
+      "openDashboard": "[TODO:vi] Open Dashboard",
+      "channelNotSet": "[TODO:vi] Teams channel is not configured.",
+      "weeklyTitle": "[TODO:vi] Weekly HR Digest ({range})",
+      "highlight": {
+        "newHires": "[TODO:vi] {count} new hires this week",
+        "attritionRisk": "[TODO:vi] {count} employees at risk of attrition — follow-up needed",
+        "pendingApprovals": "[TODO:vi] {count} pending leave approvals",
+        "pendingEvals": "[TODO:vi] {count} pending evaluations"
+      }
+    },
+    "recognition": {
+      "title": "[TODO:vi] Peer Recognition",
+      "coreValue": "[TODO:vi] Core Value",
+      "sender": "[TODO:vi] From",
+      "receiver": "[TODO:vi] To"
+    },
+    "bot": {
+      "noUserInfo": "[TODO:vi] Unable to verify user information.",
+      "noLinkedAccount": "[TODO:vi] No linked account found in HR Hub. Please log in to HR Hub first.",
+      "installed": "[TODO:vi] CTR HR Hub Bot has been installed. Try typing \"help\".",
+      "helpTitle": "[TODO:vi] CTR HR Hub Bot Commands",
+      "helpLeave": "[TODO:vi] `leave` — Check leave balance",
+      "helpPaystub": "[TODO:vi] `paystub` — View latest payslip",
+      "helpAttendance": "[TODO:vi] `attendance` — Check today's attendance",
+      "helpHelp": "[TODO:vi] `help` — Show this help message",
+      "leaveBalance": {
+        "title": "[TODO:vi] Leave Balance",
+        "empty": "[TODO:vi] No leave balance records found.",
+        "item": "[TODO:vi] - **{name}**: {remaining} days (total {granted}, used {used})"
+      },
+      "paystub": {
+        "title": "[TODO:vi] Latest Payslip",
+        "empty": "[TODO:vi] No payslip information available.",
+        "baseSalary": "[TODO:vi] Base Salary",
+        "grossPay": "[TODO:vi] Gross Pay",
+        "netPay": "[TODO:vi] Net Pay",
+        "detail": "[TODO:vi] For details, visit HR Hub > Payslips.",
+        "currencyUnit": "[TODO:vi] {amount} KRW"
+      },
+      "attendance": {
+        "title": "[TODO:vi] Today's Attendance",
+        "empty": "[TODO:vi] No attendance record for today.",
+        "clockIn": "[TODO:vi] Clock In",
+        "clockOut": "[TODO:vi] Clock Out",
+        "status": "[TODO:vi] Status",
+        "notIn": "[TODO:vi] Not clocked in",
+        "notOut": "[TODO:vi] Not clocked out"
+      }
+    },
+    "actions": {
+      "recorded": "[TODO:vi] Action has been recorded.",
+      "leaveNotFound": "[TODO:vi] Leave request not found.",
+      "alreadyProcessed": "[TODO:vi] This request has already been processed. (Status: {status})",
+      "leaveApproved": "[TODO:vi] Leave has been approved.",
+      "leaveRejected": "[TODO:vi] Leave has been rejected.",
+      "unknownAction": "[TODO:vi] Unknown action.",
+      "taskNotFound": "[TODO:vi] Onboarding task not found.",
+      "taskAlreadyDone": "[TODO:vi] This task has already been completed.",
+      "taskCompleted": "[TODO:vi] Onboarding task completed.",
+      "sessionNotFound": "[TODO:vi] Chatbot session not found.",
+      "agentAssigned": "[TODO:vi] Agent has been assigned."
+    },
+    "api": {
+      "authFailed": "[TODO:vi] Authentication failed",
+      "invalidJson": "[TODO:vi] Invalid JSON",
+      "invalidRequest": "[TODO:vi] Invalid request data",
+      "invalidRequestData": "[TODO:vi] Invalid request data.",
+      "noConfig": "[TODO:vi] No Teams configuration found.",
+      "disconnected": "[TODO:vi] Teams connection has been disconnected.",
+      "invalidId": "[TODO:vi] Invalid ID format.",
+      "webhookNotFound": "[TODO:vi] Webhook configuration not found.",
+      "senderMissing": "[TODO:vi] Sender information is missing.",
+      "userNotRegistered": "[TODO:vi] User is not registered in HR Hub."
+    },
+    "ui": {
+      "settings": {
+        "title": "[TODO:vi] Teams Integration",
+        "description": "[TODO:vi] Connect Microsoft Teams with HR Hub to configure notifications, bot, and weekly digest.",
+        "tabConnection": "[TODO:vi] Connection",
+        "tabChannel": "[TODO:vi] Channel",
+        "tabBot": "[TODO:vi] Bot",
+        "tabDigest": "[TODO:vi] Digest",
+        "save": "[TODO:vi] Save",
+        "saveSuccess": "[TODO:vi] Teams settings saved.",
+        "saveError": "[TODO:vi] An error occurred while saving.",
+        "loadError": "[TODO:vi] Failed to load Teams settings.",
+        "disconnectSuccess": "[TODO:vi] Teams connection disconnected.",
+        "disconnectError": "[TODO:vi] An error occurred while disconnecting."
+      },
+      "connection": {
+        "title": "[TODO:vi] Connection Status",
+        "connected": "[TODO:vi] Connected",
+        "disconnected": "[TODO:vi] Disconnected",
+        "connectedAt": "[TODO:vi] Connected at",
+        "testSuccess": "[TODO:vi] Connection successful — Tenant: {name}",
+        "testFail": "[TODO:vi] Connection failed: {error}",
+        "testBtn": "[TODO:vi] Test Connection",
+        "disconnectBtn": "[TODO:vi] Disconnect"
+      },
+      "channel": {
+        "title": "[TODO:vi] Teams Channel Selection",
+        "selectTeam": "[TODO:vi] Select Team",
+        "selectChannel": "[TODO:vi] Select Channel",
+        "teamPlaceholder": "[TODO:vi] Choose a team",
+        "channelPlaceholder": "[TODO:vi] Choose a channel",
+        "loadingTeams": "[TODO:vi] Loading teams...",
+        "loadingChannels": "[TODO:vi] Loading channels...",
+        "channelHelp": "[TODO:vi] Weekly digest and notifications will be sent to the selected channel.",
+        "errorTeams": "[TODO:vi] Failed to load teams.",
+        "errorChannels": "[TODO:vi] Failed to load channels."
+      },
+      "bot": {
+        "title": "[TODO:vi] Bot Settings",
+        "enabled": "[TODO:vi] Enable Bot",
+        "enabledDesc": "[TODO:vi] Use leave, payroll, and attendance commands in Teams.",
+        "presenceSync": "[TODO:vi] Presence Sync",
+        "presenceSyncDesc": "[TODO:vi] Sync Teams presence status with HR Hub."
+      },
+      "digestSettings": {
+        "title": "[TODO:vi] Weekly Digest",
+        "enabled": "[TODO:vi] Enable Digest",
+        "enabledDesc": "[TODO:vi] Post a weekly HR summary to the Teams channel on the selected day/time.",
+        "dayLabel": "[TODO:vi] Send Day",
+        "hourLabel": "[TODO:vi] Send Time",
+        "previewTitle": "[TODO:vi] Digest Preview",
+        "previewBtn": "[TODO:vi] Preview",
+        "sendBtn": "[TODO:vi] Send Manually",
+        "previewEmpty": "[TODO:vi] Click the preview button to see this week's digest.",
+        "loadError": "[TODO:vi] Failed to load digest.",
+        "sendSuccess": "[TODO:vi] Digest sent.",
+        "sendError": "[TODO:vi] Failed to send.",
+        "sendFetchError": "[TODO:vi] An error occurred while sending.",
+        "alerts": "[TODO:vi] Key Alerts",
+        "cardPreviewTitle": "[TODO:vi] Teams Card Preview"
+      },
+      "webhook": {
+        "sectionTitle": "[TODO:vi] Microsoft Teams Webhook Channels",
+        "addChannel": "[TODO:vi] Add Channel",
+        "noWebhooks": "[TODO:vi] No webhook channels registered",
+        "test": "[TODO:vi] Test",
+        "testSuccess": "[TODO:vi] Success",
+        "testFail": "[TODO:vi] Failed",
+        "deleteConfirm": "[TODO:vi] Delete this webhook configuration?",
+        "deleteAriaLabel": "[TODO:vi] Delete Webhook",
+        "noEvents": "[TODO:vi] No events selected",
+        "channelNamePlaceholder": "[TODO:vi] Channel name (e.g., HR-Alerts)",
+        "eventsToSend": "[TODO:vi] Events to Send",
+        "cancel": "[TODO:vi] Cancel",
+        "events": {
+          "overtime52h": "[TODO:vi] 52-hour block",
+          "overtime48h": "[TODO:vi] 48-hour warning",
+          "turnoverRisk": "[TODO:vi] Turnover Risk Critical",
+          "offerAccepted": "[TODO:vi] Offer Accepted",
+          "restructure": "[TODO:vi] Restructure Applied",
+          "leaveApproved": "[TODO:vi] Leave Approved",
+          "payslipIssued": "[TODO:vi] Payslip Issued",
+          "benefitApproved": "[TODO:vi] Benefit Approved",
+          "evalDeadline": "[TODO:vi] Evaluation Deadline"
+        }
+      },
+      "cardPreview": {
+        "label": "[TODO:vi] Preview"
+      }
+    }
+  },
+  "documents": {
+    "certificate": {
+      "employment": {
+        "title": "[TODO:vi] Certificate of Employment",
+        "subtitle": "[TODO:vi] Certificate of Employment"
+      },
+      "career": {
+        "title": "[TODO:vi] Certificate of Career",
+        "subtitle": "[TODO:vi] Certificate of Career",
+        "history": "[TODO:vi] Career History",
+        "department": "[TODO:vi] Department",
+        "position": "[TODO:vi] Position",
+        "startDate": "[TODO:vi] Start Date",
+        "endDate": "[TODO:vi] End Date",
+        "current": "[TODO:vi] Currently Employed"
+      },
+      "name": "[TODO:vi] Name",
+      "employeeNo": "[TODO:vi] Employee No.",
+      "birthDate": "[TODO:vi] Date of Birth",
+      "hireDate": "[TODO:vi] Hire Date",
+      "department": "[TODO:vi] Department",
+      "jobGrade": "[TODO:vi] Grade",
+      "position": "[TODO:vi] Position",
+      "purpose": "[TODO:vi] Purpose",
+      "defaultPurpose": "[TODO:vi] For submission",
+      "certify": "[TODO:vi] The above is hereby certified.",
+      "seal": "[TODO:vi] [Company Seal]"
+    },
+    "compensation": {
+      "title": "[TODO:vi] Compensation Adjustment Letter",
+      "subtitle": "[TODO:vi] Compensation Adjustment Letter",
+      "greeting": "[TODO:vi] Dear {name},",
+      "body": "[TODO:vi] We are pleased to inform you of the following compensation adjustment.",
+      "name": "[TODO:vi] Name",
+      "employeeNo": "[TODO:vi] Employee No.",
+      "department": "[TODO:vi] Department",
+      "position": "[TODO:vi] Position",
+      "adjustmentType": "[TODO:vi] Adjustment Type",
+      "previousSalary": "[TODO:vi] Previous Salary",
+      "newSalary": "[TODO:vi] New Salary",
+      "changeRate": "[TODO:vi] Change Rate",
+      "changeAmount": "[TODO:vi] Change Amount",
+      "effectiveDate": "[TODO:vi] Effective Date",
+      "bodyText": "[TODO:vi] This adjustment will take effect from the effective date above and will be reflected in the payroll from the pay date of the month in which the effective date falls.\nPlease contact the HR team if you have any questions regarding this letter.",
+      "approver": "[TODO:vi] Approved by: {name}",
+      "changeTypes": {
+        "ANNUAL_INCREASE": "[TODO:vi] Annual Increase",
+        "PROMOTION": "[TODO:vi] Promotion",
+        "MARKET_ADJUSTMENT": "[TODO:vi] Market Adjustment",
+        "MERIT_INCREASE": "[TODO:vi] Merit Increase",
+        "EQUITY_ADJUSTMENT": "[TODO:vi] Equity Adjustment",
+        "OTHER": "[TODO:vi] Other"
+      }
     }
   }
 }

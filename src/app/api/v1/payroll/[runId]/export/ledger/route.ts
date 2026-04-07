@@ -10,12 +10,14 @@ import { notFound } from '@/lib/errors'
 import { apiError } from '@/lib/api'
 import { generateLedgerExcel, buildExcelFilename, type LedgerRow } from '@/lib/payroll/excel-generators'
 import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
+import { getRequestLocale } from '@/lib/server-i18n'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { PayrollItemDetail } from '@/lib/payroll/types'
 
 export const GET = withRateLimit(withPermission(
     async (_req: NextRequest, context, user) => {
         try {
+            const locale = await getRequestLocale()
             const { runId } = await context.params
 
             const run = await prisma.payrollRun.findFirst({
@@ -72,8 +74,8 @@ export const GET = withRateLimit(withPermission(
                 }
             })
 
-            const buffer = generateLedgerExcel(run.yearMonth, rows)
-            const filename = buildExcelFilename(run.companyId, run.yearMonth, 'ledger')
+            const buffer = await generateLedgerExcel(locale, run.yearMonth, rows)
+            const filename = await buildExcelFilename(locale, run.companyId, run.yearMonth, 'ledger')
 
             return new NextResponse(buffer, {
                 status: 200,

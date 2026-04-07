@@ -6147,7 +6147,117 @@
       "yearLabel": "Año {year}"
     },
     "yearEndTitle": "Year-End Settlement",
-    "years": "year"
+    "years": "year",
+    "export": {
+      "comparison": {
+        "sheetTitle": "[TODO:es] Month-over-Month Comparison",
+        "docTitle": "[TODO:es] {yearMonth} Payroll Comparison",
+        "employeeNo": "[TODO:es] Employee No.",
+        "name": "[TODO:es] Name",
+        "department": "[TODO:es] Department",
+        "currentNet": "[TODO:es] {yearMonth} Net Pay",
+        "previousNet": "[TODO:es] Previous Net Pay",
+        "diff": "[TODO:es] Difference",
+        "diffPercent": "[TODO:es] Change (%)",
+        "reason": "[TODO:es] Reason",
+        "anomaly": "[TODO:es] Anomaly",
+        "total": "[TODO:es] Total",
+        "summarySheet": "[TODO:es] Summary",
+        "summaryItem": "[TODO:es] Item",
+        "summaryValue": "[TODO:es] Value",
+        "summaryMonth": "[TODO:es] Target Month",
+        "summaryCurrentTotal": "[TODO:es] Total Net Pay (Current)",
+        "summaryPreviousTotal": "[TODO:es] Total Net Pay (Previous)",
+        "summaryDiff": "[TODO:es] Change Amount",
+        "summaryDiffPercent": "[TODO:es] Change (%)",
+        "summaryIncreased": "[TODO:es] Increased",
+        "summaryDecreased": "[TODO:es] Decreased",
+        "summaryUnchanged": "[TODO:es] Unchanged"
+      },
+      "ledger": {
+        "sheetTitle": "[TODO:es] Payroll Ledger",
+        "docTitle": "[TODO:es] {yearMonth} Payroll Ledger",
+        "employeeNo": "[TODO:es] Emp. No.",
+        "name": "[TODO:es] Name",
+        "department": "[TODO:es] Department",
+        "jobGrade": "[TODO:es] Grade",
+        "baseSalary": "[TODO:es] Base Salary",
+        "overtimePay": "[TODO:es] Overtime",
+        "nightPay": "[TODO:es] Night Shift",
+        "holidayPay": "[TODO:es] Holiday",
+        "positionAllowance": "[TODO:es] Position Allow.",
+        "mealAllowance": "[TODO:es] Meal",
+        "transportAllowance": "[TODO:es] Transport",
+        "grossTotal": "[TODO:es] Gross Total",
+        "nationalPension": "[TODO:es] National Pension",
+        "healthInsurance": "[TODO:es] Health Ins.",
+        "longTermCare": "[TODO:es] Long-term Care",
+        "employmentInsurance": "[TODO:es] Employment Ins.",
+        "incomeTax": "[TODO:es] Income Tax",
+        "localIncomeTax": "[TODO:es] Local Income Tax",
+        "deductionTotal": "[TODO:es] Deduction Total",
+        "netPay": "[TODO:es] Net Pay",
+        "total": "[TODO:es] Total"
+      },
+      "journal": {
+        "sheetTitle": "[TODO:es] Payroll Journal Entry",
+        "docTitle": "[TODO:es] {yearMonth} Payroll Journal",
+        "department": "[TODO:es] Department",
+        "total": "[TODO:es] Total",
+        "mappingSheet": "[TODO:es] Account Mapping",
+        "mappingItem": "[TODO:es] Payroll Item",
+        "mappingCode": "[TODO:es] Account Code",
+        "mappingName": "[TODO:es] Account Name",
+        "accountNames": {
+          "salary": "[TODO:es] Salary",
+          "allowances": "[TODO:es] Allowances",
+          "welfare": "[TODO:es] Welfare Benefits",
+          "socialInsurance": "[TODO:es] Social Insurance",
+          "retirement": "[TODO:es] Retirement Benefits"
+        }
+      },
+      "filename": {
+        "yearMonth": "[TODO:es] {year}-{month}",
+        "comparison": "[TODO:es] comparison",
+        "ledger": "[TODO:es] ledger",
+        "journal": "[TODO:es] journal"
+      }
+    },
+    "pdf": {
+      "title": "[TODO:es] Pay Stub",
+      "name": "[TODO:es] Name",
+      "employeeNo": "[TODO:es] Employee No.",
+      "department": "[TODO:es] Department",
+      "jobGrade": "[TODO:es] Grade",
+      "payPeriod": "[TODO:es] Pay Period",
+      "payDate": "[TODO:es] Pay Date",
+      "earningItems": "[TODO:es] Earnings",
+      "amount": "[TODO:es] Amount",
+      "deductionItems": "[TODO:es] Deductions",
+      "grossPay": "[TODO:es] Gross Pay",
+      "totalDeductions": "[TODO:es] Total Deductions",
+      "netPay": "[TODO:es] Net Pay",
+      "footer": "[TODO:es] This pay stub is an electronic document issued by {company}.",
+      "earnings": {
+        "baseSalary": "[TODO:es] Base Salary",
+        "fixedOvertime": "[TODO:es] Fixed Overtime",
+        "meal": "[TODO:es] Meal Allowance",
+        "transport": "[TODO:es] Transport Allowance",
+        "overtime": "[TODO:es] Overtime Pay",
+        "nightShift": "[TODO:es] Night Shift Pay",
+        "holiday": "[TODO:es] Holiday Pay",
+        "bonus": "[TODO:es] Bonus",
+        "other": "[TODO:es] Other Allowances"
+      },
+      "deductions": {
+        "nationalPension": "[TODO:es] National Pension",
+        "health": "[TODO:es] Health Insurance",
+        "longTermCare": "[TODO:es] Long-term Care Insurance",
+        "employment": "[TODO:es] Employment Insurance",
+        "incomeTax": "[TODO:es] Income Tax",
+        "localIncomeTax": "[TODO:es] Local Income Tax"
+      }
+    }
   },
   "payrollMe": {
     "deductions": "Deductions",
@@ -10435,6 +10545,281 @@
       "deductions": "Ingresar Deducciones",
       "dependents": "Verificar Dependientes",
       "result": "Revisar Resultados"
+    }
+  },
+  "teams": {
+    "leaveApproval": {
+      "title": "[TODO:es] Leave Approval Request",
+      "subtitle": "[TODO:es] Leave request from {name}",
+      "applicant": "[TODO:es] Applicant",
+      "type": "[TODO:es] Type",
+      "period": "[TODO:es] Period",
+      "days": "[TODO:es] Days",
+      "daysUnit": "[TODO:es] {count} days",
+      "reason": "[TODO:es] Reason",
+      "approve": "[TODO:es] Approve",
+      "reject": "[TODO:es] Reject",
+      "viewInHub": "[TODO:es] View in HR Hub"
+    },
+    "evalReminder": {
+      "title": "[TODO:es] Evaluation Deadline Reminder",
+      "evaluator": "[TODO:es] Evaluator",
+      "pending": "[TODO:es] Pending",
+      "pendingUnit": "[TODO:es] {count} items",
+      "deadline": "[TODO:es] Deadline",
+      "deadlineWarning": "[TODO:es] Please complete evaluations by the deadline.",
+      "openInHub": "[TODO:es] Open in HR Hub"
+    },
+    "attritionRisk": {
+      "title": "[TODO:es] Attrition Risk Alert",
+      "riskScore": "[TODO:es] Risk Score",
+      "department": "[TODO:es] Department",
+      "factors": "[TODO:es] Key factors: {factors}",
+      "viewDetail": "[TODO:es] View Details"
+    },
+    "onboarding": {
+      "title": "[TODO:es] Onboarding Task Due Soon",
+      "newHire": "[TODO:es] New Hire",
+      "assignee": "[TODO:es] Assignee",
+      "deadline": "[TODO:es] Deadline",
+      "complete": "[TODO:es] Complete",
+      "viewInHub": "[TODO:es] View in HR Hub"
+    },
+    "chatbotEscalation": {
+      "title": "[TODO:es] Chatbot Escalation",
+      "subtitle": "[TODO:es] Inquiry from {name}",
+      "employee": "[TODO:es] Employee",
+      "escalation": "[TODO:es] Escalation",
+      "assign": "[TODO:es] Assign Agent",
+      "viewInHub": "[TODO:es] View in HR Hub"
+    },
+    "digest": {
+      "title": "[TODO:es] Weekly HR Digest",
+      "newHires": "[TODO:es] New Hires",
+      "onLeave": "[TODO:es] On Leave",
+      "pendingEvals": "[TODO:es] Pending Evals",
+      "attritionRisk": "[TODO:es] Attrition Risk",
+      "pendingApprovals": "[TODO:es] Pending Approvals",
+      "countPeople": "[TODO:es] {count} people",
+      "countItems": "[TODO:es] {count} items",
+      "openDashboard": "[TODO:es] Open Dashboard",
+      "channelNotSet": "[TODO:es] Teams channel is not configured.",
+      "weeklyTitle": "[TODO:es] Weekly HR Digest ({range})",
+      "highlight": {
+        "newHires": "[TODO:es] {count} new hires this week",
+        "attritionRisk": "[TODO:es] {count} employees at risk of attrition — follow-up needed",
+        "pendingApprovals": "[TODO:es] {count} pending leave approvals",
+        "pendingEvals": "[TODO:es] {count} pending evaluations"
+      }
+    },
+    "recognition": {
+      "title": "[TODO:es] Peer Recognition",
+      "coreValue": "[TODO:es] Core Value",
+      "sender": "[TODO:es] From",
+      "receiver": "[TODO:es] To"
+    },
+    "bot": {
+      "noUserInfo": "[TODO:es] Unable to verify user information.",
+      "noLinkedAccount": "[TODO:es] No linked account found in HR Hub. Please log in to HR Hub first.",
+      "installed": "[TODO:es] CTR HR Hub Bot has been installed. Try typing \"help\".",
+      "helpTitle": "[TODO:es] CTR HR Hub Bot Commands",
+      "helpLeave": "[TODO:es] `leave` — Check leave balance",
+      "helpPaystub": "[TODO:es] `paystub` — View latest payslip",
+      "helpAttendance": "[TODO:es] `attendance` — Check today's attendance",
+      "helpHelp": "[TODO:es] `help` — Show this help message",
+      "leaveBalance": {
+        "title": "[TODO:es] Leave Balance",
+        "empty": "[TODO:es] No leave balance records found.",
+        "item": "[TODO:es] - **{name}**: {remaining} days (total {granted}, used {used})"
+      },
+      "paystub": {
+        "title": "[TODO:es] Latest Payslip",
+        "empty": "[TODO:es] No payslip information available.",
+        "baseSalary": "[TODO:es] Base Salary",
+        "grossPay": "[TODO:es] Gross Pay",
+        "netPay": "[TODO:es] Net Pay",
+        "detail": "[TODO:es] For details, visit HR Hub > Payslips.",
+        "currencyUnit": "[TODO:es] {amount} KRW"
+      },
+      "attendance": {
+        "title": "[TODO:es] Today's Attendance",
+        "empty": "[TODO:es] No attendance record for today.",
+        "clockIn": "[TODO:es] Clock In",
+        "clockOut": "[TODO:es] Clock Out",
+        "status": "[TODO:es] Status",
+        "notIn": "[TODO:es] Not clocked in",
+        "notOut": "[TODO:es] Not clocked out"
+      }
+    },
+    "actions": {
+      "recorded": "[TODO:es] Action has been recorded.",
+      "leaveNotFound": "[TODO:es] Leave request not found.",
+      "alreadyProcessed": "[TODO:es] This request has already been processed. (Status: {status})",
+      "leaveApproved": "[TODO:es] Leave has been approved.",
+      "leaveRejected": "[TODO:es] Leave has been rejected.",
+      "unknownAction": "[TODO:es] Unknown action.",
+      "taskNotFound": "[TODO:es] Onboarding task not found.",
+      "taskAlreadyDone": "[TODO:es] This task has already been completed.",
+      "taskCompleted": "[TODO:es] Onboarding task completed.",
+      "sessionNotFound": "[TODO:es] Chatbot session not found.",
+      "agentAssigned": "[TODO:es] Agent has been assigned."
+    },
+    "api": {
+      "authFailed": "[TODO:es] Authentication failed",
+      "invalidJson": "[TODO:es] Invalid JSON",
+      "invalidRequest": "[TODO:es] Invalid request data",
+      "invalidRequestData": "[TODO:es] Invalid request data.",
+      "noConfig": "[TODO:es] No Teams configuration found.",
+      "disconnected": "[TODO:es] Teams connection has been disconnected.",
+      "invalidId": "[TODO:es] Invalid ID format.",
+      "webhookNotFound": "[TODO:es] Webhook configuration not found.",
+      "senderMissing": "[TODO:es] Sender information is missing.",
+      "userNotRegistered": "[TODO:es] User is not registered in HR Hub."
+    },
+    "ui": {
+      "settings": {
+        "title": "[TODO:es] Teams Integration",
+        "description": "[TODO:es] Connect Microsoft Teams with HR Hub to configure notifications, bot, and weekly digest.",
+        "tabConnection": "[TODO:es] Connection",
+        "tabChannel": "[TODO:es] Channel",
+        "tabBot": "[TODO:es] Bot",
+        "tabDigest": "[TODO:es] Digest",
+        "save": "[TODO:es] Save",
+        "saveSuccess": "[TODO:es] Teams settings saved.",
+        "saveError": "[TODO:es] An error occurred while saving.",
+        "loadError": "[TODO:es] Failed to load Teams settings.",
+        "disconnectSuccess": "[TODO:es] Teams connection disconnected.",
+        "disconnectError": "[TODO:es] An error occurred while disconnecting."
+      },
+      "connection": {
+        "title": "[TODO:es] Connection Status",
+        "connected": "[TODO:es] Connected",
+        "disconnected": "[TODO:es] Disconnected",
+        "connectedAt": "[TODO:es] Connected at",
+        "testSuccess": "[TODO:es] Connection successful — Tenant: {name}",
+        "testFail": "[TODO:es] Connection failed: {error}",
+        "testBtn": "[TODO:es] Test Connection",
+        "disconnectBtn": "[TODO:es] Disconnect"
+      },
+      "channel": {
+        "title": "[TODO:es] Teams Channel Selection",
+        "selectTeam": "[TODO:es] Select Team",
+        "selectChannel": "[TODO:es] Select Channel",
+        "teamPlaceholder": "[TODO:es] Choose a team",
+        "channelPlaceholder": "[TODO:es] Choose a channel",
+        "loadingTeams": "[TODO:es] Loading teams...",
+        "loadingChannels": "[TODO:es] Loading channels...",
+        "channelHelp": "[TODO:es] Weekly digest and notifications will be sent to the selected channel.",
+        "errorTeams": "[TODO:es] Failed to load teams.",
+        "errorChannels": "[TODO:es] Failed to load channels."
+      },
+      "bot": {
+        "title": "[TODO:es] Bot Settings",
+        "enabled": "[TODO:es] Enable Bot",
+        "enabledDesc": "[TODO:es] Use leave, payroll, and attendance commands in Teams.",
+        "presenceSync": "[TODO:es] Presence Sync",
+        "presenceSyncDesc": "[TODO:es] Sync Teams presence status with HR Hub."
+      },
+      "digestSettings": {
+        "title": "[TODO:es] Weekly Digest",
+        "enabled": "[TODO:es] Enable Digest",
+        "enabledDesc": "[TODO:es] Post a weekly HR summary to the Teams channel on the selected day/time.",
+        "dayLabel": "[TODO:es] Send Day",
+        "hourLabel": "[TODO:es] Send Time",
+        "previewTitle": "[TODO:es] Digest Preview",
+        "previewBtn": "[TODO:es] Preview",
+        "sendBtn": "[TODO:es] Send Manually",
+        "previewEmpty": "[TODO:es] Click the preview button to see this week's digest.",
+        "loadError": "[TODO:es] Failed to load digest.",
+        "sendSuccess": "[TODO:es] Digest sent.",
+        "sendError": "[TODO:es] Failed to send.",
+        "sendFetchError": "[TODO:es] An error occurred while sending.",
+        "alerts": "[TODO:es] Key Alerts",
+        "cardPreviewTitle": "[TODO:es] Teams Card Preview"
+      },
+      "webhook": {
+        "sectionTitle": "[TODO:es] Microsoft Teams Webhook Channels",
+        "addChannel": "[TODO:es] Add Channel",
+        "noWebhooks": "[TODO:es] No webhook channels registered",
+        "test": "[TODO:es] Test",
+        "testSuccess": "[TODO:es] Success",
+        "testFail": "[TODO:es] Failed",
+        "deleteConfirm": "[TODO:es] Delete this webhook configuration?",
+        "deleteAriaLabel": "[TODO:es] Delete Webhook",
+        "noEvents": "[TODO:es] No events selected",
+        "channelNamePlaceholder": "[TODO:es] Channel name (e.g., HR-Alerts)",
+        "eventsToSend": "[TODO:es] Events to Send",
+        "cancel": "[TODO:es] Cancel",
+        "events": {
+          "overtime52h": "[TODO:es] 52-hour block",
+          "overtime48h": "[TODO:es] 48-hour warning",
+          "turnoverRisk": "[TODO:es] Turnover Risk Critical",
+          "offerAccepted": "[TODO:es] Offer Accepted",
+          "restructure": "[TODO:es] Restructure Applied",
+          "leaveApproved": "[TODO:es] Leave Approved",
+          "payslipIssued": "[TODO:es] Payslip Issued",
+          "benefitApproved": "[TODO:es] Benefit Approved",
+          "evalDeadline": "[TODO:es] Evaluation Deadline"
+        }
+      },
+      "cardPreview": {
+        "label": "[TODO:es] Preview"
+      }
+    }
+  },
+  "documents": {
+    "certificate": {
+      "employment": {
+        "title": "[TODO:es] Certificate of Employment",
+        "subtitle": "[TODO:es] Certificate of Employment"
+      },
+      "career": {
+        "title": "[TODO:es] Certificate of Career",
+        "subtitle": "[TODO:es] Certificate of Career",
+        "history": "[TODO:es] Career History",
+        "department": "[TODO:es] Department",
+        "position": "[TODO:es] Position",
+        "startDate": "[TODO:es] Start Date",
+        "endDate": "[TODO:es] End Date",
+        "current": "[TODO:es] Currently Employed"
+      },
+      "name": "[TODO:es] Name",
+      "employeeNo": "[TODO:es] Employee No.",
+      "birthDate": "[TODO:es] Date of Birth",
+      "hireDate": "[TODO:es] Hire Date",
+      "department": "[TODO:es] Department",
+      "jobGrade": "[TODO:es] Grade",
+      "position": "[TODO:es] Position",
+      "purpose": "[TODO:es] Purpose",
+      "defaultPurpose": "[TODO:es] For submission",
+      "certify": "[TODO:es] The above is hereby certified.",
+      "seal": "[TODO:es] [Company Seal]"
+    },
+    "compensation": {
+      "title": "[TODO:es] Compensation Adjustment Letter",
+      "subtitle": "[TODO:es] Compensation Adjustment Letter",
+      "greeting": "[TODO:es] Dear {name},",
+      "body": "[TODO:es] We are pleased to inform you of the following compensation adjustment.",
+      "name": "[TODO:es] Name",
+      "employeeNo": "[TODO:es] Employee No.",
+      "department": "[TODO:es] Department",
+      "position": "[TODO:es] Position",
+      "adjustmentType": "[TODO:es] Adjustment Type",
+      "previousSalary": "[TODO:es] Previous Salary",
+      "newSalary": "[TODO:es] New Salary",
+      "changeRate": "[TODO:es] Change Rate",
+      "changeAmount": "[TODO:es] Change Amount",
+      "effectiveDate": "[TODO:es] Effective Date",
+      "bodyText": "[TODO:es] This adjustment will take effect from the effective date above and will be reflected in the payroll from the pay date of the month in which the effective date falls.\nPlease contact the HR team if you have any questions regarding this letter.",
+      "approver": "[TODO:es] Approved by: {name}",
+      "changeTypes": {
+        "ANNUAL_INCREASE": "[TODO:es] Annual Increase",
+        "PROMOTION": "[TODO:es] Promotion",
+        "MARKET_ADJUSTMENT": "[TODO:es] Market Adjustment",
+        "MERIT_INCREASE": "[TODO:es] Merit Increase",
+        "EQUITY_ADJUSTMENT": "[TODO:es] Equity Adjustment",
+        "OTHER": "[TODO:es] Other"
+      }
     }
   }
 }

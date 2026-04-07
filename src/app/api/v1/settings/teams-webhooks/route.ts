@@ -9,6 +9,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
 import { z } from 'zod'
+import { getRequestLocale, serverT } from '@/lib/server-i18n'
 import type { SessionUser } from '@/types'
 
 const webhookSchema = z.object({
@@ -44,7 +45,8 @@ export const POST = withPermission(
     const body = await req.json()
     const parsed = webhookSchema.safeParse(body)
     if (!parsed.success) {
-      throw badRequest('잘못된 요청입니다.', { issues: parsed.error.issues })
+      const locale = await getRequestLocale()
+      throw badRequest(await serverT(locale, 'teams.api.invalidRequestData'), { issues: parsed.error.issues })
     }
 
     const webhook = await prisma.teamsWebhookConfig.create({

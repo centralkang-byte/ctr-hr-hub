@@ -1,21 +1,22 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Plus, Trash2, TestTube, Webhook, Check, X } from 'lucide-react'
 import { BUTTON_VARIANTS } from '@/lib/styles'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
-const ALL_EVENT_TYPES = [
-  { key: 'overtime_blocked_52h', label: '52시간 차단' },
-  { key: 'overtime_warning_48h', label: '48시간 경고' },
-  { key: 'turnover_risk_critical', label: '이직위험 Critical' },
-  { key: 'offer_accepted', label: '입사 수락' },
-  { key: 'restructure_applied', label: '조직 개편 적용' },
-  { key: 'leave_approved', label: '휴가 승인' },
-  { key: 'payslip_issued', label: '급여명세서 발급' },
-  { key: 'benefit_approved', label: '복리후생 승인' },
-  { key: 'evaluation_deadline', label: '성과평가 마감' },
-]
+const EVENT_TYPE_KEYS = [
+  { key: 'overtime_blocked_52h', i18n: 'overtime52h' },
+  { key: 'overtime_warning_48h', i18n: 'overtime48h' },
+  { key: 'turnover_risk_critical', i18n: 'turnoverRisk' },
+  { key: 'offer_accepted', i18n: 'offerAccepted' },
+  { key: 'restructure_applied', i18n: 'restructure' },
+  { key: 'leave_approved', i18n: 'leaveApproved' },
+  { key: 'payslip_issued', i18n: 'payslipIssued' },
+  { key: 'benefit_approved', i18n: 'benefitApproved' },
+  { key: 'evaluation_deadline', i18n: 'evalDeadline' },
+] as const
 
 interface WebhookConfig {
   id: string
@@ -26,6 +27,11 @@ interface WebhookConfig {
 }
 
 export function TeamsWebhookSection() {
+  const t = useTranslations('teams')
+  const ALL_EVENT_TYPES = EVENT_TYPE_KEYS.map((e) => ({
+    key: e.key,
+    label: t(`ui.webhook.events.${e.i18n}`),
+  }))
   const [webhooks, setWebhooks] = useState<WebhookConfig[]>([])
   const [adding, setAdding] = useState(false)
   const [newChannel, setNewChannel] = useState('')
@@ -75,7 +81,7 @@ export function TeamsWebhookSection() {
   }
 
   const handleDelete = async (id: string) => {
-    confirm({ variant: 'destructive', title: '이 Webhook 설정을 삭제할까요?', onConfirm: async () => {
+    confirm({ variant: 'destructive', title: t('ui.webhook.deleteConfirm'), onConfirm: async () => {
       try {
         await fetch(`/api/v1/settings/teams-webhooks/${id}`, { method: 'DELETE' })
         loadWebhooks()
@@ -125,7 +131,7 @@ export function TeamsWebhookSection() {
         <div className="flex items-center gap-2">
           <Webhook className="w-4 h-4 text-primary" />
           <h3 className="text-base font-semibold text-foreground">
-            Microsoft Teams Webhook 채널
+            {t('ui.webhook.sectionTitle')}
           </h3>
         </div>
         <button
@@ -133,14 +139,14 @@ export function TeamsWebhookSection() {
           className={`flex items-center gap-1.5 text-sm ${BUTTON_VARIANTS.primary} px-3 py-1.5 rounded-lg font-medium transition-colors`}
         >
           <Plus className="w-3.5 h-3.5" />
-          채널 추가
+          {t('ui.webhook.addChannel')}
         </button>
       </div>
 
       {/* Existing webhooks */}
       {webhooks.length === 0 && !adding && (
         <p className="text-sm text-muted-foreground py-4 text-center">
-          등록된 Webhook 채널이 없습니다
+          {t('ui.webhook.noWebhooks')}
         </p>
       )}
 
@@ -161,25 +167,25 @@ export function TeamsWebhookSection() {
                   testResult[wh.id] ? (
                     <>
                       <Check className="w-3 h-3 text-emerald-600" />
-                      성공
+                      {t('ui.webhook.testSuccess')}
                     </>
                   ) : (
                     <>
                       <X className="w-3 h-3 text-red-500" />
-                      실패
+                      {t('ui.webhook.testFail')}
                     </>
                   )
                 ) : (
                   <>
                     <TestTube className="w-3 h-3" />
-                    테스트
+                    {t('ui.webhook.test')}
                   </>
                 )}
               </button>
               <button
                 onClick={() => handleDelete(wh.id)}
                 className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-destructive/10 rounded-lg transition-colors"
-                aria-label="Webhook 삭제"
+                aria-label={t('ui.webhook.deleteAriaLabel')}
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -189,7 +195,7 @@ export function TeamsWebhookSection() {
           {/* Event type badges */}
           <div className="flex flex-wrap gap-1.5">
             {wh.eventTypes.length === 0 ? (
-              <span className="text-xs text-muted-foreground">선택된 이벤트 없음</span>
+              <span className="text-xs text-muted-foreground">{t('ui.webhook.noEvents')}</span>
             ) : (
               wh.eventTypes.map((et) => {
                 const ev = ALL_EVENT_TYPES.find((e) => e.key === et)
@@ -212,7 +218,7 @@ export function TeamsWebhookSection() {
         <div className="bg-card rounded-xl border border-primary/30 p-4 space-y-3">
           <input
             type="text"
-            placeholder={'채널명 (예: HR-알림)'}
+            placeholder={t('ui.webhook.channelNamePlaceholder')}
             value={newChannel}
             onChange={(e) => setNewChannel(e.target.value)}
             className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 focus:outline-none"
@@ -225,7 +231,7 @@ export function TeamsWebhookSection() {
             className="w-full px-3 py-2 border border-border rounded-lg text-sm font-mono tabular-nums focus:border-primary focus:ring-2 focus:ring-primary/10 focus:outline-none"
           />
           <div>
-            <p className="text-xs font-medium text-muted-foreground mb-2">전송할 이벤트</p>
+            <p className="text-xs font-medium text-muted-foreground mb-2">{t('ui.webhook.eventsToSend')}</p>
             <div className="flex flex-wrap gap-2">
               {ALL_EVENT_TYPES.map((ev) => (
                 <button
@@ -248,7 +254,7 @@ export function TeamsWebhookSection() {
               disabled={!newChannel.trim() || !newUrl.trim()}
               className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50`}
             >
-              저장
+              {t('ui.settings.save')}
             </button>
             <button
               onClick={() => {
@@ -259,7 +265,7 @@ export function TeamsWebhookSection() {
               }}
               className="bg-card border border-border hover:bg-muted text-foreground px-4 py-2 rounded-lg text-sm transition-colors"
             >
-              취소
+              {t('ui.webhook.cancel')}
             </button>
           </div>
         </div>

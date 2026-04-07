@@ -15,11 +15,13 @@ import {
     type ComparisonExcelRow,
 } from '@/lib/payroll/excel-generators'
 import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
+import { getRequestLocale } from '@/lib/server-i18n'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withRateLimit(withPermission(
     async (_req: NextRequest, context, user) => {
         try {
+            const locale = await getRequestLocale()
             const { runId } = await context.params
 
             const run = await prisma.payrollRun.findFirst({
@@ -93,7 +95,7 @@ export const GET = withRateLimit(withPermission(
             const previousTotal = rows.reduce((s, r) => s + (r.previousNet ?? r.currentNet), 0)
             const diff = currentTotal - previousTotal
 
-            const buffer = generateComparisonExcel(run.yearMonth, rows, {
+            const buffer = await generateComparisonExcel(locale, run.yearMonth, rows, {
                 currentTotal,
                 previousTotal,
                 diff,
@@ -103,7 +105,7 @@ export const GET = withRateLimit(withPermission(
                 employeesUnchanged: rows.filter((r) => r.diffNet === 0).length,
             })
 
-            const filename = buildExcelFilename(run.companyId, run.yearMonth, 'comparison')
+            const filename = await buildExcelFilename(locale, run.companyId, run.yearMonth, 'comparison')
 
             return new NextResponse(buffer, {
                 status: 200,

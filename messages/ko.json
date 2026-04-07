@@ -5176,6 +5176,116 @@
       "closeAttendance": "근태 마감",
       "anomalies": "급여 이상 탐지",
       "yearEnd": "연말정산"
+    },
+    "export": {
+      "comparison": {
+        "sheetTitle": "전월 대비 비교",
+        "docTitle": "{yearMonth} 급여 전월 대비 비교표",
+        "employeeNo": "사번",
+        "name": "이름",
+        "department": "부서",
+        "currentNet": "{yearMonth} 실수령",
+        "previousNet": "전월 실수령",
+        "diff": "차이",
+        "diffPercent": "변동률(%)",
+        "reason": "사유",
+        "anomaly": "이상여부",
+        "total": "합계",
+        "summarySheet": "요약",
+        "summaryItem": "항목",
+        "summaryValue": "값",
+        "summaryMonth": "대상 월",
+        "summaryCurrentTotal": "총 실수령액 (이번달)",
+        "summaryPreviousTotal": "총 실수령액 (전월)",
+        "summaryDiff": "변동액",
+        "summaryDiffPercent": "변동률(%)",
+        "summaryIncreased": "증가 인원",
+        "summaryDecreased": "감소 인원",
+        "summaryUnchanged": "동일 인원"
+      },
+      "ledger": {
+        "sheetTitle": "급여대장",
+        "docTitle": "{yearMonth} 급여대장",
+        "employeeNo": "사번",
+        "name": "이름",
+        "department": "부서",
+        "jobGrade": "직급",
+        "baseSalary": "기본급",
+        "overtimePay": "연장수당",
+        "nightPay": "야간수당",
+        "holidayPay": "휴일수당",
+        "positionAllowance": "직책수당",
+        "mealAllowance": "식대",
+        "transportAllowance": "교통비",
+        "grossTotal": "지급합계",
+        "nationalPension": "국민연금",
+        "healthInsurance": "건강보험",
+        "longTermCare": "장기요양",
+        "employmentInsurance": "고용보험",
+        "incomeTax": "소득세",
+        "localIncomeTax": "지방소득세",
+        "deductionTotal": "공제합계",
+        "netPay": "실수령액",
+        "total": "합계"
+      },
+      "journal": {
+        "sheetTitle": "인건비 전표",
+        "docTitle": "{yearMonth} 인건비 전표",
+        "department": "부서",
+        "total": "합계",
+        "mappingSheet": "계정과목 매핑",
+        "mappingItem": "급여항목",
+        "mappingCode": "계정코드",
+        "mappingName": "계정명",
+        "accountNames": {
+          "salary": "급여",
+          "allowances": "제수당",
+          "welfare": "복리후생비",
+          "socialInsurance": "법정복리후생비",
+          "retirement": "퇴직급여"
+        }
+      },
+      "filename": {
+        "yearMonth": "{year}년{month}월",
+        "comparison": "전월대비비교",
+        "ledger": "급여대장",
+        "journal": "인건비전표"
+      }
+    },
+    "pdf": {
+      "title": "급 여 명 세 서",
+      "name": "성명",
+      "employeeNo": "사번",
+      "department": "부서",
+      "jobGrade": "직급",
+      "payPeriod": "급여기간",
+      "payDate": "지급일",
+      "earningItems": "지급항목",
+      "amount": "금액",
+      "deductionItems": "공제항목",
+      "grossPay": "총 지급액",
+      "totalDeductions": "총 공제액",
+      "netPay": "실수령액",
+      "footer": "본 급여명세서는 {company}에서 발행한 전자문서입니다.",
+      "earnings": {
+        "baseSalary": "기본급",
+        "fixedOvertime": "고정초과근무수당",
+        "meal": "식비",
+        "transport": "교통비",
+        "overtime": "연장근무수당",
+        "nightShift": "야간근무수당",
+        "holiday": "휴일근무수당",
+        "bonus": "상여금",
+        "other": "기타수당"
+      },
+      "deductions": {
+        "nationalPension": "국민연금",
+        "health": "건강보험",
+        "longTermCare": "장기요양보험",
+        "employment": "고용보험",
+        "incomeTax": "소득세",
+        "localIncomeTax": "지방소득세"
+      }
     }
   },
   "analytics": {
@@ -10429,6 +10539,281 @@
       "executeBatch": "{count}건 일괄 실행",
       "failed": "실행 실패 ({status})",
       "error": "실행 중 오류가 발생했습니다"
+    }
+  },
+  "teams": {
+    "leaveApproval": {
+      "title": "휴가 승인 요청",
+      "subtitle": "{name}님의 휴가 신청",
+      "applicant": "신청자",
+      "type": "유형",
+      "period": "기간",
+      "days": "일수",
+      "daysUnit": "{count}일",
+      "reason": "사유",
+      "approve": "승인",
+      "reject": "반려",
+      "viewInHub": "HR Hub에서 보기"
+    },
+    "evalReminder": {
+      "title": "평가 기한 알림",
+      "evaluator": "평가자",
+      "pending": "미완료",
+      "pendingUnit": "{count}건",
+      "deadline": "마감일",
+      "deadlineWarning": "마감일까지 평가를 완료해 주세요.",
+      "openInHub": "HR Hub에서 열기"
+    },
+    "attritionRisk": {
+      "title": "이탈 위험 경고",
+      "riskScore": "위험 점수",
+      "department": "부서",
+      "factors": "주요 요인: {factors}",
+      "viewDetail": "상세 보기"
+    },
+    "onboarding": {
+      "title": "온보딩 태스크 마감 임박",
+      "newHire": "신규입사자",
+      "assignee": "담당자",
+      "deadline": "마감일",
+      "complete": "완료하기",
+      "viewInHub": "HR Hub에서 보기"
+    },
+    "chatbotEscalation": {
+      "title": "챗봇 에스컬레이션",
+      "subtitle": "{name}님 문의",
+      "employee": "직원",
+      "escalation": "에스컬레이션",
+      "assign": "담당자 배정",
+      "viewInHub": "HR Hub에서 보기"
+    },
+    "digest": {
+      "title": "주간 HR 다이제스트",
+      "newHires": "신규입사",
+      "onLeave": "휴가중",
+      "pendingEvals": "평가 대기",
+      "attritionRisk": "이탈 위험",
+      "pendingApprovals": "승인 대기",
+      "countPeople": "{count}명",
+      "countItems": "{count}건",
+      "openDashboard": "대시보드 열기",
+      "channelNotSet": "Teams 채널이 설정되지 않았습니다.",
+      "weeklyTitle": "주간 HR 다이제스트 ({range})",
+      "highlight": {
+        "newHires": "이번 주 {count}명 신규 입사",
+        "attritionRisk": "이탈 위험 직원 {count}명 — 면담 필요",
+        "pendingApprovals": "미처리 휴가 승인 {count}건",
+        "pendingEvals": "미완료 평가 {count}건"
+      }
+    },
+    "recognition": {
+      "title": "동료 칭찬",
+      "coreValue": "핵심가치",
+      "sender": "보낸 사람",
+      "receiver": "받는 사람"
+    },
+    "bot": {
+      "noUserInfo": "사용자 정보를 확인할 수 없습니다.",
+      "noLinkedAccount": "HR Hub에 연결된 계정이 없습니다. HR Hub에 먼저 로그인해 주세요.",
+      "installed": "CTR HR Hub Bot이 설치되었습니다. \"도움\" 또는 \"help\"를 입력해 보세요.",
+      "helpTitle": "CTR HR Hub Bot 명령어",
+      "helpLeave": "`휴가` 또는 `leave` — 휴가 잔여 현황 조회",
+      "helpPaystub": "`급여` 또는 `paystub` — 최근 급여명세서 조회",
+      "helpAttendance": "`근태` 또는 `attendance` — 오늘 근태 현황 조회",
+      "helpHelp": "`도움` 또는 `help` — 이 도움말 표시",
+      "leaveBalance": {
+        "title": "휴가 잔여 현황",
+        "empty": "등록된 휴가 잔여일이 없습니다.",
+        "item": "- **{name}**: {remaining}일 (총 {granted}일, 사용 {used}일)"
+      },
+      "paystub": {
+        "title": "최근 급여 명세서",
+        "empty": "급여 명세서 정보가 없습니다.",
+        "baseSalary": "기본급",
+        "grossPay": "총 지급액",
+        "netPay": "실수령액",
+        "detail": "자세한 내용은 HR Hub > 급여명세서에서 확인하세요.",
+        "currencyUnit": "{amount}원"
+      },
+      "attendance": {
+        "title": "오늘 근태 현황",
+        "empty": "오늘의 근태 기록이 없습니다.",
+        "clockIn": "출근",
+        "clockOut": "퇴근",
+        "status": "상태",
+        "notIn": "미출근",
+        "notOut": "미퇴근"
+      }
+    },
+    "actions": {
+      "recorded": "액션이 기록되었습니다.",
+      "leaveNotFound": "휴가 요청을 찾을 수 없습니다.",
+      "alreadyProcessed": "이미 처리된 요청입니다. (상태: {status})",
+      "leaveApproved": "휴가가 승인되었습니다.",
+      "leaveRejected": "휴가가 반려되었습니다.",
+      "unknownAction": "알 수 없는 액션입니다.",
+      "taskNotFound": "온보딩 태스크를 찾을 수 없습니다.",
+      "taskAlreadyDone": "이미 완료된 태스크입니다.",
+      "taskCompleted": "온보딩 태스크가 완료되었습니다.",
+      "sessionNotFound": "챗봇 세션을 찾을 수 없습니다.",
+      "agentAssigned": "담당자가 배정되었습니다."
+    },
+    "api": {
+      "authFailed": "인증 실패",
+      "invalidJson": "잘못된 JSON",
+      "invalidRequest": "잘못된 요청 데이터",
+      "invalidRequestData": "잘못된 요청 데이터입니다.",
+      "noConfig": "연결된 Teams 설정이 없습니다.",
+      "disconnected": "Teams 연결이 해제되었습니다.",
+      "invalidId": "유효하지 않은 ID 형식입니다.",
+      "webhookNotFound": "Webhook 설정을 찾을 수 없습니다.",
+      "senderMissing": "보내는 사람 정보가 없습니다.",
+      "userNotRegistered": "HR Hub에 등록되지 않은 사용자입니다."
+    },
+    "ui": {
+      "settings": {
+        "title": "Teams 연동",
+        "description": "Microsoft Teams와 HR Hub를 연동하여 알림, 봇, 주간 다이제스트를 설정합니다.",
+        "tabConnection": "연결",
+        "tabChannel": "채널",
+        "tabBot": "봇",
+        "tabDigest": "다이제스트",
+        "save": "저장",
+        "saveSuccess": "Teams 설정이 저장되었습니다.",
+        "saveError": "저장 중 오류가 발생했습니다.",
+        "loadError": "Teams 설정을 불러올 수 없습니다.",
+        "disconnectSuccess": "Teams 연결이 해제되었습니다.",
+        "disconnectError": "연결 해제 중 오류가 발생했습니다."
+      },
+      "connection": {
+        "title": "연결 상태",
+        "connected": "연결됨",
+        "disconnected": "미연결",
+        "connectedAt": "연결 일시",
+        "testSuccess": "연결 성공 — 테넌트: {name}",
+        "testFail": "연결 실패: {error}",
+        "testBtn": "연결 테스트",
+        "disconnectBtn": "연결 해제"
+      },
+      "channel": {
+        "title": "Teams 채널 선택",
+        "selectTeam": "팀 선택",
+        "selectChannel": "채널 선택",
+        "teamPlaceholder": "팀을 선택하세요",
+        "channelPlaceholder": "채널을 선택하세요",
+        "loadingTeams": "팀 목록 로딩 중...",
+        "loadingChannels": "채널 목록 로딩 중...",
+        "channelHelp": "선택한 채널로 주간 다이제스트와 알림이 전송됩니다.",
+        "errorTeams": "팀 목록을 불러올 수 없습니다.",
+        "errorChannels": "채널 목록을 불러올 수 없습니다."
+      },
+      "bot": {
+        "title": "봇 설정",
+        "enabled": "봇 활성화",
+        "enabledDesc": "Teams에서 휴가, 급여, 근태 조회 명령을 사용할 수 있습니다.",
+        "presenceSync": "프레전스 동기화",
+        "presenceSyncDesc": "Teams 재석 상태를 HR Hub와 동기화합니다."
+      },
+      "digestSettings": {
+        "title": "주간 다이제스트",
+        "enabled": "다이제스트 발송",
+        "enabledDesc": "매주 선택한 요일/시간에 HR 주간 요약을 Teams 채널에 포스팅합니다.",
+        "dayLabel": "발송 요일",
+        "hourLabel": "발송 시간",
+        "previewTitle": "다이제스트 미리보기",
+        "previewBtn": "미리보기",
+        "sendBtn": "수동 전송",
+        "previewEmpty": "미리보기 버튼을 클릭하여 이번 주 다이제스트를 확인하세요.",
+        "loadError": "다이제스트를 불러올 수 없습니다.",
+        "sendSuccess": "다이제스트가 전송되었습니다.",
+        "sendError": "전송에 실패했습니다.",
+        "sendFetchError": "전송 중 오류가 발생했습니다.",
+        "alerts": "주요 알림",
+        "cardPreviewTitle": "Teams 카드 미리보기"
+      },
+      "webhook": {
+        "sectionTitle": "Microsoft Teams Webhook 채널",
+        "addChannel": "채널 추가",
+        "noWebhooks": "등록된 Webhook 채널이 없습니다",
+        "test": "테스트",
+        "testSuccess": "성공",
+        "testFail": "실패",
+        "deleteConfirm": "이 Webhook 설정을 삭제할까요?",
+        "deleteAriaLabel": "Webhook 삭제",
+        "noEvents": "선택된 이벤트 없음",
+        "channelNamePlaceholder": "채널명 (예: HR-알림)",
+        "eventsToSend": "전송할 이벤트",
+        "cancel": "취소",
+        "events": {
+          "overtime52h": "52시간 차단",
+          "overtime48h": "48시간 경고",
+          "turnoverRisk": "이직위험 Critical",
+          "offerAccepted": "입사 수락",
+          "restructure": "조직 개편 적용",
+          "leaveApproved": "휴가 승인",
+          "payslipIssued": "급여명세서 발급",
+          "benefitApproved": "복리후생 승인",
+          "evalDeadline": "성과평가 마감"
+        }
+      },
+      "cardPreview": {
+        "label": "미리보기"
+      }
+    }
+  },
+  "documents": {
+    "certificate": {
+      "employment": {
+        "title": "재 직 증 명 서",
+        "subtitle": "Certificate of Employment"
+      },
+      "career": {
+        "title": "경 력 증 명 서",
+        "subtitle": "Certificate of Career",
+        "history": "경력 사항",
+        "department": "부서",
+        "position": "직위",
+        "startDate": "시작일",
+        "endDate": "종료일",
+        "current": "재직 중"
+      },
+      "name": "성명",
+      "employeeNo": "사원번호",
+      "birthDate": "생년월일",
+      "hireDate": "입사일",
+      "department": "부서",
+      "jobGrade": "직급",
+      "position": "직위",
+      "purpose": "용도",
+      "defaultPurpose": "제출용",
+      "certify": "위 사실을 증명합니다.",
+      "seal": "[직인]"
+    },
+    "compensation": {
+      "title": "연봉 조정 통보서",
+      "subtitle": "Compensation Adjustment Letter",
+      "greeting": "{name}님께,",
+      "body": "아래와 같이 연봉 조정 사항을 통보합니다.",
+      "name": "성명",
+      "employeeNo": "사원번호",
+      "department": "부서",
+      "position": "직위",
+      "adjustmentType": "조정 유형",
+      "previousSalary": "변경 전 연봉",
+      "newSalary": "변경 후 연봉",
+      "changeRate": "인상률",
+      "changeAmount": "인상액",
+      "effectiveDate": "시행일",
+      "bodyText": "본 조정은 위 시행일부터 적용되며, 변경된 연봉은 해당 시행일이 속한 급여 지급일부터 반영됩니다.\n본 통보서의 내용에 대해 문의 사항이 있으시면 인사팀으로 연락하여 주시기 바랍니다.",
+      "approver": "승인자: {name}",
+      "changeTypes": {
+        "ANNUAL_INCREASE": "정기 연봉 조정",
+        "PROMOTION": "승진",
+        "MARKET_ADJUSTMENT": "시장 조정",
+        "MERIT_INCREASE": "성과 인상",
+        "EQUITY_ADJUSTMENT": "형평성 조정",
+        "OTHER": "기타"
+      }
     }
   }
 }
