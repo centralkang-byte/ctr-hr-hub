@@ -7,7 +7,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { CheckCircle2, Clock, LogIn, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -81,10 +81,10 @@ function formatMinutesToHM(minutes: number | null | undefined): string {
   return `${h}h ${m}m`
 }
 
-function formatTime(isoStr: string | null): string {
+function formatTime(isoStr: string | null, locale: string = 'ko'): string {
   if (!isoStr) return '--:--'
   const d = new Date(isoStr)
-  return d.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+  return new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(d)
 }
 
 function getElapsedSeconds(clockIn: string): number {
@@ -111,6 +111,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
 
   const t = useTranslations('attendance')
   const tc = useTranslations('common')
+  const locale = useLocale()
 
   const DAY_LABELS = [
     t('dayMon'), t('dayTue'), t('dayWed'), t('dayThu'),
@@ -292,7 +293,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
                 {formatElapsedTime(elapsed)}
               </p>
               <p className="text-sm text-muted-foreground">
-                {t('clockIn')}: {formatTime(today?.clockIn ?? null)}
+                {t('clockIn')}: {formatTime(today?.clockIn ?? null, locale)}
               </p>
               <Button
                 size="lg"
@@ -317,10 +318,10 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
               </p>
               <div className="flex gap-6 text-sm text-muted-foreground">
                 <span>
-                  {t('clockIn')}: {formatTime(today?.clockIn ?? null)}
+                  {t('clockIn')}: {formatTime(today?.clockIn ?? null, locale)}
                 </span>
                 <span>
-                  {t('clockOut')}: {formatTime(today?.clockOut ?? null)}
+                  {t('clockOut')}: {formatTime(today?.clockOut ?? null, locale)}
                 </span>
               </div>
               {(today?.overtimeMinutes ?? 0) > 0 && (

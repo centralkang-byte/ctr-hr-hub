@@ -205,7 +205,7 @@ export function LoaTypesTab({ companyId }: Props) {
 
   const handleApplyDefaults = async () => {
     if (!companyId) return
-    if (!confirm('국내 기본 휴직유형(8개)을 적용합니다. 이미 등록된 유형은 건너뜁니다. 계속하시겠습니까?')) return
+    if (!confirm(t('loaTypes_applyDefaultsConfirm'))) return
     setApplyingDefaults(true)
     try {
       const { data } = await apiClient.post<{ created: number; skipped: number; message: string }>(
@@ -215,7 +215,7 @@ export function LoaTypesTab({ companyId }: Props) {
       toast({ title: data.message })
       fetchTypes()
     } catch (err) {
-      toast({ title: '기본값 적용 실패', description: err instanceof Error ? err.message : '', variant: 'destructive' })
+      toast({ title: t('loaTypes_applyDefaultsFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     } finally {
       setApplyingDefaults(false)
     }
@@ -237,7 +237,7 @@ export function LoaTypesTab({ companyId }: Props) {
           {companyId && (
             <Button size="sm" variant="outline" onClick={handleApplyDefaults} disabled={applyingDefaults}>
               <RotateCcw className={cn('h-4 w-4 mr-1', applyingDefaults && 'animate-spin')} />
-              글로벌 기본값 적용
+              {t('loaTypes_applyGlobalDefaults')}
             </Button>
           )}
           <Button size="sm" onClick={() => setShowAdd(!showAdd)}>

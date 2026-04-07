@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { AlertTriangle, X, Clock, CheckCircle2, CalendarDays, ChevronDown } from 'lucide-react'
 
 // ─── Types ───────────────────────────────────────────────
@@ -27,42 +28,22 @@ type AdjustmentType =
 
 interface AdjustmentOption {
   value: AdjustmentType
-  label: string
-  description: string
+  labelKey: string
+  descKey: string
   savingsHours: number
 }
 
 // ─── Constants ───────────────────────────────────────────
 
 const ADJUSTMENT_OPTIONS: AdjustmentOption[] = [
-  {
-    value: 'half_day_off',
-    label: '반차 사용',
-    description: '금요일 오후 반차 처리 (4시간 단축)',
-    savingsHours: 4,
-  },
-  {
-    value: 'shorten_shift',
-    label: '근무 시간 단축',
-    description: '목요일 근무 2시간 단축',
-    savingsHours: 2,
-  },
-  {
-    value: 'remote_work',
-    label: '재택근무 전환',
-    description: '잔여 일정 재택 전환 (이동 시간 제외)',
-    savingsHours: 1,
-  },
-  {
-    value: 'postpone_overtime',
-    label: '초과근무 보류',
-    description: '이번 주 잔여 초과근무 취소',
-    savingsHours: 3,
-  },
+  { value: 'half_day_off', labelKey: 'adjustHalfDayOff', descKey: 'adjustHalfDayOffDesc', savingsHours: 4 },
+  { value: 'shorten_shift', labelKey: 'adjustShortenShift', descKey: 'adjustShortenShiftDesc', savingsHours: 2 },
+  { value: 'remote_work', labelKey: 'adjustRemoteWork', descKey: 'adjustRemoteWorkDesc', savingsHours: 1 },
+  { value: 'postpone_overtime', labelKey: 'adjustPostponeOvertime', descKey: 'adjustPostponeOvertimeDesc', savingsHours: 3 },
 ]
 
 const TARGET_HOURS = 52
-const DAY_OPTIONS = ['월요일', '화요일', '수요일', '목요일', '금요일']
+const DAY_OPTION_KEYS = ['dayMonday', 'dayTuesday', 'dayWednesday', 'dayThursday', 'dayFriday'] as const
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -79,21 +60,21 @@ function getAlertTokens(level: AlertLevel) {
         banner: 'bg-red-400/10 border-red-400/30',
         icon: 'text-rose-600',
         text: 'text-rose-600',
-        label: '52시간 초과 — 즉시 조정 필요',
+        labelKey: 'alertDanger',
       }
     case 'warning':
       return {
         banner: 'bg-amber-400/10 border-amber-400/40',
         icon: 'text-amber-700',
         text: 'text-amber-700',
-        label: '48시간 초과 — 조정 권고',
+        labelKey: 'alertWarning',
       }
     default:
       return {
         banner: 'bg-amber-400/10 border-amber-400/40',
         icon: 'text-amber-700',
         text: 'text-amber-700',
-        label: '44시간 초과 — 주의',
+        labelKey: 'alertCaution',
       }
   }
 }
@@ -101,6 +82,7 @@ function getAlertTokens(level: AlertLevel) {
 // ─── Progress Bar ─────────────────────────────────────────
 
 function HoursProgressBar({ current, target }: { current: number; target: number }) {
+  const t = useTranslations('attendance')
   const pct = Math.min((current / target) * 100, 100)
   const isOver = current >= target
   const isNear = current >= 48
@@ -108,7 +90,7 @@ function HoursProgressBar({ current, target }: { current: number; target: number
   return (
     <div className="space-y-1.5">
       <div className="flex justify-between text-xs">
-        <span className="text-muted-foreground">이번 주 누적</span>
+        <span className="text-muted-foreground">{t('weeklyAccumulated')}</span>
         <span className={`font-semibold ${isOver ? 'text-rose-600' : isNear ? 'text-amber-700' : 'text-foreground'}`}>
           {current}h / {target}h
         </span>
@@ -136,8 +118,10 @@ export function ScheduleAdjustmentModal({
   onClose,
   weeklyHours,
 }: ScheduleAdjustmentModalProps) {
+  const t = useTranslations('attendance')
+  const tc = useTranslations('common')
   const [selectedType, setSelectedType] = useState<AdjustmentType | null>(null)
-  const [selectedDay, setSelectedDay] = useState<string>('금요일')
+  const [selectedDay, setSelectedDay] = useState<string>('dayFriday')
   const [note, setNote] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -166,7 +150,7 @@ export function ScheduleAdjustmentModal({
 
   const handleClose = () => {
     setSelectedType(null)
-    setSelectedDay('금요일')
+    setSelectedDay('dayFriday')
     setNote('')
     setSuccess(false)
     onClose()
@@ -193,8 +177,8 @@ export function ScheduleAdjustmentModal({
                 <Clock className={`h-4 w-4 ${tokens.icon}`} />
               </div>
               <div>
-                <h2 className="text-base font-bold text-foreground">근무 일정 조정</h2>
-                <p className="text-xs text-muted-foreground">주 52시간 초과 위험 해소</p>
+                <h2 className="text-base font-bold text-foreground">{t('scheduleAdjustment')}</h2>
+                <p className="text-xs text-muted-foreground">{t('scheduleAdjustmentDesc')}</p>
               </div>
             </div>
             <button
@@ -215,16 +199,16 @@ export function ScheduleAdjustmentModal({
                   <CheckCircle2 className="h-8 w-8 text-emerald-600" />
                 </div>
                 <div>
-                  <p className="text-base font-bold text-foreground">조정 요청이 제출되었습니다</p>
+                  <p className="text-base font-bold text-foreground">{t('adjustmentSubmitted')}</p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    담당 매니저가 확인 후 승인할 예정입니다.
+                    {t('adjustmentSubmittedDesc')}
                   </p>
                 </div>
                 <button
                   onClick={handleClose}
                   className="mt-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary/80 transition-colors"
                 >
-                  확인
+                  {t('confirm')}
                 </button>
               </div>
             ) : (
@@ -233,10 +217,10 @@ export function ScheduleAdjustmentModal({
                 <div className={`flex items-start gap-3 rounded-xl border px-4 py-3 ${tokens.banner}`}>
                   <AlertTriangle className={`mt-0.5 h-4 w-4 shrink-0 ${tokens.icon}`} />
                   <div className="space-y-0.5">
-                    <p className={`text-sm font-semibold ${tokens.text}`}>{tokens.label}</p>
+                    <p className={`text-sm font-semibold ${tokens.text}`}>{t(tokens.labelKey)}</p>
                     <p className="text-xs text-muted-foreground">
-                      현재 {weeklyHours}시간 근무 중
-                      {overflow > 0 && ` — ${overflow}시간 초과`}
+                      {t('currentHoursWorking', { hours: weeklyHours })}
+                      {overflow > 0 && ` — ${t('hoursExceeded', { hours: overflow })}`}
                     </p>
                   </div>
                 </div>
@@ -247,7 +231,7 @@ export function ScheduleAdjustmentModal({
                   {selectedOption && (
                     <div className="mt-3 border-t border-border pt-3">
                       <div className="flex justify-between text-xs">
-                        <span className="text-muted-foreground">조정 후 예상</span>
+                        <span className="text-muted-foreground">{t('afterAdjustment')}</span>
                         <span className={`font-semibold ${projectedHours < 52 ? 'text-emerald-600' : 'text-rose-600'}`}>
                           {projectedHours}h / {TARGET_HOURS}h
                         </span>
@@ -258,7 +242,7 @@ export function ScheduleAdjustmentModal({
 
                 {/* Adjustment Type */}
                 <div className="space-y-2">
-                  <p className="text-sm font-semibold text-foreground">조정 방법 선택</p>
+                  <p className="text-sm font-semibold text-foreground">{t('selectAdjustmentMethod')}</p>
                   <div className="space-y-2">
                     {ADJUSTMENT_OPTIONS.map((opt) => (
                       <button
@@ -272,9 +256,9 @@ export function ScheduleAdjustmentModal({
                       >
                         <div className="space-y-0.5">
                           <p className={`text-sm font-semibold ${selectedType === opt.value ? 'text-primary' : 'text-foreground'}`}>
-                            {opt.label}
+                            {t(opt.labelKey)}
                           </p>
-                          <p className="text-xs text-muted-foreground">{opt.description}</p>
+                          <p className="text-xs text-muted-foreground">{t(opt.descKey)}</p>
                         </div>
                         <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold ${
                           selectedType === opt.value
@@ -293,7 +277,7 @@ export function ScheduleAdjustmentModal({
                   <label className="text-sm font-semibold text-foreground">
                     <span className="flex items-center gap-1.5">
                       <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                      적용 요일
+                      {t('applyDay')}
                     </span>
                   </label>
                   <div className="relative">
@@ -302,8 +286,8 @@ export function ScheduleAdjustmentModal({
                       onChange={(e) => setSelectedDay(e.target.value)}
                       className="w-full appearance-none rounded-xl border border-border bg-card px-4 py-2.5 pr-10 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
                     >
-                      {DAY_OPTIONS.map((day) => (
-                        <option key={day} value={day}>{day}</option>
+                      {DAY_OPTION_KEYS.map((key) => (
+                        <option key={key} value={key}>{t(key)}</option>
                       ))}
                     </select>
                     <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -312,11 +296,11 @@ export function ScheduleAdjustmentModal({
 
                 {/* Note */}
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-foreground">사유 (선택)</label>
+                  <label className="text-sm font-semibold text-foreground">{t('reasonOptional')}</label>
                   <textarea
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
-                    placeholder={'조정 사유를 간략히 입력하세요...'}
+                    placeholder={t('reasonPlaceholder')}
                     rows={3}
                     className="w-full resize-none rounded-xl border border-border px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
                   />
@@ -332,7 +316,7 @@ export function ScheduleAdjustmentModal({
                 onClick={handleClose}
                 className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
               >
-                취소
+                {tc('cancel')}
               </button>
               <button
                 onClick={handleSubmit}
@@ -342,10 +326,10 @@ export function ScheduleAdjustmentModal({
                 {loading ? (
                   <>
                     <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    제출 중...
+                    {t('submitting')}
                   </>
                 ) : (
-                  '조정 요청 제출'
+                  t('submitAdjustment')
                 )}
               </button>
             </div>

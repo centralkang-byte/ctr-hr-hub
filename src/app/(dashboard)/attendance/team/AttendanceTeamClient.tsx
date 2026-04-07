@@ -7,7 +7,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -51,9 +51,9 @@ const STATUS_BADGE_STYLES: Record<string, string> = {
 
 // ─── Helpers ────────────────────────────────────────────────
 
-function formatTime(t: string | null | undefined): string {
+function formatTime(t: string | null | undefined, locale: string = 'ko'): string {
   if (!t) return '—'
-  return new Date(t).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+  return new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(new Date(t))
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -64,6 +64,7 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
   const t = useTranslations('attendance')
   const tc = useTranslations('common')
   const te = useTranslations('employee')
+  const locale = useLocale()
 
   const STATUS_LABELS: Record<string, string> = {
     NORMAL: t('normal'),
@@ -107,12 +108,12 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
     {
       key: 'clockIn',
       header: t('clockIn'),
-      render: (row) => formatTime(row.attendance?.clockIn),
+      render: (row) => formatTime(row.attendance?.clockIn, locale),
     },
     {
       key: 'clockOut',
       header: t('clockOut'),
-      render: (row) => formatTime(row.attendance?.clockOut),
+      render: (row) => formatTime(row.attendance?.clockOut, locale),
     },
     {
       key: 'status',

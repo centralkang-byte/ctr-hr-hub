@@ -103,7 +103,7 @@ export function ShiftPatternsTab({
                   <td className="px-4 py-3 text-sm font-mono tabular-nums text-primary">{pattern.code}</td>
                   <td className={TABLE_STYLES.cell}>{pattern.name}</td>
                   <td className={TABLE_STYLES.cellMuted}>
-                    {pattern.patternType === 'FIXED' ? '고정' : pattern.patternType === 'ROTATING' ? '순환' : pattern.patternType}
+                    {pattern.patternType === 'FIXED' ? t('shiftPatterns_fixed') : pattern.patternType === 'ROTATING' ? t('shiftPatterns_rotating') : pattern.patternType}
                   </td>
                   <td className="px-4 py-3 text-center text-sm text-foreground">
                     <span className="inline-flex items-center gap-1">
@@ -111,7 +111,7 @@ export function ShiftPatternsTab({
                       {Array.isArray(pattern.slots) ? pattern.slots.length : 0}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-center text-sm text-foreground">{pattern.cycleDays}일</td>
+                  <td className="px-4 py-3 text-center text-sm text-foreground">{t('shiftPatterns_cycleDays', { count: pattern.cycleDays })}</td>
                   <td className="px-4 py-3 text-center text-sm text-foreground">
                     <span className="inline-flex items-center gap-1">
                       <Users className="h-3.5 w-3.5 text-muted-foreground" />
@@ -124,7 +124,7 @@ export function ShiftPatternsTab({
                         ? 'bg-emerald-500/10 text-emerald-700'
                         : 'bg-muted text-muted-foreground'
                     }`}>
-                      {!pattern.deletedAt ? '활성' : '비활성'}
+                      {!pattern.deletedAt ? t('shiftPatterns_active') : t('shiftPatterns_inactive')}
                     </span>
                   </td>
                 </tr>

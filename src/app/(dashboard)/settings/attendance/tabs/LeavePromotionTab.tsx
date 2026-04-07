@@ -57,8 +57,8 @@ export function LeavePromotionTab({
 
       {/* 알림 시작 시점 */}
       <SettingFieldWithOverride
-        label="알림 시작 시점"
-        description="연말 연차촉진 알림을 시작할 시점"
+        label={t('leavePromotionStart')}
+        description={t('leavePromotionStartDesc')}
         status="global"
         companySelected={!!companyId}
       >
@@ -86,8 +86,8 @@ export function LeavePromotionTab({
 
       {/* 알림 간격 */}
       <SettingFieldWithOverride
-        label="알림 간격"
-        description="연차촉진 알림 발송 주기"
+        label={t('leavePromotionInterval')}
+        description={t('leavePromotionIntervalDesc')}
         status="global"
         companySelected={!!companyId}
       >
@@ -106,8 +106,8 @@ export function LeavePromotionTab({
 
       {/* 최대 알림 횟수 */}
       <SettingFieldWithOverride
-        label="최대 알림 횟수"
-        description="연차촉진 알림 최대 발송 횟수"
+        label={t('leavePromotionMaxCount')}
+        description={t('leavePromotionMaxCountDesc')}
         status="global"
         companySelected={!!companyId}
       >
@@ -126,8 +126,8 @@ export function LeavePromotionTab({
 
       {/* 수신자 설정 */}
       <SettingFieldWithOverride
-        label="알림 수신자"
-        description="연차촉진 알림을 받을 대상"
+        label={t('leavePromotionRecipients')}
+        description={t('leavePromotionRecipientsDesc')}
         status="global"
         companySelected={!!companyId}
       >
@@ -164,8 +164,8 @@ export function LeavePromotionTab({
 
       {/* 미사용 연차 소멸 규칙 */}
       <SettingFieldWithOverride
-        label="미사용 연차 소멸"
-        description="연말 미사용 연차의 처리 방식"
+        label={t('leaveExpiration')}
+        description={t('leaveExpirationDesc')}
         status="global"
         companySelected={!!companyId}
       >
@@ -197,8 +197,8 @@ export function LeavePromotionTab({
 
       {/* 소멸 전 경고 */}
       <SettingFieldWithOverride
-        label="소멸 경고 알림"
-        description="연차 소멸 전 경고 알림 발송 시점"
+        label={t('expirationWarning')}
+        description={t('expirationWarningDesc')}
         status="global"
         companySelected={!!companyId}
       >

@@ -35,7 +35,6 @@ interface DesignatedLeaveTabProps {
   companyId: string | null
 }
 
-const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const
 
 export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
   const t = useTranslations('settings')
