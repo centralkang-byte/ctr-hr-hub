@@ -132,23 +132,22 @@ Plan → **Codex Plan Review** → Implement → `/verify` (includes **Codex Pos
 Two review gates in every task that is **planned** to touch 3+ files (judge by plan scope, not final diff):
 
 **Gate 1 — Plan Review** (after writing plan, before ExitPlanMode):
-- Launch a `general-purpose` Agent as independent reviewer
-- Prompt: "Review this plan critically. Find missing files, pattern inconsistencies, namespace conflicts, data-matching strings that should NOT be i18n'd. Rate findings HIGH/MED/LOW."
+- Write plan summary to `/tmp/codex-prompt.txt`
+- Run: `/opt/homebrew/bin/codex exec "$(cat /tmp/codex-prompt.txt)"`
 - Incorporate HIGH findings into plan before approval
 
 **Gate 2 — Post-Implementation Review** (during `/verify`, after tsc+lint pass):
-- Launch a `general-purpose` Agent as independent reviewer
-- Prompt: "Search actual changed files. Check for residual hardcoded strings, unused imports, type mismatches, missing translations across locales, pattern violations."
+- Run: `/opt/homebrew/bin/codex review --uncommitted`
 - Fix all HIGH findings before commit
 
-**Implementation**:
-- **Gate 1 (Plan)**: `general-purpose` Agent subagent (Claude, fast, text-based)
-- **Gate 2 (Post)**: Real Codex CLI (GPT-5.4, truly independent model)
-  ```bash
-  /opt/homebrew/bin/codex review --uncommitted   # for uncommitted changes
-  /opt/homebrew/bin/codex review --base staging   # for branch diff
-  ```
-  Long custom prompts: write to `/tmp/codex-prompt.txt`, then `codex exec "$(cat /tmp/codex-prompt.txt)"`
+**Codex CLI reference** (GPT-5.4, `/opt/homebrew/bin/codex`):
+```bash
+codex review --uncommitted          # review uncommitted changes
+codex review --base staging         # review branch diff
+codex review --commit <SHA>         # review specific commit
+codex exec "$(cat /tmp/prompt.txt)" # custom prompt (long text → file)
+```
+Timeout: 180s. If hang, kill and retry with shorter prompt.
 
 ### /verify (code checks)
 1. **Code:** `npx tsc --noEmit` + `npm run lint` (pre-commit hook auto-runs)
