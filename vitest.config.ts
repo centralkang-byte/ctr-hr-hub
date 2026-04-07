@@ -10,6 +10,11 @@ export default defineConfig({
     setupFiles: [],
   },
   resolve: {
-    alias: { '@': path.resolve(__dirname, './src') },
+    alias: {
+      'server-only': path.resolve(__dirname, './tests/unit/__mocks__/server-only.ts'),
+      '@/lib/settings/get-setting': path.resolve(__dirname, './tests/unit/__mocks__/get-setting.ts'),
+      '@/lib/prisma': path.resolve(__dirname, './tests/unit/__mocks__/prisma.ts'),
+      '@': path.resolve(__dirname, './src'),
+    },
   },
 })
