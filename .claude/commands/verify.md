@@ -54,7 +54,36 @@ Must show "Database schema is up to date". Report if drift detected.
 - [ ] Client: `toast()` 에러 표시
 - [ ] 빈 catch 블록 없음
 
-## 4. UI Visual QA (when UI files changed)
+## 4. Codex Outside Voice Review (MANDATORY for 3+ file changes)
+
+Run real Codex CLI (GPT-5.4) for independent post-implementation review:
+
+```bash
+# Review uncommitted changes (before git add)
+/opt/homebrew/bin/codex review --uncommitted
+
+# Review branch diff (after commit, before push)
+/opt/homebrew/bin/codex review --base staging
+```
+
+Output will include prioritized findings (P0-P3). Action rules:
+- **P0-P1**: Fix before commit
+- **P2**: Fix if quick (<5min), otherwise note in commit message
+- **P3**: Defer to next session
+
+**Long custom prompts** (when default review is insufficient):
+```bash
+# Write prompt to file, then exec
+cat > /tmp/codex-prompt.txt << 'EOF'
+Review these changes for: residual hardcoded Korean, unused imports,
+type mismatches, missing translations across 5 locales...
+EOF
+/opt/homebrew/bin/codex exec "$(cat /tmp/codex-prompt.txt)"
+```
+
+**Timeout**: 180s max. If codex hangs, kill and use `general-purpose` Agent fallback.
+
+## 5. UI Visual QA (when UI files changed)
 
 Run only if `git diff --name-only` includes `*Client.tsx` or `src/components/**`.
 
@@ -74,7 +103,7 @@ Run only if `git diff --name-only` includes `*Client.tsx` or `src/components/**`
 - [ ] 3-state check: loading skeleton, error toast, empty state
 - [ ] Responsive: desktop (1280px) + mobile (375px)
 
-## 5. 결과 요약
+## 6. 결과 요약
 
 위 체크리스트 결과를 아래 형식으로 보고하세요:
 

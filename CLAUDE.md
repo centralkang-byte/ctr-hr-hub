@@ -125,7 +125,30 @@ In QA mode, flag any code that doesn't match DESIGN.md.
 ## Verification & Workflow
 
 ### Dev Flow
-Implement → `/verify` → UI QA (if UI changed) → `/wrap-up` (commit + STATUS + deploy)
+Plan → **Codex Plan Review** → Implement → `/verify` (includes **Codex Post-Review**) → UI QA (if UI changed) → `/wrap-up`
+
+### Codex Outside Voice Review (MANDATORY)
+
+Two review gates in every task that is **planned** to touch 3+ files (judge by plan scope, not final diff):
+
+**Gate 1 — Plan Review** (after writing plan, before ExitPlanMode):
+- Launch a `general-purpose` Agent as independent reviewer
+- Prompt: "Review this plan critically. Find missing files, pattern inconsistencies, namespace conflicts, data-matching strings that should NOT be i18n'd. Rate findings HIGH/MED/LOW."
+- Incorporate HIGH findings into plan before approval
+
+**Gate 2 — Post-Implementation Review** (during `/verify`, after tsc+lint pass):
+- Launch a `general-purpose` Agent as independent reviewer
+- Prompt: "Search actual changed files. Check for residual hardcoded strings, unused imports, type mismatches, missing translations across locales, pattern violations."
+- Fix all HIGH findings before commit
+
+**Implementation**:
+- **Gate 1 (Plan)**: `general-purpose` Agent subagent (Claude, fast, text-based)
+- **Gate 2 (Post)**: Real Codex CLI (GPT-5.4, truly independent model)
+  ```bash
+  /opt/homebrew/bin/codex review --uncommitted   # for uncommitted changes
+  /opt/homebrew/bin/codex review --base staging   # for branch diff
+  ```
+  Long custom prompts: write to `/tmp/codex-prompt.txt`, then `codex exec "$(cat /tmp/codex-prompt.txt)"`
 
 ### /verify (code checks)
 1. **Code:** `npx tsc --noEmit` + `npm run lint` (pre-commit hook auto-runs)
