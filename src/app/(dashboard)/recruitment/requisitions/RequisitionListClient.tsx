@@ -42,27 +42,27 @@ interface Requisition {
   }>
 }
 
-const URGENCY_LABELS: Record<string, { label: string; color: string }> = {
-  urgent: { label: '긴급도', color: 'bg-destructive/10 text-destructive' },
-  normal: { label: '평균', color: 'bg-amber-500/15 text-amber-700' },
-  low: { label: '낮음', color: 'bg-sky-500/10 text-sky-700' },
+const URGENCY_LABELS: Record<string, { labelKey: string; color: string }> = {
+  urgent: { labelKey: 'urgencyUrgent', color: 'bg-destructive/10 text-destructive' },
+  normal: { labelKey: 'urgencyNormal', color: 'bg-amber-500/15 text-amber-700' },
+  low: { labelKey: 'urgencyLow', color: 'bg-sky-500/10 text-sky-700' },
 }
 
-const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  draft: { label: '임시저장', color: 'bg-background text-muted-foreground', icon: <FileText size={12} /> },
-  pending: { label: '결재중', color: 'bg-amber-500/15 text-amber-700', icon: <Clock size={12} /> },
-  approved: { label: '승인', color: 'bg-emerald-500/15 text-emerald-700', icon: <CheckCircle2 size={12} /> },
-  rejected: { label: '반려', color: 'bg-destructive/10 text-destructive', icon: <XCircle size={12} /> },
-  cancelled: { label: '취소', color: 'bg-background text-muted-foreground', icon: <XCircle size={12} /> },
-  filled: { label: '충원완료', color: 'bg-primary/10 text-primary/90', icon: <CheckCircle2 size={12} /> },
+const STATUS_LABELS: Record<string, { labelKey: string; color: string; icon: React.ReactNode }> = {
+  draft: { labelKey: 'statusDraft', color: 'bg-background text-muted-foreground', icon: <FileText size={12} /> },
+  pending: { labelKey: 'statusPending', color: 'bg-amber-500/15 text-amber-700', icon: <Clock size={12} /> },
+  approved: { labelKey: 'statusApproved', color: 'bg-emerald-500/15 text-emerald-700', icon: <CheckCircle2 size={12} /> },
+  rejected: { labelKey: 'statusRejected', color: 'bg-destructive/10 text-destructive', icon: <XCircle size={12} /> },
+  cancelled: { labelKey: 'statusCancelled', color: 'bg-background text-muted-foreground', icon: <XCircle size={12} /> },
+  filled: { labelKey: 'statusFilled', color: 'bg-primary/10 text-primary/90', icon: <CheckCircle2 size={12} /> },
 }
 
 const STEP_ROLE_LABELS: Record<string, string> = {
-  direct_manager: '팀장',
-  dept_head: '부서장',
-  hr_admin: 'HR',
-  ceo: '대표',
-  finance: '경영관리',
+  direct_manager: 'stepRoleDirectManager',
+  dept_head: 'stepRoleDeptHead',
+  hr_admin: 'stepRoleHrAdmin',
+  ceo: 'stepRoleCeo',
+  finance: 'stepRoleFinance',
 }
 
 export default function RequisitionListClient({user }: {
@@ -146,7 +146,7 @@ export default function RequisitionListClient({user }: {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="직무명, 부서, 요청자 검색..."
+            placeholder={t('requisitionSearchPlaceholder')}
             className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
           />
         </div>
@@ -186,11 +186,11 @@ export default function RequisitionListClient({user }: {
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-xs font-mono tabular-nums text-muted-foreground">{item.reqNumber}</span>
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${urgency.color}`}>
-                        {urgency.label}
+                        {t(urgency.labelKey)}
                       </span>
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${statusInfo.color}`}>
                         {statusInfo.icon}
-                        {statusInfo.label}
+                        {t(statusInfo.labelKey)}
                         {item.status === 'pending' && totalSteps > 0 && ` (${item.currentStep}/${totalSteps})`}
                       </span>
                     </div>
@@ -203,9 +203,9 @@ export default function RequisitionListClient({user }: {
                       <span>·</span>
                       <span>{item.department.name}</span>
                       <span>·</span>
-                      <span>요청자: {item.requester.name}</span>
+                      <span>{t('requester')}: {item.requester.name}</span>
                       <span>·</span>
-                      <span>{item.headcount}명</span>
+                      <span>{t('headcountWithUnit', { count: item.headcount })}</span>
                     </div>
 
                     {/* 결재 스테퍼 */}
@@ -224,7 +224,7 @@ export default function RequisitionListClient({user }: {
                                 'bg-muted text-muted-foreground'
                               }`}>
                                 {isDone ? '✅' : isRejected ? '❌' : isActive ? '⏳' : '⬜'}
-                                {STEP_ROLE_LABELS[record.approverRole] ?? record.approverRole}
+                                {t(STEP_ROLE_LABELS[record.approverRole] ?? record.approverRole)}
                               </div>
                               {idx < item.approvalRecords.length - 1 && (
                                 <ChevronRight size={14} className="text-border" />
@@ -243,7 +243,7 @@ export default function RequisitionListClient({user }: {
                         className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 text-white text-xs font-medium rounded-lg hover:bg-emerald-700"
                       >
                         <CheckCircle2 size={13} />
-                        결재
+                        {t('approve')}
                       </button>
                     )}
                     <button

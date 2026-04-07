@@ -166,7 +166,7 @@ export default function PipelineClient({ user, postingId }: Props) {
       )
       setApplications(res.data)
     } catch (err) {
-      toast({ title: '파이프라인 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('pipelineLoadFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }

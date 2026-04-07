@@ -2,6 +2,7 @@
 // CTR HR Hub — /recruitment (Server Page)
 // ═══════════════════════════════════════════════════════════
 
+import { getTranslations } from 'next-intl/server'
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
@@ -9,6 +10,11 @@ import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import RecruitmentListClient from './RecruitmentListClient'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
+
+export async function generateMetadata() {
+  const t = await getTranslations('recruitment')
+  return { title: t('pageTitle') }
+}
 
 export default async function RecruitmentPage() {
   const session = await getServerSession(authOptions)

@@ -139,7 +139,7 @@ export default function ApplicantListClient({
       setData(res.data)
       setTotal(res.pagination.total)
     } catch (err) {
-      toast({ title: '지원자 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('applicantListLoadFailed'), description: err instanceof Error ? err.message : t('cannotLoadData'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }

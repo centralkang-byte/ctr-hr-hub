@@ -266,7 +266,7 @@ function EvaluationModal({
       >
         <DialogHeader style={{ padding: '24px 24px 0' }}>
           <DialogTitle style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))' }}>
-            {'면접 평가'}
+            {t('interviewEvaluation')}
           </DialogTitle>
           {interview && (
             <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', marginTop: 4 }}>
@@ -288,7 +288,7 @@ function EvaluationModal({
           }}
         >
           <ScoreSelect
-            label={'종합 점수'}
+            label={t('evalOverallScore')}
             value={form.overallScore}
             onChange={(v) => updateField('overallScore', v)}
           />
@@ -307,21 +307,21 @@ function EvaluationModal({
                 marginBottom: 12,
               }}
             >
-              {'역량별 점수'}
+              {t('competencyScores')}
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <ScoreSelect
-                label={'직무역량'}
+                label={t('competencyJobFit')}
                 value={form.jobCompetency}
                 onChange={(v) => updateField('jobCompetency', v)}
               />
               <ScoreSelect
-                label={'커뮤니케이션'}
+                label={t('competencyCommunication')}
                 value={form.communication}
                 onChange={(v) => updateField('communication', v)}
               />
               <ScoreSelect
-                label={'문화적합'}
+                label={t('competencyCultureFit')}
                 value={form.cultureFit}
                 onChange={(v) => updateField('cultureFit', v)}
               />
@@ -329,22 +329,22 @@ function EvaluationModal({
           </div>
 
           <div>
-            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))' }}>{'강점'}</Label>
+            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))' }}>{t('evalStrengths')}</Label>
             <Textarea
               value={form.strengths}
               onChange={(e) => updateField('strengths', e.target.value)}
-              placeholder={'지원자의 강점을 입력하세요'}
+              placeholder={t('evalStrengthsPlaceholder')}
               rows={2}
               style={{ marginTop: 6 }}
             />
           </div>
 
           <div>
-            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))' }}>{'우려사항'}</Label>
+            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))' }}>{t('evalConcerns')}</Label>
             <Textarea
               value={form.concerns}
               onChange={(e) => updateField('concerns', e.target.value)}
-              placeholder={'우려 사항이 있다면 입력하세요'}
+              placeholder={t('evalConcernsPlaceholder')}
               rows={2}
               style={{ marginTop: 6 }}
             />
@@ -352,7 +352,7 @@ function EvaluationModal({
 
           <div>
             <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))', marginBottom: 8, display: 'block' }}>
-              {'추천'}
+              {t('evalRecommendation')}
             </Label>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {(
@@ -390,11 +390,11 @@ function EvaluationModal({
           </div>
 
           <div>
-            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))' }}>{'코멘트'}</Label>
+            <Label style={{ fontSize: 14, color: 'hsl(var(--foreground))' }}>{t('evalComment')}</Label>
             <Textarea
               value={form.comment}
               onChange={(e) => updateField('comment', e.target.value)}
-              placeholder={'추가 코멘트'}
+              placeholder={t('evalCommentPlaceholder')}
               rows={2}
               style={{ marginTop: 6 }}
             />
@@ -407,7 +407,7 @@ function EvaluationModal({
             onClick={() => onOpenChange(false)}
             style={{ borderRadius: 8 }}
           >
-            {'취소'}
+            {t('cancelButton')}
           </Button>
           <Button
             onClick={guardedSubmit}
@@ -419,7 +419,7 @@ function EvaluationModal({
             }}
           >
             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {'평가 제출'}
+            {t('submitEvaluation')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -455,11 +455,11 @@ export function InterviewListClient({
 
   // ─── Options (use t() for labels) ─────────────────────
   const STATUS_OPTIONS = [
-    { value: 'ALL', label: '전체 상태' },
-    { value: 'SCHEDULED', label: '예정' },
-    { value: 'COMPLETED', label: '완료' },
-    { value: 'CANCELLED', label: '취소' },
-    { value: 'NO_SHOW', label: '불참' },
+    { value: 'ALL', labelKey: 'filterAllStatus' },
+    { value: 'SCHEDULED', labelKey: 'filterScheduled' },
+    { value: 'COMPLETED', labelKey: 'filterCompleted' },
+    { value: 'CANCELLED', labelKey: 'filterCancelled' },
+    { value: 'NO_SHOW', labelKey: 'filterNoShow' },
   ]
 
   const fetchInterviews = useCallback(async () => {
@@ -510,7 +510,7 @@ export function InterviewListClient({
           evaluations: res.data.interviewEvaluations,
         })
       } catch (err) {
-        toast({ title: '평가 조회 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        toast({ title: t('evalLoadFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' })
         setEvalDetailOpen(false)
       } finally {
         setEvalDetailLoading(false)
@@ -525,7 +525,7 @@ export function InterviewListClient({
   const columns: DataTableColumn<InterviewRow>[] = [
     {
       key: 'applicantName',
-      header: '지원자',
+      header: t('colApplicant'),
       render: (row) => (
         <span style={{ fontWeight: 500, color: 'hsl(var(--foreground))' }}>
           {row.application.applicant.name}
@@ -534,14 +534,14 @@ export function InterviewListClient({
     },
     {
       key: 'interviewerName',
-      header: '면접관',
+      header: t('colInterviewer'),
       render: (row) => (
         <span className="text-foreground">{row.interviewer.name}</span>
       ),
     },
     {
       key: 'scheduledAt',
-      header: '일시',
+      header: t('colDateTime'),
       sortable: true,
       render: (row) => (
         <span className="text-foreground text-sm">
@@ -551,7 +551,7 @@ export function InterviewListClient({
     },
     {
       key: 'durationMinutes',
-      header: '소요시간',
+      header: t('colDuration'),
       render: (row) => (
         <span className="text-muted-foreground text-sm">
           {t('durationMinutes', { minutes: row.durationMinutes })}
@@ -560,7 +560,7 @@ export function InterviewListClient({
     },
     {
       key: 'interviewType',
-      header: '유형',
+      header: t('colType'),
       render: (row) => (
         <span className="text-foreground text-sm">
           {row.interviewType
@@ -571,7 +571,7 @@ export function InterviewListClient({
     },
     {
       key: 'round',
-      header: '라운드',
+      header: t('colRound'),
       render: (row) => (
         <span className="text-foreground text-sm">
           {row.round ? ROUND_KEYS[row.round] ? t(ROUND_KEYS[row.round]) : row.round : '-'}
@@ -580,7 +580,7 @@ export function InterviewListClient({
     },
     {
       key: 'status',
-      header: '상태',
+      header: t('colStatus'),
       render: (row) => {
         const colors = STATUS_COLORS[row.status] ?? {
           bg: STATUS_BG.neutral,
@@ -605,7 +605,7 @@ export function InterviewListClient({
     },
     {
       key: 'calendar',
-      header: '캘린더',
+      header: t('colCalendar'),
       render: (row) => {
         if (row.status === 'CANCELLED') return <span className="text-muted-foreground/60 text-xs">&mdash;</span>
         return (
@@ -622,7 +622,7 @@ export function InterviewListClient({
     },
     {
       key: 'evaluation',
-      header: '평가',
+      header: t('colEvaluation'),
       render: (row) => {
         const evalCount = row.interviewEvaluations?.length ?? 0
         if (row.status === 'COMPLETED') {
@@ -649,7 +649,7 @@ export function InterviewListClient({
               }}
             >
               <ClipboardCheck size={14} />
-              {evalCount > 0 ? t('evalCount', { count: evalCount }) : '평가하기'}
+              {evalCount > 0 ? t('evalCount', { count: evalCount }) : t('evaluate')}
             </button>
           )
         }
@@ -663,8 +663,8 @@ export function InterviewListClient({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <PageHeader
-        title={'면접 일정'}
-        description={'채용 공고별 면접 일정 관리'}
+        title={t('interviewScheduleTitle')}
+        description={t('interviewScheduleDescription')}
         actions={
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Button
@@ -673,7 +673,7 @@ export function InterviewListClient({
               style={{ borderRadius: 8 }}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              {'공고로 돌아가기'}
+              {t('backToPosting')}
             </Button>
             <Button
               onClick={() =>
@@ -686,7 +686,7 @@ export function InterviewListClient({
               }}
             >
               <Plus className="mr-2 h-4 w-4" />
-              {'면접 등록'}
+              {t('addInterview')}
             </Button>
           </div>
         }
@@ -709,12 +709,12 @@ export function InterviewListClient({
           }}
         >
           <SelectTrigger style={{ width: 160, borderRadius: 8 }}>
-            <SelectValue placeholder={'상태 필터'} />
+            <SelectValue placeholder={t('statusFilterPlaceholder')} />
           </SelectTrigger>
           <SelectContent>
             {STATUS_OPTIONS.map((opt) => (
               <SelectItem key={opt.value} value={opt.value}>
-                {opt.label}
+                {t(opt.labelKey)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -740,8 +740,8 @@ export function InterviewListClient({
           pagination={pagination}
           onPageChange={setPage}
           loading={loading}
-          emptyMessage={'등록된 면접 일정이 없습니다'}
-          emptyDescription={'면접 등록 버튼을 눌러 일정을 추가하세요'}
+          emptyMessage={t('noInterviews')}
+          emptyDescription={t('noInterviewsDescription')}
           rowKey={(row) => (row as unknown as InterviewRow).id}
         />
       </div>

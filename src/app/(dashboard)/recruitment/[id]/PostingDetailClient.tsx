@@ -101,7 +101,7 @@ export default function PostingDetailClient({
       const res = await apiClient.get<PostingDetail>(`/api/v1/recruitment/postings/${id}`)
       setData(res.data)
     } catch (err) {
-      toast({ title: '채용 공고 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('postingLoadFailed'), description: err instanceof Error ? err.message : t('cannotLoadData'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -115,7 +115,7 @@ export default function PostingDetailClient({
       await apiClient.put(`/api/v1/recruitment/postings/${id}/publish`)
       fetchDetail()
     } catch (err) {
-      toast({ title: '채용 공고 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('postingActionFailed'), description: err instanceof Error ? err.message : t('cannotLoadData'), variant: 'destructive' })
     } finally {
       setActionLoading(false)
     }
@@ -127,7 +127,7 @@ export default function PostingDetailClient({
       await apiClient.put(`/api/v1/recruitment/postings/${id}/close`)
       fetchDetail()
     } catch (err) {
-      toast({ title: '채용 공고 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('postingActionFailed'), description: err instanceof Error ? err.message : t('cannotLoadData'), variant: 'destructive' })
     } finally {
       setActionLoading(false)
     }

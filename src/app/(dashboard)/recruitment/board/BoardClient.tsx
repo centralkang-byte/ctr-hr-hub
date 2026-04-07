@@ -38,14 +38,14 @@ const STAGES = [
 
 type StageType = (typeof STAGES)[number]
 
-const STAGE_LABELS: Record<string, string> = {
-  APPLIED: '지원',
-  SCREENING: '서류검토',
-  INTERVIEW_1: '1차 면접',
-  INTERVIEW_2: '2차 면접',
-  FINAL: '최종 면접',
-  OFFER: '오퍼',
-  HIRED: '채용 확정',
+const STAGE_KEYS: Record<string, string> = {
+  APPLIED: 'stageAPPLIED',
+  SCREENING: 'stageSCREENING',
+  INTERVIEW_1: 'stageINTERVIEW_1',
+  INTERVIEW_2: 'stageINTERVIEW_2',
+  FINAL: 'stageFINAL',
+  OFFER: 'stageOFFER',
+  HIRED: 'stageHIRED',
 }
 
 const STAGE_ACCENT: Record<string, string> = {
@@ -412,7 +412,7 @@ export default function BoardClient({ user }: Props) {
                 style={{ backgroundColor: STAGE_ACCENT[stage] }}
               />
               <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
-                {STAGE_LABELS[stage]}
+                {t(STAGE_KEYS[stage])}
               </span>
             </div>
           ))}
@@ -487,7 +487,7 @@ export default function BoardClient({ user }: Props) {
                           className="text-[10px] font-semibold uppercase tracking-wider"
                           style={{ color: STAGE_ACCENT[stage] }}
                         >
-                          {STAGE_LABELS[stage]}
+                          {t(STAGE_KEYS[stage])}
                         </span>
                         {cards.length > 0 && (
                           <span className="text-[10px] font-bold text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
@@ -595,7 +595,7 @@ export default function BoardClient({ user }: Props) {
                       form: { ...prev.form, offeredSalary: e.target.value },
                     }))
                   }
-                  placeholder="예: 60000000"
+                  placeholder={t('offeredSalaryPlaceholder')}
                   className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-card focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground transition-colors"
                 />
               </div>
@@ -692,7 +692,7 @@ export default function BoardClient({ user }: Props) {
               onChange={(e) =>
                 setRejectionModal((prev) => ({ ...prev, reason: e.target.value }))
               }
-              placeholder="불합격 사유를 입력해주세요."
+              placeholder={t('rejectionReasonPlaceholder')}
               rows={4}
               className="w-full px-3 py-2 text-sm border border-border rounded-lg resize-none focus:outline-none focus:border-red-400 transition-colors placeholder:text-muted-foreground"
             />
