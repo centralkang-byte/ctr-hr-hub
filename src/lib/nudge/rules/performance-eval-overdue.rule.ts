@@ -87,6 +87,28 @@ export const performanceEvalOverdueRule: NudgeRule = {
     return `${cycleName ?? '성과 주기'} 자기평가를 아직 제출하지 않았습니다. ${suffix}`
   },
 
+  getTitleKey(item: OverdueItem): string {
+    return item.meta?.subType === 'mgr-eval'
+      ? 'notifications.nudge.perfEvalMgr.title'
+      : 'notifications.nudge.perfEvalSelf.title'
+  },
+  getBodyKey(item: OverdueItem): string {
+    const daysLeft = item.meta?.daysUntilDeadline != null ? Number(item.meta.daysUntilDeadline) : 0
+    const suffix = daysLeft > 0 ? 'bodyBefore' : 'bodyAfter'
+    return item.meta?.subType === 'mgr-eval'
+      ? `notifications.nudge.perfEvalMgr.${suffix}`
+      : `notifications.nudge.perfEvalSelf.${suffix}`
+  },
+  getBodyParams(item: OverdueItem, daysOverdue: number): Record<string, string | number> {
+    const daysLeft = item.meta?.daysUntilDeadline != null ? Number(item.meta.daysUntilDeadline) : 0
+    return {
+      cycleName: String(item.meta?.cycleName ?? ''),
+      targetName: String(item.meta?.targetEmployeeName ?? ''),
+      daysOverdue,
+      daysLeft,
+    }
+  },
+
   async findOverdueItems(
     companyId:   string,
     assigneeId:  string,

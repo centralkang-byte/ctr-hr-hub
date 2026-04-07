@@ -4412,6 +4412,121 @@
     "turnoverRiskCritical": {
       "body": "El riesgo de rotación del empleado está en nivel crítico.",
       "title": "Riesgo crítico de rotación"
+    },
+    "payslipIssued": {
+      "title": "Nómina emitida",
+      "body": "Su nómina de {month}/{year} ha sido emitida. Por favor revísela."
+    },
+    "loaReturnReminder": {
+      "title": "Regreso en {days} días",
+      "body": "{employeeName}, su {typeName} termina en {days} días. Prepare su solicitud de regreso."
+    },
+    "loaReturnReminderHr": {
+      "title": "Alerta de regreso ({days} días restantes)",
+      "body": "{employeeName} — Fecha de regreso de {typeName} en {days} días."
+    },
+    "offCycleComp": {
+      "approved": {
+        "title": "Ajuste salarial extraordinario aprobado",
+        "body": "Su solicitud de ajuste salarial extraordinario ha sido aprobada.",
+        "employee": {
+          "title": "Aviso de ajuste salarial",
+          "body": "Se aprobó un ajuste salarial. Consulte los detalles."
+        }
+      },
+      "rejected": {
+        "title": "Ajuste salarial extraordinario rechazado",
+        "body": "Su solicitud de ajuste salarial extraordinario fue rechazada. Motivo: {reason}"
+      },
+      "submitted": {
+        "title": "Solicitud de aprobación de ajuste salarial",
+        "body": "Se ha enviado una solicitud de ajuste salarial extraordinario. Por favor revise."
+      }
+    },
+    "goalRevisionProposed": {
+      "title": "Propuesta de revisión de objetivo MBO",
+      "body": "{employeeName} propuso una revisión de objetivo: {reason}"
+    },
+    "goalRevisionApproved": {
+      "title": "Revisión de objetivo aprobada",
+      "body": "{reviewerName} aprobó la revisión de objetivo."
+    },
+    "goalRevisionRejected": {
+      "title": "Revisión de objetivo rechazada",
+      "body": "{reviewerName} comentó: {comment}"
+    },
+    "compensation": {
+      "approved": {
+        "title": "Plan de compensación aprobado",
+        "body": "Plan de compensación aprobado ({totalEmployees} empleados). Genere las cartas de notificación."
+      }
+    },
+    "nudge": {
+      "leavePending": {
+        "title": "Aprobación de licencia pendiente",
+        "body": "{displayTitle} — pendiente de aprobación por {daysOverdue} días. Se requiere acción."
+      },
+      "perfEvalSelf": {
+        "title": "Envíe su autoevaluación",
+        "body": "{cycleName} autoevaluación no ha sido enviada. {daysLeft} días para el vencimiento.",
+        "bodyBefore": "{cycleName} autoevaluación no ha sido enviada. {daysLeft} días para el vencimiento.",
+        "bodyAfter": "{cycleName} autoevaluación lleva {daysOverdue} días de retraso. Envíe inmediatamente."
+      },
+      "perfEvalMgr": {
+        "title": "Complete la evaluación del equipo",
+        "body": "{cycleName} — Evaluación gerencial de {targetName}. {daysLeft} días para el vencimiento.",
+        "bodyBefore": "{cycleName} — Evaluación gerencial de {targetName}. {daysLeft} días para el vencimiento.",
+        "bodyAfter": "{cycleName} — Evaluación gerencial de {targetName} lleva {daysOverdue} días de retraso."
+      },
+      "perfGoalOverdue": {
+        "title": "Envíe los objetivos MBO",
+        "body": "{cycleName} envío de objetivos MBO. {daysLeft} días para el vencimiento.",
+        "bodyBefore": "{cycleName} envío de objetivos MBO. {daysLeft} días para el vencimiento.",
+        "bodyAfter": "{cycleName} envío de objetivos MBO lleva {daysOverdue} días de retraso. Envíe inmediatamente."
+      },
+      "calibrationPending": {
+        "title": "Complete la sesión de calibración",
+        "body": "{cycleName} — \"{sessionName}\" lleva {daysOverdue} días en progreso. Complétela."
+      },
+      "contractExpiring": {
+        "title": "Evaluación de vencimiento de contrato necesaria",
+        "body": "{displayTitle} — Contrato vence en {daysLeft} días. Complete la evaluación."
+      },
+      "onboardingCheckin": {
+        "title": "Check-in de onboarding (Semana {week})",
+        "body": "{displayTitle} — Check-in programado hace {daysOverdue} días no completado."
+      },
+      "probationEnding": {
+        "title": "Evaluación de período de prueba necesaria",
+        "body": "{displayTitle} — Período de prueba termina en {daysLeft} días. Complete la evaluación."
+      },
+      "delegationNotSet": {
+        "title": "Configure la delegación",
+        "body": "Tiene 3+ aprobaciones pendientes. Configure delegación para evitar interrupciones durante ausencias."
+      },
+      "payrollReview": {
+        "title": "Revisión de nómina pendiente",
+        "body": "{displayTitle} — pendiente de revisión por {daysOverdue} días. Procese la nómina."
+      },
+      "exitInterview": {
+        "title": "Entrevista de salida incompleta",
+        "body": "Entrevista de salida de {displayTitle} no realizada ({daysLeft} días hasta último día laboral). Programe una.",
+        "titleUrgent": "Urgente — Entrevista de salida incompleta",
+        "titlePressing": "Apremiante — Entrevista de salida incompleta"
+      },
+      "offboardingOverdue": {
+        "title": "Tarea de offboarding vencida",
+        "body": "\"{displayTitle}\" tarea vencida por {daysOverdue} días ({daysLeft} días hasta último día laboral). Atienda inmediatamente.",
+        "titleUrgent": "Urgente — Tarea de offboarding vencida"
+      },
+      "onboardingOverdue": {
+        "title": "Tarea de onboarding vencida ({milestone})",
+        "body": "\"{displayTitle}\" tarea vencida por {daysOverdue} días. Complete pronto."
+      },
+      "leaveYearendBurn": {
+        "title": "Recordatorio de vacaciones anuales",
+        "body": "Le quedan {remainingDays} días de vacaciones. Los días que excedan el límite de traspaso ({carryOverMax} días) vencerán el 31 de dic."
+      }
     }
   },
   "offboarding": {

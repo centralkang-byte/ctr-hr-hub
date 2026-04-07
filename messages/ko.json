@@ -9506,6 +9506,121 @@
         "title": "면접 일정 등록",
         "body": "[{postingTitle}] {applicantName}님 면접이 {scheduledAt} ({timezone})에 예정되었습니다."
       }
+    },
+    "payslipIssued": {
+      "title": "급여 명세서 발급",
+      "body": "{year}년 {month}월 급여 명세서가 발급되었습니다. 확인하세요."
+    },
+    "loaReturnReminder": {
+      "title": "복직 예정일 {days}일 전",
+      "body": "{employeeName}님, {typeName} 복직 예정일이 {days}일 남았습니다. 복직 신청을 준비해 주세요."
+    },
+    "loaReturnReminderHr": {
+      "title": "복직 예정 알림 ({days}일 전)",
+      "body": "{employeeName} — {typeName} 복직 예정일이 {days}일 남았습니다."
+    },
+    "offCycleComp": {
+      "approved": {
+        "title": "비정기 급여 조정 승인 완료",
+        "body": "비정기 급여 조정 요청이 최종 승인되었습니다.",
+        "employee": {
+          "title": "급여 조정 안내",
+          "body": "급여 조정이 승인되었습니다. 상세 내용을 확인해 주세요."
+        }
+      },
+      "rejected": {
+        "title": "비정기 급여 조정 반려",
+        "body": "비정기 급여 조정 요청이 반려되었습니다. 사유: {reason}"
+      },
+      "submitted": {
+        "title": "비정기 급여 조정 승인 요청",
+        "body": "비정기 급여 조정 요청이 제출되었습니다. 승인을 검토해 주세요."
+      }
+    },
+    "goalRevisionProposed": {
+      "title": "MBO 목표 수정 제안",
+      "body": "{employeeName}님이 목표 수정을 제안했습니다: {reason}"
+    },
+    "goalRevisionApproved": {
+      "title": "목표 수정 승인",
+      "body": "{reviewerName}님이 목표 수정을 승인했습니다."
+    },
+    "goalRevisionRejected": {
+      "title": "목표 수정 거부",
+      "body": "{reviewerName}님 코멘트: {comment}"
+    },
+    "compensation": {
+      "approved": {
+        "title": "보상 기획 승인",
+        "body": "보상 기획이 승인되었습니다 ({totalEmployees}명). 통보서를 생성하세요."
+      }
+    },
+    "nudge": {
+      "leavePending": {
+        "title": "휴가 승인 대기 중",
+        "body": "{displayTitle} — {daysOverdue}일째 승인 대기 중입니다. 확인이 필요합니다."
+      },
+      "perfEvalSelf": {
+        "title": "자기평가를 제출해 주세요",
+        "body": "{cycleName} 자기평가를 아직 제출하지 않았습니다. 마감이 {daysLeft}일 남았습니다.",
+        "bodyBefore": "{cycleName} 자기평가를 아직 제출하지 않았습니다. 마감이 {daysLeft}일 남았습니다.",
+        "bodyAfter": "{cycleName} 자기평가 제출 기한이 {daysOverdue}일 초과됐습니다. 즉시 처리해 주세요."
+      },
+      "perfEvalMgr": {
+        "title": "팀원 평가를 작성해 주세요",
+        "body": "{cycleName} — {targetName}님 매니저 평가 마감이 {daysLeft}일 남았습니다.",
+        "bodyBefore": "{cycleName} — {targetName}님 매니저 평가 마감이 {daysLeft}일 남았습니다.",
+        "bodyAfter": "{cycleName} — {targetName}님 매니저 평가 기한이 {daysOverdue}일 초과됐습니다."
+      },
+      "perfGoalOverdue": {
+        "title": "MBO 목표를 제출해 주세요",
+        "body": "{cycleName} MBO 목표 제출 마감이 {daysLeft}일 남았습니다.",
+        "bodyBefore": "{cycleName} MBO 목표 제출 마감이 {daysLeft}일 남았습니다.",
+        "bodyAfter": "{cycleName} MBO 목표 제출 기한이 {daysOverdue}일 초과됐습니다. 즉시 처리해 주세요."
+      },
+      "calibrationPending": {
+        "title": "캘리브레이션 세션을 완료해 주세요",
+        "body": "{cycleName} — \"{sessionName}\"이 {daysOverdue}일째 진행 중입니다. 완료해 주세요."
+      },
+      "contractExpiring": {
+        "title": "계약 만료 평가 필요",
+        "body": "{displayTitle} — 계약 만료 {daysLeft}일 전. 전환/연장/종료 평가서를 작성해 주세요."
+      },
+      "onboardingCheckin": {
+        "title": "온보딩 체크인을 해주세요 ({week}주차)",
+        "body": "{displayTitle} — {daysOverdue}일 전에 예정된 체크인이 아직 완료되지 않았습니다. 감정 펄스를 기록해 주세요."
+      },
+      "probationEnding": {
+        "title": "수습 평가 필요",
+        "body": "{displayTitle} — 수습기간 만료 {daysLeft}일 전. 수습 평가서를 작성해 주세요."
+      },
+      "delegationNotSet": {
+        "title": "대결 설정을 확인해 주세요",
+        "body": "미처리 승인 건이 3건 이상입니다. 부재 시 업무 중단을 방지하려면 대결 설정을 해주세요."
+      },
+      "payrollReview": {
+        "title": "급여 검토 대기 중",
+        "body": "{displayTitle} — {daysOverdue}일째 검토 대기 중입니다. 급여 처리를 진행해주세요."
+      },
+      "exitInterview": {
+        "title": "퇴직 인터뷰 미완료",
+        "body": "{displayTitle}의 Exit Interview가 아직 진행되지 않았습니다 (최종 근무일까지 {daysLeft}일). 인터뷰를 예약해 주세요.",
+        "titleUrgent": "긴급 — 퇴직 인터뷰 미완료",
+        "titlePressing": "촉박 — 퇴직 인터뷰 미완료"
+      },
+      "offboardingOverdue": {
+        "title": "오프보딩 태스크 기한 초과",
+        "body": "\"{displayTitle}\" 태스크가 {daysOverdue}일 초과됐습니다 (최종 근무일까지 {daysLeft}일). 즉시 처리해 주세요.",
+        "titleUrgent": "긴급 — 오프보딩 태스크 기한 초과"
+      },
+      "onboardingOverdue": {
+        "title": "온보딩 태스크 기한 초과 ({milestone})",
+        "body": "\"{displayTitle}\" 태스크가 {daysOverdue}일 초과됐습니다. 빠른 완료가 필요합니다."
+      },
+      "leaveYearendBurn": {
+        "title": "연차 소진 안내",
+        "body": "연차 잔여 {remainingDays}일이 남아있습니다. 12월 31일까지 사용하지 않으면 이월 한도({carryOverMax}일) 초과분은 소멸됩니다."
+      }
     }
   },
   "totalRewards": {

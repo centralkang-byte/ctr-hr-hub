@@ -4412,6 +4412,121 @@
     "turnoverRiskCritical": {
       "body": "Employee turnover risk is at critical level.",
       "title": "Critical Turnover Risk"
+    },
+    "payslipIssued": {
+      "title": "Payslip Issued",
+      "body": "Your payslip for {year}/{month} has been issued. Please check it."
+    },
+    "loaReturnReminder": {
+      "title": "Return from Leave in {days} days",
+      "body": "{employeeName}, your {typeName} leave ends in {days} days. Please prepare your return request."
+    },
+    "loaReturnReminderHr": {
+      "title": "Leave Return Alert ({days} days remaining)",
+      "body": "{employeeName} — {typeName} return date is in {days} days."
+    },
+    "offCycleComp": {
+      "approved": {
+        "title": "Off-Cycle Compensation Approved",
+        "body": "Your off-cycle compensation request has been approved.",
+        "employee": {
+          "title": "Compensation Adjustment Notice",
+          "body": "A compensation adjustment has been approved. Please check the details."
+        }
+      },
+      "rejected": {
+        "title": "Off-Cycle Compensation Rejected",
+        "body": "Your off-cycle compensation request was rejected. Reason: {reason}"
+      },
+      "submitted": {
+        "title": "Off-Cycle Compensation Approval Request",
+        "body": "An off-cycle compensation request has been submitted. Please review."
+      }
+    },
+    "goalRevisionProposed": {
+      "title": "MBO Goal Revision Proposed",
+      "body": "{employeeName} proposed a goal revision: {reason}"
+    },
+    "goalRevisionApproved": {
+      "title": "Goal Revision Approved",
+      "body": "{reviewerName} approved the goal revision."
+    },
+    "goalRevisionRejected": {
+      "title": "Goal Revision Rejected",
+      "body": "{reviewerName} commented: {comment}"
+    },
+    "compensation": {
+      "approved": {
+        "title": "Compensation Plan Approved",
+        "body": "Compensation plan approved ({totalEmployees} employees). Please generate letters."
+      }
+    },
+    "nudge": {
+      "leavePending": {
+        "title": "Leave Approval Pending",
+        "body": "{displayTitle} — pending approval for {daysOverdue} days. Action required."
+      },
+      "perfEvalSelf": {
+        "title": "Please Submit Your Self-Evaluation",
+        "body": "{cycleName} self-evaluation has not been submitted. {daysLeft} days until deadline.",
+        "bodyBefore": "{cycleName} self-evaluation has not been submitted. {daysLeft} days until deadline.",
+        "bodyAfter": "{cycleName} self-evaluation is {daysOverdue} days past deadline. Please submit immediately."
+      },
+      "perfEvalMgr": {
+        "title": "Please Complete Team Member Evaluation",
+        "body": "{cycleName} — Manager evaluation for {targetName}. {daysLeft} days until deadline.",
+        "bodyBefore": "{cycleName} — Manager evaluation for {targetName}. {daysLeft} days until deadline.",
+        "bodyAfter": "{cycleName} — Manager evaluation for {targetName} is {daysOverdue} days past deadline."
+      },
+      "perfGoalOverdue": {
+        "title": "Please Submit MBO Goals",
+        "body": "{cycleName} MBO goal submission. {daysLeft} days until deadline.",
+        "bodyBefore": "{cycleName} MBO goal submission. {daysLeft} days until deadline.",
+        "bodyAfter": "{cycleName} MBO goal submission is {daysOverdue} days past deadline. Please submit immediately."
+      },
+      "calibrationPending": {
+        "title": "Please Complete Calibration Session",
+        "body": "{cycleName} — \"{sessionName}\" has been in progress for {daysOverdue} days. Please complete it."
+      },
+      "contractExpiring": {
+        "title": "Contract Expiry Evaluation Needed",
+        "body": "{displayTitle} — Contract expires in {daysLeft} days. Please complete the evaluation."
+      },
+      "onboardingCheckin": {
+        "title": "Onboarding Check-in Due (Week {week})",
+        "body": "{displayTitle} — Check-in scheduled {daysOverdue} days ago is not completed. Please log your pulse."
+      },
+      "probationEnding": {
+        "title": "Probation Evaluation Needed",
+        "body": "{displayTitle} — Probation ends in {daysLeft} days. Please complete the evaluation."
+      },
+      "delegationNotSet": {
+        "title": "Please Set Up Delegation",
+        "body": "You have 3+ pending approvals. Set up delegation to prevent workflow interruptions during absence."
+      },
+      "payrollReview": {
+        "title": "Payroll Review Pending",
+        "body": "{displayTitle} — pending review for {daysOverdue} days. Please proceed with payroll processing."
+      },
+      "exitInterview": {
+        "title": "Exit Interview Incomplete",
+        "body": "Exit interview for {displayTitle} has not been conducted ({daysLeft} days until last working day). Please schedule it.",
+        "titleUrgent": "Urgent — Exit Interview Incomplete",
+        "titlePressing": "Pressing — Exit Interview Incomplete"
+      },
+      "offboardingOverdue": {
+        "title": "Offboarding Task Overdue",
+        "body": "\"{displayTitle}\" task is {daysOverdue} days overdue ({daysLeft} days until last working day). Handle immediately.",
+        "titleUrgent": "Urgent — Offboarding Task Overdue"
+      },
+      "onboardingOverdue": {
+        "title": "Onboarding Task Overdue ({milestone})",
+        "body": "\"{displayTitle}\" task is {daysOverdue} days overdue. Please complete promptly."
+      },
+      "leaveYearendBurn": {
+        "title": "Annual Leave Reminder",
+        "body": "You have {remainingDays} days of annual leave remaining. Days exceeding the carry-over limit ({carryOverMax} days) will expire on Dec 31."
+      }
     }
   },
   "offboarding": {

@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
+import { loadMessages, resolveKey, interpolate } from '@/lib/server-i18n'
 import type { Locale } from '@/i18n/config'
 
 // ─── Types ───────────────────────────────────────────────
@@ -47,44 +48,6 @@ export async function resolveRecipientLocale(employeeId: string): Promise<Locale
     return employee.assignments[0].company.locale as Locale
   }
   return 'ko'
-}
-
-// ─── Message Loading ────────────────────────────────────
-
-type Messages = Record<string, Record<string, string>>
-
-const messageCache = new Map<string, Messages>()
-
-async function loadMessages(locale: string): Promise<Messages> {
-  if (messageCache.has(locale)) return messageCache.get(locale)!
-
-  try {
-    const mod = await import(`../../messages/${locale}.json`)
-    const messages = mod.default as Messages
-    messageCache.set(locale, messages)
-    return messages
-  } catch {
-    // locale 파일이 없으면 en fallback
-    if (locale !== 'en') return loadMessages('en')
-    return {}
-  }
-}
-
-function resolveKey(messages: Messages, key: string): string | undefined {
-  // key: "notifications.leaveApproved.title" → messages.notifications.leaveApproved.title
-  const parts = key.split('.')
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let current: any = messages
-  for (const part of parts) {
-    if (current == null || typeof current !== 'object') return undefined
-    current = current[part]
-  }
-  return typeof current === 'string' ? current : undefined
-}
-
-function interpolate(template: string, params?: Record<string, string | number>): string {
-  if (!params) return template
-  return template.replace(/\{(\w+)\}/g, (_, key) => String(params[key] ?? `{${key}}`))
 }
 
 // ─── Render ─────────────────────────────────────────────

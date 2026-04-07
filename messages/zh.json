@@ -4413,6 +4413,121 @@
     "turnoverRiskCritical": {
       "body": "员工离职风险已达严重级别。",
       "title": "离职风险严重"
+    },
+    "payslipIssued": {
+      "title": "工资条已发布",
+      "body": "{year}年{month}月工资条已发布，请查阅。"
+    },
+    "loaReturnReminder": {
+      "title": "复职预定日还有{days}天",
+      "body": "{employeeName}，{typeName}复职预定日还有{days}天，请准备复职申请。"
+    },
+    "loaReturnReminderHr": {
+      "title": "复职预警（还有{days}天）",
+      "body": "{employeeName} — {typeName}复职预定日还有{days}天。"
+    },
+    "offCycleComp": {
+      "approved": {
+        "title": "非定期薪酬调整已批准",
+        "body": "非定期薪酬调整申请已获最终批准。",
+        "employee": {
+          "title": "薪酬调整通知",
+          "body": "薪酬调整已批准，请查看详情。"
+        }
+      },
+      "rejected": {
+        "title": "非定期薪酬调整已驳回",
+        "body": "非定期薪酬调整申请被驳回。原因：{reason}"
+      },
+      "submitted": {
+        "title": "非定期薪酬调整审批请求",
+        "body": "非定期薪酬调整申请已提交，请审核。"
+      }
+    },
+    "goalRevisionProposed": {
+      "title": "MBO目标修改建议",
+      "body": "{employeeName}提出了目标修改建议：{reason}"
+    },
+    "goalRevisionApproved": {
+      "title": "目标修改已批准",
+      "body": "{reviewerName}已批准目标修改。"
+    },
+    "goalRevisionRejected": {
+      "title": "目标修改被拒绝",
+      "body": "{reviewerName}评论：{comment}"
+    },
+    "compensation": {
+      "approved": {
+        "title": "薪酬方案已批准",
+        "body": "薪酬方案已批准（{totalEmployees}人），请生成通知书。"
+      }
+    },
+    "nudge": {
+      "leavePending": {
+        "title": "休假审批待处理",
+        "body": "{displayTitle} — 已等待审批{daysOverdue}天，需要处理。"
+      },
+      "perfEvalSelf": {
+        "title": "请提交自我评价",
+        "body": "{cycleName}自我评价尚未提交，距离截止还有{daysLeft}天。",
+        "bodyBefore": "{cycleName}自我评价尚未提交，距离截止还有{daysLeft}天。",
+        "bodyAfter": "{cycleName}自我评价已超过截止{daysOverdue}天，请立即提交。"
+      },
+      "perfEvalMgr": {
+        "title": "请完成团队成员评价",
+        "body": "{cycleName} — {targetName}的经理评价，距离截止还有{daysLeft}天。",
+        "bodyBefore": "{cycleName} — {targetName}的经理评价，距离截止还有{daysLeft}天。",
+        "bodyAfter": "{cycleName} — {targetName}的经理评价已超过截止{daysOverdue}天。"
+      },
+      "perfGoalOverdue": {
+        "title": "请提交MBO目标",
+        "body": "{cycleName} MBO目标提交，距离截止还有{daysLeft}天。",
+        "bodyBefore": "{cycleName} MBO目标提交，距离截止还有{daysLeft}天。",
+        "bodyAfter": "{cycleName} MBO目标提交已超过截止{daysOverdue}天，请立即提交。"
+      },
+      "calibrationPending": {
+        "title": "请完成校准会议",
+        "body": "{cycleName} — \"{sessionName}\"已进行{daysOverdue}天，请完成。"
+      },
+      "contractExpiring": {
+        "title": "合同到期评估需要",
+        "body": "{displayTitle} — 合同到期还有{daysLeft}天，请完成评估。"
+      },
+      "onboardingCheckin": {
+        "title": "入职签到（第{week}周）",
+        "body": "{displayTitle} — {daysOverdue}天前预定的签到尚未完成，请记录。"
+      },
+      "probationEnding": {
+        "title": "试用期评估需要",
+        "body": "{displayTitle} — 试用期{daysLeft}天后结束，请完成评估。"
+      },
+      "delegationNotSet": {
+        "title": "请设置代理审批",
+        "body": "有3件以上待审批事项，请设置代理以防缺勤时工作中断。"
+      },
+      "payrollReview": {
+        "title": "薪资审核待处理",
+        "body": "{displayTitle} — 已等待审核{daysOverdue}天，请处理。"
+      },
+      "exitInterview": {
+        "title": "离职面谈未完成",
+        "body": "{displayTitle}的离职面谈尚未进行（距最后工作日还有{daysLeft}天），请安排。",
+        "titleUrgent": "紧急 — 离职面谈未完成",
+        "titlePressing": "紧迫 — 离职面谈未完成"
+      },
+      "offboardingOverdue": {
+        "title": "离职任务逾期",
+        "body": "\"{displayTitle}\"任务已逾期{daysOverdue}天（距最后工作日还有{daysLeft}天），请立即处理。",
+        "titleUrgent": "紧急 — 离职任务逾期"
+      },
+      "onboardingOverdue": {
+        "title": "入职任务逾期（{milestone}）",
+        "body": "\"{displayTitle}\"任务已逾期{daysOverdue}天，请尽快完成。"
+      },
+      "leaveYearendBurn": {
+        "title": "年假消化提醒",
+        "body": "剩余年假{remainingDays}天，超过结转限额（{carryOverMax}天）的部分将于12月31日到期。"
+      }
     }
   },
   "offboarding": {

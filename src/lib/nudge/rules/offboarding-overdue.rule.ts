@@ -114,6 +114,25 @@ export const offboardingOverdueRule: NudgeRule = {
     return `"${item.displayTitle}" 태스크가 ${daysOverdue}일 초과됐습니다${deadline}. 즉시 처리해 주세요.`
   },
 
+  getTitleKey(item: OverdueItem): string {
+    const daysLeft = item.meta?.daysUntilLastWorking as number | undefined
+    if (daysLeft !== undefined && daysLeft <= 6) return 'notifications.nudge.offboardingOverdue.titleUrgent'
+    return 'notifications.nudge.offboardingOverdue.title'
+  },
+  getBodyKey(_item: OverdueItem): string {
+    return 'notifications.nudge.offboardingOverdue.body'
+  },
+  getBodyParams(item: OverdueItem, daysOverdue: number): Record<string, string | number> {
+    const daysLeft = item.meta?.daysUntilLastWorking != null ? Number(item.meta.daysUntilLastWorking) : 0
+    return {
+      displayTitle: item.displayTitle,
+      employeeName: String(item.meta?.employeeName ?? ''),
+      taskTitle: String(item.meta?.taskTitle ?? ''),
+      daysOverdue,
+      daysLeft,
+    }
+  },
+
   async findOverdueItems(
     companyId:   string,
     assigneeId:  string,

@@ -117,6 +117,9 @@ async function evaluateItem(
       triggerType,
       title:       rule.buildTitle(item),
       body:        rule.buildBody(item, daysOverdue),
+      titleKey:    rule.getTitleKey?.(item),
+      bodyKey:     rule.getBodyKey?.(item),
+      bodyParams:  rule.getBodyParams?.(item, daysOverdue),
       link:        item.actionUrl,
       priority:    'high',
       metadata: {

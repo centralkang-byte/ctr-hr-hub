@@ -124,6 +124,16 @@ export const onboardingOverdueRule: NudgeRule = {
     return `"${item.displayTitle}" 태스크가 ${daysOverdue}일 초과됐습니다. 빠른 완료가 필요합니다.`
   },
 
+  getTitleKey(_item: OverdueItem): string {
+    return 'notifications.nudge.onboardingOverdue.title'
+  },
+  getBodyKey(_item: OverdueItem): string {
+    return 'notifications.nudge.onboardingOverdue.body'
+  },
+  getBodyParams(item: OverdueItem, daysOverdue: number): Record<string, string | number> {
+    return { displayTitle: item.displayTitle, daysOverdue, milestone: String(item.meta?.milestoneGroup ?? '') }
+  },
+
   async findOverdueItems(
     companyId:   string,
     assigneeId:  string,

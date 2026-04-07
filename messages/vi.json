@@ -4412,6 +4412,121 @@
     "turnoverRiskCritical": {
       "body": "Rủi ro nghỉ việc của nhân viên ở mức nghiêm trọng.",
       "title": "Rủi ro nghỉ việc nghiêm trọng"
+    },
+    "payslipIssued": {
+      "title": "Phiếu lương đã phát hành",
+      "body": "Phiếu lương tháng {month}/{year} đã được phát hành. Vui lòng kiểm tra."
+    },
+    "loaReturnReminder": {
+      "title": "Còn {days} ngày đến ngày trở lại",
+      "body": "{employeeName}, còn {days} ngày đến ngày kết thúc {typeName}. Vui lòng chuẩn bị yêu cầu trở lại."
+    },
+    "loaReturnReminderHr": {
+      "title": "Thông báo trở lại ({days} ngày còn lại)",
+      "body": "{employeeName} — Ngày trở lại {typeName} còn {days} ngày."
+    },
+    "offCycleComp": {
+      "approved": {
+        "title": "Điều chỉnh lương ngoài kỳ đã duyệt",
+        "body": "Yêu cầu điều chỉnh lương ngoài kỳ đã được phê duyệt.",
+        "employee": {
+          "title": "Thông báo điều chỉnh lương",
+          "body": "Điều chỉnh lương đã được duyệt. Vui lòng kiểm tra chi tiết."
+        }
+      },
+      "rejected": {
+        "title": "Điều chỉnh lương ngoài kỳ bị từ chối",
+        "body": "Yêu cầu điều chỉnh lương ngoài kỳ bị từ chối. Lý do: {reason}"
+      },
+      "submitted": {
+        "title": "Yêu cầu duyệt điều chỉnh lương ngoài kỳ",
+        "body": "Yêu cầu điều chỉnh lương ngoài kỳ đã được gửi. Vui lòng xem xét."
+      }
+    },
+    "goalRevisionProposed": {
+      "title": "Đề xuất sửa đổi mục tiêu MBO",
+      "body": "{employeeName} đã đề xuất sửa đổi mục tiêu: {reason}"
+    },
+    "goalRevisionApproved": {
+      "title": "Sửa đổi mục tiêu đã duyệt",
+      "body": "{reviewerName} đã phê duyệt sửa đổi mục tiêu."
+    },
+    "goalRevisionRejected": {
+      "title": "Sửa đổi mục tiêu bị từ chối",
+      "body": "{reviewerName} nhận xét: {comment}"
+    },
+    "compensation": {
+      "approved": {
+        "title": "Kế hoạch lương thưởng đã duyệt",
+        "body": "Kế hoạch lương thưởng đã được duyệt ({totalEmployees} nhân viên). Vui lòng tạo thư thông báo."
+      }
+    },
+    "nudge": {
+      "leavePending": {
+        "title": "Chờ duyệt nghỉ phép",
+        "body": "{displayTitle} — đã chờ duyệt {daysOverdue} ngày. Cần xử lý."
+      },
+      "perfEvalSelf": {
+        "title": "Vui lòng nộp tự đánh giá",
+        "body": "{cycleName} tự đánh giá chưa được nộp. Còn {daysLeft} ngày đến hạn.",
+        "bodyBefore": "{cycleName} tự đánh giá chưa được nộp. Còn {daysLeft} ngày đến hạn.",
+        "bodyAfter": "{cycleName} tự đánh giá đã quá hạn {daysOverdue} ngày. Vui lòng nộp ngay."
+      },
+      "perfEvalMgr": {
+        "title": "Vui lòng hoàn thành đánh giá nhân viên",
+        "body": "{cycleName} — Đánh giá quản lý cho {targetName}. Còn {daysLeft} ngày đến hạn.",
+        "bodyBefore": "{cycleName} — Đánh giá quản lý cho {targetName}. Còn {daysLeft} ngày đến hạn.",
+        "bodyAfter": "{cycleName} — Đánh giá quản lý cho {targetName} đã quá hạn {daysOverdue} ngày."
+      },
+      "perfGoalOverdue": {
+        "title": "Vui lòng nộp mục tiêu MBO",
+        "body": "{cycleName} nộp mục tiêu MBO. Còn {daysLeft} ngày đến hạn.",
+        "bodyBefore": "{cycleName} nộp mục tiêu MBO. Còn {daysLeft} ngày đến hạn.",
+        "bodyAfter": "{cycleName} nộp mục tiêu MBO đã quá hạn {daysOverdue} ngày. Vui lòng nộp ngay."
+      },
+      "calibrationPending": {
+        "title": "Vui lòng hoàn thành phiên hiệu chỉnh",
+        "body": "{cycleName} — \"{sessionName}\" đã diễn ra {daysOverdue} ngày. Vui lòng hoàn thành."
+      },
+      "contractExpiring": {
+        "title": "Cần đánh giá hết hạn hợp đồng",
+        "body": "{displayTitle} — Hợp đồng hết hạn trong {daysLeft} ngày. Vui lòng hoàn thành đánh giá."
+      },
+      "onboardingCheckin": {
+        "title": "Check-in nhập môn (Tuần {week})",
+        "body": "{displayTitle} — Check-in dự kiến {daysOverdue} ngày trước chưa hoàn thành."
+      },
+      "probationEnding": {
+        "title": "Cần đánh giá thử việc",
+        "body": "{displayTitle} — Thử việc kết thúc trong {daysLeft} ngày. Vui lòng hoàn thành đánh giá."
+      },
+      "delegationNotSet": {
+        "title": "Vui lòng thiết lập ủy quyền",
+        "body": "Có 3+ phê duyệt đang chờ. Thiết lập ủy quyền để tránh gián đoạn khi vắng mặt."
+      },
+      "payrollReview": {
+        "title": "Xem xét lương đang chờ",
+        "body": "{displayTitle} — đã chờ xem xét {daysOverdue} ngày. Vui lòng xử lý."
+      },
+      "exitInterview": {
+        "title": "Phỏng vấn thôi việc chưa hoàn thành",
+        "body": "Phỏng vấn thôi việc cho {displayTitle} chưa được thực hiện ({daysLeft} ngày đến ngày làm việc cuối). Vui lòng lên lịch.",
+        "titleUrgent": "Khẩn cấp — Phỏng vấn thôi việc chưa hoàn thành",
+        "titlePressing": "Gấp — Phỏng vấn thôi việc chưa hoàn thành"
+      },
+      "offboardingOverdue": {
+        "title": "Nhiệm vụ offboarding quá hạn",
+        "body": "\"{displayTitle}\" đã quá hạn {daysOverdue} ngày ({daysLeft} ngày đến ngày làm việc cuối). Xử lý ngay.",
+        "titleUrgent": "Khẩn cấp — Nhiệm vụ offboarding quá hạn"
+      },
+      "onboardingOverdue": {
+        "title": "Nhiệm vụ onboarding quá hạn ({milestone})",
+        "body": "\"{displayTitle}\" đã quá hạn {daysOverdue} ngày. Vui lòng hoàn thành sớm."
+      },
+      "leaveYearendBurn": {
+        "title": "Nhắc nhở sử dụng phép năm",
+        "body": "Còn {remainingDays} ngày phép năm. Số ngày vượt hạn mức chuyển ({carryOverMax} ngày) sẽ hết hạn vào 31/12."
+      }
     }
   },
   "offboarding": {

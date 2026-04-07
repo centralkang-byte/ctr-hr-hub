@@ -39,6 +39,16 @@ export const delegationNotSetRule: NudgeRule = {
     return '미처리 승인 건이 3건 이상입니다. 부재 시 업무 중단을 방지하려면 대결 설정을 해주세요.'
   },
 
+  getTitleKey(_item: OverdueItem): string {
+    return 'notifications.nudge.delegationNotSet.title'
+  },
+  getBodyKey(_item: OverdueItem): string {
+    return 'notifications.nudge.delegationNotSet.body'
+  },
+  getBodyParams(_item: OverdueItem, _daysOverdue: number): Record<string, string | number> {
+    return {}
+  },
+
   async findOverdueItems(
     companyId: string,
     assigneeId: string,
