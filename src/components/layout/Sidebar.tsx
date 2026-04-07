@@ -36,7 +36,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 // ─── Badge Map: nav item key → count key + color ────────────
 
 const BADGE_MAP: Record<string, { countKey: string; color: string }> = {
-  'approvals-inbox': { countKey: 'approvals',     color: 'bg-red-500' },
+  'my-tasks':        { countKey: 'approvals',     color: 'bg-red-500' },
   'notifications':   { countKey: 'notifications', color: 'bg-red-500' },
   'leave-admin':     { countKey: 'pendingLeave',  color: 'bg-primary' },
   'attendance-admin':{ countKey: 'todayAbsent',   color: 'bg-amber-500' },

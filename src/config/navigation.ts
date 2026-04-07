@@ -158,15 +158,8 @@ export const NAVIGATION: NavSection[] = [
         icon: Bell,
         module: MODULE.EMPLOYEES,
       },
-      {
-        key: 'approvals-inbox',
-        labelKey: 'nav.home.approvalsInbox',
-        label: '승인함',
-        href: '/approvals/inbox',
-        icon: CheckCircle2,
-        module: MODULE.LEAVE,
-        badge: 'new' as const,
-      },
+      // 승인함 → 나의 업무 승인 탭으로 통합 (2026-04-07 One Hub)
+      // 기존 /approvals/inbox는 /my/tasks?tab=approvals로 redirect
     ],
   },
 
