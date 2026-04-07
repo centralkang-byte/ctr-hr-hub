@@ -125,6 +125,13 @@ class PayrollRunMapper
       sourceId: source.id,
       sourceModel: 'PayrollRun',
       actionUrl: `/payroll/${source.id}/review`,
+      actions: source.status === 'REVIEW'
+        ? {
+            approveUrl: `/api/v1/payroll/${source.id}/approve`,
+            rejectUrl: `/api/v1/payroll/${source.id}/reject`,
+            detailUrl: `/payroll/${source.id}/approve`,
+          }
+        : { detailUrl: `/payroll/${source.id}/review` },
 
       companyId: source.companyId,
 

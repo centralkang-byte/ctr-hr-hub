@@ -264,7 +264,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
               sub={t('dashboard.approvalAndDeadline')}
               icon={<Clock className="h-3.5 w-3.5 text-violet-500" />}
               accent="bg-purple-500/10"
-              onClick={data.summary.pendingApprovals > 0 ? () => router.push('/approvals/inbox') : undefined}
+              onClick={data.summary.pendingApprovals > 0 ? () => router.push('/my/tasks?tab=approvals') : undefined}
             />
           </div>
 
@@ -319,7 +319,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
                 icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
                 label={t('dashboard.pendingApproval')}
                 sub="STEP 4"
-                onClick={() => router.push('/approvals/inbox?module=PAYROLL')}
+                onClick={() => router.push('/my/tasks?tab=approvals')}
                 accent="bg-indigo-500/15"
               />
               <QuickAction

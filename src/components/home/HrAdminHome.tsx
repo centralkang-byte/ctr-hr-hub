@@ -21,7 +21,7 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { WidgetSkeleton } from '@/components/shared/WidgetSkeleton'
-import { UnifiedTaskHub } from './UnifiedTaskHub'
+import { TaskSummaryCard } from './TaskSummaryCard'
 import { NudgeCards } from './NudgeCards'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { StatusBadge } from '@/components/ui/StatusBadge'
@@ -160,7 +160,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
       {/* ── Main layout: TaskHub left, Compact sidebar right ── */}
       <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
         {/* UnifiedTaskHub */}
-        <UnifiedTaskHub user={user} />
+        <TaskSummaryCard user={user} />
 
         {/* Right sidebar — compact above-fold cards only */}
         <div className="space-y-4">
@@ -234,7 +234,7 @@ export function HrAdminHome({ user }: HrAdminHomeProps) {
                 <StatusBadge variant="info">{t('nudge.countBadge', { count: 3 })}</StatusBadge>
               </div>
               <Link
-                href="/approvals/inbox"
+                href="/my/tasks?tab=approvals"
                 className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
               >
                 {t('hrAdmin.goToApprovals')}

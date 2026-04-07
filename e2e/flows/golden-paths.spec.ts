@@ -40,7 +40,7 @@ test.describe('Golden Path 2: Manager Team View', () => {
     await assertPageLoads(page, '/home')
 
     // Approval inbox
-    await assertPageLoads(page, '/approvals/inbox')
+    await assertPageLoads(page, '/my/tasks?tab=approvals')
 
     // Team leave
     await assertPageLoads(page, '/leave/team')

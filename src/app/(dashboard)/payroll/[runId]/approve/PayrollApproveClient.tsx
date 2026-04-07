@@ -188,7 +188,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
         setSubmitting(true)
         try {
             await apiClient.post(`/api/v1/payroll/${runId}/reject`, { comment: rejectComment })
-            router.push('/approvals/inbox')
+            router.push('/my/tasks?tab=approvals')
         } catch (err) {
             toast({ title: t('approvePage.rejectFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
         } finally {
@@ -215,7 +215,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
         <div className="p-4 max-w-3xl mx-auto space-y-4">
             {/* Header */}
             <div className="flex items-center gap-3">
-                <button onClick={() => router.push('/approvals/inbox')} className="text-muted-foreground hover:text-foreground">
+                <button onClick={() => router.push('/my/tasks?tab=approvals')} className="text-muted-foreground hover:text-foreground">
                     <ArrowLeft className="h-5 w-5" />
                 </button>
                 <div>

@@ -217,6 +217,7 @@ export async function fetchPerformanceTasks(
       sourceId: cycleId,
       sourceModel: 'PerformanceCycle',
       actionUrl: '/performance/goals',
+      actions: { detailUrl: '/performance/goals' },
       companyId,
       metadata: { ...cycleMeta },
     })
@@ -256,6 +257,7 @@ export async function fetchPerformanceTasks(
           sourceId: `${report.employeeId}:${cycleId}`,
           sourceModel: 'MboGoal',
           actionUrl: '/performance/team-goals',
+          actions: { detailUrl: '/performance/team-goals' },
           companyId,
           metadata: { ...cycleMeta, targetEmployeeId: report.employeeId, targetEmployeeName: report.name },
         })
@@ -318,6 +320,7 @@ export async function fetchPerformanceTasks(
       sourceId: cycleId,
       sourceModel: 'PerformanceCycle',
       actionUrl: '/performance/self-eval',
+      actions: { detailUrl: '/performance/self-eval' },
       companyId,
       metadata: { ...cycleMeta },
     })
@@ -359,6 +362,7 @@ export async function fetchPerformanceTasks(
           sourceId: `${report.employeeId}:${cycleId}`,
           sourceModel: 'PerformanceEvaluation',
           actionUrl: '/performance/team-evaluations',
+          actions: { detailUrl: '/performance/team-evaluations' },
           companyId,
           metadata: { ...cycleMeta, targetEmployeeId: report.employeeId, targetEmployeeName: report.name },
         })
@@ -400,6 +404,7 @@ export async function fetchPerformanceTasks(
           sourceId: session.id,
           sourceModel: 'CalibrationSession',
           actionUrl: '/performance/calibration',
+          actions: { detailUrl: '/performance/calibration' },
           companyId,
           metadata: { ...cycleMeta, sessionId: session.id, sessionName: session.name },
         })

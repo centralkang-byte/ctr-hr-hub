@@ -26,7 +26,7 @@ test.describe('Cross-Cutting Features', () => {
   })
 
   test('can view approval inbox with tab structure', async ({ page }) => {
-    await assertPageLoads(page, '/approvals/inbox')
+    await assertPageLoads(page, '/my/tasks?tab=approvals')
     await waitForPageReady(page)
     await waitForLoading(page)
 

@@ -19,7 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { AiGeneratedBadge } from '@/components/shared/AiGeneratedBadge'
 import { NudgeCards } from './NudgeCards'
-import { UnifiedTaskHub } from './UnifiedTaskHub'
+import { TaskSummaryCard } from './TaskSummaryCard'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 
@@ -68,7 +68,7 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
       <NudgeCards user={user} />
 
       {/* 나의 할 일 */}
-      <UnifiedTaskHub user={user} />
+      <TaskSummaryCard user={user} />
 
       {/* 핵심 KPI Cards — No-Line Rule, Display Typography */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

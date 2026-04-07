@@ -20,6 +20,7 @@ import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { LeaveRequestStatus } from '@/generated/prisma/enums'
 import { getActiveDelegators } from '@/lib/delegation/resolve-delegatee'
 import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import {
@@ -174,11 +175,197 @@ const ONBOARDING_INCLUDE = {
   },
 } as const
 
+// ─── Approval Mode Handler ────────────────────────────────
+// mode=approvals: 승인 탭 전용 — Leave + Performance + Payroll (역할별)
+// 자기 자신 제외, 위임 포함, 히스토리 옵션
+
+async function handleApprovalMode(
+  searchParams: URLSearchParams,
+  user: SessionUser,
+) {
+  const isSuperAdmin = user.role === 'SUPER_ADMIN'
+  const isHrAdmin = user.role === 'HR_ADMIN' || isSuperAdmin
+  const companyFilter = isSuperAdmin ? {} : { companyId: user.companyId }
+
+  const typeFilter = searchParams.get('types')
+  const includeHistory = searchParams.get('includeHistory') === 'true'
+  const historyDays = Math.min(90, Math.max(1, Number(searchParams.get('historyDays') ?? 30)))
+  const page = Math.max(1, Number(searchParams.get('page') ?? 1))
+  const limit = Math.min(100, Math.max(1, Number(searchParams.get('limit') ?? 20)))
+  const sortField = (searchParams.get('sortField') ?? 'priority') as 'createdAt' | 'updatedAt' | 'priority'
+  const sortDir = (searchParams.get('sortDir') ?? 'desc') as 'asc' | 'desc'
+
+  // 역할별 모듈 필터: MANAGER/EXECUTIVE → Leave + Performance, HR_ADMIN/SUPER_ADMIN → + Payroll
+  const allowedTypes: UnifiedTaskType[] = []
+  if (!typeFilter || typeFilter.includes('LEAVE_APPROVAL')) {
+    allowedTypes.push(UnifiedTaskType.LEAVE_APPROVAL)
+  }
+  if (!typeFilter || typeFilter.includes('PERFORMANCE_REVIEW')) {
+    allowedTypes.push(UnifiedTaskType.PERFORMANCE_REVIEW)
+  }
+  if (isHrAdmin && (!typeFilter || typeFilter.includes('PAYROLL_REVIEW'))) {
+    allowedTypes.push(UnifiedTaskType.PAYROLL_REVIEW)
+  }
+
+  const fetchLeave = allowedTypes.includes(UnifiedTaskType.LEAVE_APPROVAL)
+  const fetchPerformance = allowedTypes.includes(UnifiedTaskType.PERFORMANCE_REVIEW)
+  const fetchPayroll = allowedTypes.includes(UnifiedTaskType.PAYROLL_REVIEW)
+
+  // 승인 모드: PENDING + 히스토리(COMPLETED/REJECTED)
+  const leaveStatusFilter: LeaveRequestStatus[] = includeHistory
+    ? [LeaveRequestStatus.PENDING, LeaveRequestStatus.APPROVED, LeaveRequestStatus.REJECTED]
+    : [LeaveRequestStatus.PENDING]
+  const historyDateCutoff = includeHistory
+    ? new Date(Date.now() - historyDays * 24 * 60 * 60 * 1000)
+    : undefined
+
+  // 직속 팀원 ID (position hierarchy)
+  const directReportIds = await getDirectReportIds(user.employeeId)
+
+  const [leaveRaw, payrollRaw, performanceTasks] = await Promise.all([
+    // Leave: 직속 팀원 + 위임된 건 (자기 자신 제외)
+    fetchLeave
+      ? prisma.leaveRequest.findMany({
+          where: {
+            ...companyFilter,
+            status: { in: leaveStatusFilter },
+            ...(directReportIds.length > 0
+              ? { employeeId: { in: directReportIds, not: user.employeeId } }
+              : isHrAdmin
+                ? { employeeId: { not: user.employeeId } }
+                : { employeeId: 'NONE' }),  // 직속 부하 없는 매니저 → 결과 0
+            ...(historyDateCutoff ? { createdAt: { gte: historyDateCutoff } } : {}),
+          },
+          include: LEAVE_INCLUDE,
+          orderBy: { createdAt: 'desc' },
+          take: 500,
+        }).catch(err => { console.error('[unified-tasks:approvals] leave query failed:', err); return [] as never[] })
+      : Promise.resolve([]),
+
+    // Payroll (HR_ADMIN only)
+    fetchPayroll
+      ? prisma.payrollRun.findMany({
+          where: {
+            ...companyFilter,
+            ...(includeHistory
+              ? { status: { in: ['REVIEW', 'APPROVED', 'PAID', 'CANCELLED'] } }
+              : { status: 'REVIEW' }),
+            ...(historyDateCutoff ? { createdAt: { gte: historyDateCutoff } } : {}),
+          },
+          include: PAYROLL_INCLUDE,
+          orderBy: { createdAt: 'desc' },
+          take: 200,
+        }).catch(err => { console.error('[unified-tasks:approvals] payroll query failed:', err); return [] as never[] })
+      : Promise.resolve([]),
+
+    // Performance: 매니저 태스크 중 승인 성격만 (goal_review, mgr_eval)
+    fetchPerformance
+      ? fetchPerformanceTasks({
+          employeeId: user.employeeId,
+          companyId: user.companyId,
+          role: user.role,
+          isSuperAdmin,
+        }).then(tasks =>
+          // 승인 모드: 본인 태스크(self_eval, goal_submit) 제외, 팀원 대상 태스크만
+          tasks.filter(t => {
+            const id = t.id
+            return id.includes('goal_review:') || id.includes('mgr_eval:') || id.includes('calibration:')
+          })
+        ).catch(err => { console.error('[unified-tasks:approvals] performance query failed:', err); return [] as UnifiedTask[] })
+      : Promise.resolve([]),
+  ])
+
+  // 매퍼 적용
+  let allTasks: UnifiedTask[] = [
+    ...leaveRequestMapper.toUnifiedTasks(leaveRaw as LeaveRequestWithRelations[]),
+    ...payrollRunMapper.toUnifiedTasks(payrollRaw as PayrollRunWithRelations[]),
+    ...performanceTasks,
+  ]
+
+  // 위임된 휴가 건 추가
+  if (fetchLeave) {
+    try {
+      const delegatorIds = await getActiveDelegators(user.employeeId, user.companyId)
+      if (delegatorIds.length > 0) {
+        const delegatedLeaveRaw = await prisma.leaveRequest.findMany({
+          where: {
+            companyId: user.companyId,
+            status: 'PENDING',
+            approvedById: { in: delegatorIds },
+            employeeId: { not: user.employeeId },
+          },
+          include: LEAVE_INCLUDE,
+          orderBy: { createdAt: 'desc' },
+          take: 200,
+        })
+        const delegatedTasks = leaveRequestMapper.toUnifiedTasks(
+          delegatedLeaveRaw as LeaveRequestWithRelations[]
+        ).map(t => ({
+          ...t,
+          metadata: { ...t.metadata, delegated: true, delegateeName: user.name },
+        }))
+        const existingIds = new Set(allTasks.map(t => t.id))
+        allTasks = [...allTasks, ...delegatedTasks.filter(t => !existingIds.has(t.id))]
+      }
+    } catch (err) {
+      console.error('[unified-tasks:approvals] delegation query failed:', err)
+    }
+  }
+
+  // 히스토리 미포함 시 PENDING/IN_PROGRESS만
+  if (!includeHistory) {
+    allTasks = allTasks.filter(t =>
+      t.status === UnifiedTaskStatus.PENDING || t.status === UnifiedTaskStatus.IN_PROGRESS
+    )
+  }
+
+  // 정렬
+  allTasks.sort((a, b) => {
+    if (sortField === 'priority') {
+      const diff = (PRIORITY_WEIGHT[b.priority] ?? 0) - (PRIORITY_WEIGHT[a.priority] ?? 0)
+      if (diff !== 0) return sortDir === 'desc' ? diff : -diff
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    }
+    const aTime = new Date(a[sortField] ?? a.createdAt).getTime()
+    const bTime = new Date(b[sortField] ?? b.createdAt).getTime()
+    return sortDir === 'desc' ? bTime - aTime : aTime - bTime
+  })
+
+  // 카운트 집계
+  const countByType: Partial<Record<UnifiedTaskType, number>> = {}
+  const countByStatus: Partial<Record<UnifiedTaskStatus, number>> = {}
+  for (const task of allTasks) {
+    countByType[task.type] = (countByType[task.type] ?? 0) + 1
+    countByStatus[task.status] = (countByStatus[task.status] ?? 0) + 1
+  }
+
+  // 페이지네이션
+  const total = allTasks.length
+  const skip = (page - 1) * limit
+  const items = allTasks.slice(skip, skip + limit)
+
+  const response: UnifiedTaskListResponse = {
+    items,
+    total,
+    page,
+    limit,
+    countByType,
+    countByStatus,
+  }
+
+  return apiSuccess(response)
+}
+
 // ─── GET Handler ──────────────────────────────────────────
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
+
+    // mode=approvals → 승인 전용 핸들러
+    if (searchParams.get('mode') === 'approvals') {
+      return handleApprovalMode(searchParams, user)
+    }
 
     // 파라미터 파싱
     const types = parseTypes(searchParams.get('types'))

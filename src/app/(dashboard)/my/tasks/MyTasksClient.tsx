@@ -48,6 +48,7 @@ import {
     UnifiedTaskPriority,
 } from '@/lib/unified-task/types'
 import type { UnifiedTask, UnifiedTaskListResponse } from '@/lib/unified-task/types'
+import { ApprovalTabContent } from './ApprovalTabContent'
 
 // ─── Helpers ─────────────────────────────────────────────
 
@@ -231,8 +232,12 @@ function MyTasksInner({ user }: { user: SessionUser }) {
     const router = useRouter()
     const searchParams = useSearchParams()
 
-    // URL state
-    const statusTab = (searchParams.get('tab') ?? 'PENDING') as 'PENDING' | 'COMPLETED'
+    // Top-level view tab: tasks | approvals
+    const viewTab = (searchParams.get('tab') ?? 'tasks') as 'tasks' | 'approvals'
+    const canSeeApprovals = user.role !== 'EMPLOYEE'
+
+    // URL state (for tasks tab)
+    const statusTab = (searchParams.get('status') ?? 'PENDING') as 'PENDING' | 'COMPLETED'
     const typeFilter = searchParams.get('type') ?? 'all'
     const sortBy = searchParams.get('sortBy') ?? 'priority'
     const page = parseInt(searchParams.get('page') ?? '1', 10)
@@ -358,11 +363,49 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                 description={t('description')}
             />
 
+            {/* ── Top-level View Tabs (내 할 일 | 승인 요청) ── */}
+            {canSeeApprovals && (
+                <div className="flex items-center gap-1 rounded-lg bg-muted p-1 w-fit" role="tablist">
+                    <button
+                        type="button"
+                        role="tab"
+                        aria-selected={viewTab === 'tasks'}
+                        onClick={() => updateParams({ tab: null, status: null, page: null, type: null })}
+                        className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                            viewTab === 'tasks'
+                                ? 'bg-card text-foreground shadow-sm'
+                                : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                    >
+                        {t('tabTasks')}
+                    </button>
+                    <button
+                        type="button"
+                        role="tab"
+                        aria-selected={viewTab === 'approvals'}
+                        onClick={() => updateParams({ tab: 'approvals', status: null, page: null, type: null })}
+                        className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                            viewTab === 'approvals'
+                                ? 'bg-card text-foreground shadow-sm'
+                                : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                    >
+                        {t('tabApprovals')}
+                    </button>
+                </div>
+            )}
+
+            {/* ── Approval Tab Content ── */}
+            {viewTab === 'approvals' && canSeeApprovals ? (
+                <ApprovalTabContent user={user} />
+            ) : (
+            <>
+
             {/* ── Status Tabs ── */}
             <div className="flex items-center gap-1 rounded-lg bg-muted p-1 w-fit">
                 <button
                     type="button"
-                    onClick={() => updateParams({ tab: null, page: null, type: null })}
+                    onClick={() => updateParams({ status: null, page: null, type: null })}
                     className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${statusTab === 'PENDING'
                         ? 'bg-card text-foreground shadow-sm'
                         : 'text-muted-foreground hover:text-foreground'
@@ -377,7 +420,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                 </button>
                 <button
                     type="button"
-                    onClick={() => updateParams({ tab: 'COMPLETED', page: null, type: null })}
+                    onClick={() => updateParams({ status: 'COMPLETED', page: null, type: null })}
                     className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${statusTab === 'COMPLETED'
                         ? 'bg-card text-foreground shadow-sm'
                         : 'text-muted-foreground hover:text-foreground'
@@ -541,6 +584,9 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                         </Button>
                     </div>
                 </div>
+            )}
+
+            </>
             )}
         </div>
     )

@@ -84,7 +84,7 @@ test.describe('Leave: MANAGER', () => {
   })
 
   test('can view approval inbox with leave requests', async ({ page }) => {
-    await assertPageLoads(page, '/approvals/inbox')
+    await assertPageLoads(page, '/my/tasks?tab=approvals')
     await waitForLoading(page)
 
     const inboxContent = page.locator('h1, h2').or(page.getByText(/승인|Approval|Inbox/)).first()

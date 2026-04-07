@@ -22,7 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { StatusBadge } from '@/components/ui/StatusBadge'
-import { UnifiedTaskHub } from './UnifiedTaskHub'
+import { TaskSummaryCard } from './TaskSummaryCard'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS } from '@/lib/styles'
@@ -99,7 +99,7 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
       {/* ── Main 2-column layout ── */}
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
         {/* UnifiedTaskHub — left / main */}
-        <UnifiedTaskHub user={user} />
+        <TaskSummaryCard user={user} />
 
         {/* Right sidebar */}
         <div className="space-y-4">

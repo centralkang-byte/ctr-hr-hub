@@ -16,7 +16,7 @@ const PAGES: Record<string, string[]> = {
   '01-home': [
     '/home',
     '/notifications',
-    '/approvals/inbox',
+    '/my/tasks?tab=approvals',
   ],
   '02-myspace': [
     '/attendance',

@@ -32,8 +32,8 @@ test.describe('RBAC: EMPLOYEE role', () => {
     await assertPageLoads(page, '/onboarding/me')
   })
 
-  test('can access /approvals/inbox', async ({ page }) => {
-    await assertPageLoads(page, '/approvals/inbox')
+  test('can access /my/tasks?tab=approvals', async ({ page }) => {
+    await assertPageLoads(page, '/my/tasks?tab=approvals')
   })
 
   test('is blocked from /employees', async ({ page }) => {

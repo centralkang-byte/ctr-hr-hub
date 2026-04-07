@@ -134,6 +134,13 @@ class LeaveRequestMapper
       sourceId: source.id,
       sourceModel: 'LeaveRequest',
       actionUrl: '/leave/team',
+      actions: source.status === 'PENDING'
+        ? {
+            approveUrl: `/api/v1/leave/requests/${source.id}/approve`,
+            rejectUrl: `/api/v1/leave/requests/${source.id}/reject`,
+            detailUrl: '/leave/team',
+          }
+        : { detailUrl: '/leave/team' },
 
       companyId: source.companyId,
 

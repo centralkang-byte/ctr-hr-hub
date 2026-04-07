@@ -82,6 +82,13 @@ export interface UnifiedTask {
   // === Company Context ===
   companyId: string   // 법인 필터링용
 
+  // === Actions (승인/반려 URL) ===
+  actions?: {
+    approveUrl?: string
+    rejectUrl?: string
+    detailUrl: string
+  }
+
   // === Extensible Metadata ===
   metadata: Record<string, unknown>
   // 소스별 원본 상태, 금액, 일수 등 자유 형식

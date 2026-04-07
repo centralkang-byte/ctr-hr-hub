@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { UnifiedTaskHub } from './UnifiedTaskHub'
+import { TaskSummaryCard } from './TaskSummaryCard'
 import { NudgeCards } from './NudgeCards'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
@@ -68,7 +68,7 @@ export function ManagerHome({ user }: ManagerHomeProps) {
       {/* ── Main 2-column layout ── */}
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
         {/* UnifiedTaskHub — left / main */}
-        <UnifiedTaskHub user={user} />
+        <TaskSummaryCard user={user} />
 
         {/* Right sidebar */}
         <div className="space-y-4">
