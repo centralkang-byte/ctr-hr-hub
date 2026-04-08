@@ -2696,8 +2696,10 @@
       "totalMembers": "{count} miembros en total",
       "totalTeamMembers": "Total de miembros",
       "viewAllMeetings": "Ver todo →",
-      "overdueLeaves": "Licencias vencidas"
+      "overdueLeaves": "Licencias vencidas",
+      "teamLoadError": "No se pudo cargar el estado del equipo"
     },
+    "loadError": "No se pudieron cargar los datos",
     "monthlyTrend": "Mensual Trend",
     "noData": "No 데이터 available.",
     "noDataDesc": "Intente cambiar las condiciones o agregue nuevos datos.",
@@ -2729,6 +2731,7 @@
       "approve": "Aprobar",
       "filterAll": "Todos",
       "groupCompleted": "Completados (recientes)",
+      "loadError": "No se pudo cargar la lista de tareas",
       "groupThisMonth": "Este mes",
       "groupThisWeek": "Esta semana",
       "groupUrgent": "Urgente",

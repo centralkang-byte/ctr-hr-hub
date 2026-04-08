@@ -5,7 +5,7 @@
 // 직원 전용 홈. KpiStrip + DashboardTaskList + 분기리뷰/나의현황.
 // ═══════════════════════════════════════════════════════════
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import {
@@ -21,6 +21,8 @@ import { Button } from '@/components/ui/button'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { KpiStrip } from './KpiStrip'
 import { DashboardTaskList } from './DashboardTaskList'
+import { TeamPresence } from './TeamPresence'
+import { DashboardErrorBanner } from './DashboardErrorBanner'
 import { WidgetSkeleton } from '@/components/shared/WidgetSkeleton'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
@@ -47,16 +49,25 @@ export function EmployeeHome({ user }: Props) {
   const t = useTranslations('home')
   const [summary, setSummary] = useState<EmployeeSummary | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  const fetchSummary = useCallback(async () => {
+    setError(false)
+    setLoading(true)
+    try {
+      const res = await apiClient.get<EmployeeSummary>('/api/v1/home/summary')
+      setSummary(res.data)
+    } catch {
+      setError(true)
+      toast({ title: '로드 실패', variant: 'destructive' })
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
-    apiClient
-      .get<EmployeeSummary>('/api/v1/home/summary')
-      .then((res) => setSummary(res.data))
-      .catch(() => {
-        toast({ title: '로드 실패', variant: 'destructive' })
-      })
-      .finally(() => setLoading(false))
-  }, [])
+    void fetchSummary()
+  }, [fetchSummary])
 
   const annualLeave = summary?.leaveBalance?.find(
     (lb) => lb.leaveType === 'ANNUAL',
@@ -106,6 +117,11 @@ export function EmployeeHome({ user }: Props) {
             <WidgetSkeleton key={i} height="h-24" lines={2} />
           ))}
         </div>
+      ) : error ? (
+        <DashboardErrorBanner
+          message={t('loadError')}
+          onRetry={() => void fetchSummary()}
+        />
       ) : (
         <KpiStrip
           hero={{
@@ -133,6 +149,9 @@ export function EmployeeHome({ user }: Props) {
         <DashboardTaskList user={user} />
 
         <div className="space-y-4">
+          {/* 팀 현황 — 직속 부하가 있는 EMPLOYEE만 표시 */}
+          <TeamPresence user={user} />
+
           {/* 분기 리뷰 */}
           <Card>
             <CardHeader className="pb-2 pt-4">

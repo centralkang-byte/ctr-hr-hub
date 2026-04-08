@@ -2696,8 +2696,10 @@
       "totalMembers": "共{count}人",
       "totalTeamMembers": "全部成员",
       "viewAllMeetings": "查看全部 →",
-      "overdueLeaves": "逾期休假"
+      "overdueLeaves": "逾期休假",
+      "teamLoadError": "无法加载团队状况"
     },
+    "loadError": "无法加载数据",
     "monthlyTrend": "月度 Trend",
     "noData": "No 데이터 available.",
     "noDataDesc": "请更改条件或添加新数据。",
@@ -2730,6 +2732,7 @@
       "filterAll": "全部",
       "groupCompleted": "已完成（近期）",
       "groupThisMonth": "本月",
+      "loadError": "无法加载待办列表",
       "groupThisWeek": "本周",
       "groupUrgent": "紧急",
       "myTasks": "我的待办",

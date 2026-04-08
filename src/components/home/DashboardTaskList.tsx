@@ -23,6 +23,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { DdayPill } from './DdayPill'
+import { DashboardErrorBanner } from './DashboardErrorBanner'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
@@ -107,12 +108,15 @@ export function DashboardTaskList({
   const [tasks, setTasks] = useState<UnifiedTask[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [processing, setProcessing] = useState<string | null>(null)
   const [expanded, setExpanded] = useState(false)
 
   // ── Fetch ──────────────────────────────────────────────
 
   const fetchTasks = useCallback(async () => {
+    setError(false)
+    setLoading(true)
     try {
       const res = await apiClient.get<UnifiedTaskListResponse>(
         '/api/v1/unified-tasks?statuses=PENDING,IN_PROGRESS&limit=50&sortField=priority&sortDir=desc',
@@ -120,7 +124,7 @@ export function DashboardTaskList({
       setTasks(res.data.items)
       setTotalCount(res.data.total)
     } catch {
-      // silent — 대시보드에서 에러 토스트 불필요
+      setError(true)
     } finally {
       setLoading(false)
     }
@@ -188,6 +192,17 @@ export function DashboardTaskList({
             </div>
           </div>
         ))}
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className={cn('rounded-2xl bg-card p-5 shadow-sm', className)}>
+        <DashboardErrorBanner
+          message={t('taskHub.loadError')}
+          onRetry={() => void fetchTasks()}
+        />
       </div>
     )
   }

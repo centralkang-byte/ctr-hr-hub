@@ -6,7 +6,7 @@
 // KpiStrip + MonitorBanner + DashboardTaskList + 분기리뷰
 // ═══════════════════════════════════════════════════════════
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { ClipboardCheck } from 'lucide-react'
@@ -15,6 +15,7 @@ import { NudgeCards } from './NudgeCards'
 import { KpiStrip } from './KpiStrip'
 import { MonitorBanner } from './MonitorBanner'
 import { DashboardTaskList } from './DashboardTaskList'
+import { DashboardErrorBanner } from './DashboardErrorBanner'
 import { WidgetSkeleton } from '@/components/shared/WidgetSkeleton'
 import { TYPOGRAPHY } from '@/lib/styles'
 import { apiClient } from '@/lib/api'
@@ -44,16 +45,25 @@ export function HrAdminHome({ user }: Props) {
   const t = useTranslations('home')
   const [summary, setSummary] = useState<HrAdminSummary | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  const fetchSummary = useCallback(async () => {
+    setError(false)
+    setLoading(true)
+    try {
+      const res = await apiClient.get<HrAdminSummary>('/api/v1/home/summary')
+      setSummary(res.data)
+    } catch {
+      setError(true)
+      toast({ title: '로드 실패', variant: 'destructive' })
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
-    apiClient
-      .get<HrAdminSummary>('/api/v1/home/summary')
-      .then((res) => setSummary(res.data))
-      .catch(() => {
-        toast({ title: '로드 실패', variant: 'destructive' })
-      })
-      .finally(() => setLoading(false))
-  }, [])
+    void fetchSummary()
+  }, [fetchSummary])
 
   const stats = summary?.quarterlyReviewStats
 
@@ -85,6 +95,11 @@ export function HrAdminHome({ user }: Props) {
             <WidgetSkeleton key={i} height="h-24" lines={2} />
           ))}
         </div>
+      ) : error ? (
+        <DashboardErrorBanner
+          message={t('loadError')}
+          onRetry={() => void fetchSummary()}
+        />
       ) : (
         <KpiStrip
           hero={{

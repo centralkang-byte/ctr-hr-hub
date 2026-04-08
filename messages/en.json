@@ -2696,8 +2696,10 @@
       "totalMembers": "{count} members total",
       "totalTeamMembers": "Total Members",
       "viewAllMeetings": "View All →",
-      "overdueLeaves": "Overdue Leaves"
+      "overdueLeaves": "Overdue Leaves",
+      "teamLoadError": "Unable to load team status"
     },
+    "loadError": "Unable to load data",
     "monthlyTrend": "Monthly Trend",
     "noData": "No 데이터 available.",
     "noDataDesc": "Try adjusting your filters or add new data.",
@@ -2730,6 +2732,7 @@
       "filterAll": "All",
       "groupCompleted": "Completed (Recent)",
       "groupThisMonth": "This Month",
+      "loadError": "Unable to load tasks",
       "groupThisWeek": "This Week",
       "groupUrgent": "Urgent",
       "myTasks": "My Tasks",

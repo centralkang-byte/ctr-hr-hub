@@ -1,10 +1,11 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { isAppError, handlePrismaError, forbidden } from '@/lib/errors'
+import { isAppError, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { MODULE, ACTION } from '@/lib/constants'
 import { getCrossCompanyReadFilter } from '@/lib/api/cross-company-access'
+import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -36,27 +37,18 @@ export const GET = withPermission(
     user: SessionUser,
   ) => {
     try {
-      if (user.role === ROLE.EMPLOYEE) throw forbidden('매니저 이상만 접근 가능합니다.')
       const companyId = user.companyId
       const managerId = user.employeeId
       const includeMembers = req.nextUrl.searchParams.get('includeMembers') === 'true'
 
-      // 2-step: find manager's positionId, then find direct reports via position hierarchy
+      // Position 기반 직속 보고라인 (primary + secondary 모두 지원)
+      const reportIds = await getDirectReportIds(managerId)
+
+      // teamName용 primary 부서명 조회
       const managerAsgn = await prisma.employeeAssignment.findFirst({
         where: { employeeId: managerId, isPrimary: true, endDate: null },
-        select: { positionId: true, position: { select: { department: { select: { name: true } } } } },
+        select: { position: { select: { department: { select: { name: true } } } } },
       })
-      const directReportAsgnList = managerAsgn?.positionId
-        ? await prisma.employeeAssignment.findMany({
-            where: {
-              position: { reportsToPositionId: managerAsgn.positionId },
-              isPrimary: true,
-              endDate: null,
-            },
-            select: { employeeId: true },
-          })
-        : []
-      const reportIds = directReportAsgnList.map((a: { employeeId: string }) => a.employeeId)
 
       // Cross-company: include employees from secondary/dotted-line relationships
       const crossCompanyFilter = await getCrossCompanyReadFilter({

@@ -2696,8 +2696,10 @@
       "totalMembers": "Tổng {count} người",
       "totalTeamMembers": "Tổng thành viên",
       "viewAllMeetings": "Xem tất cả →",
-      "overdueLeaves": "Nghỉ phép quá hạn"
+      "overdueLeaves": "Nghỉ phép quá hạn",
+      "teamLoadError": "Không thể tải tình trạng nhóm"
     },
+    "loadError": "Không thể tải dữ liệu",
     "monthlyTrend": "Hàng tháng Trend",
     "noData": "No 데이터 available.",
     "noDataDesc": "Hãy thay đổi điều kiện hoặc thêm dữ liệu mới.",
@@ -2729,6 +2731,7 @@
       "approve": "Phê duyệt",
       "filterAll": "Tất cả",
       "groupCompleted": "Đã hoàn thành (gần đây)",
+      "loadError": "Không thể tải danh sách công việc",
       "groupThisMonth": "Tháng này",
       "groupThisWeek": "Tuần này",
       "groupUrgent": "Khẩn cấp",

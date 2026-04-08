@@ -5,7 +5,7 @@
 // 경영진 대시보드. KpiStrip + DashboardTaskList + 회사별/AI.
 // ═══════════════════════════════════════════════════════════
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import {
   Building2,
@@ -17,6 +17,7 @@ import { AiGeneratedBadge } from '@/components/shared/AiGeneratedBadge'
 import { NudgeCards } from './NudgeCards'
 import { KpiStrip } from './KpiStrip'
 import { DashboardTaskList } from './DashboardTaskList'
+import { DashboardErrorBanner } from './DashboardErrorBanner'
 import { WidgetSkeleton } from '@/components/shared/WidgetSkeleton'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
@@ -44,16 +45,25 @@ export function ExecutiveHome({ user }: Props) {
   const t = useTranslations('home')
   const [summary, setSummary] = useState<ExecSummary | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  const fetchSummary = useCallback(async () => {
+    setError(false)
+    setLoading(true)
+    try {
+      const res = await apiClient.get<ExecSummary>('/api/v1/home/summary')
+      setSummary(res.data)
+    } catch {
+      setError(true)
+      toast({ title: '로드 실패', variant: 'destructive' })
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
-    apiClient
-      .get<ExecSummary>('/api/v1/home/summary')
-      .then((res) => setSummary(res.data))
-      .catch(() => {
-        toast({ title: '로드 실패', variant: 'destructive' })
-      })
-      .finally(() => setLoading(false))
-  }, [])
+    void fetchSummary()
+  }, [fetchSummary])
 
   return (
     <div className="space-y-8">
@@ -77,6 +87,11 @@ export function ExecutiveHome({ user }: Props) {
             <WidgetSkeleton key={i} height="h-24" lines={2} />
           ))}
         </div>
+      ) : error ? (
+        <DashboardErrorBanner
+          message={t('loadError')}
+          onRetry={() => void fetchSummary()}
+        />
       ) : (
         <KpiStrip
           hero={{

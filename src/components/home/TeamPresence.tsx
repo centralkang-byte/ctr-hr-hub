@@ -13,6 +13,7 @@ import Link from 'next/link'
 import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { DashboardErrorBanner } from './DashboardErrorBanner'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
@@ -64,16 +65,19 @@ export function TeamPresence({ user, className }: Props) {
   const t = useTranslations('home')
   const [data, setData] = useState<TeamSummaryData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [processing, setProcessing] = useState<string | null>(null)
 
   const fetchTeam = useCallback(async () => {
+    setError(false)
+    setLoading(true)
     try {
       const res = await apiClient.get<TeamSummaryData>(
         '/api/v1/manager-hub/summary?includeMembers=true',
       )
       setData(res.data)
     } catch {
-      // teamCount 0이면 컴포넌트 자체가 안 보임
+      setError(true)
     } finally {
       setLoading(false)
     }
@@ -99,7 +103,7 @@ export function TeamPresence({ user, className }: Props) {
   )
 
   // directReports = 0 → null
-  if (!loading && (!data || data.teamCount === 0)) return null
+  if (!loading && !error && (!data || data.teamCount === 0)) return null
 
   if (loading) {
     return (
@@ -113,7 +117,20 @@ export function TeamPresence({ user, className }: Props) {
     )
   }
 
+  if (error) {
+    return (
+      <div className={cn('rounded-2xl bg-primary-container/10 p-4', className)}>
+        <DashboardErrorBanner
+          message={t('manager.teamLoadError')}
+          onRetry={() => void fetchTeam()}
+        />
+      </div>
+    )
+  }
+
   if (!data) return null
+
+  const isEmployee = user.role === 'EMPLOYEE'
 
   return (
     <div
@@ -164,8 +181,8 @@ export function TeamPresence({ user, className }: Props) {
         )
       })}
 
-      {/* Pending Approvals */}
-      {data.pendingApprovals.length > 0 && (
+      {/* Pending Approvals — EMPLOYEE는 승인 권한 없음 */}
+      {!isEmployee && data.pendingApprovals.length > 0 && (
         <div className="mt-3 border-t border-primary-container/30 pt-2.5">
           <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-primary">
             ⚡ {t('manager.pendingApproval')}
@@ -205,13 +222,15 @@ export function TeamPresence({ user, className }: Props) {
         </div>
       )}
 
-      {/* Link */}
-      <Link
-        href="/manager-hub"
-        className="mt-2 block text-center text-[10px] font-semibold text-primary"
-      >
-        {t('manager.teamOverview')} →
-      </Link>
+      {/* Link — /manager-hub 페이지는 MANAGER 이상만 접근 가능 */}
+      {!isEmployee && (
+        <Link
+          href="/manager-hub"
+          className="mt-2 block text-center text-[10px] font-semibold text-primary"
+        >
+          {t('manager.teamOverview')} →
+        </Link>
+      )}
     </div>
   )
 }

@@ -9053,6 +9053,7 @@
       "training_completion": "교육 이수율",
       "payroll_cost": "인건비"
     },
+    "loadError": "데이터를 불러올 수 없습니다",
     "noData": "데이터가 없습니다",
     "noDataDesc": "조건을 변경하거나 새로운 데이터를 추가해 보세요",
     "kpiDashboardTitle": "KPI 대시보드",
@@ -9142,7 +9143,8 @@
       "newHires": "신규 입사",
       "pendingLeaveApproval": "승인 대기 휴가",
       "teamOverview": "팀 전체 현황 →",
-      "overdueLeaves": "지연 휴가"
+      "overdueLeaves": "지연 휴가",
+      "teamLoadError": "팀 현황을 불러올 수 없습니다"
     },
     "hrAdmin": {
       "greetingDesc": "전사 인사 현황을 확인하세요.",
@@ -9208,7 +9210,8 @@
       "groupUrgent": "긴급",
       "groupThisWeek": "이번 주",
       "groupThisMonth": "이번 달",
-      "groupCompleted": "완료 (최근)"
+      "groupCompleted": "완료 (최근)",
+      "loadError": "할 일 목록을 불러올 수 없습니다"
     },
     "nudge": {
       "attentionNeeded": "주의가 필요합니다",
