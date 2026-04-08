@@ -1,17 +1,13 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Executive Home
-// 경영진 대시보드
+// CTR HR Hub — Executive Home (Phase 3 Redesign)
+// 경영진 대시보드. KpiStrip + DashboardTaskList + 회사별/AI.
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import {
-  Users,
-  TrendingDown,
-  BarChart3,
-  DollarSign,
   Building2,
   FileText,
 } from 'lucide-react'
@@ -19,13 +15,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { AiGeneratedBadge } from '@/components/shared/AiGeneratedBadge'
 import { NudgeCards } from './NudgeCards'
-import { TaskSummaryCard } from './TaskSummaryCard'
+import { KpiStrip } from './KpiStrip'
+import { DashboardTaskList } from './DashboardTaskList'
+import { WidgetSkeleton } from '@/components/shared/WidgetSkeleton'
 import { apiClient } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
 
-// ─── Props ────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────
 
-interface ExecutiveHomeProps {
+interface Props {
   user: SessionUser
 }
 
@@ -41,20 +40,24 @@ interface ExecSummary {
 
 // ─── Component ────────────────────────────────────────────
 
-export function ExecutiveHome({ user }: ExecutiveHomeProps) {
+export function ExecutiveHome({ user }: Props) {
   const t = useTranslations('home')
   const [summary, setSummary] = useState<ExecSummary | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     apiClient
       .get<ExecSummary>('/api/v1/home/summary')
       .then((res) => setSummary(res.data))
-      .catch(() => {})
+      .catch(() => {
+        toast({ title: '로드 실패', variant: 'destructive' })
+      })
+      .finally(() => setLoading(false))
   }, [])
 
   return (
     <div className="space-y-8">
-      {/* Greeting */}
+      {/* ── Greeting ── */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">
           {t('employee.greetingName', { name: user.name })}
@@ -64,92 +67,52 @@ export function ExecutiveHome({ user }: ExecutiveHomeProps) {
         </p>
       </div>
 
-      {/* AI Nudge Cards (EXECUTIVE view) */}
+      {/* ── AI Nudge Cards ── */}
       <NudgeCards user={user} />
 
-      {/* 나의 할 일 */}
-      <TaskSummaryCard user={user} />
+      {/* ── KPI Strip ── */}
+      {loading ? (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {[...Array(5)].map((_, i) => (
+            <WidgetSkeleton key={i} height="h-24" lines={2} />
+          ))}
+        </div>
+      ) : (
+        <KpiStrip
+          hero={{
+            label: t('executive.totalHeadcount'),
+            value: summary?.totalEmployees?.toLocaleString() ?? '-',
+            delta: t('executive.prevMonthDelta', { count: summary?.newHires ?? 0, pct: ((summary?.newHires ?? 0) / Math.max(summary?.totalEmployees ?? 1, 1) * 100).toFixed(1) }),
+            deltaVariant: 'good',
+          }}
+          items={[
+            {
+              label: t('executive.turnoverRate'),
+              value: `${(summary?.turnoverRate ?? 0).toFixed(1)}%`,
+              variant: (summary?.turnoverRate ?? 0) > 5 ? 'alert' : 'default',
+            },
+            {
+              label: t('hrAdmin.newHires'),
+              value: summary?.newHires ?? 0,
+              variant: 'accent',
+            },
+            {
+              label: t('hrAdmin.terminations'),
+              value: summary?.terminations ?? 0,
+              variant: (summary?.terminations ?? 0) > 5 ? 'alert' : 'default',
+            },
+            {
+              label: 'Open Positions',
+              value: summary?.openPositions ?? 0,
+            },
+          ]}
+        />
+      )}
 
-      {/* 핵심 KPI Cards — No-Line Rule, Display Typography */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {/* 전체 인원 */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground">{t('executive.totalHeadcount')}</p>
-                <p className="text-display-sm font-extrabold text-foreground">
-                  {summary?.totalEmployees?.toLocaleString() ?? '-'}
-                </p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                <Users className="h-6 w-6 text-primary" />
-              </div>
-            </div>
-            <p className="mt-2 text-xs text-emerald-600">
-              {t('executive.prevMonthDelta', { count: 12, pct: '1.0' })}
-            </p>
-          </CardContent>
-        </Card>
+      {/* ── Task List ── */}
+      <DashboardTaskList user={user} />
 
-        {/* 이직률 */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground">{t('executive.turnoverRate')}</p>
-                <p className="text-display-sm font-extrabold text-foreground">
-                  {summary?.turnoverRate ?? '-'}%
-                </p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-                <TrendingDown className="h-6 w-6 text-destructive" />
-              </div>
-            </div>
-            <p className="mt-2 text-xs text-emerald-600">
-              {t('executive.prevMonthDeltaPct', { delta: '-0.3' })}
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* 성과 분포 */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground">{t('executive.performanceDistribution')}</p>
-                <p className="text-display-sm font-extrabold text-foreground">B+</p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-tertiary-container/20">
-                <BarChart3 className="h-6 w-6 text-tertiary" />
-              </div>
-            </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              {t('executive.companyAvgGrade')}
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* 인건비 비율 */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground">{t('executive.laborCostRatio')}</p>
-                <p className="text-display-sm font-extrabold text-foreground">32.1%</p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10">
-                <DollarSign className="h-6 w-6 text-amber-600" />
-              </div>
-            </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              {t('executive.revenueBasedLaborCost')}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Detail Grid */}
+      {/* ── Detail Grid ── */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* 회사별 현황 */}
         <Card>

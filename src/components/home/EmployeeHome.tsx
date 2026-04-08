@@ -1,36 +1,35 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Employee Home (Stage 5-A Rebuild)
-// 직원 전용 홈. UnifiedTaskHub 중심 레이아웃.
+// CTR HR Hub — Employee Home (Phase 3 Redesign)
+// 직원 전용 홈. KpiStrip + DashboardTaskList + 분기리뷰/나의현황.
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import {
-  Clock,
   CalendarDays,
   FileText,
   LogIn,
   LogOut,
-  Award,
-  TrendingUp,
+  Clock,
   ClipboardCheck,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { StatusBadge } from '@/components/ui/StatusBadge'
-import { TaskSummaryCard } from './TaskSummaryCard'
+import { KpiStrip } from './KpiStrip'
+import { DashboardTaskList } from './DashboardTaskList'
+import { WidgetSkeleton } from '@/components/shared/WidgetSkeleton'
 import { apiClient } from '@/lib/api'
-import type { SessionUser } from '@/types'
 import { toast } from '@/hooks/use-toast'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 // ─── Types ────────────────────────────────────────────────
 
-interface EmployeeHomeProps {
+interface Props {
   user: SessionUser
 }
 
@@ -44,9 +43,10 @@ interface EmployeeSummary {
 
 // ─── Component ────────────────────────────────────────────
 
-export function EmployeeHome({ user }: EmployeeHomeProps) {
+export function EmployeeHome({ user }: Props) {
   const t = useTranslations('home')
   const [summary, setSummary] = useState<EmployeeSummary | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     apiClient
@@ -55,6 +55,7 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
       .catch(() => {
         toast({ title: '로드 실패', variant: 'destructive' })
       })
+      .finally(() => setLoading(false))
   }, [])
 
   const annualLeave = summary?.leaveBalance?.find(
@@ -98,14 +99,41 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
         </Link>
       </div>
 
-      {/* ── Main 2-column layout ── */}
-      <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        {/* UnifiedTaskHub — left / main */}
-        <TaskSummaryCard user={user} />
+      {/* ── KPI Strip ── */}
+      {loading ? (
+        <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
+          {[...Array(2)].map((_, i) => (
+            <WidgetSkeleton key={i} height="h-24" lines={2} />
+          ))}
+        </div>
+      ) : (
+        <KpiStrip
+          hero={{
+            label: t('employee.remainingAnnualLeave'),
+            value: annualLeave ? `${annualLeave.remaining}` : '-',
+            delta: annualLeave
+              ? `${annualLeave.used}/${annualLeave.total} used`
+              : undefined,
+            deltaVariant: annualLeave && annualLeave.remaining <= 3 ? 'bad' : 'muted',
+            variant: annualLeave && annualLeave.remaining <= 3 ? 'warn' : 'default',
+          }}
+          items={[
+            {
+              label: t('employee.workDaysThisMonth'),
+              value: `${summary?.attendanceThisMonth ?? '-'}`,
+              delta: t('employee.dayUnit', { count: summary?.attendanceThisMonth ?? 0 }),
+              deltaVariant: 'muted',
+            },
+          ]}
+        />
+      )}
 
-        {/* Right sidebar */}
+      {/* ── Main layout: TaskList left, Sidebar right ── */}
+      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+        <DashboardTaskList user={user} />
+
         <div className="space-y-4">
-          {/* 분기 리뷰 — D-7: sidebar 첫 번째 위치 */}
+          {/* 분기 리뷰 */}
           <Card>
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
@@ -171,7 +199,6 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 pb-4">
-              {/* 근태 */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock className="h-4 w-4" />
@@ -182,7 +209,6 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
                 </span>
               </div>
 
-              {/* 잔여 연차 */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -203,65 +229,6 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
                     />
                   </div>
                 )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 최근 받은 칭찬 */}
-          <Card className="border-border shadow-none">
-            <CardHeader className="pb-2 pt-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <Award className="h-4 w-4 text-amber-500" />
-                {t('employee.recentPraise')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 pb-4">
-              {/* TODO: replace with API data */}
-              <div className="rounded-lg bg-muted p-3">
-                <p className="text-sm font-medium text-foreground">
-                  &quot;프로젝트 기여에 감사합니다!&quot;
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">김팀장 · 도전</p>
-              </div>
-              <div className="rounded-lg bg-muted p-3">
-                <p className="text-sm font-medium text-foreground">
-                  &quot;꼼꼼한 리뷰 감사합니다&quot;
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">박과장 · 신뢰</p>
-              </div>
-              <Link
-                href="/performance/recognition"
-                className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
-              >
-                {t('employee.viewAll')}
-              </Link>
-            </CardContent>
-          </Card>
-
-          {/* 성과 진행률 */}
-          <Card className="border-border shadow-none">
-            <CardHeader className="pb-2 pt-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <TrendingUp className="h-4 w-4 text-primary" />
-                {t('employee.mboAchievement')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pb-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">2026 H1</span>
-                  <span className="text-sm font-bold text-foreground">72%</span>
-                </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
-                  <div
-                    className="h-1.5 rounded-full bg-primary"
-                    style={{ width: '72%' }}
-                  />
-                </div>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{t('employee.goalsSet', { count: 5 })}</span>
-                  <Badge variant="outline" className="text-[10px]">{t('employee.inProgress')}</Badge>
-                </div>
               </div>
             </CardContent>
           </Card>

@@ -59,12 +59,12 @@ export function KpiStrip({ hero, items, heroSlot, className }: KpiStripProps) {
   const hasHero = hero || heroSlot
 
   return (
-    <div className={cn('flex gap-3', className)}>
+    <div className={cn('flex flex-wrap gap-3', className)}>
       {/* Hero KPI */}
       {hasHero && (
         <div
           className={cn(
-            'flex-shrink-0 rounded-2xl p-5 shadow-sm',
+            'w-full rounded-2xl p-5 shadow-sm sm:w-auto sm:flex-shrink-0',
             hero ? CARD_BG[hero.variant ?? 'default'] : 'bg-card',
           )}
           style={{ minWidth: 180 }}
@@ -113,10 +113,10 @@ export function KpiStrip({ hero, items, heroSlot, className }: KpiStripProps) {
         className={cn(
           'grid flex-1 gap-2',
           !hasHero && items.length <= 4
-            ? 'grid-cols-4'
+            ? 'grid-cols-2 sm:grid-cols-4'
             : items.length <= 3
-              ? 'grid-cols-3'
-              : 'grid-cols-4',
+              ? 'grid-cols-2 sm:grid-cols-3'
+              : 'grid-cols-2 sm:grid-cols-4',
         )}
       >
         {items.map((item) => (
