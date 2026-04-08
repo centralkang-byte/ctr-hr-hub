@@ -14,7 +14,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { AiGeneratedBadge } from '@/components/shared/AiGeneratedBadge'
-import { NudgeCards } from './NudgeCards'
 import { KpiStrip } from './KpiStrip'
 import { DashboardTaskList } from './DashboardTaskList'
 import { DashboardErrorBanner } from './DashboardErrorBanner'
@@ -76,9 +75,6 @@ export function ExecutiveHome({ user }: Props) {
           {t('executive.greetingDesc')}
         </p>
       </div>
-
-      {/* ── AI Nudge Cards ── */}
-      <NudgeCards user={user} />
 
       {/* ── KPI Strip ── */}
       {loading ? (

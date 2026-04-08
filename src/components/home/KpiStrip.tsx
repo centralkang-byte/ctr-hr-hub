@@ -56,74 +56,42 @@ const BADGE_STYLES: Record<string, string> = {
 // ─── Component ──────────────────────────────────────────────
 
 export function KpiStrip({ hero, items, heroSlot, className }: KpiStripProps) {
-  const hasHero = hero || heroSlot
+  // hero를 items와 합쳐 균일 그리드로 렌더
+  const allItems: KpiItem[] = hero ? [hero, ...items] : items
+  const colCount = allItems.length
 
   return (
     <div className={cn('flex flex-wrap gap-3', className)}>
-      {/* Hero KPI */}
-      {hasHero && (
+      {/* heroSlot이 있으면 첫 번째 슬롯으로 표시 */}
+      {heroSlot && (
         <div
           className={cn(
-            'w-full rounded-2xl p-5 shadow-sm sm:w-auto sm:flex-shrink-0',
+            'rounded-2xl p-4 shadow-sm',
             hero ? CARD_BG[hero.variant ?? 'default'] : 'bg-card',
           )}
-          style={{ minWidth: 180 }}
         >
-          {heroSlot ?? (
-            hero && (
-              <>
-                <p
-                  className={cn(
-                    'text-[10px] font-semibold uppercase tracking-[0.08em]',
-                    hero.variant === 'accent'
-                      ? 'text-white/70'
-                      : 'text-muted-foreground',
-                  )}
-                >
-                  {hero.label}
-                </p>
-                <p
-                  className={cn(
-                    'mt-2 font-display text-4xl font-black leading-none',
-                    hero.variant === 'accent' ? 'text-white' : 'text-foreground',
-                  )}
-                >
-                  {hero.value}
-                </p>
-                {hero.delta && (
-                  <p
-                    className={cn(
-                      'mt-1.5 text-[11px] font-medium',
-                      hero.variant === 'accent'
-                        ? 'text-white/60'
-                        : DELTA_COLOR[hero.deltaVariant ?? 'muted'],
-                    )}
-                  >
-                    {hero.delta}
-                  </p>
-                )}
-              </>
-            )
-          )}
+          {heroSlot}
         </div>
       )}
 
-      {/* Secondary Grid */}
+      {/* 균일 그리드 */}
       <div
         className={cn(
           'grid flex-1 gap-2',
-          !hasHero && items.length <= 4
-            ? 'grid-cols-2 sm:grid-cols-4'
-            : items.length <= 3
+          colCount <= 2
+            ? 'grid-cols-2'
+            : colCount <= 3
               ? 'grid-cols-2 sm:grid-cols-3'
-              : 'grid-cols-2 sm:grid-cols-4',
+              : colCount <= 4
+                ? 'grid-cols-2 sm:grid-cols-4'
+                : 'grid-cols-2 sm:grid-cols-5',
         )}
       >
-        {items.map((item) => (
+        {allItems.map((item) => (
           <div
             key={item.label}
             className={cn(
-              'rounded-2xl p-3 shadow-sm',
+              'rounded-2xl p-4 shadow-sm',
               CARD_BG[item.variant ?? 'default'],
             )}
           >
@@ -139,7 +107,7 @@ export function KpiStrip({ hero, items, heroSlot, className }: KpiStripProps) {
             </p>
             <p
               className={cn(
-                'mt-1 font-mono text-lg font-extrabold tabular-nums leading-tight',
+                'mt-1.5 font-mono text-2xl font-extrabold tabular-nums leading-tight',
                 item.variant === 'accent' ? 'text-white' : 'text-foreground',
               )}
             >

@@ -10,7 +10,6 @@ import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { ClipboardCheck } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { NudgeCards } from './NudgeCards'
 import { KpiStrip } from './KpiStrip'
 import { DashboardTaskList } from './DashboardTaskList'
 import { TeamPresence } from './TeamPresence'
@@ -73,9 +72,6 @@ export function ManagerHome({ user }: Props) {
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">{t('manager.greetingDesc')}</p>
       </div>
-
-      {/* ── Nudge Cards ── */}
-      <NudgeCards user={user} />
 
       {/* ── KPI Strip ── */}
       {loading ? (

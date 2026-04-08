@@ -11,9 +11,7 @@ import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { ClipboardCheck } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { NudgeCards } from './NudgeCards'
 import { KpiStrip } from './KpiStrip'
-import { MonitorBanner } from './MonitorBanner'
 import { DashboardTaskList } from './DashboardTaskList'
 import { DashboardErrorBanner } from './DashboardErrorBanner'
 import { WidgetSkeleton } from '@/components/shared/WidgetSkeleton'
@@ -76,17 +74,6 @@ export function HrAdminHome({ user }: Props) {
         </h1>
         <p className={`mt-1 ${TYPOGRAPHY.caption}`}>{t('hrAdmin.greetingDesc')}</p>
       </div>
-
-      {/* ── AI Nudge Cards ── */}
-      <NudgeCards user={user} />
-
-      {/* ── Monitor Banner — 승인 적체 ── */}
-      <MonitorBanner
-        label={t('hrAdmin.leaveRequest')}
-        value={summary?.pendingLeaves ?? 0}
-        description={t('hrAdmin.pendingLeaveCount', { count: summary?.pendingLeaves ?? 0 })}
-        hidden={!summary || (summary.pendingLeaves ?? 0) <= 5}
-      />
 
       {/* ── KPI Strip ── */}
       {loading ? (
