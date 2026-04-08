@@ -2606,7 +2606,8 @@
       "statusManagerDone": "Manager Reviewed",
       "viewAll": "View All →",
       "viewResult": "View Result",
-      "workDaysThisMonth": "Work Days This Month"
+      "workDaysThisMonth": "Work Days This Month",
+      "used": "used"
     },
     "executive": {
       "aiStrategicInsight": "AI Strategic Insights",
@@ -2653,7 +2654,8 @@
       "totalCount": "{count} total",
       "totalEmployees": "Total Employees",
       "turnoverRate": "Turnover Rate",
-      "upcomingTermination": "Upcoming Terminations"
+      "upcomingTermination": "Upcoming Terminations",
+      "openPositions": "Open Positions"
     },
     "kpi": {
       "leaveUsageRate": "Annual Leave 사용률",
@@ -2693,7 +2695,8 @@
       "total": "Total",
       "totalMembers": "{count} members total",
       "totalTeamMembers": "Total Members",
-      "viewAllMeetings": "View All →"
+      "viewAllMeetings": "View All →",
+      "overdueLeaves": "Overdue Leaves"
     },
     "monthlyTrend": "Monthly Trend",
     "noData": "No 데이터 available.",

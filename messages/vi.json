@@ -2606,7 +2606,8 @@
       "statusManagerDone": "Quản lý đã duyệt",
       "viewAll": "Xem tất cả →",
       "viewResult": "Xem kết quả",
-      "workDaysThisMonth": "Ngày làm việc tháng này"
+      "workDaysThisMonth": "Ngày làm việc tháng này",
+      "used": "đã sử dụng"
     },
     "executive": {
       "aiStrategicInsight": "Phân tích chiến lược AI",
@@ -2653,7 +2654,8 @@
       "totalCount": "Tổng {count} đơn",
       "totalEmployees": "Tổng nhân viên",
       "turnoverRate": "Tỷ lệ nghỉ việc",
-      "upcomingTermination": "Sắp nghỉ việc"
+      "upcomingTermination": "Sắp nghỉ việc",
+      "openPositions": "Vị trí tuyển dụng"
     },
     "kpi": {
       "leaveUsageRate": "Hàng năm Leave 사용률",
@@ -2693,7 +2695,8 @@
       "total": "Tổng",
       "totalMembers": "Tổng {count} người",
       "totalTeamMembers": "Tổng thành viên",
-      "viewAllMeetings": "Xem tất cả →"
+      "viewAllMeetings": "Xem tất cả →",
+      "overdueLeaves": "Nghỉ phép quá hạn"
     },
     "monthlyTrend": "Hàng tháng Trend",
     "noData": "No 데이터 available.",

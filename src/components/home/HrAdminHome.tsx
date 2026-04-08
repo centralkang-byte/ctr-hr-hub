@@ -114,7 +114,7 @@ export function HrAdminHome({ user }: Props) {
               variant: (summary?.turnoverRate ?? 0) > 5 ? 'warn' : 'default',
             },
             {
-              label: 'Open Positions',
+              label: t('hrAdmin.openPositions'),
               value: summary?.openPositions ?? 0,
             },
           ]}

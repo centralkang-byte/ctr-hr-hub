@@ -2606,7 +2606,8 @@
       "statusManagerDone": "经理已审核",
       "viewAll": "查看全部 →",
       "viewResult": "查看结果",
-      "workDaysThisMonth": "本月工作天数"
+      "workDaysThisMonth": "本月工作天数",
+      "used": "已使用"
     },
     "executive": {
       "aiStrategicInsight": "AI战略洞察",
@@ -2653,7 +2654,8 @@
       "totalCount": "共{count}件",
       "totalEmployees": "全公司人数",
       "turnoverRate": "离职率",
-      "upcomingTermination": "即将离职"
+      "upcomingTermination": "即将离职",
+      "openPositions": "空缺职位"
     },
     "kpi": {
       "leaveUsageRate": "年度 Leave 사용률",
@@ -2693,7 +2695,8 @@
       "total": "全部",
       "totalMembers": "共{count}人",
       "totalTeamMembers": "全部成员",
-      "viewAllMeetings": "查看全部 →"
+      "viewAllMeetings": "查看全部 →",
+      "overdueLeaves": "逾期休假"
     },
     "monthlyTrend": "月度 Trend",
     "noData": "No 데이터 available.",

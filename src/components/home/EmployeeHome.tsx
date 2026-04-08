@@ -112,7 +112,7 @@ export function EmployeeHome({ user }: Props) {
             label: t('employee.remainingAnnualLeave'),
             value: annualLeave ? `${annualLeave.remaining}` : '-',
             delta: annualLeave
-              ? `${annualLeave.used}/${annualLeave.total} used`
+              ? `${annualLeave.used}/${annualLeave.total} ${t('employee.used')}`
               : undefined,
             deltaVariant: annualLeave && annualLeave.remaining <= 3 ? 'bad' : 'muted',
             variant: annualLeave && annualLeave.remaining <= 3 ? 'warn' : 'default',

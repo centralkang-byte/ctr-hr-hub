@@ -102,7 +102,7 @@ export function ExecutiveHome({ user }: Props) {
               variant: (summary?.terminations ?? 0) > 5 ? 'alert' : 'default',
             },
             {
-              label: 'Open Positions',
+              label: t('hrAdmin.openPositions'),
               value: summary?.openPositions ?? 0,
             },
           ]}

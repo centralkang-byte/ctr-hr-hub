@@ -89,7 +89,7 @@ export function ManagerHome({ user }: Props) {
               variant: (summary?.pendingLeaves ?? 0) > 3 ? 'warn' : 'default',
             },
             {
-              label: 'Overdue',
+              label: t('manager.overdueLeaves'),
               value: summary?.overdueLeaves ?? 0,
               variant: (summary?.overdueLeaves ?? 0) > 0 ? 'alert' : 'default',
             },

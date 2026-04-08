@@ -9116,7 +9116,8 @@
       "viewAll": "전체 보기 →",
       "mboAchievement": "MBO 달성률",
       "goalsSet": "설정된 목표 {count}개",
-      "inProgress": "진행 중"
+      "inProgress": "진행 중",
+      "used": "사용"
     },
     "manager": {
       "greetingDesc": "팀 현황을 한눈에 확인하세요.",
@@ -9140,7 +9141,8 @@
       "totalTeamMembers": "전체 팀원",
       "newHires": "신규 입사",
       "pendingLeaveApproval": "승인 대기 휴가",
-      "teamOverview": "팀 전체 현황 →"
+      "teamOverview": "팀 전체 현황 →",
+      "overdueLeaves": "지연 휴가"
     },
     "hrAdmin": {
       "greetingDesc": "전사 인사 현황을 확인하세요.",
@@ -9166,7 +9168,8 @@
       "upcomingTermination": "퇴직 예정",
       "handoverInProgress": "인수인계 진행 중",
       "thisMonthTermination": "이번 달 퇴직",
-      "offboardingLink": "퇴직관리 →"
+      "offboardingLink": "퇴직관리 →",
+      "openPositions": "채용 공석"
     },
     "executive": {
       "greetingDesc": "그룹 전체 인사 현황 요약입니다.",
