@@ -51,7 +51,7 @@ export const GET = withCache(withPermission(
         const [leaveBalance, attendanceCount, qrReview] = await Promise.all([
           prisma.employeeLeaveBalance.findMany({
             where: { employeeId: user.employeeId },
-            include: { policy: { select: { name: true } } },
+            include: { policy: { select: { name: true, leaveType: true } } },
           }),
           prisma.attendance.count({
             where: {
@@ -70,6 +70,7 @@ export const GET = withCache(withPermission(
           totalEmployees,
           leaveBalance: leaveBalance.map((lb) => ({
             policy: lb.policy.name,
+            leaveType: lb.policy.leaveType,
             remaining: Number(lb.grantedDays) - Number(lb.usedDays) - Number(lb.pendingDays),
             used: Number(lb.usedDays),
             total: Number(lb.grantedDays),
@@ -84,8 +85,9 @@ export const GET = withCache(withPermission(
       if (user.role === ROLE.MANAGER) {
         // C-1 fix: canonical helper (includes secondary assignments)
         const reportIds = await getDirectReportIds(user.employeeId)
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
-        const [teamCount, pendingLeaves, scheduledOneOnOnes, qrGroups] = await Promise.all([
+        const [teamCount, pendingLeaves, overdueLeaves, scheduledOneOnOnes, qrGroups] = await Promise.all([
           prisma.employee.count({
             where: {
               id: { in: reportIds },
@@ -96,6 +98,15 @@ export const GET = withCache(withPermission(
           }),
           prisma.leaveRequest.count({
             where: { companyId, status: 'PENDING', employeeId: { in: reportIds } },
+          }),
+          // Overdue: PENDING leaves whose startDate is strictly before today
+          prisma.leaveRequest.count({
+            where: {
+              companyId,
+              status: 'PENDING',
+              employeeId: { in: reportIds },
+              startDate: { lt: todayStart },
+            },
           }),
           prisma.oneOnOne.count({
             where: { managerId: user.employeeId, companyId, status: 'SCHEDULED' },
@@ -113,6 +124,7 @@ export const GET = withCache(withPermission(
           totalEmployees,
           teamCount,
           pendingLeaves,
+          overdueLeaves,
           scheduledOneOnOnes,
           quarterlyReviewStats: aggregateQrStats(qrGroups),
         })

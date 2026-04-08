@@ -25,6 +25,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge'
 import { TaskSummaryCard } from './TaskSummaryCard'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
+import { toast } from '@/hooks/use-toast'
 import { BUTTON_VARIANTS } from '@/lib/styles'
 
 // ─── Types ────────────────────────────────────────────────
@@ -36,7 +37,7 @@ interface EmployeeHomeProps {
 interface EmployeeSummary {
   role: string
   totalEmployees: number
-  leaveBalance: { policy: string; remaining: number; used: number; total: number }[]
+  leaveBalance: { policy: string; leaveType: string; remaining: number; used: number; total: number }[]
   attendanceThisMonth: number
   quarterlyReview?: { id: string | null; status: string | null }
 }
@@ -51,12 +52,13 @@ export function EmployeeHome({ user }: EmployeeHomeProps) {
     apiClient
       .get<EmployeeSummary>('/api/v1/home/summary')
       .then((res) => setSummary(res.data))
-      .catch(() => {})
+      .catch(() => {
+        toast({ title: '로드 실패', variant: 'destructive' })
+      })
   }, [])
 
-  // TODO: Replace string matching with a proper typeCode/category field from API
   const annualLeave = summary?.leaveBalance?.find(
-    (lb) => /연차|annual|年假|nghỉ phép năm|vacaciones/i.test(lb.policy),
+    (lb) => lb.leaveType === 'ANNUAL',
   )
 
   return (
