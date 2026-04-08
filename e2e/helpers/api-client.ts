@@ -134,6 +134,11 @@ export class ApiClient {
     return parseApiResponse<T>(res)
   }
 
+  async patch<T = unknown>(path: string, data?: unknown): Promise<ApiResult<T>> {
+    const res = await this.request.patch(path, data !== undefined ? { data } : undefined)
+    return parseApiResponse<T>(res)
+  }
+
   async del<T = unknown>(path: string): Promise<ApiResult<T>> {
     const res = await this.request.delete(path)
     return parseApiResponse<T>(res)
