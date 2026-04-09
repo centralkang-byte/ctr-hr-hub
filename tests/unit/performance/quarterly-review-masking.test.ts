@@ -174,11 +174,7 @@ describe('maskQuarterlyReview — EXECUTIVE', () => {
     expect(result.goalHighlights).toBe('My highlights')
   })
 
-  // Codex Gate 1 [HIGH]: EXECUTIVE who is also the employee — isEmployee branch runs first
-  // Known bug: isEmployee check (line 82) precedes EXECUTIVE check (line 110)
-  // This test asserts the INTENDED behavior (full access). Marked .fails until bug is fixed.
-  // When the bug is fixed, this test will pass and .fails will alert to remove the wrapper.
-  it.fails('should give EXECUTIVE full access even when viewing own review (pending fix)', () => {
+  it('should give EXECUTIVE full access even when viewing own review', () => {
     const user = makeUser({ employeeId: EMPLOYEE_ID, role: 'EXECUTIVE' })
     const review = makeReview({ status: 'DRAFT' })
     const result = maskQuarterlyReview(review, user)

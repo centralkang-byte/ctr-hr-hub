@@ -13,6 +13,7 @@ const AUTH_DIR = path.join(__dirname, '.auth')
 const ROLES = {
   SUPER_ADMIN: 'super@ctr.co.kr',
   HR_ADMIN: 'hr@ctr.co.kr',
+  EXECUTIVE: 'executive@ctr.co.kr',
   MANAGER: 'manager@ctr.co.kr',
   EMPLOYEE: 'employee-a@ctr.co.kr',
 } as const

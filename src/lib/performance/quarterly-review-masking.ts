@@ -79,6 +79,9 @@ export function maskQuarterlyReview<T extends AnyReview>(
     return review
   }
 
+  // EXECUTIVE: 전체 읽기 (조직 리더) — isEmployee/isManager 보다 우선
+  if (user.role === ROLE.EXECUTIVE) return review
+
   const isEmployee = user.employeeId === review.employeeId
   const isManager = user.employeeId === review.managerId
   const status = review.status as string
@@ -106,9 +109,6 @@ export function maskQuarterlyReview<T extends AnyReview>(
     masked = maskGoalProgressForManager(masked)
     return masked
   }
-
-  // EXECUTIVE: 전체 읽기 (조직 리더)
-  if (user.role === 'EXECUTIVE') return review
 
   // 그 외: 모든 민감 필드 null
   let masked = nullifyFields(review, [...EMPLOYEE_FIELDS, ...MANAGER_FIELDS] as unknown as string[])
