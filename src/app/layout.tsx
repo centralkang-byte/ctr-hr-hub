@@ -4,15 +4,15 @@
 
 import type { Metadata, Viewport } from 'next'
 import localFont from 'next/font/local'
-import { Inter } from 'next/font/google'
+import { Outfit } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { Providers } from '@/app/providers'
 import './globals.css'
 
-const inter = Inter({
+const outfit = Outfit({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-outfit',
   display: 'swap',
 })
 
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#4a40e0',
+  themeColor: '#6366f1',
 }
 
 export default async function RootLayout({
@@ -62,7 +62,7 @@ export default async function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className={`${inter.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased tracking-ctr`}
+        className={`${outfit.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased tracking-ctr`}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>{children}</Providers>

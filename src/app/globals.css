@@ -18,7 +18,7 @@
     letter-spacing: -0.02em;
   }
 
-  /* Kinetic Atelier — Light Mode (Stitch Semantic Tokens) */
+  /* Violet Palette — Light Mode */
   :root {
     --background: 0 0% 96.5%;               /* #f6f6f6 surface */
     --foreground: 180 3.4% 18.2%;           /* #2d2f2f on-surface */
@@ -26,7 +26,7 @@
     --card-foreground: 180 3.4% 18.2%;      /* #2d2f2f on-surface */
     --popover: 0 0% 100%;                    /* #ffffff */
     --popover-foreground: 180 3.4% 18.2%;   /* #2d2f2f */
-    --primary: 244 74% 56.3%;               /* #4a40e0 primary */
+    --primary: 239 84% 67%;                 /* #6366f1 violet */
     --primary-foreground: 260 100% 97.3%;   /* #f4f1ff on-primary */
     --secondary: 0 0% 94.5%;                /* #f0f1f1 surface-container-low */
     --secondary-foreground: 180 3.4% 18.2%; /* #2d2f2f */
@@ -34,31 +34,31 @@
     --muted-foreground: 180 1.7% 35.9%;     /* #5a5c5c on-surface-variant */
     --accent: 0 0% 94.5%;                   /* #f0f1f1 */
     --accent-foreground: 180 3.4% 18.2%;    /* #2d2f2f */
-    --destructive: 340 80% 39.2%;           /* #b41340 error */
+    --destructive: 347 77% 50%;             /* #e11d48 rose */
     --destructive-foreground: 0 100% 93.7%; /* #ffefef on-error */
     --border: 180 1.5% 67.8%;              /* #acadad outline-variant (사용 시 /15 opacity) */
     --input: 180 1.5% 67.8%;               /* #acadad */
-    --ring: 244 74% 56.3%;                  /* #4a40e0 primary */
+    --ring: 239 84% 67%;                    /* #6366f1 violet */
 
-    /* Kinetic Atelier 확장 토큰 */
-    --primary-dim: 247 65% 51%;              /* #3d30d4 그라디언트 끝점 */
-    --primary-container: 242 100% 79.2%;     /* #9795ff primary 밝은 변형 */
-    --tertiary: 161 100% 20.6%;              /* #006947 에메랄드 텍스트 */
-    --tertiary-container: 154 89% 68.6%;     /* #69f6b8 에메랄드 배경 */
-    --on-tertiary-container: 162 100% 17.6%; /* #005a3c */
+    /* 확장 토큰 */
+    --primary-dim: 244 76% 59%;              /* #4f46e5 그라디언트 끝점 */
+    --primary-container: 226 94% 82%;        /* #a5b4fc primary 밝은 변형 */
+    --tertiary: 142 76% 36%;                 /* #16a34a green 텍스트 */
+    --tertiary-container: 142 77% 73%;       /* #86efac green 배경 */
+    --on-tertiary-container: 143 64% 24%;    /* #166534 */
     --surface-container-low: 0 0% 94.5%;     /* #f0f1f1 */
     --surface-container-high: 180 1.5% 88.6%; /* #e1e3e3 */
     --surface-container: 0 0% 90.8%;         /* #e7e8e8 */
 
-    --chart-1: 244 74% 56.3%;               /* #4a40e0 primary */
-    --chart-2: 242 100% 79.2%;              /* #9795ff primary-container */
-    --chart-3: 161 100% 20.6%;              /* #006947 tertiary */
-    --chart-4: 261 44% 49%;                 /* #6249b2 secondary */
-    --chart-5: 340 80% 39.2%;              /* #b41340 error */
+    --chart-1: 239 84% 67%;                 /* #6366f1 primary */
+    --chart-2: 226 94% 82%;                 /* #a5b4fc primary-container */
+    --chart-3: 142 76% 36%;                 /* #16a34a tertiary */
+    --chart-4: 215 16% 47%;                 /* #64748b slate */
+    --chart-5: 347 77% 50%;                /* #e11d48 destructive */
     --chart-6: 180 1.7% 35.9%;             /* #5a5c5c on-surface-variant */
     --radius: 0.5rem;
   }
-  /* Kinetic Atelier — Dark Mode (Stitch inverse-surface 기반) */
+  /* Violet Palette — Dark Mode */
   .dark {
     --background: 180 10% 3.7%;            /* #0c0f0f inverse-surface */
     --foreground: 0 0% 96.5%;              /* #f6f6f6 surface-bright */
@@ -66,7 +66,7 @@
     --card-foreground: 0 0% 96.5%;         /* #f6f6f6 */
     --popover: 180 3.4% 18.2%;            /* #2d2f2f */
     --popover-foreground: 0 0% 96.5%;      /* #f6f6f6 */
-    --primary: 242 100% 75.5%;             /* #8582ff inverse-primary */
+    --primary: 234 89% 74%;               /* #818cf8 indigo-400 */
     --primary-foreground: 0 0% 100%;
     --secondary: 180 3.4% 18.2%;           /* #2d2f2f */
     --secondary-foreground: 0 0% 96.5%;
@@ -74,27 +74,27 @@
     --muted-foreground: 210 6% 72%;         /* #b5b8bc — 다크모드 4.5:1+ contrast on --card */
     --accent: 180 3.4% 18.2%;
     --accent-foreground: 0 0% 96.5%;
-    --destructive: 346 85% 52.2%;          /* #f74b6d error-container (밝게) */
+    --destructive: 351 95% 72%;            /* #fb7185 rose-400 */
     --destructive-foreground: 0 0% 98%;
     --border: 180 1.5% 67.8%;             /* #acadad */
     --input: 180 1.5% 67.8%;
-    --ring: 242 100% 75.5%;                /* inverse-primary */
+    --ring: 234 89% 74%;                   /* #818cf8 indigo-400 */
 
-    --primary-dim: 244 74% 56.3%;          /* #4a40e0 */
-    --primary-container: 242 100% 79.2%;   /* #9795ff */
-    --tertiary: 154 89% 68.6%;             /* #69f6b8 밝은 에메랄드 (다크모드용) */
-    --tertiary-container: 162 100% 17.6%;  /* #005a3c 어두운 에메랄드 배경 */
-    --on-tertiary-container: 148 100% 88.6%; /* #c8ffe0 */
+    --primary-dim: 239 84% 67%;            /* #6366f1 */
+    --primary-container: 226 94% 82%;      /* #a5b4fc */
+    --tertiary: 142 69% 58%;              /* #4ade80 green-400 */
+    --tertiary-container: 143 64% 24%;     /* #166534 green-800 */
+    --on-tertiary-container: 141 84% 85%;  /* #bbf7d0 green-200 */
     --surface-container-low: 180 3.4% 18.2%;
     --surface-container-high: 180 1.5% 44.7%; /* #757777 */
     --surface-container: 180 3.4% 18.2%;
 
-    --chart-1: 242 100% 75.5%;            /* inverse-primary */
-    --chart-2: 258 100% 89%;              /* secondary-fixed #d8caff */
-    --chart-3: 154 89% 68.6%;             /* tertiary-fixed #69f6b8 */
-    --chart-4: 261 44% 49%;               /* secondary #6249b2 */
-    --chart-5: 346 85% 52.2%;             /* error-container #f74b6d */
-    --chart-6: 210 6% 72%;                /* muted foreground (다크모드 보정) */
+    --chart-1: 234 89% 74%;               /* #818cf8 indigo-400 */
+    --chart-2: 226 95% 90%;               /* #c7d2fe indigo-200 */
+    --chart-3: 142 69% 58%;               /* #4ade80 green-400 */
+    --chart-4: 215 20% 65%;               /* #94a3b8 slate-400 */
+    --chart-5: 351 95% 72%;               /* #fb7185 rose-400 */
+    --chart-6: 210 6% 72%;                /* muted foreground */
   }
 }
 
