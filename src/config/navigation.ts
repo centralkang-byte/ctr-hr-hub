@@ -67,7 +67,7 @@ import {
   BedDouble,
   type LucideIcon,
 } from 'lucide-react'
-import { MODULE, ROLE } from '@/lib/constants'
+import { MODULE } from '@/lib/constants'
 import { ROLE_GROUPS } from '@/lib/rbac/rbac-spec'
 
 // ─── Types ──────────────────────────────────────────────────
