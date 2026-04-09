@@ -92,6 +92,22 @@ export const ROUTE_ACL: readonly RouteRule[] = [
   { prefix: '/api/v1/analytics', allowedRoles: ROLE_GROUPS.MANAGER_UP },
 ]
 
+// ─── Public API Routes (intentionally unprotected) ──────
+// 감사용 문서 상수. middleware PUBLIC_PATHS와 별도 관리.
+// Batch 3 라우트 감사 기준: 599 라우트 중 9건만 의도적 public.
+
+export const PUBLIC_API_ROUTES = [
+  { path: '/api/health', reason: 'Uptime monitoring' },
+  { path: '/api/v1/monitoring/health', reason: 'Detailed health check (DB/Redis)' },
+  { path: '/api/auth', reason: 'NextAuth callback handler' },
+  { path: '/api/v1/locale', reason: 'Pre-login i18n locale switching' },
+  { path: '/api/v1/tenant-settings/brand-colors', reason: 'Pre-login brand theming' },
+  { path: '/api/v1/teams/bot', reason: 'MS Teams bot (signature-verified)' },
+  { path: '/api/v1/teams/webhook', reason: 'MS Teams webhook (HMAC-verified)' },
+  { path: '/api/v1/teams/recognition', reason: 'MS Teams recognition (signature-verified)' },
+  { path: '/api/v1/employees/bulk-upload', reason: 'Deprecated — returns 410 Gone' },
+] as const
+
 // ─── Helper ──────────────────────────────────────────────
 
 export function findRouteRule(pathname: string): RouteRule | null {

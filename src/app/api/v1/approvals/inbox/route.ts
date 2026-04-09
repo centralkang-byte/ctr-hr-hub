@@ -12,12 +12,9 @@
 
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { apiSuccess, apiError } from '@/lib/api'
-import { unauthorized } from '@/lib/errors'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { apiSuccess } from '@/lib/api'
+import { withAuth } from '@/lib/permissions'
 import { ROLE } from '@/lib/constants'
-import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── Unified item shape ────────────────────────────────────
@@ -68,31 +65,31 @@ async function getDirectReportIds(employeeId: string): Promise<string[]> {
 
 // ─── Route Handler ────────────────────────────────────────
 
-export async function GET(req: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user) return apiError(unauthorized())
-    const user = session.user as SessionUser
+export const GET = withAuth(async (req: NextRequest, _context, user) => {
+  const { searchParams } = req.nextUrl
+  const moduleFilter = searchParams.get('module')  // LEAVE | PERFORMANCE | PAYROLL | null=ALL
+  const statusFilter = searchParams.get('status')  // PENDING | APPROVED | REJECTED | null=PENDING
+  const countOnly = searchParams.get('countOnly') === 'true'
+  const historyDays = parseInt(searchParams.get('days') ?? '30', 10)
 
-    const { searchParams } = req.nextUrl
-    const moduleFilter = searchParams.get('module')  // LEAVE | PERFORMANCE | PAYROLL | null=ALL
-    const statusFilter = searchParams.get('status')  // PENDING | APPROVED | REJECTED | null=PENDING
-    const countOnly = searchParams.get('countOnly') === 'true'
-    const historyDays = parseInt(searchParams.get('days') ?? '30', 10)
+  // default: show PENDING
+  const showPending = !statusFilter || statusFilter === 'PENDING'
+  const showCompleted = statusFilter === 'APPROVED' || statusFilter === 'REJECTED' || statusFilter === 'ALL'
 
-    // default: show PENDING
-    const showPending = !statusFilter || statusFilter === 'PENDING'
-    const showCompleted = statusFilter === 'APPROVED' || statusFilter === 'REJECTED' || statusFilter === 'ALL'
+  const companyId = user.companyId
+  const employeeId = user.employeeId
+  const isHrUp = [ROLE.HR_ADMIN, ROLE.SUPER_ADMIN].includes(user.role as never)
+  const isManagerUp = [ROLE.MANAGER, ROLE.EXECUTIVE, ROLE.HR_ADMIN, ROLE.SUPER_ADMIN].includes(user.role as never)
 
-    const companyId = user.companyId
-    const employeeId = user.employeeId
-    const isHrUp = [ROLE.HR_ADMIN, ROLE.SUPER_ADMIN].includes(user.role as never)
-    const isManagerUp = [ROLE.MANAGER, ROLE.EXECUTIVE, ROLE.HR_ADMIN, ROLE.SUPER_ADMIN].includes(user.role as never)
+  // Codex F1: EMPLOYEE는 승인 권한 없음 — 빈 결과 반환 (기존 버그: reportIds=null → 전사 데이터 노출)
+  if (!isManagerUp) {
+    return apiSuccess(countOnly ? { count: 0 } : { items: [], pendingCount: 0 })
+  }
 
-    // Direct reports (for MANAGER — only see their team's requests)
-    const reportIds = isManagerUp && !isHrUp
-      ? await getDirectReportIds(employeeId)
-      : null   // HR_ADMIN sees all
+  // Direct reports (for MANAGER — only see their team's requests)
+  const reportIds = isManagerUp && !isHrUp
+    ? await getDirectReportIds(employeeId)
+    : null   // HR_ADMIN sees all
 
     const items: ApprovalItem[] = []
 
@@ -332,8 +329,5 @@ export async function GET(req: NextRequest) {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     })
 
-    return apiSuccess({ items, pendingCount })
-  } catch (error) {
-    return apiError(error)
-  }
-}
+  return apiSuccess({ items, pendingCount })
+})

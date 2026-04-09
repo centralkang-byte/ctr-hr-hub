@@ -3,17 +3,11 @@
 // VAPID public key 반환 (클라이언트 Push 구독용)
 // ═══════════════════════════════════════════════════════════
 
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { type NextRequest } from 'next/server'
 import { env } from '@/lib/env'
-import { apiSuccess, apiError } from '@/lib/api'
-import { unauthorized } from '@/lib/errors'
+import { apiSuccess } from '@/lib/api'
+import { withAuth } from '@/lib/permissions'
 
-export async function GET() {
-  const session = await getServerSession(authOptions)
-  if (!session?.user) {
-    return apiError(unauthorized('인증 필요'))
-  }
-
+export const GET = withAuth(async (_req: NextRequest, _context, _user) => {
   return apiSuccess({ vapidPublicKey: env.VAPID_PUBLIC_KEY || null })
-}
+})

@@ -5,12 +5,10 @@
 
 import { type NextRequest } from 'next/server'
 import { z } from 'zod'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { unauthorized, badRequest, handlePrismaError } from '@/lib/errors'
-import type { SessionUser } from '@/types'
+import { badRequest, handlePrismaError } from '@/lib/errors'
+import { withAuth } from '@/lib/permissions'
 
 const subscribeSchema = z.object({
   endpoint: z.string().url(),
@@ -24,11 +22,7 @@ const unsubscribeSchema = z.object({
 
 // ─── POST: 구독 등록 ──────────────────────────────────────
 
-export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user) throw unauthorized()
-  const user = session.user as SessionUser
-
+export const POST = withAuth(async (req: NextRequest, _context, user) => {
   const body: unknown = await req.json()
   const parsed = subscribeSchema.safeParse(body)
   if (!parsed.success) {
@@ -59,15 +53,11 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     throw handlePrismaError(error)
   }
-}
+})
 
 // ─── DELETE: 구독 해제 ─────────────────────────────────────
 
-export async function DELETE(req: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user) throw unauthorized()
-  const user = session.user as SessionUser
-
+export const DELETE = withAuth(async (req: NextRequest, _context, user) => {
   const body: unknown = await req.json()
   const parsed = unsubscribeSchema.safeParse(body)
   if (!parsed.success) {
@@ -86,4 +76,4 @@ export async function DELETE(req: NextRequest) {
   } catch (error) {
     throw handlePrismaError(error)
   }
-}
+})
