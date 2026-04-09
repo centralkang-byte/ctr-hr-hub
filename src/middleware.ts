@@ -10,8 +10,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
-import { ROUTE_ACL, findRouteRule } from '@/lib/rbac/rbac-spec'
-import type { RouteRule } from '@/lib/rbac/rbac-spec'
+import { findRouteRule } from '@/lib/rbac/rbac-spec'
 
 // ─── Security Headers ──────────────────────────────────────
 
