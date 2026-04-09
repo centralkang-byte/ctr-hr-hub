@@ -10,6 +10,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
+import { ROUTE_ACL, findRouteRule } from '@/lib/rbac/rbac-spec'
+import type { RouteRule } from '@/lib/rbac/rbac-spec'
 
 // ─── Security Headers ──────────────────────────────────────
 
@@ -45,92 +47,9 @@ function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'))
 }
 
-// ─── Role hierarchy (mirrors src/config/navigation.ts) ─────
-// These role groups MUST stay in sync with navigation.ts:
-//   ALL_ROLES  = EMPLOYEE, MANAGER, EXECUTIVE, HR_ADMIN, SUPER_ADMIN
-//   MANAGER_UP = MANAGER, EXECUTIVE, HR_ADMIN, SUPER_ADMIN
-//   HR_UP      = HR_ADMIN, SUPER_ADMIN
-
-const ALL_ROLES = ['EMPLOYEE', 'MANAGER', 'EXECUTIVE', 'HR_ADMIN', 'SUPER_ADMIN']
-const MANAGER_UP = ['MANAGER', 'EXECUTIVE', 'HR_ADMIN', 'SUPER_ADMIN']
-const HR_UP = ['HR_ADMIN', 'SUPER_ADMIN']
-
-// ─── Route ACL (path prefix → allowed roles) ──────────────
-// Derived from navigation.ts section visibleTo mappings.
-// Order matters: more specific prefixes must come first.
-// Routes not listed here require authentication but allow any role.
-
-interface RouteRule {
-  prefix: string
-  allowedRoles: string[]
-}
-
-const ROUTE_ACL: RouteRule[] = [
-  // ── HR_ADMIN+ only sections ──────────────────────────
-  // Settings (section 10)
-  { prefix: '/settings', allowedRoles: HR_UP },
-  // Payroll admin (section 7) — but /payroll/me is employee self-service
-  { prefix: '/payroll/me', allowedRoles: ALL_ROLES },
-  { prefix: '/payroll', allowedRoles: HR_UP },
-  // Compliance (section 9)
-  { prefix: '/compliance', allowedRoles: HR_UP },
-  // HR Management (section 4)
-  { prefix: '/employees', allowedRoles: HR_UP },
-  { prefix: '/directory', allowedRoles: ALL_ROLES },
-  { prefix: '/org', allowedRoles: ALL_ROLES },
-  { prefix: '/attendance/admin', allowedRoles: HR_UP },
-  { prefix: '/leave/admin', allowedRoles: HR_UP },
-  { prefix: '/onboarding/me', allowedRoles: ALL_ROLES },
-  { prefix: '/onboarding', allowedRoles: HR_UP },
-  { prefix: '/offboarding/exit-interviews', allowedRoles: HR_UP },
-  { prefix: '/discipline', allowedRoles: HR_UP },
-  // Recruitment (section 5)
-  { prefix: '/recruitment', allowedRoles: HR_UP },
-  { prefix: '/talent', allowedRoles: HR_UP },
-  // Performance & Compensation admin (section 6)
-  { prefix: '/performance/admin', allowedRoles: HR_UP },
-  { prefix: '/performance/goals', allowedRoles: MANAGER_UP },
-  { prefix: '/performance/quarterly-reviews', allowedRoles: HR_UP },
-  { prefix: '/performance/calibration', allowedRoles: HR_UP },
-  { prefix: '/performance/results', allowedRoles: HR_UP },
-  { prefix: '/performance/peer-review', allowedRoles: MANAGER_UP },
-  { prefix: '/compensation', allowedRoles: HR_UP },
-  { prefix: '/benefits', allowedRoles: HR_UP },
-
-  // ── MANAGER+ sections ────────────────────────────────
-  // Team management (section 3)
-  { prefix: '/manager-hub', allowedRoles: MANAGER_UP },
-  { prefix: '/attendance/team', allowedRoles: MANAGER_UP },
-  { prefix: '/leave/team', allowedRoles: MANAGER_UP },
-  { prefix: '/performance/team-goals', allowedRoles: MANAGER_UP },
-  { prefix: '/performance/manager-eval', allowedRoles: MANAGER_UP },
-  { prefix: '/performance/one-on-one', allowedRoles: MANAGER_UP },
-  { prefix: '/delegation', allowedRoles: MANAGER_UP },
-  // Insights (section 8)
-  { prefix: '/analytics', allowedRoles: MANAGER_UP },
-
-  // ── API routes mirroring page ACL ────────────────────
-  { prefix: '/api/v1/settings', allowedRoles: HR_UP },
-  { prefix: '/api/v1/payroll/me', allowedRoles: ALL_ROLES },
-  { prefix: '/api/v1/payroll', allowedRoles: HR_UP },
-  { prefix: '/api/v1/compliance', allowedRoles: HR_UP },
-  // Recruitment: internal-jobs available to all (self-service internal mobility)
-  { prefix: '/api/v1/recruitment/internal-jobs', allowedRoles: ALL_ROLES },
-  // Recruitment: interview evaluate available to managers (interviewers)
-  { prefix: '/api/v1/recruitment/interviews', allowedRoles: MANAGER_UP },
-  { prefix: '/api/v1/recruitment', allowedRoles: HR_UP },
-  { prefix: '/api/v1/year-end/hr', allowedRoles: HR_UP },
-  { prefix: '/api/v1/analytics', allowedRoles: MANAGER_UP },
-]
-
-function findRouteRule(pathname: string): RouteRule | null {
-  for (const rule of ROUTE_ACL) {
-    if (pathname === rule.prefix || pathname.startsWith(rule.prefix + '/')) {
-      return rule
-    }
-  }
-  return null
-}
+// ─── RBAC SSOT ────────────────────────────────────────────
+// Role groups + Route ACL은 src/lib/rbac/rbac-spec.ts에서 중앙 관리.
+// navigation.ts, page guard, 테스트 모두 동일 소스 참조.
 
 // ─── Helper: apply security headers ────────────────────────
 

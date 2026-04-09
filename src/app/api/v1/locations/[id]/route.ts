@@ -26,7 +26,7 @@ export const GET = withAuth(
     const { id } = await context.params
 
     const location = await prisma.workLocation.findUnique({
-      where: { id },
+      where: { id, deletedAt: null },
       include: {
         company: { select: { id: true, code: true, name: true } },
       },
@@ -56,7 +56,7 @@ export const PUT = withPermission(
       throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
     }
 
-    const existing = await prisma.workLocation.findUnique({ where: { id } })
+    const existing = await prisma.workLocation.findUnique({ where: { id, deletedAt: null } })
     if (!existing) {
       throw notFound('근무지를 찾을 수 없습니다.')
     }
@@ -99,7 +99,7 @@ export const DELETE = withPermission(
   async (req: NextRequest, context, user: SessionUser) => {
     const { id } = await context.params
 
-    const existing = await prisma.workLocation.findUnique({ where: { id } })
+    const existing = await prisma.workLocation.findUnique({ where: { id, deletedAt: null } })
     if (!existing) {
       throw notFound('근무지를 찾을 수 없습니다.')
     }

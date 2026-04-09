@@ -12,15 +12,17 @@
 
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { apiSuccess } from '@/lib/api'
-import { handlePrismaError } from '@/lib/errors'
+import { apiSuccess, apiError } from '@/lib/api'
+import { handlePrismaError, unauthorized } from '@/lib/errors'
+import { verifyCronSecret } from '@/lib/cron-auth'
 import { addOverdueFlag, daysSinceDeadline } from '@/lib/performance/pipeline'
 import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
 
 // ─── GET /api/v1/cron/overdue-check ──────────────────────
 // Settings-connected: CRON_SECRET header validation (env-based, not in Settings API)
 
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
+    if (!verifyCronSecret(req)) return apiError(unauthorized('인증 실패'))
     try {
         const now = new Date()
         let totalFlagged = 0

@@ -13,16 +13,18 @@
 
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { apiSuccess } from '@/lib/api'
-import { handlePrismaError } from '@/lib/errors'
+import { apiSuccess, apiError } from '@/lib/api'
+import { handlePrismaError, unauthorized } from '@/lib/errors'
+import { verifyCronSecret } from '@/lib/cron-auth'
 import { AUTO_ACKNOWLEDGE_HOURS } from '@/lib/performance/pipeline'
 import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
 
 // ─── GET /api/v1/cron/auto-acknowledge ───────────────────
-// No auth required for cron (secured by Vercel Cron secret or middleware)
+// Secured by CRON_SECRET header, not user session
 // Settings-connected: CRON_SECRET header validation (env-based, not in Settings API)
 
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
+    if (!verifyCronSecret(req)) return apiError(unauthorized('인증 실패'))
     try {
         const now = new Date()
         // 168 hours = exactly 7 * 24h = timezone-safe universal window

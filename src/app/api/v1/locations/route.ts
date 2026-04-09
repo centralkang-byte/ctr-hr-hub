@@ -52,6 +52,7 @@ export const GET = withAuth(
         : user.companyId
 
     const where = {
+      deletedAt: null,
       ...(effectiveCompanyId ? { companyId: effectiveCompanyId } : {}),
       ...(locationType ? { locationType } : {}),
       ...(isActive !== undefined ? { isActive } : {}),

@@ -68,6 +68,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { MODULE, ROLE } from '@/lib/constants'
+import { ROLE_GROUPS } from '@/lib/rbac/rbac-spec'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -101,30 +102,11 @@ export interface NavSection {
   items: NavItem[]
 }
 
-// ─── Role Groups ─────────────────────────────────────────────
+// ─── Role Groups (SSOT: src/lib/rbac/rbac-spec.ts) ──────────
 
-const ALL_ROLES = [
-  ROLE.EMPLOYEE,
-  ROLE.MANAGER,
-  ROLE.EXECUTIVE,
-  ROLE.HR_ADMIN,
-  ROLE.SUPER_ADMIN,
-]
-
-const MANAGER_UP = [
-  ROLE.MANAGER,
-  ROLE.EXECUTIVE,
-  ROLE.HR_ADMIN,
-  ROLE.SUPER_ADMIN,
-]
-
-// const EXECUTIVE_UP = [
-//   ROLE.EXECUTIVE,
-//   ROLE.HR_ADMIN,
-//   ROLE.SUPER_ADMIN,
-// ]
-
-const HR_UP = [ROLE.HR_ADMIN, ROLE.SUPER_ADMIN]
+const ALL_ROLES = [...ROLE_GROUPS.ALL_ROLES]
+const MANAGER_UP = [...ROLE_GROUPS.MANAGER_UP]
+const HR_UP = [...ROLE_GROUPS.HR_UP]
 
 // ─── 10-Section Navigation ───────────────────────────────────
 
