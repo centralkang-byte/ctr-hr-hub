@@ -8,12 +8,13 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { exitInterviewSummary } from '@/lib/claude'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
-export const POST = withPermission(
+export const POST = withRateLimit(withPermission(
   async (_req: NextRequest, ctx, user: SessionUser) => {
     const { id } = await ctx.params
 
@@ -79,4 +80,4 @@ export const POST = withPermission(
     return apiSuccess({ summary: result, aiGenerated: true })
   },
   perm(MODULE.OFFBOARDING, ACTION.APPROVE),
-)
+), RATE_LIMITS.AI)
