@@ -119,7 +119,7 @@ export function Header({ user, companies, onMenuClick }: HeaderProps) {
   }, [])
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-white px-4 md:px-6">
+    <header className="flex h-[52px] shrink-0 items-center justify-between bg-white/80 backdrop-blur-md shadow-sm px-4 md:px-6">
       {/* ─── Left: Hamburger (mobile) + Breadcrumb ─── */}
       <div className="flex items-center gap-2">
         {/* Hamburger — mobile only */}
@@ -138,16 +138,16 @@ export function Header({ user, companies, onMenuClick }: HeaderProps) {
 
         {/* Breadcrumb — desktop only */}
         <nav className="hidden md:flex items-center gap-1.5 text-sm text-muted-foreground">
-          <Link href="/home" className="font-medium text-foreground hover:text-ctr-primary transition-colors">
+          <Link href="/home" className="font-medium text-foreground hover:text-primary transition-colors">
             {t('home')}
           </Link>
           {breadcrumbs.map((crumb, idx) => (
             <span key={idx} className="flex items-center gap-1.5">
               <span className="text-muted-foreground/50">/</span>
               {idx === breadcrumbs.length - 1 ? (
-                <span className="font-medium text-foreground">{crumb.label}</span>
+                <span className="font-medium text-primary">{crumb.label}</span>
               ) : crumb.href ? (
-                <Link href={crumb.href} className="hover:text-ctr-primary transition-colors">
+                <Link href={crumb.href} className="hover:text-primary transition-colors">
                   {crumb.label}
                 </Link>
               ) : (
@@ -178,7 +178,7 @@ export function Header({ user, companies, onMenuClick }: HeaderProps) {
           type="button"
           aria-label={tHeader('directory')}
           title={tHeader('directory')}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ctr-gray-500 hover:bg-muted transition-colors"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-muted transition-colors"
           onClick={() => router.push('/directory')}
         >
           <Users className="h-5 w-5" />
@@ -195,7 +195,7 @@ export function Header({ user, companies, onMenuClick }: HeaderProps) {
               className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-muted"
             >
               <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-ctr-primary-light text-xs text-ctr-primary">
+                <AvatarFallback className="bg-primary/10 text-xs text-primary">
                   {userInitial}
                 </AvatarFallback>
               </Avatar>

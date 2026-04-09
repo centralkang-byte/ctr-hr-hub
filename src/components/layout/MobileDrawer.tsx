@@ -53,7 +53,7 @@ export function MobileDrawer({ isOpen, onClose, children }: MobileDrawerProps) {
 
       {/* Drawer */}
       <aside
-        className={`fixed top-0 left-0 h-full w-[280px] bg-white z-50
+        className={`fixed top-0 left-0 h-full w-[280px] bg-[#fafafe] dark:bg-card z-50
           transform transition-transform duration-200 ease-in-out md:hidden
           shadow-xl flex flex-col
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}

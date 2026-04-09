@@ -129,7 +129,7 @@ export function QuickActionsMenu({ userRole }: QuickActionsMenuProps) {
                 aria-label={t('quickActions')}
                 title={t('quickActions')}
                 onClick={() => setOpen((v) => !v)}
-                className="relative text-ctr-gray-500"
+                className="relative rounded-full !bg-primary/10 text-primary hover:!bg-primary/20"
             >
                 <Plus className="h-5 w-5" />
             </Button>
