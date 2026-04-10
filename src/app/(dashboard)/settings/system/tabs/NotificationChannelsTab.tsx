@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { Save, RotateCcw, Loader2, Bell, Mail, MessageSquare, Smartphone, type LucideIcon } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { NotificationChannelsSetting, NotificationChannelEntry } from '@/types/process-settings'
@@ -50,7 +51,7 @@ export function NotificationChannelsTab({
           <p className="text-sm text-muted-foreground">{t('notificationChannels.subtitle')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
+          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
         )}
       </div>
       <div className="space-y-3">{settings.channels.map((ch, i) => {

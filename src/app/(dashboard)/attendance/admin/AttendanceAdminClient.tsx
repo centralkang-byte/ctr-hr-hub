@@ -12,7 +12,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
 import { TYPOGRAPHY } from '@/lib/styles/typography'
-import { STATUS_VARIANT } from '@/lib/styles/status'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
@@ -84,12 +84,6 @@ interface CorrectionForm {
 
 // ─── Status variant map ─────────────────────────────────────
 
-const STATUS_BADGE_STYLES: Record<string, string> = {
-  NORMAL: STATUS_VARIANT.success,
-  LATE: STATUS_VARIANT.error,
-  EARLY_OUT: STATUS_VARIANT.warning,
-  ABSENT: STATUS_VARIANT.error,
-}
 
 // ─── Helpers ────────────────────────────────────────────────
 
@@ -248,9 +242,9 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
       key: 'status',
       header: t('status'),
       render: (row) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[row.status] ?? STATUS_VARIANT.neutral}`}>
+        <StatusBadge status={row.status}>
           {STATUS_LABELS[row.status] ?? row.status}
-        </span>
+        </StatusBadge>
       ),
     },
     {
@@ -328,10 +322,10 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
                   <span
                     className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                       alert.alertLevel === 'blocked'
-                        ? 'bg-destructive/10 text-destructive'
+                        ? 'bg-[#e11d48]/10 text-[#e11d48]'
                         : alert.alertLevel === 'warning'
-                          ? 'bg-orange-500/10 text-orange-700'
-                          : 'bg-amber-500/10 text-amber-700'
+                          ? 'bg-[#b45309]/10 text-[#b45309]'
+                          : 'bg-[#b45309]/10 text-[#b45309]'
                     }`}
                   >
                     {alert.alertLevel === 'blocked' ? t('alertLevelBlocked') : alert.alertLevel === 'warning' ? t('alertLevelWarning') : t('alertLevelCaution')}

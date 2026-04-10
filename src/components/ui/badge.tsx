@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border-0 px-2.5 py-0.5 text-[10px] font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center whitespace-nowrap rounded-full border-0 px-2.5 py-0.5 text-[10px] font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
@@ -16,13 +16,17 @@ const badgeVariants = cva(
           "bg-destructive/10 text-destructive",
         outline: "border border-border/15 text-foreground",
         success:
-          "bg-tertiary-container/30 text-on-tertiary-container",
+          "bg-[#16a34a]/10 text-[#15803d]",
         warning:
-          "bg-amber-500/10 text-amber-700",
-        danger:
-          "bg-destructive/10 text-destructive",
+          "bg-[#b45309]/10 text-[#b45309]",
+        error:
+          "bg-[#e11d48]/10 text-[#e11d48]",
         info:
-          "bg-primary-container/30 text-primary",
+          "bg-[#6366f1]/10 text-[#4f46e5]",
+        neutral:
+          "bg-[#f1f5f9] text-[#64748b]",
+        accent:
+          "bg-[#7c3aed]/10 text-[#7c3aed]",
       },
     },
     defaultVariants: {
@@ -31,7 +35,7 @@ const badgeVariants = cva(
   }
 )
 
-export type BadgeVariant = "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "danger" | "info"
+export type BadgeVariant = "default" | "secondary" | "destructive" | "outline" | "success" | "warning" | "error" | "info" | "neutral" | "accent"
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,

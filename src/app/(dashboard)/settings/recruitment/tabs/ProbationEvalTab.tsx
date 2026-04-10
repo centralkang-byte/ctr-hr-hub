@@ -1,6 +1,7 @@
 'use client'
 
 import { Save, RotateCcw, Loader2 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -44,13 +45,13 @@ export function ProbationEvalTab({
           <p className="text-sm text-muted-foreground">{t('probation_keca491_evaluation_kec8b9cec_kebb08f_keab8b0ec_settings')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
+          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
         )}
       </div>
 
       <SettingFieldWithOverride label={t('probationEval.evalTimingLabel')} description={t('probationEval.evalTimingDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">{settings.evalTimings.map((d, i) => (
-          <span key={i} className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{t('probationEval.dayN', { day: d })}</span>
+          <Badge key={i} variant="info">{t('probationEval.dayN', { day: d })}</Badge>
         ))}</div>
       </SettingFieldWithOverride>
 

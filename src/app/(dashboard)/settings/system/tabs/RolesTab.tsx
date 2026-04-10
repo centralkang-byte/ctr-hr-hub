@@ -2,6 +2,7 @@
 
 // import { useState } from 'react'
 import { Info, Lock, Shield } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { useTranslations } from 'next-intl'
 
 interface Props { companyId: string | null }
@@ -25,7 +26,7 @@ export function RolesTab({
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-base font-semibold text-foreground">{t('roles.title')}</h3>
-            <span className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />{tc('globalFixed')}</span>
+            <Badge variant="warning" className="gap-1"><Lock className="h-3 w-3" />{tc('globalFixed')}</Badge>
           </div>
           <p className="text-sm text-muted-foreground">{t('roles.rbacDefinition', { count: ROLES.length })}</p>
         </div>

@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
-import ReviewStatusBadge from './ReviewStatusBadge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -62,10 +62,9 @@ export default function GoalProgressSection({ items, canEditEmployee, canEditMan
               </span>
             </div>
             {item.trackingStatus && (
-              <ReviewStatusBadge
-                status={item.trackingStatus}
-                label={t(`tracking.${item.trackingStatus}`)}
-              />
+              <StatusBadge status={item.trackingStatus}>
+                {t(`tracking.${item.trackingStatus}`)}
+              </StatusBadge>
             )}
           </div>
 

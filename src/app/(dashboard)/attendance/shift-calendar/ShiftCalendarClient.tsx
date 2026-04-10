@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import {
   Select,
   SelectContent,
@@ -109,17 +109,17 @@ const SLOT_COLORS: Record<number, string> = {
   3: 'bg-emerald-500/15 text-emerald-800 border-emerald-200',
 }
 
-const STATUS_MAP: Record<string, { labelKey: string; color: string }> = {
-  SCHEDULED: { labelKey: 'statusScheduled', color: 'bg-primary/10 text-primary/90 border-primary/20' },
-  WORKED: { labelKey: 'statusWorked', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
-  ABSENT: { labelKey: 'statusAbsent', color: 'bg-destructive/10 text-destructive border-destructive/20' },
-  SWAPPED: { labelKey: 'statusSwapped', color: 'bg-amber-500/15 text-amber-700 border-amber-300' },
+const STATUS_MAP: Record<string, { labelKey: string }> = {
+  SCHEDULED: { labelKey: 'statusScheduled' },
+  WORKED: { labelKey: 'statusWorked' },
+  ABSENT: { labelKey: 'statusAbsent' },
+  SWAPPED: { labelKey: 'statusSwapped' },
 }
 
-const REQUEST_STATUS_MAP: Record<string, { labelKey: string; color: string }> = {
-  SCR_PENDING: { labelKey: 'requestPending', color: 'bg-amber-500/15 text-amber-700 border-amber-300' },
-  SCR_APPROVED: { labelKey: 'requestApproved', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
-  SCR_REJECTED: { labelKey: 'requestRejected', color: 'bg-destructive/10 text-destructive border-destructive/20' },
+const REQUEST_STATUS_MAP: Record<string, { labelKey: string }> = {
+  SCR_PENDING: { labelKey: 'requestPending' },
+  SCR_APPROVED: { labelKey: 'requestApproved' },
+  SCR_REJECTED: { labelKey: 'requestRejected' },
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -398,12 +398,9 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
         ))}
         <div className="ml-4 flex items-center gap-3">
           {Object.entries(STATUS_MAP).map(([key, val]) => (
-            <span
-              key={key}
-              className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${val.color}`}
-            >
+            <StatusBadge key={key} status={key}>
               {t(val.labelKey)}
-            </span>
+            </StatusBadge>
           ))}
         </div>
       </div>
@@ -615,7 +612,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                       </div>
                       <span className="text-xs text-muted-foreground">{req.reason}</span>
                     </div>
-                    <Badge className={`${st.color} border`}>{t(st.labelKey)}</Badge>
+                    <StatusBadge status={req.status}>{t(st.labelKey)}</StatusBadge>
                   </div>
                 )
               })}
@@ -672,7 +669,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                       <p className="text-xs text-muted-foreground mt-1">
                         {s.startTime} - {s.endTime}
                       </p>
-                      <Badge className={`${st.color} border mt-1`}>{t(st.labelKey)}</Badge>
+                      <StatusBadge status={s.status} className="mt-1">{t(st.labelKey)}</StatusBadge>
                     </div>
                   </div>
                 )

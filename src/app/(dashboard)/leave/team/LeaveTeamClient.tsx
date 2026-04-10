@@ -338,11 +338,11 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                               {formatDateShort(req.startDate)} ~{' '}
                               {formatDateShort(req.endDate)}
                             </span>
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-medium border border-border text-muted-foreground">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border border-border text-muted-foreground">
                               {LEAVE_TYPE_LABEL_KEYS[req.leaveType] ? t(LEAVE_TYPE_LABEL_KEYS[req.leaveType]) : req.leaveType}
                             </span>
                             <span
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                                 STATUS_BADGE[displayStatus] ?? STATUS_VARIANT.neutral
                               }`}
                             >

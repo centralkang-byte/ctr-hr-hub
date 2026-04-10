@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { DetailPanel } from '@/components/shared/DetailPanel'
@@ -73,14 +73,6 @@ interface EmployeeListClientProps {
 
 // ─── Display constants ───────────────────────────────────────
 
-type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
-
-const STATUS_VARIANTS: Record<string, BadgeVariant> = {
-  ACTIVE: 'default',
-  ON_LEAVE: 'secondary',
-  RESIGNED: 'outline',
-  TERMINATED: 'destructive',
-}
 
 const LIMIT_OPTIONS = [10, 20, 50, 100]
 const SENTINEL_ALL = '__ALL__'
@@ -246,14 +238,14 @@ function EmployeeQuickPanel({
         {/* 재직 상태 */}
         <div className="pt-1">
           <p className="text-[11px] text-muted-foreground mb-1.5">{t('listQuickPanelStatus')}</p>
-          <Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'}>
+          <StatusBadge status={employee.status}>
             {({
               ACTIVE: t('statusActive'),
               ON_LEAVE: t('statusOnLeave'),
               RESIGNED: t('statusResigned'),
               TERMINATED: t('statusTerminated'),
             } as Record<string, string>)[employee.status] ?? employee.status}
-          </Badge>
+          </StatusBadge>
         </div>
       </div>
 
@@ -481,9 +473,9 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
       key: 'status',
       header: t('status'),
       render: (row) => (
-        <Badge variant={STATUS_VARIANTS[row.status] ?? 'outline'}>
+        <StatusBadge status={row.status}>
           {STATUS_LABELS[row.status] ?? row.status}
-        </Badge>
+        </StatusBadge>
       ),
     },
   ], [t, EMPLOYMENT_TYPE_LABELS, STATUS_LABELS, selectedId])

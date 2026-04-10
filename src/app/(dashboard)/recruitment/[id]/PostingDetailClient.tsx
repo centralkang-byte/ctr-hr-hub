@@ -18,7 +18,7 @@ import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS, BUTTON_SIZES } from '@/lib/styles'
-import { STATUS_VARIANT } from '@/lib/styles/status'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 // ─── Label Maps ──────────────────────────────────────────
 
@@ -29,12 +29,6 @@ const STATUS_KEYS: Record<string, string> = {
   CANCELLED: 'statusCANCELLED',
 }
 
-const STATUS_BADGE_STYLES: Record<string, string> = {
-  DRAFT: STATUS_VARIANT.neutral,
-  OPEN: STATUS_VARIANT.success,
-  CLOSED: STATUS_VARIANT.warning,
-  CANCELLED: STATUS_VARIANT.error,
-}
 
 const EMPLOYMENT_TYPE_KEYS: Record<string, string> = {
   FULL_TIME: 'typeFULL_TIME',
@@ -289,9 +283,9 @@ export default function PostingDetailClient({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">{t('statusLabel')}</span>
-                <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${STATUS_BADGE_STYLES[data.status] ?? STATUS_VARIANT.neutral}`}>
+                <StatusBadge status={data.status}>
                   {STATUS_KEYS[data.status] ? t(STATUS_KEYS[data.status]) : data.status}
-                </span>
+                </StatusBadge>
               </div>
 
               <div className="border-t border-border" />

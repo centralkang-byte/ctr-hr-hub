@@ -257,7 +257,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
                 <h3 className="text-base font-bold text-foreground tracking-[-0.02em]">
                   {CATEGORY_LABELS[cat]}
                 </h3>
-                <span className="ml-auto inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-muted text-muted-foreground">
+                <span className="ml-auto inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-muted text-muted-foreground">
                   {grouped[cat].filter((t) => t.status === 'DONE').length} /{' '}
                   {grouped[cat].length}
                 </span>
@@ -307,7 +307,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
 
                       {/* Assignee badge */}
                       <span
-                        className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold ${ASSIGNEE_BADGE_STYLES[row.task.assigneeType] ?? 'bg-muted text-muted-foreground'}`}
+                        className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${ASSIGNEE_BADGE_STYLES[row.task.assigneeType] ?? 'bg-muted text-muted-foreground'}`}
                       >
                         {ASSIGNEE_LABELS[row.task.assigneeType] ?? row.task.assigneeType}
                       </span>

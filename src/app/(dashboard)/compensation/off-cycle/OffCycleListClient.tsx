@@ -15,7 +15,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { TableSkeleton } from '@/components/shared/PageSkeleton'
-import OffCycleStatusBadge from '@/components/compensation/OffCycleStatusBadge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { apiClient } from '@/lib/api'
 import { formatCurrency } from '@/lib/compensation'
 import { cn } from '@/lib/utils'
@@ -288,7 +288,7 @@ export default function OffCycleListClient({ user }: Props) {
                     {formatPct(req.changePct)}
                   </td>
                   <td className="px-5 py-3 text-center">
-                    <OffCycleStatusBadge status={req.status} />
+                    <StatusBadge status={req.status}>{t(`offCycle.status.${req.status}`)}</StatusBadge>
                   </td>
                   <td className="px-5 py-3 text-muted-foreground">
                     {req.initiatorName}

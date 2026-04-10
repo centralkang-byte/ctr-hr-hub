@@ -1,30 +1,30 @@
-/**
- * CRITICAL: BadgeVariant is SEMANTIC ('success', 'warning', etc.).
- * DB enums → badge mapping should happen in page/component code via a MAPPER.
- */
-type BadgeVariant = 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'muted'
+import { type StatusCategory, resolveStatusCategory } from '@/lib/styles/status'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 
-const BADGE_STYLES: Record<BadgeVariant, string> = {
-  success: 'bg-emerald-500/10 text-emerald-700',
-  warning: 'bg-amber-500/10 text-amber-700',
-  danger: 'bg-rose-500/10 text-rose-700',
-  info: 'bg-primary/5 text-primary',
-  neutral: 'bg-muted text-foreground',
-  muted: 'bg-muted/50 text-muted-foreground',
-}
+// ─── Types ──────────────────────────────────────────────────
 
 interface StatusBadgeProps {
-  variant: BadgeVariant
-  children: React.ReactNode
+  /** DB enum 값 (e.g. "APPROVED", "PENDING"). 자동으로 StatusCategory로 매핑됨 */
+  status?: string
+  /** 직접 variant 지정 (collision override 또는 기존 API 호환). status보다 우선 */
+  variant?: StatusCategory
+  /** 라벨 override. 미지정 시 status 문자열 그대로 표시 */
+  children?: React.ReactNode
   className?: string
 }
 
-export function StatusBadge({ variant, children, className = '' }: StatusBadgeProps) {
+/** @deprecated StatusCategory 사용. 기존 import 호환용 */
+export type BadgeVariant = StatusCategory
+
+// ─── Component ──────────────────────────────────────────────
+
+export function StatusBadge({ status, variant, children, className }: StatusBadgeProps) {
+  const resolved: StatusCategory = variant ?? (status ? resolveStatusCategory(status) : 'neutral')
+
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${BADGE_STYLES[variant]} ${className}`}>
-      {children}
-    </span>
+    <Badge variant={resolved} className={cn(className)}>
+      {children ?? status ?? ''}
+    </Badge>
   )
 }
-
-export type { BadgeVariant }

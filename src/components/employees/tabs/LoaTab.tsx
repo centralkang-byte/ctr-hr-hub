@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { Shield, Clock, CheckCircle2, XCircle, AlertCircle, Pause } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
+import type { StatusCategory } from '@/lib/styles/status'
 import { cn } from '@/lib/utils'
 
 interface Props {
@@ -50,14 +51,8 @@ const STATUS_ICONS: Record<string, typeof Clock> = {
   CANCELLED: XCircle,
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  REQUESTED: 'bg-yellow-500/15 text-yellow-700',
-  APPROVED: 'bg-primary/10 text-primary',
-  ACTIVE: 'bg-orange-500/15 text-orange-700',
-  RETURN_REQUESTED: 'bg-purple-500/15 text-purple-700',
-  COMPLETED: 'bg-tertiary-container/20 text-tertiary',
-  REJECTED: 'bg-destructive/10 text-destructive',
-  CANCELLED: 'bg-muted text-muted-foreground',
+const LOA_VARIANT_OVERRIDES: Record<string, StatusCategory> = {
+  ACTIVE: 'accent',
 }
 
 function formatDate(d: string | null) {
@@ -175,10 +170,10 @@ function LoaCard({ record: r }: { record: LoaRecord }) {
             </p>
           )}
         </div>
-        <Badge className={cn('shrink-0', STATUS_COLORS[r.status])}>
+        <StatusBadge status={r.status} variant={LOA_VARIANT_OVERRIDES[r.status]} className="shrink-0">
           <StatusIcon className="h-3 w-3 mr-1" />
           {t(STATUS_LABELS[r.status] ?? r.status)}
-        </Badge>
+        </StatusBadge>
       </div>
     </div>
   )

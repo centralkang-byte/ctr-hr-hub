@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import ReviewStatusBadge from '@/components/performance/quarterly-review/ReviewStatusBadge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import GoalProgressSection from '@/components/performance/quarterly-review/GoalProgressSection'
 import SentimentSelector from '@/components/performance/quarterly-review/SentimentSelector'
 import ActionItemsEditor from '@/components/performance/quarterly-review/ActionItemsEditor'
@@ -292,7 +292,7 @@ export default function QuarterlyReviewDetailClient({ user, reviewId }: Props) {
             {dept && `${dept} · `}{review.manager?.name && `${t('table.manager')}: ${review.manager.name}`}
           </p>
         </div>
-        <ReviewStatusBadge status={review.status} label={t(`status.${review.status}`)} />
+        <StatusBadge status={review.status}>{t(`status.${review.status}`)}</StatusBadge>
       </div>
 
       {/* Goal Progress Section */}

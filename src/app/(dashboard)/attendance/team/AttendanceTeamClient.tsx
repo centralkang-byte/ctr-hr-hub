@@ -14,7 +14,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
 import type { SessionUser } from '@/types'
-import { STATUS_VARIANT } from '@/lib/styles/status'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -42,12 +42,6 @@ interface TeamAttendanceData {
 
 // ─── Status variant map ─────────────────────────────────────
 
-const STATUS_BADGE_STYLES: Record<string, string> = {
-  NORMAL: STATUS_VARIANT.success,
-  LATE: STATUS_VARIANT.error,
-  EARLY_OUT: STATUS_VARIANT.warning,
-  ABSENT: STATUS_VARIANT.error,
-}
 
 // ─── Helpers ────────────────────────────────────────────────
 
@@ -121,14 +115,14 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
       render: (row) => {
         if (!row.attendance) {
           return (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-destructive/5 text-red-500">{t('notClockedIn')}</span>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-destructive/5 text-red-500">{t('notClockedIn')}</span>
           )
         }
         const status = row.attendance.status
         return (
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[status] ?? STATUS_VARIANT.neutral}`}>
+          <StatusBadge status={status}>
             {STATUS_LABELS[status] ?? status}
-          </span>
+          </StatusBadge>
         )
       },
     },

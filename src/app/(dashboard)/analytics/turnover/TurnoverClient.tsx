@@ -14,6 +14,7 @@ import { EmptyChart } from '@/components/analytics/EmptyChart'
 import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import type { TurnoverResponse } from '@/lib/analytics/types'
+import { Badge } from '@/components/ui/badge'
 import { TABLE_STYLES } from '@/lib/styles'
 import { CHART_THEME } from '@/lib/styles/chart'
 import { cn } from '@/lib/utils'
@@ -148,15 +149,15 @@ export default function TurnoverClient({ user: _user }: { user: SessionUser }) {
             <span className="px-2.5 py-1 rounded-full bg-muted/50 text-muted-foreground">
               {t('turnover.prediction.analyzed')} <strong>{t('turnover.prediction.personCount', { count: predictions.summary?.totalAnalyzed || 0 })}</strong>
             </span>
-            <span className="px-2.5 py-1 rounded-full bg-destructive/5 text-destructive">
+            <Badge variant="error">
               {t('turnover.prediction.highRisk')} <strong>{t('turnover.prediction.personCount', { count: predictions.summary?.highRisk || 0 })}</strong>
-            </span>
-            <span className="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-700">
+            </Badge>
+            <Badge variant="warning">
               {t('turnover.prediction.mediumRisk')} <strong>{t('turnover.prediction.personCount', { count: predictions.summary?.mediumRisk || 0 })}</strong>
-            </span>
-            <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700">
+            </Badge>
+            <Badge variant="success">
               {t('turnover.prediction.lowRisk')} <strong>{t('turnover.prediction.personCount', { count: predictions.summary?.lowRisk || 0 })}</strong>
-            </span>
+            </Badge>
           </div>
 
           <div className="overflow-x-auto">
@@ -191,13 +192,9 @@ export default function TurnoverClient({ user: _user }: { user: SessionUser }) {
                       </td>
                       <td className={TABLE_STYLES.cell}>
                         <div className="flex justify-center">
-                          <span className={`inline-flex px-2 py-0.5 rounded text-[10px] font-medium ${
-                            emp.level === 'HIGH' ? 'bg-destructive/5 text-destructive' :
-                            emp.level === 'MEDIUM' ? 'bg-amber-500/10 text-amber-600' :
-                            'bg-emerald-500/10 text-emerald-700'
-                          }`}>
+                          <Badge variant={emp.level === 'HIGH' ? 'error' : emp.level === 'MEDIUM' ? 'warning' : 'success'}>
                             {emp.level === 'HIGH' ? t('turnover.risk.high') : emp.level === 'MEDIUM' ? t('turnover.risk.medium') : t('turnover.risk.low')}
-                          </span>
+                          </Badge>
                         </div>
                       </td>
                       <td className={TABLE_STYLES.cell}>

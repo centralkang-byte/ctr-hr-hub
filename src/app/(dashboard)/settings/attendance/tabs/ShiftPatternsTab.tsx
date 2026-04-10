@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2, Plus, Clock, Users } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
@@ -119,13 +120,9 @@ export function ShiftPatternsTab({
                     </span>
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                      !pattern.deletedAt
-                        ? 'bg-emerald-500/10 text-emerald-700'
-                        : 'bg-muted text-muted-foreground'
-                    }`}>
+                    <Badge variant={!pattern.deletedAt ? 'success' : 'secondary'}>
                       {!pattern.deletedAt ? t('shiftPatterns_active') : t('shiftPatterns_inactive')}
-                    </span>
+                    </Badge>
                   </td>
                 </tr>
               ))}

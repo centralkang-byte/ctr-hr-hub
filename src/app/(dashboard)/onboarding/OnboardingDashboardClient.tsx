@@ -26,7 +26,7 @@ import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, PaginationInfo } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
-import { STATUS_VARIANT } from '@/lib/styles/status'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -70,10 +70,6 @@ interface OnboardingDashboardClientProps {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const STATUS_BADGE_STYLES: Record<string, string> = {
-  IN_PROGRESS: STATUS_VARIANT.info,
-  COMPLETED: STATUS_VARIANT.success,
-}
 
 const MOOD_CONFIG: Record<string, { icon: typeof Smile; color: string; labelKey: string }> = {
   GREAT: { icon: Smile, color: 'text-green-500', labelKey: 'dashboard.moodGreat' },
@@ -377,9 +373,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                       />
                     </td>
                     <td className={TABLE_STYLES.cell}>
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[row.status] ?? STATUS_VARIANT.neutral}`}
-                      >
+                      <StatusBadge status={row.status}>
                         {row.status === 'IN_PROGRESS' && (
                           <Clock className="mr-1 h-3 w-3" />
                         )}
@@ -387,16 +381,16 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                           <CheckCircle2 className="mr-1 h-3 w-3" />
                         )}
                         {STATUS_LABELS[row.status] ?? row.status}
-                      </span>
+                      </StatusBadge>
                     </td>
                     <td className={TABLE_STYLES.cell}>
                       {row.isDelayed ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-destructive/5 text-red-500">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-destructive/5 text-red-500">
                           <AlertTriangle className="mr-1 h-3 w-3" />
                           {t('delayed')}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-tertiary-container/20 text-tertiary">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-tertiary-container/20 text-tertiary">
                           {t('normal')}
                         </span>
                       )}

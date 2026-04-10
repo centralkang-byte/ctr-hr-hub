@@ -10,6 +10,7 @@ import { BarChart3, Plus, Eye, Trash2, Play, Square, Calendar } from 'lucide-rea
 import { apiClient } from '@/lib/api'
 import { CARD_STYLES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
 import type { SessionUser } from '@/types'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -35,10 +36,10 @@ interface PendingSurvey {
   _count: { questions: number }
 }
 
-const STATUS_MAP: Record<string, { labelKey: string; cls: string }> = {
-  PULSE_DRAFT: { labelKey: 'pulse.statusDraft', cls: 'bg-background text-muted-foreground border-border' },
-  PULSE_ACTIVE: { labelKey: 'pulse.statusActive', cls: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
-  PULSE_CLOSED: { labelKey: 'pulse.statusClosed', cls: 'bg-muted text-muted-foreground border-border' },
+const STATUS_MAP: Record<string, { labelKey: string }> = {
+  PULSE_DRAFT: { labelKey: 'pulse.statusDraft' },
+  PULSE_ACTIVE: { labelKey: 'pulse.statusActive' },
+  PULSE_CLOSED: { labelKey: 'pulse.statusClosed' },
 }
 
 const SCOPE_MAP: Record<string, string> = {
@@ -331,9 +332,9 @@ export default function PulseSurveyClient({ user: _user }: { user: SessionUser }
                     <td className={`${TABLE_STYLES.cell} text-center`}>{s._count.questions}</td>
                     <td className={`${TABLE_STYLES.cell} text-center`}>{s._count.responses}</td>
                     <td className={`${TABLE_STYLES.cell} text-center`}>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${STATUS_MAP[s.status]?.cls ?? ''}`}>
+                      <StatusBadge status={s.status}>
                         {STATUS_MAP[s.status]?.labelKey ? t(STATUS_MAP[s.status].labelKey) : s.status}
-                      </span>
+                      </StatusBadge>
                     </td>
                     <td className={`${TABLE_STYLES.cell} text-center`}>
                       <div className="flex items-center justify-center gap-1">

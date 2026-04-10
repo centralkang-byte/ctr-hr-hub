@@ -5,19 +5,20 @@ import { useTranslations } from 'next-intl'
 import { Loader2, Calendar } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { TABLE_STYLES } from '@/lib/styles'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 interface Cycle { id: string; name: string; type: string; status: string; startDate: string; endDate: string }
 interface Props { companyId: string | null }
 
-const STATUS_MAP: Record<string, { label: string; cls: string }> = {
-  DRAFT: { label: '임시저장', cls: 'bg-muted/50 text-muted-foreground' },
-  GOAL_SETTING: { label: '목표 설정', cls: 'bg-primary/5 text-primary' },
-  IN_PROGRESS: { label: '진행 중', cls: 'bg-tertiary-container/10 text-tertiary' },
-  SELF_REVIEW: { label: '자기평가', cls: 'bg-yellow-500/10 text-yellow-600' },
-  MANAGER_REVIEW: { label: '상세', cls: 'bg-orange-500/10 text-orange-600' },
-  CALIBRATION: { label: '캘리브레이션', cls: 'bg-purple-500/10 text-purple-600' },
-  COMPLETED: { label: '완료', cls: 'bg-muted/50 text-muted-foreground' },
-  CLOSED: { label: '마감', cls: 'bg-muted text-muted-foreground/60' },
+const STATUS_MAP: Record<string, { label: string }> = {
+  DRAFT: { label: '임시저장' },
+  GOAL_SETTING: { label: '목표 설정' },
+  IN_PROGRESS: { label: '진행 중' },
+  SELF_REVIEW: { label: '자기평가' },
+  MANAGER_REVIEW: { label: '상세' },
+  CALIBRATION: { label: '캘리브레이션' },
+  COMPLETED: { label: '완료' },
+  CLOSED: { label: '마감' },
 }
 
 export function EvalCycleTab({
@@ -51,12 +52,12 @@ export function EvalCycleTab({
             <th className={TABLE_STYLES.headerCell}>{t('evalCycle.colStatus')}</th>
             <th className={TABLE_STYLES.headerCell}>{t('evalCycle.colPeriod')}</th>
           </tr></thead><tbody className="divide-y divide-border">{cycles.map((c) => {
-            const s = STATUS_MAP[c.status] ?? { label: c.status, cls: 'bg-muted/50 text-muted-foreground' }
+            const s = STATUS_MAP[c.status] ?? { label: c.status }
             return (
               <tr key={c.id} className={TABLE_STYLES.row}>
                 <td className={TABLE_STYLES.cell}>{c.name}</td>
                 <td className={TABLE_STYLES.cellMuted}>{c.type}</td>
-                <td className="px-4 py-3 text-center"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${s.cls}`}>{s.label}</span></td>
+                <td className="px-4 py-3 text-center"><StatusBadge status={c.status}>{s.label}</StatusBadge></td>
                 <td className={TABLE_STYLES.cellMuted}>{c.startDate?.slice(0,10)} ~ {c.endDate?.slice(0,10)}</td>
               </tr>
             )

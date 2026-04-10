@@ -34,7 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
 import { ProfileSidebar } from '@/components/employees/ProfileSidebar'
@@ -110,13 +110,6 @@ interface EmployeeDetailClientProps {
 
 // ─── Constants ──────────────────────────────────────────────
 
-type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
-const STATUS_VARIANTS: Record<string, BadgeVariant> = {
-  ACTIVE: 'default',
-  ON_LEAVE: 'secondary',
-  RESIGNED: 'outline',
-  TERMINATED: 'destructive',
-}
 
 // ─── Helpers ────────────────────────────────────────────────
 
@@ -527,7 +520,7 @@ export function EmployeeDetailClient({
             {canViewGrade && <InfoRow label={t('jobGrade')} value={employee.jobGrade?.name} />}
             <InfoRow label={t('jobCategory')} value={employee.jobCategory?.name} />
             {canViewSensitive && <InfoRow label={t('employmentType')} value={EMPLOYMENT_TYPE_LABELS[employee.employmentType] ?? employee.employmentType} />}
-            <InfoRow label={tc('status')} value={<Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'}>{STATUS_LABELS[employee.status] ?? employee.status}</Badge>} />
+            <InfoRow label={tc('status')} value={<StatusBadge status={employee.status}>{STATUS_LABELS[employee.status] ?? employee.status}</StatusBadge>} />
             <InfoRow label={t('hireDate')} value={formatDate(employee.hireDate)} />
             <InfoRow label={t('resignDate')} value={formatDate(employee.resignDate)} />
           </dl>
@@ -593,9 +586,9 @@ export function EmployeeDetailClient({
               <p className="text-sm text-muted-foreground">
                 {employee.department?.name ?? '-'}{employee.jobGrade ? ` · ${employee.jobGrade.name}` : ''}
               </p>
-              <Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'} className="mt-1">
+              <StatusBadge status={employee.status} className="mt-1">
                 {STATUS_LABELS[employee.status] ?? employee.status}
-              </Badge>
+              </StatusBadge>
             </div>
           </div>
         </div>

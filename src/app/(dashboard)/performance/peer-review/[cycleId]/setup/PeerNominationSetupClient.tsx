@@ -10,6 +10,7 @@ import { ArrowLeft, Users, Sparkles, Plus, CheckCircle2, XCircle, Search } from 
 import { apiClient } from '@/lib/api'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import type { SessionUser } from '@/types'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -47,11 +48,11 @@ const SOURCE_LABELS: Record<string, string> = {
   HR_ASSIGNED: 'peerNomination.sourceHrAssigned',
 }
 
-const STATUS_MAP: Record<string, { labelKey: string; cls: string }> = {
-  PROPOSED: { labelKey: 'peerNomination.statusProposed', cls: 'bg-amber-500/15 text-amber-700 border-amber-300' },
-  NOMINATION_APPROVED: { labelKey: 'peerNomination.statusApproved', cls: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
-  NOMINATION_REJECTED: { labelKey: 'peerNomination.statusRejected', cls: 'bg-destructive/10 text-destructive border-destructive/20' },
-  NOMINATION_COMPLETED: { labelKey: 'peerNomination.statusCompleted', cls: 'bg-primary/10 text-primary/90 border-primary/20' },
+const STATUS_MAP: Record<string, { labelKey: string }> = {
+  PROPOSED: { labelKey: 'peerNomination.statusProposed' },
+  NOMINATION_APPROVED: { labelKey: 'peerNomination.statusApproved' },
+  NOMINATION_REJECTED: { labelKey: 'peerNomination.statusRejected' },
+  NOMINATION_COMPLETED: { labelKey: 'peerNomination.statusCompleted' },
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -234,9 +235,9 @@ export default function PeerNominationSetupClient({ user: _user, cycleId }: { us
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${STATUS_MAP[n.status]?.cls ?? ''}`}>
+                      <StatusBadge status={n.status}>
                         {STATUS_MAP[n.status] ? t(STATUS_MAP[n.status].labelKey) : n.status}
-                      </span>
+                      </StatusBadge>
                       {n.status === 'PROPOSED' && (
                         <div className="flex gap-1">
                           <button onClick={() => handleApproveReject(n.id, 'NOMINATION_APPROVED')}

@@ -25,7 +25,7 @@ import {
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Input } from '@/components/ui/input'
 import {
   Dialog,
@@ -92,21 +92,21 @@ const BANKS = [
   { code: 'SC', labelKey: 'bankTransferPage.bankSC' as const },
 ]
 
-const STATUS_MAP: Record<string, { labelKey: string; color: string; icon: typeof Clock }> = {
-  DRAFT: { labelKey: 'bankTransferPage.statusDraft', color: 'bg-background text-muted-foreground border-border', icon: Clock },
-  GENERATING: { labelKey: 'bankTransferPage.statusGenerating', color: 'bg-primary/10 text-primary/90 border-primary/20', icon: Loader2 },
-  GENERATED: { labelKey: 'bankTransferPage.statusGenerated', color: 'bg-indigo-500/15 text-primary/90 border-indigo-200', icon: FileSpreadsheet },
-  SUBMITTED: { labelKey: 'bankTransferPage.statusSubmitted', color: 'bg-amber-500/15 text-amber-700 border-amber-300', icon: Upload },
-  PARTIALLY_COMPLETED: { labelKey: 'bankTransferPage.statusPartial', color: 'bg-orange-500/10 text-orange-700 border-orange-200', icon: AlertTriangle },
-  COMPLETED: { labelKey: 'bankTransferPage.statusCompleted', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200', icon: CheckCircle2 },
-  FAILED: { labelKey: 'bankTransferPage.statusFailed', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: XCircle },
+const STATUS_MAP: Record<string, { labelKey: string; icon: typeof Clock }> = {
+  DRAFT: { labelKey: 'bankTransferPage.statusDraft', icon: Clock },
+  GENERATING: { labelKey: 'bankTransferPage.statusGenerating', icon: Loader2 },
+  GENERATED: { labelKey: 'bankTransferPage.statusGenerated', icon: FileSpreadsheet },
+  SUBMITTED: { labelKey: 'bankTransferPage.statusSubmitted', icon: Upload },
+  PARTIALLY_COMPLETED: { labelKey: 'bankTransferPage.statusPartial', icon: AlertTriangle },
+  COMPLETED: { labelKey: 'bankTransferPage.statusCompleted', icon: CheckCircle2 },
+  FAILED: { labelKey: 'bankTransferPage.statusFailed', icon: XCircle },
 }
 
-const ITEM_STATUS_MAP: Record<string, { labelKey: string; color: string }> = {
-  PENDING: { labelKey: 'bankTransferPage.itemPending', color: 'bg-background text-muted-foreground border-border' },
-  SUCCESS: { labelKey: 'bankTransferPage.itemSuccess', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
-  FAILED: { labelKey: 'bankTransferPage.itemFailed', color: 'bg-destructive/10 text-destructive border-destructive/20' },
-  CANCELLED: { labelKey: 'bankTransferPage.itemCancelled', color: 'bg-background text-muted-foreground border-border' },
+const ITEM_STATUS_MAP: Record<string, { labelKey: string }> = {
+  PENDING: { labelKey: 'bankTransferPage.itemPending' },
+  SUCCESS: { labelKey: 'bankTransferPage.itemSuccess' },
+  FAILED: { labelKey: 'bankTransferPage.itemFailed' },
+  CANCELLED: { labelKey: 'bankTransferPage.itemCancelled' },
 }
 
 // formatAmount는 컴포넌트 내부에서 locale을 사용하도록 이동
@@ -344,7 +344,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                         </div>
                       </div>
 
-                      <Badge className={`${st.color} border`}>{t(st.labelKey)}</Badge>
+                      <StatusBadge status={batch.status}>{t(st.labelKey)}</StatusBadge>
                     </div>
 
                     <div className="flex items-center gap-6">
@@ -589,7 +589,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                             <td className={TABLE_STYLES.cell}>{item.accountHolder}</td>
                             <td className={cn(TABLE_STYLES.cell, "text-right font-medium")}>{formatAmount(item.amount)}</td>
                             <td className={cn(TABLE_STYLES.cell, "text-center")}>
-                              <Badge className={`${ist.color} border`}>{t(ist.labelKey)}</Badge>
+                              <StatusBadge status={item.status}>{t(ist.labelKey)}</StatusBadge>
                             </td>
                             <td className={cn(TABLE_STYLES.cell, "text-red-500")}>{item.errorMessage ?? ''}</td>
                           </tr>

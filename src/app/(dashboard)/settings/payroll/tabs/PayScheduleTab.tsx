@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { Save, RotateCcw, Loader2 } from 'lucide-react'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
@@ -98,7 +99,7 @@ export function PayScheduleTab({
           <p className="text-sm text-muted-foreground">{t('kr_keba7a4ec_keab889ec_keca780ea_')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
+          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
         )}
       </div>
 

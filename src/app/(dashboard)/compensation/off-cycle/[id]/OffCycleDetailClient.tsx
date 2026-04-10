@@ -12,7 +12,7 @@ import { ArrowLeft, Edit3, Send, XCircle, CheckCircle2, RotateCcw, Zap } from 'l
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { TableSkeleton } from '@/components/shared/PageSkeleton'
-import OffCycleStatusBadge from '@/components/compensation/OffCycleStatusBadge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import OffCycleApprovalTimeline from '@/components/compensation/OffCycleApprovalTimeline'
 import PayBandChart from '@/components/compensation/PayBandChart'
 import { apiClient } from '@/lib/api'
@@ -212,7 +212,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
             </h1>
           </div>
         </div>
-        <OffCycleStatusBadge status={detail.status} className="text-sm px-3 py-1" />
+        <StatusBadge status={detail.status} className="text-sm px-3 py-1">{t(`offCycle.status.${detail.status}`)}</StatusBadge>
       </div>
 
       {/* ─── 트리거 정보 ─── */}

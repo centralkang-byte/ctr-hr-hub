@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { Save, RotateCcw, Loader2, Lock, Bot } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
@@ -52,13 +53,13 @@ export function AiScreeningTab({
           <div className="flex items-center gap-2">
             <h3 className="text-base font-semibold text-foreground">{t('aiScreening.title')}</h3>
             {!companyId && (
-              <span className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />{t('global_keab3a0ec')}</span>
+              <Badge variant="warning" className="gap-1"><Lock className="h-3 w-3" />{t('global_keab3a0ec')}</Badge>
             )}
           </div>
           <p className="text-sm text-muted-foreground">{t('aiScreening.description')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
+          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
         )}
       </div>
 

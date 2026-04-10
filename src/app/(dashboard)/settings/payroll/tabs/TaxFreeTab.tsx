@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Loader2, Save, Info, RotateCcw } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
@@ -109,7 +110,7 @@ export function TaxFreeTab({
           <p className="text-sm text-muted-foreground">{t('taxFree.subtitle')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
+          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
         )}
       </div>
       <div className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4">

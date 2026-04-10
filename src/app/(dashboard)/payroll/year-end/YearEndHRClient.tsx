@@ -18,7 +18,7 @@ import {
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_SIZES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
-import { STATUS_VARIANT } from '@/lib/styles/status'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { formatDate } from '@/lib/format/date'
@@ -74,13 +74,6 @@ const STATUS_LABEL_KEYS: Record<string, string> = {
   confirmed: 'yearEndHR.statusConfirmed',
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  not_started: STATUS_VARIANT.neutral,
-  in_progress: STATUS_VARIANT.info,
-  submitted: STATUS_VARIANT.warning,
-  hr_review: STATUS_VARIANT.primary,
-  confirmed: STATUS_VARIANT.success,
-}
 
 function formatKRW(amount: string | number, locale: string): string {
   const num = typeof amount === 'string' ? parseInt(amount, 10) : amount
@@ -94,15 +87,12 @@ function formatKRW(amount: string | number, locale: string): string {
 
 // ─── Status Badge ──────────────────────────────────────────
 
-function StatusBadge({ status }: { status: string }) {
+function YearEndStatusBadge({ status }: { status: string }) {
   const t = useTranslations('payroll')
-  const color = STATUS_COLORS[status] ?? STATUS_VARIANT.neutral
   return (
-    <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${color}`}
-    >
+    <StatusBadge status={status.toUpperCase()}>
       {t(STATUS_LABEL_KEYS[status] ?? 'yearEndHR.statusNotStarted')}
-    </span>
+    </StatusBadge>
   )
 }
 
@@ -155,7 +145,7 @@ function SettlementDetailModal({
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
           {/* Status */}
           <div className="flex items-center gap-3">
-            <StatusBadge status={settlement.status} />
+            <YearEndStatusBadge status={settlement.status} />
             {settlement.submittedAt && (
               <span className="text-xs text-muted-foreground">
                 {t('yearEndHR.submittedDate')} {formatDate(settlement.submittedAt)}
@@ -655,7 +645,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                       </span>
                     </td>
                     <td className={TABLE_STYLES.cell}>
-                      <StatusBadge status={s.status} />
+                      <YearEndStatusBadge status={s.status} />
                     </td>
                     <td className={TABLE_STYLES.cell}>
                       {formatDate(s.submittedAt)}

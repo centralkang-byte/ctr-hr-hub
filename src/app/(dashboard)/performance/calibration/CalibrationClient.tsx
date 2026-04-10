@@ -6,6 +6,7 @@ import { Plus, Sparkles, CheckCircle2, AlertTriangle, Layers } from 'lucide-reac
 import { apiClient } from '@/lib/api'
 import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import type { SessionUser } from '@/types'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import EmployeeInsightPanel from '@/components/performance/EmployeeInsightPanel'
 import BiasDetectionBanner from '@/components/performance/BiasDetectionBanner'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
@@ -69,10 +70,10 @@ interface AdjItem {
   adjustedCompetencyScore: number
 }
 
-const STATUS_MAP: Record<string, { labelKey: string; style: string }> = {
-  CALIBRATION_DRAFT: { labelKey: 'calibrationStatus.draft', style: 'bg-muted text-muted-foreground' },
-  CALIBRATION_IN_PROGRESS: { labelKey: 'calibrationStatus.inProgress', style: 'bg-amber-500/15 text-amber-700' },
-  CALIBRATION_COMPLETED: { labelKey: 'calibrationStatus.completed', style: 'bg-emerald-500/15 text-emerald-700' },
+const STATUS_MAP: Record<string, { labelKey: string }> = {
+  CALIBRATION_DRAFT: { labelKey: 'calibrationStatus.draft' },
+  CALIBRATION_IN_PROGRESS: { labelKey: 'calibrationStatus.inProgress' },
+  CALIBRATION_COMPLETED: { labelKey: 'calibrationStatus.completed' },
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -361,9 +362,9 @@ export default function CalibrationClient({ user: _user }: { user: SessionUser }
                 >
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium text-foreground">{s.name}</p>
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${st?.style ?? ''}`}>
+                    <StatusBadge status={s.status}>
                       {st?.labelKey ? t(st.labelKey) : s.status}
-                    </span>
+                    </StatusBadge>
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {t('calibration.sessionInfo', { department: s.department?.name ?? t('calibration.allCompany'), count: s._count.adjustments })}

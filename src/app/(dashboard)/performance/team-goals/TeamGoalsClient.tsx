@@ -19,6 +19,7 @@ import {
   Target,
   Loader2,
 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 
@@ -327,9 +328,9 @@ export default function TeamGoalsClient({
                     </div>
                   </div>
                   {pendingCount > 0 && (
-                    <span className="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                    <Badge variant="warning">
                       {t('pendingApprovalCount', { count: pendingCount })}
-                    </span>
+                    </Badge>
                   )}
                 </div>
               </button>

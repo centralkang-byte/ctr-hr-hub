@@ -20,6 +20,7 @@ import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
 import { toast } from '@/hooks/use-toast'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 interface AttendanceStatus {
     yearMonth: string
@@ -59,29 +60,14 @@ const STATUS_LABEL_KEYS: Record<string, string> = {
     PAID: 'closeAtt.statusPaid',
 }
 
-const STATUS_COLORS: Record<string, { color: string; bg: string }> = {
-    DRAFT: { color: '#555', bg: '#FAFAFA' },
-    ATTENDANCE_CLOSED: { color: '#047857', bg: '#D1FAE5' },
-    CALCULATING: { color: '#B45309', bg: '#FEF3C7' },
-    ADJUSTMENT: { color: '#1D4ED8', bg: '#DBEAFE' },
-    REVIEW: { color: '#7C3AED', bg: '#EDE9FE' },
-    PENDING_APPROVAL: { color: '#B45309', bg: '#FEF3C7' },
-    APPROVED: { color: '#047857', bg: '#D1FAE5' },
-    PAID: { color: '#059669', bg: '#D1FAE5' },
-}
-
-function StatusBadge({ status }: { status: string | null }) {
+function CloseAttStatusBadge({ status }: { status: string | null }) {
     const t = useTranslations('payroll')
     if (!status) return <span className="text-xs text-muted-foreground">—</span>
-    const s = STATUS_COLORS[status] ?? { color: '#555', bg: '#FAFAFA' }
     const labelKey = STATUS_LABEL_KEYS[status]
     return (
-        <span
-            className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border"
-            style={{ color: s.color, background: s.bg, borderColor: s.bg }}
-        >
+        <StatusBadge status={status}>
             {labelKey ? t(labelKey) : status}
-        </span>
+        </StatusBadge>
     )
 }
 
@@ -240,7 +226,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                     <div>
                                         <div className="flex items-center gap-2">
                                             <p className="text-[15px] font-bold text-foreground">{label}</p>
-                                            <StatusBadge status={status?.payrollRunStatus ?? null} />
+                                            <CloseAttStatusBadge status={status?.payrollRunStatus ?? null} />
                                         </div>
                                         <p className="text-xs text-muted-foreground">{yearMonth}</p>
                                     </div>

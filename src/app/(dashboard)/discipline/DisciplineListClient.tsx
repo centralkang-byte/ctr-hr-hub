@@ -14,23 +14,10 @@ import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
-import { STATUS_VARIANT } from '@/lib/styles/status'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 // ─── Badge Styles ────────────────────────────────────────
 
-const STATUS_BADGE_STYLES: Record<string, string> = {
-  DISCIPLINE_ACTIVE: STATUS_VARIANT.error,
-  DISCIPLINE_EXPIRED: STATUS_VARIANT.neutral,
-  DISCIPLINE_OVERTURNED: STATUS_VARIANT.success,
-}
-
-const APPEAL_BADGE_STYLES: Record<string, string> = {
-  NONE: STATUS_VARIANT.neutral,
-  FILED: STATUS_VARIANT.warning,
-  UNDER_REVIEW: STATUS_VARIANT.info,
-  UPHELD: STATUS_VARIANT.error,
-  OVERTURNED: STATUS_VARIANT.success,
-}
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -234,14 +221,14 @@ export default function DisciplineListClient({ user }: Props) {
                     {format(new Date(row.incidentDate), 'yyyy-MM-dd')}
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${STATUS_BADGE_STYLES[row.status] ?? STATUS_VARIANT.neutral}`}>
+                    <StatusBadge status={row.status}>
                       {t(`statusLabels.${row.status}`, { defaultValue: row.status })}
-                    </span>
+                    </StatusBadge>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${APPEAL_BADGE_STYLES[row.appealStatus] ?? STATUS_VARIANT.neutral}`}>
+                    <StatusBadge status={row.appealStatus}>
                       {t(`appealLabels.${row.appealStatus}`, { defaultValue: row.appealStatus })}
-                    </span>
+                    </StatusBadge>
                   </td>
                 </tr>
               ))

@@ -9,7 +9,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Pencil } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -67,7 +67,6 @@ interface ProfileSelfServiceClientProps {
 
 type EditableField = 'phone' | 'emergencyContact' | 'emergencyContactPhone'
 
-type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
 
 // ─── Helpers ────────────────────────────────────────────────
 
@@ -90,10 +89,10 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
     emergencyContactPhone: t('selfServiceEmergencyPhone'),
   }
 
-  const STATUS_MAP: Record<string, { labelKey: string; variant: BadgeVariant }> = {
-    CHANGE_PENDING: { labelKey: 'selfServiceStatusPending', variant: 'outline' },
-    CHANGE_APPROVED: { labelKey: 'selfServiceStatusApproved', variant: 'default' },
-    CHANGE_REJECTED: { labelKey: 'selfServiceStatusRejected', variant: 'destructive' },
+  const STATUS_LABEL_KEYS: Record<string, string> = {
+    CHANGE_PENDING: 'selfServiceStatusPending',
+    CHANGE_APPROVED: 'selfServiceStatusApproved',
+    CHANGE_REJECTED: 'selfServiceStatusRejected',
   }
 
   const [profile, setProfile] = useState<EmployeeProfile | null>(null)
@@ -264,10 +263,7 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
           ) : (
             <div className="space-y-3">
               {requests.map((r) => {
-                const statusEntry = STATUS_MAP[r.status] ?? {
-                  labelKey: null,
-                  variant: 'outline' as BadgeVariant,
-                }
+                const labelKey = STATUS_LABEL_KEYS[r.status] ?? null
                 return (
                   <div
                     key={r.id}
@@ -288,7 +284,7 @@ export function ProfileSelfServiceClient({ user }: ProfileSelfServiceClientProps
                     </div>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
                       <span>{formatDateTime(r.createdAt)}</span>
-                      <Badge variant={statusEntry.variant}>{statusEntry.labelKey ? t(statusEntry.labelKey) : r.status}</Badge>
+                      <StatusBadge status={r.status}>{labelKey ? t(labelKey) : r.status}</StatusBadge>
                     </div>
                   </div>
                 )

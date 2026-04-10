@@ -13,6 +13,7 @@ import { apiClient } from '@/lib/api'
 import { CARD_STYLES, TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
+import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type {
   Company, CompaRatioResponse, CompaRatioDistBucket,
@@ -256,12 +257,9 @@ export default function CompaRatioTab({ companies }: Props) {
                       {o.bandMin.toLocaleString(locale)} ~ {o.bandMax.toLocaleString(locale)}
                     </td>
                     <td className={TABLE_STYLES.cell}>
-                      <span className={cn(
-                        'text-xs px-2 py-0.5 rounded-full font-medium',
-                        o.compaRatio < 0.8 ? 'bg-destructive/5 text-destructive' : 'bg-amber-500/10 text-amber-700'
-                      )}>
+                      <Badge variant={o.compaRatio < 0.8 ? 'error' : 'warning'}>
                         {o.compaRatio < 0.8 ? t('simCompaLowLabel') : t('simCompaHighLabel')}
-                      </span>
+                      </Badge>
                     </td>
                   </tr>
                 ))}

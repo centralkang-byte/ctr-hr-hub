@@ -41,7 +41,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import type { SessionUser, PaginationInfo } from '@/types'
-import { STATUS_BG, STATUS_FG } from '@/lib/styles/status'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -118,12 +118,6 @@ const STATUS_KEYS: Record<string, string> = {
   NO_SHOW: 'interviewStatusNO_SHOW',
 }
 
-const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  SCHEDULED: { bg: STATUS_BG.info, text: STATUS_FG.info },
-  COMPLETED: { bg: STATUS_BG.success, text: STATUS_FG.success },
-  CANCELLED: { bg: STATUS_BG.error, text: STATUS_FG.error },
-  NO_SHOW: { bg: STATUS_BG.warning, text: STATUS_FG.warning },
-}
 
 const RECOMMENDATION_KEYS: Record<string, string> = {
   STRONG_YES: 'recSTRONG_YES',
@@ -582,24 +576,10 @@ export function InterviewListClient({
       key: 'status',
       header: t('colStatus'),
       render: (row) => {
-        const colors = STATUS_COLORS[row.status] ?? {
-          bg: STATUS_BG.neutral,
-          text: STATUS_FG.neutral,
-        }
         return (
-          <span
-            style={{
-              display: 'inline-block',
-              padding: '2px 10px',
-              borderRadius: 4,
-              fontSize: 12,
-              fontWeight: 600,
-              backgroundColor: colors.bg,
-              color: colors.text,
-            }}
-          >
+          <StatusBadge status={row.status}>
             {STATUS_KEYS[row.status] ? t(STATUS_KEYS[row.status]) : row.status}
-          </span>
+          </StatusBadge>
         )
       },
     },

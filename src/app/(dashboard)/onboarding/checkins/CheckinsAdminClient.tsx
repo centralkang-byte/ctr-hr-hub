@@ -381,7 +381,7 @@ export function CheckinsAdminClient({ user: _user }: CheckinsAdminClientProps) {
                 <h3 className="text-base font-bold text-foreground tracking-[-0.02em]">
                   {t('aiAnalysisSummary')}
                 </h3>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold bg-muted text-muted-foreground ml-2">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-muted text-muted-foreground ml-2">
                   AI Generated
                 </span>
               </div>
@@ -390,7 +390,7 @@ export function CheckinsAdminClient({ user: _user }: CheckinsAdminClientProps) {
                   <div>
                     <span className="text-xs text-muted-foreground">{t('overallSentiment')}</span>
                     <div className="mt-1">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${SENTIMENT_BADGE[aiSummary.overall_sentiment]?.className ?? 'bg-muted text-muted-foreground'}`}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${SENTIMENT_BADGE[aiSummary.overall_sentiment]?.className ?? 'bg-muted text-muted-foreground'}`}>
                         {SENTIMENT_BADGE[aiSummary.overall_sentiment] ? t(SENTIMENT_BADGE[aiSummary.overall_sentiment].labelKey) : aiSummary.overall_sentiment}
                       </span>
                     </div>
@@ -398,7 +398,7 @@ export function CheckinsAdminClient({ user: _user }: CheckinsAdminClientProps) {
                   <div>
                     <span className="text-xs text-muted-foreground">{t('trendLabel')}</span>
                     <div className="mt-1">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${TREND_BADGE[aiSummary.trend]?.className ?? 'bg-muted text-muted-foreground'}`}>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${TREND_BADGE[aiSummary.trend]?.className ?? 'bg-muted text-muted-foreground'}`}>
                         {TREND_BADGE[aiSummary.trend] ? t(TREND_BADGE[aiSummary.trend].labelKey) : aiSummary.trend}
                       </span>
                     </div>

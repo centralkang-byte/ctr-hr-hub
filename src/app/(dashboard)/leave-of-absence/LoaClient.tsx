@@ -13,7 +13,8 @@ import {
   FileText,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
+import type { StatusCategory } from '@/lib/styles/status'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -64,14 +65,8 @@ const STATUS_LABELS: Record<string, { labelKey: string }> = {
   CANCELLED: { labelKey: 'status.cancelled' },
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  REQUESTED: 'bg-yellow-500/15 text-yellow-700',
-  APPROVED: 'bg-primary/10 text-primary',
-  ACTIVE: 'bg-orange-500/15 text-orange-700',
-  RETURN_REQUESTED: 'bg-purple-500/15 text-purple-700',
-  COMPLETED: 'bg-tertiary-container/20 text-tertiary',
-  REJECTED: 'bg-destructive/10 text-destructive',
-  CANCELLED: 'bg-muted text-muted-foreground',
+const LOA_VARIANT_OVERRIDES: Record<string, StatusCategory> = {
+  ACTIVE: 'accent',
 }
 
 export function LoaClient({ user }: Props) {
@@ -408,9 +403,9 @@ export function LoaClient({ user }: Props) {
                     <p className="max-w-[200px] truncate text-muted-foreground">{r.reason ?? '—'}</p>
                   </td>
                   <td className={TABLE_STYLES.cell}>
-                    <Badge className={cn(STATUS_COLORS[r.status])}>
+                    <StatusBadge status={r.status} variant={LOA_VARIANT_OVERRIDES[r.status]}>
                       {STATUS_LABELS[r.status] ? t(STATUS_LABELS[r.status].labelKey) : r.status}
-                    </Badge>
+                    </StatusBadge>
                   </td>
                   <td className={cn(TABLE_STYLES.cell, 'text-right')}>
                     <div className="flex justify-end gap-1">

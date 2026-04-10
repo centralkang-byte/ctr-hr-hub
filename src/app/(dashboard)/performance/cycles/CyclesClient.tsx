@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, ChevronRight, Settings2, Clock, ShieldAlert, CheckCircle2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
-import { STATUS_VARIANT } from '@/lib/styles/status'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import type { SessionUser } from '@/types'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
@@ -24,17 +24,6 @@ interface Cycle {
     participantCount?: number
 }
 
-const STATUS_COLORS: Record<string, string> = {
-    DRAFT: STATUS_VARIANT.neutral,
-    ACTIVE: STATUS_VARIANT.info,
-    CHECK_IN: STATUS_VARIANT.warning,
-    EVAL_OPEN: STATUS_VARIANT.success,
-    CALIBRATION: STATUS_VARIANT.primary,
-    FINALIZED: STATUS_VARIANT.success,
-    CLOSED: STATUS_VARIANT.neutral,
-    COMP_REVIEW: STATUS_VARIANT.warning,
-    COMP_COMPLETED: STATUS_VARIANT.success,
-}
 
 const STATUS_LABEL_KEYS: Record<string, string> = {
     DRAFT: 'draft',
@@ -126,7 +115,6 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                 ) : (
                     <div className="space-y-4">
                         {cycles.map((cycle) => {
-                            const badgeColor = STATUS_COLORS[cycle.status] ?? STATUS_VARIANT.neutral
                             const badgeLabel = STATUS_LABEL_KEYS[cycle.status] ? t(STATUS_LABEL_KEYS[cycle.status]) : cycle.status
                             return (
                                 <button key={cycle.id} onClick={() => router.push(`/performance/cycles/${cycle.id}`)}
@@ -135,7 +123,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3">
                                                 <h3 className="text-base font-semibold text-foreground">{cycle.name}</h3>
-                                                <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${badgeColor}`}>{badgeLabel}</span>
+                                                <StatusBadge status={cycle.status}>{badgeLabel}</StatusBadge>
                                             </div>
                                             <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                                                 <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{cycle.startDate?.slice(0, 10)} ~ {cycle.endDate?.slice(0, 10)}</span>

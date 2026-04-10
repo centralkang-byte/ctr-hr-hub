@@ -1,6 +1,7 @@
 'use client'
 
 import { Save, RotateCcw, Loader2 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
@@ -44,7 +45,7 @@ export function LocaleTab({
           <p className="text-sm text-muted-foreground">{t('company_kebb384_keab8b0eb_kec96b8ec_kebb08f_ked8380ec_settings')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
+          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
         )}
       </div>
 
@@ -67,7 +68,7 @@ export function LocaleTab({
 
       <SettingFieldWithOverride label={t('locale.supportedLangsLabel')} status="global" companySelected={!!companyId}>
         <div className="flex flex-wrap gap-2">{settings.supportedLocales.map((l) => (
-          <span key={l} className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{LOCALE_LABELS[l] ?? l}</span>
+          <Badge key={l} variant="info">{LOCALE_LABELS[l] ?? l}</Badge>
         ))}</div>
       </SettingFieldWithOverride>
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { Save, RotateCcw, Loader2 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -54,7 +55,7 @@ export function MethodologyTab({
           <p className="text-sm text-muted-foreground">{t('kr_mbo_bei_kebb984ec_goals_kec889')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
+          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
         )}
       </div>
 
@@ -75,7 +76,7 @@ export function MethodologyTab({
       <SettingFieldWithOverride label={t('methodology.categoriesLabel')} description={t('methodology.categoriesDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex flex-wrap gap-2">
           {settings.categories.map((cat, i) => (
-            <span key={i} className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{cat}</span>
+            <Badge key={i} variant="info">{cat}</Badge>
           ))}
         </div>
       </SettingFieldWithOverride>

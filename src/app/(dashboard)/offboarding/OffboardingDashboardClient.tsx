@@ -17,6 +17,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -95,21 +96,6 @@ interface OffboardingDashboardClientProps {
 
 // ─── Constants ──────────────────────────────────────────────
 
-type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
-
-const STATUS_VARIANTS: Record<string, BadgeVariant> = {
-  IN_PROGRESS: 'default',
-  COMPLETED: 'secondary',
-  CANCELLED: 'destructive',
-}
-
-const RESIGN_TYPE_VARIANTS: Record<string, BadgeVariant> = {
-  VOLUNTARY: 'outline',
-  INVOLUNTARY: 'destructive',
-  RETIREMENT: 'secondary',
-  CONTRACT_END: 'default',
-  MUTUAL_AGREEMENT: 'outline',
-}
 
 const ASSIGNEE_COLORS: Record<string, string> = {
   EMPLOYEE: 'bg-muted text-foreground',
@@ -433,9 +419,9 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                         {row.employee.name}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={RESIGN_TYPE_VARIANTS[row.resignType] ?? 'outline'}>
+                        <StatusBadge status={row.resignType}>
                           {RESIGN_TYPE_LABELS[row.resignType] ?? row.resignType}
-                        </Badge>
+                        </StatusBadge>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col">
@@ -456,7 +442,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                         />
                       </TableCell>
                       <TableCell>
-                        <Badge variant={STATUS_VARIANTS[row.status] ?? 'outline'}>
+                        <StatusBadge status={row.status}>
                           {row.status === 'IN_PROGRESS' && (
                             <Clock className="mr-1 h-3 w-3" />
                           )}
@@ -467,7 +453,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                             <XCircle className="mr-1 h-3 w-3" />
                           )}
                           {STATUS_LABELS[row.status] ?? row.status}
-                        </Badge>
+                        </StatusBadge>
                       </TableCell>
                       <TableCell>
                         {row.isD3 ? (

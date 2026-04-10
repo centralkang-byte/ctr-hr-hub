@@ -284,7 +284,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
               </p>
             </div>
             <div className="text-right">
-              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary/90">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#6366f1]/10 text-[#4f46e5]">
                 {t('profile.statusActive')}
               </span>
             </div>
