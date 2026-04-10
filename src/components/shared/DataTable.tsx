@@ -220,7 +220,7 @@ export function DataTable<T extends Record<string, unknown>>({
     return (
       <div className="space-y-4">
         {columnSettingsButton}
-        <div className="rounded-xl border border-border overflow-hidden">
+        <div className="rounded-2xl overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
@@ -251,7 +251,7 @@ export function DataTable<T extends Record<string, unknown>>({
     return (
       <div className="space-y-4">
         {columnSettingsButton}
-        <div className="rounded-xl border border-border overflow-hidden">
+        <div className="rounded-2xl overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
@@ -311,7 +311,7 @@ export function DataTable<T extends Record<string, unknown>>({
       {columnSettingsButton}
       {virtualScroll ? (
         /* ── Virtual scroll mode ── */
-        <div className="rounded-xl border border-border overflow-hidden">
+        <div className="rounded-2xl overflow-hidden">
           <div
             ref={scrollContainerRef}
             style={{ height: virtualScrollHeight, overflowY: 'auto' }}
@@ -322,7 +322,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 {visibleColumns.map((col) => (
                   <th
                     key={col.key}
-                    className="px-4 py-3 text-left text-[13px] font-bold text-muted-foreground border-b border-border"
+                    className="px-4 py-3 text-left text-[13px] font-bold text-muted-foreground"
                   >
                     {col.sortable && onSort ? (
                       <button
@@ -362,7 +362,7 @@ export function DataTable<T extends Record<string, unknown>>({
                       data-index={virtualRow.index}
                       ref={virtualizer.measureElement}
                       onClick={onRowClick ? () => onRowClick(row, virtualRow.index) : undefined}
-                      className={`border-b border-border ${onRowClick ? 'cursor-pointer hover:bg-muted' : ''}`}
+                      className={`${onRowClick ? 'cursor-pointer hover:bg-muted' : ''}`}
                     >
                       {visibleColumns.map((col) => (
                         <td
@@ -398,7 +398,7 @@ export function DataTable<T extends Record<string, unknown>>({
         </div>
       ) : (
         /* ── Normal (paginated) mode ── */
-        <div className="rounded-xl border border-border overflow-hidden">
+        <div className="rounded-2xl overflow-hidden">
           <Table>
             {headerRow}
             <TableBody>

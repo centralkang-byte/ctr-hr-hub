@@ -19,7 +19,7 @@ export function KpiCardsSkeleton({ count = 4, className }: KpiCardsSkeletonProps
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="rounded-lg border border-border bg-card p-4 space-y-3"
+          className="rounded-2xl shadow-sm bg-card p-4 space-y-3"
           style={{ animationDelay: `${i * 75}ms` }}
         >
           <Skeleton className="h-4 w-20" />
@@ -41,9 +41,9 @@ interface TableSkeletonProps {
 
 export function TableSkeleton({ rows = 8, cols = 5, className }: TableSkeletonProps) {
   return (
-    <div className={cn('rounded-lg border border-border bg-card overflow-hidden', className)}>
+    <div className={cn('rounded-2xl shadow-sm bg-card overflow-hidden', className)}>
       {/* 헤더 */}
-      <div className="flex gap-4 p-4 border-b border-border bg-muted/50">
+      <div className="flex gap-4 p-4 bg-muted/50">
         {Array.from({ length: cols }).map((_, i) => (
           <Skeleton key={i} className="h-4 flex-1" />
         ))}
@@ -52,7 +52,7 @@ export function TableSkeleton({ rows = 8, cols = 5, className }: TableSkeletonPr
       {Array.from({ length: rows }).map((_, i) => (
         <div
           key={i}
-          className="flex gap-4 p-4 border-b border-border last:border-b-0"
+          className="flex gap-4 p-4"
           style={{ animationDelay: `${i * 75}ms` }}
         >
           {Array.from({ length: cols }).map((_, j) => (
@@ -72,7 +72,7 @@ interface ChartSkeletonProps {
 
 export function ChartSkeleton({ className }: ChartSkeletonProps) {
   return (
-    <div className={cn('rounded-lg border border-border bg-card p-6', className)}>
+    <div className={cn('rounded-2xl shadow-sm bg-card p-6', className)}>
       <Skeleton className="h-5 w-32 mb-4" />
       <Skeleton className="h-64 w-full rounded" />
     </div>

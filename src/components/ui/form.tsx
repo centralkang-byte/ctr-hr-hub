@@ -11,6 +11,7 @@ import {
   type FieldPath,
   type FieldValues,
 } from "react-hook-form"
+import { XCircle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
@@ -95,7 +96,7 @@ const FormLabel = React.forwardRef<
   return (
     <Label
       ref={ref}
-      className={cn(error && "text-destructive", className)}
+      className={cn("text-[11px] font-semibold text-muted-foreground uppercase tracking-wider", error && "text-destructive", className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -157,9 +158,10 @@ const FormMessage = React.forwardRef<
     <p
       ref={ref}
       id={formMessageId}
-      className={cn("text-[0.8rem] font-medium text-destructive", className)}
+      className={cn("flex items-center gap-1 text-xs font-medium text-destructive", className)}
       {...props}
     >
+      <XCircle className="h-3 w-3 flex-shrink-0" />
       {body}
     </p>
   )
