@@ -1695,7 +1695,9 @@
         "kr": "Korea",
         "overview": "Overview",
         "piiAudit": "PII Audit",
-        "ru": "Russia"
+        "ru": "Russia",
+        "dataProtection": "Data Protection",
+        "country": "Country"
       }
     },
     "kr": {

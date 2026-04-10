@@ -135,6 +135,25 @@ Ghost border: outline-variant at 15% opacity ONLY when absolutely needed.
 
 All badges: pill shape, `whitespace-nowrap`.
 
+### Segmented Control (Tabs)
+
+Tonal background container. No underline, no border-b. macOS-style segmented control.
+
+| Variant | List | Trigger | Usage |
+|---------|------|---------|-------|
+| default | `bg-muted/50 p-1 rounded-lg` | `rounded-md px-3 py-1.5 text-sm` | Standard tabs (2-5 items) |
+| compact | `bg-muted/50 p-0.5 rounded-md` | `rounded px-2.5 py-1 text-xs` | Nested/sub-tabs only |
+
+- Active: `bg-card shadow-sm text-primary font-semibold`
+- Inactive: `text-muted-foreground`, no background
+- Animation: `motion-safe:transition-all duration-150`
+- Mobile: `overflow-x-auto`, touch target `min-h-[44px]`
+- A11y: `aria-label` on TabsList, Radix handles `role`, `aria-selected`, keyboard nav
+- Focus: `FOCUS.ring` token
+- 4 tabs or fewer: `flex w-full` equal distribution
+- 5+ tabs: natural width + horizontal scroll
+- border-b tab indicator: **FORBIDDEN** (No-Line Rule)
+
 ### Icons (Lucide only)
 
 - sm: 16px (h-4 w-4), md: 20px (h-5 w-5), lg: 24px (h-6 w-6)

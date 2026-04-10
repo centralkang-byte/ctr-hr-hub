@@ -41,11 +41,11 @@ export default function SuccessionClient({ user: _user }: { user: SessionUser })
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="plans" className="mt-0">
+        <TabsContent value="plans">
           <PlansTab />
         </TabsContent>
 
-        <TabsContent value="dashboard" className="mt-0">
+        <TabsContent value="dashboard">
           <SuccessionDashboard />
         </TabsContent>
       </Tabs>

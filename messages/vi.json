@@ -1695,7 +1695,9 @@
         "kr": "Hàn Quốc",
         "overview": "Tổng quan",
         "piiAudit": "Kiểm toán PII",
-        "ru": "Nga"
+        "ru": "Nga",
+        "dataProtection": "Bảo vệ dữ liệu",
+        "country": "Quốc gia"
       }
     },
     "kr": {

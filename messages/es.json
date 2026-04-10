@@ -1695,7 +1695,9 @@
         "kr": "Corea",
         "overview": "Resumen",
         "piiAudit": "Auditoría de PII",
-        "ru": "Rusia"
+        "ru": "Rusia",
+        "dataProtection": "Protección de datos",
+        "country": "País"
       }
     },
     "kr": {

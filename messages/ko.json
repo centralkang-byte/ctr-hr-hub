@@ -8623,7 +8623,9 @@
         "dpia": "DPIA",
         "kr": "한국",
         "cn": "중국",
-        "ru": "러시아"
+        "ru": "러시아",
+        "dataProtection": "데이터 보호",
+        "country": "국가별"
       }
     }
   },

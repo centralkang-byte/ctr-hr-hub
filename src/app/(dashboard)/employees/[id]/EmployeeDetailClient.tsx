@@ -626,7 +626,7 @@ export function EmployeeDetailClient({
             </TabsList>
 
             {/* Tab 1: 프로필 */}
-            <TabsContent value="profile" className="mt-0">
+            <TabsContent value="profile">
               <div className="rounded-xl border border-border bg-card p-6">
                 {isHrAdmin && !editing && (
                   <div className="mb-4 flex justify-end">
@@ -648,7 +648,7 @@ export function EmployeeDetailClient({
             </TabsContent>
 
             {/* Tab 2: 발령이력 */}
-            <TabsContent value="assignment-history" className="mt-0">
+            <TabsContent value="assignment-history">
               <AssignmentHistoryTab
                 employeeId={employee.id}
                 hireDate={employee.hireDate}
@@ -658,7 +658,7 @@ export function EmployeeDetailClient({
 
             {/* Tab 3: 급여정보 (HR Admin only) */}
             {isHrAdmin && (
-              <TabsContent value="compensation-info" className="mt-0">
+              <TabsContent value="compensation-info">
                 <div className="rounded-xl border border-border bg-card p-6">
                   <CompensationTab employeeId={employee.id} />
                 </div>
@@ -666,17 +666,17 @@ export function EmployeeDetailClient({
             )}
 
             {/* Tab 4: 근태현황 (B6-1) */}
-            <TabsContent value="attendance" className="mt-0">
+            <TabsContent value="attendance">
               <AttendanceTab employeeId={employee.id} />
             </TabsContent>
 
             {/* Tab 5: 휴직 이력 */}
-            <TabsContent value="loa" className="mt-0">
+            <TabsContent value="loa">
               <LoaTab employeeId={employee.id} />
             </TabsContent>
 
             {/* Tab 6: 평가결과 (comingSoon - B3) */}
-            <TabsContent value="performance" className="mt-0">
+            <TabsContent value="performance">
               <div className="rounded-xl border border-border bg-card p-6">
                 <div className="flex flex-col items-center py-12 text-muted-foreground">
                   <TrendingUp className="h-10 w-10 mb-3 text-border" />

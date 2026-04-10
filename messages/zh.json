@@ -1695,7 +1695,9 @@
         "kr": "韩国",
         "overview": "概览",
         "piiAudit": "PII审计",
-        "ru": "俄罗斯"
+        "ru": "俄罗斯",
+        "dataProtection": "数据保护",
+        "country": "国家"
       }
     },
     "kr": {

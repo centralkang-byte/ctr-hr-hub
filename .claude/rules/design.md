@@ -100,6 +100,16 @@ Full design system: see `DESIGN.md`. Below are mandatory checks when writing UI 
 - Buttons (right-aligned): cancel(ghost) → draft(outline) → submit(primary pill)
 - Implementation: shadcn/ui FormField wrapper required
 
+## Segmented Control (Tabs)
+
+- Tab = Segmented Control: `bg-muted/50 rounded-lg p-1` container, NO border-b
+- Active: `bg-card shadow-sm text-primary font-semibold rounded-md`
+- Compact variant (nested tabs only): `p-0.5 rounded-md`, trigger `px-2.5 py-1 text-xs`
+- Animation: `motion-safe:transition-all` (respects prefers-reduced-motion)
+- Mobile: `overflow-x-auto`, touch target `min-h-[44px]`
+- `aria-label` on every TabsList
+- border-b underline tabs: **FORBIDDEN** (No-Line Rule)
+
 ## Forbidden Patterns
 
 - backdrop-blur outside TopBar/Dialog

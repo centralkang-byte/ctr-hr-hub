@@ -110,7 +110,7 @@ export default function CompensationClient({ user: _user }: { user: SessionUser 
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="simulation" className="mt-0">
+        <TabsContent value="simulation">
           <SimulationTab
             cycleId={selectedCycleId}
             onPrepareConfirm={(adjustments) => {
@@ -120,7 +120,7 @@ export default function CompensationClient({ user: _user }: { user: SessionUser 
           />
         </TabsContent>
 
-        <TabsContent value="confirm" className="mt-0">
+        <TabsContent value="confirm">
           <ConfirmTab
             cycleId={selectedCycleId}
             adjustments={pendingAdjustments}
@@ -128,11 +128,11 @@ export default function CompensationClient({ user: _user }: { user: SessionUser 
           />
         </TabsContent>
 
-        <TabsContent value="history" className="mt-0">
+        <TabsContent value="history">
           <HistoryTab />
         </TabsContent>
 
-        <TabsContent value="letter" className="mt-0">
+        <TabsContent value="letter">
           <LetterTab cycleId={selectedCycleId} />
         </TabsContent>
       </Tabs>
