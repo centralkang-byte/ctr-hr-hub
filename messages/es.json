@@ -2609,7 +2609,21 @@
       "viewAll": "Ver todo →",
       "viewResult": "Ver resultado",
       "workDaysThisMonth": "Días laborales este mes",
-      "used": "usado"
+      "used": "usado",
+      "actionTitle": "{name}, hay cosas por revisar",
+      "actionKpiGroup": "KPIs de acción empleado",
+      "actionKpi": {
+        "remainingLeave": "Vacaciones",
+        "workDays": "Días trabajados",
+        "overtime": "Horas extra",
+        "training": "Formación"
+      },
+      "quickActionsGroup": "Acciones rápidas",
+      "monitorSlot": {
+        "attendanceHeatmap": "Asistencia abril",
+        "upcomingSchedule": "Próximos eventos",
+        "payPreview": "Salario estimado"
+      }
     },
     "executive": {
       "aiStrategicInsight": "Insights estratégicos de IA",
@@ -2628,7 +2642,18 @@
       "talentRetentionRisk": "Riesgo de fuga de talento clave",
       "totalHeadcount": "Dotación total",
       "turnoverRate": "Tasa de rotación",
-      "turnoverRateLabel": "Tasa de rotación"
+      "turnoverRateLabel": "Tasa de rotación",
+      "actionTitle": "{name}, asuntos principales",
+      "actionKpiGroup": "KPIs de acción Executive",
+      "actionKpi": {
+        "orgSize": "Tamaño organización",
+        "laborCostRatio": "Ratio coste laboral",
+        "turnoverRate": "Rotación",
+        "fillRate": "Tasa de cobertura"
+      },
+      "laborCostTrend": "Tendencia coste laboral",
+      "quarterlySummary": "Resumen trimestral",
+      "successionPipeline": "Pipeline sucesión"
     },
     "globalCompare": "Comparación global",
     "greeting": ", have a great day!",
@@ -2657,7 +2682,23 @@
       "totalEmployees": "Total de empleados",
       "turnoverRate": "Tasa de rotación",
       "upcomingTermination": "Próximas desvinculaciones",
-      "openPositions": "Posiciones abiertas"
+      "openPositions": "Posiciones abiertas",
+      "actionTitle": "{name}, tareas para hoy",
+      "actionKpiGroup": "KPIs de acción HR Admin",
+      "actionKpi": {
+        "pendingApprovals": "Pendientes",
+        "urgent": "Urgente",
+        "weekDeadline": "Esta semana",
+        "onboardingWaiting": "Onboarding"
+      },
+      "quickAction": {
+        "registerEmployee": "Nuevo empleado",
+        "runPayroll": "Ejecutar nómina",
+        "reports": "Informes"
+      },
+      "thisWeekSchedule": "Esta semana",
+      "aiInsights": "AI Insights",
+      "quarterlyReviewShort": "Tasa de revisión"
     },
     "kpi": {
       "leaveUsageRate": "Anual Leave 사용률",
@@ -2699,7 +2740,18 @@
       "totalTeamMembers": "Total de miembros",
       "viewAllMeetings": "Ver todo →",
       "overdueLeaves": "Licencias vencidas",
-      "teamLoadError": "No se pudo cargar el estado del equipo"
+      "teamLoadError": "No se pudo cargar el estado del equipo",
+      "actionTitle": "{name}, tu equipo te necesita",
+      "actionKpiGroup": "KPIs de acción Manager",
+      "actionKpi": {
+        "teamPending": "Aprobaciones",
+        "reviewPending": "Revisiones",
+        "oneOnOne": "1:1 programados",
+        "goalAchievement": "Logro objetivo",
+        "reviewRate": "Tasa de revisión"
+      },
+      "teamPerformance": "Rendimiento equipo",
+      "teamAttendance": "Asistencia equipo"
     },
     "loadError": "No se pudieron cargar los datos",
     "monthlyTrend": "Mensual Trend",
@@ -2777,7 +2829,35 @@
       "talentPool": "Pool de talento",
       "tenureDistribution": "Distribución por antigüedad"
     },
-    "yearSuffix": "year"
+    "yearSuffix": "year",
+    "actionZone": "ACTION ZONE",
+    "monitorZone": "MONITOR ZONE",
+    "placeholder": {
+      "comingSoon": "Próximamente"
+    },
+    "emptyState": {
+      "onboardingAdmin": "Sin nuevas incorporaciones",
+      "onboardingTeam": "Los nuevos miembros aparecerán aquí",
+      "offboardingAdmin": "Sin procesos de salida activos",
+      "taskComplete": "Todas las tareas completadas"
+    },
+    "progress": {
+      "tasks": "{completed}/{total} completadas"
+    },
+    "onboardingTracker": {
+      "title": "Onboarding · En progreso",
+      "viewAll": "Gestionar",
+      "daysUntilStart": "D-{days}",
+      "daysSinceStart": "D+{days}",
+      "progressLabel": "{completed}/{total} completadas"
+    },
+    "offboardingTracker": {
+      "title": "Offboarding · En progreso",
+      "viewAll": "Gestionar",
+      "daysUntilExit": "D-{days}",
+      "progressLabel": "{completed}/{total} completadas",
+      "overdue": "Atrasado D+{days}"
+    }
   },
   "internalJobs": {
     "allCompanies": "[TODO:es] 전체 법인",

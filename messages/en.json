@@ -2609,7 +2609,21 @@
       "viewAll": "View All →",
       "viewResult": "View Result",
       "workDaysThisMonth": "Work Days This Month",
-      "used": "used"
+      "used": "used",
+      "actionTitle": "{name}, here is what to check",
+      "actionKpiGroup": "Employee action KPIs",
+      "actionKpi": {
+        "remainingLeave": "Leave Left",
+        "workDays": "Work Days",
+        "overtime": "Overtime",
+        "training": "Training"
+      },
+      "quickActionsGroup": "Quick actions",
+      "monitorSlot": {
+        "attendanceHeatmap": "Attendance",
+        "upcomingSchedule": "Schedule",
+        "payPreview": "Estimated Pay"
+      }
     },
     "executive": {
       "aiStrategicInsight": "AI Strategic Insights",
@@ -2628,7 +2642,18 @@
       "talentRetentionRisk": "Key Talent Retention Risk",
       "totalHeadcount": "Total Headcount",
       "turnoverRate": "Turnover Rate",
-      "turnoverRateLabel": "Turnover Rate"
+      "turnoverRateLabel": "Turnover Rate",
+      "actionTitle": "{name}, key signals",
+      "actionKpiGroup": "Executive action KPIs",
+      "actionKpi": {
+        "orgSize": "Headcount",
+        "laborCostRatio": "Labor Cost",
+        "turnoverRate": "Turnover",
+        "fillRate": "Fill Rate"
+      },
+      "laborCostTrend": "Labor Cost Trend",
+      "quarterlySummary": "Quarterly Summary",
+      "successionPipeline": "Succession Pipeline"
     },
     "globalCompare": "Global Compare",
     "greeting": ", have a great day!",
@@ -2657,7 +2682,23 @@
       "totalEmployees": "Total Employees",
       "turnoverRate": "Turnover Rate",
       "upcomingTermination": "Upcoming Terminations",
-      "openPositions": "Open Positions"
+      "openPositions": "Open Positions",
+      "actionTitle": "{name}, today's actions",
+      "actionKpiGroup": "HR admin action KPIs",
+      "actionKpi": {
+        "pendingApprovals": "Approvals",
+        "urgent": "Urgent",
+        "weekDeadline": "This Week",
+        "onboardingWaiting": "Onboarding"
+      },
+      "quickAction": {
+        "registerEmployee": "Add Employee",
+        "runPayroll": "Run Payroll",
+        "reports": "Reports"
+      },
+      "thisWeekSchedule": "This Week",
+      "aiInsights": "AI Insights",
+      "quarterlyReviewShort": "Review Rate"
     },
     "kpi": {
       "leaveUsageRate": "Annual Leave 사용률",
@@ -2699,7 +2740,18 @@
       "totalTeamMembers": "Total Members",
       "viewAllMeetings": "View All →",
       "overdueLeaves": "Overdue Leaves",
-      "teamLoadError": "Unable to load team status"
+      "teamLoadError": "Unable to load team status",
+      "actionTitle": "{name}, your team needs you",
+      "actionKpiGroup": "Manager action KPIs",
+      "actionKpi": {
+        "teamPending": "Approvals",
+        "reviewPending": "Reviews",
+        "oneOnOne": "1:1s",
+        "goalAchievement": "Goal",
+        "reviewRate": "Review Rate"
+      },
+      "teamPerformance": "Team Performance",
+      "teamAttendance": "Team Attendance"
     },
     "loadError": "Unable to load data",
     "monthlyTrend": "Monthly Trend",
@@ -2777,7 +2829,35 @@
       "talentPool": "Talent Pool",
       "tenureDistribution": "Tenure Distribution"
     },
-    "yearSuffix": "year"
+    "yearSuffix": "year",
+    "actionZone": "ACTION ZONE",
+    "monitorZone": "MONITOR ZONE",
+    "placeholder": {
+      "comingSoon": "Coming soon"
+    },
+    "emptyState": {
+      "onboardingAdmin": "No incoming hires",
+      "onboardingTeam": "New team members will appear here",
+      "offboardingAdmin": "No active offboarding",
+      "taskComplete": "All tasks complete"
+    },
+    "progress": {
+      "tasks": "{completed}/{total} done"
+    },
+    "onboardingTracker": {
+      "title": "Onboarding · In Progress",
+      "viewAll": "Manage",
+      "daysUntilStart": "D-{days}",
+      "daysSinceStart": "D+{days}",
+      "progressLabel": "{completed}/{total} done"
+    },
+    "offboardingTracker": {
+      "title": "Offboarding · Departing",
+      "viewAll": "Manage",
+      "daysUntilExit": "D-{days}",
+      "progressLabel": "{completed}/{total} done",
+      "overdue": "Overdue D+{days}"
+    }
   },
   "internalJobs": {
     "allCompanies": "[TODO:en] 전체 법인",

@@ -6,7 +6,12 @@ import { withPermission, perm } from '@/lib/permissions'
 import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { getDirectReportIds } from '@/lib/employee/direct-reports'
-import type { SessionUser } from '@/types'
+import { getStartOfDayTz } from '@/lib/timezone'
+import type { SessionUser, OnboardingItem } from '@/types'
+
+// Default company timezone for D-day calculations.
+// Phase 6: resolve from user.companyId via timezone helper.
+const DEFAULT_TZ = 'Asia/Seoul'
 
 // ─── Helpers ────────────────────────────────────────────────
 
@@ -23,6 +28,99 @@ function aggregateQrStats(groups: { status: string; _count: { _all: number } }[]
     if (g.status === 'COMPLETED') completed += g._count._all
   }
   return { total, completed, pending: total - completed }
+}
+
+/**
+ * Calendar day difference between two dates, anchored to the company timezone.
+ * Both operands are normalized to midnight in `tz` (DEFAULT_TZ = Asia/Seoul) before subtraction,
+ * so users in any browser locale see consistent D-day labels for the same business date.
+ * Returns positive when `target` is in the future, negative when in the past.
+ */
+function daysBetween(target: Date, ref: Date, tz: string = DEFAULT_TZ): number {
+  const a = getStartOfDayTz(target, tz).getTime()
+  const b = getStartOfDayTz(ref, tz).getTime()
+  return Math.round((a - b) / (1000 * 60 * 60 * 24))
+}
+
+/** EmployeeOnboarding + hydrated task counts → OnboardingItem */
+function toOnboardingItem(
+  ob: {
+    employeeId: string
+    employee?: { id: string; name: string; hireDate?: Date } | null
+    startedAt: Date | null
+    tasks: { status: string }[]
+  } & { name?: string; department?: string | null; startDate?: Date | null },
+  fallbackName: string,
+  referenceDate: Date = new Date(),
+): OnboardingItem {
+  const total = ob.tasks.length
+  const completed = ob.tasks.filter((t) => t.status === 'DONE').length
+  const progress = total > 0 ? Math.round((completed / total) * 100) : 0
+  // Priority: explicit startDate (e.g. computed) > startedAt (instance) > hireDate (fallback)
+  const rawStart = ob.startDate ?? ob.startedAt ?? ob.employee?.hireDate
+  const startIso = rawStart ? new Date(rawStart).toISOString() : null
+  const daysUntilStart = rawStart ? daysBetween(new Date(rawStart), referenceDate) : null
+  return {
+    employeeId: ob.employeeId,
+    name: ob.employee?.name ?? fallbackName,
+    department: ob.department ?? null,
+    startDate: startIso,
+    daysUntilStart,
+    progress,
+    completedTasks: completed,
+    totalTasks: total,
+  }
+}
+
+/** Onboarding sort: NOT_STARTED(미래) 우선 → 시작 임박 순 */
+function sortOnboardingByUrgency(items: OnboardingItem[]): OnboardingItem[] {
+  return [...items].sort((a, b) => {
+    const aDays = a.daysUntilStart ?? Number.POSITIVE_INFINITY
+    const bDays = b.daysUntilStart ?? Number.POSITIVE_INFINITY
+    // Future events (positive) come first, ascending. Past events (negative) come after.
+    if (aDays >= 0 && bDays >= 0) return aDays - bDays
+    if (aDays < 0 && bDays < 0) return bDays - aDays
+    return aDays >= 0 ? -1 : 1
+  })
+}
+
+/** Offboarding sort: overdue(과거) 우선 → 그 다음 임박한 미래 */
+function sortOffboardingByUrgency(items: OnboardingItem[]): OnboardingItem[] {
+  return [...items].sort((a, b) => {
+    const aDays = a.daysUntilStart ?? Number.POSITIVE_INFINITY
+    const bDays = b.daysUntilStart ?? Number.POSITIVE_INFINITY
+    // Overdue (negative) first, most overdue first. Then future, ascending (soonest exit first).
+    if (aDays < 0 && bDays < 0) return aDays - bDays // more negative = more overdue, comes first
+    if (aDays >= 0 && bDays >= 0) return aDays - bDays
+    return aDays < 0 ? -1 : 1
+  })
+}
+
+/** EmployeeOffboarding → OnboardingItem (shared DTO) */
+function toOffboardingItem(
+  ob: {
+    employeeId: string
+    employee?: { id: string; name: string } | null
+    lastWorkingDate: Date
+    offboardingTasks: { status: string }[]
+  },
+  fallbackName: string,
+  referenceDate: Date = new Date(),
+): OnboardingItem {
+  const total = ob.offboardingTasks.length
+  const completed = ob.offboardingTasks.filter((t) => t.status === 'DONE').length
+  const progress = total > 0 ? Math.round((completed / total) * 100) : 0
+  const daysUntilStart = daysBetween(ob.lastWorkingDate, referenceDate)
+  return {
+    employeeId: ob.employeeId,
+    name: ob.employee?.name ?? fallbackName,
+    department: null,
+    startDate: ob.lastWorkingDate.toISOString(),
+    daysUntilStart,
+    progress,
+    completedTasks: completed,
+    totalTasks: total,
+  }
 }
 
 // ─── Route ──────────────────────────────────────────────────
@@ -48,7 +146,13 @@ export const GET = withCache(withPermission(
       if (user.role === ROLE.EMPLOYEE) {
         const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
 
-        const [leaveBalance, attendanceCount, qrReview] = await Promise.all([
+        const [
+          leaveBalance,
+          attendanceCount,
+          qrReview,
+          myOnboardingRaw,
+          myOffboardingRaw,
+        ] = await Promise.all([
           prisma.employeeLeaveBalance.findMany({
             where: { employeeId: user.employeeId },
             include: { policy: { select: { name: true, leaveType: true } } },
@@ -63,7 +167,68 @@ export const GET = withCache(withPermission(
             where: { employeeId: user.employeeId, year: qrYear, quarter: qrQuarter },
             select: { id: true, status: true },
           }),
+          // D2: planType='ONBOARDING' 명시 — crossboarding 제외, 활성 offboarding이 있으면 onboarding 숨김
+          prisma.employeeOnboarding.findFirst({
+            where: {
+              employeeId: user.employeeId,
+              planType: 'ONBOARDING',
+              status: { in: ['NOT_STARTED', 'IN_PROGRESS'] },
+              employee: {
+                employeeOffboardings: {
+                  none: { status: 'IN_PROGRESS' },
+                },
+              },
+            },
+            include: {
+              employee: { select: { id: true, name: true, hireDate: true } },
+              tasks: { select: { status: true } },
+            },
+            orderBy: { createdAt: 'desc' },
+          }),
+          prisma.employeeOffboarding.findFirst({
+            where: {
+              employeeId: user.employeeId,
+              status: 'IN_PROGRESS',
+            },
+            include: {
+              employee: { select: { id: true, name: true } },
+              offboardingTasks: { select: { status: true } },
+            },
+            orderBy: { lastWorkingDate: 'asc' },
+          }),
         ])
+
+        const myOnboarding = myOnboardingRaw
+          ? toOnboardingItem(
+              {
+                employeeId: myOnboardingRaw.employeeId,
+                employee: myOnboardingRaw.employee
+                  ? {
+                      id: myOnboardingRaw.employee.id,
+                      name: myOnboardingRaw.employee.name,
+                      hireDate: myOnboardingRaw.employee.hireDate,
+                    }
+                  : null,
+                startedAt: myOnboardingRaw.startedAt,
+                tasks: myOnboardingRaw.tasks,
+              },
+              user.name,
+              now,
+            )
+          : null
+
+        const myOffboarding = myOffboardingRaw
+          ? toOffboardingItem(
+              {
+                employeeId: myOffboardingRaw.employeeId,
+                employee: myOffboardingRaw.employee,
+                lastWorkingDate: myOffboardingRaw.lastWorkingDate,
+                offboardingTasks: myOffboardingRaw.offboardingTasks,
+              },
+              user.name,
+              now,
+            )
+          : null
 
         return apiSuccess({
           role: 'EMPLOYEE',
@@ -79,15 +244,27 @@ export const GET = withCache(withPermission(
           quarterlyReview: qrReview
             ? { id: qrReview.id, status: qrReview.status }
             : { id: null, status: null },
+          myOnboarding,
+          myOffboarding,
         })
       }
 
       if (user.role === ROLE.MANAGER) {
-        // C-1 fix: canonical helper (includes secondary assignments)
+        // home/summary는 직속 보고만 본다 (좁은 scope, 빠른 KPI 용도).
+        // /api/v1/manager-hub/summary의 cross-company 처리는 별도 batch에서 정정 예정.
         const reportIds = await getDirectReportIds(user.employeeId)
         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
-        const [teamCount, pendingLeaves, overdueLeaves, scheduledOneOnOnes, qrGroups] = await Promise.all([
+        const [
+          teamCount,
+          pendingLeaves,
+          overdueLeaves,
+          scheduledOneOnOnes,
+          qrGroups,
+          teamOnboardingRaw,
+          teamOffboardingRaw,
+        ] = await Promise.all([
+          // reportIds 기반 + companyId 필터 (좁고 안전한 scope)
           prisma.employee.count({
             where: {
               id: { in: reportIds },
@@ -99,7 +276,6 @@ export const GET = withCache(withPermission(
           prisma.leaveRequest.count({
             where: { companyId, status: 'PENDING', employeeId: { in: reportIds } },
           }),
-          // Overdue: PENDING leaves whose startDate is strictly before today
           prisma.leaveRequest.count({
             where: {
               companyId,
@@ -111,13 +287,75 @@ export const GET = withCache(withPermission(
           prisma.oneOnOne.count({
             where: { managerId: user.employeeId, companyId, status: 'SCHEDULED' },
           }),
-          // H-1 fix: single groupBy query for QR stats
           prisma.quarterlyReview.groupBy({
             by: ['status'],
-            where: { employeeId: { in: reportIds }, year: qrYear, quarter: qrQuarter },
+            where: { companyId, employeeId: { in: reportIds }, year: qrYear, quarter: qrQuarter },
             _count: { _all: true },
           }),
+          // D2: team onboarding — application-level sort by D-day urgency.
+          // companyId on EmployeeOnboarding instance is sufficient (NOT_STARTED hires
+          // may not yet have ACTIVE assignment).
+          prisma.employeeOnboarding.findMany({
+            where: {
+              companyId,
+              employeeId: { in: reportIds },
+              planType: 'ONBOARDING',
+              status: { in: ['NOT_STARTED', 'IN_PROGRESS'] },
+              employee: {
+                employeeOffboardings: { none: { status: 'IN_PROGRESS' } },
+              },
+            },
+            include: {
+              employee: { select: { id: true, name: true, hireDate: true } },
+              tasks: { select: { status: true } },
+            },
+          }),
+          // offboarding 회사 식별 한계: EmployeeOffboarding.companyId 컬럼 부재.
+          // 가장 정확한 근사 — 가장 최근 primary assignment(endDate: null)가 본 회사인 경우.
+          // Phase 6에서 EmployeeOffboarding.companyId 컬럼 추가 후 정확한 필터 가능.
+          prisma.employeeOffboarding.findMany({
+            where: {
+              employeeId: { in: reportIds },
+              status: 'IN_PROGRESS',
+              employee: {
+                assignments: { some: { companyId, isPrimary: true, endDate: null } },
+              },
+            },
+            include: {
+              employee: { select: { id: true, name: true } },
+              offboardingTasks: { select: { status: true } },
+            },
+          }),
         ])
+
+        const teamOnboarding = sortOnboardingByUrgency(
+          teamOnboardingRaw.map((ob) =>
+            toOnboardingItem(
+              {
+                employeeId: ob.employeeId,
+                employee: ob.employee,
+                startedAt: ob.startedAt,
+                tasks: ob.tasks,
+              },
+              ob.employee?.name ?? '',
+              now,
+            ),
+          ),
+        ).slice(0, 5)
+        const teamOffboarding = sortOffboardingByUrgency(
+          teamOffboardingRaw.map((ob) =>
+            toOffboardingItem(
+              {
+                employeeId: ob.employeeId,
+                employee: ob.employee,
+                lastWorkingDate: ob.lastWorkingDate,
+                offboardingTasks: ob.offboardingTasks,
+              },
+              ob.employee?.name ?? '',
+              now,
+            ),
+          ),
+        ).slice(0, 5)
 
         return apiSuccess({
           role: 'MANAGER',
@@ -127,11 +365,31 @@ export const GET = withCache(withPermission(
           overdueLeaves,
           scheduledOneOnOnes,
           quarterlyReviewStats: aggregateQrStats(qrGroups),
+          teamOnboarding,
+          teamOffboarding,
         })
       }
 
-      // HR_ADMIN / SUPER_ADMIN
-      const [newHires, terminations, openPositions, pendingLeaves, qrGroups] = await Promise.all([
+      // HR_ADMIN / SUPER_ADMIN / EXECUTIVE
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+      const weekFromNow = new Date(todayStart)
+      weekFromNow.setDate(weekFromNow.getDate() + 8) // 7일 후까지 inclusive (lt 8 = lte 7)
+
+      // EXECUTIVE는 onboarding 트래커를 사용하지 않으므로 해당 쿼리 생략 (P3 latency 절감)
+      const isExecutive = user.role === ROLE.EXECUTIVE
+
+      const [
+        newHires,
+        terminations,
+        openPositions,
+        pendingLeaves,
+        urgentCount,
+        weekDeadlineCount,
+        qrGroups,
+        activeOnboardingRaw,
+        activeOffboardingRaw,
+        onboardingTotal,
+      ] = await Promise.all([
         prisma.employee.count({
           where: {
             hireDate: { gte: thirtyDaysAgo },
@@ -147,11 +405,80 @@ export const GET = withCache(withPermission(
         prisma.leaveRequest.count({
           where: { companyId, status: 'PENDING' },
         }),
-        prisma.quarterlyReview.groupBy({
-          by: ['status'],
-          where: { companyId, year: qrYear, quarter: qrQuarter },
-          _count: { _all: true },
+        // Urgent: pending leave whose start date is before today (overdue)
+        prisma.leaveRequest.count({
+          where: {
+            companyId,
+            status: 'PENDING',
+            startDate: { lt: todayStart },
+          },
         }),
+        // Week deadline: pending leave whose start date is within next 7 days
+        prisma.leaveRequest.count({
+          where: {
+            companyId,
+            status: 'PENDING',
+            startDate: { gte: todayStart, lt: weekFromNow },
+          },
+        }),
+        // EXECUTIVE는 quarterlyReviewStats 사용 안 함 — 빈 배열 placeholder
+        isExecutive
+          ? Promise.resolve([] as { status: string; _count: { _all: number } }[])
+          : prisma.quarterlyReview.groupBy({
+              by: ['status'],
+              where: { companyId, year: qrYear, quarter: qrQuarter },
+              _count: { _all: true },
+            }),
+        // EXECUTIVE는 onboarding 트래커 미사용 — 빈 배열로 skip
+        isExecutive
+          ? Promise.resolve([])
+          : // D2: Company-scoped onboarding list. application-level sort by D-day urgency.
+            prisma.employeeOnboarding.findMany({
+              where: {
+                companyId,
+                planType: 'ONBOARDING',
+                status: { in: ['NOT_STARTED', 'IN_PROGRESS'] },
+                employee: {
+                  employeeOffboardings: { none: { status: 'IN_PROGRESS' } },
+                },
+              },
+              include: {
+                employee: { select: { id: true, name: true, hireDate: true } },
+                tasks: { select: { status: true } },
+              },
+            }),
+        // EXECUTIVE는 offboarding 트래커 미사용
+        isExecutive
+          ? Promise.resolve([])
+          : // offboarding 회사 필터: EmployeeOffboarding.companyId 부재 → primary assignment 근사.
+            // 가장 최근(endDate: null) primary assignment가 본 회사인 경우만.
+            // Phase 6에서 EmployeeOffboarding.companyId 컬럼 추가 후 정확화.
+            prisma.employeeOffboarding.findMany({
+              where: {
+                status: 'IN_PROGRESS',
+                employee: {
+                  assignments: {
+                    some: { companyId, isPrimary: true, endDate: null },
+                  },
+                },
+              },
+              include: {
+                employee: { select: { id: true, name: true } },
+                offboardingTasks: { select: { status: true } },
+              },
+            }),
+        isExecutive
+          ? Promise.resolve(0)
+          : prisma.employeeOnboarding.count({
+              where: {
+                companyId,
+                planType: 'ONBOARDING',
+                status: { in: ['NOT_STARTED', 'IN_PROGRESS'] },
+                employee: {
+                  employeeOffboardings: { none: { status: 'IN_PROGRESS' } },
+                },
+              },
+            }),
       ])
 
       const turnoverRate =
@@ -161,6 +488,35 @@ export const GET = withCache(withPermission(
 
       const qrStats = aggregateQrStats(qrGroups)
 
+      const activeOnboarding = sortOnboardingByUrgency(
+        activeOnboardingRaw.map((ob) =>
+          toOnboardingItem(
+            {
+              employeeId: ob.employeeId,
+              employee: ob.employee,
+              startedAt: ob.startedAt,
+              tasks: ob.tasks,
+            },
+            ob.employee?.name ?? '',
+            now,
+          ),
+        ),
+      ).slice(0, 5)
+      const activeOffboarding = sortOffboardingByUrgency(
+        activeOffboardingRaw.map((ob) =>
+          toOffboardingItem(
+            {
+              employeeId: ob.employeeId,
+              employee: ob.employee,
+              lastWorkingDate: ob.lastWorkingDate,
+              offboardingTasks: ob.offboardingTasks,
+            },
+            ob.employee?.name ?? '',
+            now,
+          ),
+        ),
+      ).slice(0, 5)
+
       return apiSuccess({
         role: user.role,
         totalEmployees,
@@ -169,12 +525,17 @@ export const GET = withCache(withPermission(
         turnoverRate,
         openPositions,
         pendingLeaves,
+        urgentCount,
+        weekDeadlineCount,
         quarterlyReviewStats: {
           ...qrStats,
           completionRate: qrStats.total > 0
             ? Math.round((qrStats.completed / qrStats.total) * 100)
             : 0,
         },
+        activeOnboarding,
+        activeOffboarding,
+        onboardingCount: onboardingTotal,
       })
     } catch (error) {
       if (isAppError(error)) throw error

@@ -9120,7 +9120,21 @@
       "mboAchievement": "MBO 달성률",
       "goalsSet": "설정된 목표 {count}개",
       "inProgress": "진행 중",
-      "used": "사용"
+      "used": "사용",
+      "actionTitle": "{name}님, 확인할 것이 있어요",
+      "actionKpiGroup": "직원 액션 KPI",
+      "actionKpi": {
+        "remainingLeave": "잔여 연차",
+        "workDays": "이번 달 근무",
+        "overtime": "초과근무",
+        "training": "교육 이수"
+      },
+      "quickActionsGroup": "빠른 액션",
+      "monitorSlot": {
+        "attendanceHeatmap": "4월 출근 현황",
+        "upcomingSchedule": "다가오는 일정",
+        "payPreview": "이번 달 급여 예상"
+      }
     },
     "manager": {
       "greetingDesc": "팀 현황을 한눈에 확인하세요.",
@@ -9146,7 +9160,18 @@
       "pendingLeaveApproval": "승인 대기 휴가",
       "teamOverview": "팀 전체 현황 →",
       "overdueLeaves": "지연 휴가",
-      "teamLoadError": "팀 현황을 불러올 수 없습니다"
+      "teamLoadError": "팀 현황을 불러올 수 없습니다",
+      "actionTitle": "{name}님, 팀에서 처리할 일이에요",
+      "actionKpiGroup": "매니저 액션 KPI",
+      "actionKpi": {
+        "teamPending": "팀 결재",
+        "reviewPending": "평가 미완",
+        "oneOnOne": "1:1 예정",
+        "goalAchievement": "목표 달성",
+        "reviewRate": "평가 완료율"
+      },
+      "teamPerformance": "팀 성과",
+      "teamAttendance": "팀 근태"
     },
     "hrAdmin": {
       "greetingDesc": "전사 인사 현황을 확인하세요.",
@@ -9173,7 +9198,23 @@
       "handoverInProgress": "인수인계 진행 중",
       "thisMonthTermination": "이번 달 퇴직",
       "offboardingLink": "퇴직관리 →",
-      "openPositions": "채용 공석"
+      "openPositions": "채용 공석",
+      "actionTitle": "{name}님, 오늘 처리할 일이에요",
+      "actionKpiGroup": "HR 관리자 액션 KPI",
+      "actionKpi": {
+        "pendingApprovals": "결재 대기",
+        "urgent": "긴급",
+        "weekDeadline": "이번 주 마감",
+        "onboardingWaiting": "온보딩 대기"
+      },
+      "quickAction": {
+        "registerEmployee": "직원 등록",
+        "runPayroll": "급여 실행",
+        "reports": "리포트"
+      },
+      "thisWeekSchedule": "이번 주 일정",
+      "aiInsights": "AI 인사이트",
+      "quarterlyReviewShort": "평가 진행률"
     },
     "executive": {
       "greetingDesc": "그룹 전체 인사 현황 요약입니다.",
@@ -9192,7 +9233,18 @@
       "talentRetentionDesc": "SW개발 직군의 이직 위험도가 업계 평균 대비 높은 수준입니다. 경쟁력 있는 보상 패키지 검토를 권장합니다.",
       "orgEfficiency": "조직 효율성 개선",
       "orgEfficiencyDesc": "1인당 생산성이 전년 동기 대비 8% 향상되었습니다. 디지털 전환 투자 효과가 나타나고 있습니다.",
-      "recentReports": "최근 보고서"
+      "recentReports": "최근 보고서",
+      "actionTitle": "{name}님, 주요 현안이에요",
+      "actionKpiGroup": "경영진 액션 KPI",
+      "actionKpi": {
+        "orgSize": "조직 규모",
+        "laborCostRatio": "인건비 비율",
+        "turnoverRate": "이직률",
+        "fillRate": "충원율"
+      },
+      "laborCostTrend": "인건비 추이",
+      "quarterlySummary": "분기 성과 요약",
+      "successionPipeline": "승계 파이프라인"
     },
     "taskHub": {
       "myTasks": "나의 할 일",
@@ -9262,6 +9314,34 @@
       "companyColumn": "법인",
       "trendTitle": "월별 트렌드",
       "exportFilename": "법인비교_{year}"
+    },
+    "actionZone": "ACTION ZONE",
+    "monitorZone": "MONITOR ZONE",
+    "placeholder": {
+      "comingSoon": "곧 출시"
+    },
+    "emptyState": {
+      "onboardingAdmin": "입사 예정자가 없어요",
+      "onboardingTeam": "팀 신입이 합류하면 여기서 확인하세요",
+      "offboardingAdmin": "퇴사 진행 항목이 없어요",
+      "taskComplete": "모든 업무 완료"
+    },
+    "progress": {
+      "tasks": "{completed}/{total} 완료"
+    },
+    "onboardingTracker": {
+      "title": "입사 · 온보딩 중",
+      "viewAll": "관리",
+      "daysUntilStart": "D-{days}",
+      "daysSinceStart": "D+{days}",
+      "progressLabel": "{completed}/{total} 완료"
+    },
+    "offboardingTracker": {
+      "title": "퇴사 예정 · 오프보딩",
+      "viewAll": "관리",
+      "daysUntilExit": "D-{days}",
+      "progressLabel": "{completed}/{total} 완료",
+      "overdue": "연체 D+{days}"
     }
   },
   "mySpace": {

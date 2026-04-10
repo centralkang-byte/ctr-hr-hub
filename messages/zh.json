@@ -2609,7 +2609,21 @@
       "viewAll": "查看全部 →",
       "viewResult": "查看结果",
       "workDaysThisMonth": "本月工作天数",
-      "used": "已使用"
+      "used": "已使用",
+      "actionTitle": "{name},请查看",
+      "actionKpiGroup": "员工行动 KPI",
+      "actionKpi": {
+        "remainingLeave": "剩余年假",
+        "workDays": "本月工作日",
+        "overtime": "加班",
+        "training": "培训完成"
+      },
+      "quickActionsGroup": "快捷操作",
+      "monitorSlot": {
+        "attendanceHeatmap": "4月考勤情况",
+        "upcomingSchedule": "即将到来的日程",
+        "payPreview": "本月薪资预估"
+      }
     },
     "executive": {
       "aiStrategicInsight": "AI战略洞察",
@@ -2628,7 +2642,18 @@
       "talentRetentionRisk": "核心人才流失风险",
       "totalHeadcount": "总人数",
       "turnoverRate": "离职率",
-      "turnoverRateLabel": "离职率"
+      "turnoverRateLabel": "离职率",
+      "actionTitle": "{name}总,主要议题",
+      "actionKpiGroup": "高管行动 KPI",
+      "actionKpi": {
+        "orgSize": "组织规模",
+        "laborCostRatio": "人工成本比率",
+        "turnoverRate": "离职率",
+        "fillRate": "招聘填补率"
+      },
+      "laborCostTrend": "人工成本趋势",
+      "quarterlySummary": "季度业绩摘要",
+      "successionPipeline": "继任管道"
     },
     "globalCompare": "全球比较",
     "greeting": ", have a great day!",
@@ -2657,7 +2682,23 @@
       "totalEmployees": "全公司人数",
       "turnoverRate": "离职率",
       "upcomingTermination": "即将离职",
-      "openPositions": "空缺职位"
+      "openPositions": "空缺职位",
+      "actionTitle": "{name}先生/女士,今天的待办事项",
+      "actionKpiGroup": "HR 管理员行动 KPI",
+      "actionKpi": {
+        "pendingApprovals": "审批待处理",
+        "urgent": "紧急",
+        "weekDeadline": "本周截止",
+        "onboardingWaiting": "入职待办"
+      },
+      "quickAction": {
+        "registerEmployee": "员工登记",
+        "runPayroll": "运行薪资",
+        "reports": "报表"
+      },
+      "thisWeekSchedule": "本周日程",
+      "aiInsights": "AI 洞察",
+      "quarterlyReviewShort": "评估进度"
     },
     "kpi": {
       "leaveUsageRate": "年度 Leave 사용률",
@@ -2699,7 +2740,18 @@
       "totalTeamMembers": "全部成员",
       "viewAllMeetings": "查看全部 →",
       "overdueLeaves": "逾期休假",
-      "teamLoadError": "无法加载团队状况"
+      "teamLoadError": "无法加载团队状况",
+      "actionTitle": "{name}经理,团队待处理事项",
+      "actionKpiGroup": "经理行动 KPI",
+      "actionKpi": {
+        "teamPending": "团队审批",
+        "reviewPending": "评估未完",
+        "oneOnOne": "1:1 预定",
+        "goalAchievement": "目标达成",
+        "reviewRate": "评估完成率"
+      },
+      "teamPerformance": "团队绩效",
+      "teamAttendance": "团队考勤"
     },
     "loadError": "无法加载数据",
     "monthlyTrend": "月度 Trend",
@@ -2777,7 +2829,35 @@
       "talentPool": "人才库",
       "tenureDistribution": "工龄分布"
     },
-    "yearSuffix": "year"
+    "yearSuffix": "year",
+    "actionZone": "ACTION ZONE",
+    "monitorZone": "MONITOR ZONE",
+    "placeholder": {
+      "comingSoon": "即将推出"
+    },
+    "emptyState": {
+      "onboardingAdmin": "暂无入职预定",
+      "onboardingTeam": "团队新成员将显示在此",
+      "offboardingAdmin": "暂无离职流程",
+      "taskComplete": "所有任务已完成"
+    },
+    "progress": {
+      "tasks": "{completed}/{total} 完成"
+    },
+    "onboardingTracker": {
+      "title": "入职 · 进行中",
+      "viewAll": "管理",
+      "daysUntilStart": "D-{days}",
+      "daysSinceStart": "D+{days}",
+      "progressLabel": "{completed}/{total} 完成"
+    },
+    "offboardingTracker": {
+      "title": "离职预定 · 进行中",
+      "viewAll": "管理",
+      "daysUntilExit": "D-{days}",
+      "progressLabel": "{completed}/{total} 完成",
+      "overdue": "逾期 D+{days}"
+    }
   },
   "internalJobs": {
     "allCompanies": "[TODO:zh] 전체 법인",

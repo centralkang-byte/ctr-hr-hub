@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — KPI Strip (2-tier)
 // Hero KPI (큰 숫자) + Secondary KPIs (작은 카드).
-// DESIGN.md "Kinetic Atelier" — Editorial typography.
+// V3 Dashboard — Outfit display font (DESIGN.md §2).
 // ═══════════════════════════════════════════════════════════
 
 import { cn } from '@/lib/utils'
@@ -77,7 +77,7 @@ export function KpiStrip({ hero, items, heroSlot, className }: KpiStripProps) {
       {/* 균일 그리드 */}
       <div
         className={cn(
-          'grid flex-1 gap-2',
+          'grid flex-1 gap-3',
           colCount <= 2
             ? 'grid-cols-2'
             : colCount <= 3
@@ -87,13 +87,16 @@ export function KpiStrip({ hero, items, heroSlot, className }: KpiStripProps) {
                 : 'grid-cols-2 sm:grid-cols-5',
         )}
       >
-        {allItems.map((item) => (
+        {allItems.map((item, idx) => {
+          const isHero = hero && idx === 0
+          return (
           <div
             key={item.label}
             className={cn(
               'rounded-2xl p-4 shadow-sm',
               CARD_BG[item.variant ?? 'default'],
             )}
+            aria-label={`${item.label}: ${item.value}`}
           >
             <p
               className={cn(
@@ -102,14 +105,17 @@ export function KpiStrip({ hero, items, heroSlot, className }: KpiStripProps) {
                   ? 'text-white/70'
                   : 'text-muted-foreground',
               )}
+              aria-hidden="true"
             >
               {item.label}
             </p>
             <p
               className={cn(
-                'mt-1.5 font-mono text-2xl font-extrabold tabular-nums leading-tight',
+                'mt-1.5 font-display font-extrabold tabular-nums leading-tight tracking-tight',
+                isHero ? 'text-4xl' : 'text-[32px]',
                 item.variant === 'accent' ? 'text-white' : 'text-foreground',
               )}
+              aria-hidden="true"
             >
               {item.value}
             </p>
@@ -136,7 +142,8 @@ export function KpiStrip({ hero, items, heroSlot, className }: KpiStripProps) {
               </p>
             )}
           </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

@@ -1,24 +1,33 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — HR Admin Home (Phase 3 Redesign)
-// HR 관리자 / 슈퍼관리자 대시보드
-// KpiStrip + MonitorBanner + DashboardTaskList + 분기리뷰
+// CTR HR Hub — HR Admin Home (V3 2-Zone)
+// Phase 4 Batch 7: Action Zone + Monitor Zone 전면 재구축.
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
-import { ClipboardCheck } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  UserPlus,
+  DollarSign,
+  BarChart3,
+  Calendar,
+  Lightbulb,
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { KpiStrip } from './KpiStrip'
 import { DashboardTaskList } from './DashboardTaskList'
 import { DashboardErrorBanner } from './DashboardErrorBanner'
+import { OnboardingTracker } from './OnboardingTracker'
+import { OffboardingTracker } from './OffboardingTracker'
+import { PlaceholderCard } from './PlaceholderCard'
 import { WidgetSkeleton } from '@/components/shared/WidgetSkeleton'
 import { TYPOGRAPHY } from '@/lib/styles'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
-import type { SessionUser } from '@/types'
+import { cn } from '@/lib/utils'
+import type { SessionUser, HrAdminSummary } from '@/types'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -26,15 +35,45 @@ interface Props {
   user: SessionUser
 }
 
-interface HrAdminSummary {
-  role: string
-  totalEmployees: number
-  newHires: number
-  terminations: number
-  turnoverRate: number
-  openPositions: number
-  pendingLeaves: number
-  quarterlyReviewStats?: { total: number; completed: number; pending: number; completionRate: number }
+// ─── Helpers ──────────────────────────────────────────────
+
+function ActionKpiCard({
+  label,
+  value,
+  color = 'primary',
+}: {
+  label: string
+  value: string | number
+  color?: 'primary' | 'error' | 'warning' | 'success'
+}) {
+  const colorMap: Record<string, string> = {
+    primary: 'text-primary',
+    error: 'text-error',
+    warning: 'text-[#B45309]',
+    success: 'text-tertiary',
+  }
+  return (
+    <div
+      aria-label={`${label}: ${value}`}
+      className="rounded-lg bg-muted/50 p-4 text-center"
+    >
+      <p
+        className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground"
+        aria-hidden="true"
+      >
+        {label}
+      </p>
+      <p
+        className={cn(
+          'mt-1 font-display text-2xl font-extrabold tabular-nums',
+          colorMap[color],
+        )}
+        aria-hidden="true"
+      >
+        {value}
+      </p>
+    </div>
+  )
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -63,119 +102,170 @@ export function HrAdminHome({ user }: Props) {
     void fetchSummary()
   }, [fetchSummary])
 
-  const stats = summary?.quarterlyReviewStats
-
   return (
     <div className="space-y-6">
       {/* ── Greeting ── */}
-      <div>
-        <h1 className={TYPOGRAPHY.pageTitle}>
-          {t('employee.greetingName', { name: user.name })}
+      <header>
+        <h1 id="dashboard-title" className={TYPOGRAPHY.pageTitle}>
+          {t('hrAdmin.actionTitle', { name: user.name })}
         </h1>
         <p className={`mt-1 ${TYPOGRAPHY.caption}`}>{t('hrAdmin.greetingDesc')}</p>
-      </div>
+      </header>
 
-      {/* ── KPI Strip ── */}
-      {loading ? (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {[...Array(4)].map((_, i) => (
-            <WidgetSkeleton key={i} height="h-24" lines={2} />
-          ))}
-        </div>
-      ) : error ? (
-        <DashboardErrorBanner
-          message={t('loadError')}
-          onRetry={() => void fetchSummary()}
-        />
-      ) : (
-        <KpiStrip
-          hero={{
-            label: t('hrAdmin.totalEmployees'),
-            value: summary?.totalEmployees?.toLocaleString() ?? '-',
-            delta: t('hrAdmin.thisMonth', { count: summary?.newHires ?? 0 }),
-            deltaVariant: 'good',
-          }}
-          items={[
-            {
-              label: t('hrAdmin.newHires'),
-              value: summary?.newHires ?? 0,
-              delta: t('hrAdmin.last30Days'),
-              deltaVariant: 'muted',
-              variant: 'accent',
-            },
-            {
-              label: t('hrAdmin.terminations'),
-              value: summary?.terminations ?? 0,
-              delta: t('hrAdmin.last30Days'),
-              deltaVariant: 'muted',
-              variant: (summary?.terminations ?? 0) > 3 ? 'alert' : 'default',
-            },
-            {
-              label: t('hrAdmin.turnoverRate'),
-              value: `${(summary?.turnoverRate ?? 0).toFixed(1)}%`,
-              variant: (summary?.turnoverRate ?? 0) > 5 ? 'warn' : 'default',
-            },
-            {
-              label: t('hrAdmin.openPositions'),
-              value: summary?.openPositions ?? 0,
-            },
-          ]}
-        />
-      )}
-
-      {/* ── Main layout: TaskList left, Sidebar right ── */}
-      <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
-        <DashboardTaskList user={user} />
-
-        {/* 분기 리뷰 현황 */}
-        <div className="space-y-4">
-          <Card>
-            <CardHeader className="pb-2 pt-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <ClipboardCheck className="h-4 w-4 text-primary" />
-                {t('hrAdmin.quarterlyReviewStatus')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 pb-4">
-              {(() => {
-                if (!stats || stats.total === 0) {
-                  return (
-                    <p className="text-sm text-muted-foreground">
-                      {t('hrAdmin.noReviewYet')}
-                    </p>
-                  )
-                }
-                return (
-                  <>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">{t('hrAdmin.completionRate')}</span>
-                      <span className="text-sm font-bold text-foreground">
-                        {stats.completionRate}%
-                      </span>
-                    </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
-                      <div
-                        className="h-1.5 rounded-full bg-primary transition-all"
-                        style={{ width: `${stats.completionRate}%` }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>{t('hrAdmin.completedCount', { count: stats.completed })}</span>
-                      <span>{t('hrAdmin.totalCount', { count: stats.total })}</span>
-                    </div>
-                  </>
-                )
-              })()}
+      {/* ── ACTION ZONE ── */}
+      <section
+        aria-label={t('actionZone')}
+        className="rounded-2xl bg-card p-8 shadow-sm"
+      >
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div
+            className="text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground"
+            aria-hidden="true"
+          >
+            {t('actionZone')}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild size="sm" variant="outline" className="gap-1.5">
               <Link
-                href="/performance/quarterly-reviews"
-                className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
+                href="/employees/new"
+                aria-label={t('hrAdmin.quickAction.registerEmployee')}
               >
-                {t('hrAdmin.manageReviews')}
+                <UserPlus className="h-4 w-4 stroke-[1.5]" aria-hidden="true" />
+                {t('hrAdmin.quickAction.registerEmployee')}
               </Link>
-            </CardContent>
-          </Card>
+            </Button>
+            <Button asChild size="sm" variant="outline" className="gap-1.5">
+              <Link
+                href="/payroll"
+                aria-label={t('hrAdmin.quickAction.runPayroll')}
+              >
+                <DollarSign className="h-4 w-4 stroke-[1.5]" aria-hidden="true" />
+                {t('hrAdmin.quickAction.runPayroll')}
+              </Link>
+            </Button>
+            <Button asChild size="sm" variant="outline" className="gap-1.5">
+              <Link
+                href="/analytics"
+                aria-label={t('hrAdmin.quickAction.reports')}
+              >
+                <BarChart3 className="h-4 w-4 stroke-[1.5]" aria-hidden="true" />
+                {t('hrAdmin.quickAction.reports')}
+              </Link>
+            </Button>
+          </div>
         </div>
-      </div>
+
+        <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+          <DashboardTaskList user={user} />
+          <div
+            className="grid grid-cols-2 gap-3 content-start"
+            role="group"
+            aria-label={t('hrAdmin.actionKpiGroup')}
+          >
+            <ActionKpiCard
+              label={t('hrAdmin.actionKpi.pendingApprovals')}
+              value={summary?.pendingLeaves ?? '-'}
+              color="error"
+            />
+            <ActionKpiCard
+              label={t('hrAdmin.actionKpi.urgent')}
+              value={summary?.urgentCount ?? '-'}
+              color="error"
+            />
+            <ActionKpiCard
+              label={t('hrAdmin.actionKpi.weekDeadline')}
+              value={summary?.weekDeadlineCount ?? '-'}
+              color="warning"
+            />
+            <ActionKpiCard
+              label={t('hrAdmin.actionKpi.onboardingWaiting')}
+              value={summary?.onboardingCount ?? '-'}
+              color="primary"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── MONITOR ZONE ── */}
+      <section aria-label={t('monitorZone')} className="space-y-6">
+        <div
+          className="text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground"
+          aria-hidden="true"
+        >
+          {t('monitorZone')}
+        </div>
+
+        {/* Row 1: KPI Strip */}
+        {loading ? (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[...Array(4)].map((_, i) => (
+              <WidgetSkeleton key={i} height="h-24" lines={2} />
+            ))}
+          </div>
+        ) : error ? (
+          <DashboardErrorBanner
+            message={t('loadError')}
+            onRetry={() => void fetchSummary()}
+          />
+        ) : (
+          <KpiStrip
+            hero={{
+              label: t('hrAdmin.totalEmployees'),
+              value: summary?.totalEmployees?.toLocaleString() ?? '-',
+              delta: t('hrAdmin.thisMonth', { count: summary?.newHires ?? 0 }),
+              deltaVariant: 'good',
+            }}
+            items={[
+              {
+                label: t('hrAdmin.newHires'),
+                value: summary?.newHires ?? 0,
+                delta: t('hrAdmin.last30Days'),
+                deltaVariant: 'muted',
+              },
+              {
+                label: t('hrAdmin.turnoverRate'),
+                value: `${(summary?.turnoverRate ?? 0).toFixed(1)}%`,
+                variant: (summary?.turnoverRate ?? 0) > 5 ? 'warn' : 'default',
+              },
+              {
+                label: t('hrAdmin.openPositions'),
+                value: summary?.openPositions ?? 0,
+              },
+              {
+                label: t('hrAdmin.quarterlyReviewShort'),
+                value: summary?.quarterlyReviewStats?.completionRate != null
+                  ? `${summary.quarterlyReviewStats.completionRate}%`
+                  : '-',
+              },
+            ]}
+          />
+        )}
+
+        {/* Row 2: 4-col widgets (xl+), 2-col (md+), 1-col mobile */}
+        {/* error 상태에서는 트래커가 misleading empty state를 보여주므로 미렌더 */}
+        {!error && (
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            <OnboardingTracker
+              variant="admin"
+              items={summary?.activeOnboarding}
+              loading={loading}
+            />
+            <OffboardingTracker
+              variant="admin"
+              items={summary?.activeOffboarding}
+              loading={loading}
+            />
+            <PlaceholderCard
+              title={t('hrAdmin.thisWeekSchedule')}
+              icon={Calendar}
+            />
+            <PlaceholderCard
+              title={t('hrAdmin.aiInsights')}
+              icon={Lightbulb}
+            />
+          </div>
+        )}
+      </section>
     </div>
   )
 }

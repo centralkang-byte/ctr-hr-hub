@@ -19,6 +19,9 @@ import {
   ListChecks,
   CheckCircle2,
   Loader2,
+  AlertCircle,
+  Flag,
+  Calendar,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -61,10 +64,13 @@ const TYPE_ICON: Record<string, React.ElementType> = {
   [UnifiedTaskType.BENEFIT_REQUEST]: ListChecks,
 }
 
-const GROUP_CONFIG: Record<TaskGroup, { emoji: string; labelKey: string; color: string }> = {
-  urgent: { emoji: '🔴', labelKey: 'taskHub.groupUrgent', color: 'text-error' },
-  week: { emoji: '📌', labelKey: 'taskHub.groupWeek', color: 'text-[#B45309]' },
-  month: { emoji: '📅', labelKey: 'taskHub.groupMonth', color: 'text-primary' },
+const GROUP_CONFIG: Record<
+  TaskGroup,
+  { Icon: React.ElementType; labelKey: string; color: string }
+> = {
+  urgent: { Icon: AlertCircle, labelKey: 'taskHub.groupUrgent', color: 'text-error' },
+  week: { Icon: Flag, labelKey: 'taskHub.groupWeek', color: 'text-[#B45309]' },
+  month: { Icon: Calendar, labelKey: 'taskHub.groupMonth', color: 'text-primary' },
 }
 
 const INLINE_APPROVE_TYPES = new Set([
@@ -106,7 +112,7 @@ export function DashboardTaskList({
 }: Props) {
   const t = useTranslations('home')
   const [tasks, setTasks] = useState<UnifiedTask[]>([])
-  const [totalCount, setTotalCount] = useState(0)
+  const [, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [processing, setProcessing] = useState<string | null>(null)
@@ -258,20 +264,23 @@ export function DashboardTaskList({
             user.role !== 'EMPLOYEE' &&
             (task.status === UnifiedTaskStatus.PENDING || task.status === UnifiedTaskStatus.IN_PROGRESS)
 
+          const GroupIcon = GROUP_CONFIG[group].Icon
+
           return (
             <Fragment key={task.id}>
               {showGroupHeader && (
                 <p
                   className={cn(
-                    'mt-3 text-[10px] font-bold uppercase tracking-wider',
+                    'mt-3 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider',
                     GROUP_CONFIG[group].color,
                     idx === 0 && 'mt-2',
                   )}
                 >
-                  {GROUP_CONFIG[group].emoji} {t(GROUP_CONFIG[group].labelKey)} ({groups[group].length})
+                  <GroupIcon className="h-3 w-3 stroke-[1.5]" aria-hidden="true" />
+                  {t(GROUP_CONFIG[group].labelKey)} ({groups[group].length})
                 </p>
               )}
-              <div className="flex items-center gap-3.5 border-b border-outline-variant/15 py-3 last:border-b-0">
+              <div className="flex items-center gap-3.5 py-3">
                 <DdayPill daysUntilDue={-days} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-bold text-foreground">

@@ -2609,7 +2609,21 @@
       "viewAll": "Xem tất cả →",
       "viewResult": "Xem kết quả",
       "workDaysThisMonth": "Ngày làm việc tháng này",
-      "used": "đã sử dụng"
+      "used": "đã sử dụng",
+      "actionTitle": "{name}, có việc cần kiểm tra",
+      "actionKpiGroup": "KPI hành động nhân viên",
+      "actionKpi": {
+        "remainingLeave": "Phép còn lại",
+        "workDays": "Ngày làm việc",
+        "overtime": "Tăng ca",
+        "training": "Đào tạo"
+      },
+      "quickActionsGroup": "Hành động nhanh",
+      "monitorSlot": {
+        "attendanceHeatmap": "Chuyên cần tháng 4",
+        "upcomingSchedule": "Lịch sắp tới",
+        "payPreview": "Lương dự kiến tháng"
+      }
     },
     "executive": {
       "aiStrategicInsight": "Phân tích chiến lược AI",
@@ -2628,7 +2642,18 @@
       "talentRetentionRisk": "Rủi ro mất nhân tài chủ chốt",
       "totalHeadcount": "Tổng nhân sự",
       "turnoverRate": "Tỷ lệ nghỉ việc",
-      "turnoverRateLabel": "Tỷ lệ nghỉ việc"
+      "turnoverRateLabel": "Tỷ lệ nghỉ việc",
+      "actionTitle": "{name}, các vấn đề chính",
+      "actionKpiGroup": "KPI hành động Executive",
+      "actionKpi": {
+        "orgSize": "Quy mô tổ chức",
+        "laborCostRatio": "Tỷ lệ chi phí LĐ",
+        "turnoverRate": "Tỷ lệ nghỉ việc",
+        "fillRate": "Tỷ lệ tuyển"
+      },
+      "laborCostTrend": "Xu hướng chi phí LĐ",
+      "quarterlySummary": "Tóm tắt quý",
+      "successionPipeline": "Pipeline kế nhiệm"
     },
     "globalCompare": "So sánh toàn cầu",
     "greeting": ", have a great day!",
@@ -2657,7 +2682,23 @@
       "totalEmployees": "Tổng nhân viên",
       "turnoverRate": "Tỷ lệ nghỉ việc",
       "upcomingTermination": "Sắp nghỉ việc",
-      "openPositions": "Vị trí tuyển dụng"
+      "openPositions": "Vị trí tuyển dụng",
+      "actionTitle": "{name}, công việc cần xử lý hôm nay",
+      "actionKpiGroup": "KPI hành động HR Admin",
+      "actionKpi": {
+        "pendingApprovals": "Chờ duyệt",
+        "urgent": "Khẩn cấp",
+        "weekDeadline": "Hạn tuần này",
+        "onboardingWaiting": "Chờ onboarding"
+      },
+      "quickAction": {
+        "registerEmployee": "Đăng ký NV",
+        "runPayroll": "Chạy lương",
+        "reports": "Báo cáo"
+      },
+      "thisWeekSchedule": "Lịch tuần này",
+      "aiInsights": "AI Insights",
+      "quarterlyReviewShort": "Tỷ lệ đánh giá"
     },
     "kpi": {
       "leaveUsageRate": "Hàng năm Leave 사용률",
@@ -2699,7 +2740,18 @@
       "totalTeamMembers": "Tổng thành viên",
       "viewAllMeetings": "Xem tất cả →",
       "overdueLeaves": "Nghỉ phép quá hạn",
-      "teamLoadError": "Không thể tải tình trạng nhóm"
+      "teamLoadError": "Không thể tải tình trạng nhóm",
+      "actionTitle": "{name}, công việc của nhóm cần xử lý",
+      "actionKpiGroup": "KPI hành động Manager",
+      "actionKpi": {
+        "teamPending": "Chờ duyệt nhóm",
+        "reviewPending": "Đánh giá chưa xong",
+        "oneOnOne": "1:1 dự kiến",
+        "goalAchievement": "Đạt mục tiêu",
+        "reviewRate": "Tỷ lệ đánh giá"
+      },
+      "teamPerformance": "Hiệu suất nhóm",
+      "teamAttendance": "Chuyên cần nhóm"
     },
     "loadError": "Không thể tải dữ liệu",
     "monthlyTrend": "Hàng tháng Trend",
@@ -2777,7 +2829,35 @@
       "talentPool": "Nguồn nhân tài",
       "tenureDistribution": "Phân bổ thâm niên"
     },
-    "yearSuffix": "year"
+    "yearSuffix": "year",
+    "actionZone": "ACTION ZONE",
+    "monitorZone": "MONITOR ZONE",
+    "placeholder": {
+      "comingSoon": "Sắp ra mắt"
+    },
+    "emptyState": {
+      "onboardingAdmin": "Chưa có nhân viên mới",
+      "onboardingTeam": "Nhân viên mới sẽ xuất hiện ở đây",
+      "offboardingAdmin": "Không có quy trình thôi việc",
+      "taskComplete": "Hoàn thành tất cả công việc"
+    },
+    "progress": {
+      "tasks": "{completed}/{total} hoàn thành"
+    },
+    "onboardingTracker": {
+      "title": "Onboarding · Đang tiến hành",
+      "viewAll": "Quản lý",
+      "daysUntilStart": "D-{days}",
+      "daysSinceStart": "D+{days}",
+      "progressLabel": "{completed}/{total} hoàn thành"
+    },
+    "offboardingTracker": {
+      "title": "Thôi việc · Đang tiến hành",
+      "viewAll": "Quản lý",
+      "daysUntilExit": "D-{days}",
+      "progressLabel": "{completed}/{total} hoàn thành",
+      "overdue": "Quá hạn D+{days}"
+    }
   },
   "internalJobs": {
     "allCompanies": "[TODO:vi] 전체 법인",
