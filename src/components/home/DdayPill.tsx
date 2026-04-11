@@ -19,10 +19,11 @@ interface DdayPillProps {
 
 // ─── Constants ──────────────────────────────────────────────
 
+// Phase 4 Batch 7 — D17/D18 색감: bg는 밝은 alert-red/warning-bright, text는 WCAG AA
 const VARIANT_STYLES: Record<DdayVariant, { bg: string; text: string }> = {
-  alert: { bg: 'bg-error-container/20', text: 'text-error' },
-  delay: { bg: 'bg-[#FEF3C7]', text: 'text-[#B45309]' },
-  active: { bg: 'bg-primary-container/20', text: 'text-primary' },
+  alert: { bg: 'bg-alert-red/10', text: 'text-error' },       // 긴급 D-3 이내
+  delay: { bg: 'bg-warning-bright/15', text: 'text-[#B45309]' }, // 지연
+  active: { bg: 'bg-primary-container/20', text: 'text-primary' }, // 여유
 }
 
 const VARIANT_LABELS: Record<DdayVariant, string> = {

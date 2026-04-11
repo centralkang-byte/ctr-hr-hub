@@ -17,8 +17,10 @@
 | primary-container | #a5b4fc | Light variant, badge bg, highlight |
 | tertiary | #16a34a | Success, growth, positive signals |
 | tertiary-container | #86efac | Success badge bg |
-| destructive | #e11d48 | Error, rejection, delete |
-| warning | #B45309 | Pending, probation |
+| destructive | #e11d48 | Error, rejection, delete, 정적 count, 퇴사 |
+| alert-red | #ef4444 | 동적 alert, urgent pill, AI 인사이트 semantic bg only (정적 count는 destructive) |
+| warning | #B45309 | Pending, probation — **text only** (WCAG AA) |
+| warning-bright | #f59e0b | BG/icon/progress bar only (text는 warning #B45309) |
 | secondary | #64748b | Muted accent, metadata |
 | accent (badge) | #7c3aed | Offer, LOA, business trip |
 

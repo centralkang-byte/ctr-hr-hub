@@ -250,8 +250,9 @@ export const GET = withCache(withPermission(
       }
 
       if (user.role === ROLE.MANAGER) {
-        // home/summary는 직속 보고만 본다 (좁은 scope, 빠른 KPI 용도).
-        // /api/v1/manager-hub/summary의 cross-company 처리는 별도 batch에서 정정 예정.
+        // home/summary는 직속 보고만 본다 (company-scoped KPI 용도 — 아래 leave/oneOnOne/qr 쿼리가
+        // 모두 companyId 필터를 걸기 때문에 cross-company 직원은 어차피 필터아웃된다).
+        // cross-company dotted-line이 필요한 경우 manager-hub/summary의 getAllReportIds를 사용.
         const reportIds = await getDirectReportIds(user.employeeId)
         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 

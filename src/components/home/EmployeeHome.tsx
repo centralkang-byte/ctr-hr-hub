@@ -43,18 +43,27 @@ function ActionKpiCard({
 }: {
   label: string
   value: string | number
-  color?: 'primary' | 'error' | 'warning' | 'success'
+  color?: 'primary' | 'error' | 'alert' | 'warning-bright' | 'success'
 }) {
-  const colorMap: Record<string, string> = {
+  // D17/D18: text는 WCAG AA-safe, bg tint로 시각 강조
+  const textMap: Record<string, string> = {
     primary: 'text-primary',
     error: 'text-error',
-    warning: 'text-[#B45309]',
+    alert: 'text-error',
+    'warning-bright': 'text-[#B45309]',
     success: 'text-tertiary',
+  }
+  const bgMap: Record<string, string> = {
+    primary: 'bg-muted/50',
+    error: 'bg-muted/50',
+    alert: 'bg-alert-red/10',
+    'warning-bright': 'bg-warning-bright/15',
+    success: 'bg-muted/50',
   }
   return (
     <div
       aria-label={`${label}: ${value}`}
-      className="rounded-lg bg-muted/50 p-4 text-center"
+      className={cn('rounded-lg p-4 text-center', bgMap[color])}
     >
       <p
         className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground"
@@ -65,7 +74,7 @@ function ActionKpiCard({
       <p
         className={cn(
           'mt-1 font-display text-2xl font-extrabold tabular-nums',
-          colorMap[color],
+          textMap[color],
         )}
         aria-hidden="true"
       >
@@ -202,12 +211,12 @@ export function EmployeeHome({ user }: Props) {
             <ActionKpiCard
               label={t('employee.actionKpi.overtime')}
               value="-"
-              color="warning"
+              color="warning-bright"
             />
             <ActionKpiCard
               label={t('employee.actionKpi.training')}
               value="-"
-              color="warning"
+              color="warning-bright"
             />
           </div>
         </div>

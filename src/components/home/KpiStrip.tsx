@@ -33,23 +33,26 @@ interface KpiStripProps {
 
 // ─── Constants ──────────────────────────────────────────────
 
+// Phase 4 Batch 7 — 목업 색감 (D17/D18):
+// BG tint는 warning-bright/alert-red (밝은 amber/red, 시각 강조용)
+// Text는 기존 #B45309/text-error 유지 (WCAG AA contrast)
 const CARD_BG: Record<NonNullable<KpiItem['variant']>, string> = {
   default: 'bg-card',
   accent: 'bg-primary text-white',
-  alert: 'bg-error-container/20',
-  warn: 'bg-[#FEF3C7]',
+  alert: 'bg-alert-red/10',
+  warn: 'bg-warning-bright/15',
 }
 
 const DELTA_COLOR: Record<NonNullable<KpiItem['deltaVariant']>, string> = {
   good: 'text-tertiary',
   bad: 'text-error',
-  warn: 'text-[#B45309]',
+  warn: 'text-[#B45309]',  // text 용도 — WCAG AA
   muted: 'text-muted-foreground',
 }
 
 const BADGE_STYLES: Record<string, string> = {
-  error: 'bg-error-container/20 text-error',
-  warning: 'bg-[#FEF3C7] text-[#B45309]',
+  error: 'bg-alert-red/10 text-error',
+  warning: 'bg-warning-bright/15 text-[#B45309]',  // bg 강조 + text 가독성
   info: 'bg-primary-container/20 text-primary',
 }
 

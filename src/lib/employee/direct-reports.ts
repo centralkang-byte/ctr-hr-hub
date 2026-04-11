@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import { getCrossCompanyReadFilter } from '@/lib/api/cross-company-access'
 
 /**
  * Get employee IDs of direct reports via position hierarchy.
@@ -33,6 +34,38 @@ export async function getDirectReportIds(managerId: string): Promise<string[]> {
 
   // Deduplicate (same employee could report via multiple positions)
   return [...new Set(reportAsgns.map((a) => a.employeeId))]
+}
+
+/**
+ * Canonical "모든 팀원" resolver — direct reports + cross-company dotted-line.
+ * Used by home/summary and manager-hub/summary to ensure both routes see the
+ * identical team scope. Without this helper, home/summary missed cross-company
+ * dotted-line reports that manager-hub/summary already included (Batch 7 D1).
+ *
+ * - Direct reports: via `getDirectReportIds` (primary + secondary positions)
+ * - Cross-company: via `getCrossCompanyReadFilter` (dotted line + secondary in other company)
+ * - Deduplicated Set → Array
+ */
+export async function getAllReportIds(args: {
+  managerId: string
+  role: string
+  companyId: string
+}): Promise<string[]> {
+  const directIds = await getDirectReportIds(args.managerId)
+  const crossFilter = await getCrossCompanyReadFilter({
+    callerEmployeeId: args.managerId,
+    callerRole: args.role,
+    callerCompanyId: args.companyId,
+  })
+  const crossIds: string[] = crossFilter
+    ? (
+        await prisma.employee.findMany({
+          where: crossFilter,
+          select: { id: true },
+        })
+      ).map((r) => r.id)
+    : []
+  return [...new Set([...directIds, ...crossIds])]
 }
 
 /**

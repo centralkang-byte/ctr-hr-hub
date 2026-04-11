@@ -68,6 +68,7 @@ const GROUP_CONFIG: Record<
   TaskGroup,
   { Icon: React.ElementType; labelKey: string; color: string }
 > = {
+  // D17/D18: 10px 헤더 text는 WCAG AA-safe 색상 유지 (bright tokens는 bg/icon 전용)
   urgent: { Icon: AlertCircle, labelKey: 'taskHub.groupUrgent', color: 'text-error' },
   week: { Icon: Flag, labelKey: 'taskHub.groupWeek', color: 'text-[#B45309]' },
   month: { Icon: Calendar, labelKey: 'taskHub.groupMonth', color: 'text-primary' },

@@ -4,8 +4,7 @@ import { apiSuccess } from '@/lib/api'
 import { isAppError, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
-import { getCrossCompanyReadFilter } from '@/lib/api/cross-company-access'
-import { getDirectReportIds } from '@/lib/employee/direct-reports'
+import { getAllReportIds } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -41,28 +40,19 @@ export const GET = withPermission(
       const managerId = user.employeeId
       const includeMembers = req.nextUrl.searchParams.get('includeMembers') === 'true'
 
-      // Position 기반 직속 보고라인 (primary + secondary 모두 지원)
-      const reportIds = await getDirectReportIds(managerId)
+      // D1: canonical helper — direct reports + cross-company dotted-line 통합.
+      // home/summary와 manager-hub/summary가 동일 팀 정의 사용 (Phase 4 Batch 7).
+      const allReportIds = await getAllReportIds({
+        managerId,
+        role: user.role,
+        companyId,
+      })
 
       // teamName용 primary 부서명 조회
       const managerAsgn = await prisma.employeeAssignment.findFirst({
         where: { employeeId: managerId, isPrimary: true, endDate: null },
         select: { position: { select: { department: { select: { name: true } } } } },
       })
-
-      // Cross-company: include employees from secondary/dotted-line relationships
-      const crossCompanyFilter = await getCrossCompanyReadFilter({
-        callerEmployeeId: managerId,
-        callerRole: user.role,
-        callerCompanyId: companyId,
-      })
-      const crossCompanyIds: string[] = crossCompanyFilter
-        ? await prisma.employee.findMany({
-            where: crossCompanyFilter,
-            select: { id: true },
-          }).then((rows) => rows.map((r) => r.id))
-        : []
-      const allReportIds = [...new Set([...reportIds, ...crossCompanyIds])]
 
       // Headcount
       const headcount = await prisma.employee.count({

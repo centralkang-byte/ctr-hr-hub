@@ -61,12 +61,17 @@ const config: Config = {
 					'6': 'hsl(var(--chart-6))',
 				},
 
-				// Kinetic Atelier 확장 토큰 (CSS variable 기반)
+				// V3 Dashboard 확장 토큰 (CSS variable 기반)
 				tertiary: {
 					DEFAULT: 'hsl(var(--tertiary))',
 					container: 'hsl(var(--tertiary-container))',
 				},
 				'on-tertiary-container': 'hsl(var(--on-tertiary-container))',
+				// Phase 4 Batch 7 — 목업 색감 충실도 (D17/D18)
+				// warning-bright: BG/icon/progress bar only (text는 ctr-warning #B45309 사용)
+				// alert-red: 동적 alert, urgent pill, border-left semantic only
+				'warning-bright': 'hsl(var(--warning-bright))',
+				'alert-red': 'hsl(var(--alert-red))',
 				'surface-container-low': 'hsl(var(--surface-container-low))',
 				'surface-container-high': 'hsl(var(--surface-container-high))',
 				'surface-container': 'hsl(var(--surface-container))',

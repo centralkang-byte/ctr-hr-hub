@@ -155,8 +155,8 @@ function TaskCard({ task, user, onAction, processing }: TaskCardProps) {
 
   // Urgency border highlight
   let borderStyle = 'border border-border'
-  if (task.priority === UnifiedTaskPriority.URGENT) borderStyle = 'border border-destructive/20 border-l-4 border-l-[#EF4444]'
-  else if (task.priority === UnifiedTaskPriority.HIGH) borderStyle = 'border border-amber-300 border-l-4 border-l-[#F59E0B]'
+  if (task.priority === UnifiedTaskPriority.URGENT) borderStyle = 'border border-destructive/20 border-l-4 border-l-alert-red'
+  else if (task.priority === UnifiedTaskPriority.HIGH) borderStyle = 'border border-amber-300 border-l-4 border-l-warning-bright'
 
   return (
     <div

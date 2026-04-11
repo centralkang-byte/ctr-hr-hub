@@ -44,18 +44,27 @@ function ActionKpiCard({
 }: {
   label: string
   value: string | number
-  color?: 'primary' | 'error' | 'warning' | 'success'
+  color?: 'primary' | 'error' | 'alert' | 'warning-bright' | 'success'
 }) {
-  const colorMap: Record<string, string> = {
+  // D17/D18: text는 WCAG AA-safe, bg tint로 시각 강조 (bright tokens는 bg/icon 전용)
+  const textMap: Record<string, string> = {
     primary: 'text-primary',
-    error: 'text-error',
-    warning: 'text-[#B45309]',
-    success: 'text-tertiary',
+    error: 'text-error',              // #e11d48 — 정적 count, 결재 대기
+    alert: 'text-error',              // alert도 text는 accessible한 #e11d48 사용
+    'warning-bright': 'text-[#B45309]', // bright KPI도 text는 WCAG AA
+    success: 'text-tertiary',         // #16a34a
+  }
+  const bgMap: Record<string, string> = {
+    primary: 'bg-muted/50',
+    error: 'bg-muted/50',
+    alert: 'bg-alert-red/10',         // bg tint로 시각 강조
+    'warning-bright': 'bg-warning-bright/15', // bg tint로 시각 강조
+    success: 'bg-muted/50',
   }
   return (
     <div
       aria-label={`${label}: ${value}`}
-      className="rounded-lg bg-muted/50 p-4 text-center"
+      className={cn('rounded-lg p-4 text-center', bgMap[color])}
     >
       <p
         className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground"
@@ -66,7 +75,7 @@ function ActionKpiCard({
       <p
         className={cn(
           'mt-1 font-display text-2xl font-extrabold tabular-nums',
-          colorMap[color],
+          textMap[color],
         )}
         aria-hidden="true"
       >
@@ -170,12 +179,12 @@ export function HrAdminHome({ user }: Props) {
             <ActionKpiCard
               label={t('hrAdmin.actionKpi.urgent')}
               value={summary?.urgentCount ?? '-'}
-              color="error"
+              color="alert"
             />
             <ActionKpiCard
               label={t('hrAdmin.actionKpi.weekDeadline')}
               value={summary?.weekDeadlineCount ?? '-'}
-              color="warning"
+              color="warning-bright"
             />
             <ActionKpiCard
               label={t('hrAdmin.actionKpi.onboardingWaiting')}
