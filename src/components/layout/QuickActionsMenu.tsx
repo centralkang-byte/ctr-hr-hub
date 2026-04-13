@@ -131,7 +131,7 @@ export function QuickActionsMenu({ userRole }: QuickActionsMenuProps) {
                 onClick={() => setOpen((v) => !v)}
                 className="relative rounded-full !bg-primary/10 text-primary hover:!bg-primary/20"
             >
-                <Plus className="h-5 w-5" />
+                <Plus className="h-5 w-5" strokeWidth={1.5} />
             </Button>
 
             {/* Dropdown */}

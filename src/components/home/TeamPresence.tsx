@@ -53,8 +53,8 @@ interface TeamSummaryData {
 
 const STATUS_TAG: Record<string, { label: string; class: string }> = {
   PRESENT: { label: 'Present', class: 'bg-tertiary-container/30 text-tertiary' },
-  LEAVE: { label: 'Leave', class: 'bg-[#FEF3C7] text-[#B45309]' },
-  HALF_DAY: { label: 'Half-day', class: 'bg-[#FEF3C7] text-[#B45309]' },
+  LEAVE: { label: 'Leave', class: 'bg-warning-bright/15 text-[#B45309]' },
+  HALF_DAY: { label: 'Half-day', class: 'bg-warning-bright/15 text-[#B45309]' },
   VACATION: { label: 'Vacation', class: 'bg-primary-container/20 text-primary' },
   ABSENT: { label: 'Absent', class: 'bg-error-container/20 text-error' },
 }

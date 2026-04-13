@@ -59,7 +59,7 @@ export function LanguageSwitcher({ countryCode }: LanguageSwitcherProps) {
         disabled={isPending}
         className="gap-1.5 text-xs"
       >
-        <Globe className="h-3.5 w-3.5" />
+        <Globe className="h-3.5 w-3.5" strokeWidth={1.5} />
         <span>{localeFlags[otherLocale]} {localeNames[otherLocale]}</span>
       </Button>
     )
@@ -70,7 +70,7 @@ export function LanguageSwitcher({ countryCode }: LanguageSwitcherProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" disabled={isPending} className="gap-1.5 text-xs">
-          <Globe className="h-3.5 w-3.5" />
+          <Globe className="h-3.5 w-3.5" strokeWidth={1.5} />
           <span>{localeFlags[locale]} {localeNames[locale]}</span>
         </Button>
       </DropdownMenuTrigger>

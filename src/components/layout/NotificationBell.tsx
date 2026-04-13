@@ -120,7 +120,7 @@ export function NotificationBell() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="relative" aria-label={t('title')}>
-          <Bell className="h-5 w-5 text-ctr-gray-500" />
+          <Bell className="h-5 w-5 text-ctr-gray-500" strokeWidth={1.5} />
           {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 flex min-w-[20px] h-5 px-1 items-center justify-center rounded-full bg-destructive text-[11px] font-medium leading-none text-white">
               {unreadCount > 99 ? '99+' : unreadCount}
@@ -141,9 +141,9 @@ export function NotificationBell() {
               disabled={markingAll}
             >
               {markingAll ? (
-                <Loader2 className="h-3 w-3 animate-spin" />
+                <Loader2 className="h-3 w-3 animate-spin" strokeWidth={1.5} />
               ) : (
-                <CheckCheck className="h-3 w-3" />
+                <CheckCheck className="h-3 w-3" strokeWidth={1.5} />
               )}
               {t('markAllRead')}
             </Button>
@@ -155,7 +155,7 @@ export function NotificationBell() {
         <ScrollArea className="max-h-[400px]">
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" strokeWidth={1.5} />
             </div>
           ) : notifications.length === 0 ? (
             <div className="py-8 text-center text-sm text-muted-foreground">

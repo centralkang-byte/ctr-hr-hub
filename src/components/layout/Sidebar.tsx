@@ -144,7 +144,7 @@ export function Sidebar({ user, onSignOut, countryCode, mode = 'desktop', onItem
             }}
             className="mx-3 mb-2 flex items-center gap-2 rounded-lg border border-border/15 bg-muted px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted/80 transition-colors"
           >
-            <Search className="h-3.5 w-3.5" />
+            <Search className="h-3.5 w-3.5" strokeWidth={1.5} />
             <span className="flex-1 text-left">{'검색...'}</span>
             <kbd className="rounded bg-background px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">{isMacOS ? '⌘K' : 'Ctrl K'}</kbd>
           </button>
@@ -158,7 +158,7 @@ export function Sidebar({ user, onSignOut, countryCode, mode = 'desktop', onItem
             {!isCollapsed && favoriteItems.length > 0 && (
               <div className="mb-1">
                 <div className="flex items-center gap-2 px-4 py-2">
-                  <Star className="h-[18px] w-[18px] text-amber-500 fill-amber-500" />
+                  <Star className="h-[18px] w-[18px] text-amber-500 fill-amber-500" strokeWidth={1.5} />
                   <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                     {getLabel('favorites.label', '즐겨찾기')}
                   </span>
@@ -217,8 +217,8 @@ export function Sidebar({ user, onSignOut, countryCode, mode = 'desktop', onItem
             aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {isCollapsed
-              ? <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              : <ChevronLeft  className="h-4 w-4 text-muted-foreground" />}
+              ? <ChevronRight className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
+              : <ChevronLeft  className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />}
           </button>
         )}
 
@@ -243,7 +243,7 @@ export function Sidebar({ user, onSignOut, countryCode, mode = 'desktop', onItem
                 className="shrink-0 rounded p-1 hover:bg-muted"
                 aria-label={tAuth('logout')}
               >
-                <LogOut className="h-4 w-4 text-muted-foreground" />
+                <LogOut className="h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
               </button>
             </TooltipTrigger>
             <TooltipContent side="right" className="text-xs">{tAuth('logout')}</TooltipContent>
@@ -308,8 +308,8 @@ function SidebarSection({
             </span>
           </div>
           {expanded
-            ? <ChevronUp   className="h-3 w-3 text-muted-foreground" />
-            : <ChevronDown className="h-3 w-3 text-muted-foreground" />}
+            ? <ChevronUp   className="h-3 w-3 text-muted-foreground" strokeWidth={1.5} />
+            : <ChevronDown className="h-3 w-3 text-muted-foreground" strokeWidth={1.5} />}
         </button>
       )}
 
@@ -384,7 +384,7 @@ function ExpandedNavItem({
           <div className="mx-2 flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground">
             <item.icon className="h-[18px] w-[18px] shrink-0" />
             <span className="truncate flex-1">{label}</span>
-            <Lock className="ml-auto h-3 w-3 shrink-0" />
+            <Lock className="ml-auto h-3 w-3 shrink-0" strokeWidth={1.5} />
           </div>
         </TooltipTrigger>
         <TooltipContent side="right" className="text-xs">준비 중입니다</TooltipContent>

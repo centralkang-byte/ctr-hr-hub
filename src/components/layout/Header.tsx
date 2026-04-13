@@ -129,7 +129,7 @@ export function Header({ user, companies, onMenuClick }: HeaderProps) {
             className="p-2 -ml-1 rounded-lg text-muted-foreground hover:bg-muted transition-colors md:hidden"
             aria-label="Open menu"
           >
-            <Menu size={22} />
+            <Menu size={22} strokeWidth={1.5} />
           </button>
         )}
 
@@ -181,7 +181,7 @@ export function Header({ user, companies, onMenuClick }: HeaderProps) {
           className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-muted transition-colors"
           onClick={() => router.push('/directory')}
         >
-          <Users className="h-5 w-5" />
+          <Users className="h-5 w-5" strokeWidth={1.5} />
         </button>
 
         {/* Notification Bell */}
@@ -206,16 +206,16 @@ export function Header({ user, companies, onMenuClick }: HeaderProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem className="gap-2">
-              <User className="h-4 w-4" />
+              <User className="h-4 w-4" strokeWidth={1.5} />
               <span>{tAuth('myProfile')}</span>
             </DropdownMenuItem>
             <DropdownMenuItem className="gap-2">
-              <Settings className="h-4 w-4" />
+              <Settings className="h-4 w-4" strokeWidth={1.5} />
               <span>{t('settings')}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 text-destructive" onClick={handleSignOut}>
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-4 w-4" strokeWidth={1.5} />
               <span>{tAuth('logout')}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>

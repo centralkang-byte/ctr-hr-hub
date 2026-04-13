@@ -67,7 +67,7 @@ export function MobileDrawer({ isOpen, onClose, children }: MobileDrawerProps) {
           className="absolute top-3.5 right-3 z-10 p-1.5 rounded-lg text-muted-foreground hover:bg-muted transition-colors"
           aria-label="Close menu"
         >
-          <X size={20} />
+          <X size={20} strokeWidth={1.5} />
         </button>
 
         {/* Sidebar content rendered as children */}
