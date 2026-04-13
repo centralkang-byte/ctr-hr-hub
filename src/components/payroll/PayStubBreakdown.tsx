@@ -98,7 +98,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
             style={{ width: `${netRatio}%` }}
           />
           <div
-            className="bg-[#999] transition-all"
+            className="bg-muted-foreground transition-all"
             style={{ width: `${deductionRatio}%` }}
           />
         </div>

@@ -243,7 +243,7 @@ export default function ApplicantListClient({
           </div>
           <button
             onClick={handleSearch}
-            className="px-4 py-2 text-sm font-medium bg-foreground text-white rounded-lg hover:bg-[#333] transition-colors duration-150"
+            className="px-4 py-2 text-sm font-medium bg-foreground text-white rounded-lg hover:opacity-90 transition-colors duration-150"
           >
             {t('searchButton')}
           </button>

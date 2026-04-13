@@ -170,14 +170,14 @@ export function MyLeaveClient({ user: _user }: { user: SessionUser }) {
         </div>
         {/* 연도 선택기 */}
         <div className="flex items-center gap-2">
-          <button onClick={() => setYear((y) => y - 1)} className="p-1.5 hover:bg-muted rounded-lg">
+          <button onClick={() => setYear((y) => y - 1)} className="p-1.5 hover:bg-muted rounded-lg motion-safe:transition-all">
             <ChevronLeft className="w-4 h-4 text-muted-foreground" />
           </button>
           <span className="text-lg font-bold text-foreground min-w-16 text-center">{year}{tCommon('unit.year')}</span>
           <button
             onClick={() => setYear((y) => y + 1)}
             disabled={year >= new Date().getFullYear()}
-            className="p-1.5 hover:bg-muted rounded-lg disabled:opacity-40"
+            className="p-1.5 hover:bg-muted rounded-lg disabled:opacity-40 motion-safe:transition-all"
           >
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
           </button>

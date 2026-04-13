@@ -72,6 +72,7 @@ const config: Config = {
 				// alert-red: 동적 alert, urgent pill, border-left semantic only
 				'warning-bright': 'hsl(var(--warning-bright))',
 				'alert-red': 'hsl(var(--alert-red))',
+				'badge-accent': 'hsl(var(--badge-accent))',
 				'surface-container-low': 'hsl(var(--surface-container-low))',
 				'surface-container-high': 'hsl(var(--surface-container-high))',
 				'surface-container': 'hsl(var(--surface-container))',

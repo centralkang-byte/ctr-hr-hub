@@ -16,17 +16,17 @@ const badgeVariants = cva(
           "bg-destructive/10 text-destructive",
         outline: "border border-border/15 text-foreground",
         success:
-          "bg-[#16a34a]/10 text-[#15803d]",
+          "bg-tertiary/10 text-[#15803d] dark:text-tertiary",
         warning:
-          "bg-[#b45309]/10 text-[#b45309]",
+          "bg-[#b45309]/10 text-ctr-warning",
         error:
-          "bg-[#e11d48]/10 text-[#e11d48]",
+          "bg-destructive/10 text-destructive",
         info:
-          "bg-[#6366f1]/10 text-[#4f46e5]",
+          "bg-primary/10 text-primary-dim",
         neutral:
-          "bg-[#f1f5f9] text-[#64748b]",
+          "bg-muted text-muted-foreground",
         accent:
-          "bg-[#7c3aed]/10 text-[#7c3aed]",
+          "bg-badge-accent/10 text-badge-accent",
       },
     },
     defaultVariants: {

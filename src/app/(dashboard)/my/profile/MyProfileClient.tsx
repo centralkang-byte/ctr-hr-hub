@@ -259,7 +259,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
         
         <div className="relative shrink-0">
-          <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-[#5E81F4] to-[#4B6DE0] flex items-center justify-center text-white text-3xl font-bold shadow-md">
+          <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-primary to-primary-dim flex items-center justify-center text-white text-3xl font-bold shadow-md">
             {employee.name.slice(0, 1)}
           </div>
           <button
@@ -284,7 +284,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
               </p>
             </div>
             <div className="text-right">
-              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#6366f1]/10 text-[#4f46e5]">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary-dim">
                 {t('profile.statusActive')}
               </span>
             </div>
@@ -444,7 +444,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                       <button onClick={saveBio} className={`flex items-center gap-1 ${BUTTON_VARIANTS.primary} px-3 py-1.5 rounded-lg text-sm font-medium`}>
                         <Save className="w-3.5 h-3.5" /> {tCommon('save')}
                       </button>
-                      <button onClick={() => setEditingBio(false)} className="flex items-center gap-1 border border-border text-muted-foreground px-3 py-1.5 rounded-lg text-sm hover:bg-muted">
+                      <button onClick={() => setEditingBio(false)} className="flex items-center gap-1 border border-border text-muted-foreground px-3 py-1.5 rounded-lg text-sm hover:bg-muted motion-safe:transition-all">
                         <X className="w-3.5 h-3.5" /> {tCommon('cancel')}
                       </button>
                     </div>
@@ -571,7 +571,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
           {employee.employeeHistories.length === 0 ? (
             <EmptyState title={t('profile.emptyCareerTitle')} description={t('profile.emptyCareerDesc')} />
           ) : (
-            <div className="space-y-8 relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-[#EDF1FE] before:via-[#5E81F4]/20 before:to-transparent">
+            <div className="space-y-8 relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-primary/10 before:via-primary/20 before:to-transparent">
               {employee.employeeHistories.map((hist) => (
                 <div key={hist.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                   <div className="flex items-center justify-center w-8 h-8 rounded-full border-4 border-white bg-primary text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm relative z-10 mx-auto">
@@ -602,7 +602,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
       {/* ── Tab: Compensation (보상 및 급여) ── */}
       {activeTab === 'compensation' && (
         <div className="space-y-6">
-          <div className={`${CARD_STYLES.padded} bg-gradient-to-br from-[#111] to-[#333] text-white border-none shadow-lg relative overflow-hidden`}>
+          <div className={`${CARD_STYLES.padded} bg-gradient-to-br from-foreground to-foreground/80 text-white border-none shadow-lg relative overflow-hidden`}>
             {/* Decals */}
             <DollarSign className="absolute -right-10 -bottom-10 w-48 h-48 text-white/5 pointer-events-none" />
             
@@ -750,7 +750,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
               <button onClick={addEmergencyContact} className={`flex-1 ${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary}`}>
                 {tCommon('save')}
               </button>
-              <button onClick={() => setShowEcForm(false)} className={`flex-1 border border-border text-muted-foreground rounded-xl text-sm font-medium hover:bg-muted py-2`}>
+              <button onClick={() => setShowEcForm(false)} className={`flex-1 border border-border text-muted-foreground rounded-xl text-sm font-medium hover:bg-muted py-2 motion-safe:transition-all`}>
                 {tCommon('cancel')}
               </button>
             </div>

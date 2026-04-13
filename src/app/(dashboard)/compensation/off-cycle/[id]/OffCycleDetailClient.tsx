@@ -269,7 +269,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
             <p className="text-xs text-muted-foreground">{t('offCycle.detail.changePct')}</p>
             <p className={cn(
               'font-mono tabular-nums font-semibold',
-              detail.changePct > 0 ? 'text-[#059669]' : detail.changePct < 0 ? 'text-[#DC2626]' : 'text-muted-foreground',
+              detail.changePct > 0 ? 'text-tertiary' : detail.changePct < 0 ? 'text-destructive' : 'text-muted-foreground',
             )}>
               {detail.changePct >= 0 ? '+' : ''}{detail.changePct.toFixed(1)}%
             </p>
@@ -296,7 +296,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
               <p className="text-xs text-muted-foreground">{t('offCycle.form.compaRatioAfter')}</p>
               <p className={cn(
                 'font-mono tabular-nums font-semibold',
-                proposedCompaRatio > 120 ? 'text-[#DC2626]' : 'text-foreground',
+                proposedCompaRatio > 120 ? 'text-destructive' : 'text-foreground',
               )}>
                 {proposedCompaRatio.toFixed(1)}%
               </p>

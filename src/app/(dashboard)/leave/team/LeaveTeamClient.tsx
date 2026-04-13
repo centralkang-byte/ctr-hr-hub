@@ -364,14 +364,14 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                         {isPending && (
                           <div className="flex items-center gap-2">
                             <button
-                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-primary text-primary hover:bg-primary/10 flex items-center"
+                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-primary text-primary hover:bg-primary/10 flex items-center motion-safe:transition-all"
                               onClick={() => handleApprove(req.id)}
                             >
                               <Check className="mr-1 h-4 w-4" />
                               {t('team.approve')}
                             </button>
                             <button
-                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-red-500 text-red-500 hover:bg-destructive/5 flex items-center"
+                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-red-500 text-red-500 hover:bg-destructive/5 flex items-center motion-safe:transition-all"
                               onClick={() => openRejectDialog(req.id)}
                             >
                               <X className="mr-1 h-4 w-4" />

@@ -569,7 +569,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('admin.bulk.year')}</Label>
                 <Input type="number" value={bulkForm.year} onChange={(e) => setBulkForm((f) => ({ ...f, year: e.target.value }))} min={2024} max={currentYear + 1} />

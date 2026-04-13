@@ -245,7 +245,7 @@ export default function TeamGoalsClient({
       {/* Empty state */}
       {!loading && members.length === 0 && (
         <div className="rounded-xl border border-dashed border-border bg-background py-20 text-center">
-          <Users className="mx-auto h-12 w-12 text-[#CCC]" />
+          <Users className="mx-auto h-12 w-12 text-border" />
           <p className="mt-4 text-muted-foreground">{t('noTeamMembersOrGoals')}</p>
         </div>
       )}

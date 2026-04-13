@@ -486,7 +486,7 @@ export default function AdjustmentsClient({user }: Props) {
                         <form ref={formRef} onSubmit={handleCreate} className="px-6 py-5 space-y-4">
                             {/* Employee */}
                             <div>
-                                <label className="block text-xs font-semibold text-[#444] mb-1.5">{t('adj.targetEmployee')}</label>
+                                <label className="block text-xs font-semibold text-foreground mb-1.5">{t('adj.targetEmployee')}</label>
                                 <div className="relative">
                                     <select
                                         value={form.employeeId}
@@ -506,7 +506,7 @@ export default function AdjustmentsClient({user }: Props) {
                             {/* Type + Category row */}
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-xs font-semibold text-[#444] mb-1.5">{t('adj.typeLabel')}</label>
+                                    <label className="block text-xs font-semibold text-foreground mb-1.5">{t('adj.typeLabel')}</label>
                                     <div className="relative">
                                         <select
                                             value={form.type}
@@ -521,7 +521,7 @@ export default function AdjustmentsClient({user }: Props) {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-[#444] mb-1.5">{t('adj.categoryLabel')}</label>
+                                    <label className="block text-xs font-semibold text-foreground mb-1.5">{t('adj.categoryLabel')}</label>
                                     <div className="relative">
                                         <select
                                             value={form.category}
@@ -537,7 +537,7 @@ export default function AdjustmentsClient({user }: Props) {
 
                             {/* Amount */}
                             <div>
-                                <label className="block text-xs font-semibold text-[#444] mb-1.5">
+                                <label className="block text-xs font-semibold text-foreground mb-1.5">
                                     {t('amount_krw')}
                                     <span className="font-normal text-muted-foreground ml-1">{t('adj.amountHint')}</span>
                                 </label>
@@ -553,7 +553,7 @@ export default function AdjustmentsClient({user }: Props) {
 
                             {/* Description */}
                             <div>
-                                <label className="block text-xs font-semibold text-[#444] mb-1.5">{t('adj.reasonLabel')}</label>
+                                <label className="block text-xs font-semibold text-foreground mb-1.5">{t('adj.reasonLabel')}</label>
                                 <textarea
                                     value={form.description}
                                     onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
@@ -566,7 +566,7 @@ export default function AdjustmentsClient({user }: Props) {
 
                             {/* Evidence URL */}
                             <div>
-                                <label className="block text-xs font-semibold text-[#444] mb-1.5">
+                                <label className="block text-xs font-semibold text-foreground mb-1.5">
                                     {t('adj.evidenceUrlLabel')}
                                     <span className="font-normal text-muted-foreground ml-1">{t('adj.optional')}</span>
                                 </label>

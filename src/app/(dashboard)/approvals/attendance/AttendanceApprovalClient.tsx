@@ -188,7 +188,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
         </div>
         <button
           onClick={load}
-          className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg hover:bg-muted text-sm text-muted-foreground"
+          className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg hover:bg-muted text-sm text-muted-foreground motion-safe:transition-all"
         >
           <RefreshCw className="w-4 h-4" />
           {tc('refresh')}

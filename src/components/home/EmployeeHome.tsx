@@ -194,7 +194,7 @@ export function EmployeeHome({ user }: Props) {
         <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
           <DashboardTaskList user={user} />
           <div
-            className="grid grid-cols-2 gap-3 content-start"
+            className="grid grid-cols-1 sm:grid-cols-2 gap-3 content-start"
             role="group"
             aria-label={t('employee.actionKpiGroup')}
           >

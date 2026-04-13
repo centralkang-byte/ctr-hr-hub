@@ -274,7 +274,7 @@ export function ScheduleAdjustmentModal({
 
                 {/* Target Day */}
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-foreground">
+                  <label htmlFor="schedule-apply-day" className="text-sm font-semibold text-foreground">
                     <span className="flex items-center gap-1.5">
                       <CalendarDays className="h-4 w-4 text-muted-foreground" />
                       {t('applyDay')}
@@ -282,6 +282,7 @@ export function ScheduleAdjustmentModal({
                   </label>
                   <div className="relative">
                     <select
+                      id="schedule-apply-day"
                       value={selectedDay}
                       onChange={(e) => setSelectedDay(e.target.value)}
                       className="w-full appearance-none rounded-xl border border-border bg-card px-4 py-2.5 pr-10 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
@@ -296,8 +297,9 @@ export function ScheduleAdjustmentModal({
 
                 {/* Note */}
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-foreground">{t('reasonOptional')}</label>
+                  <label htmlFor="schedule-note" className="text-sm font-semibold text-foreground">{t('reasonOptional')}</label>
                   <textarea
+                    id="schedule-note"
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     placeholder={t('reasonPlaceholder')}

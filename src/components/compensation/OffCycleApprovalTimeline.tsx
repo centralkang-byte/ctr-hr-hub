@@ -43,13 +43,13 @@ const STEP_VARIANT_MAP: Record<ApprovalStepStatus, StatusVariant> = {
 function StepIcon({ status }: { status: ApprovalStepStatus }) {
   switch (status) {
     case 'APPROVED':
-      return <Check className="h-4 w-4 text-[#059669]" />
+      return <Check className="h-4 w-4 text-tertiary" />
     case 'REJECTED':
-      return <X className="h-4 w-4 text-[#DC2626]" />
+      return <X className="h-4 w-4 text-destructive" />
     case 'PENDING':
-      return <Clock className="h-4 w-4 text-[#D97706]" />
+      return <Clock className="h-4 w-4 text-ctr-warning" />
     default:
-      return <Circle className="h-4 w-4 text-[#64748B]" />
+      return <Circle className="h-4 w-4 text-muted-foreground" />
   }
 }
 

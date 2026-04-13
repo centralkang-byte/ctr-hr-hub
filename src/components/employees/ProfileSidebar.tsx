@@ -147,8 +147,8 @@ export function ProfileSidebar({
           )}
         </div>
         <h2 className="text-lg font-bold text-foreground tracking-ctr">{name}</h2>
-        {nameEn && <p className="text-xs text-[#999] mt-0.5">{nameEn}</p>}
-        {subtitle && <p className="text-sm text-[#666] mt-1">{subtitle}</p>}
+        {nameEn && <p className="text-xs text-muted-foreground mt-0.5">{nameEn}</p>}
+        {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}
       </div>
 
       <div className="divide-y divide-border">
@@ -157,14 +157,14 @@ export function ProfileSidebar({
           <div className="py-4 space-y-1.5 text-sm">
             {company && <p className="font-medium text-foreground">{company}</p>}
             {(division || team) && (
-              <p className="text-[#555]">
+              <p className="text-muted-foreground">
                 {[division, team].filter(Boolean).join(' / ')}
               </p>
             )}
             {locationName && (
               <div className="flex items-center gap-1.5">
-                <MapPin size={13} className="text-[#999] shrink-0" strokeWidth={1.5} />
-                <span className="text-[#555]">{locationName}</span>
+                <MapPin size={13} className="text-muted-foreground shrink-0" strokeWidth={1.5} />
+                <span className="text-muted-foreground">{locationName}</span>
               </div>
             )}
           </div>
@@ -173,26 +173,26 @@ export function ProfileSidebar({
         {/* 연락처 + 기본 정보 */}
         <div className="py-4 space-y-2.5">
           <div className="flex items-center gap-2">
-            <Mail size={15} className="text-[#999] shrink-0" strokeWidth={1.5} />
-            <span className="text-sm text-[#333] truncate">{email}</span>
+            <Mail size={15} className="text-muted-foreground shrink-0" strokeWidth={1.5} />
+            <span className="text-sm text-foreground truncate">{email}</span>
           </div>
           {phone && (
             <div className="flex items-center gap-2">
-              <Phone size={15} className="text-[#999] shrink-0" strokeWidth={1.5} />
-              <span className="text-sm text-[#333]">{phone}</span>
+              <Phone size={15} className="text-muted-foreground shrink-0" strokeWidth={1.5} />
+              <span className="text-sm text-foreground">{phone}</span>
             </div>
           )}
           {birthDate && (
             <div className="flex items-start gap-2">
-              <span className="text-xs text-[#999] w-14 shrink-0 pt-0.5">생년월일</span>
-              <span className="text-sm text-[#333]">{formatDate(birthDate)}</span>
+              <span className="text-xs text-muted-foreground w-14 shrink-0 pt-0.5">생년월일</span>
+              <span className="text-sm text-foreground">{formatDate(birthDate)}</span>
             </div>
           )}
           <div className="flex items-start gap-2">
-            <Calendar size={15} className="text-[#999] shrink-0 mt-0.5" strokeWidth={1.5} />
+            <Calendar size={15} className="text-muted-foreground shrink-0 mt-0.5" strokeWidth={1.5} />
             <div>
-              <span className="text-sm text-[#333]">{formatDate(hireDate)} 입사</span>
-              <span className="text-xs text-[#999] ml-1">· {tenureText}</span>
+              <span className="text-sm text-foreground">{formatDate(hireDate)} 입사</span>
+              <span className="text-xs text-muted-foreground ml-1">· {tenureText}</span>
             </div>
           </div>
         </div>
@@ -203,9 +203,9 @@ export function ProfileSidebar({
             {canViewGrade && grade && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Shield size={15} className="text-[#999] shrink-0" strokeWidth={1.5} />
-                  <span className="text-xs text-[#999]">직급</span>
-                  <span className="text-sm text-[#333] font-medium">{grade}</span>
+                  <Shield size={15} className="text-muted-foreground shrink-0" strokeWidth={1.5} />
+                  <span className="text-xs text-muted-foreground">직급</span>
+                  <span className="text-sm text-foreground font-medium">{grade}</span>
                 </div>
                 {/* 급여 밴드 compact — CLS 방어: skeleton → chart */}
                 {compensationLoading && (
@@ -224,11 +224,11 @@ export function ProfileSidebar({
             )}
             {canViewSensitive && (emergencyContact || emergencyContactPhone) && (
               <div className="flex items-start gap-2">
-                <AlertCircle size={15} className="text-[#999] shrink-0 mt-0.5" strokeWidth={1.5} />
+                <AlertCircle size={15} className="text-muted-foreground shrink-0 mt-0.5" strokeWidth={1.5} />
                 <div>
-                  <p className="text-xs text-[#999] mb-0.5">비상연락처</p>
-                  {emergencyContact && <p className="text-sm text-[#333]">{emergencyContact}</p>}
-                  {emergencyContactPhone && <p className="text-sm text-[#333]">{emergencyContactPhone}</p>}
+                  <p className="text-xs text-muted-foreground mb-0.5">비상연락처</p>
+                  {emergencyContact && <p className="text-sm text-foreground">{emergencyContact}</p>}
+                  {emergencyContactPhone && <p className="text-sm text-foreground">{emergencyContactPhone}</p>}
                 </div>
               </div>
             )}
@@ -238,7 +238,7 @@ export function ProfileSidebar({
         {/* 직속 상사 */}
         {manager && (
           <div className="py-4">
-            <p className="text-xs text-[#999] mb-2">직속 상사</p>
+            <p className="text-xs text-muted-foreground mb-2">직속 상사</p>
             <EmployeeCell
               name={manager.name}
               photoUrl={manager.photoUrl}

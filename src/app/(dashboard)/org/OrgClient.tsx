@@ -264,7 +264,7 @@ function ListView({ depts, onSelect, selectedId }: ListViewProps) {
             >
               <td className="px-4 py-3 font-mono tabular-nums text-xs text-muted-foreground">{dept.code}</td>
               <td className="px-4 py-3 font-medium text-foreground" style={{ paddingLeft: `${1 + dept.level * 1.5}rem` }}>
-                {dept.level > 0 && <span className="text-[#CCC] mr-1">{'└'}</span>}
+                {dept.level > 0 && <span className="text-border mr-1">{'└'}</span>}
                 {dept.name}
               </td>
               <td className="px-4 py-3 text-muted-foreground">{dept.level + 1}</td>

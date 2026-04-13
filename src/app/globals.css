@@ -48,6 +48,7 @@
     --on-tertiary-container: 143 64% 24%;    /* #166534 */
     --warning-bright: 38 92% 50%;            /* #f59e0b amber-500 — BG/icon/progress only (text는 #B45309 사용, Phase 4 Batch 7) */
     --alert-red: 0 84% 60%;                  /* #ef4444 red-500 — 동적 alert, urgent pill, border semantic only (정적 count는 destructive 사용, Phase 4 Batch 7) */
+    --badge-accent: 263 70% 50%;             /* #7c3aed violet-600 — badge accent only (--accent은 neutral surface, Phase 4 Batch 10) */
     --surface-container-low: 0 0% 94.5%;     /* #f0f1f1 */
     --surface-container-high: 180 1.5% 88.6%; /* #e1e3e3 */
     --surface-container: 0 0% 90.8%;         /* #e7e8e8 */
@@ -89,6 +90,7 @@
     --on-tertiary-container: 141 84% 85%;  /* #bbf7d0 green-200 */
     --warning-bright: 38 92% 50%;          /* #f59e0b amber-500 — 다크모드에서도 동일 (Phase 4 Batch 7) */
     --alert-red: 0 84% 60%;                /* #ef4444 red-500 — 다크모드에서도 동일 (Phase 4 Batch 7) */
+    --badge-accent: 263 70% 50%;           /* #7c3aed violet-600 — badge accent (다크모드 동일, Phase 4 Batch 10) */
     --surface-container-low: 180 3.4% 18.2%;
     --surface-container-high: 180 1.5% 44.7%; /* #757777 */
     --surface-container: 180 3.4% 18.2%;

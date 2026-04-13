@@ -283,7 +283,7 @@ export default function OffCycleListClient({ user }: Props) {
                   </td>
                   <td className={cn(
                     'px-5 py-3 text-right font-mono tabular-nums font-medium',
-                    req.changePct > 0 ? 'text-[#059669]' : req.changePct < 0 ? 'text-[#DC2626]' : 'text-muted-foreground',
+                    req.changePct > 0 ? 'text-tertiary' : req.changePct < 0 ? 'text-destructive' : 'text-muted-foreground',
                   )}>
                     {formatPct(req.changePct)}
                   </td>

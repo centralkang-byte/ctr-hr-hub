@@ -143,7 +143,7 @@ export function LeaveAccrualTab({
                   <button
                     type="button"
                     onClick={() => setExpandedId(isExpanded ? null : typeDef.id)}
-                    className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted"
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted motion-safe:transition-all"
                   >
                     {isExpanded ? (
                       <ChevronDown className="h-4 w-4 text-muted-foreground" />

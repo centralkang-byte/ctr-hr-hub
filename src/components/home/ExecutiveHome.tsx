@@ -148,7 +148,7 @@ export function ExecutiveHome({ user }: Props) {
             <WidgetSkeleton height="h-48" lines={4} />
           ) : (
             <div
-              className="grid grid-cols-2 gap-3 content-stretch h-full"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-3 content-stretch h-full"
               role="group"
               aria-label={t('executive.actionKpiGroup')}
             >

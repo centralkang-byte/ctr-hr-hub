@@ -187,24 +187,24 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
         <div className="flex items-center gap-3">
           {/* Month navigator */}
           <div className="flex items-center gap-1 bg-card border border-border rounded-xl px-2 py-1">
-            <button onClick={prevMonth} className="p-1 rounded-lg hover:bg-muted text-muted-foreground">
+            <button onClick={prevMonth} className="p-1 rounded-lg hover:bg-muted text-muted-foreground motion-safe:transition-all">
               <ChevronLeft className="h-4 w-4" />
             </button>
             <span className="text-sm font-semibold text-foreground px-2 min-w-24 text-center">
               {new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long' }).format(new Date(year, month - 1))}
             </span>
-            <button onClick={nextMonth} className="p-1 rounded-lg hover:bg-muted text-muted-foreground">
+            <button onClick={nextMonth} className="p-1 rounded-lg hover:bg-muted text-muted-foreground motion-safe:transition-all">
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
 
-          <button onClick={fetchDashboard} className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground">
+          <button onClick={fetchDashboard} className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground motion-safe:transition-all">
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
 
           <button
             onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary/85 text-white text-sm font-semibold"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary/85 text-white text-sm font-semibold motion-safe:transition-all"
           >
             <Plus className="h-4 w-4" />
             {t('dashboard.createRun')}

@@ -38,6 +38,15 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+} from '@/components/ui/sheet'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
@@ -129,6 +138,8 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     REJECTED: t('rejected'),
     CANCELLED: t('cancelled'),
   }
+
+  const isMobile = useIsMobile()
 
   // ─── State ───
   const [balances, setBalances] = useState<LeaveBalanceLocal[]>([])
@@ -598,17 +609,10 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         rowKey={(row) => (row as unknown as LeaveRequestLocal).id}
       />
 
-      {/* ─── Section 2: Leave Request Dialog ─── */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-[520px]">
-          <DialogHeader>
-            <DialogTitle>{t('request')}</DialogTitle>
-            <DialogDescription>
-              {t('requestDescription')}
-            </DialogDescription>
-          </DialogHeader>
-
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      {/* ─── Section 2: Leave Request Form ─── */}
+      {(() => {
+        const formContent = (
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
             {/* policyId */}
             <div className="space-y-2">
@@ -842,7 +846,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               )}
             </div>
 
-            <DialogFooter>
+            <div className="flex justify-end gap-2 pt-4">
               <Button
                 type="button"
                 variant="outline"
@@ -857,10 +861,32 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                 {saving && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
                 {t('request')}
               </Button>
-            </DialogFooter>
+            </div>
           </form>
-        </DialogContent>
-      </Dialog>
+        )
+
+        return isMobile ? (
+          <Sheet open={dialogOpen} onOpenChange={setDialogOpen}>
+            <SheetContent side="bottom" className="h-[85vh] overflow-y-auto rounded-t-2xl">
+              <SheetHeader>
+                <SheetTitle>{t('request')}</SheetTitle>
+                <SheetDescription>{t('requestDescription')}</SheetDescription>
+              </SheetHeader>
+              {formContent}
+            </SheetContent>
+          </Sheet>
+        ) : (
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogContent className="sm:max-w-[520px]">
+              <DialogHeader>
+                <DialogTitle>{t('request')}</DialogTitle>
+                <DialogDescription>{t('requestDescription')}</DialogDescription>
+              </DialogHeader>
+              {formContent}
+            </DialogContent>
+          </Dialog>
+        )
+      })()}
     </div>
   )
 }

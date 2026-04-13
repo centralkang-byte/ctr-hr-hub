@@ -150,7 +150,7 @@ export default function RequisitionListClient({user }: {
             className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
           />
         </div>
-        <button className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background">
+        <button className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background motion-safe:transition-all">
           <Filter size={14} />
           {t('filter')}
         </button>
@@ -240,7 +240,7 @@ export default function RequisitionListClient({user }: {
                     {canApprove && (
                       <button
                         onClick={() => setApproveTarget(item)}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 text-white text-xs font-medium rounded-lg hover:bg-emerald-700"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 text-white text-xs font-medium rounded-lg hover:bg-emerald-700 motion-safe:transition-all"
                       >
                         <CheckCircle2 size={13} />
                         {t('approve')}
@@ -248,7 +248,7 @@ export default function RequisitionListClient({user }: {
                     )}
                     <button
                       onClick={() => router.push(`/recruitment/requisitions/${item.id}`)}
-                      className="flex items-center gap-1 px-3 py-1.5 border border-border text-muted-foreground text-xs rounded-lg hover:bg-background"
+                      className="flex items-center gap-1 px-3 py-1.5 border border-border text-muted-foreground text-xs rounded-lg hover:bg-background motion-safe:transition-all"
                     >
                       {t('kr_kec8381ec')}
                     </button>

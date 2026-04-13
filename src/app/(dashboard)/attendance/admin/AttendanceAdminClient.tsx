@@ -322,10 +322,10 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
                   <span
                     className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                       alert.alertLevel === 'blocked'
-                        ? 'bg-[#e11d48]/10 text-[#e11d48]'
+                        ? 'bg-destructive/10 text-destructive'
                         : alert.alertLevel === 'warning'
-                          ? 'bg-[#b45309]/10 text-[#b45309]'
-                          : 'bg-[#b45309]/10 text-[#b45309]'
+                          ? 'bg-warning-bright/15 text-ctr-warning'
+                          : 'bg-warning-bright/15 text-ctr-warning'
                     }`}
                   >
                     {alert.alertLevel === 'blocked' ? t('alertLevelBlocked') : alert.alertLevel === 'warning' ? t('alertLevelWarning') : t('alertLevelCaution')}

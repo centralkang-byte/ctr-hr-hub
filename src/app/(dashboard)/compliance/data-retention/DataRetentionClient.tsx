@@ -159,21 +159,21 @@ export default function DataRetentionClient({ user: _user }: { user: SessionUser
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => { setSelected(p); setShowForm(true) }}
-                          className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded"
+                          className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded motion-safe:transition-all"
                           title={tc('edit')}
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleRunPolicy(p.id)}
-                          className="p-1.5 text-muted-foreground hover:text-emerald-600 hover:bg-emerald-500/15 rounded"
+                          className="p-1.5 text-muted-foreground hover:text-emerald-600 hover:bg-emerald-500/15 rounded motion-safe:transition-all"
                           title={t('gdpr.runRetention')}
                         >
                           <Play className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(p.id)}
-                          className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded"
+                          className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded motion-safe:transition-all"
                           title={tc('delete')}
                         >
                           <Trash2 className="w-4 h-4" />

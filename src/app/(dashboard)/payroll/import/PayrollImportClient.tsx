@@ -322,7 +322,7 @@ export default function PayrollImportClient({ user, companies }: {
             className="bg-card rounded-xl border-2 border-dashed border-border p-10 text-center cursor-pointer hover:border-primary hover:bg-primary/10/20 transition-colors"
             onClick={() => fileRef.current?.click()}
           >
-            <FileSpreadsheet className="w-12 h-12 text-[#CCC] mx-auto mb-3" />
+            <FileSpreadsheet className="w-12 h-12 text-border mx-auto mb-3" />
             {selectedFile ? (
               <div>
                 <p className="text-sm font-semibold text-foreground">{selectedFile.name}</p>
@@ -453,7 +453,7 @@ export default function PayrollImportClient({ user, companies }: {
                         {t(field.labelKey)}
                         {field.required && <span className="text-destructive ml-0.5">*</span>}
                       </span>
-                      <ChevronRight className="w-3 h-3 text-[#CCC] shrink-0" />
+                      <ChevronRight className="w-3 h-3 text-border shrink-0" />
                       <input
                         value={(editingMapping.mappings as Record<string, string>)?.[field.key] ?? ''}
                         onChange={e => setEditingMapping(prev => ({

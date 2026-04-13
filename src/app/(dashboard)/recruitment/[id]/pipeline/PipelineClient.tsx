@@ -471,7 +471,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                       onDragEnd={handleDragEnd}
                       className={`bg-card border border-border rounded-lg p-3 cursor-grab active:cursor-grabbing transition-opacity duration-150 ${
                         draggingId === app.id ? 'opacity-50' : 'opacity-100'
-                      } hover:border-[#CCC]`}
+                      } hover:border-border`}
                     >
                       <p className="text-sm font-medium text-foreground mb-1">
                         {app.applicant.name}

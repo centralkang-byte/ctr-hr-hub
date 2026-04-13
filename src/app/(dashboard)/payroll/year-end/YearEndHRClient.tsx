@@ -682,7 +682,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                             {t('kr_kec9881ec')}
                           </button>
                         )}
-                        <ChevronRight className="h-3.5 w-3.5 text-[#CCC]" />
+                        <ChevronRight className="h-3.5 w-3.5 text-border" />
                       </div>
                     </td>
                   </tr>

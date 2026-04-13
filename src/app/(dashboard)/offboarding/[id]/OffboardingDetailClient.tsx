@@ -1130,8 +1130,8 @@ function GateItem({
       disabled={!onToggle}
       className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors ${
         done
-          ? 'bg-[#16a34a]/10 text-[#15803d]'
-          : 'bg-[#b45309]/10 text-[#b45309]'
+          ? 'bg-tertiary/10 text-tertiary'
+          : 'bg-warning-bright/15 text-ctr-warning'
       } ${onToggle ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
     >
       <CheckCircle2 className={`h-3.5 w-3.5 ${done ? 'text-emerald-600' : 'text-amber-500'}`} />

@@ -408,7 +408,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
                       {s.label}
                     </span>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-[#CCC]" />
+                  <ChevronRight className="w-4 h-4 text-border" />
                 </div>
               )
             })}

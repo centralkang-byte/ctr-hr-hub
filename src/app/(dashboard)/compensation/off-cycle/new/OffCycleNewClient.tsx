@@ -359,7 +359,7 @@ export default function OffCycleNewClient({ user: _user }: Props) {
                   <span
                     className={cn(
                       'font-mono tabular-nums font-semibold',
-                      changePct > 0 ? 'text-[#059669]' : changePct < 0 ? 'text-[#DC2626]' : 'text-muted-foreground',
+                      changePct > 0 ? 'text-tertiary' : changePct < 0 ? 'text-destructive' : 'text-muted-foreground',
                     )}
                   >
                     {changePct >= 0 ? '+' : ''}{changePct.toFixed(1)}%
@@ -391,7 +391,7 @@ export default function OffCycleNewClient({ user: _user }: Props) {
                   <p className="text-xs text-muted-foreground">{t('offCycle.form.compaRatioAfter')}</p>
                   <p className={cn(
                     'font-mono tabular-nums font-semibold',
-                    proposedCompaRatio > 120 ? 'text-[#DC2626]' : 'text-foreground',
+                    proposedCompaRatio > 120 ? 'text-destructive' : 'text-foreground',
                   )}>
                     {proposedCompaRatio.toFixed(1)}%
                   </p>

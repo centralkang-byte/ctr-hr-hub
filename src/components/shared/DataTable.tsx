@@ -27,7 +27,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { cn } from '@/lib/utils'
 import type { PaginationInfo, SortDirection } from '@/types'
+
+const HIDE_BELOW_CLASS: Record<string, string> = {
+  sm: 'hidden sm:table-cell',
+  md: 'hidden md:table-cell',
+  lg: 'hidden lg:table-cell',
+}
 
 // ─── Sort icon (module-level to avoid unmount/remount on parent re-render) ───
 
@@ -57,6 +64,8 @@ export interface DataTableColumn<T> {
   header: string
   render?: (row: T, index: number) => ReactNode
   sortable?: boolean
+  /** 지정 breakpoint 미만에서 컬럼 숨김 (모바일 반응형) */
+  hideBelow?: 'sm' | 'md' | 'lg'
 }
 
 interface DataTableProps<T> {
@@ -225,7 +234,7 @@ export function DataTable<T extends Record<string, unknown>>({
             <TableHeader>
               <TableRow>
                 {visibleColumns.map((col) => (
-                  <TableHead key={col.key}>{col.header}</TableHead>
+                  <TableHead key={col.key} className={col.hideBelow ? HIDE_BELOW_CLASS[col.hideBelow] : undefined}>{col.header}</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
@@ -233,7 +242,7 @@ export function DataTable<T extends Record<string, unknown>>({
               {Array.from({ length: skeletonRows }).map((_, i) => (
                 <TableRow key={`skeleton-${i}`}>
                   {visibleColumns.map((col) => (
-                    <TableCell key={`skeleton-${i}-${col.key}`}>
+                    <TableCell key={`skeleton-${i}-${col.key}`} className={col.hideBelow ? HIDE_BELOW_CLASS[col.hideBelow] : undefined}>
                       <Skeleton className="h-5 w-full" />
                     </TableCell>
                   ))}
@@ -256,7 +265,7 @@ export function DataTable<T extends Record<string, unknown>>({
             <TableHeader>
               <TableRow>
                 {visibleColumns.map((col) => (
-                  <TableHead key={col.key}>{col.header}</TableHead>
+                  <TableHead key={col.key} className={col.hideBelow ? HIDE_BELOW_CLASS[col.hideBelow] : undefined}>{col.header}</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
@@ -272,7 +281,7 @@ export function DataTable<T extends Record<string, unknown>>({
     <TableHeader>
       <TableRow>
         {visibleColumns.map((col) => (
-          <TableHead key={col.key}>
+          <TableHead key={col.key} className={col.hideBelow ? HIDE_BELOW_CLASS[col.hideBelow] : undefined}>
             {col.sortable && onSort ? (
               <button
                 type="button"
@@ -299,7 +308,7 @@ export function DataTable<T extends Record<string, unknown>>({
       className={onRowClick ? 'cursor-pointer hover:bg-muted' : ''}
     >
       {visibleColumns.map((col) => (
-        <TableCell key={col.key}>
+        <TableCell key={col.key} className={col.hideBelow ? HIDE_BELOW_CLASS[col.hideBelow] : undefined}>
           {col.render ? col.render(row, index) : String(row[col.key] ?? '')}
         </TableCell>
       ))}
@@ -322,7 +331,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 {visibleColumns.map((col) => (
                   <th
                     key={col.key}
-                    className="px-4 py-3 text-left text-[13px] font-bold text-muted-foreground"
+                    className={cn("px-4 py-3 text-left text-[13px] font-bold text-muted-foreground", col.hideBelow && HIDE_BELOW_CLASS[col.hideBelow])}
                   >
                     {col.sortable && onSort ? (
                       <button
@@ -367,7 +376,7 @@ export function DataTable<T extends Record<string, unknown>>({
                       {visibleColumns.map((col) => (
                         <td
                           key={col.key}
-                          className="px-4 py-3 text-sm text-foreground"
+                          className={cn("px-4 py-3 text-sm text-foreground", col.hideBelow && HIDE_BELOW_CLASS[col.hideBelow])}
                         >
                           {col.render
                             ? col.render(row, virtualRow.index)
