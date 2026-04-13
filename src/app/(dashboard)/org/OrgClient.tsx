@@ -12,29 +12,36 @@ import {
   type Node,
   type Edge,
   type NodeTypes,
-  type NodeProps,
   useNodesState,
   useEdgesState,
   useReactFlow,
   ReactFlowProvider,
   Background,
   Controls,
-  Handle,
-  Position,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import dagre from '@dagrejs/dagre'
-import { GitBranch, LayoutGrid, List, Network, Search } from 'lucide-react'
+import { GitBranch, LayoutGrid, List, Network, Search, Users } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser, RefOption } from '@/types'
 import { ROLE } from '@/lib/constants'
 import { EffectiveDatePicker } from '@/components/shared/EffectiveDatePicker'
 import { RestructureModal } from '@/components/org/RestructureModal'
-import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { DetailPanel } from '@/components/org/DetailPanel'
+import { DirectoryView } from '@/components/org/DirectoryView'
+import { BUTTON_SIZES, BUTTON_VARIANTS, TABLE_STYLES, TAB_STYLES } from '@/lib/styles'
+import { DeptFlowNode, getNodeSize, type DeptFlowNodeData } from '@/components/org/DeptFlowNode'
 
 // ─── Types ─────────────────────────────────────────────────
 
-type ViewMode = 'tree' | 'list' | 'grid'
+type ViewMode = 'tree' | 'directory' | 'list' | 'grid'
+
+type DeptHead = {
+  employeeId: string
+  name: string
+  nameEn: string | null
+  title: string | null
+}
 
 type DeptNode = {
   id: string
@@ -46,26 +53,14 @@ type DeptNode = {
   deletedAt: string | null
   parentId: string | null
   employeeCount: number
+  head: DeptHead | null
   children: DeptNode[]
-}
-
-type DeptNodeData = {
-  dept: DeptNode
-  onClick: (dept: DeptNode) => void
-}
-
-type EmployeeRow = {
-  id: string
-  name: string
-  employeeNo: string
-  jobGrade?: { name: string } | null
 }
 
 // ─── Constants ─────────────────────────────────────────────
 
-const NODE_W = 200
-const NODE_H = 76
 const SENTINEL_ALL = '__ALL__'
+const GROUP_ROOT_ID = '__GROUP_ROOT__'
 
 function formatDateYMD(date: Date): string {
   return date.toISOString().split('T')[0]
@@ -77,32 +72,6 @@ function isToday(date: Date): boolean {
     date.getFullYear() === today.getFullYear() &&
     date.getMonth() === today.getMonth() &&
     date.getDate() === today.getDate()
-  )
-}
-
-// ─── Custom Node Component ──────────────────────────────────
-
-function DeptFlowNode({ data }: NodeProps) {
-  const { dept, onClick } = data as unknown as DeptNodeData
-  const tOrg = useTranslations('org')
-
-  return (
-    <div
-      className={`
-        w-[200px] min-h-[76px] rounded-xl border bg-card cursor-pointer
-        flex flex-col items-center justify-center px-3 py-3 shadow-none
-        transition-colors hover:border-ctr-primary
-        ${!dept.deletedAt ? 'border-border' : 'border-border opacity-60'}
-      `}
-      onClick={() => onClick(dept)}
-    >
-      <Handle type="target" position={Position.Top} className="!bg-ctr-primary" />
-      <p className="text-sm font-bold text-foreground text-center line-clamp-2">
-        {dept.name}
-      </p>
-      <p className="text-xs text-muted-foreground mt-1">{tOrg('headcountUnit', { count: dept.employeeCount })}</p>
-      <Handle type="source" position={Position.Bottom} className="!bg-ctr-primary" />
-    </div>
   )
 }
 
@@ -123,47 +92,93 @@ function flattenTree(tree: DeptNode[]): DeptNode[] {
   return result
 }
 
+/** collapsed 자식 pruning + 그룹 루트 가상 노드 주입 */
 function buildFlowElements(
   tree: DeptNode[],
   onNodeClick: (dept: DeptNode) => void,
+  collapsedIds: Set<string>,
+  onToggleCollapse: (id: string) => void,
+  selectedCompanyId: string,
 ): { nodes: Node[]; edges: Edge[] } {
   if (tree.length === 0) return { nodes: [], edges: [] }
 
-  const flat = flattenTree(tree)
+  // 그룹 루트 가상 노드 (전체 법인 조회 시)
+  let workingTree = tree
+  if (selectedCompanyId === SENTINEL_ALL && tree.length > 0) {
+    const totalCount = tree.reduce((sum, n) => sum + n.employeeCount, 0)
+    const groupRoot: DeptNode = {
+      id: GROUP_ROOT_ID,
+      name: 'CTR Group',
+      nameEn: 'CTR Group',
+      code: 'GROUP',
+      level: 0,
+      sortOrder: 0,
+      deletedAt: null,
+      parentId: null,
+      employeeCount: totalCount,
+      head: null,
+      children: tree.map((r) => ({ ...r, parentId: GROUP_ROOT_ID })),
+    }
+    workingTree = [groupRoot]
+  }
+
+  // collapsed pruning이 적용된 flat 배열
+  const flat: DeptNode[] = []
+  const queue = [...workingTree]
+  while (queue.length > 0) {
+    const node = queue.shift()!
+    flat.push(node)
+    if (!collapsedIds.has(node.id)) {
+      queue.push(...node.children)
+    }
+  }
 
   const g = new dagre.graphlib.Graph()
-  g.setGraph({ rankdir: 'TB', ranksep: 40, nodesep: 20 })
+  g.setGraph({ rankdir: 'TB', ranksep: 50, nodesep: 24 })
   g.setDefaultEdgeLabel(() => ({}))
 
   for (const dept of flat) {
-    g.setNode(dept.id, { width: NODE_W, height: NODE_H })
+    const isRoot = dept.id === GROUP_ROOT_ID || (selectedCompanyId !== SENTINEL_ALL && !dept.parentId)
+    const size = getNodeSize(dept.level, isRoot)
+    g.setNode(dept.id, { width: size.w, height: size.h })
   }
   for (const dept of flat) {
-    if (dept.parentId) {
+    if (dept.parentId && flat.some((n) => n.id === dept.parentId)) {
       g.setEdge(dept.parentId, dept.id)
     }
   }
 
   dagre.layout(g)
 
+  let colorIdx = 0
   const nodes: Node[] = flat.map((dept) => {
     const pos = g.node(dept.id)
+    const isRoot = dept.id === GROUP_ROOT_ID || (selectedCompanyId !== SENTINEL_ALL && !dept.parentId)
+    const size = getNodeSize(dept.level, isRoot)
+    const ci = colorIdx++
     return {
       id: dept.id,
       type: 'deptNode',
-      position: { x: pos.x - NODE_W / 2, y: pos.y - NODE_H / 2 },
-      data: { dept, onClick: onNodeClick } as Record<string, unknown>,
+      position: { x: pos.x - size.w / 2, y: pos.y - size.h / 2 },
+      data: {
+        dept,
+        isRoot,
+        isCollapsed: collapsedIds.has(dept.id),
+        colorIndex: ci,
+        onToggleCollapse,
+        onClick: onNodeClick,
+      } satisfies DeptFlowNodeData as unknown as Record<string, unknown>,
     }
   })
 
   const edges: Edge[] = flat
-    .filter((dept) => dept.parentId)
+    .filter((dept) => dept.parentId && flat.some((n) => n.id === dept.parentId))
     .map((dept) => ({
       id: `e-${dept.parentId}-${dept.id}`,
       source: dept.parentId!,
       target: dept.id,
       type: 'smoothstep',
-      style: { stroke: '#E8E8E8', strokeWidth: 1.5 },
+      style: { stroke: 'hsl(var(--border))', strokeWidth: 1.5 },
     }))
 
   return { nodes, edges }
@@ -200,7 +215,7 @@ function FlowCanvas({ initNodes, initEdges }: FlowCanvasProps) {
       maxZoom={2}
       className="bg-background"
     >
-      <Background color="#E8E8E8" gap={20} />
+      <Background color="hsl(var(--border))" gap={20} />
       <Controls />
     </ReactFlow>
   )
@@ -298,9 +313,9 @@ function GridView({ depts, onSelect, selectedId }: GridViewProps) {
           <button
             key={dept.id}
             onClick={() => onSelect(dept)}
-            className={`text-left rounded-xl border p-4 transition-all hover:border-ctr-primary hover:shadow-sm ${
+            className={`text-left rounded-lg border p-4 transition-all hover:border-primary hover:shadow-sm ${
               selectedId === dept.id
-                ? 'border-ctr-primary bg-primary/10 shadow-sm'
+                ? 'border-primary bg-primary/10 shadow-sm'
                 : 'border-border bg-card'
             } ${!!dept.deletedAt ? 'opacity-60' : ''}`}
           >
@@ -329,109 +344,6 @@ function GridView({ depts, onSelect, selectedId }: GridViewProps) {
   )
 }
 
-// ─── Detail Panel ───────────────────────────────────────────
-
-interface DetailPanelProps {
-  dept: DeptNode | null
-  onClose: () => void
-}
-
-function DetailPanel({ dept, onClose }: DetailPanelProps) {
-  const t = useTranslations('org')
-  const tc = useTranslations('common')
-  const [employees, setEmployees] = useState<EmployeeRow[]>([])
-  const [loadingEmps, setLoadingEmps] = useState(false)
-
-  useEffect(() => {
-    if (!dept) return
-    setLoadingEmps(true)
-    apiClient
-      .getList<EmployeeRow>('/api/v1/employees', {
-        departmentId: dept.id,
-        limit: 50,
-      })
-      .then((res) => setEmployees(res.data))
-      .catch(() => setEmployees([]))
-      .finally(() => setLoadingEmps(false))
-  }, [dept])
-
-  if (!dept) return null
-
-  return (
-    <div className="absolute top-0 right-0 h-full w-80 bg-card border-l border-border shadow-lg z-10 flex flex-col overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-ctr-primary text-white shrink-0">
-        <h3 className="font-semibold text-sm truncate">{dept.name}</h3>
-        <button
-          onClick={onClose}
-          className="text-white/70 hover:text-white text-lg leading-none ml-2"
-          aria-label={'close'}
-        >
-          ×
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {/* Dept Info */}
-        <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-muted-foreground">{'deptInfo'}</h4>
-          <div className="bg-background rounded-lg p-3 space-y-1.5 text-sm">
-            <InfoRow label={'code'} value={dept.code} />
-            <InfoRow label={'level'} value={String(dept.level)} />
-            <InfoRow label={'상태'} value={!dept.deletedAt ? tc('active') : tc('inactive')} />
-            <InfoRow label={'headcount'} value={t('headcountUnit', { count: dept.employeeCount })} />
-            {dept.nameEn && <InfoRow label={'nameEn'} value={dept.nameEn} />}
-          </div>
-        </div>
-
-        {/* Sub-departments */}
-        {dept.children.length > 0 && (
-          <div className="space-y-2">
-            <h4 className="text-xs font-semibold text-muted-foreground">
-              {'subDepartments'} ({dept.children.length})
-            </h4>
-            <ul className="space-y-1">
-              {dept.children.map((child) => (
-                <li key={child.id} className="text-sm px-3 py-1.5 bg-background rounded flex justify-between">
-                  <span className="text-foreground">{child.name}</span>
-                  <span className="text-muted-foreground text-xs">{t('headcountUnit', { count: child.employeeCount })}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Employees */}
-        <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-muted-foreground">{'employees'}</h4>
-          {loadingEmps ? (
-            <p className="text-xs text-muted-foreground py-2">{'loadingData'}</p>
-          ) : employees.length === 0 ? (
-            <p className="text-xs text-muted-foreground py-2">{'noEmployees'}</p>
-          ) : (
-            <ul className="space-y-1">
-              {employees.map((emp) => (
-                <li key={emp.id} className="text-sm px-3 py-1.5 bg-background rounded flex justify-between items-center">
-                  <span className="text-foreground">{emp.name}</span>
-                  <span className="text-muted-foreground text-xs">{emp.jobGrade?.name ?? emp.employeeNo}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="text-foreground font-medium">{value}</span>
-    </div>
-  )
-}
 
 // ─── Snapshot Tree Builder ──────────────────────────────────
 
@@ -457,6 +369,7 @@ function buildSnapshotTree(
       deletedAt: null,
       parentId: d.parentId,
       employeeCount: d.headcount,
+      head: null,
       children: [],
     })
   }
@@ -487,11 +400,8 @@ function ViewModeButton({ mode, current, icon, label, onClick }: ViewModeButtonP
     <button
       onClick={onClick}
       title={label}
-      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-        active
-          ? 'bg-primary text-white'
-          : 'bg-card border border-border text-muted-foreground hover:bg-background'
-      }`}
+      data-state={active ? 'active' : 'inactive'}
+      className={TAB_STYLES.trigger}
     >
       {icon}
       <span className="hidden sm:inline">{label}</span>
@@ -521,6 +431,10 @@ export function OrgClient({ user, companies }: OrgClientProps) {
   const [search, setSearch] = useState('')
   const [effectiveDate, setEffectiveDate] = useState<Date>(new Date())
   const [showRestructureModal, setShowRestructureModal] = useState(false)
+  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set())
+  const [showMatrix, setShowMatrix] = useState(false)
+  const [matrixEdgeData, setMatrixEdgeData] = useState<Array<{ fromDeptId: string; toDeptId: string }>>([])
+
 
   const isSnapshot = useMemo(() => !isToday(effectiveDate), [effectiveDate])
   const snapshotDateStr = useMemo(() => (isSnapshot ? formatDateYMD(effectiveDate) : undefined), [isSnapshot, effectiveDate])
@@ -567,7 +481,17 @@ export function OrgClient({ user, companies }: OrgClientProps) {
   }, [loadTree, selectedCompanyId, snapshotDateStr])
 
   const handleNodeClick = useCallback((dept: DeptNode) => {
+    if (dept.id === GROUP_ROOT_ID) return // 그룹 루트는 선택 불가
     setSelectedDept((prev) => (prev?.id === dept.id ? null : dept))
+  }, [])
+
+  const handleToggleCollapse = useCallback((id: string) => {
+    setCollapsedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
   }, [])
 
   const allDepts = useMemo(() => flattenTree(tree), [tree])
@@ -583,10 +507,34 @@ export function OrgClient({ user, companies }: OrgClientProps) {
     )
   }, [allDepts, search])
 
-  const { nodes: initNodes, edges: initEdges } = useMemo(
-    () => buildFlowElements(tree, handleNodeClick),
-    [tree, handleNodeClick],
-  )
+  // Matrix edge fetch
+  useEffect(() => {
+    if (!showMatrix) { setMatrixEdgeData([]); return }
+    const params = selectedCompanyId !== SENTINEL_ALL ? `?companyId=${selectedCompanyId}` : ''
+    apiClient.get<{ edges: Array<{ fromDeptId: string; toDeptId: string }> }>(`/api/v1/org/matrix-edges${params}`)
+      .then((res) => setMatrixEdgeData(res.data.edges))
+      .catch(() => setMatrixEdgeData([]))
+  }, [showMatrix, selectedCompanyId])
+
+  const { nodes: initNodes, edges: initEdges } = useMemo(() => {
+    const result = buildFlowElements(tree, handleNodeClick, collapsedIds, handleToggleCollapse, selectedCompanyId)
+    // 매트릭스 점선 edge 추가
+    if (showMatrix && matrixEdgeData.length > 0) {
+      const nodeIds = new Set(result.nodes.map((n) => n.id))
+      for (const me of matrixEdgeData) {
+        if (nodeIds.has(me.fromDeptId) && nodeIds.has(me.toDeptId)) {
+          result.edges.push({
+            id: `matrix-${me.fromDeptId}-${me.toDeptId}`,
+            source: me.fromDeptId,
+            target: me.toDeptId,
+            type: 'smoothstep',
+            style: { stroke: 'hsl(var(--primary-container))', strokeWidth: 1.5, strokeDasharray: '6 4' },
+          })
+        }
+      }
+    }
+    return result
+  }, [tree, handleNodeClick, collapsedIds, handleToggleCollapse, selectedCompanyId, showMatrix, matrixEdgeData])
 
   // For tree view, filter by hiding unmatched (highlight instead)
   const filteredTreeNodes = useMemo(() => {
@@ -601,29 +549,36 @@ export function OrgClient({ user, companies }: OrgClientProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-3 px-6 py-3 border-b border-border bg-card shrink-0">
+      <div className="flex flex-wrap items-center gap-3 px-6 py-3 bg-muted/30 shrink-0">
         <h1 className="text-lg font-bold text-foreground tracking-ctr mr-2">{t('orgChart')}</h1>
 
         {/* View mode toggle */}
-        <div className="flex items-center gap-1">
+        <div className={TAB_STYLES.list} aria-label="View mode">
           <ViewModeButton
             mode="tree"
             current={viewMode}
-            icon={<Network size={14} />}
+            icon={<Network size={16} strokeWidth={1.5} />}
             label={t('viewTree')}
             onClick={() => setViewMode('tree')}
           />
           <ViewModeButton
+            mode="directory"
+            current={viewMode}
+            icon={<Users size={16} strokeWidth={1.5} />}
+            label={t('viewDirectory')}
+            onClick={() => setViewMode('directory')}
+          />
+          <ViewModeButton
             mode="list"
             current={viewMode}
-            icon={<List size={14} />}
+            icon={<List size={16} strokeWidth={1.5} />}
             label={t('viewList')}
             onClick={() => setViewMode('list')}
           />
           <ViewModeButton
             mode="grid"
             current={viewMode}
-            icon={<LayoutGrid size={14} />}
+            icon={<LayoutGrid size={16} strokeWidth={1.5} />}
             label={t('viewGrid')}
             onClick={() => setViewMode('grid')}
           />
@@ -631,15 +586,28 @@ export function OrgClient({ user, companies }: OrgClientProps) {
 
         {/* Search */}
         <div className="relative flex-1 min-w-[160px] max-w-xs">
-          <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Search size={16} strokeWidth={1.5} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('searchDepts')}
-            className="w-full pl-8 pr-3 py-1.5 text-sm border border-border rounded-lg bg-card focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
+            className="w-full pl-8 pr-3 py-1.5 text-sm border border-border rounded-full bg-card focus:outline-none focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
           />
         </div>
+
+        {/* Matrix toggle (tree view only) */}
+        {viewMode === 'tree' && (
+          <label className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={showMatrix}
+              onChange={(e) => setShowMatrix(e.target.checked)}
+              className="w-3.5 h-3.5 rounded border-border accent-primary"
+            />
+            {t('showMatrix')}
+          </label>
+        )}
 
         <div className="flex items-center gap-2 ml-auto">
           {/* Effective Date Picker */}
@@ -723,8 +691,24 @@ export function OrgClient({ user, companies }: OrgClientProps) {
             <ReactFlowProvider>
               <FlowCanvas initNodes={filteredTreeNodes} initEdges={initEdges} />
             </ReactFlowProvider>
+            {showMatrix && (
+              <div className="absolute bottom-4 left-4 flex items-center gap-4 text-[9px] text-muted-foreground z-10">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-5 h-0 border-t-2 border-border" />
+                  {t('directReport')}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-5 h-0 border-t-2 border-dashed border-primary-container" />
+                  {t('matrixReport')}
+                </span>
+              </div>
+            )}
             <DetailPanel dept={selectedDept} onClose={() => setSelectedDept(null)} />
           </>
+        )}
+
+        {viewMode === 'directory' && (
+          <DirectoryView tree={tree} selectedCompanyId={selectedCompanyId} />
         )}
 
         {viewMode === 'list' && (

@@ -13,6 +13,13 @@ import type { SessionUser } from '@/types'
 
 // ─── Tree node type ───────────────────────────────────────
 
+type DeptHead = {
+  employeeId: string
+  name: string
+  nameEn: string | null
+  title: string | null
+}
+
 type DeptNode = {
   id: string
   name: string
@@ -22,6 +29,7 @@ type DeptNode = {
   sortOrder: number
   parentId: string | null
   employeeCount: number
+  head: DeptHead | null
   children: DeptNode[]
 }
 
@@ -112,19 +120,40 @@ export const GET = withCache(withPermission(
             assignments: { where: { endDate: null } },
           },
         },
+        assignments: {
+          where: { endDate: null, isPrimary: true },
+          orderBy: { effectiveDate: 'desc' },
+          take: 1,
+          select: {
+            employee: { select: { id: true, name: true, nameEn: true } },
+            title: { select: { name: true } },
+            jobGrade: { select: { name: true } },
+          },
+        },
       },
     })
 
-    const flat: Omit<DeptNode, 'children'>[] = departments.map((d) => ({
-      id: d.id,
-      name: d.name,
-      nameEn: d.nameEn,
-      code: d.code,
-      level: d.level,
-      sortOrder: d.sortOrder,
-      parentId: d.parentId,
-      employeeCount: (d as any)._count.assignments, // eslint-disable-line @typescript-eslint/no-explicit-any
-    }))
+    const flat: Omit<DeptNode, 'children'>[] = departments.map((d) => {
+      const asgn = d.assignments[0]
+      return {
+        id: d.id,
+        name: d.name,
+        nameEn: d.nameEn,
+        code: d.code,
+        level: d.level,
+        sortOrder: d.sortOrder,
+        parentId: d.parentId,
+        employeeCount: (d as any)._count.assignments, // eslint-disable-line @typescript-eslint/no-explicit-any
+        head: asgn
+          ? {
+              employeeId: asgn.employee.id,
+              name: asgn.employee.name,
+              nameEn: asgn.employee.nameEn,
+              title: asgn.title?.name ?? asgn.jobGrade?.name ?? null,
+            }
+          : null,
+      }
+    })
 
     const tree = buildTree(flat)
 

@@ -5105,7 +5105,21 @@
     "title": "Organization",
     "viewGrid": "Grid",
     "viewList": "List",
-    "viewTree": "Tree"
+    "viewTree": "Tree",
+    "viewDirectory": "Directory",
+    "includeSubDepts": "Include Sub-departments",
+    "showMatrix": "Show Matrix Lines",
+    "matrixReport": "Matrix Report",
+    "directReport": "Direct Report",
+    "collapseAll": "Collapse All",
+    "expandAll": "Expand All",
+    "noHead": "No Head Assigned",
+    "subDeptCount": "{count} sub-depts",
+    "inactive": "Inactive",
+    "searchEmployees": "Search employees...",
+    "positionTitle": "Position",
+    "grade": "Grade",
+    "email": "Email"
   },
   "orgChanges": {
     "after": "After",

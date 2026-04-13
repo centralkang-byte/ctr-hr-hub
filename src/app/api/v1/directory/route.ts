@@ -1,6 +1,6 @@
-import { type NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { withPermission, perm } from '@/lib/permissions'
-import { apiPaginated, buildPagination } from '@/lib/api'
+import { buildPagination } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
 import { prisma } from '@/lib/prisma'
 import { MODULE, ACTION } from '@/lib/constants'
@@ -12,6 +12,7 @@ const querySchema = z.object({
   search: z.string().optional(),
   companyId: z.string().optional(),
   departmentId: z.string().optional(),
+  departmentIds: z.string().optional(), // 쉼표 구분 복수 부서 ID (하위 부서 포함 용)
   jobGradeId: z.string().optional(),
   skill: z.string().optional(),
   page: z.coerce.number().int().min(1).default(1),
@@ -24,7 +25,7 @@ export const GET = withPermission(
     const parsed = querySchema.safeParse(Object.fromEntries(searchParams))
     if (!parsed.success) throw badRequest('Invalid query params', { issues: parsed.error.issues })
 
-    const { search, companyId, departmentId, jobGradeId, skill, page, limit } = parsed.data
+    const { search, companyId, departmentId, departmentIds, jobGradeId, skill, page, limit } = parsed.data
     const skip = (page - 1) * limit
 
     const assignmentFilter: Record<string, unknown> = { isPrimary: true, endDate: null, status: { in: ['ACTIVE', 'ON_LEAVE'] } }
@@ -34,7 +35,12 @@ export const GET = withPermission(
     } else if (user.role !== 'SUPER_ADMIN') {
       assignmentFilter.companyId = user.companyId
     }
-    if (departmentId) assignmentFilter.departmentId = departmentId
+    // 부서 필터: departmentIds(복수) > departmentId(단수)
+    if (departmentIds) {
+      assignmentFilter.departmentId = { in: departmentIds.split(',').filter(Boolean) }
+    } else if (departmentId) {
+      assignmentFilter.departmentId = departmentId
+    }
     if (jobGradeId) assignmentFilter.jobGradeId = jobGradeId
 
     const baseWhere = {
@@ -54,8 +60,14 @@ export const GET = withPermission(
       ...(skill ? { profileExtension: { skills: { has: skill } } } : {}),
     }
 
-    const [total, employees] = await Promise.all([
+    // 비활성 직원 수 (같은 부서/회사 범위, TERMINATED/RESIGNED)
+    const inactiveFilter: Record<string, unknown> = { isPrimary: true, endDate: null, status: { in: ['TERMINATED', 'RESIGNED'] } }
+    if (assignmentFilter.companyId) inactiveFilter.companyId = assignmentFilter.companyId
+    if (assignmentFilter.departmentId) inactiveFilter.departmentId = assignmentFilter.departmentId
+
+    const [total, inactiveCount, employees] = await Promise.all([
       prisma.employee.count({ where: baseWhere }),
+      prisma.employee.count({ where: { deletedAt: null, assignments: { some: inactiveFilter } } }),
       prisma.employee.findMany({
         where: baseWhere,
         skip,
@@ -116,7 +128,8 @@ export const GET = withPermission(
       }
     })
 
-    return apiPaginated(result, buildPagination(page, limit, total))
+    const pagination = buildPagination(page, limit, total)
+    return NextResponse.json({ data: result, pagination, inactiveCount })
   },
   perm(MODULE.EMPLOYEES, ACTION.VIEW),
 )

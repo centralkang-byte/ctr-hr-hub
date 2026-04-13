@@ -7,7 +7,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { X, Plus, Trash2, ChevronRight, GitBranch, ArrowRight } from 'lucide-react'
+import { X, Plus, Trash2, ChevronRight, GitBranch, ArrowRight, AlertTriangle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { EffectiveDatePicker } from '@/components/shared/EffectiveDatePicker'
 import { RestructureDiffView } from '@/components/org/RestructureDiffView'
@@ -289,7 +289,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
           </select>
           {change.closeDeptId && (
             <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
-              <span>⚠</span> 폐지 시 소속 인원은 상위 부서로 자동 이동됩니다.
+              <AlertTriangle size={16} strokeWidth={1.5} /> 폐지 시 소속 인원은 상위 부서로 자동 이동됩니다.
             </p>
           )}
         </div>
@@ -352,9 +352,9 @@ type Step = 'edit' | 'diff' | 'confirm'
 
 function StepIndicator({ step }: { step: Step }) {
   const steps: { key: Step; label: string }[] = [
-    { key: 'edit', label: '① 변경 사항 작성' },
-    { key: 'diff', label: '② 영향도 검토' },
-    { key: 'confirm', label: '③ 확인 및 저장' },
+    { key: 'edit', label: '1. 변경 사항 작성' },
+    { key: 'diff', label: '2. 영향도 검토' },
+    { key: 'confirm', label: '3. 확인 및 저장' },
   ]
   return (
     <div className="flex items-center gap-1 px-6 py-3 border-b border-border bg-background">
@@ -594,7 +594,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
               </div>
 
               <div className="bg-amber-500/15 border border-amber-300 rounded-xl p-4">
-                <p className="text-xs font-medium text-amber-800 mb-1">⚠ 즉시 적용 시 주의사항</p>
+                <p className="text-xs font-medium text-amber-800 mb-1 flex items-center gap-1"><AlertTriangle size={16} strokeWidth={1.5} /> 즉시 적용 시 주의사항</p>
                 <ul className="text-xs text-amber-700 space-y-1 list-disc list-inside">
                   <li>부서 이동/통합/폐지 시 소속 인원의 Assignment가 자동 업데이트됩니다.</li>
                   <li>이 작업은 되돌리기 어려울 수 있습니다.</li>

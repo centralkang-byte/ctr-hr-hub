@@ -4098,7 +4098,21 @@
     "draftSaved": "초안이 저장되었습니다.",
     "searchDepts": "부서 검색...",
     "name": "이름",
-    "searchResult": "검색 결과"
+    "searchResult": "검색 결과",
+    "viewDirectory": "디렉토리",
+    "includeSubDepts": "하위 부서 포함",
+    "showMatrix": "점선 보고 표시",
+    "matrixReport": "매트릭스 보고",
+    "directReport": "직접 보고",
+    "collapseAll": "모두 접기",
+    "expandAll": "모두 펼치기",
+    "noHead": "부서장 미지정",
+    "subDeptCount": "{count}개 부서",
+    "inactive": "비활성",
+    "searchEmployees": "직원 검색...",
+    "positionTitle": "직위",
+    "grade": "직급",
+    "email": "이메일"
   },
   "payroll": {
     "title": "급여 관리",
