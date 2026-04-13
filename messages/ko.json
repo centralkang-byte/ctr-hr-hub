@@ -5306,6 +5306,8 @@
     "title": "분석/리포트",
     "overview": "전사 개요",
     "workforce": {
+      "pageTitle": "인력 분석",
+      "pageDescription": "인력 구성, 입퇴사 추이, 근속 분포를 분석합니다.",
       "charts": {
         "deptDist": "부서별 인원",
         "exits": "퇴사",

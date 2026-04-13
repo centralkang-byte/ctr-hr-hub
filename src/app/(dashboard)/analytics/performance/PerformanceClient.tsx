@@ -86,7 +86,7 @@ export default function PerformanceClient({ user: _user }: { user: SessionUser }
               <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
               <Legend iconType="circle" iconSize={8} />
               <Bar dataKey="actual" name={t('performance.charts.actual')} fill={CHART_COLORS.primary} radius={[4, 4, 0, 0]} maxBarSize={40} />
-              <Bar dataKey="guideline" name={t('performance.charts.guideline')} fill="#D1D5DB" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar dataKey="guideline" name={t('performance.charts.guideline')} fill={CHART_COLORS.neutral} radius={[4, 4, 0, 0]} maxBarSize={40} />
             </BarChart>
           </ResponsiveContainer>
         )}
@@ -124,7 +124,7 @@ export default function PerformanceClient({ user: _user }: { user: SessionUser }
                       <span className="text-muted-foreground">{stage.completed}/{stage.total} ({pct}%)</span>
                     </div>
                     <div className="h-3 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full rounded-full bg-gradient-to-r from-[#5E81F4] to-[#8B5CF6] transition-all duration-500" style={{ width: `${pct}%` }} />
+                      <div className="h-full rounded-full bg-gradient-to-r from-primary to-primary-dim transition-all duration-500" style={{ width: `${pct}%` }} />
                     </div>
                   </div>
                 )

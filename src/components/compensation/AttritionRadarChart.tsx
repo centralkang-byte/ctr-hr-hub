@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts'
+import { CHART_THEME } from '@/lib/styles/chart'
 
 interface Factor {
   factor: string
@@ -42,15 +43,16 @@ export default function AttritionRadarChart({ factors }: AttritionRadarChartProp
     <div className="w-full h-64">
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart cx="50%" cy="50%" outerRadius="75%" data={data}>
-          <PolarGrid stroke="#E8E8E8" />
-          <PolarAngleAxis dataKey="subject" tick={{ fontSize: 12, fill: '#666' }} />
+          <PolarGrid stroke={CHART_THEME.grid.stroke} />
+          <PolarAngleAxis dataKey="subject" tick={CHART_THEME.axis.tick} />
           <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 10 }} />
           <Radar
             name="위험 점수"
             dataKey="score"
-            stroke="#EF4444"
-            fill="#EF4444"
+            stroke={CHART_THEME.colors[4]}
+            fill={CHART_THEME.colors[4]}
             fillOpacity={0.2}
+            strokeWidth={2}
           />
           <Tooltip
             content={({ active, payload }) => {

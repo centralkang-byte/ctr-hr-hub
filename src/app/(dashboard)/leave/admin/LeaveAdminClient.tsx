@@ -110,10 +110,8 @@ interface DepartmentOption {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const CHART_COLORS = ['#5E81F4', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899']
-
 function getDeptColor(index: number): string {
-  return CHART_COLORS[index % CHART_COLORS.length]
+  return CHART_THEME.colors[index % CHART_THEME.colors.length]
 }
 
 function getYearOptions(): number[] {

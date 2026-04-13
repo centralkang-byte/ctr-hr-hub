@@ -718,6 +718,8 @@
     "warning": "Advertencia",
     "weeklyOvertimeViolationsTooltip": "Casos que superan 52h/semana (este mes)",
     "workforce": {
+      "pageTitle": "Análisis de personal",
+      "pageDescription": "Analice la composición del personal, tendencias de contratación/salida y distribución de antigüedad.",
       "charts": {
         "deptDist": "Personal por departamento",
         "exits": "Bajas",

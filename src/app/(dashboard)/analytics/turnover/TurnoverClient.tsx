@@ -87,7 +87,7 @@ export default function TurnoverClient({ user: _user }: { user: SessionUser }) {
               <XAxis dataKey="month" fontSize={10} tickFormatter={(v) => v.substring(2).replace('-', '/')} />
               <YAxis fontSize={11} unit="%" />
               <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
-              <ReferenceLine y={benchmarkRate} label={{ value: t('turnover.charts.industryAvg'), position: 'insideTopRight', fill: '#EF4444', fontSize: 11 }} stroke={CHART_COLORS.danger} strokeDasharray="3 3" />
+              <ReferenceLine y={benchmarkRate} label={{ value: t('turnover.charts.industryAvg'), position: 'insideTopRight', fill: CHART_COLORS.danger, fontSize: 11 }} stroke={CHART_COLORS.danger} strokeDasharray="3 3" />
               <Line type="monotone" dataKey="rate" name={t('turnover.charts.turnoverRate')} stroke={CHART_COLORS.primary} strokeWidth={2} dot={{ r: 2 }} />
             </LineChart>
           </ResponsiveContainer>

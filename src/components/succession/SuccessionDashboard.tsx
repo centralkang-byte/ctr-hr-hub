@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { Crown, Users, AlertTriangle, Shield } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
+import { CHART_THEME } from '@/lib/styles/chart'
 import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 
@@ -24,9 +25,9 @@ const READINESS_LABELS: Record<string, string> = {
 }
 
 const READINESS_COLORS: Record<string, string> = {
-  READY_NOW: '#10B981',
-  READY_1_2_YEARS: '#5E81F4',
-  READY_3_PLUS_YEARS: '#F59E0B',
+  READY_NOW: CHART_THEME.colors[2],
+  READY_1_2_YEARS: CHART_THEME.colors[0],
+  READY_3_PLUS_YEARS: CHART_THEME.colors[3],
 }
 
 // ─── Component ───────────────────────────────────────────

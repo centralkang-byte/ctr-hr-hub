@@ -39,7 +39,6 @@ interface AiAnalysis {
   department_comparison?: string
 }
 
-const CHART_COLORS = ['#5E81F4', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
 
 // ─── Component ───────────────────────────────────────────
 
@@ -179,7 +178,7 @@ export default function PulseResultsClient({ user: _user, id }: { user: SessionU
                       dataKey="value" label
                     >
                       {Object.keys(q.distribution).map((_, idx) => (
-                        <Cell key={idx} fill={CHART_COLORS[idx % CHART_COLORS.length]} />
+                        <Cell key={idx} fill={CHART_THEME.colors[idx % CHART_THEME.colors.length]} />
                       ))}
                     </Pie>
                     <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />

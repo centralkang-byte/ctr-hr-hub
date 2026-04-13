@@ -13,7 +13,7 @@ import { EmptyChart } from '@/components/analytics/EmptyChart'
 import { AnalyticsFilterBar } from '@/components/analytics/AnalyticsFilterBar'
 import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import type { AttendanceResponse } from '@/lib/analytics/types'
-import { CHART_THEME } from '@/lib/styles'
+import { CHART_THEME, HEATMAP_COLORS } from '@/lib/styles'
 import type { SessionUser } from '@/types'
 
 export default function AttendanceClient({ user: _user }: { user: SessionUser }) {
@@ -110,10 +110,10 @@ export default function AttendanceClient({ user: _user }: { user: SessionUser })
                     const count = cell?.count || 0
                     const intensity = count / maxCount
                     const bgColor = count === 0 ? '#F3F4F6'
-                      : intensity < 0.3 ? '#DBEAFE'
-                      : intensity < 0.6 ? '#93C5FD'
-                      : intensity < 0.8 ? '#5E81F4'
-                      : '#3B5FCA'
+                      : intensity < 0.3 ? HEATMAP_COLORS.scale[0]
+                      : intensity < 0.6 ? HEATMAP_COLORS.scale[2]
+                      : intensity < 0.8 ? HEATMAP_COLORS.scale[4]
+                      : HEATMAP_COLORS.scale[6]
                     return (
                       <div key={`${day}-${hour}`}
                         className="w-8 h-6 rounded-sm cursor-default"

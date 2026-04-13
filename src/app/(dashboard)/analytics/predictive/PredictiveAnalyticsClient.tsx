@@ -41,6 +41,7 @@ import {
 import { apiClient } from '@/lib/api'
 import { AnalyticsPageLayout } from '@/components/analytics/AnalyticsPageLayout'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { CHART_THEME, RISK_COLORS } from '@/lib/styles/chart'
 import { cn } from '@/lib/utils'
 
 // ─── 타입 ────────────────────────────────────────────────
@@ -104,21 +105,6 @@ const RISK_CONFIG: Record<RiskLevel, { labelKey: string; bg: string; text: strin
   critical: { labelKey: 'predictive.riskLevels.critical', bg: 'bg-orange-500/10', text: 'text-orange-700', border: 'border-orange-200' },
 }
 
-const RISK_COLORS: Record<RiskLevel, string> = {
-  low: '#059669',
-  medium: '#F59E0B',
-  high: '#EF4444',
-  critical: '#C2410C',
-}
-
-const CHART_THEME = {
-  grid: { stroke: '#F5F5F5', strokeDasharray: '3 3' },
-  tooltip: {
-    contentStyle: { borderRadius: '8px', border: '1px solid #E8E8E8', boxShadow: '0 4px 16px rgba(15,23,42,0.06)' },
-    labelStyle: { fontWeight: 600, color: '#1A1A1A' },
-  },
-  colors: ['#5E81F4', '#22C55E', '#F59E0B', '#8B5CF6', '#EF4444'],
-}
 
 // ─── 헬퍼 ────────────────────────────────────────────────
 
@@ -176,7 +162,7 @@ function SummaryCards({
       label: t('predictive.summary.turnoverHighRisk'),
       value: highTurnover,
       unit: t('predictive.summary.persons'),
-      color: '#EF4444',
+      color: RISK_COLORS.high,
       bg: '#FEE2E2',
     },
     {
@@ -184,7 +170,7 @@ function SummaryCards({
       label: t('predictive.summary.burnoutHighRisk'),
       value: highBurnout,
       unit: t('predictive.summary.persons'),
-      color: '#F59E0B',
+      color: RISK_COLORS.medium,
       bg: '#FEF3C7',
     },
     {
@@ -192,7 +178,7 @@ function SummaryCards({
       label: t('predictive.summary.riskTeams'),
       value: criticalTeams,
       unit: t('predictive.summary.teams'),
-      color: '#8B5CF6',
+      color: CHART_THEME.colors[3],
       bg: '#EDE9FE',
     },
     {
@@ -200,7 +186,7 @@ function SummaryCards({
       label: t('predictive.summary.totalAnalyzed'),
       value: turnoverData.length,
       unit: t('predictive.summary.persons'),
-      color: '#059669',
+      color: RISK_COLORS.low,
       bg: '#D1FAE5',
     },
   ]
@@ -631,7 +617,7 @@ function WorkforceTab({
                             className="h-full rounded-full"
                             style={{
                               width: `${riskRate}%`,
-                              backgroundColor: riskRate > 50 ? '#EF4444' : riskRate > 25 ? '#F59E0B' : '#059669',
+                              backgroundColor: riskRate > 50 ? RISK_COLORS.high : riskRate > 25 ? RISK_COLORS.medium : RISK_COLORS.low,
                             }}
                           />
                         </div>

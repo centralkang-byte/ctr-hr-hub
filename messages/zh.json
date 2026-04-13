@@ -718,6 +718,8 @@
     "warning": "警告",
     "weeklyOvertimeViolationsTooltip": "超过52小时周限的次数（本月）",
     "workforce": {
+      "pageTitle": "人力分析",
+      "pageDescription": "分析人员构成、入离职趋势和工龄分布。",
       "charts": {
         "deptDist": "部门人数",
         "exits": "离职",

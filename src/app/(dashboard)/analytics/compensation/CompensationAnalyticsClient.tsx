@@ -23,9 +23,10 @@ import { AnalyticsKpiCard } from '@/components/analytics/AnalyticsKpiCard'
 import type { CompensationData } from '@/lib/analytics/types'
 import { Banknote } from 'lucide-react'
 import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
+import { CHART_COLORS } from '@/components/analytics/chart-colors'
 import type { SessionUser } from '@/types'
 
-const BAND_COLORS = ['#EF4444', '#10B981', '#F59E0B']
+const BAND_COLORS = [CHART_COLORS.danger, CHART_COLORS.success, CHART_COLORS.warning]
 
 export default function CompensationAnalyticsClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('analytics.compensationPage')
@@ -111,7 +112,7 @@ export default function CompensationAnalyticsClient({ user: _user }: { user: Ses
                 <XAxis dataKey="grade_name" tick={{ fontSize: 12 }} />
                 <YAxis domain={[0.5, 1.5]} />
                 <Tooltip formatter={(v) => typeof v === 'number' ? v.toFixed(3) : v} />
-                <Bar dataKey="avg_compa_ratio" fill="#8B5CF6" radius={[4, 4, 0, 0]} name={t('compaRatio')} />
+                <Bar dataKey="avg_compa_ratio" fill={CHART_THEME.colors[0]} radius={[4, 4, 0, 0]} name={t('compaRatio')} cursor="pointer" />
               </BarChart>
             </ResponsiveContainer>
           ) : (

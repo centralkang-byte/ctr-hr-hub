@@ -29,13 +29,13 @@ interface Props {
 // ─── Constants ──────────────────────────────────────────────
 
 const BUCKET_COLORS: Record<string, string> = {
-  '< 0.7': '#DC2626',     // red — 심각 저보상
-  '0.7–0.8': '#F59E0B',   // amber — 저보상
-  '0.8–0.9': '#3B82F6',   // blue — 약간 낮음
-  '0.9–1.0': '#059669',   // green — 적정
-  '1.0–1.1': '#059669',   // green — 적정
-  '1.1–1.2': '#3B82F6',   // blue — 약간 높음
-  '> 1.2': '#DC2626',      // red — 고보상 이탈
+  '< 0.7': CHART_THEME.colors[4],   // red — 심각 저보상
+  '0.7–0.8': CHART_THEME.colors[3], // amber — 저보상
+  '0.8–0.9': CHART_THEME.colors[0], // violet — 약간 낮음
+  '0.9–1.0': CHART_THEME.colors[2], // green — 적정
+  '1.0–1.1': CHART_THEME.colors[2], // green — 적정
+  '1.1–1.2': CHART_THEME.colors[0], // violet — 약간 높음
+  '> 1.2': CHART_THEME.colors[4],   // red — 고보상 이탈
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -142,8 +142,8 @@ export default function CompaRatioTab({ companies }: Props) {
             <XAxis dataKey="range" {...CHART_THEME.axis} />
             <YAxis {...CHART_THEME.axis} label={{ value: t('simCompaChartCount'), angle: -90, position: 'insideLeft', ...CHART_THEME.axis.label }} />
             <Tooltip {...CHART_THEME.tooltip} formatter={(v) => [`${v}`, t('simCompaChartCount')]} />
-            <ReferenceLine x="0.8–0.9" stroke="#DC2626" strokeDasharray="3 3" label={{ value: t('simCompaLowLabel'), fill: '#DC2626', fontSize: 11 }} />
-            <ReferenceLine x="1.1–1.2" stroke="#DC2626" strokeDasharray="3 3" label={{ value: t('simCompaHighLabel'), fill: '#DC2626', fontSize: 11 }} />
+            <ReferenceLine x="0.8–0.9" stroke={CHART_THEME.colors[4]} strokeDasharray="4 3" label={{ value: t('simCompaLowLabel'), fill: CHART_THEME.colors[4], fontSize: 11 }} />
+            <ReferenceLine x="1.1–1.2" stroke={CHART_THEME.colors[4]} strokeDasharray="4 3" label={{ value: t('simCompaHighLabel'), fill: CHART_THEME.colors[4], fontSize: 11 }} />
             <Bar dataKey="count" radius={[4, 4, 0, 0]}>
               {distribution.map((entry: CompaRatioDistBucket) => (
                 <Cell key={entry.range} fill={BUCKET_COLORS[entry.range] ?? CHART_THEME.colors[0]} />

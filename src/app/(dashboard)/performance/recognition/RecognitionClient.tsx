@@ -44,15 +44,15 @@ interface Employee {
 
 // ─── Constants ───────────────────────────────────────────
 
-const VALUE_CONFIG: Record<string, { labelKey: string; emoji: string; bgDefault: string; borderDefault: string; textDefault: string; bgActive: string; textActive: string }> = {
-  CHALLENGE: { labelKey: 'recognition_valueChallenge', emoji: '🔴', bgDefault: 'bg-destructive/5', borderDefault: 'border-destructive/20', textDefault: 'text-red-500', bgActive: 'bg-destructive/50', textActive: 'text-white' },
-  TRUST: { labelKey: 'recognition_valueTrust', emoji: '🟢', bgDefault: 'bg-primary/10', borderDefault: 'border-green-300', textDefault: 'text-primary', bgActive: 'bg-primary', textActive: 'text-white' },
-  RESPONSIBILITY: { labelKey: 'recognition_valueResponsibility', emoji: '🟠', bgDefault: 'bg-amber-500/10', borderDefault: 'border-amber-200', textDefault: 'text-amber-500', bgActive: 'bg-amber-500/100', textActive: 'text-white' },
-  RESPECT: { labelKey: 'recognition_valueRespect', emoji: '🔵', bgDefault: 'bg-primary/5', borderDefault: 'border-primary/20', textDefault: 'text-blue-500', bgActive: 'bg-primary/50', textActive: 'text-white' },
+const VALUE_CONFIG: Record<string, { labelKey: string; dotClass: string; bgDefault: string; borderDefault: string; textDefault: string; bgActive: string; textActive: string }> = {
+  CHALLENGE: { labelKey: 'recognition_valueChallenge', dotClass: 'bg-destructive', bgDefault: 'bg-destructive/5', borderDefault: 'border-destructive/20', textDefault: 'text-red-500', bgActive: 'bg-destructive/50', textActive: 'text-white' },
+  TRUST: { labelKey: 'recognition_valueTrust', dotClass: 'bg-tertiary', bgDefault: 'bg-primary/10', borderDefault: 'border-green-300', textDefault: 'text-primary', bgActive: 'bg-primary', textActive: 'text-white' },
+  RESPONSIBILITY: { labelKey: 'recognition_valueResponsibility', dotClass: 'bg-amber-500', bgDefault: 'bg-amber-500/10', borderDefault: 'border-amber-200', textDefault: 'text-amber-500', bgActive: 'bg-amber-500/100', textActive: 'text-white' },
+  RESPECT: { labelKey: 'recognition_valueRespect', dotClass: 'bg-primary', bgDefault: 'bg-primary/5', borderDefault: 'border-primary/20', textDefault: 'text-blue-500', bgActive: 'bg-primary/50', textActive: 'text-white' },
 }
 
 const VALUE_LABELS: Record<string, string> = { CHALLENGE: 'Challenge', TRUST: 'Trust', RESPONSIBILITY: 'Responsibility', RESPECT: 'Respect' }
-const CHART_COLORS = ['#EF4444', '#5E81F4', '#F59E0B', '#3B82F6']
+const LOCAL_CHART_COLORS = [CHART_THEME.colors[4], CHART_THEME.colors[0], CHART_THEME.colors[3], CHART_THEME.colors[1]]
 
 // ─── Component ───────────────────────────────────────────
 
@@ -204,7 +204,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
           >
             <option value="">{tCommon('all')}</option>
             {Object.entries(VALUE_CONFIG).map(([key, config]) => (
-              <option key={key} value={key}>{config.emoji} {t(config.labelKey)}</option>
+              <option key={key} value={key}>● {t(config.labelKey)}</option>
             ))}
           </select>
         )}
@@ -235,7 +235,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                     </div>
                     {config && (
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mb-3 ${config.bgDefault} ${config.textDefault} border ${config.borderDefault}`}>
-                        {config.emoji} {t(config.labelKey)} ({VALUE_LABELS[item.coreValue]})
+                        <span className={`inline-block w-2 h-2 rounded-full mr-1 ${config.dotClass}`} /> {t(config.labelKey)} ({VALUE_LABELS[item.coreValue]})
                       </span>
                     )}
                     <p className="text-sm text-foreground leading-relaxed mb-3">&quot;{item.message}&quot;</p>
@@ -292,11 +292,11 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                       cx="50%"
                       cy="50%"
                       outerRadius={80}
-                      innerRadius={40}
+                      innerRadius={52}
                       label
                     >
                       {stats.valueDistribution.map((_, i) => (
-                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                        <Cell key={i} fill={LOCAL_CHART_COLORS[i % LOCAL_CHART_COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
@@ -312,8 +312,8 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.departmentActivity.slice(0, 8)}>
                     <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
-                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#666' }} />
-                    <YAxis tick={{ fontSize: 12, fill: '#666' }} allowDecimals={false} />
+                    <XAxis dataKey="name" tick={CHART_THEME.axis.tick} />
+                    <YAxis tick={CHART_THEME.axis.tick} allowDecimals={false} />
                     <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
                     <Legend />
                     <Bar dataKey="sent" name={t('recognition_sentCount')} fill={CHART_THEME.colors[3]} radius={[4, 4, 0, 0]} />
@@ -331,10 +331,10 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={stats.monthlyTrend}>
                   <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
-                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#666' }} />
-                  <YAxis tick={{ fontSize: 12, fill: '#666' }} allowDecimals={false} />
+                  <XAxis dataKey="month" tick={CHART_THEME.axis.tick} />
+                  <YAxis tick={CHART_THEME.axis.tick} allowDecimals={false} />
                   <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
-                  <Line type="monotone" dataKey="count" name={t('recognitionCount')} stroke={CHART_THEME.colors[3]} strokeWidth={2} dot={{ fill: '#5E81F4' }} />
+                  <Line type="monotone" dataKey="count" name={t('recognitionCount')} stroke={CHART_THEME.colors[3]} strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -439,7 +439,10 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                           : `${config.bgDefault} ${config.textDefault} ${config.borderDefault}`
                       }`}
                     >
-                      {config.emoji} {t(config.labelKey)}
+                      <span className="inline-flex items-center gap-1.5">
+                        <span className={`inline-block w-2 h-2 rounded-full ${config.dotClass}`} />
+                        {t(config.labelKey)}
+                      </span>
                       <span className="block text-xs opacity-70">{VALUE_LABELS[key]}</span>
                     </button>
                   ))}

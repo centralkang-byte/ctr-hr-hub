@@ -718,6 +718,8 @@
     "warning": "Cảnh báo",
     "weeklyOvertimeViolationsTooltip": "Số lần vượt 52h/tuần (tháng này)",
     "workforce": {
+      "pageTitle": "Phân tích nhân lực",
+      "pageDescription": "Phân tích cơ cấu nhân sự, xu hướng tuyển dụng/nghỉ việc và phân bổ thâm niên.",
       "charts": {
         "deptDist": "Nhân sự theo phòng ban",
         "exits": "Nghỉ việc",

@@ -8,7 +8,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, Smile, Meh, Frown, type LucideIcon } from 'lucide-react'
 import {
   LineChart,
   Line,
@@ -57,12 +57,12 @@ function _isRiskRow(row: CheckinRow): boolean {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const MOOD_MAP: Record<string, { emoji: string; labelKey: string; value: number }> = {
-  GREAT: { emoji: '\u{1F603}', labelKey: 'moodBestShort', value: 5 },
-  GOOD: { emoji: '\u{1F642}', labelKey: 'moodGoodShort', value: 4 },
-  NEUTRAL: { emoji: '\u{1F610}', labelKey: 'moodNeutralShort', value: 3 },
-  STRUGGLING: { emoji: '\u{1F61F}', labelKey: 'moodStrugglingShort', value: 2 },
-  BAD: { emoji: '\u{1F622}', labelKey: 'moodBadShort', value: 1 },
+const MOOD_MAP: Record<string, { icon: LucideIcon; iconClass: string; labelKey: string; value: number }> = {
+  GREAT: { icon: Smile, iconClass: 'text-emerald-500', labelKey: 'moodBestShort', value: 5 },
+  GOOD: { icon: Smile, iconClass: 'text-tertiary', labelKey: 'moodGoodShort', value: 4 },
+  NEUTRAL: { icon: Meh, iconClass: 'text-amber-500', labelKey: 'moodNeutralShort', value: 3 },
+  STRUGGLING: { icon: Frown, iconClass: 'text-red-500', labelKey: 'moodStrugglingShort', value: 2 },
+  BAD: { icon: Frown, iconClass: 'text-destructive', labelKey: 'moodBadShort', value: 1 },
 }
 
 const SENTIMENT_BADGE: Record<string, { labelKey: string; className: string }> = {
@@ -205,8 +205,9 @@ export function CheckinsAdminClient({ user: _user }: CheckinsAdminClientProps) {
           const row = r as unknown as CheckinRow
           const m = MOOD_MAP[row.mood]
           return (
-            <span className="text-sm" title={m ? t(m.labelKey) : undefined}>
-              {m?.emoji ?? row.mood} {m ? t(m.labelKey) : ''}
+            <span className="inline-flex items-center gap-1 text-sm" title={m ? t(m.labelKey) : undefined}>
+              {m ? <m.icon className={`h-4 w-4 ${m.iconClass}`} strokeWidth={1.5} /> : row.mood}
+              {m ? t(m.labelKey) : ''}
             </span>
           )
         },
@@ -351,21 +352,24 @@ export function CheckinsAdminClient({ user: _user }: CheckinsAdminClientProps) {
                       dataKey="mood"
                       stroke={CHART_THEME.colors[0]}
                       strokeWidth={2}
-                      dot={{ r: 4 }}
+                      dot={false}
+                      activeDot={{ r: 4 }}
                     />
                     <Line
                       type="monotone"
                       dataKey="energy"
                       stroke={CHART_THEME.colors[2]}
                       strokeWidth={2}
-                      dot={{ r: 4 }}
+                      dot={false}
+                      activeDot={{ r: 4 }}
                     />
                     <Line
                       type="monotone"
                       dataKey="belonging"
-                      stroke="#2196F3"
+                      stroke={CHART_THEME.colors[1]}
                       strokeWidth={2}
-                      dot={{ r: 4 }}
+                      dot={false}
+                      activeDot={{ r: 4 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>

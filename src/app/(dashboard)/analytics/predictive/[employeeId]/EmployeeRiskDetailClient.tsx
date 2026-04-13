@@ -29,7 +29,7 @@ import {
   Tooltip,
 } from 'recharts'
 import { apiClient } from '@/lib/api'
-import { BUTTON_VARIANTS,  TABLE_STYLES, CHART_THEME } from '@/lib/styles'
+import { BUTTON_VARIANTS,  TABLE_STYLES, CHART_THEME, RISK_COLORS } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 
 // ─── 타입 ────────────────────────────────────────────────
@@ -77,10 +77,10 @@ interface EmployeeRiskData {
 // ─── 상수 ────────────────────────────────────────────────
 
 const RISK_CONFIG: Record<string, { labelKey: string; bg: string; text: string; border: string; color: string }> = {
-  low:      { labelKey: 'predictive.riskLevels.low',     bg: 'bg-emerald-500/15', text: 'text-emerald-700', border: 'border-emerald-200', color: '#059669' },
-  medium:   { labelKey: 'predictive.riskLevels.medium',     bg: 'bg-amber-500/15', text: 'text-amber-700', border: 'border-amber-300', color: '#F59E0B' },
-  high:     { labelKey: 'predictive.riskLevels.high',     bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20', color: '#EF4444' },
-  critical: { labelKey: 'predictive.riskLevels.critical',     bg: 'bg-orange-500/10', text: 'text-orange-700', border: 'border-orange-200', color: '#C2410C' },
+  low:      { labelKey: 'predictive.riskLevels.low',     bg: 'bg-emerald-500/15', text: 'text-emerald-700', border: 'border-emerald-200', color: RISK_COLORS.low },
+  medium:   { labelKey: 'predictive.riskLevels.medium',     bg: 'bg-amber-500/15', text: 'text-amber-700', border: 'border-amber-300', color: RISK_COLORS.medium },
+  high:     { labelKey: 'predictive.riskLevels.high',     bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20', color: RISK_COLORS.high },
+  critical: { labelKey: 'predictive.riskLevels.critical',     bg: 'bg-orange-500/10', text: 'text-orange-700', border: 'border-orange-200', color: RISK_COLORS.critical },
   insufficient_data: { labelKey: 'predictive.riskLevels.insufficientData', bg: 'bg-background', text: 'text-muted-foreground', border: 'border-border', color: '#999' },
 }
 
@@ -114,7 +114,7 @@ function ScoreGauge({ score, riskLevel }: { score: number; riskLevel: string }) 
   return (
     <div className="relative flex items-center justify-center">
       <svg viewBox="0 0 120 120" className="w-36 h-36">
-        <circle cx="60" cy="60" r="50" fill="none" stroke="#F5F5F5" strokeWidth="10" />
+        <circle cx="60" cy="60" r="50" fill="none" stroke={CHART_THEME.grid.stroke} strokeWidth="10" />
         <circle
           cx="60"
           cy="60"
@@ -126,7 +126,7 @@ function ScoreGauge({ score, riskLevel }: { score: number; riskLevel: string }) 
           strokeDasharray={`${(score / 100) * 314} 314`}
           transform="rotate(-90 60 60)"
         />
-        <text x="60" y="58" textAnchor="middle" className="text-2xl font-bold" style={{ fill: '#1A1A1A', fontSize: '22px', fontWeight: 700 }}>
+        <text x="60" y="58" textAnchor="middle" className="text-2xl font-bold" style={{ fill: CHART_THEME.axis.label.fill, fontSize: '22px', fontWeight: 700 }}>
           {score}
         </text>
         <text x="60" y="75" textAnchor="middle" style={{ fill: '#999', fontSize: '11px' }}>
@@ -329,7 +329,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
                               className="h-full rounded-full"
                               style={{
                                 width: `${indicator.score}%`,
-                                backgroundColor: indicator.score > 70 ? '#EF4444' : indicator.score > 40 ? '#F59E0B' : '#059669',
+                                backgroundColor: indicator.score > 70 ? RISK_COLORS.high : indicator.score > 40 ? RISK_COLORS.medium : RISK_COLORS.low,
                               }}
                             />
                           </div>
@@ -405,7 +405,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
                               className="h-full rounded-full"
                               style={{
                                 width: `${signal.score}%`,
-                                backgroundColor: signal.score > 70 ? '#EF4444' : signal.score > 40 ? '#F59E0B' : '#059669',
+                                backgroundColor: signal.score > 70 ? RISK_COLORS.high : signal.score > 40 ? RISK_COLORS.medium : RISK_COLORS.low,
                               }}
                             />
                           </div>

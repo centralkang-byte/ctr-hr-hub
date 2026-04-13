@@ -718,6 +718,8 @@
     "warning": "Warning",
     "weeklyOvertimeViolationsTooltip": "Cases exceeding 52h weekly limit (this month)",
     "workforce": {
+      "pageTitle": "Workforce Analytics",
+      "pageDescription": "Analyze headcount composition, hire/exit trends, and tenure distribution.",
       "charts": {
         "deptDist": "Headcount by Department",
         "exits": "Exits",
