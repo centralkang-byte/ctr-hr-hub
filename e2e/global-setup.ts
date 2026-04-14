@@ -47,10 +47,12 @@ async function globalSetup(config: FullConfig) {
     try {
       // 1. Get CSRF token
       const csrfRes = await page.request.get('/api/auth/csrf')
+      const csrfStatus = csrfRes.status()
       const { csrfToken } = await csrfRes.json()
+      console.log(`  [auth] ${role} csrf status=${csrfStatus} token=${csrfToken ? csrfToken.slice(0, 12) + '...' : 'EMPTY'}`)
 
       // 2. POST credentials to NextAuth callback
-      await page.request.post('/api/auth/callback/credentials', {
+      const postRes = await page.request.post('/api/auth/callback/credentials', {
         form: {
           email,
           csrfToken,
@@ -58,9 +60,13 @@ async function globalSetup(config: FullConfig) {
           json: 'true',
         },
       })
+      const postStatus = postRes.status()
+      const postBody = (await postRes.text()).slice(0, 300)
+      console.log(`  [auth] ${role} callback status=${postStatus} body=${postBody}`)
 
       // 3. Navigate to verify session is set
       await page.goto('/home', { waitUntil: 'domcontentloaded', timeout: 45000 })
+      console.log(`  [auth] ${role} after goto /home url=${page.url()}`)
 
       if (page.url().includes('/login')) {
         throw new Error(`Login failed for ${role} (${email})`)
