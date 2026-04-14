@@ -87,6 +87,13 @@ jobs:
       - name: Seed test data
         run: npx tsx prisma/seed.ts
 
+      - name: Seed QA accounts (workaround — see scripts/seed-qa-accounts.ts)
+        # The master seed (prisma/seed.ts) does not call seedQAAccounts, so
+        # super@/hr@/manager@/employee-* SsoIdentity rows are missing and the
+        # credentials provider login in e2e/global-setup.ts fails. This wrapper
+        # injects them before Playwright runs.
+        run: npx tsx scripts/seed-qa-accounts.ts
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
