@@ -36,10 +36,57 @@ export default defineConfig({
       testDir: './e2e/flows',
       use: { ...devices['Desktop Chrome'] },
     },
+    // ─── Visual regression: 3 viewport sub-projects ─────
     {
-      name: 'visual',
+      name: 'visual-desktop',
       testDir: './e2e/visual',
-      use: { ...devices['Desktop Chrome'] },
+      retries: 0,
+      timeout: 60_000,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1280, height: 720 },
+      },
+      expect: {
+        toHaveScreenshot: {
+          maxDiffPixelRatio: 0.005,
+          threshold: 0.2,
+        },
+      },
+      snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
+    },
+    {
+      name: 'visual-tablet',
+      testDir: './e2e/visual',
+      retries: 0,
+      timeout: 60_000,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 768, height: 1024 },
+      },
+      expect: {
+        toHaveScreenshot: {
+          maxDiffPixelRatio: 0.005,
+          threshold: 0.2,
+        },
+      },
+      snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
+    },
+    {
+      name: 'visual-mobile',
+      testDir: './e2e/visual',
+      retries: 0,
+      timeout: 60_000,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 375, height: 812 },
+      },
+      expect: {
+        toHaveScreenshot: {
+          maxDiffPixelRatio: 0.005,
+          threshold: 0.2,
+        },
+      },
+      snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
     },
   ],
 
