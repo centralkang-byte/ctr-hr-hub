@@ -139,6 +139,9 @@ jobs:
           echo "::endgroup::"
 
       - name: Upload baselines artifact
+        # Always upload — even if verify pass fails we want the generated PNGs
+        # so we can inspect them locally and diagnose the flaky tests.
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: visual-baselines

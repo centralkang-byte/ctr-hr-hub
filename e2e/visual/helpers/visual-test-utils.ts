@@ -56,8 +56,17 @@ export { expect }
 /**
  * Set the theme before navigation or screenshot.
  * Toggles the HTML class + sets localStorage for next-themes persistence.
+ *
+ * IMPORTANT: we re-inject DISABLE_ANIMATIONS_CSS **before** flipping the class
+ * so the theme switch does not trigger any CSS transitions or animations
+ * (background color, shadow, border, etc.). Without this, a transition may
+ * still be in-flight when the screenshot is captured, which caused dark-theme
+ * tests to drift between the generate pass and the twice-cold verify pass.
  */
 export async function setTheme(page: Page, theme: 'light' | 'dark'): Promise<void> {
+  // 1. Guarantee zero-duration animations/transitions BEFORE the flip.
+  await page.addStyleTag({ content: DISABLE_ANIMATIONS_CSS })
+
   await page.evaluate((t) => {
     // Set localStorage for next-themes state
     localStorage.setItem('theme', t)
@@ -72,7 +81,7 @@ export async function setTheme(page: Page, theme: 'light' | 'dark'): Promise<voi
     }
   }, theme)
 
-  // Wait for CSS custom property recalculation
+  // Wait for CSS custom property recalculation + any post-flip paints.
   await page.waitForTimeout(300)
 }
 
