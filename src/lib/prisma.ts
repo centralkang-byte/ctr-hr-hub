@@ -26,8 +26,14 @@ function createPrismaClient(): PrismaClient {
   }
   const isSupabase =
     connectionString.includes('supabase.co') || connectionString.includes('supabase.com')
+  // CI uses a plain-TCP Postgres container on localhost; production builds
+  // (next start) force NODE_ENV=production, which would otherwise enable SSL
+  // against a host that does not support it and break every Prisma query.
+  const isLocalhost =
+    connectionString.includes('localhost') ||
+    connectionString.includes('127.0.0.1')
   const ssl =
-    isSupabase || process.env.NODE_ENV === 'production'
+    !isLocalhost && (isSupabase || process.env.NODE_ENV === 'production')
       ? { rejectUnauthorized: false }
       : undefined
   const adapter = new PrismaPg({ connectionString, ssl })
