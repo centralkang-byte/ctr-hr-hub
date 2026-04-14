@@ -54,34 +54,52 @@ export { expect }
 // ─── Theme toggle ───────────────────────────────────────────
 
 /**
- * Set the theme before navigation or screenshot.
- * Toggles the HTML class + sets localStorage for next-themes persistence.
+ * Set the theme for the current page and trigger a fresh reload so
+ * next-themes hydrates against the right value.
  *
- * IMPORTANT: we re-inject DISABLE_ANIMATIONS_CSS **before** flipping the class
- * so the theme switch does not trigger any CSS transitions or animations
- * (background color, shadow, border, etc.). Without this, a transition may
- * still be in-flight when the screenshot is captured, which caused dark-theme
- * tests to drift between the generate pass and the twice-cold verify pass.
+ * Why a reload is required: next-themes reads `theme` from localStorage
+ * inside an inline <head> script during the initial render, and its
+ * React provider syncs its internal state with the DOM on hydration.
+ * Setting `localStorage` and flipping the `.dark` class AFTER hydration
+ * races the provider — sometimes the provider wins and reverts our
+ * class, producing light-theme screenshots for dark-theme tests. The
+ * initial CI runs caught this: ~46 dark tests flip-flopped between the
+ * generate pass and the twice-cold verify pass with 93% pixel diff.
+ *
+ * Fix: register a `page.addInitScript` that seeds localStorage and the
+ * `<html>` class BEFORE any page script runs, then `reload()` so the
+ * current page re-renders with that seed from the very first paint.
  */
 export async function setTheme(page: Page, theme: 'light' | 'dark'): Promise<void> {
-  // 1. Guarantee zero-duration animations/transitions BEFORE the flip.
-  await page.addStyleTag({ content: DISABLE_ANIMATIONS_CSS })
-
-  await page.evaluate((t) => {
-    // Set localStorage for next-themes state
-    localStorage.setItem('theme', t)
-
-    // Toggle class directly for immediate effect
-    if (t === 'dark') {
-      document.documentElement.classList.add('dark')
-      document.documentElement.setAttribute('data-theme', 'dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-      document.documentElement.setAttribute('data-theme', 'light')
+  await page.addInitScript((t) => {
+    try {
+      localStorage.setItem('theme', t)
+    } catch {
+      // localStorage may not be accessible for some origins; best-effort only.
     }
+    const apply = () => {
+      if (!document.documentElement) return
+      if (t === 'dark') {
+        document.documentElement.classList.add('dark')
+        document.documentElement.setAttribute('data-theme', 'dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+        document.documentElement.setAttribute('data-theme', 'light')
+      }
+    }
+    apply()
+    document.addEventListener('DOMContentLoaded', apply, { once: true })
   }, theme)
 
-  // Wait for CSS custom property recalculation + any post-flip paints.
+  // Reload the current document so the init script runs against a fresh
+  // navigation. `addInitScript` only applies to future navigations, so
+  // without this the just-registered script would not affect the already
+  // loaded page the test navigated to.
+  await page.reload({ waitUntil: 'domcontentloaded' })
+
+  // Re-inject animation-disabling CSS after the reload and give the
+  // browser a brief settle window for post-hydration paints.
+  await page.addStyleTag({ content: DISABLE_ANIMATIONS_CSS }).catch(() => {})
   await page.waitForTimeout(300)
 }
 
