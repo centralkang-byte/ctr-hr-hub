@@ -20,6 +20,11 @@ type VisualFixtures = {
   visualPage: Page
 }
 
+// Frozen wall-clock for visual baselines: 2026-04-14 09:00 KST.
+// Freezes Date.now/setTimeout/setInterval so D-day badges, current month,
+// attendance elapsed timers, and clock-in countdowns render deterministically.
+const FROZEN_TIME = new Date('2026-04-14T00:00:00.000Z') // 09:00 KST
+
 export const test = base.extend<VisualFixtures>({
   visualPage: async ({ page, context }, use) => {
     // Set NEXT_LOCALE=ko cookie to ensure Korean locale (default is en)
@@ -30,7 +35,14 @@ export const test = base.extend<VisualFixtures>({
       path: '/',
     }])
 
-    // Inject animation-disabling CSS
+    // Pin Date.now() / new Date() to a fixed wall-clock so D-day, current
+    // month, and clock-in countdowns render deterministically. setFixedTime()
+    // leaves setTimeout/setInterval/requestAnimationFrame on real time, so
+    // React hydration and SWR fetch flows still complete normally; animations
+    // are separately disabled via DISABLE_ANIMATIONS_CSS above.
+    await page.clock.setFixedTime(FROZEN_TIME)
+
+    // Inject animation-disabling CSS (re-injected after navigation in waitForVisualStability)
     await page.addStyleTag({ content: DISABLE_ANIMATIONS_CSS })
 
     await use(page)
@@ -118,21 +130,30 @@ export async function waitForVisualStability(page: Page): Promise<void> {
 
 /**
  * Returns locators for non-deterministic content that should be masked
- * during visual comparison: charts, clocks, relative timestamps.
+ * during visual comparison: charts, clocks, relative timestamps, D-day
+ * badges, and any element opted in via [data-mask="dynamic"].
+ *
+ * Clock-frozen content (D-day, current month) is mostly handled by
+ * page.clock.install in the visualPage fixture, but mask selectors below
+ * cover the cases where SSR pre-renders pre-freeze content or where the
+ * value depends on database state rather than wall time.
  */
 export async function maskDynamicContent(page: Page): Promise<Locator[]> {
   const masks: Locator[] = []
 
-  // Mask Recharts chart containers
-  const chartCount = await page.locator('.recharts-wrapper').count()
-  if (chartCount > 0) {
-    masks.push(page.locator('.recharts-wrapper'))
-  }
+  const SELECTORS = [
+    '.recharts-wrapper',     // Recharts chart containers
+    'time[datetime]',        // Relative time elements (e.g., "3분 전")
+    '[data-mask="dynamic"]', // Explicit opt-in for ad-hoc masking
+    '[data-dday]',           // D-day badges (interview countdown, etc.)
+    '.elapsed-time',         // Attendance elapsed timers
+  ]
 
-  // Mask relative time elements (e.g., "3분 전", "2 hours ago")
-  const timeAgoCount = await page.locator('time[datetime]').count()
-  if (timeAgoCount > 0) {
-    masks.push(page.locator('time[datetime]'))
+  for (const sel of SELECTORS) {
+    const count = await page.locator(sel).count()
+    if (count > 0) {
+      masks.push(page.locator(sel))
+    }
   }
 
   return masks

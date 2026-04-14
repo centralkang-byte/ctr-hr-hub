@@ -52,7 +52,7 @@ export default defineConfig({
           threshold: 0.2,
         },
       },
-      snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
+      snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{testFilePath}/{arg}{ext}',
     },
     {
       name: 'visual-tablet',
@@ -69,7 +69,7 @@ export default defineConfig({
           threshold: 0.2,
         },
       },
-      snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
+      snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{testFilePath}/{arg}{ext}',
     },
     {
       name: 'visual-mobile',
@@ -86,7 +86,7 @@ export default defineConfig({
           threshold: 0.2,
         },
       },
-      snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
+      snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{testFilePath}/{arg}{ext}',
     },
   ],
 
