@@ -37,6 +37,11 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     // ─── Visual regression: 3 viewport sub-projects ─────
+    // bypassCSP: true — production build ships strict style-src nonce CSP,
+    // which blocks page.addStyleTag (animation-disabling CSS) in the visual
+    // fixture. bypassCSP tells the browser to ignore CSP for these contexts
+    // so test helpers can inject styles. Only applies inside Playwright —
+    // the served app still emits the real CSP header.
     {
       name: 'visual-desktop',
       testDir: './e2e/visual',
@@ -45,6 +50,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 1280, height: 720 },
+        bypassCSP: true,
       },
       expect: {
         toHaveScreenshot: {
@@ -62,6 +68,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 768, height: 1024 },
+        bypassCSP: true,
       },
       expect: {
         toHaveScreenshot: {
@@ -79,6 +86,7 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 375, height: 812 },
+        bypassCSP: true,
       },
       expect: {
         toHaveScreenshot: {
