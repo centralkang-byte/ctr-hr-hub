@@ -53,6 +53,13 @@ jobs:
       REDIS_URL: redis://localhost:6379
       NODE_ENV: test
       PLAYWRIGHT_BASE_URL: http://localhost:3002
+      # Dummy Azure AD env vars — required by src/lib/env.ts getRequired()
+      # when NODE_ENV=production, which `next build` internally sets even
+      # though NODE_ENV: test is declared above. Visual tests log in via
+      # the credentials provider so real Azure SSO is never invoked.
+      AZURE_AD_CLIENT_ID: ci-test-azure-client-id
+      AZURE_AD_CLIENT_SECRET: ci-test-azure-client-secret
+      AZURE_AD_TENANT_ID: ci-test-azure-tenant-id
 
     steps:
       - uses: actions/checkout@v4
