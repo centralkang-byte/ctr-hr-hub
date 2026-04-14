@@ -22,7 +22,7 @@
 | warning | #B45309 | Pending, probation — **text only** (WCAG AA) |
 | warning-bright | #f59e0b | BG/icon/progress bar only (text는 warning #B45309) |
 | secondary | #64748b | Muted accent, metadata |
-| accent (badge) | #7c3aed | Offer, LOA, business trip |
+| badge-accent | #7c3aed | Offer, LOA, business trip (badge 전용, `--accent`은 neutral surface) |
 
 ### Surface Hierarchy (Tonal Layering)
 
@@ -40,6 +40,18 @@
 | on-surface | #2d2f2f | Primary text (pure #000 forbidden) |
 | on-surface-variant | #5a5c5c | Secondary text, labels |
 | outline-variant | #acadad | Ghost border (15% opacity ONLY) |
+
+### D17 Color Principle (bg/text 분리)
+
+bg와 text는 다른 토큰을 사용한다. bg는 밝은(bright) 색상으로 시각 강조, text는 어두운(darker) 색상으로 WCAG AA contrast 준수.
+
+| 용도 | bg 토큰 | text 토큰 | 이유 |
+|------|---------|-----------|------|
+| Warning | `bg-warning-bright/15` (#f59e0b) | `text-ctr-warning` (#B45309) | #f59e0b는 흰 배경에서 text AA 미달 |
+| Alert | `bg-alert-red/10` (#ef4444) | `text-destructive` (#e11d48) | 동적/정적 분리 |
+| Success | `bg-tertiary/10` (#16a34a) | `text-[#15803d]` | #16a34a는 10px badge text에서 AA 미달 |
+
+도메인 고유 색상(차트 팔레트, 파이프라인 단계, heatmap)은 범용 토큰 통합 금지 — `chart.ts`/`chart-colors.ts`에서 별도 관리.
 
 ### Chart: #6366f1, #a5b4fc, #16a34a, #f59e0b, #e11d48, #64748b (ext: #7c3aed, #0ea5e9, #84cc16, #f97316)
 
@@ -126,16 +138,24 @@ Ghost border: outline-variant at 15% opacity ONLY when absolutely needed.
 
 ### Status Badge (6 categories)
 
-| Category | Color | Usage |
-|----------|-------|-------|
-| success | #16a34a | Approved, complete, active, PAID |
-| warning | #b45309 | Pending, probation, REVIEW |
-| error | #e11d48 | Rejected, terminated, absent |
-| info | #6366f1 | In progress, on leave, interview |
-| neutral | #64748b | Draft, cancelled |
-| accent | #7c3aed | Offer, LOA, business trip |
+| Category | bg class | text class | Usage |
+|----------|----------|------------|-------|
+| success | `bg-tertiary/10` | `text-[#15803d]` (D17) | Approved, complete, active, PAID |
+| warning | `bg-[#b45309]/10` | `text-ctr-warning` | Pending, probation, REVIEW |
+| error | `bg-destructive/10` | `text-destructive` | Rejected, terminated, absent |
+| info | `bg-primary/10` | `text-primary-dim` | In progress, on leave, interview |
+| neutral | `bg-muted` | `text-muted-foreground` | Draft, cancelled |
+| accent | `bg-badge-accent/10` | `text-badge-accent` | Offer, LOA, business trip |
 
-All badges: pill shape, `whitespace-nowrap`.
+All badges: pill shape, `whitespace-nowrap`. Use `StatusBadge` component for automatic status→category mapping.
+
+### PageHeader
+
+공유 컴포넌트 (`src/components/shared/PageHeader.tsx`). 모든 페이지에서 사용.
+
+- **No border**: border-b 없음 (No-Line Rule). 페이지 `space-y-6`이 간격 담당.
+- **Responsive**: `text-xl sm:text-2xl`, actions `flex-wrap gap-2`
+- **Actions**: 모바일에서도 우측 정렬 유지 (`shrink-0`)
 
 ### Segmented Control (Tabs)
 
@@ -166,6 +186,28 @@ Tonal background container. No underline, no border-b. macOS-style segmented con
 
 ## 6. Motion
 
+- **Hover 기본**: `motion-safe:transition-all` — hover/focus 있는 모든 interactive 요소에 필수
 - Easing: enter `ease-out`, exit `ease-in`. Duration: micro 50-100ms, short 150ms, medium 250ms
 - Button: `hover:scale-[1.02]` (lg CTA), `active:scale-95`. Card: `hover:-translate-y-1`
 - Decorative animation: **FORBIDDEN**
+
+---
+
+## 7. Mobile (Strategy B: Responsive + Tier 1)
+
+Breakpoint: `< md (768px)` = 모바일, `≥ md` = 데스크톱. MobileBottomNav가 `md:hidden`으로 이 기준 사용.
+
+### Tier
+
+| Tier | Pages | 처리 |
+|------|-------|------|
+| 1 (모바일 최적화) | 출퇴근, 휴가 신청, 결재, 알림, 대시보드 | Dialog→Sheet, 1-col grid, column hiding |
+| 2 (반응형만) | 팀 현황, 프로필, 일정, 교육 | breakpoint 대응 |
+| 3 (데스크톱 전용) | 직원 등록, 급여, 성과, 분석, 설정, 조직도, 벌크, DnD | 모바일 미지원 |
+
+### Patterns
+
+- **Grid**: `grid-cols-1 sm:grid-cols-2` (KPI 카드), `grid-cols-2 sm:grid-cols-3 lg:grid-cols-4` (위젯)
+- **Dialog→Sheet**: `useIsMobile()` hook (md breakpoint). `< md`: `<Sheet side="bottom">`, `≥ md`: `<Dialog>`. 폼 state를 부모에서 관리 (전환 시 보존).
+- **Column hiding**: `DataTableColumn.hideBelow: 'sm' | 'md'` — 비필수 컬럼 자동 숨김
+- **Touch target**: 최소 44px (`min-h-[44px]`)

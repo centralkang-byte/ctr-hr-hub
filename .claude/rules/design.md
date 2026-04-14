@@ -8,7 +8,7 @@ Full design system: see `DESIGN.md`. Below are mandatory checks when writing UI 
 - Primary: #6366f1, Primary-dim: #4f46e5, Primary-container: #a5b4fc
 - Tertiary (Green): #16a34a, Tertiary-container: #86efac
 - Error: #e11d48, Warning: #B45309, Info: = primary
-- Accent (badge-only): #7c3aed
+- Badge-accent (badge-only): #7c3aed (`--badge-accent`, `--accent`은 neutral surface이므로 사용 금지)
 
 ## Typography
 
@@ -86,7 +86,7 @@ Full design system: see `DESIGN.md`. Below are mandatory checks when writing UI 
 |-------|-------|
 | Employee/leave/approvals (default) | **Tonal Layering** — no border, bg color diff, unified toolbar |
 | Payroll/attendance/audit (dense) | **Zebra Stripe** — alternating row bg, compact density |
-| Directory/recruitment/talent pool | **Card Row** — independent cards, hover lift |
+| Directory/recruitment/talent pool | **Card Row** — independent cards, hover lift (미구현, 필요 시 추가) |
 
 - Name cell: default = single line + hover tooltip, directory = 2-line compact
 
@@ -95,7 +95,7 @@ Full design system: see `DESIGN.md`. Below are mandatory checks when writing UI 
 - Label: always top, 11px semibold
 - Required: red *
 - Error: inline below input + red border + XCircle icon
-- Input: border 1.5px, rounded-lg, focus Violet ring
+- Input: border 1px (Tailwind default), rounded-lg, focus Violet ring
 - Layout: 2-column default, short forms 1-column
 - Buttons (right-aligned): cancel(ghost) → draft(outline) → submit(primary pill)
 - Implementation: shadcn/ui FormField wrapper required
@@ -110,6 +110,21 @@ Full design system: see `DESIGN.md`. Below are mandatory checks when writing UI 
 - `aria-label` on every TabsList
 - border-b underline tabs: **FORBIDDEN** (No-Line Rule)
 
+## D17 Color Principle (bg/text 분리)
+
+bg와 text에 같은 토큰을 쓰지 않는다. bg는 밝은(bright) 색상, text는 WCAG AA를 만족하는 어두운(darker) 색상.
+
+- Warning: `bg-warning-bright/15` + `text-ctr-warning`
+- Alert: `bg-alert-red/10` + `text-destructive`
+- Success badge: `bg-tertiary/10` + `text-[#15803d]` (darker green, AA 준수)
+
+## Hardcoded Hex Exceptions
+
+원칙: CSS 변수/Tailwind 토큰 사용. 아래 3가지는 예외:
+1. **WCAG AA text**: `text-[#15803d]` (badge success) — tertiary #16a34a는 10px text에서 contrast 부족
+2. **Opacity 미지원**: `bg-[#b45309]/10` (badge warning) — ctr-warning이 direct hex라 `/opacity` 문법 불가
+3. **도메인 고유 색상**: 차트 팔레트, 파이프라인 단계, 급여 조정 유형 등 — `chart.ts` 또는 컴포넌트 상수로 관리
+
 ## Forbidden Patterns
 
 - backdrop-blur outside TopBar/Dialog
@@ -119,4 +134,4 @@ Full design system: see `DESIGN.md`. Below are mandatory checks when writing UI 
 - System emoji in UI (use Lucide icons)
 - font-display on mixed KR/EN text
 - font-mono without tabular-nums
-- Hardcoded hex colors (use CSS variables or CTR tokens)
+- Hardcoded hex colors (use CSS variables or CTR tokens) — 예외는 위 "Hardcoded Hex Exceptions" 참조
