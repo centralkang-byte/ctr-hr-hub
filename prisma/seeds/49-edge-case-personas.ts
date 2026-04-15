@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import type { PrismaClient } from '../../src/generated/prisma/client'
+import { seedLoaTypes } from './43-loa-types'
 
 // ─── Deterministic UUID ────────────────────────────────────
 
@@ -426,6 +427,17 @@ const PERSONAS: PersonaDef[] = [
 
 export async function seedEdgeCasePersonas(prisma: PrismaClient) {
   console.log('\n🌱 Seeding 49-edge-case-personas (30 personas)...')
+
+  // Ensure LeaveOfAbsenceType rows exist before EDGE-005/006 LOA creation
+  // below. The master prisma/seed.ts orchestrator does NOT call seedLoaTypes
+  // (43-loa-types.ts has only a require.main standalone runner), so on a
+  // fresh `db push --force-reset` the PARENTAL lookup at line ~535 returns
+  // null and the LOA block is silently skipped. Local dev DBs masked this
+  // because the standalone runner had been executed at least once. Phase 6B
+  // CI workflow caught it on run 24455042346 (A3 EDGE-005 fail).
+  // seedLoaTypes is idempotent (upsertLoaType findFirst → skip-or-create),
+  // so calling it from here is safe even when the rows already exist.
+  await seedLoaTypes(prisma)
 
   // 1. Lookup maps
   const companies = await prisma.company.findMany({ select: { id: true, code: true } })
