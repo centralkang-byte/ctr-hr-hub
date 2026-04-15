@@ -7,6 +7,7 @@
 import { test, expect } from '@playwright/test'
 import { authFile } from '../helpers/auth'
 import { parseApiResponse, assertError } from '../helpers/api-client'
+import { expectQueryBudget } from '../helpers/query-budget'
 import {
   resolveLeavePolicy,
   createLeaveRequest,
@@ -172,6 +173,9 @@ test.describe('HR_ADMIN: Leave admin', () => {
     const res = await request.get('/api/v1/leave/admin')
     const result = await parseApiResponse(res)
     expect([200, 404].includes(result.status)).toBe(true)
+    // Phase 6A baseline budget — TODO(session-164): tighten after observing
+    // actual count in first PRISMA_QUERY_DEBUG=1 CI run.
+    await expectQueryBudget(res, 999, 'GET /api/v1/leave/admin')
   })
 
   test('GET /leave/admin?year=2025 supports year filter', async ({ request }) => {

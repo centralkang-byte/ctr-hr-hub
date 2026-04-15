@@ -7,6 +7,7 @@
 import { test, expect } from '@playwright/test'
 import { authFile } from '../helpers/auth'
 import { parseApiResponse, assertOk, assertError } from '../helpers/api-client'
+import { expectQueryBudget } from '../helpers/query-budget'
 import {
   createTestEmployee,
   getEmployee,
@@ -204,6 +205,9 @@ test.describe('EMPLOYEE: Self-service', () => {
     const result = await parseApiResponse(res)
     // May return 200 (data exists) or 404 (no rewards data)
     expect([200, 404].includes(result.status)).toBe(true)
+    // Phase 6A baseline budget — TODO(session-164): tighten after observing
+    // actual count in first PRISMA_QUERY_DEBUG=1 CI run.
+    await expectQueryBudget(res, 999, 'GET /api/v1/employees/me/total-rewards')
   })
 
   test('GET /employees/me/emergency-contacts returns contacts', async ({ request }) => {

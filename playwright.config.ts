@@ -104,5 +104,11 @@ export default defineConfig({
     url: 'http://localhost:3002',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      // Phase 6A: enable X-Query-Count response headers so API specs can
+      // assert per-route query budgets via `expectQueryBudget`. Never set
+      // in production Vercel env — scoped to preview/development/test only.
+      PRISMA_QUERY_DEBUG: '1',
+    },
   },
 })

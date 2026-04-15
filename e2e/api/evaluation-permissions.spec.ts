@@ -7,6 +7,7 @@
 
 import { test, expect } from '@playwright/test'
 import { authFile, assertPageLoads, assertBlocked } from '../helpers/auth'
+import { expectQueryBudget } from '../helpers/query-budget'
 
 // ─── EMPLOYEE boundaries ────────────────────────────────────
 
@@ -107,5 +108,8 @@ test.describe('Eval Permissions: HR_ADMIN', () => {
     const res = await request.get('/api/v1/performance/cycles')
     expect(res.ok()).toBe(true)
     expect(res.status()).toBe(200)
+    // Phase 6A baseline budget — TODO(session-164): tighten after observing
+    // actual count in first PRISMA_QUERY_DEBUG=1 CI run.
+    await expectQueryBudget(res, 999, 'GET /api/v1/performance/cycles')
   })
 })

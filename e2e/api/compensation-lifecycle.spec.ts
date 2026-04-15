@@ -5,6 +5,7 @@
 
 import { test, expect } from '@playwright/test'
 import { authFile, assertPageLoads } from '../helpers/auth'
+import { expectQueryBudget } from '../helpers/query-budget'
 import { waitForLoading, waitForPageReady } from '../helpers/wait-helpers'
 
 // ─── HR_ADMIN tests ──────────────────────────────────────
@@ -52,6 +53,9 @@ test.describe('Compensation API: Salary Bands', () => {
     const body = await res.json()
     expect(body.data).toBeDefined()
     expect(Array.isArray(body.data)).toBe(true)
+    // Phase 6A baseline budget — TODO(session-164): tighten after observing
+    // actual count in first PRISMA_QUERY_DEBUG=1 CI run.
+    await expectQueryBudget(res, 999, 'GET /api/v1/compensation/salary-bands')
   })
 })
 

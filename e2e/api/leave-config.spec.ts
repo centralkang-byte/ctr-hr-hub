@@ -7,6 +7,7 @@
 import { test, expect } from '@playwright/test'
 import { authFile } from '../helpers/auth'
 import { parseApiResponse } from '../helpers/api-client'
+import { expectQueryBudget } from '../helpers/query-budget'
 import { resolveSeedData } from '../helpers/test-data'
 
 // ═══════════════════════════════════════════════════════════
@@ -24,6 +25,9 @@ test.describe('HR_ADMIN: Leave Policies', () => {
     const result = await parseApiResponse(res)
     expect(result.ok).toBe(true)
     expect(Array.isArray(result.data)).toBe(true)
+    // Phase 6A baseline budget — TODO(session-164): tighten after observing
+    // actual count in first PRISMA_QUERY_DEBUG=1 CI run (× 1.2 slack).
+    await expectQueryBudget(res, 999, 'GET /api/v1/leave/policies')
   })
 
   test('POST /leave/policies creates new policy', async ({ request }) => {
