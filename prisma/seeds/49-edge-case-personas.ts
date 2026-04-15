@@ -447,8 +447,12 @@ export async function seedEdgeCasePersonas(prisma: PrismaClient) {
   }
 
   // 연차 LeaveTypeDef 조회 (잔여 0 / 마이너스 케이스용)
+  // NOTE: Canonical casing is lowercase 'annual' — matches 00-qa-accounts.ts,
+  // 27-fix-4-data.ts, 35-statutory-leave-types.ts. Phase 6B validator caught
+  // a prior 'ANNUAL' typo here that silently skipped leave-zero/leave-negative
+  // seed data for EDGE-021/022. See scripts/seed-validate-phase6b.ts §A8/B1.
   const annualLeaveType = await prisma.leaveTypeDef.findFirst({
-    where: { code: 'ANNUAL', companyId: companyMap['CTR'] },
+    where: { code: 'annual', companyId: companyMap['CTR'] },
     select: { id: true },
   })
 

@@ -13,6 +13,7 @@
     "qa:inventory": "tsx scripts/qa/inventory.ts",
     "postinstall": "prisma generate",
     "seed:dev": "npx tsx prisma/seed-dev.ts",
+    "seed:validate": "tsx scripts/seed-validate-phase6b.ts",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
     "test:e2e": "npx playwright test",
