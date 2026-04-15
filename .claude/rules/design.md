@@ -30,7 +30,7 @@ Full design system: see `DESIGN.md`. Below are mandatory checks when writing UI 
 
 ## Glassmorphism (2 locations only)
 
-- TopBar: bg-white/80 backdrop-blur-md ✅
+- TopBar: bg-white/80 backdrop-blur-md (light) + dark:bg-card/80 (dark) ✅
 - Dialog/Sheet overlay: bg-white/70 backdrop-blur-[20px] ✅
 - Everywhere else: ❌ FORBIDDEN
 

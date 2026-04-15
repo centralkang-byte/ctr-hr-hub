@@ -119,7 +119,7 @@ export function Header({ user, companies, onMenuClick }: HeaderProps) {
   }, [])
 
   return (
-    <header className="flex h-[52px] shrink-0 items-center justify-between bg-white/80 backdrop-blur-md shadow-sm px-4 md:px-6">
+    <header className="flex h-[52px] shrink-0 items-center justify-between bg-white/80 dark:bg-card/80 backdrop-blur-md shadow-sm px-4 md:px-6">
       {/* ─── Left: Hamburger (mobile) + Breadcrumb ─── */}
       <div className="flex items-center gap-2">
         {/* Hamburger — mobile only */}

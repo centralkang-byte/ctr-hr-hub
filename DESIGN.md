@@ -115,7 +115,7 @@ Base unit: 4px. Default density: comfortable.
 
 ### Glassmorphism (2 locations ONLY)
 
-- TopBar: `bg-white/80 backdrop-blur-md`
+- TopBar: `bg-white/80 backdrop-blur-md` (light) + `dark:bg-card/80` (dark)
 - Dialog/Sheet overlay: `bg-white/70 backdrop-blur-[20px]`
 - Everywhere else: **FORBIDDEN**
 
