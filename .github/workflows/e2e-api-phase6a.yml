@@ -1,0 +1,124 @@
+name: E2E API Phase 6A Query Budgets
+
+# Runs the `api` Playwright project on staging to collect X-Query-Count
+# observations from the five Phase 6A budgeted routes. Why a dedicated
+# workflow instead of extending e2e.yml: e2e.yml (a) only triggers on main,
+# (b) still has the pre-Session-162 Node 20 / pgvector / QA-seed / Prisma
+# SSL gaps that broke the visual workflow. Fixing e2e.yml end-to-end is
+# out of scope for Phase 6A tuning; this file copies the already-validated
+# visual-baseline.yml shape and swaps the test step.
+#
+# All `run:` commands below use static strings only — no github.event.*
+# interpolation, so no injection surface.
+#
+# Auto-trigger: any push that touches this workflow file on staging.
+# Manual trigger: workflow_dispatch (gh workflow run e2e-api-phase6a.yml --ref staging).
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - '.github/workflows/e2e-api-phase6a.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: e2e-api-phase6a-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: ctr_hr_hub_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://test:test@localhost:5432/ctr_hr_hub_test
+      NEXTAUTH_URL: http://localhost:3002
+      NEXTAUTH_SECRET: ci-test-secret-key-for-e2e
+      REDIS_URL: redis://localhost:6379
+      NODE_ENV: test
+      PLAYWRIGHT_BASE_URL: http://localhost:3002
+      AZURE_AD_CLIENT_ID: ci-test-azure-client-id
+      AZURE_AD_CLIENT_SECRET: ci-test-azure-client-secret
+      AZURE_AD_TENANT_ID: ci-test-azure-tenant-id
+      PRISMA_QUERY_DEBUG: '1'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Push schema to test DB
+        run: npx prisma db push --force-reset
+
+      - name: Seed test data
+        run: npx tsx prisma/seed.ts
+
+      - name: Seed QA accounts
+        run: npx tsx scripts/seed-qa-accounts.ts
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run API specs (Pass 1)
+        run: npx playwright test --project=api
+        env:
+          CI: 'true'
+
+      - name: Run API specs (Pass 2)
+        run: npx playwright test --project=api
+        env:
+          CI: 'true'
+
+      - name: Summarize query budget observations
+        if: always()
+        run: |
+          echo "Phase 6A query-budget observations are logged inline by"
+          echo "e2e/helpers/query-budget.ts on every expectQueryBudget call."
+          echo ""
+          echo "To extract them from this run's log:"
+          echo "  gh run view <run-id> --log | grep -F '[query-budget]'"
+          echo ""
+          echo "Expected: 5 labels x 2 passes = 10 observation lines."
+
+      - name: Upload Playwright report (on failure)
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
