@@ -74,6 +74,15 @@ export async function expectQueryBudget(
     return
   }
 
+  // Always emit a uniform observation line BEFORE the budget comparison so
+  // grep-based baseline workflows get one line per assertion regardless of
+  // pass/fail. Stays stable across CI runs and compounds into ongoing
+  // observability for future spec authors. No PII — label/numbers only.
+  // eslint-disable-next-line no-console
+  console.log(
+    `[query-budget] ${label} observed=${count} budget=${budget} suggested=${Math.ceil(count * 1.2)}`,
+  )
+
   if (count > budget) {
     // Playwright's expect gives us a nice diff view on failure.
     expect(
