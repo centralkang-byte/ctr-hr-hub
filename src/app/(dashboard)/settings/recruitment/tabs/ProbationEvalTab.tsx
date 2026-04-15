@@ -41,7 +41,7 @@ export function ProbationEvalTab({
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-foreground">{t('probationEval')}</h3>
+          <h3 className="text-base font-semibold text-foreground">{t('probationEval.title')}</h3>
           <p className="text-sm text-muted-foreground">{t('probation_keca491_evaluation_kec8b9cec_kebb08f_keab8b0ec_settings')}</p>
         </div>
         {isOverridden && (

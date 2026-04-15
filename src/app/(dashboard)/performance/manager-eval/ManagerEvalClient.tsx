@@ -259,7 +259,7 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('managerEval')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('managerEval.title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t('kr_ked8c80ec_kec84b1ea_ked8f89ea')}</p>
         </div>
         <select

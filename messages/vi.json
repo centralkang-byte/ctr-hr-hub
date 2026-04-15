@@ -592,7 +592,9 @@
         "performanceGrade": "Xếp hạng hiệu suất",
         "turnoverRisk": "Rủi ro nghỉ việc"
       },
-      "viewProfile": "Xem hồ sơ"
+      "viewProfile": "Xem hồ sơ",
+      "pageTitle": "Sức khỏe nhóm",
+      "pageDescription": "Xem tình trạng nhóm và chỉ số rủi ro"
     },
     "teamHealthPage": {
       "burnoutRiskList": "Burnout Risk List",
@@ -697,7 +699,9 @@
         "regrettableRate": "성과 M+(충족 이상) 등급 퇴사자 ÷ M+ 전체 인원 × 100",
         "avgTenure": "퇴사자의 평균 근속 연수",
         "highRiskPrediction": "7개 변수 기반 이직 예측 모델에서 70점 이상"
-      }
+      },
+      "pageTitle": "Phân tích nghỉ việc",
+      "pageDescription": "Phân tích tỷ lệ và nguyên nhân nghỉ việc"
     },
     "turnoverPage": {
       "byDepartment": "Dept. Turnover Rate",
@@ -783,7 +787,9 @@
         "leaveUsageRate": "Tỷ lệ phép đã sử dụng trên tổng phép được cấp (%)",
         "negativeBalance": "Số nhân viên có số dư phép âm",
         "overtimeViolations": "Số lần vi phạm giới hạn 52 giờ làm việc/tuần (tháng hiện tại)"
-      }
+      },
+      "pageTitle": "Phân tích chấm công",
+      "pageDescription": "Xem xu hướng chấm công và bất thường"
     },
     "payroll": {
       "charts": {
@@ -802,7 +808,9 @@
         "changeRate": "Tỷ lệ thay đổi tổng chi phí lao động so với tháng trước (%)",
         "monthlyTotal": "Tổng chi phí lao động từ bảng lương đã xác nhận gần nhất",
         "perCapita": "Tổng chi phí lao động ÷ Số người nhận lương"
-      }
+      },
+      "pageTitle": "Phân tích lương",
+      "pageDescription": "Phân tích chi tiêu và sai lệch lương"
     },
     "performance": {
       "charts": {
@@ -818,7 +826,9 @@
         "cyclePhase": "Giai đoạn chu kỳ quản lý hiệu suất hiện tại",
         "evalCompletion": "Nhân viên đã đánh giá ÷ Tổng nhân viên đủ điều kiện × 100",
         "goalSubmission": "Nhân viên đã nộp mục tiêu ÷ Nhân viên đủ điều kiện × 100"
-      }
+      },
+      "pageTitle": "Phân tích hiệu suất",
+      "pageDescription": "Phân tích đánh giá và phân bố hiệu suất"
     }
   },
   "attendance": {
@@ -5107,7 +5117,21 @@
     "title": "Organization",
     "viewGrid": "Grid",
     "viewList": "Danh sách",
-    "viewTree": "Tree"
+    "viewTree": "Tree",
+    "viewDirectory": "Danh bạ",
+    "includeSubDepts": "Bao gồm phòng ban con",
+    "showMatrix": "Hiển thị đường báo cáo ma trận",
+    "matrixReport": "Báo cáo ma trận",
+    "directReport": "Báo cáo trực tiếp",
+    "collapseAll": "Thu gọn tất cả",
+    "expandAll": "Mở rộng tất cả",
+    "noHead": "Chưa phân công trưởng phòng",
+    "subDeptCount": "{count} phòng ban con",
+    "inactive": "Ngừng hoạt động",
+    "searchEmployees": "Tìm kiếm nhân viên...",
+    "positionTitle": "Chức danh",
+    "grade": "Cấp bậc",
+    "email": "Email"
   },
   "orgChanges": {
     "after": "After",
@@ -6168,7 +6192,8 @@
       "pendingApproval": "Chờ phê duyệt",
       "published": "Đã xác nhận",
       "review": "Đang kiểm tra",
-      "reviewing": "Reviewing"
+      "reviewing": "Reviewing",
+      "title": "Trạng thái"
     },
     "stub": {
       "customAllowance": "Phụ cấp bổ sung",
@@ -6485,7 +6510,8 @@
       "scoreAdjust": "Điều chỉnh điểm: {name}",
       "sessionInfo": "{department} · {count} điều chỉnh",
       "sessionLoadFailed": "Tải phiên hiệu chuẩn thất bại",
-      "sessionNamePlaceholder": "Tên phiên"
+      "sessionNamePlaceholder": "Tên phiên",
+      "title": "Hiệu chuẩn"
     },
     "calibrationBatch": {
       "batchMode": "Điều chỉnh hàng loạt",
@@ -6801,7 +6827,8 @@
       "exceeds": "Giỏi (E)",
       "exceedsPlus": "Xuất sắc (E+)",
       "meets": "Đạt kỳ vọng (M)",
-      "meetsPlus": "Trên kỳ vọng (M+)"
+      "meetsPlus": "Trên kỳ vọng (M+)",
+      "title": "Cấp bậc"
     },
     "gradeDistribution": "Grade Distribution",
     "growthChart": {
@@ -7110,7 +7137,8 @@
       "saveFirstForAi": "Lưu nháp trước để tạo bản nháp AI",
       "selfBadge": "Tự đánh giá",
       "settingsLoadFailed": "Tải cài đặt đánh giá thất bại",
-      "weight": "Trọng số: {weight}%"
+      "weight": "Trọng số: {weight}%",
+      "title": "Đánh giá của quản lý"
     },
     "managerEvalTitle": "Manager Evaluation",
     "managerEval_keb8a94_eval_open_keb8ba8ea_keca784ed": "Quản lý evaluation is available during the EVAL_OPEN phase.",
@@ -7202,7 +7230,8 @@
       "submitting": "Đang gửi...",
       "titleLabel": "Tiêu đề",
       "titlePlaceholder": "Tiêu đề mục tiêu",
-      "weightLabel": "Trọng số (%)"
+      "weightLabel": "Trọng số (%)",
+      "title": "Mục tiêu của tôi"
     },
     "myGoalsTitle": "My Goals",
     "myGoals_my_goals": "My Mục tiêus",
@@ -7635,7 +7664,8 @@
     "responsibility": "Responsibility",
     "results": {
       "loadFailed": "Không thể tải kết quả đánh giá",
-      "weight": "Trọng số: {weight}%"
+      "weight": "Trọng số: {weight}%",
+      "title": "Kết quả"
     },
     "resultsTitle": "Results",
     "retryMessage": "Vui lòng thử lại.",
@@ -7663,7 +7693,8 @@
       "draftSaved": "Đã lưu nháp.",
       "loadFailed": "Tải tự đánh giá thất bại",
       "saveFailed": "Lưu tự đánh giá thất bại",
-      "submitted": "Đã gửi thành công."
+      "submitted": "Đã gửi thành công.",
+      "title": "Tự đánh giá"
     },
     "selfEvalTitle": "Self Evaluation",
     "selfEval_keab080_keca09cec": "selfevaluation가 submit completed.",
@@ -8772,7 +8803,8 @@
       "requiredDesc": "Liệu bước hiệu chuẩn có bắt buộc trong quy trình đánh giá không",
       "requiredLabel": "Hiệu chuẩn bắt buộc",
       "scopeDesc": "Đơn vị cuộc họp hiệu chuẩn",
-      "scopeLabel": "Phạm vi tham gia"
+      "scopeLabel": "Phạm vi tham gia",
+      "title": "Cài đặt hiệu chuẩn"
     },
     "calibrationSettings": {
       "managerOverrideDesc": "Cho phép quản lý trực tiếp thay đổi xếp hạng mà không cần hiệu chuẩn",
@@ -8836,7 +8868,8 @@
     "clockInBlockingToggleDesc": "Nhân viên clock-in records are automatically rejected when blocking threshold is exceeded.",
     "closed": "Chốt",
     "codeManagement": {
-      "subtitle": "{count} nhóm mã hệ thống/enum"
+      "subtitle": "{count} nhóm mã hệ thống/enum",
+      "title": "Quản lý mã"
     },
     "codeManagementSubtitle": "{count} nhóm mã hệ thống/enum",
     "color": "Color",
@@ -8934,7 +8967,8 @@
     "customFieldLoadError": "Failed to load custom fields.",
     "customFieldSaved": "Custom field saved.",
     "customFields": {
-      "subtitle": "{count} trường tùy chỉnh"
+      "subtitle": "{count} trường tùy chỉnh",
+      "title": "Trường tùy chỉnh"
     },
     "customFieldsDesc": "Manage custom fields by entity.",
     "customFieldsSubtitle": "{count} trường tùy chỉnh",
@@ -8961,7 +8995,8 @@
     "deductions": {
       "subtitle": "{count} khoản khấu trừ",
       "statutory": "Theo luật",
-      "nonStatutory": "Không theo luật"
+      "nonStatutory": "Không theo luật",
+      "title": "Khấu trừ"
     },
     "deductionsNonStatutory": "Không theo luật",
     "deductionsStatutory": "Theo luật",
@@ -9769,7 +9804,8 @@
     },
     "notificationChannels_settings": "Thông báo Channel Cài đặt",
     "notificationRules": {
-      "subtitle": "Đối tượng và kênh thông báo theo sự kiện ({count} mục)"
+      "subtitle": "Đối tượng và kênh thông báo theo sự kiện ({count} mục)",
+      "title": "Quy tắc thông báo"
     },
     "notificationRulesSubtitle": "Đối tượng và kênh thông báo theo sự kiện ({count} mục)",
     "notificationsDesc": "Configure and manage notification triggers.",
@@ -9783,7 +9819,8 @@
       "subtitle": "{count} mẫu",
       "newHire": "Nhân viên mới",
       "transfer": "Chuyển đến",
-      "rehire": "Tái tuyển dụng"
+      "rehire": "Tái tuyển dụng",
+      "title": "Mẫu onboarding"
     },
     "onboardingTemplatesNewHire": "Nhân viên mới",
     "onboardingTemplatesRehire": "Tái tuyển dụng",
@@ -9881,7 +9918,8 @@
       "evalTimingDesc": "Thời điểm thực hiện đánh giá trong thời gian thử việc",
       "evalTimingLabel": "Thời điểm đánh giá",
       "extensionDesc": "Có cho phép gia hạn thử việc và thời gian gia hạn tối đa không",
-      "extensionLabel": "Gia hạn thử việc"
+      "extensionLabel": "Gia hạn thử việc",
+      "title": "Thử việc"
     },
     "probationEval": {
       "autoConfirmDesc": "Có tự động chuyển đổi chính thức khi đậu không",
@@ -9890,7 +9928,8 @@
       "evalTimingDesc": "Thời điểm thực hiện đánh giá trong thời gian thử việc",
       "evalTimingLabel": "Thời điểm đánh giá",
       "passingScoreDesc": "Điểm đậu đánh giá thử việc (thang 100)",
-      "passingScoreLabel": "Điểm đậu"
+      "passingScoreLabel": "Điểm đậu",
+      "title": "Đánh giá thử việc"
     },
     "probationEval2": {
       "autoConfirmDesc": "Có tự động chuyển đổi chính thức khi đậu không",

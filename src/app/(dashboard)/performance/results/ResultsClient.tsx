@@ -86,7 +86,7 @@ export default function ResultsClient({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('results')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('results.title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t('kr_keb8298ec_kec84b1ea_keab2b0ea_')}</p>
         </div>
         <select
@@ -148,7 +148,7 @@ export default function ResultsClient({
               <tbody>
                 {result?.selfEvaluation && (
                   <tr className={TABLE_STYLES.row}>
-                    <td className={cn(TABLE_STYLES.cell, "font-medium")}>{t('selfEval')}</td>
+                    <td className={cn(TABLE_STYLES.cell, "font-medium")}>{t('selfEval.title')}</td>
                     <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.selfEvaluation.performanceScore?.toFixed(1) ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.selfEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-primary")}>{result.selfEvaluation.emsBlock ?? '-'}</td>
@@ -159,7 +159,7 @@ export default function ResultsClient({
                 )}
                 {result?.managerEvaluation && (
                   <tr className={TABLE_STYLES.row}>
-                    <td className={cn(TABLE_STYLES.cell, "font-medium")}>{t('managerEval')}</td>
+                    <td className={cn(TABLE_STYLES.cell, "font-medium")}>{t('managerEval.title')}</td>
                     <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.managerEvaluation.performanceScore?.toFixed(1) ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.managerEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-primary")}>{result.managerEvaluation.emsBlock ?? '-'}</td>

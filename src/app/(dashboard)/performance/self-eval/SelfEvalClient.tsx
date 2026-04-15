@@ -232,7 +232,7 @@ export default function SelfEvalClient({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('selfEval')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('selfEval.title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t('kr_kec9e90ea_kec84b1ea_kebb08f_ke')}</p>
         </div>
         <select

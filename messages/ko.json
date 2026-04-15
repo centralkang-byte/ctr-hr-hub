@@ -1426,7 +1426,8 @@
       "saveFailed": "자기 평가 저장 실패",
       "submitted": "제출 완료되었습니다.",
       "draftSaved": "임시 저장되었습니다.",
-      "commentPlaceholder": "이번 평가 주기에 대한 종합 의견을 작성하세요..."
+      "commentPlaceholder": "이번 평가 주기에 대한 종합 의견을 작성하세요...",
+      "title": "자기 평가"
     },
     "managerEval": {
       "cycleLoadFailed": "평가 주기 로드 실패",
@@ -1440,7 +1441,8 @@
       "beiWeightGrade": "역량 {weight}% ({grade})",
       "aiSuggest": "AI 코멘트 제안",
       "commentPlaceholder": "팀원에 대한 종합 평가 의견을 작성하세요...",
-      "saveFirstForAi": "먼저 임시 저장 후 AI 초안을 생성할 수 있습니다"
+      "saveFirstForAi": "먼저 임시 저장 후 AI 초안을 생성할 수 있습니다",
+      "title": "관리자 평가"
     },
     "peerReview": "다면 평가",
     "calibration": {
@@ -1455,7 +1457,8 @@
       "batchPartialFail": "{succeeded}건 저장, {failed}건 실패",
       "checkFailedItems": "실패 항목을 확인하세요.",
       "batchSuccess": "{count}건 배치 조정 완료",
-      "batchSaveFailed": "배치 저장 실패"
+      "batchSaveFailed": "배치 저장 실패",
+      "title": "캘리브레이션"
     },
     "finalGrade": "최종 등급",
     "oneOnOne": "1:1 미팅",
@@ -1541,7 +1544,8 @@
       "loadFailed": "목표 목록을 불러오지 못했습니다.",
       "deadline": "마감: {date}",
       "submitting": "제출 중...",
-      "submitAll": "전체 제출"
+      "submitAll": "전체 제출",
+      "title": "내 목표"
     },
     "newGoal": {
       "loadFailed": "데이터 로드 실패"
@@ -1769,7 +1773,8 @@
     "adminResults": "전체 결과",
     "results": {
       "loadFailed": "평가 결과 로드 실패",
-      "weight": "가중치: {weight}%"
+      "weight": "가중치: {weight}%",
+      "title": "결과"
     },
     "teamResults": "팀 결과",
     "cyclesTitle": "평가 사이클",
@@ -1839,7 +1844,8 @@
       "meetsPlus": "기대 이상 (M+)",
       "meets": "기대 충족 (M)",
       "below": "개선 필요 (B)",
-      "belowMinus": "미흡 (B-)"
+      "belowMinus": "미흡 (B-)",
+      "title": "등급"
     },
     "kr_kec9e90ea_kec84b1ea": "자기 성과",
     "kr_keba7a4eb_kec84b1ea": "매니저 성과",
@@ -4155,7 +4161,8 @@
       "review": "이상 검토중",
       "pendingApproval": "결재 대기중",
       "published": "확정",
-      "cancelled": "취소"
+      "cancelled": "취소",
+      "title": "상태"
     },
     "runsTitle": "급여 처리",
     "closeTitle": "근태 마감",
@@ -5364,7 +5371,9 @@
         "regrettableRate": "성과 M+(충족 이상) 등급 퇴사자 ÷ M+ 전체 인원 × 100",
         "avgTenure": "퇴사자의 평균 근속 연수",
         "highRiskPrediction": "7개 변수 기반 이직 예측 모델에서 70점 이상"
-      }
+      },
+      "pageTitle": "이직 분석",
+      "pageDescription": "이직률과 원인을 분석합니다"
     },
     "performanceAnalysis": "성과 분석",
     "attendanceAnalysis": "근태 분석",
@@ -5381,7 +5390,9 @@
         "performanceGrade": "성과등급",
         "turnoverRisk": "이직위험"
       },
-      "viewProfile": "프로필 보기"
+      "viewProfile": "프로필 보기",
+      "pageTitle": "팀 헬스",
+      "pageDescription": "팀 건강도와 리스크 지표를 확인합니다"
     },
     "attritionRisk": "이탈 위험",
     "executiveReport": "AI 보고서",
@@ -6070,7 +6081,9 @@
         "leaveUsageRate": "전체 부여 연차 중 사용한 비율 (%)",
         "negativeBalance": "잔여 연차가 0 미만인 직원 수 (마이너스 연차 사용 중)",
         "overtimeViolations": "주 52시간 근무 한도를 초과한 건수 (당월)"
-      }
+      },
+      "pageTitle": "근태 분석",
+      "pageDescription": "근태 패턴과 이상치를 확인합니다"
     },
     "payroll": {
       "charts": {
@@ -6089,7 +6102,9 @@
         "changeRate": "전월 대비 총 인건비 변동률 (%)",
         "monthlyTotal": "최근 확정 급여의 총 인건비 합산",
         "perCapita": "총 인건비 ÷ 급여 대상 인원"
-      }
+      },
+      "pageTitle": "급여 분석",
+      "pageDescription": "급여 지출과 편차를 분석합니다"
     },
     "performance": {
       "charts": {
@@ -6105,7 +6120,9 @@
         "cyclePhase": "현재 성과 관리 사이클 단계",
         "evalCompletion": "평가 완료된 직원 ÷ 평가 대상 전체 × 100",
         "goalSubmission": "목표 제출 완료한 직원 ÷ 목표 설정 대상 × 100"
-      }
+      },
+      "pageTitle": "성과 분석",
+      "pageDescription": "성과 평가와 분포를 분석합니다"
     }
   },
   "notification": {
@@ -6195,7 +6212,8 @@
     "enums": "분류 코드 관리",
     "workflows": "승인 워크플로우",
     "customFields": {
-      "subtitle": "사용자 정의 필드 {count}개"
+      "subtitle": "사용자 정의 필드 {count}개",
+      "title": "사용자 정의 필드"
     },
     "emailTemplates": "이메일 템플릿",
     "exportTemplates": "내보내기 템플릿",
@@ -6814,7 +6832,8 @@
     "approve_ked9584ec": "승인 필요",
     "kr_keb9098eb": "되돌리기",
     "codeManagement": {
-      "subtitle": "시스템 코드/열거형 {count}개 그룹"
+      "subtitle": "시스템 코드/열거형 {count}개 그룹",
+      "title": "코드 관리"
     },
     "kr_kecbd94eb_add": "코드 추가",
     "kr_ked82a4": "키",
@@ -6870,7 +6889,8 @@
       "evalTimingDesc": "수습 기간 중 평가를 실시할 시점",
       "evalTimingLabel": "평가 시점",
       "extensionDesc": "수습 기간 연장 허용 여부 및 최대 연장 기간",
-      "extensionLabel": "수습 연장"
+      "extensionLabel": "수습 연장",
+      "title": "수습"
     },
     "probation_evaluation_keab8b0ec_kec9e90eb_keca084ed_settings": "수습 기간, 평가 기준, 자동 전환 설정",
     "kr_keab09cec": "개월",
@@ -6898,7 +6918,8 @@
     "deductions": {
       "subtitle": "공제 항목 {count}개",
       "statutory": "법정",
-      "nonStatutory": "비법정"
+      "nonStatutory": "비법정",
+      "title": "공제 항목"
     },
     "kr_ked95adeb_add": "항목 추가",
     "kr_ked95adeb": "항목",
@@ -6945,7 +6966,8 @@
       "requiredDesc": "평가 프로세스에서 캘리브레이션 단계를 필수로 할지",
       "requiredLabel": "캘리브레이션 필수",
       "scopeDesc": "캘리브레이션 회의 단위",
-      "scopeLabel": "참여 범위"
+      "scopeLabel": "참여 범위",
+      "title": "캘리브레이션 설정"
     },
     "kr_keb93b1ea_keca1b0ec_ked9a8cec_": "등급 조정 회의 필수 여부 및 참여 범위 설정",
     "calibration_required": "캘리브레이션 필수",
@@ -7014,7 +7036,8 @@
       "subtitle": "{count}개 템플릿",
       "newHire": "신입",
       "transfer": "전입",
-      "rehire": "재입사"
+      "rehire": "재입사",
+      "title": "온보딩 템플릿"
     },
     "kr_ked859ced_add": "템플릿 추가",
     "kr_ked859ced": "템플릿명",
@@ -7035,7 +7058,8 @@
       "evalTimingDesc": "수습 기간 중 평가를 실시할 시점",
       "evalTimingLabel": "평가 시점",
       "passingScoreDesc": "수습 평가 합격 기준 점수 (100점 만점)",
-      "passingScoreLabel": "합격 기준 점수"
+      "passingScoreLabel": "합격 기준 점수",
+      "title": "수습 평가"
     },
     "probation_keca491_evaluation_kec8b9cec_kebb08f_keab8b0ec_settings": "수습 기간 중 평가 시점 및 기준 설정",
     "passed_kec8b9c_kec9e90eb_keca084ed": "합격 시 자동 전환",
@@ -7074,7 +7098,8 @@
     },
     "email_teams_kec95b1_ked91b8ec_kecb184eb_settings": "이메일/Teams/앱 푸시 채널 설정",
     "notificationRules": {
-      "subtitle": "이벤트별 알림 대상 및 채널 ({count}건)"
+      "subtitle": "이벤트별 알림 대상 및 채널 ({count}건)",
+      "title": "알림 규칙"
     },
     "kr_keab79cec_add": "규칙 추가",
     "kr_kec9db4eb": "이벤트",

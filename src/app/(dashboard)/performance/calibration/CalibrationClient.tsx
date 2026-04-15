@@ -292,7 +292,7 @@ export default function CalibrationClient({ user: _user }: { user: SessionUser }
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('calibration')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('calibration.title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t('kr_kec84b1ea_kecba98eb_keab480eb')}</p>
         </div>
         <div className="flex items-center gap-3">

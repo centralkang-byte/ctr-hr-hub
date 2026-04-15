@@ -592,7 +592,9 @@
         "performanceGrade": "Performance Grade",
         "turnoverRisk": "Turnover Risk"
       },
-      "viewProfile": "View Profile"
+      "viewProfile": "View Profile",
+      "pageTitle": "Team Health",
+      "pageDescription": "Review team health and risk indicators"
     },
     "teamHealthPage": {
       "burnoutRiskList": "Burnout Risk List",
@@ -697,7 +699,9 @@
         "regrettableRate": "M+ (meets or above) grade exits ÷ total M+ headcount × 100",
         "avgTenure": "Average tenure of exiting employees (years)",
         "highRiskPrediction": "70+ score from 7-variable turnover prediction model"
-      }
+      },
+      "pageTitle": "Turnover Analytics",
+      "pageDescription": "Analyze turnover rate and causes"
     },
     "turnoverPage": {
       "byDepartment": "Dept. Turnover Rate",
@@ -783,7 +787,9 @@
         "leaveUsageRate": "Percentage of granted leave used (%)",
         "negativeBalance": "Number of employees with negative leave balance",
         "overtimeViolations": "Number of 52-hour weekly work limit violations (current month)"
-      }
+      },
+      "pageTitle": "Attendance Analytics",
+      "pageDescription": "Review attendance patterns and anomalies"
     },
     "payroll": {
       "charts": {
@@ -802,7 +808,9 @@
         "changeRate": "Month-over-month change rate of total labor cost (%)",
         "monthlyTotal": "Total labor cost from the latest confirmed payroll",
         "perCapita": "Total labor cost / Number of payroll recipients"
-      }
+      },
+      "pageTitle": "Payroll Analytics",
+      "pageDescription": "Analyze payroll spend and variance"
     },
     "performance": {
       "charts": {
@@ -818,7 +826,9 @@
         "cyclePhase": "Current performance management cycle phase",
         "evalCompletion": "Evaluated employees / Total eligible employees × 100",
         "goalSubmission": "Employees with goals submitted / Goal-eligible employees × 100"
-      }
+      },
+      "pageTitle": "Performance Analytics",
+      "pageDescription": "Analyze performance ratings and distribution"
     }
   },
   "attendance": {
@@ -6182,7 +6192,8 @@
       "pendingApproval": "Pending Approval",
       "published": "Published",
       "review": "Anomaly Review",
-      "reviewing": "Reviewing"
+      "reviewing": "Reviewing",
+      "title": "Status"
     },
     "stub": {
       "customAllowance": "Additional Allowances",
@@ -6499,7 +6510,8 @@
       "scoreAdjust": "Score Adjustment: {name}",
       "sessionInfo": "{department} · {count} adjustments",
       "sessionLoadFailed": "Failed to load calibration session",
-      "sessionNamePlaceholder": "Session name"
+      "sessionNamePlaceholder": "Session name",
+      "title": "Calibration"
     },
     "calibrationBatch": {
       "batchMode": "Batch Adjust",
@@ -6815,7 +6827,8 @@
       "exceeds": "Exceeds (E)",
       "exceedsPlus": "Exceptional (E+)",
       "meets": "Meets Expectations (M)",
-      "meetsPlus": "Above Expectations (M+)"
+      "meetsPlus": "Above Expectations (M+)",
+      "title": "Grade"
     },
     "gradeDistribution": "Grade Distribution",
     "growthChart": {
@@ -7124,7 +7137,8 @@
       "saveFirstForAi": "Save as draft first to generate AI draft",
       "selfBadge": "Self",
       "settingsLoadFailed": "Failed to load evaluation settings",
-      "weight": "Weight: {weight}%"
+      "weight": "Weight: {weight}%",
+      "title": "Manager Evaluation"
     },
     "managerEvalTitle": "Manager Evaluation",
     "managerEval_keb8a94_eval_open_keb8ba8ea_keca784ed": "Manager evaluation is available during the EVAL_OPEN phase.",
@@ -7216,7 +7230,8 @@
       "submitting": "Submitting...",
       "titleLabel": "Title",
       "titlePlaceholder": "Goal title",
-      "weightLabel": "Weight (%)"
+      "weightLabel": "Weight (%)",
+      "title": "My Goals"
     },
     "myGoalsTitle": "My Goals",
     "myGoals_my_goals": "My Goals",
@@ -7649,7 +7664,8 @@
     "responsibility": "Responsibility",
     "results": {
       "loadFailed": "Failed to load evaluation results",
-      "weight": "Weight: {weight}%"
+      "weight": "Weight: {weight}%",
+      "title": "Results"
     },
     "resultsTitle": "Results",
     "retryMessage": "Please try again.",
@@ -7677,7 +7693,8 @@
       "draftSaved": "Draft saved.",
       "loadFailed": "Failed to load self-evaluation",
       "saveFailed": "Failed to save self-evaluation",
-      "submitted": "Submitted successfully."
+      "submitted": "Submitted successfully.",
+      "title": "Self Evaluation"
     },
     "selfEvalTitle": "Self Evaluation",
     "selfEval_keab080_keca09cec": "selfevaluation가 submit completed.",
@@ -8786,7 +8803,8 @@
       "requiredDesc": "Whether calibration step is mandatory in the evaluation process",
       "requiredLabel": "Calibration Required",
       "scopeDesc": "Calibration meeting unit",
-      "scopeLabel": "Participation Scope"
+      "scopeLabel": "Participation Scope",
+      "title": "Calibration Settings"
     },
     "calibrationSettings": {
       "managerOverrideDesc": "Allow managers to directly change grades without calibration",
@@ -8850,7 +8868,8 @@
     "clockInBlockingToggleDesc": "Employee clock-in records are automatically rejected when blocking threshold is exceeded.",
     "closed": "Deadline",
     "codeManagement": {
-      "subtitle": "{count} system code/enum groups"
+      "subtitle": "{count} system code/enum groups",
+      "title": "Code Management"
     },
     "codeManagementSubtitle": "{count} system code/enum groups",
     "color": "Color",
@@ -8948,7 +8967,8 @@
     "customFieldLoadError": "Failed to load custom fields.",
     "customFieldSaved": "Custom field saved.",
     "customFields": {
-      "subtitle": "{count} custom fields"
+      "subtitle": "{count} custom fields",
+      "title": "Custom Fields"
     },
     "customFieldsDesc": "Manage custom fields by entity.",
     "customFieldsSubtitle": "{count} custom fields",
@@ -8975,7 +8995,8 @@
     "deductions": {
       "subtitle": "{count} deduction items",
       "statutory": "Statutory",
-      "nonStatutory": "Non-Statutory"
+      "nonStatutory": "Non-Statutory",
+      "title": "Deductions"
     },
     "deductionsNonStatutory": "Non-Statutory",
     "deductionsStatutory": "Statutory",
@@ -9783,7 +9804,8 @@
     },
     "notificationChannels_settings": "Notification Channel Settings",
     "notificationRules": {
-      "subtitle": "Notification targets and channels per event ({count} entries)"
+      "subtitle": "Notification targets and channels per event ({count} entries)",
+      "title": "Notification Rules"
     },
     "notificationRulesSubtitle": "Notification targets and channels per event ({count} entries)",
     "notificationsDesc": "Configure and manage notification triggers.",
@@ -9797,7 +9819,8 @@
       "subtitle": "{count} templates",
       "newHire": "New Hire",
       "transfer": "Transfer",
-      "rehire": "Rehire"
+      "rehire": "Rehire",
+      "title": "Onboarding Templates"
     },
     "onboardingTemplatesNewHire": "New Hire",
     "onboardingTemplatesRehire": "Rehire",
@@ -9895,7 +9918,8 @@
       "evalTimingDesc": "When to conduct evaluations during probation",
       "evalTimingLabel": "Evaluation Timing",
       "extensionDesc": "Whether to allow probation extension and maximum extension period",
-      "extensionLabel": "Probation Extension"
+      "extensionLabel": "Probation Extension",
+      "title": "Probation"
     },
     "probationEval": {
       "autoConfirmDesc": "Whether to auto-convert to regular upon passing",
@@ -9904,7 +9928,8 @@
       "evalTimingDesc": "When to conduct evaluations during probation",
       "evalTimingLabel": "Evaluation Timing",
       "passingScoreDesc": "Passing score for probation evaluation (out of 100)",
-      "passingScoreLabel": "Passing Score"
+      "passingScoreLabel": "Passing Score",
+      "title": "Probation Evaluation"
     },
     "probationEval2": {
       "autoConfirmDesc": "Whether to auto-convert to regular upon passing",

@@ -592,7 +592,9 @@
         "performanceGrade": "绩效等级",
         "turnoverRisk": "离职风险"
       },
-      "viewProfile": "查看资料"
+      "viewProfile": "查看资料",
+      "pageTitle": "团队健康",
+      "pageDescription": "查看团队健康度与风险指标"
     },
     "teamHealthPage": {
       "burnoutRiskList": "Burnout Risk List",
@@ -697,7 +699,9 @@
         "regrettableRate": "성과 M+(충족 이상) 등급 퇴사자 ÷ M+ 전체 인원 × 100",
         "avgTenure": "퇴사자의 평균 근속 연수",
         "highRiskPrediction": "7개 변수 기반 이직 예측 모델에서 70점 이상"
-      }
+      },
+      "pageTitle": "离职分析",
+      "pageDescription": "分析离职率与原因"
     },
     "turnoverPage": {
       "byDepartment": "Dept. Turnover Rate",
@@ -783,7 +787,9 @@
         "leaveUsageRate": "已使用年假占全部已分配年假的比例（%）",
         "negativeBalance": "剩余年假低于0的员工数（使用负数年假中）",
         "overtimeViolations": "超过每周52小时工作上限的次数（当月）"
-      }
+      },
+      "pageTitle": "考勤分析",
+      "pageDescription": "查看考勤模式与异常"
     },
     "payroll": {
       "charts": {
@@ -802,7 +808,9 @@
         "changeRate": "总人力成本环比变动率（%）",
         "monthlyTotal": "最近确定薪资的总人力成本合计",
         "perCapita": "总人力成本 ÷ 发薪人数"
-      }
+      },
+      "pageTitle": "薪资分析",
+      "pageDescription": "分析薪资支出与偏差"
     },
     "performance": {
       "charts": {
@@ -818,7 +826,9 @@
         "cyclePhase": "当前绩效管理周期阶段",
         "evalCompletion": "已评估员工 ÷ 评估对象总数 × 100",
         "goalSubmission": "已提交目标的员工 ÷ 目标设定对象 × 100"
-      }
+      },
+      "pageTitle": "绩效分析",
+      "pageDescription": "分析绩效评级与分布"
     }
   },
   "attendance": {
@@ -5108,7 +5118,21 @@
     "title": "Organization",
     "viewGrid": "Grid",
     "viewList": "列表",
-    "viewTree": "Tree"
+    "viewTree": "Tree",
+    "viewDirectory": "目录",
+    "includeSubDepts": "包含子部门",
+    "showMatrix": "显示虚线汇报线",
+    "matrixReport": "矩阵汇报",
+    "directReport": "直接汇报",
+    "collapseAll": "全部折叠",
+    "expandAll": "全部展开",
+    "noHead": "未指派负责人",
+    "subDeptCount": "{count} 个子部门",
+    "inactive": "非活跃",
+    "searchEmployees": "搜索员工...",
+    "positionTitle": "职位",
+    "grade": "职级",
+    "email": "邮箱"
   },
   "orgChanges": {
     "after": "After",
@@ -6169,7 +6193,8 @@
       "pendingApproval": "待审批",
       "published": "已确定",
       "review": "异常审查中",
-      "reviewing": "Reviewing"
+      "reviewing": "Reviewing",
+      "title": "状态"
     },
     "stub": {
       "customAllowance": "附加补贴",
@@ -6486,7 +6511,8 @@
       "scoreAdjust": "分数调整: {name}",
       "sessionInfo": "{department} · 调整 {count}项",
       "sessionLoadFailed": "加载校准会议失败",
-      "sessionNamePlaceholder": "会议名称"
+      "sessionNamePlaceholder": "会议名称",
+      "title": "绩效校准"
     },
     "calibrationBatch": {
       "batchMode": "批量调整",
@@ -6802,7 +6828,8 @@
       "exceeds": "优秀 (E)",
       "exceedsPlus": "卓越 (E+)",
       "meets": "达到预期 (M)",
-      "meetsPlus": "超出预期 (M+)"
+      "meetsPlus": "超出预期 (M+)",
+      "title": "等级"
     },
     "gradeDistribution": "Grade Distribution",
     "growthChart": {
@@ -7111,7 +7138,8 @@
       "saveFirstForAi": "请先暂存后才能生成AI草稿",
       "selfBadge": "自评",
       "settingsLoadFailed": "加载评估设置失败",
-      "weight": "权重: {weight}%"
+      "weight": "权重: {weight}%",
+      "title": "上级评估"
     },
     "managerEvalTitle": "Manager Evaluation",
     "managerEval_keb8a94_eval_open_keb8ba8ea_keca784ed": "经理 evaluation is available during the EVAL_OPEN phase.",
@@ -7203,7 +7231,8 @@
       "submitting": "提交中...",
       "titleLabel": "标题",
       "titlePlaceholder": "目标标题",
-      "weightLabel": "权重 (%)"
+      "weightLabel": "权重 (%)",
+      "title": "我的目标"
     },
     "myGoalsTitle": "My Goals",
     "myGoals_my_goals": "My 目标s",
@@ -7636,7 +7665,8 @@
     "responsibility": "Responsibility",
     "results": {
       "loadFailed": "加载评估结果失败",
-      "weight": "权重: {weight}%"
+      "weight": "权重: {weight}%",
+      "title": "结果"
     },
     "resultsTitle": "Results",
     "retryMessage": "请重试。",
@@ -7664,7 +7694,8 @@
       "draftSaved": "已暂存。",
       "loadFailed": "加载自我评估失败",
       "saveFailed": "保存自我评估失败",
-      "submitted": "提交完成。"
+      "submitted": "提交完成。",
+      "title": "自评"
     },
     "selfEvalTitle": "Self Evaluation",
     "selfEval_keab080_keca09cec": "selfevaluation가 submit completed.",
@@ -8773,7 +8804,8 @@
       "requiredDesc": "评估流程中校准步骤是否必需",
       "requiredLabel": "校准必需",
       "scopeDesc": "校准会议单位",
-      "scopeLabel": "参与范围"
+      "scopeLabel": "参与范围",
+      "title": "校准设置"
     },
     "calibrationSettings": {
       "managerOverrideDesc": "允许管理者不经过校准直接变更等级",
@@ -8837,7 +8869,8 @@
     "clockInBlockingToggleDesc": "员工 clock-in records are automatically rejected when blocking threshold is exceeded.",
     "closed": "截止",
     "codeManagement": {
-      "subtitle": "系统代码/枚举{count}个组"
+      "subtitle": "系统代码/枚举{count}个组",
+      "title": "代码管理"
     },
     "codeManagementSubtitle": "系统代码/枚举{count}个组",
     "color": "Color",
@@ -8935,7 +8968,8 @@
     "customFieldLoadError": "Failed to load custom fields.",
     "customFieldSaved": "Custom field saved.",
     "customFields": {
-      "subtitle": "用户自定义字段{count}个"
+      "subtitle": "用户自定义字段{count}个",
+      "title": "自定义字段"
     },
     "customFieldsDesc": "Manage custom fields by entity.",
     "customFieldsSubtitle": "用户自定义字段{count}个",
@@ -8962,7 +8996,8 @@
     "deductions": {
       "subtitle": "扣除项目{count}个",
       "statutory": "法定",
-      "nonStatutory": "非法定"
+      "nonStatutory": "非法定",
+      "title": "扣除项"
     },
     "deductionsNonStatutory": "非法定",
     "deductionsStatutory": "法定",
@@ -9770,7 +9805,8 @@
     },
     "notificationChannels_settings": "通知 Channel 设置",
     "notificationRules": {
-      "subtitle": "按事件通知对象及渠道（{count}条）"
+      "subtitle": "按事件通知对象及渠道（{count}条）",
+      "title": "通知规则"
     },
     "notificationRulesSubtitle": "按事件通知对象及渠道（{count}条）",
     "notificationsDesc": "Configure and manage notification triggers.",
@@ -9784,7 +9820,8 @@
       "subtitle": "{count}个模板",
       "newHire": "新入职",
       "transfer": "转入",
-      "rehire": "再入职"
+      "rehire": "再入职",
+      "title": "入职模板"
     },
     "onboardingTemplatesNewHire": "新入职",
     "onboardingTemplatesRehire": "再入职",
@@ -9882,7 +9919,8 @@
       "evalTimingDesc": "试用期内进行评估的时间",
       "evalTimingLabel": "评估时间",
       "extensionDesc": "是否允许延长试用期及最大延长期限",
-      "extensionLabel": "试用期延长"
+      "extensionLabel": "试用期延长",
+      "title": "试用期"
     },
     "probationEval": {
       "autoConfirmDesc": "合格时是否自动转正",
@@ -9891,7 +9929,8 @@
       "evalTimingDesc": "试用期内进行评估的时间",
       "evalTimingLabel": "评估时间",
       "passingScoreDesc": "试用期评估合格分数（满分100）",
-      "passingScoreLabel": "合格分数"
+      "passingScoreLabel": "合格分数",
+      "title": "试用期评估"
     },
     "probationEval2": {
       "autoConfirmDesc": "合格时是否自动转正",

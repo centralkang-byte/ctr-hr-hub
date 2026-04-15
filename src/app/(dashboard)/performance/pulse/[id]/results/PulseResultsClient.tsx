@@ -88,7 +88,7 @@ export default function PulseResultsClient({ user: _user, id }: { user: SessionU
           </button>
           <BarChart3 className="w-6 h-6 text-primary" />
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{results.title} — {t('results')}</h1>
+            <h1 className="text-2xl font-bold text-foreground">{results.title} — {t('results.title')}</h1>
             <p className="text-sm text-muted-foreground">{t('pulse.totalRespondents', { count: results.totalRespondents })}</p>
           </div>
         </div>

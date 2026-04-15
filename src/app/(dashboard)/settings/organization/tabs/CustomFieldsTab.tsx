@@ -32,7 +32,7 @@ export function CustomFieldsTab({
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
-        <div><h3 className="text-base font-semibold text-foreground">{t('customFields')}</h3><p className="text-sm text-muted-foreground">{t('customFields.subtitle', { count: fields.length })}</p></div>
+        <div><h3 className="text-base font-semibold text-foreground">{t('customFields.title')}</h3><p className="text-sm text-muted-foreground">{t('customFields.subtitle', { count: fields.length })}</p></div>
         <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />{t('kr_ked9584eb_add')}</Button>
       </div>
       {fields.length > 0 ? Object.entries(grouped).map(([entity, items]) => (

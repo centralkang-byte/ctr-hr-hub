@@ -304,7 +304,7 @@ export default function PerformanceClient({
             {!isManager && !isAdmin && (
               <section className="mb-8">
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-foreground">{t('myGoals')}</h2>
+                  <h2 className="text-lg font-semibold text-foreground">{t('myGoals.title')}</h2>
                   <Link
                     href="/performance/goals"
                     className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
@@ -432,7 +432,7 @@ export default function PerformanceClient({
                 {goals.length > 0 && (
                   <div className="mt-6">
                     <h3 className="mb-3 text-base font-semibold text-foreground">
-                      {t('myGoals')}
+                      {t('myGoals.title')}
                     </h3>
                     <div className="space-y-3">
                       {goals.map((goal) => {
@@ -546,7 +546,7 @@ export default function PerformanceClient({
                   <div className="mt-6">
                     <div className="mb-3 flex items-center justify-between">
                       <h3 className="text-base font-semibold text-foreground">
-                        {t('myGoals')}
+                        {t('myGoals.title')}
                       </h3>
                       <Link
                         href="/performance/goals"

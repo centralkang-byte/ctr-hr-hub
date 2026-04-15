@@ -43,7 +43,7 @@ export function CalibrationTab({
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-foreground">{t('calibration')}</h3>
+          <h3 className="text-base font-semibold text-foreground">{t('calibration.title')}</h3>
           <p className="text-sm text-muted-foreground">{t('kr_keb93b1ea_keca1b0ec_ked9a8cec_')}</p>
         </div>
         {isOverridden && (

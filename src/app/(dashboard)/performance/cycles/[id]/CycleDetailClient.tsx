@@ -250,7 +250,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                         <th className={TABLE_STYLES.headerCell}>{t('name')}</th>
                                         <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('goals')}</th>
                                         <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kecb2b4ed')}</th>
-                                        <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('selfEval')}</th>
+                                        <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('selfEval.title')}</th>
                                         <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('cycleDetail.peerReviewHeader')}</th>
                                         <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('status')}</th>
                                     </tr>

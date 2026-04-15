@@ -511,7 +511,7 @@ export default function PayrollImportClient({ user, companies }: {
                 <th className={TABLE_STYLES.headerCell}>{t('import.colFile')}</th>
                 <th className={TABLE_STYLES.headerCellRight}>{t('import.colPersonCount')}</th>
                 <th className={TABLE_STYLES.headerCellRight}>{t('import.colTotalAmount')}</th>
-                <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('status.title')}</th>
                 <th className={TABLE_STYLES.headerCell}>{t('import.colUploadDate')}</th>
               </tr>
             </thead>

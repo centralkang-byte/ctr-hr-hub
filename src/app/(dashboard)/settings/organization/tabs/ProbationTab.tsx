@@ -24,7 +24,7 @@ export function ProbationTab({
   return (
     <div className="space-y-4">
       <div className="mb-4">
-        <h3 className="text-base font-semibold text-foreground">{t('probation')}</h3>
+        <h3 className="text-base font-semibold text-foreground">{t('probation.title')}</h3>
         <p className="text-sm text-muted-foreground">{t('probation_evaluation_keab8b0ec_kec9e90eb_keca084ed_settings')}</p>
       </div>
 

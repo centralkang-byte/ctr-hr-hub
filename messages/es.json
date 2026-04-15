@@ -592,7 +592,9 @@
         "performanceGrade": "Calificación del desempeño",
         "turnoverRisk": "Riesgo de rotación"
       },
-      "viewProfile": "Ver perfil"
+      "viewProfile": "Ver perfil",
+      "pageTitle": "Salud del equipo",
+      "pageDescription": "Revisa la salud del equipo e indicadores de riesgo"
     },
     "teamHealthPage": {
       "burnoutRiskList": "Burnout Risk List",
@@ -697,7 +699,9 @@
         "regrettableRate": "성과 M+(충족 이상) 등급 퇴사자 ÷ M+ 전체 인원 × 100",
         "avgTenure": "퇴사자의 평균 근속 연수",
         "highRiskPrediction": "7개 변수 기반 이직 예측 모델에서 70점 이상"
-      }
+      },
+      "pageTitle": "Análisis de rotación",
+      "pageDescription": "Analiza la tasa y las causas de rotación"
     },
     "turnoverPage": {
       "byDepartment": "Dept. Turnover Rate",
@@ -783,7 +787,9 @@
         "leaveUsageRate": "Porcentaje de licencias otorgadas utilizadas (%)",
         "negativeBalance": "Número de empleados con saldo de licencias negativo",
         "overtimeViolations": "Número de violaciones del límite de 52 horas semanales (mes actual)"
-      }
+      },
+      "pageTitle": "Análisis de asistencia",
+      "pageDescription": "Revisa patrones de asistencia y anomalías"
     },
     "payroll": {
       "charts": {
@@ -802,7 +808,9 @@
         "changeRate": "Tasa de cambio mensual del costo laboral total (%)",
         "monthlyTotal": "Costo laboral total de la nómina confirmada más reciente",
         "perCapita": "Costo laboral total ÷ Número de beneficiarios de nómina"
-      }
+      },
+      "pageTitle": "Análisis de nómina",
+      "pageDescription": "Analiza el gasto y la variación de nómina"
     },
     "performance": {
       "charts": {
@@ -818,7 +826,9 @@
         "cyclePhase": "Fase actual del ciclo de gestión del desempeño",
         "evalCompletion": "Empleados evaluados ÷ Total de empleados elegibles × 100",
         "goalSubmission": "Empleados con objetivos enviados ÷ Empleados elegibles × 100"
-      }
+      },
+      "pageTitle": "Análisis de desempeño",
+      "pageDescription": "Analiza calificaciones y distribución del desempeño"
     }
   },
   "attendance": {
@@ -5107,7 +5117,21 @@
     "title": "Organization",
     "viewGrid": "Grid",
     "viewList": "Lista",
-    "viewTree": "Tree"
+    "viewTree": "Tree",
+    "viewDirectory": "Directorio",
+    "includeSubDepts": "Incluir subdepartamentos",
+    "showMatrix": "Mostrar líneas de reporte matricial",
+    "matrixReport": "Reporte matricial",
+    "directReport": "Reporte directo",
+    "collapseAll": "Colapsar todo",
+    "expandAll": "Expandir todo",
+    "noHead": "Sin jefe asignado",
+    "subDeptCount": "{count} subdepartamentos",
+    "inactive": "Inactivo",
+    "searchEmployees": "Buscar empleados...",
+    "positionTitle": "Puesto",
+    "grade": "Nivel",
+    "email": "Correo electrónico"
   },
   "orgChanges": {
     "after": "After",
@@ -6168,7 +6192,8 @@
       "pendingApproval": "Pendiente de aprobación",
       "published": "Publicado",
       "review": "Revisión de anomalías",
-      "reviewing": "Reviewing"
+      "reviewing": "Reviewing",
+      "title": "Estado"
     },
     "stub": {
       "customAllowance": "Subsidios adicionales",
@@ -6485,7 +6510,8 @@
       "scoreAdjust": "Ajuste de puntuación: {name}",
       "sessionInfo": "{department} · {count} ajustes",
       "sessionLoadFailed": "Error al cargar la sesión de calibración",
-      "sessionNamePlaceholder": "Nombre de la sesión"
+      "sessionNamePlaceholder": "Nombre de la sesión",
+      "title": "Calibración"
     },
     "calibrationBatch": {
       "batchMode": "Ajuste por lotes",
@@ -6801,7 +6827,8 @@
       "exceeds": "Sobresaliente (E)",
       "exceedsPlus": "Excepcional (E+)",
       "meets": "Cumple expectativas (M)",
-      "meetsPlus": "Supera expectativas (M+)"
+      "meetsPlus": "Supera expectativas (M+)",
+      "title": "Grado"
     },
     "gradeDistribution": "Grade Distribution",
     "growthChart": {
@@ -7110,7 +7137,8 @@
       "saveFirstForAi": "Guarde como borrador primero para generar el borrador de IA",
       "selfBadge": "Auto",
       "settingsLoadFailed": "Error al cargar la configuración de evaluación",
-      "weight": "Peso: {weight}%"
+      "weight": "Peso: {weight}%",
+      "title": "Evaluación del supervisor"
     },
     "managerEvalTitle": "Manager Evaluation",
     "managerEval_keb8a94_eval_open_keb8ba8ea_keca784ed": "Gerente evaluation is available during the EVAL_OPEN phase.",
@@ -7202,7 +7230,8 @@
       "submitting": "Enviando...",
       "titleLabel": "Título",
       "titlePlaceholder": "Título del objetivo",
-      "weightLabel": "Peso (%)"
+      "weightLabel": "Peso (%)",
+      "title": "Mis objetivos"
     },
     "myGoalsTitle": "My Goals",
     "myGoals_my_goals": "My Objetivos",
@@ -7635,7 +7664,8 @@
     "responsibility": "Responsibility",
     "results": {
       "loadFailed": "Error al cargar resultados de evaluación",
-      "weight": "Peso: {weight}%"
+      "weight": "Peso: {weight}%",
+      "title": "Resultados"
     },
     "resultsTitle": "Results",
     "retryMessage": "Por favor, inténtelo de nuevo.",
@@ -7663,7 +7693,8 @@
       "draftSaved": "Borrador guardado.",
       "loadFailed": "Error al cargar la autoevaluación",
       "saveFailed": "Error al guardar la autoevaluación",
-      "submitted": "Enviado exitosamente."
+      "submitted": "Enviado exitosamente.",
+      "title": "Autoevaluación"
     },
     "selfEvalTitle": "Self Evaluation",
     "selfEval_keab080_keca09cec": "selfevaluation가 submit completed.",
@@ -8772,7 +8803,8 @@
       "requiredDesc": "Si el paso de calibración es obligatorio en el proceso de evaluación",
       "requiredLabel": "Calibración obligatoria",
       "scopeDesc": "Unidad de reunión de calibración",
-      "scopeLabel": "Alcance de participación"
+      "scopeLabel": "Alcance de participación",
+      "title": "Configuración de calibración"
     },
     "calibrationSettings": {
       "managerOverrideDesc": "Permitir que los gerentes cambien calificaciones directamente sin calibración",
@@ -8836,7 +8868,8 @@
     "clockInBlockingToggleDesc": "Empleado clock-in records are automatically rejected when blocking threshold is exceeded.",
     "closed": "Cierre",
     "codeManagement": {
-      "subtitle": "{count} grupos de códigos/enumeraciones del sistema"
+      "subtitle": "{count} grupos de códigos/enumeraciones del sistema",
+      "title": "Gestión de códigos"
     },
     "codeManagementSubtitle": "{count} grupos de códigos/enumeraciones del sistema",
     "color": "Color",
@@ -8934,7 +8967,8 @@
     "customFieldLoadError": "Failed to load custom fields.",
     "customFieldSaved": "Custom field saved.",
     "customFields": {
-      "subtitle": "{count} campos personalizados"
+      "subtitle": "{count} campos personalizados",
+      "title": "Campos personalizados"
     },
     "customFieldsDesc": "Manage custom fields by entity.",
     "customFieldsSubtitle": "{count} campos personalizados",
@@ -8961,7 +8995,8 @@
     "deductions": {
       "subtitle": "{count} partidas de deducción",
       "statutory": "Legal",
-      "nonStatutory": "No legal"
+      "nonStatutory": "No legal",
+      "title": "Deducciones"
     },
     "deductionsNonStatutory": "No legal",
     "deductionsStatutory": "Legal",
@@ -9769,7 +9804,8 @@
     },
     "notificationChannels_settings": "Notificación Channel Configuración",
     "notificationRules": {
-      "subtitle": "Destinatarios y canales de notificación por evento ({count} entradas)"
+      "subtitle": "Destinatarios y canales de notificación por evento ({count} entradas)",
+      "title": "Reglas de notificación"
     },
     "notificationRulesSubtitle": "Destinatarios y canales de notificación por evento ({count} entradas)",
     "notificationsDesc": "Configure and manage notification triggers.",
@@ -9783,7 +9819,8 @@
       "subtitle": "{count} plantillas",
       "newHire": "Nueva contratación",
       "transfer": "Transferencia",
-      "rehire": "Recontratación"
+      "rehire": "Recontratación",
+      "title": "Plantillas de incorporación"
     },
     "onboardingTemplatesNewHire": "Nueva contratación",
     "onboardingTemplatesRehire": "Recontratación",
@@ -9881,7 +9918,8 @@
       "evalTimingDesc": "Cuándo realizar evaluaciones durante la prueba",
       "evalTimingLabel": "Momento de evaluación",
       "extensionDesc": "Si se permite extensión de prueba y período máximo de extensión",
-      "extensionLabel": "Extensión de prueba"
+      "extensionLabel": "Extensión de prueba",
+      "title": "Periodo de prueba"
     },
     "probationEval": {
       "autoConfirmDesc": "Si se convierte automáticamente a regular al aprobar",
@@ -9890,7 +9928,8 @@
       "evalTimingDesc": "Cuándo realizar evaluaciones durante el período de prueba",
       "evalTimingLabel": "Momento de evaluación",
       "passingScoreDesc": "Puntuación de aprobación de evaluación de prueba (sobre 100)",
-      "passingScoreLabel": "Puntuación de aprobación"
+      "passingScoreLabel": "Puntuación de aprobación",
+      "title": "Evaluación de periodo de prueba"
     },
     "probationEval2": {
       "autoConfirmDesc": "Si se convierte automáticamente a regular al aprobar",

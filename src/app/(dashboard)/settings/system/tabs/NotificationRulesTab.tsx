@@ -30,7 +30,7 @@ export function NotificationRulesTab({
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
-        <div><h3 className="text-base font-semibold text-foreground">{t('notificationRules')}</h3><p className="text-sm text-muted-foreground">{t('notificationRules.subtitle', { count: triggers.length })}</p></div>
+        <div><h3 className="text-base font-semibold text-foreground">{t('notificationRules.title')}</h3><p className="text-sm text-muted-foreground">{t('notificationRules.subtitle', { count: triggers.length })}</p></div>
         <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />{t('kr_keab79cec_add')}</Button>
       </div>
       {triggers.length > 0 ? (

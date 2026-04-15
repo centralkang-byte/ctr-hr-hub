@@ -115,8 +115,8 @@ export default function TeamResultsClient({
             <tr className={TABLE_STYLES.header}>
               <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
               <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
-              <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('selfEval')}</th>
-              <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('managerEval')}</th>
+              <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('selfEval.title')}</th>
+              <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('managerEval.title')}</th>
               <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kecb59cec_kec84b1ea')}</th>
               <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kecb59cec_kec97adeb')}</th>
               <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_ems_kebb894eb')}</th>
