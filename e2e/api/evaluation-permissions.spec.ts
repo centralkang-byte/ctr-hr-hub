@@ -108,8 +108,9 @@ test.describe('Eval Permissions: HR_ADMIN', () => {
     const res = await request.get('/api/v1/performance/cycles')
     expect(res.ok()).toBe(true)
     expect(res.status()).toBe(200)
-    // Phase 6A baseline budget — TODO(session-164): tighten after observing
-    // actual count in first PRISMA_QUERY_DEBUG=1 CI run.
-    await expectQueryBudget(res, 999, 'GET /api/v1/performance/cycles')
+    // Phase 6A baseline budget — observed=2 in run 24439102066 Pass 1+2
+    // (deterministic). Budget = ceil(2 * 1.2) = 3. Recorded 2026-04-15.
+    // Raise only with justification (regression vs feature growth).
+    await expectQueryBudget(res, 3, 'GET /api/v1/performance/cycles')
   })
 })

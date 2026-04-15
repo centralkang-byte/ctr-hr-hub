@@ -25,9 +25,10 @@ test.describe('HR_ADMIN: Leave Policies', () => {
     const result = await parseApiResponse(res)
     expect(result.ok).toBe(true)
     expect(Array.isArray(result.data)).toBe(true)
-    // Phase 6A baseline budget — TODO(session-164): tighten after observing
-    // actual count in first PRISMA_QUERY_DEBUG=1 CI run (× 1.2 slack).
-    await expectQueryBudget(res, 999, 'GET /api/v1/leave/policies')
+    // Phase 6A baseline budget — observed=2 in run 24439102066 Pass 1+2
+    // (deterministic). Budget = ceil(2 * 1.2) = 3. Recorded 2026-04-15.
+    // Raise only with justification (regression vs feature growth).
+    await expectQueryBudget(res, 3, 'GET /api/v1/leave/policies')
   })
 
   test('POST /leave/policies creates new policy', async ({ request }) => {

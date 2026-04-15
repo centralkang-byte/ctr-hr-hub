@@ -173,9 +173,10 @@ test.describe('HR_ADMIN: Leave admin', () => {
     const res = await request.get('/api/v1/leave/admin')
     const result = await parseApiResponse(res)
     expect([200, 404].includes(result.status)).toBe(true)
-    // Phase 6A baseline budget — TODO(session-164): tighten after observing
-    // actual count in first PRISMA_QUERY_DEBUG=1 CI run.
-    await expectQueryBudget(res, 999, 'GET /api/v1/leave/admin')
+    // Phase 6A baseline budget — observed=4 in run 24439102066 Pass 1+2
+    // (deterministic). Budget = ceil(4 * 1.2) = 5. Recorded 2026-04-15.
+    // Raise only with justification (regression vs feature growth).
+    await expectQueryBudget(res, 5, 'GET /api/v1/leave/admin')
   })
 
   test('GET /leave/admin?year=2025 supports year filter', async ({ request }) => {

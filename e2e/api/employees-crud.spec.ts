@@ -205,9 +205,12 @@ test.describe('EMPLOYEE: Self-service', () => {
     const result = await parseApiResponse(res)
     // May return 200 (data exists) or 404 (no rewards data)
     expect([200, 404].includes(result.status)).toBe(true)
-    // Phase 6A baseline budget — TODO(session-164): tighten after observing
-    // actual count in first PRISMA_QUERY_DEBUG=1 CI run.
-    await expectQueryBudget(res, 999, 'GET /api/v1/employees/me/total-rewards')
+    // Phase 6A baseline budget — observed=8 in run 24439102066 Pass 1+2
+    // (deterministic). Budget = ceil(8 * 1.2) = 10. Recorded 2026-04-15.
+    // Note: the route runs a 3-year aggregate loop (lines 97-111), so 5
+    // baseline ops + 3 yearly aggregates is expected. Raise only with
+    // justification (regression vs feature growth).
+    await expectQueryBudget(res, 10, 'GET /api/v1/employees/me/total-rewards')
   })
 
   test('GET /employees/me/emergency-contacts returns contacts', async ({ request }) => {
