@@ -3837,7 +3837,12 @@
     "title": "온보딩",
     "dashboard": {
       "allCompanies": "전체 법인",
-      "emotion": "감정"
+      "emotion": "감정",
+      "planAll": "전체",
+      "planOnboarding": "온보딩",
+      "planOffboarding": "오프보딩",
+      "planCrossboardingDeparture": "전출",
+      "planCrossboardingArrival": "전입"
     },
     "myOnboarding": "내 온보딩",
     "checklist": "체크리스트",

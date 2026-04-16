@@ -4902,7 +4902,12 @@
     "crossboardingDeparture": "Departure Checklist",
     "dashboard": {
       "allCompanies": "All Companies",
-      "emotion": "Emotion"
+      "emotion": "Emotion",
+      "planAll": "All",
+      "planOnboarding": "Onboarding",
+      "planOffboarding": "Offboarding",
+      "planCrossboardingDeparture": "Crossboarding (Departure)",
+      "planCrossboardingArrival": "Crossboarding (Arrival)"
     },
     "dashboardDescription": "Monitor onboarding progress for new hires.",
     "dashboardTitle": "Onboarding Status",

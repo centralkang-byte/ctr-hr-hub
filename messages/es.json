@@ -4902,7 +4902,12 @@
     "crossboardingDeparture": "Departure Checklist",
     "dashboard": {
       "allCompanies": "전체 법인",
-      "emotion": "감정"
+      "emotion": "감정",
+      "planAll": "Todos",
+      "planOnboarding": "Incorporación",
+      "planOffboarding": "Desvinculación",
+      "planCrossboardingDeparture": "Transferencia (Salida)",
+      "planCrossboardingArrival": "Transferencia (Llegada)"
     },
     "dashboardDescription": "Monitor onboarding progress for new hires.",
     "dashboardTitle": "Onboarding Status",

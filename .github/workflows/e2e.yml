@@ -108,7 +108,7 @@ jobs:
           NODE_OPTIONS: '--max-old-space-size=4096'
 
       - name: Run E2E tests
-        run: npx playwright test
+        run: npx playwright test --project=api --project=browser
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
