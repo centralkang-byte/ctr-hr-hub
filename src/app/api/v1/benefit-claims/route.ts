@@ -3,8 +3,8 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
+import { ROLE } from '@/lib/constants'
 import { z } from 'zod'
 import type { SessionUser } from '@/types'
 
@@ -17,7 +17,7 @@ const createSchema = z.object({
   notes: z.string().max(500).optional(),
 })
 
-export const GET = withPermission(
+export const GET = withAuth(
   async (req: NextRequest, _ctx: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
     const view = searchParams.get('view') ?? 'mine'
@@ -71,10 +71,9 @@ export const GET = withPermission(
 
     return apiPaginated(claims, buildPagination(page, limit, total))
   },
-  perm(MODULE.BENEFITS, ACTION.VIEW),
 )
 
-export const POST = withPermission(
+export const POST = withAuth(
   async (req: NextRequest, _ctx: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const body = await req.json()
     const parsed = createSchema.safeParse(body)
@@ -136,5 +135,4 @@ export const POST = withPermission(
 
     return apiSuccess(claim, 201)
   },
-  perm(MODULE.BENEFITS, ACTION.CREATE),
 )

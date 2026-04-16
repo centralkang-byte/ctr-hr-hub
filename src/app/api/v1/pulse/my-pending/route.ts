@@ -5,13 +5,12 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/pulse/my-pending ────────────────────────
 
-export const GET = withPermission(
+export const GET = withAuth(
   async (_req: NextRequest, _context, user: SessionUser) => {
     const now = new Date()
 
@@ -49,5 +48,4 @@ export const GET = withPermission(
 
     return apiSuccess(pending)
   },
-  perm(MODULE.PULSE, ACTION.VIEW),
 )

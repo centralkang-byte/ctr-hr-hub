@@ -8,9 +8,8 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
+import { withAuth } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
-import { MODULE, ACTION } from '@/lib/constants'
 import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
 import type { SessionUser } from '@/types'
 
@@ -24,7 +23,7 @@ const createSchema = z.object({
 // ─── POST /api/v1/performance/checkins ───────────────────
 // Creates a check-in record (OneOnOne with isCheckinRecord=true)
 
-export const POST = withPermission(
+export const POST = withAuth(
     async (req: NextRequest, _context, user: SessionUser) => {
         const body: unknown = await req.json()
         const parsed = createSchema.safeParse(body)
@@ -129,5 +128,4 @@ export const POST = withPermission(
             throw handlePrismaError(error)
         }
     },
-    perm(MODULE.PERFORMANCE, ACTION.UPDATE),
 )

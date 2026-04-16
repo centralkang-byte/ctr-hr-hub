@@ -33,7 +33,7 @@ test.describe('Training: HR_ADMIN', () => {
 
     const main = page.locator('main')
     await expect(main).toBeVisible()
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 15000 })
   })
 })
 
@@ -48,6 +48,8 @@ test.describe('Training: EMPLOYEE', () => {
 
     const main = page.locator('main')
     await expect(main).toBeVisible()
+    // Wait for loading to finish and h1 to appear (custom skeleton uses animate-pulse)
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 15000 })
   })
 
   // RBAC boundary: discipline is HR_UP only

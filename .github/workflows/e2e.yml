@@ -101,6 +101,16 @@ jobs:
         # injects them before Playwright runs.
         run: npx tsx scripts/seed-qa-accounts.ts
 
+      - name: Create analytics materialized views
+        # MVs must be created AFTER seed so they contain data. We pipe the
+        # SQL file from the runner filesystem into docker exec's stdin, which
+        # forwards it to psql inside the postgres service container.
+        # ON_ERROR_STOP=1 ensures any SQL error fails the step immediately.
+        run: |
+          docker exec -i $(docker ps -q --filter "ancestor=pgvector/pgvector:pg16") \
+            psql -U test -d ctr_hr_hub_test -v ON_ERROR_STOP=1 \
+            < prisma/migrations/mv_analytics.sql
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 

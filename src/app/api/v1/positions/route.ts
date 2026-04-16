@@ -83,7 +83,7 @@ export const POST = withPermission(
           jobGrade: { select: { id: true, name: true } },
         },
       })
-      return apiSuccess(position)
+      return apiSuccess(position, 201)
     } catch (error) {
       if (isAppError(error)) throw error
       throw handlePrismaError(error)

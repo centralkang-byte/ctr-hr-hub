@@ -85,8 +85,11 @@ export const ROUTE_ACL: readonly RouteRule[] = [
   { prefix: '/api/v1/manager-hub', allowedRoles: ROLE_GROUPS.MANAGER_ONLY },
   // Recruitment: internal-jobs available to all (self-service internal mobility)
   { prefix: '/api/v1/recruitment/internal-jobs', allowedRoles: ROLE_GROUPS.ALL_ROLES },
-  // Recruitment: interview evaluate available to managers (interviewers)
-  { prefix: '/api/v1/recruitment/interviews', allowedRoles: ROLE_GROUPS.MANAGER_UP },
+  // Recruitment: interviews available to all (handler filters by interviewerId for non-HR)
+  { prefix: '/api/v1/recruitment/interviews', allowedRoles: ROLE_GROUPS.ALL_ROLES },
+  // Recruitment: postings + applicants readable by managers (hiring managers)
+  { prefix: '/api/v1/recruitment/postings', allowedRoles: ROLE_GROUPS.MANAGER_UP },
+  { prefix: '/api/v1/recruitment/applicants', allowedRoles: ROLE_GROUPS.MANAGER_UP },
   { prefix: '/api/v1/recruitment', allowedRoles: ROLE_GROUPS.HR_UP },
   { prefix: '/api/v1/year-end/hr', allowedRoles: ROLE_GROUPS.HR_UP },
   { prefix: '/api/v1/analytics', allowedRoles: ROLE_GROUPS.MANAGER_UP },

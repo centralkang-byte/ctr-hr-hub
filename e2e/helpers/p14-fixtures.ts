@@ -205,7 +205,7 @@ export function buildSalaryBand(jobGradeId: string) {
     minSalary: 30000000,
     midSalary: 45000000,
     maxSalary: 60000000,
-    effectiveFrom: new Date().toISOString().slice(0, 10),
+    effectiveFrom: new Date().toISOString(),
   }
 }
 

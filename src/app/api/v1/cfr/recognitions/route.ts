@@ -22,7 +22,7 @@ const feedSchema = z.object({
 })
 
 const createSchema = z.object({
-  receiverId: z.string(),
+  receiverId: z.string().min(1, '받는 사람 ID가 필요합니다.'),
   coreValue: z.enum(CTR_VALUES),
   message: z.string().min(10).max(500),
   isPublic: z.boolean().default(true),

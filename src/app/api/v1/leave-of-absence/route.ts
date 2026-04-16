@@ -48,7 +48,7 @@ export const GET = withPermission(
 
     return apiPaginated(records, buildPagination(page, limit, total))
   },
-  perm(MODULE.LEAVE, ACTION.VIEW),
+  perm(MODULE.LEAVE, ACTION.UPDATE),
 )
 
 // ─── POST /api/v1/leave-of-absence ──────────────────────
@@ -126,5 +126,5 @@ export const POST = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.LEAVE, ACTION.CREATE),
+  perm(MODULE.LEAVE, ACTION.UPDATE),
 )

@@ -106,6 +106,7 @@ export const GET = withPermission(
             where: { isPrimary: true, endDate: null },
             take: 1,
             select: {
+              companyId: true,
               status: true,
               employmentType: true,
               department: { select: { id: true, name: true } },

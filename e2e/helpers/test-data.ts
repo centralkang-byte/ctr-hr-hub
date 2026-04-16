@@ -106,8 +106,18 @@ export async function resolveSeedData(request: APIRequestContext): Promise<SeedD
   const assignments = emp.assignments as Array<Record<string, unknown>> | undefined
   const primary = assignments?.find((a) => a.isPrimary && !a.endDate) ?? assignments?.[0]
 
-  const departmentId = (primary?.departmentId ?? '') as string
-  const jobGradeId = (primary?.jobGradeId ?? '') as string
+  // The employees list API returns relations as nested objects (e.g. jobGrade: { id, name })
+  // rather than raw foreign keys (jobGradeId). Handle both shapes for resilience.
+  const departmentId = (
+    primary?.departmentId ??
+    (primary?.department as Record<string, unknown> | undefined)?.id ??
+    ''
+  ) as string
+  const jobGradeId = (
+    primary?.jobGradeId ??
+    (primary?.jobGrade as Record<string, unknown> | undefined)?.id ??
+    ''
+  ) as string
   const companyId = (primary?.companyId ?? emp.companyId ?? '') as string
 
   // 2. Discover leave policy

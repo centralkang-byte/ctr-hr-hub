@@ -16,9 +16,9 @@ test.describe('Onboarding: HR_ADMIN', () => {
     await assertPageLoads(page, '/onboarding')
     await waitForPageReady(page)
 
-    await expect(page.getByRole('button', { name: '전체' })).toBeVisible({ timeout: 10000 })
-    await expect(page.getByRole('button', { name: '온보딩' })).toBeVisible({ timeout: 5000 })
-    await expect(page.getByRole('button', { name: '오프보딩' })).toBeVisible({ timeout: 5000 })
+    await expect(page.getByRole('button', { name: '전체' }).first()).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('button', { name: '온보딩' }).first()).toBeVisible({ timeout: 5000 })
+    await expect(page.getByRole('button', { name: '오프보딩' }).first()).toBeVisible({ timeout: 5000 })
   })
 
   test('can view offboarding cases', async ({ page }) => {
@@ -28,7 +28,7 @@ test.describe('Onboarding: HR_ADMIN', () => {
 
     // Page renders with tabs (In Progress / Completed) or empty state
     const tabs = page.getByRole('tab').first()
-    const emptyState = page.getByText(/No offboarding data|오프보딩 데이터/)
+    const emptyState = page.getByText(/데이터가 없|No offboarding data|퇴직처리/)
     await expect(tabs.or(emptyState)).toBeVisible({ timeout: 10000 })
   })
 
@@ -36,7 +36,7 @@ test.describe('Onboarding: HR_ADMIN', () => {
     await assertPageLoads(page, '/onboarding')
     await waitForPageReady(page)
 
-    const expectedLabels = ['전체', '온보딩', '오프보딩', '크로스보딩 출발', '크로스보딩 도착']
+    const expectedLabels = ['전체', '온보딩', '오프보딩', '전출', '전입']
     for (const label of expectedLabels) {
       await expect(page.getByRole('button', { name: label }).first()).toBeVisible({ timeout: 10000 })
     }

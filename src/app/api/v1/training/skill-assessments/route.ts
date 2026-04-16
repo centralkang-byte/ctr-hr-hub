@@ -9,8 +9,7 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
 import { z } from 'zod'
 import type { SessionUser } from '@/types'
 
@@ -22,7 +21,7 @@ const assessmentUpsertSchema = z.object({
 
 // ─── GET /api/v1/training/skill-assessments ──────────────
 
-export const GET = withPermission(
+export const GET = withAuth(
   async (_req: NextRequest, _context, user: SessionUser) => {
     const assessments = await prisma.employeeSkillAssessment.findMany({
       where: { employeeId: user.employeeId },
@@ -65,12 +64,11 @@ export const GET = withPermission(
       })),
     )
   },
-  perm(MODULE.TRAINING, ACTION.VIEW),
 )
 
 // ─── POST /api/v1/training/skill-assessments ─────────────
 
-export const POST = withPermission(
+export const POST = withAuth(
   async (req: NextRequest, _context, user: SessionUser) => {
     const body: unknown = await req.json()
     const parsed = assessmentUpsertSchema.safeParse(body)
@@ -113,5 +111,4 @@ export const POST = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.TRAINING, ACTION.VIEW),
 )

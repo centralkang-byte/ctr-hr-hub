@@ -589,7 +589,7 @@ export function buildTemplateTask(prefix: string) {
 export function buildChecklist(prefix: string) {
   return {
     name: `E2E ${prefix} Checklist ${ts()}`,
-    description: `E2E offboarding checklist (${prefix})`,
+    targetType: 'VOLUNTARY' as const,
   }
 }
 

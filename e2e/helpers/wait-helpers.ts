@@ -19,8 +19,8 @@ export async function waitForToast(page: Page, text: string | RegExp, timeout = 
  * Excludes permanent spinners (e.g., refresh icons with animate-spin class).
  */
 export async function waitForLoading(page: Page, timeout = 10000) {
-  // Target loading-specific spinners: border-based spinner divs, not icon SVGs
-  const spinner = page.locator('div.animate-spin, [data-loading="true"]').first()
+  // Target loading spinners: div-based spinners AND SVG icon spinners (Loader2)
+  const spinner = page.locator('.animate-spin, [data-loading="true"]').first()
   if (await spinner.isVisible({ timeout: 2000 }).catch(() => false)) {
     await expect(spinner).not.toBeVisible({ timeout })
   }
@@ -51,12 +51,14 @@ export async function waitForPageReady(page: Page, timeout = 15000) {
   await page.waitForLoadState('domcontentloaded', { timeout })
 
   // Wait for skeleton loaders to disappear
-  const skeleton = page.locator('[class*="skeleton"], [class*="Skeleton"]').first()
+  // shadcn Skeleton uses animate-pulse class (not "skeleton" in classname)
+  // PageSkeleton composites also use Skeleton which renders animate-pulse divs
+  const skeleton = page.locator('.animate-pulse').first()
   if (await skeleton.isVisible({ timeout: 2000 }).catch(() => false)) {
     await expect(skeleton).not.toBeVisible({ timeout })
   }
 
-  // Wait for spinners
+  // Wait for spinners (SVG icons like Loader2 and div-based spinners)
   const spinner = page.locator('.animate-spin').first()
   if (await spinner.isVisible({ timeout: 1000 }).catch(() => false)) {
     await expect(spinner).not.toBeVisible({ timeout })

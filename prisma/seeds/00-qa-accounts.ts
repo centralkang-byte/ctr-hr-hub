@@ -110,14 +110,14 @@ export async function seedQAAccounts(prisma: PrismaClient) {
     update: { name: '생산기술팀', nameEn: 'Production Engineering' },
     create: { id: qaTeamAId, companyId: krId, code: 'QA-TEAM-A', name: '생산기술팀', nameEn: 'Production Engineering', level: 1, sortOrder: 90 },
   })
-  deptMap['CTR-KR:QA-TEAM-A'] = qaTeamAId
+  deptMap['CTR:QA-TEAM-A'] = qaTeamAId
 
   await prisma.department.upsert({
     where: { companyId_code: { companyId: krId, code: 'QA-TEAM-B' } },
     update: { name: '품질관리팀', nameEn: 'Quality Control' },
     create: { id: qaTeamBId, companyId: krId, code: 'QA-TEAM-B', name: '품질관리팀', nameEn: 'Quality Control', level: 1, sortOrder: 91 },
   })
-  deptMap['CTR-KR:QA-TEAM-B'] = qaTeamBId
+  deptMap['CTR:QA-TEAM-B'] = qaTeamBId
 
   console.log('  ✅ QA departments: 생산기술팀, 품질관리팀')
 
