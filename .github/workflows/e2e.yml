@@ -104,6 +104,8 @@ jobs:
 
       - name: Build application
         run: npm run build
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
 
       - name: Run E2E tests
         run: npx playwright test
