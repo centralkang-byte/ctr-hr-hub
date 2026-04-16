@@ -7,6 +7,7 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
+import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { genderPayGapQuerySchema } from '@/lib/schemas/gender-pay-gap'
 import type { SessionUser } from '@/types'
@@ -52,7 +53,7 @@ function gapPercent(maleAvg: number, femaleAvg: number): number {
 
 // ─── GET Handler ─────────────────────────────────────────
 
-export const GET = withPermission(
+export const GET = withCache(withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
     const { groupBy, year } = genderPayGapQuerySchema.parse({
@@ -296,4 +297,4 @@ export const GET = withPermission(
     return apiSuccess(response)
   },
   perm(MODULE.ANALYTICS, ACTION.VIEW),
-)
+), CACHE_STRATEGY.ANALYTICS, 'user')

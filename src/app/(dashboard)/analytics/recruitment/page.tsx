@@ -1,10 +1,13 @@
-import { Suspense } from 'react'
+import dynamic from 'next/dynamic'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
-import RecruitmentAnalyticsClient from './RecruitmentAnalyticsClient'
 import { ChartSkeleton } from '@/components/shared/PageSkeleton'
+
+const RecruitmentAnalyticsClient = dynamic(() => import('./RecruitmentAnalyticsClient'), {
+  loading: () => <ChartSkeleton />,
+})
 
 export default async function RecruitmentPage() {
   const session = await getServerSession(authOptions)
@@ -14,8 +17,6 @@ export default async function RecruitmentPage() {
   const user = session.user as SessionUser
 
   return (
-    <Suspense fallback={<ChartSkeleton />}>
-      <RecruitmentAnalyticsClient user={user} />
-    </Suspense>
+    <RecruitmentAnalyticsClient user={user} />
   )
 }

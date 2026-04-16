@@ -14,7 +14,15 @@ Sentry.init({
   // Performance: 10% in prod, 100% in dev
   tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
 
-  // Session replay (disabled for now)
+  // Browser tracing with INP (Interaction to Next Paint) measurement
+  integrations: [
+    Sentry.browserTracingIntegration({
+      enableLongTask: true,
+      enableInp: true,
+    }),
+  ],
+
+  // Session replay (disabled — PII masking required before enabling for HR SaaS)
   replaysSessionSampleRate: 0,
   replaysOnErrorSampleRate: 0,
 

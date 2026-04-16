@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --port 3002",
     "build": "next build",
+    "analyze": "ANALYZE=true next build",
     "start": "next start",
     "lint": "next lint",
     "i18n:validate": "tsx scripts/validate-i18n-keys.ts",
@@ -88,6 +89,7 @@
     "seed": "npx tsx prisma/seed.ts"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.2.4",
     "@playwright/test": "^1.58.2",
     "@types/node": "^20",
     "@types/pg": "^8.16.0",
@@ -95,6 +97,7 @@
     "@types/react-dom": "^18",
     "@types/uuid": "^10.0.0",
     "@types/web-push": "^3.6.4",
+    "@vercel/speed-insights": "^2.0.0",
     "@vitest/coverage-v8": "^4.1.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.35",

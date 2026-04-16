@@ -11,6 +11,7 @@
  * @see CLAUDE.md — "Assignment 규칙 (Track B)" section
  */
 
+import { cache } from 'react'
 import { prisma } from '@/lib/prisma'
 
 /**
@@ -40,7 +41,7 @@ export async function getCompanyHireDate(
  * Changwon), effectiveDate should be compared in the employee's location timezone.
  * Acceptable for V1 launch; revisit post-deployment.
  */
-export async function fetchPrimaryAssignment(employeeId: string) {
+export const fetchPrimaryAssignment = cache(async function fetchPrimaryAssignment(employeeId: string) {
   const now = new Date()
   return prisma.employeeAssignment.findFirst({
     where: {
@@ -57,7 +58,7 @@ export async function fetchPrimaryAssignment(employeeId: string) {
       workLocation: true,
     },
   })
-}
+})
 
 /**
  * Helper 2: In-Memory Filter — for list APIs where assignments already loaded via include.

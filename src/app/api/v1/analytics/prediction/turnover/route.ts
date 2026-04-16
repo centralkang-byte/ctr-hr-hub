@@ -9,11 +9,12 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiError } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
+import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { MODULE, ACTION } from '@/lib/constants'
 import { calculateTurnoverRisk } from '@/lib/analytics/turnover-prediction'
 import type { SessionUser } from '@/types'
 
-export const GET = withPermission(
+export const GET = withCache(withPermission(
   async (req: NextRequest, _ctx, _user: SessionUser) => {
     try {
       const searchParams = new URL(req.url).searchParams
@@ -191,4 +192,4 @@ export const GET = withPermission(
     }
   },
   perm(MODULE.ANALYTICS, ACTION.VIEW),
-)
+), CACHE_STRATEGY.ANALYTICS, 'user')

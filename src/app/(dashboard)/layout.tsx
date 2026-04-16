@@ -3,34 +3,41 @@
 // 세션 확인 → Sidebar + Header + main content
 // ═══════════════════════════════════════════════════════════
 
-// All dashboard pages use getServerSession (→ headers()).
-// Force dynamic rendering for the entire (dashboard) segment.
-export const dynamic = 'force-dynamic'
+// getServerSession internally calls headers(), which auto-opts into dynamic rendering.
+// Explicit 'force-dynamic' is redundant — removed in Phase 7 performance optimization.
 
 
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { fetchPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { getCompaniesForUser } from '@/lib/company/getCompanies'
+import nextDynamic from 'next/dynamic'
 import { BrandProvider } from '@/components/shared/BrandProvider'
-import { CommandPalette } from '@/components/command-palette/CommandPalette'
-import { HrChatbot } from '@/components/hr-chatbot/HrChatbot'
-import { PwaInstallBanner } from '@/components/shared/PwaInstallBanner'
-import { ServiceWorkerRegistrar } from '@/components/shared/ServiceWorkerRegistrar'
-import { SessionTimeoutWarning } from '@/components/shared/SessionTimeoutWarning'
 import { DashboardShell } from './DashboardShell'
 
-// ─── Types ──────────────────────────────────────────────────
-
-interface CompanyOption {
-  id: string
-  name: string
-  nameEn: string | null
-  countryCode?: string | null
-}
+// Floating UI — lazy-loaded, zero CLS impact (modals/FABs/banners)
+const CommandPalette = nextDynamic(
+  () => import('@/components/command-palette/CommandPalette').then(m => m.CommandPalette),
+  { loading: () => null },
+)
+const HrChatbot = nextDynamic(
+  () => import('@/components/hr-chatbot/HrChatbot').then(m => m.HrChatbot),
+  { loading: () => null },
+)
+const PwaInstallBanner = nextDynamic(
+  () => import('@/components/shared/PwaInstallBanner').then(m => m.PwaInstallBanner),
+  { loading: () => null },
+)
+const ServiceWorkerRegistrar = nextDynamic(
+  () => import('@/components/shared/ServiceWorkerRegistrar').then(m => m.ServiceWorkerRegistrar),
+  { loading: () => null },
+)
+const SessionTimeoutWarning = nextDynamic(
+  () => import('@/components/shared/SessionTimeoutWarning').then(m => m.SessionTimeoutWarning),
+  { loading: () => null },
+)
 
 // ─── Layout ─────────────────────────────────────────────────
 
@@ -48,36 +55,14 @@ export default async function DashboardLayout({
   const user = session.user as SessionUser
 
   // B-3k: Pre-hire check — redirect if no active assignment
+  // React cache() dedup: same employeeId within single request = 1 DB query
   const primaryAssignment = await fetchPrimaryAssignment(user.employeeId)
   if (!primaryAssignment) {
     redirect('/pre-hire')
   }
 
-  // Load companies for CompanySelector
-  let companies: CompanyOption[] = []
-  try {
-    const canSeeAll = [ROLE.SUPER_ADMIN, ROLE.HR_ADMIN, ROLE.EXECUTIVE].includes(
-      user.role as typeof ROLE.SUPER_ADMIN,
-    )
-
-    if (canSeeAll) {
-      companies = await prisma.company.findMany({
-        where: { deletedAt: null },
-        select: { id: true, name: true, nameEn: true, countryCode: true },
-        orderBy: { name: 'asc' },
-      })
-    } else {
-      const ownCompany = await prisma.company.findUnique({
-        where: { id: user.companyId },
-        select: { id: true, name: true, nameEn: true, countryCode: true },
-      })
-      if (ownCompany) {
-        companies = [ownCompany]
-      }
-    }
-  } catch {
-    // Fallback: empty companies list
-  }
+  // Load companies — React cache() + Redis (5min TTL)
+  const companies = await getCompaniesForUser(user.role, user.companyId)
 
   return (
     <BrandProvider companyId={user.companyId}>

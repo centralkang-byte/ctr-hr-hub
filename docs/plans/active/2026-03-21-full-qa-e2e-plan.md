@@ -26,7 +26,7 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:3002/login
 
 **Step 2:** 서버가 안 떠있으면 기동
 ```bash
-cd /Users/sangwoo/Vibe.nosync/03. HR_Hub/ctr-hr-hub
+cd /Users/sangwoo/Documents/Project/HR_Hub/ctr-hr-hub
 npm run dev
 ```
 
