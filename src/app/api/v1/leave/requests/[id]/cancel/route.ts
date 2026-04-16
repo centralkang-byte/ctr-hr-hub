@@ -161,19 +161,10 @@ export const PUT = withPermission(
         }
       } else {
         // 하위호환: 기존 요청은 policy 경유 lookup
-        const policyWithType = await prisma.leavePolicy.findUnique({
-          where: { id: request.policyId },
-          select: { companyId: true },
-        })
-        if (policyWithType) {
-          const typeDef = await prisma.leaveTypeDef.findFirst({
-            where: {
-              OR: [
-                { companyId: policyWithType.companyId, deletedAt: null },
-                { companyId: null, deletedAt: null },
-              ],
-            },
-            orderBy: { companyId: 'desc' },
+        const resolvedId = await resolveLeaveTypeDefId(request.policyId)
+        if (resolvedId) {
+          const typeDef = await prisma.leaveTypeDef.findUnique({
+            where: { id: resolvedId },
             select: { countingMethod: true, includesHolidays: true },
           })
           if (typeDef) {

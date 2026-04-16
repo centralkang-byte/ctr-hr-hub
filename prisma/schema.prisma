@@ -427,12 +427,12 @@ enum CheckInMode {
   RECOMMENDED   // 권장 — 경고만, 사이클은 정상 진행
 }
 
-// GP#4: 4등급 체계 (설계서 섹션 5)
+// GP#4: 4등급 체계 — CEO 확정 (2026-04-06)
 enum PerformanceGrade {
-  E        // Exceeds (탁월) — 10% 가이드라인
-  M_PLUS   // Meets+ (우수) — 30%
+  O        // Outstanding (탁월) — 10% 가이드라인
+  E        // Exceeds (우수) — 30%
   M        // Meets (보통) — 50%
-  B        // Below (미흡) — 10%
+  S        // Sufficient (미흡) — 10%
 }
 
 // GP#4: 개인별 평가 진행 상태 (설계서 섹션 14)

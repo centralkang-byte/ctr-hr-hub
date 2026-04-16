@@ -82,7 +82,7 @@ export function CompanySelector({
   if (!canSeeAll) {
     const ownCompany = companies.find((c) => c.id === currentCompanyId)
     return (
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <div className="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
         <Building2 className="h-4 w-4" />
         <span>{ownCompany?.name ?? '내 법인'}</span>
       </div>
@@ -91,7 +91,7 @@ export function CompanySelector({
 
   return (
     <Select value={selectedCompanyId} onValueChange={handleChange}>
-      <SelectTrigger className="w-[200px]">
+      <SelectTrigger className="w-[200px] rounded-full border-primary/15 bg-primary/10 text-primary font-semibold">
         <div className="flex items-center gap-2">
           <Building2 className="h-4 w-4 shrink-0" />
           <SelectValue placeholder={tCommon('filterSelectCompany')} />

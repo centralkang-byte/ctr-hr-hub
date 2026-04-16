@@ -71,7 +71,7 @@ export function HolidaysTab({
         <div>
           <h3 className="text-base font-semibold text-foreground">{t('kr_kebb295ec_holidays')}</h3>
           <p className="text-sm text-muted-foreground">
-            {selectedYear}년 공휴일 {holidays.length}일
+            {t('holidays_yearSummary', { year: selectedYear, count: holidays.length })}
             {!companyId && <span className="text-primary"> {t('kr_kebb295ec_kec84a0ed_ked95b4eb_')}</span>}
           </p>
         </div>
@@ -82,7 +82,7 @@ export function HolidaysTab({
             className="rounded-xl border border-border bg-muted px-3 py-2 text-sm text-foreground"
           >
             {[2024, 2025, 2026, 2027].map((y) => (
-              <option key={y} value={y}>{y}년</option>
+              <option key={y} value={y}>{t('holidays_yearOption', { year: y })}</option>
             ))}
           </select>
           <Button className={BUTTON_VARIANTS.primary}>
@@ -99,7 +99,7 @@ export function HolidaysTab({
             .sort(([a], [b]) => Number(a) - Number(b))
             .map(([month, items]) => (
               <div key={month}>
-                <h4 className="mb-2 text-sm font-semibold text-muted-foreground">{month}월</h4>
+                <h4 className="mb-2 text-sm font-semibold text-muted-foreground">{t('holidays_monthLabel', { month })}</h4>
                 <div className="space-y-1">
                   {items
                     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -129,11 +129,11 @@ export function HolidaysTab({
       ) : (
         <div className="rounded-xl border border-dashed border-border py-12 text-center">
           <Calendar className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
-          <p className="text-sm font-medium text-foreground">{selectedYear}년 공휴일이 등록되지 않았습니다</p>
+          <p className="text-sm font-medium text-foreground">{t('holidays_emptyTitle', { year: selectedYear })}</p>
           <p className="mt-1 text-xs text-muted-foreground">
             {!companyId
-              ? '법인을 선택하면 해당 법인의 공휴일이 표시됩니다'
-              : '공휴일을 직접 추가하거나 시드 데이터를 실행하세요'}
+              ? t('holidays_emptySelectCompany')
+              : t('holidays_emptyRunSeed')}
           </p>
         </div>
       )}

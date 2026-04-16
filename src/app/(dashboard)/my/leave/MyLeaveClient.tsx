@@ -31,20 +31,26 @@ interface LeaveTypeDef {
 }
 
 // 카테고리 표시 순서 및 라벨
-const CATEGORY_ORDER = ['annual', 'health', 'family_event', 'maternity', 'military', 'other'] as const
-const CATEGORY_LABELS: Record<string, { ko: string; icon: string }> = {
-  annual:       { ko: '연차', icon: '📅' },
-  health:       { ko: '보건/건강', icon: '🏥' },
-  family_event: { ko: '경조', icon: '🎊' },
-  maternity:    { ko: '모성보호', icon: '👶' },
-  military:     { ko: '병역', icon: '🎖️' },
-  other:        { ko: '기타', icon: '📋' },
+const CATEGORY_ORDER = ['annual', 'sick', 'maternity', 'paternity', 'bereavement', 'special', 'compensatory', 'other'] as const
+const CATEGORY_LABELS: Record<string, { labelKey: string; icon: string }> = {
+  annual:       { labelKey: 'leave.category.annual', icon: '📅' },
+  sick:         { labelKey: 'leave.category.health', icon: '🏥' },
+  maternity:    { labelKey: 'leave.category.maternity', icon: '👶' },
+  paternity:    { labelKey: 'leave.category.paternity', icon: '👨‍👶' },
+  bereavement:  { labelKey: 'leave.category.familyEvent', icon: '🎊' },
+  special:      { labelKey: 'leave.category.special', icon: '⭐' },
+  compensatory: { labelKey: 'leave.category.compensatory', icon: '🔄' },
+  other:        { labelKey: 'leave.category.other', icon: '📋' },
 }
 
-function groupByCategory(balances: YearBalance[]): { category: string; label: string; icon: string; items: YearBalance[] }[] {
+function groupByCategory(
+  balances: YearBalance[],
+  t: (key: string) => string,
+): { category: string; label: string; icon: string; items: YearBalance[] }[] {
   const groups: Record<string, YearBalance[]> = {}
   for (const b of balances) {
-    const cat = b.leaveTypeDef.category ?? 'other'
+    const rawCode = b.leaveTypeDef.code ?? 'other'
+    const cat = CATEGORY_LABELS[rawCode] ? rawCode : 'other'
     if (!groups[cat]) groups[cat] = []
     groups[cat].push(b)
   }
@@ -52,7 +58,7 @@ function groupByCategory(balances: YearBalance[]): { category: string; label: st
     .filter(cat => groups[cat]?.length)
     .map(cat => ({
       category: cat,
-      label: CATEGORY_LABELS[cat]?.ko ?? cat,
+      label: CATEGORY_LABELS[cat] ? t(CATEGORY_LABELS[cat].labelKey) : cat,
       icon: CATEGORY_LABELS[cat]?.icon ?? '📋',
       items: groups[cat],
     }))
@@ -164,14 +170,14 @@ export function MyLeaveClient({ user: _user }: { user: SessionUser }) {
         </div>
         {/* 연도 선택기 */}
         <div className="flex items-center gap-2">
-          <button onClick={() => setYear((y) => y - 1)} className="p-1.5 hover:bg-muted rounded-lg">
+          <button onClick={() => setYear((y) => y - 1)} className="p-1.5 hover:bg-muted rounded-lg motion-safe:transition-all">
             <ChevronLeft className="w-4 h-4 text-muted-foreground" />
           </button>
           <span className="text-lg font-bold text-foreground min-w-16 text-center">{year}{tCommon('unit.year')}</span>
           <button
             onClick={() => setYear((y) => y + 1)}
             disabled={year >= new Date().getFullYear()}
-            className="p-1.5 hover:bg-muted rounded-lg disabled:opacity-40"
+            className="p-1.5 hover:bg-muted rounded-lg disabled:opacity-40 motion-safe:transition-all"
           >
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
           </button>
@@ -191,7 +197,7 @@ export function MyLeaveClient({ user: _user }: { user: SessionUser }) {
           { label: t('totalEntitled'), value: totalEntitled, unit: tCommon('unit.day'), color: 'text-foreground' },
           { label: tCommon('used'), value: totalUsed, unit: tCommon('unit.day'), color: 'text-emerald-600' },
           { label: tCommon('pending'), value: totalPending, unit: tCommon('unit.day'), color: 'text-amber-700' },
-          { label: '지정연차', value: designatedCount, unit: tCommon('unit.day'), color: 'text-violet-600' },
+          { label: t('leave.designatedLeave'), value: designatedCount, unit: tCommon('unit.day'), color: 'text-violet-600' },
           { label: tCommon('remaining'), value: totalRemaining, unit: tCommon('unit.day'), color: 'text-primary' },
         ].map((kpi) => (
           <div key={kpi.label} className="bg-card rounded-xl shadow-sm border border-border p-6">
@@ -219,7 +225,7 @@ export function MyLeaveClient({ user: _user }: { user: SessionUser }) {
             />
         ) : (
           <div className="p-5 space-y-6">
-            {groupByCategory(balances).map((group) => (
+            {groupByCategory(balances, t).map((group) => (
               <div key={group.category}>
                 {/* 카테고리 헤더 */}
                 <div className="flex items-center gap-2 mb-3">

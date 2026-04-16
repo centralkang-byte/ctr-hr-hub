@@ -1,276 +1,280 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — HR Admin Home (Stage 5-A Rebuild)
-// HR 관리자 / 슈퍼관리자 대시보드
-// NudgeCards + UnifiedTaskHub + KPI 그리드
+// CTR HR Hub — HR Admin Home (V3 2-Zone)
+// Phase 4 Batch 7: Action Zone + Monitor Zone 전면 재구축.
 // ═══════════════════════════════════════════════════════════
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import {
-  Users,
-  AlertTriangle,
-  UserMinus,
-  CheckSquare,
-  TrendingUp,
-  TrendingDown,
-  ArrowUpRight,
-  ClipboardCheck,
+  UserPlus,
+  DollarSign,
+  BarChart3,
+  Calendar,
+  Lightbulb,
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { KpiStrip } from './KpiStrip'
+import { DashboardTaskList } from './DashboardTaskList'
+import { DashboardErrorBanner } from './DashboardErrorBanner'
+import { OnboardingTracker } from './OnboardingTracker'
+import { OffboardingTracker } from './OffboardingTracker'
+import { PlaceholderCard } from './PlaceholderCard'
 import { WidgetSkeleton } from '@/components/shared/WidgetSkeleton'
-import { UnifiedTaskHub } from './UnifiedTaskHub'
-import { NudgeCards } from './NudgeCards'
-import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
-import { StatusBadge } from '@/components/ui/StatusBadge'
-import { TYPOGRAPHY, CARD_STYLES } from '@/lib/styles'
+import { TYPOGRAPHY } from '@/lib/styles'
 import { apiClient } from '@/lib/api'
-import type { SessionUser } from '@/types'
+import { toast } from '@/hooks/use-toast'
+import { cn } from '@/lib/utils'
+import type { SessionUser, HrAdminSummary } from '@/types'
 
-// ─── Props ────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────
 
-interface HrAdminHomeProps {
+interface Props {
   user: SessionUser
 }
 
-interface HrAdminSummary {
-  role: string
-  totalEmployees: number
-  newHires: number
-  terminations: number
-  turnoverRate: number
-  openPositions: number
-  pendingLeaves: number
-  quarterlyReviewStats?: { total: number; completed: number; pending: number; completionRate: number }
+// ─── Helpers ──────────────────────────────────────────────
+
+function ActionKpiCard({
+  label,
+  value,
+  color = 'primary',
+}: {
+  label: string
+  value: string | number
+  color?: 'primary' | 'error' | 'alert' | 'warning-bright' | 'success'
+}) {
+  // D17/D18: text는 WCAG AA-safe, bg tint로 시각 강조 (bright tokens는 bg/icon 전용)
+  const textMap: Record<string, string> = {
+    primary: 'text-primary',
+    error: 'text-error',              // #e11d48 — 정적 count, 결재 대기
+    alert: 'text-error',              // alert도 text는 accessible한 #e11d48 사용
+    'warning-bright': 'text-[#B45309]', // bright KPI도 text는 WCAG AA
+    success: 'text-tertiary',         // #16a34a
+  }
+  const bgMap: Record<string, string> = {
+    primary: 'bg-muted/50',
+    error: 'bg-muted/50',
+    alert: 'bg-alert-red/10',         // bg tint로 시각 강조
+    'warning-bright': 'bg-warning-bright/15', // bg tint로 시각 강조
+    success: 'bg-muted/50',
+  }
+  return (
+    <div
+      aria-label={`${label}: ${value}`}
+      className={cn('rounded-lg p-4 text-center', bgMap[color])}
+    >
+      <p
+        className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground"
+        aria-hidden="true"
+      >
+        {label}
+      </p>
+      <p
+        className={cn(
+          'mt-1 font-display text-2xl font-extrabold tabular-nums',
+          textMap[color],
+        )}
+        aria-hidden="true"
+      >
+        {value}
+      </p>
+    </div>
+  )
 }
 
 // ─── Component ────────────────────────────────────────────
 
-export function HrAdminHome({ user }: HrAdminHomeProps) {
+export function HrAdminHome({ user }: Props) {
+  const t = useTranslations('home')
   const [summary, setSummary] = useState<HrAdminSummary | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
-  useEffect(() => {
-    apiClient
-      .get<HrAdminSummary>('/api/v1/home/summary')
-      .then((res) => setSummary(res.data))
-      .catch(() => {})
-      .finally(() => setLoading(false))
+  const fetchSummary = useCallback(async () => {
+    setError(false)
+    setLoading(true)
+    try {
+      const res = await apiClient.get<HrAdminSummary>('/api/v1/home/summary')
+      setSummary(res.data)
+    } catch {
+      setError(true)
+      toast({ title: '로드 실패', variant: 'destructive' })
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
+  useEffect(() => {
+    void fetchSummary()
+  }, [fetchSummary])
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* ── Greeting ── */}
-      <div>
-        <h1 className={TYPOGRAPHY.pageTitle}>
-          안녕하세요, {user.name}님 👋
+      <header>
+        <h1 id="dashboard-title" className={TYPOGRAPHY.pageTitle}>
+          {t('hrAdmin.actionTitle', { name: user.name })}
         </h1>
-        <p className={`mt-1 ${TYPOGRAPHY.caption}`}>전사 인사 현황을 확인하세요.</p>
-      </div>
+        <p className={`mt-1 ${TYPOGRAPHY.caption}`}>{t('hrAdmin.greetingDesc')}</p>
+      </header>
 
-      {/* ── AI Nudge Cards ── */}
-      <NudgeCards user={user} />
-
-      {/* ── KPI Row ── */}
-      {loading ? (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {[...Array(4)].map((_, i) => (
-            <WidgetSkeleton key={i} height="h-28" lines={2} />
-          ))}
-        </div>
-      ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {/* 전사 인원 */}
-          <div className={CARD_STYLES.kpi}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={TYPOGRAPHY.label}>전사 인원</p>
-                <p className={`mt-1 ${TYPOGRAPHY.stat}`}>
-                  <AnimatedNumber value={summary?.totalEmployees ?? 0} />
-                </p>
-              </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                <Users className="h-5 w-5 text-primary" />
-              </div>
-            </div>
-            <div className="mt-3 flex items-center gap-1">
-              <TrendingUp className="h-3 w-3 text-emerald-500" />
-              <span className="text-xs text-emerald-600 font-medium">+{summary?.newHires ?? 0} 이번 달</span>
-            </div>
+      {/* ── ACTION ZONE ── */}
+      <section
+        aria-label={t('actionZone')}
+        className="rounded-2xl bg-card p-8 shadow-sm"
+      >
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div
+            className="text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground"
+            aria-hidden="true"
+          >
+            {t('actionZone')}
           </div>
-
-          {/* 신규 입사 */}
-          <div className={CARD_STYLES.kpi}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={TYPOGRAPHY.label}>신규 입사</p>
-                <p className={`mt-1 text-3xl font-bold tabular-nums text-emerald-600`}>
-                  <AnimatedNumber value={summary?.newHires ?? 0} />
-                </p>
-              </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10">
-                <ArrowUpRight className="h-5 w-5 text-emerald-500" />
-              </div>
-            </div>
-            <p className={`mt-3 ${TYPOGRAPHY.caption}`}>최근 30일</p>
-          </div>
-
-          {/* 퇴사자 */}
-          <div className={CARD_STYLES.kpi}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={TYPOGRAPHY.label}>퇴사자</p>
-                <p className={`mt-1 text-3xl font-bold tabular-nums text-red-500`}>
-                  <AnimatedNumber value={summary?.terminations ?? 0} />
-                </p>
-              </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-destructive/5">
-                <TrendingDown className="h-5 w-5 text-red-400" />
-              </div>
-            </div>
-            <p className={`mt-3 ${TYPOGRAPHY.caption}`}>최근 30일</p>
-          </div>
-
-          {/* 이직률 */}
-          <div className={CARD_STYLES.kpi}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={TYPOGRAPHY.label}>이직률</p>
-                <p className={`mt-1 ${TYPOGRAPHY.stat}`}>
-                  <AnimatedNumber
-                    value={summary?.turnoverRate ?? 0}
-                    formatter={(n) => `${n.toFixed(1)}%`}
-                  />
-                </p>
-              </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/10">
-                <AlertTriangle className="h-5 w-5 text-amber-500" />
-              </div>
-            </div>
-            <p className={`mt-3 ${TYPOGRAPHY.caption}`}>
-              대기 휴가: {summary?.pendingLeaves ?? 0}건
-            </p>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild size="sm" variant="outline" className="gap-1.5">
+              <Link
+                href="/employees/new"
+                aria-label={t('hrAdmin.quickAction.registerEmployee')}
+              >
+                <UserPlus className="h-4 w-4 stroke-[1.5]" aria-hidden="true" />
+                {t('hrAdmin.quickAction.registerEmployee')}
+              </Link>
+            </Button>
+            <Button asChild size="sm" variant="outline" className="gap-1.5">
+              <Link
+                href="/payroll"
+                aria-label={t('hrAdmin.quickAction.runPayroll')}
+              >
+                <DollarSign className="h-4 w-4 stroke-[1.5]" aria-hidden="true" />
+                {t('hrAdmin.quickAction.runPayroll')}
+              </Link>
+            </Button>
+            <Button asChild size="sm" variant="outline" className="gap-1.5">
+              <Link
+                href="/analytics"
+                aria-label={t('hrAdmin.quickAction.reports')}
+              >
+                <BarChart3 className="h-4 w-4 stroke-[1.5]" aria-hidden="true" />
+                {t('hrAdmin.quickAction.reports')}
+              </Link>
+            </Button>
           </div>
         </div>
-      )}
 
-      {/* ── Main layout: TaskHub left, Compact sidebar right ── */}
-      <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
-        {/* UnifiedTaskHub */}
-        <UnifiedTaskHub user={user} />
-
-        {/* Right sidebar — compact above-fold cards only */}
-        <div className="space-y-4">
-          {/* 분기 리뷰 현황 */}
-          <Card>
-            <CardHeader className="pb-2 pt-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <ClipboardCheck className="h-4 w-4 text-primary" />
-                분기 리뷰 현황
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 pb-4">
-              {(() => {
-                const stats = summary?.quarterlyReviewStats
-                if (!stats || stats.total === 0) {
-                  return (
-                    <p className="text-sm text-muted-foreground">
-                      이번 분기 리뷰가 아직 생성되지 않았습니다
-                    </p>
-                  )
-                }
-                return (
-                  <>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">완료율</span>
-                      <span className="text-sm font-bold text-foreground">
-                        {stats.completionRate}%
-                      </span>
-                    </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
-                      <div
-                        className="h-1.5 rounded-full bg-primary transition-all"
-                        style={{ width: `${stats.completionRate}%` }}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>완료 {stats.completed}건</span>
-                      <span>전체 {stats.total}건</span>
-                    </div>
-                  </>
-                )
-              })()}
-              <Link
-                href="/performance/quarterly-reviews"
-                className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
-              >
-                분기 리뷰 관리 →
-              </Link>
-            </CardContent>
-          </Card>
-
-          {/* 승인 대기 현황 */}
-          <Card className="bg-primary/5">
-            <CardHeader className="pb-2 pt-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <CheckSquare className="h-4 w-4 text-primary" />
-                승인 대기 현황
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 pb-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">휴가 신청</span>
-                <StatusBadge variant="info">{summary?.pendingLeaves ?? 0}건</StatusBadge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">프로필 변경</span>
-                <StatusBadge variant="info">5건</StatusBadge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">급여 조정</span>
-                <StatusBadge variant="info">3건</StatusBadge>
-              </div>
-              <Link
-                href="/approvals/inbox"
-                className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
-              >
-                승인함 바로가기 →
-              </Link>
-            </CardContent>
-          </Card>
-
-          {/* 퇴직 진행 현황 */}
-          <Card>
-            <CardHeader className="pb-2 pt-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <UserMinus className="h-4 w-4 text-amber-500" />
-                퇴직 진행 현황
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 pb-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">퇴직 예정</span>
-                <StatusBadge variant="warning">{summary?.terminations ?? 0}명</StatusBadge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">인수인계 진행 중</span>
-                <StatusBadge variant="warning">1명</StatusBadge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">이번 달 퇴직</span>
-                <StatusBadge variant="danger">{summary?.terminations ?? 0}명</StatusBadge>
-              </div>
-              <Link
-                href="/offboarding"
-                className="block pt-1 text-center text-xs font-medium text-primary hover:underline"
-              >
-                퇴직관리 →
-              </Link>
-            </CardContent>
-          </Card>
+        <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+          <DashboardTaskList user={user} />
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 gap-3 content-start"
+            role="group"
+            aria-label={t('hrAdmin.actionKpiGroup')}
+          >
+            <ActionKpiCard
+              label={t('hrAdmin.actionKpi.pendingApprovals')}
+              value={summary?.pendingLeaves ?? '-'}
+              color="error"
+            />
+            <ActionKpiCard
+              label={t('hrAdmin.actionKpi.urgent')}
+              value={summary?.urgentCount ?? '-'}
+              color="alert"
+            />
+            <ActionKpiCard
+              label={t('hrAdmin.actionKpi.weekDeadline')}
+              value={summary?.weekDeadlineCount ?? '-'}
+              color="warning-bright"
+            />
+            <ActionKpiCard
+              label={t('hrAdmin.actionKpi.onboardingWaiting')}
+              value={summary?.onboardingCount ?? '-'}
+              color="primary"
+            />
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* ── MONITOR ZONE ── */}
+      <section aria-label={t('monitorZone')} className="space-y-6">
+        <div
+          className="text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground"
+          aria-hidden="true"
+        >
+          {t('monitorZone')}
+        </div>
+
+        {/* Row 1: KPI Strip */}
+        {loading ? (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {[...Array(4)].map((_, i) => (
+              <WidgetSkeleton key={i} height="h-24" lines={2} />
+            ))}
+          </div>
+        ) : error ? (
+          <DashboardErrorBanner
+            message={t('loadError')}
+            onRetry={() => void fetchSummary()}
+          />
+        ) : (
+          <KpiStrip
+            hero={{
+              label: t('hrAdmin.totalEmployees'),
+              value: summary?.totalEmployees?.toLocaleString() ?? '-',
+              delta: t('hrAdmin.thisMonth', { count: summary?.newHires ?? 0 }),
+              deltaVariant: 'good',
+            }}
+            items={[
+              {
+                label: t('hrAdmin.newHires'),
+                value: summary?.newHires ?? 0,
+                delta: t('hrAdmin.last30Days'),
+                deltaVariant: 'muted',
+              },
+              {
+                label: t('hrAdmin.turnoverRate'),
+                value: `${(summary?.turnoverRate ?? 0).toFixed(1)}%`,
+                variant: (summary?.turnoverRate ?? 0) > 5 ? 'warn' : 'default',
+              },
+              {
+                label: t('hrAdmin.openPositions'),
+                value: summary?.openPositions ?? 0,
+              },
+              {
+                label: t('hrAdmin.quarterlyReviewShort'),
+                value: summary?.quarterlyReviewStats?.completionRate != null
+                  ? `${summary.quarterlyReviewStats.completionRate}%`
+                  : '-',
+              },
+            ]}
+          />
+        )}
+
+        {/* Row 2: 4-col widgets (xl+), 2-col (md+), 1-col mobile */}
+        {/* error 상태에서는 트래커가 misleading empty state를 보여주므로 미렌더 */}
+        {!error && (
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            <OnboardingTracker
+              variant="admin"
+              items={summary?.activeOnboarding}
+              loading={loading}
+            />
+            <OffboardingTracker
+              variant="admin"
+              items={summary?.activeOffboarding}
+              loading={loading}
+            />
+            <PlaceholderCard
+              title={t('hrAdmin.thisWeekSchedule')}
+              icon={Calendar}
+            />
+            <PlaceholderCard
+              title={t('hrAdmin.aiInsights')}
+              icon={Lightbulb}
+            />
+          </div>
+        )}
+      </section>
     </div>
   )
 }

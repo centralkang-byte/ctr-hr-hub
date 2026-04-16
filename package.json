@@ -9,9 +9,18 @@
     "lint": "next lint",
     "i18n:validate": "tsx scripts/validate-i18n-keys.ts",
     "i18n:fix": "tsx scripts/validate-i18n-keys.ts --fix",
+    "i18n:detect": "tsx scripts/detect-hardcoded-korean.ts",
+    "qa:inventory": "tsx scripts/qa/inventory.ts",
     "postinstall": "prisma generate",
     "seed:dev": "npx tsx prisma/seed-dev.ts",
+    "seed:validate": "tsx scripts/seed-validate-phase6b.ts",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
     "test:e2e": "npx playwright test",
+    "test:api": "npx playwright test --project=api",
+    "test:browser": "npx playwright test --project=browser",
+    "test:visual": "npx playwright test --project=visual-desktop --project=visual-tablet --project=visual-mobile",
+    "test:visual:update": "npx playwright test --project=visual-desktop --project=visual-tablet --project=visual-mobile --update-snapshots",
     "test:e2e:ui": "npx playwright test --ui",
     "test:e2e:report": "npx playwright show-report"
   },
@@ -44,6 +53,7 @@
     "@radix-ui/react-toast": "^1.2.15",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@sentry/nextjs": "^9.14.0",
+    "@supabase/supabase-js": "^2.101.1",
     "@tanstack/react-virtual": "^3.13.19",
     "@xyflow/react": "^12.10.1",
     "class-variance-authority": "^0.7.1",
@@ -85,15 +95,18 @@
     "@types/react-dom": "^18",
     "@types/uuid": "^10.0.0",
     "@types/web-push": "^3.6.4",
+    "@vitest/coverage-v8": "^4.1.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.35",
+    "fast-glob": "^3.3.3",
     "postcss": "^8",
     "prisma": "^7.4.1",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.2"
   },
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   }
 }

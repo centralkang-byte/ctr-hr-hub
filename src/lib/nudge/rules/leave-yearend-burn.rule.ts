@@ -41,6 +41,16 @@ export const leaveYearendBurnRule: NudgeRule = {
     return `연차 잔여 ${remaining}일이 남아있습니다. 12월 31일까지 사용하지 않으면 이월 한도(${carryOverMax}일) 초과분은 소멸됩니다.`
   },
 
+  getTitleKey(_item: OverdueItem): string {
+    return 'notifications.nudge.leaveYearendBurn.title'
+  },
+  getBodyKey(_item: OverdueItem): string {
+    return 'notifications.nudge.leaveYearendBurn.body'
+  },
+  getBodyParams(item: OverdueItem, _daysOverdue: number): Record<string, string | number> {
+    return { remainingDays: String(item.meta?.remainingDays ?? 0), carryOverMax: String(item.meta?.carryOverMax ?? 0) }
+  },
+
   async findOverdueItems(
     companyId: string,
     assigneeId: string,
@@ -64,7 +74,7 @@ export const leaveYearendBurnRule: NudgeRule = {
       },
       include: {
         leaveTypeDef: {
-          select: { name: true, category: true },
+          select: { name: true, code: true, category: true },
         },
       },
     })
@@ -72,8 +82,8 @@ export const leaveYearendBurnRule: NudgeRule = {
     const items: OverdueItem[] = []
 
     for (const b of balances) {
-      // 연차(annual) 카테고리만 소진 유도 대상
-      if (b.leaveTypeDef.category !== 'annual') continue
+      // 연차(annual) 코드만 소진 유도 대상
+      if (b.leaveTypeDef.code !== 'annual') continue
 
       const remaining = b.entitled + b.carriedOver + b.adjusted - b.used - b.pending
 

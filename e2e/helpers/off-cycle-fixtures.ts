@@ -3,7 +3,7 @@
 // Helpers for creating/managing off-cycle requests in tests
 // ════════════════════════════════════════════════════════���══
 
-import type { APIRequestContext } from '@playwright/test'
+import type { APIRequestContext, APIResponse } from '@playwright/test'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -12,8 +12,8 @@ export interface OffCycleRequest {
   status: string
   employeeId: string
   reasonCategory: string
-  currentSalary: number
-  proposedSalary: number
+  currentBaseSalary: number
+  proposedBaseSalary: number
   changePct: number
   effectiveDate: string
 }
@@ -21,10 +21,9 @@ export interface OffCycleRequest {
 interface CreateParams {
   employeeId: string
   reasonCategory?: string
-  proposedSalary?: number
+  proposedBaseSalary?: number
   effectiveDate?: string
-  justification?: string
-  submitForApproval?: boolean
+  reason?: string
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -39,45 +38,45 @@ export async function createOffCycleDraft(
   request: APIRequestContext,
   params: CreateParams,
 ): Promise<OffCycleRequest> {
-  const salary = params.proposedSalary ?? 50_000_000 + (Date.now() % 100_000)
-  const res = await request.post(BASE_URL, {
-    data: {
-      employeeId: params.employeeId,
-      reasonCategory: params.reasonCategory ?? 'PROMOTION',
-      proposedSalary: salary,
-      effectiveDate: params.effectiveDate ?? '2026-06-01',
-      justification: params.justification ?? 'E2E test off-cycle request',
-      submitForApproval: params.submitForApproval ?? false,
-    },
-  })
+  const salary = params.proposedBaseSalary ?? 50_000_000 + (Date.now() % 100_000)
+  const effectiveDate = params.effectiveDate ?? '2026-06-01T00:00:00.000Z'
+  const postData = {
+    employeeId: params.employeeId,
+    reasonCategory: params.reasonCategory ?? 'PROMOTION',
+    proposedBaseSalary: salary,
+    effectiveDate,
+    reason: params.reason ?? 'E2E test off-cycle request',
+  }
+  const res = await request.post(BASE_URL, { data: postData })
   const body = await res.json()
+  if (res.status() !== 201 && res.status() !== 409) {
+    console.error(`[off-cycle-fixtures] POST failed: ${res.status()}`, JSON.stringify(body).slice(0, 300))
+  }
   if (res.status() === 409) {
-    // Duplicate guard — cancel existing and retry
-    const listRes = await request.get(BASE_URL, {
-      params: {
-        employeeId: params.employeeId,
-        status: 'DRAFT',
-        limit: 1,
-      },
-    })
-    const listBody = await listRes.json()
-    const existing = listBody.data?.[0]
-    if (existing) {
-      await cancelOffCycle(request, existing.id)
-      // Retry
-      const retryRes = await request.post(BASE_URL, {
-        data: {
-          employeeId: params.employeeId,
-          reasonCategory: params.reasonCategory ?? 'PROMOTION',
-          proposedSalary: salary,
-          effectiveDate: params.effectiveDate ?? '2026-06-01',
-          justification: params.justification ?? 'E2E test off-cycle request',
-          submitForApproval: params.submitForApproval ?? false,
-        },
+    // Duplicate guard — cancel existing DRAFT or PENDING_APPROVAL, then retry
+    let existing: OffCycleRequest | undefined
+    for (const s of ['DRAFT', 'PENDING_APPROVAL'] as const) {
+      const listRes = await request.get(BASE_URL, {
+        params: { employeeId: params.employeeId, status: s, limit: 1 },
       })
+      const listBody = await listRes.json()
+      existing = listBody.data?.[0]
+      if (existing) break
+    }
+    if (existing) {
+      const cancelRes = await cancelOffCycle(request, existing.id)
+      if (cancelRes.status() >= 400) {
+        console.error(`[off-cycle-fixtures] cancel failed: ${cancelRes.status()}`)
+        return body.data
+      }
+      const retryRes = await request.post(BASE_URL, { data: postData })
       const retryBody = await retryRes.json()
+      if (retryRes.status() !== 201) {
+        console.error(`[off-cycle-fixtures] retry failed: ${retryRes.status()}`, JSON.stringify(retryBody).slice(0, 300))
+      }
       return retryBody.data
     }
+    console.error('[off-cycle-fixtures] 409 but no DRAFT/PENDING_APPROVAL found')
   }
   return body.data
 }
@@ -120,12 +119,13 @@ export async function rejectOffCycle(
 
 /**
  * Cancel a DRAFT or PENDING_APPROVAL request.
+ * Returns the APIResponse for error checking by callers.
  */
 export async function cancelOffCycle(
   request: APIRequestContext,
   id: string,
-): Promise<void> {
-  await request.post(`${BASE_URL}/${id}/cancel`)
+): Promise<APIResponse> {
+  return request.post(`${BASE_URL}/${id}/cancel`)
 }
 
 /**

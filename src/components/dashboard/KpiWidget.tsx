@@ -20,6 +20,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { CARD_STYLES } from '@/lib/styles'
+import { CHART_THEME } from '@/lib/styles/chart'
 
 export type ChartType = 'bar' | 'bar-horizontal' | 'line' | 'donut' | 'number'
 
@@ -35,7 +36,6 @@ interface KpiWidgetProps {
   height?: number
 }
 
-const CHART_COLORS = ['#5E81F4', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
 
 export function KpiWidget({
   title,
@@ -93,11 +93,11 @@ export function KpiWidget({
       <ResponsiveContainer width="100%" height={height}>
         {chartType === 'bar' ? (
           <BarChart data={arrayData} margin={{ top: 4, right: 8, bottom: 4, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
-            <XAxis dataKey={nameKey} tick={{ fontSize: 11, fill: '#666' }} />
-            <YAxis tick={{ fontSize: 11, fill: '#666' }} />
-            <Tooltip contentStyle={{ fontSize: 12, borderColor: '#E8E8E8' }} />
-            <Bar dataKey={dataKey} fill="#5E81F4" radius={[4, 4, 0, 0]} />
+            <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
+            <XAxis dataKey={nameKey} tick={CHART_THEME.axis.tick} />
+            <YAxis tick={CHART_THEME.axis.tick} />
+            <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
+            <Bar dataKey={dataKey} fill={CHART_THEME.colors[0]} radius={[4, 4, 0, 0]} cursor="pointer" />
           </BarChart>
         ) : chartType === 'bar-horizontal' ? (
           <BarChart
@@ -105,24 +105,24 @@ export function KpiWidget({
             data={arrayData}
             margin={{ top: 4, right: 8, bottom: 4, left: 40 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
-            <XAxis type="number" tick={{ fontSize: 11, fill: '#666' }} />
+            <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
+            <XAxis type="number" tick={CHART_THEME.axis.tick} />
             <YAxis
               dataKey={nameKey}
               type="category"
-              tick={{ fontSize: 11, fill: '#666' }}
+              tick={CHART_THEME.axis.tick}
               width={60}
             />
-            <Tooltip contentStyle={{ fontSize: 12, borderColor: '#E8E8E8' }} />
-            <Bar dataKey={dataKey} fill="#5E81F4" radius={[0, 4, 4, 0]} />
+            <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
+            <Bar dataKey={dataKey} fill={CHART_THEME.colors[0]} radius={[0, 4, 4, 0]} cursor="pointer" />
           </BarChart>
         ) : chartType === 'line' ? (
           <LineChart data={arrayData} margin={{ top: 4, right: 8, bottom: 4, left: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#F5F5F5" />
-            <XAxis dataKey={nameKey} tick={{ fontSize: 11, fill: '#666' }} />
-            <YAxis tick={{ fontSize: 11, fill: '#666' }} />
-            <Tooltip contentStyle={{ fontSize: 12, borderColor: '#E8E8E8' }} />
-            <Line type="monotone" dataKey={dataKey} stroke="#5E81F4" strokeWidth={2} dot={false} />
+            <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
+            <XAxis dataKey={nameKey} tick={CHART_THEME.axis.tick} />
+            <YAxis tick={CHART_THEME.axis.tick} />
+            <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
+            <Line type="monotone" dataKey={dataKey} stroke={CHART_THEME.colors[0]} strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
           </LineChart>
         ) : chartType === 'donut' ? (
           <PieChart>
@@ -135,10 +135,10 @@ export function KpiWidget({
               paddingAngle={2}
             >
               {arrayData.map((_: unknown, i: number) => (
-                <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                <Cell key={i} fill={CHART_THEME.colors[i % CHART_THEME.colors.length]} />
               ))}
             </Pie>
-            <Tooltip contentStyle={{ fontSize: 12, borderColor: '#E8E8E8' }} />
+            <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
             <Legend iconSize={10} wrapperStyle={{ fontSize: 11 }} />
           </PieChart>
         ) : (

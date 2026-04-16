@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { CheckCircle2, RotateCcw, Clock, Minus } from 'lucide-react'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -29,12 +30,12 @@ export interface PipelineEntry {
 
 // Maps visual column (1-6) → step ranges from STATUS_TO_STEP
 const STEPS = [
-    { col: 1, label: '1단계', sublabel: '근태 마감', minStep: 2, targetStatus: ['ATTENDANCE_CLOSED'] },
-    { col: 2, label: '2단계', sublabel: '자동 계산', minStep: 3, targetStatus: ['CALCULATING', 'ADJUSTMENT'] },
-    { col: 3, label: '2.5단계', sublabel: '수동 조정', minStep: 4, targetStatus: ['ADJUSTMENT'] },
-    { col: 4, label: '3단계', sublabel: '이상 검토', minStep: 5, targetStatus: ['REVIEW'] },
-    { col: 5, label: '4단계', sublabel: '결재', minStep: 6, targetStatus: ['PENDING_APPROVAL'] },
-    { col: 6, label: '5단계', sublabel: '명세서 발행', minStep: 7, targetStatus: ['APPROVED', 'PAID'] },
+    { col: 1, labelKey: 'pipeline.step1', sublabelKey: 'pipeline.step1Sub', minStep: 2, targetStatus: ['ATTENDANCE_CLOSED'] },
+    { col: 2, labelKey: 'pipeline.step2', sublabelKey: 'pipeline.step2Sub', minStep: 3, targetStatus: ['CALCULATING', 'ADJUSTMENT'] },
+    { col: 3, labelKey: 'pipeline.step2_5', sublabelKey: 'pipeline.step2_5Sub', minStep: 4, targetStatus: ['ADJUSTMENT'] },
+    { col: 4, labelKey: 'pipeline.step3', sublabelKey: 'pipeline.step3Sub', minStep: 5, targetStatus: ['REVIEW'] },
+    { col: 5, labelKey: 'pipeline.step4', sublabelKey: 'pipeline.step4Sub', minStep: 6, targetStatus: ['PENDING_APPROVAL'] },
+    { col: 6, labelKey: 'pipeline.step5', sublabelKey: 'pipeline.step5Sub', minStep: 7, targetStatus: ['APPROVED', 'PAID'] },
 ]
 
 // ─── Badge style per pipeline step ──────────────────────────
@@ -63,11 +64,11 @@ function StepStateIcon({ state }: { state: StepState }) {
     return <Minus className="h-3 w-3" />
 }
 
-function stateLabel(state: StepState): string {
-    if (state === 'done') return '완료'
-    if (state === 'active') return '진행'
-    if (state === 'pending') return '대기'
-    return '미시작'
+const STATE_LABEL_KEYS: Record<StepState, string> = {
+    done: 'pipeline.done',
+    active: 'pipeline.active',
+    pending: 'pipeline.pending',
+    not_started: 'pipeline.notStarted',
 }
 
 // ─── Navigate on badge click ─────────────────────────────────
@@ -99,17 +100,18 @@ interface Props {
 
 export default function PayrollPipeline({ pipelines }: Props) {
     const router = useRouter()
+    const t = useTranslations('payroll')
 
     return (
         <div className="overflow-x-auto">
             <div className="min-w-[700px]">
                 {/* Header row */}
                 <div className="grid grid-cols-7 gap-2 mb-3">
-                    <div className="text-xs font-semibold text-muted-foreground py-1">법인</div>
+                    <div className="text-xs font-semibold text-muted-foreground py-1">{t('pipeline.company')}</div>
                     {STEPS.map((step) => (
                         <div key={step.col} className="text-center">
-                            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{step.label}</div>
-                            <div className="text-[11px] text-muted-foreground">{step.sublabel}</div>
+                            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t(step.labelKey)}</div>
+                            <div className="text-[11px] text-muted-foreground">{t(step.sublabelKey)}</div>
                         </div>
                     ))}
                 </div>
@@ -144,7 +146,7 @@ export default function PayrollPipeline({ pipelines }: Props) {
                                         <button
                                             onClick={() => url && router.push(url)}
                                             disabled={!url}
-                                            title={url ? `${entry.companyCode} ${step.sublabel} →` : undefined}
+                                            title={url ? `${entry.companyCode} ${t(step.sublabelKey)} →` : undefined}
                                             className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all
                         ${cfg.bg} ${cfg.text} ${cfg.border}
                         ${url ? 'hover:opacity-80 cursor-pointer hover:shadow-sm' : 'cursor-default'}
@@ -153,7 +155,7 @@ export default function PayrollPipeline({ pipelines }: Props) {
                       `}
                                         >
                                             <StepStateIcon state={state} />
-                                            <span className="hidden sm:inline">{stateLabel(state)}</span>
+                                            <span className="hidden sm:inline">{t(STATE_LABEL_KEYS[state])}</span>
                                             {isAnomaly && (
                                                 <span className="ml-0.5 bg-amber-500/100 text-white text-[9px] rounded-full px-1">{entry.anomalyCount}</span>
                                             )}
@@ -170,19 +172,14 @@ export default function PayrollPipeline({ pipelines }: Props) {
 
                 {/* Legend */}
                 <div className="mt-4 pt-3 border-t border-border flex items-center gap-5 text-xs text-muted-foreground">
-                    {[
-                        { state: 'done' as StepState, label: '완료' },
-                        { state: 'active' as StepState, label: '진행중' },
-                        { state: 'pending' as StepState, label: '대기' },
-                        { state: 'not_started' as StepState, label: '미시작' },
-                    ].map(({ state, label }) => {
+                    {(['done', 'active', 'pending', 'not_started'] as StepState[]).map((state) => {
                         const cfg = STATE_CONFIG[state]
                         return (
                             <span key={state} className="flex items-center gap-1">
                                 <span className={`inline-flex h-4 w-4 items-center justify-center rounded-full border ${cfg.bg} ${cfg.text} ${cfg.border}`}>
                                     <StepStateIcon state={state} />
                                 </span>
-                                {label}
+                                {t(STATE_LABEL_KEYS[state])}
                             </span>
                         )
                     })}

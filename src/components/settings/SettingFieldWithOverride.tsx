@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { Globe, Pencil, Lock, RotateCcw } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 type OverrideStatus = 'global' | 'custom' | 'locked'
 
@@ -28,6 +29,7 @@ export function SettingFieldWithOverride({
   children,
   companySelected = false,
 }: SettingFieldWithOverrideProps) {
+  const t = useTranslations('settings')
   return (
     <div className="rounded-lg border border-border bg-card p-4">
       {/* Label row */}
@@ -45,17 +47,17 @@ export function SettingFieldWithOverride({
             {status === 'global' && (
               <span className="inline-flex items-center gap-1 rounded-full bg-primary/5 px-2.5 py-1 text-xs font-medium text-primary">
                 <Globe className="h-3 w-3" />
-                글로벌 기본값
+                {t('overrideGlobal')}
               </span>
             )}
             {status === 'custom' && (
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/10 px-2.5 py-1 text-xs font-medium text-orange-600">
                   <Pencil className="h-3 w-3" />
-                  법인 커스텀
+                  {t('overrideCustom')}
                 </span>
                 {globalValue && (
-                  <span className="text-xs text-muted-foreground">(글로벌: {globalValue})</span>
+                  <span className="text-xs text-muted-foreground">({t('overrideGlobalValue', { value: globalValue })})</span>
                 )}
                 {onRevert && (
                   <button
@@ -64,7 +66,7 @@ export function SettingFieldWithOverride({
                     className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs text-muted-foreground transition-colors hover:border-orange-200 hover:text-orange-600"
                   >
                     <RotateCcw className="h-3 w-3" />
-                    기본값으로
+                    {t('revertToDefault')}
                   </button>
                 )}
               </div>
@@ -72,7 +74,7 @@ export function SettingFieldWithOverride({
             {status === 'locked' && (
               <span className="inline-flex items-center gap-1 rounded-full bg-muted/50 px-2.5 py-1 text-xs font-medium text-muted-foreground/60">
                 <Lock className="h-3 w-3" />
-                글로벌 고정
+                {t('overrideLocked')}
               </span>
             )}
           </div>

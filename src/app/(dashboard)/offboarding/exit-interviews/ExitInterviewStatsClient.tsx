@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -41,15 +42,15 @@ interface StatsData {
     } | null
 }
 
-const REASON_LABELS: Record<string, string> = {
-    COMPENSATION: '보상/급여',
-    CAREER_GROWTH: '경력 성장',
-    WORK_LIFE_BALANCE: '워라밸',
-    MANAGEMENT: '경영진/관리',
-    CULTURE: '조직 문화',
-    RELOCATION: '이전/이주',
-    PERSONAL: '개인 사유',
-    OTHER: '기타',
+const REASON_LABEL_KEYS: Record<string, string> = {
+    COMPENSATION: 'reasonCompensation',
+    CAREER_GROWTH: 'reasonCareerGrowth',
+    WORK_LIFE_BALANCE: 'reasonWorkLifeBalance',
+    MANAGEMENT: 'reasonManagement',
+    CULTURE: 'reasonCulture',
+    RELOCATION: 'reasonRelocation',
+    PERSONAL: 'reasonPersonal',
+    OTHER: 'reasonOther',
 }
 
 const REASON_COLORS: Record<string, string> = {
@@ -66,6 +67,7 @@ const REASON_COLORS: Record<string, string> = {
 // ─── Component ──────────────────────────────────────────────
 
 export function ExitInterviewStatsClient({ user: _user }: { user: SessionUser }) {
+    const t = useTranslations('offboarding')
     const [stats, setStats] = useState<StatsData | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -76,7 +78,7 @@ export function ExitInterviewStatsClient({ user: _user }: { user: SessionUser })
             const result = await apiClient.get<StatsData>('/api/v1/offboarding/exit-interviews/statistics')
             setStats(result.data)
         } catch {
-            setError('네트워크 오류가 발생했습니다.')
+            setError(t('loadFailed'))
         } finally {
             setLoading(false)
         }
@@ -87,8 +89,8 @@ export function ExitInterviewStatsClient({ user: _user }: { user: SessionUser })
     return (
         <div className="space-y-6">
             <PageHeader
-                title="퇴직 면담 분석"
-                description="익명화된 퇴직 사유 통계 및 조직 건강 지표"
+                title={t('exitInterviewStatsTitle')}
+                description={t('exitInterviewStatsDesc')}
             />
 
             {loading ? (
@@ -115,11 +117,10 @@ export function ExitInterviewStatsClient({ user: _user }: { user: SessionUser })
                     <CardContent className="py-16 text-center">
                         <ShieldAlert className="w-16 h-16 text-muted-foreground mx-auto mb-6" />
                         <h3 className="text-xl font-semibold text-foreground mb-2">
-                            데이터 부족
+                            {t('exitInterview.insufficientData')}
                         </h3>
                         <p className="text-muted-foreground max-w-md mx-auto">
-                            통계를 생성하려면 최소 <span className="font-bold text-primary">5건</span>의 퇴직 면담이 필요합니다.
-                            현재: <span className="font-bold text-foreground">{stats?.totalInterviews ?? 0}건</span>
+                            {t('exitInterview.insufficientDataDesc', { min: 5, current: stats?.totalInterviews ?? 0 })}
                         </p>
                     </CardContent>
                 </Card>
@@ -134,7 +135,7 @@ export function ExitInterviewStatsClient({ user: _user }: { user: SessionUser })
                                     <div className="p-2 rounded-lg bg-primary/10">
                                         <Users className="w-5 h-5 text-primary" />
                                     </div>
-                                    <span className="text-sm text-muted-foreground">총 면담 건수</span>
+                                    <span className="text-sm text-muted-foreground">{t('totalInterviews')}</span>
                                 </div>
                                 <p className="text-3xl font-bold text-foreground">{stats.totalInterviews}</p>
                             </CardContent>
@@ -146,7 +147,7 @@ export function ExitInterviewStatsClient({ user: _user }: { user: SessionUser })
                                     <div className="p-2 rounded-lg bg-amber-500/100/10">
                                         <Star className="w-5 h-5 text-amber-500" />
                                     </div>
-                                    <span className="text-sm text-muted-foreground">평균 만족도</span>
+                                    <span className="text-sm text-muted-foreground">{t('avgSatisfaction')}</span>
                                 </div>
                                 <div className="flex items-baseline gap-2">
                                     <p className="text-3xl font-bold text-foreground">{stats.avgSatisfaction}</p>
@@ -172,13 +173,13 @@ export function ExitInterviewStatsClient({ user: _user }: { user: SessionUser })
                                     <div className="p-2 rounded-lg bg-tertiary-container/100/10">
                                         <ThumbsUp className="w-5 h-5 text-green-500" />
                                     </div>
-                                    <span className="text-sm text-muted-foreground">추천 의향</span>
+                                    <span className="text-sm text-muted-foreground">{t('recommendRate')}</span>
                                 </div>
                                 <p className="text-3xl font-bold text-foreground">
                                     {stats.wouldRecommend?.percentage ?? 0}%
                                 </p>
                                 <p className="text-xs text-muted-foreground mt-1">
-                                    예 {stats.wouldRecommend?.yes ?? 0} / 아니오 {stats.wouldRecommend?.no ?? 0}
+                                    {t('wouldRecommendYes')} {stats.wouldRecommend?.yes ?? 0} / {t('wouldRecommendNo')} {stats.wouldRecommend?.no ?? 0}
                                 </p>
                             </CardContent>
                         </Card>
@@ -189,7 +190,7 @@ export function ExitInterviewStatsClient({ user: _user }: { user: SessionUser })
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-foreground">
                                 <BarChart3 className="w-5 h-5 text-primary" />
-                                퇴직 사유 분석
+                                {t('reasonAnalysis')}
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -198,10 +199,10 @@ export function ExitInterviewStatsClient({ user: _user }: { user: SessionUser })
                                     <div key={item.reason} className="space-y-2">
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-medium text-foreground">
-                                                {REASON_LABELS[item.reason] ?? item.reason}
+                                                {REASON_LABEL_KEYS[item.reason] ? t(REASON_LABEL_KEYS[item.reason]) : item.reason}
                                             </span>
                                             <span className="text-sm text-muted-foreground">
-                                                {item.count}건 ({item.percentage}%)
+                                                {item.count} ({item.percentage}%)
                                             </span>
                                         </div>
                                         <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
@@ -227,7 +228,7 @@ export function ExitInterviewStatsClient({ user: _user }: { user: SessionUser })
                     <div className="flex items-center gap-2 px-4 py-3 bg-primary/5 rounded-lg border border-primary/20">
                         <ShieldAlert className="w-4 h-4 text-primary flex-shrink-0" />
                         <p className="text-xs text-muted-foreground">
-                            모든 통계는 익명화되어 표시됩니다. 개인 식별 정보는 포함되지 않으며, 5건 미만의 데이터는 통계로 생성되지 않습니다.
+                            {t('exitInterviewPrivacyFull')}
                         </p>
                     </div>
                 </div>

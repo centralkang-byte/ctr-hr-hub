@@ -1,269 +1,214 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Executive Home
-// 경영진 대시보드
+// CTR HR Hub — Executive Home (V3 2-Zone)
+// Phase 4 Batch 7: Action Zone + Monitor Zone 전면 재구축.
+// Real data only. AI insights / 단일 task / mock KPI는 Phase 6에서 도입.
 // ═══════════════════════════════════════════════════════════
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import {
-  Users,
-  TrendingDown,
-  BarChart3,
-  DollarSign,
+  TrendingUp,
   Building2,
-  FileText,
+  BarChart3,
+  Users,
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { AiGeneratedBadge } from '@/components/shared/AiGeneratedBadge'
-import { NudgeCards } from './NudgeCards'
-import { UnifiedTaskHub } from './UnifiedTaskHub'
+import { DashboardTaskList } from './DashboardTaskList'
+import { DashboardErrorBanner } from './DashboardErrorBanner'
+import { PlaceholderCard } from './PlaceholderCard'
+import { WidgetSkeleton } from '@/components/shared/WidgetSkeleton'
 import { apiClient } from '@/lib/api'
-import type { SessionUser } from '@/types'
+import { toast } from '@/hooks/use-toast'
+import { cn } from '@/lib/utils'
+import type { SessionUser, ExecSummary } from '@/types'
 
-// ─── Props ────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────
 
-interface ExecutiveHomeProps {
+interface Props {
   user: SessionUser
 }
 
-interface ExecSummary {
-  role: string
-  totalEmployees: number
-  newHires: number
-  terminations: number
-  turnoverRate: number
-  openPositions: number
-  pendingLeaves: number
+// ─── Helpers ──────────────────────────────────────────────
+
+function ActionKpiCard({
+  label,
+  value,
+  color = 'primary',
+}: {
+  label: string
+  value: string | number
+  color?: 'primary' | 'error' | 'alert' | 'warning-bright' | 'success'
+}) {
+  // D17/D18: text는 WCAG AA-safe, bg tint로 시각 강조
+  const textMap: Record<string, string> = {
+    primary: 'text-primary',
+    error: 'text-error',
+    alert: 'text-error',
+    'warning-bright': 'text-[#B45309]',
+    success: 'text-tertiary',
+  }
+  const bgMap: Record<string, string> = {
+    primary: 'bg-muted/50',
+    error: 'bg-muted/50',
+    alert: 'bg-alert-red/10',
+    'warning-bright': 'bg-warning-bright/15',
+    success: 'bg-muted/50',
+  }
+  return (
+    <div
+      aria-label={`${label}: ${value}`}
+      className={cn('flex flex-col justify-center rounded-lg p-4 text-center', bgMap[color])}
+    >
+      <p
+        className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground"
+        aria-hidden="true"
+      >
+        {label}
+      </p>
+      <p
+        className={cn(
+          'mt-1 font-display text-2xl font-extrabold tabular-nums',
+          textMap[color],
+        )}
+        aria-hidden="true"
+      >
+        {value}
+      </p>
+    </div>
+  )
 }
 
 // ─── Component ────────────────────────────────────────────
 
-export function ExecutiveHome({ user }: ExecutiveHomeProps) {
+export function ExecutiveHome({ user }: Props) {
+  const t = useTranslations('home')
   const [summary, setSummary] = useState<ExecSummary | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
-  useEffect(() => {
-    apiClient
-      .get<ExecSummary>('/api/v1/home/summary')
-      .then((res) => setSummary(res.data))
-      .catch(() => {})
+  const fetchSummary = useCallback(async () => {
+    setError(false)
+    setLoading(true)
+    try {
+      const res = await apiClient.get<ExecSummary>('/api/v1/home/summary')
+      setSummary(res.data)
+    } catch {
+      setError(true)
+      toast({ title: '로드 실패', variant: 'destructive' })
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
+  useEffect(() => {
+    void fetchSummary()
+  }, [fetchSummary])
+
   return (
-    <div className="space-y-8">
-      {/* Greeting */}
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">
-          안녕하세요, {user.name}님 👋
+    <div className="space-y-6">
+      {/* ── Greeting ── */}
+      <header>
+        <h1
+          id="dashboard-title"
+          className="text-3xl font-bold text-foreground"
+        >
+          {t('executive.actionTitle', { name: user.name })}
         </h1>
         <p className="mt-1 text-base text-muted-foreground">
-          그룹 전체 인사 현황 요약입니다.
+          {t('executive.greetingDesc')}
         </p>
-      </div>
+      </header>
 
-      {/* AI Nudge Cards (EXECUTIVE view) */}
-      <NudgeCards user={user} />
-
-      {/* 나의 할 일 */}
-      <UnifiedTaskHub user={user} />
-
-      {/* 핵심 KPI Cards — No-Line Rule, Display Typography */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {/* 전체 인원 */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground">전체 인원</p>
-                <p className="text-display-sm font-extrabold text-foreground">
-                  {summary?.totalEmployees?.toLocaleString() ?? '-'}
-                </p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                <Users className="h-6 w-6 text-primary" />
-              </div>
-            </div>
-            <p className="mt-2 text-xs text-emerald-600">
-              전월 대비 +12명 (1.0%)
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* 이직률 */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground">이직률</p>
-                <p className="text-display-sm font-extrabold text-foreground">
-                  {summary?.turnoverRate ?? '-'}%
-                </p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-                <TrendingDown className="h-6 w-6 text-destructive" />
-              </div>
-            </div>
-            <p className="mt-2 text-xs text-emerald-600">
-              전월 대비 -0.3%p
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* 성과 분포 */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground">성과 분포</p>
-                <p className="text-display-sm font-extrabold text-foreground">B+</p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-tertiary-container/20">
-                <BarChart3 className="h-6 w-6 text-tertiary" />
-              </div>
-            </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              전사 평균 등급
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* 인건비 비율 */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-medium text-muted-foreground">인건비 비율</p>
-                <p className="text-display-sm font-extrabold text-foreground">32.1%</p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10">
-                <DollarSign className="h-6 w-6 text-amber-600" />
-              </div>
-            </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              매출 대비 인건비
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Detail Grid */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* 회사별 현황 */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-foreground">
-              <Building2 className="mr-2 inline-block h-4 w-4" />
-              회사별 현황
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {[
-                { name: '씨티알모빌리티', count: 420, rate: '2.8%' },
-                { name: '씨티알정보통신', count: 310, rate: '3.5%' },
-                { name: '씨티알글로벌', count: 185, rate: '4.1%' },
-                { name: '씨티알이엔지', count: 152, rate: '2.2%' },
-                { name: '씨티알오토모티브', count: 180, rate: '3.9%' },
-              ].map((company) => (
-                <div
-                  key={company.name}
-                  className="flex items-center justify-between rounded-lg bg-muted/50 p-3"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
-                      {company.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {company.count}명
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-foreground">
-                      이직률
-                    </p>
-                    <p
-                      className={`text-xs font-bold ${
-                        parseFloat(company.rate) > 3.5
-                          ? 'text-destructive'
-                          : 'text-tertiary'
-                      }`}
-                    >
-                      {company.rate}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* AI 인사이트 + 최근 보고서 */}
-        <div className="space-y-4">
-          {/* AI 전략 인사이트 */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-foreground">
-                AI 전략 인사이트
-              </CardTitle>
-              <AiGeneratedBadge />
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="rounded-xl bg-destructive/5 p-3">
-                  <p className="text-sm font-medium text-destructive">
-                    핵심 인재 유출 위험
-                  </p>
-                  <p className="mt-1 text-xs text-destructive">
-                    SW개발 직군의 이직 위험도가 업계 평균 대비 높은 수준입니다.
-                    경쟁력 있는 보상 패키지 검토를 권장합니다.
-                  </p>
-                </div>
-                <div className="rounded-xl bg-tertiary-container/10 p-3">
-                  <p className="text-sm font-medium text-tertiary">
-                    조직 효율성 개선
-                  </p>
-                  <p className="mt-1 text-xs text-tertiary">
-                    1인당 생산성이 전년 동기 대비 8% 향상되었습니다.
-                    디지털 전환 투자 효과가 나타나고 있습니다.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 최근 보고서 */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-foreground">
-                <FileText className="mr-2 inline-block h-4 w-4" />
-                최근 보고서
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {[
-                  { title: '2026년 1분기 인사 현황 보고서', date: '2026-02-25' },
-                  { title: '성과 평가 결과 분석', date: '2026-02-20' },
-                  { title: '채용 파이프라인 월간 리포트', date: '2026-02-15' },
-                ].map((report) => (
-                  <div
-                    key={report.title}
-                    className="flex items-center justify-between"
-                  >
-                    <span className="text-sm text-foreground">
-                      {report.title}
-                    </span>
-                    <Badge variant="outline" className="text-xs">
-                      {report.date}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+      {/* ── ACTION ZONE ── */}
+      <section
+        aria-label={t('actionZone')}
+        className="rounded-2xl bg-card p-8 shadow-sm"
+      >
+        <div
+          className="mb-4 text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground"
+          aria-hidden="true"
+        >
+          {t('actionZone')}
         </div>
-      </div>
+
+        {error && (
+          <DashboardErrorBanner
+            message={t('loadError')}
+            onRetry={() => void fetchSummary()}
+          />
+        )}
+
+        <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr] lg:auto-rows-fr">
+          {/* 좌: 실 결재 task list — summary와 독립적으로 렌더 (별도 endpoint) */}
+          <DashboardTaskList user={user} />
+
+          {/* 우: 2x2 Action KPI — 실데이터만 */}
+          {loading ? (
+            <WidgetSkeleton height="h-48" lines={4} />
+          ) : (
+            <div
+              className="grid grid-cols-1 sm:grid-cols-2 gap-3 content-stretch h-full"
+              role="group"
+              aria-label={t('executive.actionKpiGroup')}
+            >
+              <ActionKpiCard
+                label={t('executive.actionKpi.orgSize')}
+                value={summary?.totalEmployees?.toLocaleString() ?? '-'}
+                color="primary"
+              />
+              <ActionKpiCard
+                label={t('executive.actionKpi.turnoverRate')}
+                value={
+                  summary?.turnoverRate != null
+                    ? `${summary.turnoverRate.toFixed(1)}%`
+                    : '-'
+                }
+                color="error"
+              />
+              <ActionKpiCard
+                label={t('hrAdmin.newHires')}
+                value={summary?.newHires ?? '-'}
+                color="success"
+              />
+              <ActionKpiCard
+                label={t('hrAdmin.openPositions')}
+                value={summary?.openPositions ?? '-'}
+                color="warning-bright"
+              />
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── MONITOR ZONE ── */}
+      <section aria-label={t('monitorZone')} className="space-y-6">
+        <div
+          className="text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground"
+          aria-hidden="true"
+        >
+          {t('monitorZone')}
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          <PlaceholderCard
+            title={t('executive.companyOverview')}
+            icon={Building2}
+          />
+          <PlaceholderCard
+            title={t('executive.laborCostTrend')}
+            icon={TrendingUp}
+          />
+          <PlaceholderCard
+            title={t('executive.quarterlySummary')}
+            icon={BarChart3}
+          />
+          <PlaceholderCard
+            title={t('executive.successionPipeline')}
+            icon={Users}
+          />
+        </div>
+      </section>
     </div>
   )
 }

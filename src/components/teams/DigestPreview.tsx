@@ -5,6 +5,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Eye, Loader2, Send } from 'lucide-react'
 
 import { apiClient } from '@/lib/api'
@@ -24,6 +25,7 @@ interface DigestData {
 }
 
 export function DigestPreview() {
+  const t = useTranslations('teams')
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const [sending, setSending] = useState(false)
@@ -40,7 +42,7 @@ export function DigestPreview() {
       setDigest(res.data.digest)
       setCard(res.data.card)
     } catch {
-      toast({ title: '오류', description: '다이제스트를 불러올 수 없습니다.', variant: 'destructive' })
+      toast({ title: t('ui.digestSettings.loadError'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -54,16 +56,15 @@ export function DigestPreview() {
         {},
       )
       if (res.data.success) {
-        toast({ title: '성공', description: '다이제스트가 전송되었습니다.' })
+        toast({ title: t('ui.digestSettings.sendSuccess') })
       } else {
         toast({
-          title: '실패',
-          description: res.data.message ?? '전송에 실패했습니다.',
+          title: res.data.message ?? t('ui.digestSettings.sendError'),
           variant: 'destructive',
         })
       }
     } catch {
-      toast({ title: '오류', description: '전송 중 오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: t('ui.digestSettings.sendFetchError'), variant: 'destructive' })
     } finally {
       setSending(false)
     }
@@ -73,7 +74,7 @@ export function DigestPreview() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center justify-between text-lg">
-          <span>다이제스트 미리보기</span>
+          <span>{t('ui.digestSettings.previewTitle')}</span>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={fetchPreview} disabled={loading}>
               {loading ? (
@@ -81,7 +82,7 @@ export function DigestPreview() {
               ) : (
                 <Eye className="mr-1 h-3 w-3" />
               )}
-              미리보기
+              {t('ui.digestSettings.previewBtn')}
             </Button>
             <Button size="sm" onClick={handleSend} disabled={sending || !card}>
               {sending ? (
@@ -89,7 +90,7 @@ export function DigestPreview() {
               ) : (
                 <Send className="mr-1 h-3 w-3" />
               )}
-              수동 전송
+              {t('ui.digestSettings.sendBtn')}
             </Button>
           </div>
         </CardTitle>
@@ -97,7 +98,7 @@ export function DigestPreview() {
       <CardContent>
         {!digest && !loading && (
           <p className="text-sm text-muted-foreground">
-            미리보기 버튼을 클릭하여 이번 주 다이제스트를 확인하세요.
+            {t('ui.digestSettings.previewEmpty')}
           </p>
         )}
 
@@ -106,11 +107,11 @@ export function DigestPreview() {
             {/* 통계 요약 */}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
               {[
-                { label: '신규입사', value: digest.newHires },
-                { label: '휴가중', value: digest.onLeave },
-                { label: '평가 대기', value: digest.pendingEvals },
-                { label: '이탈 위험', value: digest.attritionRisks },
-                { label: '승인 대기', value: digest.pendingApprovals },
+                { label: t('digest.newHires'), value: digest.newHires },
+                { label: t('digest.onLeave'), value: digest.onLeave },
+                { label: t('digest.pendingEvals'), value: digest.pendingEvals },
+                { label: t('digest.attritionRisk'), value: digest.attritionRisks },
+                { label: t('digest.pendingApprovals'), value: digest.pendingApprovals },
               ].map(({ label, value }) => (
                 <div
                   key={label}
@@ -125,7 +126,7 @@ export function DigestPreview() {
             {/* 주요 알림 */}
             {digest.highlights.length > 0 && (
               <div className="space-y-1">
-                <p className="text-sm font-medium text-foreground">주요 알림</p>
+                <p className="text-sm font-medium text-foreground">{t('ui.digestSettings.alerts')}</p>
                 <ul className="space-y-1">
                   {digest.highlights.map((h, i) => (
                     <li key={i} className="text-sm text-muted-foreground">
@@ -137,7 +138,7 @@ export function DigestPreview() {
             )}
 
             {/* Adaptive Card 미리보기 */}
-            {card && <AdaptiveCardPreview card={card} title="Teams 카드 미리보기" />}
+            {card && <AdaptiveCardPreview card={card} title={t('ui.digestSettings.cardPreviewTitle')} />}
           </div>
         )}
       </CardContent>

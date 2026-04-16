@@ -9,6 +9,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, forbidden, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { generateEvaluationDraft } from '@/lib/claude'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
@@ -41,7 +42,7 @@ export const GET = withPermission(
 
 // ─── POST /api/v1/performance/evaluations/[id]/ai-draft ──
 
-export const POST = withPermission(
+export const POST = withRateLimit(withPermission(
   async (
     _req: NextRequest,
     context: { params: Promise<Record<string, string>> },
@@ -184,4 +185,4 @@ export const POST = withPermission(
     return apiSuccess(saved)
   },
   perm(MODULE.PERFORMANCE, ACTION.UPDATE),
-)
+), RATE_LIMITS.AI)

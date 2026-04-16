@@ -206,7 +206,7 @@ export async function collectReportData(
   const regrettableExits = await prisma.performanceReview.count({
     where: {
       ...companyFilter,
-      finalGrade: { in: ['E', 'M_PLUS'] },
+      finalGrade: { in: ['O', 'E'] },
       employee: {
         assignments: {
           some: {

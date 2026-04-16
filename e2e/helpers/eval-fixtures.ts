@@ -50,26 +50,11 @@ interface ManagerEvalParams {
   status: 'DRAFT' | 'SUBMITTED'
 }
 
-// ─── API Response Helper ────────────────────────────────────
+// ─── API Response Helper (shared) ───────────────────────────
 
-async function parseApiResponse(response: { ok: () => boolean; status: () => number; json: () => Promise<unknown> }) {
-  const status = response.status()
-  const body = await response.json().catch(() => ({})) as Record<string, unknown>
-
-  // API error format: { error: { message: string, code?: string } }
-  const errorObj = body.error as { message?: string; code?: string } | string | undefined
-  const errorMessage = typeof errorObj === 'string'
-    ? errorObj
-    : errorObj?.message ?? undefined
-
-  return {
-    status,
-    ok: response.ok(),
-    data: body.data as Record<string, unknown> | undefined,
-    error: errorMessage,
-    body,
-  }
-}
+// Re-export from shared api-client (single source of truth)
+import { parseApiResponse } from './api-client'
+export { parseApiResponse }
 
 // ─── Cycle Management ───────────────────────────────────────
 

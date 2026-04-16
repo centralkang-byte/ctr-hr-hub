@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { apiClient } from '@/lib/api'
-import { STATUS_VARIANT } from '@/lib/styles/status'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import type { Permission } from '@/types'
 import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
@@ -34,12 +34,6 @@ interface Props {
   permissions: Permission[]
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  ACTIVE: STATUS_VARIANT.success,
-  EXPIRED: STATUS_VARIANT.error,
-  REVOKED: STATUS_VARIANT.neutral,
-  PENDING_RENEWAL: STATUS_VARIANT.warning,
-}
 
 export default function WorkPermitsClient({ employeeId, permissions }: Props) {
   const t = useTranslations('employee')
@@ -244,9 +238,9 @@ export default function WorkPermitsClient({ employeeId, permissions }: Props) {
                   )}
                 </TableCell>
                 <TableCell>
-                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[p.status] ?? STATUS_VARIANT.neutral}`}>
+                  <StatusBadge status={p.status}>
                     {STATUS_LABELS[p.status] ?? p.status}
-                  </span>
+                  </StatusBadge>
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">{p.notes ?? '-'}</TableCell>
               </TableRow>

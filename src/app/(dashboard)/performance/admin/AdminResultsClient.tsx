@@ -55,10 +55,10 @@ export default function AdminResultsClient({ user: _user }: { user: SessionUser 
         setCycles(cycleRes.data)
         setDepartments(deptRes.data)
         if (cycleRes.data.length > 0) setSelectedCycleId(cycleRes.data[0].id)
-      } catch (err) { toast({ title: '관리자 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+      } catch (err) { toast({ title: t('admin.resultsLoadFailed'), description: err instanceof Error ? err.message : t('messages.tryAgain'), variant: 'destructive' }) }
     }
     init()
-  }, [])
+  }, [t])
 
   const { confirm, dialogProps } = useConfirmDialog()
 
@@ -74,9 +74,9 @@ export default function AdminResultsClient({ user: _user }: { user: SessionUser 
       const res = await apiClient.getList<AdminResult>('/api/v1/performance/results/admin', params)
       setResults(res.data)
       setTotalPages(res.pagination.totalPages)
-    } catch (err) { toast({ title: '관리자 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('admin.resultsLoadFailed'), description: err instanceof Error ? err.message : t('messages.tryAgain'), variant: 'destructive' }) }
     finally { setLoading(false) }
-  }, [selectedCycleId, selectedDeptId, page])
+  }, [selectedCycleId, selectedDeptId, page, t])
 
   useEffect(() => { fetchResults() }, [fetchResults])
 
@@ -165,7 +165,7 @@ export default function AdminResultsClient({ user: _user }: { user: SessionUser 
             <tr className={TABLE_STYLES.header}>
               <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
               <th className={TABLE_STYLES.headerCell}>{t('department')}</th>
-              <th className={TABLE_STYLES.headerCell}>{t('grade')}</th>
+              <th className={TABLE_STYLES.headerCell}>{t('grade.title')}</th>
               <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kec9e90ea_kec84b1ea')}</th>
               <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_keba7a4eb_kec84b1ea')}</th>
               <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('kr_kecb59cec_kec84b1ea')}</th>

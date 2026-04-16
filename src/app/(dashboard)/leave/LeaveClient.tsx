@@ -38,6 +38,15 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+} from '@/components/ui/sheet'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
@@ -100,6 +109,8 @@ const statusBadgeClass: Record<string, string> = {
   CANCELLED: 'bg-muted text-muted-foreground',
 }
 
+const SINGLE_DAY_PRESETS = new Set(['AM', 'PM', 'QUARTER'])
+
 // ─── Component ──────────────────────────────────────────────
 
 export function LeaveClient({ user }: { user: SessionUser }) {
@@ -127,6 +138,8 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     REJECTED: t('rejected'),
     CANCELLED: t('cancelled'),
   }
+
+  const isMobile = useIsMobile()
 
   // ─── State ───
   const [balances, setBalances] = useState<LeaveBalanceLocal[]>([])
@@ -188,18 +201,13 @@ export function LeaveClient({ user }: { user: SessionUser }) {
   // Handle Preset Changes
   const handlePresetChange = (preset: 'FULL' | 'AM' | 'PM' | 'QUARTER' | 'CUSTOM') => {
     setPresetType(preset)
-    
-    // Auto-update values when switching presets (if dates are set)
-    if (preset !== 'CUSTOM') {
+
+    if (SINGLE_DAY_PRESETS.has(preset)) {
+      // AM/PM/QUARTER: force single day
       if (watchedStart) {
-        setValue('endDate', watchedStart) // Make end date match start date for single days
+        setValue('endDate', watchedStart)
       }
-      
       switch (preset) {
-        case 'FULL':
-          setValue('days', 1)
-          setValue('halfDayType', undefined)
-          break
         case 'AM':
           setValue('days', 0.5)
           setValue('halfDayType', 'AM')
@@ -210,11 +218,19 @@ export function LeaveClient({ user }: { user: SessionUser }) {
           break
         case 'QUARTER':
           setValue('days', 0.25)
-          setValue('halfDayType', undefined) // Quarter might not need AM/PM, adjust if needed
+          setValue('halfDayType', undefined)
           break
       }
+    } else if (preset === 'FULL') {
+      // FULL: allow multi-day, auto-calculate
+      setValue('halfDayType', undefined)
+      if (watchedStart && watchedEnd && watchedStart !== watchedEnd) {
+        setValue('days', calculateBusinessDays(watchedStart, watchedEnd))
+      } else {
+        setValue('days', 1)
+      }
     } else {
-      // Switched to Custom: recalculate business days if we have both dates
+      // CUSTOM: recalculate business days if we have both dates
       if (watchedStart && watchedEnd) {
         setValue('days', calculateBusinessDays(watchedStart, watchedEnd))
       }
@@ -224,11 +240,11 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
   useEffect(() => {
     if (watchedStart && watchedEnd) {
-      if (presetType === 'CUSTOM') {
+      if (presetType === 'CUSTOM' || presetType === 'FULL') {
         const calc = calculateBusinessDays(watchedStart, watchedEnd)
         setValue('days', calc)
       } else if (watchedStart !== watchedEnd) {
-        // Enforce start = end for presets if they somehow get out of sync
+        // Enforce start = end for single-day presets (AM/PM/QUARTER)
         setValue('endDate', watchedStart)
       }
     }
@@ -239,7 +255,17 @@ export function LeaveClient({ user }: { user: SessionUser }) {
   const getRemainingDays = (b: LeaveBalanceLocal) =>
     b.remaining ?? (b.entitled + b.carriedOver + b.adjusted - b.used - b.pending)
 
-  const selectedBalance = balances.find((b) => b.leaveTypeDef?.id === watchedPolicyId || b.policy?.id === watchedPolicyId) ?? null
+  // policy의 leaveType → leaveTypeDef.code 매핑으로 balance를 찾음
+  const LEAVE_TYPE_TO_CODE: Record<string, string> = {
+    ANNUAL: 'annual', SICK: 'sick', MATERNITY: 'maternity',
+    PATERNITY: 'paternity', BEREAVEMENT: 'bereavement',
+    SPECIAL: 'special', COMPENSATORY: 'compensatory',
+  }
+  const selectedPolicy = policies.find(p => p.id === watchedPolicyId)
+  const expectedCode = selectedPolicy ? LEAVE_TYPE_TO_CODE[selectedPolicy.leaveType] : null
+  const selectedBalance = expectedCode
+    ? balances.find((b) => b.leaveTypeDef?.code === expectedCode) ?? null
+    : null
   const selectedRemaining = selectedBalance
     ? getRemainingDays(selectedBalance)
     : null
@@ -271,10 +297,10 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         return acc
       }, [] as LeavePolicyLocal[])
 
-      // Filter out "특별휴가" as requested
+      // i18n: DB policy name matching — "특별휴가" is a DB value, not for translation
       const filteredPolicies = uniquePolicies.filter(p => !p.name.includes("특별휴가"))
 
-      // Sort: "연차" containing policies to the top
+      // i18n: DB policy name matching — sort annual-type policies to top
       const sortedPolicies = filteredPolicies.sort((a, b) => {
         const aIsAnnual = a.name.includes('연차')
         const bIsAnnual = b.name.includes('연차')
@@ -322,13 +348,19 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     if (!watchedPolicyId || policies.length === 0) return
     const selected = policies.find(p => p.id === watchedPolicyId)
     if (selected) {
+      // i18n: DB policy name matching — preset toggle only for annual leave
       if (!selected.name.includes('연차')) {
         setPresetType('CUSTOM')
       } else {
         // default back to FULL when an annual leave is selected
         setPresetType('FULL')
-        setValue('days', 1)
         setValue('halfDayType', undefined)
+        // Recalculate if dates already set for multi-day
+        if (watchedStart && watchedEnd && watchedStart !== watchedEnd) {
+          setValue('days', calculateBusinessDays(watchedStart, watchedEnd))
+        } else {
+          setValue('days', 1)
+        }
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -372,11 +404,11 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       }
       await apiClient.post('/api/v1/leave/requests', payload)
       setDialogOpen(false)
-      toast({ title: tc('submitted'), description: '담당자 승인 후 확정됩니다.' })
+      toast({ title: tc('submitted'), description: t('submit.pendingApproval') })
       void fetchBalances()
       void fetchRequests()
     } catch (err) {
-      const msg = err instanceof Error ? err.message : '휴가 신청 중 오류가 발생했습니다.'
+      const msg = err instanceof Error ? err.message : t('submit.error')
       toast({ title: tc('error'), description: msg, variant: 'destructive' })
     } finally {
       setSaving(false)
@@ -423,7 +455,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       key: 'status',
       header: te('status'),
       render: (row: LeaveRequestLocal) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${statusBadgeClass[row.status] ?? 'bg-muted text-muted-foreground'}`}>
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${statusBadgeClass[row.status] ?? 'bg-muted text-muted-foreground'}`}>
           {statusLabel[row.status] ?? row.status}
         </span>
       ),
@@ -479,16 +511,22 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       )}
       {balances?.length > 0 && (() => {
         // 카테고리별 그룹핑
-        const CATEGORY_ORDER = ['annual', 'health', 'family_event', 'maternity', 'military', 'other']
-        const CATEGORY_LABELS: Record<string, string> = {
-          annual: '연차', health: '보건/건강', family_event: '경조',
-          maternity: '모성보호', military: '병역', other: '기타',
+        const CATEGORY_ORDER = ['annual', 'sick', 'maternity', 'paternity', 'bereavement', 'special', 'compensatory', 'other']
+        const CATEGORY_LABEL_KEYS: Record<string, string> = {
+          annual: 'category.annual', sick: 'category.health', maternity: 'category.maternity',
+          paternity: 'category.paternity', bereavement: 'category.familyEvent', special: 'category.special',
+          compensatory: 'category.compensatory', other: 'category.other',
         }
         const groups: Record<string, LeaveBalanceLocal[]> = {}
         for (const b of balances) {
-          const cat = b.leaveTypeDef?.category ?? 'other'
-          if (!groups[cat]) groups[cat] = []
-          groups[cat].push(b)
+          const cat = b.leaveTypeDef?.code ?? 'other'
+          if (!CATEGORY_LABEL_KEYS[cat]) {
+            if (!groups['other']) groups['other'] = []
+            groups['other'].push(b)
+          } else {
+            if (!groups[cat]) groups[cat] = []
+            groups[cat].push(b)
+          }
         }
         const orderedGroups = CATEGORY_ORDER.filter(c => groups[c]?.length)
 
@@ -497,7 +535,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
             {orderedGroups.map(cat => (
               <div key={cat}>
                 <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
-                  {CATEGORY_LABELS[cat] ?? cat}
+                  {CATEGORY_LABEL_KEYS[cat] ? t(CATEGORY_LABEL_KEYS[cat]) : cat}
                 </p>
                 <div className="flex gap-4 overflow-x-auto pb-1">
                   {groups[cat].map((b) => {
@@ -571,17 +609,10 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         rowKey={(row) => (row as unknown as LeaveRequestLocal).id}
       />
 
-      {/* ─── Section 2: Leave Request Dialog ─── */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-[520px]">
-          <DialogHeader>
-            <DialogTitle>{t('request')}</DialogTitle>
-            <DialogDescription>
-              {t('requestDescription')}
-            </DialogDescription>
-          </DialogHeader>
-
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      {/* ─── Section 2: Leave Request Form ─── */}
+      {(() => {
+        const formContent = (
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
             {/* policyId */}
             <div className="space-y-2">
@@ -614,7 +645,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               <div className="rounded-lg border border-border bg-background px-4 py-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">
-                    현재 잔여:{' '}
+                    {t('balancePreview.currentRemaining')}{' '}
                     <strong className="text-foreground">{selectedRemaining}{t('fullDay')}</strong>
                   </span>
                   {requestedDaysNum > 0 && projectedRemaining !== null && (
@@ -627,27 +658,28 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                           : 'text-primary'
                       }`}
                     >
-                      신청: {requestedDaysNum}{t('fullDay')} | 잔여: {projectedRemaining}{t('fullDay')}
+                      {t('balancePreview.requestAmount', { amount: requestedDaysNum, unit: t('fullDay'), remaining: projectedRemaining })}
                     </span>
                   )}
                 </div>
                 {projectedRemaining !== null && projectedRemaining < 0 && (
-                  <p className="mt-1 text-xs text-red-500">잔여 휴가가 부족합니다.</p>
+                  <p className="mt-1 text-xs text-red-500">{t('balancePreview.insufficientWarning')}</p>
                 )}
               </div>
             )}
 
             {/* ─── Preset Toggle ─── */}
+            {/* i18n: DB policy name matching — preset toggle only for annual leave */}
             {policies.find(p => p.id === watchedPolicyId)?.name.includes('연차') && (
               <div className="space-y-2">
-                <Label>휴가 유형 선택</Label>
+                <Label>{t('balancePreview.selectType')}</Label>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { id: 'FULL', label: '연차' },
-                    { id: 'AM', label: '오전 반차' },
-                    { id: 'PM', label: '오후 반차' },
-                    { id: 'QUARTER', label: '반반차' },
-                    { id: 'CUSTOM', label: '직접 입력' },
+                    { id: 'FULL', label: t('preset.annual') },
+                    { id: 'AM', label: t('preset.halfDayAM') },
+                    { id: 'PM', label: t('preset.halfDayPM') },
+                    { id: 'QUARTER', label: t('preset.quarterDay') },
+                    { id: 'CUSTOM', label: t('preset.custom') },
                   ].map((preset) => (
                     <button
                       key={preset.id}
@@ -671,7 +703,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
             {/* startDate */}
             <div className="space-y-2">
-              <Label htmlFor="leave-start">{presetType === 'CUSTOM' ? t('startDate') : '휴가 일자'}</Label>
+              <Label htmlFor="leave-start">{presetType === 'CUSTOM' || presetType === 'FULL' ? t('startDate') : t('balancePreview.leaveDate')}</Label>
               <Controller
                 control={control}
                 name="startDate"
@@ -687,24 +719,24 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {field.value ? field.value : <span>{tc('selectPlaceholder') ?? '날짜 선택'}</span>}
+                        {field.value ? field.value : <span>{tc('selectPlaceholder')}</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0 z-[100]" align="start">
                       <Calendar
                         mode="single"
                         selected={field.value ? new Date(field.value) : undefined}
-                        onSelect={(date) => { 
+                        onSelect={(date) => {
                           if (date) {
                             const dateStr = format(date, "yyyy-MM-dd")
                             field.onChange(dateStr)
-                            if (presetType !== 'CUSTOM') {
+                            if (SINGLE_DAY_PRESETS.has(presetType)) {
                               setValue('endDate', dateStr)
                             }
                           } else {
                             field.onChange('')
                           }
-                          setStartDateOpen(false) 
+                          setStartDateOpen(false)
                         }}
                         initialFocus
                       />
@@ -717,8 +749,8 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               )}
             </div>
 
-            {/* endDate - ONLY SHOW IF CUSTOM */}
-            {presetType === 'CUSTOM' && (
+            {/* endDate - show for CUSTOM and FULL (multi-day) */}
+            {(presetType === 'CUSTOM' || presetType === 'FULL') && (
               <div className="space-y-2">
                 <Label htmlFor="leave-end">{t('endDate')}</Label>
                 <Controller
@@ -736,7 +768,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {field.value ? field.value : <span>{tc('selectPlaceholder') ?? '날짜 선택'}</span>}
+                          {field.value ? field.value : <span>{tc('selectPlaceholder')}</span>}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0 z-[100]" align="start">
@@ -756,8 +788,8 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               </div>
             )}
 
-            {/* days - ONLY SHOW IF CUSTOM */}
-            {presetType === 'CUSTOM' && (
+            {/* days - show for CUSTOM (editable) and FULL (read-only, auto-calculated) */}
+            {(presetType === 'CUSTOM' || presetType === 'FULL') && (
               <div className="space-y-2">
                 <Label htmlFor="leave-days">{t('days')}</Label>
               <Input
@@ -765,6 +797,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                 type="number"
                 step="0.25"
                 min="0.25"
+                readOnly={presetType === 'FULL'}
                 {...register('days')}
               />
               {errors.days && (
@@ -813,7 +846,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               )}
             </div>
 
-            <DialogFooter>
+            <div className="flex justify-end gap-2 pt-4">
               <Button
                 type="button"
                 variant="outline"
@@ -828,10 +861,32 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                 {saving && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
                 {t('request')}
               </Button>
-            </DialogFooter>
+            </div>
           </form>
-        </DialogContent>
-      </Dialog>
+        )
+
+        return isMobile ? (
+          <Sheet open={dialogOpen} onOpenChange={setDialogOpen}>
+            <SheetContent side="bottom" className="h-[85vh] overflow-y-auto rounded-t-2xl">
+              <SheetHeader>
+                <SheetTitle>{t('request')}</SheetTitle>
+                <SheetDescription>{t('requestDescription')}</SheetDescription>
+              </SheetHeader>
+              {formContent}
+            </SheetContent>
+          </Sheet>
+        ) : (
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogContent className="sm:max-w-[520px]">
+              <DialogHeader>
+                <DialogTitle>{t('request')}</DialogTitle>
+                <DialogDescription>{t('requestDescription')}</DialogDescription>
+              </DialogHeader>
+              {formContent}
+            </DialogContent>
+          </Dialog>
+        )
+      })()}
     </div>
   )
 }

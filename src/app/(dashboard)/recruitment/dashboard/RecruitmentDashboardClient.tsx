@@ -271,7 +271,7 @@ export function RecruitmentDashboardClient(_props: {
           fontSize: 14,
         }}
       >
-        {'데이터를 불러올 수 없습니다.'}
+        {t('dashboardLoadFailed')}
       </div>
     )
   }
@@ -279,25 +279,25 @@ export function RecruitmentDashboardClient(_props: {
   // KPI cards config (inside component to access t())
   const KPI_CARDS: { label: string; icon: LucideIcon; color: string; format: (kpis: DashboardKpis) => string }[] = [
     {
-      label: '진행중 공고',
+      label: t('kpiActivePostings'),
       icon: UserPlus,
       color: '#2196F3',
       format: (k) => String(k.activePostings),
     },
     {
-      label: '총 지원자',
+      label: t('kpiTotalApplicants'),
       icon: Users,
       color: 'hsl(var(--primary))',
       format: (k) => String(k.totalApplicants),
     },
     {
-      label: '평균 채용기간',
+      label: t('kpiAvgTimeToHire'),
       icon: Clock,
       color: '#FF9800',
       format: (k) => (k.avgTimeToHire != null ? t('avgTimeToHireDays', { days: k.avgTimeToHire }) : '-'),
     },
     {
-      label: '합격률',
+      label: t('kpiHireRate'),
       icon: Target,
       color: 'hsl(var(--primary))',
       format: (k) => t('hireRatePercent', { rate: k.hireRate }),
@@ -315,8 +315,8 @@ export function RecruitmentDashboardClient(_props: {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <PageHeader
-        title={'채용 대시보드'}
-        description={'채용 현황 및 통계'}
+        title={t('dashboardTitle')}
+        description={t('dashboardDescription')}
       />
 
       {/* KPI Cards */}
@@ -356,7 +356,7 @@ export function RecruitmentDashboardClient(_props: {
             letterSpacing: '-0.02em',
           }}
         >
-          {'채용 퍼널'}
+          {t('funnelTitle')}
         </h2>
         <div style={{ width: '100%', height: 360 }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -413,20 +413,20 @@ export function RecruitmentDashboardClient(_props: {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
             <Briefcase size={18} className="text-primary" />
             <h2 style={{ fontSize: 16, fontWeight: 700, color: 'hsl(var(--foreground))', letterSpacing: '-0.02em' }}>
-              {'공석 현황 (Position Vacancies)'}
+              {t('vacancySectionTitle')}
             </h2>
           </div>
 
           {/* 요약 뱃지 */}
           <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
             {[
-              { label: '전체 공석', value: vacancySummary.totalVacancies, bg: 'hsl(var(--muted))', color: 'hsl(var(--foreground))' },
-              { label: '채용 진행 중', value: vacancySummary.withActivePosting, bg: 'hsl(var(--primary) / 0.08)', color: 'hsl(var(--primary))' },
-              { label: '공고 없음', value: vacancySummary.withoutPosting, bg: '#FEF3C7', color: '#B45309' },
-              { label: '30일 내 충원', value: vacancySummary.recentlyFilled, bg: 'hsl(var(--primary) / 0.1)', color: 'hsl(var(--primary))' },
+              { labelKey: 'vacancyTotal' as const, value: vacancySummary.totalVacancies, bg: 'hsl(var(--muted))', color: 'hsl(var(--foreground))' },
+              { labelKey: 'vacancyWithPosting' as const, value: vacancySummary.withActivePosting, bg: 'hsl(var(--primary) / 0.08)', color: 'hsl(var(--primary))' },
+              { labelKey: 'vacancyWithoutPosting' as const, value: vacancySummary.withoutPosting, bg: '#FEF3C7', color: '#B45309' },
+              { labelKey: 'vacancyRecentlyFilled' as const, value: vacancySummary.recentlyFilled, bg: 'hsl(var(--primary) / 0.1)', color: 'hsl(var(--primary))' },
             ].map((item) => (
               <div
-                key={item.label}
+                key={item.labelKey}
                 style={{
                   backgroundColor: item.bg,
                   borderRadius: 10,
@@ -435,13 +435,13 @@ export function RecruitmentDashboardClient(_props: {
                 }}
               >
                 <div style={{ fontSize: 22, fontWeight: 700, color: item.color }}>{item.value}</div>
-                <div style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', marginTop: 2 }}>{item.label}</div>
+                <div style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', marginTop: 2 }}>{t(item.labelKey)}</div>
               </div>
             ))}
             {vacancySummary.avgFillDays !== null && (
               <div style={{ backgroundColor: 'hsl(var(--primary) / 0.05)', borderRadius: 10, padding: '12px 16px', minWidth: 110 }}>
-                <div style={{ fontSize: 22, fontWeight: 700, color: 'hsl(var(--primary))' }}>{vacancySummary.avgFillDays}일</div>
-                <div style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', marginTop: 2 }}>{'평균 채용 소요일'}</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: 'hsl(var(--primary))' }}>{t('vacancyAvgFillDaysValue', { days: vacancySummary.avgFillDays })}</div>
+                <div style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', marginTop: 2 }}>{t('vacancyAvgFillDays')}</div>
               </div>
             )}
           </div>
@@ -452,9 +452,14 @@ export function RecruitmentDashboardClient(_props: {
               <table className={TABLE_STYLES.table}>
                 <thead>
                   <tr className={TABLE_STYLES.header}>
-                    {['법인', '전체 공석', '채용 진행', '공고 없음'].map((h) => (
-                      <th key={h} className={h === '법인' ? TABLE_STYLES.headerCell : TABLE_STYLES.headerCellRight}>
-                        {h}
+                    {[
+                      { key: 'vacancyColCompany', align: 'left' },
+                      { key: 'vacancyColTotal', align: 'right' },
+                      { key: 'vacancyColActive', align: 'right' },
+                      { key: 'vacancyColNoPosting', align: 'right' },
+                    ].map((h) => (
+                      <th key={h.key} className={h.align === 'left' ? TABLE_STYLES.headerCell : TABLE_STYLES.headerCellRight}>
+                        {t(h.key)}
                       </th>
                     ))}
                   </tr>
@@ -494,15 +499,15 @@ export function RecruitmentDashboardClient(_props: {
             letterSpacing: '-0.02em',
           }}
         >
-          {'최근 공고'}
+          {t('recentPostingsTitle')}
         </h2>
         <div className={TABLE_STYLES.wrapper}>
           <table className={TABLE_STYLES.table}>
             <thead>
               <tr className={TABLE_STYLES.header}>
-                <th className={TABLE_STYLES.headerCell}>{'공고 제목'}</th>
-                <th className={TABLE_STYLES.headerCellRight}>{'지원자수'}</th>
-                <th className={TABLE_STYLES.headerCellRight}>{'게시일'}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('postingColTitle')}</th>
+                <th className={TABLE_STYLES.headerCellRight}>{t('postingColApplicants')}</th>
+                <th className={TABLE_STYLES.headerCellRight}>{t('postingColPublishedAt')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -512,7 +517,7 @@ export function RecruitmentDashboardClient(_props: {
                     colSpan={3}
                     className="px-4 py-12 text-center text-sm text-muted-foreground"
                   >
-                    {'최근 공고가 없습니다'}
+                    {t('recentPostingsEmpty')}
                   </td>
                 </tr>
               ) : (

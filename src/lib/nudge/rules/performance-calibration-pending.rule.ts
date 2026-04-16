@@ -58,6 +58,16 @@ export const performanceCalibrationPendingRule: NudgeRule = {
     return `${cycleName ?? '성과 주기'} — "${sessionName ?? '캘리브레이션 세션'}"이 ${daysOverdue}일째 진행 중입니다. 완료해 주세요.`
   },
 
+  getTitleKey(_item: OverdueItem): string {
+    return 'notifications.nudge.calibrationPending.title'
+  },
+  getBodyKey(_item: OverdueItem): string {
+    return 'notifications.nudge.calibrationPending.body'
+  },
+  getBodyParams(item: OverdueItem, daysOverdue: number): Record<string, string | number> {
+    return { cycleName: String(item.meta?.cycleName ?? ''), sessionName: String(item.meta?.sessionName ?? ''), daysOverdue }
+  },
+
   async findOverdueItems(
     companyId:  string,
     assigneeId: string,

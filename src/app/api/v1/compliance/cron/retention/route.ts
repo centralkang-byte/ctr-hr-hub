@@ -1,19 +1,19 @@
-// CRON: secured by CRON_SECRET header, not user session
+// CRON: secured by x-cron-secret header, not user session
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Data Retention Cron Job
 // Runs retention policies automatically
 // ═══════════════════════════════════════════════════════════
 
+import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { enforceRetention } from '@/lib/compliance/gdpr'
 import { apiSuccess, apiError } from '@/lib/api'
 import { unauthorized } from '@/lib/errors'
+import { verifyCronSecret } from '@/lib/cron-auth'
 
-export async function GET(req: Request) {
-  // Verify cron secret
-  const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return apiError(unauthorized())
+export async function GET(req: NextRequest) {
+  if (!verifyCronSecret(req)) {
+    return apiError(unauthorized('인증 실패'))
   }
 
   const policies = await prisma.dataRetentionPolicy.findMany({

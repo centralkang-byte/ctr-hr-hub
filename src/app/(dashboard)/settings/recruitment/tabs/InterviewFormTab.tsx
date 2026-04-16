@@ -1,6 +1,7 @@
 'use client'
 
 import { Save, RotateCcw, Loader2 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { InterviewFormSetting, InterviewFormCategoryEntry } from '@/types/process-settings'
@@ -42,14 +43,14 @@ export function InterviewFormTab({
           <p className="text-sm text-muted-foreground">{t('interview_ked8f89ea_keab8b0eb_ked95adeb_management')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
+          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
         )}
       </div>
       {settings.categories.map((cat) => (
         <div key={cat.category}>
           <h4 className="mb-2 text-sm font-semibold text-muted-foreground">{cat.category}</h4>
           <div className="space-y-1">{cat.items.map((item) => (
-            <div key={item} className="flex items-center gap-3 rounded-xl border border-border px-4 py-3 hover:bg-muted">
+            <div key={item} className="flex items-center gap-3 rounded-xl border border-border px-4 py-3 hover:bg-muted motion-safe:transition-all">
               <span className="text-sm text-foreground">{item}</span>
             </div>
           ))}</div>
@@ -61,7 +62,7 @@ export function InterviewFormTab({
           <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}{t('save')}
         </Button>
       </div>
     </div>

@@ -48,7 +48,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
   useEffect(() => {
     apiClient.getList<Company>('/api/v1/companies', { limit: '100' })
       .then((res) => setCompanies(res.data ?? []))
-      .catch((err: unknown) => { toast({ title: '데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) })
+      .catch((err: unknown) => { toast({ title: t('dataLoadFailed'), description: err instanceof Error ? err.message : t('dataLoadRetry'), variant: 'destructive' }) })
   }, [])
 
   // 부서 목록 (법인 선택 시)
@@ -59,7 +59,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
       limit: '200',
     })
       .then((res) => setDepartments(res.data ?? []))
-      .catch((err: unknown) => { toast({ title: '데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) })
+      .catch((err: unknown) => { toast({ title: t('dataLoadFailed'), description: err instanceof Error ? err.message : t('dataLoadRetry'), variant: 'destructive' }) })
   }, [form.companyId])
 
   // 공석 Position 목록
@@ -71,12 +71,12 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
       limit: '100',
     })
       .then((res) => setPositions(res.data ?? []))
-      .catch((err: unknown) => { toast({ title: '데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) })
+      .catch((err: unknown) => { toast({ title: t('dataLoadFailed'), description: err instanceof Error ? err.message : t('dataLoadRetry'), variant: 'destructive' }) })
   }, [form.companyId])
 
   const handleSave = async (submitForApproval: boolean) => {
     if (!form.companyId || !form.departmentId || !form.title || !form.justification) {
-      setError('필수 항목을 모두 입력해주세요.')
+      setError(t('requiredFieldsError'))
       return
     }
     setSaving(true)
@@ -158,7 +158,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
           <input
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
-            placeholder="예: 시니어 백엔드 개발자"
+            placeholder={t('jobTitlePlaceholder')}
             className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary placeholder:text-muted-foreground"
           />
         </div>
@@ -180,7 +180,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
             <input
               value={form.jobLevel}
               onChange={(e) => setForm({ ...form, jobLevel: e.target.value })}
-              placeholder="예: 과장"
+              placeholder={t('gradePlaceholder')}
               className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary placeholder:text-muted-foreground"
             />
           </div>
@@ -214,7 +214,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
                     className="text-primary"
                   />
                   <span className="text-sm">
-                    {u === 'urgent' ? '🔴 긴급' : u === 'normal' ? '🟡 보통' : '🟢 낮음'}
+                    {u === 'urgent' ? t('urgencyUrgent') : u === 'normal' ? t('urgencyNormal') : t('urgencyLow')}
                   </span>
                 </label>
               ))}
@@ -259,7 +259,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
             rows={4}
             value={form.justification}
             onChange={(e) => setForm({ ...form, justification: e.target.value })}
-            placeholder="채용이 필요한 사유를 상세히 작성해주세요. (예: 신규 프로젝트 인력 확충, 퇴직자 대체 충원 등)"
+            placeholder={t('justificationPlaceholder')}
             className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none placeholder:text-muted-foreground"
           />
         </div>
@@ -269,8 +269,8 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
           <p className="text-sm text-primary/90 font-medium mb-1">{t('kr_keab2b0ec_kec9e90eb_keca081ec')}</p>
           <p className="text-xs text-muted-foreground">
             {form.urgency === 'urgent'
-              ? '긴급: 팀장 → 부서장 → HR → 대표 (4단계)'
-              : '일반: 팀장 → HR (2단계)'}
+              ? t('approvalFlowUrgent')
+              : t('approvalFlowNormal')}
           </p>
         </div>
 

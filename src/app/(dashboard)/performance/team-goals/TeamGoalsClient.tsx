@@ -19,6 +19,7 @@ import {
   Target,
   Loader2,
 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 
@@ -122,7 +123,7 @@ export default function TeamGoalsClient({
           setSelectedCycleId(res.data[0].id)
         }
       } catch (err) {
-        toast({ title: '팀 목표 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        toast({ title: t('teamLoadFailed'), description: err instanceof Error ? err.message : t('messages.tryAgain'), variant: 'destructive' })
       }
     }
     fetchCycles()
@@ -131,15 +132,16 @@ export default function TeamGoalsClient({
   // ─── Fetch team goals ─────────────────────────────────
 
   const fetchTeamGoals = useCallback(async () => {
-    if (!selectedCycleId) return
+    if (!selectedCycleId) { setLoading(false); return }
     setLoading(true)
     try {
       const res = await apiClient.get<TeamMemberGoals[]>(
-        `/api/v1/performance/team-goals?cycleId=${selectedCycleId}`,
+        '/api/v1/performance/team-goals',
+        { cycleId: selectedCycleId },
       )
       setMembers(res.data)
     } catch (err) {
-      toast({ title: '팀 목표 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('teamLoadFailed'), description: err instanceof Error ? err.message : t('messages.tryAgain'), variant: 'destructive' })
       setMembers([])
     } finally {
       setLoading(false)
@@ -243,7 +245,7 @@ export default function TeamGoalsClient({
       {/* Empty state */}
       {!loading && members.length === 0 && (
         <div className="rounded-xl border border-dashed border-border bg-background py-20 text-center">
-          <Users className="mx-auto h-12 w-12 text-[#CCC]" />
+          <Users className="mx-auto h-12 w-12 text-border" />
           <p className="mt-4 text-muted-foreground">{t('noTeamMembersOrGoals')}</p>
         </div>
       )}
@@ -326,9 +328,9 @@ export default function TeamGoalsClient({
                     </div>
                   </div>
                   {pendingCount > 0 && (
-                    <span className="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                    <Badge variant="warning">
                       {t('pendingApprovalCount', { count: pendingCount })}
-                    </span>
+                    </Badge>
                   )}
                 </div>
               </button>

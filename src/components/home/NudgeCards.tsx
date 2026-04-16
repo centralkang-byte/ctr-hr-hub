@@ -14,6 +14,7 @@
 //   - MANAGER, HR_ADMIN, EXECUTIVE, SUPER_ADMIN 전용
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import {
   AlertTriangle,
@@ -105,6 +106,7 @@ const NUDGE_ROLES = new Set(['MANAGER', 'EXECUTIVE', 'HR_ADMIN', 'SUPER_ADMIN'])
 // ─── Component ────────────────────────────────────────────
 
 export function NudgeCards({ user }: NudgeCardsProps) {
+  const t = useTranslations('home')
   const [nudges,   setNudges]   = useState<NudgeNotification[]>([])
   const [loading,  setLoading]  = useState(true)
   const [expanded, setExpanded] = useState(false)
@@ -155,9 +157,9 @@ export function NudgeCards({ user }: NudgeCardsProps) {
       {/* Header */}
       <div className="mb-3 flex items-center gap-2">
         <AlertTriangle className="h-4 w-4 text-amber-500" />
-        <span className="text-sm font-semibold text-foreground">주의가 필요합니다</span>
+        <span className="text-sm font-semibold text-foreground">{t('nudge.attentionNeeded')}</span>
         <span className="ml-1 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">
-          {nudges.length}건
+          {t('nudge.countBadge', { count: nudges.length })}
         </span>
       </div>
 
@@ -177,7 +179,7 @@ export function NudgeCards({ user }: NudgeCardsProps) {
                 type="button"
                 className="absolute right-2 top-2 rounded p-0.5 text-muted-foreground hover:bg-black/5"
                 onClick={() => dismiss(nudge.id)}
-                aria-label="닫기"
+                aria-label={t('nudge.close')}
               >
                 <X className="h-3 w-3" />
               </button>
@@ -198,7 +200,7 @@ export function NudgeCards({ user }: NudgeCardsProps) {
                   href={href}
                   className="mt-2 inline-flex items-center text-[11px] font-medium text-primary hover:underline"
                 >
-                  조치하기 →
+                  {t('nudge.takeAction')}
                 </Link>
               )}
             </div>
@@ -213,7 +215,7 @@ export function NudgeCards({ user }: NudgeCardsProps) {
             className="flex min-w-[80px] flex-col items-center justify-center rounded-xl border border-dashed border-border px-3 py-4 text-xs text-muted-foreground hover:border-primary hover:text-primary"
           >
             <span className="text-base font-bold">+{overflow}</span>
-            <span>더 보기</span>
+            <span>{t('nudge.showMore')}</span>
           </button>
         )}
       </div>

@@ -7,6 +7,7 @@
 
 import { useState } from 'react'
 import { MapPin, Loader2, CheckCircle2, Clock } from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
 
 type PunchStatus = 'idle' | 'locating' | 'success' | 'error'
 
@@ -25,6 +26,8 @@ interface MobilePunchCardProps {
 }
 
 export function MobilePunchCard({ isClockedIn = false, onPunch }: MobilePunchCardProps) {
+  const t = useTranslations('attendance')
+  const locale = useLocale()
   const [status, setStatus] = useState<PunchStatus>('idle')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [lastResult, setLastResult] = useState<PunchResult | null>(null)
@@ -33,7 +36,7 @@ export function MobilePunchCard({ isClockedIn = false, onPunch }: MobilePunchCar
     if (status === 'locating') return
 
     if (!navigator.geolocation) {
-      setErrorMsg('이 기기는 위치 서비스를 지원하지 않습니다.')
+      setErrorMsg(t('geoNotSupported'))
       setStatus('error')
       return
     }
@@ -56,7 +59,7 @@ export function MobilePunchCard({ isClockedIn = false, onPunch }: MobilePunchCar
           setLastResult(result)
           setStatus('success')
         } catch {
-          setErrorMsg('출퇴근 기록 중 오류가 발생했습니다.')
+          setErrorMsg(t('punchError'))
           setStatus('error')
         }
 
@@ -65,11 +68,11 @@ export function MobilePunchCard({ isClockedIn = false, onPunch }: MobilePunchCar
       },
       (err) => {
         const messages: Record<number, string> = {
-          1: '위치 접근 권한이 거부되었습니다.',
-          2: '현재 위치를 확인할 수 없습니다.',
-          3: '위치 확인 시간이 초과되었습니다.',
+          1: t('geoPermissionDenied'),
+          2: t('geoUnavailable'),
+          3: t('geoTimeout'),
         }
-        setErrorMsg(messages[err.code] ?? '위치 정보를 가져오지 못했습니다.')
+        setErrorMsg(messages[err.code] ?? t('geoFailed'))
         setStatus('error')
         setTimeout(() => setStatus('idle'), 3000)
       },
@@ -78,14 +81,14 @@ export function MobilePunchCard({ isClockedIn = false, onPunch }: MobilePunchCar
   }
 
   const isClockingIn = !isClockedIn
-  const buttonLabel = isClockingIn ? '출근하기' : '퇴근하기'
+  const buttonLabel = isClockingIn ? t('clockInAction') : t('clockOutAction')
 
   return (
     <div className="flex flex-col items-center gap-6 py-8">
       {/* Timestamp display */}
       <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
         <Clock size={14} />
-        <span>{new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>
+        <span>{new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(new Date())}</span>
       </div>
 
       {/* One-touch punch button */}
@@ -114,7 +117,7 @@ export function MobilePunchCard({ isClockedIn = false, onPunch }: MobilePunchCar
           <MapPin size={32} strokeWidth={1.5} />
         )}
         <span className="text-base font-semibold">
-          {status === 'locating' ? '위치 확인 중...' : buttonLabel}
+          {status === 'locating' ? t('locating') : buttonLabel}
         </span>
       </button>
 
@@ -122,7 +125,7 @@ export function MobilePunchCard({ isClockedIn = false, onPunch }: MobilePunchCar
       {status === 'success' && lastResult && (
         <div className="text-center space-y-1">
           <p className="text-sm font-semibold text-primary">
-            {lastResult.type === 'IN' ? '출근 완료!' : '퇴근 완료!'}
+            {lastResult.type === 'IN' ? t('clockInComplete') : t('clockOutComplete')}
           </p>
           <p className="text-xs text-muted-foreground">
             GPS ({lastResult.lat.toFixed(4)}, {lastResult.lng.toFixed(4)})

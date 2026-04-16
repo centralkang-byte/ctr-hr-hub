@@ -10,7 +10,7 @@ import { useTranslations } from 'next-intl'
 interface MatrixCell { id?: string; gradeKey: string; comparatioBand: string; minPct: number | null; maxPct: number | null; recommendedPct: number | null }
 interface Props { companyId: string | null }
 
-const GRADE_LABELS: Record<string,string> = { E: '탁월', M_PLUS: '우수', M: '보통', B: '미흡' }
+const GRADE_LABELS: Record<string,string> = { O: '탁월', E: '우수', M: '보통', S: '미흡' }
 const BAND_LABELS: Record<string,string> = { LOW: '하위', MID: '중위', HIGH: '상위' }
 
 export function MeritMatrixTab({
@@ -31,7 +31,7 @@ export function MeritMatrixTab({
 
   if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
-  const grades = ['E', 'M_PLUS', 'M', 'B']
+  const grades = ['O', 'E', 'M', 'S']
   const bands = ['LOW', 'MID', 'HIGH']
   const getCell = (g: string, b: string) => matrix.find((c) => c.gradeKey === g && c.comparatioBand === b)
 

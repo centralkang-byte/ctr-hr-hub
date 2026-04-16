@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
-// Kinetic Atelier Design System — DESIGN.md 기준
-// Last updated: 2026-03-30 (Stitch 컨설팅 반영)
+// CTR HR Hub Design System — DESIGN.md 기준
+// Last updated: 2026-04-10 (Phase 4 Batch 1: Violet palette + Outfit font)
 // ═══════════════════════════════════════════════════════════════
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
@@ -11,6 +11,7 @@ const config: Config = {
 		"./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
 		"./src/components/**/*.{js,ts,jsx,tsx,mdx}",
 		"./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+		"./src/lib/styles/**/*.{js,ts}",
 	],
 	theme: {
 		extend: {
@@ -60,31 +61,37 @@ const config: Config = {
 					'6': 'hsl(var(--chart-6))',
 				},
 
-				// Kinetic Atelier 확장 토큰 (CSS variable 기반)
+				// V3 Dashboard 확장 토큰 (CSS variable 기반)
 				tertiary: {
 					DEFAULT: 'hsl(var(--tertiary))',
 					container: 'hsl(var(--tertiary-container))',
 				},
 				'on-tertiary-container': 'hsl(var(--on-tertiary-container))',
+				// Phase 4 Batch 7 — 목업 색감 충실도 (D17/D18)
+				// warning-bright: BG/icon/progress bar only (text는 ctr-warning #B45309 사용)
+				// alert-red: 동적 alert, urgent pill, border-left semantic only
+				'warning-bright': 'hsl(var(--warning-bright))',
+				'alert-red': 'hsl(var(--alert-red))',
+				'badge-accent': 'hsl(var(--badge-accent))',
 				'surface-container-low': 'hsl(var(--surface-container-low))',
 				'surface-container-high': 'hsl(var(--surface-container-high))',
 				'surface-container': 'hsl(var(--surface-container))',
 
 				// CTR 호환 토큰 (직접 hex — 레거시 페이지 호환용)
-				'ctr-primary': '#4a40e0',
-				'ctr-primary-dark': '#3d30d4',
-				'ctr-primary-light': '#9795ff',
-				'ctr-secondary': '#6249b2',
+				'ctr-primary': '#6366f1',
+				'ctr-primary-dark': '#4f46e5',
+				'ctr-primary-light': '#a5b4fc',
+				'ctr-secondary': '#64748b',
 				// Semantic
-				'ctr-success': '#006947',
+				'ctr-success': '#16a34a',
 				'ctr-warning': '#B45309',
-				'ctr-error': '#b41340',
-				'ctr-info': '#4a40e0',
+				'ctr-error': '#e11d48',
+				'ctr-info': '#6366f1',
 				// Semantic backgrounds
-				'ctr-success-bg': '#69f6b8',
+				'ctr-success-bg': '#86efac',
 				'ctr-warning-bg': '#FEF3C7',
-				'ctr-error-bg': '#f74b6d',
-				'ctr-info-bg': '#9795ff',
+				'ctr-error-bg': '#fb7185',
+				'ctr-info-bg': '#a5b4fc',
 				// Surface scale (Stitch Tonal Layering)
 				'ctr-surface': {
 					DEFAULT: '#f6f6f6',
@@ -110,7 +117,7 @@ const config: Config = {
 					'sans-serif',
 				],
 				display: [
-					'var(--font-inter)', 'Inter',
+					'var(--font-outfit)', 'Outfit',
 					'Pretendard Variable', 'Pretendard',
 					'-apple-system', 'BlinkMacSystemFont', 'system-ui',
 					'sans-serif',
@@ -135,8 +142,8 @@ const config: Config = {
 				'sm': '0 1px 2px rgba(15,23,42,0.06)',
 				'md': '0 4px 12px rgba(15,23,42,0.08)',
 				'lg': '0 12px 32px rgba(15,23,42,0.12)',
-				'primary-tinted': '0 20px 40px -5px rgba(74,64,224,0.06)',
-				'primary-glow': '0 8px 24px rgba(74,64,224,0.20)',
+				'primary-tinted': '0 20px 40px -5px rgba(99,102,241,0.06)',
+				'primary-glow': '0 8px 24px rgba(99,102,241,0.20)',
 			},
 		}
 	},

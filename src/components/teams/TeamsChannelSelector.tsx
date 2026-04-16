@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Loader2 } from 'lucide-react'
 
 import { apiClient } from '@/lib/api'
@@ -25,6 +26,7 @@ interface Props {
 }
 
 export function TeamsChannelSelector({ teamId, channelId, onSelect }: Props) {
+  const t = useTranslations('teams')
   const { toast } = useToast()
   const [loadingTeams, setLoadingTeams] = useState(false)
   const [loadingChannels, setLoadingChannels] = useState(false)
@@ -39,12 +41,12 @@ export function TeamsChannelSelector({ teamId, channelId, onSelect }: Props) {
         error?: string
       }>('/api/v1/teams/channels')
       if (res.data.error) {
-        toast({ title: '오류', description: res.data.error, variant: 'destructive' })
+        toast({ title: res.data.error, variant: 'destructive' })
       } else {
         setTeams(res.data.teams ?? [])
       }
     } catch {
-      toast({ title: '오류', description: '팀 목록을 불러올 수 없습니다.', variant: 'destructive' })
+      toast({ title: t('ui.channel.errorTeams'), variant: 'destructive' })
     } finally {
       setLoadingTeams(false)
     }
@@ -59,12 +61,12 @@ export function TeamsChannelSelector({ teamId, channelId, onSelect }: Props) {
           error?: string
         }>(`/api/v1/teams/channels?teamId=${selectedTeamId}`)
         if (res.data.error) {
-          toast({ title: '오류', description: res.data.error, variant: 'destructive' })
+          toast({ title: res.data.error, variant: 'destructive' })
         } else {
           setChannels(res.data.channels ?? [])
         }
       } catch {
-        toast({ title: '오류', description: '채널 목록을 불러올 수 없습니다.', variant: 'destructive' })
+        toast({ title: t('ui.channel.errorChannels'), variant: 'destructive' })
       } finally {
         setLoadingChannels(false)
       }
@@ -85,15 +87,15 @@ export function TeamsChannelSelector({ teamId, channelId, onSelect }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Teams 채널 선택</CardTitle>
+        <CardTitle className="text-lg">{t('ui.channel.title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Team 선택 */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium">팀 선택</Label>
+          <Label className="text-sm font-medium">{t('ui.channel.selectTeam')}</Label>
           {loadingTeams ? (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" /> 팀 목록 로딩 중...
+              <Loader2 className="h-4 w-4 animate-spin" /> {t('ui.channel.loadingTeams')}
             </div>
           ) : (
             <select
@@ -105,7 +107,7 @@ export function TeamsChannelSelector({ teamId, channelId, onSelect }: Props) {
               }}
               className="w-full rounded-lg border border-border px-3 py-2 text-sm"
             >
-              <option value="">팀을 선택하세요</option>
+              <option value="">{t('ui.channel.teamPlaceholder')}</option>
               {teams.map((team) => (
                 <option key={team.id} value={team.id}>
                   {team.displayName}
@@ -118,10 +120,10 @@ export function TeamsChannelSelector({ teamId, channelId, onSelect }: Props) {
         {/* Channel 선택 */}
         {teamId && (
           <div className="space-y-2">
-            <Label className="text-sm font-medium">채널 선택</Label>
+            <Label className="text-sm font-medium">{t('ui.channel.selectChannel')}</Label>
             {loadingChannels ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" /> 채널 목록 로딩 중...
+                <Loader2 className="h-4 w-4 animate-spin" /> {t('ui.channel.loadingChannels')}
               </div>
             ) : (
               <select
@@ -129,7 +131,7 @@ export function TeamsChannelSelector({ teamId, channelId, onSelect }: Props) {
                 onChange={(e) => onSelect(teamId, e.target.value || null)}
                 className="w-full rounded-lg border border-border px-3 py-2 text-sm"
               >
-                <option value="">채널을 선택하세요</option>
+                <option value="">{t('ui.channel.channelPlaceholder')}</option>
                 {channels.map((ch) => (
                   <option key={ch.id} value={ch.id}>
                     {ch.displayName}
@@ -141,7 +143,7 @@ export function TeamsChannelSelector({ teamId, channelId, onSelect }: Props) {
         )}
 
         <p className="text-xs text-muted-foreground">
-          선택한 채널로 주간 다이제스트와 알림이 전송됩니다.
+          {t('ui.channel.channelHelp')}
         </p>
       </CardContent>
     </Card>

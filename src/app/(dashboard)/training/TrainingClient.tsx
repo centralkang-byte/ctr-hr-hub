@@ -42,19 +42,19 @@ export default function TrainingClient({ user: _user }: { user: SessionUser }) {
           </TabsTrigger>
           <TabsTrigger value="mandatory">
             <ShieldCheck className="mr-1.5 h-4 w-4" />
-            법정 의무교육
+            {t('mandatory')}
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="courses" className="mt-0">
+        <TabsContent value="courses">
           <CoursesTab />
         </TabsContent>
 
-        <TabsContent value="enrollments" className="mt-0">
+        <TabsContent value="enrollments">
           <EnrollmentsTab />
         </TabsContent>
 
-        <TabsContent value="mandatory" className="mt-0">
+        <TabsContent value="mandatory">
           <MandatoryConfigTab />
         </TabsContent>
       </Tabs>

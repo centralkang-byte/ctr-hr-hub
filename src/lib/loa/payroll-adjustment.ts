@@ -5,6 +5,7 @@
 
 import type { Prisma } from '@/generated/prisma/client'
 import { prisma } from '@/lib/prisma'
+import type { PrismaTx } from '@/lib/prisma-rls'
 import { getWeekdaysInMonth, getWeekdaysBetween } from '@/lib/payroll/kr-tax'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -105,9 +106,12 @@ export async function getEmployeeMonthlySalary(employeeId: string, asOfDate: Dat
 /**
  * 단일 월 범위에 대해 PayrollAdjustment 생성 (Issue #3: 코드 중복 제거).
  * createCrossMonthLoaAdjustments / reconcileLoaAdjustments 양쪽에서 재사용.
+ *
+ * Phase 6A: PrismaLike union (Prisma.TransactionClient | typeof prisma) caused
+ * "Excessive stack depth" errors once the top-level client was extended via
+ * $extends. PrismaTx (Omit<typeof prisma, $connect|$disconnect|$on|$transaction|$use|$extends>)
+ * covers both call paths without the problematic union.
  */
-type PrismaLike = Prisma.TransactionClient | typeof prisma
-
 interface AdjustmentRangeOpts {
   companyId: string
   employeeId: string
@@ -124,7 +128,7 @@ interface AdjustmentRangeOpts {
 }
 
 async function createAdjustmentForRange(
-  client: PrismaLike,
+  client: PrismaTx,
   opts: AdjustmentRangeOpts,
 ): Promise<boolean> {
   const payrollRun = await client.payrollRun.findFirst({
@@ -276,7 +280,7 @@ type AdjWithRun = Prisma.PayrollAdjustmentGetPayload<{
  * - 마지막 월 일수 변경 → 금액 재계산
  */
 export async function reconcileLoaAdjustments(
-  tx: Prisma.TransactionClient,
+  tx: PrismaTx,
   record: LoaRecord,
   actualEndDate: Date,
   userId: string,
@@ -429,7 +433,7 @@ export async function reconcileLoaAdjustments(
  * diffAmount가 제공되면 해당 금액 사용, 없으면 전액 취소(부호 반전).
  */
 async function createCorrectionInNextRun(
-  tx: Prisma.TransactionClient,
+  tx: PrismaTx,
   originalAdj: AdjWithRun,
   record: LoaRecord,
   userId: string,

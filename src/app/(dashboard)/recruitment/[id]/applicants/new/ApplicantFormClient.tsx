@@ -8,7 +8,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { ChevronLeft, UserPlus, Save, Loader2, AlertTriangle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { useAutoSave } from '@/hooks/useAutoSave'
@@ -50,6 +50,7 @@ export default function ApplicantFormClient({
  user, postingId }: Props) {
 
   const t = useTranslations('recruitment')
+  const locale = useLocale()
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -106,8 +107,8 @@ export default function ApplicantFormClient({
       if (res.data.exists && res.data.candidate) {
         const { name, appliedJobTitle } = res.data.candidate
         const msg = appliedJobTitle
-          ? `이미 시스템에 존재하는 후보자입니다 (이름: ${name}, 최근 지원 공고: ${appliedJobTitle})`
-          : `이미 시스템에 존재하는 후보자입니다 (이름: ${name})`
+          ? t('duplicateCandidateWithJob', { name, jobTitle: appliedJobTitle })
+          : t('duplicateCandidateNoJob', { name })
         if (field === 'email') setEmailWarning(msg)
         else setPhoneWarning(msg)
       } else {
@@ -390,8 +391,8 @@ export default function ApplicantFormClient({
             </button>
             {savedAt && (
               <span className="text-xs text-muted-foreground">
-                초안 자동 저장됨{' '}
-                {savedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+                {t('draftAutoSaved')}{' '}
+                {savedAt.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
               </span>
             )}
           </div>

@@ -46,16 +46,6 @@ type Props = {
 
 const PERIODS = ['2025-H1', '2025-H2', '2026-H1', 'latest']
 
-// ── 레벨 라벨 ─────────────────────────────────────────────
-
-const LEVEL_LABELS: Record<number, { label: string; color: string }> = {
-  1: { label: '기초', color: '#EF4444' },
-  2: { label: '기본', color: '#F59E0B' },
-  3: { label: '우수', color: '#10B981' },
-  4: { label: '탁월', color: '#3B82F6' },
-  5: { label: '전문가', color: '#8B5CF6' },
-}
-
 // ── 갭 색상 ──────────────────────────────────────────────
 
 function getGapColor(gap: number | null) {
@@ -79,14 +69,15 @@ function getGapBg(gap: number | null) {
 function LevelSelector({
   value,
   onChange,
+  levelLabels,
 }: {
   value: number
   onChange: (v: number) => void
+  levelLabels: Record<number, string>
 }) {
   return (
     <div className="flex gap-1.5">
       {[1, 2, 3, 4, 5].map((l) => {
-        const info = LEVEL_LABELS[l]
         const selected = value === l
         return (
           <button
@@ -99,7 +90,7 @@ function LevelSelector({
             }`}
           >
             <span className="text-base font-bold">{l}</span>
-            <span>{info.label}</span>
+            <span>{levelLabels[l]}</span>
           </button>
         )
       })}
@@ -110,7 +101,16 @@ function LevelSelector({
 // ── 메인 컴포넌트 ─────────────────────────────────────────
 
 export default function MySkillsClient({user: _user, competencies, requirementMap, grade: _grade }: Props) {
+  const t = useTranslations('mySkills')
   const tCommon = useTranslations('common')
+
+  const LEVEL_LABELS: Record<number, string> = {
+    1: t('level.beginner'),
+    2: t('level.basic'),
+    3: t('level.proficient'),
+    4: t('level.advanced'),
+    5: t('level.expert'),
+  }
 
   const [period, setPeriod] = useState('2026-H1')
   const [assessments, setAssessments] = useState<Record<string, AssessmentItem>>({})
@@ -179,7 +179,7 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
         items,
       })
       setSavedAssessments({ ...assessments })
-      if (submit) toast({ title: '자기평가가 제출되었습니다.' })
+      if (submit) toast({ title: t('toastSubmitted') })
     } finally {
       setSaving(false)
     }
@@ -190,8 +190,8 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
     const a = assessments[c.id]
     return {
       name: c.name,
-      실제: a?.selfLevel ?? 0,
-      기대: requirementMap[c.id] ?? 0,
+      actual: a?.selfLevel ?? 0,
+      expected: requirementMap[c.id] ?? 0,
     }
   })
 
@@ -206,9 +206,9 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">나의 역량 자기평가</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            역량별 현재 수준을 자기평가하고, 개발 방향을 확인하세요.
+            {t('description')}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -226,7 +226,7 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
             className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background"
           >
             <Radar className="w-4 h-4" />
-            레이더 차트
+            {t('radarChart')}
           </button>
         </div>
       </div>
@@ -234,14 +234,14 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
       {/* 진행률 KPI */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-muted-foreground mb-1">평가 완료</p>
+          <p className="text-xs text-muted-foreground mb-1">{t('kpi.completed')}</p>
           <p className="text-3xl font-bold text-foreground">{completedCount}<span className="text-lg font-normal text-muted-foreground">/{totalCount}</span></p>
           <div className="mt-2 bg-muted rounded-full h-2">
             <div className="bg-primary h-2 rounded-full" style={{ width: `${completionRate}%` }} />
           </div>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-muted-foreground mb-1">미달 역량</p>
+          <p className="text-xs text-muted-foreground mb-1">{t('kpi.belowExpected')}</p>
           <p className="text-3xl font-bold text-red-500">
             {competencies.filter((c) => {
               const a = assessments[c.id]
@@ -249,10 +249,10 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
               return a && req && a.selfLevel < req
             }).length}
           </p>
-          <p className="text-xs text-red-500 mt-1">기대 수준 미달</p>
+          <p className="text-xs text-red-500 mt-1">{t('kpi.belowExpectedDesc')}</p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-muted-foreground mb-1">강점 역량</p>
+          <p className="text-xs text-muted-foreground mb-1">{t('kpi.strength')}</p>
           <p className="text-3xl font-bold text-emerald-600">
             {competencies.filter((c) => {
               const a = assessments[c.id]
@@ -260,30 +260,30 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
               return a && req && a.selfLevel >= req
             }).length}
           </p>
-          <p className="text-xs text-emerald-600 mt-1">기대 수준 이상</p>
+          <p className="text-xs text-emerald-600 mt-1">{t('kpi.meetsExpected')}</p>
         </div>
       </div>
 
       {/* 레이더 차트 */}
       {showRadar && (
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <h2 className="text-base font-semibold text-foreground mb-4">역량 레이더 차트</h2>
+          <h2 className="text-base font-semibold text-foreground mb-4">{t('radarChartTitle')}</h2>
           <ResponsiveContainer width="100%" height={320}>
             <RadarChart data={radarData}>
               <PolarGrid />
               <PolarAngleAxis dataKey="name" tick={{ fontSize: 12 }} />
               <PolarRadiusAxis domain={[0, 5]} tick={{ fontSize: 10 }} />
               <RechartsRadar
-                name="기대 수준"
-                dataKey="기대"
+                name={t('expected')}
+                dataKey="expected"
                 stroke="#E8E8E8"
                 fill="#E8E8E8"
                 fillOpacity={0.3}
                 strokeDasharray="4 4"
               />
               <RechartsRadar
-                name="자기평가"
-                dataKey="실제"
+                name={t('actual')}
+                dataKey="actual"
                 stroke={CHART_THEME.colors[3]}
                 fill={CHART_THEME.colors[3]}
                 fillOpacity={0.3}
@@ -321,7 +321,7 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
                     <BookOpen className="w-5 h-5 text-primary" />
                     <span className="font-semibold text-foreground">{category.name}</span>
                     <span className="text-xs text-muted-foreground">
-                      {items.filter((c) => assessments[c.id]).length}/{items.length} 완료
+                      {t('categoryProgress', { done: items.filter((c) => assessments[c.id]).length, total: items.length })}
                     </span>
                   </div>
                   {expanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
@@ -346,13 +346,13 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
                               </div>
                               {expectedLevel != null && (
                                 <span className="text-xs text-muted-foreground">
-                                  기대 수준: {expectedLevel} ({LEVEL_LABELS[expectedLevel]?.label ?? '-'})
+                                  {t('expectedLevel')}: {expectedLevel} ({LEVEL_LABELS[expectedLevel] ?? '-'})
                                 </span>
                               )}
                             </div>
                             {gap !== null && (
                               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${getGapBg(gap)} ${getGapColor(gap)}`}>
-                                {gap > 0 ? `갭 -${gap}` : gap === 0 ? '충족' : `+${Math.abs(gap)}`}
+                                {gap > 0 ? t('gapBehind', { gap }) : gap === 0 ? t('gapMet') : t('gapAhead', { gap: Math.abs(gap) })}
                               </span>
                             )}
                           </div>
@@ -360,6 +360,7 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
                           {/* 레벨 선택 */}
                           <LevelSelector
                             value={a?.selfLevel ?? 0}
+                            levelLabels={LEVEL_LABELS}
                             onChange={(v) =>
                               setAssessments((prev) => ({
                                 ...prev,
@@ -409,7 +410,7 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
           className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
-          임시저장
+          {t('saveDraft')}
         </button>
         <button
           onClick={() => handleSave(true)}
@@ -417,7 +418,7 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
           className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
         >
           <Send className="w-4 h-4" />
-          제출 ({completedCount}/{totalCount})
+          {t('submit')} ({completedCount}/{totalCount})
         </button>
       </div>
     </div>

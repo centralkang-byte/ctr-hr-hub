@@ -88,7 +88,7 @@ export default function RewardsListClient({ user }: Props) {
       setData(res.data)
       setTotal(res.pagination.total)
     } catch (err) {
-      toast({ title: '포상 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('loadFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }

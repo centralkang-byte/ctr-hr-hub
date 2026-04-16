@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 
@@ -46,10 +46,10 @@ interface AiNotesResult {
 }
 
 const MEETING_TYPE_LABELS: Record<string, string> = {
-  REGULAR: '정기',
-  AD_HOC: '수시',
-  GOAL_REVIEW: '목표 점검',
-  DEVELOPMENT: '역량 개발',
+  REGULAR: 'oneOnOne_typeRegular',
+  AD_HOC: 'oneOnOne_typeAdHoc',
+  GOAL_REVIEW: 'oneOnOne_typeGoalReview',
+  DEVELOPMENT: 'oneOnOne_typeDevelopment',
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -57,6 +57,7 @@ const MEETING_TYPE_LABELS: Record<string, string> = {
 export default function OneOnOneDetailClient({ user: _user, id }: { user: SessionUser; id: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
+  const locale = useLocale()
   const router = useRouter()
 
   const [meeting, setMeeting] = useState<MeetingDetail | null>(null)
@@ -85,9 +86,9 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
         if (pm.actionItems) prev.push(...pm.actionItems)
       }
       setPrevActions(prev)
-    } catch (err) { toast({ title: '미팅 정보 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('messages.meetingLoadFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
     setLoading(false)
-  }, [id])
+  }, [id, t])
 
   useEffect(() => { fetchMeeting() }, [fetchMeeting])
 
@@ -105,7 +106,7 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
       } else {
         fetchMeeting()
       }
-    } catch (err) { toast({ title: '미팅 저장 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('messages.meetingSaveFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
     setSaving(false)
   }
 
@@ -131,7 +132,7 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
       await apiClient.put(`/api/v1/cfr/one-on-ones/${id}`, {
         aiSummary: res.data.coaching_tip,
       })
-    } catch (err) { toast({ title: 'AI 분석 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('messages.aiAnalysisFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
     setAiLoading(false)
   }
 
@@ -169,10 +170,10 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
         <MessageSquare className="w-6 h-6 text-primary" />
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            1:1 기록 — {meeting.employee.name}
+            {t('oneOnOne_recordTitle')} — {meeting.employee.name}
           </h1>
           <p className="text-sm text-muted-foreground">
-            {new Date(meeting.scheduledAt).toLocaleDateString('ko-KR')} · {MEETING_TYPE_LABELS[meeting.meetingType] ?? meeting.meetingType}
+            {new Date(meeting.scheduledAt).toLocaleDateString(locale)} · {MEETING_TYPE_LABELS[meeting.meetingType] ? t(MEETING_TYPE_LABELS[meeting.meetingType]) : meeting.meetingType}
             {meeting.employee.department && ` · ${meeting.employee.department.name}`}
           </p>
         </div>
@@ -199,14 +200,14 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
                   {a.item}
                 </span>
                 {a.dueDate && (
-                  <span className="text-xs text-muted-foreground ml-auto">(기한: {a.dueDate})</span>
+                  <span className="text-xs text-muted-foreground ml-auto">({t('oneOnOne_dueDate')}: {a.dueDate})</span>
                 )}
                 <span className={`text-xs px-2 py-0.5 rounded-full ${
                   a.completed
                     ? 'bg-emerald-500/15 text-emerald-700'
                     : 'bg-amber-500/15 text-amber-700'
                 }`}>
-                  {a.completed ? '완료' : t('inProgress')}
+                  {a.completed ? t('complete') : t('inProgress')}
                 </span>
               </div>
             ))}
@@ -220,7 +221,7 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="미팅 내용을 기록하세요..."
+          placeholder={t('oneOnOne_notesPlaceholder')}
           rows={8}
           className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
         />
@@ -271,7 +272,7 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
                 type="text"
                 value={a.item}
                 onChange={(e) => updateActionItem(i, 'item', e.target.value)}
-                placeholder="액션 아이템 입력"
+                placeholder={t('oneOnOne_actionItemPlaceholder')}
                 className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
               />
               <select
@@ -321,7 +322,7 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
           className="flex items-center gap-2 px-4 py-2 border border-indigo-200 text-primary/90 rounded-lg text-sm font-medium hover:bg-indigo-500/15 disabled:opacity-50"
         >
           <Sparkles className="w-4 h-4" />
-          {aiLoading ? t('aiGenerating') : 'AI 요약 생성'}
+          {aiLoading ? t('aiGenerating') : t('oneOnOne_aiSummarize')}
         </button>
 
         <div className="flex items-center gap-3">

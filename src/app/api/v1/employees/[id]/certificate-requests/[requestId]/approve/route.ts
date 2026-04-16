@@ -14,6 +14,7 @@ import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { sendNotification } from '@/lib/notifications'
 import { generateEmploymentCertPdf, generateCareerCertPdf } from '@/lib/documents/certificate-pdf'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { getRequestLocale } from '@/lib/server-i18n'
 import type { SessionUser } from '@/types'
 
 export const POST = withPermission(
@@ -22,6 +23,7 @@ export const POST = withPermission(
     context: { params: Promise<Record<string, string>> },
     user: SessionUser,
   ) => {
+    const locale = await getRequestLocale()
     const { id, requestId } = await context.params
 
     // 증명서 요청 조회
@@ -93,10 +95,10 @@ export const POST = withPermission(
         startDate: a.effectiveDate.toISOString(),
         endDate: a.endDate ? a.endDate.toISOString() : null,
       }))
-      pdfBuffer = generateCareerCertPdf(empInfo, compInfo, history, certRequest.purpose ?? undefined)
+      pdfBuffer = await generateCareerCertPdf(locale, empInfo, compInfo, history, certRequest.purpose ?? undefined)
     } else {
       // 재직증명서 / 소득증명서 (동일 템플릿)
-      pdfBuffer = generateEmploymentCertPdf(empInfo, compInfo, certRequest.purpose ?? undefined)
+      pdfBuffer = await generateEmploymentCertPdf(locale, empInfo, compInfo, certRequest.purpose ?? undefined)
     }
 
     // S3 업로드 (서버 직접 업로드)

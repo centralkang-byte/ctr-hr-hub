@@ -13,6 +13,7 @@ import { letterSendSchema } from '@/lib/schemas/compensation'
 import { sendEmail } from '@/lib/email'
 import { generateCompensationLetterPdf, buildLetterData } from '@/lib/documents/compensation-letter-pdf'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { getRequestLocale } from '@/lib/server-i18n'
 import type { SessionUser } from '@/types'
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -104,7 +105,8 @@ export const POST = withPermission(
               { ...h, employee: letter.employee },
               primaryAssignment,
             )
-            const htmlBuffer = generateCompensationLetterPdf(pdfData)
+            const locale = await getRequestLocale()
+            const htmlBuffer = await generateCompensationLetterPdf(locale, pdfData)
 
             const result = await sendEmail({
               to: email,

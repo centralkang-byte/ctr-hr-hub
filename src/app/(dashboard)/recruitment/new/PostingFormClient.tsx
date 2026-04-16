@@ -85,7 +85,7 @@ export default function PostingFormClient({
       if (min !== null && max !== null && min > max) return false
       return true
     },
-    { message: t('validationSalaryRange') ?? '최소 급여가 최대 급여보다 클 수 없습니다.', path: ['salaryRangeMax'] },
+    { message: t('validationSalaryRange'), path: ['salaryRangeMax'] },
   )
 
   type FormData = z.input<typeof formSchema>
@@ -132,7 +132,7 @@ export default function PostingFormClient({
       setCategories(catRes.data)
       setEmployees(empRes.data)
     } catch (err) {
-      toast({ title: '데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('dataLoadFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' })
     }
   }, [])
 
@@ -169,7 +169,7 @@ export default function PostingFormClient({
       setValue('requirements', res.data.qualifications)
       setValue('preferred', res.data.preferred)
     } catch (err) {
-      toast({ title: 'AI 생성 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('aiGenerateFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' })
     } finally {
       setAiLoading(false)
     }
@@ -205,7 +205,7 @@ export default function PostingFormClient({
       const res = await apiClient.post<{ id: string }>('/api/v1/recruitment/postings', payload)
       router.push(`/recruitment/${res.data.id}`)
     } catch (err) {
-      toast({ title: '채용 공고 등록 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('postingRegisterFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' })
     } finally {
       setSubmitting(false)
     }

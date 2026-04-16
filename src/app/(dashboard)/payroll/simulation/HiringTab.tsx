@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Calculator, Loader2, Plus, Trash2, Save } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { apiClient } from '@/lib/api'
@@ -43,10 +43,7 @@ interface Props {
   onSaveScenario?: (payload: SaveScenarioPayload) => void
 }
 
-// ─── Formatters ─────────────────────────────────────────────
-
-const fmtN = (n: number) => n.toLocaleString('ko-KR')
-const fmtKRW = (n: number) => `₩${Math.abs(n).toLocaleString('ko-KR')}`
+import { fmtN, fmtKRW } from './formatters'
 
 // ─── Helpers ────────────────────────────────────────────────
 
@@ -60,9 +57,9 @@ function calcQuartile(band: BandData, anchor: SalaryAnchor): number {
   return map[anchor]
 }
 
-function bandHint(band: BandData | undefined, notRegisteredLabel: string): string {
+function bandHint(band: BandData | undefined, notRegisteredLabel: string, locale: string): string {
   if (!band) return notRegisteredLabel
-  return `₩${fmtN(band.min)}~₩${fmtN(band.max)} (Q1: ₩${fmtN(band.q1)})`
+  return `₩${fmtN(band.min, locale)}~₩${fmtN(band.max, locale)} (Q1: ₩${fmtN(band.q1, locale)})`
 }
 
 // ─── KPI Card ───────────────────────────────────────────────
@@ -84,6 +81,7 @@ let rowKeyCounter = 0
 export default function HiringTab({ companies, onSaveScenario }: Props) {
   const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
 
   const [selectedCompanyId, setSelectedCompanyId] = useState(companies[0]?.id ?? '')
   const [grades, setGrades] = useState<GradeInfo[]>([])
@@ -314,7 +312,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                         />
                       </td>
                       <td className={cn(TABLE_STYLES.cell, 'text-xs text-muted-foreground')}>
-                        {bandHint(bandMap[h.gradeCode], t('simHiringBandNotRegistered'))}
+                        {bandHint(bandMap[h.gradeCode], t('simHiringBandNotRegistered'), locale)}
                       </td>
                       <td className={TABLE_STYLES.cell}>
                         <button onClick={() => removeHire(h.key)} className="text-muted-foreground hover:text-red-500">
@@ -383,22 +381,22 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <KPICard
               label={t('simHiringKpiCurrentCost')}
-              value={fmtKRW(summary.currentMonthlyGross)}
+              value={fmtKRW(summary.currentMonthlyGross, locale)}
               sub={t('simPersonUnit', { count: summary.currentHeadcount })}
             />
             <KPICard
               label={t('simHiringKpiNewCost')}
-              value={fmtKRW(summary.newHireMonthlyGross)}
+              value={fmtKRW(summary.newHireMonthlyGross, locale)}
               sub={t('simPersonUnit', { count: summary.newHireCount })}
             />
             <KPICard
               label={t('simHiringKpiTotalCost')}
-              value={fmtKRW(summary.projectedMonthlyGross)}
+              value={fmtKRW(summary.projectedMonthlyGross, locale)}
               sub={t('simPersonUnit', { count: summary.currentHeadcount + summary.newHireCount })}
             />
             <KPICard
               label={t('simHiringKpiAnnualAdd')}
-              value={fmtKRW(summary.annualAdditionalCost)}
+              value={fmtKRW(summary.annualAdditionalCost, locale)}
               sub={t('simHiringKpiAnnualAddSub')}
             />
           </div>
@@ -443,10 +441,10 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                       <td className={cn(TABLE_STYLES.cell, 'font-mono font-medium')}>{g.grade}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums')}>{t('simPersonUnit', { count: g.headcount })}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-center text-xs text-muted-foreground')}>{g.salaryAnchor}</td>
-                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(g.grossPerPerson)}</td>
-                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-red-500')}>{fmtKRW(g.deductionsPerPerson)}</td>
-                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(g.netPerPerson)}</td>
-                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono font-semibold')}>{fmtKRW(g.totalMonthlyGross)}</td>
+                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(g.grossPerPerson, locale)}</td>
+                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-red-500')}>{fmtKRW(g.deductionsPerPerson, locale)}</td>
+                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(g.netPerPerson, locale)}</td>
+                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono font-semibold')}>{fmtKRW(g.totalMonthlyGross, locale)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -471,8 +469,8 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                     {summary.recruitmentCosts.map((c, i) => (
                       <tr key={i} className={TABLE_STYLES.row}>
                         <td className={TABLE_STYLES.cell}>{c.costType}</td>
-                        <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(c.avgAmount)}</td>
-                        <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono font-semibold')}>{fmtKRW(c.totalForHires)}</td>
+                        <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(c.avgAmount, locale)}</td>
+                        <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono font-semibold')}>{fmtKRW(c.totalForHires, locale)}</td>
                       </tr>
                     ))}
                   </tbody>

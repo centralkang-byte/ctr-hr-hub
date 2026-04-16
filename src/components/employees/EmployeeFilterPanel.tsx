@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { SlidersHorizontal, X, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -55,6 +56,8 @@ export function EmployeeFilterPanel({
   exportLoading = false,
   isHrAdmin = false,
 }: EmployeeFilterPanelProps) {
+  const t = useTranslations('employee')
+
   const [expanded, setExpanded] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [companies, setCompanies] = useState<CompanyOption[]>([])
@@ -93,14 +96,14 @@ export function EmployeeFilterPanel({
   }
 
   const chips: Array<{ key: keyof FilterValues; label: string }> = []
-  if (filters.companyId) chips.push({ key: 'companyId', label: `법인: ${companies.find((c) => c.id === filters.companyId)?.name ?? filters.companyId}` })
-  if (filters.departmentId) chips.push({ key: 'departmentId', label: `부서: ${departments.find((d) => d.id === filters.departmentId)?.name ?? filters.departmentId}` })
-  if (filters.jobGradeId) chips.push({ key: 'jobGradeId', label: `직급: ${jobGrades.find((g) => g.id === filters.jobGradeId)?.name ?? filters.jobGradeId}` })
-  if (filters.status) chips.push({ key: 'status', label: `상태: ${filters.status}` })
-  if (filters.employmentType) chips.push({ key: 'employmentType', label: `고용: ${filters.employmentType}` })
-  if (filters.contractType) chips.push({ key: 'contractType', label: `계약: ${filters.contractType}` })
-  if (filters.hireDateFrom) chips.push({ key: 'hireDateFrom', label: `입사일↑: ${filters.hireDateFrom}` })
-  if (filters.hireDateTo) chips.push({ key: 'hireDateTo', label: `입사일↓: ${filters.hireDateTo}` })
+  if (filters.companyId) chips.push({ key: 'companyId', label: t('filterChipCompany', { name: companies.find((c) => c.id === filters.companyId)?.name ?? filters.companyId }) })
+  if (filters.departmentId) chips.push({ key: 'departmentId', label: t('filterChipDepartment', { name: departments.find((d) => d.id === filters.departmentId)?.name ?? filters.departmentId }) })
+  if (filters.jobGradeId) chips.push({ key: 'jobGradeId', label: t('filterChipGrade', { name: jobGrades.find((g) => g.id === filters.jobGradeId)?.name ?? filters.jobGradeId }) })
+  if (filters.status) chips.push({ key: 'status', label: t('filterChipStatus', { name: filters.status }) })
+  if (filters.employmentType) chips.push({ key: 'employmentType', label: t('filterChipEmployment', { name: filters.employmentType }) })
+  if (filters.contractType) chips.push({ key: 'contractType', label: t('filterChipContract', { name: filters.contractType }) })
+  if (filters.hireDateFrom) chips.push({ key: 'hireDateFrom', label: t('filterChipHireDateStart', { date: filters.hireDateFrom }) })
+  if (filters.hireDateTo) chips.push({ key: 'hireDateTo', label: t('filterChipHireDateEnd', { date: filters.hireDateTo }) })
 
   const hasFilters = chips.length > 0
 
@@ -108,68 +111,68 @@ export function EmployeeFilterPanel({
   const filterForm = (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-4">
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">법인</Label>
+            <Label className="text-xs text-muted-foreground">{t('filterCompany')}</Label>
             <Select value={filters.companyId ?? '__ALL__'} onValueChange={(v) => set('companyId', v === '__ALL__' ? undefined : v)}>
-              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={'전체'} /></SelectTrigger>
+              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={t('filterAll')} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="__ALL__">전체</SelectItem>
+                <SelectItem value="__ALL__">{t('filterAll')}</SelectItem>
                 {companies.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">부서</Label>
+            <Label className="text-xs text-muted-foreground">{t('filterDepartment')}</Label>
             <Select value={filters.departmentId ?? '__ALL__'} onValueChange={(v) => set('departmentId', v === '__ALL__' ? undefined : v)}>
-              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={'전체'} /></SelectTrigger>
+              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={t('filterAll')} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="__ALL__">전체</SelectItem>
+                <SelectItem value="__ALL__">{t('filterAll')}</SelectItem>
                 {filteredDepts.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">직급</Label>
+            <Label className="text-xs text-muted-foreground">{t('filterGrade')}</Label>
             <Select value={filters.jobGradeId ?? '__ALL__'} onValueChange={(v) => set('jobGradeId', v === '__ALL__' ? undefined : v)}>
-              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={'전체'} /></SelectTrigger>
+              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={t('filterAll')} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="__ALL__">전체</SelectItem>
+                <SelectItem value="__ALL__">{t('filterAll')}</SelectItem>
                 {jobGrades.map((g) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">재직상태</Label>
+            <Label className="text-xs text-muted-foreground">{t('filterStatusLabel')}</Label>
             <Select value={filters.status ?? '__ALL__'} onValueChange={(v) => set('status', v === '__ALL__' ? undefined : v)}>
-              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={'전체'} /></SelectTrigger>
+              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={t('filterAll')} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="__ALL__">전체</SelectItem>
-                <SelectItem value="ACTIVE">재직</SelectItem>
-                <SelectItem value="ON_LEAVE">휴직</SelectItem>
-                <SelectItem value="RESIGNED">퇴직</SelectItem>
-                <SelectItem value="TERMINATED">해고</SelectItem>
+                <SelectItem value="__ALL__">{t('filterAll')}</SelectItem>
+                <SelectItem value="ACTIVE">{t('filterStatusActive')}</SelectItem>
+                <SelectItem value="ON_LEAVE">{t('filterStatusOnLeave')}</SelectItem>
+                <SelectItem value="RESIGNED">{t('filterStatusResigned')}</SelectItem>
+                <SelectItem value="TERMINATED">{t('filterStatusTerminated')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">고용형태</Label>
+            <Label className="text-xs text-muted-foreground">{t('filterEmploymentType')}</Label>
             <Select value={filters.employmentType ?? '__ALL__'} onValueChange={(v) => set('employmentType', v === '__ALL__' ? undefined : v)}>
-              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={'전체'} /></SelectTrigger>
+              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder={t('filterAll')} /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="__ALL__">전체</SelectItem>
-                <SelectItem value="FULL_TIME">정규직</SelectItem>
-                <SelectItem value="CONTRACT">계약직</SelectItem>
-                <SelectItem value="INTERN">인턴</SelectItem>
-                <SelectItem value="DISPATCH">파견</SelectItem>
+                <SelectItem value="__ALL__">{t('filterAll')}</SelectItem>
+                <SelectItem value="FULL_TIME">{t('filterFullTime')}</SelectItem>
+                <SelectItem value="CONTRACT">{t('filterContract')}</SelectItem>
+                <SelectItem value="INTERN">{t('filterIntern')}</SelectItem>
+                <SelectItem value="DISPATCH">{t('filterDispatch')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">입사일 (시작)</Label>
+            <Label className="text-xs text-muted-foreground">{t('filterHireDateStart')}</Label>
             <Input
               type="date"
               value={filters.hireDateFrom ?? ''}
@@ -179,7 +182,7 @@ export function EmployeeFilterPanel({
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">입사일 (종료)</Label>
+            <Label className="text-xs text-muted-foreground">{t('filterHireDateEnd')}</Label>
             <Input
               type="date"
               value={filters.hireDateTo ?? ''}
@@ -199,7 +202,7 @@ export function EmployeeFilterPanel({
           className="hidden md:flex items-center gap-2 text-sm font-medium text-foreground hover:text-foreground"
         >
           <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-          고급 검색 필터
+          {t('filterAdvanced')}
           {hasFilters && (
             <span className="rounded-full bg-primary text-white text-xs px-1.5 py-0.5">
               {chips.length}
@@ -212,7 +215,7 @@ export function EmployeeFilterPanel({
           <SheetTrigger asChild>
             <button className="flex md:hidden items-center gap-2 text-sm font-medium text-foreground hover:text-foreground">
               <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-              필터
+              {t('filterButton')}
               {hasFilters && (
                 <span className="rounded-full bg-primary text-white text-xs px-1.5 py-0.5">
                   {chips.length}
@@ -222,7 +225,7 @@ export function EmployeeFilterPanel({
           </SheetTrigger>
           <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
             <SheetHeader>
-              <SheetTitle>고급 검색 필터</SheetTitle>
+              <SheetTitle>{t('filterAdvanced')}</SheetTitle>
             </SheetHeader>
             <div className="py-4 space-y-4">
               {filterForm}
@@ -232,7 +235,7 @@ export function EmployeeFilterPanel({
                   className="flex-1"
                   onClick={() => setMobileOpen(false)}
                 >
-                  적용
+                  {t('filterApply')}
                 </Button>
                 {hasFilters && (
                   <Button
@@ -240,7 +243,7 @@ export function EmployeeFilterPanel({
                     size="sm"
                     onClick={() => { onFilterChange({}); setMobileOpen(false) }}
                   >
-                    초기화
+                    {t('filterReset')}
                   </Button>
                 )}
               </div>
@@ -256,7 +259,7 @@ export function EmployeeFilterPanel({
               onClick={() => onFilterChange({})}
               className="hidden md:flex h-7 text-xs text-muted-foreground hover:text-foreground"
             >
-              필터 초기화
+              {t('filterResetAll')}
             </Button>
           )}
           {isHrAdmin && (
@@ -268,8 +271,8 @@ export function EmployeeFilterPanel({
               className="h-7 gap-1.5 text-xs border-border"
             >
               <Download className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{exportLoading ? '다운로드 중...' : '엑셀 다운로드'}</span>
-              <span className="sm:hidden">{exportLoading ? '...' : '엑셀'}</span>
+              <span className="hidden sm:inline">{exportLoading ? t('filterExporting') : t('filterExport')}</span>
+              <span className="sm:hidden">{exportLoading ? '...' : t('filterExportShort')}</span>
             </Button>
           )}
         </div>

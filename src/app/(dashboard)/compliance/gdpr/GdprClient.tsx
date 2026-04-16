@@ -1,6 +1,5 @@
 'use client'
 
-
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Shield } from 'lucide-react'
@@ -12,9 +11,50 @@ import type { SessionUser } from '@/types'
 
 type TabKey = 'consents' | 'requests' | 'retention' | 'dpia'
 
-export default function GdprClient({ user: _user }: { user: SessionUser }) {
+const VALID_TABS = new Set<TabKey>(['consents', 'requests', 'retention', 'dpia'])
+
+function isValidTab(value: string | undefined | null): value is TabKey {
+  return !!value && VALID_TABS.has(value as TabKey)
+}
+
+interface Props {
+  user: SessionUser
+  /** Controlled mode: parent는 activeTab + onTabChange를 세트로 전달 (Hub URL sync) */
+  activeTab?: string
+  onTabChange?: (tab: string) => void
+  /** Uncontrolled mode: 초기 탭만 지정 (standalone 사용 시) */
+  defaultTab?: string
+}
+
+export default function GdprClient({
+  user: _user,
+  activeTab: controlledTab,
+  onTabChange,
+  defaultTab,
+}: Props) {
   const t = useTranslations('compliance')
-  const [activeTab, setActiveTab] = useState<TabKey>('consents')
+
+  // Hybrid controlled/uncontrolled 패턴
+  const isControlled = controlledTab !== undefined
+  const initialLocal: TabKey = isValidTab(defaultTab) ? defaultTab : 'consents'
+  const [localTab, setLocalTab] = useState<TabKey>(initialLocal)
+
+  // 실제 렌더링 탭: controlled면 prop, uncontrolled면 local state
+  // controlled mode에서 invalid 값 오면 'consents' fallback
+  const currentTab: TabKey =
+    isControlled
+      ? (isValidTab(controlledTab) ? controlledTab : 'consents')
+      : localTab
+
+  const handleTabChange = (tab: TabKey) => {
+    if (isControlled) {
+      // Controlled: parent가 URL/state 관리
+      onTabChange?.(tab)
+    } else {
+      // Uncontrolled: local state 관리
+      setLocalTab(tab)
+    }
+  }
 
   const tabs: { key: TabKey; label: string }[] = [
     { key: 'consents', label: t('gdpr.consents') },
@@ -41,9 +81,9 @@ export default function GdprClient({ user: _user }: { user: SessionUser }) {
         {tabs.map((tab) => (
           <button
             key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
+            onClick={() => handleTabChange(tab.key)}
             className={
-              activeTab === tab.key
+              currentTab === tab.key
                 ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-primary text-primary'
                 : 'px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground border-b-2 border-transparent'
             }
@@ -55,10 +95,10 @@ export default function GdprClient({ user: _user }: { user: SessionUser }) {
 
       {/* Tab Content */}
       <div>
-        {activeTab === 'consents' && <ConsentManagementTab />}
-        {activeTab === 'requests' && <DataRequestsTab />}
-        {activeTab === 'retention' && <DataRetentionClientContent />}
-        {activeTab === 'dpia' && <DpiaTabContent />}
+        {currentTab === 'consents' && <ConsentManagementTab />}
+        {currentTab === 'requests' && <DataRequestsTab />}
+        {currentTab === 'retention' && <DataRetentionClientContent />}
+        {currentTab === 'dpia' && <DpiaTabContent />}
       </div>
     </div>
   )

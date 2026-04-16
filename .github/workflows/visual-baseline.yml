@@ -1,0 +1,157 @@
+name: Visual Baseline Generation
+
+# Generates Linux Chromium visual regression baselines for Phase 5.
+# Auto-trigger: any push that touches this workflow file on staging.
+# Manual trigger: workflow_dispatch (gh workflow run visual-baseline.yml --ref staging).
+
+on:
+  push:
+    branches: [staging]
+    paths:
+      - '.github/workflows/visual-baseline.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: visual-baseline-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    services:
+      postgres:
+        # pgvector image (Postgres 16 + pgvector extension) — schema declares
+        # `extensions = [vector]` and uses Unsupported("vector(1536)"), so the
+        # stock postgres:16 image cannot satisfy `prisma db push --force-reset`.
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: ctr_hr_hub_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://test:test@localhost:5432/ctr_hr_hub_test
+      NEXTAUTH_URL: http://localhost:3002
+      NEXTAUTH_SECRET: ci-test-secret-key-for-e2e
+      REDIS_URL: redis://localhost:6379
+      NODE_ENV: test
+      PLAYWRIGHT_BASE_URL: http://localhost:3002
+      # Dummy Azure AD env vars — required by src/lib/env.ts getRequired()
+      # when NODE_ENV=production, which `next build` internally sets even
+      # though NODE_ENV: test is declared above. Visual tests log in via
+      # the credentials provider so real Azure SSO is never invoked.
+      AZURE_AD_CLIENT_ID: ci-test-azure-client-id
+      AZURE_AD_CLIENT_SECRET: ci-test-azure-client-secret
+      AZURE_AD_TENANT_ID: ci-test-azure-tenant-id
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Node 24 LTS uses npm 11.x which honors next@15.5.12's exact pin of
+          # @swc/helpers@0.5.15. Node 20 ships npm 10.x which strict-enforces
+          # the optional peer-dep range `@swc/helpers >=0.5.17` from a sibling
+          # package and fails `npm ci` with "Missing @swc/helpers@0.5.21".
+          # This mismatch is a pre-existing repo issue and also breaks e2e.yml
+          # on main; bumping the runner Node here is the surgical unblock.
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Push schema to test DB
+        run: npx prisma db push --force-reset
+
+      - name: Seed test data
+        run: npx tsx prisma/seed.ts
+
+      - name: Seed QA accounts (workaround — see scripts/seed-qa-accounts.ts)
+        # The master seed (prisma/seed.ts) does not call seedQAAccounts, so
+        # super@/hr@/manager@/employee-* SsoIdentity rows are missing and the
+        # credentials provider login in e2e/global-setup.ts fails. This wrapper
+        # injects them before Playwright runs.
+        run: npx tsx scripts/seed-qa-accounts.ts
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build application
+        run: npm run build
+
+      # ─── Pass 1: Generate baselines (--update-snapshots) ───
+      - name: Generate baselines
+        run: |
+          npx playwright test \
+            --project=visual-desktop \
+            --project=visual-tablet \
+            --project=visual-mobile \
+            --update-snapshots
+
+      # ─── Pass 2: Twice-cold verify (no --update) — Codex Gate 1 HIGH #2 ───
+      # Re-runs the same suite against the freshly-generated baselines.
+      # Catches flaky waits, partial-load captures, and time-dependent UI that
+      # was not frozen by page.clock.install.
+      - name: Verify baselines (twice-cold)
+        run: |
+          npx playwright test \
+            --project=visual-desktop \
+            --project=visual-tablet \
+            --project=visual-mobile
+
+      - name: Sanity check baseline count
+        run: |
+          COUNT=$(find e2e/visual/__screenshots__ -name "*.png" | wc -l | tr -d ' ')
+          echo "Baseline PNG count: $COUNT"
+          if [ "$COUNT" -lt 330 ]; then
+            echo "::error::Expected at least 330 baselines, got $COUNT"
+            exit 1
+          fi
+          echo "::group::Smallest 5 PNGs (potential blank/broken)"
+          find e2e/visual/__screenshots__ -name "*.png" -exec du -h {} + | sort -h | head -5
+          echo "::endgroup::"
+          echo "::group::Largest 5 PNGs"
+          find e2e/visual/__screenshots__ -name "*.png" -exec du -h {} + | sort -h | tail -5
+          echo "::endgroup::"
+          echo "::group::Total size"
+          du -sh e2e/visual/__screenshots__
+          echo "::endgroup::"
+
+      - name: Upload baselines artifact
+        # Always upload — even if verify pass fails we want the generated PNGs
+        # so we can inspect them locally and diagnose the flaky tests.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-baselines
+          path: e2e/visual/__screenshots__/
+          retention-days: 7
+
+      - name: Upload Playwright report (on failure)
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

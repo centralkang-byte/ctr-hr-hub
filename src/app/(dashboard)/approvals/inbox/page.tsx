@@ -1,40 +1,10 @@
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Approval Inbox Page (Stage 5-B)
-// /(dashboard)/approvals/inbox
+// CTR HR Hub — Approval Inbox → Redirect to My Tasks
+// 승인함이 나의 업무 승인 탭으로 통합됨 (2026-04-07 One Hub)
 // ═══════════════════════════════════════════════════════════
 
-import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { ROLE } from '@/lib/constants'
-import type { SessionUser } from '@/types'
-import { ApprovalInboxClient } from './ApprovalInboxClient'
-import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
-export const metadata = {
-  title: '승인함 — CTR HR Hub',
-  description: '처리가 필요한 승인 요청을 한 곳에서 확인하세요.',
-}
-
-// Only MANAGER, HR_ADMIN, EXECUTIVE can access
-const ALLOWED_ROLES = new Set([ROLE.MANAGER, ROLE.HR_ADMIN, ROLE.EXECUTIVE, ROLE.SUPER_ADMIN])
-
-export default async function ApprovalInboxPage() {
-  const session = await getServerSession(authOptions)
-  if (!session?.user) redirect('/login')
-
-  const user = session.user as SessionUser
-
-  if (!ALLOWED_ROLES.has(user.role as never)) {
-    redirect('/home')
-  }
-
-  return (
-    <Suspense fallback={<ListPageSkeleton />}>
-      <div className="mx-auto max-w-3xl px-4 py-6">
-        <ApprovalInboxClient user={user} />
-      </div>
-    </Suspense>
-  )
+export default function ApprovalInboxPage() {
+  redirect('/my/tasks?tab=approvals')
 }

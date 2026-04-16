@@ -60,7 +60,7 @@ export function ApprovalFlowEditor({ flow, onChange, disabled = false }: Approva
             {index + 1}
           </div>
 
-          <GripVertical className="h-4 w-4 flex-shrink-0 cursor-grab text-[#CCC]" />
+          <GripVertical className="h-4 w-4 flex-shrink-0 cursor-grab text-border" />
 
           {/* 역할 선택 */}
           <div className="relative flex-1">

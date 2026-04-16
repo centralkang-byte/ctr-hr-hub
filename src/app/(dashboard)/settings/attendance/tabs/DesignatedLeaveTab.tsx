@@ -35,7 +35,6 @@ interface DesignatedLeaveTabProps {
   companyId: string | null
 }
 
-const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const
 
 export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
   const t = useTranslations('settings')
@@ -174,7 +173,7 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
                   {items.map((d) => (
                     <div
                       key={d.id}
-                      className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-background group"
+                      className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-background group motion-safe:transition-all"
                     >
                       <div className="flex items-center gap-3">
                         <CalendarDays className="h-4 w-4 text-primary" />

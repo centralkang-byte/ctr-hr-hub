@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 
@@ -59,10 +59,10 @@ interface DashboardData {
 }
 
 const MEETING_TYPE_LABELS: Record<string, string> = {
-  REGULAR: '정기',
-  AD_HOC: '수시',
-  GOAL_REVIEW: '목표 점검',
-  DEVELOPMENT: '역량 개발',
+  REGULAR: 'oneOnOne_typeRegular',
+  AD_HOC: 'oneOnOne_typeAdHoc',
+  GOAL_REVIEW: 'oneOnOne_typeGoalReview',
+  DEVELOPMENT: 'oneOnOne_typeDevelopment',
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -70,6 +70,7 @@ const MEETING_TYPE_LABELS: Record<string, string> = {
 export default function OneOnOneClient({ user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
+  const locale = useLocale()
 
   const router = useRouter()
   const isManager = user.role === ROLE.MANAGER || user.role === ROLE.HR_ADMIN || user.role === ROLE.EXECUTIVE
@@ -90,17 +91,17 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
     try {
       const res = await apiClient.getList<Meeting>('/api/v1/cfr/one-on-ones', { status: statusFilter })
       setMeetings(res.data)
-    } catch (err) { toast({ title: '미팅 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('messages.meetingListLoadFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
     setLoading(false)
-  }, [statusFilter])
+  }, [statusFilter, t])
 
   const fetchDashboard = useCallback(async () => {
     if (!isManager) return
     try {
       const res = await apiClient.get<DashboardData>('/api/v1/cfr/one-on-ones/dashboard')
       setDashboard(res.data)
-    } catch (err) { toast({ title: '대시보드 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
-  }, [isManager])
+    } catch (err) { toast({ title: t('messages.dashboardLoadFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
+  }, [isManager, t])
 
   useEffect(() => { fetchMeetings() }, [fetchMeetings])
   useEffect(() => { fetchDashboard() }, [fetchDashboard])
@@ -109,7 +110,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
     try {
       const res = await apiClient.getList<TeamMember>('/api/v1/employees', { managerId: user.employeeId, status: 'ACTIVE', limit: 100 })
       setTeamMembers(res.data)
-    } catch (err) { toast({ title: '팀원 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('messages.teamMemberLoadFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
     setShowCreateModal(true)
   }
 
@@ -126,7 +127,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
       setShowCreateModal(false)
       setNewMeeting({ employeeId: '', scheduledAt: '', meetingType: 'REGULAR', agenda: '' })
       fetchMeetings()
-    } catch (err) { toast({ title: '미팅 생성 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('messages.meetingCreateFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
     setCreating(false)
   }
 
@@ -153,7 +154,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
         <div className="flex items-center gap-3">
           <MessageSquare className="w-6 h-6 text-primary" />
           <h1 className="text-2xl font-bold text-foreground">
-            {isManager ? '1:1 미팅' : '내 1:1 미팅'}
+            {isManager ? t('oneOnOne_title') : t('oneOnOne_myTitle')}
           </h1>
         </div>
         {isManager && (
@@ -178,7 +179,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                 : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
-            {s === 'ALL' ? '전체' : s === 'SCHEDULED' ? '예정' : '완료'}
+            {s === 'ALL' ? t('all') : s === 'SCHEDULED' ? t('oneOnOne_scheduled') : t('oneOnOne_completed')}
           </button>
         ))}
       </div>
@@ -204,10 +205,10 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                           employee={isManager ? (m.employee as any) : { id: m.id, name: m.manager?.name ?? '', } }
                           trailing={
                             <p className="text-xs text-muted-foreground">
-                              {new Date(m.scheduledAt).toLocaleDateString('ko-KR')} {new Date(m.scheduledAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+                              {new Date(m.scheduledAt).toLocaleDateString(locale)} {new Date(m.scheduledAt).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
                               {' · '}
                               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary/90">
-                                {MEETING_TYPE_LABELS[m.meetingType] ?? m.meetingType}
+                                {MEETING_TYPE_LABELS[m.meetingType] ? t(MEETING_TYPE_LABELS[m.meetingType]) : m.meetingType}
                               </span>
                             </p>
                           }
@@ -223,7 +224,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                       )}
                     </div>
                     {m.agenda && (
-                      <p className="mt-2 text-sm text-muted-foreground pl-[52px]">아젠다: {m.agenda}</p>
+                      <p className="mt-2 text-sm text-muted-foreground pl-[52px]">{t('oneOnOne_agenda')}: {m.agenda}</p>
                     )}
                   </div>
                 ))}
@@ -242,7 +243,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                   <thead>
                     <tr className={TABLE_STYLES.header}>
                       <th className={TABLE_STYLES.headerCell}>
-                        {isManager ? '팀원' : '매니저'}
+                        {isManager ? t('oneOnOne_teamMember') : t('oneOnOne_manager')}
                       </th>
                       <th className={TABLE_STYLES.headerCell}>{t('kr_kec9dbcec')}</th>
                       <th className={TABLE_STYLES.headerCell}>{t('kr_kec9ca0ed')}</th>
@@ -264,17 +265,17 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                             {isManager ? m.employee.name : m.manager.name}
                           </td>
                           <td className={cn(TABLE_STYLES.cellMuted)}>
-                            {new Date(m.completedAt ?? m.scheduledAt).toLocaleDateString('ko-KR')}
+                            {new Date(m.completedAt ?? m.scheduledAt).toLocaleDateString(locale)}
                           </td>
                           <td className={TABLE_STYLES.cell}>
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-background text-muted-foreground border border-border">
-                              {MEETING_TYPE_LABELS[m.meetingType] ?? m.meetingType}
+                              {MEETING_TYPE_LABELS[m.meetingType] ? t(MEETING_TYPE_LABELS[m.meetingType]) : m.meetingType}
                             </span>
                           </td>
                           {isManager && (
                             <td className={TABLE_STYLES.cell}>
                               {pendingActions > 0 ? (
-                                <span className="text-red-500 font-medium">{pendingActions}건</span>
+                                <span className="text-red-500 font-medium">{t('oneOnOne_pendingCount', { count: pendingActions })}</span>
                               ) : (
                                 <span className="text-emerald-600">{t('kr_0keab1b4')}</span>
                               )}
@@ -324,7 +325,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                       <div className="mt-3 flex items-center gap-2 text-sm text-red-500">
                         <AlertTriangle className="w-4 h-4" />
                         <span>
-                          30일+ 미실시:{' '}
+                          {t('oneOnOne_overdueWarning')}:{' '}
                           {dashboard.teamMembers.filter((m) => m.overdue).map((m) => m.name).join(', ')}
                         </span>
                       </div>
@@ -346,7 +347,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                         <span className="text-sm text-foreground font-medium">{a.employeeName}:</span>
                         <span className="text-sm text-muted-foreground">&quot;{a.item}&quot;</span>
                         {a.dueDate && (
-                          <span className="text-xs text-muted-foreground ml-auto">(기한: {a.dueDate})</span>
+                          <span className="text-xs text-muted-foreground ml-auto">({t('oneOnOne_dueDate')}: {a.dueDate})</span>
                         )}
                       </div>
                     ))}
@@ -391,7 +392,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
               <div>
                 <label className="text-sm font-medium text-foreground mb-1 block">{t('kr_kec9ca0ed')}</label>
                 <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(MEETING_TYPE_LABELS).map(([key, label]) => (
+                  {Object.entries(MEETING_TYPE_LABELS).map(([key, labelKey]) => (
                     <button
                       key={key}
                       onClick={() => setNewMeeting({ ...newMeeting, meetingType: key })}
@@ -401,7 +402,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                           : 'bg-card text-muted-foreground border-border hover:bg-background'
                       }`}
                     >
-                      {label}
+                      {t(labelKey)}
                     </button>
                   ))}
                 </div>
@@ -411,7 +412,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                 <textarea
                   value={newMeeting.agenda}
                   onChange={(e) => setNewMeeting({ ...newMeeting, agenda: e.target.value })}
-                  placeholder="논의할 내용을 입력하세요"
+                  placeholder={t('oneOnOne_agendaPlaceholder')}
                   rows={3}
                   className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
                 />
@@ -429,7 +430,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                 disabled={creating || !newMeeting.employeeId || !newMeeting.scheduledAt}
                 className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
               >
-                {creating ? '예약 중...' : '예약'}
+                {creating ? t('oneOnOne_scheduling') : t('oneOnOne_schedule')}
               </button>
             </div>
           </div>

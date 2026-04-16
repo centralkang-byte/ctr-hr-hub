@@ -17,6 +17,7 @@ import {
   Trash2,
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import {
@@ -157,15 +158,7 @@ export function InterviewCalendarScheduler({
           e.stopPropagation()
           handleOpen()
         }}
-        style={{
-          borderRadius: 6,
-          fontSize: 12,
-          padding: '4px 10px',
-          gap: 4,
-          ...(hasEvent
-            ? {}
-            : { backgroundColor: '#5E81F4', color: '#fff' }),
-        }}
+        className={cn('gap-1 text-xs', !hasEvent && 'bg-primary text-primary-foreground')}
       >
         <Calendar size={14} />
         {hasEvent ? '일정 관리' : '일정 예약'}
@@ -173,43 +166,30 @@ export function InterviewCalendarScheduler({
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          style={{ maxWidth: 560, borderRadius: 16, padding: 0 }}
+          className="max-w-[560px] rounded-2xl p-0"
           onClick={(e) => e.stopPropagation()}
         >
-          <DialogHeader style={{ padding: '24px 24px 0' }}>
-            <DialogTitle style={{ fontSize: 18, fontWeight: 700, color: '#1A1A1A' }}>
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle className="text-lg font-bold text-foreground">
               {hasEvent && mode === 'view'
                 ? '면접 일정 관리'
                 : '면접 일정 예약'}
             </DialogTitle>
             {interviewerName && (
-              <p style={{ fontSize: 13, color: '#999', marginTop: 4 }}>
+              <p className="text-sm text-muted-foreground mt-1">
                 면접관: {interviewerName} · {durationMinutes}분
               </p>
             )}
           </DialogHeader>
 
-          <div
-            style={{
-              padding: '20px 24px',
-              maxHeight: 420,
-              overflowY: 'auto',
-            }}
-          >
+          <div className="px-6 py-5 max-h-[420px] overflow-y-auto">
             {/* Existing event view */}
             {hasEvent && mode === 'view' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <div
-                  style={{
-                    padding: 16,
-                    backgroundColor: '#EDF1FE',
-                    borderRadius: 12,
-                    border: '1px solid #C8E6C9',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <div className="flex flex-col gap-4">
+                <div className="p-4 bg-primary/5 rounded-xl">
+                  <div className="flex items-center gap-2 mb-2">
                     <Clock size={16} className="text-primary" />
-                    <span style={{ fontSize: 14, fontWeight: 600, color: '#1B5E20' }}>
+                    <span className="text-sm font-semibold text-foreground">
                       {scheduledAt
                         ? format(new Date(scheduledAt), 'yyyy-MM-dd HH:mm')
                         : '-'}
@@ -221,14 +201,7 @@ export function InterviewCalendarScheduler({
                       href={meetingLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        fontSize: 13,
-                        color: '#5E81F4',
-                        textDecoration: 'none',
-                      }}
+                      className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
                     >
                       <Video size={14} />
                       Teams 미팅 링크
@@ -237,7 +210,7 @@ export function InterviewCalendarScheduler({
                   )}
                 </div>
 
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
@@ -245,7 +218,7 @@ export function InterviewCalendarScheduler({
                       setMode('reschedule')
                       fetchSlots()
                     }}
-                    style={{ borderRadius: 8, flex: 1 }}
+                    className="flex-1"
                   >
                     <RefreshCw size={14} className="mr-1" />
                     일정 변경
@@ -255,12 +228,7 @@ export function InterviewCalendarScheduler({
                     size="sm"
                     onClick={handleCancel}
                     disabled={submitting}
-                    style={{
-                      borderRadius: 8,
-                      flex: 1,
-                      borderColor: '#FCA5A5',
-                      color: '#DC2626',
-                    }}
+                    className="flex-1 border-destructive/30 text-destructive"
                   >
                     {submitting ? (
                       <Loader2 size={14} className="mr-1 animate-spin" />
@@ -277,50 +245,22 @@ export function InterviewCalendarScheduler({
             {(!hasEvent || mode === 'reschedule') && (
               <>
                 {loading ? (
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: 40,
-                      color: '#999',
-                    }}
-                  >
+                  <div className="flex items-center justify-center py-10 text-muted-foreground">
                     <Loader2 size={20} className="animate-spin mr-2" />
                     가용 시간 조회 중...
                   </div>
                 ) : slots.length === 0 ? (
-                  <div
-                    style={{
-                      textAlign: 'center',
-                      padding: 40,
-                      color: '#999',
-                      fontSize: 14,
-                    }}
-                  >
+                  <div className="text-center py-10 text-muted-foreground text-sm">
                     가용 시간이 없습니다
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div className="flex flex-col gap-4">
                     {Object.entries(slotsByDate).map(([date, dateSlots]) => (
                       <div key={date}>
-                        <p
-                          style={{
-                            fontSize: 13,
-                            fontWeight: 600,
-                            color: '#1A1A1A',
-                            marginBottom: 8,
-                          }}
-                        >
+                        <p className="text-sm font-semibold text-foreground mb-2">
                           {format(new Date(date), 'yyyy-MM-dd (EEE)')}
                         </p>
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: 6,
-                          }}
-                        >
+                        <div className="flex flex-wrap gap-1.5">
                           {dateSlots.map((slot) => {
                             const isSelected =
                               selectedSlot?.start === slot.start
@@ -329,21 +269,12 @@ export function InterviewCalendarScheduler({
                                 key={slot.start}
                                 type="button"
                                 onClick={() => setSelectedSlot(slot)}
-                                style={{
-                                  padding: '6px 12px',
-                                  borderRadius: 6,
-                                  border: isSelected
-                                    ? '2px solid #5E81F4'
-                                    : '1px solid #E5E7EB',
-                                  backgroundColor: isSelected
-                                    ? '#EDF1FE'
-                                    : '#FFFFFF',
-                                  color: isSelected ? '#5E81F4' : '#374151',
-                                  fontSize: 13,
-                                  fontWeight: isSelected ? 600 : 400,
-                                  cursor: 'pointer',
-                                  transition: 'all 0.15s ease',
-                                }}
+                                className={cn(
+                                  'px-3 py-1.5 rounded-lg text-sm transition-all cursor-pointer',
+                                  isSelected
+                                    ? 'ring-2 ring-primary bg-primary/5 text-primary font-semibold'
+                                    : 'border border-border bg-card text-foreground hover:bg-muted/50',
+                                )}
                               >
                                 {format(new Date(slot.start), 'HH:mm')}
                               </button>
@@ -360,12 +291,7 @@ export function InterviewCalendarScheduler({
 
           {/* Footer */}
           {(!hasEvent || mode === 'reschedule') && (
-            <DialogFooter
-              style={{
-                padding: '16px 24px',
-                borderTop: '1px solid #E8E8E8',
-              }}
-            >
+            <DialogFooter className="px-6 py-4 bg-muted/30">
               <Button
                 variant="outline"
                 onClick={() => {
@@ -375,18 +301,12 @@ export function InterviewCalendarScheduler({
                     setOpen(false)
                   }
                 }}
-                style={{ borderRadius: 8 }}
               >
                 {mode === 'reschedule' ? '돌아가기' : '취소'}
               </Button>
               <Button
                 onClick={handleSchedule}
                 disabled={!selectedSlot || submitting}
-                style={{
-                  borderRadius: 8,
-                  backgroundColor: '#5E81F4',
-                  color: '#FFFFFF',
-                }}
               >
                 {submitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

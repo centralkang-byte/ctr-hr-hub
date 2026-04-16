@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts'
+import { CHART_THEME } from '@/lib/styles/chart'
 
 interface TrendItem {
   month: string
@@ -25,13 +26,13 @@ interface AttritionTrendChartProps {
 
 export default function AttritionTrendChart({ data }: AttritionTrendChartProps) {
   return (
-    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+    <div className="bg-card rounded-2xl shadow-sm p-6">
       <h3 className="text-lg font-semibold text-foreground mb-4">이탈 위험 추이</h3>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-          <YAxis />
+          <CartesianGrid {...CHART_THEME.grid} />
+          <XAxis dataKey="month" tick={CHART_THEME.axis.tick} />
+          <YAxis tick={CHART_THEME.axis.tick} />
           <Tooltip
             content={({ active, payload, label }) => {
               if (!active || !payload?.length) return null
@@ -52,25 +53,28 @@ export default function AttritionTrendChart({ data }: AttritionTrendChartProps) 
             type="monotone"
             dataKey="avgScore"
             name="평균 점수"
-            stroke="#8B5CF6"
+            stroke={CHART_THEME.colors[0]}
             strokeWidth={2}
-            dot={{ r: 3 }}
+            dot={false}
+            activeDot={{ r: 4 }}
           />
           <Line
             type="monotone"
             dataKey="highCount"
             name="고위험"
-            stroke="#EF4444"
+            stroke={CHART_THEME.colors[4]}
             strokeWidth={2}
-            dot={{ r: 3 }}
+            dot={false}
+            activeDot={{ r: 4 }}
           />
           <Line
             type="monotone"
             dataKey="mediumCount"
             name="주의"
-            stroke="#F59E0B"
+            stroke={CHART_THEME.colors[3]}
             strokeWidth={2}
-            dot={{ r: 3 }}
+            dot={false}
+            activeDot={{ r: 4 }}
           />
         </LineChart>
       </ResponsiveContainer>

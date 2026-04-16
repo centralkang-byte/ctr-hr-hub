@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -50,21 +51,21 @@ interface AssignmentHistoryTabProps {
 // ─── 변경유형 한국어 레이블 ──────────────────────────────────
 
 const CHANGE_TYPE_LABELS: Record<string, string> = {
-  HIRE: '입사',
-  PROMOTION: '승진',
-  DEMOTION: '강등',
-  TRANSFER: '부서이동',
-  COMPANY_TRANSFER: '법인이동',
-  CONTRACT_CHANGE: '계약변경',
-  STATUS_CHANGE: '상태변경',
-  REORGANIZATION: '조직개편',
-  TERMINATION: '퇴직',
-  CONCURRENT: '겸직발령',
+  HIRE: 'assignmentTypeHire',
+  PROMOTION: 'assignmentTypePromotion',
+  DEMOTION: 'assignmentTypeDemotion',
+  TRANSFER: 'assignmentTypeTransfer',
+  COMPANY_TRANSFER: 'assignmentTypeCompanyTransfer',
+  CONTRACT_CHANGE: 'assignmentTypeContractChange',
+  STATUS_CHANGE: 'assignmentTypeStatusChange',
+  REORGANIZATION: 'assignmentTypeReorganization',
+  TERMINATION: 'assignmentTypeTermination',
+  CONCURRENT: 'assignmentTypeConcurrent',
 }
 
 // ─── assignment → TimelineEvent 변환 ────────────────────────
 
-function toTimelineEvent(a: AssignmentRecord, highlightDate: Date): TimelineEvent {
+function toTimelineEvent(a: AssignmentRecord, highlightDate: Date, t: (key: string, params?: Record<string, string | number | Date>) => string): TimelineEvent {
   const dept = a.department?.name ?? ''
   const grade = a.jobGrade?.name ?? ''
   const description = [dept, grade].filter(Boolean).join(' · ')
@@ -74,13 +75,13 @@ function toTimelineEvent(a: AssignmentRecord, highlightDate: Date): TimelineEven
     aDate <= highlightDate &&
     (a.endDate === null || new Date(a.endDate) > highlightDate)
 
-  const prefix = a.isPrimary !== false ? '[주] ' : '[겸직] '
+  const prefix = a.isPrimary !== false ? t('assignmentPrefixPrimary') + ' ' : t('assignmentPrefixConcurrent') + ' '
 
   return {
     id: a.id,
     date: a.effectiveDate,
     type: a.changeType,
-    title: prefix + (CHANGE_TYPE_LABELS[a.changeType] ?? a.changeType),
+    title: prefix + (CHANGE_TYPE_LABELS[a.changeType] ? t(CHANGE_TYPE_LABELS[a.changeType]) : a.changeType),
     description,
     details: a as unknown as Record<string, unknown>,
     highlighted: isHighlighted,
@@ -96,28 +97,29 @@ function AssignmentSidePanel({
   event: TimelineEvent
   onClose: () => void
 }) {
+  const t = useTranslations('employee')
   const a = event.details as unknown as AssignmentRecord
 
   const rows: Array<{ label: string; value: string }> = [
-    { label: '발효일', value: new Date(a.effectiveDate).toLocaleDateString('ko-KR') },
-    { label: '종료일', value: a.endDate ? new Date(a.endDate).toLocaleDateString('ko-KR') : '현재' },
-    { label: '변경 유형', value: CHANGE_TYPE_LABELS[a.changeType] ?? a.changeType },
-    { label: '법인', value: a.company?.name ?? '-' },
-    { label: '부서', value: a.department?.name ?? '-' },
-    { label: '직급', value: a.jobGrade?.name ?? '-' },
-    { label: '직무', value: a.jobCategory?.name ?? '-' },
-    { label: '고용형태', value: a.employmentType ?? '-' },
-    { label: '계약유형', value: a.contractType ?? '-' },
-    { label: '상태', value: a.status ?? '-' },
-    { label: '발령번호', value: a.orderNumber ?? '-' },
-    { label: '사유', value: a.reason ?? '-' },
-    { label: '승인자', value: a.approver?.name ?? '-' },
+    { label: t('assignmentEffectiveDate'), value: new Date(a.effectiveDate).toLocaleDateString('ko-KR') },
+    { label: t('assignmentEndDate'), value: a.endDate ? new Date(a.endDate).toLocaleDateString('ko-KR') : t('assignmentCurrent') },
+    { label: t('assignmentChangeType'), value: CHANGE_TYPE_LABELS[a.changeType] ? t(CHANGE_TYPE_LABELS[a.changeType]) : a.changeType },
+    { label: t('assignmentCompany'), value: a.company?.name ?? '-' },
+    { label: t('assignmentDepartment'), value: a.department?.name ?? '-' },
+    { label: t('assignmentGrade'), value: a.jobGrade?.name ?? '-' },
+    { label: t('assignmentJobCategory'), value: a.jobCategory?.name ?? '-' },
+    { label: t('assignmentEmploymentType'), value: a.employmentType ?? '-' },
+    { label: t('assignmentContractType'), value: a.contractType ?? '-' },
+    { label: t('assignmentStatus'), value: a.status ?? '-' },
+    { label: t('assignmentOrderNumber'), value: a.orderNumber ?? '-' },
+    { label: t('assignmentReason'), value: a.reason ?? '-' },
+    { label: t('assignmentApprover'), value: a.approver?.name ?? '-' },
   ]
 
   return (
     <div className="w-72 flex-shrink-0 rounded-xl border border-border bg-card overflow-hidden">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <h3 className="text-sm font-bold text-foreground">발령 상세</h3>
+        <h3 className="text-sm font-bold text-foreground">{t('assignmentDetailTitle')}</h3>
         <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={onClose}>
           <X className="h-4 w-4" />
         </Button>
@@ -159,16 +161,17 @@ function ConcurrentStatusSection({
   onAdd: () => void
   onEnd: (a: ConcurrentAssignment) => void
 }) {
+  const t = useTranslations('employee')
   const activeConcurrents = assignments.filter(
     (a) => !a.isPrimary && a.endDate === null
   )
 
   return (
     <div className="rounded-xl border border-border bg-card p-4 space-y-3">
-      <h3 className="text-sm font-bold text-foreground">현재 겸직 현황</h3>
+      <h3 className="text-sm font-bold text-foreground">{t('assignmentConcurrentStatus')}</h3>
 
       {activeConcurrents.length === 0 ? (
-        <p className="text-xs text-muted-foreground">현재 활성 겸직이 없습니다.</p>
+        <p className="text-xs text-muted-foreground">{t('assignmentNoConcurrent')}</p>
       ) : (
         <div className="space-y-2">
           {activeConcurrents.map((a) => (
@@ -196,7 +199,7 @@ function ConcurrentStatusSection({
                   })
                 }
               >
-                종료
+                {t('assignmentEnd')}
               </Button>
             </div>
           ))}
@@ -205,7 +208,7 @@ function ConcurrentStatusSection({
 
       <Button variant="outline" size="sm" className="h-8 text-xs" onClick={onAdd}>
         <Plus className="mr-1 h-3.5 w-3.5" />
-        겸직 추가
+        {t('assignmentAddConcurrent')}
       </Button>
     </div>
   )
@@ -219,6 +222,7 @@ export function AssignmentHistoryTab({
   user,
   onSnapshotChange,
 }: AssignmentHistoryTabProps) {
+  const t = useTranslations('employee')
   const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
 
   const [viewDate, setViewDate] = useState<Date>(new Date())
@@ -271,14 +275,14 @@ export function AssignmentHistoryTab({
   // Build events with dual-render for ended concurrent assignments
   const events: TimelineEvent[] = []
   for (const a of assignments) {
-    events.push(toTimelineEvent(a, viewDate))
+    events.push(toTimelineEvent(a, viewDate, t))
     // Gemini #2: Dual render for ended concurrent
     if (a.changeType === 'CONCURRENT' && a.endDate) {
       events.push({
         id: `${a.id}-end`,
         date: a.endDate,
         type: 'CONCURRENT_END',
-        title: '[겸직] 겸직 종료',
+        title: t('assignmentConcurrentEnd'),
         description: [a.company?.name, a.department?.name].filter(Boolean).join(' · '),
         details: a as unknown as Record<string, unknown>,
         highlighted: false,
@@ -318,7 +322,7 @@ export function AssignmentHistoryTab({
             events={events}
             onEventClick={setSelectedEvent}
             loading={loading}
-            emptyMessage="발령 이력이 없습니다."
+            emptyMessage={t('assignmentNoHistory')}
           />
         </div>
 
@@ -331,7 +335,7 @@ export function AssignmentHistoryTab({
       </div>
 
       {snapshotLoading && (
-        <div className="text-xs text-muted-foreground text-center py-1 animate-pulse">시점 정보 조회 중...</div>
+        <div className="text-xs text-muted-foreground text-center py-1 animate-pulse">{t('assignmentSnapshotLoading')}</div>
       )}
 
       {/* Dialogs */}

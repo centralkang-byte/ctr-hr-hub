@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { Save, RotateCcw, Loader2 } from 'lucide-react'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
@@ -98,11 +99,11 @@ export function PayScheduleTab({
           <p className="text-sm text-muted-foreground">{t('kr_keba7a4ec_keab889ec_keca780ea_')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
+          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
         )}
       </div>
 
-      <SettingFieldWithOverride label="급여 지급일" description="매월 급여가 지급되는 날짜" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('paySchedule.payDayLabel')} description={t('paySchedule.payDayDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">{t('kr_keba7a4ec')}</span>
           <Input type="number" value={settings.payDay} min={1} max={31} onChange={(e) => setSettings((p) => ({ ...p, payDay: Number(e.target.value) }))} className="w-20" />
@@ -110,7 +111,7 @@ export function PayScheduleTab({
         </div>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="급여 마감일" description="급여 계산 기준 마감일" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('paySchedule.cutoffLabel')} description={t('paySchedule.cutoffDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">{t('kr_keba7a4ec')}</span>
           <Input type="number" value={settings.cutoffDay} min={1} max={31} onChange={(e) => setSettings((p) => ({ ...p, cutoffDay: Number(e.target.value) }))} className="w-20" />
@@ -118,7 +119,7 @@ export function PayScheduleTab({
         </div>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="지급 방법" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('paySchedule.methodLabel')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <select className={FORM_STYLES.select} value={settings.paymentMethod} onChange={(e) => setSettings((p) => ({ ...p, paymentMethod: e.target.value as PayScheduleSettings['paymentMethod'] }))}>
           <option value="BANK_TRANSFER">{t('kr_keab384ec')}</option>
           <option value="CHECK">{t('kr_kec8898ed')}</option>
@@ -130,7 +131,7 @@ export function PayScheduleTab({
           <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={handleSave} disabled={!hasChanges || saving}>
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}{t('save')}
         </Button>
       </div>
     </div>

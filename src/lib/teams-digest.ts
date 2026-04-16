@@ -4,6 +4,8 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
+import { serverT } from '@/lib/server-i18n'
+import type { Locale } from '@/i18n/config'
 
 export interface DigestData {
   weekRange: string
@@ -16,6 +18,7 @@ export interface DigestData {
 }
 
 export async function generateDigestData(
+  locale: Locale,
   companyId: string,
 ): Promise<DigestData> {
   const now = new Date()
@@ -98,14 +101,16 @@ export async function generateDigestData(
     }),
   ])
 
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
+
   const highlights: string[] = []
-  if (newHires > 0) highlights.push(`이번 주 ${newHires}명 신규 입사`)
+  if (newHires > 0) highlights.push(await t('teams.digest.highlight.newHires', { count: newHires }))
   if (attritionRisks > 0)
-    highlights.push(`이탈 위험 직원 ${attritionRisks}명 — 면담 필요`)
+    highlights.push(await t('teams.digest.highlight.attritionRisk', { count: attritionRisks }))
   if (pendingApprovals > 5)
-    highlights.push(`미처리 휴가 승인 ${pendingApprovals}건`)
+    highlights.push(await t('teams.digest.highlight.pendingApprovals', { count: pendingApprovals }))
   if (pendingEvals > 0)
-    highlights.push(`미완료 평가 ${pendingEvals}건`)
+    highlights.push(await t('teams.digest.highlight.pendingEvals', { count: pendingEvals }))
 
   return {
     weekRange,

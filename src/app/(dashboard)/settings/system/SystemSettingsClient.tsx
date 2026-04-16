@@ -58,7 +58,7 @@ function SystemSettingsContent() {
 
 export function SystemSettingsClient() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center p-16 text-muted-foreground">{'로딩 중...'}</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center p-16 text-muted-foreground">{'Loading...'}</div>}>
       <SystemSettingsContent />
     </Suspense>
   )

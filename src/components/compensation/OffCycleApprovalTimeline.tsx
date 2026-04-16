@@ -17,11 +17,11 @@ type ApprovalStepStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'SKIPPED'
 interface ApprovalStep {
   id: string
   stepNumber: number
-  roleName: string
-  approverName?: string
+  roleRequired: string
+  approverName?: string | null
   status: ApprovalStepStatus
-  comment?: string
-  decidedAt?: string
+  comment?: string | null
+  decidedAt?: string | null
 }
 
 interface OffCycleApprovalTimelineProps {
@@ -43,13 +43,13 @@ const STEP_VARIANT_MAP: Record<ApprovalStepStatus, StatusVariant> = {
 function StepIcon({ status }: { status: ApprovalStepStatus }) {
   switch (status) {
     case 'APPROVED':
-      return <Check className="h-4 w-4 text-[#059669]" />
+      return <Check className="h-4 w-4 text-tertiary" />
     case 'REJECTED':
-      return <X className="h-4 w-4 text-[#DC2626]" />
+      return <X className="h-4 w-4 text-destructive" />
     case 'PENDING':
-      return <Clock className="h-4 w-4 text-[#D97706]" />
+      return <Clock className="h-4 w-4 text-ctr-warning" />
     default:
-      return <Circle className="h-4 w-4 text-[#64748B]" />
+      return <Circle className="h-4 w-4 text-muted-foreground" />
   }
 }
 
@@ -93,7 +93,7 @@ export default function OffCycleApprovalTimeline({ steps, className }: OffCycleA
             <div className={cn('pb-6', isLast && 'pb-0')}>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-foreground">
-                  {step.stepNumber}. {step.roleName}
+                  {step.stepNumber}. {step.roleRequired}
                 </span>
                 <span
                   className={cn(

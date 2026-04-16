@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Calculator, Loader2, RotateCcw, Save } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { apiClient } from '@/lib/api'
@@ -29,17 +29,7 @@ interface Props {
   onSaveScenario?: (payload: SaveScenarioPayload) => void
 }
 
-// ─── Formatters ─────────────────────────────────────────────
-
-const fmtN = (n: number) => n.toLocaleString('ko-KR')
-const fmtKRW = (n: number) => `₩${Math.abs(n).toLocaleString('ko-KR')}`
-const signedKRW = (n: number) => n === 0 ? '₩0' : `${n > 0 ? '+' : '-'}${fmtKRW(n)}`
-const fmtMan = (n: number) => `₩${fmtN(Math.round(n / 10000))}만`
-const pctChange = (cur: number, adj: number) => {
-  if (cur === 0) return '0.0%'
-  const pct = ((adj - cur) / cur) * 100
-  return `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%`
-}
+import { fmtN, fmtKRW, signedKRW, pctChange } from './formatters'
 
 // ─── Currency symbols ───────────────────────────────────────
 
@@ -80,6 +70,7 @@ function initRates(): RateRow[] {
 export default function FxTab({ companies, onSaveScenario }: Props) {
   const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
 
   const [rates, setRates] = useState<RateRow[]>(initRates)
   const [isLoading, setIsLoading] = useState(false)
@@ -274,24 +265,24 @@ export default function FxTab({ companies, onSaveScenario }: Props) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <KPICard
               label={t('simFxKpiOverseasCurrent')}
-              value={fmtMan(summary.overseasCurrentKRW)}
+              value={`₩${fmtN(Math.round(summary.overseasCurrentKRW / 10000), locale)}만`}
             />
             <KPICard
               label={t('simFxKpiOverseasSim')}
-              value={fmtMan(summary.overseasSimulatedKRW)}
-              diff={signedKRW(summary.differenceKRW)}
+              value={`₩${fmtN(Math.round(summary.overseasSimulatedKRW / 10000), locale)}만`}
+              diff={signedKRW(summary.differenceKRW, locale)}
               variant={summary.differenceKRW > 0 ? 'cost' : 'neutral'}
             />
             <KPICard
               label={t('simFxKpiDiffMonthly')}
-              value={signedKRW(summary.differenceKRW)}
-              diff={t('simFxKpiAnnualDiff', { amount: signedKRW(summary.differenceKRW * 12) })}
+              value={signedKRW(summary.differenceKRW, locale)}
+              diff={t('simFxKpiAnnualDiff', { amount: signedKRW(summary.differenceKRW * 12, locale) })}
               variant={summary.differenceKRW > 0 ? 'cost' : 'neutral'}
             />
             <KPICard
               label={t('simFxKpiGlobalTotal')}
-              value={fmtMan(summary.totalSimulatedKRW)}
-              diff={t('simFxKpiDomestic', { amount: fmtMan(summary.domesticMonthlyKRW) })}
+              value={`₩${fmtN(Math.round(summary.totalSimulatedKRW / 10000), locale)}만`}
+              diff={t('simFxKpiDomestic', { amount: `₩${fmtN(Math.round(summary.domesticMonthlyKRW / 10000), locale)}만` })}
             />
           </div>
 
@@ -336,15 +327,15 @@ export default function FxTab({ companies, onSaveScenario }: Props) {
                       <td className={cn(TABLE_STYLES.cell, 'text-center text-xs')}>{c.currency}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums')}>{t('simPersonUnit', { count: c.employeeCount })}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-muted-foreground')}>
-                        {fmtN(c.localMonthlyGross)}
+                        {fmtN(c.localMonthlyGross, locale)}
                       </td>
-                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(c.currentKRW)}</td>
-                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(c.simulatedKRW)}</td>
+                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(c.currentKRW, locale)}</td>
+                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(c.simulatedKRW, locale)}</td>
                       <td className={cn(
                         TABLE_STYLES.cell, 'text-right tabular-nums font-mono',
                         c.differenceKRW > 0 ? 'text-destructive' : c.differenceKRW < 0 ? 'text-tertiary' : 'text-muted-foreground'
                       )}>
-                        {signedKRW(c.differenceKRW)}
+                        {signedKRW(c.differenceKRW, locale)}
                       </td>
                     </tr>
                   ))}
@@ -384,9 +375,9 @@ export default function FxTab({ companies, onSaveScenario }: Props) {
                             s.differenceKRW > 0 ? 'text-destructive' :
                               s.differenceKRW < 0 ? 'text-tertiary' : 'text-muted-foreground'
                           )}>
-                            <div>{fmtMan(s.totalKRW)}</div>
+                            <div>{`₩${fmtN(Math.round(s.totalKRW / 10000), locale)}만`}</div>
                             {s.differenceKRW !== 0 && (
-                              <div className="text-[10px]">{signedKRW(s.differenceKRW)}</div>
+                              <div className="text-[10px]">{signedKRW(s.differenceKRW, locale)}</div>
                             )}
                           </td>
                         ))}

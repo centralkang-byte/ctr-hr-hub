@@ -1,12 +1,16 @@
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import { MyDocumentsClient } from './MyDocumentsClient'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
-export const metadata = { title: '문서/증명서 | CTR HR Hub' }
+export async function generateMetadata() {
+  const t = await getTranslations('myDocuments')
+  return { title: t('pageTitle') }
+}
 
 export default async function MyDocumentsPage() {
   const session = await getServerSession(authOptions)

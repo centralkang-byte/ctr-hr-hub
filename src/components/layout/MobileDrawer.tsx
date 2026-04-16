@@ -53,7 +53,7 @@ export function MobileDrawer({ isOpen, onClose, children }: MobileDrawerProps) {
 
       {/* Drawer */}
       <aside
-        className={`fixed top-0 left-0 h-full w-[280px] bg-white z-50
+        className={`fixed top-0 left-0 h-full w-[280px] bg-[#fafafe] dark:bg-card z-50
           transform transition-transform duration-200 ease-in-out md:hidden
           shadow-xl flex flex-col
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
@@ -67,7 +67,7 @@ export function MobileDrawer({ isOpen, onClose, children }: MobileDrawerProps) {
           className="absolute top-3.5 right-3 z-10 p-1.5 rounded-lg text-muted-foreground hover:bg-muted transition-colors"
           aria-label="Close menu"
         >
-          <X size={20} />
+          <X size={20} strokeWidth={1.5} />
         </button>
 
         {/* Sidebar content rendered as children */}

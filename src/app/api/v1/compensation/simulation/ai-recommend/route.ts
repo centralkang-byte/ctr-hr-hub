@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { aiRecommendSchema } from '@/lib/schemas/compensation'
@@ -16,7 +17,7 @@ import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── POST /api/v1/compensation/simulation/ai-recommend ───
 
-export const POST = withPermission(
+export const POST = withRateLimit(withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const body: unknown = await req.json()
     const parsed = aiRecommendSchema.safeParse(body)
@@ -129,4 +130,4 @@ export const POST = withPermission(
     return apiSuccess(result)
   },
   perm(MODULE.COMPENSATION, ACTION.VIEW),
-)
+), RATE_LIMITS.AI)

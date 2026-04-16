@@ -6,7 +6,7 @@
 // Design Decision #18: Soft Warning (exceptions allowed)
 // ═══════════════════════════════════════════════════════════
 
-import type { PrismaClient } from '@/generated/prisma/client'
+import type { PrismaTx } from '@/lib/prisma-rls'
 
 export interface MeritRecommendation {
     meritMinPct: number
@@ -50,7 +50,7 @@ export async function getMeritRecommendation(
     grade: string,
     comparatio: number,
     companyId: string,
-    prisma: PrismaClient,
+    prisma: PrismaTx,
 ): Promise<MeritRecommendation> {
     const band = getComparatioBand(comparatio)
 
@@ -107,7 +107,7 @@ export function checkMeritException(
 export async function getCurrentSalary(
     employeeId: string,
     companyId: string,
-    prisma: PrismaClient,
+    prisma: PrismaTx,
 ): Promise<{ salary: number; currency: string }> {
     const latest = await prisma.compensationHistory.findFirst({
         where: { employeeId, companyId },
@@ -137,7 +137,7 @@ export async function getCurrentSalary(
 export async function getSalaryBandMidpoint(
     jobGradeId: string | null,
     companyId: string,
-    prisma: PrismaClient,
+    prisma: PrismaTx,
 ): Promise<number | null> {
     if (!jobGradeId) return null
 

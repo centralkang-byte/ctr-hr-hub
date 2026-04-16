@@ -6,13 +6,14 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Loader2, AlertCircle, TrendingDown, TrendingUp } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine, Cell } from 'recharts'
 import { apiClient } from '@/lib/api'
 import { CARD_STYLES, TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
+import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type {
   Company, CompaRatioResponse, CompaRatioDistBucket,
@@ -28,13 +29,13 @@ interface Props {
 // ─── Constants ──────────────────────────────────────────────
 
 const BUCKET_COLORS: Record<string, string> = {
-  '< 0.7': '#DC2626',     // red — 심각 저보상
-  '0.7–0.8': '#F59E0B',   // amber — 저보상
-  '0.8–0.9': '#3B82F6',   // blue — 약간 낮음
-  '0.9–1.0': '#059669',   // green — 적정
-  '1.0–1.1': '#059669',   // green — 적정
-  '1.1–1.2': '#3B82F6',   // blue — 약간 높음
-  '> 1.2': '#DC2626',      // red — 고보상 이탈
+  '< 0.7': CHART_THEME.colors[4],   // red — 심각 저보상
+  '0.7–0.8': CHART_THEME.colors[3], // amber — 저보상
+  '0.8–0.9': CHART_THEME.colors[0], // violet — 약간 낮음
+  '0.9–1.0': CHART_THEME.colors[2], // green — 적정
+  '1.0–1.1': CHART_THEME.colors[2], // green — 적정
+  '1.1–1.2': CHART_THEME.colors[0], // violet — 약간 높음
+  '> 1.2': CHART_THEME.colors[4],   // red — 고보상 이탈
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -42,6 +43,7 @@ const BUCKET_COLORS: Record<string, string> = {
 export default function CompaRatioTab({ companies }: Props) {
   const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
 
   const [selectedCompanyId, setSelectedCompanyId] = useState('')
   const [loading, setLoading] = useState(true)
@@ -140,8 +142,8 @@ export default function CompaRatioTab({ companies }: Props) {
             <XAxis dataKey="range" {...CHART_THEME.axis} />
             <YAxis {...CHART_THEME.axis} label={{ value: t('simCompaChartCount'), angle: -90, position: 'insideLeft', ...CHART_THEME.axis.label }} />
             <Tooltip {...CHART_THEME.tooltip} formatter={(v) => [`${v}`, t('simCompaChartCount')]} />
-            <ReferenceLine x="0.8–0.9" stroke="#DC2626" strokeDasharray="3 3" label={{ value: t('simCompaLowLabel'), fill: '#DC2626', fontSize: 11 }} />
-            <ReferenceLine x="1.1–1.2" stroke="#DC2626" strokeDasharray="3 3" label={{ value: t('simCompaHighLabel'), fill: '#DC2626', fontSize: 11 }} />
+            <ReferenceLine x="0.8–0.9" stroke={CHART_THEME.colors[4]} strokeDasharray="4 3" label={{ value: t('simCompaLowLabel'), fill: CHART_THEME.colors[4], fontSize: 11 }} />
+            <ReferenceLine x="1.1–1.2" stroke={CHART_THEME.colors[4]} strokeDasharray="4 3" label={{ value: t('simCompaHighLabel'), fill: CHART_THEME.colors[4], fontSize: 11 }} />
             <Bar dataKey="count" radius={[4, 4, 0, 0]}>
               {distribution.map((entry: CompaRatioDistBucket) => (
                 <Cell key={entry.range} fill={BUCKET_COLORS[entry.range] ?? CHART_THEME.colors[0]} />
@@ -249,18 +251,15 @@ export default function CompaRatioTab({ companies }: Props) {
                       {o.compaRatio.toFixed(3)}
                     </td>
                     <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>
-                      {o.salary.toLocaleString('ko-KR')} {o.currency}
+                      {o.salary.toLocaleString(locale)} {o.currency}
                     </td>
                     <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-muted-foreground text-xs')}>
-                      {o.bandMin.toLocaleString('ko-KR')} ~ {o.bandMax.toLocaleString('ko-KR')}
+                      {o.bandMin.toLocaleString(locale)} ~ {o.bandMax.toLocaleString(locale)}
                     </td>
                     <td className={TABLE_STYLES.cell}>
-                      <span className={cn(
-                        'text-xs px-2 py-0.5 rounded-full font-medium',
-                        o.compaRatio < 0.8 ? 'bg-destructive/5 text-destructive' : 'bg-amber-500/10 text-amber-700'
-                      )}>
+                      <Badge variant={o.compaRatio < 0.8 ? 'error' : 'warning'}>
                         {o.compaRatio < 0.8 ? t('simCompaLowLabel') : t('simCompaHighLabel')}
-                      </span>
+                      </Badge>
                     </td>
                   </tr>
                 ))}

@@ -35,7 +35,7 @@ interface CompanyLoaTypes {
 }
 
 const DOMESTIC_COMPANIES = [
-  'CTR-HQ', 'CTR-KR', 'CTR-MOB', 'CTR-ECO', 'CTR-ROB', 'CTR-ENG', 'FML',
+  'CTR-HOLD', 'CTR', 'CTR-MOB', 'CTR-ECO', 'CTR-ROB', 'CTR-ENR', 'CTR-FML',
 ]
 
 // ═══════════════════════════════════════════════════════════

@@ -29,7 +29,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import ReviewStatusBadge from '@/components/performance/quarterly-review/ReviewStatusBadge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import DashboardStatsBar from '@/components/performance/quarterly-review/DashboardStatsBar'
 import BulkCreateDialog from '@/components/performance/quarterly-review/BulkCreateDialog'
 
@@ -231,7 +231,7 @@ export default function QuarterlyReviewAdminClient({ user }: Props) {
                     <TableCell>{review.manager?.name ?? '—'}</TableCell>
                     <TableCell>{t(`quarter.${review.quarter}`)}</TableCell>
                     <TableCell>
-                      <ReviewStatusBadge status={review.status} label={t(`status.${review.status}`)} />
+                      <StatusBadge status={review.status}>{t(`status.${review.status}`)}</StatusBadge>
                     </TableCell>
                     <TableCell>
                       {review.overallSentiment

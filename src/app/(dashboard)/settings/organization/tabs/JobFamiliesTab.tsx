@@ -25,7 +25,7 @@ export function JobFamiliesTab({
     <div className="space-y-4">
       <div className="mb-4">
         <h3 className="text-base font-semibold text-foreground">{t('kr_keca781ec_keca781eb')}</h3>
-        <p className="text-sm text-muted-foreground">{families.length}개 직종, 총 {families.reduce((s, f) => s + f.profiles, 0)}개 Job Profile</p>
+        <p className="text-sm text-muted-foreground">{t('jobFamilies.subtitle', { families: families.length, profiles: families.reduce((s, f) => s + f.profiles, 0) })}</p>
       </div>
 
       <div className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
@@ -49,7 +49,7 @@ export function JobFamiliesTab({
                 <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{f.code}</td>
                 <td className={TABLE_STYLES.cell}>{f.name}</td>
                 <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>{f.nameEn}</td>
-                <td className={`${TABLE_STYLES.cell} text-center text-muted-foreground`}>{f.profiles}개</td>
+                <td className={`${TABLE_STYLES.cell} text-center text-muted-foreground`}>{t('jobFamilies.countUnit', { count: f.profiles })}</td>
               </tr>
             ))}
           </tbody>

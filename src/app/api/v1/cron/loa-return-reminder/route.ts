@@ -13,9 +13,9 @@ import { apiSuccess, apiError } from '@/lib/api'
 import { unauthorized } from '@/lib/errors'
 
 const THRESHOLDS = [
-  { days: 7, label: '7일' },
-  { days: 3, label: '3일' },
-  { days: 1, label: '1일' },
+  { days: 7 },
+  { days: 3 },
+  { days: 1 },
 ]
 
 export async function POST(req: NextRequest) {
@@ -61,8 +61,11 @@ export async function POST(req: NextRequest) {
       sendNotification({
         employeeId: record.employee.id,
         triggerType: 'LOA_RETURN_REMINDER',
-        title: `복직 예정일 ${threshold.label} 전`,
-        body: `${record.employee.name}님, ${record.type.name} 복직 예정일이 ${threshold.label} 남았습니다. 복직 신청을 준비해 주세요.`,
+        title: `복직 예정일 ${threshold.days}일 전`,
+        body: `${record.employee.name}님, ${record.type.name} 복직 예정일이 ${threshold.days}일 남았습니다. 복직 신청을 준비해 주세요.`,
+        titleKey: 'notifications.loaReturnReminder.title',
+        bodyKey: 'notifications.loaReturnReminder.body',
+        bodyParams: { days: threshold.days, employeeName: record.employee.name, typeName: record.type.name },
         priority: threshold.days <= 1 ? 'high' : 'normal',
         link: '/leave-of-absence',
         metadata: { daysRemaining: threshold.days, loaId: record.id },
@@ -83,8 +86,11 @@ export async function POST(req: NextRequest) {
         sendNotification({
           employeeId: hr.id,
           triggerType: 'LOA_RETURN_REMINDER',
-          title: `복직 예정 알림 (${threshold.label} 전)`,
-          body: `${record.employee.name} — ${record.type.name} 복직 예정일이 ${threshold.label} 남았습니다.`,
+          title: `복직 예정 알림 (${threshold.days}일 전)`,
+          body: `${record.employee.name} — ${record.type.name} 복직 예정일이 ${threshold.days}일 남았습니다.`,
+          titleKey: 'notifications.loaReturnReminderHr.title',
+          bodyKey: 'notifications.loaReturnReminderHr.body',
+          bodyParams: { days: threshold.days, employeeName: record.employee.name, typeName: record.type.name },
           priority: 'normal',
           link: '/leave-of-absence',
           metadata: { daysRemaining: threshold.days, loaId: record.id, employeeName: record.employee.name },

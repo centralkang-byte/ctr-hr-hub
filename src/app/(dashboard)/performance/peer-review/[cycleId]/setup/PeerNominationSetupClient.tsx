@@ -10,6 +10,7 @@ import { ArrowLeft, Users, Sparkles, Plus, CheckCircle2, XCircle, Search } from 
 import { apiClient } from '@/lib/api'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import type { SessionUser } from '@/types'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -41,17 +42,17 @@ interface Nomination {
 }
 
 const SOURCE_LABELS: Record<string, string> = {
-  AI_RECOMMENDED: 'AI 추천',
-  SELF_NOMINATED: '자기 추천',
-  MANAGER_ASSIGNED: '매니저 지정',
-  HR_ASSIGNED: 'HR 지정',
+  AI_RECOMMENDED: 'peerNomination.sourceAiRecommended',
+  SELF_NOMINATED: 'peerNomination.sourceSelfNominated',
+  MANAGER_ASSIGNED: 'peerNomination.sourceManagerAssigned',
+  HR_ASSIGNED: 'peerNomination.sourceHrAssigned',
 }
 
-const STATUS_MAP: Record<string, { label: string; cls: string }> = {
-  PROPOSED: { label: '검토 대기', cls: 'bg-amber-500/15 text-amber-700 border-amber-300' },
-  NOMINATION_APPROVED: { label: '승인', cls: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
-  NOMINATION_REJECTED: { label: '거부', cls: 'bg-destructive/10 text-destructive border-destructive/20' },
-  NOMINATION_COMPLETED: { label: '평가 완료', cls: 'bg-primary/10 text-primary/90 border-primary/20' },
+const STATUS_MAP: Record<string, { labelKey: string }> = {
+  PROPOSED: { labelKey: 'peerNomination.statusProposed' },
+  NOMINATION_APPROVED: { labelKey: 'peerNomination.statusApproved' },
+  NOMINATION_REJECTED: { labelKey: 'peerNomination.statusRejected' },
+  NOMINATION_COMPLETED: { labelKey: 'peerNomination.statusCompleted' },
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -77,7 +78,7 @@ export default function PeerNominationSetupClient({ user: _user, cycleId }: { us
         `/api/v1/peer-review/nominations?cycleId=${cycleId}&size=100`
       )
       setNominations(res.data.items ?? [])
-    } catch (err) { toast({ title: '후보자 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('peerNomination.loadNominationsFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' }) }
     setLoading(false)
   }, [cycleId])
 
@@ -87,7 +88,7 @@ export default function PeerNominationSetupClient({ user: _user, cycleId }: { us
     try {
       const res = await apiClient.get<{ items: Employee[] }>(`/api/v1/employees?search=${encodeURIComponent(searchQuery)}&size=10`)
       setEmployees(res.data.items ?? [])
-    } catch (err) { toast({ title: '직원 검색 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('peerNomination.searchEmployeeFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' }) }
     setEmpLoading(false)
   }, [searchQuery])
 
@@ -106,7 +107,7 @@ export default function PeerNominationSetupClient({ user: _user, cycleId }: { us
         `/api/v1/peer-review/recommend?employeeId=${employeeId}&cycleId=${cycleId}&limit=5`
       )
       setCandidates(res.data ?? [])
-    } catch (err) { toast({ title: '추천 후보 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('peerNomination.loadRecommendationsFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' }) }
   }
 
   const handleNominate = async (nomineeId: string, source: string, score?: number) => {
@@ -122,27 +123,27 @@ export default function PeerNominationSetupClient({ user: _user, cycleId }: { us
       if (selectedEmployeeId) {
         fetchRecommendations(selectedEmployeeId)
       }
-    } catch (err) { toast({ title: '후보 추천 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('peerNomination.nominateFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' }) }
   }
 
   const handleApproveReject = (nomId: string, status: string) => {
     if (status === 'NOMINATION_APPROVED') {
       confirm({
-        title: '승인 확인',
-        description: '이 피어 리뷰 지명을 승인하시겠습니까? 승인 후에는 취소할 수 없습니다.',
-        confirmLabel: '승인',
+        title: t('peerNomination.confirmApproveTitle'),
+        description: t('peerNomination.confirmApproveDesc'),
+        confirmLabel: t('peerNomination.approve'),
         variant: 'default',
         onConfirm: async () => {
           try {
             await apiClient.put(`/api/v1/peer-review/nominations/${nomId}`, { status })
             fetchNominations()
-          } catch (err) { toast({ title: '후보 상태 변경 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+          } catch (err) { toast({ title: t('peerNomination.statusChangeFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' }) }
         },
       })
     } else {
       void apiClient.put(`/api/v1/peer-review/nominations/${nomId}`, { status })
         .then(() => fetchNominations())
-        .catch((err: unknown) => { toast({ title: '후보 상태 변경 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) })
+        .catch((err: unknown) => { toast({ title: t('peerNomination.statusChangeFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' }) })
     }
   }
 
@@ -195,7 +196,7 @@ export default function PeerNominationSetupClient({ user: _user, cycleId }: { us
                   <div key={c.employeeId} className="bg-card rounded-lg p-3 flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-foreground">{c.name}</p>
-                      <p className="text-xs text-muted-foreground">{c.department} · 협업 점수: {c.totalScore}</p>
+                      <p className="text-xs text-muted-foreground">{c.department} · {t('peerNomination.collaborationScore', { score: c.totalScore })}</p>
                     </div>
                     <button onClick={() => handleNominate(c.employeeId, 'AI_RECOMMENDED', c.totalScore)}
                       className="flex items-center gap-1 px-3 py-1.5 bg-primary/90 text-white rounded-lg text-xs font-medium hover:bg-indigo-800">
@@ -211,7 +212,7 @@ export default function PeerNominationSetupClient({ user: _user, cycleId }: { us
         {/* Right: Nominations List */}
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <h2 className="text-base font-semibold text-foreground mb-3">
-            현재 지명 목록 ({nominations.length}건)
+            {t('peerNomination.nominationList', { count: nominations.length })}
           </h2>
           {loading ? (
             <p className="text-sm text-muted-foreground text-center py-4">{tCommon('loading')}</p>
@@ -229,14 +230,14 @@ export default function PeerNominationSetupClient({ user: _user, cycleId }: { us
                         <span className="font-medium">{n.nominee.name}</span>
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        {SOURCE_LABELS[n.nominationSource] ?? n.nominationSource}
-                        {n.collaborationTotalScore != null && ` · 협업 ${n.collaborationTotalScore}`}
+                        {SOURCE_LABELS[n.nominationSource] ? t(SOURCE_LABELS[n.nominationSource]) : n.nominationSource}
+                        {n.collaborationTotalScore != null && ` · ${t('peerNomination.collaboration', { score: n.collaborationTotalScore })}`}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${STATUS_MAP[n.status]?.cls ?? ''}`}>
-                        {STATUS_MAP[n.status]?.label ?? n.status}
-                      </span>
+                      <StatusBadge status={n.status}>
+                        {STATUS_MAP[n.status] ? t(STATUS_MAP[n.status].labelKey) : n.status}
+                      </StatusBadge>
                       {n.status === 'PROPOSED' && (
                         <div className="flex gap-1">
                           <button onClick={() => handleApproveReject(n.id, 'NOMINATION_APPROVED')}

@@ -10,27 +10,51 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
+import { findRouteRule } from '@/lib/rbac/rbac-spec'
 
 // ─── Security Headers ──────────────────────────────────────
 
-const securityHeaders = {
+const isProd = process.env.NODE_ENV === 'production'
+const cspStrictMode = process.env.CSP_STRICT_MODE !== 'false'
+
+function buildCspHeader(nonce: string): string {
+  const common = [
+    "default-src 'self'",
+    "img-src 'self' data: blob: https:",
+    "font-src 'self' data: https://cdn.jsdelivr.net",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "object-src 'none'",
+  ]
+
+  if (isProd && cspStrictMode) {
+    const reportUri = process.env.SENTRY_CSP_REPORT_URI
+    return [
+      ...common,
+      `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+      `style-src 'self' 'nonce-${nonce}' https://cdn.jsdelivr.net`,
+      "connect-src 'self' https://*.ingest.sentry.io https://*.amazonaws.com",
+      'upgrade-insecure-requests',
+      ...(reportUri ? [`report-uri ${reportUri}`] : []),
+    ].join('; ')
+  }
+
+  // Dev / CSP_STRICT_MODE=false 폴백
+  return [
+    ...common,
+    "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+    "connect-src 'self' https: ws: wss:",
+  ].join('; ')
+}
+
+const staticSecurityHeaders: Record<string, string> = {
   'X-Frame-Options': 'DENY',
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
   'X-DNS-Prefetch-Control': 'on',
-  'X-XSS-Protection': '1; mode=block',
-  'Content-Security-Policy': [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
-    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
-    "img-src 'self' data: blob: https:",
-    "font-src 'self' data: https://cdn.jsdelivr.net",
-    "connect-src 'self' https:",
-    "frame-ancestors 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-  ].join('; '),
 }
 
 // ─── Public routes (no auth required) ──────────────────────
@@ -45,100 +69,18 @@ function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'))
 }
 
-// ─── Role hierarchy (mirrors src/config/navigation.ts) ─────
-// These role groups MUST stay in sync with navigation.ts:
-//   ALL_ROLES  = EMPLOYEE, MANAGER, EXECUTIVE, HR_ADMIN, SUPER_ADMIN
-//   MANAGER_UP = MANAGER, EXECUTIVE, HR_ADMIN, SUPER_ADMIN
-//   HR_UP      = HR_ADMIN, SUPER_ADMIN
-
-const ALL_ROLES = ['EMPLOYEE', 'MANAGER', 'EXECUTIVE', 'HR_ADMIN', 'SUPER_ADMIN']
-const MANAGER_UP = ['MANAGER', 'EXECUTIVE', 'HR_ADMIN', 'SUPER_ADMIN']
-const HR_UP = ['HR_ADMIN', 'SUPER_ADMIN']
-
-// ─── Route ACL (path prefix → allowed roles) ──────────────
-// Derived from navigation.ts section visibleTo mappings.
-// Order matters: more specific prefixes must come first.
-// Routes not listed here require authentication but allow any role.
-
-interface RouteRule {
-  prefix: string
-  allowedRoles: string[]
-}
-
-const ROUTE_ACL: RouteRule[] = [
-  // ── HR_ADMIN+ only sections ──────────────────────────
-  // Settings (section 10)
-  { prefix: '/settings', allowedRoles: HR_UP },
-  // Payroll admin (section 7) — but /payroll/me is employee self-service
-  { prefix: '/payroll/me', allowedRoles: ALL_ROLES },
-  { prefix: '/payroll', allowedRoles: HR_UP },
-  // Compliance (section 9)
-  { prefix: '/compliance', allowedRoles: HR_UP },
-  // HR Management (section 4)
-  { prefix: '/employees', allowedRoles: HR_UP },
-  { prefix: '/directory', allowedRoles: ALL_ROLES },
-  { prefix: '/org', allowedRoles: ALL_ROLES },
-  { prefix: '/attendance/admin', allowedRoles: HR_UP },
-  { prefix: '/leave/admin', allowedRoles: HR_UP },
-  { prefix: '/onboarding/me', allowedRoles: ALL_ROLES },
-  { prefix: '/onboarding', allowedRoles: HR_UP },
-  { prefix: '/offboarding/exit-interviews', allowedRoles: HR_UP },
-  { prefix: '/discipline', allowedRoles: HR_UP },
-  // Recruitment (section 5)
-  { prefix: '/recruitment', allowedRoles: HR_UP },
-  { prefix: '/talent', allowedRoles: HR_UP },
-  // Performance & Compensation admin (section 6)
-  { prefix: '/performance/admin', allowedRoles: HR_UP },
-  { prefix: '/performance/goals', allowedRoles: MANAGER_UP },
-  { prefix: '/performance/quarterly-reviews', allowedRoles: HR_UP },
-  { prefix: '/performance/calibration', allowedRoles: HR_UP },
-  { prefix: '/performance/results', allowedRoles: HR_UP },
-  { prefix: '/performance/peer-review', allowedRoles: MANAGER_UP },
-  { prefix: '/compensation', allowedRoles: HR_UP },
-  { prefix: '/benefits', allowedRoles: HR_UP },
-
-  // ── MANAGER+ sections ────────────────────────────────
-  // Team management (section 3)
-  { prefix: '/manager-hub', allowedRoles: MANAGER_UP },
-  { prefix: '/attendance/team', allowedRoles: MANAGER_UP },
-  { prefix: '/leave/team', allowedRoles: MANAGER_UP },
-  { prefix: '/performance/team-goals', allowedRoles: MANAGER_UP },
-  { prefix: '/performance/manager-eval', allowedRoles: MANAGER_UP },
-  { prefix: '/performance/one-on-one', allowedRoles: MANAGER_UP },
-  { prefix: '/delegation', allowedRoles: MANAGER_UP },
-  // Insights (section 8)
-  { prefix: '/analytics', allowedRoles: MANAGER_UP },
-
-  // ── API routes mirroring page ACL ────────────────────
-  { prefix: '/api/v1/settings', allowedRoles: HR_UP },
-  { prefix: '/api/v1/payroll/me', allowedRoles: ALL_ROLES },
-  { prefix: '/api/v1/payroll', allowedRoles: HR_UP },
-  { prefix: '/api/v1/compliance', allowedRoles: HR_UP },
-  // Recruitment: internal-jobs available to all (self-service internal mobility)
-  { prefix: '/api/v1/recruitment/internal-jobs', allowedRoles: ALL_ROLES },
-  // Recruitment: interview evaluate available to managers (interviewers)
-  { prefix: '/api/v1/recruitment/interviews', allowedRoles: MANAGER_UP },
-  { prefix: '/api/v1/recruitment', allowedRoles: HR_UP },
-  { prefix: '/api/v1/year-end/hr', allowedRoles: HR_UP },
-  { prefix: '/api/v1/analytics', allowedRoles: MANAGER_UP },
-]
-
-function findRouteRule(pathname: string): RouteRule | null {
-  for (const rule of ROUTE_ACL) {
-    if (pathname === rule.prefix || pathname.startsWith(rule.prefix + '/')) {
-      return rule
-    }
-  }
-  return null
-}
+// ─── RBAC SSOT ────────────────────────────────────────────
+// Role groups + Route ACL은 src/lib/rbac/rbac-spec.ts에서 중앙 관리.
+// navigation.ts, page guard, 테스트 모두 동일 소스 참조.
 
 // ─── Helper: apply security headers ────────────────────────
 
-function applySecurityHeaders(response: NextResponse): NextResponse {
-  for (const [key, value] of Object.entries(securityHeaders)) {
+function applySecurityHeaders(response: NextResponse, nonce: string): NextResponse {
+  for (const [key, value] of Object.entries(staticSecurityHeaders)) {
     response.headers.set(key, value)
   }
-  if (process.env.NODE_ENV === 'production') {
+  response.headers.set('Content-Security-Policy', buildCspHeader(nonce))
+  if (isProd) {
     response.headers.set(
       'Strict-Transport-Security',
       'max-age=63072000; includeSubDomains; preload',
@@ -182,6 +124,20 @@ function checkLoginRateLimit(ip: string): boolean {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+  const nonce = btoa(crypto.randomUUID())
+
+  // Helper: NextResponse.next() with nonce on request headers (prod only)
+  // Dev mode에서 x-nonce를 설정하면 Next.js가 자동으로 nonce를 인라인 요소에 추가하여
+  // hydration mismatch 발생 → prod strict mode에서만 nonce 전달
+  const useStrictCsp = isProd && cspStrictMode
+  function nextWithNonce(): NextResponse {
+    if (useStrictCsp) {
+      const requestHeaders = new Headers(request.headers)
+      requestHeaders.set('x-nonce', nonce)
+      return NextResponse.next({ request: { headers: requestHeaders } })
+    }
+    return NextResponse.next()
+  }
 
   // 0. Body size limit (Fix 4-7) — reject oversized API payloads before processing
   if (pathname.startsWith('/api/') && request.method !== 'GET' && request.method !== 'HEAD') {
@@ -194,6 +150,7 @@ export async function middleware(request: NextRequest) {
             { error: { code: 'PAYLOAD_TOO_LARGE', message: '요청 본문이 너무 큽니다. 최대 1MB까지 허용됩니다.' } },
             { status: 413 },
           ),
+          nonce,
         )
       }
     }
@@ -218,13 +175,14 @@ export async function middleware(request: NextRequest) {
           },
           { status: 429, headers: { 'Retry-After': '60' } },
         ),
+        nonce,
       )
     }
   }
 
   // 1. Public routes — apply headers only, no auth check
   if (isPublicPath(pathname)) {
-    return applySecurityHeaders(NextResponse.next())
+    return applySecurityHeaders(nextWithNonce(), nonce)
   }
 
   // 2. Get JWT token (lightweight, no DB call)
@@ -237,7 +195,7 @@ export async function middleware(request: NextRequest) {
   if (!token) {
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('callbackUrl', pathname)
-    return applySecurityHeaders(NextResponse.redirect(loginUrl))
+    return applySecurityHeaders(NextResponse.redirect(loginUrl), nonce)
   }
 
   // 4. RBAC check — find matching route rule
@@ -252,16 +210,17 @@ export async function middleware(request: NextRequest) {
             { error: { code: 'FORBIDDEN', message: '접근 권한이 없습니다.' } },
             { status: 403 },
           ),
+          nonce,
         )
       }
       const homeUrl = new URL('/', request.url)
       homeUrl.searchParams.set('error', 'forbidden')
-      return applySecurityHeaders(NextResponse.redirect(homeUrl))
+      return applySecurityHeaders(NextResponse.redirect(homeUrl), nonce)
     }
   }
 
-  // 5. Authorized — proceed with security headers
-  return applySecurityHeaders(NextResponse.next())
+  // 5. Authorized — proceed with security headers + nonce
+  return applySecurityHeaders(nextWithNonce(), nonce)
 }
 
 export const config = {

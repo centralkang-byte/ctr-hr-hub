@@ -8,10 +8,10 @@ import { defineConfig, devices } from '@playwright/test'
 export default defineConfig({
   testDir: './e2e',
   globalSetup: './e2e/global-setup.ts',
-  fullyParallel: false,    // Run sequentially (tests may share state)
+  fullyParallel: true,     // Step 3: non-serial describes distribute tests across workers
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
-  workers: 1,              // Single worker for smoke tests
+  workers: process.env.CI ? 2 : 4,   // Step 3: CI=2 (ubuntu 2vCPU/7GB), local=4
   reporter: [
     ['html', { open: 'never' }],
     ['list'],
@@ -27,8 +27,74 @@ export default defineConfig({
 
   projects: [
     {
-      name: 'chromium',
+      name: 'api',
+      testDir: './e2e/api',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'browser',
+      testDir: './e2e/flows',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    // ─── Visual regression: 3 viewport sub-projects ─────
+    // bypassCSP: true — production build ships strict style-src nonce CSP,
+    // which blocks page.addStyleTag (animation-disabling CSS) in the visual
+    // fixture. bypassCSP tells the browser to ignore CSP for these contexts
+    // so test helpers can inject styles. Only applies inside Playwright —
+    // the served app still emits the real CSP header.
+    {
+      name: 'visual-desktop',
+      testDir: './e2e/visual',
+      retries: 0,
+      timeout: 60_000,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1280, height: 720 },
+        bypassCSP: true,
+      },
+      expect: {
+        toHaveScreenshot: {
+          maxDiffPixelRatio: 0.005,
+          threshold: 0.2,
+        },
+      },
+      snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{testFilePath}/{arg}{ext}',
+    },
+    {
+      name: 'visual-tablet',
+      testDir: './e2e/visual',
+      retries: 0,
+      timeout: 60_000,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 768, height: 1024 },
+        bypassCSP: true,
+      },
+      expect: {
+        toHaveScreenshot: {
+          maxDiffPixelRatio: 0.005,
+          threshold: 0.2,
+        },
+      },
+      snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{testFilePath}/{arg}{ext}',
+    },
+    {
+      name: 'visual-mobile',
+      testDir: './e2e/visual',
+      retries: 0,
+      timeout: 60_000,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 375, height: 812 },
+        bypassCSP: true,
+      },
+      expect: {
+        toHaveScreenshot: {
+          maxDiffPixelRatio: 0.005,
+          threshold: 0.2,
+        },
+      },
+      snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{testFilePath}/{arg}{ext}',
     },
   ],
 
@@ -38,5 +104,11 @@ export default defineConfig({
     url: 'http://localhost:3002',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      // Phase 6A: enable X-Query-Count response headers so API specs can
+      // assert per-route query budgets via `expectQueryBudget`. Never set
+      // in production Vercel env — scoped to preview/development/test only.
+      PRISMA_QUERY_DEBUG: '1',
+    },
   },
 })

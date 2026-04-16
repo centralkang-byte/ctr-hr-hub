@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { TYPOGRAPHY } from '@/lib/styles/typography'
 import type { MovementType, ValidateResponse } from '@/lib/bulk-movement/types'
@@ -17,13 +18,14 @@ import type { SessionUser } from '@/types'
 
 type Step = 'select' | 'upload' | 'confirm'
 
-const STEPS: { key: Step; label: string }[] = [
-  { key: 'select', label: '유형 선택' },
-  { key: 'upload', label: '파일 업로드' },
-  { key: 'confirm', label: '실행 확인' },
+const STEPS: { key: Step; labelKey: string }[] = [
+  { key: 'select', labelKey: 'step.selectType' },
+  { key: 'upload', labelKey: 'step.upload' },
+  { key: 'confirm', labelKey: 'step.confirm' },
 ]
 
 export default function BulkMovementsClient({ user: _user }: { user: SessionUser }) {
+  const t = useTranslations('bulkMovement')
   const [step, setStep] = useState<Step>('select')
   const [selectedType, setSelectedType] = useState<MovementType | null>(null)
   const [file, setFile] = useState<File | null>(null)
@@ -69,9 +71,9 @@ export default function BulkMovementsClient({ user: _user }: { user: SessionUser
     <div className="space-y-6 p-6">
       {/* 페이지 헤더 */}
       <div>
-        <h1 className={cn(TYPOGRAPHY.pageTitle)}>일괄 인사이동</h1>
+        <h1 className={cn(TYPOGRAPHY.pageTitle)}>{t('title')}</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          CSV 파일을 업로드하여 다수 직원의 인사이동을 일괄 처리합니다
+          {t('description')}
         </p>
       </div>
 
@@ -107,7 +109,7 @@ export default function BulkMovementsClient({ user: _user }: { user: SessionUser
                     isActive ? 'font-medium text-foreground' : 'text-muted-foreground'
                   )}
                 >
-                  {s.label}
+                  {t(s.labelKey)}
                 </span>
               </div>
             </div>
@@ -121,7 +123,7 @@ export default function BulkMovementsClient({ user: _user }: { user: SessionUser
           onClick={handleBack}
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          ← 이전 단계
+          {t('button.previousStep')}
         </button>
       )}
 

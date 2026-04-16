@@ -2,6 +2,7 @@
 // CTR HR Hub — /onboarding (Server Page)
 // ═══════════════════════════════════════════════════════════
 
+import { getTranslations } from 'next-intl/server'
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
@@ -11,6 +12,11 @@ import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { OnboardingDashboardClient } from './OnboardingDashboardClient'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
+
+export async function generateMetadata() {
+  const t = await getTranslations('onboarding')
+  return { title: t('pageTitle') }
+}
 
 export default async function OnboardingPage() {
   const session = await getServerSession(authOptions)

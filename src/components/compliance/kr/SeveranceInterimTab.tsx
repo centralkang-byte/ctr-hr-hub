@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import SeveranceInterimForm from './SeveranceInterimForm'
 import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 type SipStatus = 'SIP_PENDING' | 'SIP_APPROVED' | 'SIP_REJECTED' | 'SIP_PAID'
 
@@ -34,23 +35,11 @@ interface SeveranceInterimRequest {
   paidAt?: string
 }
 
-const STATUS_MAP: Record<SipStatus, { label: string; className: string }> = {
-  SIP_PENDING: {
-    label: '검토 중',
-    className: 'bg-amber-500/15 text-amber-700 border border-amber-300',
-  },
-  SIP_APPROVED: {
-    label: '승인',
-    className: 'bg-emerald-500/15 text-emerald-700 border border-emerald-200',
-  },
-  SIP_REJECTED: {
-    label: '반려',
-    className: 'bg-destructive/10 text-destructive border border-destructive/20',
-  },
-  SIP_PAID: {
-    label: '지급 완료',
-    className: 'bg-primary/10 text-primary/90 border border-primary/20',
-  },
+const STATUS_MAP: Record<SipStatus, { label: string }> = {
+  SIP_PENDING: { label: '검토 중' },
+  SIP_APPROVED: { label: '승인' },
+  SIP_REJECTED: { label: '반려' },
+  SIP_PAID: { label: '지급 완료' },
 }
 
 const REASON_LABELS: Record<string, string> = {
@@ -210,12 +199,9 @@ export default function SeveranceInterimTab() {
           const count = requests.filter((r) => r.status === status).length
           const info = STATUS_MAP[status]
           return (
-            <span
-              key={status}
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${info.className}`}
-            >
+            <StatusBadge key={status} status={status}>
               {info.label}: {count}건
-            </span>
+            </StatusBadge>
           )
         })}
       </div>
@@ -309,11 +295,9 @@ export default function SeveranceInterimTab() {
 
                       {/* Status */}
                       <td className="px-4 py-3 text-center">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusInfo.className}`}
-                        >
+                        <StatusBadge status={req.status}>
                           {statusInfo.label}
-                        </span>
+                        </StatusBadge>
                       </td>
 
                       {/* Reviewed/Paid At */}

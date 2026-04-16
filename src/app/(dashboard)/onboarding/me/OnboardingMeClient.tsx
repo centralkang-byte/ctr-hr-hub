@@ -7,7 +7,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { CheckCircle2, Clock, User } from 'lucide-react'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { EmptyState } from '@/components/shared/EmptyState'
@@ -68,11 +68,11 @@ const ASSIGNEE_BADGE_STYLES: Record<string, string> = {
 
 // ─── Helpers ──────────────────────────────────────────────────
 
-function addDays(dateStr: string | null, days: number): string {
+function addDays(dateStr: string | null, days: number, locale: string): string {
   if (!dateStr) return '-'
   const d = new Date(dateStr)
   d.setDate(d.getDate() + days)
-  return d.toLocaleDateString('ko-KR')
+  return d.toLocaleDateString(locale)
 }
 
 function groupByCategory(tasks: OnboardingTaskRow[]): Record<string, OnboardingTaskRow[]> {
@@ -89,6 +89,7 @@ function groupByCategory(tasks: OnboardingTaskRow[]): Record<string, OnboardingT
 
 export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
   const t = useTranslations('onboarding')
+  const locale = useLocale()
 
   const [data, setData] = useState<MyOnboarding | null>(null)
   const [loading, setLoading] = useState(true)
@@ -256,7 +257,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
                 <h3 className="text-base font-bold text-foreground tracking-[-0.02em]">
                   {CATEGORY_LABELS[cat]}
                 </h3>
-                <span className="ml-auto inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold bg-muted text-muted-foreground">
+                <span className="ml-auto inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-muted text-muted-foreground">
                   {grouped[cat].filter((t) => t.status === 'DONE').length} /{' '}
                   {grouped[cat].length}
                 </span>
@@ -306,7 +307,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
 
                       {/* Assignee badge */}
                       <span
-                        className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold ${ASSIGNEE_BADGE_STYLES[row.task.assigneeType] ?? 'bg-muted text-muted-foreground'}`}
+                        className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${ASSIGNEE_BADGE_STYLES[row.task.assigneeType] ?? 'bg-muted text-muted-foreground'}`}
                       >
                         {ASSIGNEE_LABELS[row.task.assigneeType] ?? row.task.assigneeType}
                       </span>
@@ -314,7 +315,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
                       {/* Due date */}
                       <div className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />
-                        {addDays(data.startedAt, row.task.dueDaysAfter)}
+                        {addDays(data.startedAt, row.task.dueDaysAfter, locale)}
                       </div>
 
                       {/* Status */}

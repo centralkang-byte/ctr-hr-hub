@@ -2,13 +2,14 @@ import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { getTranslations } from 'next-intl/server'
 import type { SessionUser } from '@/types'
 import CloseAttendanceClient from './CloseAttendanceClient'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
-export const metadata = {
-    title: '근태 마감 | CTR HR Hub',
-    description: '월별 근태를 마감하여 급여 계산을 시작합니다.',
+export async function generateMetadata() {
+    const t = await getTranslations('payroll')
+    return { title: `${t('page.closeAttendance')} | CTR HR Hub` }
 }
 
 export default async function CloseAttendancePage() {

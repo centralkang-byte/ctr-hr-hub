@@ -1,6 +1,7 @@
 'use client'
 
 import { Save, RotateCcw, Loader2 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -40,28 +41,28 @@ export function ProbationEvalTab({
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-foreground">{t('probationEval')}</h3>
+          <h3 className="text-base font-semibold text-foreground">{t('probationEval.title')}</h3>
           <p className="text-sm text-muted-foreground">{t('probation_keca491_evaluation_kec8b9cec_kebb08f_keab8b0ec_settings')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
+          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
         )}
       </div>
 
-      <SettingFieldWithOverride label="평가 시점" description="수습 기간 중 평가를 실시할 시점" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('probationEval.evalTimingLabel')} description={t('probationEval.evalTimingDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">{settings.evalTimings.map((d, i) => (
-          <span key={i} className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{d}일차</span>
+          <Badge key={i} variant="info">{t('probationEval.dayN', { day: d })}</Badge>
         ))}</div>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="합격 기준 점수" description="수습 평가 합격 기준 점수 (100점 만점)" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('probationEval.passingScoreLabel')} description={t('probationEval.passingScoreDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input type="number" value={settings.passingScore} min={0} max={100} onChange={(e) => setSettings((p) => ({ ...p, passingScore: Number(e.target.value) }))} className="w-20" />
           <span className="text-sm text-muted-foreground">{t('kr_keca090_kec9db4ec')}</span>
         </div>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="자동 정규직 전환" description="합격 시 자동 정규직 전환 여부" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('probationEval.autoConfirmLabel')} description={t('probationEval.autoConfirmDesc')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={settings.autoConfirm} onChange={(e) => setSettings((p) => ({ ...p, autoConfirm: e.target.checked }))} className="h-4 w-4 rounded border-border text-primary" />
           <span className="text-foreground">{t('passed_kec8b9c_kec9e90eb_keca084ed')}</span>
@@ -73,7 +74,7 @@ export function ProbationEvalTab({
           <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}{t('save')}
         </Button>
       </div>
     </div>

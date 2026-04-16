@@ -40,9 +40,6 @@ import {
   FileText,
 //   Monitor,
   Scale,
-  Database,
-  Eye,
-  FileSearch,
   Sparkles,
   AlertTriangle,
   TrendingDown,
@@ -66,12 +63,12 @@ import {
   Globe,
   Calculator,
 //   Upload,
-  CheckCircle2,
   LogOut,
   BedDouble,
   type LucideIcon,
 } from 'lucide-react'
-import { MODULE, ROLE } from '@/lib/constants'
+import { MODULE } from '@/lib/constants'
+import { ROLE_GROUPS } from '@/lib/rbac/rbac-spec'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -105,30 +102,11 @@ export interface NavSection {
   items: NavItem[]
 }
 
-// ─── Role Groups ─────────────────────────────────────────────
+// ─── Role Groups (SSOT: src/lib/rbac/rbac-spec.ts) ──────────
 
-const ALL_ROLES = [
-  ROLE.EMPLOYEE,
-  ROLE.MANAGER,
-  ROLE.EXECUTIVE,
-  ROLE.HR_ADMIN,
-  ROLE.SUPER_ADMIN,
-]
-
-const MANAGER_UP = [
-  ROLE.MANAGER,
-  ROLE.EXECUTIVE,
-  ROLE.HR_ADMIN,
-  ROLE.SUPER_ADMIN,
-]
-
-// const EXECUTIVE_UP = [
-//   ROLE.EXECUTIVE,
-//   ROLE.HR_ADMIN,
-//   ROLE.SUPER_ADMIN,
-// ]
-
-const HR_UP = [ROLE.HR_ADMIN, ROLE.SUPER_ADMIN]
+const ALL_ROLES = [...ROLE_GROUPS.ALL_ROLES]
+const MANAGER_UP = [...ROLE_GROUPS.MANAGER_UP]
+const HR_UP = [...ROLE_GROUPS.HR_UP]
 
 // ─── 10-Section Navigation ───────────────────────────────────
 
@@ -158,15 +136,8 @@ export const NAVIGATION: NavSection[] = [
         icon: Bell,
         module: MODULE.EMPLOYEES,
       },
-      {
-        key: 'approvals-inbox',
-        labelKey: 'nav.home.approvalsInbox',
-        label: '승인함',
-        href: '/approvals/inbox',
-        icon: CheckCircle2,
-        module: MODULE.LEAVE,
-        badge: 'new' as const,
-      },
+      // 승인함 → 나의 업무 승인 탭으로 통합 (2026-04-07 One Hub)
+      // 기존 /approvals/inbox는 /my/tasks?tab=approvals로 redirect
     ],
   },
 

@@ -34,6 +34,21 @@ export const probationEndingRule: NudgeRule = {
     return `${item.displayTitle} — 수습기간 만료 ${daysLeft != null ? `${daysLeft}일 전` : '임박'}. 수습 평가서를 작성해 주세요.`
   },
 
+  getTitleKey(_item: OverdueItem): string {
+    return 'notifications.nudge.probationEnding.title'
+  },
+  getBodyKey(_item: OverdueItem): string {
+    return 'notifications.nudge.probationEnding.body'
+  },
+  getBodyParams(item: OverdueItem): Record<string, string | number> {
+    const daysLeft = item.meta?.daysUntilEnd != null ? Number(item.meta.daysUntilEnd) : 0
+    return {
+      displayTitle: item.displayTitle,
+      employeeName: String(item.meta?.employeeName ?? ''),
+      daysLeft,
+    }
+  },
+
   async findOverdueItems(
     companyId: string,
     assigneeId: string,

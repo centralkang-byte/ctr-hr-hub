@@ -1,0 +1,77 @@
+name: Seed Validate Phase 6B
+
+# Runs scripts/seed-validate-phase6b.ts against a fresh Postgres on every
+# staging push. The validator asserts ~32 invariants (edge persona existence
+# + cascade orphan raw-SQL queries + volume/history seed gates) and exits
+# 1 on any assertion failure or 2 on infra failure, failing the job.
+#
+# Why a dedicated workflow instead of extending e2e.yml: e2e.yml (a) only
+# triggers on main, (b) still has the pre-Session-162 Node 20 / pgvector /
+# Prisma SSL gaps. This file copies the already-validated e2e-api-phase6a.yml
+# shape and swaps in the validator instead of Playwright.
+#
+# All run: commands below use static strings only — no github.event.*
+# interpolation, so no command-injection surface. Only github.ref appears,
+# and only inside the concurrency group key (not a shell-evaluated context).
+
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+concurrency:
+  group: seed-validate-phase6b-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  seed-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: ctr_hr_hub_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://test:test@localhost:5432/ctr_hr_hub_test
+      # SEED_VOLUME and SEED_HISTORY MUST be set at job-level so they are
+      # visible to npx tsx prisma/seed.ts below. The validator detects
+      # volume/history rows via DB queries (employeeNo startsWith 'VOL-',
+      # cycle name startsWith 'HIST-'), not env vars — the env vars only
+      # gate seed execution at prisma/seed.ts:3669 and :3674. Do not move
+      # these onto the validator step.
+      SEED_VOLUME: 'true'
+      SEED_HISTORY: 'true'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Push schema to test DB
+        run: npx prisma db push --force-reset
+
+      - name: Seed test data (edge + volume + history)
+        run: npx tsx prisma/seed.ts
+
+      - name: Run Phase 6B validator
+        run: npm run seed:validate

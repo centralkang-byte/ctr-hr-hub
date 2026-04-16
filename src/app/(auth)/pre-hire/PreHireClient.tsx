@@ -1,6 +1,8 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { Building2, Calendar, Clock } from 'lucide-react'
+import { formatDate } from '@/lib/format/date'
 
 interface Props {
   userName: string
@@ -13,8 +15,9 @@ interface Props {
 }
 
 export default function PreHireClient({ userName, futureAssignment }: Props) {
+  const t = useTranslations('preHire')
   const effectiveDate = futureAssignment
-    ? new Date(futureAssignment.effectiveDate).toLocaleDateString('ko-KR')
+    ? formatDate(futureAssignment.effectiveDate)
     : null
 
   return (
@@ -27,35 +30,35 @@ export default function PreHireClient({ userName, futureAssignment }: Props) {
         </div>
 
         <h1 className="mb-2 text-center text-xl font-semibold text-foreground">
-          {userName}님, 환영합니다
+          {t('welcome', { name: userName })}
         </h1>
 
         {futureAssignment ? (
           <>
             <p className="mb-6 text-center text-sm text-muted-foreground">
-              발령일이 도래하지 않았습니다.
+              {t('notYetEffective')}
             </p>
             <div className="mb-6 rounded-lg bg-muted/50 p-4 space-y-3">
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4 text-muted-foreground/60" />
-                <span className="text-muted-foreground">발령일:</span>
+                <span className="text-muted-foreground">{t('effectiveDate')}</span>
                 <span className="font-medium">{effectiveDate}</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <Building2 className="h-4 w-4 text-muted-foreground/60" />
-                <span className="text-muted-foreground">소속:</span>
+                <span className="text-muted-foreground">{t('affiliation')}</span>
                 <span className="font-medium">
                   {futureAssignment.companyName} · {futureAssignment.departmentName}
                 </span>
               </div>
             </div>
             <p className="text-center text-xs text-muted-foreground/60">
-              {effectiveDate}에 다시 접근해 주세요.
+              {t('comeBackOn', { date: effectiveDate ?? '' })}
             </p>
           </>
         ) : (
           <p className="text-center text-sm text-muted-foreground">
-            발령 정보가 없습니다. 관리자에게 문의해 주세요.
+            {t('noAssignment')}
           </p>
         )}
       </div>

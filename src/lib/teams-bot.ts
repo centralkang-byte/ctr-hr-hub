@@ -6,6 +6,8 @@
 import { createHmac } from 'crypto'
 import { env } from '@/lib/env'
 import { prisma } from '@/lib/prisma'
+import { serverT } from '@/lib/server-i18n'
+import type { Locale } from '@/i18n/config'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -68,6 +70,7 @@ export function verifyWebhookSignature(
 // ─── Command Router ─────────────────────────────────────────
 
 type CommandHandler = (
+  locale: Locale,
   activity: BotActivity,
   employeeId: string,
 ) => Promise<BotResponse>
@@ -80,11 +83,13 @@ const COMMANDS: { pattern: RegExp; handler: CommandHandler }[] = [
 ]
 
 export async function routeBotCommand(
+  locale: Locale,
   activity: BotActivity,
 ): Promise<BotResponse> {
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
   const aadId = activity.from.aadObjectId
   if (!aadId) {
-    return { type: 'message', text: '사용자 정보를 확인할 수 없습니다.' }
+    return { type: 'message', text: await t('teams.bot.noUserInfo') }
   }
 
   // SsoIdentity로 Employee 매핑
@@ -96,7 +101,7 @@ export async function routeBotCommand(
   if (!ssoIdentity) {
     return {
       type: 'message',
-      text: 'HR Hub에 연결된 계정이 없습니다. HR Hub에 먼저 로그인해 주세요.',
+      text: await t('teams.bot.noLinkedAccount'),
     }
   }
 
@@ -104,45 +109,52 @@ export async function routeBotCommand(
 
   for (const cmd of COMMANDS) {
     if (cmd.pattern.test(text)) {
-      return cmd.handler(activity, ssoIdentity.employeeId)
+      return cmd.handler(locale, activity, ssoIdentity.employeeId)
     }
   }
 
-  return handleHelp(activity, ssoIdentity.employeeId)
+  return handleHelp(locale, activity, ssoIdentity.employeeId)
 }
 
 // ─── Command Handlers ───────────────────────────────────────
 
 async function handleLeaveBalance(
+  locale: Locale,
   _activity: BotActivity,
   employeeId: string,
 ): Promise<BotResponse> {
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
+
   const balances = await prisma.employeeLeaveBalance.findMany({
     where: { employeeId },
     include: { policy: { select: { name: true } } },
   })
 
   if (balances.length === 0) {
-    return { type: 'message', text: '등록된 휴가 잔여일이 없습니다.' }
+    return { type: 'message', text: await t('teams.bot.leaveBalance.empty') }
   }
 
-  const lines = balances.map((b) => {
+  const lines: string[] = []
+  for (const b of balances) {
     const granted = Number(b.grantedDays)
     const used = Number(b.usedDays)
     const remaining = granted - used
-    return `- **${b.policy.name}**: ${remaining}일 (총 ${granted}일, 사용 ${used}일)`
-  })
+    lines.push(await t('teams.bot.leaveBalance.item', { name: b.policy.name, remaining, granted, used }))
+  }
 
   return {
     type: 'message',
-    text: `**휴가 잔여 현황**\n\n${lines.join('\n')}`,
+    text: `**${await t('teams.bot.leaveBalance.title')}**\n\n${lines.join('\n')}`,
   }
 }
 
 async function handlePaystub(
+  locale: Locale,
   _activity: BotActivity,
   employeeId: string,
 ): Promise<BotResponse> {
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
+
   const latest = await prisma.payrollItem.findFirst({
     where: { employeeId },
     orderBy: { createdAt: 'desc' },
@@ -152,7 +164,7 @@ async function handlePaystub(
   })
 
   if (!latest) {
-    return { type: 'message', text: '급여 명세서 정보가 없습니다.' }
+    return { type: 'message', text: await t('teams.bot.paystub.empty') }
   }
 
   const start = latest.run.periodStart.toISOString().slice(0, 10)
@@ -161,20 +173,23 @@ async function handlePaystub(
   return {
     type: 'message',
     text: [
-      `**최근 급여 명세서** (${start} ~ ${end})`,
-      `- 기본급: ${Number(latest.baseSalary).toLocaleString()}원`,
-      `- 총 지급액: ${Number(latest.grossPay).toLocaleString()}원`,
-      `- 실수령액: ${Number(latest.netPay).toLocaleString()}원`,
+      `**${await t('teams.bot.paystub.title')}** (${start} ~ ${end})`,
+      `- ${await t('teams.bot.paystub.baseSalary')}: ${await t('teams.bot.paystub.currencyUnit', { amount: Number(latest.baseSalary).toLocaleString() })}`,
+      `- ${await t('teams.bot.paystub.grossPay')}: ${await t('teams.bot.paystub.currencyUnit', { amount: Number(latest.grossPay).toLocaleString() })}`,
+      `- ${await t('teams.bot.paystub.netPay')}: ${await t('teams.bot.paystub.currencyUnit', { amount: Number(latest.netPay).toLocaleString() })}`,
       '',
-      '자세한 내용은 HR Hub > 급여명세서에서 확인하세요.',
+      await t('teams.bot.paystub.detail'),
     ].join('\n'),
   }
 }
 
 async function handleAttendance(
+  locale: Locale,
   _activity: BotActivity,
   employeeId: string,
 ): Promise<BotResponse> {
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
+
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
@@ -187,40 +202,44 @@ async function handleAttendance(
   })
 
   if (!attendance) {
-    return { type: 'message', text: '오늘의 근태 기록이 없습니다.' }
+    return { type: 'message', text: await t('teams.bot.attendance.empty') }
   }
 
+  const timeLocale = locale === 'ko' ? 'ko-KR' : 'en-US'
   const clockIn = attendance.clockIn
-    ? new Date(attendance.clockIn).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
-    : '미출근'
+    ? new Date(attendance.clockIn).toLocaleTimeString(timeLocale, { hour: '2-digit', minute: '2-digit' })
+    : await t('teams.bot.attendance.notIn')
   const clockOut = attendance.clockOut
-    ? new Date(attendance.clockOut).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
-    : '미퇴근'
+    ? new Date(attendance.clockOut).toLocaleTimeString(timeLocale, { hour: '2-digit', minute: '2-digit' })
+    : await t('teams.bot.attendance.notOut')
 
   return {
     type: 'message',
     text: [
-      '**오늘 근태 현황**',
-      `- 출근: ${clockIn}`,
-      `- 퇴근: ${clockOut}`,
-      `- 상태: ${attendance.status}`,
+      `**${await t('teams.bot.attendance.title')}**`,
+      `- ${await t('teams.bot.attendance.clockIn')}: ${clockIn}`,
+      `- ${await t('teams.bot.attendance.clockOut')}: ${clockOut}`,
+      `- ${await t('teams.bot.attendance.status')}: ${attendance.status}`,
     ].join('\n'),
   }
 }
 
 async function handleHelp(
+  locale: Locale,
   _activity: BotActivity,
   _employeeId: string,
 ): Promise<BotResponse> {
+  const t = (key: string) => serverT(locale, key)
+
   return {
     type: 'message',
     text: [
-      '**CTR HR Hub Bot 명령어**',
+      `**${await t('teams.bot.helpTitle')}**`,
       '',
-      '- `휴가` 또는 `leave` — 휴가 잔여 현황 조회',
-      '- `급여` 또는 `paystub` — 최근 급여명세서 조회',
-      '- `근태` 또는 `attendance` — 오늘 근태 현황 조회',
-      '- `도움` 또는 `help` — 이 도움말 표시',
+      await t('teams.bot.helpLeave'),
+      await t('teams.bot.helpPaystub'),
+      await t('teams.bot.helpAttendance'),
+      await t('teams.bot.helpHelp'),
     ].join('\n'),
   }
 }

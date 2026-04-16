@@ -111,9 +111,9 @@ export default function MyCheckinsClient({user: _user }: {
     }
 
     const conditions = checkinStatus ? [
-        { label: t('oneOnOne_keab8b0eb'), done: checkinStatus.hasOneOnOne, detail: checkinStatus.hasOneOnOne ? '완료' : '미완료' },
-        { label: t('kr_keba7a4eb_keab8b0eb'), done: checkinStatus.hasManagerNote, detail: checkinStatus.hasManagerNote ? '완료' : '미완료' },
-        { label: t('goals_keca784ed_kec9785eb'), done: checkinStatus.goalsUpdated >= checkinStatus.goalsTotal && checkinStatus.goalsTotal > 0, detail: `${checkinStatus.goalsUpdated}/${checkinStatus.goalsTotal} 목표 업데이트됨` },
+        { label: t('oneOnOne_keab8b0eb'), done: checkinStatus.hasOneOnOne, detail: checkinStatus.hasOneOnOne ? t('checkin.done') : t('checkin.notDone') },
+        { label: t('kr_keba7a4eb_keab8b0eb'), done: checkinStatus.hasManagerNote, detail: checkinStatus.hasManagerNote ? t('checkin.done') : t('checkin.notDone') },
+        { label: t('goals_keca784ed_kec9785eb'), done: checkinStatus.goalsUpdated >= checkinStatus.goalsTotal && checkinStatus.goalsTotal > 0, detail: t('checkin.goalsUpdated', { updated: checkinStatus.goalsUpdated, total: checkinStatus.goalsTotal }) },
     ] : []
 
     const allComplete = conditions.every((c) => c.done)
@@ -143,11 +143,11 @@ export default function MyCheckinsClient({user: _user }: {
                                 {allComplete ? (
                                     <><CheckCircle2 className="h-5 w-5 text-emerald-600" /><span className="font-medium text-emerald-700">{t('kr_kecb2b4ed_complete')}</span></>
                                 ) : (
-                                    <><Clock className="h-5 w-5 text-amber-600" /><span className="font-medium text-amber-800">{isMandatory ? '필수' : '권장'} 체크인 진행 중</span></>
+                                    <><Clock className="h-5 w-5 text-amber-600" /><span className="font-medium text-amber-800">{isMandatory ? t('checkin.mandatoryInProgress') : t('checkin.recommendedInProgress')}</span></>
                                 )}
                             </div>
                             {checkinStatus.deadline && (
-                                <span className="text-sm text-muted-foreground">마감: {checkinStatus.deadline.slice(0, 10)}</span>
+                                <span className="text-sm text-muted-foreground">{t('checkin.deadline')}: {checkinStatus.deadline.slice(0, 10)}</span>
                             )}
                         </div>
                     </div>
@@ -209,7 +209,7 @@ export default function MyCheckinsClient({user: _user }: {
                                             <div className="mb-3 flex items-center justify-between">
                                                 <div>
                                                     <h3 className="text-sm font-semibold text-foreground">{goal.title}</h3>
-                                                    <span className="text-xs text-muted-foreground">가중치: {goal.weight}%</span>
+                                                    <span className="text-xs text-muted-foreground">{t('weightColLabel')}: {goal.weight}%</span>
                                                 </div>
                                                 <span className="text-sm font-medium text-primary">{Number(goal.achievementScore ?? 0)}%</span>
                                             </div>

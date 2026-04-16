@@ -59,7 +59,7 @@ export default function AiReportClient({ user: _user }: { user: SessionUser }) {
         setCompanies(c.data || [])
       }
     } catch (err) {
-      toast({ title: 'AI 리포트 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('aiReport.loadFailed'), description: err instanceof Error ? err.message : t('error.retryMessage'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -86,10 +86,10 @@ export default function AiReportClient({ user: _user }: { user: SessionUser }) {
       } else if (json.data?.message) {
         setError(json.data.message)
       } else {
-        setError('리포트 생성에 실패했습니다.')
+        setError(t('aiReport.generateFailed'))
       }
     } catch {
-      setError('네트워크 오류가 발생했습니다.')
+      setError(t('aiReport.networkError'))
     } finally {
       setGenerating(false)
     }
@@ -247,7 +247,7 @@ export default function AiReportClient({ user: _user }: { user: SessionUser }) {
                 onChange={(e) => setSelectedCompany(e.target.value)}
                 className="pl-9 pr-8 py-2.5 text-sm border border-border rounded-xl bg-card appearance-none cursor-pointer hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all min-w-[140px]"
               >
-                <option value="">{t('kr_keca084ec')}</option>
+                <option value="">{t('aiReport.allCompanies')}</option>
                 {companies.map((c) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
@@ -264,12 +264,12 @@ export default function AiReportClient({ user: _user }: { user: SessionUser }) {
             {generating ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                {t('kr_kec839dec_keca491')}
+                {t('aiReport.generating')}
               </>
             ) : (
               <>
                 <Sparkles className="h-4 w-4" />
-                {t('kr_keba6aced_kec839dec')}
+                {t('aiReport.generateReport')}
               </>
             )}
           </button>
@@ -289,8 +289,8 @@ export default function AiReportClient({ user: _user }: { user: SessionUser }) {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-primary/10 mb-4">
             <Sparkles className="h-8 w-8 text-primary animate-pulse" />
           </div>
-          <h3 className="text-lg font-semibold text-foreground mb-2">{t('kr_aikeab080_keba6aced_kec839dec_')}</h3>
-          <p className="text-sm text-muted-foreground">{t('kr_kec95bd_5_15kecb488_kec868cec_')}</p>
+          <h3 className="text-lg font-semibold text-foreground mb-2">{t('aiReport.aiAnalyzing')}</h3>
+          <p className="text-sm text-muted-foreground">{t('aiReport.estimatedTime')}</p>
           <div className="mt-6 w-48 mx-auto">
             <div className="h-1.5 bg-muted rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-[#5E81F4] to-[#6B73E8] rounded-full animate-[progressBar_2s_ease-in-out_infinite]" style={{ width: '60%' }} />
@@ -311,19 +311,19 @@ export default function AiReportClient({ user: _user }: { user: SessionUser }) {
                 </div>
                 <div>
                   <h3 className="text-base font-semibold text-foreground">
-                    {currentReport.companyName} — {currentReport.period} 리포트
+                    {currentReport.companyName} — {currentReport.period} {t('aiReport.report')}
                   </h3>
                   <div className="flex items-center gap-3 mt-0.5">
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
                       <Clock className="h-3 w-3" />
-                      {new Date(currentReport.createdAt).toLocaleDateString('ko-KR', {
+                      {new Date(currentReport.createdAt).toLocaleDateString(undefined, {
                         year: 'numeric', month: 'long', day: 'numeric',
                         hour: '2-digit', minute: '2-digit',
                       })}
                     </span>
                     {(currentReport.metadata as { model?: string })?.model && (
                       <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                        {(currentReport.metadata as { model?: string }).model === 'template' ? '템플릿' : '🤖 AI'}
+                        {(currentReport.metadata as { model?: string }).model === 'template' ? t('aiReport.template') : t('aiReport.aiGenerated')}
                       </span>
                     )}
                   </div>
@@ -336,7 +336,7 @@ export default function AiReportClient({ user: _user }: { user: SessionUser }) {
                   handleGenerate()
                 }}
                 className="p-2 rounded-lg hover:bg-muted text-muted-foreground/60 hover:text-muted-foreground transition-colors"
-                title="리포트 재생성"
+                title={t('aiReport.regenerate')}
               >
                 <RefreshCw className="h-4 w-4" />
               </button>
@@ -356,9 +356,9 @@ export default function AiReportClient({ user: _user }: { user: SessionUser }) {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br from-[#5E81F4]/10 to-[#6B73E8]/10 mb-4">
             <Sparkles className="h-8 w-8 text-primary" />
           </div>
-          <h3 className="text-lg font-semibold text-foreground mb-2">{t('kr_kec9584ec_kec839dec_keba6aced_')}</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-2">{t('aiReport.emptyTitle')}</h3>
           <p className="text-sm text-muted-foreground mb-6">
-            {t('kr_kec8381eb_quot_keba6aced_kec83')}
+            {t('aiReport.emptyDescription')}
           </p>
         </div>
       )}
@@ -384,7 +384,7 @@ export default function AiReportClient({ user: _user }: { user: SessionUser }) {
                   </div>
                 </div>
                 <span className="text-xs text-muted-foreground/60">
-                  {new Date(report.createdAt).toLocaleDateString('ko-KR')}
+                  {new Date(report.createdAt).toLocaleDateString()}
                 </span>
               </button>
             ))}

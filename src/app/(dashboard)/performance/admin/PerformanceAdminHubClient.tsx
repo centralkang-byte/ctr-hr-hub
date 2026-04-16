@@ -46,6 +46,7 @@ export function PerformanceAdminHubClient({ user, defaultTab }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const t = useTranslations('nav')
+  const tp = useTranslations('performance')
 
   const activeTab: PerformanceAdminTab =
     resolveDefaultTab(searchParams.get('tab')) ??
@@ -73,24 +74,18 @@ export function PerformanceAdminHubClient({ user, defaultTab }: Props) {
   return (
     <div className="space-y-4">
       <Tabs value={activeTab} onValueChange={handleTabChange}>
-        <div className="border-b border-border overflow-x-auto">
-          <TabsList className="h-auto bg-transparent p-0 w-full justify-start gap-0 rounded-none">
-            {[
-              { value: 'overview',    label: '개요' },
-              { value: 'goals',       label: tabLabel('goals', '목표 관리') },
-              { value: 'results',     label: tabLabel('results', '성과 결과') },
-              { value: 'peer-review', label: tabLabel('peerReview', '동료 평가') },
-            ].map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="rounded-none border-b-2 border-transparent px-4 py-3 text-sm font-medium text-muted-foreground data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:bg-transparent hover:text-foreground"
-              >
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </div>
+        <TabsList aria-label="Performance admin navigation">
+          {[
+            { value: 'overview',    label: tp('admin.overview') },
+            { value: 'goals',       label: tabLabel('goals', '목표 관리') },
+            { value: 'results',     label: tabLabel('results', '성과 결과') },
+            { value: 'peer-review', label: tabLabel('peerReview', '동료 평가') },
+          ].map((tab) => (
+            <TabsTrigger key={tab.value} value={tab.value}>
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
         {/* Radix Tabs 기본 동작: 비활성 탭은 언마운트 → 활성 탭만 API 호출 */}
         <TabsContent value="overview"><PerformanceClient user={user} /></TabsContent>

@@ -4,6 +4,8 @@
 // ═══════════════════════════════════════════════════════════
 
 import type { PayrollItemDetail } from './types'
+import { serverT } from '@/lib/server-i18n'
+import type { Locale } from '@/i18n/config'
 
 interface PayrollItemWithRelations {
   id: string
@@ -42,38 +44,61 @@ function formatDate(d: Date | string): string {
 }
 
 export async function generatePayStubPdf(
+  locale: Locale,
   item: PayrollItemWithRelations,
 ): Promise<Buffer> {
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
   const detail = item.detail as unknown as PayrollItemDetail | null
+
+  // Resolve all labels upfront
+  const [eBaseSalary, eFixedOT, eMeal, eTransport, eOT, eNight, eHoliday, eBonus, eOther] = await Promise.all([
+    t('payroll.pdf.earnings.baseSalary'), t('payroll.pdf.earnings.fixedOvertime'),
+    t('payroll.pdf.earnings.meal'), t('payroll.pdf.earnings.transport'),
+    t('payroll.pdf.earnings.overtime'), t('payroll.pdf.earnings.nightShift'),
+    t('payroll.pdf.earnings.holiday'), t('payroll.pdf.earnings.bonus'), t('payroll.pdf.earnings.other'),
+  ])
+  const [dNP, dHealth, dLTC, dEmpl, dIncome, dLocal] = await Promise.all([
+    t('payroll.pdf.deductions.nationalPension'), t('payroll.pdf.deductions.health'),
+    t('payroll.pdf.deductions.longTermCare'), t('payroll.pdf.deductions.employment'),
+    t('payroll.pdf.deductions.incomeTax'), t('payroll.pdf.deductions.localIncomeTax'),
+  ])
+  const [pTitle, pName, pEmpNo, pDept, pGrade, pPeriod, pPayDate, pEarnings, pAmount, pDeductions, pGross, pTotalDed, pNet, pFooter] = await Promise.all([
+    t('payroll.pdf.title'), t('payroll.pdf.name'), t('payroll.pdf.employeeNo'),
+    t('payroll.pdf.department'), t('payroll.pdf.jobGrade'), t('payroll.pdf.payPeriod'),
+    t('payroll.pdf.payDate'), t('payroll.pdf.earningItems'), t('payroll.pdf.amount'),
+    t('payroll.pdf.deductionItems'), t('payroll.pdf.grossPay'), t('payroll.pdf.totalDeductions'),
+    t('payroll.pdf.netPay'), t('payroll.pdf.footer', { company: item.employee.company.name }),
+  ])
 
   const earningItems = detail
     ? [
-        { label: '기본급', value: detail.earnings.baseSalary },
-        { label: '고정초과근무수당', value: detail.earnings.fixedOvertimeAllowance },
-        { label: '식비', value: detail.earnings.mealAllowance },
-        { label: '교통비', value: detail.earnings.transportAllowance },
-        { label: '연장근무수당', value: detail.earnings.overtimePay },
-        { label: '야간근무수당', value: detail.earnings.nightShiftPay },
-        { label: '휴일근무수당', value: detail.earnings.holidayPay },
-        { label: '상여금', value: detail.earnings.bonuses },
-        { label: '기타수당', value: detail.earnings.otherEarnings },
+        { label: eBaseSalary, value: detail.earnings.baseSalary },
+        { label: eFixedOT, value: detail.earnings.fixedOvertimeAllowance },
+        { label: eMeal, value: detail.earnings.mealAllowance },
+        { label: eTransport, value: detail.earnings.transportAllowance },
+        { label: eOT, value: detail.earnings.overtimePay },
+        { label: eNight, value: detail.earnings.nightShiftPay },
+        { label: eHoliday, value: detail.earnings.holidayPay },
+        { label: eBonus, value: detail.earnings.bonuses },
+        { label: eOther, value: detail.earnings.otherEarnings },
       ].filter((i) => i.value > 0)
     : []
 
   const deductionItems = detail
     ? [
-        { label: '국민연금', value: detail.deductions.nationalPension },
-        { label: '건강보험', value: detail.deductions.healthInsurance },
-        { label: '장기요양보험', value: detail.deductions.longTermCare },
-        { label: '고용보험', value: detail.deductions.employmentInsurance },
-        { label: '소득세', value: detail.deductions.incomeTax },
-        { label: '지방소득세', value: detail.deductions.localIncomeTax },
+        { label: dNP, value: detail.deductions.nationalPension },
+        { label: dHealth, value: detail.deductions.healthInsurance },
+        { label: dLTC, value: detail.deductions.longTermCare },
+        { label: dEmpl, value: detail.deductions.employmentInsurance },
+        { label: dIncome, value: detail.deductions.incomeTax },
+        { label: dLocal, value: detail.deductions.localIncomeTax },
       ].filter((i) => i.value > 0)
     : []
 
+  const htmlLang = locale === 'ko' ? 'ko' : locale
   const html = `
 <!DOCTYPE html>
-<html>
+<html lang="${htmlLang}">
 <head>
   <meta charset="utf-8" />
   <style>
@@ -97,51 +122,49 @@ export async function generatePayStubPdf(
   </style>
 </head>
 <body>
-  <h1>급 여 명 세 서</h1>
+  <h1>${pTitle}</h1>
   <p class="subtitle">${item.employee.company.name}</p>
 
   <div class="info-grid">
-    <div class="info-item"><span class="info-label">성명</span><span class="info-value">${item.employee.name}</span></div>
-    <div class="info-item"><span class="info-label">사번</span><span class="info-value">${item.employee.employeeNo}</span></div>
-    <div class="info-item"><span class="info-label">부서</span><span class="info-value">${item.employee.department.name}</span></div>
-    <div class="info-item"><span class="info-label">직급</span><span class="info-value">${item.employee.jobGrade.name}</span></div>
-    <div class="info-item"><span class="info-label">급여기간</span><span class="info-value">${formatDate(item.run.periodStart)} ~ ${formatDate(item.run.periodEnd)}</span></div>
-    <div class="info-item"><span class="info-label">지급일</span><span class="info-value">${item.run.payDate ? formatDate(item.run.payDate) : '-'}</span></div>
+    <div class="info-item"><span class="info-label">${pName}</span><span class="info-value">${item.employee.name}</span></div>
+    <div class="info-item"><span class="info-label">${pEmpNo}</span><span class="info-value">${item.employee.employeeNo}</span></div>
+    <div class="info-item"><span class="info-label">${pDept}</span><span class="info-value">${item.employee.department.name}</span></div>
+    <div class="info-item"><span class="info-label">${pGrade}</span><span class="info-value">${item.employee.jobGrade.name}</span></div>
+    <div class="info-item"><span class="info-label">${pPeriod}</span><span class="info-value">${formatDate(item.run.periodStart)} ~ ${formatDate(item.run.periodEnd)}</span></div>
+    <div class="info-item"><span class="info-label">${pPayDate}</span><span class="info-value">${item.run.payDate ? formatDate(item.run.payDate) : '-'}</span></div>
   </div>
 
   <div class="two-col">
     <div>
       <table>
-        <thead><tr><th>지급항목</th><th class="amount">금액</th></tr></thead>
+        <thead><tr><th>${pEarnings}</th><th class="amount">${pAmount}</th></tr></thead>
         <tbody>
           ${earningItems.map((i) => `<tr><td>${i.label}</td><td class="amount">${formatKRW(i.value)}</td></tr>`).join('')}
-          <tr class="total-row"><td>총 지급액</td><td class="amount">${formatKRW(detail?.grossPay ?? Number(item.grossPay))}</td></tr>
+          <tr class="total-row"><td>${pGross}</td><td class="amount">${formatKRW(detail?.grossPay ?? Number(item.grossPay))}</td></tr>
         </tbody>
       </table>
     </div>
     <div>
       <table>
-        <thead><tr><th>공제항목</th><th class="amount">금액</th></tr></thead>
+        <thead><tr><th>${pDeductions}</th><th class="amount">${pAmount}</th></tr></thead>
         <tbody>
           ${deductionItems.map((i) => `<tr><td>${i.label}</td><td class="amount">${formatKRW(i.value)}</td></tr>`).join('')}
-          <tr class="total-row"><td>총 공제액</td><td class="amount">${formatKRW(detail?.totalDeductions ?? Number(item.deductions))}</td></tr>
+          <tr class="total-row"><td>${pTotalDed}</td><td class="amount">${formatKRW(detail?.totalDeductions ?? Number(item.deductions))}</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
   <div class="net-pay">
-    <div class="net-pay-label">실수령액</div>
+    <div class="net-pay-label">${pNet}</div>
     <div class="net-pay-value">${formatKRW(detail?.netPay ?? Number(item.netPay))}</div>
   </div>
 
   <div class="footer">
-    본 급여명세서는 ${item.employee.company.name}에서 발행한 전자문서입니다.
+    ${pFooter}
   </div>
 </body>
 </html>`
 
-  // Use a simple HTML-to-PDF approach — in production, use puppeteer or @react-pdf/renderer
-  // For now, return HTML as buffer (can be rendered client-side)
   return Buffer.from(html, 'utf-8')
 }

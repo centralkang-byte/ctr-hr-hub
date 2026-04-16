@@ -72,7 +72,7 @@ export default function ExecutiveReportClient({ user: _user }: { user: SessionUs
               </span>
               <span className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Clock className="h-3 w-3" />
-                {new Date(report.generatedAt).toLocaleString('ko-KR')}
+                {new Date(report.generatedAt).toLocaleString()}
               </span>
             </div>
           </div>

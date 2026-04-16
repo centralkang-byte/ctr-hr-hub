@@ -11,6 +11,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { teamsConfigSchema } from '@/lib/schemas/teams'
+import { getRequestLocale, serverT } from '@/lib/server-i18n'
 import type { SessionUser } from '@/types'
 
 // ─── GET — TeamsIntegration 조회 ────────────────────────────
@@ -33,7 +34,8 @@ export const PUT = withPermission(
     const body: unknown = await req.json()
     const parsed = teamsConfigSchema.safeParse(body)
     if (!parsed.success) {
-      throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
+      const locale = await getRequestLocale()
+      throw badRequest(await serverT(locale, 'teams.api.invalidRequestData'), { issues: parsed.error.issues })
     }
 
     try {

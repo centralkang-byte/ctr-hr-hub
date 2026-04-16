@@ -74,6 +74,24 @@ export const performanceGoalOverdueRule: NudgeRule = {
     return `${cycleName ?? '성과 주기'}의 MBO 목표 제출 기한이 ${Math.abs(daysOverdue)}일 초과됐습니다. 즉시 처리해 주세요.`
   },
 
+  getTitleKey(_item: OverdueItem): string {
+    return 'notifications.nudge.perfGoalOverdue.title'
+  },
+  getBodyKey(item: OverdueItem): string {
+    const daysLeft = item.meta?.daysUntilDeadline != null ? Number(item.meta.daysUntilDeadline) : 0
+    return daysLeft > 0
+      ? 'notifications.nudge.perfGoalOverdue.bodyBefore'
+      : 'notifications.nudge.perfGoalOverdue.bodyAfter'
+  },
+  getBodyParams(item: OverdueItem, daysOverdue: number): Record<string, string | number> {
+    const daysLeft = item.meta?.daysUntilDeadline != null ? Number(item.meta.daysUntilDeadline) : 0
+    return {
+      cycleName: String(item.meta?.cycleName ?? ''),
+      daysOverdue,
+      daysLeft,
+    }
+  },
+
   async findOverdueItems(
     companyId:   string,
     assigneeId:  string,

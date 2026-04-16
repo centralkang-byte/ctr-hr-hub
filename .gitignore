@@ -51,3 +51,5 @@ data/*.json
 !data/README.md
 .gstack/
 .superpowers/
+.context/
+.superpowers/

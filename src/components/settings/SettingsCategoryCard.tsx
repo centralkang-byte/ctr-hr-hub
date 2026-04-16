@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { ChevronRight } from 'lucide-react'
 import type { SettingsCategoryConfig } from './settings-config'
 
@@ -15,6 +16,7 @@ interface SettingsCategoryCardProps {
 
 export function SettingsCategoryCard({ config }: SettingsCategoryCardProps) {
   const router = useRouter()
+  const t = useTranslations('settings')
   const Icon = config.icon
   const previewTabs = config.tabs.slice(0, 3)
 
@@ -33,12 +35,12 @@ export function SettingsCategoryCard({ config }: SettingsCategoryCardProps) {
       </div>
 
       {/* Labels */}
-      <h3 className="text-base font-semibold text-foreground">{config.label}</h3>
+      <h3 className="text-base font-semibold text-foreground">{t(`categories.${config.key}`)}</h3>
       <p className="mt-0.5 text-xs text-muted-foreground">{config.labelEn}</p>
 
       {/* Tab count */}
       <p className="mt-3 text-sm text-muted-foreground">
-        {config.tabs.length}개 설정 항목
+        {t('tabCount', { count: config.tabs.length })}
       </p>
 
       {/* Preview */}
@@ -46,12 +48,12 @@ export function SettingsCategoryCard({ config }: SettingsCategoryCardProps) {
         {previewTabs.map((tab) => (
           <li key={tab.slug} className="flex items-center gap-1.5 text-sm text-foreground/70">
             <span className="text-primary">·</span>
-            {tab.label}
+            {t(`tabs.${tab.slug}`)}
           </li>
         ))}
         {config.tabs.length > 3 && (
           <li className="text-xs text-muted-foreground">
-            +{config.tabs.length - 3}개 더보기
+            {t('moreItems', { count: config.tabs.length - 3 })}
           </li>
         )}
       </ul>

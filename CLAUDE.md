@@ -125,7 +125,33 @@ In QA mode, flag any code that doesn't match DESIGN.md.
 ## Verification & Workflow
 
 ### Dev Flow
-Implement → `/verify` → UI QA (if UI changed) → `/wrap-up` (commit + STATUS + deploy)
+Plan → **Codex Plan Review** → Implement → `/verify` (includes **Codex Post-Review**) → UI QA (if UI changed) → `/wrap-up`
+
+### Codex Outside Voice Review (MANDATORY)
+
+Two review gates in every task that is **planned** to touch 3+ files (judge by plan scope, not final diff):
+
+**Gate 1 — Plan Review** (after writing plan, before ExitPlanMode):
+- Write plan summary to `/tmp/codex-prompt.txt`
+- Run: `cat /tmp/codex-prompt.txt | /opt/homebrew/bin/codex exec -`
+- Incorporate HIGH findings into plan before approval
+
+**Gate 2 — Post-Implementation Review** (during `/verify`, after tsc+lint pass):
+- Run: `/opt/homebrew/bin/codex review --uncommitted`
+- Fix all HIGH findings before commit
+
+**Codex CLI reference** (GPT-5.4, `/opt/homebrew/bin/codex`):
+```bash
+# Gate 2: built-in review commands (no prompt needed)
+codex review --uncommitted          # review uncommitted changes
+codex review --base staging         # review branch diff
+codex review --commit <SHA>         # review specific commit
+
+# Gate 1: custom prompt via stdin pipe (MUST use pipe, NOT $(cat))
+cat /tmp/prompt.txt | codex exec -  # ✅ stable
+codex exec "$(cat /tmp/prompt.txt)" # ❌ shows "Reading additional input from stdin..."
+```
+Timeout: 300s (codex exec scans full codebase).
 
 ### /verify (code checks)
 1. **Code:** `npx tsc --noEmit` + `npm run lint` (pre-commit hook auto-runs)

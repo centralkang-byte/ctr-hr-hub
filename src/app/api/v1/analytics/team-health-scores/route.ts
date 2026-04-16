@@ -3,24 +3,19 @@
 // GET /api/v1/analytics/team-health-scores
 // ═══════════════════════════════════════════════════════════
 
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { apiSuccess } from '@/lib/api'
+import { withPermission, perm } from '@/lib/permissions'
+import { MODULE, ACTION } from '@/lib/constants'
+import { parseAnalyticsParams } from '@/lib/analytics/parse-params'
+import type { SessionUser } from '@/types'
 
-export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+export const GET = withPermission(
+  async (req: NextRequest, _ctx, user: SessionUser) => {
+    const params = parseAnalyticsParams(new URL(req.url).searchParams)
+    const companyId = params.companyId || user.companyId
 
-  const user = session.user as { role?: string; companyId?: string }
-  if (!['HR_ADMIN', 'SUPER_ADMIN'].includes(user.role ?? '')) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  }
-
-  const { searchParams } = new URL(req.url)
-  const companyId = searchParams.get('company_id') ?? user.companyId ?? ''
-
-  try {
     const departments = await prisma.department.findMany({
       where: { companyId },
       select: {
@@ -50,9 +45,7 @@ export async function GET(req: NextRequest) {
       .filter((d) => d.latestScore !== null)
       .sort((a, b) => (b.latestScore?.overallScore ?? 0) - (a.latestScore?.overallScore ?? 0))
 
-    return NextResponse.json({ success: true, data })
-  } catch (error) {
-    console.error('[team-health-scores GET]', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
+    return apiSuccess(data)
+  },
+  perm(MODULE.ANALYTICS, ACTION.VIEW),
+)

@@ -41,6 +41,7 @@ import {
 import { apiClient } from '@/lib/api'
 import { AnalyticsPageLayout } from '@/components/analytics/AnalyticsPageLayout'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
+import { CHART_THEME, RISK_COLORS } from '@/lib/styles/chart'
 import { cn } from '@/lib/utils'
 
 // ─── 타입 ────────────────────────────────────────────────
@@ -89,46 +90,32 @@ interface TeamHealthRow {
 // ─── 상수 ────────────────────────────────────────────────
 
 const TABS = [
-  { key: 'turnover', label: '이직 예측', icon: TrendingDown },
-  { key: 'burnout', label: '번아웃', icon: Activity },
-  { key: 'team', label: '팀 건강', icon: Heart },
-  { key: 'workforce', label: '인력 현황', icon: Users },
+  { key: 'turnover', labelKey: 'predictive.tabs.turnover', icon: TrendingDown },
+  { key: 'burnout', labelKey: 'predictive.tabs.burnout', icon: Activity },
+  { key: 'team', labelKey: 'predictive.tabs.teamHealth', icon: Heart },
+  { key: 'workforce', labelKey: 'predictive.tabs.workforce', icon: Users },
 ] as const
 
 type TabKey = (typeof TABS)[number]['key']
 
-const RISK_CONFIG: Record<RiskLevel, { label: string; bg: string; text: string; border: string }> = {
-  low:      { label: '낮음', bg: 'bg-emerald-500/15', text: 'text-emerald-700', border: 'border-emerald-200' },
-  medium:   { label: '보통', bg: 'bg-amber-500/15', text: 'text-amber-700', border: 'border-amber-300' },
-  high:     { label: '높음', bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20' },
-  critical: { label: '위험', bg: 'bg-orange-500/10', text: 'text-orange-700', border: 'border-orange-200' },
+const RISK_CONFIG: Record<RiskLevel, { labelKey: string; bg: string; text: string; border: string }> = {
+  low:      { labelKey: 'predictive.riskLevels.low', bg: 'bg-emerald-500/15', text: 'text-emerald-700', border: 'border-emerald-200' },
+  medium:   { labelKey: 'predictive.riskLevels.medium', bg: 'bg-amber-500/15', text: 'text-amber-700', border: 'border-amber-300' },
+  high:     { labelKey: 'predictive.riskLevels.high', bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20' },
+  critical: { labelKey: 'predictive.riskLevels.critical', bg: 'bg-orange-500/10', text: 'text-orange-700', border: 'border-orange-200' },
 }
 
-const RISK_COLORS: Record<RiskLevel, string> = {
-  low: '#059669',
-  medium: '#F59E0B',
-  high: '#EF4444',
-  critical: '#C2410C',
-}
-
-const CHART_THEME = {
-  grid: { stroke: '#F5F5F5', strokeDasharray: '3 3' },
-  tooltip: {
-    contentStyle: { borderRadius: '8px', border: '1px solid #E8E8E8', boxShadow: '0 4px 16px rgba(15,23,42,0.06)' },
-    labelStyle: { fontWeight: 600, color: '#1A1A1A' },
-  },
-  colors: ['#5E81F4', '#22C55E', '#F59E0B', '#8B5CF6', '#EF4444'],
-}
 
 // ─── 헬퍼 ────────────────────────────────────────────────
 
 function RiskBadge({ level }: { level: RiskLevel }) {
+  const t = useTranslations('analytics')
   const cfg = RISK_CONFIG[level]
   return (
     <span
       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${cfg.bg} ${cfg.text} ${cfg.border}`}
     >
-      {cfg.label}
+      {t(cfg.labelKey)}
     </span>
   )
 }
@@ -158,6 +145,7 @@ function SummaryCards({
   burnoutData: BurnoutRow[]
   teamData: TeamHealthRow[]
 }) {
+  const t = useTranslations('analytics')
   const highTurnover = turnoverData.filter((d) =>
     ['high', 'critical'].includes(d.latestScore?.riskLevel ?? '')
   ).length
@@ -171,34 +159,34 @@ function SummaryCards({
   const cards = [
     {
       icon: TrendingDown,
-      label: 'kr_kec9db4ec_keab3a0ec_kec9db8ec',
+      label: t('predictive.summary.turnoverHighRisk'),
       value: highTurnover,
-      unit: 'persons',
-      color: '#EF4444',
+      unit: t('predictive.summary.persons'),
+      color: RISK_COLORS.high,
       bg: '#FEE2E2',
     },
     {
       icon: Zap,
-      label: 'kr_kebb288ec_keab3a0ec_kec9db8ec',
+      label: t('predictive.summary.burnoutHighRisk'),
       value: highBurnout,
-      unit: 'persons',
-      color: '#F59E0B',
+      unit: t('predictive.summary.persons'),
+      color: RISK_COLORS.medium,
       bg: '#FEF3C7',
     },
     {
       icon: Shield,
-      label: 'risk_ked8c80',
+      label: t('predictive.summary.riskTeams'),
       value: criticalTeams,
-      unit: 'kr_keab09c',
-      color: '#8B5CF6',
+      unit: t('predictive.summary.teams'),
+      color: CHART_THEME.colors[3],
       bg: '#EDE9FE',
     },
     {
       icon: Users,
-      label: 'analytics_keb8c80ec_kec9db8ec',
+      label: t('predictive.summary.totalAnalyzed'),
       value: turnoverData.length,
-      unit: 'persons',
-      color: '#059669',
+      unit: t('predictive.summary.persons'),
+      color: RISK_COLORS.low,
       bg: '#D1FAE5',
     },
   ]
@@ -226,8 +214,9 @@ function SummaryCards({
 // ─── 이직 예측 탭 ─────────────────────────────────────
 
 function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
+  const t = useTranslations('analytics')
   const chartData = ['critical', 'high', 'medium', 'low'].map((level) => ({
-    level: RISK_CONFIG[level as RiskLevel].label,
+    level: t(RISK_CONFIG[level as RiskLevel].labelKey),
     count: data.filter((d) => d.latestScore?.riskLevel === level).length,
     fill: RISK_COLORS[level as RiskLevel],
   }))
@@ -237,7 +226,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 분포 차트 */}
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <h3 className="text-base font-semibold text-foreground mb-4">{'risk_keb8f84_kebb684ed'}</h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">{t('predictive.turnover.riskDistribution')}</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
               <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
@@ -255,7 +244,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
 
         {/* 고위험 Top 5 */}
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <h3 className="text-base font-semibold text-foreground mb-4">{'kr_keab3a0ec_kec8381ec_5persons'}</h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">{t('predictive.turnover.highRiskTop5')}</h3>
           <div className="space-y-3">
             {data.slice(0, 5).map((row) => (
               <div key={row.employeeId} className="flex items-center gap-3">
@@ -277,7 +266,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
               </div>
             ))}
             {data.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-8">{'kr_kec8aa4ec_keb8db0ec_kec9786ec'}</p>
+              <p className="text-sm text-muted-foreground text-center py-8">{t('predictive.noCalculationData')}</p>
             )}
           </div>
         </div>
@@ -286,18 +275,18 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
       {/* 전체 목록 */}
       <div className="bg-card rounded-xl border border-border">
         <div className="px-5 py-4 border-b border-border">
-          <h3 className="text-base font-semibold text-foreground">{'kr_kec9db4ec_risk_all_kebaaa9eb'}</h3>
+          <h3 className="text-base font-semibold text-foreground">{t('predictive.turnover.allList')}</h3>
         </div>
         <div className="overflow-x-auto">
           <table className={TABLE_STYLES.table}>
             <thead className={TABLE_STYLES.header}>
               <tr className={TABLE_STYLES.row}>
-                <th className={TABLE_STYLES.headerCell}>{'이름'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'부서'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'직급'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'risk_score'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'risk_keb8f84'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'kr_keca3bcec_kec9a94ec'}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.table.name')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.table.department')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.table.grade')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.table.riskScore')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.table.riskLevel')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.table.topFactors')}</th>
                 <th className={TABLE_STYLES.headerCell}></th>
               </tr>
             </thead>
@@ -311,7 +300,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
                     {row.latestScore ? (
                       <ScoreBar score={row.latestScore.overallScore} level={row.latestScore.riskLevel} />
                     ) : (
-                      <span className="text-xs text-muted-foreground">{'kr_kebafb8ea'}</span>
+                      <span className="text-xs text-muted-foreground">{t('predictive.noScore')}</span>
                     )}
                   </td>
                   <td className={TABLE_STYLES.cell}>
@@ -331,7 +320,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
                       href={`/analytics/predictive/${row.employeeId}`}
                       className="text-sm text-primary hover:text-primary/90 font-medium"
                     >
-                      {'analytics'}
+                      {t('predictive.viewDetail')}
                     </Link>
                   </td>
                 </tr>
@@ -340,7 +329,7 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
           </table>
           {data.length === 0 && (
             <div className="text-center py-12 text-sm text-muted-foreground">
-              {'kr_keb8db0ec_kec9786ec_kebb0b0ec_'}
+              {t('predictive.noData')}
             </div>
           )}
         </div>
@@ -352,8 +341,9 @@ function TurnoverTab({ data }: { data: TurnoverRiskRow[] }) {
 // ─── 번아웃 탭 ───────────────────────────────────────
 
 function BurnoutTab({ data }: { data: BurnoutRow[] }) {
+  const t = useTranslations('analytics')
   const chartData = ['critical', 'high', 'medium', 'low'].map((level) => ({
-    level: RISK_CONFIG[level as RiskLevel].label,
+    level: t(RISK_CONFIG[level as RiskLevel].labelKey),
     count: data.filter((d) => d.latestScore?.riskLevel === level).length,
     fill: RISK_COLORS[level as RiskLevel],
   }))
@@ -362,7 +352,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <h3 className="text-base font-semibold text-foreground mb-4">{'kr_kebb288ec_risk_kebb684ed'}</h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">{t('predictive.burnout.riskDistribution')}</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 0, left: -20 }}>
               <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
@@ -379,7 +369,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
         </div>
 
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <h3 className="text-base font-semibold text-foreground mb-4">{'kr_kebb288ec_keab3a0ec_kec8381ec_'}</h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">{t('predictive.burnout.highRiskTop5')}</h3>
           <div className="space-y-3">
             {data.slice(0, 5).map((row) => (
               <div key={row.employeeId} className="flex items-center gap-3">
@@ -391,7 +381,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
               </div>
             ))}
             {data.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-8">{'kr_kec8aa4ec_keb8db0ec_kec9786ec'}</p>
+              <p className="text-sm text-muted-foreground text-center py-8">{t('predictive.noCalculationData')}</p>
             )}
           </div>
         </div>
@@ -399,17 +389,17 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
 
       <div className="bg-card rounded-xl border border-border">
         <div className="px-5 py-4 border-b border-border">
-          <h3 className="text-base font-semibold text-foreground">{'kr_kebb288ec_all_kebaaa9eb'}</h3>
+          <h3 className="text-base font-semibold text-foreground">{t('predictive.burnout.allList')}</h3>
         </div>
         <div className="overflow-x-auto">
           <table className={TABLE_STYLES.table}>
             <thead className={TABLE_STYLES.header}>
               <tr className={TABLE_STYLES.row}>
-                <th className={TABLE_STYLES.headerCell}>{'이름'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'부서'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'kr_kebb288ec_score'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'risk_keb8f84'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'kr_keab384ec'}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.table.name')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.table.department')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.burnout.score')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.table.riskLevel')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.table.calculatedAt')}</th>
               </tr>
             </thead>
             <tbody>
@@ -421,7 +411,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
                     {row.latestScore ? (
                       <ScoreBar score={row.latestScore.overallScore} level={row.latestScore.riskLevel} />
                     ) : (
-                      <span className="text-xs text-muted-foreground">{'kr_kebafb8ea'}</span>
+                      <span className="text-xs text-muted-foreground">{t('predictive.noScore')}</span>
                     )}
                   </td>
                   <td className={TABLE_STYLES.cell}>
@@ -429,7 +419,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
                   </td>
                   <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>
                     {row.latestScore
-                      ? new Date(row.latestScore.calculatedAt).toLocaleDateString('ko-KR')
+                      ? new Date(row.latestScore.calculatedAt).toLocaleDateString()
                       : '—'}
                   </td>
                 </tr>
@@ -438,7 +428,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
           </table>
           {data.length === 0 && (
             <div className="text-center py-12 text-sm text-muted-foreground">
-              {'kr_keb8db0ec_kec9786ec_kebb0b0ec_'}
+              {t('predictive.noData')}
             </div>
           )}
         </div>
@@ -450,6 +440,7 @@ function BurnoutTab({ data }: { data: BurnoutRow[] }) {
 // ─── 팀 건강 탭 ─────────────────────────────────────
 
 function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
+  const t = useTranslations('analytics')
   const radarData = data.slice(0, 8).map((d) => ({
     team: d.departmentName.slice(0, 6),
     score: 100 - (d.latestScore?.overallScore ?? 0),
@@ -459,7 +450,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <h3 className="text-base font-semibold text-foreground mb-4">{'kr_ked8c80eb_keab1b4ea'}</h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">{t('predictive.teamHealth.healthRadar')}</h3>
           <ResponsiveContainer width="100%" height={220}>
             <RadarChart data={radarData}>
               <PolarGrid />
@@ -471,7 +462,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
         </div>
 
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <h3 className="text-base font-semibold text-foreground mb-4">{'kr_ked8c80_keab1b4ea_risk_status'}</h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">{t('predictive.teamHealth.riskStatus')}</h3>
           <div className="space-y-3">
             {data
               .filter((d) => ['high', 'critical'].includes(d.latestScore?.riskLevel ?? ''))
@@ -480,13 +471,13 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
                 <div key={d.departmentId} className="flex items-center gap-3">
                   <div className="flex-1">
                     <p className="text-sm font-medium text-foreground">{d.departmentName}</p>
-                    <p className="text-xs text-muted-foreground">{d.latestScore?.memberCount ?? 0}명</p>
+                    <p className="text-xs text-muted-foreground">{t('predictive.teamHealth.memberCount', { count: d.latestScore?.memberCount ?? 0 })}</p>
                   </div>
                   {d.latestScore && <RiskBadge level={d.latestScore.riskLevel} />}
                 </div>
               ))}
             {data.filter((d) => ['high', 'critical'].includes(d.latestScore?.riskLevel ?? '')).length === 0 && (
-              <p className="text-sm text-emerald-600 text-center py-8">{'kr_kebaaa8eb_ked8c80ec_keab1b4ea'}</p>
+              <p className="text-sm text-emerald-600 text-center py-8">{t('predictive.teamHealth.allHealthy')}</p>
             )}
           </div>
         </div>
@@ -494,17 +485,17 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
 
       <div className="bg-card rounded-xl border border-border">
         <div className="px-5 py-4 border-b border-border">
-          <h3 className="text-base font-semibold text-foreground">{'kr_ked8c80_keab1b4ea_all_status'}</h3>
+          <h3 className="text-base font-semibold text-foreground">{t('predictive.teamHealth.allStatus')}</h3>
         </div>
         <div className="overflow-x-auto">
           <table className={TABLE_STYLES.table}>
             <thead className={TABLE_STYLES.header}>
               <tr className={TABLE_STYLES.row}>
-                <th className={TABLE_STYLES.headerCell}>{'kr_ked8c80'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'kr_kec9db8ec'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'kr_keab1b4ea_score'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'risk_keb8f84'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'kr_keab384ec'}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.teamHealth.team')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.teamHealth.members')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.teamHealth.healthScore')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.table.riskLevel')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.table.calculatedAt')}</th>
               </tr>
             </thead>
             <tbody>
@@ -516,7 +507,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
                     {row.latestScore ? (
                       <ScoreBar score={row.latestScore.overallScore} level={row.latestScore.riskLevel} />
                     ) : (
-                      <span className="text-xs text-muted-foreground">{'kr_kebafb8ea'}</span>
+                      <span className="text-xs text-muted-foreground">{t('predictive.noScore')}</span>
                     )}
                   </td>
                   <td className={TABLE_STYLES.cell}>
@@ -524,7 +515,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
                   </td>
                   <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>
                     {row.latestScore
-                      ? new Date(row.latestScore.calculatedAt).toLocaleDateString('ko-KR')
+                      ? new Date(row.latestScore.calculatedAt).toLocaleDateString()
                       : '—'}
                   </td>
                 </tr>
@@ -533,7 +524,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
           </table>
           {data.length === 0 && (
             <div className="text-center py-12 text-sm text-muted-foreground">
-              {'kr_keb8db0ec_kec9786ec_kebb0b0ec_'}
+              {t('predictive.noData')}
             </div>
           )}
         </div>
@@ -551,10 +542,11 @@ function WorkforceTab({
   turnoverData: TurnoverRiskRow[]
   burnoutData: BurnoutRow[]
 }) {
+  const t = useTranslations('analytics')
   const deptMap: Record<string, { turnoverHigh: number; burnoutHigh: number; total: number }> = {}
 
   for (const row of turnoverData) {
-    const dept = row.departmentName ?? '기타'
+    const dept = row.departmentName ?? t('predictive.workforce.other')
     if (!deptMap[dept]) deptMap[dept] = { turnoverHigh: 0, burnoutHigh: 0, total: 0 }
     deptMap[dept].total++
     if (['high', 'critical'].includes(row.latestScore?.riskLevel ?? '')) {
@@ -563,7 +555,7 @@ function WorkforceTab({
   }
 
   for (const row of burnoutData) {
-    const dept = row.departmentName ?? '기타'
+    const dept = row.departmentName ?? t('predictive.workforce.other')
     if (!deptMap[dept]) deptMap[dept] = { turnoverHigh: 0, burnoutHigh: 0, total: 0 }
     if (['high', 'critical'].includes(row.latestScore?.riskLevel ?? '')) {
       deptMap[dept].burnoutHigh++
@@ -573,40 +565,40 @@ function WorkforceTab({
   const chartData = Object.entries(deptMap)
     .map(([dept, stats]) => ({
       dept: dept.slice(0, 8),
-      이직위험: stats.turnoverHigh,
-      번아웃위험: stats.burnoutHigh,
+      turnoverRisk: stats.turnoverHigh,
+      burnoutRisk: stats.burnoutHigh,
     }))
-    .sort((a, b) => (b.이직위험 + b.번아웃위험) - (a.이직위험 + a.번아웃위험))
+    .sort((a, b) => (b.turnoverRisk + b.burnoutRisk) - (a.turnoverRisk + a.burnoutRisk))
 
   return (
     <div className="space-y-6">
       <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-        <h3 className="text-base font-semibold text-foreground mb-4">{'department_kebb384_risk_kec9db8ec_status'}</h3>
+        <h3 className="text-base font-semibold text-foreground mb-4">{t('predictive.workforce.deptRiskChart')}</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData} margin={{ top: 0, right: 0, bottom: 20, left: -20 }}>
             <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
             <XAxis dataKey="dept" tick={{ fontSize: 11 }} angle={-30} textAnchor="end" />
             <YAxis tick={{ fontSize: 12 }} />
             <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
-            <Bar dataKey="이직위험" fill={CHART_THEME.colors[4]} radius={[4, 4, 0, 0]} />
-            <Bar dataKey="번아웃위험" fill={CHART_THEME.colors[2]} radius={[4, 4, 0, 0]} />
+            <Bar dataKey="turnoverRisk" name={t('predictive.workforce.turnoverRisk')} fill={CHART_THEME.colors[4]} radius={[4, 4, 0, 0]} />
+            <Bar dataKey="burnoutRisk" name={t('predictive.workforce.burnoutRisk')} fill={CHART_THEME.colors[2]} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
       <div className="bg-card rounded-xl border border-border">
         <div className="px-5 py-4 border-b border-border">
-          <h3 className="text-base font-semibold text-foreground">{'department_kebb384_integrations_status'}</h3>
+          <h3 className="text-base font-semibold text-foreground">{t('predictive.workforce.deptIntegratedStatus')}</h3>
         </div>
         <div className="overflow-x-auto">
           <table className={TABLE_STYLES.table}>
             <thead className={TABLE_STYLES.header}>
               <tr className={TABLE_STYLES.row}>
-                <th className={TABLE_STYLES.headerCell}>{'부서'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'analytics_kec9db8ec'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'kr_kec9db4ec_keab3a0ec'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'kr_kebb288ec_keab3a0ec'}</th>
-                <th className={TABLE_STYLES.headerCell}>{'risk_keba5a0'}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.table.department')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.workforce.headcount')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.workforce.turnoverHighRisk')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.workforce.burnoutHighRisk')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('predictive.workforce.riskRate')}</th>
               </tr>
             </thead>
             <tbody>
@@ -625,7 +617,7 @@ function WorkforceTab({
                             className="h-full rounded-full"
                             style={{
                               width: `${riskRate}%`,
-                              backgroundColor: riskRate > 50 ? '#EF4444' : riskRate > 25 ? '#F59E0B' : '#059669',
+                              backgroundColor: riskRate > 50 ? RISK_COLORS.high : riskRate > 25 ? RISK_COLORS.medium : RISK_COLORS.low,
                             }}
                           />
                         </div>
@@ -639,7 +631,7 @@ function WorkforceTab({
           </table>
           {Object.keys(deptMap).length === 0 && (
             <div className="text-center py-12 text-sm text-muted-foreground">
-              {'kr_keb8db0ec_kec9786ec_kebb0b0ec_'}
+              {t('predictive.noData')}
             </div>
           )}
         </div>
@@ -703,14 +695,14 @@ export default function PredictiveAnalyticsClient() {
 
   return (
     <AnalyticsPageLayout
-      title="예측 애널리틱스"
-      description="이직 위험, 번아웃, 팀 심리안전 지수를 AI 기반으로 분석합니다"
+      title={t('predictive.pageTitle')}
+      description={t('predictive.pageDescription')}
     >
       {/* 액션 버튼 */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 text-amber-700" />
-          <span className="text-sm text-muted-foreground">{t('kr_hr_admin_keca084ec_keca781ec_k')}</span>
+          <span className="text-sm text-muted-foreground">{t('predictive.hrAdminOnly')}</span>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -719,7 +711,7 @@ export default function PredictiveAnalyticsClient() {
             className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            {t('kr_kec8388eb')}
+            {t('predictive.refresh')}
           </button>
           <button
             onClick={handleCalculate}
@@ -731,7 +723,7 @@ export default function PredictiveAnalyticsClient() {
             ) : (
               <Play className="w-4 h-4" />
             )}
-            {calculating ? '계산 중...' : '배치 계산 실행'}
+            {calculating ? t('predictive.calculating') : t('predictive.runBatchCalc')}
           </button>
         </div>
       </div>
@@ -754,7 +746,7 @@ export default function PredictiveAnalyticsClient() {
             }`}
           >
             <tab.icon className="w-4 h-4" />
-            {tab.label}
+            {t(tab.labelKey)}
           </button>
         ))}
       </div>

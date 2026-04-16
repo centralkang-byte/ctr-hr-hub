@@ -46,9 +46,41 @@ function normaliseDetail(
   if (!raw || typeof raw !== 'object') return null
   const d = raw as Record<string, unknown>
 
-  // Already in PayrollItemDetail format (has earnings key)
+  // Payroll engine format: { earnings, insurance, tax } → merge insurance+tax into deductions
   if (d.earnings && typeof d.earnings === 'object') {
-    return raw as PayrollItemDetail
+    const ins = (d.insurance as Record<string, number>) ?? {}
+    const tax = (d.tax as Record<string, number>) ?? {}
+    const existingDed = d.deductions as Record<string, number> | undefined
+
+    const deductions: PayrollItemDetail['deductions'] = existingDed && Object.keys(existingDed).length > 0
+      ? existingDed as unknown as PayrollItemDetail['deductions']
+      : {
+          nationalPension: ins.nationalPension ?? 0,
+          healthInsurance: ins.healthInsurance ?? 0,
+          longTermCare: ins.longTermCare ?? 0,
+          employmentInsurance: ins.employmentInsurance ?? 0,
+          incomeTax: tax.incomeTax ?? 0,
+          localIncomeTax: tax.localIncomeTax ?? 0,
+          otherDeductions: 0,
+        }
+
+    const totalDeductions = Object.values(deductions).reduce((s, v) => s + v, 0)
+
+    return {
+      earnings: d.earnings as PayrollItemDetail['earnings'],
+      deductions,
+      overtime: (d.overtime as PayrollItemDetail['overtime']) ?? {
+        hourlyWage: 0, totalOvertimeHours: 0,
+        weekdayOTHours: 0, weekendHours: 0,
+        holidayHours: 0, nightHours: 0,
+      },
+      grossPay: Number(grossPay) || 0,
+      totalDeductions,
+      netPay: Number(netPay) || 0,
+      customAllowances: d.customAllowances as PayrollItemDetail['customAllowances'],
+      customDeductions: d.customDeductions as PayrollItemDetail['customDeductions'],
+      previousMonth: d.previousMonth as PayrollItemDetail['previousMonth'],
+    }
   }
 
   // Raw seed format: { components, deductions }

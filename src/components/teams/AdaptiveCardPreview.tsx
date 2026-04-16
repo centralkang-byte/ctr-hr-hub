@@ -5,6 +5,7 @@
 // Adaptive Card JSON → HTML 미리보기
 // ═══════════════════════════════════════════════════════════
 
+import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -119,6 +120,8 @@ function renderAction(action: AdaptiveAction, idx: number): React.ReactNode {
 }
 
 export function AdaptiveCardPreview({ card, title }: Props) {
+  const t = useTranslations('teams')
+
   return (
     <Card className="max-w-md">
       {title && (
@@ -126,7 +129,7 @@ export function AdaptiveCardPreview({ card, title }: Props) {
           <div className="flex items-center gap-2">
             <CardTitle className="text-sm">{title}</CardTitle>
             <Badge variant="outline" className="text-[10px]">
-              미리보기
+              {t('ui.cardPreview.label')}
             </Badge>
           </div>
         </CardHeader>

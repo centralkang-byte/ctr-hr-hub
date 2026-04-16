@@ -1,5 +1,5 @@
 // ================================================================
-// QF-PRE-RUN: 8 QA Test Accounts for comprehensive E2E testing
+// QF-PRE-RUN: 9 QA Test Accounts for comprehensive E2E testing
 // prisma/seeds/00-qa-accounts.ts
 //
 // Accounts:
@@ -11,6 +11,7 @@
 //   6. employee-a@ctr.co.kr EMPLOYEE     CTR  QA Team A → reports to M1
 //   7. employee-b@ctr.co.kr EMPLOYEE     CTR  QA Team A → reports to M1
 //   8. employee-c@ctr.co.kr EMPLOYEE     CTR  QA Team B → reports to M2
+//   9. executive@ctr.co.kr  EXECUTIVE    CTR  경영리더 (E1)
 //
 // Idempotent: uses upsert throughout. Safe to re-run.
 // ================================================================
@@ -56,10 +57,11 @@ const QA_ACCOUNTS: QAAccount[] = [
   { email: 'employee-a@ctr.co.kr', name: '이민준',   nameEn: 'Minjun Lee',     employeeNo: 'CTR-QA-0006', roleCode: 'EMPLOYEE',    companyCode: 'CTR', deptCode: 'QA-TEAM-A', gradeCode: 'L1', positionCode: 'CTR-KR-QA-TEAM-A-01' },
   { email: 'employee-b@ctr.co.kr', name: '정다은',   nameEn: 'Daeun Jung',     employeeNo: 'CTR-QA-0007', roleCode: 'EMPLOYEE',    companyCode: 'CTR', deptCode: 'QA-TEAM-A', gradeCode: 'L1', positionCode: 'CTR-KR-QA-TEAM-A-02' },
   { email: 'employee-c@ctr.co.kr', name: '송현우',   nameEn: 'Hyunwoo Song',   employeeNo: 'CTR-QA-0008', roleCode: 'EMPLOYEE',    companyCode: 'CTR', deptCode: 'QA-TEAM-B', gradeCode: 'L1', positionCode: 'CTR-KR-QA-TEAM-B-01' },
+  { email: 'executive@ctr.co.kr', name: '강대표',   nameEn: 'Daepyo Kang',    employeeNo: 'CTR-QA-0009', roleCode: 'EXECUTIVE',   companyCode: 'CTR', deptCode: null,         gradeCode: 'E1', positionCode: null },
 ]
 
 export async function seedQAAccounts(prisma: PrismaClient) {
-  console.log('📌 Seeding QA test accounts (8)...')
+  console.log('📌 Seeding QA test accounts (9)...')
 
   // ── Lookup company IDs ──
   const companies = await prisma.company.findMany({ select: { id: true, code: true } })

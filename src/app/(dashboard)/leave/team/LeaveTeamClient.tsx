@@ -53,6 +53,26 @@ interface TeamLeaveData {
 
 // ─── Constants ──────────────────────────────────────────────
 
+const STATUS_LABEL_KEYS: Record<string, string> = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  REJECTED: 'rejected',
+  CANCELLED: 'cancelled',
+}
+
+const LEAVE_TYPE_LABEL_KEYS: Record<string, string> = {
+  ANNUAL: 'annual',
+  SICK: 'sick',
+  MATERNITY: 'maternity',
+  PATERNITY: 'paternity',
+  BEREAVEMENT: 'bereavement',
+  SPECIAL: 'special',
+  COMPENSATORY: 'compensatory',
+  FAMILY_CARE: 'familyCare',
+  WEDDING: 'wedding',
+  MENSTRUAL: 'menstrual',
+}
+
 const STATUS_BADGE: Record<string, string> = {
   PENDING: STATUS_VARIANT.warning,
   APPROVED: STATUS_VARIANT.success,
@@ -97,27 +117,8 @@ function getTeamAbsenceCount(
 export function LeaveTeamClient({ user }: { user: SessionUser }) {
   void user
 
+  const t = useTranslations('leave')
   const tc = useTranslations('common')
-
-  const STATUS_LABEL: Record<string, string> = {
-    PENDING: '대기중',
-    APPROVED: '승인되었습니다',
-    REJECTED: '반려되었습니다',
-    CANCELLED: '취소되었습니다',
-  }
-
-  const LEAVE_TYPE_LABEL: Record<string, string> = {
-    ANNUAL: '연차',
-    SICK: '병가',
-    MATERNITY: '출산휴가',
-    PATERNITY: '배우자출산휴가',
-    BEREAVEMENT: '경조사',
-    SPECIAL: '특별휴가',
-    COMPENSATORY: '보상휴가',
-    FAMILY_CARE: '가족돌봄휴가',
-    WEDDING: '결혼휴가',
-    MENSTRUAL: '생리휴가',
-  }
 
   const [month, setMonth] = useState(getCurrentMonth)
   const [data, setData] = useState<TeamLeaveData | null>(null)
@@ -190,9 +191,9 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
   const handleApprove = useCallback(
     (requestId: string) => {
       confirm({
-        title: '승인 확인',
-        description: '이 휴가 요청을 승인하시겠습니까? 승인 후에는 취소할 수 없습니다.',
-        confirmLabel: '승인',
+        title: t('team.approveConfirm'),
+        description: t('team.approveConfirmDesc'),
+        confirmLabel: t('team.approve'),
         variant: 'default',
         onConfirm: async () => {
           // 1. Optimistic: immediately show green row
@@ -203,12 +204,12 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
             scheduleRowFadeAndRefresh(requestId)
           } catch {
             revertOptimistic(requestId)
-            toast({ title: tc('error'), description: '승인 처리 중 오류가 발생했습니다', variant: 'destructive' })
+            toast({ title: tc('error'), description: t('team.approveError'), variant: 'destructive' })
           }
         },
       })
     },
-    [confirm, scheduleRowFadeAndRefresh, revertOptimistic, tc],
+    [confirm, scheduleRowFadeAndRefresh, revertOptimistic, t, tc],
   )
 
   const openRejectDialog = useCallback((requestId: string) => {
@@ -234,9 +235,9 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
       scheduleRowFadeAndRefresh(requestId)
     } catch {
       revertOptimistic(requestId)
-      toast({ title: tc('error'), description: '반려 처리 중 오류가 발생했습니다', variant: 'destructive' })
+      toast({ title: tc('error'), description: t('team.rejectError'), variant: 'destructive' })
     }
-  }, [rejectTargetId, rejectionReason, scheduleRowFadeAndRefresh, revertOptimistic, tc])
+  }, [rejectTargetId, rejectionReason, scheduleRowFadeAndRefresh, revertOptimistic, t, tc])
 
   // ─── Loading skeleton ───
   if (loading) {
@@ -259,8 +260,8 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title={'팀 휴가 캘린더'}
-        description={hasPending ? '승인 대기 요청이 있습니다' : undefined}
+        title={t('team.title')}
+        description={hasPending ? t('team.pendingNotice') : undefined}
       />
 
       {/* ─── Month Selector ─── */}
@@ -281,21 +282,21 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
       {members.length === 0 ? (
         <EmptyState
           icon={CalendarOff}
-          title="팀원이 없습니다"
-          description="팀원이 배정되면 여기에 휴가 현황이 표시됩니다."
+          title={t('team.noMembers')}
+          description={t('team.noMembersDesc')}
         />
       ) : !hasAnyRequests ? (
         <div className="space-y-4">
           <EmptyState
             icon={CalendarOff}
-            title="이번 달 팀 휴가 신청이 없습니다"
-            description="팀원의 휴가 신청이 있으면 여기에 표시됩니다."
+            title={t('team.noRequests')}
+            description={t('team.noRequestsDesc')}
           />
           <div className="bg-card border border-border rounded-xl divide-y divide-border">
             {members.map((member) => (
               <div key={member.employeeId} className="flex items-center justify-between px-4 py-3">
                 <span className="text-sm font-medium text-foreground">{member.name}</span>
-                <span className="text-xs text-muted-foreground">휴가 없음</span>
+                <span className="text-xs text-muted-foreground">{t('team.noLeave')}</span>
               </div>
             ))}
           </div>
@@ -337,24 +338,24 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                               {formatDateShort(req.startDate)} ~{' '}
                               {formatDateShort(req.endDate)}
                             </span>
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-medium border border-border text-muted-foreground">
-                              {LEAVE_TYPE_LABEL[req.leaveType] ?? req.leaveType}
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border border-border text-muted-foreground">
+                              {LEAVE_TYPE_LABEL_KEYS[req.leaveType] ? t(LEAVE_TYPE_LABEL_KEYS[req.leaveType]) : req.leaveType}
                             </span>
                             <span
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
                                 STATUS_BADGE[displayStatus] ?? STATUS_VARIANT.neutral
                               }`}
                             >
-                              {STATUS_LABEL[displayStatus] ?? displayStatus}
+                              {STATUS_LABEL_KEYS[displayStatus] ? t(STATUS_LABEL_KEYS[displayStatus]) : displayStatus}
                             </span>
                           </div>
                           <div className="flex items-center gap-3">
                             <span className="text-xs text-muted-foreground">
-                              {req.days}{'일수'}
+                              {t('team.dayCount', { days: req.days })}
                             </span>
                             {isPending && absenceCount > 0 && (
                               <span className="text-xs text-amber-500 font-medium">
-                                해당 기간 팀 부재: {absenceCount}명
+                                {t('team.teamAbsence', { count: absenceCount })}
                               </span>
                             )}
                           </div>
@@ -363,18 +364,18 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                         {isPending && (
                           <div className="flex items-center gap-2">
                             <button
-                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-primary text-primary hover:bg-primary/10 flex items-center"
+                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-primary text-primary hover:bg-primary/10 flex items-center motion-safe:transition-all"
                               onClick={() => handleApprove(req.id)}
                             >
                               <Check className="mr-1 h-4 w-4" />
-                              {'승인'}
+                              {t('team.approve')}
                             </button>
                             <button
-                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-red-500 text-red-500 hover:bg-destructive/5 flex items-center"
+                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-red-500 text-red-500 hover:bg-destructive/5 flex items-center motion-safe:transition-all"
                               onClick={() => openRejectDialog(req.id)}
                             >
                               <X className="mr-1 h-4 w-4" />
-                              {'반려'}
+                              {t('team.reject')}
                             </button>
                           </div>
                         )}
@@ -390,15 +391,15 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
       <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{'반려'}</DialogTitle>
+            <DialogTitle>{t('team.reject')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
-            <Label htmlFor="rejection-reason">{'반려 사유'}</Label>
+            <Label htmlFor="rejection-reason">{t('team.rejectReason')}</Label>
             <Textarea
               id="rejection-reason"
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
-              placeholder={'반려 사유를 입력하세요'}
+              placeholder={t('team.rejectReasonPlaceholder')}
               rows={3}
             />
           </div>
@@ -414,7 +415,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
               onClick={handleReject}
               disabled={!rejectionReason.trim()}
             >
-              {'반려'}
+              {t('team.reject')}
             </Button>
           </DialogFooter>
         </DialogContent>

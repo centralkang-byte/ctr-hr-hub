@@ -592,14 +592,14 @@ export async function seedQASkillsTrainingPulse(prisma: PrismaClient) {
         take: 8,
         select: { id: true },
       })
-      const gradeDistribution: Array<'E' | 'M_PLUS' | 'M' | 'B'> = ['E', 'M_PLUS', 'M_PLUS', 'M', 'M', 'M', 'M', 'B']
+      const gradeDistribution: Array<'O' | 'E' | 'M' | 'S'> = ['O', 'E', 'E', 'M', 'M', 'M', 'M', 'S']
       for (let i = 0; i < reviews.length; i++) {
         await prisma.performanceReview.update({
           where: { id: reviews[i].id },
           data: { finalGrade: gradeDistribution[i % gradeDistribution.length] },
         })
       }
-      console.log(`  ✅ 5-4: ${reviews.length} reviews graded (E/M+/M/B distribution)`)
+      console.log(`  ✅ 5-4: ${reviews.length} reviews graded (O/E/M/S distribution)`)
     }
   } else {
     console.log('  ✅ 5-4: FINALIZED 사이클 이미 존재 — skip')

@@ -4,6 +4,8 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
+import { serverT } from '@/lib/server-i18n'
+import type { Locale } from '@/i18n/config'
 
 interface CardActionInput {
   cardType: string
@@ -19,8 +21,10 @@ interface CardActionResult {
 }
 
 export async function executeCardAction(
+  locale: Locale,
   input: CardActionInput,
 ): Promise<CardActionResult> {
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
   const { cardType, referenceId, action, actionBy, companyId } = input
 
   // TeamsCardAction 레코드 업데이트
@@ -40,31 +44,34 @@ export async function executeCardAction(
 
   switch (cardType) {
     case 'LEAVE_APPROVAL':
-      return handleLeaveApproval(referenceId, action, actionBy)
+      return handleLeaveApproval(locale, referenceId, action, actionBy)
     case 'ONBOARDING_TASK_DUE':
-      return handleOnboardingTaskComplete(referenceId, action, actionBy)
+      return handleOnboardingTaskComplete(locale, referenceId, action, actionBy)
     case 'CHATBOT_ESCALATION':
-      return handleChatbotEscalation(referenceId, action, actionBy)
+      return handleChatbotEscalation(locale, referenceId, action, actionBy)
     default:
-      return { success: true, message: '액션이 기록되었습니다.' }
+      return { success: true, message: await t('teams.actions.recorded') }
   }
 }
 
 async function handleLeaveApproval(
+  locale: Locale,
   requestId: string,
   action: string,
   approverId: string,
 ): Promise<CardActionResult> {
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
+
   const request = await prisma.leaveRequest.findUnique({
     where: { id: requestId },
   })
 
   if (!request) {
-    return { success: false, message: '휴가 요청을 찾을 수 없습니다.' }
+    return { success: false, message: await t('teams.actions.leaveNotFound') }
   }
 
   if (request.status !== 'PENDING') {
-    return { success: false, message: `이미 처리된 요청입니다. (상태: ${request.status})` }
+    return { success: false, message: await t('teams.actions.alreadyProcessed', { status: request.status }) }
   }
 
   const newStatus = action === 'approve' ? 'APPROVED' : 'REJECTED'
@@ -94,18 +101,21 @@ async function handleLeaveApproval(
   return {
     success: true,
     message: newStatus === 'APPROVED'
-      ? '휴가가 승인되었습니다.'
-      : '휴가가 반려되었습니다.',
+      ? await t('teams.actions.leaveApproved')
+      : await t('teams.actions.leaveRejected'),
   }
 }
 
 async function handleOnboardingTaskComplete(
+  locale: Locale,
   taskId: string,
   action: string,
   completedById: string,
 ): Promise<CardActionResult> {
+  const t = (key: string) => serverT(locale, key)
+
   if (action !== 'complete') {
-    return { success: false, message: '알 수 없는 액션입니다.' }
+    return { success: false, message: await t('teams.actions.unknownAction') }
   }
 
   const task = await prisma.employeeOnboardingTask.findUnique({
@@ -113,11 +123,11 @@ async function handleOnboardingTaskComplete(
   })
 
   if (!task) {
-    return { success: false, message: '온보딩 태스크를 찾을 수 없습니다.' }
+    return { success: false, message: await t('teams.actions.taskNotFound') }
   }
 
   if (task.status === 'DONE') {
-    return { success: false, message: '이미 완료된 태스크입니다.' }
+    return { success: false, message: await t('teams.actions.taskAlreadyDone') }
   }
 
   await prisma.employeeOnboardingTask.update({
@@ -129,16 +139,19 @@ async function handleOnboardingTaskComplete(
     },
   })
 
-  return { success: true, message: '온보딩 태스크가 완료되었습니다.' }
+  return { success: true, message: await t('teams.actions.taskCompleted') }
 }
 
 async function handleChatbotEscalation(
+  locale: Locale,
   sessionId: string,
   action: string,
   assignedBy: string,
 ): Promise<CardActionResult> {
+  const t = (key: string) => serverT(locale, key)
+
   if (action !== 'assign') {
-    return { success: false, message: '알 수 없는 액션입니다.' }
+    return { success: false, message: await t('teams.actions.unknownAction') }
   }
 
   const session = await prisma.hrChatSession.findUnique({
@@ -146,7 +159,7 @@ async function handleChatbotEscalation(
   })
 
   if (!session) {
-    return { success: false, message: '챗봇 세션을 찾을 수 없습니다.' }
+    return { success: false, message: await t('teams.actions.sessionNotFound') }
   }
 
   // 에스컬레이션 상태 업데이트 — assignedBy를 담당자로 지정
@@ -162,5 +175,5 @@ async function handleChatbotEscalation(
     },
   })
 
-  return { success: true, message: '담당자가 배정되었습니다.' }
+  return { success: true, message: await t('teams.actions.agentAssigned') }
 }

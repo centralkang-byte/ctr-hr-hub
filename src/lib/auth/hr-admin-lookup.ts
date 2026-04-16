@@ -12,7 +12,7 @@
 // Last verified: 2026-03-12 (Q-4 P6)
 // ═══════════════════════════════════════════════════════════════
 
-import type { PrismaClient } from '@/generated/prisma/client'
+import type { PrismaTx } from '@/lib/prisma-rls'
 
 /**
  * 회사의 HR_ADMIN 역할을 가진 활성 직원 ID 목록을 반환합니다.
@@ -25,7 +25,7 @@ import type { PrismaClient } from '@/generated/prisma/client'
  *   const hrAdminIds = await getHrAdminIds(prisma, companyId)
  */
 export async function getHrAdminIds(
-  prisma: PrismaClient,
+  prisma: PrismaTx,
   companyId: string,
 ): Promise<string[]> {
   // FIX: Issue #1 — Use EmployeeRole (RBAC) instead of fragile Employee-level queries.
@@ -47,7 +47,7 @@ export async function getHrAdminIds(
  * 캘리브레이션 알림 등 더 넓은 대상이 필요할 때 사용.
  */
 export async function getHrAndSuperAdminIds(
-  prisma: PrismaClient,
+  prisma: PrismaTx,
   companyId: string,
 ): Promise<string[]> {
   const roles = await prisma.employeeRole.findMany({

@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import { authOptions } from '@/lib/auth'
 import { Settings } from 'lucide-react'
 import { SETTINGS_CATEGORIES } from '@/components/settings/settings-config'
@@ -9,9 +10,17 @@ import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export const dynamic = 'force-dynamic'
 
+export async function generateMetadata() {
+  const t = await getTranslations('settings')
+  return { title: t('pageTitle') }
+}
+
 export default async function SettingsHubPage() {
   const session = await getServerSession(authOptions)
   if (!session?.user) redirect('/login')
+
+  const t = await getTranslations('settings')
+  const totalTabs = SETTINGS_CATEGORIES.reduce((s, c) => s + c.tabs.length, 0)
 
   return (
     <div className="min-h-screen bg-muted">
@@ -22,9 +31,9 @@ export default async function SettingsHubPage() {
             <Settings className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{'설정'}</h1>
+            <h1 className="text-2xl font-bold text-foreground">{t('pageTitle')}</h1>
             <p className="text-sm text-muted-foreground">
-              시스템 설정을 카테고리별로 관리합니다 · {SETTINGS_CATEGORIES.reduce((s, c) => s + c.tabs.length, 0)}개 항목
+              {t('pageDescription', { count: totalTabs })}
             </p>
           </div>
         </div>

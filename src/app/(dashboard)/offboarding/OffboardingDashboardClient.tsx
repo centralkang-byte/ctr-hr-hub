@@ -7,7 +7,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import {
   AlertTriangle,
   CheckCircle2,
@@ -17,6 +17,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -95,21 +96,6 @@ interface OffboardingDashboardClientProps {
 
 // ─── Constants ──────────────────────────────────────────────
 
-type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
-
-const STATUS_VARIANTS: Record<string, BadgeVariant> = {
-  IN_PROGRESS: 'default',
-  COMPLETED: 'secondary',
-  CANCELLED: 'destructive',
-}
-
-const RESIGN_TYPE_VARIANTS: Record<string, BadgeVariant> = {
-  VOLUNTARY: 'outline',
-  INVOLUNTARY: 'destructive',
-  RETIREMENT: 'secondary',
-  CONTRACT_END: 'default',
-  MUTUAL_AGREEMENT: 'outline',
-}
 
 const ASSIGNEE_COLORS: Record<string, string> = {
   EMPLOYEE: 'bg-muted text-foreground',
@@ -126,6 +112,7 @@ const LIMIT_OPTIONS = [10, 20, 50]
 export function OffboardingDashboardClient({ user, companies = [] }: OffboardingDashboardClientProps) {
   const t = useTranslations('offboarding')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
 
   const STATUS_LABELS: Record<string, string> = {
     IN_PROGRESS: t('inProgress'),
@@ -322,10 +309,10 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
             }}
           >
             <SelectTrigger className="w-40">
-              <SelectValue placeholder="전체 법인" />
+              <SelectValue placeholder={t('dashboard.allCompanies')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__ALL__">전체 법인</SelectItem>
+              <SelectItem value="__ALL__">{t('dashboard.allCompanies')}</SelectItem>
               {companies.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   {c.code} — {c.name}
@@ -432,14 +419,14 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                         {row.employee.name}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={RESIGN_TYPE_VARIANTS[row.resignType] ?? 'outline'}>
+                        <StatusBadge status={row.resignType}>
                           {RESIGN_TYPE_LABELS[row.resignType] ?? row.resignType}
-                        </Badge>
+                        </StatusBadge>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col">
                           <span>
-                            {new Date(row.lastWorkingDate).toLocaleDateString('ko-KR')}
+                            {new Date(row.lastWorkingDate).toLocaleDateString(locale)}
                           </span>
                           <DdayBadge
                             daysUntil={row.daysUntil}
@@ -455,7 +442,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                         />
                       </TableCell>
                       <TableCell>
-                        <Badge variant={STATUS_VARIANTS[row.status] ?? 'outline'}>
+                        <StatusBadge status={row.status}>
                           {row.status === 'IN_PROGRESS' && (
                             <Clock className="mr-1 h-3 w-3" />
                           )}
@@ -466,7 +453,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                             <XCircle className="mr-1 h-3 w-3" />
                           )}
                           {STATUS_LABELS[row.status] ?? row.status}
-                        </Badge>
+                        </StatusBadge>
                       </TableCell>
                       <TableCell>
                         {row.isD3 ? (

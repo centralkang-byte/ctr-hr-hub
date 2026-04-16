@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2, Plus, Briefcase, X } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
@@ -138,9 +139,9 @@ export function LeaveTypesTab({
                 </td>
                 <td className="px-4 py-3 text-center">
                   {type.category ? (
-                    <span className="inline-flex rounded-full bg-violet-500/10 px-2 py-0.5 text-xs font-medium text-violet-700">
+                    <Badge variant="info">
                       {t(CATEGORY_LABEL_KEYS[type.category] ?? type.category)}
-                    </span>
+                    </Badge>
                   ) : <span className="text-xs text-muted-foreground">—</span>}
                 </td>
                 <td className="px-4 py-3 text-center text-sm text-foreground">
@@ -156,13 +157,9 @@ export function LeaveTypesTab({
                   {type.maxConsecutiveDays ? t('leaveTypes.daysUnit', { count: type.maxConsecutiveDays }) : '—'}
                 </td>
                 <td className="px-4 py-3 text-center">
-                  <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                    !type.companyId
-                      ? 'bg-primary/5 text-primary'
-                      : 'bg-orange-500/10 text-orange-600'
-                  }`}>
+                  <Badge variant={!type.companyId ? 'info' : 'warning'}>
                     {!type.companyId ? tc('global') : tc('company')}
-                  </span>
+                  </Badge>
                 </td>
               </tr>
             ))}
@@ -200,11 +197,9 @@ function BoolBadge({
   falseLabel?: string
 }) {
   return (
-    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-      value ? 'bg-emerald-500/10 text-emerald-700' : 'bg-muted text-muted-foreground'
-    }`}>
+    <Badge variant={value ? 'success' : 'secondary'}>
       {value ? trueLabel : falseLabel}
-    </span>
+    </Badge>
   )
 }
 

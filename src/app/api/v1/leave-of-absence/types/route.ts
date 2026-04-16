@@ -21,6 +21,7 @@ export const GET = withPermission(
       where: {
         companyId,
         deletedAt: null,
+        isActive: true,
       },
       orderBy: { sortOrder: 'asc' },
     })

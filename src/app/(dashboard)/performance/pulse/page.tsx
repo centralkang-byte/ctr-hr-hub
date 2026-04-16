@@ -3,11 +3,14 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
-import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import PulseSurveyClient from './PulseSurveyClient'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
-export const metadata: Metadata = { title: '펄스 서베이 | CTR HR Hub' }
+export async function generateMetadata() {
+  const t = await getTranslations('performance')
+  return { title: `${t('pulse.pageTitle')} | CTR HR Hub` }
+}
 
 export default async function PulseSurveyPage() {
   const session = await getServerSession(authOptions)

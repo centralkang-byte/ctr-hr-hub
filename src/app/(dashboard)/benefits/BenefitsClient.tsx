@@ -35,13 +35,13 @@ export function BenefitsClient({ user }: { user: SessionUser }) {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="pending" className="mt-0">
+        <TabsContent value="pending">
           <BenefitApprovalTab user={user} view="pending" />
         </TabsContent>
-        <TabsContent value="all" className="mt-0">
+        <TabsContent value="all">
           <BenefitApprovalTab user={user} view="all" />
         </TabsContent>
-        <TabsContent value="budget" className="mt-0">
+        <TabsContent value="budget">
           <BenefitBudgetTab user={user} />
         </TabsContent>
       </Tabs>

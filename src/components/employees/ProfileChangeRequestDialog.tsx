@@ -50,22 +50,23 @@ interface Props {
 // ─── Constants ──────────────────────────────────────────────
 
 const FIELD_LABELS: Record<EditableField, string> = {
-  phone: '연락처 (개인)',
-  emergencyContact: '비상연락처 이름',
-  emergencyContactPhone: '비상연락처 전화번호',
-  name: '이름',
+  phone: 'profileChangePhone',
+  emergencyContact: 'profileChangeEmergencyName',
+  emergencyContactPhone: 'profileChangeEmergencyPhone',
+  name: 'profileChangeName',
 }
 
 const STATUS_BADGE: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-  CHANGE_PENDING: { label: '대기중', variant: 'default' },
-  CHANGE_APPROVED: { label: '승인됨', variant: 'secondary' },
-  CHANGE_REJECTED: { label: '반려됨', variant: 'destructive' },
+  CHANGE_PENDING: { label: 'profileChangeStatusPending', variant: 'default' },
+  CHANGE_APPROVED: { label: 'profileChangeStatusApproved', variant: 'secondary' },
+  CHANGE_REJECTED: { label: 'profileChangeStatusRejected', variant: 'destructive' },
 }
 
 // ─── Component ──────────────────────────────────────────────
 
 export function ProfileChangeRequestDialog({ open, onOpenChange, fieldKey, currentValue, onSuccess }: Props) {
   const t = useTranslations('common')
+  const te = useTranslations('employee')
 
   // Independent form state (AR-2: isolated from parent)
   const [newValue, setNewValue] = useState('')
@@ -89,25 +90,25 @@ export function ProfileChangeRequestDialog({ open, onOpenChange, fieldKey, curre
         newValue: newValue.trim(),
         reason: reason.trim() || undefined,
       })
-      toast({ title: '수정 요청이 제출되었습니다.' })
+      toast({ title: te('profileChangeSubmitSuccess') })
       onOpenChange(false)
       onSuccess()
     } catch (err) {
       toast({
-        title: '요청 실패',
-        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        title: te('profileChangeSubmitError'),
+        description: err instanceof Error ? err.message : undefined,
         variant: 'destructive',
       })
     } finally {
       setSubmitting(false)
     }
-  }, [fieldKey, newValue, reason, onOpenChange, onSuccess])
+  }, [fieldKey, newValue, reason, onOpenChange, onSuccess, te])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>정보 변경 요청</DialogTitle>
+          <DialogTitle>{te('profileChangeTitle')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -117,38 +118,38 @@ export function ProfileChangeRequestDialog({ open, onOpenChange, fieldKey, curre
           </div>
 
           <div className="space-y-2">
-            <Label>{FIELD_LABELS[fieldKey]} — 새로운 값</Label>
+            <Label>{te(FIELD_LABELS[fieldKey])}{te('profileChangeNewValue')}</Label>
             <Input
               value={newValue}
               onChange={(e) => setNewValue(e.target.value)}
-              placeholder="변경할 값을 입력하세요"
+              placeholder={te('profileChangeEnterValue')}
             />
           </div>
 
           <div className="space-y-2">
-            <Label>변경 사유 (선택)</Label>
+            <Label>{te('profileChangeReasonLabel')}</Label>
             <Textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               maxLength={500}
               rows={3}
-              placeholder="변경이 필요한 이유를 입력하세요"
+              placeholder={te('profileChangeReasonPlaceholder')}
             />
             <p className="text-xs text-muted-foreground text-right">{reason.length}/500</p>
           </div>
 
           <p className="text-xs text-muted-foreground">
-            HR 담당자의 승인 후 최종 반영됩니다.
+            {te('profileChangeHrNotice')}
           </p>
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            취소
+            {te('cancel')}
           </Button>
           <Button onClick={handleSubmit} disabled={submitting || !newValue.trim()}>
             <CheckCircle2 className="w-4 h-4 mr-1.5" />
-            {submitting ? '제출 중...' : '요청 제출'}
+            {submitting ? te('profileChangeSubmitting') : te('profileChangeSubmitButton')}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -163,29 +164,32 @@ interface HistoryProps {
 }
 
 export function ChangeRequestHistory({ requests }: HistoryProps) {
+  const te = useTranslations('employee')
+
   if (requests.length === 0) return null
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold text-foreground">수정 요청 내역</h3>
+      <h3 className="text-sm font-semibold text-foreground">{te('profileChangeHistoryTitle')}</h3>
       <div className="space-y-2">
         {requests.map((req) => {
           const badge = STATUS_BADGE[req.status] ?? { label: req.status, variant: 'outline' as const }
+          const fieldLabelKey = FIELD_LABELS[req.fieldName as EditableField]
           return (
             <div key={req.id} className="flex items-center justify-between rounded-xl bg-muted/30 px-4 py-3">
               <div className="space-y-0.5">
                 <p className="text-sm font-medium">
-                  {FIELD_LABELS[req.fieldName as EditableField] ?? req.fieldName}
+                  {fieldLabelKey ? te(fieldLabelKey) : req.fieldName}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {req.oldValue ?? '-'} → {req.newValue}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {new Date(req.createdAt).toLocaleDateString('ko-KR')}
-                  {req.rejectionReason && ` · 사유: ${req.rejectionReason}`}
+                  {req.rejectionReason && ` · ${te('profileChangeReasonPrefix')}${req.rejectionReason}`}
                 </p>
               </div>
-              <Badge variant={badge.variant}>{badge.label}</Badge>
+              <Badge variant={badge.variant}>{te(badge.label)}</Badge>
             </div>
           )
         })}

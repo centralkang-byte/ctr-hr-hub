@@ -1,6 +1,7 @@
 'use client'
 
 import { Save, RotateCcw, Loader2 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
@@ -44,17 +45,17 @@ export function LocaleTab({
           <p className="text-sm text-muted-foreground">{t('company_kebb384_keab8b0eb_kec96b8ec_kebb08f_ked8380ec_settings')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{t('company_kec98a4eb')}</span>
+          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
         )}
       </div>
 
-      <SettingFieldWithOverride label="기본 언어" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('locale.defaultLangLabel')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <select className={FORM_STYLES.select} value={settings.defaultLocale} onChange={(e) => setSettings((p) => ({ ...p, defaultLocale: e.target.value }))}>
           {settings.supportedLocales.map((l) => <option key={l} value={l}>{LOCALE_LABELS[l] ?? l}</option>)}
         </select>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="기본 타임존" status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('locale.defaultTimezoneLabel')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
         <select className={FORM_STYLES.select} value={settings.defaultTimezone} onChange={(e) => setSettings((p) => ({ ...p, defaultTimezone: e.target.value }))}>
           <option value="Asia/Seoul">Asia/Seoul (KST, UTC+9)</option>
           <option value="America/New_York">America/New_York (EST, UTC-5)</option>
@@ -65,9 +66,9 @@ export function LocaleTab({
         </select>
       </SettingFieldWithOverride>
 
-      <SettingFieldWithOverride label="지원 언어" status="global" companySelected={!!companyId}>
+      <SettingFieldWithOverride label={t('locale.supportedLangsLabel')} status="global" companySelected={!!companyId}>
         <div className="flex flex-wrap gap-2">{settings.supportedLocales.map((l) => (
-          <span key={l} className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{LOCALE_LABELS[l] ?? l}</span>
+          <Badge key={l} variant="info">{LOCALE_LABELS[l] ?? l}</Badge>
         ))}</div>
       </SettingFieldWithOverride>
 
@@ -76,7 +77,7 @@ export function LocaleTab({
           <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}{t('save')}
         </Button>
       </div>
     </div>

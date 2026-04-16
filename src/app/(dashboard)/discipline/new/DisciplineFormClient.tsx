@@ -111,16 +111,16 @@ export default function DisciplineFormClient({ user }: Props) {
       const res = await apiClient.getList<EmployeeOption>('/api/v1/employees', { limit: 100 })
       setEmployees(res.data)
     } catch (err) {
-      toast({ title: '징계 양식 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('loadFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' })
     }
-  }, [])
+  }, [t, tCommon])
 
   const fetchGrades = useCallback(async () => {
     try {
       const res = await apiClient.getList<GradeOption>('/api/v1/org/grades', { limit: 100 })
       setGrades(res.data)
     } catch (err) {
-      toast({ title: '징계 양식 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('loadFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' })
     }
   }, [])
 
@@ -159,7 +159,7 @@ export default function DisciplineFormClient({ user }: Props) {
       })
       router.push('/discipline')
     } catch (err) {
-      toast({ title: '징계 저장 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('saveFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' })
     } finally {
       setSubmitting(false)
     }

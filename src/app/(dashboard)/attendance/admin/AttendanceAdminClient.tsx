@@ -8,11 +8,11 @@ import { EmptyState } from '@/components/ui/EmptyState'
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
 import { TYPOGRAPHY } from '@/lib/styles/typography'
-import { STATUS_VARIANT } from '@/lib/styles/status'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
@@ -84,18 +84,12 @@ interface CorrectionForm {
 
 // ─── Status variant map ─────────────────────────────────────
 
-const STATUS_BADGE_STYLES: Record<string, string> = {
-  NORMAL: STATUS_VARIANT.success,
-  LATE: STATUS_VARIANT.error,
-  EARLY_OUT: STATUS_VARIANT.warning,
-  ABSENT: STATUS_VARIANT.error,
-}
 
 // ─── Helpers ────────────────────────────────────────────────
 
-function formatTime(t: string | null | undefined): string {
+function formatTime(t: string | null | undefined, locale: string = 'ko'): string {
   if (!t) return '—'
-  return new Date(t).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+  return new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(new Date(t))
 }
 
 function formatMinutes(m: number): string {
@@ -118,6 +112,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
   const t = useTranslations('attendance')
   const tc = useTranslations('common')
   const te = useTranslations('employee')
+  const locale = useLocale()
 
   const STATUS_LABELS: Record<string, string> = {
     NORMAL: t('normal'),
@@ -236,20 +231,20 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
     {
       key: 'clockIn',
       header: t('clockIn'),
-      render: (row) => formatTime(row.clockIn),
+      render: (row) => formatTime(row.clockIn, locale),
     },
     {
       key: 'clockOut',
       header: t('clockOut'),
-      render: (row) => formatTime(row.clockOut),
+      render: (row) => formatTime(row.clockOut, locale),
     },
     {
       key: 'status',
       header: t('status'),
       render: (row) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_BADGE_STYLES[row.status] ?? STATUS_VARIANT.neutral}`}>
+        <StatusBadge status={row.status}>
           {STATUS_LABELS[row.status] ?? row.status}
-        </span>
+        </StatusBadge>
       ),
     },
     {
@@ -301,21 +296,21 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-red-500" />
               <span className="text-sm font-semibold text-destructive">
-                52시간 초과 경고 ({alerts.length}명)
+                {t('weeklyHourAlert', { count: alerts.length })}
               </span>
             </div>
             <div className="flex items-center gap-3 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
                 <span className="h-2 w-2 rounded-full bg-amber-500/100 inline-block" />
-                주의: {alerts.filter((a) => a.alertLevel === 'caution').length}
+                {t('cautionCount', { count: alerts.filter((a) => a.alertLevel === 'caution').length })}
               </span>
               <span className="flex items-center gap-1">
                 <span className="h-2 w-2 rounded-full bg-orange-500/100 inline-block" />
-                경고: {alerts.filter((a) => a.alertLevel === 'warning').length}
+                {t('warningCount', { count: alerts.filter((a) => a.alertLevel === 'warning').length })}
               </span>
               <span className="flex items-center gap-1">
                 <span className="h-2 w-2 rounded-full bg-destructive/50 inline-block" />
-                차단: {alerts.filter((a) => a.alertLevel === 'blocked').length}
+                {t('blockedCount', { count: alerts.filter((a) => a.alertLevel === 'blocked').length })}
               </span>
             </div>
           </div>
@@ -329,17 +324,17 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
                       alert.alertLevel === 'blocked'
                         ? 'bg-destructive/10 text-destructive'
                         : alert.alertLevel === 'warning'
-                          ? 'bg-orange-500/10 text-orange-700'
-                          : 'bg-amber-500/10 text-amber-700'
+                          ? 'bg-warning-bright/15 text-ctr-warning'
+                          : 'bg-warning-bright/15 text-ctr-warning'
                     }`}
                   >
-                    {alert.alertLevel === 'blocked' ? '차단' : alert.alertLevel === 'warning' ? '경고' : '주의'}
+                    {alert.alertLevel === 'blocked' ? t('alertLevelBlocked') : alert.alertLevel === 'warning' ? t('alertLevelWarning') : t('alertLevelCaution')}
                   </span>
                   <span className="text-sm font-medium text-foreground">
                     {alert.employee?.name ?? '—'}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {alert.totalHours.toFixed(1)}h / 주
+                    {t('hoursPerWeek', { hours: alert.totalHours.toFixed(1) })}
                   </span>
                 </div>
                 <button
@@ -352,7 +347,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
                   ) : (
                     <CheckCircle2 className="h-4 w-4" />
                   )}
-                  해제
+                  {t('release')}
                 </button>
               </div>
             ))}

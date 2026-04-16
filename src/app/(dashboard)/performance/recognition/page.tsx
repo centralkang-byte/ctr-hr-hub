@@ -3,11 +3,14 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
-import { type Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import RecognitionClient from './RecognitionClient'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
-export const metadata: Metadata = { title: 'Recognition | CTR HR Hub' }
+export async function generateMetadata() {
+  const t = await getTranslations('performance')
+  return { title: `${t('recognition_pageTitle')} | CTR HR Hub` }
+}
 
 export default async function RecognitionPage() {
   const session = await getServerSession(authOptions)

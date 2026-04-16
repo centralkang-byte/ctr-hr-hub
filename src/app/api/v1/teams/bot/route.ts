@@ -9,19 +9,21 @@ import { verifyBotSignature, routeBotCommand } from '@/lib/teams-bot'
 import { botActivitySchema } from '@/lib/schemas/teams'
 import { apiError } from '@/lib/api'
 import { unauthorized, badRequest } from '@/lib/errors'
+import { getRequestLocale, serverT } from '@/lib/server-i18n'
 
 export async function POST(req: NextRequest) {
+  const locale = await getRequestLocale()
   const authHeader = req.headers.get('authorization')
 
   if (!verifyBotSignature(authHeader)) {
-    return apiError(unauthorized('인증 실패'))
+    return apiError(unauthorized(await serverT(locale, 'teams.api.authFailed')))
   }
 
   const body: unknown = await req.json()
 
   const parsed = botActivitySchema.safeParse(body)
   if (!parsed.success) {
-    return apiError(badRequest('잘못된 Activity 데이터'))
+    return apiError(badRequest(await serverT(locale, 'teams.api.invalidRequest')))
   }
 
   const activity = parsed.data
@@ -31,13 +33,13 @@ export async function POST(req: NextRequest) {
   if (activity.type === 'conversationUpdate') {
     return NextResponse.json({
       type: 'message',
-      text: 'CTR HR Hub Bot이 설치되었습니다. "도움" 또는 "help"를 입력해 보세요.',
+      text: await serverT(locale, 'teams.bot.installed'),
     })
   }
 
   // message: 명령 라우팅
   if (activity.type === 'message') {
-    const response = await routeBotCommand(activity)
+    const response = await routeBotCommand(locale, activity)
     return NextResponse.json(response)
   }
 

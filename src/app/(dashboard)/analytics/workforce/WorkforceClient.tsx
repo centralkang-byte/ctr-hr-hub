@@ -47,8 +47,8 @@ export default function WorkforceClient({ user: _user }: { user: SessionUser }) 
   if (error || !data) {
     return (
       <EmptyState
-        title="데이터를 불러올 수 없습니다"
-        description="인사이트 데이터를 불러오는 중 오류가 발생했습니다. 새로고침하거나 잠시 후 다시 시도해주세요."
+        title={t('error.loadFailed')}
+        description={t('error.loadFailedDescription')}
         action={{ label: t('retry'), onClick: () => fetchData() }}
       />
     )
@@ -61,14 +61,14 @@ export default function WorkforceClient({ user: _user }: { user: SessionUser }) 
       <AnalyticsFilterBar companies={companies} />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KpiCard {...kpis.totalEmployees} icon={Users} tooltip="현재 ACTIVE 상태인 전체 직원 수" />
-        <KpiCard {...kpis.newHires} icon={UserPlus} tooltip="기간 내 신규 입사자 수" />
-        <KpiCard {...kpis.exits} icon={UserMinus} tooltip="기간 내 퇴사자 수" />
-        <KpiCard {...kpis.avgAge} icon={Calendar} tooltip="전체 재직자의 평균 연령" />
+        <KpiCard {...kpis.totalEmployees} icon={Users} tooltip={t('workforce.tooltips.totalEmployees')} />
+        <KpiCard {...kpis.newHires} icon={UserPlus} tooltip={t('workforce.tooltips.newHires')} />
+        <KpiCard {...kpis.exits} icon={UserMinus} tooltip={t('workforce.tooltips.exits')} />
+        <KpiCard {...kpis.avgAge} icon={Calendar} tooltip={t('workforce.tooltips.avgAge')} />
       </div>
 
       {/* Position Level Distribution - Full Width */}
-      <ChartCard title="📊 직급 분포">
+      <ChartCard title={t('workforce.charts.positionDist')}>
         {charts.positionLevelDist.length === 0 ? <EmptyChart /> : (
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={charts.positionLevelDist} layout="vertical">
@@ -76,14 +76,14 @@ export default function WorkforceClient({ user: _user }: { user: SessionUser }) 
               <XAxis type="number" fontSize={11} />
               <YAxis type="category" dataKey="level" width={80} fontSize={11} />
               <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
-              <Bar dataKey="count" name="인원" fill={CHART_COLORS.primary} radius={[0, 4, 4, 0]} maxBarSize={24} />
+              <Bar dataKey="count" name={t('workforce.charts.headcount')} fill={CHART_COLORS.primary} radius={[0, 4, 4, 0]} maxBarSize={24} />
             </BarChart>
           </ResponsiveContainer>
         )}
       </ChartCard>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartCard title="🏢 부서별 인원">
+        <ChartCard title={t('workforce.charts.deptDist')}>
           {charts.departmentDist.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={charts.departmentDist.slice(0, 10)}>
@@ -91,13 +91,13 @@ export default function WorkforceClient({ user: _user }: { user: SessionUser }) 
                 <XAxis dataKey="department" fontSize={10} angle={-20} textAnchor="end" height={50} />
                 <YAxis fontSize={11} />
                 <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
-                <Bar dataKey="count" name="인원" fill={CHART_COLORS.secondary[0]} radius={[4, 4, 0, 0]} maxBarSize={40} />
+                <Bar dataKey="count" name={t('workforce.charts.headcount')} fill={CHART_COLORS.secondary[0]} radius={[4, 4, 0, 0]} maxBarSize={40} />
               </BarChart>
             </ResponsiveContainer>
           )}
         </ChartCard>
 
-        <ChartCard title="📅 근속 분포">
+        <ChartCard title={t('workforce.charts.tenureDist')}>
           {charts.tenureDist.length === 0 ? <EmptyChart /> : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={charts.tenureDist}>
@@ -105,24 +105,24 @@ export default function WorkforceClient({ user: _user }: { user: SessionUser }) 
                 <XAxis dataKey="range" fontSize={11} />
                 <YAxis fontSize={11} />
                 <Tooltip contentStyle={{ borderRadius: 8, fontSize: 12 }} />
-                <Bar dataKey="count" name="인원" fill={CHART_COLORS.secondary[1]} radius={[4, 4, 0, 0]} maxBarSize={40} />
+                <Bar dataKey="count" name={t('workforce.charts.headcount')} fill={CHART_COLORS.secondary[1]} radius={[4, 4, 0, 0]} maxBarSize={40} />
               </BarChart>
             </ResponsiveContainer>
           )}
         </ChartCard>
       </div>
 
-      <ChartCard title="📊 월별 입사/퇴사 추이">
+      <ChartCard title={t('workforce.charts.monthlyHiresExits')}>
         {charts.monthlyHiresExits.length === 0 ? <EmptyChart /> : (
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={charts.monthlyHiresExits}>
               <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
-              <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1] + '월'} />
+              <XAxis dataKey="month" fontSize={11} tickFormatter={(v) => v.split('-')[1]} />
               <YAxis fontSize={11} />
-              <Tooltip labelFormatter={(v) => `${String(v).split('-')[1]}월`} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
+              <Tooltip labelFormatter={(v) => String(v).split('-')[1]} contentStyle={{ borderRadius: 8, fontSize: 12 }} />
               <Legend iconType="circle" iconSize={8} />
-              <Bar dataKey="hires" name="입사" fill={CHART_COLORS.success} radius={[4, 4, 0, 0]} />
-              <Bar dataKey="exits" name="퇴사" fill={CHART_COLORS.danger} radius={[4, 4, 0, 0]} />
+              <Bar dataKey="hires" name={t('workforce.charts.hires')} fill={CHART_COLORS.success} radius={[4, 4, 0, 0]} />
+              <Bar dataKey="exits" name={t('workforce.charts.exits')} fill={CHART_COLORS.danger} radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         )}

@@ -2,13 +2,14 @@ import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { getTranslations } from 'next-intl/server'
 import type { SessionUser } from '@/types'
 import AdjustmentsClient from './AdjustmentsClient'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
-export const metadata = {
-    title: '수동 조정 | CTR HR Hub',
-    description: '소급 지급, 보너스, 공제 등 급여 수동 조정을 추가합니다.',
+export async function generateMetadata() {
+    const t = await getTranslations('payroll')
+    return { title: `${t('page.adjustments')} | CTR HR Hub` }
 }
 
 export default async function AdjustmentsPage() {

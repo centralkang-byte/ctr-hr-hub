@@ -73,14 +73,14 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
         {/* Breadcrumb */}
         <nav className="mb-4 flex items-center gap-1.5 text-sm">
           <Link href="/settings" className="text-muted-foreground transition-colors hover:text-primary">
-            설정
+            {t('breadcrumb')}
           </Link>
           <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-muted-foreground">{config.label}</span>
+          <span className="text-muted-foreground">{t(`categories.${config.key}`)}</span>
           {currentTab && (
             <>
               <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="font-medium text-foreground">{currentTab.label}</span>
+              <span className="font-medium text-foreground">{t(`tabs.${currentTab.slug}`)}</span>
             </>
           )}
         </nav>
@@ -92,7 +92,7 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
               <Icon className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">{config.label}</h1>
+              <h1 className="text-xl font-bold text-foreground">{t(`categories.${config.key}`)}</h1>
               <p className="text-xs text-muted-foreground">{config.labelEn}</p>
             </div>
           </div>
@@ -116,7 +116,7 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
                       : 'text-foreground/70 hover:bg-muted hover:text-foreground',
                   )}
                 >
-                  <span className="flex-1">{tab.label}</span>
+                  <span className="flex-1">{t(`tabs.${tab.slug}`)}</span>
                   {tab.isGlobalOnly && (
                     <Lock className="h-3.5 w-3.5 text-muted-foreground" />
                   )}
@@ -134,7 +134,7 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
             >
               {config.tabs.map((tab) => (
                 <option key={tab.slug} value={tab.slug}>
-                  {tab.label} {tab.isGlobalOnly ? '🔒' : ''}
+                  {t(`tabs.${tab.slug}`)} {tab.isGlobalOnly ? '🔒' : ''}
                 </option>
               ))}
             </select>

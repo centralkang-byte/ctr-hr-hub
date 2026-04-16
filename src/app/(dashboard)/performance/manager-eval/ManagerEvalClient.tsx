@@ -41,7 +41,7 @@ interface EvalPayload {
   beiIndicators: BeiIndicatorGroup[]
 }
 
-const SCORE_LABELS = ['', '매우 부족', '부족', '보통', '우수', '탁월']
+const SCORE_LABELS = ['', 'score.veryLacking', 'score.lacking', 'score.average', 'score.excellent', 'score.outstanding']
 
 const STATUS_BADGE: Record<string, string> = {
   DRAFT: STATUS_VARIANT.neutral,
@@ -87,24 +87,24 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
         const evalCycles = res.data.filter((c) => getAllowedStatuses('evaluation', c.half ?? 'H2').includes(c.status))
         setCycles(evalCycles)
         if (evalCycles.length > 0) setSelectedCycleId(evalCycles[0].id)
-      } catch (err) { toast({ title: '평가 주기 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+      } catch (err) { toast({ title: t('managerEval.cycleLoadFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' }) }
     }
     fetchCycles()
-  }, [])
+  }, [t]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─── Fetch team evaluations ─────────────────────────
 
   const fetchTeam = useCallback(async () => {
-    if (!selectedCycleId) return
+    if (!selectedCycleId) { setLoading(false); return }
     setLoading(true)
     try {
       const res = await apiClient.get<EvalPayload>('/api/v1/performance/evaluations/manager', { cycleId: selectedCycleId })
       setTeamMembers(res.data.members ?? [])
       setEvalSettings(res.data.evalSettings)
       setBeiIndicators(res.data.beiIndicators ?? [])
-    } catch (err) { toast({ title: '평가 설정 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('managerEval.settingsLoadFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' }) }
     finally { setLoading(false) }
-  }, [selectedCycleId])
+  }, [selectedCycleId, t])
 
   useEffect(() => { fetchTeam() }, [fetchTeam])
 
@@ -136,9 +136,9 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
       if (tm?.managerEval?.id) {
         setCurrentEvaluationId(tm.managerEval.id)
       }
-    } catch (err) { toast({ title: '팀원 평가 데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('managerEval.dataLoadFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' }) }
     finally { setFormLoading(false) }
-  }, [selectedCycleId, teamMembers])
+  }, [selectedCycleId, teamMembers, t])
 
   // ─── Apply AI Draft ──────────────────────────────────
 
@@ -234,7 +234,7 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
     setAiLoading(true)
     try {
       const res = await apiClient.post<{ suggested_comment: string }>('/api/v1/ai/eval-comment', {
-        employeeName: emp?.employee.name ?? '직원',
+        employeeName: emp?.employee.name ?? t('managerEval.defaultEmployee'),
         goalSummary: goals.map((g) => g.title).join(', '),
         goalScores: goals.map((g) => ({
           title: g.title,
@@ -259,7 +259,7 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('managerEval')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('managerEval.title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t('kr_ked8c80ec_kec84b1ea_ked8f89ea')}</p>
         </div>
         <select
@@ -306,13 +306,13 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
                   {tm.selfEval && (
                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_BADGE[tm.selfEval.status] ?? ''}`}>
                       {tm.selfEval.status === 'SUBMITTED' ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
-                      자기
+                      {t('managerEval.selfBadge')}
                     </span>
                   )}
                   {tm.managerEval && (
                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_BADGE[tm.managerEval.status] ?? ''}`}>
                       {tm.managerEval.status === 'SUBMITTED' ? <CheckCircle2 className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
-                      매니저
+                      {t('managerEval.managerBadge')}
                     </span>
                   )}
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
@@ -346,7 +346,7 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
                         <div className="flex items-center justify-between">
                           <div>
                             <p className="text-sm font-medium text-foreground">{goal.title}</p>
-                            <p className="text-xs text-muted-foreground">가중치: {goal.weight}%</p>
+                            <p className="text-xs text-muted-foreground">{t('managerEval.weight', { weight: goal.weight })}</p>
                           </div>
                           <div className="flex items-center gap-1">
                             {[1, 2, 3, 4, 5].map((score) => (
@@ -367,7 +367,7 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
                             ))}
                           </div>
                         </div>
-                        <p className="text-xs text-muted-foreground">{SCORE_LABELS[goalScores[goal.id]?.score ?? 3]}</p>
+                        <p className="text-xs text-muted-foreground">{SCORE_LABELS[goalScores[goal.id]?.score ?? 3] ? t(SCORE_LABELS[goalScores[goal.id]?.score ?? 3]) : ''}</p>
                       </div>
                     ))}
                   </div>
@@ -459,9 +459,9 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
                 <div className="rounded-xl border border-primary/20 bg-tertiary-container/10 p-4">
                   <p className="text-sm font-semibold text-primary/90">{t('kr_keca285ed_keb93b1ea_kec9e90eb_')}</p>
                   <p className="text-xs text-emerald-700 mt-1">
-                    업적 {evalSettings.mboWeight}% ({performanceGrade})
+                    {t('managerEval.mboWeightGrade', { weight: evalSettings.mboWeight, grade: performanceGrade })}
                     {evalSettings.methodology === 'MBO_BEI' && competencyGrade
-                      ? ` + 역량 ${evalSettings.beiWeight}% (${competencyGrade})`
+                      ? ` + ${t('managerEval.beiWeightGrade', { weight: evalSettings.beiWeight, grade: competencyGrade })}`
                       : ''}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -480,14 +480,14 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-500/15 text-primary/90 hover:bg-indigo-200 transition-colors disabled:opacity-50"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
-                    {aiLoading ? t('aiGenerating') : 'AI 코멘트 제안'}
+                    {aiLoading ? t('aiGenerating') : t('managerEval.aiSuggest')}
                   </button>
                 </div>
                 <textarea
                   rows={4}
                   value={overallComment}
                   onChange={(e) => setOverallComment(e.target.value)}
-                  placeholder="팀원에 대한 종합 평가 의견을 작성하세요..."
+                  placeholder={t('managerEval.commentPlaceholder')}
                   className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground resize-none"
                 />
               </div>
@@ -497,7 +497,7 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
                 <button
                   onClick={() => setShowAiDraft(true)}
                   disabled={!currentEvaluationId}
-                  title={!currentEvaluationId ? '먼저 임시 저장 후 AI 초안을 생성할 수 있습니다' : undefined}
+                  title={!currentEvaluationId ? t('managerEval.saveFirstForAi') : undefined}
                   className="flex items-center gap-1.5 px-3 py-2 border border-indigo-200 bg-indigo-500/15 text-primary/90 rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-indigo-200 transition-colors"
                 >
                   <Sparkles className="w-4 h-4" />

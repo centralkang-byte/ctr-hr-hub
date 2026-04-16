@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { toast } from '@/hooks/use-toast'
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -29,13 +29,14 @@ interface SurveyDetail {
   questions: Question[]
 }
 
-const LIKERT_LABELS = ['매우 부정', '부정', '보통', '긍정', '매우 긍정']
+const LIKERT_LABEL_KEYS = ['pulse.likertVeryNegative', 'pulse.likertNegative', 'pulse.likertNeutral', 'pulse.likertPositive', 'pulse.likertVeryPositive']
 
 // ─── Component ───────────────────────────────────────────
 
 export default function PulseRespondClient({ user: _user, id }: { user: SessionUser; id: string }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
+  const locale = useLocale()
   const router = useRouter()
 
   const [survey, setSurvey] = useState<SurveyDetail | null>(null)
@@ -49,10 +50,10 @@ export default function PulseRespondClient({ user: _user, id }: { user: SessionU
       const res = await apiClient.get<SurveyDetail>(`/api/v1/pulse/surveys/${id}`)
       setSurvey(res.data)
     } catch (err) {
-      toast({ title: '설문 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('messages.surveyLoadFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' })
     }
     setLoading(false)
-  }, [id])
+  }, [id, t])
 
   useEffect(() => { fetchSurvey() }, [fetchSurvey])
 
@@ -71,7 +72,7 @@ export default function PulseRespondClient({ user: _user, id }: { user: SessionU
       await apiClient.post(`/api/v1/pulse/surveys/${id}/respond`, { answers: answerList })
       setSubmitted(true)
     } catch (err) {
-      toast({ title: '응답 제출 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('messages.responseSubmitFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' })
     }
     setSubmitting(false)
   }
@@ -111,9 +112,9 @@ export default function PulseRespondClient({ user: _user, id }: { user: SessionU
 
       <div className="bg-indigo-500/15 rounded-xl border border-indigo-200 p-4 text-sm text-primary/90">
         {survey.anonymityLevel === 'FULL_ANONYMOUS'
-          ? '이 설문은 완전 익명으로 진행됩니다. 응답자 정보가 기록되지 않습니다.'
-          : '이 설문은 부서 단위로 익명이 보장됩니다.'}
-        <br />마감: {new Date(survey.closeAt).toLocaleDateString('ko-KR')}
+          ? t('pulse.anonymityFullNotice')
+          : t('pulse.anonymityDivisionNotice')}
+        <br />{t('pulse.deadline')}: {new Date(survey.closeAt).toLocaleDateString(locale)}
       </div>
 
       {/* Questions */}
@@ -140,7 +141,7 @@ export default function PulseRespondClient({ user: _user, id }: { user: SessionU
                         : 'bg-card text-muted-foreground border-border hover:bg-background'
                     }`}>
                     <div className="text-lg">{v}</div>
-                    <div className="text-xs mt-1 opacity-80">{LIKERT_LABELS[v - 1]}</div>
+                    <div className="text-xs mt-1 opacity-80">{t(LIKERT_LABEL_KEYS[v - 1])}</div>
                   </button>
                 ))}
               </div>
@@ -179,7 +180,7 @@ export default function PulseRespondClient({ user: _user, id }: { user: SessionU
         <button onClick={handleSubmit} disabled={submitting || !allRequiredAnswered}
           className={`flex items-center gap-2 px-6 py-2.5 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}>
           <Send className="w-4 h-4" />
-          {submitting ? '제출 중...' : '응답 제출'}
+          {submitting ? t('pulse.submitting') : t('pulse.submitResponse')}
         </button>
       </div>
     </div>

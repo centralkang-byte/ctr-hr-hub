@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { apiClient } from '@/lib/api'
 import { TABLE_STYLES } from '@/lib/styles'
 import PayBandChart from '@/components/compensation/PayBandChart'
@@ -54,24 +55,25 @@ function formatCurrency(amount: number, currency: string): string {
 // ─── Allowance type label map ────────────────────────────────
 
 const ALLOWANCE_TYPE_LABELS: Record<string, string> = {
-  OVERTIME_ALLOWANCE: '초과근무수당',
-  NIGHT_SHIFT: '야간근무수당',
-  HOLIDAY_ALLOWANCE: '휴일수당',
-  HAZARD: '위험수당',
-  POSITION: '직책수당',
-  FAMILY: '가족수당',
-  MEAL_ALLOWANCE: '식대',
-  TRANSPORT_ALLOWANCE: '교통수당',
-  OTHER: '기타수당',
+  OVERTIME_ALLOWANCE: 'allowanceOvertime',
+  NIGHT_SHIFT: 'allowanceNightShift',
+  HOLIDAY_ALLOWANCE: 'allowanceHoliday',
+  HAZARD: 'allowanceHazard',
+  POSITION: 'allowancePosition',
+  FAMILY: 'allowanceFamily',
+  MEAL_ALLOWANCE: 'allowanceMeal',
+  TRANSPORT_ALLOWANCE: 'allowanceTransport',
+  OTHER: 'allowanceOther',
 }
 
-function getAllowanceLabel(type: string): string {
-  return ALLOWANCE_TYPE_LABELS[type] ?? type
+function getAllowanceLabel(type: string, t: (key: string) => string): string {
+  return ALLOWANCE_TYPE_LABELS[type] ? t(ALLOWANCE_TYPE_LABELS[type]) : type
 }
 
 // ─── Component ──────────────────────────────────────────────
 
 export function CompensationTab({ employeeId }: CompensationTabProps) {
+  const t = useTranslations('employee')
   const [data, setData] = useState<CompensationData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -81,9 +83,9 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
     apiClient
       .get<CompensationData>(`/api/v1/employees/${employeeId}/compensation`)
       .then((res) => setData(res.data))
-      .catch(() => setError('급여 정보를 불러오지 못했습니다.'))
+      .catch(() => setError(t('compensationLoadError')))
       .finally(() => setLoading(false))
-  }, [employeeId])
+  }, [employeeId, t])
 
   if (loading) {
     return (
@@ -103,7 +105,7 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
     return (
       <div className="flex flex-col items-center py-12 text-muted-foreground">
         <span className="text-3xl mb-2">💰</span>
-        <p className="text-sm">등록된 급여 정보가 없습니다.</p>
+        <p className="text-sm">{t('compensationNoData')}</p>
       </div>
     )
   }
@@ -122,10 +124,10 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <h3 className="text-base font-bold text-foreground">
-          급여 정보 ({effectiveDateStr} 기준)
+          {t('compensationInfoAsOf', { date: effectiveDateStr })}
         </h3>
         <span className="text-xs text-muted-foreground rounded-full bg-muted px-2.5 py-1">
-          HR Admin 전용
+          {t('compensationHrOnly')}
         </span>
       </div>
 
@@ -135,26 +137,26 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
           <thead>
             <tr className={TABLE_STYLES.header}>
               <th className={TABLE_STYLES.headerCell}>
-                항목
+                {t('compensationItem')}
               </th>
               <th className={TABLE_STYLES.headerCellRight}>
-                금액
+                {t('compensationAmount')}
               </th>
               <th className={TABLE_STYLES.headerCell}>
-                지급 월
+                {t('compensationPayMonth')}
               </th>
             </tr>
           </thead>
           <tbody>
             {/* 기본급 */}
             <tr className={TABLE_STYLES.row}>
-              <td className="px-4 py-3 text-sm font-medium text-foreground">기본급</td>
+              <td className="px-4 py-3 text-sm font-medium text-foreground">{t('compensationBaseSalary')}</td>
               <td className="px-4 py-3 text-right text-sm font-mono tabular-nums text-foreground">
                 {formatCurrency(latestComp.newBaseSalary, currency)}
               </td>
               <td className="px-4 py-3 text-center">
                 <span className="text-xs text-emerald-700 bg-emerald-500/15 rounded-full px-2 py-0.5">
-                  기본
+                  {t('compensationBaseLabel')}
                 </span>
               </td>
             </tr>
@@ -163,7 +165,7 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
             {allowances.map((a) => (
               <tr key={a.id} className="border-t border-border">
                 <td className="px-4 py-3 text-sm text-muted-foreground">
-                  {getAllowanceLabel(a.allowanceType)}
+                  {getAllowanceLabel(a.allowanceType, t)}
                 </td>
                 <td className="px-4 py-3 text-right text-sm font-mono tabular-nums text-muted-foreground">
                   {formatCurrency(a.amount, a.currency)}
@@ -178,7 +180,7 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
 
             {/* 합계 */}
             <tr className="border-t-2 border-border bg-background">
-              <td className="px-4 py-3 text-sm font-bold text-foreground">연봉 합계</td>
+              <td className="px-4 py-3 text-sm font-bold text-foreground">{t('compensationAnnualTotal')}</td>
               <td className="px-4 py-3 text-right text-base font-bold font-mono tabular-nums text-foreground">
                 {formatCurrency(latestComp.newBaseSalary + totalAllowances, currency)}
               </td>
@@ -192,7 +194,7 @@ export function CompensationTab({ employeeId }: CompensationTabProps) {
       {salaryBand && (
         <div className="rounded-xl border border-border p-5">
           <h4 className="text-sm font-semibold text-foreground mb-1">
-            연봉밴드 위치
+            {t('compensationBandPosition')}
             {jobGrade && (
               <span className="ml-2 text-muted-foreground font-normal">({jobGrade.name})</span>
             )}

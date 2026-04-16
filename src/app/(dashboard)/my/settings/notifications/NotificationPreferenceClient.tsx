@@ -1,9 +1,11 @@
 'use client'
 
-
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Bell, Moon, Save, Check } from 'lucide-react'
 import { CARD_STYLES, BUTTON_VARIANTS } from '@/lib/styles'
+import { apiClient } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
 
 type Channel = 'in_app' | 'email' | 'teams'
 
@@ -19,34 +21,34 @@ interface Preferences {
 
 const EVENT_GROUPS = [
   {
-    label: '근태 / 휴가',
+    labelKey: 'group.attendanceLeave',
     events: [
-      { key: 'leave_approved', label: '휴가 승인' },
-      { key: 'leave_rejected', label: '휴가 반려' },
-      { key: 'overtime_warning_48h', label: '주 48시간 경고' },
-      { key: 'overtime_blocked_52h', label: '주 52시간 차단' },
-      { key: 'leave_expiry_30d', label: '연차 소멸 30일 전' },
+      { key: 'leave_approved', labelKey: 'event.leaveApproved' },
+      { key: 'leave_rejected', labelKey: 'event.leaveRejected' },
+      { key: 'overtime_warning_48h', labelKey: 'event.overtimeWarning48h' },
+      { key: 'overtime_blocked_52h', labelKey: 'event.overtimeBlocked52h' },
+      { key: 'leave_expiry_30d', labelKey: 'event.leaveExpiry30d' },
     ],
   },
   {
-    label: '급여',
+    labelKey: 'group.payroll',
     events: [
-      { key: 'payslip_issued', label: '급여명세서 발급' },
-      { key: 'year_end_deadline', label: '연말정산 마감' },
+      { key: 'payslip_issued', labelKey: 'event.payslipIssued' },
+      { key: 'year_end_deadline', labelKey: 'event.yearEndDeadline' },
     ],
   },
   {
-    label: '교육 / 복리후생',
+    labelKey: 'group.trainingBenefits',
     events: [
-      { key: 'mandatory_training_due', label: '법정교육 마감 30일 전' },
-      { key: 'benefit_approved', label: '복리후생 승인' },
+      { key: 'mandatory_training_due', labelKey: 'event.mandatoryTrainingDue' },
+      { key: 'benefit_approved', labelKey: 'event.benefitApproved' },
     ],
   },
   {
-    label: '성과 / 분석',
+    labelKey: 'group.performanceAnalytics',
     events: [
-      { key: 'evaluation_deadline', label: '성과평가 마감' },
-      { key: 'turnover_risk_critical', label: '이직위험 Critical' },
+      { key: 'evaluation_deadline', labelKey: 'event.evaluationDeadline' },
+      { key: 'turnover_risk_critical', labelKey: 'event.turnoverRiskCritical' },
     ],
   },
 ]
@@ -54,6 +56,7 @@ const EVENT_GROUPS = [
 const DEFAULT_PREF: EventPref = { in_app: true, email: false, teams: false }
 
 export function NotificationPreferenceClient() {
+  const t = useTranslations('notificationPrefs')
   const [preferences, setPreferences] = useState<Preferences>({})
   const [quietStart, setQuietStart] = useState('22:00')
   const [quietEnd, setQuietEnd] = useState('08:00')
@@ -63,19 +66,18 @@ export function NotificationPreferenceClient() {
 
   const loadPrefs = useCallback(async () => {
     try {
-      const res = await fetch('/api/v1/notifications/preferences')
-      const data = await res.json()
-      if (data.data) {
-        setPreferences((data.data.preferences as Preferences) ?? {})
-        setQuietStart(data.data.quietHoursStart ?? '22:00')
-        setQuietEnd(data.data.quietHoursEnd ?? '08:00')
+      const res = await apiClient.get<{ preferences: Preferences; quietHoursStart: string; quietHoursEnd: string }>('/api/v1/notifications/preferences')
+      if (res.data) {
+        setPreferences(res.data.preferences ?? {})
+        setQuietStart(res.data.quietHoursStart ?? '22:00')
+        setQuietEnd(res.data.quietHoursEnd ?? '08:00')
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      toast({ title: t('fetchError'), description: err instanceof Error ? err.message : undefined, variant: 'destructive' })
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     loadPrefs()
@@ -97,17 +99,15 @@ export function NotificationPreferenceClient() {
   const handleSave = async () => {
     setSaving(true)
     try {
-      await fetch('/api/v1/notifications/preferences', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          preferences,
-          quietHoursStart: quietStart,
-          quietHoursEnd: quietEnd,
-        }),
+      await apiClient.put('/api/v1/notifications/preferences', {
+        preferences,
+        quietHoursStart: quietStart,
+        quietHoursEnd: quietEnd,
       })
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
+    } catch (err) {
+      toast({ title: t('saveError'), description: err instanceof Error ? err.message : undefined, variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -129,7 +129,7 @@ export function NotificationPreferenceClient() {
       {/* Header */}
       <div className="flex items-center gap-2 mb-6">
         <Bell className="w-5 h-5 text-primary" />
-        <h1 className="text-2xl font-bold text-foreground">{'알림 설정'}</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
       </div>
 
       {/* Channel toggles */}
@@ -137,24 +137,24 @@ export function NotificationPreferenceClient() {
         {/* Header row */}
         <div className="grid grid-cols-[1fr_80px_80px_80px] gap-4 px-5 py-3 bg-background border-b border-border">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            이벤트
+            {t('channel.event')}
           </span>
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center">
-            인앱
+            {t('channel.inApp')}
           </span>
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center">
-            이메일
+            {t('channel.email')}
           </span>
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center">
-            Teams
+            {t('channel.teams')}
           </span>
         </div>
 
         {EVENT_GROUPS.map((group) => (
-          <div key={group.label}>
+          <div key={group.labelKey}>
             {/* Group header */}
             <div className="px-5 py-2 bg-muted border-b border-border">
-              <span className="text-xs font-semibold text-muted-foreground">{group.label}</span>
+              <span className="text-xs font-semibold text-muted-foreground">{t(group.labelKey)}</span>
             </div>
 
             {/* Event rows */}
@@ -165,7 +165,7 @@ export function NotificationPreferenceClient() {
                   key={ev.key}
                   className="grid grid-cols-[1fr_80px_80px_80px] gap-4 px-5 py-3.5 border-b border-border last:border-0 items-center"
                 >
-                  <span className="text-sm text-foreground">{ev.label}</span>
+                  <span className="text-sm text-foreground">{t(ev.labelKey)}</span>
                   {(['in_app', 'email', 'teams'] as Channel[]).map((ch) => (
                     <div key={ch} className="flex justify-center">
                       <button
@@ -175,7 +175,7 @@ export function NotificationPreferenceClient() {
                             ? 'bg-primary border-primary'
                             : 'bg-card border-border hover:border-primary'
                         }`}
-                        aria-label={`${ev.label} ${ch} 알림 ${pref[ch] ? '끄기' : '켜기'}`}
+                        aria-label={`${t(ev.labelKey)} ${ch} ${pref[ch] ? t('toggleOff') : t('toggleOn')}`}
                       >
                         {pref[ch] && <Check className="w-3 h-3 text-white" />}
                       </button>
@@ -192,8 +192,8 @@ export function NotificationPreferenceClient() {
       <div className={`${CARD_STYLES.kpi} mb-6`}>
         <div className="flex items-center gap-2 mb-4">
           <Moon className="w-4 h-4 text-muted-foreground" />
-          <h2 className="text-base font-semibold text-foreground">방해금지 시간</h2>
-          <span className="text-xs text-muted-foreground">(urgent 알림 제외)</span>
+          <h2 className="text-base font-semibold text-foreground">{t('quietHours.title')}</h2>
+          <span className="text-xs text-muted-foreground">({t('quietHours.excludeUrgent')})</span>
         </div>
         <div className="flex items-center gap-3">
           <input
@@ -211,7 +211,7 @@ export function NotificationPreferenceClient() {
           />
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          설정된 시간 동안 긴급(urgent) 외 알림은 조용히 처리됩니다
+          {t('quietHours.description')}
         </p>
       </div>
 
@@ -224,12 +224,12 @@ export function NotificationPreferenceClient() {
         {saved ? (
           <>
             <Check className="w-4 h-4" />
-            저장됨
+            {t('saved')}
           </>
         ) : (
           <>
             <Save className="w-4 h-4" />
-            {saving ? '저장 중...' : '저장'}
+            {saving ? t('saving') : t('save')}
           </>
         )}
       </button>

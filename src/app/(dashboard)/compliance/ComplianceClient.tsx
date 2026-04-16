@@ -74,32 +74,33 @@ export default function ComplianceClient({ user: _user }: { user: SessionUser })
     { label: t('gdpr.dpia'), value: stats?.dpiaRecords ?? 0, icon: FileSearch, color: 'text-primary' },
   ]
 
+  // Hub 기준 딥링크 (?tab=...&section=... / ?tab=country&region=...)
   const navCards = [
     {
       title: t('gdpr.title'),
       description: 'GDPR compliance management — consents, requests, DPIA',
-      href: '/compliance/gdpr',
+      href: '/compliance?tab=data-protection&section=consents',
       icon: Shield,
       color: 'bg-emerald-500/15 text-emerald-600',
     },
     {
       title: t('gdpr.piiAudit'),
       description: t('gdpr.piiAuditDesc'),
-      href: '/compliance/pii-audit',
+      href: '/compliance?tab=pii-audit',
       icon: Eye,
       color: 'bg-primary/10 text-primary',
     },
     {
       title: t('gdpr.retention'),
       description: t('gdpr.retentionDesc'),
-      href: '/compliance/data-retention',
+      href: '/compliance?tab=data-protection&section=retention',
       icon: Database,
       color: 'bg-purple-500/10 text-purple-600',
     },
     {
       title: t('gdpr.dpia'),
       description: t('gdpr.dpiaDesc'),
-      href: '/compliance/dpia',
+      href: '/compliance?tab=data-protection&section=dpia',
       icon: FileSearch,
       color: 'bg-indigo-500/15 text-primary',
     },
@@ -109,21 +110,21 @@ export default function ComplianceClient({ user: _user }: { user: SessionUser })
     {
       title: t('ru.title'),
       description: t('ru.description'),
-      href: '/compliance/ru',
+      href: '/compliance?tab=country&region=ru',
       icon: FileText,
       flag: '🇷🇺',
     },
     {
       title: t('cn.title'),
       description: t('cn.description'),
-      href: '/compliance/cn',
+      href: '/compliance?tab=country&region=cn',
       icon: Scale,
       flag: '🇨🇳',
     },
     {
       title: t('kr.title'),
       description: t('kr.description'),
-      href: '/compliance/kr',
+      href: '/compliance?tab=country&region=kr',
       icon: ClipboardCheck,
       flag: '🇰🇷',
     },

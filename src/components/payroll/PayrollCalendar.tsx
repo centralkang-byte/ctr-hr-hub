@@ -4,6 +4,7 @@
 // PayrollCalendar.tsx — 급여 캘린더 (법인별 마감일/지급일 + D-day 알림)
 // ═══════════════════════════════════════════════════════════
 
+import { useTranslations, useLocale } from 'next-intl'
 import { AlertTriangle, CheckCircle2, Clock, Calendar } from 'lucide-react'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -20,35 +21,19 @@ interface CalendarEntry {
     status: string
 }
 
-// ─── D-Day formatter ─────────────────────────────────────────
+// ─── Status label keys ───────────────────────────────────────
 
-function formatDDay(d: number | null, isCompleted: boolean): React.ReactNode {
-    if (isCompleted) return <span className="text-emerald-600 text-xs">완료</span>
-    if (d == null) return <span className="text-muted-foreground text-xs">—</span>
-    if (d < 0) return <span className="text-destructive text-xs font-bold">{Math.abs(d)}일 초과</span>
-    if (d === 0) return <span className="text-destructive text-xs font-bold">D-Day</span>
-    return <span className={`text-xs font-semibold ${d <= 3 ? 'text-amber-600' : 'text-muted-foreground'}`}>D-{d}</span>
-}
-
-function formatDate(iso: string | null): string {
-    if (!iso) return '—'
-    const d = new Date(iso)
-    return `${d.getMonth() + 1}/${d.getDate()}`
-}
-
-// ─── Status label ────────────────────────────────────────────
-
-const STATUS_LABELS: Record<string, string> = {
-    NOT_STARTED: '미시작',
-    DRAFT: '준비중',
-    ATTENDANCE_CLOSED: '근태 마감',
-    CALCULATING: '자동 계산중',
-    ADJUSTMENT: '수동 조정중',
-    REVIEW: '이상 검토중',
-    PENDING_APPROVAL: '결재 대기중',
-    APPROVED: '승인 완료',
-    PAID: '지급 완료',
-    CANCELLED: '취소',
+const STATUS_LABEL_KEYS: Record<string, string> = {
+    NOT_STARTED: 'status.notStarted',
+    DRAFT: 'status.draft',
+    ATTENDANCE_CLOSED: 'status.attendanceClosed',
+    CALCULATING: 'status.calculating',
+    ADJUSTMENT: 'status.adjustment',
+    REVIEW: 'status.review',
+    PENDING_APPROVAL: 'status.pendingApproval',
+    APPROVED: 'status.approved',
+    PAID: 'status.paid',
+    CANCELLED: 'status.cancelled',
 }
 
 // ─── Main Component ──────────────────────────────────────────
@@ -59,8 +44,26 @@ interface Props {
 }
 
 export default function PayrollCalendar({ entries, yearMonth }: Props) {
+    const t = useTranslations('payroll')
+    const locale = useLocale()
     const [yr, mn] = yearMonth.split('-')
     const hasAlerts = entries.some((e) => e.alertLevel !== 'normal' && e.currentStep < 7)
+
+    // D-Day 포맷터
+    function formatDDay(d: number | null, isCompleted: boolean): React.ReactNode {
+        if (isCompleted) return <span className="text-emerald-600 text-xs">{t('calendar.complete')}</span>
+        if (d == null) return <span className="text-muted-foreground text-xs">—</span>
+        if (d < 0) return <span className="text-destructive text-xs font-bold">{t('calendar.overdue', { days: Math.abs(d) })}</span>
+        if (d === 0) return <span className="text-destructive text-xs font-bold">D-Day</span>
+        return <span className={`text-xs font-semibold ${d <= 3 ? 'text-amber-600' : 'text-muted-foreground'}`}>D-{d}</span>
+    }
+
+    // 날짜 포맷터 (로케일 기반)
+    function formatDate(iso: string | null): string {
+        if (!iso) return '—'
+        const d = new Date(iso)
+        return new Intl.DateTimeFormat(locale, { month: 'numeric', day: 'numeric' }).format(d)
+    }
 
     // Sort: by closingDay ascending
     const sorted = [...entries].sort((a, b) => {
@@ -74,10 +77,10 @@ export default function PayrollCalendar({ entries, yearMonth }: Props) {
             {/* Header */}
             <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-primary" />
-                <span className="text-sm font-semibold text-foreground">{yr}년 {mn}월 급여 캘린더</span>
+                <span className="text-sm font-semibold text-foreground">{t('calendar.title', { year: yr, month: mn })}</span>
                 {hasAlerts && (
                     <span className="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-amber-500/15 text-amber-700">
-                        <AlertTriangle className="h-3 w-3" /> 마감 임박
+                        <AlertTriangle className="h-3 w-3" /> {t('calendar.deadlineAlert')}
                     </span>
                 )}
             </div>
@@ -87,11 +90,11 @@ export default function PayrollCalendar({ entries, yearMonth }: Props) {
                 <table className="w-full text-sm">
                     <thead>
                         <tr className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                            <th className="text-left pb-2 font-semibold">법인</th>
-                            <th className="text-center pb-2 font-semibold">마감일</th>
-                            <th className="text-center pb-2 font-semibold">지급일</th>
-                            <th className="text-center pb-2 font-semibold">현재 단계</th>
-                            <th className="text-center pb-2 font-semibold">잔여일</th>
+                            <th className="text-left pb-2 font-semibold">{t('calendar.company')}</th>
+                            <th className="text-center pb-2 font-semibold">{t('calendar.closingDate')}</th>
+                            <th className="text-center pb-2 font-semibold">{t('calendar.payDate')}</th>
+                            <th className="text-center pb-2 font-semibold">{t('calendar.currentStep')}</th>
+                            <th className="text-center pb-2 font-semibold">{t('calendar.remainingDays')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
@@ -124,7 +127,7 @@ export default function PayrollCalendar({ entries, yearMonth }: Props) {
                                                             'bg-primary/10 text-primary'
                                             }`}>
                                             {isCompleted ? <CheckCircle2 className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                                            {STATUS_LABELS[entry.status] ?? entry.status}
+                                            {STATUS_LABEL_KEYS[entry.status] ? t(STATUS_LABEL_KEYS[entry.status]) : entry.status}
                                         </span>
                                     </td>
                                     <td className="py-2 text-center">
@@ -148,12 +151,11 @@ export default function PayrollCalendar({ entries, yearMonth }: Props) {
                 >
                     <AlertTriangle className="h-4 w-4 flex-shrink-0" />
                     <span>
-                        <strong>{entry.companyCode}</strong>:{' '}
                         {entry.dDayClosing != null && entry.dDayClosing <= 0
-                            ? `마감일이 ${Math.abs(entry.dDayClosing)}일 지났습니다. 즉시 처리해 주세요.`
+                            ? t('calendar.deadlineAlertOverdue', { company: entry.companyCode ?? entry.companyName, days: Math.abs(entry.dDayClosing) })
                             : entry.dDayClosing != null && entry.dDayClosing === 0
-                                ? `오늘이 마감일입니다. 빠른 처리가 필요합니다.`
-                                : `마감일까지 ${entry.dDayClosing}일 남았습니다. (현재: ${STATUS_LABELS[entry.status] ?? entry.status})`
+                                ? t('calendar.deadlineAlertToday', { company: entry.companyCode ?? entry.companyName })
+                                : t('calendar.deadlineAlertSoon', { company: entry.companyCode ?? entry.companyName, days: entry.dDayClosing ?? 0, status: STATUS_LABEL_KEYS[entry.status] ? t(STATUS_LABEL_KEYS[entry.status]) : entry.status })
                         }
                     </span>
                 </div>

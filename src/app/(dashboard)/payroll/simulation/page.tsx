@@ -2,12 +2,16 @@ import { Suspense } from 'react'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
 import PayrollSimulationClient from './PayrollSimulationClient'
 import type { SessionUser } from '@/types'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
-export const metadata = { title: '급여 시뮬레이션 | CTR HR Hub' }
+export async function generateMetadata() {
+  const t = await getTranslations('payroll')
+  return { title: `${t('page.simulation')} | CTR HR Hub` }
+}
 
 export default async function PayrollSimulationPage() {
   const session = await getServerSession(authOptions)

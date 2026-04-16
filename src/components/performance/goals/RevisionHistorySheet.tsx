@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { History } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet'
 import { apiClient } from '@/lib/api'
@@ -52,6 +52,7 @@ const REVISION_STATUS_STYLES: Record<string, string> = {
 
 export function RevisionHistorySheet({ open, onOpenChange, goalId, goalTitle }: Props) {
   const t = useTranslations('performance.goalRevision')
+  const locale = useLocale()
   const [revisions, setRevisions] = useState<GoalRevisionItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -63,14 +64,14 @@ export function RevisionHistorySheet({ open, onOpenChange, goalId, goalTitle }: 
       setRevisions(res.data)
     } catch (err) {
       toast({
-        title: '이력 로드 실패',
-        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        title: t('messages.loadFailed'),
+        description: err instanceof Error ? err.message : t('messages.retryPlease'),
         variant: 'destructive',
       })
     } finally {
       setLoading(false)
     }
-  }, [goalId])
+  }, [goalId, t])
 
   useEffect(() => {
     if (open) fetchRevisions()
@@ -123,20 +124,20 @@ export function RevisionHistorySheet({ open, onOpenChange, goalId, goalTitle }: 
                       {t(`revision${rev.status.charAt(0) + rev.status.slice(1).toLowerCase()}` as Parameters<typeof t>[0])}
                     </span>
                     {rev.batchId && (
-                      <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">배치</span>
+                      <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">{t('batch')}</span>
                     )}
                   </div>
                   <span className="font-mono text-xs tabular-nums text-muted-foreground">
-                    {new Date(rev.createdAt).toLocaleDateString('ko-KR')}
+                    {new Date(rev.createdAt).toLocaleDateString(locale)}
                   </span>
                 </div>
 
                 {/* Diff */}
                 <div className="mb-2 space-y-1 rounded-lg bg-primary-container/10 p-2">
-                  <DiffLine label="제목" prev={rev.prevTitle} next={rev.newTitle} />
-                  <DiffLine label="가중치" prev={`${rev.prevWeight}%`} next={`${rev.newWeight}%`} />
-                  <DiffLine label="지표" prev={rev.prevTargetMetric ?? '-'} next={rev.newTargetMetric ?? '-'} />
-                  <DiffLine label="목표값" prev={rev.prevTargetValue ?? '-'} next={rev.newTargetValue ?? '-'} />
+                  <DiffLine label={t('diffTitle')} prev={rev.prevTitle} next={rev.newTitle} />
+                  <DiffLine label={t('diffWeight')} prev={`${rev.prevWeight}%`} next={`${rev.newWeight}%`} />
+                  <DiffLine label={t('diffMetric')} prev={rev.prevTargetMetric ?? '-'} next={rev.newTargetMetric ?? '-'} />
+                  <DiffLine label={t('diffTargetValue')} prev={rev.prevTargetValue ?? '-'} next={rev.newTargetValue ?? '-'} />
                 </div>
 
                 {/* Reason */}

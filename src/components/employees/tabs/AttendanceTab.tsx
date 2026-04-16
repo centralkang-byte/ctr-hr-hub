@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Clock, AlertTriangle, CheckCircle2, MinusCircle, CalendarClock } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { ScheduleAdjustmentModal } from '@/components/attendance/ScheduleAdjustmentModal'
@@ -63,11 +64,11 @@ function fmtHours(minutes: number | null): string {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  NORMAL: { label: '정상', color: 'bg-emerald-500/15 text-emerald-700' },
-  LATE: { label: '지각', color: 'bg-amber-500/15 text-amber-700' },
-  EARLY_OUT: { label: '조퇴', color: 'bg-orange-500/10 text-orange-700' },
-  ABSENT: { label: '결근', color: 'bg-destructive/10 text-destructive' },
-  HOLIDAY: { label: '휴가', color: 'bg-indigo-500/15 text-primary/90' },
+  NORMAL: { label: 'attendanceStatusNormal', color: 'bg-emerald-500/15 text-emerald-700' },
+  LATE: { label: 'attendanceStatusLate', color: 'bg-amber-500/15 text-amber-700' },
+  EARLY_OUT: { label: 'attendanceStatusEarlyOut', color: 'bg-orange-500/10 text-orange-700' },
+  ABSENT: { label: 'attendanceStatusAbsent', color: 'bg-destructive/10 text-destructive' },
+  HOLIDAY: { label: 'attendanceStatusHoliday', color: 'bg-indigo-500/15 text-primary/90' },
 }
 
 // ─── Mini KPI ────────────────────────────────────────────
@@ -89,6 +90,7 @@ interface Props {
 }
 
 export function AttendanceTab({ employeeId }: Props) {
+  const t = useTranslations('employee')
   const [data, setData] = useState<AttendanceTabData | null>(null)
   const [loading, setLoading] = useState(true)
   const [adjustModalOpen, setAdjustModalOpen] = useState(false)
@@ -155,7 +157,7 @@ export function AttendanceTab({ employeeId }: Props) {
       <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex flex-col items-center py-12 text-muted-foreground">
           <Clock className="h-10 w-10 mb-3 text-border" />
-          <p className="text-sm text-muted-foreground">근태 데이터를 불러올 수 없습니다.</p>
+          <p className="text-sm text-muted-foreground">{t('attendanceLoadError')}</p>
         </div>
       </div>
     )
@@ -166,23 +168,23 @@ export function AttendanceTab({ employeeId }: Props) {
       {/* KPI 카드 */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <MiniKpi
-          label="이번 주 근무"
+          label={t('attendanceWeeklyWork')}
           value={`${data.weeklyHours}h`}
-          sub="52시간 상한 기준"
+          sub={t('attendanceWeeklyLimit')}
           warn={data.weeklyHours >= 52}
         />
         <MiniKpi
-          label="이번 달 근무"
+          label={t('attendanceMonthlyWork')}
           value={`${data.monthlyHours}h`}
         />
         <MiniKpi
-          label="지각 (최근 10일)"
-          value={`${data.lateCount}회`}
+          label={t('attendanceLateCount')}
+          value={`${data.lateCount}${t('attendanceCountSuffix')}`}
           warn={data.lateCount > 0}
         />
         <MiniKpi
-          label="결근 (최근 10일)"
-          value={`${data.absentCount}회`}
+          label={t('attendanceAbsentCount')}
+          value={`${data.absentCount}${t('attendanceCountSuffix')}`}
           warn={data.absentCount > 0}
         />
       </div>
@@ -203,13 +205,13 @@ export function AttendanceTab({ employeeId }: Props) {
                 data.weeklyHours >= 52 ? 'text-rose-600' : 'text-amber-700'
               }`}>
                 {data.weeklyHours >= 52
-                  ? `주 52시간 초과 — 현재 ${data.weeklyHours}h (차단 대상)`
+                  ? t('attendanceOver52h', { hours: data.weeklyHours })
                   : data.weeklyHours >= 48
-                    ? `주 48시간 초과 — 현재 ${data.weeklyHours}h (경고)`
-                    : `주 44시간 초과 — 현재 ${data.weeklyHours}h (주의)`}
+                    ? t('attendanceOver48h', { hours: data.weeklyHours })
+                    : t('attendanceOver44h', { hours: data.weeklyHours })}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                일정 조정으로 초과근무 위험을 해소하세요.
+                {t('attendanceAdjustSchedule')}
               </p>
             </div>
           </div>
@@ -222,7 +224,7 @@ export function AttendanceTab({ employeeId }: Props) {
             }`}
           >
             <CalendarClock className="h-3.5 w-3.5" />
-            근무 일정 조정
+            {t('attendanceAdjustButton')}
           </button>
         </div>
       )}
@@ -238,12 +240,12 @@ export function AttendanceTab({ employeeId }: Props) {
       {/* 최근 근태 기록 테이블 */}
       <div className="rounded-xl border border-border bg-card overflow-hidden">
         <div className="px-5 py-3 border-b border-border">
-          <h3 className="text-sm font-semibold text-foreground">최근 근태 기록</h3>
+          <h3 className="text-sm font-semibold text-foreground">{t('attendanceRecentRecords')}</h3>
         </div>
         {data.recentRecords.length === 0 ? (
           <div className="flex flex-col items-center py-10 text-muted-foreground">
             <MinusCircle className="h-8 w-8 mb-2 text-border" />
-            <p className="text-sm">근태 기록이 없습니다.</p>
+            <p className="text-sm">{t('attendanceNoRecords')}</p>
           </div>
         ) : (
           <div className="divide-y divide-border">
@@ -269,7 +271,7 @@ export function AttendanceTab({ employeeId }: Props) {
                       {fmtHours(rec.totalMinutes)}
                     </span>
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusCfg.color}`}>
-                      {statusCfg.label}
+                      {t(statusCfg.label)}
                     </span>
                   </div>
                 </div>

@@ -38,6 +38,16 @@ export const leavePendingRule: NudgeRule = {
     return `${item.displayTitle} — ${daysOverdue}일째 승인 대기 중입니다. 확인이 필요합니다.`
   },
 
+  getTitleKey(_item: OverdueItem): string {
+    return 'notifications.nudge.leavePending.title'
+  },
+  getBodyKey(_item: OverdueItem): string {
+    return 'notifications.nudge.leavePending.body'
+  },
+  getBodyParams(item: OverdueItem, daysOverdue: number): Record<string, string | number> {
+    return { displayTitle: item.displayTitle, daysOverdue }
+  },
+
   async findOverdueItems(
     companyId: string,
     assigneeId: string,

@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { DetailPanel } from '@/components/shared/DetailPanel'
@@ -73,14 +73,6 @@ interface EmployeeListClientProps {
 
 // ─── Display constants ───────────────────────────────────────
 
-type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
-
-const STATUS_VARIANTS: Record<string, BadgeVariant> = {
-  ACTIVE: 'default',
-  ON_LEAVE: 'secondary',
-  RESIGNED: 'outline',
-  TERMINATED: 'destructive',
-}
 
 const LIMIT_OPTIONS = [10, 20, 50, 100]
 const SENTINEL_ALL = '__ALL__'
@@ -94,6 +86,7 @@ function EmployeeQuickPanel({
   employeeId: string
   onViewFull: () => void
 }) {
+  const t = useTranslations('employee')
   const [employee, setEmployee] = useState<EmployeeDetail | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -120,7 +113,7 @@ function EmployeeQuickPanel({
   if (!employee) {
     return (
       <div className="flex items-center justify-center h-40 text-sm text-muted-foreground">
-        직원 정보를 불러올 수 없습니다.
+        {t('listLoadError')}
       </div>
     )
   }
@@ -139,14 +132,11 @@ function EmployeeQuickPanel({
   }
   const ringClass = STATUS_RING[employee.status] ?? ''
 
-  function calcTenure(d: string): string {
+  function calcTenure(d: string): { years: number; months: number } {
     const hire = new Date(d)
     const now = new Date()
     const totalMonths = (now.getFullYear() - hire.getFullYear()) * 12 + (now.getMonth() - hire.getMonth())
-    const y = Math.floor(totalMonths / 12)
-    const m = totalMonths % 12
-    if (y === 0) return `${m}개월`
-    return `${y}년 ${m}개월`
+    return { years: Math.floor(totalMonths / 12), months: totalMonths % 12 }
   }
 
   return (
@@ -184,7 +174,7 @@ function EmployeeQuickPanel({
           <div className="flex items-center gap-3">
             <Building2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
             <div>
-              <p className="text-[11px] text-muted-foreground">법인</p>
+              <p className="text-[11px] text-muted-foreground">{t('listQuickPanelCompany')}</p>
               <p className="text-sm text-foreground">{employee.company.name}</p>
             </div>
           </div>
@@ -194,7 +184,7 @@ function EmployeeQuickPanel({
           <div className="flex items-center gap-3">
             <Building2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
             <div>
-              <p className="text-[11px] text-muted-foreground">부서</p>
+              <p className="text-[11px] text-muted-foreground">{t('listQuickPanelDepartment')}</p>
               <p className="text-sm text-foreground">{employee.department.name}</p>
             </div>
           </div>
@@ -204,7 +194,7 @@ function EmployeeQuickPanel({
           <div className="flex items-center gap-3">
             <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
             <div>
-              <p className="text-[11px] text-muted-foreground">근무지</p>
+              <p className="text-[11px] text-muted-foreground">{t('listQuickPanelWorkLocation')}</p>
               <p className="text-sm text-foreground">{employee.workLocation.name}</p>
             </div>
           </div>
@@ -235,11 +225,11 @@ function EmployeeQuickPanel({
         <div className="flex items-center gap-3">
           <Calendar className="w-4 h-4 text-muted-foreground flex-shrink-0" />
           <div>
-            <p className="text-[11px] text-muted-foreground">입사일</p>
+            <p className="text-[11px] text-muted-foreground">{t('listQuickPanelHireDate')}</p>
             <p className="text-sm text-foreground">
               {hireDate}
               {employee.hireDate && (
-                <span className="text-xs text-muted-foreground ml-1.5">· {calcTenure(employee.hireDate)}</span>
+                <span className="text-xs text-muted-foreground ml-1.5">· {(() => { const tn = calcTenure(employee.hireDate); return tn.years > 0 ? t('tenureYearsMonths', tn) : tn.months > 0 ? t('tenureMonthsOnly', tn) : t('tenureZeroMonths') })()}</span>
               )}
             </p>
           </div>
@@ -247,15 +237,15 @@ function EmployeeQuickPanel({
 
         {/* 재직 상태 */}
         <div className="pt-1">
-          <p className="text-[11px] text-muted-foreground mb-1.5">재직 상태</p>
-          <Badge variant={STATUS_VARIANTS[employee.status] ?? 'outline'}>
-            {{
-              ACTIVE: 'statusActive',
-              ON_LEAVE: 'statusOnLeave',
-              RESIGNED: 'statusResigned',
-              TERMINATED: 'statusTerminated',
-            }[employee.status] ?? employee.status}
-          </Badge>
+          <p className="text-[11px] text-muted-foreground mb-1.5">{t('listQuickPanelStatus')}</p>
+          <StatusBadge status={employee.status}>
+            {({
+              ACTIVE: t('statusActive'),
+              ON_LEAVE: t('statusOnLeave'),
+              RESIGNED: t('statusResigned'),
+              TERMINATED: t('statusTerminated'),
+            } as Record<string, string>)[employee.status] ?? employee.status}
+          </StatusBadge>
         </div>
       </div>
 
@@ -266,7 +256,7 @@ function EmployeeQuickPanel({
           className="w-full bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-lg"
         >
           <ExternalLink className="w-4 h-4 mr-2" />
-          전체 프로필 보기
+          {t('listViewFullProfile')}
         </Button>
       </div>
     </div>
@@ -483,9 +473,9 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
       key: 'status',
       header: t('status'),
       render: (row) => (
-        <Badge variant={STATUS_VARIANTS[row.status] ?? 'outline'}>
+        <StatusBadge status={row.status}>
           {STATUS_LABELS[row.status] ?? row.status}
-        </Badge>
+        </StatusBadge>
       ),
     },
   ], [t, EMPLOYMENT_TYPE_LABELS, STATUS_LABELS, selectedId])
@@ -506,7 +496,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
                 className="gap-2"
               >
                 <Upload className="h-4 w-4" />
-                일괄 발령
+                {t('listBulkMovement')}
               </Button>
               <Button
                 onClick={() => router.push('/employees/new')}
@@ -648,7 +638,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
       <DetailPanel
         open={!!selectedId}
         onClose={closePanel}
-        title={selectedEmployee?.name ?? '직원 정보'}
+        title={selectedEmployee?.name ?? t('listQuickPanelTitle')}
         subtitle={selectedEmployee?.department?.name ?? undefined}
       >
         {selectedId && (

@@ -167,7 +167,7 @@ export default function PostingEditClient({
         requiredCompetencies: p.requiredCompetencies ? p.requiredCompetencies.join(', ') : '',
       })
     } catch (err) {
-      toast({ title: '채용 공고 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('postingLoadFailed'), description: err instanceof Error ? err.message : t('cannotLoadData'), variant: 'destructive' })
     } finally {
       setDataLoading(false)
     }
@@ -193,7 +193,7 @@ export default function PostingEditClient({
       setValue('requirements', res.data.qualifications)
       setValue('preferred', res.data.preferred)
     } catch (err) {
-      toast({ title: 'AI 생성 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('aiGenerateFailed'), description: err instanceof Error ? err.message : t('cannotLoadData'), variant: 'destructive' })
     } finally { setAiLoading(false) }
   }
 
@@ -224,7 +224,7 @@ export default function PostingEditClient({
       await apiClient.put(`/api/v1/recruitment/postings/${id}`, payload)
       router.push(`/recruitment/${id}`)
     } catch (err) {
-      toast({ title: '채용 공고 수정 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('postingUpdateFailed'), description: err instanceof Error ? err.message : t('cannotLoadData'), variant: 'destructive' })
     } finally { setSubmitting(false) }
   }
 

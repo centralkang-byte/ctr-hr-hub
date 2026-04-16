@@ -51,13 +51,13 @@ interface PeerResult {
 
 // ─── Grade display config ─────────────────────────────────
 
-const GRADE_STYLE: Record<string, { bg: string; text: string; label: string }> = {
-    EXCEEDS_PLUS: { bg: 'bg-primary/10', text: 'text-primary/90', label: '탁월 (E+)' },
-    EXCEEDS: { bg: 'bg-primary/10', text: 'text-primary', label: '우수 (E)' },
-    MEETS_PLUS: { bg: 'bg-emerald-500/15', text: 'text-emerald-700', label: '기대 이상 (M+)' },
-    MEETS: { bg: 'bg-primary/10', text: 'text-tertiary', label: '기대 충족 (M)' },
-    BELOW: { bg: 'bg-amber-500/15', text: 'text-amber-800', label: '개선 필요 (B)' },
-    BELOW_MINUS: { bg: 'bg-destructive/5', text: 'text-destructive', label: '미흡 (B-)' },
+const GRADE_STYLE: Record<string, { bg: string; text: string; labelKey: string }> = {
+    EXCEEDS_PLUS: { bg: 'bg-primary/10', text: 'text-primary/90', labelKey: 'grade.exceedsPlus' },
+    EXCEEDS: { bg: 'bg-primary/10', text: 'text-primary', labelKey: 'grade.exceeds' },
+    MEETS_PLUS: { bg: 'bg-emerald-500/15', text: 'text-emerald-700', labelKey: 'grade.meetsPlus' },
+    MEETS: { bg: 'bg-primary/10', text: 'text-tertiary', labelKey: 'grade.meets' },
+    BELOW: { bg: 'bg-amber-500/15', text: 'text-amber-800', labelKey: 'grade.below' },
+    BELOW_MINUS: { bg: 'bg-destructive/5', text: 'text-destructive', labelKey: 'grade.belowMinus' },
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -93,7 +93,7 @@ export default function MyResultClient({user }: {
     }, [t])
 
     const fetchResult = useCallback(async () => {
-        if (!selectedCycleId) return
+        if (!selectedCycleId) { setLoading(false); return }
         setLoading(true); setError('')
         try {
             const [resultRes, peerRes] = await Promise.all([
@@ -102,7 +102,7 @@ export default function MyResultClient({user }: {
             ])
             if (resultRes) setResult(resultRes.data)
             if (peerRes) setPeerResult(peerRes.data)
-        } catch { setError('결과를 불러오지 못했습니다.') }
+        } catch { setError(t('myResult.loadFailed')) }
         finally { setLoading(false) }
     }, [selectedCycleId, user.employeeId])
 
@@ -204,7 +204,7 @@ export default function MyResultClient({user }: {
                             <p className="mb-3 text-sm text-muted-foreground">{t('kr_kecb59cec_keb93b1ea')}</p>
                             {grade ? (
                                 <div className={`mx-auto inline-flex rounded-xl px-8 py-4 ${grade.bg}`}>
-                                    <span className={`text-2xl font-bold ${grade.text}`}>{grade.label}</span>
+                                    <span className={`text-2xl font-bold ${grade.text}`}>{t(grade.labelKey)}</span>
                                 </div>
                             ) : (
                                 <p className="text-lg text-muted-foreground">{t('kr_keb93b1ea_kebafb8ec')}</p>
@@ -243,7 +243,7 @@ export default function MyResultClient({user }: {
                                             <div className="mb-2 flex items-center justify-between">
                                                 <div>
                                                     <h3 className="text-sm font-medium text-foreground">{goal.title}</h3>
-                                                    <span className="text-xs text-muted-foreground">가중치: {goal.weight}%</span>
+                                                    <span className="text-xs text-muted-foreground">{t('weight')}: {goal.weight}%</span>
                                                 </div>
                                                 <div className="text-right text-sm">
                                                     <span className="text-muted-foreground">{t('kr_kec9e90ea')} </span><span className="font-medium text-foreground">{goal.selfScore ?? '-'}</span>
@@ -251,7 +251,7 @@ export default function MyResultClient({user }: {
                                                 </div>
                                             </div>
                                             {goal.managerComment && (
-                                                <p className="mt-1 text-xs text-muted-foreground">매니저 코멘트: &quot;{goal.managerComment}&quot;</p>
+                                                <p className="mt-1 text-xs text-muted-foreground">{t('myResult.managerComment')}: &quot;{goal.managerComment}&quot;</p>
                                             )}
                                         </div>
                                     ))}
@@ -264,7 +264,7 @@ export default function MyResultClient({user }: {
                             <div className="mb-6 rounded-xl border border-border bg-card">
                                 <div className="border-b border-border px-5 py-4">
                                     <h2 className="text-base font-semibold text-foreground">
-                                        동료평가 결과 ({peerResult.summary.completedReviewers}명 평가 완료)
+                                        {t('myResult.peerResultTitle', { count: peerResult.summary.completedReviewers })}
                                     </h2>
                                 </div>
                                 <div className="px-5 py-4">
@@ -293,7 +293,7 @@ export default function MyResultClient({user }: {
                                             {peerResult.reviews.map((r, i) => (
                                                 <div key={i} className="rounded-xl border border-border p-3">
                                                     <p className="mb-1 text-xs font-medium text-muted-foreground">{r.reviewerName}</p>
-                                                    <p className="text-sm text-foreground">{r.overallComment || '(의견 없음)'}</p>
+                                                    <p className="text-sm text-foreground">{r.overallComment || t('myResult.noComment')}</p>
                                                 </div>
                                             ))}
                                         </div>
@@ -313,7 +313,7 @@ export default function MyResultClient({user }: {
                                 <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-500/15 p-4">
                                     <CheckCircle2 className="h-5 w-5 text-emerald-600" />
                                     <span className="text-sm font-medium text-emerald-700">
-                                        ✅ 확인 완료 ({result.acknowledgedAt?.slice(0, 10)})
+                                        {t('myResult.acknowledgedAt', { date: result.acknowledgedAt?.slice(0, 10) ?? '' })}
                                     </span>
                                 </div>
                             ) : (
@@ -322,13 +322,13 @@ export default function MyResultClient({user }: {
                                         <div className="mb-3 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-500/15 p-3">
                                             <Clock className="h-4 w-4 text-amber-600" />
                                             <span className="text-xs text-amber-800">
-                                                {result.acknowledgeDeadline?.slice(0, 10)}까지 확인하지 않으면 자동 확인 처리됩니다. (D-{Math.max(daysLeft, 0)})
+                                                {t('myResult.autoConfirmWarning', { deadline: result.acknowledgeDeadline?.slice(0, 10) ?? '', days: Math.max(daysLeft, 0) })}
                                             </span>
                                         </div>
                                     )}
                                     <button onClick={handleAcknowledge} disabled={acknowledging}
                                         className="w-full rounded-lg bg-primary py-3 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40 transition-colors">
-                                        {acknowledging ? t('processing') : '결과를 확인합니다'}
+                                        {acknowledging ? t('processing') : t('myResult.acknowledgeButton')}
                                     </button>
                                     <div className="mt-3 flex items-start gap-1.5 text-xs text-muted-foreground">
                                         <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />

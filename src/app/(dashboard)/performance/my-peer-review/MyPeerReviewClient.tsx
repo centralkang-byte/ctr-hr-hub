@@ -32,9 +32,9 @@ const EMPTY_FORM: ReviewForm = {
     overallComment: '',
 }
 
-const STATUS_BADGE: Record<string, { label: string; icon: typeof CheckCircle2; cls: string }> = {
-    SUBMITTED: { label: '제출 완료', icon: CheckCircle2, cls: STATUS_VARIANT.info },
-    DRAFT: { label: '작성 중', icon: Clock, cls: STATUS_VARIANT.neutral },
+const STATUS_BADGE: Record<string, { labelKey: string; icon: typeof CheckCircle2; cls: string }> = {
+    SUBMITTED: { labelKey: 'myPeerReview.statusSubmitted', icon: CheckCircle2, cls: STATUS_VARIANT.info },
+    DRAFT: { labelKey: 'myPeerReview.statusDraft', icon: Clock, cls: STATUS_VARIANT.neutral },
 }
 
 // ─── Star Rating ──────────────────────────────────────────
@@ -56,10 +56,10 @@ function Stars({ value, onChange, disabled }: { value: number; onChange: (v: num
 // ─── CTR Values ───────────────────────────────────────────
 
 const CTR_VALUES = [
-    { scoreKey: 'scoreChallenge' as const, commentKey: 'commentChallenge' as const, label: '도전', labelEn: 'Challenge' },
-    { scoreKey: 'scoreTrust' as const, commentKey: 'commentTrust' as const, label: '신뢰', labelEn: 'Trust' },
-    { scoreKey: 'scoreResponsibility' as const, commentKey: 'commentResponsibility' as const, label: '책임', labelEn: 'Responsibility' },
-    { scoreKey: 'scoreRespect' as const, commentKey: 'commentRespect' as const, label: '존중', labelEn: 'Respect' },
+    { scoreKey: 'scoreChallenge' as const, commentKey: 'commentChallenge' as const, labelKey: 'ctrValue.challenge' },
+    { scoreKey: 'scoreTrust' as const, commentKey: 'commentTrust' as const, labelKey: 'ctrValue.trust' },
+    { scoreKey: 'scoreResponsibility' as const, commentKey: 'commentResponsibility' as const, labelKey: 'ctrValue.responsibility' },
+    { scoreKey: 'scoreRespect' as const, commentKey: 'commentRespect' as const, labelKey: 'ctrValue.respect' },
 ]
 
 // ─── Main Component ───────────────────────────────────────
@@ -101,7 +101,7 @@ export default function MyPeerReviewClient({user: _user }: {
         try {
             const res = await apiClient.get<AssignmentItem[]>('/api/v1/performance/peer-review/my-assignments', { cycleId: selectedCycleId })
             setAssignments(res.data ?? [])
-        } catch { setError('동료평가 목록을 불러오지 못했습니다.') }
+        } catch { setError(t('myPeerReview.loadFailed')) }
         finally { setLoading(false) }
     }, [selectedCycleId])
 
@@ -186,7 +186,7 @@ export default function MyPeerReviewClient({user: _user }: {
                     <div>
                         <h1 className="text-2xl font-bold text-foreground">{t('kr_keb8f99eb_peer_review')}</h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            내가 평가해야 할 동료: {total}명 | 완료: {completed}/{total}
+                            {t('myPeerReview.assignmentSummary', { total, completed })}
                         </p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
@@ -200,7 +200,7 @@ export default function MyPeerReviewClient({user: _user }: {
                     <div className="mb-6 rounded-xl border border-border bg-card p-4">
                         <div className="mb-2 flex items-center justify-between text-sm">
                             <span className="text-muted-foreground">{t('kr_keca784ed')}</span>
-                            <span className="font-medium text-foreground">{completed}/{total} 완료</span>
+                            <span className="font-medium text-foreground">{t('myPeerReview.completedCount', { completed, total })}</span>
                         </div>
                         <div className="h-2 rounded-full bg-border">
                             <div className="h-2 rounded-full bg-primary transition-all" style={{ width: `${total > 0 ? (completed / total) * 100 : 0}%` }} />
@@ -244,13 +244,13 @@ export default function MyPeerReviewClient({user: _user }: {
                                     <div className="flex items-center gap-3">
                                         {badge && (
                                             <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${badge.cls}`}>
-                                                <Icon className="h-3.5 w-3.5" /> {badge.label}
+                                                <Icon className="h-3.5 w-3.5" /> {t(badge.labelKey)}
                                             </span>
                                         )}
                                         {!isCompleted && (
                                             <button onClick={() => openReview(item)}
                                                 className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors">
-                                                {item.status === 'DRAFT' ? '이어서 작성' : '평가 시작'}
+                                                {item.status === 'DRAFT' ? t('myPeerReview.continueWrite') : t('myPeerReview.startEval')}
                                             </button>
                                         )}
                                     </div>
@@ -266,7 +266,7 @@ export default function MyPeerReviewClient({user: _user }: {
                 <div className="fixed inset-0 z-50 flex items-start justify-end bg-black/30" onClick={() => setActiveReview(null)}>
                     <div className="h-full w-full max-w-xl overflow-y-auto bg-card shadow-lg" onClick={(e) => e.stopPropagation()}>
                         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card px-6 py-4">
-                            <h2 className="text-lg font-bold text-foreground">{activeReview.employeeName} 님에 대한 동료평가</h2>
+                            <h2 className="text-lg font-bold text-foreground">{t('myPeerReview.reviewTitle', { name: activeReview.employeeName })}</h2>
                             <button onClick={() => setActiveReview(null)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
                         </div>
 
@@ -285,12 +285,12 @@ export default function MyPeerReviewClient({user: _user }: {
                                 {CTR_VALUES.map((v) => (
                                     <div key={v.scoreKey} className="rounded-xl border border-border p-4 space-y-2">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm font-medium text-foreground">{v.label} ({v.labelEn})</span>
+                                            <span className="text-sm font-medium text-foreground">{t(v.labelKey)}</span>
                                             <Stars value={form[v.scoreKey]} onChange={(val) => setForm((p) => ({ ...p, [v.scoreKey]: val }))} disabled={false} />
                                         </div>
                                         <textarea rows={2} value={form[v.commentKey]}
                                             onChange={(e) => setForm((p) => ({ ...p, [v.commentKey]: e.target.value }))}
-                                            placeholder={`${v.label}에 대한 의견 (선택)`}
+                                            placeholder={t('myPeerReview.valuePlaceholder', { value: t(v.labelKey) })}
                                             className="w-full resize-none rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" />
                                     </div>
                                 ))}
@@ -298,12 +298,12 @@ export default function MyPeerReviewClient({user: _user }: {
 
                             {/* Overall comment */}
                             <div>
-                                <h3 className="mb-2 text-base font-semibold text-foreground">종합 의견 (최소 20자)</h3>
+                                <h3 className="mb-2 text-base font-semibold text-foreground">{t('myPeerReview.overallOpinion')}</h3>
                                 <textarea rows={4} value={form.overallComment}
                                     onChange={(e) => setForm((p) => ({ ...p, overallComment: e.target.value }))}
-                                    placeholder="동료에 대한 종합적인 의견을 작성해주세요..."
+                                    placeholder={t('myPeerReview.overallPlaceholder')}
                                     className="w-full resize-none rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" />
-                                <p className="mt-1 text-xs text-muted-foreground">{form.overallComment.length}자 / 최소 20자</p>
+                                <p className="mt-1 text-xs text-muted-foreground">{t('myPeerReview.charMinCount', { count: form.overallComment.length, min: 20 })}</p>
                             </div>
 
                             {/* Actions */}

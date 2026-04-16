@@ -9,7 +9,7 @@ import type { SessionUser } from '@/types'
 import { Card } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Loader2, ArrowRight } from 'lucide-react'
-import ReviewStatusBadge from '@/components/performance/quarterly-review/ReviewStatusBadge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -136,10 +136,9 @@ export default function MyQuarterlyReviewClient({ user: _user }: Props) {
                     <span className="text-lg font-semibold">
                       {review.year} {t(`quarter.${review.quarter}`)}
                     </span>
-                    <ReviewStatusBadge
-                      status={review.status}
-                      label={t(`status.${review.status}`)}
-                    />
+                    <StatusBadge status={review.status}>
+                      {t(`status.${review.status}`)}
+                    </StatusBadge>
                   </div>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />

@@ -17,10 +17,10 @@ import type { SessionUser } from '@/types'
 // Returns hardcoded 4-grade system per design spec v1.1, customizable via TenantSetting.gradeLabels
 const DEFAULT_GRADE_SCALE = {
     grades: [
-        { key: 'E', labelKo: '탁월', labelEn: 'Exceeds', guidePct: 10, description: '기대를 크게 상회하는 성과' },
-        { key: 'M_PLUS', labelKo: '우수', labelEn: 'Meets+', guidePct: 30, description: '기대를 충족하며 일부 영역에서 상회' },
+        { key: 'O', labelKo: '탁월', labelEn: 'Outstanding', guidePct: 10, description: '기대를 크게 상회하는 성과' },
+        { key: 'E', labelKo: '우수', labelEn: 'Exceeds', guidePct: 30, description: '기대를 충족하며 일부 영역에서 상회' },
         { key: 'M', labelKo: '보통', labelEn: 'Meets', guidePct: 50, description: '기대 수준을 충족하는 안정적 성과' },
-        { key: 'B', labelKo: '미흡', labelEn: 'Below', guidePct: 10, description: '기대에 미달. 개선 계획(PIP) 대상' },
+        { key: 'S', labelKo: '미흡', labelEn: 'Sufficient', guidePct: 10, description: '기대에 미달. 개선 계획(PIP) 대상' },
     ],
     totalGrades: 4,
     isForcedDistribution: false,

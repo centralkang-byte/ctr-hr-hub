@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 
@@ -60,6 +61,7 @@ export function useBatchAdjustmentState(
   sessionId: string | null,
   onSaveComplete: () => void,
 ) {
+  const t = useTranslations('performance')
   const [pendingChanges, setPendingChanges] = useState<Map<string, PendingChange>>(new Map())
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [isSaving, setIsSaving] = useState(false)
@@ -224,26 +226,26 @@ export function useBatchAdjustmentState(
           return next
         })
         toast({
-          title: `${succeeded}건 저장, ${failed}건 실패`,
-          description: '실패 항목을 확인하세요.',
+          title: t('calibration.batchPartialFail', { succeeded, failed }),
+          description: t('calibration.checkFailedItems'),
           variant: 'destructive',
         })
       } else {
         setPendingChanges(new Map())
-        toast({ title: `${succeeded}건 배치 조정 완료` })
+        toast({ title: t('calibration.batchSuccess', { count: succeeded }) })
       }
 
       onSaveComplete()
     } catch (err) {
       toast({
-        title: '배치 저장 실패',
-        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        title: t('calibration.batchSaveFailed'),
+        description: err instanceof Error ? err.message : t('retryMessage'),
         variant: 'destructive',
       })
     } finally {
       setIsSaving(false)
     }
-  }, [sessionId, pendingChanges, onSaveComplete])
+  }, [sessionId, pendingChanges, onSaveComplete, t])
 
   return {
     // Selection

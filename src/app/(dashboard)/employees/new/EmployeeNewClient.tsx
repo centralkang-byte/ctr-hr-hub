@@ -292,7 +292,7 @@ export function EmployeeNewClient({
   const renderStep1 = () => (
     <div className="grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2">
       <Field label={t('nameKorean')} required>
-        <Input value={data.name} onChange={(e) => set('name', e.target.value)} placeholder="홍길동" />
+        <Input value={data.name} onChange={(e) => set('name', e.target.value)} placeholder={t('newNamePlaceholder')} />
       </Field>
       <Field label={t('nameEn')}>
         <Input value={data.nameEn} onChange={(e) => set('nameEn', e.target.value)} placeholder="Gildong Hong" />
@@ -301,7 +301,7 @@ export function EmployeeNewClient({
         <Input type="email" value={data.email} onChange={(e) => set('email', e.target.value)} placeholder="hong@company.com" />
       </Field>
       <Field label={t('phone')}>
-        <Input value={data.phone} onChange={(e) => set('phone', e.target.value)} placeholder="010-0000-0000" />
+        <Input value={data.phone} onChange={(e) => set('phone', e.target.value)} placeholder={t('newPhonePlaceholder')} />
       </Field>
       <Field label={t('birthDate')}>
         <Input type="date" value={data.birthDate} onChange={(e) => set('birthDate', e.target.value)} />
@@ -325,7 +325,7 @@ export function EmployeeNewClient({
         <Input value={data.emergencyContact} onChange={(e) => set('emergencyContact', e.target.value)} placeholder={t('emergencyContactName')} />
       </Field>
       <Field label={t('emergencyContactPhone')}>
-        <Input value={data.emergencyContactPhone} onChange={(e) => set('emergencyContactPhone', e.target.value)} placeholder="010-0000-0000" />
+        <Input value={data.emergencyContactPhone} onChange={(e) => set('emergencyContactPhone', e.target.value)} placeholder={t('newPhonePlaceholder')} />
       </Field>
     </div>
   )
@@ -445,17 +445,17 @@ export function EmployeeNewClient({
           <Input value={mappedTitle.employeeTitle.name} readOnly className="bg-muted" />
         </Field>
       )}
-      <Field label="직위 (선택)">
+      <Field label={t('newPositionOptional')}>
         <Select
           value={data.positionId || '__NONE__'}
           onValueChange={(v) => set('positionId', v === '__NONE__' ? '' : v)}
           disabled={!data.companyId}
         >
           <SelectTrigger>
-            <SelectValue placeholder="직위 선택" />
+            <SelectValue placeholder={t('newSelectPosition')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__NONE__">선택 안 함</SelectItem>
+            <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
             {filteredPositions.map((p) => (
               <SelectItem key={p.id} value={p.id}>{p.titleKo} ({p.code})</SelectItem>
             ))}
@@ -624,7 +624,7 @@ export function EmployeeNewClient({
       {/* ─── Step content ─── */}
       <div className="rounded-xl border border-border bg-card p-6">
         <h2 className="mb-5 text-base font-bold text-foreground tracking-ctr">
-          {step + 1}단계: {STEPS[step]!.label}
+          {t('newStepLabel', { number: step + 1, label: STEPS[step]!.label })}
         </h2>
         {step === 0 && renderStep1()}
         {step === 1 && renderStep2()}

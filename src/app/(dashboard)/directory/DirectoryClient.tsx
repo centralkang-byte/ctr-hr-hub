@@ -76,7 +76,7 @@ export function DirectoryClient({ user: _user, companies, departments, jobGrades
       setEmployees(res.data ?? [])
       setTotal(res.pagination?.total ?? 0)
     } catch {
-      toast({ title: tCommon('error'), description: '처리 중 오류가 발생했습니다', variant: 'destructive' })
+      toast({ title: tCommon('error'), description: tCommon('retryMessage'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }

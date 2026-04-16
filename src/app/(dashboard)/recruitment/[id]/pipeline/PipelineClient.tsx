@@ -166,7 +166,7 @@ export default function PipelineClient({ user, postingId }: Props) {
       )
       setApplications(res.data)
     } catch (err) {
-      toast({ title: '파이프라인 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('pipelineLoadFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -471,7 +471,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                       onDragEnd={handleDragEnd}
                       className={`bg-card border border-border rounded-lg p-3 cursor-grab active:cursor-grabbing transition-opacity duration-150 ${
                         draggingId === app.id ? 'opacity-50' : 'opacity-100'
-                      } hover:border-[#CCC]`}
+                      } hover:border-border`}
                     >
                       <p className="text-sm font-medium text-foreground mb-1">
                         {app.applicant.name}

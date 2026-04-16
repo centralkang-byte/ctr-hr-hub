@@ -4,6 +4,8 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
+import { useLocale } from 'next-intl'
 import { apiClient } from '@/lib/api'
 import {
   Inbox, CalendarDays, Clock, ArrowRightLeft, ClipboardList,
@@ -12,7 +14,6 @@ import {
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
 import { format } from 'date-fns'
-import { ko } from 'date-fns/locale'
 
 // ─── 타입 ─────────────────────────────────────────────────
 
@@ -42,23 +43,26 @@ interface ApprovalRequest {
 type ViewMode = 'pending-approval' | 'mine' | 'team'
 type RequestTypeFilter = 'all' | 'leave' | 'overtime' | 'attendance_correction' | 'shift_change'
 
-const REQUEST_TYPE_LABELS: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
-  leave: { label: '휴가', icon: <CalendarDays className="w-3.5 h-3.5" />, color: 'bg-primary/10 text-emerald-700' },
-  overtime: { label: '초과근무', icon: <Clock className="w-3.5 h-3.5" />, color: 'bg-amber-500/15 text-amber-700' },
-  attendance_correction: { label: '근태수정', icon: <ClipboardList className="w-3.5 h-3.5" />, color: 'bg-indigo-500/15 text-primary/90' },
-  shift_change: { label: '교대변경', icon: <ArrowRightLeft className="w-3.5 h-3.5" />, color: 'bg-orange-500/10 text-orange-700' },
+const REQUEST_TYPE_LABELS: Record<string, { labelKey: string; icon: React.ReactNode; color: string }> = {
+  leave: { labelKey: 'typeLeave', icon: <CalendarDays className="w-3.5 h-3.5" />, color: 'bg-primary/10 text-emerald-700' },
+  overtime: { labelKey: 'typeOvertime', icon: <Clock className="w-3.5 h-3.5" />, color: 'bg-amber-500/15 text-amber-700' },
+  attendance_correction: { labelKey: 'typeAttendanceCorrection', icon: <ClipboardList className="w-3.5 h-3.5" />, color: 'bg-indigo-500/15 text-primary/90' },
+  shift_change: { labelKey: 'typeShiftChange', icon: <ArrowRightLeft className="w-3.5 h-3.5" />, color: 'bg-orange-500/10 text-orange-700' },
 }
 
-const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  pending: { label: '대기중', color: 'bg-amber-500/15 text-amber-700 border-amber-300' },
-  approved: { label: '승인', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
-  rejected: { label: '반려', color: 'bg-destructive/10 text-destructive border-destructive/20' },
-  cancelled: { label: '취소', color: 'bg-background text-muted-foreground border-border' },
+const STATUS_LABELS: Record<string, { labelKey: string; color: string }> = {
+  pending: { labelKey: 'statusPending', color: 'bg-amber-500/15 text-amber-700 border-amber-300' },
+  approved: { labelKey: 'statusApproved', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
+  rejected: { labelKey: 'statusRejected', color: 'bg-destructive/10 text-destructive border-destructive/20' },
+  cancelled: { labelKey: 'statusCancelled', color: 'bg-background text-muted-foreground border-border' },
 }
 
 // ─── 메인 컴포넌트 ─────────────────────────────────────────
 
 export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
+  const t = useTranslations('attendance')
+  const tc = useTranslations('common')
+  const locale = useLocale()
   const [view, setView] = useState<ViewMode>('pending-approval')
   const [typeFilter, setTypeFilter] = useState<RequestTypeFilter>('all')
   const [requests, setRequests] = useState<ApprovalRequest[]>([])
@@ -125,11 +129,11 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
       setRequests(raw.data ?? [])
       setTotal(raw.pagination?.total ?? 0)
     } catch {
-      setError('승인 목록을 불러오지 못했습니다.')
+      setError(t('loadFailed'))
     } finally {
       setLoading(false)
     }
-  }, [view, typeFilter])
+  }, [view, typeFilter, t])
 
   useEffect(() => { load() }, [load])
 
@@ -142,7 +146,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
       setSelected(null)
       await load()
     } catch {
-      toast({ title: '처리에 실패했습니다.', variant: 'destructive' })
+      toast({ title: t('processFailed'), variant: 'destructive' })
     } finally {
       setApproving(false)
     }
@@ -157,12 +161,12 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
         { ids: Array.from(selectedIds), action }
       )
       const { processed, skipped } = res.data
-      toast({ title: `처리 완료: ${processed}건 처리됨${skipped > 0 ? `, ${skipped}건 건너뜀` : ''}` })
+      toast({ title: skipped > 0 ? t('processedResultWithSkipped', { processed, skipped }) : t('processedResult', { processed }) })
       setSelectedIds(new Set())
       setSelected(null)
       await load()
     } catch {
-      toast({ title: '일괄 처리에 실패했습니다.', variant: 'destructive' })
+      toast({ title: t('bulkProcessFailed'), variant: 'destructive' })
     } finally {
       setBulkProcessing(false)
     }
@@ -178,38 +182,38 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
         <div className="flex items-center gap-3">
           <Inbox className="w-6 h-6 text-primary" />
           <div>
-            <h1 className="text-2xl font-bold text-foreground">근태 승인함</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">휴가, 초과근무, 근태수정, 교대변경 요청을 한 곳에서 처리합니다</p>
+            <h1 className="text-2xl font-bold text-foreground">{t('approvalInbox')}</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">{t('approvalInboxDesc')}</p>
           </div>
         </div>
         <button
           onClick={load}
-          className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg hover:bg-muted text-sm text-muted-foreground"
+          className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg hover:bg-muted text-sm text-muted-foreground motion-safe:transition-all"
         >
           <RefreshCw className="w-4 h-4" />
-          새로고침
+          {tc('refresh')}
         </button>
       </div>
 
       {/* 뷰 탭 */}
       <div className="flex border-b border-border flex-shrink-0">
         {([
-          { key: 'pending-approval', label: '결재 대기', badge: pendingCount },
-          { key: 'mine', label: '내 신청' },
-          { key: 'team', label: '팀 전체' },
-        ] as { key: ViewMode; label: string; badge?: number }[]).map((t) => (
+          { key: 'pending-approval', labelKey: 'pendingApproval', badge: pendingCount },
+          { key: 'mine', labelKey: 'myRequests' },
+          { key: 'team', labelKey: 'teamAll' },
+        ] as { key: ViewMode; labelKey: string; badge?: number }[]).map((tab) => (
           <button
-            key={t.key}
-            onClick={() => changeView(t.key)}
+            key={tab.key}
+            onClick={() => changeView(tab.key)}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-              view === t.key
+              view === tab.key
                 ? 'border-primary text-primary'
                 : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
-            {t.label}
-            {t.badge !== undefined && t.badge > 0 && (
-              <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold bg-primary text-white rounded-full">{t.badge}</span>
+            {t(tab.labelKey)}
+            {tab.badge !== undefined && tab.badge > 0 && (
+              <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold bg-primary text-white rounded-full">{tab.badge}</span>
             )}
           </button>
         ))}
@@ -220,12 +224,12 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
         <Filter className="w-4 h-4 text-muted-foreground" />
         <div className="flex gap-2">
           {([
-            { key: 'all', label: '전체' },
-            { key: 'leave', label: '휴가' },
-            { key: 'overtime', label: '초과근무' },
-            { key: 'attendance_correction', label: '근태수정' },
-            { key: 'shift_change', label: '교대변경' },
-          ] as { key: RequestTypeFilter; label: string }[]).map((f) => (
+            { key: 'all', labelKey: 'filterAll' },
+            { key: 'leave', labelKey: 'typeLeave' },
+            { key: 'overtime', labelKey: 'typeOvertime' },
+            { key: 'attendance_correction', labelKey: 'typeAttendanceCorrection' },
+            { key: 'shift_change', labelKey: 'typeShiftChange' },
+          ] as { key: RequestTypeFilter; labelKey: string }[]).map((f) => (
             <button
               key={f.key}
               onClick={() => setTypeFilter(f.key)}
@@ -235,11 +239,11 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                   : 'bg-muted text-muted-foreground hover:bg-muted'
               }`}
             >
-              {f.label}
+              {t(f.labelKey)}
             </button>
           ))}
         </div>
-        <span className="ml-auto text-xs text-muted-foreground">총 {total}건</span>
+        <span className="ml-auto text-xs text-muted-foreground">{t('totalCount', { count: total })}</span>
       </div>
 
       {/* 컨텐츠 */}
@@ -258,10 +262,10 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                 ) : (
                   <Square className="w-4 h-4" />
                 )}
-                전체 선택
+                {tc('selectAll')}
               </button>
               {someChecked && (
-                <span className="text-xs text-primary font-medium ml-1">{selectedIds.size}건 선택됨</span>
+                <span className="text-xs text-primary font-medium ml-1">{t('itemsSelected', { count: selectedIds.size })}</span>
               )}
             </div>
           )}
@@ -283,7 +287,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
           ) : (
             <div className="overflow-y-auto divide-y divide-muted">
               {requests.map((r) => {
-                const typeInfo = REQUEST_TYPE_LABELS[r.requestType] ?? { label: r.requestType, icon: null, color: 'bg-muted text-muted-foreground' }
+                const typeInfo = REQUEST_TYPE_LABELS[r.requestType] ?? { labelKey: r.requestType, icon: null, color: 'bg-muted text-muted-foreground' }
                 const statusInfo = STATUS_LABELS[r.status] ?? STATUS_LABELS.pending
                 const isSelected = selected?.id === r.id
                 const isCheckable =
@@ -322,10 +326,10 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                       <div className="flex items-center gap-2 mb-1">
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${typeInfo.color}`}>
                           {typeInfo.icon}
-                          {typeInfo.label}
+                          {t(typeInfo.labelKey)}
                         </span>
                         <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium border ${statusInfo.color}`}>
-                          {statusInfo.label}
+                          {t(statusInfo.labelKey)}
                         </span>
                       </div>
                       <p className="text-sm font-medium text-foreground truncate">{r.title}</p>
@@ -334,8 +338,8 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                           <User className="w-3 h-3" />
                           {r.requester.name}
                         </span>
-                        <span>{format(new Date(r.createdAt), 'M/d HH:mm', { locale: ko })}</span>
-                        <span>승인 {r.steps.filter((s) => s.status === 'approved').length}/{r.steps.length}단계</span>
+                        <span>{new Intl.DateTimeFormat(locale, { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(r.createdAt))}</span>
+                        <span>{t('approvalProgress', { approved: r.steps.filter((s) => s.status === 'approved').length, total: r.steps.length })}</span>
                       </div>
                     </div>
                     <ChevronRight className="w-4 h-4 text-muted-foreground/60 flex-shrink-0 mt-1 ml-2" />
@@ -350,7 +354,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
         {selected && (
           <div className="w-96 flex-shrink-0 bg-card rounded-xl border border-border flex flex-col overflow-hidden">
             <div className="px-5 py-4 border-b border-border">
-              <h3 className="text-sm font-semibold text-foreground">요청 상세</h3>
+              <h3 className="text-sm font-semibold text-foreground">{t('requestDetail')}</h3>
             </div>
 
             <div className="flex-1 overflow-y-auto p-5 space-y-5">
@@ -363,7 +367,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                     return (
                       <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${typeInfo.color}`}>
                         {typeInfo.icon}
-                        {typeInfo.label}
+                        {t(typeInfo.labelKey)}
                       </span>
                     )
                   })()}
@@ -372,14 +376,14 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                     if (!statusInfo) return null
                     return (
                       <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium border ${statusInfo.color}`}>
-                        {statusInfo.label}
+                        {t(statusInfo.labelKey)}
                       </span>
                     )
                   })()}
                 </div>
                 <p className="text-base font-semibold text-foreground">{selected.title}</p>
-                <p className="text-xs text-muted-foreground">신청자: {selected.requester.name} ({selected.requester.employeeNo ?? '—'})</p>
-                <p className="text-xs text-muted-foreground">신청일: {format(new Date(selected.createdAt), 'yyyy.MM.dd HH:mm', { locale: ko })}</p>
+                <p className="text-xs text-muted-foreground">{t('applicant')}: {selected.requester.name} ({selected.requester.employeeNo ?? '—'})</p>
+                <p className="text-xs text-muted-foreground">{t('applicationDate')}: {new Intl.DateTimeFormat(locale, { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(selected.createdAt))}</p>
               </div>
 
               {/* 상세 내용 */}
@@ -396,7 +400,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
 
               {/* 승인 타임라인 */}
               <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">승인 단계</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">{t('approvalSteps')}</p>
                 <div className="space-y-3">
                   {selected.steps.map((step, idx) => {
                     const isCurrent = step.stepOrder === selected.currentStep && step.status === 'pending'
@@ -415,10 +419,10 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                         <div className="flex-1">
                           <p className="text-sm font-medium text-foreground">{step.approver.name}</p>
                           <p className="text-xs text-muted-foreground">
-                            {step.status === 'approved' && step.decidedAt && `승인 · ${format(new Date(step.decidedAt), 'M/d HH:mm')}`}
-                            {step.status === 'rejected' && step.decidedAt && `반려 · ${format(new Date(step.decidedAt), 'M/d HH:mm')}`}
-                            {isCurrent && '결재 대기중'}
-                            {step.status === 'waiting' && '대기'}
+                            {step.status === 'approved' && step.decidedAt && t('approvedAt', { time: format(new Date(step.decidedAt), 'M/d HH:mm') })}
+                            {step.status === 'rejected' && step.decidedAt && t('rejectedAt', { time: format(new Date(step.decidedAt), 'M/d HH:mm') })}
+                            {isCurrent && t('approvalPending')}
+                            {step.status === 'waiting' && t('waiting')}
                           </p>
                           {step.comment && (
                             <div className="mt-1 flex items-start gap-1 text-xs text-muted-foreground bg-muted rounded px-2 py-1">
@@ -441,12 +445,12 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                          s.approverId === user.employeeId
                ) && (
                 <div className="border border-border rounded-lg p-4 space-y-3">
-                  <p className="text-sm font-medium text-foreground">의견 (선택)</p>
+                  <p className="text-sm font-medium text-foreground">{t('commentOptional')}</p>
                   <textarea
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                     rows={3}
-                    placeholder={'승인/반려 사유를 입력하세요...'}
+                    placeholder={t('approvalReasonPlaceholder')}
                     className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none placeholder:text-muted-foreground/60"
                   />
                   <div className="flex gap-2">
@@ -456,7 +460,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                       className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 border border-red-400 text-red-400 hover:bg-destructive/5 rounded-lg text-sm font-medium disabled:opacity-60 transition-colors"
                     >
                       {approving ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
-                      반려
+                      {tc('reject')}
                     </button>
                     <button
                       onClick={() => handleAction('approve')}
@@ -464,7 +468,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                       className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-medium disabled:opacity-60 transition-colors"
                     >
                       {approving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                      승인
+                      {tc('approve')}
                     </button>
                   </div>
                 </div>
@@ -478,7 +482,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
       {showBulkBar && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 px-5 py-3 bg-card rounded-xl shadow-lg border border-border">
           <span className="text-sm font-semibold text-foreground">
-            {selectedIds.size}건 선택됨
+            {t('itemsSelected', { count: selectedIds.size })}
           </span>
           <div className="h-4 w-px bg-border" />
           <button
@@ -487,7 +491,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
             className="flex items-center gap-1.5 px-4 py-2 border border-red-400 text-red-400 hover:bg-destructive/5 rounded-lg text-sm font-semibold disabled:opacity-60 transition-colors"
           >
             {bulkProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
-            일괄 반려
+            {t('bulkReject')}
           </button>
           <button
             onClick={() => handleBulkAction('APPROVE')}
@@ -495,13 +499,13 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
             className="flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-semibold disabled:opacity-60 transition-colors"
           >
             {bulkProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-            일괄 승인
+            {t('bulkApprove')}
           </button>
           <button
             onClick={() => setSelectedIds(new Set())}
             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
-            취소
+            {tc('cancel')}
           </button>
         </div>
       )}

@@ -37,15 +37,15 @@ const COMP_RECORDS: Array<{
     exceptionReason?: string
 }> = [
         { empNo: 'CTR-KR-3001', baseSalary: 45000000, grade: 'M', meritPct: 3, isException: false },
-        { empNo: 'CTR-KR-3002', baseSalary: 48000000, grade: 'M_PLUS', meritPct: 5, isException: false },
-        { empNo: 'CTR-KR-3006', baseSalary: 55000000, grade: 'E', meritPct: 9, isException: false },
-        { empNo: 'CTR-KR-3010', baseSalary: 62000000, grade: 'M_PLUS', meritPct: 7, isException: false },
-        { empNo: 'CTR-KR-3017', baseSalary: 78000000, grade: 'E', meritPct: 15, isException: true, exceptionReason: '핵심 인재 유지 — 경쟁사 제안 대응 필요' },
+        { empNo: 'CTR-KR-3002', baseSalary: 48000000, grade: 'E', meritPct: 5, isException: false },
+        { empNo: 'CTR-KR-3006', baseSalary: 55000000, grade: 'O', meritPct: 9, isException: false },
+        { empNo: 'CTR-KR-3010', baseSalary: 62000000, grade: 'E', meritPct: 7, isException: false },
+        { empNo: 'CTR-KR-3017', baseSalary: 78000000, grade: 'O', meritPct: 15, isException: true, exceptionReason: '핵심 인재 유지 — 경쟁사 제안 대응 필요' },
         { empNo: 'CTR-KR-3019', baseSalary: 42000000, grade: 'M', meritPct: 4, isException: false },
-        { empNo: 'CTR-KR-3029', baseSalary: 90000000, grade: 'E', meritPct: 6, isException: false },
-        { empNo: 'CTR-KR-3030', baseSalary: 38000000, grade: 'B', meritPct: 0, isException: true, exceptionReason: '수습 기간 미완료 — 6개월 후 재평가 예정' },
+        { empNo: 'CTR-KR-3029', baseSalary: 90000000, grade: 'O', meritPct: 6, isException: false },
+        { empNo: 'CTR-KR-3030', baseSalary: 38000000, grade: 'S', meritPct: 0, isException: true, exceptionReason: '수습 기간 미완료 — 6개월 후 재평가 예정' },
         { empNo: 'CTR-KR-3031', baseSalary: 52000000, grade: 'M', meritPct: 3, isException: false },
-        { empNo: 'CTR-KR-3035', baseSalary: 47000000, grade: 'M_PLUS', meritPct: 5, isException: false },
+        { empNo: 'CTR-KR-3035', baseSalary: 47000000, grade: 'E', meritPct: 5, isException: false },
     ]
 
 export async function seedGP4CompReview(prisma: PrismaClient): Promise<void> {

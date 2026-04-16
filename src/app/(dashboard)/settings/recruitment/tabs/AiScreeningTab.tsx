@@ -1,6 +1,8 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { Save, RotateCcw, Loader2, Lock, Bot } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
@@ -22,13 +24,13 @@ const DEFAULTS: AiScreeningSetting = {
 
 export function AiScreeningTab({
   companyId }: Props) {
-//   const t = useTranslations('settings')
+  const t = useTranslations('settings')
   const { settings, setSettings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<AiScreeningSetting>({
     category: 'recruitment',
     key: 'ai-screening',
     companyId,
     defaults: DEFAULTS,
-    description: 'AI 기반 서류 심사 자동화 설정',
+    description: t('aiScreening.description'),
     merge: (raw, defs) => ({
       enabled: typeof raw.enabled === 'boolean' ? raw.enabled : defs.enabled,
       minScore: (raw.minScore as number) ?? defs.minScore,
@@ -49,20 +51,20 @@ export function AiScreeningTab({
       <div className="mb-4 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold text-foreground">{'AI 스크리닝'}</h3>
+            <h3 className="text-base font-semibold text-foreground">{t('aiScreening.title')}</h3>
             {!companyId && (
-              <span className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-600"><Lock className="h-3 w-3" />{'글로벌 고정'}</span>
+              <Badge variant="warning" className="gap-1"><Lock className="h-3 w-3" />{t('global_keab3a0ec')}</Badge>
             )}
           </div>
-          <p className="text-sm text-muted-foreground">{'AI 기반 서류 심사 자동화 설정'}</p>
+          <p className="text-sm text-muted-foreground">{t('aiScreening.description')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
+          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
         )}
       </div>
 
       <div className="flex items-center gap-4 rounded-xl border border-border p-4">
-        <span className="text-sm font-medium text-foreground">{'최소 합격 점수'}</span>
+        <span className="text-sm font-medium text-foreground">{t('aiScreening.minScore')}</span>
         <Input
           type="number"
           value={settings.minScore}
@@ -71,7 +73,7 @@ export function AiScreeningTab({
           onChange={(e) => setSettings((p) => ({ ...p, minScore: Number(e.target.value) }))}
           className="w-20"
         />
-        <span className="text-sm text-muted-foreground">{'점 이상'}</span>
+        <span className="text-sm text-muted-foreground">{t('aiScreening.minScoreSuffix')}</span>
       </div>
 
       <div className="space-y-3">{settings.features.map((f, i) => (
@@ -86,7 +88,7 @@ export function AiScreeningTab({
                 onClick={() => toggleFeature(i)}
                 className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${f.enabled ? 'bg-tertiary-container/10 text-tertiary hover:bg-tertiary-container/20' : 'bg-muted/50 text-muted-foreground/60 hover:bg-muted'}`}
               >
-                {f.enabled ? '활성' : '비활성'}
+                {f.enabled ? t('aiScreening.enabled') : t('aiScreening.disabled')}
               </button>
             </div>
             <p className="text-xs text-muted-foreground">{f.desc}</p>
@@ -96,10 +98,10 @@ export function AiScreeningTab({
 
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={revert} disabled={!hasChanges}>
-          <RotateCcw className="mr-2 h-4 w-4" />{'되돌리기'}
+          <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}{t('save')}
         </Button>
       </div>
     </div>

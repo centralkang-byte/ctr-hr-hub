@@ -69,7 +69,7 @@ export default function GoalsClient({
           setSelectedCycleId(res.data[0].id)
         }
       } catch (err) {
-        toast({ title: '목표 데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        toast({ title: t('messages.goalDataLoadFailed'), description: err instanceof Error ? err.message : t('messages.tryAgain'), variant: 'destructive' })
         setLoading(false)
       }
     }
@@ -88,7 +88,7 @@ export default function GoalsClient({
       )
       setGoals(res.data)
     } catch (err) {
-      toast({ title: '목표 데이터 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('messages.goalDataLoadFailed'), description: err instanceof Error ? err.message : t('messages.tryAgain'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }

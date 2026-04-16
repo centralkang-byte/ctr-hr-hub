@@ -3,11 +3,11 @@
 import { useCallback, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
+import { useTranslations } from 'next-intl'
 import { Loader2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { ko } from '@/lib/i18n/ko'
 
 interface QAAccount {
   email: string
@@ -54,22 +54,21 @@ const QA_ACCOUNT_GROUPS: QAGroup[] = [
 
 const SHOW_TEST_ACCOUNTS = process.env.NEXT_PUBLIC_SHOW_TEST_ACCOUNTS?.trim() === 'true'
 
-const SSO_ERROR_MESSAGES: Record<string, string> = {
-  OAuthSignin: 'M365 로그인 시작 중 오류가 발생했습니다.',
-  OAuthCallback: 'M365 인증 콜백 처리 중 오류가 발생했습니다.',
-  OAuthCreateAccount: '계정 생성 중 오류가 발생했습니다.',
-  Callback: '인증 콜백 오류가 발생했습니다.',
-  AccessDenied: '이메일 또는 비밀번호가 올바르지 않습니다.',
-  CredentialsSignin: '이메일 또는 비밀번호가 올바르지 않습니다.',
-  TooManyAttempts: '로그인 시도가 너무 많습니다. 1분 후 다시 시도하세요.',
-  Configuration: '서버 설정 오류입니다. 관리자에게 문의하세요.',
-}
+const SSO_ERROR_CODES = [
+  'OAuthSignin', 'OAuthCallback', 'OAuthCreateAccount', 'Callback',
+  'AccessDenied', 'CredentialsSignin', 'TooManyAttempts', 'Configuration',
+] as const
 
 export default function LoginPageContent() {
   const [loadingId, setLoadingId] = useState<string | null>(null)
+  const t = useTranslations('auth')
   const searchParams = useSearchParams()
   const errorCode = searchParams.get('error')
-  const errorMessage = errorCode ? (SSO_ERROR_MESSAGES[errorCode] ?? `로그인 오류: ${errorCode}`) : null
+  const errorMessage = errorCode
+    ? (SSO_ERROR_CODES.includes(errorCode as typeof SSO_ERROR_CODES[number])
+        ? t(`ssoError.${errorCode as typeof SSO_ERROR_CODES[number]}`)
+        : t('ssoError.fallback', { code: errorCode }))
+    : null
 
   const handleM365Login = useCallback(() => {
     setLoadingId('m365')
@@ -90,8 +89,8 @@ export default function LoginPageContent() {
             <span className="text-3xl font-bold text-white">CTR</span>
           </div>
           <h1 className="mb-4 text-3xl font-bold text-white">CTR HR Hub</h1>
-          <p className="mb-2 text-lg text-white/80">통합 인사관리 시스템</p>
-          <p className="text-sm text-white/60">{ko.auth.slogan}</p>
+          <p className="mb-2 text-lg text-white/80">{t('integratedHrSystem')}</p>
+          <p className="text-sm text-white/60">{t('brandSlogan')}</p>
         </div>
       </div>
 
@@ -108,7 +107,7 @@ export default function LoginPageContent() {
 
           <Card className="border-0 shadow-none lg:border lg:">
             <CardHeader className="text-center">
-              <CardTitle className="text-xl">{ko.auth.login}</CardTitle>
+              <CardTitle className="text-xl">{t('login')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* ── Error Message ── */}
@@ -141,7 +140,7 @@ export default function LoginPageContent() {
                     <rect x="11" y="11" width="9" height="9" fill="#FFB900" />
                   </svg>
                 )}
-                {ko.auth.loginWithM365}
+                {t('loginWithM365')}
               </Button>
 
               {/* ── QA Test Accounts (Dev Only) ── */}
@@ -191,7 +190,9 @@ export default function LoginPageContent() {
               {/* Footer */}
               <div className="mt-4 rounded-lg bg-muted px-4 py-3 text-center">
                 <p className="text-xs text-muted-foreground">
-                  계정이 없거나 로그인이 불가한 경우 <span className="font-semibold text-foreground">HR 담당자</span>에게 문의해주세요.
+                  {t.rich('contactHr', {
+                    emphasis: (chunks) => <span className="font-semibold text-foreground">{chunks}</span>,
+                  })}
                 </p>
               </div>
             </CardContent>

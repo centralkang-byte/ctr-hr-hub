@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
-import { Plus, Pencil, Trash2, Shield, FileText } from 'lucide-react'
+import { Plus, Pencil, Trash2, Shield, FileText, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -89,6 +89,7 @@ export function LoaTypesTab({ companyId }: Props) {
   const [editForm, setEditForm] = useState<EditForm>(emptyForm)
   const [showAdd, setShowAdd] = useState(false)
   const [addForm, setAddForm] = useState<EditForm & { code: string }>({ ...emptyForm, code: '' })
+  const [applyingDefaults, setApplyingDefaults] = useState(false)
 
   const fetchTypes = useCallback(async () => {
     setLoading(true)
@@ -202,6 +203,24 @@ export function LoaTypesTab({ companyId }: Props) {
     })
   }
 
+  const handleApplyDefaults = async () => {
+    if (!companyId) return
+    if (!confirm(t('loaTypes_applyDefaultsConfirm'))) return
+    setApplyingDefaults(true)
+    try {
+      const { data } = await apiClient.post<{ created: number; skipped: number; message: string }>(
+        '/api/v1/leave-of-absence/types/apply-defaults',
+        { companyId },
+      )
+      toast({ title: data.message })
+      fetchTypes()
+    } catch (err) {
+      toast({ title: t('loaTypes_applyDefaultsFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
+    } finally {
+      setApplyingDefaults(false)
+    }
+  }
+
   const statutoryCount = types.filter(lt => lt.category === 'STATUTORY').length
   const contractualCount = types.filter(lt => lt.category === 'CONTRACTUAL').length
 
@@ -214,9 +233,17 @@ export function LoaTypesTab({ companyId }: Props) {
             {t('loaTypes.description', { total: types.length, statutory: statutoryCount, contractual: contractualCount })}
           </p>
         </div>
-        <Button size="sm" onClick={() => setShowAdd(!showAdd)}>
-          <Plus className="h-4 w-4 mr-1" /> {t('common.add')}
-        </Button>
+        <div className="flex gap-2">
+          {companyId && (
+            <Button size="sm" variant="outline" onClick={handleApplyDefaults} disabled={applyingDefaults}>
+              <RotateCcw className={cn('h-4 w-4 mr-1', applyingDefaults && 'animate-spin')} />
+              {t('loaTypes_applyGlobalDefaults')}
+            </Button>
+          )}
+          <Button size="sm" onClick={() => setShowAdd(!showAdd)}>
+            <Plus className="h-4 w-4 mr-1" /> {t('common.add')}
+          </Button>
+        </div>
       </div>
 
       {/* 추가 폼 */}

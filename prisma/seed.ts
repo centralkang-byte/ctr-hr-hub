@@ -57,6 +57,9 @@ import { seedQuarterlyReviews } from './seeds/44-quarterly-reviews'
 import { seedGoalRevisions } from './seeds/45-goal-revisions'
 import { seedCalibrationQA } from './seeds/46-calibration-qa'
 import { seedLaborContractSettings } from './seeds/47-labor-contract-settings'
+import { seedEdgeCasePersonas } from './seeds/49-edge-case-personas'
+import { seedVolumeStress } from './seeds/50-volume-stress'
+import { seedHistorical3Years } from './seeds/51-historical-3years'
 
 // Load DATABASE_URL from .env.local or .env
 const DATABASE_URL = process.env.DATABASE_URL
@@ -3658,6 +3661,19 @@ async function main() {
 
   // Labor & contract settings defaults (Phase 3)
   await seedLaborContractSettings(prisma)
+
+  // Edge case personas (30 personas for UAT)
+  await seedEdgeCasePersonas(prisma)
+
+  // Volume stress (2,500 employees + transactions) — flag-gated
+  if (process.env.SEED_VOLUME === 'true') {
+    await seedVolumeStress(prisma)
+  }
+
+  // Historical 3-year data (payroll/perf/turnover) — flag-gated
+  if (process.env.SEED_HISTORY === 'true') {
+    await seedHistorical3Years(prisma)
+  }
 }
 
 main()

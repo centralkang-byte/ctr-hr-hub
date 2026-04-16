@@ -160,18 +160,29 @@ export default function OffCycleNewClient({ user: _user }: Props) {
       const body = {
         employeeId: selectedEmployee.id,
         reasonCategory,
-        proposedSalary: proposed,
-        effectiveDate,
-        justification: justification.trim(),
-        submitForApproval,
+        proposedBaseSalary: proposed,
+        effectiveDate: effectiveDate + 'T00:00:00.000Z',
+        reason: justification.trim() || undefined,
       }
       const res = await apiClient.post<{ id: string }>(
         '/api/v1/compensation/off-cycle',
         body,
       )
-      toast({
-        title: submitForApproval ? t('offCycle.toast.submitComplete') : t('offCycle.toast.draftSaved'),
-      })
+
+      if (submitForApproval) {
+        try {
+          await apiClient.post(`/api/v1/compensation/off-cycle/${res.data.id}/submit`, {})
+          toast({ title: t('offCycle.toast.submitComplete') })
+        } catch {
+          toast({
+            title: t('offCycle.toast.submitAfterCreateFailed'),
+            variant: 'destructive',
+          })
+        }
+      } else {
+        toast({ title: t('offCycle.toast.draftSaved') })
+      }
+
       router.push(`/compensation/off-cycle/${res.data.id}`)
     } catch (err) {
       toast({
@@ -348,7 +359,7 @@ export default function OffCycleNewClient({ user: _user }: Props) {
                   <span
                     className={cn(
                       'font-mono tabular-nums font-semibold',
-                      changePct > 0 ? 'text-[#059669]' : changePct < 0 ? 'text-[#DC2626]' : 'text-muted-foreground',
+                      changePct > 0 ? 'text-tertiary' : changePct < 0 ? 'text-destructive' : 'text-muted-foreground',
                     )}
                   >
                     {changePct >= 0 ? '+' : ''}{changePct.toFixed(1)}%
@@ -380,7 +391,7 @@ export default function OffCycleNewClient({ user: _user }: Props) {
                   <p className="text-xs text-muted-foreground">{t('offCycle.form.compaRatioAfter')}</p>
                   <p className={cn(
                     'font-mono tabular-nums font-semibold',
-                    proposedCompaRatio > 120 ? 'text-[#DC2626]' : 'text-foreground',
+                    proposedCompaRatio > 120 ? 'text-destructive' : 'text-foreground',
                   )}>
                     {proposedCompaRatio.toFixed(1)}%
                   </p>

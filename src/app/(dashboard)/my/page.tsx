@@ -1,13 +1,17 @@
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
+import { getTranslations } from 'next-intl/server'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import { prisma } from '@/lib/prisma'
 import { MySpaceClient } from './MySpaceClient'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
-export const metadata = { title: '나의 공간 | CTR HR Hub' }
+export async function generateMetadata() {
+  const t = await getTranslations('mySpace')
+  return { title: t('pageTitle') }
+}
 
 export default async function MySpacePage() {
   const session = await getServerSession(authOptions)

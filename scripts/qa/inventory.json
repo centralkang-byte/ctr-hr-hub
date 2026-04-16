@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-04-05T15:55:12.328Z",
+  "gitCommit": "99c954b",
+  "gitBranch": "staging",
+  "counts": {
+    "apiRoutes": 599,
+    "apiRoutesV1": 596,
+    "pages": 162,
+    "cronRoutes": 8,
+    "prismaModels": 209,
+    "e2eSpecs": 21,
+    "locales": 5
+  },
+  "locales": {
+    "en": {
+      "topLevelKeys": 53,
+      "fileSizeKb": 265
+    },
+    "es": {
+      "topLevelKeys": 53,
+      "fileSizeKb": 271
+    },
+    "ko": {
+      "topLevelKeys": 53,
+      "fileSizeKb": 277
+    },
+    "vi": {
+      "topLevelKeys": 53,
+      "fileSizeKb": 277
+    },
+    "zh": {
+      "topLevelKeys": 53,
+      "fileSizeKb": 261
+    }
+  },
+  "localeParity": true,
+  "warnings": []
+}

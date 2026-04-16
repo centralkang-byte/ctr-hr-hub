@@ -65,7 +65,7 @@ const STATIC_URLS: UrlEntry[] = [
   { path: '/performance', role: 'EMPLOYEE', group: 'performance' },
 
   // ── Approvals ──
-  { path: '/approvals/inbox', role: 'MANAGER', group: 'approvals' },
+  { path: '/my/tasks?tab=approvals', role: 'MANAGER', group: 'approvals' },
   { path: '/approvals/attendance', role: 'MANAGER', group: 'approvals' },
   { path: '/manager-hub', role: 'MANAGER', group: 'manager' },
   { path: '/attendance/team', role: 'MANAGER', group: 'attendance' },

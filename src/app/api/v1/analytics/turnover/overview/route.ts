@@ -84,7 +84,7 @@ export const GET = withPermission(
       prisma.performanceReview.findMany({
         where: {
           ...companyFilter,
-          finalGrade: { in: ['E', 'M_PLUS', 'M'] }, // M and above = regrettable
+          finalGrade: { in: ['O', 'E', 'M'] }, // M and above = regrettable
           employee: {
             assignments: {
               some: {

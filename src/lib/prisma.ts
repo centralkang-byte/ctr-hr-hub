@@ -9,6 +9,7 @@ import 'server-only'
 
 import { PrismaClient } from '@/generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
+import { queryCounterExtension } from '@/lib/observability/query-counter-extension'
 
 const globalForPrisma = globalThis as unknown as {
   __prisma: PrismaClient | undefined
@@ -26,8 +27,14 @@ function createPrismaClient(): PrismaClient {
   }
   const isSupabase =
     connectionString.includes('supabase.co') || connectionString.includes('supabase.com')
+  // CI uses a plain-TCP Postgres container on localhost; production builds
+  // (next start) force NODE_ENV=production, which would otherwise enable SSL
+  // against a host that does not support it and break every Prisma query.
+  const isLocalhost =
+    connectionString.includes('localhost') ||
+    connectionString.includes('127.0.0.1')
   const ssl =
-    isSupabase || process.env.NODE_ENV === 'production'
+    !isLocalhost && (isSupabase || process.env.NODE_ENV === 'production')
       ? { rejectUnauthorized: false }
       : undefined
   const adapter = new PrismaPg({ connectionString, ssl })
@@ -37,9 +44,18 @@ function createPrismaClient(): PrismaClient {
   })
 }
 
-export const prisma: PrismaClient =
+// Phase 6A: cache the UNEXTENDED base client on globalThis (HMR-friendly),
+// then derive the extended client once per module load. The extension is a
+// pure value (Prisma.defineExtension), so re-extending on every HMR reload
+// is free. Keeping `__prisma` typed as `PrismaClient` preserves the original
+// global cache signature without leaking the extended type into places that
+// still annotate as `PrismaClient`.
+const basePrisma: PrismaClient =
   globalForPrisma.__prisma ?? createPrismaClient()
 
 if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.__prisma = prisma
+  globalForPrisma.__prisma = basePrisma
 }
+
+export const prisma = basePrisma.$extends(queryCounterExtension)
+export type AppPrisma = typeof prisma

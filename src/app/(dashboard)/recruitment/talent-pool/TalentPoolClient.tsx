@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 
 // ═══════════════════════════════════════════════════════════
@@ -40,23 +40,23 @@ interface TalentPoolEntry {
   sourcePosting?: { id: string; title: string }
 }
 
-const POOL_REASON_LABELS: Record<string, { label: string; color: string }> = {
-  rejected_qualified: { label: '우수 불합격', color: 'bg-indigo-500/15 text-primary/90' },
-  withdrawn: { label: '자진 철회', color: 'bg-amber-500/15 text-amber-700' },
-  overqualified: { label: '역량 초과', color: 'bg-sky-500/10 text-sky-700' },
-  manual: { label: '수동 등록', color: 'bg-background text-muted-foreground' },
+const POOL_REASON_LABELS: Record<string, { labelKey: string; color: string }> = {
+  rejected_qualified: { labelKey: 'poolReasonRejectedQualified', color: 'bg-indigo-500/15 text-primary/90' },
+  withdrawn: { labelKey: 'poolReasonWithdrawn', color: 'bg-amber-500/15 text-amber-700' },
+  overqualified: { labelKey: 'poolReasonOverqualified', color: 'bg-sky-500/10 text-sky-700' },
+  manual: { labelKey: 'poolReasonManual', color: 'bg-background text-muted-foreground' },
 }
 
-const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  active: { label: '활성', color: 'bg-emerald-500/15 text-emerald-700' },
-  contacted: { label: '접촉 중', color: 'bg-amber-500/15 text-amber-700' },
-  expired: { label: '만료', color: 'bg-background text-muted-foreground' },
-  hired: { label: '채용 완료', color: 'bg-primary/10 text-primary/90' },
+const STATUS_LABELS: Record<string, { labelKey: string; color: string }> = {
+  active: { labelKey: 'poolStatusActive', color: 'bg-emerald-500/15 text-emerald-700' },
+  contacted: { labelKey: 'poolStatusContacted', color: 'bg-amber-500/15 text-amber-700' },
+  expired: { labelKey: 'poolStatusExpired', color: 'bg-background text-muted-foreground' },
+  hired: { labelKey: 'poolStatusHired', color: 'bg-primary/10 text-primary/90' },
 }
 
 const STAGE_LABELS: Record<string, string> = {
-  APPLIED: '서류접수', SCREENING: '서류심사', INTERVIEW_1: '1차 면접',
-  INTERVIEW_2: '2차 면접', FINAL: '최종', OFFER: '오퍼', HIRED: '합격', REJECTED: '불합격',
+  APPLIED: 'stageApplied', SCREENING: 'stageScreening', INTERVIEW_1: 'stageInterview1',
+  INTERVIEW_2: 'stageInterview2', FINAL: 'stageFinal', OFFER: 'stageOffer', HIRED: 'stageHired', REJECTED: 'stageRejected',
 }
 
 function daysUntil(date: string): number {
@@ -67,6 +67,7 @@ export default function TalentPoolClient({user: _user }: {
   user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('recruitment')
+  const locale = useLocale()
   const [items, setItems] = useState<TalentPoolEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -187,10 +188,10 @@ export default function TalentPoolClient({user: _user }: {
                     {/* 배지 행 */}
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusInfo.color}`}>
-                        {statusInfo.label}
+                        {t(statusInfo.labelKey)}
                       </span>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${reasonInfo.color}`}>
-                        {reasonInfo.label}
+                        {t(reasonInfo.labelKey)}
                       </span>
                       {!entry.consentGiven && (
                         <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-destructive/10 text-destructive">
@@ -201,7 +202,7 @@ export default function TalentPoolClient({user: _user }: {
                       {isExpiringSoon && (
                         <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700">
                           <Clock size={10} />
-                          {daysLeft}일 후 만료
+                          {t('expiresInDays', { days: daysLeft })}
                         </span>
                       )}
                     </div>
@@ -239,8 +240,8 @@ export default function TalentPoolClient({user: _user }: {
                         {entry.applicant.applications.map((app, idx) => (
                           <p key={idx} className="text-xs text-muted-foreground">
                             {app.posting.company.name} · {app.posting.title} →{' '}
-                            <span className="font-medium">{STAGE_LABELS[app.stage] ?? app.stage}</span>{' '}
-                            ({new Date(app.createdAt).toLocaleDateString('ko-KR')})
+                            <span className="font-medium">{t(STAGE_LABELS[app.stage] ?? app.stage)}</span>{' '}
+                            ({new Date(app.createdAt).toLocaleDateString(locale)})
                           </p>
                         ))}
                       </div>
@@ -249,7 +250,7 @@ export default function TalentPoolClient({user: _user }: {
                     {/* 등록 출처 공고 */}
                     {entry.sourcePosting && (
                       <p className="text-xs text-muted-foreground mt-1">
-                        출처 공고: {entry.sourcePosting.title}
+                        {t('sourcePosting')}: {entry.sourcePosting.title}
                       </p>
                     )}
                   </div>
@@ -268,7 +269,7 @@ export default function TalentPoolClient({user: _user }: {
                       <option value="expired">{t('kr_keba78ceb')}</option>
                     </select>
                     <p className="text-xs text-muted-foreground mt-1 text-right">
-                      만료: {new Date(entry.expiresAt).toLocaleDateString('ko-KR')}
+                      {t('expiresOn')}: {new Date(entry.expiresAt).toLocaleDateString(locale)}
                     </p>
                   </div>
                 </div>

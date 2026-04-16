@@ -308,3 +308,16 @@ export interface DashboardLayout {
     sort_order: number[]
   }
 }
+
+// ─── Home Dashboard DTOs ──────────────────────────────────
+
+export type {
+  OnboardingItem,
+  LeaveBalanceItem,
+  QuarterlyReviewStats,
+  EmployeeSummary,
+  ManagerSummary,
+  HrAdminSummary,
+  ExecSummary,
+  HomeSummary,
+} from './home'

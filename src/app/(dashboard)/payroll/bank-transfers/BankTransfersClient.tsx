@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+import { useLocale } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 
 // ═══════════════════════════════════════════════════════════
@@ -23,7 +25,7 @@ import {
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Input } from '@/components/ui/input'
 import {
   Dialog,
@@ -81,40 +83,46 @@ interface BankTransferItem {
 // ─── Constants ──────────────────────────────────────────────
 
 const BANKS = [
-  { code: 'SHINHAN', name: '신한은행' },
-  { code: 'KOOKMIN', name: 'KB국민은행' },
-  { code: 'WOORI', name: '우려됨' },
-  { code: 'HANA', name: '하나은행' },
-  { code: 'NH', name: 'NH농협은행' },
-  { code: 'IBK', name: 'IBK기업은행' },
-  { code: 'SC', name: 'SC제일은행' },
+  { code: 'SHINHAN', labelKey: 'bankTransferPage.bankShinhan' as const },
+  { code: 'KOOKMIN', labelKey: 'bankTransferPage.bankKookmin' as const },
+  { code: 'WOORI', labelKey: 'bankTransferPage.bankWoori' as const },
+  { code: 'HANA', labelKey: 'bankTransferPage.bankHana' as const },
+  { code: 'NH', labelKey: 'bankTransferPage.bankNH' as const },
+  { code: 'IBK', labelKey: 'bankTransferPage.bankIBK' as const },
+  { code: 'SC', labelKey: 'bankTransferPage.bankSC' as const },
 ]
 
-const STATUS_MAP: Record<string, { label: string; color: string; icon: typeof Clock }> = {
-  DRAFT: { label: '임시저장', color: 'bg-background text-muted-foreground border-border', icon: Clock },
-  GENERATING: { label: '생성', color: 'bg-primary/10 text-primary/90 border-primary/20', icon: Loader2 },
-  GENERATED: { label: '생성완료', color: 'bg-indigo-500/15 text-primary/90 border-indigo-200', icon: FileSpreadsheet },
-  SUBMITTED: { label: '제출됨', color: 'bg-amber-500/15 text-amber-700 border-amber-300', icon: Upload },
-  PARTIALLY_COMPLETED: { label: '부분완료', color: 'bg-orange-500/10 text-orange-700 border-orange-200', icon: AlertTriangle },
-  COMPLETED: { label: '완료', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200', icon: CheckCircle2 },
-  FAILED: { label: '실패', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: XCircle },
+const STATUS_MAP: Record<string, { labelKey: string; icon: typeof Clock }> = {
+  DRAFT: { labelKey: 'bankTransferPage.statusDraft', icon: Clock },
+  GENERATING: { labelKey: 'bankTransferPage.statusGenerating', icon: Loader2 },
+  GENERATED: { labelKey: 'bankTransferPage.statusGenerated', icon: FileSpreadsheet },
+  SUBMITTED: { labelKey: 'bankTransferPage.statusSubmitted', icon: Upload },
+  PARTIALLY_COMPLETED: { labelKey: 'bankTransferPage.statusPartial', icon: AlertTriangle },
+  COMPLETED: { labelKey: 'bankTransferPage.statusCompleted', icon: CheckCircle2 },
+  FAILED: { labelKey: 'bankTransferPage.statusFailed', icon: XCircle },
 }
 
-const ITEM_STATUS_MAP: Record<string, { label: string; color: string }> = {
-  PENDING: { label: '🟡 대기', color: 'bg-background text-muted-foreground border-border' },
-  SUCCESS: { label: '성공', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
-  FAILED: { label: '실패', color: 'bg-destructive/10 text-destructive border-destructive/20' },
-  CANCELLED: { label: '취소', color: 'bg-background text-muted-foreground border-border' },
+const ITEM_STATUS_MAP: Record<string, { labelKey: string }> = {
+  PENDING: { labelKey: 'bankTransferPage.itemPending' },
+  SUCCESS: { labelKey: 'bankTransferPage.itemSuccess' },
+  FAILED: { labelKey: 'bankTransferPage.itemFailed' },
+  CANCELLED: { labelKey: 'bankTransferPage.itemCancelled' },
 }
 
-function formatAmount(amount: string | number): string {
-  return Number(amount).toLocaleString('ko-KR', { style: 'currency', currency: 'KRW' })
-}
+// formatAmount는 컴포넌트 내부에서 locale을 사용하도록 이동
 
 // ─── Component ──────────────────────────────────────────────
 
 export function BankTransfersClient({ user }: { user: SessionUser }) {
   void user
+  const t = useTranslations('payroll')
+  const tCommon = useTranslations('common')
+  const locale = useLocale()
+
+  // 금액 포매팅 (locale 반영)
+  const formatAmount = (amount: string | number): string => {
+    return Number(amount).toLocaleString(locale, { style: 'currency', currency: 'KRW' })
+  }
 
   const [batches, setBatches] = useState<BankTransferBatch[]>([])
   const [loading, setLoading] = useState(true)
@@ -125,7 +133,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
   const [creating, setCreating] = useState(false)
   const [newBatch, setNewBatch] = useState({
     bankCode: 'SHINHAN',
-    bankName: '신한은행',
+    bankName: t('bankTransferPage.bankShinhan'),
     format: 'CSV' as 'CSV' | 'XML' | 'EBCDIC',
     note: '',
   })
@@ -171,7 +179,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
         note: newBatch.note || null,
       })
       setCreateOpen(false)
-      setNewBatch({ bankCode: 'SHINHAN', bankName: '신한은행', format: 'CSV', note: '' })
+      setNewBatch({ bankCode: 'SHINHAN', bankName: t('bankTransferPage.bankShinhan'), format: 'CSV', note: '' })
       await fetchBatches()
     } catch {
       // handled
@@ -254,16 +262,16 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <Building2 className="h-6 w-6 text-primary" />
-            {'급여 이체 관리'}
+            {t('bankTransferPage.title')}
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">{'은행별 급여 이체 파일 생성 및 결과 관리'}</p>
+          <p className="text-sm text-muted-foreground mt-1">{t('bankTransferPage.subtitle')}</p>
         </div>
         <Button
           onClick={() => setCreateOpen(true)}
           className={BUTTON_VARIANTS.primary}
         >
           <Plus className="h-4 w-4 mr-2" />
-          {'이체 배치 생성'}
+          {t('bankTransferPage.createBatch')}
         </Button>
       </div>
 
@@ -271,25 +279,25 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-muted-foreground mb-1">{'전체 배치'}</p>
+            <p className="text-xs text-muted-foreground mb-1">{t('bankTransferPage.totalBatches')}</p>
             <p className="text-3xl font-bold text-foreground">{totalBatches}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-muted-foreground mb-1">{'처리 대기'}</p>
+            <p className="text-xs text-muted-foreground mb-1">{t('bankTransferPage.pendingBatches')}</p>
             <p className="text-3xl font-bold text-amber-600">{pendingBatches}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-muted-foreground mb-1">{'완료'}</p>
+            <p className="text-xs text-muted-foreground mb-1">{t('bankTransferPage.completed')}</p>
             <p className="text-3xl font-bold text-emerald-600">{completedBatches}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5">
-            <p className="text-xs text-muted-foreground mb-1">{'총 이체액'}</p>
+            <p className="text-xs text-muted-foreground mb-1">{t('bankTransferPage.totalAmount')}</p>
             <p className="text-2xl font-bold text-primary">{formatAmount(totalAmount)}</p>
           </CardContent>
         </Card>
@@ -299,12 +307,12 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
       <div className="flex items-center gap-3">
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder={'상태 필터'} />
+            <SelectValue placeholder={t('bankTransferPage.statusFilter')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{'전체 상태'}</SelectItem>
+            <SelectItem value="all">{t('bankTransferPage.allStatus')}</SelectItem>
             {Object.entries(STATUS_MAP).map(([key, val]) => (
-              <SelectItem key={key} value={key}>{val.label}</SelectItem>
+              <SelectItem key={key} value={key}>{t(val.labelKey)}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -336,7 +344,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                         </div>
                       </div>
 
-                      <Badge className={`${st.color} border`}>{st.label}</Badge>
+                      <StatusBadge status={batch.status}>{t(st.labelKey)}</StatusBadge>
                     </div>
 
                     <div className="flex items-center gap-6">
@@ -344,12 +352,12 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                       <div className="text-right">
                         <p className="text-sm font-bold text-foreground">{formatAmount(batch.totalAmount)}</p>
                         <p className="text-xs text-muted-foreground">
-                          {batch.totalCount}건
+                          {t('bankTransferPage.itemCount', { count: batch.totalCount })}
                           {batch.successCount > 0 && (
-                            <span className="text-emerald-600 ml-1">({batch.successCount} 성공)</span>
+                            <span className="text-emerald-600 ml-1">({t('bankTransferPage.successCount', { count: batch.successCount })})</span>
                           )}
                           {batch.failCount > 0 && (
-                            <span className="text-red-500 ml-1">({batch.failCount} 실패)</span>
+                            <span className="text-red-500 ml-1">({t('bankTransferPage.failCount', { count: batch.failCount })})</span>
                           )}
                         </p>
                       </div>
@@ -362,7 +370,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                           onClick={() => handleViewDetail(batch)}
                         >
                           <Eye className="h-3.5 w-3.5 mr-1" />
-                          {'상세'}
+                          {t('bankTransferPage.detail')}
                         </Button>
 
                         {batch.status === 'DRAFT' && (
@@ -377,7 +385,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                             ) : (
                               <FileSpreadsheet className="h-3.5 w-3.5 mr-1" />
                             )}
-                            파일 생성
+                            {t('bankTransferPage.generateFile')}
                           </Button>
                         )}
 
@@ -388,7 +396,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                               size="sm"
                             >
                               <Download className="h-3.5 w-3.5 mr-1" />
-                              {'다운로드'}
+                              {t('bankTransferPage.download')}
                             </Button>
                             <Button
                               size="sm"
@@ -401,7 +409,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                               ) : (
                                 <Upload className="h-3.5 w-3.5 mr-1" />
                               )}
-                              결과 처리
+                              {t('bankTransferPage.processResult')}
                             </Button>
                           </>
                         )}
@@ -430,7 +438,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                   )}
 
                   <p className="text-xs text-muted-foreground mt-2">
-                    {new Date(batch.createdAt).toLocaleDateString('ko-KR')}
+                    {new Intl.DateTimeFormat(locale).format(new Date(batch.createdAt))}
                     {batch.note && ` · ${batch.note}`}
                   </p>
                 </CardContent>
@@ -444,11 +452,11 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{'이체 배치 생성'}</DialogTitle>
+            <DialogTitle>{t('bankTransferPage.createTitle')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{'은행 선택'}</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">{t('bankTransferPage.selectBank')}</label>
               <Select
                 value={newBatch.bankCode}
                 onValueChange={v => {
@@ -456,7 +464,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                   setNewBatch(prev => ({
                     ...prev,
                     bankCode: v,
-                    bankName: bank?.name ?? v,
+                    bankName: bank ? t(bank.labelKey) : v,
                   }))
                 }}
               >
@@ -465,14 +473,14 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                 </SelectTrigger>
                 <SelectContent>
                   {BANKS.map(bank => (
-                    <SelectItem key={bank.code} value={bank.code}>{bank.name}</SelectItem>
+                    <SelectItem key={bank.code} value={bank.code}>{t(bank.labelKey)}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{'파일 형식'}</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">{t('bankTransferPage.fileFormat')}</label>
               <Select
                 value={newBatch.format}
                 onValueChange={v => setNewBatch(prev => ({ ...prev, format: v as 'CSV' | 'XML' | 'EBCDIC' }))}
@@ -489,23 +497,23 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{'비고'}</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">{t('bankTransferPage.note')}</label>
               <Input
                 value={newBatch.note}
                 onChange={e => setNewBatch(prev => ({ ...prev, note: e.target.value }))}
-                placeholder={'비고 입력 (선택)'}
+                placeholder={t('bankTransferPage.notePlaceholder')}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateOpen(false)}>{'취소'}</Button>
+            <Button variant="outline" onClick={() => setCreateOpen(false)}>{tCommon('cancel')}</Button>
             <Button
               onClick={handleCreate}
               disabled={creating}
               className={BUTTON_VARIANTS.primary}
             >
               {creating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
-              생성
+              {t('bankTransferPage.create')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -517,7 +525,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-primary" />
-              {selectedBatch?.bankName} 이체 상세
+              {t('bankTransferPage.detailTitle', { bank: selectedBatch?.bankName ?? '' })}
             </DialogTitle>
           </DialogHeader>
 
@@ -531,19 +539,19 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
               {selectedBatch && (
                 <div className="grid grid-cols-4 gap-3">
                   <div className="bg-background rounded-lg p-3 text-center">
-                    <p className="text-xs text-muted-foreground">{'① 총급여'}</p>
+                    <p className="text-xs text-muted-foreground">{t('bankTransferPage.totalPayroll')}</p>
                     <p className="text-lg font-bold">{selectedBatch.totalCount}</p>
                   </div>
                   <div className="bg-emerald-500/15 rounded-lg p-3 text-center">
-                    <p className="text-xs text-emerald-600">{'성공'}</p>
+                    <p className="text-xs text-emerald-600">{t('bankTransferPage.success')}</p>
                     <p className="text-lg font-bold text-emerald-700">{selectedBatch.successCount}</p>
                   </div>
                   <div className="bg-destructive/10 rounded-lg p-3 text-center">
-                    <p className="text-xs text-red-500">{'실패'}</p>
+                    <p className="text-xs text-red-500">{t('bankTransferPage.failed')}</p>
                     <p className="text-lg font-bold text-destructive">{selectedBatch.failCount}</p>
                   </div>
                   <div className="bg-primary/10 rounded-lg p-3 text-center">
-                    <p className="text-xs text-primary">{'총지급액'}</p>
+                    <p className="text-xs text-primary">{t('bankTransferPage.totalPay')}</p>
                     <p className="text-lg font-bold text-primary/90">{formatAmount(selectedBatch.totalAmount)}</p>
                   </div>
                 </div>
@@ -554,20 +562,20 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                 <table className={TABLE_STYLES.table}>
                   <thead>
                     <tr className={TABLE_STYLES.header}>
-                      <th className={TABLE_STYLES.headerCell}>{'사번'}</th>
-                      <th className={TABLE_STYLES.headerCell}>{'이름'}</th>
-                      <th className={TABLE_STYLES.headerCell}>{'계약직'}</th>
-                      <th className={TABLE_STYLES.headerCell}>{'예금주'}</th>
-                      <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{'금액'}</th>
-                      <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{'상태'}</th>
-                      <th className={TABLE_STYLES.headerCell}>{'비고'}</th>
+                      <th className={TABLE_STYLES.headerCell}>{t('bankTransferPage.empNo')}</th>
+                      <th className={TABLE_STYLES.headerCell}>{t('bankTransferPage.name')}</th>
+                      <th className={TABLE_STYLES.headerCell}>{t('bankTransferPage.account')}</th>
+                      <th className={TABLE_STYLES.headerCell}>{t('bankTransferPage.holder')}</th>
+                      <th className={cn(TABLE_STYLES.headerCell, "text-right")}>{t('bankTransferPage.amount')}</th>
+                      <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('bankTransferPage.status')}</th>
+                      <th className={TABLE_STYLES.headerCell}>{t('bankTransferPage.remark')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {batchItems.length === 0 ? (
                       <tr>
                         <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
-                          {'이체 항목이 없습니다.'}
+                          {t('bankTransferPage.noItems')}
                         </td>
                       </tr>
                     ) : (
@@ -581,7 +589,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                             <td className={TABLE_STYLES.cell}>{item.accountHolder}</td>
                             <td className={cn(TABLE_STYLES.cell, "text-right font-medium")}>{formatAmount(item.amount)}</td>
                             <td className={cn(TABLE_STYLES.cell, "text-center")}>
-                              <Badge className={`${ist.color} border`}>{ist.label}</Badge>
+                              <StatusBadge status={item.status}>{t(ist.labelKey)}</StatusBadge>
                             </td>
                             <td className={cn(TABLE_STYLES.cell, "text-red-500")}>{item.errorMessage ?? ''}</td>
                           </tr>

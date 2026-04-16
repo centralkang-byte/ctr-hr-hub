@@ -65,10 +65,16 @@ export interface NudgeRule {
 
   /** 알림 triggerType (e.g., 'nudge_leave_pending') */
   triggerType: string
-  /** 알림 제목 생성기 */
+  /** 알림 제목 생성기 (Korean fallback) */
   buildTitle(item: OverdueItem): string
-  /** 알림 본문 생성기 */
+  /** 알림 본문 생성기 (Korean fallback) */
   buildBody(item: OverdueItem, daysOverdue: number): string
+  /** i18n: 항목별 titleKey 반환 (있으면 buildTitle보다 우선) */
+  getTitleKey?(item: OverdueItem): string | undefined
+  /** i18n: 항목별 bodyKey 반환 (있으면 buildBody보다 우선) */
+  getBodyKey?(item: OverdueItem): string | undefined
+  /** i18n: bodyKey 내 {변수} 치환 파라미터 */
+  getBodyParams?(item: OverdueItem, daysOverdue: number): Record<string, string | number> | undefined
 
   /**
    * 처리 지연된 항목을 DB에서 조회

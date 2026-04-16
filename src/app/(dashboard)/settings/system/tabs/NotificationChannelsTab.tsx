@@ -1,6 +1,8 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { Save, RotateCcw, Loader2, Bell, Mail, MessageSquare, Smartphone, type LucideIcon } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { NotificationChannelsSetting, NotificationChannelEntry } from '@/types/process-settings'
@@ -21,13 +23,13 @@ const DEFAULTS: NotificationChannelsSetting = {
 
 export function NotificationChannelsTab({
   companyId }: Props) {
-//   const t = useTranslations('settings')
+  const t = useTranslations('settings')
   const { settings, setSettings, loading, saving, isOverridden, hasChanges, save, revert } = useProcessSetting<NotificationChannelsSetting>({
     category: 'system',
     key: 'notification-channels',
     companyId,
     defaults: DEFAULTS,
-    description: '알림 채널 설정',
+    description: t('notificationChannels.description'),
     merge: (raw, defs) => ({
       channels: Array.isArray(raw.channels) ? (raw.channels as NotificationChannelEntry[]) : defs.channels,
     }),
@@ -45,11 +47,11 @@ export function NotificationChannelsTab({
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-foreground">{'알림 채널'}</h3>
-          <p className="text-sm text-muted-foreground">{'이메일/Teams/앱 푸시 채널 설정'}</p>
+          <h3 className="text-base font-semibold text-foreground">{t('notificationChannels.title')}</h3>
+          <p className="text-sm text-muted-foreground">{t('notificationChannels.subtitle')}</p>
         </div>
         {isOverridden && (
-          <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600">{'법인 오버라이드'}</span>
+          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
         )}
       </div>
       <div className="space-y-3">{settings.channels.map((ch, i) => {
@@ -67,10 +69,10 @@ export function NotificationChannelsTab({
 
       <div className="flex justify-end gap-2 pt-4">
         <Button variant="outline" onClick={revert} disabled={!hasChanges}>
-          <RotateCcw className="mr-2 h-4 w-4" />{'되돌리기'}
+          <RotateCcw className="mr-2 h-4 w-4" />{t('kr_keb9098eb')}
         </Button>
         <Button className={BUTTON_VARIANTS.primary} onClick={save} disabled={!hasChanges || saving}>
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}저장
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}{t('save')}
         </Button>
       </div>
     </div>

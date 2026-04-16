@@ -28,8 +28,8 @@ import {
   isWeekend,
   isToday,
 } from 'date-fns'
-import { ko } from 'date-fns/locale'
 import { apiClient } from '@/lib/api'
+import { useTranslations, useLocale } from 'next-intl'
 import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -38,8 +38,8 @@ type SlotName = 'morning' | 'night' | 'off'
 
 interface ShiftBlockDef {
   type: SlotName
-  label: string
-  shortLabel: string
+  labelKey: string
+  shortLabelKey: string
   defaultStart: string
   defaultEnd: string
   colorClass: string
@@ -81,8 +81,8 @@ type RosterMap = Record<string, Record<string, CellState>>
 const SHIFT_BLOCKS: ShiftBlockDef[] = [
   {
     type: 'morning',
-    label: '주간 (Morning)',
-    shortLabel: '주간',
+    labelKey: 'shiftMorning',
+    shortLabelKey: 'shiftMorningShort',
     defaultStart: '08:00',
     defaultEnd: '17:00',
     colorClass:
@@ -91,8 +91,8 @@ const SHIFT_BLOCKS: ShiftBlockDef[] = [
   },
   {
     type: 'night',
-    label: '야간 (Night)',
-    shortLabel: '야간',
+    labelKey: 'shiftNight',
+    shortLabelKey: 'shiftNightShort',
     defaultStart: '21:00',
     defaultEnd: '06:00',
     colorClass:
@@ -101,8 +101,8 @@ const SHIFT_BLOCKS: ShiftBlockDef[] = [
   },
   {
     type: 'off',
-    label: '휴무 (Day Off)',
-    shortLabel: '휴무',
+    labelKey: 'shiftOff',
+    shortLabelKey: 'shiftOffShort',
     defaultStart: '',
     defaultEnd: '',
     colorClass:
@@ -117,6 +117,7 @@ const SHIFT_BY_TYPE: Record<SlotName, ShiftBlockDef> = Object.fromEntries(
 
 // ─── Helper — infer slot name from schedule data ─────────────
 
+// NOTE: Korean strings ('야간', '휴무') are intentional — matching server DB values, NOT i18n targets
 function inferSlotName(entry: ScheduleEntry): SlotName {
   if (entry.isNightShift) return 'night'
   const slot = (entry.slotName ?? '').toLowerCase()
@@ -134,6 +135,9 @@ function getInitials(name: string): string {
 // ─── Component ──────────────────────────────────────────────
 
 export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
+  const t = useTranslations('shift')
+  const tc = useTranslations('common')
+  const locale = useLocale()
   const [weekStart, setWeekStart] = useState<Date>(() =>
     startOfWeek(new Date(), { weekStartsOn: 1 }),
   )
@@ -189,11 +193,11 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
       }
       setRosterMap(map)
     } catch (err) {
-      setError(err instanceof Error ? err.message : '데이터 로드 중 오류가 발생했습니다.')
+      setError(err instanceof Error ? err.message : t('dataLoadError'))
     } finally {
       setLoading(false)
     }
-  }, [startDate, endDate])
+  }, [startDate, endDate, t])
 
   useEffect(() => {
     void fetchData()
@@ -346,16 +350,18 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
 
   // ─── Render ──────────────────────────────────────────────────
 
-  const weekLabel = `${format(weekStart, 'yyyy년 MM월 dd일', { locale: ko })} – ${format(addDays(weekStart, 6), 'MM월 dd일', { locale: ko })}`
+  const dtfLong = new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long', day: 'numeric' })
+  const dtfShort = new Intl.DateTimeFormat(locale, { month: 'long', day: 'numeric' })
+  const weekLabel = `${dtfLong.format(weekStart)} – ${dtfShort.format(addDays(weekStart, 6))}`
 
   return (
     <div className="flex h-full flex-col gap-4">
       {/* ── Page header ─────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">근무 배정표</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('rosterTitle')}</h1>
           <p className="text-sm text-muted-foreground">
-            현장 근무자의 교대 일정을 시각적으로 관리합니다.
+            {t('rosterDesc')}
           </p>
         </div>
         <button
@@ -363,7 +369,7 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
           className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted"
         >
           <RefreshCw className="h-4 w-4" />
-          새로고침
+          {tc('refresh')}
         </button>
       </div>
 
@@ -389,7 +395,7 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
           onClick={goToday}
           className="rounded-lg border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
         >
-          오늘
+          {tc('today')}
         </button>
       </div>
 
@@ -398,9 +404,9 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
         {/* ── Left: Shift toolbar ─────────────────────────────── */}
         <div className="flex w-44 flex-shrink-0 flex-col gap-2">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-            근무 유형
+            {t('shiftType')}
           </p>
-          <p className="text-xs text-muted-foreground">드래그하여 배정</p>
+          <p className="text-xs text-muted-foreground">{t('dragToAssign')}</p>
 
           {SHIFT_BLOCKS.map((block) => {
             const { Icon } = block
@@ -415,7 +421,7 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
                 <GripVertical className="h-3.5 w-3.5 opacity-50" />
                 <Icon className="h-4 w-4 flex-shrink-0" />
                 <div className="flex flex-col">
-                  <span className="text-xs font-semibold">{block.shortLabel}</span>
+                  <span className="text-xs font-semibold">{t(block.shortLabelKey)}</span>
                   {block.defaultStart && (
                     <span className="text-[10px] opacity-60">
                       {block.defaultStart}–{block.defaultEnd}
@@ -429,20 +435,20 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
           {/* Legend */}
           <div className="mt-4 rounded-lg border border-border bg-muted p-3">
             <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              범례
+              {t('legend')}
             </p>
             <ul className="space-y-1.5">
               <li className="flex items-center gap-2 text-xs text-foreground">
                 <span className="h-2.5 w-2.5 rounded-full bg-primary" />
-                주간 (8h–17h)
+                {t('legendMorning')}
               </li>
               <li className="flex items-center gap-2 text-xs text-foreground">
                 <span className="h-2.5 w-2.5 rounded-full bg-foreground" />
-                야간 (21h–6h)
+                {t('legendNight')}
               </li>
               <li className="flex items-center gap-2 text-xs text-foreground">
                 <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
-                휴무
+                {t('legendOff')}
               </li>
             </ul>
           </div>
@@ -466,11 +472,10 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
             <div className="flex h-full flex-col items-center justify-center gap-3 p-12 text-center">
               <Calendar className="h-12 w-12 text-border" />
               <p className="text-sm font-medium text-foreground">
-                배정된 근무자가 없습니다
+                {t('noAssignedWorkers')}
               </p>
               <p className="max-w-xs text-xs text-muted-foreground">
-                교대 그룹에 구성원을 추가하거나, 설정 → 교대 패턴에서
-                스케줄을 생성하세요.
+                {t('noAssignedWorkersDesc')}
               </p>
             </div>
           )}
@@ -484,7 +489,7 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
                     {/* Employee column header */}
                     <th className="sticky left-0 top-0 z-20 min-w-[180px] border-b border-r border-border bg-card px-4 py-3 text-left">
                       <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                        직원
+                        {t('employee')}
                       </span>
                     </th>
 
@@ -506,7 +511,7 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
                                 isWknd ? 'text-red-400' : 'text-muted-foreground'
                               }`}
                             >
-                              {format(day, 'EEE', { locale: ko })}
+                              {new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(day)}
                             </span>
                             <span
                               className={`flex h-6 w-6 items-center justify-center rounded-full text-sm font-bold ${
@@ -634,7 +639,7 @@ export function ShiftRosterBoard({ user: _user }: { user: SessionUser }) {
             }`}
           />
           <span className="text-xs font-medium text-foreground">
-            {SHIFT_BY_TYPE[draggedType]?.shortLabel} 배정 중…
+            {t('assigning', { type: t(SHIFT_BY_TYPE[draggedType]?.shortLabelKey ?? 'shiftMorningShort') })}
           </span>
         </div>
       )}
@@ -664,6 +669,7 @@ function ShiftCell({
   ) => void
   onDragEnd: () => void
 }) {
+  const t = useTranslations('shift')
   const block = SHIFT_BY_TYPE[cell.slotName]
   if (!block) return null
   const { Icon } = block
@@ -676,19 +682,20 @@ function ShiftCell({
       className={`inline-flex h-12 w-full cursor-grab flex-col items-center justify-center gap-0.5 rounded-lg px-2 text-xs font-semibold transition-all active:scale-95 active:cursor-grabbing ${block.colorClass} ${
         cell.isPending || isSaving ? 'opacity-60' : ''
       }`}
-      title={`${block.label}${cell.startTime ? ` (${cell.startTime}–${cell.endTime})` : ''}`}
+      title={`${cell.startTime ? `${cell.startTime}–${cell.endTime}` : ''}`}
     >
       {isSaving ? (
         <Loader2 className="h-3.5 w-3.5 animate-spin" />
       ) : (
         <Icon className="h-3.5 w-3.5" />
       )}
-      <span>{block.shortLabel}</span>
+      <span>{t(block.shortLabelKey)}</span>
     </div>
   )
 }
 
 function EmptyCell({ isDropTarget }: { isDropTarget: boolean }) {
+  const t = useTranslations('shift')
   return (
     <div
       className={`flex h-12 w-full items-center justify-center rounded-xl border border-dashed transition-colors ${
@@ -698,7 +705,7 @@ function EmptyCell({ isDropTarget }: { isDropTarget: boolean }) {
       }`}
     >
       <span className="text-[10px] text-muted-foreground/70">
-        {isDropTarget ? '놓기' : '—'}
+        {isDropTarget ? t('drop') : '—'}
       </span>
     </div>
   )

@@ -13,8 +13,8 @@ import type { PerformanceResponse } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
-const GRADE_GUIDELINES: Record<string, number> = { E: 10, M_PLUS: 30, M: 50, B: 10 }
-const GRADE_LABELS: Record<string, string> = { E: '탁월(E)', M_PLUS: '우수(M+)', M: '보통(M)', B: '미흡(B)' }
+const GRADE_GUIDELINES: Record<string, number> = { O: 10, E: 30, M: 50, S: 10 }
+const GRADE_LABELS: Record<string, string> = { O: '탁월(O)', E: '우수(E)', M: '보통(M)', S: '미흡(S)' }
 
 export const GET = withPermission(
   async (req: NextRequest, _ctx, _user: SessionUser) => {
@@ -82,7 +82,7 @@ export const GET = withPermission(
       ? Math.round((approvedGoalEmployees.size / goalEmployees.size) * 1000) / 10 : 0
 
     // Chart: Grade distribution vs guideline
-    const gradeCounts: Record<string, number> = { E: 0, M_PLUS: 0, M: 0, B: 0 }
+    const gradeCounts: Record<string, number> = { O: 0, E: 0, M: 0, S: 0 }
     for (const r of cycleReviews) {
       if (r.finalGrade && gradeCounts[r.finalGrade] !== undefined) {
         gradeCounts[r.finalGrade]++
@@ -100,7 +100,7 @@ export const GET = withPermission(
     for (const r of cycleReviews) {
       if (!r.finalGrade) continue
       const dept = extractPrimaryAssignment(r.employee?.assignments ?? [])?.department?.name || '미지정'
-      if (!deptGrades.has(dept)) deptGrades.set(dept, { E: 0, M_PLUS: 0, M: 0, B: 0 })
+      if (!deptGrades.has(dept)) deptGrades.set(dept, { O: 0, E: 0, M: 0, S: 0 })
       const dg = deptGrades.get(dept)!
       if (dg[r.finalGrade] !== undefined) dg[r.finalGrade]++
     }

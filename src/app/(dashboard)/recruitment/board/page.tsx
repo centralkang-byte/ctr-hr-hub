@@ -3,6 +3,7 @@
 // ATS 스윔레인 칸반 보드 — 공고별 가로 레인
 // ═══════════════════════════════════════════════════════════
 
+import { getTranslations } from 'next-intl/server'
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
@@ -10,6 +11,11 @@ import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
 import BoardClient from './BoardClient'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
+
+export async function generateMetadata() {
+  const t = await getTranslations('recruitment')
+  return { title: t('pageTitle_board') }
+}
 
 export default async function RecruitmentBoardPage() {
   const session = await getServerSession(authOptions)

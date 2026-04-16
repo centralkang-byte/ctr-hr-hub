@@ -34,7 +34,7 @@ export function CurrencyTab({
     <div className="space-y-4">
       <div className="mb-4">
         <h3 className="text-base font-semibold text-foreground">{t('kr_ked86b5ed_ked9998ec')}</h3>
-        <p className="text-sm text-muted-foreground">{year}년 {month}월 적용 환율 ({rates.length}건)</p>
+        <p className="text-sm text-muted-foreground">{t('currency.subtitle', { year, month, count: rates.length })}</p>
       </div>
       {rates.length > 0 ? (
         <div className={TABLE_STYLES.wrapper}>
@@ -59,7 +59,7 @@ export function CurrencyTab({
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-border py-12 text-center">
-          <ArrowLeftRight className="mx-auto mb-3 h-8 w-8 text-muted-foreground" /><p className="text-sm font-medium text-foreground">{year}년 {month}월 환율이 등록되지 않았습니다</p>
+          <ArrowLeftRight className="mx-auto mb-3 h-8 w-8 text-muted-foreground" /><p className="text-sm font-medium text-foreground">{t('currency.emptyState', { year, month })}</p>
         </div>
       )}
     </div>

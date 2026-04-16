@@ -12,24 +12,11 @@ import { useTranslations } from 'next-intl'
 import { ChevronLeft, Gavel, User, FileText, AlertTriangle } from 'lucide-react'
 import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
-import { STATUS_VARIANT } from '@/lib/styles/status'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import type { SessionUser } from '@/types'
 
 // ─── Badge Styles ────────────────────────────────────────
 
-const STATUS_BADGE_STYLES: Record<string, string> = {
-  DISCIPLINE_ACTIVE: STATUS_VARIANT.error,
-  DISCIPLINE_EXPIRED: STATUS_VARIANT.neutral,
-  DISCIPLINE_OVERTURNED: STATUS_VARIANT.success,
-}
-
-const APPEAL_BADGE_STYLES: Record<string, string> = {
-  NONE: STATUS_VARIANT.neutral,
-  FILED: STATUS_VARIANT.warning,
-  UNDER_REVIEW: STATUS_VARIANT.info,
-  UPHELD: STATUS_VARIANT.error,
-  OVERTURNED: STATUS_VARIANT.success,
-}
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -90,7 +77,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
       const res = await apiClient.get<DisciplinaryDetail>(`/api/v1/disciplinary/${id}`)
       setData(res.data)
     } catch (err) {
-      toast({ title: '징계 상세 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('loadFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -108,7 +95,7 @@ export default function DisciplineDetailClient({ user, id }: Props) {
       await fetchData()
       setAppealText('')
     } catch (err) {
-      toast({ title: '징계 처리 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('processFailed'), description: err instanceof Error ? err.message : tCommon('retryMessage'), variant: 'destructive' })
     } finally {
       setAppealSubmitting(false)
     }
@@ -156,9 +143,9 @@ export default function DisciplineDetailClient({ user, id }: Props) {
               {t('title')}
             </h1>
             <div className="flex items-center gap-2 mt-0.5">
-              <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${STATUS_BADGE_STYLES[data.status] ?? STATUS_VARIANT.neutral}`}>
+              <StatusBadge status={data.status}>
                 {tPage(`statusLabels.${data.status}`, { defaultValue: data.status })}
-              </span>
+              </StatusBadge>
               <span className="text-xs text-muted-foreground">
                 {tPage(`typeLabels.${data.actionType}`, { defaultValue: data.actionType })}
               </span>
@@ -341,9 +328,9 @@ export default function DisciplineDetailClient({ user, id }: Props) {
             {data.appealStatus === 'FILED' && (
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <span className={`px-2 py-1 text-xs font-medium rounded ${APPEAL_BADGE_STYLES.FILED}`}>
+                  <StatusBadge status="FILED">
                     {tPage('appealLabels.FILED')}
-                  </span>
+                  </StatusBadge>
                   {data.appealDate && (
                     <span className="text-xs text-muted-foreground">
                       {format(new Date(data.appealDate), 'yyyy-MM-dd')}
@@ -358,9 +345,9 @@ export default function DisciplineDetailClient({ user, id }: Props) {
 
             {data.appealStatus === 'UNDER_REVIEW' && (
               <div className="space-y-3">
-                <span className={`px-2 py-1 text-xs font-medium rounded ${APPEAL_BADGE_STYLES.UNDER_REVIEW}`}>
+                <StatusBadge status="UNDER_REVIEW">
                   {tPage('appealLabels.UNDER_REVIEW')}
-                </span>
+                </StatusBadge>
                 {data.appealText && (
                   <p className="text-sm text-foreground whitespace-pre-wrap">{data.appealText}</p>
                 )}
@@ -369,9 +356,9 @@ export default function DisciplineDetailClient({ user, id }: Props) {
 
             {(data.appealStatus === 'UPHELD' || data.appealStatus === 'OVERTURNED') && (
               <div className="space-y-3">
-                <span className={`px-2 py-1 text-xs font-medium rounded ${APPEAL_BADGE_STYLES[data.appealStatus]}`}>
+                <StatusBadge status={data.appealStatus}>
                   {tPage(`appealLabels.${data.appealStatus}`)}
-                </span>
+                </StatusBadge>
                 {data.appealText && (
                   <div className="mt-2">
                     <span className="text-xs text-muted-foreground">{t('appealContent')}</span>

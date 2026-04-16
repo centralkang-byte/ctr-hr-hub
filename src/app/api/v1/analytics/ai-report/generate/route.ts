@@ -8,12 +8,13 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiError } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
+import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { collectReportData } from '@/lib/analytics/ai-report/data-collector'
 import { generateAiReport } from '@/lib/analytics/ai-report/generator'
 import type { SessionUser } from '@/types'
 
-export const POST = withPermission(
+export const POST = withRateLimit(withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
     try {
       const body = await req.json()
@@ -97,4 +98,4 @@ export const POST = withPermission(
     }
   },
   perm(MODULE.ANALYTICS, ACTION.VIEW),
-)
+), RATE_LIMITS.AI)

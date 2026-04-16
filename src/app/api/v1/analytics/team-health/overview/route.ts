@@ -146,7 +146,7 @@ export const GET = withPermission(
       if (weeklyOvertime > 10) riskPoints += 30
       else if (weeklyOvertime > 5) riskPoints += 15
       if (leaveUsageRate < 20) riskPoints += 20
-      if (grade === 'B') riskPoints += 25
+      if (grade === 'S') riskPoints += 25
       const attritionBase = emp.attritionRiskScore || 0
       riskPoints = Math.max(riskPoints, attritionBase)
       const turnoverRisk: 'HIGH' | 'MEDIUM' | 'LOW' = riskPoints >= 70 ? 'HIGH' : riskPoints >= 40 ? 'MEDIUM' : 'LOW'
@@ -159,7 +159,7 @@ export const GET = withPermission(
       if (leaveUsageRate < 20) yellowFlags++
       if (turnoverRisk === 'HIGH') redFlags++
       else if (turnoverRisk === 'MEDIUM') yellowFlags++
-      if (grade === 'B') yellowFlags++
+      if (grade === 'S') yellowFlags++
       // G-2: Burnout compound flag
       if (weeklyOvertime > 8 && leaveUsageRate < 30) redFlags++
 
@@ -235,7 +235,7 @@ export const GET = withPermission(
         const factors: string[] = []
         if (m.weeklyOvertime > 5) factors.push('초과근무 증가 추세')
         if (m.turnoverRisk === 'MEDIUM') factors.push('이직 주의')
-        if (m.lastGrade === 'B') factors.push('성과 미흡')
+        if (m.lastGrade === 'S') factors.push('성과 미흡')
         recommendations.push({
           severity: 'YELLOW', employeeName: m.name, factors,
           actionText: '업무량과 목표를 조정하고 모니터링하세요.',

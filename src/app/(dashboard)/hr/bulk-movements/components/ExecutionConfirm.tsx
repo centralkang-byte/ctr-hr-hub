@@ -5,6 +5,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import {
   AlertTriangle,
@@ -20,12 +21,12 @@ import type {
   ExecuteResponse,
 } from '@/lib/bulk-movement/types'
 
-const TYPE_LABELS: Record<MovementType, string> = {
-  transfer: '부서이동',
-  promotion: '승진',
-  'entity-transfer': '법인전환',
-  termination: '퇴직',
-  compensation: '급여변경',
+const TYPE_LABEL_KEYS: Record<MovementType, string> = {
+  transfer: 'type.transfer',
+  promotion: 'type.promotion',
+  'entity-transfer': 'type.entityTransfer',
+  termination: 'type.termination',
+  compensation: 'type.compensation',
 }
 
 interface ExecutionConfirmProps {
@@ -43,6 +44,7 @@ export function ExecutionConfirm({
   onSuccess,
   onBack,
 }: ExecutionConfirmProps) {
+  const t = useTranslations('bulkMovement')
   const [isExecuting, setIsExecuting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [execResult, setExecResult] = useState<ExecuteResponse | null>(null)
@@ -68,13 +70,13 @@ export function ExecutionConfirm({
 
       if (!res.ok) {
         const body = await res.json().catch(() => null)
-        throw new Error(body?.error ?? `실행 실패 (${res.status})`)
+        throw new Error(body?.error ?? t('execution.failed', { status: res.status }))
       }
 
       const data: ExecuteResponse = await res.json()
       setExecResult(data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : '실행 중 오류가 발생했습니다')
+      setError(err instanceof Error ? err.message : t('execution.error'))
     } finally {
       setIsExecuting(false)
     }
@@ -87,14 +89,14 @@ export function ExecutionConfirm({
         <CardContent className="flex flex-col items-center gap-4 p-8">
           <CheckCircle2 className="h-12 w-12 text-green-500" />
           <div className="text-center">
-            <p className="text-lg font-semibold">일괄 처리 완료</p>
+            <p className="text-lg font-semibold">{t('execution.complete')}</p>
             <p className="text-sm text-muted-foreground mt-1">
-              {TYPE_LABELS[type]} {execResult.applied}건이 성공적으로 적용되었습니다
+              {t('execution.appliedCount', { type: t(TYPE_LABEL_KEYS[type]), count: execResult.applied })}
             </p>
           </div>
           <Button variant="outline" onClick={onSuccess}>
             <RotateCcw className="h-4 w-4 mr-1.5" />
-            새로운 작업 시작
+            {t('execution.newTask')}
           </Button>
         </CardContent>
       </Card>
@@ -109,18 +111,18 @@ export function ExecutionConfirm({
         <CardContent className="p-4 space-y-3">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-muted-foreground">이동 유형</p>
-              <p className="font-medium">{TYPE_LABELS[type]}</p>
+              <p className="text-muted-foreground">{t('execution.movementType')}</p>
+              <p className="font-medium">{t(TYPE_LABEL_KEYS[type])}</p>
             </div>
             <div>
-              <p className="text-muted-foreground">처리 건수</p>
-              <p className="font-medium">{result.validRows}건</p>
+              <p className="text-muted-foreground">{t('execution.processCount')}</p>
+              <p className="font-medium">{t('execution.countUnit', { count: result.validRows })}</p>
             </div>
           </div>
           {warningCount > 0 && (
             <div className="flex items-center gap-2 text-sm text-amber-600">
               <AlertTriangle className="h-4 w-4 shrink-0" />
-              <span>경고 {warningCount}건이 있습니다</span>
+              <span>{t('validation.warnings', { count: warningCount })}</span>
             </div>
           )}
         </CardContent>
@@ -136,11 +138,10 @@ export function ExecutionConfirm({
         <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
         <div className="text-sm">
           <p className="font-medium text-amber-800 dark:text-amber-200">
-            이 작업은 되돌릴 수 없습니다
+            {t('execution.irreversibleWarning')}
           </p>
           <p className="text-amber-700 dark:text-amber-300 mt-1">
-            실행 전에 데이터를 다시 한번 확인해주세요.
-            처리 후에는 개별 건으로만 수정이 가능합니다.
+            {t('execution.reviewBeforeExecute')}
           </p>
         </div>
       </div>
@@ -155,7 +156,7 @@ export function ExecutionConfirm({
       {/* 버튼 */}
       <div className="flex items-center gap-3">
         <Button variant="outline" onClick={onBack} disabled={isExecuting}>
-          이전
+          {t('button.previous')}
         </Button>
         <Button
           variant="destructive"
@@ -165,10 +166,10 @@ export function ExecutionConfirm({
           {isExecuting ? (
             <>
               <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-              실행 중...
+              {t('execution.executing')}
             </>
           ) : (
-            `${result.validRows}건 일괄 실행`
+            t('execution.executeBatch', { count: result.validRows })
           )}
         </Button>
       </div>

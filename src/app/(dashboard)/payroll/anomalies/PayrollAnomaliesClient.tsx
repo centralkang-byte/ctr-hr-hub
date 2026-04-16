@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 
 import { useState, useEffect, useCallback } from 'react'
 import {
@@ -33,17 +33,32 @@ const SEVERITY_COLORS: Record<string, string> = {
   low: 'bg-indigo-500/15 text-primary/90 border-indigo-200',
 }
 
-const SEVERITY_LABEL: Record<string, string> = { high: '높음', medium: '보통', low: '낮음' }
-
-const RULE_ICONS: Record<string, string> = {
-  '밴드 이탈': '📊',
-  '내부 분산 과다': '📈',
-  '법인간 격차': '🌍',
-  '급격한 변화': '⚡',
+const SEVERITY_LABEL_KEYS: Record<string, string> = {
+  high: 'anomalyPage.severityHigh',
+  medium: 'anomalyPage.severityMedium',
+  low: 'anomalyPage.severityLow',
 }
 
+const RULE_ICONS: Record<string, string> = {
+  'BAND_EXCEEDED': '📊',
+  'HIGH_INTERNAL_VARIANCE': '📈',
+  'CROSS_ENTITY_GAP': '🌍',
+  'MOM_CHANGE_30PCT': '⚡',
+}
+
+const RULE_LABEL_KEYS: Record<string, string> = {
+  'BAND_EXCEEDED': 'anomalyPage.ruleBandExceeded',
+  'HIGH_INTERNAL_VARIANCE': 'anomalyPage.ruleHighVariance',
+  'CROSS_ENTITY_GAP': 'anomalyPage.ruleCrossEntityGap',
+  'MOM_CHANGE_30PCT': 'anomalyPage.ruleMomChange',
+}
+
+const ALL_RULES = ['BAND_EXCEEDED', 'HIGH_INTERNAL_VARIANCE', 'CROSS_ENTITY_GAP', 'MOM_CHANGE_30PCT'] as const
+
 export default function PayrollAnomaliesClient({ user: _user }: { user: SessionUser }) {
-  const tPayroll = useTranslations('payrollPage')
+  const t = useTranslations('payroll')
+  const tCommon = useTranslations('common')
+  const locale = useLocale()
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth() + 1)
@@ -94,7 +109,7 @@ export default function PayrollAnomaliesClient({ user: _user }: { user: SessionU
                 <tr key={i} className={TABLE_STYLES.row}>
                   {Object.entries(r).filter(([k]) => k !== 'employeeId').map(([k, v]) => (
                     <td key={k} className={TABLE_STYLES.cell}>
-                      {typeof v === 'number' ? v.toLocaleString() : String(v ?? '—')}
+                      {typeof v === 'number' ? v.toLocaleString(locale) : String(v ?? '—')}
                     </td>
                   ))}
                 </tr>
@@ -103,7 +118,7 @@ export default function PayrollAnomaliesClient({ user: _user }: { user: SessionU
           </tbody>
         </table>
         {details.length > 8 && (
-          <p className="text-xs text-muted-foreground mt-2 px-3">... 외 {details.length - 8}건 더</p>
+          <p className="text-xs text-muted-foreground mt-2 px-3">{t('anomalyPage.moreItems', { count: details.length - 8 })}</p>
         )}
       </div>
     )
@@ -118,8 +133,8 @@ export default function PayrollAnomaliesClient({ user: _user }: { user: SessionU
             <AlertTriangle className="w-5 h-5 text-destructive" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{'급여 이상 탐지'}</h1>
-            <p className="text-sm text-muted-foreground">{'밴드 이탈 · 내부 분산 · 법인간 격차 · 급격한 변화를 자동으로 탐지합니다'}</p>
+            <h1 className="text-2xl font-bold text-foreground">{t('anomalyPage.pageTitle')}</h1>
+            <p className="text-sm text-muted-foreground">{t('anomalyPage.pageDesc')}</p>
           </div>
         </div>
         <button onClick={fetchData} className="p-2 hover:bg-muted rounded-lg" disabled={loading}>
@@ -133,7 +148,7 @@ export default function PayrollAnomaliesClient({ user: _user }: { user: SessionU
           <ChevronLeft className="w-5 h-5 text-muted-foreground" />
         </button>
         <div className="text-lg font-semibold text-foreground min-w-[120px] text-center">
-          {year}년 {month}월
+          {t('anomalyPage.yearMonth', { year, month })}
         </div>
         <button onClick={nextMonth} className="p-2 hover:bg-muted rounded-lg">
           <ChevronRight className="w-5 h-5 text-muted-foreground" />
@@ -142,7 +157,7 @@ export default function PayrollAnomaliesClient({ user: _user }: { user: SessionU
 
       {loading && (
         <div className="flex items-center justify-center py-20 text-muted-foreground text-sm gap-2">
-          <RefreshCw className="w-4 h-4 animate-spin" /> {'분석 중...'}
+          <RefreshCw className="w-4 h-4 animate-spin" /> {tCommon('analyzing')}
         </div>
       )}
 
@@ -151,23 +166,23 @@ export default function PayrollAnomaliesClient({ user: _user }: { user: SessionU
           {/* Summary KPI */}
           <div className="grid grid-cols-4 gap-4 mb-6">
             <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-muted-foreground mb-1">{tPayroll('totalAnomalies')}</p>
+              <p className="text-xs text-muted-foreground mb-1">{t('anomalyPage.totalAnomalies')}</p>
               <p className={`text-3xl font-bold ${data.totalAnomalies > 0 ? 'text-destructive' : 'text-emerald-600'}`}>
                 {data.totalAnomalies}
               </p>
             </div>
             <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-muted-foreground mb-1">{tPayroll('highOrAbove')}</p>
+              <p className="text-xs text-muted-foreground mb-1">{t('anomalyPage.highOrAbove')}</p>
               <p className="text-3xl font-bold text-destructive">
                 {data.anomalies.filter(a => a.severity === 'high').reduce((s, a) => s + a.affectedCount, 0)}
               </p>
             </div>
             <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-muted-foreground mb-1">{'분석 규칙'}</p>
+              <p className="text-xs text-muted-foreground mb-1">{t('anomalyPage.ruleCount')}</p>
               <p className="text-3xl font-bold text-foreground">4</p>
             </div>
             <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-muted-foreground mb-1">{'스캔 인원'}</p>
+              <p className="text-xs text-muted-foreground mb-1">{t('anomalyPage.scannedCount')}</p>
               <p className="text-3xl font-bold text-foreground">{data.scannedCount}</p>
             </div>
           </div>
@@ -176,8 +191,8 @@ export default function PayrollAnomaliesClient({ user: _user }: { user: SessionU
             <div className="flex items-center gap-3 p-6 bg-emerald-500/15 rounded-xl text-emerald-700">
               <CheckCircle2 className="w-6 h-6 shrink-0" />
               <div>
-                <p className="font-semibold">{tPayroll('noAnomalies')}</p>
-                <p className="text-sm mt-0.5">{year}년 {month}월 급여 데이터에서 이상 징후가 발견되지 않았습니다.</p>
+                <p className="font-semibold">{t('anomalyPage.noAnomalies')}</p>
+                <p className="text-sm mt-0.5">{t('anomalyPage.noAnomaliesDesc', { year, month })}</p>
               </div>
             </div>
           )}
@@ -199,11 +214,11 @@ export default function PayrollAnomaliesClient({ user: _user }: { user: SessionU
                     <span className="text-2xl">{RULE_ICONS[anomaly.rule] ?? '⚠️'}</span>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-foreground">{anomaly.rule}</h3>
+                        <h3 className="font-semibold text-foreground">{t(RULE_LABEL_KEYS[anomaly.rule] ?? anomaly.rule)}</h3>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${SEVERITY_COLORS[anomaly.severity]}`}>
-                          위험도 {SEVERITY_LABEL[anomaly.severity]}
+                          {t('anomalyPage.riskLevel', { level: t(SEVERITY_LABEL_KEYS[anomaly.severity]) })}
                         </span>
-                        <span className="text-sm font-bold text-destructive">{anomaly.affectedCount}건</span>
+                        <span className="text-sm font-bold text-destructive">{t('anomalyPage.itemCount', { count: anomaly.affectedCount })}</span>
                       </div>
                       <p className="text-sm text-muted-foreground mt-0.5">{anomaly.description}</p>
                     </div>
@@ -223,14 +238,14 @@ export default function PayrollAnomaliesClient({ user: _user }: { user: SessionU
             ))}
 
             {/* Placeholder cards for rules with no anomalies */}
-            {(['밴드 이탈', '내부 분산 과다', '법인간 격차', '급격한 변화'] as const)
+            {ALL_RULES
               .filter(rule => !data.anomalies.find(a => a.rule === rule))
               .map(rule => (
                 <div key={rule} className={`${CARD_STYLES.kpi} flex items-center gap-3 opacity-60`}>
                   <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
                   <div>
-                    <h3 className="font-medium text-muted-foreground">{rule}</h3>
-                    <p className="text-sm text-muted-foreground">{'이상 없음'}</p>
+                    <h3 className="font-medium text-muted-foreground">{t(RULE_LABEL_KEYS[rule] ?? rule)}</h3>
+                    <p className="text-sm text-muted-foreground">{t('anomalyPage.noAnomalies')}</p>
                   </div>
                 </div>
               ))}

@@ -11,7 +11,7 @@ import KedoDocumentForm from './KedoDocumentForm'
 import KedoSignDialog from './KedoSignDialog'
 import type { PaginationInfo } from '@/types'
 import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
-import { STATUS_VARIANT } from '@/lib/styles/status'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 interface KedoDocument {
   id: string
@@ -40,13 +40,6 @@ const STATUS_LABELS: Record<string, string> = {
   EXPIRED: '만료',
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  DRAFT: STATUS_VARIANT.neutral,
-  PENDING_SIGNATURE: STATUS_VARIANT.warning,
-  SIGNED: STATUS_VARIANT.success,
-  REJECTED: STATUS_VARIANT.error,
-  EXPIRED: STATUS_VARIANT.neutral,
-}
 
 const DOC_TYPE_LABELS: Record<string, string> = {
   EMPLOYMENT_CONTRACT: '근로계약서',
@@ -207,13 +200,9 @@ export default function KedoDocumentsTab() {
                     {DOC_TYPE_LABELS[doc.documentType] ?? doc.documentType}
                   </td>
                   <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-                        STATUS_COLORS[doc.status] ?? 'bg-background text-muted-foreground border-border'
-                      }`}
-                    >
+                    <StatusBadge status={doc.status}>
                       {STATUS_LABELS[doc.status] ?? doc.status}
-                    </span>
+                    </StatusBadge>
                   </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">
                     {doc.signatureLevel ?? '-'}

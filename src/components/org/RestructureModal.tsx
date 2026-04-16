@@ -7,7 +7,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { X, Plus, Trash2, ChevronRight, GitBranch, ArrowRight } from 'lucide-react'
+import { X, Plus, Trash2, ChevronRight, GitBranch, ArrowRight, AlertTriangle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { EffectiveDatePicker } from '@/components/shared/EffectiveDatePicker'
 import { RestructureDiffView } from '@/components/org/RestructureDiffView'
@@ -151,8 +151,9 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
       {change.type === 'create' && (
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-medium text-foreground block mb-1">부서명 *</label>
+            <label htmlFor={`${change.id}-deptName`} className="text-xs font-medium text-foreground block mb-1">부서명 *</label>
             <input
+              id={`${change.id}-deptName`}
               value={change.newDeptName ?? ''}
               onChange={(e) => update({ newDeptName: e.target.value })}
               placeholder={'신설 부서명'}
@@ -160,8 +161,9 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-foreground block mb-1">코드 *</label>
+            <label htmlFor={`${change.id}-deptCode`} className="text-xs font-medium text-foreground block mb-1">코드 *</label>
             <input
+              id={`${change.id}-deptCode`}
               value={change.newDeptCode ?? ''}
               onChange={(e) => update({ newDeptCode: e.target.value })}
               placeholder="예: DEPT-NEW"
@@ -169,8 +171,9 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             />
           </div>
           <div className="col-span-2">
-            <label className="text-xs font-medium text-foreground block mb-1">상위 부서</label>
+            <label htmlFor={`${change.id}-parentDept`} className="text-xs font-medium text-foreground block mb-1">상위 부서</label>
             <select
+              id={`${change.id}-parentDept`}
               value={change.newDeptParentId ?? ''}
               onChange={(e) => update({ newDeptParentId: e.target.value || null })}
               className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
@@ -185,8 +188,9 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
       {change.type === 'move' && (
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-medium text-foreground block mb-1">이동 대상 부서 *</label>
+            <label htmlFor={`${change.id}-moveDept`} className="text-xs font-medium text-foreground block mb-1">이동 대상 부서 *</label>
             <select
+              id={`${change.id}-moveDept`}
               value={change.deptId ?? ''}
               onChange={(e) => update({ deptId: e.target.value })}
               className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
@@ -198,8 +202,9 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
           <div className="flex items-end gap-2">
             <ArrowRight size={16} className="mb-2 text-muted-foreground shrink-0" />
             <div className="flex-1">
-              <label className="text-xs font-medium text-foreground block mb-1">이동 후 상위 부서 *</label>
+              <label htmlFor={`${change.id}-targetParent`} className="text-xs font-medium text-foreground block mb-1">이동 후 상위 부서 *</label>
               <select
+                id={`${change.id}-targetParent`}
                 value={change.targetParentId ?? ''}
                 onChange={(e) => update({ targetParentId: e.target.value || null })}
                 className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
@@ -215,8 +220,9 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
       {change.type === 'merge' && (
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-medium text-foreground block mb-1">통합 대상 (폐지) *</label>
+            <label htmlFor={`${change.id}-sourceDept`} className="text-xs font-medium text-foreground block mb-1">통합 대상 (폐지) *</label>
             <select
+              id={`${change.id}-sourceDept`}
               value={change.sourceDeptId ?? ''}
               onChange={(e) => update({ sourceDeptId: e.target.value })}
               className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
@@ -228,8 +234,9 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
           <div className="flex items-end gap-2">
             <ArrowRight size={16} className="mb-2 text-muted-foreground shrink-0" />
             <div className="flex-1">
-              <label className="text-xs font-medium text-foreground block mb-1">흡수 부서 *</label>
+              <label htmlFor={`${change.id}-targetDept`} className="text-xs font-medium text-foreground block mb-1">흡수 부서 *</label>
               <select
+                id={`${change.id}-targetDept`}
                 value={change.targetDeptId ?? ''}
                 onChange={(e) => update({ targetDeptId: e.target.value })}
                 className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
@@ -245,8 +252,9 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
       {change.type === 'rename' && (
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs font-medium text-foreground block mb-1">변경 부서 *</label>
+            <label htmlFor={`${change.id}-renameDept`} className="text-xs font-medium text-foreground block mb-1">변경 부서 *</label>
             <select
+              id={`${change.id}-renameDept`}
               value={change.renameDeptId ?? ''}
               onChange={(e) => update({ renameDeptId: e.target.value })}
               className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
@@ -256,8 +264,9 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             </select>
           </div>
           <div>
-            <label className="text-xs font-medium text-foreground block mb-1">새 부서명 *</label>
+            <label htmlFor={`${change.id}-newName`} className="text-xs font-medium text-foreground block mb-1">새 부서명 *</label>
             <input
+              id={`${change.id}-newName`}
               value={change.newName ?? ''}
               onChange={(e) => update({ newName: e.target.value })}
               placeholder={'변경될 이름'}
@@ -265,8 +274,9 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             />
           </div>
           <div className="col-span-2">
-            <label className="text-xs font-medium text-foreground block mb-1">영문명 (선택)</label>
+            <label htmlFor={`${change.id}-newNameEn`} className="text-xs font-medium text-foreground block mb-1">영문명 (선택)</label>
             <input
+              id={`${change.id}-newNameEn`}
               value={change.newNameEn ?? ''}
               onChange={(e) => update({ newNameEn: e.target.value })}
               placeholder="English name"
@@ -278,8 +288,9 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
 
       {change.type === 'close' && (
         <div>
-          <label className="text-xs font-medium text-foreground block mb-1">폐지 부서 *</label>
+          <label htmlFor={`${change.id}-closeDept`} className="text-xs font-medium text-foreground block mb-1">폐지 부서 *</label>
           <select
+            id={`${change.id}-closeDept`}
             value={change.closeDeptId ?? ''}
             onChange={(e) => update({ closeDeptId: e.target.value })}
             className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
@@ -289,7 +300,7 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
           </select>
           {change.closeDeptId && (
             <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
-              <span>⚠</span> 폐지 시 소속 인원은 상위 부서로 자동 이동됩니다.
+              <AlertTriangle size={16} strokeWidth={1.5} /> 폐지 시 소속 인원은 상위 부서로 자동 이동됩니다.
             </p>
           )}
         </div>
@@ -298,8 +309,9 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
       {change.type === 'transfer_employee' && (
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
-            <label className="text-xs font-medium text-foreground block mb-1">이동 직원 *</label>
+            <label htmlFor={`${change.id}-employee`} className="text-xs font-medium text-foreground block mb-1">이동 직원 *</label>
             <select
+              id={`${change.id}-employee`}
               value={change.employeeId ?? ''}
               onChange={(e) => update({ employeeId: e.target.value })}
               className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
@@ -316,8 +328,9 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
             </select>
           </div>
           <div>
-            <label className="text-xs font-medium text-foreground block mb-1">현재 부서</label>
+            <label htmlFor={`${change.id}-fromDept`} className="text-xs font-medium text-foreground block mb-1">현재 부서</label>
             <select
+              id={`${change.id}-fromDept`}
               value={change.fromDeptId ?? ''}
               onChange={(e) => update({ fromDeptId: e.target.value })}
               className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
@@ -329,8 +342,9 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
           <div className="flex items-end gap-2">
             <ArrowRight size={16} className="mb-2 text-muted-foreground shrink-0" />
             <div className="flex-1">
-              <label className="text-xs font-medium text-foreground block mb-1">이동 부서 *</label>
+              <label htmlFor={`${change.id}-toDept`} className="text-xs font-medium text-foreground block mb-1">이동 부서 *</label>
               <select
+                id={`${change.id}-toDept`}
                 value={change.toDeptId ?? ''}
                 onChange={(e) => update({ toDeptId: e.target.value })}
                 className="w-full px-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/10"
@@ -352,9 +366,9 @@ type Step = 'edit' | 'diff' | 'confirm'
 
 function StepIndicator({ step }: { step: Step }) {
   const steps: { key: Step; label: string }[] = [
-    { key: 'edit', label: '① 변경 사항 작성' },
-    { key: 'diff', label: '② 영향도 검토' },
-    { key: 'confirm', label: '③ 확인 및 저장' },
+    { key: 'edit', label: '1. 변경 사항 작성' },
+    { key: 'diff', label: '2. 영향도 검토' },
+    { key: 'confirm', label: '3. 확인 및 저장' },
   ]
   return (
     <div className="flex items-center gap-1 px-6 py-3 border-b border-border bg-background">
@@ -500,8 +514,9 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
               {/* Plan metadata */}
               <div className="space-y-3">
                 <div>
-                  <label className="text-sm font-medium text-foreground block mb-1">계획명 *</label>
+                  <label htmlFor="plan-title" className="text-sm font-medium text-foreground block mb-1">계획명 *</label>
                   <input
+                    id="plan-title"
                     value={plan.title}
                     onChange={(e) => setPlan((p) => ({ ...p, title: e.target.value }))}
                     placeholder="예: 2026년 상반기 조직 개편"
@@ -519,8 +534,9 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-foreground block mb-1">설명 (선택)</label>
+                    <label htmlFor="plan-description" className="text-sm font-medium text-foreground block mb-1">설명 (선택)</label>
                     <input
+                      id="plan-description"
                       value={plan.description}
                       onChange={(e) => setPlan((p) => ({ ...p, description: e.target.value }))}
                       placeholder={'개편 배경 및 목적'}
@@ -594,7 +610,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
               </div>
 
               <div className="bg-amber-500/15 border border-amber-300 rounded-xl p-4">
-                <p className="text-xs font-medium text-amber-800 mb-1">⚠ 즉시 적용 시 주의사항</p>
+                <p className="text-xs font-medium text-amber-800 mb-1 flex items-center gap-1"><AlertTriangle size={16} strokeWidth={1.5} /> 즉시 적용 시 주의사항</p>
                 <ul className="text-xs text-amber-700 space-y-1 list-disc list-inside">
                   <li>부서 이동/통합/폐지 시 소속 인원의 Assignment가 자동 업데이트됩니다.</li>
                   <li>이 작업은 되돌리기 어려울 수 있습니다.</li>

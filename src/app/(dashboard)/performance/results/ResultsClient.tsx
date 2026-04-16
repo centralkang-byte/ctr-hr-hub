@@ -38,7 +38,7 @@ interface MyResult {
   goals: GoalResult[]
 }
 
-const SCORE_LABELS = ['', '매우 부족', '부족', '보통', '우수', '탁월']
+const SCORE_LABELS = ['', 'score.veryLacking', 'score.lacking', 'score.average', 'score.excellent', 'score.outstanding']
 
 // ─── Component ────────────────────────────────────────────
 
@@ -58,18 +58,18 @@ export default function ResultsClient({
         const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
         setCycles(res.data)
         if (res.data.length > 0) setSelectedCycleId(res.data[0].id)
-      } catch (err) { toast({ title: '평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+      } catch (err) { toast({ title: t('results.loadFailed'), description: err instanceof Error ? err.message : t('performanceMain.retryMessage'), variant: 'destructive' }) }
     }
     fetchCycles()
   }, [])
 
   const fetchResult = useCallback(async () => {
-    if (!selectedCycleId) return
+    if (!selectedCycleId) { setLoading(false); return }
     setLoading(true)
     try {
       const res = await apiClient.get<MyResult>('/api/v1/performance/results/me', { cycleId: selectedCycleId })
       setResult(res.data)
-    } catch (err) { toast({ title: '평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('results.loadFailed'), description: err instanceof Error ? err.message : t('performanceMain.retryMessage'), variant: 'destructive' }) }
     finally { setLoading(false) }
   }, [selectedCycleId])
 
@@ -86,7 +86,7 @@ export default function ResultsClient({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('results')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('results.title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t('kr_keb8298ec_kec84b1ea_keab2b0ea_')}</p>
         </div>
         <select
@@ -148,7 +148,7 @@ export default function ResultsClient({
               <tbody>
                 {result?.selfEvaluation && (
                   <tr className={TABLE_STYLES.row}>
-                    <td className={cn(TABLE_STYLES.cell, "font-medium")}>{t('selfEval')}</td>
+                    <td className={cn(TABLE_STYLES.cell, "font-medium")}>{t('selfEval.title')}</td>
                     <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.selfEvaluation.performanceScore?.toFixed(1) ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.selfEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-primary")}>{result.selfEvaluation.emsBlock ?? '-'}</td>
@@ -159,7 +159,7 @@ export default function ResultsClient({
                 )}
                 {result?.managerEvaluation && (
                   <tr className={TABLE_STYLES.row}>
-                    <td className={cn(TABLE_STYLES.cell, "font-medium")}>{t('managerEval')}</td>
+                    <td className={cn(TABLE_STYLES.cell, "font-medium")}>{t('managerEval.title')}</td>
                     <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.managerEvaluation.performanceScore?.toFixed(1) ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.managerEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-primary")}>{result.managerEvaluation.emsBlock ?? '-'}</td>
@@ -185,14 +185,14 @@ export default function ResultsClient({
               <div key={goal.id} className="px-5 py-3 flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-foreground">{goal.title}</p>
-                  <p className="text-xs text-muted-foreground">가중치: {goal.weight}%</p>
+                  <p className="text-xs text-muted-foreground">{t('results.weight', { weight: goal.weight })}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium text-foreground">
                     {goal.achievementScore != null ? `${goal.achievementScore}/5` : '-'}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {goal.achievementScore != null ? SCORE_LABELS[Math.round(goal.achievementScore)] : ''}
+                    {goal.achievementScore != null && SCORE_LABELS[Math.round(goal.achievementScore)] ? t(SCORE_LABELS[Math.round(goal.achievementScore)] as Parameters<typeof t>[0]) : ''}
                   </p>
                 </div>
               </div>

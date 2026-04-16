@@ -4,6 +4,9 @@
 // 패턴: src/lib/documents/certificate-pdf.ts (HTML → Buffer)
 // ═══════════════════════════════════════════════════════════
 
+import { serverT } from '@/lib/server-i18n'
+import type { Locale } from '@/i18n/config'
+
 export interface CompensationLetterData {
   companyName: string
   employeeName: string
@@ -59,19 +62,12 @@ function formatAmount(amount: number, currency: string): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount)
 }
 
-// ─── 변경 유형 라벨 ──────────────────────────────────────────
+// ─── 변경 유형 라벨 (resolved via i18n) ────────────────────
 
-const CHANGE_TYPE_LABELS: Record<string, string> = {
-  ANNUAL_INCREASE: '정기 연봉 조정',
-  PROMOTION: '승진',
-  MARKET_ADJUSTMENT: '시장 조정',
-  MERIT_INCREASE: '성과 인상',
-  EQUITY_ADJUSTMENT: '형평성 조정',
-  OTHER: '기타',
-}
-
-function getChangeTypeLabel(changeType: string): string {
-  return CHANGE_TYPE_LABELS[changeType] ?? changeType
+async function getChangeTypeLabel(locale: Locale, changeType: string): Promise<string> {
+  const label = await serverT(locale, `documents.compensation.changeTypes.${changeType}`)
+  // serverT falls back to key itself if not found
+  return label === `documents.compensation.changeTypes.${changeType}` ? changeType : label
 }
 
 // ─── CSS (다국어 폰트 방어) ──────────────────────────────────
@@ -176,47 +172,63 @@ const CSS = `
 
 // ─── PDF 생성 ────────────────────────────────────────────────
 
-export function generateCompensationLetterPdf(data: CompensationLetterData): Buffer {
+export async function generateCompensationLetterPdf(locale: Locale, data: CompensationLetterData): Promise<Buffer> {
+  const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
   const increase = data.newBaseSalary - data.previousBaseSalary
   const changeSign = increase >= 0 ? '+' : ''
 
+  // Resolve all labels
+  const [lTitle, lSubtitle, lGreeting, lBody, lName, lEmpNo, lDept, lPos, lAdjType, lPrevSalary, lNewSalary, lChangeRate, lChangeAmt, lEffDate, lBodyText, lApprover, lSeal] = await Promise.all([
+    t('documents.compensation.title'), t('documents.compensation.subtitle'),
+    t('documents.compensation.greeting', { name: data.employeeName }),
+    t('documents.compensation.body'), t('documents.compensation.name'),
+    t('documents.compensation.employeeNo'), t('documents.compensation.department'),
+    t('documents.compensation.position'), t('documents.compensation.adjustmentType'),
+    t('documents.compensation.previousSalary'), t('documents.compensation.newSalary'),
+    t('documents.compensation.changeRate'), t('documents.compensation.changeAmount'),
+    t('documents.compensation.effectiveDate'), t('documents.compensation.bodyText'),
+    t('documents.compensation.approver', { name: data.approverName }),
+    t('documents.certificate.seal'),
+  ])
+  const changeTypeLabel = await getChangeTypeLabel(locale, data.changeType)
+
+  const htmlLang = locale === 'ko' ? 'ko' : locale
   const html = `<!DOCTYPE html>
-<html lang="ko">
+<html lang="${htmlLang}">
 <head><meta charset="UTF-8"><style>${CSS}</style></head>
 <body>
   <div class="header">
     <div class="company-name">${escapeHtml(data.companyName)}</div>
-    <h1>연봉 조정 통보서</h1>
-    <div class="sub">Compensation Adjustment Letter</div>
+    <h1>${escapeHtml(lTitle)}</h1>
+    <div class="sub">${escapeHtml(lSubtitle)}</div>
   </div>
 
   <div class="greeting">
-    <strong>${escapeHtml(data.employeeName)}</strong>님께,<br>
-    아래와 같이 연봉 조정 사항을 통보합니다.
+    ${escapeHtml(lGreeting)}<br>
+    ${escapeHtml(lBody)}
   </div>
 
   <table>
-    <tr><th>성명</th><td>${escapeHtml(data.employeeName)}</td><th>사원번호</th><td>${escapeHtml(data.employeeNo)}</td></tr>
-    <tr><th>부서</th><td>${escapeHtml(data.departmentName)}</td><th>직위</th><td>${escapeHtml(data.positionName)}</td></tr>
+    <tr><th>${escapeHtml(lName)}</th><td>${escapeHtml(data.employeeName)}</td><th>${escapeHtml(lEmpNo)}</th><td>${escapeHtml(data.employeeNo)}</td></tr>
+    <tr><th>${escapeHtml(lDept)}</th><td>${escapeHtml(data.departmentName)}</td><th>${escapeHtml(lPos)}</th><td>${escapeHtml(data.positionName)}</td></tr>
   </table>
 
   <table>
-    <tr><th>조정 유형</th><td colspan="3">${escapeHtml(getChangeTypeLabel(data.changeType))}</td></tr>
-    <tr><th>변경 전 연봉</th><td class="amount">${formatAmount(data.previousBaseSalary, data.currency)}</td><th>변경 후 연봉</th><td class="amount highlight">${formatAmount(data.newBaseSalary, data.currency)}</td></tr>
-    <tr><th>인상률</th><td class="change-pct">${changeSign}${data.changePct.toFixed(1)}%</td><th>인상액</th><td class="amount">${changeSign}${formatAmount(Math.abs(increase), data.currency)}</td></tr>
-    <tr><th>시행일</th><td colspan="3">${escapeHtml(data.effectiveDate)}</td></tr>
+    <tr><th>${escapeHtml(lAdjType)}</th><td colspan="3">${escapeHtml(changeTypeLabel)}</td></tr>
+    <tr><th>${escapeHtml(lPrevSalary)}</th><td class="amount">${formatAmount(data.previousBaseSalary, data.currency)}</td><th>${escapeHtml(lNewSalary)}</th><td class="amount highlight">${formatAmount(data.newBaseSalary, data.currency)}</td></tr>
+    <tr><th>${escapeHtml(lChangeRate)}</th><td class="change-pct">${changeSign}${data.changePct.toFixed(1)}%</td><th>${escapeHtml(lChangeAmt)}</th><td class="amount">${changeSign}${formatAmount(Math.abs(increase), data.currency)}</td></tr>
+    <tr><th>${escapeHtml(lEffDate)}</th><td colspan="3">${escapeHtml(data.effectiveDate)}</td></tr>
   </table>
 
   <div class="body-text">
-    본 조정은 위 시행일부터 적용되며, 변경된 연봉은 해당 시행일이 속한 급여 지급일부터 반영됩니다.<br>
-    본 통보서의 내용에 대해 문의 사항이 있으시면 인사팀으로 연락하여 주시기 바랍니다.
+    ${escapeHtml(lBodyText).replace(/\n/g, '<br>')}
   </div>
 
   <div class="footer">
     <div class="date">${todayFormatted()}</div>
     <div class="company">${escapeHtml(data.companyName)}</div>
-    <div class="approver">승인자: ${escapeHtml(data.approverName)}</div>
-    <div class="seal">[직인]</div>
+    <div class="approver">${escapeHtml(lApprover)}</div>
+    <div class="seal">${escapeHtml(lSeal)}</div>
   </div>
 </body>
 </html>`

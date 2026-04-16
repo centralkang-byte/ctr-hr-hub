@@ -51,14 +51,14 @@ export function calculateTurnoverRisk(input: TurnoverRiskInput): TurnoverRiskRes
   }
 
   // 2. Performance grade (20%)
-  if (input.lastGrade === 'B') {
+  if (input.lastGrade === 'S') {
     score += 20
-    factors.push({ factor: '성과 등급', contribution: 20, detail: `최근 등급 B — 저성과 이탈 위험` })
+    factors.push({ factor: '성과 등급', contribution: 20, detail: `최근 등급 S — 저성과 이탈 위험` })
   }
-  // S-equivalent high performer with low pay = extra risky
-  if (input.lastGrade === 'E' && input.compaRatio !== null && input.compaRatio < 0.95) {
+  // O-grade high performer with low pay = extra risky
+  if (input.lastGrade === 'O' && input.compaRatio !== null && input.compaRatio < 0.95) {
     score += 20
-    factors.push({ factor: '고성과 저보상', contribution: 20, detail: `E등급이나 Compa-Ratio ${(input.compaRatio * 100).toFixed(0)}% — 핵심 인재 유출 위험` })
+    factors.push({ factor: '고성과 저보상', contribution: 20, detail: `O등급이나 Compa-Ratio ${(input.compaRatio * 100).toFixed(0)}% — 핵심 인재 유출 위험` })
   }
 
   // 3. Overtime (15%) — sustained high overtime

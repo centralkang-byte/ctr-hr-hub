@@ -68,6 +68,24 @@ export const exitInterviewPendingRule: NudgeRule = {
     return `${item.displayTitle}의 Exit Interview가 아직 진행되지 않았습니다${deadline}. 인터뷰를 예약해 주세요.`
   },
 
+  getTitleKey(item: OverdueItem): string {
+    const daysLeft = item.meta?.daysUntilLastWorking as number | undefined
+    if (daysLeft !== undefined && daysLeft <= 1) return 'notifications.nudge.exitInterview.titleUrgent'
+    if (daysLeft !== undefined && daysLeft <= 3) return 'notifications.nudge.exitInterview.titlePressing'
+    return 'notifications.nudge.exitInterview.title'
+  },
+  getBodyKey(_item: OverdueItem): string {
+    return 'notifications.nudge.exitInterview.body'
+  },
+  getBodyParams(item: OverdueItem): Record<string, string | number> {
+    const daysLeft = item.meta?.daysUntilLastWorking != null ? Number(item.meta.daysUntilLastWorking) : 0
+    return {
+      displayTitle: item.displayTitle,
+      employeeName: String(item.meta?.employeeName ?? ''),
+      daysLeft,
+    }
+  },
+
   async findOverdueItems(
     companyId: string,
     assigneeId: string,  // 현재 로그인 사용자 (HR 담당자)

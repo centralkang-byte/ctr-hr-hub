@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 
 import { useState, useEffect, useRef } from 'react'
@@ -49,14 +49,14 @@ interface ImportLog {
 
 // 표준 필드 목록 (PayrollItem 기준)
 const STANDARD_FIELDS = [
-  { key: 'employeeNumber', label: '사번', required: true },
-  { key: 'name', label: '성명', required: true },
-  { key: 'basePay', label: '기본급', required: true },
-  { key: 'grossPay', label: '총지급액', required: true },
-  { key: 'netPay', label: '실수령액', required: true },
-  { key: 'totalDeductions', label: '공제합계', required: false },
-  { key: 'overtime', label: '연장수당', required: false },
-  { key: 'bonus', label: '성과급/상여', required: false },
+  { key: 'employeeNumber', labelKey: 'import.fieldEmployeeId', required: true },
+  { key: 'name', labelKey: 'import.fieldName', required: true },
+  { key: 'basePay', labelKey: 'import.fieldBasePay', required: true },
+  { key: 'grossPay', labelKey: 'import.fieldGrossPay', required: true },
+  { key: 'netPay', labelKey: 'import.fieldNetPay', required: true },
+  { key: 'totalDeductions', labelKey: 'import.fieldTotalDeductions', required: false },
+  { key: 'overtime', labelKey: 'import.fieldOvertime', required: false },
+  { key: 'bonus', labelKey: 'import.fieldBonus', required: false },
 ]
 
 type Tab = 'upload' | 'mapping' | 'history'
@@ -67,6 +67,7 @@ export default function PayrollImportClient({ user, companies }: {
 }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('payroll')
+  const locale = useLocale()
   const [tab, setTab] = useState<Tab>('upload')
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(companies[0] ?? null)
   const [mappings, setMappings] = useState<ImportMapping[]>([])
@@ -80,12 +81,12 @@ export default function PayrollImportClient({ user, companies }: {
   const [uploadYear, setUploadYear] = useState(new Date().getFullYear())
   const [uploadMonth, setUploadMonth] = useState(new Date().getMonth() + 1)
   const [uploading, setUploading] = useState(false)
-  const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
+  const [toastState, setToastState] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
   const [savingMapping, setSavingMapping] = useState(false)
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
-    setToast({ msg, type })
-    setTimeout(() => setToast(null), 3000)
+    setToastState({ msg, type })
+    setTimeout(() => setToastState(null), 3000)
   }
 
   useEffect(() => {
@@ -132,12 +133,12 @@ export default function PayrollImportClient({ user, companies }: {
         currency: selectedCompany.currency ?? 'USD',
         uploadedById: user.id,
       })
-      showToast(`${selectedFile.name} 업로드 완료`)
+      showToast(t('import.uploadComplete', { fileName: selectedFile.name }))
       setSelectedFile(null)
       if (fileRef.current) fileRef.current.value = ''
       setTab('history')
     } catch {
-      showToast('업로드 실패', 'error')
+      showToast(t('import.uploadFailed'), 'error')
     } finally {
       setUploading(false)
     }
@@ -163,9 +164,9 @@ export default function PayrollImportClient({ user, companies }: {
       setMappings(prev => [...prev, createdRes.data])
       setSelectedMapping(createdRes.data)
       setEditingMapping(null)
-      showToast('매핑 저장 완료')
+      showToast(t('import.mappingSaved'))
     } catch {
-      showToast('저장 실패', 'error')
+      showToast(t('import.saveFailed'), 'error')
     } finally {
       setSavingMapping(false)
     }
@@ -178,12 +179,29 @@ export default function PayrollImportClient({ user, companies }: {
       confirmed: 'bg-emerald-500/15 text-emerald-700',
       failed: 'bg-destructive/10 text-destructive',
     }
-    const label: Record<string, string> = { uploaded: '업로드됨', processing: '처리중', confirmed: t('confirmed'), failed: t('failed') }
+    const label: Record<string, string> = {
+      uploaded: t('import.statusUploaded'),
+      processing: t('import.statusProcessing'),
+      confirmed: t('confirmed'),
+      failed: t('failed'),
+    }
     return (
       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${map[status] ?? 'bg-muted text-muted-foreground'}`}>
         {label[status] ?? status}
       </span>
     )
+  }
+
+  const TAB_LABELS: Record<Tab, string> = {
+    upload: t('import.tabUpload'),
+    mapping: t('import.tabMapping'),
+    history: t('import.tabHistory'),
+  }
+
+  const TAB_ICONS: Record<Tab, typeof Upload> = {
+    upload: Upload,
+    mapping: Settings2,
+    history: Clock,
   }
 
   return (
@@ -195,14 +213,14 @@ export default function PayrollImportClient({ user, companies }: {
         </div>
         <div>
           <h1 className="text-2xl font-bold text-foreground">{t('importTitle')}</h1>
-          <p className="text-sm text-muted-foreground">{t('kr_ked95b4ec_company_keab889ec_ke')}</p>
+          <p className="text-sm text-muted-foreground">{t('import.subtitle')}</p>
         </div>
       </div>
 
       {/* Company Selector */}
       <div className="flex items-center gap-3 mb-6">
         <Building2 className="w-4 h-4 text-muted-foreground" />
-        <span className="text-sm text-muted-foreground">{t('company_kec84a0ed')}</span>
+        <span className="text-sm text-muted-foreground">{t('import.companySelect')}</span>
         <div className="flex gap-2 flex-wrap">
           {companies.map(co => (
             <button
@@ -222,8 +240,9 @@ export default function PayrollImportClient({ user, companies }: {
 
       {/* Tabs */}
       <div className="flex border-b border-border mb-6">
-        {([['upload', '파일 업로드', Upload], ['mapping', '컬럼 매핑 설정', Settings2], ['history', '업로드 이력', Clock]] as const).map(
-          ([key, label, Icon]) => (
+        {(['upload', 'mapping', 'history'] as const).map(key => {
+          const Icon = TAB_ICONS[key]
+          return (
             <button
               key={key}
               onClick={() => setTab(key)}
@@ -234,10 +253,10 @@ export default function PayrollImportClient({ user, companies }: {
               }`}
             >
               <Icon className="w-4 h-4" />
-              {label}
+              {TAB_LABELS[key]}
             </button>
           )
-        )}
+        })}
       </div>
 
       {/* Tab: Upload */}
@@ -245,14 +264,14 @@ export default function PayrollImportClient({ user, companies }: {
         <div className="max-w-2xl space-y-6">
           {/* Mapping selector */}
           <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-            <h3 className="text-sm font-semibold text-foreground mb-3">{t('kr_kecbbaceb_keba7a4ed_kec84a0ed')}</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('import.selectMappingTemplate')}</h3>
             {loadingMappings ? (
               <div className="text-sm text-muted-foreground">{tCommon('loading')}</div>
             ) : mappings.length === 0 ? (
               <div className="text-sm text-muted-foreground">
-                선택한 법인에 매핑 설정이 없습니다.{' '}
+                {t('import.noMappingConfig')}{' '}
                 <button onClick={() => setTab('mapping')} className="text-primary underline">
-                  {t('kr_keba7a4ed_add')}
+                  {t('import.addMapping')}
                 </button>
               </div>
             ) : (
@@ -268,7 +287,7 @@ export default function PayrollImportClient({ user, companies }: {
                         : 'border-border text-muted-foreground hover:bg-background'
                     }`}
                   >
-                    {m.name} {m.isDefault && <span className="text-xs ml-1 text-muted-foreground">{t('kr_keab8b0eb')}</span>}
+                    {m.name} {m.isDefault && <span className="text-xs ml-1 text-muted-foreground">{t('import.default')}</span>}
                   </button>
                 ))}
               </div>
@@ -277,7 +296,7 @@ export default function PayrollImportClient({ user, companies }: {
 
           {/* Period */}
           <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-            <h3 className="text-sm font-semibold text-foreground mb-3">{t('kr_keab889ec_keca780ea_month')}</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-3">{t('import.payrollPeriod')}</h3>
             <div className="flex gap-3">
               <select
                 value={uploadYear}
@@ -292,7 +311,7 @@ export default function PayrollImportClient({ user, companies }: {
                 className="px-3 py-2 border border-border rounded-lg text-sm"
               >
                 {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
-                  <option key={m} value={m}>{m}월</option>
+                  <option key={m} value={m}>{t('import.monthLabel', { month: m })}</option>
                 ))}
               </select>
             </div>
@@ -303,7 +322,7 @@ export default function PayrollImportClient({ user, companies }: {
             className="bg-card rounded-xl border-2 border-dashed border-border p-10 text-center cursor-pointer hover:border-primary hover:bg-primary/10/20 transition-colors"
             onClick={() => fileRef.current?.click()}
           >
-            <FileSpreadsheet className="w-12 h-12 text-[#CCC] mx-auto mb-3" />
+            <FileSpreadsheet className="w-12 h-12 text-border mx-auto mb-3" />
             {selectedFile ? (
               <div>
                 <p className="text-sm font-semibold text-foreground">{selectedFile.name}</p>
@@ -311,8 +330,8 @@ export default function PayrollImportClient({ user, companies }: {
               </div>
             ) : (
               <div>
-                <p className="text-sm font-semibold text-foreground">{t('kr_ked8c8cec_ked81b4eb_kec84a0ed')}</p>
-                <p className="text-xs text-muted-foreground mt-1">{t('kr_xlsx_csv_keca780ec')}</p>
+                <p className="text-sm font-semibold text-foreground">{t('import.dropFilePrompt')}</p>
+                <p className="text-xs text-muted-foreground mt-1">{t('import.supportedFormats')}</p>
               </div>
             )}
             <input ref={fileRef} type="file" accept=".xlsx,.csv" className="hidden" onChange={handleFileChange} />
@@ -324,13 +343,13 @@ export default function PayrollImportClient({ user, companies }: {
             className={`w-full flex items-center justify-center gap-2 py-3 ${BUTTON_VARIANTS.primary} rounded-xl font-medium disabled:opacity-50`}
           >
             <Upload className="w-4 h-4" />
-            {uploading ? '업로드 중...' : '업로드 시작'}
+            {uploading ? t('import.uploading') : t('import.uploadStart')}
           </button>
 
           {!selectedMapping && (
             <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-500/15 p-3 rounded-lg">
               <AlertCircle className="w-4 h-4 shrink-0" />
-              {t('kr_kecbbaceb_keba7a4ed_keba8bcec_')}
+              {t('import.mappingRequiredWarning')}
             </div>
           )}
         </div>
@@ -341,13 +360,13 @@ export default function PayrollImportClient({ user, companies }: {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-foreground">
-              {selectedCompany?.code} 컬럼 매핑 목록
+              {t('import.mappingList', { code: selectedCompany?.code ?? '' })}
             </h3>
             <button
               onClick={startNewMapping}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-lg text-sm"
             >
-              <Plus className="w-4 h-4" /> {t('kr_kec8388_keba7a4ed_add')}
+              <Plus className="w-4 h-4" /> {t('import.addNewMapping')}
             </button>
           </div>
 
@@ -357,10 +376,10 @@ export default function PayrollImportClient({ user, companies }: {
               <table className={TABLE_STYLES.table}>
                 <thead>
                   <tr className={TABLE_STYLES.header}>
-                    <th className={TABLE_STYLES.headerCell}>{t('kr_keba7a4ed')}</th>
-                    <th className={TABLE_STYLES.headerCell}>{t('kr_ked8c8cec_ked9895ec')}</th>
-                    <th className={TABLE_STYLES.headerCell}>{t('kr_ked86b5ed')}</th>
-                    <th className={TABLE_STYLES.headerCell}>기본</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('import.colMappingName')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('import.colFileType')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('import.colCurrency')}</th>
+                    <th className={TABLE_STYLES.headerCell}>{t('import.default')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -391,19 +410,19 @@ export default function PayrollImportClient({ user, companies }: {
           {/* New Mapping Editor */}
           {editingMapping && (
             <div className="bg-card rounded-xl border border-primary p-5 space-y-4">
-              <h4 className="text-sm font-semibold text-foreground">{t('kr_kec8388_keba7a4ed_settings')}</h4>
+              <h4 className="text-sm font-semibold text-foreground">{t('import.newMappingSettings')}</h4>
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">{t('kr_keba7a4ed')}</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t('import.colMappingName')}</label>
                   <input
                     value={editingMapping.name ?? ''}
                     onChange={e => setEditingMapping(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="예: 기본 급여 양식"
+                    placeholder={t('import.exampleTemplateName')}
                     className="w-full px-3 py-2 border border-border rounded-lg text-sm"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">{t('kr_ked8c8cec_ked9895ec')}</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t('import.colFileType')}</label>
                   <select
                     value={editingMapping.fileType ?? 'xlsx'}
                     onChange={e => setEditingMapping(prev => ({ ...prev, fileType: e.target.value }))}
@@ -414,7 +433,7 @@ export default function PayrollImportClient({ user, companies }: {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">{t('kr_ked97a4eb_ked9689_kebb288ed')}</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">{t('import.headerRowNumber')}</label>
                   <input
                     type="number"
                     min={1}
@@ -426,22 +445,22 @@ export default function PayrollImportClient({ user, companies }: {
               </div>
 
               <div>
-                <h5 className="text-xs text-muted-foreground font-medium mb-2">{t('kr_kecbbaceb_keba7a4ed_ked8c8cec_')}</h5>
+                <h5 className="text-xs text-muted-foreground font-medium mb-2">{t('import.columnMappingFileHeader')}</h5>
                 <div className="grid grid-cols-2 gap-3">
                   {STANDARD_FIELDS.map(field => (
                     <div key={field.key} className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground w-28 shrink-0">
-                        {field.label}
+                        {t(field.labelKey)}
                         {field.required && <span className="text-destructive ml-0.5">*</span>}
                       </span>
-                      <ChevronRight className="w-3 h-3 text-[#CCC] shrink-0" />
+                      <ChevronRight className="w-3 h-3 text-border shrink-0" />
                       <input
                         value={(editingMapping.mappings as Record<string, string>)?.[field.key] ?? ''}
                         onChange={e => setEditingMapping(prev => ({
                           ...prev,
                           mappings: { ...(prev?.mappings as Record<string, string> ?? {}), [field.key]: e.target.value }
                         }))}
-                        placeholder="파일 헤더명"
+                        placeholder={t('import.fileHeaderName')}
                         className="flex-1 px-2.5 py-1.5 border border-border rounded text-xs"
                       />
                     </div>
@@ -457,7 +476,7 @@ export default function PayrollImportClient({ user, companies }: {
                     onChange={e => setEditingMapping(prev => ({ ...prev, isDefault: e.target.checked }))}
                     className="w-4 h-4 rounded border-border text-primary"
                   />
-                  {t('kr_keab8b0eb_keba7a4ed_settings')}
+                  {t('import.setAsDefaultMapping')}
                 </label>
                 <div className="flex gap-2">
                   <button
@@ -488,34 +507,34 @@ export default function PayrollImportClient({ user, companies }: {
             <thead>
               <tr className={TABLE_STYLES.header}>
                 <th className={TABLE_STYLES.headerCell}>{t('company')}</th>
-                <th className={TABLE_STYLES.headerCell}>{t('kr_keab889ec')}</th>
-                <th className={TABLE_STYLES.headerCell}>{t('kr_ked8c8cec')}</th>
-                <th className={TABLE_STYLES.headerCellRight}>{t('kr_kec9db8ec')}</th>
-                <th className={TABLE_STYLES.headerCellRight}>{t('kr_kecb49dec_ked9884ec')}</th>
-                <th className={TABLE_STYLES.headerCell}>{t('status')}</th>
-                <th className={TABLE_STYLES.headerCell}>{t('kr_kec9785eb')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('import.colPeriod')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('import.colFile')}</th>
+                <th className={TABLE_STYLES.headerCellRight}>{t('import.colPersonCount')}</th>
+                <th className={TABLE_STYLES.headerCellRight}>{t('import.colTotalAmount')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('status.title')}</th>
+                <th className={TABLE_STYLES.headerCell}>{t('import.colUploadDate')}</th>
               </tr>
             </thead>
             <tbody>
               {loadingLogs ? (
                 <tr><td colSpan={7} className="py-12 text-center text-sm text-muted-foreground">{tCommon('loading')}</td></tr>
               ) : logs.length === 0 ? (
-                <tr><td colSpan={7} className="py-12 text-center text-sm text-muted-foreground">{t('kr_kec9785eb_kec9db4eb_kec9786ec')}</td></tr>
+                <tr><td colSpan={7} className="py-12 text-center text-sm text-muted-foreground">{t('import.noHistory')}</td></tr>
               ) : (
                 logs.map(log => (
                   <tr key={log.id} className={TABLE_STYLES.row}>
                     <td className={cn(TABLE_STYLES.cell, "font-medium")}>{log.company.code}</td>
-                    <td className={TABLE_STYLES.cellMuted}>{log.year}년 {log.month}월</td>
+                    <td className={TABLE_STYLES.cellMuted}>{t('import.yearMonth', { year: log.year, month: log.month })}</td>
                     <td className={TABLE_STYLES.cellMuted}>
                       <div className="truncate max-w-[180px]" title={log.fileName}>{log.fileName}</div>
                     </td>
-                    <td className={TABLE_STYLES.cellRight}>{log.employeeCount.toLocaleString()}명</td>
+                    <td className={TABLE_STYLES.cellRight}>{t('import.personCount', { count: log.employeeCount.toLocaleString(locale) })}</td>
                     <td className={cn(TABLE_STYLES.cellRight, "font-mono tabular-nums")}>
-                      {Number(log.totalGross).toLocaleString()} {log.currency}
+                      {Number(log.totalGross).toLocaleString(locale)} {log.currency}
                     </td>
                     <td className={TABLE_STYLES.cell}>{statusBadge(log.status)}</td>
                     <td className={cn(TABLE_STYLES.cellMuted, "text-xs")}>
-                      {new Date(log.createdAt).toLocaleDateString('ko-KR')}
+                      {new Date(log.createdAt).toLocaleDateString(locale)}
                     </td>
                   </tr>
                 ))
@@ -526,10 +545,10 @@ export default function PayrollImportClient({ user, companies }: {
       )}
 
       {/* Toast */}
-      {toast && (
+      {toastState && (
         <div className={`fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg text-sm font-medium text-white z-50
-          ${toast.type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`}>
-          {toast.msg}
+          ${toastState.type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`}>
+          {toastState.msg}
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Onboarding Instance Detail
@@ -100,6 +100,7 @@ interface OnboardingDetail {
 export default function OnboardingDetailClient({ user, onboardingId }: { user: SessionUser; onboardingId: string }) {
     const tCommon = useTranslations('common')
     const t = useTranslations('onboarding')
+    const locale = useLocale()
     const router = useRouter()
     const [data, setData] = useState<OnboardingDetail | null>(null)
     const [loading, setLoading] = useState(true)
@@ -193,7 +194,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
     if (error && !data) {
         return (
             <div className="p-6">
-                <EmptyState icon={<AlertTriangle className="h-12 w-12" />} title="오류" description={error} />
+                <EmptyState icon={<AlertTriangle className="h-12 w-12" />} title={tCommon('error')} description={error} />
             </div>
         )
     }
@@ -202,7 +203,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
 
     const milestones = ['DAY_1', 'DAY_7', 'DAY_30', 'DAY_90'] as const
     const milestoneLabels: Record<string, string> = {
-        DAY_1: 'Day 1 · 첫날', DAY_7: 'Day 7 · 1주차', DAY_30: 'Day 30 · 1개월', DAY_90: 'Day 90 · 3개월',
+        DAY_1: t('milestoneDay1'), DAY_7: t('milestoneDay7'), DAY_30: t('milestoneDay30'), DAY_90: t('milestoneDay90'),
     }
     const canSignOff = (isHrAdmin || data.employee.manager?.id === user.employeeId) && data.signOffEligibility.eligible
 
@@ -213,7 +214,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                 <button onClick={() => router.push('/onboarding')} className="rounded-lg p-2 text-muted-foreground hover:bg-muted">
                     <ArrowLeft className="h-5 w-5" />
                 </button>
-                <PageHeader title={`${data.employee.name} 온보딩`} description={`${data.employee.department ?? ''} · ${data.employee.position ?? ''}`} />
+                <PageHeader title={t('detail.headerTitle', { name: data.employee.name })} description={`${data.employee.department ?? ''} · ${data.employee.position ?? ''}`} />
                 <span className={`ml-auto rounded-full px-3 py-1 text-xs font-semibold ${data.status === 'COMPLETED' ? 'bg-tertiary-container/20 text-tertiary' : data.status === 'IN_PROGRESS' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
                     {data.status === 'COMPLETED' ? t('statusCompleted') : data.status === 'IN_PROGRESS' ? t('statusInProgress') : data.status}
                 </span>
@@ -241,29 +242,29 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                         <div className="grid grid-cols-3 gap-2 text-center">
                             <div className="rounded-lg bg-primary/10 px-2 py-1.5">
                                 <div className="text-sm font-bold text-primary">{data.progress.inProgress}</div>
-                                <div className="text-[10px] text-muted-foreground">진행 중</div>
+                                <div className="text-[10px] text-muted-foreground">{t('inProgress')}</div>
                             </div>
                             <div className="rounded-lg bg-destructive/5 px-2 py-1.5">
                                 <div className="text-sm font-bold text-red-500">{data.progress.blocked}</div>
-                                <div className="text-[10px] text-muted-foreground">차단</div>
+                                <div className="text-[10px] text-muted-foreground">{t('blockedStatus')}</div>
                             </div>
                             <div className="rounded-lg bg-muted px-2 py-1.5">
                                 <div className="text-sm font-bold text-muted-foreground">{data.progress.pending}</div>
-                                <div className="text-[10px] text-muted-foreground">대기</div>
+                                <div className="text-[10px] text-muted-foreground">{t('pending')}</div>
                             </div>
                         </div>
                     </div>
 
                     {/* Employee Info Card */}
                     <div className="rounded-xl border border-border bg-card p-5 space-y-3">
-                        <h3 className="text-sm font-semibold text-foreground">직원 정보</h3>
-                        <InfoRow label="입사일" value={data.employee.hireDate ? new Date(data.employee.hireDate).toLocaleDateString('ko-KR') : '-'} />
-                        <InfoRow label="부서" value={data.employee.department ?? '-'} />
-                        <InfoRow label="직위" value={data.employee.position ?? '-'} />
-                        <InfoRow label="법인" value={data.employee.company ?? '-'} />
-                        <InfoRow label="매니저" value={data.employee.manager?.name ?? '-'} />
-                        <InfoRow label="버디" value={data.buddy?.name ?? '-'} />
-                        <InfoRow label="현재 단계" value={data.currentMilestone ? milestoneLabels[data.currentMilestone] ?? data.currentMilestone : '-'} />
+                        <h3 className="text-sm font-semibold text-foreground">{t('detail.employeeInfo')}</h3>
+                        <InfoRow label={t('hireDate')} value={data.employee.hireDate ? new Date(data.employee.hireDate).toLocaleDateString(locale) : '-'} />
+                        <InfoRow label={t('detail.department')} value={data.employee.department ?? '-'} />
+                        <InfoRow label={t('detail.position')} value={data.employee.position ?? '-'} />
+                        <InfoRow label={t('detail.company')} value={data.employee.company ?? '-'} />
+                        <InfoRow label={t('detail.manager')} value={data.employee.manager?.name ?? '-'} />
+                        <InfoRow label={t('buddy')} value={data.buddy?.name ?? '-'} />
+                        <InfoRow label={t('detail.currentMilestone')} value={data.currentMilestone ? milestoneLabels[data.currentMilestone] ?? data.currentMilestone : '-'} />
                     </div>
 
                     {/* Sign-off Section */}
@@ -272,7 +273,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                             <h3 className="mb-2 text-sm font-semibold text-foreground">🖊️ Sign-off</h3>
                             {data.signOffEligibility.eligible ? (
                                 <>
-                                    <p className="mb-3 text-xs text-tertiary">✅ 모든 필수 태스크 완료</p>
+                                    <p className="mb-3 text-xs text-tertiary">✅ {t('detail.allRequiredDone')}</p>
                                     {canSignOff && (
                                         <button onClick={() => setSignOffDialog(true)} disabled={actionLoading === 'sign-off'}
                                             className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50">
@@ -283,7 +284,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                             ) : (
                                 <>
                                     <p className="mb-2 text-xs text-muted-foreground">
-                                        {data.signOffEligibility.requiredDone}/{data.signOffEligibility.requiredTotal} 필수 태스크 완료
+                                        {t('detail.requiredTaskProgress', { done: data.signOffEligibility.requiredDone, total: data.signOffEligibility.requiredTotal })}
                                     </p>
                                     {data.signOffEligibility.remainingTasks.length > 0 && (
                                         <ul className="space-y-1">
@@ -291,7 +292,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                                 <li key={i} className="text-xs text-red-500">• {t}</li>
                                             ))}
                                             {data.signOffEligibility.remainingTasks.length > 3 && (
-                                                <li className="text-xs text-muted-foreground">... +{data.signOffEligibility.remainingTasks.length - 3}건</li>
+                                                <li className="text-xs text-muted-foreground">... +{data.signOffEligibility.remainingTasks.length - 3}</li>
                                             )}
                                         </ul>
                                     )}
@@ -302,10 +303,10 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
 
                     {data.status === 'COMPLETED' && data.signOff.signedOffBy && (
                         <div className="rounded-xl border border-green-100 bg-tertiary-container/10 p-5">
-                            <h3 className="mb-2 text-sm font-semibold text-tertiary">✅ 온보딩 완료</h3>
-                            <InfoRow label="승인자" value={data.signOff.signedOffBy.name} />
-                            <InfoRow label="승인일" value={data.signOff.signedOffAt ? new Date(data.signOff.signedOffAt).toLocaleDateString('ko-KR') : '-'} />
-                            {data.signOff.note && <InfoRow label="코멘트" value={data.signOff.note} />}
+                            <h3 className="mb-2 text-sm font-semibold text-tertiary">✅ {t('detail.onboardingComplete')}</h3>
+                            <InfoRow label={t('detail.approver')} value={data.signOff.signedOffBy.name} />
+                            <InfoRow label={t('detail.approvedDate')} value={data.signOff.signedOffAt ? new Date(data.signOff.signedOffAt).toLocaleDateString(locale) : '-'} />
+                            {data.signOff.note && <InfoRow label={t('detail.comment')} value={data.signOff.note} />}
                         </div>
                     )}
                 </div>
@@ -362,12 +363,12 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     {tab === 'checkins' && (
                         <div className="space-y-4">
                             {data.checkins.length === 0 ? (
-                                <EmptyState icon={<Smile className="h-12 w-12" />} title="아직 체크인이 없습니다" description="감정 체크인은 Day 7, 30, 90에 진행됩니다." />
+                                <EmptyState icon={<Smile className="h-12 w-12" />} title={t('detail.noCheckins')} description={t('detail.noCheckinsDesc')} />
                             ) : (
                                 <>
                                     {/* Mini Trend */}
                                     <div className="rounded-xl border border-border bg-card p-5">
-                                        <h3 className="mb-3 text-sm font-semibold text-foreground">감정 추이</h3>
+                                        <h3 className="mb-3 text-sm font-semibold text-foreground">{t('detail.emotionTrend')}</h3>
                                         <div className="flex items-end justify-around gap-4 h-28">
                                             {data.checkins.map((c, i) => (
                                                 <div key={i} className="flex flex-col items-center gap-1">
@@ -388,17 +389,17 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                                 <span className="text-sm font-semibold text-foreground">
                                                     {c.milestone ? milestoneLabels[c.milestone] ?? c.milestone : `Week ${c.checkinWeek}`}
                                                 </span>
-                                                <span className="text-xs text-muted-foreground">{new Date(c.submittedAt).toLocaleDateString('ko-KR')}</span>
+                                                <span className="text-xs text-muted-foreground">{new Date(c.submittedAt).toLocaleDateString(locale)}</span>
                                             </div>
                                             <div className="grid grid-cols-3 gap-3">
-                                                <EmotionCell label="기분" value={c.mood} emoji={moodEmoji(c.mood)} />
-                                                <EmotionCell label="에너지" value={String(c.energy)} emoji={numEmoji(c.energy)} />
-                                                <EmotionCell label="소속감" value={String(c.belonging)} emoji={numEmoji(c.belonging)} />
+                                                <EmotionCell label={t('mood')} value={c.mood} emoji={moodEmoji(c.mood)} />
+                                                <EmotionCell label={t('detail.energy')} value={String(c.energy)} emoji={numEmoji(c.energy)} />
+                                                <EmotionCell label={t('detail.belonging')} value={String(c.belonging)} emoji={numEmoji(c.belonging)} />
                                             </div>
                                             {c.comment && <p className="mt-3 text-sm text-muted-foreground">{c.comment}</p>}
                                             {c.aiSummary && (
                                                 <div className="mt-2 rounded-lg bg-primary/10 p-3 text-xs text-primary">
-                                                    🤖 AI 요약: {c.aiSummary}
+                                                    🤖 {t('aiSummary')}: {c.aiSummary}
                                                 </div>
                                             )}
                                         </div>
@@ -411,7 +412,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     {/* Timeline Tab */}
                     {tab === 'timeline' && (
                         <div className="rounded-xl border border-border bg-card p-5">
-                            <h3 className="mb-4 text-sm font-semibold text-foreground">차단 이력</h3>
+                            <h3 className="mb-4 text-sm font-semibold text-foreground">{t('detail.blockedHistory')}</h3>
                             {data.blockedHistory.length === 0 ? (
                                 <p className="text-sm text-muted-foreground">{t('emptyBlockedHistory')}</p>
                             ) : (
@@ -421,10 +422,10 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                             <Lock className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
                                             <div>
                                                 <p className="text-sm font-medium text-foreground">{b.taskTitle}</p>
-                                                <p className="text-xs text-muted-foreground">사유: {b.reason}</p>
+                                                <p className="text-xs text-muted-foreground">{t('detail.reason')}: {b.reason}</p>
                                                 <p className="text-xs text-muted-foreground">
-                                                    {new Date(b.blockedAt).toLocaleDateString('ko-KR')} ~ {b.unblockedAt ? new Date(b.unblockedAt).toLocaleDateString('ko-KR') : '진행 중'}
-                                                    {' '}({b.durationDays}일)
+                                                    {new Date(b.blockedAt).toLocaleDateString(locale)} ~ {b.unblockedAt ? new Date(b.unblockedAt).toLocaleDateString(locale) : t('inProgress')}
+                                                    {' '}({t('detail.durationDays', { days: b.durationDays })})
                                                 </p>
                                             </div>
                                         </div>
@@ -440,7 +441,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
             <Dialog open={!!blockDialog} onOpenChange={() => setBlockDialog(null)}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>태스크 차단</DialogTitle>
+                        <DialogTitle>{t('detail.blockTask')}</DialogTitle>
                         <DialogDescription>{blockDialog?.title}</DialogDescription>
                     </DialogHeader>
                     <Textarea placeholder={tCommon('placeholderBlockReason')} value={blockReason} onChange={(e) => setBlockReason(e.target.value)} rows={3} />
@@ -450,7 +451,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                         </button>
                         <button onClick={blockTask} disabled={!blockReason.trim() || !!actionLoading}
                             className="rounded-lg bg-destructive/50 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 disabled:opacity-50">
-                            차단하기
+                            {t('detail.block')}
                         </button>
                     </DialogFooter>
                 </DialogContent>
@@ -460,13 +461,13 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
             <Dialog open={signOffDialog} onOpenChange={setSignOffDialog}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>온보딩 완료 승인</DialogTitle>
-                        <DialogDescription>{data.employee.name}의 온보딩을 완료 처리합니다.</DialogDescription>
+                        <DialogTitle>{t('approveOnboarding')}</DialogTitle>
+                        <DialogDescription>{t('detail.signOffDesc', { name: data.employee.name })}</DialogDescription>
                     </DialogHeader>
                     <div className="space-y-3">
                         <div className="rounded-lg bg-primary/10 p-3">
-                            <p className="text-sm text-primary">✅ {data.signOffEligibility.requiredDone}/{data.signOffEligibility.requiredTotal} 필수 태스크 완료</p>
-                            <p className="text-xs text-muted-foreground mt-1">감정 체크인 {data.checkins.length}회 기록됨</p>
+                            <p className="text-sm text-primary">✅ {t('detail.requiredTaskProgress', { done: data.signOffEligibility.requiredDone, total: data.signOffEligibility.requiredTotal })}</p>
+                            <p className="text-xs text-muted-foreground mt-1">{t('detail.checkinCount', { count: data.checkins.length })}</p>
                         </div>
                         <Textarea placeholder={tCommon('enterComment')} value={signOffNote} onChange={(e) => setSignOffNote(e.target.value)} rows={3} />
                     </div>
@@ -503,6 +504,8 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
     onUnblock: (taskId: string) => void
 }) {
     const tCommon = useTranslations('common')
+    const t = useTranslations('onboarding')
+    const locale = useLocale()
     const isAssignee = task.assigneeId === user.employeeId
     const canAct = isAssignee || isHrAdmin
     const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'DONE' && task.status !== 'SKIPPED'
@@ -522,7 +525,7 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
                     <span className={`text-sm font-medium ${task.status === 'DONE' || task.status === 'SKIPPED' ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
                         {task.task.title}
                     </span>
-                    {task.task.isRequired && <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">필수</span>}
+                    {task.task.isRequired && <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">{t('detail.required')}</span>}
                     {!task.task.isRequired && <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">{tCommon('select')}</span>}
                 </div>
                 {task.task.description && <p className="mt-0.5 text-xs text-muted-foreground">{task.task.description}</p>}
@@ -532,8 +535,8 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
                     {task.dueDate && (
                         <span className={isOverdue ? 'font-medium text-red-500' : ''}>
                             <Clock className="mr-0.5 inline h-3 w-3" />
-                            {new Date(task.dueDate).toLocaleDateString('ko-KR')}
-                            {isOverdue && ' (지연)'}
+                            {new Date(task.dueDate).toLocaleDateString(locale)}
+                            {isOverdue && ` (${t('delayed')})`}
                         </span>
                     )}
                 </div>
@@ -549,31 +552,31 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
                     {task.status === 'PENDING' && (
                         <button onClick={() => onStatusChange(task.id, 'IN_PROGRESS')} disabled={isLoading}
                             className="rounded-lg border border-primary px-2 py-1 text-xs text-primary hover:bg-primary/10 disabled:opacity-50">
-                            시작
+                            {t('detail.start')}
                         </button>
                     )}
                     {(task.status === 'PENDING' || task.status === 'IN_PROGRESS') && (
                         <button onClick={() => onStatusChange(task.id, 'DONE')} disabled={isLoading}
                             className="rounded-lg bg-tertiary-container/100 px-2 py-1 text-xs text-white hover:bg-green-600 disabled:opacity-50">
-                            완료
+                            {t('completed')}
                         </button>
                     )}
                     {(task.status === 'PENDING' || task.status === 'IN_PROGRESS') && (
                         <button onClick={() => onBlock(task.id, task.task.title)} disabled={isLoading}
                             className="rounded-lg border border-red-500 px-2 py-1 text-xs text-red-500 hover:bg-destructive/5 disabled:opacity-50">
-                            차단
+                            {t('detail.block')}
                         </button>
                     )}
                     {task.status === 'BLOCKED' && (
                         <button onClick={() => onUnblock(task.id)} disabled={isLoading}
                             className="rounded-lg border border-amber-500 px-2 py-1 text-xs text-amber-500 hover:bg-amber-500/10 disabled:opacity-50">
-                            해제
+                            {t('unblock')}
                         </button>
                     )}
                     {task.status === 'PENDING' && !task.task.isRequired && (
                         <button onClick={() => onStatusChange(task.id, 'SKIPPED')} disabled={isLoading}
                             className="rounded-lg border border-muted-foreground px-2 py-1 text-xs text-muted-foreground hover:bg-muted disabled:opacity-50">
-                            건너뛰기
+                            {t('detail.skip')}
                         </button>
                     )}
                 </div>

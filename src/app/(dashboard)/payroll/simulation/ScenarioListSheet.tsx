@@ -6,7 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect, useCallback } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Trash2, Upload, GitCompareArrows, Loader2, X } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
@@ -47,6 +47,7 @@ const MODE_COLORS: Record<SaveableMode, string> = {
 export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompare }: Props) {
   const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
   const { toast } = useToast()
   const [scenarios, setScenarios] = useState<ScenarioListItem[]>([])
   const [loading, setLoading] = useState(false)
@@ -149,7 +150,7 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
     }
   }
 
-  const fmtDate = (d: string) => new Date(d).toLocaleDateString('ko-KR', {
+  const fmtDate = (d: string) => new Date(d).toLocaleDateString(locale, {
     month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
   })
 

@@ -7,14 +7,15 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { CheckCircle2, Clock, LogIn, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-import { STATUS_VARIANT } from '@/lib/styles/status'
+import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -53,20 +54,15 @@ type ClockState = 'NOT_CLOCKED_IN' | 'WORKING' | 'COMPLETED'
 
 // ─── Constants ──────────────────────────────────────────────
 
-const STATUS_COLORS: Record<string, string> = {
-  NORMAL: STATUS_VARIANT.success,
-  LATE: STATUS_VARIANT.error,
-  EARLY_OUT: STATUS_VARIANT.warning,
-  ABSENT: STATUS_VARIANT.error,
-  ON_LEAVE: STATUS_VARIANT.info,
-  HOLIDAY: STATUS_VARIANT.primary,
+const ATTENDANCE_VARIANT_OVERRIDES: Record<string, 'info'> = {
+  ON_LEAVE: 'info',
 }
 
-const WORK_TYPE_COLORS: Record<string, string> = {
-  NORMAL: STATUS_VARIANT.neutral,
-  REMOTE: STATUS_VARIANT.info,
-  FIELD: STATUS_VARIANT.success,
-  BUSINESS_TRIP: STATUS_VARIANT.primary,
+const WORK_TYPE_VARIANT: Record<string, 'info' | 'accent' | 'neutral'> = {
+  NORMAL: 'neutral',
+  REMOTE: 'info',
+  FIELD: 'accent',
+  BUSINESS_TRIP: 'accent',
 }
 
 const STANDARD_WORK_HOURS = 8
@@ -81,10 +77,10 @@ function formatMinutesToHM(minutes: number | null | undefined): string {
   return `${h}h ${m}m`
 }
 
-function formatTime(isoStr: string | null): string {
+function formatTime(isoStr: string | null, locale: string = 'ko'): string {
   if (!isoStr) return '--:--'
   const d = new Date(isoStr)
-  return d.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+  return new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(d)
 }
 
 function getElapsedSeconds(clockIn: string): number {
@@ -111,6 +107,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
 
   const t = useTranslations('attendance')
   const tc = useTranslations('common')
+  const locale = useLocale()
 
   const DAY_LABELS = [
     t('dayMon'), t('dayTue'), t('dayWed'), t('dayThu'),
@@ -285,14 +282,14 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
 
           {clockState === 'WORKING' && (
             <div className="flex flex-col items-center gap-4 py-6">
-              <span className="inline-flex items-center px-3 py-1 rounded-[4px] text-sm font-semibold bg-primary/10 text-tertiary">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-primary/10 text-tertiary">
                 {t('currentlyWorking')}
               </span>
               <p className="font-mono text-4xl font-bold text-primary tabular-nums">
                 {formatElapsedTime(elapsed)}
               </p>
               <p className="text-sm text-muted-foreground">
-                {t('clockIn')}: {formatTime(today?.clockIn ?? null)}
+                {t('clockIn')}: {formatTime(today?.clockIn ?? null, locale)}
               </p>
               <Button
                 size="lg"
@@ -317,10 +314,10 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
               </p>
               <div className="flex gap-6 text-sm text-muted-foreground">
                 <span>
-                  {t('clockIn')}: {formatTime(today?.clockIn ?? null)}
+                  {t('clockIn')}: {formatTime(today?.clockIn ?? null, locale)}
                 </span>
                 <span>
-                  {t('clockOut')}: {formatTime(today?.clockOut ?? null)}
+                  {t('clockOut')}: {formatTime(today?.clockOut ?? null, locale)}
                 </span>
               </div>
               {(today?.overtimeMinutes ?? 0) > 0 && (
@@ -399,17 +396,17 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
             {/* Attendance status badge */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">{t('status')}:</span>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${STATUS_COLORS[today.status] ?? STATUS_VARIANT.neutral}`}>
+              <StatusBadge status={today.status} variant={ATTENDANCE_VARIANT_OVERRIDES[today.status]}>
                 {STATUS_LABELS[today.status] ?? today.status}
-              </span>
+              </StatusBadge>
             </div>
 
             {/* Work type badge */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">{t('workType')}:</span>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${WORK_TYPE_COLORS[today.workType] ?? STATUS_VARIANT.neutral}`}>
+              <Badge variant={WORK_TYPE_VARIANT[today.workType] ?? 'neutral'}>
                 {WORK_TYPE_LABELS[today.workType] ?? today.workType}
-              </span>
+              </Badge>
             </div>
           </div>
         </div>

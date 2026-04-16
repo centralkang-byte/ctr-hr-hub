@@ -13,7 +13,7 @@ import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
-import { STATUS_VARIANT } from '@/lib/styles/status'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 // ─── Label Maps ──────────────────────────────────────────
 
@@ -24,12 +24,6 @@ const STATUS_KEYS: Record<string, string> = {
   CANCELLED: 'statusCANCELLED',
 }
 
-const STATUS_BADGE_STYLES: Record<string, string> = {
-  DRAFT: STATUS_VARIANT.neutral,
-  OPEN: STATUS_VARIANT.success,
-  CLOSED: STATUS_VARIANT.warning,
-  CANCELLED: STATUS_VARIANT.error,
-}
 
 const EMPLOYMENT_TYPE_KEYS: Record<string, string> = {
   FULL_TIME: 'typeFULL_TIME',
@@ -84,7 +78,7 @@ export default function RecruitmentListClient({ user }: Props) {
       setData(res.data)
       setTotal(res.pagination.total)
     } catch (err) {
-      toast({ title: '채용 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('postingListLoadFailed'), description: err instanceof Error ? err.message : t('cannotLoadData'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -216,9 +210,9 @@ export default function RecruitmentListClient({ user }: Props) {
                     {row._count.applications}
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`inline-block px-2 py-1 text-xs font-medium rounded ${STATUS_BADGE_STYLES[row.status] ?? STATUS_VARIANT.neutral}`}>
+                    <StatusBadge status={row.status}>
                       {STATUS_KEYS[row.status] ? t(STATUS_KEYS[row.status]) : row.status}
-                    </span>
+                    </StatusBadge>
                   </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">
                     {format(new Date(row.createdAt), 'yyyy-MM-dd')}

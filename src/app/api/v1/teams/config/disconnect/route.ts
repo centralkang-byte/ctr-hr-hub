@@ -9,6 +9,7 @@ import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { getRequestLocale, serverT } from '@/lib/server-i18n'
 import type { SessionUser } from '@/types'
 
 export const POST = withPermission(
@@ -18,7 +19,8 @@ export const POST = withPermission(
     })
 
     if (!integration) {
-      return apiSuccess({ message: '연결된 Teams 설정이 없습니다.' })
+      const locale = await getRequestLocale()
+      return apiSuccess({ message: await serverT(locale, 'teams.api.noConfig') })
     }
 
     await prisma.teamsIntegration.delete({
@@ -36,7 +38,8 @@ export const POST = withPermission(
       userAgent,
     })
 
-    return apiSuccess({ message: 'Teams 연결이 해제되었습니다.' })
+    const locale = await getRequestLocale()
+    return apiSuccess({ message: await serverT(locale, 'teams.api.disconnected') })
   },
   perm(MODULE.SETTINGS, ACTION.UPDATE),
 )

@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { EmptyState } from '@/components/ui/EmptyState'
 
@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import {
   Select,
   SelectContent,
@@ -109,20 +109,18 @@ const SLOT_COLORS: Record<number, string> = {
   3: 'bg-emerald-500/15 text-emerald-800 border-emerald-200',
 }
 
-const STATUS_MAP: Record<string, { label: string; color: string }> = {
-  SCHEDULED: { label: '예정', color: 'bg-primary/10 text-primary/90 border-primary/20' },
-  WORKED: { label: '완료', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
-  ABSENT: { label: '결근', color: 'bg-destructive/10 text-destructive border-destructive/20' },
-  SWAPPED: { label: '교대변경', color: 'bg-amber-500/15 text-amber-700 border-amber-300' },
+const STATUS_MAP: Record<string, { labelKey: string }> = {
+  SCHEDULED: { labelKey: 'statusScheduled' },
+  WORKED: { labelKey: 'statusWorked' },
+  ABSENT: { labelKey: 'statusAbsent' },
+  SWAPPED: { labelKey: 'statusSwapped' },
 }
 
-const REQUEST_STATUS_MAP: Record<string, { label: string; color: string }> = {
-  SCR_PENDING: { label: '대기', color: 'bg-amber-500/15 text-amber-700 border-amber-300' },
-  SCR_APPROVED: { label: '승인', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
-  SCR_REJECTED: { label: '반려', color: 'bg-destructive/10 text-destructive border-destructive/20' },
+const REQUEST_STATUS_MAP: Record<string, { labelKey: string }> = {
+  SCR_PENDING: { labelKey: 'requestPending' },
+  SCR_APPROVED: { labelKey: 'requestApproved' },
+  SCR_REJECTED: { labelKey: 'requestRejected' },
 }
-
-const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
 
 // ─── Helpers ────────────────────────────────────────────────
 
@@ -148,6 +146,12 @@ function formatDateKey(date: Date): string {
 export function ShiftCalendarClient({ user }: { user: SessionUser }) {
   void user
   const tCommon = useTranslations('common')
+  const t = useTranslations('shift')
+  const ta = useTranslations('attendance')
+  const locale = useLocale()
+  void locale
+
+  const DAY_LABELS = [ta('daySun'), ta('dayMon'), ta('dayTue'), ta('dayWed'), ta('dayThu'), ta('dayFri'), ta('daySat')]
 
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())
@@ -281,9 +285,9 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2 tracking-[-0.02em]">
             <Calendar className="h-6 w-6 text-primary" />
-            교대근무 캘린더
+            {t('calendarTitle')}
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">월간 교대 스케줄 배정 현황</p>
+          <p className="text-sm text-muted-foreground mt-1">{t('calendarDesc')}</p>
         </div>
         <Button
           onClick={handleGenerate}
@@ -295,26 +299,26 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
           ) : (
             <RefreshCw className="h-4 w-4 mr-2" />
           )}
-          스케줄 자동생성
+          {t('autoGenerate')}
         </Button>
       </div>
 
       {/* ─── KPI Cards ─── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-card border border-border rounded-xl p-6">
-          <p className="text-xs text-muted-foreground font-medium mb-2">배정 인원</p>
+          <p className="text-xs text-muted-foreground font-medium mb-2">{t('assignedCount')}</p>
           <p className={TYPOGRAPHY.stat}><AnimatedNumber value={totalEmployees} /></p>
         </div>
         <div className="bg-card border border-border rounded-xl p-6">
-          <p className="text-xs text-muted-foreground font-medium mb-2">예정 스케줄</p>
+          <p className="text-xs text-muted-foreground font-medium mb-2">{t('scheduledCount')}</p>
           <p className="text-3xl font-bold tabular-nums text-primary"><AnimatedNumber value={totalScheduled} /></p>
         </div>
         <div className="bg-card border border-border rounded-xl p-6">
-          <p className="text-xs text-muted-foreground font-medium mb-2">완료</p>
+          <p className="text-xs text-muted-foreground font-medium mb-2">{t('completedCount')}</p>
           <p className="text-3xl font-bold tabular-nums text-emerald-600"><AnimatedNumber value={totalWorked} /></p>
         </div>
         <div className="bg-card border border-border rounded-xl p-6">
-          <p className="text-xs text-muted-foreground font-medium mb-2">교대변경 요청</p>
+          <p className="text-xs text-muted-foreground font-medium mb-2">{t('changeRequestCount')}</p>
           <p className="text-3xl font-bold tabular-nums text-amber-500"><AnimatedNumber value={pendingSwaps} /></p>
         </div>
       </div>
@@ -326,7 +330,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
             <ChevronLeft className="h-4 w-4 text-muted-foreground" />
           </button>
           <h2 className="text-base font-bold text-foreground min-w-[120px] text-center tracking-[-0.02em]">
-            {year}년 {month}월
+            {t('yearSuffix', { year })} {t('monthSuffix', { month })}
           </h2>
           <button onClick={nextMonth} className="p-1.5 hover:bg-muted rounded-lg border border-border">
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -339,7 +343,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
               <SelectValue placeholder={tCommon('filterSelectShift')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">전체 교대조</SelectItem>
+              <SelectItem value="all">{t('allGroups')}</SelectItem>
               {!groups?.length && <EmptyState />}
               {groups?.map(g => (
                 <SelectItem key={g.id} value={g.id}>
@@ -364,7 +368,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
               }`}
               onClick={() => setViewMode('calendar')}
             >
-              캘린더
+              {t('calendarView')}
             </button>
             <button
               className={`px-3 py-1.5 text-sm font-medium rounded-r-lg ${
@@ -374,7 +378,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
               }`}
               onClick={() => setViewMode('list')}
             >
-              리스트
+              {t('listView')}
             </button>
           </div>
         </div>
@@ -394,12 +398,9 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
         ))}
         <div className="ml-4 flex items-center gap-3">
           {Object.entries(STATUS_MAP).map(([key, val]) => (
-            <span
-              key={key}
-              className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${val.color}`}
-            >
-              {val.label}
-            </span>
+            <StatusBadge key={key} status={key}>
+              {t(val.labelKey)}
+            </StatusBadge>
           ))}
         </div>
       </div>
@@ -463,7 +464,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                       </span>
                       {daySchedules.length > 0 && (
                         <span className="text-[10px] text-muted-foreground">
-                          {daySchedules.length}명
+                          {t('workersCount', { count: daySchedules.length })}
                         </span>
                       )}
                     </div>
@@ -487,7 +488,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                       ))}
                       {daySchedules.length > 3 && (
                         <div className="text-[10px] text-muted-foreground pl-1">
-                          +{daySchedules.length - 3}명 더
+                          {t('moreWorkers', { count: daySchedules.length - 3 })}
                         </div>
                       )}
                     </div>
@@ -508,7 +509,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                 <thead className={TABLE_STYLES.header}>
                   <tr>
                     <th className={`sticky left-0 z-10 bg-background ${TABLE_STYLES.headerCell}`}>
-                      직원
+                      {t('employee')}
                     </th>
                     {days.map(date => {
                       const dayOfWeek = date.getDay()
@@ -584,7 +585,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <ArrowRightLeft className="h-5 w-5 text-orange-500" />
-              교대변경 요청 ({changeRequests.length})
+              {t('changeRequests', { count: changeRequests.length })}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -611,7 +612,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                       </div>
                       <span className="text-xs text-muted-foreground">{req.reason}</span>
                     </div>
-                    <Badge className={`${st.color} border`}>{st.label}</Badge>
+                    <StatusBadge status={req.status}>{t(st.labelKey)}</StatusBadge>
                   </div>
                 )
               })}
@@ -626,13 +627,13 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
-              {selectedDate} 교대 스케줄
+              {t('dateSchedule', { date: selectedDate ?? '' })}
             </DialogTitle>
           </DialogHeader>
 
           {dateSchedules.length === 0 ? (
             <div className="text-center py-8 text-sm text-muted-foreground">
-              이 날짜에 배정된 스케줄이 없습니다.
+              {t('noScheduleForDate')}
             </div>
           ) : (
             <div className="space-y-3 max-h-[400px] overflow-y-auto">
@@ -668,7 +669,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
                       <p className="text-xs text-muted-foreground mt-1">
                         {s.startTime} - {s.endTime}
                       </p>
-                      <Badge className={`${st.color} border mt-1`}>{st.label}</Badge>
+                      <StatusBadge status={s.status} className="mt-1">{t(st.labelKey)}</StatusBadge>
                     </div>
                   </div>
                 )

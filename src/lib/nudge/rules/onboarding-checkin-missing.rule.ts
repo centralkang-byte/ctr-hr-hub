@@ -56,6 +56,16 @@ export const onboardingCheckinMissingRule: NudgeRule = {
     return `${item.displayTitle} — ${daysOverdue}일 전에 예정된 체크인이 아직 완료되지 않았습니다. 감정 펄스를 기록해 주세요.`
   },
 
+  getTitleKey(_item: OverdueItem): string {
+    return 'notifications.nudge.onboardingCheckin.title'
+  },
+  getBodyKey(_item: OverdueItem): string {
+    return 'notifications.nudge.onboardingCheckin.body'
+  },
+  getBodyParams(item: OverdueItem, daysOverdue: number): Record<string, string | number> {
+    return { displayTitle: item.displayTitle, daysOverdue, week: String(item.meta?.week ?? '') }
+  },
+
   async findOverdueItems(
     companyId:  string,
     assigneeId: string,

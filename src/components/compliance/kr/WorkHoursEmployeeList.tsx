@@ -9,6 +9,8 @@ import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Search, AlertTriangle } from 'lucide-react'
 import { TABLE_STYLES } from '@/lib/styles'
+import { StatusBadge } from '@/components/ui/StatusBadge'
+import type { StatusCategory } from '@/lib/styles/status'
 
 type WorkHoursStatus = 'COMPLIANT' | 'WARNING' | 'VIOLATION'
 
@@ -25,22 +27,10 @@ interface Props {
   weekOffset: number
 }
 
-const STATUS_MAP: Record<WorkHoursStatus, { label: string; className: string }> = {
-  COMPLIANT: {
-    label: '준수',
-    className:
-      'bg-primary/10 text-tertiary',
-  },
-  WARNING: {
-    label: '주의',
-    className:
-      'bg-orange-500/10 text-orange-500',
-  },
-  VIOLATION: {
-    label: '위반',
-    className:
-      'bg-destructive/5 text-red-500',
-  },
+const STATUS_MAP: Record<WorkHoursStatus, { label: string; variant: StatusCategory }> = {
+  COMPLIANT: { label: '준수', variant: 'success' },
+  WARNING: { label: '주의', variant: 'warning' },
+  VIOLATION: { label: '위반', variant: 'error' },
 }
 
 const MOCK_EMPLOYEES: WorkHoursEmployee[] = [
@@ -99,7 +89,7 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-6 border-b border-border">
         <div className="flex items-center gap-2">
           <h2 className="text-base font-bold text-foreground tracking-[-0.02em]">직원별 근무현황</h2>
-          <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-xs font-semibold bg-muted text-muted-foreground">
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-muted text-muted-foreground">
             {filtered.length}명
           </span>
         </div>
@@ -206,11 +196,9 @@ export default function WorkHoursEmployeeList({ weekOffset }: Props) {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-[4px] text-xs font-semibold ${statusInfo.className}`}
-                      >
+                      <StatusBadge variant={statusInfo.variant}>
                         {statusInfo.label}
-                      </span>
+                      </StatusBadge>
                     </td>
                   </tr>
                 )

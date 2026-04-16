@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { useTranslations, useLocale } from 'next-intl'
 import { X, Target, MessageSquare, Award, Star, ChevronRight } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 
@@ -51,10 +52,10 @@ interface InsightData {
 
 // ─── Constants ────────────────────────────────────────────
 
-const READINESS_BADGE: Record<string, { label: string; color: string; icon: string }> = {
-  READY_NOW: { label: 'Ready Now', color: 'bg-emerald-500/15 text-emerald-700', icon: '🟢' },
-  READY_1_2_YEARS: { label: '1-2년 후', color: 'bg-amber-500/15 text-amber-700', icon: '🟡' },
-  READY_3_PLUS_YEARS: { label: '개발 필요', color: 'bg-destructive/10 text-destructive', icon: '🔴' },
+const READINESS_BADGE: Record<string, { labelKey: string; color: string; icon: string }> = {
+  READY_NOW: { labelKey: 'insight.readinessReadyNow', color: 'bg-emerald-500/15 text-emerald-700', icon: '🟢' },
+  READY_1_2_YEARS: { labelKey: 'insight.readiness1to2Years', color: 'bg-amber-500/15 text-amber-700', icon: '🟡' },
+  READY_3_PLUS_YEARS: { labelKey: 'insight.readinessDevelopment', color: 'bg-destructive/10 text-destructive', icon: '🔴' },
 }
 
 const SENTIMENT_ICON: Record<string, string> = {
@@ -73,6 +74,8 @@ interface Props {
 }
 
 export default function EmployeeInsightPanel({ employeeId, employeeName, onClose }: Props) {
+  const t = useTranslations('performance')
+  const locale = useLocale()
   const [data, setData] = useState<InsightData | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -117,23 +120,23 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
         <div className="flex items-center justify-between p-4 border-b border-border sticky top-0 bg-card">
           <div>
             <h2 className="text-base font-semibold text-foreground">
-              {data?.employee.name ?? employeeName ?? '직원 정보'}
+              {data?.employee.name ?? employeeName ?? t('insight.employeeInfo')}
             </h2>
-            <p className="text-xs text-muted-foreground">통합 인사이트</p>
+            <p className="text-xs text-muted-foreground">{t('insight.integratedInsight')}</p>
           </div>
           <button
             onClick={onClose}
             className="p-1.5 hover:bg-muted rounded-lg transition-colors"
-            aria-label="닫기"
+            aria-label={t('insight.close')}
           >
             <X className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
 
         {loading ? (
-          <div className="p-6 text-center text-sm text-muted-foreground">불러오는 중...</div>
+          <div className="p-6 text-center text-sm text-muted-foreground">{t('insight.loading')}</div>
         ) : !data ? (
-          <div className="p-6 text-center text-sm text-muted-foreground">데이터를 불러올 수 없습니다.</div>
+          <div className="p-6 text-center text-sm text-muted-foreground">{t('insight.loadFailed')}</div>
         ) : (
           <div className="p-4 space-y-5">
 
@@ -141,10 +144,10 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
             <section>
               <div className="flex items-center gap-2 mb-2">
                 <Target className="w-4 h-4 text-primary" />
-                <span className="text-sm font-semibold text-foreground">목표 달성률</span>
+                <span className="text-sm font-semibold text-foreground">{t('insight.goalAchievement')}</span>
               </div>
               {data.goals.length === 0 ? (
-                <p className="text-xs text-muted-foreground">등록된 목표 없음</p>
+                <p className="text-xs text-muted-foreground">{t('insight.noGoals')}</p>
               ) : (
                 <div className="space-y-1.5">
                   {data.goals.map((goal) => {
@@ -175,11 +178,11 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
               <div className="flex items-center gap-2 mb-2">
                 <MessageSquare className="w-4 h-4 text-primary/90" />
                 <span className="text-sm font-semibold text-foreground">
-                  최근 원온원 ({data.oneOnOnes.length}건)
+                  {t('insight.recentOneOnOnes', { count: data.oneOnOnes.length })}
                 </span>
               </div>
               {data.oneOnOnes.length === 0 ? (
-                <p className="text-xs text-muted-foreground">최근 6개월 원온원 없음</p>
+                <p className="text-xs text-muted-foreground">{t('insight.noRecentOneOnOnes')}</p>
               ) : (
                 <div className="space-y-1.5">
                   {data.oneOnOnes.map((o) => (
@@ -189,12 +192,12 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
                         </span>
                       <div className="min-w-0">
                         <p className="text-xs text-muted-foreground">
-                          {new Date(o.scheduledAt).toLocaleDateString('ko-KR', {
+                          {new Date(o.scheduledAt).toLocaleDateString(locale, {
                             month: '2-digit', day: '2-digit',
                           })}
                         </p>
                         <p className="text-xs text-foreground line-clamp-2">
-                          {o.aiSummary ?? o.notes ?? '노트 없음'}
+                          {o.aiSummary ?? o.notes ?? t('insight.noNotes')}
                         </p>
                       </div>
                     </div>
@@ -208,25 +211,25 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
               <section>
                 <div className="flex items-center gap-2 mb-2">
                   <Award className="w-4 h-4 text-amber-700" />
-                  <span className="text-sm font-semibold text-foreground">최근 평가</span>
+                  <span className="text-sm font-semibold text-foreground">{t('insight.latestEval')}</span>
                   <span className="text-xs text-muted-foreground">({data.latestEval.cycle.name})</span>
                 </div>
                 <div className="bg-background rounded-lg p-2.5 grid grid-cols-2 gap-2">
                   <div>
-                    <p className="text-xs text-muted-foreground">업적 등급</p>
+                    <p className="text-xs text-muted-foreground">{t('insight.performanceGrade')}</p>
                     <p className="text-sm font-semibold text-foreground">
                       {data.latestEval.performanceGrade ?? '-'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">역량 등급</p>
+                    <p className="text-xs text-muted-foreground">{t('insight.competencyGrade')}</p>
                     <p className="text-sm font-semibold text-foreground">
                       {data.latestEval.competencyGrade ?? '-'}
                     </p>
                   </div>
                   {data.latestEval.emsBlock && (
                     <div className="col-span-2">
-                      <p className="text-xs text-muted-foreground">EMS 블록</p>
+                      <p className="text-xs text-muted-foreground">{t('insight.emsBlock')}</p>
                       <p className="text-sm font-semibold text-foreground">{data.latestEval.emsBlock}</p>
                     </div>
                   )}
@@ -238,14 +241,14 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
             <section>
               <div className="flex items-center gap-2 mb-2">
                 <Star className="w-4 h-4 text-amber-500" />
-                <span className="text-sm font-semibold text-foreground">승계 준비도</span>
+                <span className="text-sm font-semibold text-foreground">{t('insight.successionReadiness')}</span>
               </div>
               {data.successionEntry ? (
                 <div className="bg-background rounded-lg p-2.5">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${READINESS_BADGE[data.successionEntry.readiness]?.color ?? 'bg-muted text-muted-foreground'}`}>
                       {READINESS_BADGE[data.successionEntry.readiness]?.icon}{' '}
-                      {READINESS_BADGE[data.successionEntry.readiness]?.label ?? data.successionEntry.readiness}
+                      {READINESS_BADGE[data.successionEntry.readiness]?.labelKey ? t(READINESS_BADGE[data.successionEntry.readiness].labelKey) : data.successionEntry.readiness}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       {data.successionEntry.plan?.positionTitle}
@@ -258,7 +261,7 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
                   )}
                 </div>
               ) : (
-                <p className="text-xs text-muted-foreground">승계 계획 미등록</p>
+                <p className="text-xs text-muted-foreground">{t('insight.noSuccessionPlan')}</p>
               )}
             </section>
 
@@ -268,7 +271,7 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
                 href={`/employees/${employeeId}`}
                 className="flex items-center justify-between w-full px-3 py-2 bg-card border border-border rounded-lg hover:bg-background text-sm text-foreground transition-colors"
               >
-                <span>직원 프로필 보기</span>
+                <span>{t('insight.viewProfile')}</span>
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </a>
             </div>

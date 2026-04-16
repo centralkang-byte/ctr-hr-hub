@@ -40,6 +40,16 @@ export const payrollReviewRule: NudgeRule = {
     return `${item.displayTitle} — ${daysOverdue}일째 검토 대기 중입니다. 급여 처리를 진행해주세요.`
   },
 
+  getTitleKey(_item: OverdueItem): string {
+    return 'notifications.nudge.payrollReview.title'
+  },
+  getBodyKey(_item: OverdueItem): string {
+    return 'notifications.nudge.payrollReview.body'
+  },
+  getBodyParams(item: OverdueItem, daysOverdue: number): Record<string, string | number> {
+    return { displayTitle: item.displayTitle, daysOverdue }
+  },
+
   async findOverdueItems(
     companyId: string,
     assigneeId: string,

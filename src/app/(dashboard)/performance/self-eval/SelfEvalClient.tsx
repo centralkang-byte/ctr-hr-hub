@@ -58,7 +58,7 @@ interface ExistingEval {
   comment: string | null
 }
 
-const SCORE_LABELS = ['', '매우 부족', '부족', '보통', '우수', '탁월']
+const SCORE_LABELS = ['', 'score.veryLacking', 'score.lacking', 'score.average', 'score.excellent', 'score.outstanding']
 
 // ─── Component ────────────────────────────────────────────
 
@@ -91,16 +91,16 @@ export default function SelfEvalClient({
         setCycles(evalOpenCycles)
         if (evalOpenCycles.length > 0) setSelectedCycleId(evalOpenCycles[0].id)
       } catch (err) {
-        toast({ title: '자기 평가 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+        toast({ title: t('selfEval.loadFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' })
       }
     }
     fetchCycles()
-  }, [])
+  }, [t]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─── Fetch evaluation data ──────────────────────────
 
   const fetchEvalData = useCallback(async () => {
-    if (!selectedCycleId) return
+    if (!selectedCycleId) { setLoading(false); return }
     setLoading(true)
     try {
       const res = await apiClient.get<{
@@ -134,11 +134,11 @@ export default function SelfEvalClient({
 
       setOverallComment(res.data.evaluation?.comment ?? '')
     } catch (err) {
-      toast({ title: '자기 평가 저장 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' })
+      toast({ title: t('selfEval.saveFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
-  }, [selectedCycleId])
+  }, [selectedCycleId, t])
 
   useEffect(() => { fetchEvalData() }, [fetchEvalData])
 
@@ -157,7 +157,7 @@ export default function SelfEvalClient({
           status,
         })
         await fetchEvalData()
-        toast({ title: '제출 완료되었습니다.' })
+        toast({ title: t('selfEval.submitted') })
       } catch {
         toast({ title: t('saveFailed'), variant: 'destructive' })
       } finally {
@@ -175,7 +175,7 @@ export default function SelfEvalClient({
           status,
         })
         await fetchEvalData()
-        toast({ title: '임시 저장되었습니다.' })
+        toast({ title: t('selfEval.draftSaved') })
       } catch {
         toast({ title: t('saveFailed'), variant: 'destructive' })
       } finally {
@@ -194,7 +194,7 @@ export default function SelfEvalClient({
         strengths: string[]
         improvement_areas: string[]
       }>('/api/v1/ai/eval-comment', {
-        employeeName: user.name ?? '직원',
+        employeeName: user.name ?? t('managerEval.defaultEmployee'),
         goalSummary: goals.map((g) => g.title).join(', '),
         goalScores: goals.map((g) => ({
           title: g.title,
@@ -232,7 +232,7 @@ export default function SelfEvalClient({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('selfEval')}</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('selfEval.title')}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t('kr_kec9e90ea_kec84b1ea_kebb08f_ke')}</p>
         </div>
         <select
@@ -266,7 +266,7 @@ export default function SelfEvalClient({
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-foreground">{goal.title}</p>
-                    <p className="text-xs text-muted-foreground">가중치: {goal.weight}%</p>
+                    <p className="text-xs text-muted-foreground">{t('managerEval.weight', { weight: goal.weight })}</p>
                   </div>
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((score) => (
@@ -288,7 +288,7 @@ export default function SelfEvalClient({
                     ))}
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground">{SCORE_LABELS[goalScores[goal.id]?.score ?? 3]}</p>
+                <p className="text-xs text-muted-foreground">{SCORE_LABELS[goalScores[goal.id]?.score ?? 3] ? t(SCORE_LABELS[goalScores[goal.id]?.score ?? 3]) : ''}</p>
                 <input
                   type="text"
                   placeholder={t('enterComment')}
@@ -340,7 +340,7 @@ export default function SelfEvalClient({
                     ))}
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground">{SCORE_LABELS[compScores[comp.id]?.score ?? 3]}</p>
+                <p className="text-xs text-muted-foreground">{SCORE_LABELS[compScores[comp.id]?.score ?? 3] ? t(SCORE_LABELS[compScores[comp.id]?.score ?? 3]) : ''}</p>
               </div>
             ))}
           </div>
@@ -358,7 +358,7 @@ export default function SelfEvalClient({
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-500/15 text-primary/90 hover:bg-indigo-200 transition-colors disabled:opacity-50"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              {aiLoading ? t('aiGenerating') : 'AI 코멘트 제안'}
+              {aiLoading ? t('aiGenerating') : t('managerEval.aiSuggest')}
             </button>
           )}
         </div>
@@ -367,7 +367,7 @@ export default function SelfEvalClient({
           disabled={isSubmitted}
           value={overallComment}
           onChange={(e) => setOverallComment(e.target.value)}
-          placeholder="이번 평가 주기에 대한 종합 의견을 작성하세요..."
+          placeholder={t('selfEval.commentPlaceholder')}
           className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground disabled:bg-background resize-none"
         />
       </div>

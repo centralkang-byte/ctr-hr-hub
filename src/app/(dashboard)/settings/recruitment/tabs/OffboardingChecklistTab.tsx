@@ -28,12 +28,12 @@ export function OffboardingChecklistTab({
 
   if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
-  const typeLabels: Record<string,string> = { VOLUNTARY: '자발적 퇴직', INVOLUNTARY: '비자발적', RETIREMENT: '정년퇴직', CONTRACT_END: '계약만료' }
+  const typeLabels: Record<string,string> = { VOLUNTARY: t('offboarding.voluntary'), INVOLUNTARY: t('offboarding.involuntary'), RETIREMENT: t('offboarding.retirement'), CONTRACT_END: t('offboarding.contractEnd') }
 
   return (
     <div className="space-y-4">
       <div className="mb-4 flex items-center justify-between">
-        <div><h3 className="text-base font-semibold text-foreground">{t('kr_kec98a4ed_kecb2b4ed')}</h3><p className="text-sm text-muted-foreground">{checklists.length}개 체크리스트</p></div>
+        <div><h3 className="text-base font-semibold text-foreground">{t('kr_kec98a4ed_kecb2b4ed')}</h3><p className="text-sm text-muted-foreground">{t('offboarding.subtitle', { count: checklists.length })}</p></div>
         <Button className={BUTTON_VARIANTS.primary}><Plus className="mr-2 h-4 w-4" />{t('kr_kecb2b4ed_add')}</Button>
       </div>
       {checklists.length > 0 ? (
@@ -48,7 +48,7 @@ export function OffboardingChecklistTab({
               <td className={TABLE_STYLES.cell}>{c.name}</td>
               <td className={TABLE_STYLES.cellMuted}>{typeLabels[c.targetType] ?? c.targetType}</td>
               <td className="px-4 py-3 text-center text-sm text-muted-foreground">{c._count?.offboardingTasks ?? 0}</td>
-              <td className="px-4 py-3 text-center"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!c.deletedAt ? 'bg-tertiary-container/10 text-tertiary' : 'bg-muted/50 text-muted-foreground/60'}`}>{!c.deletedAt ? '활성' : '비활성'}</span></td>
+              <td className="px-4 py-3 text-center"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!c.deletedAt ? 'bg-tertiary-container/10 text-tertiary' : 'bg-muted/50 text-muted-foreground/60'}`}>{!c.deletedAt ? t('common.active') : t('common.inactive')}</span></td>
             </tr>
           ))}</tbody></table>
         </div>

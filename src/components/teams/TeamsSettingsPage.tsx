@@ -6,6 +6,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Loader2, Save, Wifi, WifiOff } from 'lucide-react'
 
 import type { SessionUser } from '@/types'
@@ -51,12 +52,18 @@ const EMPTY_CONFIG: TeamsConfig = {
   connectedBy: null,
 }
 
-const TABS = ['연결', '채널', '봇', '다이제스트'] as const
-
 const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
 
 export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
+  const t = useTranslations('teams')
   const { toast } = useToast()
+
+  const TABS = [
+    t('ui.settings.tabConnection'),
+    t('ui.settings.tabChannel'),
+    t('ui.settings.tabBot'),
+    t('ui.settings.tabDigest'),
+  ] as const
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
@@ -75,7 +82,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
         setConnected(false)
       }
     } catch {
-      toast({ title: '오류', description: 'Teams 설정을 불러올 수 없습니다.', variant: 'destructive' })
+      toast({ title: t('ui.settings.loadError'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -89,10 +96,10 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
     setSaving(true)
     try {
       await apiClient.put('/api/v1/teams/config', config)
-      toast({ title: '성공', description: 'Teams 설정이 저장되었습니다.' })
+      toast({ title: t('ui.settings.saveSuccess') })
       void fetchConfig()
     } catch {
-      toast({ title: '오류', description: '저장 중 오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: t('ui.settings.saveError'), variant: 'destructive' })
     } finally {
       setSaving(false)
     }
@@ -101,11 +108,11 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
   const handleDisconnect = async () => {
     try {
       await apiClient.post('/api/v1/teams/config/disconnect', {})
-      toast({ title: '성공', description: 'Teams 연결이 해제되었습니다.' })
+      toast({ title: t('ui.settings.disconnectSuccess') })
       setConfig(EMPTY_CONFIG)
       setConnected(false)
     } catch {
-      toast({ title: '오류', description: '연결 해제 중 오류가 발생했습니다.', variant: 'destructive' })
+      toast({ title: t('ui.settings.disconnectError'), variant: 'destructive' })
     }
   }
 
@@ -120,17 +127,17 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title="Teams 연동"
-        description="Microsoft Teams와 HR Hub를 연동하여 알림, 봇, 주간 다이제스트를 설정합니다."
+        title={t('ui.settings.title')}
+        description={t('ui.settings.description')}
         actions={
           <div className="flex items-center gap-2">
             {connected ? (
               <span className="flex items-center gap-1.5 text-sm text-emerald-600">
-                <Wifi className="h-4 w-4" /> 연결됨
+                <Wifi className="h-4 w-4" /> {t('ui.connection.connected')}
               </span>
             ) : (
               <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <WifiOff className="h-4 w-4" /> 미연결
+                <WifiOff className="h-4 w-4" /> {t('ui.connection.disconnected')}
               </span>
             )}
           </div>
@@ -179,14 +186,14 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
         {activeTab === 2 && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">봇 설정</CardTitle>
+              <CardTitle className="text-lg">{t('ui.bot.title')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <Label className="text-sm font-medium">봇 활성화</Label>
+                  <Label className="text-sm font-medium">{t('ui.bot.enabled')}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Teams에서 휴가, 급여, 근태 조회 명령을 사용할 수 있습니다.
+                    {t('ui.bot.enabledDesc')}
                   </p>
                 </div>
                 <Switch
@@ -219,14 +226,14 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
           <div className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">주간 다이제스트</CardTitle>
+                <CardTitle className="text-lg">{t('ui.digestSettings.title')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label className="text-sm font-medium">다이제스트 발송</Label>
+                    <Label className="text-sm font-medium">{t('ui.digestSettings.enabled')}</Label>
                     <p className="text-xs text-muted-foreground">
-                      매주 선택한 요일/시간에 HR 주간 요약을 Teams 채널에 포스팅합니다.
+                      {t('ui.digestSettings.enabledDesc')}
                     </p>
                   </div>
                   <Switch
@@ -240,7 +247,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
                 {config.digestEnabled && (
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">발송 요일</Label>
+                      <Label className="text-sm font-medium">{t('ui.digestSettings.dayLabel')}</Label>
                       <div className="flex gap-1">
                         {DAY_LABELS.map((label, i) => (
                           <button
@@ -262,7 +269,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
                     </div>
 
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">발송 시간</Label>
+                      <Label className="text-sm font-medium">{t('ui.digestSettings.hourLabel')}</Label>
                       <select
                         value={config.digestHour}
                         onChange={(e) =>
@@ -303,7 +310,7 @@ export function TeamsSettingsPage({ user: _user }: { user: SessionUser }) {
           ) : (
             <Save className="mr-2 h-4 w-4" />
           )}
-          저장
+          {t('ui.settings.save')}
         </Button>
       </div>
     </div>

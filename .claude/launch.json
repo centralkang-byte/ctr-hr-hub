@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeExecutable": "/bin/zsh",
+      "runtimeArgs": ["-lc", "PATH=/opt/homebrew/bin:$PATH npm run dev"],
       "port": 3002,
       "autoPort": true
     }

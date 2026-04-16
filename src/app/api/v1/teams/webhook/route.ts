@@ -11,25 +11,27 @@ import { teamsCardActionSchema } from '@/lib/schemas/teams'
 import { prisma } from '@/lib/prisma'
 import { apiError } from '@/lib/api'
 import { unauthorized, badRequest, notFound } from '@/lib/errors'
+import { getRequestLocale, serverT } from '@/lib/server-i18n'
 
 export async function POST(req: NextRequest) {
+  const locale = await getRequestLocale()
   const rawBody = await req.text()
   const signature = req.headers.get('x-teams-signature')
 
   if (!verifyWebhookSignature(rawBody, signature)) {
-    return apiError(unauthorized('인증 실패'))
+    return apiError(unauthorized(await serverT(locale, 'teams.api.authFailed')))
   }
 
   let body: unknown
   try {
     body = JSON.parse(rawBody)
   } catch {
-    return apiError(badRequest('잘못된 JSON'))
+    return apiError(badRequest(await serverT(locale, 'teams.api.invalidJson')))
   }
 
   const parsed = teamsCardActionSchema.safeParse(body)
   if (!parsed.success) {
-    return apiError(badRequest('잘못된 요청 데이터'))
+    return apiError(badRequest(await serverT(locale, 'teams.api.invalidRequest')))
   }
 
   const { action, cardType, referenceId } = parsed.data
@@ -41,10 +43,10 @@ export async function POST(req: NextRequest) {
   })
 
   if (!cardAction) {
-    return apiError(notFound('처리 가능한 카드 액션이 없습니다.'))
+    return apiError(notFound(await serverT(locale, 'teams.actions.recorded')))
   }
 
-  const result = await executeCardAction({
+  const result = await executeCardAction(locale, {
     cardType,
     referenceId,
     action,

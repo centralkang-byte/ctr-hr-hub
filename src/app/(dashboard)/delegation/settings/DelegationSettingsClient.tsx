@@ -33,6 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useTranslations } from 'next-intl'
 import { apiClient } from '@/lib/api'
 import { formatDateLocale } from '@/lib/format/date'
 import type { SessionUser } from '@/types'
@@ -74,6 +75,7 @@ function getDaysLeft(endDate: string): number {
 // ─── Component ───────────────────────────────────────────
 
 export function DelegationSettingsClient({ user: _user }: { user: SessionUser }) {
+  const t = useTranslations('delegation')
   const [view, setView] = useState<ViewMode>('list')
   const [delegated, setDelegated] = useState<DelegationRecord[]>([])
   const [received, setReceived] = useState<DelegationRecord[]>([])
@@ -135,7 +137,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
 
   const handleCreate = async () => {
     if (!selectedDelegatee || !startDate || !endDate) {
-      setError('수임자, 시작일, 종료일을 모두 선택해주세요.')
+      setError(t('error.requiredFields'))
       return
     }
 
@@ -154,7 +156,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
       void fetchDelegations()
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { error?: { message?: string } } } })
-        ?.response?.data?.error?.message ?? '위임 생성에 실패했습니다.'
+        ?.response?.data?.error?.message ?? t('error.createFailed')
       setError(msg)
     } finally {
       setProcessing(false)
@@ -196,19 +198,17 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
   return (
     <div className="space-y-6 p-6">
       <PageHeader
-        title="위임 설정"
-        description="부재 시 승인 권한을 위임하여 업무 중단을 방지합니다."
+        title={t('title')}
+        description={t('description')}
       />
 
       {/* ── Info Banner ── */}
       <div className="flex items-start gap-3 rounded-xl border border-indigo-200 bg-primary/10 p-4">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
         <div className="text-xs text-primary">
-          <p className="font-medium">승인 위임 안내</p>
+          <p className="font-medium">{t('info.title')}</p>
           <p className="mt-1 text-muted-foreground">
-            출장, 휴가 등 부재 시 다른 매니저에게 승인 권한을 위임할 수 있습니다.
-            수임자는 위임 기간 동안 귀하의 팀 휴가 승인/반려를 처리할 수 있습니다.
-            최대 30일까지 설정 가능합니다.
+            {t('info.description')}
           </p>
         </div>
       </div>
@@ -221,7 +221,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
               <div className="flex items-center gap-2">
                 <ShieldCheck className="h-5 w-5 text-primary" />
                 <CardTitle className="text-base font-bold text-foreground">
-                  내가 설정한 위임
+                  {t('section.myDelegations')}
                 </CardTitle>
                 {activeDelegated.length > 0 && (
                   <Badge className="bg-primary text-white text-[10px] px-1.5 rounded-full">
@@ -235,7 +235,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                 onClick={() => { resetForm(); setView('create') }}
               >
                 <Plus className="h-3.5 w-3.5" />
-                새 위임 설정
+                {t('button.newDelegation')}
               </Button>
             </CardHeader>
             <CardContent>
@@ -246,8 +246,8 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
               ) : activeDelegated.length === 0 ? (
                 <EmptyState
                   icon={<ShieldCheck className="h-10 w-10" />}
-                  title="활성 위임이 없습니다"
-                  description="부재 시 위임을 설정하면 승인 업무가 원활하게 처리됩니다."
+                  title={t('empty.title')}
+                  description={t('empty.description')}
                 />
               ) : (
                 <div className="space-y-3">
@@ -265,14 +265,14 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                           <div>
                             <div className="flex items-center gap-2">
                               <span className="text-sm font-semibold text-foreground">
-                                {d.delegatee?.name ?? '알 수 없음'}
+                                {d.delegatee?.name ?? t('unknown')}
                               </span>
                               <ArrowRight className="h-3 w-3 text-muted-foreground" />
                               <Badge
                                 variant="outline"
                                 className="text-[10px] border-indigo-200 text-primary"
                               >
-                                {d.scope === 'ALL' ? '전체' : '휴가'}
+                                {d.scope === 'ALL' ? t('scope.all') : t('scope.leaveOnly')}
                               </Badge>
                             </div>
                             <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
@@ -300,7 +300,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                           onClick={() => handleRevoke(d.id)}
                         >
                           <XCircle className="h-3.5 w-3.5" />
-                          해제
+                          {t('button.revoke')}
                         </Button>
                       </div>
                     )
@@ -317,7 +317,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-emerald-500" />
                   <CardTitle className="text-base font-bold text-foreground">
-                    나에게 위임된 승인 권한
+                    {t('section.receivedDelegations')}
                   </CardTitle>
                   <Badge className="bg-emerald-500/100 text-white text-[10px] px-1.5 rounded-full">
                     {activeReceived.length}
@@ -337,15 +337,15 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-semibold text-foreground">
-                            {d.delegator?.name ?? '알 수 없음'}
+                            {d.delegator?.name ?? t('unknown')}
                           </span>
-                          <span className="text-[11px] text-muted-foreground">님의 승인 권한</span>
+                          <span className="text-[11px] text-muted-foreground">{t('receivedLabel')}</span>
                         </div>
                         <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
                           <CalendarDays className="h-3 w-3" />
                           <span>{formatDateLocale(d.startDate)} ~ {formatDateLocale(d.endDate)}</span>
                           <Badge variant="outline" className="text-[9px] border-emerald-100 text-emerald-500">
-                            {d.scope === 'ALL' ? '전체' : '휴가'}
+                            {d.scope === 'ALL' ? t('scope.all') : t('scope.leaveOnly')}
                           </Badge>
                         </div>
                       </div>
@@ -364,7 +364,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
               className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
             >
               <Clock className="h-3.5 w-3.5" />
-              {showHistory ? '이력 숨기기' : '이력 보기'}
+              {showHistory ? t('history.hide') : t('history.show')}
             </button>
           </div>
 
@@ -372,7 +372,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
           {showHistory && historyDelegated.length > 0 && (
             <Card className="border-border">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-muted-foreground">이력</CardTitle>
+                <CardTitle className="text-sm font-semibold text-muted-foreground">{t('history.title')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -385,7 +385,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                         <User className="h-4 w-4 text-muted-foreground" />
                         <div>
                           <span className="text-xs font-medium text-muted-foreground">
-                            {d.delegatee?.name ?? '알 수 없음'}
+                            {d.delegatee?.name ?? t('unknown')}
                           </span>
                           <span className="ml-2 text-[10px] text-muted-foreground/60">
                             {formatDateLocale(d.startDate)} ~ {formatDateLocale(d.endDate)}
@@ -396,7 +396,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                         variant="outline"
                         className={`text-[10px] ${d.status === 'EXPIRED' ? 'border-amber-300 text-amber-700' : 'border-destructive/20 text-red-500'}`}
                       >
-                        {d.status === 'EXPIRED' ? '만료' : '해제'}
+                        {d.status === 'EXPIRED' ? t('status.expired') : t('status.revoked')}
                       </Badge>
                     </div>
                   ))}
@@ -411,7 +411,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-bold text-foreground">
-                새 위임 설정
+                {t('create.title')}
               </CardTitle>
               <Button
                 variant="ghost"
@@ -419,7 +419,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                 onClick={() => { setView('list'); resetForm() }}
                 className="text-muted-foreground"
               >
-                취소
+                {t('button.cancel')}
               </Button>
             </div>
           </CardHeader>
@@ -435,7 +435,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
             {/* Step 1: Select Delegatee */}
             <div className="space-y-2">
               <label className="text-xs font-semibold text-foreground">
-                수임자 선택 <span className="text-red-500">*</span>
+                {t('create.delegatee')} <span className="text-red-500">*</span>
               </label>
               {selectedDelegatee ? (
                 <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-background p-3">
@@ -456,7 +456,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                     onClick={() => setSelectedDelegatee(null)}
                     className="text-muted-foreground h-7"
                   >
-                    변경
+                    {t('button.change')}
                   </Button>
                 </div>
               ) : (
@@ -464,7 +464,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder={'이름 또는 이메일로 검색...'}
+                      placeholder={t('create.searchPlaceholder')}
                       className="pl-9 h-10"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -501,14 +501,14 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
 
             {/* Step 2: Scope */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-foreground">위임 범위</label>
+              <label className="text-xs font-semibold text-foreground">{t('create.scope')}</label>
               <Select value={scope} onValueChange={(v) => setScope(v as 'LEAVE_ONLY' | 'ALL')}>
                 <SelectTrigger className="h-10">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="LEAVE_ONLY">휴가 승인만</SelectItem>
-                  <SelectItem value="ALL">전체 승인</SelectItem>
+                  <SelectItem value="LEAVE_ONLY">{t('scope.leaveOnly')}</SelectItem>
+                  <SelectItem value="ALL">{t('scope.all')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -517,7 +517,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-foreground">
-                  시작일 <span className="text-red-500">*</span>
+                  {t('create.startDate')} <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="date"
@@ -529,7 +529,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-foreground">
-                  종료일 <span className="text-red-500">*</span>
+                  {t('create.endDate')} <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="date"
@@ -543,9 +543,9 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
 
             {/* Step 4: Reason */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-foreground">사유 (선택)</label>
+              <label className="text-xs font-semibold text-foreground">{t('create.reason')}</label>
               <Input
-                placeholder="출장, 휴가 등..."
+                placeholder={t('create.reasonPlaceholder')}
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 className="h-10"
@@ -559,7 +559,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                 variant="outline"
                 onClick={() => { setView('list'); resetForm() }}
               >
-                취소
+                {t('button.cancel')}
               </Button>
               <Button
                 className="gap-1.5 bg-primary text-white hover:bg-primary/80"
@@ -571,7 +571,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                 ) : (
                   <ShieldCheck className="h-4 w-4" />
                 )}
-                위임 설정
+                {t('button.setDelegation')}
               </Button>
             </div>
           </CardContent>

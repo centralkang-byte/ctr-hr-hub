@@ -11,17 +11,25 @@
 // ═══════════════════════════════════════════════════════════
 
 import * as XLSX from 'xlsx'
+import { serverT } from '@/lib/server-i18n'
+import type { Locale } from '@/i18n/config'
 
 // ─── 계정과목 매핑 ─────────────────────────────────────────
 
-// Settings-connected: account code mapping (defaults below, configurable per company)
-const ACCOUNT_MAPPING = {
-    basePay: { code: '811', name: '급여' },
-    allowances: { code: '812', name: '제수당' },
-    welfare: { code: '822', name: '복리후생비' },
-    socialInsurance: { code: '831', name: '법정복리후생비' },
-    retirement: { code: '826', name: '퇴직급여' },
+// Settings-connected: account code mapping (codes only, names resolved via i18n)
+const ACCOUNT_CODES = {
+    basePay: '811',
+    allowances: '812',
+    welfare: '822',
+    socialInsurance: '831',
+    retirement: '826',
 } as const
+
+// ─── Excel sheet name sanitizer (31 chars max, no []:*?/\) ──
+
+function sanitizeSheetName(name: string): string {
+  return name.replace(/[[\]*?/\\:]/g, '').slice(0, 31)
+}
 
 // ─── 헤더 스타일 정의 ─────────────────────────────────────
 
@@ -69,7 +77,8 @@ function toArrayBuffer(wb: XLSX.WorkBook): ArrayBuffer {
     return uint8.buffer.slice(uint8.byteOffset, uint8.byteOffset + uint8.byteLength)
 }
 
-export function generateComparisonExcel(
+export async function generateComparisonExcel(
+    locale: Locale,
     yearMonth: string,
     rows: ComparisonExcelRow[],
     summary: {
@@ -81,65 +90,59 @@ export function generateComparisonExcel(
         employeesDecreased: number
         employeesUnchanged: number
     },
-): ArrayBuffer {
+): Promise<ArrayBuffer> {
+    const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
     const wb = XLSX.utils.book_new()
 
-    // ── Sheet 1: 전월 대비 비교 ──────────────────────────────
+    // Resolve all labels upfront (serverT is async, XLSX APIs are sync)
+    const [docTitle, hEmpNo, hName, hDept, hCurrentNet, hPrevNet, hDiff, hDiffPct, hReason, hAnomaly, hTotal,
+      sheetTitle, summarySheet, sItem, sValue, sMonth, sCurrentTotal, sPrevTotal, sDiff, sDiffPct, sInc, sDec, sUnchanged] = await Promise.all([
+      t('payroll.export.comparison.docTitle', { yearMonth }),
+      t('payroll.export.comparison.employeeNo'), t('payroll.export.comparison.name'), t('payroll.export.comparison.department'),
+      t('payroll.export.comparison.currentNet', { yearMonth }), t('payroll.export.comparison.previousNet'),
+      t('payroll.export.comparison.diff'), t('payroll.export.comparison.diffPercent'),
+      t('payroll.export.comparison.reason'), t('payroll.export.comparison.anomaly'), t('payroll.export.comparison.total'),
+      t('payroll.export.comparison.sheetTitle'), t('payroll.export.comparison.summarySheet'),
+      t('payroll.export.comparison.summaryItem'), t('payroll.export.comparison.summaryValue'),
+      t('payroll.export.comparison.summaryMonth'), t('payroll.export.comparison.summaryCurrentTotal'),
+      t('payroll.export.comparison.summaryPreviousTotal'), t('payroll.export.comparison.summaryDiff'),
+      t('payroll.export.comparison.summaryDiffPercent'), t('payroll.export.comparison.summaryIncreased'),
+      t('payroll.export.comparison.summaryDecreased'), t('payroll.export.comparison.summaryUnchanged'),
+    ])
+
     const sheetData = [
-        // 제목 행
-        [`${yearMonth} 급여 전월 대비 비교표`],
-        [],
-        // 헤더
-        ['사번', '이름', '부서', `${yearMonth} 실수령`, '전월 실수령', '차이', '변동률(%)', '사유', '이상여부'],
-        // 데이터
+        [docTitle], [],
+        [hEmpNo, hName, hDept, hCurrentNet, hPrevNet, hDiff, hDiffPct, hReason, hAnomaly],
         ...rows.map((r) => [
-            r.employeeNo,
-            r.employeeName,
-            r.department,
-            r.currentNet,
-            r.previousNet ?? '',
-            r.diffNet,
-            r.diffPercent,
-            r.changeReason ?? '',
-            r.hasAnomaly ? '⚠️' : '',
+            r.employeeNo, r.employeeName, r.department,
+            r.currentNet, r.previousNet ?? '', r.diffNet, r.diffPercent,
+            r.changeReason ?? '', r.hasAnomaly ? '⚠️' : '',
         ]),
-        // 합계 행
         [],
-        ['합계', '', '', summary.currentTotal, summary.previousTotal, summary.diff, summary.diffPercent, '', ''],
+        [hTotal, '', '', summary.currentTotal, summary.previousTotal, summary.diff, summary.diffPercent, '', ''],
     ]
 
     const ws1 = XLSX.utils.aoa_to_sheet(sheetData)
-
-    // 열 너비 설정
     ws1['!cols'] = [
-        { wch: 12 }, // 사번
-        { wch: 15 }, // 이름
-        { wch: 18 }, // 부서
-        { wch: 16 }, // 현재 실수령
-        { wch: 16 }, // 전월 실수령
-        { wch: 14 }, // 차이
-        { wch: 10 }, // 변동률
-        { wch: 24 }, // 사유
-        { wch: 8 },  // 이상여부
+        { wch: 12 }, { wch: 15 }, { wch: 18 }, { wch: 16 }, { wch: 16 },
+        { wch: 14 }, { wch: 10 }, { wch: 24 }, { wch: 8 },
     ]
+    XLSX.utils.book_append_sheet(wb, ws1, sanitizeSheetName(sheetTitle))
 
-    XLSX.utils.book_append_sheet(wb, ws1, '전월 대비 비교')
-
-    // ── Sheet 2: 요약 ────────────────────────────────────────
     const summaryData = [
-        ['항목', '값'],
-        ['대상 월', yearMonth],
-        ['총 실수령액 (이번달)', summary.currentTotal],
-        ['총 실수령액 (전월)', summary.previousTotal],
-        ['변동액', summary.diff],
-        ['변동률(%)', summary.diffPercent],
-        ['증가 인원', summary.employeesIncreased],
-        ['감소 인원', summary.employeesDecreased],
-        ['동일 인원', summary.employeesUnchanged],
+        [sItem, sValue],
+        [sMonth, yearMonth],
+        [sCurrentTotal, summary.currentTotal],
+        [sPrevTotal, summary.previousTotal],
+        [sDiff, summary.diff],
+        [sDiffPct, summary.diffPercent],
+        [sInc, summary.employeesIncreased],
+        [sDec, summary.employeesDecreased],
+        [sUnchanged, summary.employeesUnchanged],
     ]
     const ws2 = XLSX.utils.aoa_to_sheet(summaryData)
     ws2['!cols'] = [{ wch: 24 }, { wch: 16 }]
-    XLSX.utils.book_append_sheet(wb, ws2, '요약')
+    XLSX.utils.book_append_sheet(wb, ws2, sanitizeSheetName(summarySheet))
 
     return toArrayBuffer(wb)
 }
@@ -169,19 +172,31 @@ export interface LedgerRow {
     netPay: number
 }
 
-export function generateLedgerExcel(yearMonth: string, rows: LedgerRow[]): ArrayBuffer {
+export async function generateLedgerExcel(locale: Locale, yearMonth: string, rows: LedgerRow[]): Promise<ArrayBuffer> {
+    const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
     const wb = XLSX.utils.book_new()
 
-    const headers = [
-        '사번', '이름', '부서', '직급',
-        '기본급', '연장수당', '야간수당', '휴일수당', '직책수당', '식대', '교통비', '지급합계',
-        '국민연금', '건강보험', '장기요양', '고용보험', '소득세', '지방소득세', '공제합계',
-        '실수령액',
-    ]
+    const headers = await Promise.all([
+        t('payroll.export.ledger.employeeNo'), t('payroll.export.ledger.name'),
+        t('payroll.export.ledger.department'), t('payroll.export.ledger.jobGrade'),
+        t('payroll.export.ledger.baseSalary'), t('payroll.export.ledger.overtimePay'),
+        t('payroll.export.ledger.nightPay'), t('payroll.export.ledger.holidayPay'),
+        t('payroll.export.ledger.positionAllowance'), t('payroll.export.ledger.mealAllowance'),
+        t('payroll.export.ledger.transportAllowance'), t('payroll.export.ledger.grossTotal'),
+        t('payroll.export.ledger.nationalPension'), t('payroll.export.ledger.healthInsurance'),
+        t('payroll.export.ledger.longTermCare'), t('payroll.export.ledger.employmentInsurance'),
+        t('payroll.export.ledger.incomeTax'), t('payroll.export.ledger.localIncomeTax'),
+        t('payroll.export.ledger.deductionTotal'), t('payroll.export.ledger.netPay'),
+    ])
 
-    const title = [`${yearMonth} 급여대장`]
+    const [docTitle, sheetTitle, hTotal] = await Promise.all([
+        t('payroll.export.ledger.docTitle', { yearMonth }),
+        t('payroll.export.ledger.sheetTitle'),
+        t('payroll.export.ledger.total'),
+    ])
+
     const sheetData = [
-        title, [], headers,
+        [docTitle], [], headers,
         ...rows.map((r) => [
             r.employeeNo, r.employeeName, r.department, r.jobGrade,
             r.baseSalary, r.overtimePay, r.nightPay, r.holidayPay, r.positionAllowance,
@@ -192,7 +207,7 @@ export function generateLedgerExcel(yearMonth: string, rows: LedgerRow[]): Array
         ]),
         // 합계
         [],
-        ['합계', '', '', '',
+        [hTotal, '', '', '',
             rows.reduce((s, r) => s + r.baseSalary, 0),
             rows.reduce((s, r) => s + r.overtimePay, 0),
             rows.reduce((s, r) => s + r.nightPay, 0),
@@ -220,7 +235,7 @@ export function generateLedgerExcel(yearMonth: string, rows: LedgerRow[]): Array
         { wch: 14 },
     ]
 
-    XLSX.utils.book_append_sheet(wb, ws, '급여대장')
+    XLSX.utils.book_append_sheet(wb, ws, sanitizeSheetName(sheetTitle))
     return toArrayBuffer(wb)
 }
 
@@ -236,29 +251,47 @@ export interface JournalRow {
     total: number
 }
 
-export function generateJournalExcel(yearMonth: string, rows: JournalRow[]): ArrayBuffer {
+export async function generateJournalExcel(locale: Locale, yearMonth: string, rows: JournalRow[]): Promise<ArrayBuffer> {
+    const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
     const wb = XLSX.utils.book_new()
 
-    // ── Sheet 1: 인건비 전표 ─────────────────────────────────
+    // Resolve account names and labels
+    const [aSalary, aAllow, aWelfare, aSocial, aRetire] = await Promise.all([
+        t('payroll.export.journal.accountNames.salary'),
+        t('payroll.export.journal.accountNames.allowances'),
+        t('payroll.export.journal.accountNames.welfare'),
+        t('payroll.export.journal.accountNames.socialInsurance'),
+        t('payroll.export.journal.accountNames.retirement'),
+    ])
+    const [docTitle, sheetTitle, hDept, hTotal, mappingSheet, mItem, mCode, mName] = await Promise.all([
+        t('payroll.export.journal.docTitle', { yearMonth }),
+        t('payroll.export.journal.sheetTitle'),
+        t('payroll.export.journal.department'),
+        t('payroll.export.journal.total'),
+        t('payroll.export.journal.mappingSheet'),
+        t('payroll.export.journal.mappingItem'),
+        t('payroll.export.journal.mappingCode'),
+        t('payroll.export.journal.mappingName'),
+    ])
+
     const headers = [
-        '부서',
-        `급여(${ACCOUNT_MAPPING.basePay.code})`,
-        `제수당(${ACCOUNT_MAPPING.allowances.code})`,
-        `복리후생비(${ACCOUNT_MAPPING.welfare.code})`,
-        `법정복리후생비(${ACCOUNT_MAPPING.socialInsurance.code})`,
-        `퇴직급여(${ACCOUNT_MAPPING.retirement.code})`,
-        '합계',
+        hDept,
+        `${aSalary}(${ACCOUNT_CODES.basePay})`,
+        `${aAllow}(${ACCOUNT_CODES.allowances})`,
+        `${aWelfare}(${ACCOUNT_CODES.welfare})`,
+        `${aSocial}(${ACCOUNT_CODES.socialInsurance})`,
+        `${aRetire}(${ACCOUNT_CODES.retirement})`,
+        hTotal,
     ]
 
-    const title = [`${yearMonth} 인건비 전표`]
     const sheetData = [
-        title, [], headers,
+        [docTitle], [], headers,
         ...rows.map((r) => [
             r.department, r.basePay, r.allowances, r.welfare, r.socialInsurance, r.retirement, r.total,
         ]),
         [],
         [
-            '합계',
+            hTotal,
             rows.reduce((s, r) => s + r.basePay, 0),
             rows.reduce((s, r) => s + r.allowances, 0),
             rows.reduce((s, r) => s + r.welfare, 0),
@@ -270,31 +303,34 @@ export function generateJournalExcel(yearMonth: string, rows: JournalRow[]): Arr
 
     const ws1 = XLSX.utils.aoa_to_sheet(sheetData)
     ws1['!cols'] = [{ wch: 18 }, { wch: 14 }, { wch: 14 }, { wch: 16 }, { wch: 18 }, { wch: 14 }, { wch: 16 }]
-    XLSX.utils.book_append_sheet(wb, ws1, '인건비 전표')
+    XLSX.utils.book_append_sheet(wb, ws1, sanitizeSheetName(sheetTitle))
 
-    // ── Sheet 2: 계정과목 매핑 ───────────────────────────────
+    const accountNames = [aSalary, aAllow, aWelfare, aSocial, aRetire]
+    const accountCodes = [ACCOUNT_CODES.basePay, ACCOUNT_CODES.allowances, ACCOUNT_CODES.welfare, ACCOUNT_CODES.socialInsurance, ACCOUNT_CODES.retirement]
     const mappingData = [
-        ['급여항목', '계정코드', '계정명'],
-        ...Object.entries(ACCOUNT_MAPPING).map(([, v]) => [v.name, v.code, v.name]),
+        [mItem, mCode, mName],
+        ...accountNames.map((name, i) => [name, accountCodes[i], name]),
     ]
     const ws2 = XLSX.utils.aoa_to_sheet(mappingData)
     ws2['!cols'] = [{ wch: 18 }, { wch: 12 }, { wch: 18 }]
-    XLSX.utils.book_append_sheet(wb, ws2, '계정과목 매핑')
+    XLSX.utils.book_append_sheet(wb, ws2, sanitizeSheetName(mappingSheet))
 
     return toArrayBuffer(wb)
 }
 
 // ─── 파일명 생성 유틸 ─────────────────────────────────────
 
-export function buildExcelFilename(
+export async function buildExcelFilename(
+    locale: Locale,
     companyId: string,
     yearMonth: string,
     type: 'comparison' | 'ledger' | 'journal',
-): string {
+): Promise<string> {
+    const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
     const [yr, mn] = yearMonth.split('-')
-    const yearLabel = `${yr}년${mn}월`
-    const typeMap = { comparison: '전월대비비교', ledger: '급여대장', journal: '인건비전표' }
-    return `${companyId}_${yearLabel}_${typeMap[type]}.xlsx`
+    const yearLabel = await t('payroll.export.filename.yearMonth', { year: yr, month: mn })
+    const typeLabel = await t(`payroll.export.filename.${type}`)
+    return `${companyId}_${yearLabel}_${typeLabel}.xlsx`
 }
 
 // ─── 타입 re-export (for unused warning suppression) ─────

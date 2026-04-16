@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 
@@ -10,6 +10,7 @@ import { BarChart3, Plus, Eye, Trash2, Play, Square, Calendar } from 'lucide-rea
 import { apiClient } from '@/lib/api'
 import { CARD_STYLES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
 import type { SessionUser } from '@/types'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -35,17 +36,17 @@ interface PendingSurvey {
   _count: { questions: number }
 }
 
-const STATUS_MAP: Record<string, { label: string; cls: string }> = {
-  PULSE_DRAFT: { label: '임시저장', cls: 'bg-background text-muted-foreground border-border' },
-  PULSE_ACTIVE: { label: '진행 중', cls: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
-  PULSE_CLOSED: { label: '종료', cls: 'bg-muted text-muted-foreground border-border' },
+const STATUS_MAP: Record<string, { labelKey: string }> = {
+  PULSE_DRAFT: { labelKey: 'pulse.statusDraft' },
+  PULSE_ACTIVE: { labelKey: 'pulse.statusActive' },
+  PULSE_CLOSED: { labelKey: 'pulse.statusClosed' },
 }
 
 const SCOPE_MAP: Record<string, string> = {
-  ALL: '전사',
-  DIVISION: '사업부',
-  DEPARTMENT: '부서',
-  TEAM: '팀',
+  ALL: 'pulse.scopeAll',
+  DIVISION: 'pulse.scopeDivision',
+  DEPARTMENT: 'pulse.scopeDepartment',
+  TEAM: 'pulse.scopeTeam',
 }
 
 // ─── Create Modal ────────────────────────────────────────
@@ -63,6 +64,7 @@ interface QuestionInput {
 }
 
 function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
+  const t = useTranslations('performance')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [targetScope, setTargetScope] = useState<string>('ALL')
@@ -110,7 +112,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
         })),
       })
       onCreated()
-    } catch (err) { toast({ title: '설문 생성 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('messages.surveyCreateFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
     setSaving(false)
   }
 
@@ -118,47 +120,47 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
     <div className={MODAL_STYLES.container}>
       <div className="bg-card rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">{'새 펄스 서베이'}</h2>
+          <h2 className="text-lg font-semibold text-foreground">{t('pulse.newSurvey')}</h2>
         </div>
         <div className="p-6 space-y-4">
           <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">{'제목'}</label>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="서베이 제목"
+            <label className="text-sm font-medium text-foreground mb-1 block">{t('pulse.titleLabel')}</label>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t('pulse.titlePlaceholder')}
               className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground" />
           </div>
           <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">{'설명 (선택)'}</label>
+            <label className="text-sm font-medium text-foreground mb-1 block">{t('pulse.descriptionOptional')}</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2}
               className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{'대상 범위'}</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">{t('pulse.targetScope')}</label>
               <select value={targetScope} onChange={(e) => setTargetScope(e.target.value)}
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm">
-                <option value="ALL">{'전사'}</option>
-                <option value="DIVISION">{'사업부'}</option>
-                <option value="DEPARTMENT">{'부서'}</option>
-                <option value="TEAM">{'팀'}</option>
+                <option value="ALL">{t('pulse.scopeAll')}</option>
+                <option value="DIVISION">{t('pulse.scopeDivision')}</option>
+                <option value="DEPARTMENT">{t('pulse.scopeDepartment')}</option>
+                <option value="TEAM">{t('pulse.scopeTeam')}</option>
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{'익명 수준'}</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">{t('pulse.anonymityLevel')}</label>
               <select value={anonymityLevel} onChange={(e) => setAnonymityLevel(e.target.value)}
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm">
-                <option value="FULL_ANONYMOUS">{'완전 익명'}</option>
-                <option value="FULL_DIVISION">{'부서 공개'}</option>
+                <option value="FULL_ANONYMOUS">{t('pulse.fullAnonymous')}</option>
+                <option value="FULL_DIVISION">{t('pulse.divisionPublic')}</option>
               </select>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{'시작일'}</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">{t('pulse.startDate')}</label>
               <input type="datetime-local" value={openAt} onChange={(e) => setOpenAt(e.target.value)}
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm" />
             </div>
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{'종료일'}</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">{t('pulse.endDate')}</label>
               <input type="datetime-local" value={closeAt} onChange={(e) => setCloseAt(e.target.value)}
                 className="w-full px-3 py-2 border border-border rounded-lg text-sm" />
             </div>
@@ -167,9 +169,9 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
           {/* Questions */}
           <div className="border-t border-border pt-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-foreground">{'질문 구성'}</h3>
+              <h3 className="text-sm font-semibold text-foreground">{t('pulse.questionConfig')}</h3>
               <button onClick={addQuestion} className="flex items-center gap-1 text-sm text-primary hover:text-primary/90 font-medium">
-                <Plus className="w-4 h-4" /> {'질문 추가'}
+                <Plus className="w-4 h-4" /> {t('pulse.addQuestion')}
               </button>
             </div>
             <div className="space-y-3">
@@ -179,12 +181,12 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-muted-foreground font-medium">Q{i + 1}</span>
                     <input value={q.questionText} onChange={(e) => updateQuestion(i, 'questionText', e.target.value)}
-                      placeholder="질문 내용" className="flex-1 px-3 py-1.5 border border-border rounded-lg text-sm placeholder:text-muted-foreground" />
+                      placeholder={t('pulse.questionPlaceholder')} className="flex-1 px-3 py-1.5 border border-border rounded-lg text-sm placeholder:text-muted-foreground" />
                     <select value={q.questionType} onChange={(e) => updateQuestion(i, 'questionType', e.target.value)}
                       className="px-2 py-1.5 border border-border rounded-lg text-xs">
-                      <option value="LIKERT">{'리커트 (1-5)'}</option>
-                      <option value="TEXT">{'주관식'}</option>
-                      <option value="CHOICE">{'객관식'}</option>
+                      <option value="LIKERT">{t('pulse.typeLikert')}</option>
+                      <option value="TEXT">{t('pulse.typeText')}</option>
+                      <option value="CHOICE">{t('pulse.typeChoice')}</option>
                     </select>
                     {questions.length > 1 && (
                       <button onClick={() => removeQuestion(i)} className="p-1 text-muted-foreground hover:text-red-500">
@@ -197,7 +199,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
                       <input
                         value={q.options.join(', ')}
                         onChange={(e) => updateQuestion(i, 'options', e.target.value.split(',').map((s) => s.trim()).filter(Boolean))}
-                        placeholder="보기를 쉼표로 구분 (예: 매우 만족, 만족, 보통, 불만족)"
+                        placeholder={t('pulse.choiceOptionsPlaceholder')}
                         className="w-full px-3 py-1.5 border border-border rounded-lg text-xs placeholder:text-muted-foreground"
                       />
                     </div>
@@ -208,9 +210,9 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
           </div>
         </div>
         <div className="p-6 border-t border-border flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 border border-border rounded-lg text-sm text-foreground hover:bg-background">{'취소'}</button>
+          <button onClick={onClose} className="px-4 py-2 border border-border rounded-lg text-sm text-foreground hover:bg-background">{t('cancel')}</button>
           <button onClick={handleSubmit} disabled={saving} className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}>
-            {saving ? '생성 중...' : '생성'}
+            {saving ? t('pulse.creating') : t('pulse.create')}
           </button>
         </div>
       </div>
@@ -223,6 +225,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
 export default function PulseSurveyClient({ user: _user }: { user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
+  const locale = useLocale()
 
   const router = useRouter()
   const [surveys, setSurveys] = useState<Survey[]>([])
@@ -241,9 +244,9 @@ export default function PulseSurveyClient({ user: _user }: { user: SessionUser }
       ])
       setSurveys(surveyRes.data.items ?? [])
       setPending(pendingRes.data ?? [])
-    } catch (err) { toast({ title: '설문 목록 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('messages.surveyListLoadFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
     setLoading(false)
-  }, [statusFilter])
+  }, [statusFilter, t])
 
   useEffect(() => { fetchAll() }, [fetchAll])
 
@@ -251,19 +254,19 @@ export default function PulseSurveyClient({ user: _user }: { user: SessionUser }
     try {
       await apiClient.put(`/api/v1/pulse/surveys/${id}`, { status: newStatus })
       fetchAll()
-    } catch (err) { toast({ title: '설문 상태 변경 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('messages.surveyStatusChangeFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
   }
 
   const handleDelete = async (id: string) => {
     try {
       await apiClient.delete(`/api/v1/pulse/surveys/${id}`)
       fetchAll()
-    } catch (err) { toast({ title: '설문 삭제 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+    } catch (err) { toast({ title: t('messages.surveyDeleteFailed'), description: err instanceof Error ? err.message : t('messages.retryPlease'), variant: 'destructive' }) }
   }
 
   const TABS = [
     { key: 'manage', label: t('kr_kec84a4eb_management') },
-    { key: 'respond', label: `응답 대기 (${pending.length})` },
+    { key: 'respond', label: t('pulse.pendingRespond', { count: pending.length }) },
   ] as const
 
   return (
@@ -322,16 +325,16 @@ export default function PulseSurveyClient({ user: _user }: { user: SessionUser }
                 {surveys.map((s) => (
                   <tr key={s.id} className={TABLE_STYLES.row}>
                     <td className={`${TABLE_STYLES.cell} font-medium`}>{s.title}</td>
-                    <td className={TABLE_STYLES.cell}>{SCOPE_MAP[s.targetScope] ?? s.targetScope}</td>
+                    <td className={TABLE_STYLES.cell}>{SCOPE_MAP[s.targetScope] ? t(SCOPE_MAP[s.targetScope]) : s.targetScope}</td>
                     <td className={`${TABLE_STYLES.cell} text-xs text-muted-foreground`}>
-                      {new Date(s.openAt).toLocaleDateString('ko-KR')} ~ {new Date(s.closeAt).toLocaleDateString('ko-KR')}
+                      {new Date(s.openAt).toLocaleDateString(locale)} ~ {new Date(s.closeAt).toLocaleDateString(locale)}
                     </td>
                     <td className={`${TABLE_STYLES.cell} text-center`}>{s._count.questions}</td>
                     <td className={`${TABLE_STYLES.cell} text-center`}>{s._count.responses}</td>
                     <td className={`${TABLE_STYLES.cell} text-center`}>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${STATUS_MAP[s.status]?.cls ?? ''}`}>
-                        {STATUS_MAP[s.status]?.label ?? s.status}
-                      </span>
+                      <StatusBadge status={s.status}>
+                        {STATUS_MAP[s.status]?.labelKey ? t(STATUS_MAP[s.status].labelKey) : s.status}
+                      </StatusBadge>
                     </td>
                     <td className={`${TABLE_STYLES.cell} text-center`}>
                       <div className="flex items-center justify-center gap-1">
@@ -342,19 +345,19 @@ export default function PulseSurveyClient({ user: _user }: { user: SessionUser }
                           </button>
                         )}
                         {s.status === 'PULSE_ACTIVE' && (
-                          <button onClick={() => handleStatusChange(s.id, 'PULSE_CLOSED')} title="종료"
+                          <button onClick={() => handleStatusChange(s.id, 'PULSE_CLOSED')} title={t('ended')}
                             className="p-1.5 text-amber-700 hover:bg-amber-500/15 rounded-lg">
                             <Square className="w-4 h-4" />
                           </button>
                         )}
                         {(s.status === 'PULSE_ACTIVE' || s.status === 'PULSE_CLOSED') && (
-                          <button onClick={() => router.push(`/performance/pulse/${s.id}/results`)} title="결과 보기"
+                          <button onClick={() => router.push(`/performance/pulse/${s.id}/results`)} title={t('pulse.viewResults')}
                             className="p-1.5 text-primary/90 hover:bg-indigo-500/15 rounded-lg">
                             <Eye className="w-4 h-4" />
                           </button>
                         )}
                         {s.status === 'PULSE_DRAFT' && (
-                          <button onClick={() => handleDelete(s.id)} title="삭제"
+                          <button onClick={() => handleDelete(s.id)} title={t('pulse.delete')}
                             className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-destructive/10 rounded-lg">
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -383,14 +386,14 @@ export default function PulseSurveyClient({ user: _user }: { user: SessionUser }
                   {s.description && <p className="text-xs text-muted-foreground mt-1">{s.description}</p>}
                   <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                     <Calendar className="w-3 h-3" />
-                    <span>마감: {new Date(s.closeAt).toLocaleDateString('ko-KR')}</span>
+                    <span>{t('pulse.deadline')}: {new Date(s.closeAt).toLocaleDateString(locale)}</span>
                     <span>·</span>
-                    <span>{s._count.questions}개 질문</span>
+                    <span>{t('pulse.questionCount', { n: s._count.questions })}</span>
                   </div>
                 </div>
                 <button onClick={() => router.push(`/performance/pulse/${s.id}/respond`)}
                   className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>
-                  응답하기
+                  {t('pulse.respond')}
                 </button>
               </div>
             ))

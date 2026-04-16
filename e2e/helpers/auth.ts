@@ -8,11 +8,12 @@ import path from 'path'
 import { type Page, expect } from '@playwright/test'
 
 // ─── Role types ──────────────────────────────────────────
-export type RoleType = 'SUPER_ADMIN' | 'HR_ADMIN' | 'MANAGER' | 'EMPLOYEE'
+export type RoleType = 'SUPER_ADMIN' | 'HR_ADMIN' | 'EXECUTIVE' | 'MANAGER' | 'EMPLOYEE'
 
 const TEST_EMAILS: Record<RoleType, string> = {
   SUPER_ADMIN: 'super@ctr.co.kr',
   HR_ADMIN:    'hr@ctr.co.kr',
+  EXECUTIVE:   'executive@ctr.co.kr',
   MANAGER:     'manager@ctr.co.kr',
   EMPLOYEE:    'employee-a@ctr.co.kr',
 }

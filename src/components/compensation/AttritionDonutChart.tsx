@@ -1,6 +1,7 @@
 'use client'
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
+import { RISK_COLORS } from '@/lib/styles/chart'
 
 interface DistributionItem {
   level: string
@@ -14,10 +15,10 @@ interface AttritionDonutChartProps {
 }
 
 const LEVEL_COLORS: Record<string, string> = {
-  LOW: '#10B981',
-  MEDIUM: '#F59E0B',
-  HIGH: '#F97316',
-  CRITICAL: '#EF4444',
+  LOW: RISK_COLORS.low,
+  MEDIUM: RISK_COLORS.medium,
+  HIGH: RISK_COLORS.high,
+  CRITICAL: RISK_COLORS.critical,
 }
 
 const LEVEL_LABELS: Record<string, string> = {
@@ -38,7 +39,7 @@ export default function AttritionDonutChart({
   }))
 
   return (
-    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+    <div className="bg-card rounded-2xl shadow-sm p-6">
       <h3 className="text-lg font-semibold text-foreground mb-4">위험 분포</h3>
       <div className="flex items-center gap-6">
         <div className="relative w-48 h-48">
@@ -48,7 +49,7 @@ export default function AttritionDonutChart({
                 data={data}
                 cx="50%"
                 cy="50%"
-                innerRadius={50}
+                innerRadius={52}
                 outerRadius={80}
                 paddingAngle={2}
                 dataKey="count"
@@ -75,7 +76,7 @@ export default function AttritionDonutChart({
           </ResponsiveContainer>
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="text-center">
-              <p className="text-2xl font-bold text-foreground">{totalCount}</p>
+              <p className="text-2xl font-display font-extrabold text-foreground">{totalCount}</p>
               <p className="text-xs text-muted-foreground">전체</p>
             </div>
           </div>

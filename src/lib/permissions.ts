@@ -9,6 +9,10 @@ import { prisma } from '@/lib/prisma'
 import { forbidden, unauthorized } from '@/lib/errors'
 import { apiError } from '@/lib/api'
 import { ROLE, MODULE } from '@/lib/constants'
+import {
+  queryContextAls,
+  type QueryContextStore,
+} from '@/lib/observability/query-context'
 import type { Permission, SessionUser } from '@/types'
 
 // ─── Check if session has specific permission ─────────────
@@ -57,6 +61,22 @@ type RouteHandler = (
   context: { params: Promise<Record<string, string>> },
 ) => Promise<NextResponse>
 
+// Phase 6A: When PRISMA_QUERY_DEBUG=1 (preview/dev only, never production),
+// wrap the handler in an AsyncLocalStorage context so the Prisma extension
+// captures every query fired inside the request. The resulting count is
+// attached as `X-Query-Count` for Playwright API tests to assert on.
+// Off-path cost when the env var is unset is one env-var read per request.
+const QUERY_DEBUG_ENABLED = process.env.PRISMA_QUERY_DEBUG === '1'
+
+async function runWithQueryContext(
+  fn: () => Promise<NextResponse>,
+): Promise<NextResponse> {
+  const store: QueryContextStore = { records: [], startedAt: Date.now() }
+  const response = await queryContextAls.run(store, fn)
+  response.headers.set('X-Query-Count', String(store.records.length))
+  return response
+}
+
 export function withPermission(
   handler: (
     req: NextRequest,
@@ -83,6 +103,9 @@ export function withPermission(
         )
       }
 
+      if (QUERY_DEBUG_ENABLED) {
+        return await runWithQueryContext(() => handler(req, context, user))
+      }
       return await handler(req, context, user)
     } catch (error) {
       return apiError(error)
@@ -109,6 +132,10 @@ export function withAuth(
       }
 
       const user = session.user as SessionUser
+
+      if (QUERY_DEBUG_ENABLED) {
+        return await runWithQueryContext(() => handler(req, context, user))
+      }
       return await handler(req, context, user)
     } catch (error) {
       return apiError(error)

@@ -33,7 +33,7 @@ interface PeerCandidate {
     employeeId: string; name: string; department: string; jobGrade: string; relevanceScore: number
 }
 
-const GRADES = ['E', 'M_PLUS', 'M', 'B']
+const GRADES = ['O', 'E', 'M', 'S']
 
 // ─── Star Rating (reused pattern from D-2a) ───────────────
 
@@ -52,8 +52,8 @@ function Stars({ value, onChange, disabled }: { value: number; onChange: (v: num
 }
 
 const CTR_VALUES = [
-    { key: 'challenge', label: '도전' }, { key: 'trust', label: '신뢰' },
-    { key: 'responsibility', label: '책임' }, { key: 'respect', label: '존중' },
+    { key: 'challenge', labelKey: 'ctrValue.challenge' }, { key: 'trust', labelKey: 'ctrValue.trust' },
+    { key: 'responsibility', labelKey: 'ctrValue.responsibility' }, { key: 'respect', labelKey: 'ctrValue.respect' },
 ]
 
 // ─── Main Component ───────────────────────────────────────
@@ -89,9 +89,9 @@ export default function ManagerEvaluationClient({user: _user }: {
         try {
             const res = await apiClient.get<TeamMember[]>('/api/v1/performance/evaluations', { role: 'manager', cycleId: selectedCycleId })
             setTeamMembers(res.data ?? [])
-        } catch { setError('팀원 목록을 불러오지 못했습니다.') }
+        } catch { setError(t('managerEvaluation.teamLoadFailed')) }
         finally { setLoading(false) }
-    }, [selectedCycleId])
+    }, [selectedCycleId, t])
 
     useEffect(() => { fetchTeam() }, [fetchTeam])
 
@@ -128,8 +128,8 @@ export default function ManagerEvaluationClient({user: _user }: {
                     <div>
                         <h1 className="text-2xl font-bold text-foreground">{t('managerEvalTitle')}</h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            내 팀원: {teamMembers.length}명 | 평가 완료: {completedCount}/{teamMembers.length}
-                            {overdueCount > 0 && <span className="ml-2 inline-flex items-center gap-1 text-destructive">| Overdue: {overdueCount}명 <AlertTriangle aria-hidden="true" className="h-3.5 w-3.5 inline" /><span className="sr-only">경고</span></span>}
+                            {t('managerEvaluation.teamSummary', { total: teamMembers.length, completed: completedCount })}
+                            {overdueCount > 0 && <span className="ml-2 inline-flex items-center gap-1 text-destructive">| {t('managerEvaluation.overdueCount', { count: overdueCount })} <AlertTriangle aria-hidden="true" className="h-3.5 w-3.5 inline" /><span className="sr-only">{t('managerEvaluation.warning')}</span></span>}
                         </p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
@@ -185,11 +185,11 @@ export default function ManagerEvaluationClient({user: _user }: {
                                             <p className="mt-1 text-xs text-muted-foreground">{member.department}</p>
                                             <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
                                                 <span>MBO: {member.selfEval?.performanceScore?.toFixed(1) ?? '-'}</span>
-                                                <span className="inline-flex items-center gap-1">자기평가: {member.selfEval?.status === 'SUBMITTED'
-                                                    ? <><CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5 text-emerald-600" /><span className="sr-only">완료</span></>
-                                                    : <><Clock aria-hidden="true" className="h-3.5 w-3.5 text-amber-500" /><span className="sr-only">미완료</span></>}
+                                                <span className="inline-flex items-center gap-1">{t('managerEvaluation.selfEvalLabel')}: {member.selfEval?.status === 'SUBMITTED'
+                                                    ? <><CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5 text-emerald-600" /><span className="sr-only">{t('managerEvaluation.completed')}</span></>
+                                                    : <><Clock aria-hidden="true" className="h-3.5 w-3.5 text-amber-500" /><span className="sr-only">{t('managerEvaluation.incomplete')}</span></>}
                                                 </span>
-                                                <span>동료평가: {member.peerReviewProgress}</span>
+                                                <span>{t('managerEvaluation.peerReviewLabel')}: {member.peerReviewProgress}</span>
                                             </div>
                                             {hasOverdue && (
                                                 <p className="mt-1 text-xs text-red-500">Overdue: {member.overdueFlags.join(', ')}</p>
@@ -205,7 +205,7 @@ export default function ManagerEvaluationClient({user: _user }: {
                                             </button>
                                             <button onClick={() => setActiveEval(member)}
                                                 className="rounded-lg bg-primary px-4 py-1.5 text-xs font-medium text-white hover:bg-primary/90">
-                                                {isCompleted ? '수정' : '평가하기'} →
+                                                {isCompleted ? t('managerEvaluation.edit') : t('managerEvaluation.evaluate')} →
                                             </button>
                                         </div>
                                     </div>
@@ -264,7 +264,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
         // Fetch peer results
         apiClient.get<{ reviews: typeof peerResults }>(`/api/v1/performance/peer-review/results/${member.employeeId}`, { cycleId })
             .then((res) => setPeerResults(res.data.reviews ?? []))
-            .catch((err) => { toast({ title: '동료 평가 결과 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) })
+            .catch((err) => { toast({ title: t('managerEvaluation.peerResultLoadFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' }) })
     }, [member, cycleId]) // eslint-disable-line react-hooks/exhaustive-deps
 
     const mboAvg = Object.values(goalScores).length > 0
@@ -275,7 +275,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
 
     async function handleSave(status: 'DRAFT' | 'SUBMITTED') {
         if (hasOverlengthComment) {
-            toast({ title: `코멘트를 ${COMMENT_SOFT_LIMIT}자 이내로 수정해주세요.`, variant: 'destructive' })
+            toast({ title: t('managerEvaluation.commentTooLong', { limit: COMMENT_SOFT_LIMIT }), variant: 'destructive' })
             return
         }
         if (!(status === 'SUBMITTED')) return
@@ -306,7 +306,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
         <div className="fixed inset-0 z-50 flex items-start justify-end bg-black/30" onClick={onClose}>
             <div className="h-full w-full max-w-2xl overflow-y-auto bg-card shadow-lg" onClick={(e) => e.stopPropagation()}>
                 <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-card px-6 py-4">
-                    <h2 className="text-lg font-bold text-foreground">{member.name} 평가</h2>
+                    <h2 className="text-lg font-bold text-foreground">{t('managerEvaluation.evalTitle', { name: member.name })}</h2>
                     <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
                 </div>
 
@@ -328,7 +328,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <p className="text-sm font-medium text-foreground">{goal.title} ({goal.weight}%)</p>
-                                            <p className="text-xs text-muted-foreground">자기평가: {goal.achievementScore ?? '-'}/5 | 진행률: {Number(goal.achievementScore ?? 0) * 20}%</p>
+                                            <p className="text-xs text-muted-foreground">{t('managerEvaluation.selfEvalLabel')}: {goal.achievementScore ?? '-'}/5 | {t('managerEvaluation.progressRate')}: {Number(goal.achievementScore ?? 0) * 20}%</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
@@ -352,7 +352,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                             {CTR_VALUES.map((v) => (
                                 <div key={v.key} className="rounded-xl border border-border p-4 space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm font-medium text-foreground">{v.label}</span>
+                                        <span className="text-sm font-medium text-foreground">{t(v.labelKey)}</span>
                                         <Stars value={beiScores[v.key]?.score ?? 3}
                                             onChange={(val) => { setBeiScores((p) => ({ ...p, [v.key]: { ...p[v.key], score: val } })); setIsDirty(true) }} disabled={false} />
                                     </div>
@@ -373,12 +373,12 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                                 <EmptyState />
                             ) : peerResults.map((r, i) => (
                                 <div key={i} className="rounded-xl border border-border p-4">
-                                    <p className="mb-2 text-sm font-medium text-foreground">평가자: {r.reviewerName}</p>
+                                    <p className="mb-2 text-sm font-medium text-foreground">{t('managerEvaluation.reviewer')}: {r.reviewerName}</p>
                                     <div className="mb-2 grid grid-cols-4 gap-2 text-xs text-muted-foreground">
-                                        <span>도전: {r.scoreChallenge}/5</span>
-                                        <span>신뢰: {r.scoreTrust}/5</span>
-                                        <span>책임: {r.scoreResponsibility}/5</span>
-                                        <span>존중: {r.scoreRespect}/5</span>
+                                        <span>{t('ctrValue.challenge')}: {r.scoreChallenge}/5</span>
+                                        <span>{t('ctrValue.trust')}: {r.scoreTrust}/5</span>
+                                        <span>{t('ctrValue.responsibility')}: {r.scoreResponsibility}/5</span>
+                                        <span>{t('ctrValue.respect')}: {r.scoreRespect}/5</span>
                                     </div>
                                     {r.overallComment && <p className="text-sm text-foreground">&ldquo;{r.overallComment}&rdquo;</p>}
                                 </div>
@@ -421,7 +421,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                         </button>
                         <button onClick={() => handleSave('SUBMITTED')} disabled={saving || hasOverlengthComment}
                             className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40">
-                            <Send className="h-4 w-4" /> {saving ? '확정 중...' : '평가 확정'}
+                            <Send className="h-4 w-4" /> {saving ? t('managerEvaluation.confirming') : t('managerEvaluation.confirmEval')}
                         </button>
                     </div>
                 </div>
@@ -449,11 +449,11 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
             try {
                 const res = await apiClient.get<PeerCandidate[]>('/api/v1/performance/peer-review/candidates', { employeeId: member.employeeId, cycleId })
                 setCandidates(res.data ?? [])
-            } catch (err) { toast({ title: '동료평가 후보 로드 실패', description: err instanceof Error ? err.message : '다시 시도해 주세요.', variant: 'destructive' }) }
+            } catch (err) { toast({ title: t('managerEvaluation.peerCandidateLoadFailed'), description: err instanceof Error ? err.message : t('retryMessage'), variant: 'destructive' }) }
             finally { setLoading(false) }
         }
         load()
-    }, [member.employeeId, cycleId])
+    }, [member.employeeId, cycleId, t])
 
     function toggleCandidate(id: string) {
         setSelected((p) => { const n = new Set(p); if (n.has(id)) n.delete(id); else n.add(id); return n })
@@ -461,7 +461,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
 
     async function handleNominate() {
         if (selected.size < 2) { toast({ title: t('kr_kecb59cec_2kebaa85ec_keca780eb'), variant: 'destructive' }); return }
-        confirm({ title: `${selected.size}명을 동료평가자로 지명하시겠습니까?`, onConfirm: async () => {
+        confirm({ title: t('managerEvaluation.confirmNominate', { count: selected.size }), onConfirm: async () => {
             setSaving(true)
             try {
                 await apiClient.post('/api/v1/performance/peer-review/nominate', {
@@ -477,10 +477,10 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={onClose}>
             <div className="max-h-[80vh] w-full max-w-lg overflow-y-auto rounded-xl bg-card p-6" onClick={(e) => e.stopPropagation()}>
                 <div className="mb-5 flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-foreground">{member.name} 동료평가자 지명</h3>
+                    <h3 className="text-lg font-bold text-foreground">{t('managerEvaluation.nominateTitle', { name: member.name })}</h3>
                     <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
                 </div>
-                <p className="mb-4 text-sm text-muted-foreground">최소 2명, 최대 4명 선택 | 선택: {selected.size}명</p>
+                <p className="mb-4 text-sm text-muted-foreground">{t('managerEvaluation.nominateGuide', { selected: selected.size })}</p>
 
                 {loading ? (
                     <div className="py-8 text-center text-sm text-muted-foreground">{tCommon('loading')}</div>
@@ -499,7 +499,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
                                         <p className="text-xs text-muted-foreground">{c.department} · {c.jobGrade}</p>
                                     </div>
                                 </div>
-                                <span className="text-xs text-muted-foreground">관련도: {c.relevanceScore}점</span>
+                                <span className="text-xs text-muted-foreground">{t('managerEvaluation.relevanceScore', { score: c.relevanceScore })}</span>
                             </label>
                         ))}
                     </div>
@@ -509,7 +509,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
                     <button onClick={onClose} className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground">{tCommon('cancel')}</button>
                     <button onClick={handleNominate} disabled={saving || selected.size < 2}
                         className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
-                        {saving ? '지명 중...' : '지명 확정'}
+                        {saving ? t('managerEvaluation.nominating') : t('managerEvaluation.confirmNominateBtn')}
                     </button>
                 </div>
             </div>
