@@ -7,6 +7,7 @@
 import { chromium, type FullConfig } from '@playwright/test'
 import path from 'path'
 import fs from 'fs'
+import Redis from 'ioredis'
 
 const AUTH_DIR = path.join(__dirname, '.auth')
 
@@ -21,6 +22,20 @@ const ROLES = {
 async function globalSetup(config: FullConfig) {
   const baseURL = config.projects[0]?.use?.baseURL || 'http://localhost:3002'
 
+  // Flush Redis cache to prevent cross-test pollution from stale cached responses
+  if (process.env.REDIS_URL) {
+    const redis = new Redis(process.env.REDIS_URL, { lazyConnect: true })
+    try {
+      await redis.connect()
+      await redis.flushdb()
+      console.log('  [setup] Redis FLUSHDB complete')
+    } catch (err) {
+      console.warn('  [setup] Redis FLUSHDB failed (non-fatal):', err)
+    } finally {
+      await redis.quit()
+    }
+  }
+
   // Ensure auth directory exists
   if (!fs.existsSync(AUTH_DIR)) {
     fs.mkdirSync(AUTH_DIR, { recursive: true })
@@ -31,13 +46,18 @@ async function globalSetup(config: FullConfig) {
   for (const [role, email] of Object.entries(ROLES)) {
     const authFile = path.join(AUTH_DIR, `${role}.json`)
 
-    // Skip if auth file exists and is less than 1 hour old
+    // CI: always recreate auth (DB reset/seed invalidates JWT employee IDs)
+    // Local: reuse if less than 1 hour old
     if (fs.existsSync(authFile)) {
-      const stat = fs.statSync(authFile)
-      const ageMs = Date.now() - stat.mtimeMs
-      if (ageMs < 60 * 60 * 1000) {
-        console.log(`  [auth] ${role} — reusing cached session`)
-        continue
+      if (process.env.CI) {
+        fs.unlinkSync(authFile)
+      } else {
+        const stat = fs.statSync(authFile)
+        const ageMs = Date.now() - stat.mtimeMs
+        if (ageMs < 60 * 60 * 1000) {
+          console.log(`  [auth] ${role} — reusing cached session`)
+          continue
+        }
       }
     }
 

@@ -173,8 +173,8 @@ export function withCache(
       if (scope === 'user') {
         cacheKey = `${strategy.prefix}:${companyId}:${role}:${employeeId}:${url.pathname}${queryKey ? `:${queryKey}` : ''}`
       } else {
-        // company scope
-        cacheKey = `${strategy.prefix}:${companyId}:${url.pathname}${queryKey ? `:${queryKey}` : ''}`
+        // company scope — include role to prevent cross-role cache bleed (e.g. HR_ADMIN cached 200 served to EMPLOYEE)
+        cacheKey = `${strategy.prefix}:${companyId}:${role}:${url.pathname}${queryKey ? `:${queryKey}` : ''}`
       }
     }
 

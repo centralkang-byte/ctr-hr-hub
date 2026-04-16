@@ -7,8 +7,9 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { redis } from '@/lib/redis'
+import { getCacheStats } from '@/lib/cache'
 
-export async function GET() {
+export async function GET(request: Request) {
   const checks: Record<string, { status: string; latencyMs?: number }> = {}
 
   // DB check
@@ -31,11 +32,25 @@ export async function GET() {
 
   const allOk = Object.values(checks).every((c) => c.status === 'ok')
 
+  // Optional: include cache stats when ?stats=true (for load test monitoring)
+  const url = new URL(request.url)
+  const includeStats = url.searchParams.get('stats') === 'true'
+
+  let cacheStats = undefined
+  if (includeStats && checks.redis.status === 'ok') {
+    try {
+      cacheStats = await getCacheStats()
+    } catch {
+      // Non-critical: skip if stats collection fails
+    }
+  }
+
   return NextResponse.json(
     {
       status: allOk ? 'healthy' : 'degraded',
       timestamp: new Date().toISOString(),
       checks,
+      ...(cacheStats && { cacheStats }),
     },
     { status: allOk ? 200 : 503 },
   )

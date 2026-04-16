@@ -63,4 +63,4 @@ export const GET = withCache(withPermission(
     return apiSuccess(data)
   },
   perm(MODULE.ANALYTICS, ACTION.VIEW),
-), CACHE_STRATEGY.ANALYTICS, 'company')
+), CACHE_STRATEGY.ANALYTICS, 'user')
