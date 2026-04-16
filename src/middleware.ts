@@ -191,8 +191,18 @@ export async function middleware(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   })
 
-  // 3. Unauthenticated → redirect to login
+  // 3. Unauthenticated → reject or redirect
   if (!token) {
+    // API routes: return JSON 401 (Playwright follows redirects, so 302→/login→200 breaks E2E auth tests)
+    if (pathname.startsWith('/api/')) {
+      return applySecurityHeaders(
+        NextResponse.json(
+          { error: { code: 'UNAUTHORIZED', message: '인증이 필요합니다.' } },
+          { status: 401 },
+        ),
+        nonce,
+      )
+    }
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('callbackUrl', pathname)
     return applySecurityHeaders(NextResponse.redirect(loginUrl), nonce)

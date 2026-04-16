@@ -3,9 +3,10 @@
 // 세션 확인 → Sidebar + Header + main content
 // ═══════════════════════════════════════════════════════════
 
-// getServerSession internally calls headers(), which auto-opts into dynamic rendering.
-// Explicit 'force-dynamic' is redundant — removed in Phase 7 performance optimization.
-
+// Explicit force-dynamic required: ensures fresh getServerSession per request.
+// Phase 7 removed this assuming headers() auto-opts, but E2E auth depends on
+// consistent per-request rendering for session validation via /home navigation.
+export const dynamic = 'force-dynamic'
 
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
