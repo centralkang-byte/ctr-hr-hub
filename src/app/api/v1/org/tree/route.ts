@@ -160,4 +160,4 @@ export const GET = withCache(withPermission(
     return apiSuccess({ tree })
   },
   perm(MODULE.ORG, ACTION.VIEW),
-), CACHE_STRATEGY.ORG_TREE)
+), CACHE_STRATEGY.ORG_TREE, 'user')

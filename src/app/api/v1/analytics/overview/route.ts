@@ -51,4 +51,4 @@ export const GET = withCache(withPermission(
     return apiSuccess(kpi)
   },
   perm(MODULE.ANALYTICS, ACTION.VIEW),
-), CACHE_STRATEGY.DASHBOARD_KPI)
+), CACHE_STRATEGY.DASHBOARD_KPI, 'user')

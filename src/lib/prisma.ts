@@ -37,7 +37,8 @@ function createPrismaClient(): PrismaClient {
     !isLocalhost && (isSupabase || process.env.NODE_ENV === 'production')
       ? { rejectUnauthorized: false }
       : undefined
-  const adapter = new PrismaPg({ connectionString, ssl })
+  const poolMax = parseInt(process.env.DATABASE_POOL_SIZE || '10', 10)
+  const adapter = new PrismaPg({ connectionString, ssl, max: poolMax })
   return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
