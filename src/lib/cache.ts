@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
-import { cacheGet, cacheSet, cacheDel, cacheDelPattern } from '@/lib/redis'
+import { cacheGet, cacheSet, cacheDel, cacheDelPattern, redis } from '@/lib/redis'
 
 // ─── Cache TTL Constants ─────────────────────────────────
 
@@ -59,6 +59,69 @@ export async function invalidateMultiple(
   await Promise.all(
     strategies.map((s) => invalidateCache(s, companyId)),
   )
+}
+
+// ─── Cache Stats ────────────────────────────────────────
+
+const CACHE_STATS_TTL = 3600 // 1 hour
+
+function trackCacheResult(prefix: string, hit: boolean): void {
+  const key = hit ? `monitor:cache:hit:${prefix}` : `monitor:cache:miss:${prefix}`
+  try {
+    // Fire-and-forget: INCR + EXPIRE as individual commands
+    redis.incr(key).catch(() => {})
+    redis.expire(key, CACHE_STATS_TTL).catch(() => {})
+  } catch {
+    // Graceful degradation
+  }
+}
+
+/** 전략별 cache hit rate 통계 */
+export async function getCacheStats(): Promise<{
+  overall: { hits: number; misses: number; hitRate: number }
+  byStrategy: Record<string, { hits: number; misses: number; hitRate: number }>
+}> {
+  const strategies = Object.values(CACHE_STRATEGY)
+  const byStrategy: Record<string, { hits: number; misses: number; hitRate: number }> = {}
+  let totalHits = 0
+  let totalMisses = 0
+
+  try {
+    const keys: string[] = []
+    for (const s of strategies) {
+      keys.push(`monitor:cache:hit:${s.prefix}`)
+      keys.push(`monitor:cache:miss:${s.prefix}`)
+    }
+    const results = keys.length > 0 ? await redis.mget(...keys) : []
+    if (!results) {
+      return { overall: { hits: 0, misses: 0, hitRate: 0 }, byStrategy }
+    }
+
+    for (let i = 0; i < strategies.length; i++) {
+      const hits = parseInt(results[i * 2] || '0', 10)
+      const misses = parseInt(results[i * 2 + 1] || '0', 10)
+      const total = hits + misses
+      byStrategy[strategies[i].prefix] = {
+        hits,
+        misses,
+        hitRate: total > 0 ? Math.round((hits / total) * 100) / 100 : 0,
+      }
+      totalHits += hits
+      totalMisses += misses
+    }
+  } catch {
+    // Graceful degradation
+  }
+
+  const total = totalHits + totalMisses
+  return {
+    overall: {
+      hits: totalHits,
+      misses: totalMisses,
+      hitRate: total > 0 ? Math.round((totalHits / total) * 100) / 100 : 0,
+    },
+    byStrategy,
+  }
 }
 
 // ─── withCache HOF ───────────────────────────────────────
@@ -118,12 +181,14 @@ export function withCache(
     // 캐시 조회
     const cached = await cacheGet<{ body: unknown; status: number }>(cacheKey)
     if (cached) {
+      trackCacheResult(strategy.prefix, true)
       const response = NextResponse.json(cached.body, { status: cached.status })
       response.headers.set('X-Cache', 'HIT')
       return response
     }
 
     // 캐시 미스 — 핸들러 실행
+    trackCacheResult(strategy.prefix, false)
     const response = await handler(req, context)
     const responseBody = await response.clone().json()
 

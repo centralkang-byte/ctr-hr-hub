@@ -6,7 +6,6 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useRef, useState } from 'react'
-import * as XLSX from 'xlsx'
 import { Upload, Download, CheckCircle2, AlertTriangle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -40,7 +39,7 @@ interface BulkUploadWizardProps {
 
 // ─── Template download ───────────────────────────────────────
 
-function downloadTemplate() {
+async function downloadTemplate() {
   const template = [
     {
       사번: 'EMP001',
@@ -59,6 +58,7 @@ function downloadTemplate() {
       사유: '정기승진',
     },
   ]
+  const XLSX = await import('xlsx')
   const wb = XLSX.utils.book_new()
   const ws = XLSX.utils.json_to_sheet(template)
   XLSX.utils.book_append_sheet(wb, ws, '발령일괄등록')
@@ -93,6 +93,7 @@ export function BulkUploadWizard({ open, onClose, onSuccess }: BulkUploadWizardP
   const handleFileChange = useCallback(async (f: File) => {
     setFile(f)
     const buf = await f.arrayBuffer()
+    const XLSX = await import('xlsx')
     const wb = XLSX.read(buf, { type: 'array', cellDates: true })
     const ws = wb.Sheets[wb.SheetNames[0]]
     const rows = XLSX.utils.sheet_to_json<PreviewRow>(ws)

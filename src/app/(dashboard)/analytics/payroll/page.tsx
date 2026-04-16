@@ -1,11 +1,14 @@
-import { Suspense } from 'react'
+import dynamic from 'next/dynamic'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { getTranslations } from 'next-intl/server'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
-import PayrollClient from './PayrollClient'
 import { ChartSkeleton } from '@/components/shared/PageSkeleton'
+
+const PayrollClient = dynamic(() => import('./PayrollClient'), {
+  loading: () => <ChartSkeleton />,
+})
 
 export async function generateMetadata() {
   const t = await getTranslations('analytics')
@@ -26,9 +29,7 @@ export default async function PayrollPage() {
         <h1 className="text-2xl font-bold text-foreground">{t('payroll.pageTitle')}</h1>
         <p className="text-sm text-muted-foreground mt-1">{t('payroll.pageDescription')}</p>
       </div>
-      <Suspense fallback={<ChartSkeleton />}>
-        <PayrollClient user={user} />
-      </Suspense>
+      <PayrollClient user={user} />
     </div>
   )
 }

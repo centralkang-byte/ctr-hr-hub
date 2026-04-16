@@ -1,10 +1,13 @@
-import { Suspense } from 'react'
+import dynamic from 'next/dynamic'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
-import CompensationAnalyticsClient from './CompensationAnalyticsClient'
 import { ChartSkeleton } from '@/components/shared/PageSkeleton'
+
+const CompensationAnalyticsClient = dynamic(() => import('./CompensationAnalyticsClient'), {
+  loading: () => <ChartSkeleton />,
+})
 
 export default async function CompensationAnalyticsPage() {
   const session = await getServerSession(authOptions)
@@ -14,8 +17,6 @@ export default async function CompensationAnalyticsPage() {
   const user = session.user as SessionUser
 
   return (
-    <Suspense fallback={<ChartSkeleton />}>
-      <CompensationAnalyticsClient user={user} />
-    </Suspense>
+    <CompensationAnalyticsClient user={user} />
   )
 }

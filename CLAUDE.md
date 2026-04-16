@@ -63,7 +63,7 @@ npm run test:e2e     # Playwright E2E
 npx prisma generate
 npx prisma migrate dev --name <name>
 npx tsx prisma/seed.ts
-npx tsx scripts/run-qa-seed.ts
+npx tsx scripts/seed-qa-accounts.ts
 ```
 
 ---

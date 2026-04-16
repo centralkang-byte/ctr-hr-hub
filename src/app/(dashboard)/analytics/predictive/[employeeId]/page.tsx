@@ -1,9 +1,12 @@
-import { Suspense } from 'react'
+import dynamic from 'next/dynamic'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
-import EmployeeRiskDetailClient from './EmployeeRiskDetailClient'
 import { ChartSkeleton } from '@/components/shared/PageSkeleton'
+
+const EmployeeRiskDetailClient = dynamic(() => import('./EmployeeRiskDetailClient'), {
+  loading: () => <ChartSkeleton />,
+})
 
 export default async function EmployeeRiskDetailPage({
   params,
@@ -20,8 +23,6 @@ export default async function EmployeeRiskDetailPage({
 
   const { employeeId } = await params
   return (
-    <Suspense fallback={<ChartSkeleton />}>
-      <EmployeeRiskDetailClient employeeId={employeeId} />
-    </Suspense>
+    <EmployeeRiskDetailClient employeeId={employeeId} />
   )
 }

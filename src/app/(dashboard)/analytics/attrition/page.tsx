@@ -1,10 +1,13 @@
-import { Suspense } from 'react'
+import dynamic from 'next/dynamic'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
-import AttritionRiskClient from './AttritionRiskClient'
 import { ChartSkeleton } from '@/components/shared/PageSkeleton'
+
+const AttritionRiskClient = dynamic(() => import('./AttritionRiskClient'), {
+  loading: () => <ChartSkeleton />,
+})
 
 export default async function AttritionRiskPage() {
   const session = await getServerSession(authOptions)
@@ -14,8 +17,6 @@ export default async function AttritionRiskPage() {
   const user = session.user as SessionUser
 
   return (
-    <Suspense fallback={<ChartSkeleton />}>
-      <AttritionRiskClient user={user} />
-    </Suspense>
+    <AttritionRiskClient user={user} />
   )
 }

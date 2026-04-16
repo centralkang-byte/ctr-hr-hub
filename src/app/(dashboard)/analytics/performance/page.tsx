@@ -1,11 +1,14 @@
-import { Suspense } from 'react'
+import dynamic from 'next/dynamic'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { getTranslations } from 'next-intl/server'
 import { authOptions } from '@/lib/auth'
 import type { SessionUser } from '@/types'
-import PerformanceClient from './PerformanceClient'
 import { ChartSkeleton } from '@/components/shared/PageSkeleton'
+
+const PerformanceClient = dynamic(() => import('./PerformanceClient'), {
+  loading: () => <ChartSkeleton />,
+})
 
 export async function generateMetadata() {
   const t = await getTranslations('analytics')
@@ -26,9 +29,7 @@ export default async function PerformancePage() {
         <h1 className="text-2xl font-bold text-foreground">{t('performance.pageTitle')}</h1>
         <p className="text-sm text-muted-foreground mt-1">{t('performance.pageDescription')}</p>
       </div>
-      <Suspense fallback={<ChartSkeleton />}>
-        <PerformanceClient user={user} />
-      </Suspense>
+      <PerformanceClient user={user} />
     </div>
   )
 }

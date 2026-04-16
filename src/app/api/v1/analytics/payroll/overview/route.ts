@@ -8,13 +8,14 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
+import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { MODULE, ACTION } from '@/lib/constants'
 import { parseAnalyticsParams, generateMonthRange } from '@/lib/analytics/parse-params'
 import { convertToKRW, formatCurrency } from '@/lib/analytics/currency'
 import type { PayrollResponse } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
 
-export const GET = withPermission(
+export const GET = withCache(withPermission(
   async (req: NextRequest, _ctx, _user: SessionUser) => {
     const params = parseAnalyticsParams(new URL(req.url).searchParams)
     const companyFilter = params.companyId ? { companyId: params.companyId } : {}
@@ -128,4 +129,4 @@ export const GET = withPermission(
     return apiSuccess(response)
   },
   perm(MODULE.ANALYTICS, ACTION.VIEW),
-)
+), CACHE_STRATEGY.ANALYTICS, 'user')

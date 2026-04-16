@@ -18,6 +18,7 @@ test.describe('AI Smoke: Input Validation', () => {
 
   // calibration-analysis
   test('POST /ai/calibration-analysis (smoke)', async ({ request }) => {
+    test.skip(!!process.env.CI, 'Anthropic API key not available in CI')
     const api = new ApiClient(request)
     const res = await f.postAi(api, 'calibration-analysis', f.buildCalibrationRequest())
     // Smoke: accept 200 (AI working) or 500 (API key missing)
@@ -32,6 +33,7 @@ test.describe('AI Smoke: Input Validation', () => {
 
   // eval-comment
   test('POST /ai/eval-comment (smoke)', async ({ request }) => {
+    test.skip(!!process.env.CI, 'Anthropic API key not available in CI')
     const api = new ApiClient(request)
     const res = await f.postAi(api, 'eval-comment', f.buildEvalCommentRequest())
     expect([200, 500]).toContain(res.status)
@@ -45,6 +47,7 @@ test.describe('AI Smoke: Input Validation', () => {
 
   // executive-report
   test('POST /ai/executive-report (smoke)', async ({ request }) => {
+    test.skip(!!process.env.CI, 'Anthropic API key not available in CI')
     const api = new ApiClient(request)
     const res = await f.postAi(api, 'executive-report', f.buildExecutiveReportRequest())
     expect([200, 500]).toContain(res.status)
@@ -52,6 +55,7 @@ test.describe('AI Smoke: Input Validation', () => {
 
   // job-description
   test('POST /ai/job-description (smoke)', async ({ request }) => {
+    test.skip(!!process.env.CI, 'Anthropic API key not available in CI')
     const api = new ApiClient(request)
     const res = await f.postAi(api, 'job-description', f.buildJobDescriptionRequest())
     expect([200, 500]).toContain(res.status)
@@ -101,6 +105,7 @@ test.describe('AI Smoke: Input Validation', () => {
 
   // resume-analysis
   test('POST /ai/resume-analysis (smoke)', async ({ request }) => {
+    test.skip(!!process.env.CI, 'Anthropic API key not available in CI')
     const api = new ApiClient(request)
     const res = await f.postAi(api, 'resume-analysis', f.buildResumeAnalysisRequest())
     expect([200, 500]).toContain(res.status)
@@ -179,6 +184,7 @@ test.describe('HR Chat: EMPLOYEE Lifecycle', () => {
   })
 
   test('POST /hr-chat/sessions/[id]/messages sends message (smoke)', async ({ request }) => {
+    test.skip(!!process.env.CI, 'Anthropic API key not available in CI')
     const api = new ApiClient(request)
     const res = await f.postMessage(api, sessionId, f.buildChatMessage())
     // 200 if AI works, 500 if embedding/Claude API key missing
