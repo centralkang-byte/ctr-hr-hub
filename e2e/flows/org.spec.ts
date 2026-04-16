@@ -23,7 +23,8 @@ test.describe('Org: HR_ADMIN', () => {
 
     const main = page.locator('main')
     await expect(main).toBeVisible()
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10000 })
+    // OrgClient is dynamically imported (ssr: false) — h1 appears after chunk load + API fetch
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 30000 })
   })
 
   test('skill matrix page loads', async ({ page }) => {
@@ -40,9 +41,10 @@ test.describe('Org: EMPLOYEE', () => {
   // Codex MED: /org is ALL_ROLES accessible — loads read-only, not blocked
   test('org chart loads read-only', async ({ page }) => {
     await assertPageLoads(page, '/org')
-    await waitForLoading(page)
 
     const main = page.locator('main')
     await expect(main).toBeVisible()
+    // OrgClient is dynamically imported — wait for content to appear
+    await waitForLoading(page)
   })
 })

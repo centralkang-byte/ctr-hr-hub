@@ -6,11 +6,14 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest } from '@/lib/errors'
+import { badRequest, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
+
+// ─── Manager+ only roles ────────────────────────────────
+const MANAGER_UP: Set<string> = new Set([ROLE.SUPER_ADMIN, ROLE.HR_ADMIN, ROLE.EXECUTIVE, ROLE.MANAGER])
 
 // ─── Schema ──────────────────────────────────────────────
 
@@ -23,6 +26,10 @@ const querySchema = z.object({
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
+    if (!MANAGER_UP.has(user.role as string)) {
+      throw forbidden('매니저 이상 권한이 필요합니다.')
+    }
+
     const params = Object.fromEntries(req.nextUrl.searchParams.entries())
     const parsed = querySchema.safeParse(params)
     if (!parsed.success) {

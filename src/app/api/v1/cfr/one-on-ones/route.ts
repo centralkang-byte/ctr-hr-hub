@@ -90,20 +90,36 @@ export const POST = withPermission(
 
     const { employeeId, scheduledAt, meetingType, agenda } = parsed.data
 
-    // Verify the target employee is a direct report
-    const reportIds = await getDirectReportIds(user.employeeId)
-    const employee = reportIds.length > 0
-      ? (reportIds.includes(employeeId)
-          ? await prisma.employee.findUnique({ where: { id: employeeId } })
-          : null)
-      : await prisma.employee.findFirst({
-          where: {
-            id: employeeId,
-            assignments: {
-              some: { companyId: user.companyId, isPrimary: true, endDate: null },
-            },
+    // Verify the target employee exists in the same company
+    // HR_ADMIN / SUPER_ADMIN can schedule 1:1s with any employee in their company
+    // Managers can only schedule with direct reports (or same-company fallback if no position hierarchy)
+    const isHrOrAbove = ['SUPER_ADMIN', 'HR_ADMIN'].includes(user.role)
+
+    let employee
+    if (isHrOrAbove) {
+      employee = await prisma.employee.findFirst({
+        where: {
+          id: employeeId,
+          assignments: {
+            some: { companyId: user.companyId, isPrimary: true, endDate: null },
           },
-        })
+        },
+      })
+    } else {
+      const reportIds = await getDirectReportIds(user.employeeId)
+      employee = reportIds.length > 0
+        ? (reportIds.includes(employeeId)
+            ? await prisma.employee.findUnique({ where: { id: employeeId } })
+            : null)
+        : await prisma.employee.findFirst({
+            where: {
+              id: employeeId,
+              assignments: {
+                some: { companyId: user.companyId, isPrimary: true, endDate: null },
+              },
+            },
+          })
+    }
     if (!employee) throw notFound('해당 팀원을 찾을 수 없습니다.')
 
     try {

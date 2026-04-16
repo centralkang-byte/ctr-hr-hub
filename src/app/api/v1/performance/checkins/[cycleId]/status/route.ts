@@ -6,16 +6,23 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
+import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
+// ─── Manager+ only roles ────────────────────────────────
+const MANAGER_UP: Set<string> = new Set([ROLE.SUPER_ADMIN, ROLE.HR_ADMIN, ROLE.EXECUTIVE, ROLE.MANAGER])
+
 // ─── GET /api/v1/performance/checkins/:cycleId/status ────
-// Returns per-employee check-in completion status
+// Returns per-employee check-in completion status (manager-level)
 
 export const GET = withPermission(
     async (_req: NextRequest, context: { params: Promise<Record<string, string>> }, user: SessionUser) => {
+        if (!MANAGER_UP.has(user.role as string)) {
+            throw forbidden('매니저 이상 권한이 필요합니다.')
+        }
+
         const { cycleId } = await context.params
 
         try {

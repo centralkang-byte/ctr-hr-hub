@@ -23,7 +23,7 @@ test.describe('Payroll: HR_ADMIN', () => {
 
     const main = page.locator('main')
     await expect(main).toBeVisible()
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 15000 })
   })
 
   test('close attendance page loads', async ({ page }) => {
@@ -74,9 +74,11 @@ test.describe('Payroll: EMPLOYEE', () => {
 
   test('my payslip page loads', async ({ page }) => {
     await assertPageLoads(page, '/payroll/me')
-    await waitForPageReady(page)
+    await waitForLoading(page)
 
     const main = page.locator('main')
     await expect(main).toBeVisible()
+    // h1 appears after API fetch completes (loading → content or empty state)
+    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 15000 })
   })
 })

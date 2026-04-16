@@ -5,11 +5,27 @@
 //         checkins, calibration extras.
 // ═══════════════════════════════════════════════════════════
 
-import { ApiClient, type ApiResult } from './api-client'
+import { ApiClient, type ApiResult, parseApiResponse } from './api-client'
+import type { APIRequestContext } from '@playwright/test'
 
 const PERF = '/api/v1/performance'
 const CFR = '/api/v1/cfr'
 const PULSE = '/api/v1/pulse'
+
+// ─── Seed Resolvers ─────────────────────────────────────
+
+/**
+ * Resolve an existing performance cycle ID from the seed data.
+ * Returns the first cycle's ID, or undefined if none exist.
+ */
+export async function resolveCycleId(request: APIRequestContext): Promise<string | undefined> {
+  const res = await request.get(`${PERF}/cycles?limit=1`)
+  const result = await parseApiResponse<Array<{ id: string }>>(res)
+  if (result.ok && Array.isArray(result.data) && result.data.length > 0) {
+    return result.data[0]?.id
+  }
+  return undefined
+}
 
 // ─── Goals ───────────────────────────────────────────────
 
@@ -62,7 +78,7 @@ export function unlockGoal(client: ApiClient, id: string): Promise<ApiResult> {
 export function requestRevision(
   client: ApiClient,
   id: string,
-  data?: { reason?: string },
+  data?: { comment?: string },
 ): Promise<ApiResult> {
   return client.put(`${PERF}/goals/${id}/request-revision`, data ?? {})
 }

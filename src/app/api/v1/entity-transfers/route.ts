@@ -73,7 +73,7 @@ export const GET = withPermission(
 
     return apiPaginated(transfers, buildPagination(page, limit, total))
   },
-  perm(MODULE.EMPLOYEES, ACTION.VIEW),
+  perm(MODULE.EMPLOYEES, ACTION.APPROVE),
 )
 
 // ─── POST /api/v1/entity-transfers ───────────────────────

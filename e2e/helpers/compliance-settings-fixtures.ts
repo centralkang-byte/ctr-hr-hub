@@ -145,9 +145,10 @@ export function buildGdprRequest(employeeId: string) {
 }
 
 export function buildDepartment(prefix: string, companyId: string) {
+  const uniq = `${ts()}${Math.random().toString(36).slice(2, 5)}`
   return {
     companyId,
-    code: `E2E${prefix}${ts()}`.slice(0, 20),
+    code: `E2E${prefix}${uniq}`.slice(0, 20),
     name: `E2E ${prefix} Dept`,
   }
 }

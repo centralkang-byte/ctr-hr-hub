@@ -30,13 +30,14 @@ test.describe('Cross-Cutting Features', () => {
     await waitForPageReady(page)
     await waitForLoading(page)
 
-    await expect(page.getByRole('button', { name: '전체' }).first()).toBeVisible()
-    await expect(page.getByRole('button', { name: '휴가' }).first()).toBeVisible()
-    await expect(page.getByRole('button', { name: '성과' }).first()).toBeVisible()
-    await expect(page.getByRole('button', { name: '급여' }).first()).toBeVisible()
+    // Filter pill buttons may include a count badge (e.g. "전체 5"), so use regex
+    await expect(page.getByRole('button', { name: /^전체/ }).first()).toBeVisible()
+    await expect(page.getByRole('button', { name: /^휴가/ }).first()).toBeVisible()
+    await expect(page.getByRole('button', { name: /^성과/ }).first()).toBeVisible()
+    await expect(page.getByRole('button', { name: /^급여/ }).first()).toBeVisible()
 
     // Click 휴가 tab without crash
-    await page.getByRole('button', { name: '휴가' }).first().click()
+    await page.getByRole('button', { name: /^휴가/ }).first().click()
     await waitForLoading(page)
     expect(page.url()).not.toContain('/login')
   })

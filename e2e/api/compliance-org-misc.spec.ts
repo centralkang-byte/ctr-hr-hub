@@ -213,7 +213,7 @@ test.describe('Regional RU: HR_ADMIN', () => {
 
   test('GET /compliance/ru/reports/p4 returns report', async ({ request }) => {
     const client = new ApiClient(request)
-    const result = await f.getRuReport(client, 'p4', { year: '2025' })
+    const result = await f.getRuReport(client, 'p4', { year: '2025', quarter: '1' })
     assertOk(result, 'get RU P4 report')
   })
 })

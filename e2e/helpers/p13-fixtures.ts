@@ -121,15 +121,14 @@ export async function resolveEmployeeId(request: APIRequestContext): Promise<str
 }
 
 /**
- * Resolve company ID from employee assignment.
+ * Resolve company ID from the companies list (CTR company).
  */
 export async function resolveCompanyId(request: APIRequestContext): Promise<string | undefined> {
-  const res = await request.get('/api/v1/employees?search=이민준&page=1&limit=1')
+  const res = await request.get('/api/v1/companies')
   const { ok, data } = await parseApiResponse(res)
   if (ok && Array.isArray(data) && data.length > 0) {
-    const emp = data[0] as { assignments?: Array<{ companyId?: string; isPrimary?: boolean; endDate?: string | null }> }
-    const primary = emp.assignments?.find((a) => a.isPrimary && !a.endDate)
-    return primary?.companyId
+    const ctr = (data as Array<{ id: string; code: string }>).find((c) => c.code === 'CTR')
+    return ctr?.id ?? (data[0] as { id: string }).id
   }
   return undefined
 }
@@ -238,7 +237,7 @@ export function buildChatMessage() {
 }
 
 export function buildChatFeedback() {
-  return { feedback: 'HELPFUL' as const }
+  return { feedback: 'POSITIVE' as const }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -300,11 +299,11 @@ export function buildAiReportGenerate(companyId?: string) {
 export function buildRetentionPolicy() {
   const t = ts()
   return {
-    category: 'EMPLOYMENT',
-    dataType: `E2E_DATA_${t}`,
-    retentionDays: 365,
+    category: 'EMPLOYMENT_RECORDS',
+    retentionMonths: 12,
     description: `E2E retention policy ${t}`,
-    isActive: true,
+    autoDelete: false,
+    anonymize: true,
   }
 }
 

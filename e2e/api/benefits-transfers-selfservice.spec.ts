@@ -248,16 +248,18 @@ test.describe('Entity Transfers RBAC: EMPLOYEE Blocked', () => {
 test.describe('Bulk Movements: Templates', () => {
   test.use({ storageState: authFile('HR_ADMIN') })
 
-  test('GET /templates/TRANSFER returns 200', async ({ request }) => {
+  test('GET /templates/transfer returns 200', async ({ request }) => {
     const api = new ApiClient(request)
-    const res = await f.getBulkTemplate(api, 'TRANSFER')
-    assertOk(res, 'get transfer template')
+    const res = await api.getRaw('/api/v1/bulk-movements/templates/transfer')
+    expect(res.status).toBe(200)
+    expect(res.headers['content-type']).toContain('text/csv')
   })
 
-  test('GET /templates/PROMOTION returns 200', async ({ request }) => {
+  test('GET /templates/promotion returns 200', async ({ request }) => {
     const api = new ApiClient(request)
-    const res = await f.getBulkTemplate(api, 'PROMOTION')
-    assertOk(res, 'get promotion template')
+    const res = await api.getRaw('/api/v1/bulk-movements/templates/promotion')
+    expect(res.status).toBe(200)
+    expect(res.headers['content-type']).toContain('text/csv')
   })
 
   test('GET /templates/INVALID_TYPE returns error', async ({ request }) => {
@@ -281,9 +283,9 @@ test.describe('Bulk Movements: Templates', () => {
 test.describe('Bulk Movements RBAC: EMPLOYEE Blocked', () => {
   test.use({ storageState: authFile('EMPLOYEE') })
 
-  test('GET /templates/TRANSFER → 403', async ({ request }) => {
+  test('GET /templates/transfer → 403', async ({ request }) => {
     const api = new ApiClient(request)
-    const res = await f.getBulkTemplate(api, 'TRANSFER')
+    const res = await f.getBulkTemplate(api, 'transfer')
     assertError(res, 403, 'EMPLOYEE bulk template')
   })
 })

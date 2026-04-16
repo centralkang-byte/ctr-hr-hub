@@ -117,8 +117,8 @@ test.describe('Attendance Core API', () => {
       const api = new ApiClient(request)
       // Attempt second clock-in (after previous describe's clock-out)
       const res = await clockIn(api)
-      // Either 200 (creates second record) or 400 (already has open record)
-      expect([200, 400]).toContain(res.status)
+      // Either 201 (creates second record) or 400 (already has open record)
+      expect([200, 201, 400]).toContain(res.status)
       // Clean up: if we created a new record, clock out
       if (res.ok) {
         await clockOut(api)

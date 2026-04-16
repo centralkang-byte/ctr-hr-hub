@@ -58,20 +58,17 @@ test.describe('Cron Auth: Wrong Secret', () => {
 // They should still return 200 without the secret header
 // ═══════════════════════════════════════════════════════════
 
-test.describe('Cron: verifyCronSecret Gap Detection', () => {
+test.describe('Cron: verifyCronSecret — All Routes Secured', () => {
   test.use({ storageState: authFile('SUPER_ADMIN') })
 
-  test('GET /cron/overdue-check without secret -> 200 (security gap)', async ({ request }) => {
+  test('GET /cron/overdue-check without secret -> 401', async ({ request }) => {
     const res = await f.cronGetNoSecret(request, f.CRON_PATHS.OVERDUE)
-    // SECURITY FINDING: overdue-check does NOT verify cron secret
-    // It returns 200 even without the header. Document this gap.
-    expect(res.status, 'overdue-check should return 200 without secret (known security gap)').toBe(200)
+    assertError(res, 401, 'overdue-check without cron secret')
   })
 
-  test('GET /cron/auto-acknowledge without secret -> 200 (security gap)', async ({ request }) => {
+  test('GET /cron/auto-acknowledge without secret -> 401', async ({ request }) => {
     const res = await f.cronGetNoSecret(request, f.CRON_PATHS.AUTO_ACK)
-    // SECURITY FINDING: auto-acknowledge does NOT verify cron secret
-    expect(res.status, 'auto-acknowledge should return 200 without secret (known security gap)').toBe(200)
+    assertError(res, 401, 'auto-acknowledge without cron secret')
   })
 })
 

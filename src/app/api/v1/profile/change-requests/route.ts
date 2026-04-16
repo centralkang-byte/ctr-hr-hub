@@ -8,8 +8,7 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
 import type { SessionUser } from '@/types'
 
 // ─── Allowed editable fields ────────────────────────────────
@@ -33,7 +32,7 @@ const createChangeRequestSchema = z.object({
 
 // ─── GET — 내 변경 요청 목록 ──────────────────────────────────
 
-export const GET = withPermission(
+export const GET = withAuth(
   async (
     _req: NextRequest,
     _context: { params: Promise<Record<string, string>> },
@@ -49,12 +48,11 @@ export const GET = withPermission(
 
     return apiSuccess(requests)
   },
-  perm(MODULE.EMPLOYEES, ACTION.UPDATE),
 )
 
 // ─── POST — 변경 요청 생성 ──────────────────────────────────
 
-export const POST = withPermission(
+export const POST = withAuth(
   async (
     req: NextRequest,
     _context: { params: Promise<Record<string, string>> },
@@ -92,5 +90,4 @@ export const POST = withPermission(
 
     return apiSuccess(request, 201)
   },
-  perm(MODULE.EMPLOYEES, ACTION.UPDATE),
 )

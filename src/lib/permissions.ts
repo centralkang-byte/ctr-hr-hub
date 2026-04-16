@@ -25,8 +25,9 @@ export function hasPermission(
   if (user.role === ROLE.SUPER_ADMIN) return true
 
   // Fallback for missing DB seed permissions
+  // RBAC spec: MANAGER_UP (MANAGER, EXECUTIVE, HR_ADMIN) can access analytics
   if (
-    (user.role === ROLE.HR_ADMIN || user.role === ROLE.EXECUTIVE) &&
+    (user.role === ROLE.HR_ADMIN || user.role === ROLE.EXECUTIVE || user.role === ROLE.MANAGER) &&
     permission.module === MODULE.ANALYTICS
   ) {
     return true

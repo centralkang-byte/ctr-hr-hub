@@ -126,7 +126,7 @@ test.describe('Goals Workflow', () => {
 
   test('10. HR_ADMIN requests revision on goal 1', async () => {
     const result = await pf.requestRevision(hrClient, goalId1, {
-      reason: 'E2E test: please revise the goal scope',
+      comment: 'E2E test: please revise the goal scope',
     })
     assertOk(result, 'request revision on goal 1')
   })
@@ -187,7 +187,7 @@ test.describe('Goals RBAC: EMPLOYEE boundaries', () => {
   test('EMPLOYEE cannot request revision', async ({ request }) => {
     const client = new ApiClient(request)
     const result = await pf.requestRevision(client, FAKE_GOAL_ID, {
-      reason: 'Should be blocked',
+      comment: 'Should be blocked',
     })
     // 403 (permission denied) or 400 (not found / wrong state)
     expect(result.status).toBeGreaterThanOrEqual(400)
@@ -252,7 +252,7 @@ test.describe('Peer Review Pipeline', () => {
   })
 
   test('2. HR gets peer review candidates', async () => {
-    const result = await pf.getCandidates(hrClient, cycleId)
+    const result = await pf.getCandidates(hrClient, cycleId, employeeAId)
     assertOk(result, 'get peer review candidates')
   })
 
@@ -355,9 +355,16 @@ test.describe('Peer Review Pipeline', () => {
 test.describe('Results & Reviews: HR_ADMIN', () => {
   test.use({ storageState: authFile('HR_ADMIN') })
 
+  let seedCycleId: string | undefined
+
+  test.beforeAll(async ({ request }) => {
+    seedCycleId = await pf.resolveCycleId(request)
+  })
+
   test('HR gets admin results', async ({ request }) => {
+    test.skip(!seedCycleId, 'no seed cycle found')
     const client = new ApiClient(request)
-    const result = await pf.getAdminResults(client)
+    const result = await pf.getAdminResults(client, { cycleId: seedCycleId! })
     assertOk(result, 'admin results')
 
     const data = result.data
@@ -365,8 +372,9 @@ test.describe('Results & Reviews: HR_ADMIN', () => {
   })
 
   test('Admin results have expected shape', async ({ request }) => {
+    test.skip(!seedCycleId, 'no seed cycle found')
     const client = new ApiClient(request)
-    const result = await pf.getAdminResults(client)
+    const result = await pf.getAdminResults(client, { cycleId: seedCycleId! })
     assertOk(result, 'admin results shape check')
 
     const data = result.data as Array<Record<string, unknown>>
@@ -381,9 +389,16 @@ test.describe('Results & Reviews: HR_ADMIN', () => {
 test.describe('Results & Reviews: MANAGER', () => {
   test.use({ storageState: authFile('MANAGER') })
 
+  let seedCycleId: string | undefined
+
+  test.beforeAll(async ({ request }) => {
+    seedCycleId = await pf.resolveCycleId(request)
+  })
+
   test('MANAGER gets team results', async ({ request }) => {
+    test.skip(!seedCycleId, 'no seed cycle found')
     const client = new ApiClient(request)
-    const result = await pf.getTeamResults(client)
+    const result = await pf.getTeamResults(client, { cycleId: seedCycleId! })
     assertOk(result, 'team results')
 
     const data = result.data
@@ -394,15 +409,23 @@ test.describe('Results & Reviews: MANAGER', () => {
 test.describe('Results & Reviews: EMPLOYEE', () => {
   test.use({ storageState: authFile('EMPLOYEE') })
 
+  let seedCycleId: string | undefined
+
+  test.beforeAll(async ({ request }) => {
+    seedCycleId = await pf.resolveCycleId(request)
+  })
+
   test('EMPLOYEE gets my results', async ({ request }) => {
+    test.skip(!seedCycleId, 'no seed cycle found')
     const client = new ApiClient(request)
-    const result = await pf.getMyResults(client)
+    const result = await pf.getMyResults(client, { cycleId: seedCycleId! })
     assertOk(result, 'my results')
   })
 
   test('EMPLOYEE gets my-result', async ({ request }) => {
+    test.skip(!seedCycleId, 'no seed cycle found')
     const client = new ApiClient(request)
-    const result = await pf.getMyReviewResult(client)
+    const result = await pf.getMyReviewResult(client, { cycleId: seedCycleId! })
     // May return 200 with data or 404 if no review exists yet
     if (result.status === 404) {
       expect(result.ok).toBe(false)

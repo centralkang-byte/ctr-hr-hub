@@ -49,14 +49,14 @@ export const matrixSearchSchema = z.object({
 })
 
 export const matrixEntrySchema = z.object({
-  emsBlock: z.string().min(1).max(4),
+  emsBlock: z.string().min(1).max(20),
   recommendedIncreasePct: z.number().min(0).max(100),
   minIncreasePct: z.number().min(0).max(100).optional(),
   maxIncreasePct: z.number().min(0).max(100).optional(),
 })
 
 export const matrixUpsertSchema = z.object({
-  cycleId: z.string().uuid().nullable(),
+  cycleId: z.string().uuid().nullable().optional(),
   entries: z.array(matrixEntrySchema).min(1).max(9),
 })
 

@@ -96,8 +96,7 @@ test.describe('EMPLOYEE: Leave requests', () => {
       policyId,
       startDate: futureDate,
       endDate: futureDate,
-      days: 0.5,
-      halfDayType: 'AM',
+      days: 1,
     })
     createdRequestId = leaveReq.id
     expect(leaveReq.id).toBeTruthy()

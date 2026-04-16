@@ -9,12 +9,11 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
-export const GET = withPermission(
+export const GET = withAuth(
   async (req: NextRequest, _context, user: SessionUser) => {
     const url = req.nextUrl
     const employeeId = url.searchParams.get('employeeId') ?? user.employeeId
@@ -140,5 +139,4 @@ export const GET = withPermission(
       noCoursesForGaps: recommendations.filter((r) => r.recommendedCourses.length === 0).map((r) => r.competencyName),
     })
   },
-  perm(MODULE.TRAINING, ACTION.VIEW),
 )

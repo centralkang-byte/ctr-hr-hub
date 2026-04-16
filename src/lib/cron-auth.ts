@@ -4,10 +4,12 @@
 // ═══════════════════════════════════════════════════════════
 
 import { type NextRequest } from 'next/server'
-import { env } from '@/lib/env'
 
 export function verifyCronSecret(req: NextRequest): boolean {
   const secret = req.headers.get('x-cron-secret')
-  if (!env.CRON_SECRET) return false
-  return secret === env.CRON_SECRET
+  // Read CRON_SECRET at call time (not module-load time) to avoid
+  // stale values when env vars are injected after build.
+  const expected = process.env.CRON_SECRET
+  if (!expected) return false
+  return secret === expected
 }

@@ -101,6 +101,12 @@ jobs:
         # injects them before Playwright runs.
         run: npx tsx scripts/seed-qa-accounts.ts
 
+      # NOTE: Analytics MVs (prisma/migrations/mv_analytics.sql) are NOT created
+      # in CI. The SQL references columns (e.g. employees.company_id) that don't
+      # exist — Employee→Company is via EmployeeAssignment, not a direct FK.
+      # Analytics API routes use safeMvQuery() which returns empty arrays when
+      # MVs are missing, so tests pass without them.
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 

@@ -83,7 +83,10 @@ test.describe('CFR: 1:1 Meetings', () => {
   test('5. MANAGER updates meeting with notes', async () => {
     const result = await pf.updateOneOnOne(mgrClient, meetingId1, {
       notes: `E2E test notes updated at ${Date.now()}`,
-      actionItems: 'Follow up on project timeline; Review Q2 goals',
+      actionItems: [
+        { item: 'Follow up on project timeline', assignee: 'MANAGER' },
+        { item: 'Review Q2 goals', assignee: 'EMPLOYEE' },
+      ],
     })
     assertOk(result, 'update 1:1 notes')
   })
