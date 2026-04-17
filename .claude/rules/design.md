@@ -1,137 +1,106 @@
+---
+paths: ["src/app/**/*.tsx", "src/components/**/*.tsx", "src/lib/styles/**"]
+---
+
 # Design Token Rules
 
-Full design system: see `DESIGN.md`. Below are mandatory checks when writing UI code.
+> **SSOT**: `DESIGN.md` (전체 디자인 시스템 정의)
+> 본 파일은 UI 파일 편집 시 자동 주입되는 "금지/필수 체크리스트" 요약본.
+> 색상 팔레트, 타이포그래피 스케일, 컴포넌트 상세, Mobile 전략 등은 `DESIGN.md` 참조.
+> 구현 SSOT: `src/lib/styles/typography.ts`, `src/lib/styles/status.ts`, `src/components/ui/badge.tsx`.
 
-## Color
+---
 
-- Pure black #000/#000000 forbidden → use on-surface (#2d2f2f)
-- Primary: #6366f1, Primary-dim: #4f46e5, Primary-container: #a5b4fc
-- Tertiary (Green): #16a34a, Tertiary-container: #86efac
-- Error: #e11d48, Warning: #B45309, Info: = primary
-- Badge-accent (badge-only): #7c3aed (`--badge-accent`, `--accent`은 neutral surface이므로 사용 금지)
+## 색상 (Color) — 핵심 체크
 
-## Typography
-
-- font-display (Outfit): English-only, text-4xl+ only. NEVER use for mixed Korean/English text
-- font-mono: MUST accompany tabular-nums (never standalone)
-- CJK: letter-spacing -0.02em, line-height 1.6+, base 14px
-
-## Border & Elevation
-
-- **No-Line Rule:** No 1px solid borders for section separation → use Tonal Layering
-- Ghost Border: outline-variant (#acadad) at 15% opacity ONLY
-- Shadow tokens: shadow-sm (card), shadow-md (dropdown), shadow-lg (modal)
-
-## Border Radius (3 tiers only)
-
-- Pill (rounded-full): CTA lg buttons, status badges, search bar
-- Container (rounded-2xl): cards, modals, panels
-- Element (rounded-lg): inputs, sm buttons
-
-## Glassmorphism (2 locations only)
-
-- TopBar: bg-white/80 backdrop-blur-md (light) + dark:bg-card/80 (dark) ✅
-- Dialog/Sheet overlay: bg-white/70 backdrop-blur-[20px] ✅
-- Everywhere else: ❌ FORBIDDEN
-
-## Button
-
-- lg: rounded-full + gradient (from-primary to-primary-dim) + shadow-lg
-- default: rounded-xl + bg-primary
-- sm: rounded-lg + bg-primary (density protection)
-
-## Spacing Density
-
-- compact (p-4): payroll/attendance/audit tables
-- comfortable (p-6, DEFAULT): employee list, leave, recruitment
-- spacious (p-8): dashboard KPI, profile, onboarding
-
-## Status Badge (6 categories)
-
-| Category | Color | Usage |
-|----------|-------|-------|
-| success | #16a34a | Approved, complete, active, PAID, HIRED |
-| warning | #b45309 | Pending, probation, REVIEW |
-| error | #e11d48 | Rejected, terminated, absent, FAILED |
-| info | #6366f1 | In progress, on leave, interview, ACTIVE |
-| neutral | #64748b | Draft, cancelled, DRAFT |
-| accent | #7c3aed | Offer, LOA, business trip |
-
-- All badges: pill shape, `whitespace-nowrap`
-- Use StatusBadge component for automatic status→category mapping
-
-## Icons
-
-- Lucide React only (lucide-react)
-- System emoji: **FORBIDDEN** in all UI
-- Inactive: Slate (#94a3b8), Active: white on gradient
-- stroke-width: 1.5px, icon-text gap: mr-2
-- Sizes: sm=16px (h-4 w-4), md=20px (h-5 w-5), lg=24px (h-6 w-6)
-
-## Page Layout (5 types)
-
-| Type | Container | Header | Body |
-|------|-----------|--------|------|
-| List | p-6 space-y-6 | icon + title + CTA | filter pills → table |
-| Detail | p-6 space-y-6 | back + profile | 2-col: profile(240px) + tabs |
-| Dashboard | p-8 space-y-6 | greeting + context | V3 Action Zone + Monitor Zone |
-| Settings | p-6 bg-muted | icon + title | 2-col: categories(200px) + tabs |
-| Form | p-6 max-w-4xl | back + step | section cards, StickyActionBar |
-
-- Common: PageHeader component, space-y-6, back button on Detail/Form only
-
-## Table (3 types)
-
-| Usage | Style |
-|-------|-------|
-| Employee/leave/approvals (default) | **Tonal Layering** — no border, bg color diff, unified toolbar |
-| Payroll/attendance/audit (dense) | **Zebra Stripe** — alternating row bg, compact density |
-| Directory/recruitment/talent pool | **Card Row** — independent cards, hover lift (미구현, 필요 시 추가) |
-
-- Name cell: default = single line + hover tooltip, directory = 2-line compact
-
-## Form Standard
-
-- Label: always top, 11px semibold
-- Required: red *
-- Error: inline below input + red border + XCircle icon
-- Input: border 1px (Tailwind default), rounded-lg, focus Violet ring
-- Layout: 2-column default, short forms 1-column
-- Buttons (right-aligned): cancel(ghost) → draft(outline) → submit(primary pill)
-- Implementation: shadcn/ui FormField wrapper required
-
-## Segmented Control (Tabs)
-
-- Tab = Segmented Control: `bg-muted/50 rounded-lg p-1` container, NO border-b
-- Active: `bg-card shadow-sm text-primary font-semibold rounded-md`
-- Compact variant (nested tabs only): `p-0.5 rounded-md`, trigger `px-2.5 py-1 text-xs`
-- Animation: `motion-safe:transition-all` (respects prefers-reduced-motion)
-- Mobile: `overflow-x-auto`, touch target `min-h-[44px]`
-- `aria-label` on every TabsList
-- border-b underline tabs: **FORBIDDEN** (No-Line Rule)
+- 순수 검정 `#000`/`#000000` 사용 금지 → `on-surface` (#2d2f2f)
+- Primary: #6366f1 / Primary-dim: #4f46e5 / Primary-container: #a5b4fc
+- 하드코딩 hex 금지 (CSS 변수/Tailwind 토큰 사용). 예외 3가지:
+  1. **WCAG AA text**: `text-[#15803d]` (badge success)
+  2. **Opacity 미지원 토큰**: `bg-[#b45309]/10` (badge warning)
+  3. **도메인 고유 색상**: 차트 팔레트, 파이프라인 단계, 급여 유형 등 → `chart.ts` 또는 컴포넌트 상수로 관리
 
 ## D17 Color Principle (bg/text 분리)
 
-bg와 text에 같은 토큰을 쓰지 않는다. bg는 밝은(bright) 색상, text는 WCAG AA를 만족하는 어두운(darker) 색상.
+bg와 text에 같은 토큰 사용 금지. bg는 밝은 색, text는 WCAG AA 만족하는 어두운 색.
 
 - Warning: `bg-warning-bright/15` + `text-ctr-warning`
 - Alert: `bg-alert-red/10` + `text-destructive`
-- Success badge: `bg-tertiary/10` + `text-[#15803d]` (darker green, AA 준수)
+- Success badge: `bg-tertiary/10` + `text-[#15803d]`
 
-## Hardcoded Hex Exceptions
+## Typography — 핵심 체크
 
-원칙: CSS 변수/Tailwind 토큰 사용. 아래 3가지는 예외:
-1. **WCAG AA text**: `text-[#15803d]` (badge success) — tertiary #16a34a는 10px text에서 contrast 부족
-2. **Opacity 미지원**: `bg-[#b45309]/10` (badge warning) — ctr-warning이 direct hex라 `/opacity` 문법 불가
-3. **도메인 고유 색상**: 차트 팔레트, 파이프라인 단계, 급여 조정 유형 등 — `chart.ts` 또는 컴포넌트 상수로 관리
+- `font-display` (Outfit): English/숫자 only, `text-4xl+` only. **한/영 혼재 금지**
+- `font-mono` (Geist Mono): 항상 `tabular-nums`와 페어. **단독 사용 금지**
+- CJK: `letter-spacing: -0.02em`, `line-height: 1.6+`, base 14px
+- `TYPOGRAPHY` 상수 (`src/lib/styles/typography.ts`) 사용. inline `text-Xxl font-bold` 최소화
+
+## Border & Elevation
+
+- **No-Line Rule**: 1px solid border로 섹션 구분 금지 → Tonal Layering 사용
+- Ghost Border: `outline-variant` 15% opacity ONLY
+- Shadow: `shadow-sm` (card), `shadow-md` (dropdown), `shadow-lg` (modal)
+
+## Border Radius (3 tiers only)
+
+- **Pill** (`rounded-full`): CTA lg 버튼, status badge, search bar
+- **Container** (`rounded-2xl`): card, modal, panel
+- **Element** (`rounded-lg`): input, sm button
+
+## Glassmorphism (2 locations only)
+
+- TopBar: `bg-white/80 backdrop-blur-md` + `dark:bg-card/80`
+- Dialog/Sheet overlay: `bg-white/70 backdrop-blur-[20px]`
+- **그 외 모든 곳 FORBIDDEN**
+
+## Status Badge (SSOT: `src/lib/styles/status.ts` + `src/components/ui/badge.tsx`)
+
+- **Semantic status 매핑**: `StatusBadge` 컴포넌트 사용 → `status.ts`의 `STATUS_MAP`이 status → category 자동 변환
+- **Visual variant 수동 지정**: `Badge` 컴포넌트 + variant prop (10개: default/secondary/destructive/outline/success/warning/error/info/neutral/accent)
+- 6개 semantic category: `success`, `warning`, `error`, `info`, `neutral`, `accent`
+- 새 status 추가 시 `status.ts`의 `STATUS_MAP`에 category 매핑만 추가 (UI 수정 불필요)
+- 모두 pill shape + `whitespace-nowrap` (badge.tsx가 자동 처리)
+- **직접 `bg-[#xxx]/10 text-[#xxx]` 하드코딩 금지**
+
+## Icons (Lucide only)
+
+- `lucide-react`만 사용
+- System emoji: **FORBIDDEN** in all UI
+- Inactive: Slate (#94a3b8), Active: white on gradient
+- stroke-width: 1.5px, icon-text gap: `mr-2`
+- Sizes: sm=16px (h-4 w-4), md=20px (h-5 w-5), lg=24px (h-6 w-6)
+
+## Spacing Density
+
+- `compact` (p-4): payroll/attendance/audit 테이블
+- `comfortable` (p-6, DEFAULT): 직원 목록, 휴가, 채용
+- `spacious` (p-8): dashboard KPI, profile, onboarding
+
+## Form (shadcn FormField 래퍼 필수)
+
+- Label: 항상 top, 11px semibold
+- Required: red `*`
+- Error: inline + red border + `XCircle` icon
+- Input: border 1px (Tailwind 기본), `rounded-lg`, focus Violet ring
+- Buttons (right-align): cancel(ghost) → draft(outline) → submit(primary pill)
+
+## Tabs = Segmented Control
+
+- `bg-muted/50 rounded-lg p-1` 컨테이너, **NO border-b**
+- Active: `bg-card shadow-sm text-primary font-semibold rounded-md`
+- Compact (nested only): `p-0.5 rounded-md`, trigger `px-2.5 py-1 text-xs`
+- `motion-safe:transition-all`
+- Mobile: `overflow-x-auto`, `min-h-[44px]`
+- `aria-label` on every `TabsList`
 
 ## Forbidden Patterns
 
-- backdrop-blur outside TopBar/Dialog
-- 1px solid borders for section separation
-- Uniform border-radius (must use 3-tier system)
+- `backdrop-blur` TopBar/Dialog 외 사용
+- 1px solid border로 섹션 구분
+- 통일된 border-radius (3-tier 시스템 필수)
 - Purple AI-slop gradients
-- System emoji in UI (use Lucide icons)
-- font-display on mixed KR/EN text
-- font-mono without tabular-nums
-- Hardcoded hex colors (use CSS variables or CTR tokens) — 예외는 위 "Hardcoded Hex Exceptions" 참조
+- System emoji (Lucide 아이콘 사용)
+- `font-display`를 KR/EN 혼재 텍스트에 사용
+- `font-mono` without `tabular-nums`
+- 하드코딩 hex (위 "예외 3가지" 외)
+- Status badge를 raw `bg-[#xxx]/10 text-[#xxx]` 로 구성 (StatusBadge/Badge 사용)
