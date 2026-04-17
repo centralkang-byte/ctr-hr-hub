@@ -2763,7 +2763,91 @@
         "reviewRate": "Tasa de revisión"
       },
       "teamPerformance": "Rendimiento equipo",
-      "teamAttendance": "Asistencia equipo"
+      "teamAttendance": "Asistencia equipo",
+      "v2": {
+        "loadError": "Error al cargar el panel",
+        "section": {
+          "hero": "Enfoque de hoy",
+          "stat": "Métricas clave",
+          "list": "Progreso del equipo",
+          "insight": "Información"
+        },
+        "hero": {
+          "greetingAm": "Buenos días, {name}",
+          "greetingPm": "Hola, {name}",
+          "focusOverdue": "{count} aprobaciones vencidas",
+          "focusOverdueDesc": "Solicitudes con más de un día. Atiéndelas primero.",
+          "focusPending": "{count} aprobaciones pendientes",
+          "focusPendingDesc": "Resolverlas hoy mantiene al equipo al día.",
+          "focusReview": "{count} revisiones trimestrales pendientes",
+          "focusReviewDesc": "Cierra las revisiones antes de la fecha límite.",
+          "focusCelebration": "Nada urgente hoy",
+          "focusCelebrationDesc": "Tómate un respiro y revisa cómo va el equipo.",
+          "cta": {
+            "open": "Abrir",
+            "view": "Ver"
+          },
+          "secondary": {
+            "oneOnOne": "Reuniones 1:1",
+            "team": "Ver equipo"
+          }
+        },
+        "stat": {
+          "teamCount": "Miembros del equipo",
+          "viewTeam": "Ver equipo",
+          "approvals": "Aprobaciones pendientes",
+          "viewApprovals": "Abrir bandeja",
+          "approvalsDelta": "{count}",
+          "approvalsSr": "{count} aprobaciones pendientes (últimos 7 días)",
+          "review": "Completitud de revisiones",
+          "viewReview": "Gestionar revisiones",
+          "oneOnOne": "Reuniones 1:1",
+          "viewOneOnOne": "Ver reuniones",
+          "oneOnOneDelta": "{count}",
+          "oneOnOneSr": "{count} 1:1 programadas (últimas 4 semanas)"
+        },
+        "list": {
+          "onboarding": "Onboarding del equipo",
+          "offboarding": "Offboarding del equipo",
+          "viewAll": "Ver todo",
+          "onboardingRow": "{progress}% · D-{days}",
+          "offboardingRow": "{progress}% · D-{days}",
+          "onboardingStatus": {
+            "success": "Bien",
+            "warning": "En riesgo",
+            "error": "Atrasado"
+          },
+          "offboardingStatus": {
+            "success": "Holgado",
+            "warning": "Próximo",
+            "error": "Vencido"
+          },
+          "action": {
+            "edit": "Editar",
+            "doc": "Abrir documento"
+          }
+        },
+        "empty": {
+          "onboarding": {
+            "title": "No hay onboarding en curso",
+            "desc": "Los nuevos ingresos aparecerán aquí."
+          },
+          "offboarding": {
+            "title": "No hay offboarding planificado",
+            "desc": "El equipo está estable."
+          }
+        },
+        "insight": {
+          "overdueMsg": "{count} solicitudes llevan más de un día pendientes. Revísalas en lote.",
+          "overdueCta": "Revisión en lote",
+          "reviewMsg": "Más de la mitad del equipo no ha completado la revisión. Considera enviar un recordatorio.",
+          "reviewCta": "Abrir revisiones"
+        },
+        "pilotBanner": {
+          "title": "Manager Pilot — Vista previa",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
+      }
     },
     "loadError": "No se pudieron cargar los datos",
     "monthlyTrend": "Mensual Trend",

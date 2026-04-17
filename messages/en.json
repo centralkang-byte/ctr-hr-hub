@@ -2763,7 +2763,91 @@
         "reviewRate": "Review Rate"
       },
       "teamPerformance": "Team Performance",
-      "teamAttendance": "Team Attendance"
+      "teamAttendance": "Team Attendance",
+      "v2": {
+        "loadError": "Failed to load dashboard",
+        "section": {
+          "hero": "Today's focus",
+          "stat": "Key metrics",
+          "list": "Team progress",
+          "insight": "Insights"
+        },
+        "hero": {
+          "greetingAm": "Good morning, {name}",
+          "greetingPm": "Hi {name}",
+          "focusOverdue": "{count} approvals overdue",
+          "focusOverdueDesc": "Requests more than a day old. Handle these first.",
+          "focusPending": "{count} approvals pending",
+          "focusPendingDesc": "Clearing these today keeps the team on schedule.",
+          "focusReview": "{count} team reviews pending",
+          "focusReviewDesc": "Wrap up quarterly reviews before the deadline.",
+          "focusCelebration": "Nothing urgent today",
+          "focusCelebrationDesc": "Take a breath and check in on the team.",
+          "cta": {
+            "open": "Open",
+            "view": "View"
+          },
+          "secondary": {
+            "oneOnOne": "1:1 meetings",
+            "team": "View team"
+          }
+        },
+        "stat": {
+          "teamCount": "Team size",
+          "viewTeam": "View team",
+          "approvals": "Pending approvals",
+          "viewApprovals": "Open inbox",
+          "approvalsDelta": "{count}",
+          "approvalsSr": "{count} pending approvals (last 7 days)",
+          "review": "Review completion",
+          "viewReview": "Manage reviews",
+          "oneOnOne": "1:1 meetings",
+          "viewOneOnOne": "View meetings",
+          "oneOnOneDelta": "{count}",
+          "oneOnOneSr": "{count} scheduled 1:1s (last 4 weeks)"
+        },
+        "list": {
+          "onboarding": "Team onboarding",
+          "offboarding": "Team offboarding",
+          "viewAll": "View all",
+          "onboardingRow": "{progress}% · D-{days}",
+          "offboardingRow": "{progress}% · D-{days}",
+          "onboardingStatus": {
+            "success": "On track",
+            "warning": "At risk",
+            "error": "Behind"
+          },
+          "offboardingStatus": {
+            "success": "Comfortable",
+            "warning": "Approaching",
+            "error": "Overdue"
+          },
+          "action": {
+            "edit": "Edit",
+            "doc": "Open doc"
+          }
+        },
+        "empty": {
+          "onboarding": {
+            "title": "No team onboarding in progress",
+            "desc": "New joiners will appear here."
+          },
+          "offboarding": {
+            "title": "No team offboarding planned",
+            "desc": "Team is stable."
+          }
+        },
+        "insight": {
+          "overdueMsg": "{count} requests have been pending more than a day. Review in bulk.",
+          "overdueCta": "Bulk review",
+          "reviewMsg": "Over half the team hasn't finished this quarter's review. Consider nudging.",
+          "reviewCta": "Open reviews"
+        },
+        "pilotBanner": {
+          "title": "Manager Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
+      }
     },
     "loadError": "Unable to load data",
     "monthlyTrend": "Monthly Trend",

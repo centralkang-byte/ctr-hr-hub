@@ -2763,7 +2763,91 @@
         "reviewRate": "评估完成率"
       },
       "teamPerformance": "团队绩效",
-      "teamAttendance": "团队考勤"
+      "teamAttendance": "团队考勤",
+      "v2": {
+        "loadError": "仪表盘加载失败",
+        "section": {
+          "hero": "今日焦点",
+          "stat": "核心指标",
+          "list": "团队进展",
+          "insight": "洞察"
+        },
+        "hero": {
+          "greetingAm": "早上好，{name}",
+          "greetingPm": "您好，{name}",
+          "focusOverdue": "{count} 项审批已逾期",
+          "focusOverdueDesc": "有超过一天未处理的请求，请优先处理。",
+          "focusPending": "{count} 项审批待处理",
+          "focusPendingDesc": "尽快处理，避免影响团队日程。",
+          "focusReview": "季度评估还有 {count} 人未完成",
+          "focusReviewDesc": "在本季度截止前完成团队评估。",
+          "focusCelebration": "今天没有紧急事项",
+          "focusCelebrationDesc": "稍作休息，关注一下团队动态。",
+          "cta": {
+            "open": "打开",
+            "view": "查看"
+          },
+          "secondary": {
+            "oneOnOne": "1:1 会议",
+            "team": "团队"
+          }
+        },
+        "stat": {
+          "teamCount": "团队人数",
+          "viewTeam": "查看团队",
+          "approvals": "待审批",
+          "viewApprovals": "打开收件箱",
+          "approvalsDelta": "{count}",
+          "approvalsSr": "{count} 项待审批（近 7 天）",
+          "review": "评估完成率",
+          "viewReview": "评估管理",
+          "oneOnOne": "1:1 会议",
+          "viewOneOnOne": "会议列表",
+          "oneOnOneDelta": "{count}",
+          "oneOnOneSr": "{count} 次 1:1 会议（近 4 周）"
+        },
+        "list": {
+          "onboarding": "团队入职",
+          "offboarding": "团队离职",
+          "viewAll": "全部查看",
+          "onboardingRow": "{progress}% · D-{days}",
+          "offboardingRow": "{progress}% · D-{days}",
+          "onboardingStatus": {
+            "success": "良好",
+            "warning": "注意",
+            "error": "延迟"
+          },
+          "offboardingStatus": {
+            "success": "充裕",
+            "warning": "临近",
+            "error": "逾期"
+          },
+          "action": {
+            "edit": "编辑",
+            "doc": "打开文档"
+          }
+        },
+        "empty": {
+          "onboarding": {
+            "title": "暂无进行中的团队入职",
+            "desc": "新成员加入后将在此显示。"
+          },
+          "offboarding": {
+            "title": "暂无计划中的团队离职",
+            "desc": "团队稳定。"
+          }
+        },
+        "insight": {
+          "overdueMsg": "{count} 项请求已超过一天未处理，建议批量审核。",
+          "overdueCta": "批量审核",
+          "reviewMsg": "过半数成员尚未完成季度评估，建议提醒。",
+          "reviewCta": "打开评估"
+        },
+        "pilotBanner": {
+          "title": "Manager Pilot — 预览",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
+      }
     },
     "loadError": "无法加载数据",
     "monthlyTrend": "月度 Trend",

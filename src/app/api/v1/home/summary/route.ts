@@ -6,8 +6,8 @@ import { withPermission, perm } from '@/lib/permissions'
 import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { getDirectReportIds } from '@/lib/employee/direct-reports'
-import { getStartOfDayTz } from '@/lib/timezone'
-import type { SessionUser, OnboardingItem } from '@/types'
+import { getStartOfDayTz, formatToTz } from '@/lib/timezone'
+import type { SessionUser, OnboardingItem, TrendPoint } from '@/types'
 
 // Default company timezone for D-day calculations.
 // Phase 6: resolve from user.companyId via timezone helper.
@@ -94,6 +94,61 @@ function sortOffboardingByUrgency(items: OnboardingItem[]): OnboardingItem[] {
     if (aDays >= 0 && bDays >= 0) return aDays - bDays
     return aDays < 0 ? -1 : 1
   })
+}
+
+/**
+ * Bucket Date[] into 7 daily buckets ending at `end` (inclusive).
+ * Returns ascending [oldest...newest]. Empty days return 0.
+ * Codex Gate 1 HIGH fix: Prisma groupBy(DateTime) buckets by exact timestamp,
+ * not by day. Use findMany + JS bucketing for deterministic fixed-width buckets.
+ */
+function bucketDaily(dates: Date[], end: Date, days: number, tz: string = DEFAULT_TZ): TrendPoint[] {
+  const counts = new Map<string, number>()
+  // Pre-fill: derive each day key by subtracting i days from `end` in tz.
+  // getStartOfDayTz returns a UTC instant of local midnight; we format back in tz to get the local date string.
+  for (let i = days - 1; i >= 0; i--) {
+    const anchor = new Date(end)
+    anchor.setDate(anchor.getDate() - i)
+    counts.set(formatToTz(anchor, tz, 'yyyy-MM-dd'), 0)
+  }
+  for (const ts of dates) {
+    const key = formatToTz(ts, tz, 'yyyy-MM-dd')
+    if (counts.has(key)) counts.set(key, (counts.get(key) ?? 0) + 1)
+  }
+  return Array.from(counts.entries()).map(([bucket, value]) => ({ bucket, value }))
+}
+
+/**
+ * Bucket Date[] into `weeks` weekly buckets (Mon-Sun) ending at the current week's Monday.
+ * Returns ascending.
+ */
+function bucketWeekly(dates: Date[], end: Date, weeks: number, tz: string = DEFAULT_TZ): TrendPoint[] {
+  // ISO-week Monday calculation using tz-local date string.
+  // Using UTC getDay() on local Date is timezone-fragile; derive via formatToTz 'yyyy-MM-dd' then parseISO.
+  const mondayOf = (d: Date): string => {
+    const localStr = formatToTz(d, tz, 'yyyy-MM-dd') // YYYY-MM-DD local
+    const [y, m, day] = localStr.split('-').map(Number)
+    // Use UTC date arithmetic (no DST) — the local date as a naive UTC date for day-of-week arithmetic
+    const naive = new Date(Date.UTC(y, m - 1, day))
+    const wday = naive.getUTCDay() // 0=Sun..6=Sat
+    const diffToMon = wday === 0 ? -6 : 1 - wday
+    naive.setUTCDate(naive.getUTCDate() + diffToMon)
+    return naive.toISOString().slice(0, 10)
+  }
+
+  const counts = new Map<string, number>()
+  const anchorMon = mondayOf(end)
+  const [ay, am, ad] = anchorMon.split('-').map(Number)
+  for (let i = weeks - 1; i >= 0; i--) {
+    const wk = new Date(Date.UTC(ay, am - 1, ad))
+    wk.setUTCDate(wk.getUTCDate() - i * 7)
+    counts.set(wk.toISOString().slice(0, 10), 0)
+  }
+  for (const ts of dates) {
+    const key = mondayOf(ts)
+    if (counts.has(key)) counts.set(key, (counts.get(key) ?? 0) + 1)
+  }
+  return Array.from(counts.entries()).map(([bucket, value]) => ({ bucket, value }))
 }
 
 /** EmployeeOffboarding → OnboardingItem (shared DTO) */
@@ -255,6 +310,14 @@ export const GET = withCache(withPermission(
         // cross-company dotted-line이 필요한 경우 manager-hub/summary의 getAllReportIds를 사용.
         const reportIds = await getDirectReportIds(user.employeeId)
         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        // R2 pilot: trend window boundaries for sparklines.
+        // Codex Gate 2 P2 fix: anchor cutoffs in `DEFAULT_TZ` (Asia/Seoul) to match bucketing —
+        // server-local midnight diverges from tz midnight on Vercel (UTC) and truncates the oldest bucket.
+        const tzMidnight = getStartOfDayTz(now, DEFAULT_TZ)
+        const sevenDaysAgo = new Date(tzMidnight)
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6) // 7 days inclusive of today
+        const fourWeeksAgo = new Date(tzMidnight)
+        fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 27) // 4 weeks inclusive of current week
 
         const [
           teamCount,
@@ -264,6 +327,8 @@ export const GET = withCache(withPermission(
           qrGroups,
           teamOnboardingRaw,
           teamOffboardingRaw,
+          pendingLeavesTrendRaw,
+          oneOnOneTrendRaw,
         ] = await Promise.all([
           // reportIds 기반 + companyId 필터 (좁고 안전한 scope)
           prisma.employee.count({
@@ -327,6 +392,29 @@ export const GET = withCache(withPermission(
               offboardingTasks: { select: { status: true } },
             },
           }),
+          // R2 pilot: last 7 days of *currently-pending* leave requests (submitted-date trend).
+          // Semantic: inflow of still-open requests, bucketed by submission day. Not a historical
+          // backlog snapshot — that would require status-transition history. Codex Gate 1 MEDIUM.
+          prisma.leaveRequest.findMany({
+            where: {
+              companyId,
+              status: 'PENDING',
+              employeeId: { in: reportIds },
+              createdAt: { gte: sevenDaysAgo },
+            },
+            select: { createdAt: true },
+          }),
+          // R2 pilot: last 4 weeks of 1:1 meetings (SCHEDULED + COMPLETED), weekly buckets.
+          // Codex Gate 2 P2 fix: exclude CANCELLED/NO_SHOW to align with headline scheduledOneOnOnes count.
+          prisma.oneOnOne.findMany({
+            where: {
+              managerId: user.employeeId,
+              companyId,
+              scheduledAt: { gte: fourWeeksAgo },
+              status: { in: ['SCHEDULED', 'COMPLETED'] },
+            },
+            select: { scheduledAt: true },
+          }),
         ])
 
         const teamOnboarding = sortOnboardingByUrgency(
@@ -358,6 +446,17 @@ export const GET = withCache(withPermission(
           ),
         ).slice(0, 5)
 
+        const pendingLeavesTrend = bucketDaily(
+          pendingLeavesTrendRaw.map((r) => r.createdAt),
+          now,
+          7,
+        )
+        const oneOnOneTrend = bucketWeekly(
+          oneOnOneTrendRaw.map((r) => r.scheduledAt),
+          now,
+          4,
+        )
+
         return apiSuccess({
           role: 'MANAGER',
           totalEmployees,
@@ -368,6 +467,8 @@ export const GET = withCache(withPermission(
           quarterlyReviewStats: aggregateQrStats(qrGroups),
           teamOnboarding,
           teamOffboarding,
+          pendingLeavesTrend,
+          oneOnOneTrend,
         })
       }
 

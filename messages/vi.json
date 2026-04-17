@@ -2763,7 +2763,91 @@
         "reviewRate": "Tỷ lệ đánh giá"
       },
       "teamPerformance": "Hiệu suất nhóm",
-      "teamAttendance": "Chuyên cần nhóm"
+      "teamAttendance": "Chuyên cần nhóm",
+      "v2": {
+        "loadError": "Không tải được bảng điều khiển",
+        "section": {
+          "hero": "Trọng tâm hôm nay",
+          "stat": "Chỉ số chính",
+          "list": "Tiến độ nhóm",
+          "insight": "Thông tin"
+        },
+        "hero": {
+          "greetingAm": "Chào buổi sáng, {name}",
+          "greetingPm": "Xin chào {name}",
+          "focusOverdue": "{count} phê duyệt quá hạn",
+          "focusOverdueDesc": "Yêu cầu quá 1 ngày, hãy xử lý trước.",
+          "focusPending": "{count} phê duyệt đang chờ",
+          "focusPendingDesc": "Xử lý hôm nay để không ảnh hưởng lịch nhóm.",
+          "focusReview": "{count} đánh giá quý chưa hoàn tất",
+          "focusReviewDesc": "Hoàn thành trước kỳ hạn quý.",
+          "focusCelebration": "Không có việc khẩn hôm nay",
+          "focusCelebrationDesc": "Nghỉ ngơi và xem tình hình nhóm.",
+          "cta": {
+            "open": "Mở",
+            "view": "Xem"
+          },
+          "secondary": {
+            "oneOnOne": "Họp 1:1",
+            "team": "Xem nhóm"
+          }
+        },
+        "stat": {
+          "teamCount": "Số thành viên",
+          "viewTeam": "Xem nhóm",
+          "approvals": "Chờ phê duyệt",
+          "viewApprovals": "Mở hộp thư",
+          "approvalsDelta": "{count}",
+          "approvalsSr": "{count} yêu cầu chờ (7 ngày qua)",
+          "review": "Tỉ lệ hoàn tất đánh giá",
+          "viewReview": "Quản lý đánh giá",
+          "oneOnOne": "Họp 1:1",
+          "viewOneOnOne": "Danh sách họp",
+          "oneOnOneDelta": "{count}",
+          "oneOnOneSr": "{count} cuộc họp 1:1 (4 tuần qua)"
+        },
+        "list": {
+          "onboarding": "Onboarding nhóm",
+          "offboarding": "Offboarding nhóm",
+          "viewAll": "Xem tất cả",
+          "onboardingRow": "{progress}% · D-{days}",
+          "offboardingRow": "{progress}% · D-{days}",
+          "onboardingStatus": {
+            "success": "Tốt",
+            "warning": "Chú ý",
+            "error": "Trễ"
+          },
+          "offboardingStatus": {
+            "success": "Thoải mái",
+            "warning": "Sắp đến",
+            "error": "Quá hạn"
+          },
+          "action": {
+            "edit": "Chỉnh sửa",
+            "doc": "Mở tài liệu"
+          }
+        },
+        "empty": {
+          "onboarding": {
+            "title": "Không có onboarding đang diễn ra",
+            "desc": "Thành viên mới sẽ hiển thị tại đây."
+          },
+          "offboarding": {
+            "title": "Không có offboarding sắp tới",
+            "desc": "Nhóm đang ổn định."
+          }
+        },
+        "insight": {
+          "overdueMsg": "{count} yêu cầu đã quá 1 ngày. Khuyến nghị xem xét theo lô.",
+          "overdueCta": "Xem theo lô",
+          "reviewMsg": "Hơn nửa nhóm chưa hoàn tất đánh giá. Hãy nhắc nhở.",
+          "reviewCta": "Mở đánh giá"
+        },
+        "pilotBanner": {
+          "title": "Manager Pilot — Xem trước",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
+      }
     },
     "loadError": "Không thể tải dữ liệu",
     "monthlyTrend": "Hàng tháng Trend",

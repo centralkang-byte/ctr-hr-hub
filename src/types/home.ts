@@ -41,6 +41,16 @@ export interface QuarterlyReviewStats {
   completionRate?: number
 }
 
+/**
+ * Trend 버킷 — sparkline 입력.
+ * bucket: ISO date(일별) 또는 ISO week start(주별), value: 해당 버킷 집계치.
+ * R2 pilot: pending leave 7d + 1:1 미팅 4w에 사용.
+ */
+export interface TrendPoint {
+  bucket: string
+  value: number
+}
+
 // ─── Base summary ───────────────────────────────────────────
 
 interface BaseSummary {
@@ -69,6 +79,10 @@ export interface ManagerSummary extends BaseSummary {
   quarterlyReviewStats?: QuarterlyReviewStats
   teamOnboarding?: OnboardingItem[]
   teamOffboarding?: OnboardingItem[]
+  /** R2 pilot: 지난 7일간 신규 휴가 요청 추이 (현재 PENDING 기준, 제출일 기준 버킷) */
+  pendingLeavesTrend?: TrendPoint[]
+  /** R2 pilot: 지난 4주간 1:1 미팅 예정/완료 합계 (주별 버킷) */
+  oneOnOneTrend?: TrendPoint[]
 }
 
 export interface HrAdminSummary extends BaseSummary {
