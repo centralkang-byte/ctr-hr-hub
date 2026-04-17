@@ -2869,6 +2869,32 @@
       "daysUntilExit": "D-{days}",
       "progressLabel": "{completed}/{total} 完成",
       "overdue": "逾期 D+{days}"
+    },
+    "preview": {
+      "title": "R1 Foundation 预览",
+      "envBadge": "env 保护,仅 staging",
+      "viewport": {
+        "mobile": "手机",
+        "tablet": "平板",
+        "desktop": "桌面",
+        "full": "全宽",
+        "switchTo": "切换到 {viewport} 视口"
+      },
+      "theme": {
+        "light": "浅色",
+        "dark": "深色",
+        "switchToDark": "切换到深色模式",
+        "switchToLight": "切换到浅色模式"
+      },
+      "section": {
+        "hero": "Hero — 今日焦点",
+        "stat": "StatCard — 4 个核心指标",
+        "list": "ListCard — 入职进度",
+        "insight": "InsightStrip — 上下文横幅",
+        "empty": "EmptyState — 色调变体",
+        "grid": "12 列网格布局验证"
+      },
+      "breakpointHint": "⚠️ 视口切换仅调整 max-width。实际断点模拟请使用浏览器 DevTools 设备仿真。"
     }
   },
   "internalJobs": {

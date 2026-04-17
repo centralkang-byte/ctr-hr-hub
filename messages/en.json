@@ -2869,6 +2869,32 @@
       "daysUntilExit": "D-{days}",
       "progressLabel": "{completed}/{total} done",
       "overdue": "Overdue D+{days}"
+    },
+    "preview": {
+      "title": "R1 Foundation Preview",
+      "envBadge": "env-gated, staging only",
+      "viewport": {
+        "mobile": "Mobile",
+        "tablet": "Tablet",
+        "desktop": "Desktop",
+        "full": "Full width",
+        "switchTo": "Switch to {viewport} viewport"
+      },
+      "theme": {
+        "light": "Light",
+        "dark": "Dark",
+        "switchToDark": "Switch to dark mode",
+        "switchToLight": "Switch to light mode"
+      },
+      "section": {
+        "hero": "Hero — Today's Focus",
+        "stat": "StatCard — 4 key metrics",
+        "list": "ListCard — Onboarding status",
+        "insight": "InsightStrip — Context banner",
+        "empty": "EmptyState — Tone variants",
+        "grid": "12-col Grid layout verification"
+      },
+      "breakpointHint": "⚠️ Viewport switcher only constrains max-width. For actual breakpoint simulation, use browser DevTools device emulation."
     }
   },
   "internalJobs": {

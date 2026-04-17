@@ -2869,6 +2869,32 @@
       "daysUntilExit": "D-{days}",
       "progressLabel": "{completed}/{total} completadas",
       "overdue": "Atrasado D+{days}"
+    },
+    "preview": {
+      "title": "R1 Foundation Preview",
+      "envBadge": "env-gated, solo staging",
+      "viewport": {
+        "mobile": "Móvil",
+        "tablet": "Tableta",
+        "desktop": "Escritorio",
+        "full": "Ancho completo",
+        "switchTo": "Cambiar a viewport {viewport}"
+      },
+      "theme": {
+        "light": "Claro",
+        "dark": "Oscuro",
+        "switchToDark": "Cambiar a modo oscuro",
+        "switchToLight": "Cambiar a modo claro"
+      },
+      "section": {
+        "hero": "Hero — Enfoque de hoy",
+        "stat": "StatCard — 4 métricas clave",
+        "list": "ListCard — Estado de onboarding",
+        "insight": "InsightStrip — Banner de contexto",
+        "empty": "EmptyState — Variantes de tono",
+        "grid": "Verificación de diseño Grid 12-col"
+      },
+      "breakpointHint": "⚠️ El selector de viewport solo limita max-width. Para simulación real de breakpoints, use la emulación de dispositivos en DevTools."
     }
   },
   "internalJobs": {

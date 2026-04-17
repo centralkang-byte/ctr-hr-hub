@@ -7,6 +7,13 @@
       "runtimeArgs": ["-lc", "PATH=/opt/homebrew/bin:$PATH npm run dev"],
       "port": 3002,
       "autoPort": true
+    },
+    {
+      "name": "dev-preview",
+      "runtimeExecutable": "/bin/zsh",
+      "runtimeArgs": ["-lc", "PATH=/opt/homebrew/bin:$PATH HOME_PREVIEW=true npm run dev"],
+      "port": 3002,
+      "autoPort": true
     }
   ]
 }

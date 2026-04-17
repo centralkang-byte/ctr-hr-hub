@@ -2869,6 +2869,32 @@
       "daysUntilExit": "D-{days}",
       "progressLabel": "{completed}/{total} hoàn thành",
       "overdue": "Quá hạn D+{days}"
+    },
+    "preview": {
+      "title": "R1 Foundation Preview",
+      "envBadge": "env-gated, chỉ staging",
+      "viewport": {
+        "mobile": "Di động",
+        "tablet": "Máy tính bảng",
+        "desktop": "Máy tính",
+        "full": "Toàn màn hình",
+        "switchTo": "Chuyển sang viewport {viewport}"
+      },
+      "theme": {
+        "light": "Sáng",
+        "dark": "Tối",
+        "switchToDark": "Chuyển sang chế độ tối",
+        "switchToLight": "Chuyển sang chế độ sáng"
+      },
+      "section": {
+        "hero": "Hero — Tiêu điểm hôm nay",
+        "stat": "StatCard — 4 chỉ số chính",
+        "list": "ListCard — Tiến trình onboarding",
+        "insight": "InsightStrip — Biểu ngữ ngữ cảnh",
+        "empty": "EmptyState — Biến thể tông",
+        "grid": "Xác minh bố cục lưới 12 cột"
+      },
+      "breakpointHint": "⚠️ Chuyển viewport chỉ giới hạn max-width. Để mô phỏng breakpoint thực tế, hãy dùng chế độ mô phỏng thiết bị của DevTools."
     }
   },
   "internalJobs": {

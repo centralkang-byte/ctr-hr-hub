@@ -9388,6 +9388,32 @@
       "daysUntilExit": "D-{days}",
       "progressLabel": "{completed}/{total} 완료",
       "overdue": "연체 D+{days}"
+    },
+    "preview": {
+      "title": "R1 Foundation Preview",
+      "envBadge": "env 가드됨, staging 전용",
+      "viewport": {
+        "mobile": "모바일",
+        "tablet": "태블릿",
+        "desktop": "데스크톱",
+        "full": "전체폭",
+        "switchTo": "{viewport} 뷰포트로 전환"
+      },
+      "theme": {
+        "light": "라이트",
+        "dark": "다크",
+        "switchToDark": "다크 모드로 전환",
+        "switchToLight": "라이트 모드로 전환"
+      },
+      "section": {
+        "hero": "Hero — 오늘의 포커스",
+        "stat": "StatCard — 4개 핵심 지표",
+        "list": "ListCard — 온보딩 진행 현황",
+        "insight": "InsightStrip — 컨텍스트 배너",
+        "empty": "EmptyState — 다양한 톤",
+        "grid": "12-col Grid 레이아웃 검증"
+      },
+      "breakpointHint": "⚠️ 뷰포트 전환은 max-width만 조정합니다. 실제 breakpoint 시뮬레이션은 브라우저 DevTools의 기기 에뮬레이션을 사용하세요."
     }
   },
   "mySpace": {
