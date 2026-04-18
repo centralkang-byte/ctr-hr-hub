@@ -1,34 +1,33 @@
 'use client'
 
-import { useState } from 'react'
+import Link from 'next/link'
 import {
+  ArrowUpRight,
+  Briefcase,
   CheckCircle2,
   Clock,
   FileText,
   Pencil,
+  User,
+  Users,
+  UserCog,
   UserPlus,
   CalendarDays,
   Coffee,
-  Moon,
-  Sun,
-  Monitor,
-  Smartphone,
-  Tablet,
 } from 'lucide-react'
-import { useTheme } from 'next-themes'
 import { useTranslations } from 'next-intl'
 import type { SessionUser } from '@/types'
 import { cn } from '@/lib/utils'
+import { ELEVATION, MOTION } from '@/lib/styles'
 import { DashboardHomeShell, HomeGrid, HomeSection } from '@/components/home/shell/DashboardHomeShell'
 import { StatCard } from '@/components/home/primitives/StatCard'
 import { ListCard } from '@/components/home/primitives/ListCard'
 import { HeroCard } from '@/components/home/primitives/HeroCard'
 import { InsightStrip } from '@/components/home/primitives/InsightStrip'
 import { EmptyState } from '@/components/home/primitives/EmptyState'
+import { PreviewToolbar } from '@/components/home/primitives/PreviewToolbar'
 
 // ─── Types ──────────────────────────────────────────────────
-
-type Viewport = 'mobile' | 'tablet' | 'desktop' | 'full'
 
 interface Props {
   user: SessionUser
@@ -55,102 +54,54 @@ const SPARK_UP = [4, 5, 6, 5, 7, 8, 9, 11, 10, 12]
 const SPARK_DOWN = [12, 11, 10, 9, 8, 7, 6, 5, 4, 3]
 const SPARK_FLAT = [6, 7, 6, 7, 6, 7, 6, 7, 6, 7]
 
-const VIEWPORT_WIDTH: Record<Viewport, string> = {
-  mobile: 'max-w-[375px]',
-  tablet: 'max-w-[768px]',
-  desktop: 'max-w-[1280px]',
-  full: 'max-w-[1440px]',
-}
-
-const VIEWPORT_ICON = {
-  mobile: Smartphone,
-  tablet: Tablet,
-  desktop: Monitor,
-  full: Monitor,
-} as const
-
 // ─── Component ──────────────────────────────────────────────
 
 export function PreviewClient({ user }: Props) {
-  const [viewport, setViewport] = useState<Viewport>('full')
-  const { setTheme, resolvedTheme } = useTheme()
   const t = useTranslations('home.preview')
 
-  const toggleTheme = () => {
-    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
-  }
+  const pilots = [
+    { label: t('pilots.manager'), href: '/home-preview/manager', icon: Users },
+    { label: t('pilots.hrAdmin'), href: '/home-preview/hr-admin', icon: UserCog },
+    { label: t('pilots.executive'), href: '/home-preview/executive', icon: Briefcase },
+    { label: t('pilots.employee'), href: '/home-preview/employee', icon: User },
+  ]
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Preview toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border/40 bg-card px-4 py-3">
-        <div className="flex flex-col gap-0.5 text-sm">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold">{t('title')}</span>
-            <span className="text-xs text-muted-foreground">
-              {user.email} — {t('envBadge')}
-            </span>
-          </div>
-          {/*
-            Codex Gate 2 P2 note — max-width 기반 preview는 Tailwind breakpoint를 트리거하지 않음.
-            실제 모바일/태블릿 레이아웃은 브라우저 DevTools의 Device Emulation을 사용.
-          */}
-          <p className="text-[11px] leading-[1.4] text-muted-foreground">
-            {t('breakpointHint')}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {(['mobile', 'tablet', 'desktop', 'full'] as Viewport[]).map((vp) => {
-            const Icon = VIEWPORT_ICON[vp]
-            const isActive = viewport === vp
-            const vpLabel = t(`viewport.${vp}` as 'viewport.mobile')
-            return (
-              <button
-                key={vp}
-                type="button"
-                onClick={() => setViewport(vp)}
-                aria-label={t('viewport.switchTo', { viewport: vpLabel })}
-                aria-pressed={isActive}
+    <PreviewToolbar title={t('title')} subtitle={`${user.email} — ${t('envBadge')}`}>
+      <DashboardHomeShell>
+        {/* === Role pilots nav === */}
+        <HomeSection title={t('pilots.title')}>
+          <p className="text-xs text-muted-foreground">{t('pilots.description')}</p>
+          <HomeGrid cols={4}>
+            {pilots.map(({ label, href, icon: Icon }) => (
+              <Link
+                key={href}
+                href={href}
                 className={cn(
-                  'inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-medium transition-colors',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                  isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-foreground hover:bg-muted/70',
+                  'flex items-center justify-between gap-3 rounded-2xl bg-card p-5',
+                  ELEVATION.xs,
+                  MOTION.hoverLift,
+                  'hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                 )}
               >
-                <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-                <span>{vpLabel}</span>
-              </button>
-            )
-          })}
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label={resolvedTheme === 'dark' ? t('theme.switchToLight') : t('theme.switchToDark')}
-            className={cn(
-              'inline-flex h-9 items-center gap-1.5 rounded-lg bg-muted px-3 text-xs font-medium hover:bg-muted/70',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-            )}
-          >
-            {resolvedTheme === 'dark' ? (
-              <Sun className="h-3.5 w-3.5" aria-hidden="true" />
-            ) : (
-              <Moon className="h-3.5 w-3.5" aria-hidden="true" />
-            )}
-            {resolvedTheme === 'dark' ? t('theme.light') : t('theme.dark')}
-          </button>
-        </div>
-      </div>
+                <span className="flex items-center gap-3">
+                  <span
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary"
+                    aria-hidden="true"
+                  >
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <span className="text-sm font-semibold text-foreground">{label}</span>
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
+                  {t('pilots.cta')}
+                  <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+                </span>
+              </Link>
+            ))}
+          </HomeGrid>
+        </HomeSection>
 
-      {/* Viewport-constrained content */}
-      <div
-        className={cn(
-          'mx-auto w-full transition-[max-width] duration-300',
-          VIEWPORT_WIDTH[viewport],
-        )}
-      >
-        <DashboardHomeShell>
           {/* === HeroCard showcase === */}
           <HomeSection title={t('section.hero')} srOnly>
             <HeroCard
@@ -302,7 +253,6 @@ export function PreviewClient({ user }: Props) {
             </HomeGrid>
           </HomeSection>
         </DashboardHomeShell>
-      </div>
-    </div>
+    </PreviewToolbar>
   )
 }

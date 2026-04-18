@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — /home-preview/manager (Server Page)
-// R2 Dashboard Pilot — ManagerHomeV2, 3중 가드 (HOME_PREVIEW + VERCEL_ENV + role).
-// R3 (Session 178): assertHomePreviewEnabled + assertPilotRole 공용 가드 사용.
+// CTR HR Hub — /home-preview/employee (Server Page)
+// R3 Dashboard Pilot — EmployeeHomeV2, 3중 가드.
+// EMPLOYEE only — SUPER_ADMIN 제외 (개인 데이터 범위라 의미 없음).
 // ═══════════════════════════════════════════════════════════
 
 import { Suspense } from 'react'
@@ -12,11 +12,11 @@ import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { HomeSkeleton } from '@/components/shared/PageSkeleton'
 import { assertHomePreviewEnabled, assertPilotRole } from '@/lib/home-preview/guard'
-import { ManagerPilotClient } from './ManagerPilotClient'
+import { EmployeePilotClient } from './EmployeePilotClient'
 
 // ─── Page ─────────────────────────────────────────────────
 
-export default async function ManagerPilotPage() {
+export default async function EmployeePilotPage() {
   assertHomePreviewEnabled()
 
   const session = await getServerSession(authOptions)
@@ -26,12 +26,11 @@ export default async function ManagerPilotPage() {
 
   const user = session.user as SessionUser
 
-  // MANAGER만 허용 — SUPER_ADMIN은 별도 DTO를 받아 미스매치 발생.
-  assertPilotRole(user.role, [ROLE.MANAGER])
+  assertPilotRole(user.role, [ROLE.EMPLOYEE])
 
   return (
     <Suspense fallback={<HomeSkeleton />}>
-      <ManagerPilotClient user={user} />
+      <EmployeePilotClient user={user} />
     </Suspense>
   )
 }

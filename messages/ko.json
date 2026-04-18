@@ -9180,6 +9180,73 @@
         "attendanceHeatmap": "4월 출근 현황",
         "upcomingSchedule": "다가오는 일정",
         "payPreview": "이번 달 급여 예상"
+      },
+      "v2": {
+        "loadError": "대시보드 로드 실패",
+        "section": {
+          "hero": "오늘의 포커스",
+          "stat": "내 현황",
+          "tracker": "내 진행 중",
+          "insight": "인사이트"
+        },
+        "hero": {
+          "greetingAm": "좋은 아침입니다, {name}님",
+          "greetingPm": "안녕하세요, {name}님",
+          "focusOffboarding": "퇴직 D-{days} — 체크리스트를 확인하세요",
+          "focusOffboardingDesc": "마지막 근무일 전에 완료해야 할 항목이 있어요.",
+          "focusOnboarding": "온보딩 {progress}% 진행 중",
+          "focusOnboardingDesc": "남은 태스크를 확인하고 차근차근 진행하세요.",
+          "focusReview": "분기 자기 평가가 작성되지 않았어요",
+          "focusReviewDesc": "마감 전에 분기 자기 평가를 작성해 주세요.",
+          "focusLeaveForfeit": "잔여 휴가 소진이 임박했어요",
+          "focusLeaveForfeitDesc": "곧 만료되는 휴가가 있어요. 일정 계획을 잡아보세요.",
+          "focusGreeting": "오늘도 좋은 하루 보내세요",
+          "focusGreetingDesc": "내 현황을 확인하고 계획을 세워보세요.",
+          "cta": {
+            "checklist": "체크리스트",
+            "writeReview": "자기 평가 작성",
+            "leaveRequest": "휴가 신청",
+            "myPage": "마이 페이지"
+          }
+        },
+        "stat": {
+          "annualRemaining": "잔여 연차",
+          "viewLeave": "휴가 관리",
+          "attendanceThisMonth": "이번 달 근무일",
+          "viewAttendance": "근태 조회",
+          "reviewStatus": {
+            "label": "분기 평가",
+            "completed": "완료",
+            "notStarted": "미작성",
+            "inProgress": "작성 중",
+            "draft": "초안",
+            "employeeDone": "본인 제출",
+            "managerDone": "매니저 검토"
+          },
+          "viewReview": "평가 열기",
+          "myTeamSize": "동료 수",
+          "viewTeam": "팀 보기"
+        },
+        "tracker": {
+          "onboarding": {
+            "title": "내 온보딩 진행",
+            "subtitle": "진행률 {progress}% · D-{days}",
+            "cta": "체크리스트 열기"
+          },
+          "offboarding": {
+            "title": "내 오프보딩 진행",
+            "subtitle": "진행률 {progress}% · D-{days}",
+            "cta": "인수인계 열기"
+          }
+        },
+        "insight": {
+          "leaveForfeitMsg": "잔여 3일 미만의 휴가가 있어요. 일정 계획을 세워보세요.",
+          "leaveForfeitCta": "휴가 신청"
+        },
+        "pilotBanner": {
+          "title": "Employee Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
       }
     },
     "manager": {
@@ -9344,7 +9411,93 @@
       },
       "thisWeekSchedule": "이번 주 일정",
       "aiInsights": "AI 인사이트",
-      "quarterlyReviewShort": "평가 진행률"
+      "quarterlyReviewShort": "평가 진행률",
+      "v2": {
+        "loadError": "대시보드 로드 실패",
+        "section": {
+          "quickActions": "빠른 작업",
+          "hero": "오늘의 포커스",
+          "stat": "핵심 지표",
+          "list": "진행 현황",
+          "insight": "인사이트"
+        },
+        "quickActions": {
+          "registerEmployee": "직원 등록",
+          "runPayroll": "급여 실행",
+          "reports": "분석 리포트"
+        },
+        "hero": {
+          "greetingAm": "좋은 아침입니다, {name}님",
+          "greetingPm": "안녕하세요, {name}님",
+          "focusUrgent": "{count}건의 연체된 결재가 있어요",
+          "focusUrgentDesc": "시작일이 지난 휴가 요청이 쌓여 있어요. 먼저 처리해 주세요.",
+          "focusWeekDeadline": "이번 주 마감 결재 {count}건",
+          "focusWeekDeadlineDesc": "주간 업무가 밀리지 않도록 순차 처리해 주세요.",
+          "focusOpenPositions": "채용 중인 포지션 {count}개",
+          "focusOpenPositionsDesc": "진행 상태를 점검하고 후보자 플로우를 살펴보세요.",
+          "focusAllClear": "모든 업무가 정상 처리 중입니다",
+          "focusAllClearDesc": "조직 현황 대시보드로 이동해 인사이트를 확인하세요.",
+          "cta": {
+            "open": "열기",
+            "view": "보기"
+          }
+        },
+        "stat": {
+          "totalEmployees": "전사 인원",
+          "newHiresDelta": "{count}명",
+          "newHiresSr": "지난 30일 신규 입사자 {count}명 (주별 추이)",
+          "viewEmployees": "직원 목록",
+          "pendingLeaves": "결재 대기",
+          "pendingLeavesDelta": "{count}건",
+          "pendingLeavesSr": "승인 대기 {count}건 (최근 7일 추이)",
+          "viewApprovals": "결재함",
+          "turnoverRate": "이직률 (30일)",
+          "viewTurnover": "이직 분석",
+          "openPositions": "채용 중 포지션",
+          "viewRecruitment": "채용 관리"
+        },
+        "list": {
+          "onboarding": "온보딩 진행",
+          "offboarding": "오프보딩 진행",
+          "viewAll": "모두 보기",
+          "onboardingRow": "진행률 {progress}% · D-{days}",
+          "offboardingRow": "진행률 {progress}% · D-{days}",
+          "onboardingStatus": {
+            "success": "양호",
+            "warning": "주의",
+            "error": "지연"
+          },
+          "offboardingStatus": {
+            "success": "여유",
+            "warning": "임박",
+            "error": "연체"
+          },
+          "action": {
+            "edit": "편집",
+            "doc": "문서 열기"
+          }
+        },
+        "empty": {
+          "onboarding": {
+            "title": "진행 중인 온보딩이 없어요",
+            "desc": "신규 입사자가 합류하면 여기에 표시됩니다."
+          },
+          "offboarding": {
+            "title": "예정된 오프보딩이 없어요",
+            "desc": "안정적인 조직 구성입니다."
+          }
+        },
+        "insight": {
+          "urgentMsg": "{count}건이 연체 상태예요. 일괄 처리를 권장합니다.",
+          "urgentCta": "일괄 처리",
+          "orphanHiresMsg": "신규 입사자 {count}명의 온보딩 계획이 비어 있어요.",
+          "orphanHiresCta": "온보딩 시작"
+        },
+        "pilotBanner": {
+          "title": "HR Admin Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
+      }
     },
     "executive": {
       "greetingDesc": "그룹 전체 인사 현황 요약입니다.",
@@ -9374,7 +9527,71 @@
       },
       "laborCostTrend": "인건비 추이",
       "quarterlySummary": "분기 성과 요약",
-      "successionPipeline": "승계 파이프라인"
+      "successionPipeline": "승계 파이프라인",
+      "v2": {
+        "loadError": "대시보드 로드 실패",
+        "section": {
+          "hero": "오늘의 포커스",
+          "stat": "핵심 지표",
+          "list": "주요 이슈",
+          "insight": "인사이트"
+        },
+        "hero": {
+          "greetingAm": "좋은 아침입니다, {name}님",
+          "greetingPm": "안녕하세요, {name}님",
+          "focusTurnover": "이직률 {rate}% — {count}명 이탈",
+          "focusTurnoverDesc": "임계치를 초과했습니다. 원인 분석 대시보드를 확인하세요.",
+          "focusOpenPositions": "채용 중 포지션 {count}개",
+          "focusOpenPositionsDesc": "채용 압박이 높은 시점입니다. 파이프라인을 점검하세요.",
+          "focusNewHires": "이달 신규 입사자 {count}명",
+          "focusNewHiresDesc": "조직 확장세가 이어지고 있습니다.",
+          "focusStable": "조직이 안정적으로 운영 중입니다",
+          "focusStableDesc": "주요 지표 모두 정상 범위입니다.",
+          "cta": {
+            "analyze": "분석하기",
+            "view": "보기",
+            "dashboard": "대시보드"
+          }
+        },
+        "stat": {
+          "totalEmployees": "전사 인원",
+          "newHiresDelta": "{count}명",
+          "newHiresSr": "지난 30일 신규 입사자 {count}명 (주별 추이)",
+          "viewWorkforce": "조직 분석",
+          "newHires": "신규 입사 (30일)",
+          "viewEmployees": "직원 목록",
+          "turnoverRate": "이직률 (30일)",
+          "viewTurnover": "이직 분석",
+          "openPositions": "채용 중 포지션",
+          "viewRecruitment": "채용 현황"
+        },
+        "list": {
+          "offboarding": "진행 중 오프보딩",
+          "viewAll": "모두 보기",
+          "offboardingRow": "진행률 {progress}% · D-{days}",
+          "offboardingStatus": {
+            "success": "여유",
+            "warning": "임박",
+            "error": "연체"
+          }
+        },
+        "empty": {
+          "offboarding": {
+            "title": "예정된 오프보딩이 없어요",
+            "desc": "조직이 안정적으로 유지되고 있습니다."
+          }
+        },
+        "insight": {
+          "turnoverMsg": "이직률 {rate}%로 {count}명이 이탈했습니다. 원인 분석을 권장합니다.",
+          "turnoverCta": "원인 분석",
+          "openPositionsMsg": "채용 중 포지션이 {count}개로 누적되었습니다.",
+          "openPositionsCta": "채용 현황"
+        },
+        "pilotBanner": {
+          "title": "Executive Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
+      }
     },
     "taskHub": {
       "myTasks": "나의 할 일",
@@ -9497,7 +9714,16 @@
         "empty": "EmptyState — 다양한 톤",
         "grid": "12-col Grid 레이아웃 검증"
       },
-      "breakpointHint": "⚠️ 뷰포트 전환은 max-width만 조정합니다. 실제 breakpoint 시뮬레이션은 브라우저 DevTools의 기기 에뮬레이션을 사용하세요."
+      "breakpointHint": "⚠️ 뷰포트 전환은 max-width만 조정합니다. 실제 breakpoint 시뮬레이션은 브라우저 DevTools의 기기 에뮬레이션을 사용하세요.",
+      "pilots": {
+        "title": "역할별 파일럿",
+        "description": "각 역할의 대시보드 V2를 미리보기 합니다.",
+        "manager": "Manager",
+        "hrAdmin": "HR Admin",
+        "executive": "Executive",
+        "employee": "Employee",
+        "cta": "열기"
+      }
     }
   },
   "mySpace": {

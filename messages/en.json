@@ -2635,6 +2635,73 @@
         "attendanceHeatmap": "Attendance",
         "upcomingSchedule": "Schedule",
         "payPreview": "Estimated Pay"
+      },
+      "v2": {
+        "loadError": "Failed to load dashboard",
+        "section": {
+          "hero": "Today's focus",
+          "stat": "My status",
+          "tracker": "My progress",
+          "insight": "Insights"
+        },
+        "hero": {
+          "greetingAm": "Good morning, {name}",
+          "greetingPm": "Hello, {name}",
+          "focusOffboarding": "D-{days} until exit — check your checklist",
+          "focusOffboardingDesc": "Items to complete before your last working day.",
+          "focusOnboarding": "Onboarding {progress}% in progress",
+          "focusOnboardingDesc": "Review remaining tasks and proceed step by step.",
+          "focusReview": "Your quarterly self-review is not started",
+          "focusReviewDesc": "Please complete your quarterly self-review before the deadline.",
+          "focusLeaveForfeit": "Leave forfeit is approaching",
+          "focusLeaveForfeitDesc": "You have leave that will expire soon. Plan your schedule.",
+          "focusGreeting": "Have a great day",
+          "focusGreetingDesc": "Review your status and plan ahead.",
+          "cta": {
+            "checklist": "Checklist",
+            "writeReview": "Write review",
+            "leaveRequest": "Request leave",
+            "myPage": "My page"
+          }
+        },
+        "stat": {
+          "annualRemaining": "Annual leave left",
+          "viewLeave": "Leave",
+          "attendanceThisMonth": "Workdays this month",
+          "viewAttendance": "Attendance",
+          "reviewStatus": {
+            "label": "Quarterly review",
+            "completed": "Completed",
+            "notStarted": "Not started",
+            "inProgress": "In progress",
+            "draft": "Draft",
+            "employeeDone": "Self submitted",
+            "managerDone": "Manager reviewed"
+          },
+          "viewReview": "Open review",
+          "myTeamSize": "Peers",
+          "viewTeam": "Team"
+        },
+        "tracker": {
+          "onboarding": {
+            "title": "My onboarding",
+            "subtitle": "{progress}% · D-{days}",
+            "cta": "Open checklist"
+          },
+          "offboarding": {
+            "title": "My offboarding",
+            "subtitle": "{progress}% · D-{days}",
+            "cta": "Open handover"
+          }
+        },
+        "insight": {
+          "leaveForfeitMsg": "You have less than 3 days of leave remaining. Plan your schedule.",
+          "leaveForfeitCta": "Request leave"
+        },
+        "pilotBanner": {
+          "title": "Employee Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
       }
     },
     "executive": {
@@ -2665,7 +2732,71 @@
       },
       "laborCostTrend": "Labor Cost Trend",
       "quarterlySummary": "Quarterly Summary",
-      "successionPipeline": "Succession Pipeline"
+      "successionPipeline": "Succession Pipeline",
+      "v2": {
+        "loadError": "Failed to load dashboard",
+        "section": {
+          "hero": "Today's focus",
+          "stat": "Key metrics",
+          "list": "Key issues",
+          "insight": "Insights"
+        },
+        "hero": {
+          "greetingAm": "Good morning, {name}",
+          "greetingPm": "Hello, {name}",
+          "focusTurnover": "Turnover {rate}% — {count} departures",
+          "focusTurnoverDesc": "Above threshold. Review the turnover analysis dashboard.",
+          "focusOpenPositions": "{count} open positions",
+          "focusOpenPositionsDesc": "Recruiting pressure is elevated. Check the pipeline.",
+          "focusNewHires": "{count} new hires this month",
+          "focusNewHiresDesc": "Organization continues to expand.",
+          "focusStable": "Organization is running smoothly",
+          "focusStableDesc": "All key metrics are within normal range.",
+          "cta": {
+            "analyze": "Analyze",
+            "view": "View",
+            "dashboard": "Dashboard"
+          }
+        },
+        "stat": {
+          "totalEmployees": "Total employees",
+          "newHiresDelta": "+{count}",
+          "newHiresSr": "{count} new hires in last 30 days (weekly trend)",
+          "viewWorkforce": "Workforce",
+          "newHires": "New hires (30d)",
+          "viewEmployees": "Employees",
+          "turnoverRate": "Turnover (30d)",
+          "viewTurnover": "Turnover analysis",
+          "openPositions": "Open positions",
+          "viewRecruitment": "Recruitment"
+        },
+        "list": {
+          "offboarding": "Active offboarding",
+          "viewAll": "View all",
+          "offboardingRow": "{progress}% · D-{days}",
+          "offboardingStatus": {
+            "success": "On track",
+            "warning": "Soon",
+            "error": "Overdue"
+          }
+        },
+        "empty": {
+          "offboarding": {
+            "title": "No scheduled offboarding",
+            "desc": "Organization is stable."
+          }
+        },
+        "insight": {
+          "turnoverMsg": "Turnover {rate}% with {count} departures. Root cause analysis recommended.",
+          "turnoverCta": "Analyze",
+          "openPositionsMsg": "Open positions accumulated to {count}.",
+          "openPositionsCta": "Recruitment"
+        },
+        "pilotBanner": {
+          "title": "Executive Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
+      }
     },
     "globalCompare": "Global Compare",
     "greeting": ", have a great day!",
@@ -2710,7 +2841,93 @@
       },
       "thisWeekSchedule": "This Week",
       "aiInsights": "AI Insights",
-      "quarterlyReviewShort": "Review Rate"
+      "quarterlyReviewShort": "Review Rate",
+      "v2": {
+        "loadError": "Failed to load dashboard",
+        "section": {
+          "quickActions": "Quick Actions",
+          "hero": "Today's focus",
+          "stat": "Key metrics",
+          "list": "Progress",
+          "insight": "Insights"
+        },
+        "quickActions": {
+          "registerEmployee": "Register Employee",
+          "runPayroll": "Run Payroll",
+          "reports": "Reports"
+        },
+        "hero": {
+          "greetingAm": "Good morning, {name}",
+          "greetingPm": "Hello, {name}",
+          "focusUrgent": "{count} overdue approvals",
+          "focusUrgentDesc": "Leave requests past their start date are piling up. Handle these first.",
+          "focusWeekDeadline": "{count} approvals due this week",
+          "focusWeekDeadlineDesc": "Keep weekly operations on track by processing in order.",
+          "focusOpenPositions": "{count} open positions",
+          "focusOpenPositionsDesc": "Review pipeline status and candidate flow.",
+          "focusAllClear": "All tasks are on track",
+          "focusAllClearDesc": "Jump to the analytics dashboard for deeper insights.",
+          "cta": {
+            "open": "Open",
+            "view": "View"
+          }
+        },
+        "stat": {
+          "totalEmployees": "Total employees",
+          "newHiresDelta": "+{count}",
+          "newHiresSr": "{count} new hires in last 30 days (weekly trend)",
+          "viewEmployees": "Employees",
+          "pendingLeaves": "Pending approvals",
+          "pendingLeavesDelta": "{count}",
+          "pendingLeavesSr": "{count} pending approvals (7-day trend)",
+          "viewApprovals": "Approvals",
+          "turnoverRate": "Turnover (30d)",
+          "viewTurnover": "Turnover analysis",
+          "openPositions": "Open positions",
+          "viewRecruitment": "Recruitment"
+        },
+        "list": {
+          "onboarding": "Onboarding",
+          "offboarding": "Offboarding",
+          "viewAll": "View all",
+          "onboardingRow": "{progress}% · D-{days}",
+          "offboardingRow": "{progress}% · D-{days}",
+          "onboardingStatus": {
+            "success": "Healthy",
+            "warning": "Attention",
+            "error": "Behind"
+          },
+          "offboardingStatus": {
+            "success": "On track",
+            "warning": "Soon",
+            "error": "Overdue"
+          },
+          "action": {
+            "edit": "Edit",
+            "doc": "Open doc"
+          }
+        },
+        "empty": {
+          "onboarding": {
+            "title": "No onboarding in progress",
+            "desc": "New hires will appear here."
+          },
+          "offboarding": {
+            "title": "No scheduled offboarding",
+            "desc": "Stable organization."
+          }
+        },
+        "insight": {
+          "urgentMsg": "{count} items overdue. Batch review recommended.",
+          "urgentCta": "Batch review",
+          "orphanHiresMsg": "{count} new hires have no onboarding plan yet.",
+          "orphanHiresCta": "Start onboarding"
+        },
+        "pilotBanner": {
+          "title": "HR Admin Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
+      }
     },
     "kpi": {
       "leaveUsageRate": "Annual Leave 사용률",
@@ -2978,7 +3195,16 @@
         "empty": "EmptyState — Tone variants",
         "grid": "12-col Grid layout verification"
       },
-      "breakpointHint": "⚠️ Viewport switcher only constrains max-width. For actual breakpoint simulation, use browser DevTools device emulation."
+      "breakpointHint": "⚠️ Viewport switcher only constrains max-width. For actual breakpoint simulation, use browser DevTools device emulation.",
+      "pilots": {
+        "title": "Role pilots",
+        "description": "Preview each role's V2 dashboard.",
+        "manager": "Manager",
+        "hrAdmin": "HR Admin",
+        "executive": "Executive",
+        "employee": "Employee",
+        "cta": "Open"
+      }
     }
   },
   "internalJobs": {

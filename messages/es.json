@@ -2635,6 +2635,73 @@
         "attendanceHeatmap": "Asistencia abril",
         "upcomingSchedule": "Próximos eventos",
         "payPreview": "Salario estimado"
+      },
+      "v2": {
+        "loadError": "Error al cargar el panel",
+        "section": {
+          "hero": "Enfoque de hoy",
+          "stat": "Mi estado",
+          "tracker": "Mi progreso",
+          "insight": "Insights"
+        },
+        "hero": {
+          "greetingAm": "Buenos días, {name}",
+          "greetingPm": "Hola, {name}",
+          "focusOffboarding": "Salida D-{days} — revisa tu lista",
+          "focusOffboardingDesc": "Elementos a completar antes de tu último día.",
+          "focusOnboarding": "Incorporación al {progress}%",
+          "focusOnboardingDesc": "Revisa las tareas restantes y avanza paso a paso.",
+          "focusReview": "Tu autoevaluación trimestral no está iniciada",
+          "focusReviewDesc": "Por favor completa tu autoevaluación antes del plazo.",
+          "focusLeaveForfeit": "Vacaciones a punto de expirar",
+          "focusLeaveForfeitDesc": "Tienes días que vencerán pronto. Planea tu agenda.",
+          "focusGreeting": "Que tengas un buen día",
+          "focusGreetingDesc": "Revisa tu estado y planifica.",
+          "cta": {
+            "checklist": "Lista",
+            "writeReview": "Escribir",
+            "leaveRequest": "Solicitar",
+            "myPage": "Mi página"
+          }
+        },
+        "stat": {
+          "annualRemaining": "Vacaciones restantes",
+          "viewLeave": "Vacaciones",
+          "attendanceThisMonth": "Días trabajados este mes",
+          "viewAttendance": "Asistencia",
+          "reviewStatus": {
+            "label": "Evaluación trimestral",
+            "completed": "Completada",
+            "notStarted": "No iniciada",
+            "inProgress": "En progreso",
+            "draft": "Borrador",
+            "employeeDone": "Enviado",
+            "managerDone": "Revisado"
+          },
+          "viewReview": "Abrir",
+          "myTeamSize": "Compañeros",
+          "viewTeam": "Equipo"
+        },
+        "tracker": {
+          "onboarding": {
+            "title": "Mi incorporación",
+            "subtitle": "{progress}% · D-{days}",
+            "cta": "Abrir lista"
+          },
+          "offboarding": {
+            "title": "Mi desvinculación",
+            "subtitle": "{progress}% · D-{days}",
+            "cta": "Abrir entrega"
+          }
+        },
+        "insight": {
+          "leaveForfeitMsg": "Te quedan menos de 3 días. Planea tu agenda.",
+          "leaveForfeitCta": "Solicitar"
+        },
+        "pilotBanner": {
+          "title": "Employee Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
       }
     },
     "executive": {
@@ -2665,7 +2732,71 @@
       },
       "laborCostTrend": "Tendencia coste laboral",
       "quarterlySummary": "Resumen trimestral",
-      "successionPipeline": "Pipeline sucesión"
+      "successionPipeline": "Pipeline sucesión",
+      "v2": {
+        "loadError": "Error al cargar el panel",
+        "section": {
+          "hero": "Enfoque de hoy",
+          "stat": "Métricas clave",
+          "list": "Asuntos clave",
+          "insight": "Insights"
+        },
+        "hero": {
+          "greetingAm": "Buenos días, {name}",
+          "greetingPm": "Hola, {name}",
+          "focusTurnover": "Rotación {rate}% — {count} salidas",
+          "focusTurnoverDesc": "Por encima del umbral. Revisa el análisis de rotación.",
+          "focusOpenPositions": "{count} vacantes abiertas",
+          "focusOpenPositionsDesc": "Presión de contratación alta. Revisa el pipeline.",
+          "focusNewHires": "{count} nuevas contrataciones este mes",
+          "focusNewHiresDesc": "La organización sigue expandiéndose.",
+          "focusStable": "La organización opera sin problemas",
+          "focusStableDesc": "Todas las métricas clave están en rango normal.",
+          "cta": {
+            "analyze": "Analizar",
+            "view": "Ver",
+            "dashboard": "Panel"
+          }
+        },
+        "stat": {
+          "totalEmployees": "Total empleados",
+          "newHiresDelta": "+{count}",
+          "newHiresSr": "{count} nuevas contrataciones últimos 30 días",
+          "viewWorkforce": "Fuerza laboral",
+          "newHires": "Nuevas (30d)",
+          "viewEmployees": "Empleados",
+          "turnoverRate": "Rotación (30d)",
+          "viewTurnover": "Análisis",
+          "openPositions": "Vacantes",
+          "viewRecruitment": "Reclutamiento"
+        },
+        "list": {
+          "offboarding": "Desvinculaciones activas",
+          "viewAll": "Ver todo",
+          "offboardingRow": "{progress}% · D-{days}",
+          "offboardingStatus": {
+            "success": "Con margen",
+            "warning": "Próximo",
+            "error": "Vencido"
+          }
+        },
+        "empty": {
+          "offboarding": {
+            "title": "Sin desvinculaciones programadas",
+            "desc": "Organización estable."
+          }
+        },
+        "insight": {
+          "turnoverMsg": "Rotación {rate}% con {count} salidas. Se recomienda análisis.",
+          "turnoverCta": "Analizar",
+          "openPositionsMsg": "Vacantes acumuladas: {count}.",
+          "openPositionsCta": "Reclutamiento"
+        },
+        "pilotBanner": {
+          "title": "Executive Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
+      }
     },
     "globalCompare": "Comparación global",
     "greeting": ", have a great day!",
@@ -2710,7 +2841,93 @@
       },
       "thisWeekSchedule": "Esta semana",
       "aiInsights": "AI Insights",
-      "quarterlyReviewShort": "Tasa de revisión"
+      "quarterlyReviewShort": "Tasa de revisión",
+      "v2": {
+        "loadError": "Error al cargar el panel",
+        "section": {
+          "quickActions": "Acciones rápidas",
+          "hero": "Enfoque de hoy",
+          "stat": "Métricas clave",
+          "list": "Progreso",
+          "insight": "Insights"
+        },
+        "quickActions": {
+          "registerEmployee": "Registrar empleado",
+          "runPayroll": "Ejecutar nómina",
+          "reports": "Informes"
+        },
+        "hero": {
+          "greetingAm": "Buenos días, {name}",
+          "greetingPm": "Hola, {name}",
+          "focusUrgent": "{count} aprobaciones vencidas",
+          "focusUrgentDesc": "Solicitudes de licencia pasaron su fecha de inicio. Resuélvelas primero.",
+          "focusWeekDeadline": "{count} aprobaciones esta semana",
+          "focusWeekDeadlineDesc": "Procesa en orden para no retrasar la semana.",
+          "focusOpenPositions": "{count} vacantes abiertas",
+          "focusOpenPositionsDesc": "Revisa el progreso y el flujo de candidatos.",
+          "focusAllClear": "Todas las tareas en orden",
+          "focusAllClearDesc": "Ve al panel de analítica para obtener más información.",
+          "cta": {
+            "open": "Abrir",
+            "view": "Ver"
+          }
+        },
+        "stat": {
+          "totalEmployees": "Total empleados",
+          "newHiresDelta": "+{count}",
+          "newHiresSr": "{count} nuevas contrataciones últimos 30 días (tendencia semanal)",
+          "viewEmployees": "Empleados",
+          "pendingLeaves": "Aprobaciones pendientes",
+          "pendingLeavesDelta": "{count}",
+          "pendingLeavesSr": "{count} aprobaciones pendientes (tendencia 7 días)",
+          "viewApprovals": "Aprobaciones",
+          "turnoverRate": "Rotación (30d)",
+          "viewTurnover": "Análisis de rotación",
+          "openPositions": "Vacantes",
+          "viewRecruitment": "Reclutamiento"
+        },
+        "list": {
+          "onboarding": "Incorporación",
+          "offboarding": "Desvinculación",
+          "viewAll": "Ver todo",
+          "onboardingRow": "{progress}% · D-{days}",
+          "offboardingRow": "{progress}% · D-{days}",
+          "onboardingStatus": {
+            "success": "Bien",
+            "warning": "Atención",
+            "error": "Retrasado"
+          },
+          "offboardingStatus": {
+            "success": "Con margen",
+            "warning": "Próximo",
+            "error": "Vencido"
+          },
+          "action": {
+            "edit": "Editar",
+            "doc": "Abrir documento"
+          }
+        },
+        "empty": {
+          "onboarding": {
+            "title": "Sin incorporaciones en curso",
+            "desc": "Las nuevas contrataciones aparecerán aquí."
+          },
+          "offboarding": {
+            "title": "Sin desvinculaciones programadas",
+            "desc": "Organización estable."
+          }
+        },
+        "insight": {
+          "urgentMsg": "{count} vencidos. Se recomienda revisión masiva.",
+          "urgentCta": "Revisar",
+          "orphanHiresMsg": "{count} nuevas contrataciones sin plan de incorporación.",
+          "orphanHiresCta": "Iniciar incorporación"
+        },
+        "pilotBanner": {
+          "title": "HR Admin Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
+      }
     },
     "kpi": {
       "leaveUsageRate": "Anual Leave 사용률",
@@ -2978,7 +3195,16 @@
         "empty": "EmptyState — Variantes de tono",
         "grid": "Verificación de diseño Grid 12-col"
       },
-      "breakpointHint": "⚠️ El selector de viewport solo limita max-width. Para simulación real de breakpoints, use la emulación de dispositivos en DevTools."
+      "breakpointHint": "⚠️ El selector de viewport solo limita max-width. Para simulación real de breakpoints, use la emulación de dispositivos en DevTools.",
+      "pilots": {
+        "title": "Pilotos por rol",
+        "description": "Vista previa del panel V2 por rol.",
+        "manager": "Manager",
+        "hrAdmin": "HR Admin",
+        "executive": "Executive",
+        "employee": "Employee",
+        "cta": "Abrir"
+      }
     }
   },
   "internalJobs": {

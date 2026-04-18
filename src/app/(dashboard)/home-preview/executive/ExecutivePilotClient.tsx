@@ -1,14 +1,13 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — ManagerPilotClient
-// R2 pilot: ManagerHomeV2 + 공용 PreviewToolbar.
-// Session 178 (R3): 툴바 ~60줄이 PreviewToolbar primitive로 이관됨.
+// CTR HR Hub — ExecutivePilotClient
+// R3 pilot: ExecutiveHomeV2 + 공용 PreviewToolbar.
 // ═══════════════════════════════════════════════════════════
 
 import { useTranslations } from 'next-intl'
 import type { SessionUser } from '@/types'
-import { ManagerHomeV2 } from '@/components/home/ManagerHomeV2'
+import { ExecutiveHomeV2 } from '@/components/home/ExecutiveHomeV2'
 import { PreviewToolbar } from '@/components/home/primitives/PreviewToolbar'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -19,12 +18,12 @@ interface Props {
 
 // ─── Component ──────────────────────────────────────────────
 
-export function ManagerPilotClient({ user }: Props) {
-  const t = useTranslations('home.manager.v2.pilotBanner')
+export function ExecutivePilotClient({ user }: Props) {
+  const t = useTranslations('home.executive.v2.pilotBanner')
 
   return (
     <PreviewToolbar title={t('title')} subtitle={t('envLabel', { role: user.role })}>
-      <ManagerHomeV2 user={user} />
+      <ExecutiveHomeV2 user={user} />
     </PreviewToolbar>
   )
 }

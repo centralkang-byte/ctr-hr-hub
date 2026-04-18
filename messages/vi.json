@@ -2635,6 +2635,73 @@
         "attendanceHeatmap": "Chuyên cần tháng 4",
         "upcomingSchedule": "Lịch sắp tới",
         "payPreview": "Lương dự kiến tháng"
+      },
+      "v2": {
+        "loadError": "Không thể tải bảng điều khiển",
+        "section": {
+          "hero": "Trọng tâm hôm nay",
+          "stat": "Trạng thái",
+          "tracker": "Tiến độ",
+          "insight": "Thông tin"
+        },
+        "hero": {
+          "greetingAm": "Chào buổi sáng, {name}",
+          "greetingPm": "Xin chào, {name}",
+          "focusOffboarding": "Nghỉ việc D-{days} — kiểm tra danh sách",
+          "focusOffboardingDesc": "Các mục cần hoàn thành trước ngày cuối.",
+          "focusOnboarding": "Onboarding đang ở {progress}%",
+          "focusOnboardingDesc": "Xem nhiệm vụ còn lại và thực hiện từng bước.",
+          "focusReview": "Đánh giá quý của bạn chưa bắt đầu",
+          "focusReviewDesc": "Vui lòng hoàn thành đánh giá quý trước hạn.",
+          "focusLeaveForfeit": "Sắp hết hạn nghỉ phép",
+          "focusLeaveForfeitDesc": "Có ngày nghỉ sắp hết hạn. Hãy sắp xếp lịch.",
+          "focusGreeting": "Chúc bạn một ngày tốt lành",
+          "focusGreetingDesc": "Xem trạng thái và lên kế hoạch.",
+          "cta": {
+            "checklist": "Danh sách",
+            "writeReview": "Viết đánh giá",
+            "leaveRequest": "Xin nghỉ",
+            "myPage": "Trang của tôi"
+          }
+        },
+        "stat": {
+          "annualRemaining": "Ngày nghỉ còn lại",
+          "viewLeave": "Nghỉ phép",
+          "attendanceThisMonth": "Ngày công tháng này",
+          "viewAttendance": "Chấm công",
+          "reviewStatus": {
+            "label": "Đánh giá quý",
+            "completed": "Đã hoàn thành",
+            "notStarted": "Chưa bắt đầu",
+            "inProgress": "Đang thực hiện",
+            "draft": "Nháp",
+            "employeeDone": "Tự gửi",
+            "managerDone": "Quản lý đã xem xét"
+          },
+          "viewReview": "Mở đánh giá",
+          "myTeamSize": "Đồng nghiệp",
+          "viewTeam": "Nhóm"
+        },
+        "tracker": {
+          "onboarding": {
+            "title": "Onboarding của tôi",
+            "subtitle": "{progress}% · D-{days}",
+            "cta": "Mở danh sách"
+          },
+          "offboarding": {
+            "title": "Offboarding của tôi",
+            "subtitle": "{progress}% · D-{days}",
+            "cta": "Mở bàn giao"
+          }
+        },
+        "insight": {
+          "leaveForfeitMsg": "Còn chưa đầy 3 ngày nghỉ. Hãy sắp xếp lịch.",
+          "leaveForfeitCta": "Xin nghỉ"
+        },
+        "pilotBanner": {
+          "title": "Employee Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
       }
     },
     "executive": {
@@ -2665,7 +2732,71 @@
       },
       "laborCostTrend": "Xu hướng chi phí LĐ",
       "quarterlySummary": "Tóm tắt quý",
-      "successionPipeline": "Pipeline kế nhiệm"
+      "successionPipeline": "Pipeline kế nhiệm",
+      "v2": {
+        "loadError": "Không thể tải bảng điều khiển",
+        "section": {
+          "hero": "Trọng tâm hôm nay",
+          "stat": "Chỉ số chính",
+          "list": "Vấn đề chính",
+          "insight": "Thông tin"
+        },
+        "hero": {
+          "greetingAm": "Chào buổi sáng, {name}",
+          "greetingPm": "Xin chào, {name}",
+          "focusTurnover": "Tỷ lệ nghỉ {rate}% — {count} người nghỉ",
+          "focusTurnoverDesc": "Trên ngưỡng. Kiểm tra bảng phân tích nguyên nhân.",
+          "focusOpenPositions": "{count} vị trí đang tuyển",
+          "focusOpenPositionsDesc": "Áp lực tuyển dụng cao. Kiểm tra luồng ứng viên.",
+          "focusNewHires": "{count} nhân viên mới tháng này",
+          "focusNewHiresDesc": "Tổ chức tiếp tục mở rộng.",
+          "focusStable": "Tổ chức vận hành ổn định",
+          "focusStableDesc": "Tất cả chỉ số chính đều trong phạm vi bình thường.",
+          "cta": {
+            "analyze": "Phân tích",
+            "view": "Xem",
+            "dashboard": "Bảng điều khiển"
+          }
+        },
+        "stat": {
+          "totalEmployees": "Tổng nhân viên",
+          "newHiresDelta": "+{count}",
+          "newHiresSr": "{count} nhân viên mới 30 ngày qua",
+          "viewWorkforce": "Nhân lực",
+          "newHires": "Nhân viên mới (30 ngày)",
+          "viewEmployees": "Nhân viên",
+          "turnoverRate": "Tỷ lệ nghỉ việc (30 ngày)",
+          "viewTurnover": "Phân tích",
+          "openPositions": "Vị trí tuyển",
+          "viewRecruitment": "Tuyển dụng"
+        },
+        "list": {
+          "offboarding": "Offboarding đang diễn ra",
+          "viewAll": "Xem tất cả",
+          "offboardingRow": "{progress}% · D-{days}",
+          "offboardingStatus": {
+            "success": "Ổn",
+            "warning": "Sắp",
+            "error": "Quá hạn"
+          }
+        },
+        "empty": {
+          "offboarding": {
+            "title": "Không có offboarding dự kiến",
+            "desc": "Tổ chức ổn định."
+          }
+        },
+        "insight": {
+          "turnoverMsg": "Tỷ lệ nghỉ {rate}% với {count} người nghỉ. Khuyến nghị phân tích.",
+          "turnoverCta": "Phân tích",
+          "openPositionsMsg": "Vị trí tuyển tích lũy đến {count}.",
+          "openPositionsCta": "Tuyển dụng"
+        },
+        "pilotBanner": {
+          "title": "Executive Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
+      }
     },
     "globalCompare": "So sánh toàn cầu",
     "greeting": ", have a great day!",
@@ -2710,7 +2841,93 @@
       },
       "thisWeekSchedule": "Lịch tuần này",
       "aiInsights": "AI Insights",
-      "quarterlyReviewShort": "Tỷ lệ đánh giá"
+      "quarterlyReviewShort": "Tỷ lệ đánh giá",
+      "v2": {
+        "loadError": "Không thể tải bảng điều khiển",
+        "section": {
+          "quickActions": "Hành động nhanh",
+          "hero": "Trọng tâm hôm nay",
+          "stat": "Chỉ số chính",
+          "list": "Tiến độ",
+          "insight": "Thông tin"
+        },
+        "quickActions": {
+          "registerEmployee": "Đăng ký nhân viên",
+          "runPayroll": "Chạy lương",
+          "reports": "Báo cáo"
+        },
+        "hero": {
+          "greetingAm": "Chào buổi sáng, {name}",
+          "greetingPm": "Xin chào, {name}",
+          "focusUrgent": "{count} phê duyệt quá hạn",
+          "focusUrgentDesc": "Các yêu cầu nghỉ đã quá ngày bắt đầu. Hãy xử lý trước.",
+          "focusWeekDeadline": "{count} phê duyệt hết hạn tuần này",
+          "focusWeekDeadlineDesc": "Xử lý theo thứ tự để công việc tuần không bị trễ.",
+          "focusOpenPositions": "{count} vị trí đang tuyển",
+          "focusOpenPositionsDesc": "Kiểm tra tiến độ và luồng ứng viên.",
+          "focusAllClear": "Mọi công việc đang đúng tiến độ",
+          "focusAllClearDesc": "Mở bảng phân tích để xem thông tin sâu hơn.",
+          "cta": {
+            "open": "Mở",
+            "view": "Xem"
+          }
+        },
+        "stat": {
+          "totalEmployees": "Tổng nhân viên",
+          "newHiresDelta": "+{count}",
+          "newHiresSr": "{count} nhân viên mới 30 ngày qua (xu hướng hàng tuần)",
+          "viewEmployees": "Nhân viên",
+          "pendingLeaves": "Phê duyệt chờ",
+          "pendingLeavesDelta": "{count}",
+          "pendingLeavesSr": "{count} phê duyệt chờ (xu hướng 7 ngày)",
+          "viewApprovals": "Phê duyệt",
+          "turnoverRate": "Tỷ lệ nghỉ việc (30 ngày)",
+          "viewTurnover": "Phân tích nghỉ việc",
+          "openPositions": "Vị trí tuyển",
+          "viewRecruitment": "Tuyển dụng"
+        },
+        "list": {
+          "onboarding": "Onboarding",
+          "offboarding": "Offboarding",
+          "viewAll": "Xem tất cả",
+          "onboardingRow": "{progress}% · D-{days}",
+          "offboardingRow": "{progress}% · D-{days}",
+          "onboardingStatus": {
+            "success": "Tốt",
+            "warning": "Chú ý",
+            "error": "Chậm"
+          },
+          "offboardingStatus": {
+            "success": "Ổn",
+            "warning": "Sắp",
+            "error": "Quá hạn"
+          },
+          "action": {
+            "edit": "Sửa",
+            "doc": "Mở tài liệu"
+          }
+        },
+        "empty": {
+          "onboarding": {
+            "title": "Không có onboarding đang diễn ra",
+            "desc": "Nhân viên mới sẽ xuất hiện tại đây."
+          },
+          "offboarding": {
+            "title": "Không có offboarding dự kiến",
+            "desc": "Tổ chức ổn định."
+          }
+        },
+        "insight": {
+          "urgentMsg": "{count} mục quá hạn. Khuyến nghị xem xét hàng loạt.",
+          "urgentCta": "Xem hàng loạt",
+          "orphanHiresMsg": "{count} nhân viên mới chưa có kế hoạch onboarding.",
+          "orphanHiresCta": "Bắt đầu onboarding"
+        },
+        "pilotBanner": {
+          "title": "HR Admin Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
+      }
     },
     "kpi": {
       "leaveUsageRate": "Hàng năm Leave 사용률",
@@ -2978,7 +3195,16 @@
         "empty": "EmptyState — Biến thể tông",
         "grid": "Xác minh bố cục lưới 12 cột"
       },
-      "breakpointHint": "⚠️ Chuyển viewport chỉ giới hạn max-width. Để mô phỏng breakpoint thực tế, hãy dùng chế độ mô phỏng thiết bị của DevTools."
+      "breakpointHint": "⚠️ Chuyển viewport chỉ giới hạn max-width. Để mô phỏng breakpoint thực tế, hãy dùng chế độ mô phỏng thiết bị của DevTools.",
+      "pilots": {
+        "title": "Pilot theo vai trò",
+        "description": "Xem trước bảng điều khiển V2 của từng vai trò.",
+        "manager": "Manager",
+        "hrAdmin": "HR Admin",
+        "executive": "Executive",
+        "employee": "Employee",
+        "cta": "Mở"
+      }
     }
   },
   "internalJobs": {

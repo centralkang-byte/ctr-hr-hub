@@ -6,6 +6,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { getDirectReportIds } from '@/lib/employee/direct-reports'
+import { getPeerCount } from '@/lib/employee/peers'
 import { getStartOfDayTz, formatToTz } from '@/lib/timezone'
 import type { SessionUser, OnboardingItem, TrendPoint } from '@/types'
 
@@ -207,6 +208,7 @@ export const GET = withCache(withPermission(
           qrReview,
           myOnboardingRaw,
           myOffboardingRaw,
+          myTeamSize,
         ] = await Promise.all([
           prisma.employeeLeaveBalance.findMany({
             where: { employeeId: user.employeeId },
@@ -251,6 +253,8 @@ export const GET = withCache(withPermission(
             },
             orderBy: { lastWorkingDate: 'asc' },
           }),
+          // R3: 같은 매니저 아래 동료 수 (본인 제외) — src/lib/employee/peers.ts
+          getPeerCount({ employeeId: user.employeeId, companyId }),
         ])
 
         const myOnboarding = myOnboardingRaw
@@ -301,6 +305,7 @@ export const GET = withCache(withPermission(
             : { id: null, status: null },
           myOnboarding,
           myOffboarding,
+          myTeamSize,
         })
       }
 
@@ -480,6 +485,13 @@ export const GET = withCache(withPermission(
       // EXECUTIVE는 onboarding 트래커를 사용하지 않으므로 해당 쿼리 생략 (P3 latency 절감)
       const isExecutive = user.role === ROLE.EXECUTIVE
 
+      // R3: trend 버킷 경계 — MANAGER 브랜치와 동일한 TZ-consistent 패턴
+      const tzMidnight = getStartOfDayTz(now, DEFAULT_TZ)
+      const sevenDaysAgo = new Date(tzMidnight)
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6) // 7 days inclusive of today
+      const fourWeeksAgo = new Date(tzMidnight)
+      fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 27) // 4 weeks inclusive of current week
+
       const [
         newHires,
         terminations,
@@ -491,6 +503,8 @@ export const GET = withCache(withPermission(
         activeOnboardingRaw,
         activeOffboardingRaw,
         onboardingTotal,
+        pendingLeavesTrendRaw,
+        newHiresTrendRaw,
       ] = await Promise.all([
         prisma.employee.count({
           where: {
@@ -549,26 +563,24 @@ export const GET = withCache(withPermission(
                 tasks: { select: { status: true } },
               },
             }),
-        // EXECUTIVE는 offboarding 트래커 미사용
-        isExecutive
-          ? Promise.resolve([])
-          : // offboarding 회사 필터: EmployeeOffboarding.companyId 부재 → primary assignment 근사.
-            // 가장 최근(endDate: null) primary assignment가 본 회사인 경우만.
-            // Phase 6에서 EmployeeOffboarding.companyId 컬럼 추가 후 정확화.
-            prisma.employeeOffboarding.findMany({
-              where: {
-                status: 'IN_PROGRESS',
-                employee: {
-                  assignments: {
-                    some: { companyId, isPrimary: true, endDate: null },
-                  },
-                },
+        // offboarding 회사 필터: EmployeeOffboarding.companyId 부재 → primary assignment 근사.
+        // 가장 최근(endDate: null) primary assignment가 본 회사인 경우만.
+        // Phase 6에서 EmployeeOffboarding.companyId 컬럼 추가 후 정확화.
+        // Codex Gate 2 P2 fix: EXECUTIVE도 활성 offboarding list를 본다 — R3 ExecutiveHomeV2의 핵심 위젯.
+        prisma.employeeOffboarding.findMany({
+          where: {
+            status: 'IN_PROGRESS',
+            employee: {
+              assignments: {
+                some: { companyId, isPrimary: true, endDate: null },
               },
-              include: {
-                employee: { select: { id: true, name: true } },
-                offboardingTasks: { select: { status: true } },
-              },
-            }),
+            },
+          },
+          include: {
+            employee: { select: { id: true, name: true } },
+            offboardingTasks: { select: { status: true } },
+          },
+        }),
         isExecutive
           ? Promise.resolve(0)
           : prisma.employeeOnboarding.count({
@@ -581,6 +593,25 @@ export const GET = withCache(withPermission(
                 },
               },
             }),
+        // R3: 지난 7일 PENDING 휴가 요청 제출일 (company-wide, HR 전용 — EXECUTIVE는 미표시)
+        isExecutive
+          ? Promise.resolve([] as { createdAt: Date }[])
+          : prisma.leaveRequest.findMany({
+              where: {
+                companyId,
+                status: 'PENDING',
+                createdAt: { gte: sevenDaysAgo },
+              },
+              select: { createdAt: true },
+            }),
+        // R3: 지난 4주 신규 입사자 (HR + EXECUTIVE 공통)
+        prisma.employee.findMany({
+          where: {
+            hireDate: { gte: fourWeeksAgo },
+            assignments: { some: { companyId, isPrimary: true, endDate: null } },
+          },
+          select: { hireDate: true },
+        }),
       ])
 
       const turnoverRate =
@@ -619,6 +650,17 @@ export const GET = withCache(withPermission(
         ),
       ).slice(0, 5)
 
+      // R3: trend 버킷팅 — MANAGER 브랜치와 동일한 bucketDaily/Weekly helpers.
+      // HR/EXEC 공통: newHiresTrend. HR 전용: pendingLeavesTrend (EXECUTIVE는 empty array로 생략).
+      const pendingLeavesTrend = isExecutive
+        ? undefined
+        : bucketDaily(pendingLeavesTrendRaw.map((r) => r.createdAt), now, 7)
+      const newHiresTrend = bucketWeekly(
+        newHiresTrendRaw.map((r) => r.hireDate),
+        now,
+        4,
+      )
+
       return apiSuccess({
         role: user.role,
         totalEmployees,
@@ -638,6 +680,8 @@ export const GET = withCache(withPermission(
         activeOnboarding,
         activeOffboarding,
         onboardingCount: onboardingTotal,
+        pendingLeavesTrend,
+        newHiresTrend,
       })
     } catch (error) {
       if (isAppError(error)) throw error

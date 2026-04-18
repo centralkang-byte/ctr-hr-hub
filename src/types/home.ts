@@ -67,6 +67,8 @@ export interface EmployeeSummary extends BaseSummary {
   quarterlyReview?: { id: string | null; status: string | null }
   myOnboarding?: OnboardingItem | null
   myOffboarding?: OnboardingItem | null
+  /** R3: 같은 매니저를 공유하는 동료 수 (본인 제외). 최상위/무소속은 0. */
+  myTeamSize: number
 }
 
 export interface ManagerSummary extends BaseSummary {
@@ -98,6 +100,10 @@ export interface HrAdminSummary extends BaseSummary {
   quarterlyReviewStats?: QuarterlyReviewStats
   activeOnboarding?: OnboardingItem[]
   activeOffboarding?: OnboardingItem[]
+  /** R3: 지난 7일 companyId 범위 PENDING 휴가 요청 제출일 추이 (일별 버킷) */
+  pendingLeavesTrend?: TrendPoint[]
+  /** R3: 지난 4주 신규 입사자 추이 (주별 버킷, hireDate 기준) */
+  newHiresTrend?: TrendPoint[]
 }
 
 export interface ExecSummary extends BaseSummary {
@@ -107,6 +113,8 @@ export interface ExecSummary extends BaseSummary {
   turnoverRate: number
   openPositions: number
   pendingLeaves: number
+  /** R3: 지난 4주 신규 입사자 추이 (주별 버킷) */
+  newHiresTrend?: TrendPoint[]
 }
 
 /** Discriminated union — role로 좁혀 사용 */

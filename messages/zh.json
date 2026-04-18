@@ -2635,6 +2635,73 @@
         "attendanceHeatmap": "4月考勤情况",
         "upcomingSchedule": "即将到来的日程",
         "payPreview": "本月薪资预估"
+      },
+      "v2": {
+        "loadError": "仪表板加载失败",
+        "section": {
+          "hero": "今日焦点",
+          "stat": "我的状态",
+          "tracker": "我的进展",
+          "insight": "洞察"
+        },
+        "hero": {
+          "greetingAm": "早上好，{name}",
+          "greetingPm": "您好，{name}",
+          "focusOffboarding": "离职倒计时 D-{days} — 请查看清单",
+          "focusOffboardingDesc": "最后工作日前需要完成的事项。",
+          "focusOnboarding": "入职进度 {progress}%",
+          "focusOnboardingDesc": "查看剩余任务并逐步推进。",
+          "focusReview": "您的季度自评尚未开始",
+          "focusReviewDesc": "请在截止日期前完成季度自评。",
+          "focusLeaveForfeit": "休假即将过期",
+          "focusLeaveForfeitDesc": "有即将过期的休假，请规划行程。",
+          "focusGreeting": "祝您有美好的一天",
+          "focusGreetingDesc": "查看状态并提前规划。",
+          "cta": {
+            "checklist": "清单",
+            "writeReview": "编写自评",
+            "leaveRequest": "请假",
+            "myPage": "我的"
+          }
+        },
+        "stat": {
+          "annualRemaining": "剩余年假",
+          "viewLeave": "休假",
+          "attendanceThisMonth": "本月工作天数",
+          "viewAttendance": "考勤",
+          "reviewStatus": {
+            "label": "季度评估",
+            "completed": "已完成",
+            "notStarted": "未开始",
+            "inProgress": "进行中",
+            "draft": "草稿",
+            "employeeDone": "本人已提交",
+            "managerDone": "管理者已审核"
+          },
+          "viewReview": "打开评估",
+          "myTeamSize": "同事",
+          "viewTeam": "团队"
+        },
+        "tracker": {
+          "onboarding": {
+            "title": "我的入职",
+            "subtitle": "{progress}% · D-{days}",
+            "cta": "打开清单"
+          },
+          "offboarding": {
+            "title": "我的离职",
+            "subtitle": "{progress}% · D-{days}",
+            "cta": "打开交接"
+          }
+        },
+        "insight": {
+          "leaveForfeitMsg": "剩余休假不足 3 天，请规划行程。",
+          "leaveForfeitCta": "请假"
+        },
+        "pilotBanner": {
+          "title": "Employee Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
       }
     },
     "executive": {
@@ -2665,7 +2732,71 @@
       },
       "laborCostTrend": "人工成本趋势",
       "quarterlySummary": "季度业绩摘要",
-      "successionPipeline": "继任管道"
+      "successionPipeline": "继任管道",
+      "v2": {
+        "loadError": "仪表板加载失败",
+        "section": {
+          "hero": "今日焦点",
+          "stat": "关键指标",
+          "list": "主要事项",
+          "insight": "洞察"
+        },
+        "hero": {
+          "greetingAm": "早上好，{name}",
+          "greetingPm": "您好，{name}",
+          "focusTurnover": "离职率 {rate}% — {count} 人离职",
+          "focusTurnoverDesc": "已超过阈值，请查看原因分析仪表板。",
+          "focusOpenPositions": "{count} 个空缺职位",
+          "focusOpenPositionsDesc": "招聘压力较高。请检查流程。",
+          "focusNewHires": "本月新增员工 {count} 人",
+          "focusNewHiresDesc": "组织持续扩展。",
+          "focusStable": "组织运营平稳",
+          "focusStableDesc": "所有关键指标均在正常范围内。",
+          "cta": {
+            "analyze": "分析",
+            "view": "查看",
+            "dashboard": "仪表板"
+          }
+        },
+        "stat": {
+          "totalEmployees": "员工总数",
+          "newHiresDelta": "+{count}",
+          "newHiresSr": "近 30 天新增 {count} 人（每周趋势）",
+          "viewWorkforce": "组织分析",
+          "newHires": "新员工（30天）",
+          "viewEmployees": "员工列表",
+          "turnoverRate": "离职率（30天）",
+          "viewTurnover": "离职分析",
+          "openPositions": "空缺职位",
+          "viewRecruitment": "招聘"
+        },
+        "list": {
+          "offboarding": "进行中的离职",
+          "viewAll": "查看全部",
+          "offboardingRow": "{progress}% · D-{days}",
+          "offboardingStatus": {
+            "success": "宽裕",
+            "warning": "临近",
+            "error": "逾期"
+          }
+        },
+        "empty": {
+          "offboarding": {
+            "title": "暂无计划的离职",
+            "desc": "组织稳定。"
+          }
+        },
+        "insight": {
+          "turnoverMsg": "离职率 {rate}%，{count} 人离职。建议分析原因。",
+          "turnoverCta": "分析原因",
+          "openPositionsMsg": "空缺职位累计至 {count} 个。",
+          "openPositionsCta": "招聘"
+        },
+        "pilotBanner": {
+          "title": "Executive Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
+      }
     },
     "globalCompare": "全球比较",
     "greeting": ", have a great day!",
@@ -2710,7 +2841,93 @@
       },
       "thisWeekSchedule": "本周日程",
       "aiInsights": "AI 洞察",
-      "quarterlyReviewShort": "评估进度"
+      "quarterlyReviewShort": "评估进度",
+      "v2": {
+        "loadError": "仪表板加载失败",
+        "section": {
+          "quickActions": "快捷操作",
+          "hero": "今日焦点",
+          "stat": "关键指标",
+          "list": "进度",
+          "insight": "洞察"
+        },
+        "quickActions": {
+          "registerEmployee": "注册员工",
+          "runPayroll": "运行薪资",
+          "reports": "报告"
+        },
+        "hero": {
+          "greetingAm": "早上好，{name}",
+          "greetingPm": "您好，{name}",
+          "focusUrgent": "{count} 项审批已逾期",
+          "focusUrgentDesc": "已有超过开始日期的请假堆积，请优先处理。",
+          "focusWeekDeadline": "本周待处理 {count} 项审批",
+          "focusWeekDeadlineDesc": "按顺序处理，避免影响本周工作。",
+          "focusOpenPositions": "{count} 个空缺职位",
+          "focusOpenPositionsDesc": "查看招聘进展和候选人流程。",
+          "focusAllClear": "所有任务进展顺利",
+          "focusAllClearDesc": "前往分析仪表板以获取更深入的洞察。",
+          "cta": {
+            "open": "打开",
+            "view": "查看"
+          }
+        },
+        "stat": {
+          "totalEmployees": "员工总数",
+          "newHiresDelta": "+{count}",
+          "newHiresSr": "近 30 天新增 {count} 人（每周趋势）",
+          "viewEmployees": "员工列表",
+          "pendingLeaves": "待审批",
+          "pendingLeavesDelta": "{count}",
+          "pendingLeavesSr": "待审批 {count} 项（7 天趋势）",
+          "viewApprovals": "审批",
+          "turnoverRate": "离职率（30天）",
+          "viewTurnover": "离职分析",
+          "openPositions": "空缺职位",
+          "viewRecruitment": "招聘"
+        },
+        "list": {
+          "onboarding": "入职",
+          "offboarding": "离职",
+          "viewAll": "查看全部",
+          "onboardingRow": "{progress}% · D-{days}",
+          "offboardingRow": "{progress}% · D-{days}",
+          "onboardingStatus": {
+            "success": "良好",
+            "warning": "注意",
+            "error": "延迟"
+          },
+          "offboardingStatus": {
+            "success": "宽裕",
+            "warning": "临近",
+            "error": "逾期"
+          },
+          "action": {
+            "edit": "编辑",
+            "doc": "打开文档"
+          }
+        },
+        "empty": {
+          "onboarding": {
+            "title": "暂无进行中的入职",
+            "desc": "新员工加入后将显示在此处。"
+          },
+          "offboarding": {
+            "title": "暂无计划的离职",
+            "desc": "组织结构稳定。"
+          }
+        },
+        "insight": {
+          "urgentMsg": "{count} 项已逾期。建议批量处理。",
+          "urgentCta": "批量处理",
+          "orphanHiresMsg": "{count} 名新员工尚无入职计划。",
+          "orphanHiresCta": "开始入职"
+        },
+        "pilotBanner": {
+          "title": "HR Admin Pilot — Preview",
+          "envLabel": "{role} · HOME_PREVIEW=true"
+        }
+      }
     },
     "kpi": {
       "leaveUsageRate": "年度 Leave 사용률",
@@ -2978,7 +3195,16 @@
         "empty": "EmptyState — 色调变体",
         "grid": "12 列网格布局验证"
       },
-      "breakpointHint": "⚠️ 视口切换仅调整 max-width。实际断点模拟请使用浏览器 DevTools 设备仿真。"
+      "breakpointHint": "⚠️ 视口切换仅调整 max-width。实际断点模拟请使用浏览器 DevTools 设备仿真。",
+      "pilots": {
+        "title": "角色试点",
+        "description": "预览每个角色的 V2 仪表板。",
+        "manager": "Manager",
+        "hrAdmin": "HR Admin",
+        "executive": "Executive",
+        "employee": "Employee",
+        "cta": "打开"
+      }
     }
   },
   "internalJobs": {
