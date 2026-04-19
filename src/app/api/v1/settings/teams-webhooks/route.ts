@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
-import { badRequest } from '@/lib/errors'
+import { badRequest, handlePrismaError } from '@/lib/errors'
 import { z } from 'zod'
 import { getRequestLocale, serverT } from '@/lib/server-i18n'
 import type { SessionUser } from '@/types'
@@ -42,18 +42,26 @@ export const GET = withPermission(
 
 export const POST = withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
-    const body = await req.json()
+    let body: unknown
+    try {
+      body = await req.json()
+    } catch {
+      throw badRequest('요청 본문이 올바른 JSON 형식이 아닙니다.')
+    }
     const parsed = webhookSchema.safeParse(body)
     if (!parsed.success) {
       const locale = await getRequestLocale()
-      throw badRequest(await serverT(locale, 'teams.api.invalidRequestData'), { issues: parsed.error.issues })
+      throw badRequest(await serverT(locale, 'teams.api.invalidRequestData'))
     }
 
-    const webhook = await prisma.teamsWebhookConfig.create({
-      data: { ...parsed.data, companyId: user.companyId },
-    })
-
-    return apiSuccess(webhook)
+    try {
+      const webhook = await prisma.teamsWebhookConfig.create({
+        data: { ...parsed.data, companyId: user.companyId },
+      })
+      return apiSuccess(webhook)
+    } catch (e) {
+      throw handlePrismaError(e)
+    }
   },
   perm(MODULE.SETTINGS, ACTION.CREATE),
 )
