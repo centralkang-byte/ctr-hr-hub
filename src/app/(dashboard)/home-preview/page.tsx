@@ -1,25 +1,24 @@
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Dashboard Home (Server Component)
-// 역할별 홈 페이지 분기
+// CTR HR Hub — /home-preview (Server Page)
+// R1 Foundation showcase — HOME_PREVIEW env gated + VERCEL_ENV guard.
+// R3 (Session 178): /lib/home-preview/guard로 2중 가드 추출.
 // ═══════════════════════════════════════════════════════════
 
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
-import { EmployeeHomeV2 } from '@/components/home/EmployeeHomeV2'
-import { ManagerHomeV2 } from '@/components/home/ManagerHomeV2'
-import { HrAdminHomeV2 } from '@/components/home/HrAdminHomeV2'
-import { ExecutiveHomeV2 } from '@/components/home/ExecutiveHomeV2'
 import { HomeSkeleton } from '@/components/shared/PageSkeleton'
+import { assertHomePreviewEnabled } from '@/lib/home-preview/guard'
+import { PreviewClient } from './PreviewClient'
 
 // ─── Page ─────────────────────────────────────────────────
 
-export default async function DashboardPage() {
-  const session = await getServerSession(authOptions)
+export default async function HomePreviewPage() {
+  assertHomePreviewEnabled()
 
+  const session = await getServerSession(authOptions)
   if (!session?.user) {
     redirect('/login')
   }
@@ -28,24 +27,7 @@ export default async function DashboardPage() {
 
   return (
     <Suspense fallback={<HomeSkeleton />}>
-      <HomeContent user={user} />
+      <PreviewClient user={user} />
     </Suspense>
   )
-}
-
-function HomeContent({ user }: { user: SessionUser }) {
-  switch (user.role) {
-    case ROLE.SUPER_ADMIN:
-    case ROLE.HR_ADMIN:
-      return <HrAdminHomeV2 user={user} />
-
-    case ROLE.MANAGER:
-      return <ManagerHomeV2 user={user} />
-
-    case ROLE.EXECUTIVE:
-      return <ExecutiveHomeV2 user={user} />
-
-    default:
-      return <EmployeeHomeV2 user={user} />
-  }
 }

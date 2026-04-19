@@ -18,18 +18,22 @@ DROP MATERIALIZED VIEW IF EXISTS mv_headcount_daily;
 CREATE MATERIALIZED VIEW mv_headcount_daily AS
 SELECT
   CURRENT_DATE AS snapshot_date,
-  e.company_id,
-  e.department_id,
-  e.employment_type,
-  e.job_category_id,
+  ea.company_id,
+  ea.department_id,
+  ea.employment_type,
+  ea.job_category_id,
   COUNT(*) AS headcount,
   COUNT(*) FILTER (WHERE e.hire_date >= CURRENT_DATE - INTERVAL '30 days') AS new_hires_30d,
   COUNT(*) FILTER (WHERE e.resign_date IS NOT NULL
     AND e.resign_date >= CURRENT_DATE - INTERVAL '30 days') AS resignations_30d
 FROM employees e
-WHERE e.status IN ('ACTIVE', 'ON_LEAVE')
+JOIN employee_assignments ea
+  ON ea.employee_id = e.id
+  AND ea.end_date IS NULL
+  AND ea.is_primary = true
+WHERE ea.status IN ('ACTIVE', 'ON_LEAVE')
   AND e.deleted_at IS NULL
-GROUP BY e.company_id, e.department_id, e.employment_type, e.job_category_id;
+GROUP BY ea.company_id, ea.department_id, ea.employment_type, ea.job_category_id;
 
 CREATE UNIQUE INDEX uq_headcount
   ON mv_headcount_daily(snapshot_date, company_id, department_id, employment_type, job_category_id);
@@ -67,17 +71,21 @@ DROP MATERIALIZED VIEW IF EXISTS mv_performance_summary;
 CREATE MATERIALIZED VIEW mv_performance_summary AS
 SELECT
   pe.cycle_id,
-  e.department_id,
+  ea.department_id,
   pe.ems_block,
   COUNT(*) AS employee_count,
   AVG(pe.performance_score) AS avg_performance_score,
   AVG(pe.competency_score) AS avg_competency_score
 FROM performance_evaluations pe
 JOIN employees e ON e.id = pe.employee_id
+JOIN employee_assignments ea
+  ON ea.employee_id = e.id
+  AND ea.end_date IS NULL
+  AND ea.is_primary = true
 WHERE pe.eval_type = 'MANAGER'
   AND pe.status = 'CONFIRMED'
   AND pe.ems_block IS NOT NULL
-GROUP BY pe.cycle_id, e.department_id, pe.ems_block;
+GROUP BY pe.cycle_id, ea.department_id, pe.ems_block;
 
 CREATE UNIQUE INDEX uq_perf_summary
   ON mv_performance_summary(cycle_id, department_id, ems_block);
@@ -143,7 +151,7 @@ last_oo AS (
 )
 SELECT
   e.id AS employee_id, e.name,
-  e.company_id,
+  ea.company_id,
   d.name AS department,
   jc.code AS job_category_code,
   COALESCE(wo.high_weeks, 0) AS consecutive_high_weeks,
@@ -158,12 +166,16 @@ SELECT
     AND COALESCE(lu.unused_days, 0) >= 45
     AND COALESCE(lo.days_since, 999) >= 30) AS is_burnout_critical
 FROM employees e
-JOIN departments d ON e.department_id = d.id
-JOIN job_categories jc ON e.job_category_id = jc.id
+JOIN employee_assignments ea
+  ON ea.employee_id = e.id
+  AND ea.end_date IS NULL
+  AND ea.is_primary = true
+JOIN departments d ON ea.department_id = d.id
+JOIN job_categories jc ON ea.job_category_id = jc.id
 LEFT JOIN weekly_ot wo ON wo.employee_id = e.id
 LEFT JOIN leave_unused lu ON lu.employee_id = e.id
 LEFT JOIN last_oo lo ON lo.employee_id = e.id
-WHERE e.status = 'ACTIVE' AND e.deleted_at IS NULL;
+WHERE ea.status = 'ACTIVE' AND e.deleted_at IS NULL;
 
 CREATE UNIQUE INDEX uq_burnout_risk ON mv_burnout_risk(employee_id);
 
@@ -175,7 +187,7 @@ DROP MATERIALIZED VIEW IF EXISTS mv_team_health;
 
 CREATE MATERIALIZED VIEW mv_team_health AS
 SELECT
-  e.department_id,
+  ea.department_id,
   d.name AS department_name,
   d.company_id,
   COUNT(*) AS team_size,
@@ -193,7 +205,11 @@ SELECT
     1
   ) AS one_on_one_coverage_pct
 FROM employees e
-JOIN departments d ON d.id = e.department_id
+JOIN employee_assignments ea
+  ON ea.employee_id = e.id
+  AND ea.end_date IS NULL
+  AND ea.is_primary = true
+JOIN departments d ON d.id = ea.department_id
 -- Latest manager evaluation per employee
 LEFT JOIN LATERAL (
   SELECT pe.performance_score, pe.competency_score
@@ -229,8 +245,8 @@ LEFT JOIN LATERAL (
     AND oo.completed_at >= CURRENT_DATE - INTERVAL '30 days'
   LIMIT 1
 ) oo_recent ON true
-WHERE e.status = 'ACTIVE' AND e.deleted_at IS NULL
-GROUP BY e.department_id, d.name, d.company_id;
+WHERE ea.status = 'ACTIVE' AND e.deleted_at IS NULL
+GROUP BY ea.department_id, d.name, d.company_id;
 
 CREATE UNIQUE INDEX uq_team_health ON mv_team_health(department_id);
 
@@ -243,18 +259,25 @@ DROP MATERIALIZED VIEW IF EXISTS mv_exit_reason_monthly;
 CREATE MATERIALIZED VIEW mv_exit_reason_monthly AS
 SELECT
   DATE_TRUNC('month', eo.last_working_date) AS month,
-  eo.resign_type,
-  ei.primary_reason,
-  e.company_id,
+  eo.resign_type::text AS resign_type,
+  COALESCE(ei.primary_reason::text, '__none__') AS primary_reason,
+  COALESCE(ea.company_id, '__none__') AS company_id,
   COUNT(*) AS count
 FROM employee_offboarding eo
 JOIN employees e ON e.id = eo.employee_id
+LEFT JOIN LATERAL (
+  SELECT la.company_id
+  FROM employee_assignments la
+  WHERE la.employee_id = e.id AND la.is_primary = true
+  ORDER BY la.effective_date DESC
+  LIMIT 1
+) ea ON true
 LEFT JOIN exit_interviews ei ON ei.employee_offboarding_id = eo.id
 WHERE eo.status = 'COMPLETED'
 GROUP BY 1, 2, 3, 4;
 
 CREATE UNIQUE INDEX uq_exit_reason
-  ON mv_exit_reason_monthly(month, company_id, resign_type, primary_reason) WHERE primary_reason IS NOT NULL;
+  ON mv_exit_reason_monthly(month, company_id, resign_type, primary_reason);
 
 -- ================================================================
 -- MV 8: mv_compa_ratio_distribution
@@ -264,7 +287,7 @@ DROP MATERIALIZED VIEW IF EXISTS mv_compa_ratio_distribution;
 
 CREATE MATERIALIZED VIEW mv_compa_ratio_distribution AS
 SELECT
-  e.company_id,
+  ea.company_id,
   jc.code AS job_category_code,
   jg.code AS grade_code,
   jg.name AS grade_name,
@@ -274,14 +297,18 @@ SELECT
   PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ch.compa_ratio) AS median,
   PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY ch.compa_ratio) AS p75
 FROM employees e
-JOIN job_categories jc ON jc.id = e.job_category_id
-JOIN job_grades jg ON jg.id = e.job_grade_id
+JOIN employee_assignments ea
+  ON ea.employee_id = e.id
+  AND ea.end_date IS NULL
+  AND ea.is_primary = true
+JOIN job_categories jc ON jc.id = ea.job_category_id
+JOIN job_grades jg ON jg.id = ea.job_grade_id
 LEFT JOIN LATERAL (
   SELECT compa_ratio FROM compensation_history
   WHERE employee_id = e.id
   ORDER BY effective_date DESC LIMIT 1
 ) ch ON true
-WHERE e.status = 'ACTIVE' AND e.deleted_at IS NULL
+WHERE ea.status = 'ACTIVE' AND e.deleted_at IS NULL
 GROUP BY 1, 2, 3, 4;
 
 CREATE UNIQUE INDEX uq_compa_dist

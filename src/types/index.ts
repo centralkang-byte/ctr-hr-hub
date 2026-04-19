@@ -315,6 +315,7 @@ export type {
   OnboardingItem,
   LeaveBalanceItem,
   QuarterlyReviewStats,
+  TrendPoint,
   EmployeeSummary,
   ManagerSummary,
   HrAdminSummary,

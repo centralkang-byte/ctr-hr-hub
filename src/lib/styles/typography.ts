@@ -39,4 +39,14 @@ export const TYPOGRAPHY = {
   statSub: 'text-lg font-semibold font-mono tabular-nums text-foreground',
   /** 14px 숫자 — 테이블 내 금액/코드 */
   mono: 'font-mono tabular-nums',
+
+  // === R1 Home Redesign (Linear/Attio primitives) ===
+  /** 20px / 600 / 1.3 — HeroCard greeting */
+  heroGreeting: 'text-xl md:text-2xl font-semibold leading-[1.3] text-foreground',
+  /** 12px / 500 / uppercase — StatCard label (above number) */
+  statLabel: 'text-xs font-medium uppercase tracking-wide text-muted-foreground',
+  /** 14px / 500 / 1.5 — ListCard row primary text */
+  listPrimary: 'text-sm font-medium leading-[1.5] text-foreground',
+  /** 12px / 400 / 1.4 — ListCard row secondary text */
+  listSecondary: 'text-xs leading-[1.4] text-muted-foreground',
 } as const

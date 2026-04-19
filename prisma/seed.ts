@@ -57,6 +57,8 @@ import { seedQuarterlyReviews } from './seeds/44-quarterly-reviews'
 import { seedGoalRevisions } from './seeds/45-goal-revisions'
 import { seedCalibrationQA } from './seeds/46-calibration-qa'
 import { seedLaborContractSettings } from './seeds/47-labor-contract-settings'
+import { seedQAAccounts } from './seeds/00-qa-accounts'
+import { seedLoaTypes } from './seeds/43-loa-types'
 import { seedEdgeCasePersonas } from './seeds/49-edge-case-personas'
 import { seedVolumeStress } from './seeds/50-volume-stress'
 import { seedHistorical3Years } from './seeds/51-historical-3years'
@@ -3552,6 +3554,11 @@ async function main() {
   console.log('========================================\n')
 
   // ─────────────────────────────────────────────────────────
+  // QA Accounts (super/hr/manager/employee test users)
+  // ─────────────────────────────────────────────────────────
+  await seedQAAccounts(prisma)
+
+  // ─────────────────────────────────────────────────────────
   // SESSION 1: New Employee Expansion (KR +70, CN +18)
   // ─────────────────────────────────────────────────────────
   await seedNewEmployees(prisma)
@@ -3625,6 +3632,9 @@ async function main() {
 
   // F-3: Leave enhancement test data
   await seedLeaveEnhancement(prisma)
+
+  // LOA types (leave of absence categories per company)
+  await seedLoaTypes(prisma)
 
   // H-2c: Process settings defaults (payroll/attendance/performance/system)
   await seedProcessSettings(prisma)

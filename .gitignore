@@ -56,3 +56,6 @@ data/*.json
 .superpowers/
 .context/
 .superpowers/
+
+# Claude Code local artifacts (machine-specific)
+.claude/scheduled_tasks.lock

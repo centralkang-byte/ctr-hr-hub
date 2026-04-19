@@ -1,6 +1,7 @@
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Dashboard Home (Server Component)
-// 역할별 홈 페이지 분기
+// CTR HR Hub — /home-preview/hr-admin (Server Page)
+// R3 Dashboard Pilot — HrAdminHomeV2, 3중 가드 (HOME_PREVIEW + VERCEL_ENV + role).
+// SUPER_ADMIN 허용 — HR/EXEC 두 브랜치 DTO가 동일해서 SUPER가 4 pilot 순회 가능.
 // ═══════════════════════════════════════════════════════════
 
 import { Suspense } from 'react'
@@ -9,43 +10,27 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
-import { EmployeeHomeV2 } from '@/components/home/EmployeeHomeV2'
-import { ManagerHomeV2 } from '@/components/home/ManagerHomeV2'
-import { HrAdminHomeV2 } from '@/components/home/HrAdminHomeV2'
-import { ExecutiveHomeV2 } from '@/components/home/ExecutiveHomeV2'
 import { HomeSkeleton } from '@/components/shared/PageSkeleton'
+import { assertHomePreviewEnabled, assertPilotRole } from '@/lib/home-preview/guard'
+import { HrAdminPilotClient } from './HrAdminPilotClient'
 
 // ─── Page ─────────────────────────────────────────────────
 
-export default async function DashboardPage() {
-  const session = await getServerSession(authOptions)
+export default async function HrAdminPilotPage() {
+  assertHomePreviewEnabled()
 
+  const session = await getServerSession(authOptions)
   if (!session?.user) {
     redirect('/login')
   }
 
   const user = session.user as SessionUser
 
+  assertPilotRole(user.role, [ROLE.HR_ADMIN, ROLE.SUPER_ADMIN])
+
   return (
     <Suspense fallback={<HomeSkeleton />}>
-      <HomeContent user={user} />
+      <HrAdminPilotClient user={user} />
     </Suspense>
   )
-}
-
-function HomeContent({ user }: { user: SessionUser }) {
-  switch (user.role) {
-    case ROLE.SUPER_ADMIN:
-    case ROLE.HR_ADMIN:
-      return <HrAdminHomeV2 user={user} />
-
-    case ROLE.MANAGER:
-      return <ManagerHomeV2 user={user} />
-
-    case ROLE.EXECUTIVE:
-      return <ExecutiveHomeV2 user={user} />
-
-    default:
-      return <EmployeeHomeV2 user={user} />
-  }
 }
