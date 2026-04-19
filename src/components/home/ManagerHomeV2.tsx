@@ -27,6 +27,7 @@ import { InsightStrip } from './primitives/InsightStrip'
 import { DashboardErrorBanner } from './DashboardErrorBanner'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
+import { useTimeOfDay } from '@/hooks/useTimeOfDay'
 import type { SessionUser, ManagerSummary, OnboardingItem } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -78,15 +79,11 @@ function listItemStatusForOffboarding(daysUntilStart: number | null | undefined)
   return 'success'
 }
 
-function timeOfDayIllustration(): 'sunrise' | 'focus' {
-  const h = new Date().getHours()
-  return h < 12 ? 'sunrise' : 'focus'
-}
-
 // ─── Component ──────────────────────────────────────────────
 
 export function ManagerHomeV2({ user }: Props) {
   const t = useTranslations('home.manager.v2')
+  const timeOfDay = useTimeOfDay()
   const [summary, setSummary] = useState<ManagerSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -144,7 +141,7 @@ export function ManagerHomeV2({ user }: Props) {
           title: t('hero.focusPending', { count: pendingLeaves }),
           description: t('hero.focusPendingDesc'),
           cta: { label: t('hero.cta.open'), href: '/approvals/inbox' },
-          illustration: timeOfDayIllustration(),
+          illustration: timeOfDay === 'pm' ? ('focus' as const) : ('sunrise' as const),
         }
       case 'review':
         return {
@@ -163,7 +160,8 @@ export function ManagerHomeV2({ user }: Props) {
     }
   })()
 
-  const greetingKey = new Date().getHours() < 12 ? 'hero.greetingAm' : 'hero.greetingPm'
+  // SSR/초기 hydration 중에는 timeOfDay === null → AM 을 디폴트로 렌더.
+  const greetingKey = timeOfDay === 'pm' ? 'hero.greetingPm' : 'hero.greetingAm'
 
   // ── Error state ───────────────────────────────────────
   if (error && !summary) {

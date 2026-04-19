@@ -33,6 +33,7 @@ import { InsightStrip } from './primitives/InsightStrip'
 import { DashboardErrorBanner } from './DashboardErrorBanner'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
+import { useTimeOfDay } from '@/hooks/useTimeOfDay'
 import type { SessionUser, HrAdminSummary, OnboardingItem } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -88,10 +89,6 @@ function listItemStatusForOffboarding(
   return 'success'
 }
 
-function timeOfDayIllustration(): 'sunrise' | 'focus' {
-  return new Date().getHours() < 12 ? 'sunrise' : 'focus'
-}
-
 function sparkTrendDirection(data: number[]): 'up' | 'down' | 'flat' {
   if (data.length < 2) return 'flat'
   const first = data[0]
@@ -105,6 +102,7 @@ function sparkTrendDirection(data: number[]): 'up' | 'down' | 'flat' {
 
 export function HrAdminHomeV2({ user }: Props) {
   const t = useTranslations('home.hrAdmin.v2')
+  const timeOfDay = useTimeOfDay()
   const [summary, setSummary] = useState<HrAdminSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -170,7 +168,7 @@ export function HrAdminHomeV2({ user }: Props) {
           title: t('hero.focusWeekDeadline', { count: weekDeadlineCount }),
           description: t('hero.focusWeekDeadlineDesc'),
           cta: { label: t('hero.cta.open'), href: '/approvals/inbox' },
-          illustration: timeOfDayIllustration(),
+          illustration: timeOfDay === 'pm' ? ('focus' as const) : ('sunrise' as const),
         }
       case 'openPositions':
         return {
@@ -189,7 +187,8 @@ export function HrAdminHomeV2({ user }: Props) {
     }
   })()
 
-  const greetingKey = new Date().getHours() < 12 ? 'hero.greetingAm' : 'hero.greetingPm'
+  // SSR/초기 hydration 중에는 timeOfDay === null → AM 을 디폴트로 렌더.
+  const greetingKey = timeOfDay === 'pm' ? 'hero.greetingPm' : 'hero.greetingAm'
 
   // ── Error state ───────────────────────────────────────
   if (error && !summary) {

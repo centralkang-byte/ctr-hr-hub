@@ -29,6 +29,7 @@ import { InsightStrip } from './primitives/InsightStrip'
 import { DashboardErrorBanner } from './DashboardErrorBanner'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
+import { useTimeOfDay } from '@/hooks/useTimeOfDay'
 import type { SessionUser, EmployeeSummary, OnboardingItem, LeaveBalanceItem } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -124,6 +125,7 @@ function quarterlyReviewLabelKey(status: string | null | undefined): string {
 
 export function EmployeeHomeV2({ user }: Props) {
   const t = useTranslations('home.employee.v2')
+  const timeOfDay = useTimeOfDay()
   const [summary, setSummary] = useState<EmployeeSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -205,7 +207,9 @@ export function EmployeeHomeV2({ user }: Props) {
     }
   })()
 
-  const greetingKey = new Date().getHours() < 12 ? 'hero.greetingAm' : 'hero.greetingPm'
+  // SSR/초기 hydration 동안 timeOfDay === null — AM 을 디폴트로 렌더하여
+  // 서버/클라이언트 출력이 일치하도록 함. useEffect 실행 후 PM 이면 갱신.
+  const greetingKey = timeOfDay === 'pm' ? 'hero.greetingPm' : 'hero.greetingAm'
 
   // ── Error state ───────────────────────────────────────
   if (error && !summary) {
