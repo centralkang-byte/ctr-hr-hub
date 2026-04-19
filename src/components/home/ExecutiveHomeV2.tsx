@@ -145,7 +145,7 @@ export function ExecutiveHomeV2({ user }: Props) {
         return {
           title: t('hero.focusOpenPositions', { count: openPositions }),
           description: t('hero.focusOpenPositionsDesc'),
-          cta: { label: t('hero.cta.view'), href: '/recruitment' },
+          cta: { label: t('hero.cta.view'), href: '/analytics/recruitment' },
           illustration: 'focus' as const,
         }
       case 'newHires':
@@ -220,7 +220,7 @@ export function ExecutiveHomeV2({ user }: Props) {
             value={loading ? '—' : newHires}
             loading={loading}
             tone={newHires > 0 ? 'success' : 'default'}
-            action={{ label: t('stat.viewEmployees'), href: '/employees' }}
+            action={{ label: t('stat.viewEmployees'), href: '/directory' }}
           />
           <StatCard
             label={t('stat.turnoverRate')}
@@ -234,7 +234,7 @@ export function ExecutiveHomeV2({ user }: Props) {
             value={loading ? '—' : openPositions}
             loading={loading}
             tone="info"
-            action={{ label: t('stat.viewRecruitment'), href: '/recruitment' }}
+            action={{ label: t('stat.viewRecruitment'), href: '/analytics/recruitment' }}
           />
         </HomeGrid>
       </HomeSection>
@@ -259,7 +259,7 @@ export function ExecutiveHomeV2({ user }: Props) {
               statusLabel: t(
                 `list.offboardingStatus.${listItemStatusForOffboarding(item.daysUntilStart)}`,
               ),
-              href: `/employees/${item.employeeId}/offboarding`,
+              // TODO: href requires offboardingId from API (employeeId won't work). Non-clickable for now.
             })}
             emptyState={
               <EmptyState
@@ -295,7 +295,7 @@ export function ExecutiveHomeV2({ user }: Props) {
               kind="announcement"
               icon={AlertTriangle}
               message={t('insight.openPositionsMsg', { count: openPositions })}
-              action={{ label: t('insight.openPositionsCta'), href: '/recruitment' }}
+              action={{ label: t('insight.openPositionsCta'), href: '/analytics/recruitment' }}
             />
           </HomeStack>
         </HomeSection>

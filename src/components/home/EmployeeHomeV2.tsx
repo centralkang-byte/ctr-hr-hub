@@ -178,14 +178,14 @@ export function EmployeeHomeV2({ user }: Props) {
         return {
           title: t('hero.focusOnboarding', { progress: myOnboarding?.progress ?? 0 }),
           description: t('hero.focusOnboardingDesc'),
-          cta: { label: t('hero.cta.checklist'), href: '/my/onboarding' },
+          cta: { label: t('hero.cta.checklist'), href: '/my/tasks' },
           illustration: 'focus' as const,
         }
       case 'review':
         return {
           title: t('hero.focusReview'),
           description: t('hero.focusReviewDesc'),
-          cta: { label: t('hero.cta.writeReview'), href: '/my/quarterly-review' },
+          cta: { label: t('hero.cta.writeReview'), href: '/performance/my-quarterly-review' },
           illustration: 'focus' as const,
         }
       case 'leaveForfeit':
@@ -255,20 +255,20 @@ export function EmployeeHomeV2({ user }: Props) {
             label={t('stat.attendanceThisMonth')}
             value={loading ? '—' : attendanceThisMonth}
             loading={loading}
-            action={{ label: t('stat.viewAttendance'), href: '/my/attendance' }}
+            action={{ label: t('stat.viewAttendance'), href: '/attendance' }}
           />
           <StatCard
             label={t('stat.reviewStatus.label')}
             value={loading ? '—' : t(quarterlyReviewLabelKey(reviewStatus))}
             loading={loading}
             tone={quarterlyReviewTone(reviewStatus)}
-            action={{ label: t('stat.viewReview'), href: '/my/quarterly-review' }}
+            action={{ label: t('stat.viewReview'), href: '/performance/my-quarterly-review' }}
           />
           <StatCard
             label={t('stat.myTeamSize')}
             value={loading ? '—' : myTeamSize}
             loading={loading}
-            action={{ label: t('stat.viewTeam'), href: '/my/team' }}
+            action={{ label: t('stat.viewTeam'), href: '/directory' }}
           />
         </HomeGrid>
       </HomeSection>
@@ -286,7 +286,7 @@ export function EmployeeHomeV2({ user }: Props) {
                   progress: myOnboarding.progress,
                   days: myOnboarding.daysUntilStart ?? 0,
                 })}
-                href="/my/onboarding"
+                href="/my/tasks"
                 hrefLabel={t('tracker.onboarding.cta')}
                 accentIcon={Target}
               />

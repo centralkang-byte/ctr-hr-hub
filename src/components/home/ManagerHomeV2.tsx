@@ -136,28 +136,28 @@ export function ManagerHomeV2({ user }: Props) {
         return {
           title: t('hero.focusOverdue', { count: overdueLeaves }),
           description: t('hero.focusOverdueDesc'),
-          cta: { label: t('hero.cta.open'), href: '/approvals?filter=overdue' },
+          cta: { label: t('hero.cta.open'), href: '/approvals/inbox' },
           illustration: 'focus' as const,
         }
       case 'pending':
         return {
           title: t('hero.focusPending', { count: pendingLeaves }),
           description: t('hero.focusPendingDesc'),
-          cta: { label: t('hero.cta.open'), href: '/approvals' },
+          cta: { label: t('hero.cta.open'), href: '/approvals/inbox' },
           illustration: timeOfDayIllustration(),
         }
       case 'review':
         return {
           title: t('hero.focusReview', { count: reviewPending }),
           description: t('hero.focusReviewDesc'),
-          cta: { label: t('hero.cta.open'), href: '/performance/quarterly' },
+          cta: { label: t('hero.cta.open'), href: '/performance/manager-eval' },
           illustration: 'focus' as const,
         }
       default:
         return {
           title: t('hero.focusCelebration'),
           description: t('hero.focusCelebrationDesc'),
-          cta: { label: t('hero.cta.view'), href: '/my/team' },
+          cta: { label: t('hero.cta.view'), href: '/attendance/team' },
           illustration: 'celebration' as const,
         }
     }
@@ -190,8 +190,8 @@ export function ManagerHomeV2({ user }: Props) {
             cta: heroFocus.cta,
           }}
           secondary={[
-            { label: t('hero.secondary.oneOnOne'), href: '/one-on-one', icon: CalendarDays },
-            { label: t('hero.secondary.team'), href: '/my/team', icon: Coffee },
+            { label: t('hero.secondary.oneOnOne'), href: '/performance/one-on-one', icon: CalendarDays },
+            { label: t('hero.secondary.team'), href: '/attendance/team', icon: Coffee },
           ]}
           illustration={heroFocus.illustration}
         />
@@ -205,7 +205,7 @@ export function ManagerHomeV2({ user }: Props) {
             value={loading ? '—' : teamCount}
             loading={loading}
             tone="info"
-            action={{ label: t('stat.viewTeam'), href: '/my/team' }}
+            action={{ label: t('stat.viewTeam'), href: '/attendance/team' }}
           />
           <StatCard
             label={t('stat.approvals')}
@@ -227,14 +227,14 @@ export function ManagerHomeV2({ user }: Props) {
                   }
                 : undefined
             }
-            action={{ label: t('stat.viewApprovals'), href: '/approvals' }}
+            action={{ label: t('stat.viewApprovals'), href: '/approvals/inbox' }}
           />
           <StatCard
             label={t('stat.review')}
             value={loading ? '—' : reviewRate != null ? `${reviewRate}%` : '—'}
             loading={loading}
             tone={reviewRate != null && reviewRate < 50 ? 'warning' : 'info'}
-            action={{ label: t('stat.viewReview'), href: '/performance/quarterly' }}
+            action={{ label: t('stat.viewReview'), href: '/performance/manager-eval' }}
           />
           <StatCard
             label={t('stat.oneOnOne')}
@@ -256,7 +256,7 @@ export function ManagerHomeV2({ user }: Props) {
                   }
                 : undefined
             }
-            action={{ label: t('stat.viewOneOnOne'), href: '/one-on-one' }}
+            action={{ label: t('stat.viewOneOnOne'), href: '/performance/one-on-one' }}
           />
         </HomeGrid>
       </HomeSection>
@@ -268,7 +268,8 @@ export function ManagerHomeV2({ user }: Props) {
             title={t('list.onboarding')}
             items={teamOnboarding}
             maxRows={3}
-            viewAllHref="/onboarding"
+            // viewAllHref omitted: /onboarding is HR_UP only (manager would 403).
+            // Future: team-scoped onboarding view.
             viewAllLabel={t('list.viewAll')}
             renderItem={(item) => ({
               id: item.employeeId,
@@ -279,7 +280,7 @@ export function ManagerHomeV2({ user }: Props) {
               }),
               statusDot: listItemStatusForOnboarding(item.progress),
               statusLabel: t(`list.onboardingStatus.${listItemStatusForOnboarding(item.progress)}`),
-              href: `/employees/${item.employeeId}/onboarding`,
+              // TODO: href requires onboardingId from API (employeeId won't work). Non-clickable for now.
             })}
             actions={() => [
               { icon: Pencil, label: t('list.action.edit'), onClick: () => undefined },
@@ -308,7 +309,7 @@ export function ManagerHomeV2({ user }: Props) {
               }),
               statusDot: listItemStatusForOffboarding(item.daysUntilStart),
               statusLabel: t(`list.offboardingStatus.${listItemStatusForOffboarding(item.daysUntilStart)}`),
-              href: `/employees/${item.employeeId}/offboarding`,
+              // TODO: href requires offboardingId from API (employeeId won't work). Non-clickable for now.
             })}
             emptyState={
               <EmptyState
@@ -331,7 +332,7 @@ export function ManagerHomeV2({ user }: Props) {
                 kind="ai-suggestion"
                 icon={Sparkles}
                 message={t('insight.overdueMsg', { count: overdueLeaves })}
-                action={{ label: t('insight.overdueCta'), href: '/approvals?filter=overdue' }}
+                action={{ label: t('insight.overdueCta'), href: '/approvals/inbox' }}
               />
             ) : null}
             {reviewPending > 0 && teamCount > 0 && reviewPending * 2 > teamCount ? (
@@ -339,7 +340,7 @@ export function ManagerHomeV2({ user }: Props) {
                 kind="system"
                 icon={Target}
                 message={t('insight.reviewMsg', { count: reviewPending })}
-                action={{ label: t('insight.reviewCta'), href: '/performance/quarterly' }}
+                action={{ label: t('insight.reviewCta'), href: '/performance/manager-eval' }}
               />
             ) : null}
           </HomeStack>

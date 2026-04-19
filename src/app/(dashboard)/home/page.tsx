@@ -9,10 +9,10 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
-import { EmployeeHome } from '@/components/home/EmployeeHome'
-import { ManagerHome } from '@/components/home/ManagerHome'
-import { HrAdminHome } from '@/components/home/HrAdminHome'
-import { ExecutiveHome } from '@/components/home/ExecutiveHome'
+import { EmployeeHomeV2 } from '@/components/home/EmployeeHomeV2'
+import { ManagerHomeV2 } from '@/components/home/ManagerHomeV2'
+import { HrAdminHomeV2 } from '@/components/home/HrAdminHomeV2'
+import { ExecutiveHomeV2 } from '@/components/home/ExecutiveHomeV2'
 import { HomeSkeleton } from '@/components/shared/PageSkeleton'
 
 // ─── Page ─────────────────────────────────────────────────
@@ -37,15 +37,15 @@ function HomeContent({ user }: { user: SessionUser }) {
   switch (user.role) {
     case ROLE.SUPER_ADMIN:
     case ROLE.HR_ADMIN:
-      return <HrAdminHome user={user} />
+      return <HrAdminHomeV2 user={user} />
 
     case ROLE.MANAGER:
-      return <ManagerHome user={user} />
+      return <ManagerHomeV2 user={user} />
 
     case ROLE.EXECUTIVE:
-      return <ExecutiveHome user={user} />
+      return <ExecutiveHomeV2 user={user} />
 
     default:
-      return <EmployeeHome user={user} />
+      return <EmployeeHomeV2 user={user} />
   }
 }

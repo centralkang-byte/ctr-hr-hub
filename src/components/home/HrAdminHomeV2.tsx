@@ -162,14 +162,14 @@ export function HrAdminHomeV2({ user }: Props) {
         return {
           title: t('hero.focusUrgent', { count: urgentCount }),
           description: t('hero.focusUrgentDesc'),
-          cta: { label: t('hero.cta.open'), href: '/approvals?filter=overdue' },
+          cta: { label: t('hero.cta.open'), href: '/approvals/inbox' },
           illustration: 'focus' as const,
         }
       case 'weekDeadline':
         return {
           title: t('hero.focusWeekDeadline', { count: weekDeadlineCount }),
           description: t('hero.focusWeekDeadlineDesc'),
-          cta: { label: t('hero.cta.open'), href: '/approvals' },
+          cta: { label: t('hero.cta.open'), href: '/approvals/inbox' },
           illustration: timeOfDayIllustration(),
         }
       case 'openPositions':
@@ -282,7 +282,7 @@ export function HrAdminHomeV2({ user }: Props) {
                   }
                 : undefined
             }
-            action={{ label: t('stat.viewApprovals'), href: '/approvals' }}
+            action={{ label: t('stat.viewApprovals'), href: '/approvals/inbox' }}
           />
           <StatCard
             label={t('stat.turnoverRate')}
@@ -319,7 +319,7 @@ export function HrAdminHomeV2({ user }: Props) {
               }),
               statusDot: listItemStatusForOnboarding(item.progress),
               statusLabel: t(`list.onboardingStatus.${listItemStatusForOnboarding(item.progress)}`),
-              href: `/employees/${item.employeeId}/onboarding`,
+              // TODO: href requires onboardingId from API (employeeId won't work). Non-clickable for now.
             })}
             actions={() => [
               { icon: Pencil, label: t('list.action.edit'), onClick: () => undefined },
@@ -350,7 +350,7 @@ export function HrAdminHomeV2({ user }: Props) {
               statusLabel: t(
                 `list.offboardingStatus.${listItemStatusForOffboarding(item.daysUntilStart)}`,
               ),
-              href: `/employees/${item.employeeId}/offboarding`,
+              // TODO: href requires offboardingId from API (employeeId won't work). Non-clickable for now.
             })}
             emptyState={
               <EmptyState
@@ -373,7 +373,7 @@ export function HrAdminHomeV2({ user }: Props) {
                 kind="ai-suggestion"
                 icon={Sparkles}
                 message={t('insight.urgentMsg', { count: urgentCount })}
-                action={{ label: t('insight.urgentCta'), href: '/approvals?filter=overdue' }}
+                action={{ label: t('insight.urgentCta'), href: '/approvals/inbox' }}
               />
             ) : null}
             {showOrphanHiresInsight ? (
