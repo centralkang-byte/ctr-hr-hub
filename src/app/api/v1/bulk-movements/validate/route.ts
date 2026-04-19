@@ -17,7 +17,12 @@ import type { SessionUser } from '@/types'
 
 export const POST = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
-    const formData = await req.formData()
+    let formData: FormData
+    try {
+      formData = await req.formData()
+    } catch {
+      throw badRequest('multipart/form-data 형식의 요청이 필요합니다.')
+    }
     const file = formData.get('file') as File | null
     const type = formData.get('type') as string | null
 
@@ -35,9 +40,15 @@ export const POST = withPermission(
       throw forbidden('이 발령 유형은 최고관리자만 사용할 수 있습니다')
     }
 
-    // CSV 파싱
-    const buffer = await file.arrayBuffer()
-    const rows = parseCSV(buffer)
+    // CSV 파싱 — file body 또는 파서 자체 throw도 400으로 정규화
+    let buffer: ArrayBuffer
+    let rows: ReturnType<typeof parseCSV>
+    try {
+      buffer = await file.arrayBuffer()
+      rows = parseCSV(buffer)
+    } catch {
+      throw badRequest('CSV 파일을 파싱할 수 없습니다.')
+    }
 
     if (rows.length === 0) throw badRequest('데이터가 없습니다.')
     if (rows.length > 500) {

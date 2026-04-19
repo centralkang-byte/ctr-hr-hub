@@ -8,6 +8,7 @@ import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
+import { badRequest } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { payrollRunListSchema, payrollRunCreateSchema } from '@/lib/schemas/payroll'
 import { injectLoaAdjustmentsForNewRun } from '@/lib/loa/payroll-adjustment'
@@ -17,7 +18,11 @@ export const GET = withPermission(
   async (req, _context, user) => {
     const url = new URL(req.url)
     const params = Object.fromEntries(url.searchParams)
-    const { page, limit, status, runType, yearMonth } = payrollRunListSchema.parse(params)
+    const parsedQuery = payrollRunListSchema.safeParse(params)
+    if (!parsedQuery.success) {
+      throw badRequest('잘못된 파라미터입니다.')
+    }
+    const { page, limit, status, runType, yearMonth } = parsedQuery.data
 
     const where: Prisma.PayrollRunWhereInput = {
       companyId: user.companyId,
@@ -47,8 +52,17 @@ export const GET = withPermission(
 
 export const POST = withPermission(
   async (req, _context, user) => {
-    const body = await req.json()
-    const data = payrollRunCreateSchema.parse(body)
+    let body: unknown
+    try {
+      body = await req.json()
+    } catch {
+      throw badRequest('요청 본문이 올바른 JSON 형식이 아닙니다.')
+    }
+    const parsed = payrollRunCreateSchema.safeParse(body)
+    if (!parsed.success) {
+      throw badRequest('잘못된 요청 데이터입니다.')
+    }
+    const data = parsed.data
 
     const run = await prisma.payrollRun.create({
       data: {

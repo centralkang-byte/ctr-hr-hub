@@ -55,8 +55,17 @@ export const GET = withPermission(
 export const POST = withPermission(
     async (req: NextRequest, context, user) => {
         const { runId } = await context.params
-        const body = await req.json()
-        const data = createSchema.parse(body)
+        let body: unknown
+        try {
+            body = await req.json()
+        } catch {
+            throw badRequest('요청 본문이 올바른 JSON 형식이 아닙니다.')
+        }
+        const parsed = createSchema.safeParse(body)
+        if (!parsed.success) {
+            throw badRequest('잘못된 요청 데이터입니다.')
+        }
+        const data = parsed.data
 
         const run = await prisma.payrollRun.findUnique({ where: { id: runId } })
         if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
