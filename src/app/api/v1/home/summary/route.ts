@@ -46,6 +46,7 @@ function daysBetween(target: Date, ref: Date, tz: string = DEFAULT_TZ): number {
 /** EmployeeOnboarding + hydrated task counts → OnboardingItem */
 function toOnboardingItem(
   ob: {
+    id: string
     employeeId: string
     employee?: { id: string; name: string; hireDate?: Date } | null
     startedAt: Date | null
@@ -62,6 +63,7 @@ function toOnboardingItem(
   const startIso = rawStart ? new Date(rawStart).toISOString() : null
   const daysUntilStart = rawStart ? daysBetween(new Date(rawStart), referenceDate) : null
   return {
+    recordId: ob.id,
     employeeId: ob.employeeId,
     name: ob.employee?.name ?? fallbackName,
     department: ob.department ?? null,
@@ -155,6 +157,7 @@ function bucketWeekly(dates: Date[], end: Date, weeks: number, tz: string = DEFA
 /** EmployeeOffboarding → OnboardingItem (shared DTO) */
 function toOffboardingItem(
   ob: {
+    id: string
     employeeId: string
     employee?: { id: string; name: string } | null
     lastWorkingDate: Date
@@ -168,6 +171,7 @@ function toOffboardingItem(
   const progress = total > 0 ? Math.round((completed / total) * 100) : 0
   const daysUntilStart = daysBetween(ob.lastWorkingDate, referenceDate)
   return {
+    recordId: ob.id,
     employeeId: ob.employeeId,
     name: ob.employee?.name ?? fallbackName,
     department: null,
@@ -260,6 +264,7 @@ export const GET = withCache(withPermission(
         const myOnboarding = myOnboardingRaw
           ? toOnboardingItem(
               {
+                id: myOnboardingRaw.id,
                 employeeId: myOnboardingRaw.employeeId,
                 employee: myOnboardingRaw.employee
                   ? {
@@ -279,6 +284,7 @@ export const GET = withCache(withPermission(
         const myOffboarding = myOffboardingRaw
           ? toOffboardingItem(
               {
+                id: myOffboardingRaw.id,
                 employeeId: myOffboardingRaw.employeeId,
                 employee: myOffboardingRaw.employee,
                 lastWorkingDate: myOffboardingRaw.lastWorkingDate,
@@ -426,6 +432,7 @@ export const GET = withCache(withPermission(
           teamOnboardingRaw.map((ob) =>
             toOnboardingItem(
               {
+                id: ob.id,
                 employeeId: ob.employeeId,
                 employee: ob.employee,
                 startedAt: ob.startedAt,
@@ -440,6 +447,7 @@ export const GET = withCache(withPermission(
           teamOffboardingRaw.map((ob) =>
             toOffboardingItem(
               {
+                id: ob.id,
                 employeeId: ob.employeeId,
                 employee: ob.employee,
                 lastWorkingDate: ob.lastWorkingDate,
@@ -625,6 +633,7 @@ export const GET = withCache(withPermission(
         activeOnboardingRaw.map((ob) =>
           toOnboardingItem(
             {
+              id: ob.id,
               employeeId: ob.employeeId,
               employee: ob.employee,
               startedAt: ob.startedAt,
@@ -639,6 +648,7 @@ export const GET = withCache(withPermission(
         activeOffboardingRaw.map((ob) =>
           toOffboardingItem(
             {
+              id: ob.id,
               employeeId: ob.employeeId,
               employee: ob.employee,
               lastWorkingDate: ob.lastWorkingDate,

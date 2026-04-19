@@ -318,7 +318,7 @@ export function HrAdminHomeV2({ user }: Props) {
               }),
               statusDot: listItemStatusForOnboarding(item.progress),
               statusLabel: t(`list.onboardingStatus.${listItemStatusForOnboarding(item.progress)}`),
-              // TODO: href requires onboardingId from API (employeeId won't work). Non-clickable for now.
+              href: `/onboarding/${item.recordId}`,
             })}
             actions={() => [
               { icon: Pencil, label: t('list.action.edit'), onClick: () => undefined },
@@ -349,7 +349,7 @@ export function HrAdminHomeV2({ user }: Props) {
               statusLabel: t(
                 `list.offboardingStatus.${listItemStatusForOffboarding(item.daysUntilStart)}`,
               ),
-              // TODO: href requires offboardingId from API (employeeId won't work). Non-clickable for now.
+              href: `/offboarding/${item.recordId}`,
             })}
             emptyState={
               <EmptyState

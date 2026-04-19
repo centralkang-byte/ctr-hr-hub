@@ -8,6 +8,11 @@
 
 /** 온보딩/오프보딩 트래커 item (admin list / team / personal 공통) */
 export interface OnboardingItem {
+  /**
+   * 인스턴스 ID — 온보딩 리스트면 EmployeeOnboarding.id, 오프보딩이면 EmployeeOffboarding.id.
+   * 역할/ACL이 허용될 때 `/onboarding/[id]` 또는 `/offboarding/[id]` 라우트로 연결.
+   */
+  recordId: string
   employeeId: string
   name: string
   department?: string | null
@@ -113,6 +118,8 @@ export interface ExecSummary extends BaseSummary {
   turnoverRate: number
   openPositions: number
   pendingLeaves: number
+  /** R3: 활성 offboarding list (ExecutiveHomeV2 위젯 입력) */
+  activeOffboarding?: OnboardingItem[]
   /** R3: 지난 4주 신규 입사자 추이 (주별 버킷) */
   newHiresTrend?: TrendPoint[]
 }

@@ -57,20 +57,23 @@ import { toast } from '@/hooks/use-toast'
 
 // ─── Types ──────────────────────────────────────────────────
 
+/**
+ * Offboarding task row — flattened DTO matching `/api/v1/offboarding/instances/[id]` response.
+ * Source: `src/app/api/v1/offboarding/instances/[id]/route.ts` (tasks projection L132-149).
+ */
 interface OffboardingTaskRow {
   id: string
+  taskId: string
+  title: string
+  description: string | null
+  assigneeType: string
+  dueDaysBefore: number
+  isRequired: boolean
+  sortOrder: number
   status: string
   completedAt: string | null
   completedById: string | null
   note: string | null
-  task: {
-    isRequired: boolean
-    title: string
-    description: string | null
-    assigneeType: string
-    dueDaysBefore: number
-    sortOrder: number
-  }
 }
 
 interface OffboardingDetail {
@@ -93,7 +96,7 @@ interface OffboardingDetail {
   employee: { id: string; name: string; companyId: string }
   checklist: { id: string; name: string }
   handoverTo: { id: string; name: string } | null
-  offboardingTasks: OffboardingTaskRow[]
+  tasks: OffboardingTaskRow[]
   progress: {
     done: number
     total: number
@@ -375,8 +378,8 @@ export function OffboardingDetailClient({
     )
   }
 
-  const sortedTasks = [...detail.offboardingTasks].sort(
-    (a, b) => a.task.sortOrder - b.task.sortOrder,
+  const sortedTasks = [...detail.tasks].sort(
+    (a, b) => a.sortOrder - b.sortOrder,
   )
   const completedCount = sortedTasks.filter((tsk) => tsk.status === 'DONE').length
   const totalCount = sortedTasks.length
@@ -526,29 +529,28 @@ export function OffboardingDetailClient({
                       <TableCell>
                         <div>
                           <span className="text-sm font-medium">
-                            {tsk.task.title}
+                            {tsk.title}
                           </span>
-                          {tsk.task.description && (
+                          {tsk.description && (
                             <p className="text-xs text-muted-foreground mt-0.5">
-                              {tsk.task.description}
+                              {tsk.description}
                             </p>
                           )}
                         </div>
                       </TableCell>
                       <TableCell>
                         <span
-                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ASSIGNEE_COLORS[tsk.task.assigneeType] ?? 'bg-muted text-foreground'}`}
+                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${ASSIGNEE_COLORS[tsk.assigneeType] ?? 'bg-muted text-foreground'}`}
                         >
-                          {ASSIGNEE_LABELS[tsk.task.assigneeType] ??
-                            tsk.task.assigneeType}
+                          {ASSIGNEE_LABELS[tsk.assigneeType] ?? tsk.assigneeType}
                         </span>
                       </TableCell>
                       <TableCell>
                         <Badge
-                          variant={tsk.task.isRequired ? 'destructive' : 'outline'}
+                          variant={tsk.isRequired ? 'destructive' : 'outline'}
                           className="text-xs"
                         >
-                          {tsk.task.isRequired ? t('requiredTask') : t('optionalTask')}
+                          {tsk.isRequired ? t('requiredTask') : t('optionalTask')}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -641,7 +643,7 @@ export function OffboardingDetailClient({
               <CardContent>
                 {(() => {
                   const handoverTasks = sortedTasks.filter(
-                    (tsk) => tsk.task.assigneeType === 'MANAGER' || (detail.handoverToId && tsk.completedById?.toString() === detail.handoverToId),
+                    (tsk) => tsk.assigneeType === 'MANAGER' || (detail.handoverToId && tsk.completedById?.toString() === detail.handoverToId),
                   )
                   if (handoverTasks.length === 0) {
                     return (
@@ -674,11 +676,11 @@ export function OffboardingDetailClient({
                               className={`h-4 w-4 ${tsk.status === 'DONE' ? 'text-emerald-600' : 'text-muted-foreground/40'}`}
                             />
                             <span className={`text-sm ${tsk.status === 'DONE' ? 'line-through text-muted-foreground' : ''}`}>
-                              {tsk.task.title}
+                              {tsk.title}
                             </span>
                           </div>
-                          <Badge className={ASSIGNEE_COLORS[tsk.task.assigneeType] ?? 'bg-muted'}>
-                            {ASSIGNEE_LABELS[tsk.task.assigneeType] ?? tsk.task.assigneeType}
+                          <Badge className={ASSIGNEE_COLORS[tsk.assigneeType] ?? 'bg-muted'}>
+                            {ASSIGNEE_LABELS[tsk.assigneeType] ?? tsk.assigneeType}
                           </Badge>
                         </div>
                       ))}
