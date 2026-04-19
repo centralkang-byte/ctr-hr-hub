@@ -24,7 +24,7 @@ interface EmptyStateProps {
 // ─── Component ──────────────────────────────────────────────
 
 /**
- * PlaceholderCard 대체 — "동기부여형" 빈 상태.
+ * "동기부여형" 빈 상태.
  * 단순 회색 박스 대신 icon circle + title + 선택적 action으로 다음 행동 유도.
  * Server component.
  */
