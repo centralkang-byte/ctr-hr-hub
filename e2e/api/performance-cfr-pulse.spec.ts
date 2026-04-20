@@ -187,18 +187,20 @@ test.describe('CFR: Recognition', () => {
     const result = await pf.listRecognitions(mgrClient)
     assertOk(result, 'list recognition feed')
 
-    const data = result.data
-    expect(Array.isArray(data)).toBe(true)
+    // Route returns { items, nextCursor } (route.ts:75). Previous test
+    // expected a bare array — contract drift.
+    const data = result.data as { items: unknown[]; nextCursor: string | null }
+    expect(Array.isArray(data.items)).toBe(true)
   })
 
   test('5. filter feed by core value (CHALLENGE)', async () => {
-    const result = await pf.listRecognitions(mgrClient, { coreValue: 'CHALLENGE' })
+    const result = await pf.listRecognitions(mgrClient, { value: 'CHALLENGE' })
     assertOk(result, 'filter recognition by value')
 
-    const data = result.data as Array<Record<string, unknown>>
-    expect(Array.isArray(data)).toBe(true)
-    if (data.length > 0) {
-      expect(data[0].coreValue).toBe('CHALLENGE')
+    const data = result.data as { items: Array<Record<string, unknown>> }
+    expect(Array.isArray(data.items)).toBe(true)
+    if (data.items.length > 0) {
+      expect(data.items[0].coreValue).toBe('CHALLENGE')
     }
   })
 
