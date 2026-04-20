@@ -9,19 +9,20 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess, buildPagination } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 
 const querySchema = z.object({
-    companyId: z.string().min(1),
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(1).max(100).default(50),
 })
 
 export const GET = withPermission(
-    async (req: NextRequest, _context, _user) => {
+    async (req: NextRequest, _context, user) => {
         const url = new URL(req.url)
         const parsed = querySchema.safeParse(Object.fromEntries(url.searchParams))
-        if (!parsed.success) throw badRequest('companyId 파라미터가 필요합니다.')
-        const { companyId, page, limit } = parsed.data
+        if (!parsed.success) throw badRequest('잘못된 쿼리 파라미터입니다.')
+        const { page, limit } = parsed.data
+        const companyId = resolveCompanyId(user, url.searchParams.get('companyId'))
 
         // 법인 내 화이트리스트 등록된 이상 항목
         // 직원+규칙 기준 가장 최신 항목만 표시 (distinct equivalent)
