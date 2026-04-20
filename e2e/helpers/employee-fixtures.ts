@@ -44,6 +44,10 @@ export async function createTestEmployee(
   const ts = Date.now()
   const prefix = `e2e-emp-${ts}`
 
+  // jobCategoryId comes from seed (이민준's primary assignment carries the
+  // canonical OFFICE category for CTR). No dedicated /job-categories endpoint
+  // exists — the prior GET /api/v1/org/job-categories fallback always 404'd,
+  // leaving payload.jobCategoryId = companyId (wrong FK → P2003).
   const payload = {
     employeeNo: overrides?.employeeNo ?? prefix,
     name: overrides?.name ?? `테스트직원 ${ts}`,
@@ -51,20 +55,11 @@ export async function createTestEmployee(
     companyId: overrides?.companyId ?? seed.companyId,
     departmentId: overrides?.departmentId ?? seed.departmentId,
     jobGradeId: overrides?.jobGradeId ?? seed.jobGradeId,
-    jobCategoryId: overrides?.jobCategoryId ?? seed.companyId, // will be resolved
+    jobCategoryId: overrides?.jobCategoryId ?? seed.jobCategoryId,
     hireDate: overrides?.hireDate ?? '2026-01-01',
     employmentType: overrides?.employmentType ?? 'FULL_TIME',
     status: overrides?.status ?? 'ACTIVE',
     nameEn: overrides?.nameEn ?? `Test Employee ${ts}`,
-  }
-
-  // Resolve jobCategoryId from seed if not provided (Codex P1: correct endpoint path)
-  if (!overrides?.jobCategoryId) {
-    const catRes = await request.get('/api/v1/org/job-categories?limit=1')
-    const catResult = await parseApiResponse<Array<Record<string, unknown>>>(catRes)
-    if (catResult.ok && catResult.data && (catResult.data as unknown[]).length > 0) {
-      payload.jobCategoryId = ((catResult.data as unknown[])[0] as Record<string, unknown>).id as string
-    }
   }
 
   const res = await request.post('/api/v1/employees', { data: payload })
