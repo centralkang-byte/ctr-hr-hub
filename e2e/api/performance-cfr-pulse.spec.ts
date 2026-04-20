@@ -339,7 +339,7 @@ test.describe('Pulse Survey Lifecycle', () => {
 
     const answers = questionIds.map((qId, idx) => ({
       questionId: qId,
-      value: idx === 0 ? 4 : 'More flexible hours would help',
+      answerValue: idx === 0 ? '4' : 'More flexible hours would help',
     }))
 
     const result = await pf.respondToSurvey(empClient, surveyId, { answers })
@@ -351,7 +351,7 @@ test.describe('Pulse Survey Lifecycle', () => {
 
     const answers = questionIds.map((qId, idx) => ({
       questionId: qId,
-      value: idx === 0 ? 3 : 'Duplicate attempt',
+      answerValue: idx === 0 ? '3' : 'Duplicate attempt',
     }))
 
     const result = await pf.respondToSurvey(empClient, surveyId, { answers })
