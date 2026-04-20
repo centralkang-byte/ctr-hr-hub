@@ -240,6 +240,10 @@ test.describe('HR Chat: EMPLOYEE Lifecycle', () => {
 // ═══════════════════════════════════════════════════════════
 
 test.describe('Perf Compensation Pipeline: HR_ADMIN', () => {
+  // Serial: `cycleId` module var is shared between resolve test and consumers.
+  // Under fullyParallel, each worker has its own module instance — serial keeps
+  // them in one worker so the resolved id survives between tests.
+  test.describe.configure({ mode: 'serial' })
   test.use({ storageState: authFile('HR_ADMIN') })
 
   let cycleId = ''
@@ -314,6 +318,8 @@ test.describe('Perf Compensation RBAC: EMPLOYEE Blocked', () => {
 // ═══════════════════════════════════════════════════════════
 
 test.describe('Perf Results: HR_ADMIN', () => {
+  // Serial: shared `cycleId` across tests (see Perf Compensation Pipeline note).
+  test.describe.configure({ mode: 'serial' })
   test.use({ storageState: authFile('HR_ADMIN') })
 
   let cycleId = ''
@@ -427,6 +433,8 @@ test.describe('Perf Reviews Deeper: EMPLOYEE', () => {
 // ═══════════════════════════════════════════════════════════
 
 test.describe('Perf Checkins & Team Goals: MANAGER', () => {
+  // Serial: shared `cycleId` across tests (see Perf Compensation Pipeline note).
+  test.describe.configure({ mode: 'serial' })
   test.use({ storageState: authFile('MANAGER') })
 
   let cycleId = ''
