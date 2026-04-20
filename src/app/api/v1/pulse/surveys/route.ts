@@ -92,7 +92,9 @@ export const POST = withPermission(
             closeAt: new Date(surveyData.closeAt),
             targetIds: surveyData.targetIds ?? undefined,
             companyId: user.companyId,
-            createdById: user.id,
+            // Session 188 drift: createdById is an Employee FK. Must use
+            // user.employeeId, not user.id (NextAuth session subject).
+            createdById: user.employeeId,
             status: 'PULSE_DRAFT',
           },
         })

@@ -122,7 +122,8 @@ export function buildSurvey() {
     title: `E2E Pulse Survey ${ts()}`,
     description: 'E2E test survey',
     targetScope: 'ALL',
-    anonymityLevel: 'ANONYMOUS',
+    // Schema enum: ['FULL_DIVISION', 'FULL_ANONYMOUS'] — 'ANONYMOUS' was drift.
+    anonymityLevel: 'FULL_ANONYMOUS',
     minRespondentsForReport: 3,
     openAt,
     closeAt,
