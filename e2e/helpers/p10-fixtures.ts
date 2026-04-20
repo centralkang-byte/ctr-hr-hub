@@ -215,20 +215,24 @@ export function buildBankTransferBatch(payrollRunId?: string) {
   return {
     bankCode: 'KB',
     bankName: `E2E Bank ${t}`,
-    format: 'STANDARD',
+    // Schema enum: CSV | XML | EBCDIC (see src/lib/schemas/bank-transfer.ts:7)
+    format: 'CSV',
     ...(payrollRunId ? { payrollRunId } : {}),
   }
 }
 
 export function buildTaxBracket() {
   const t = ts()
+  // Codex Gate 1 HIGH: @@unique([companyId, countryCode, taxType, bracketMin,
+  // effectiveFrom]) — static values → re-run 409. Vary bracketMin with ts()
+  // to preserve per-run uniqueness. rate is decimal (schema: min(0).max(1)).
   return {
     countryCode: 'KR',
-    taxType: `E2E_TAX_${t}`,
+    taxType: 'INCOME_TAX',
     name: `E2E Tax Bracket ${t}`,
-    bracketMin: 0,
-    bracketMax: 12000000,
-    rate: 6,
+    bracketMin: t,
+    bracketMax: t + 12000000,
+    rate: 0.06,
     fixedAmount: 0,
     effectiveFrom: '2099-01-01',
   }

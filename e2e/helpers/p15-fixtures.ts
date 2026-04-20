@@ -94,7 +94,10 @@ export function buildEnrollment(courseId: string, employeeIds: string[]) {
 export function buildEnrollmentUpdate(status: string) {
   return {
     status,
-    ...(status === 'COMPLETED' ? { completedAt: new Date().toISOString(), score: 85 } : {}),
+    // Schema enum: ENROLLED | IN_PROGRESS | ENROLLMENT_COMPLETED | DROPPED
+    // (src/lib/schemas/training.ts:52). Codex Gate 1 MED: match the completed
+    // marker so completedAt + score side effects still apply.
+    ...(status === 'ENROLLMENT_COMPLETED' ? { completedAt: new Date().toISOString(), score: 85 } : {}),
   }
 }
 
@@ -155,7 +158,9 @@ export function buildMigrationJob() {
     name: `E2E Migration ${ts()}`,
     description: 'E2E test migration job',
     sourceType: 'CSV',
-    dataScope: 'EMPLOYEE',
+    // Schema enum: EMPLOYEES | ATTENDANCE | PAYROLL | LEAVE | PERFORMANCE | ALL
+    // (src/lib/schemas/migration.ts:6). 'EMPLOYEE' (singular) was drift.
+    dataScope: 'EMPLOYEES',
   }
 }
 
