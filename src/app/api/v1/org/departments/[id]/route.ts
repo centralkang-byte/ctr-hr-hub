@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — PUT /api/v1/org/departments/[id]
+// CTR HR Hub — GET / PUT /api/v1/org/departments/[id]
 // ═══════════════════════════════════════════════════════════
 
 import { type NextRequest } from 'next/server'
@@ -11,6 +11,53 @@ import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { departmentUpdateSchema } from '@/lib/schemas/org'
 import type { SessionUser } from '@/types'
+
+// ─── GET /api/v1/org/departments/[id] ─────────────────────
+
+export const GET = withPermission(
+  async (
+    _req: NextRequest,
+    context: { params: Promise<Record<string, string>> },
+    user: SessionUser,
+  ) => {
+    const { id } = await context.params
+
+    const companyFilter =
+      user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }
+
+    const department = await prisma.department.findFirst({
+      where: { id, deletedAt: null, ...companyFilter },
+    })
+    if (!department) throw notFound('부서를 찾을 수 없습니다.')
+
+    // Multi-tenant scope: parent/children always constrained to the same company
+    // as the fetched department (defensive — even SUPER_ADMIN sees same-company tree).
+    const [parent, children] = await Promise.all([
+      department.parentId
+        ? prisma.department.findFirst({
+            where: {
+              id: department.parentId,
+              companyId: department.companyId,
+              deletedAt: null,
+            },
+            select: { id: true, name: true },
+          })
+        : Promise.resolve(null),
+      prisma.department.findMany({
+        where: {
+          parentId: department.id,
+          companyId: department.companyId,
+          deletedAt: null,
+        },
+        select: { id: true, name: true },
+        orderBy: { name: 'asc' },
+      }),
+    ])
+
+    return apiSuccess({ ...department, parent, children })
+  },
+  perm(MODULE.ORG, ACTION.VIEW),
+)
 
 // ─── PUT /api/v1/org/departments/[id] ─────────────────────
 
