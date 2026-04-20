@@ -12,6 +12,11 @@ import { notFound, badRequest } from '@/lib/errors'
 import { getRequestLocale, serverT } from '@/lib/server-i18n'
 import type { SessionUser } from '@/types'
 
+// isActive is accepted (backward compat with UI/clients that still send it)
+// but not a TeamsWebhookConfig column — the data spread at line 47-52 already
+// filters it out. Removing it would, combined with .strict(), turn previously
+// valid payloads into 400s. POST route's Zod schema has it removed since POST
+// is non-strict and silently strips extras (Codex Gate 2 P2).
 const webhookPatchSchema = z.object({
   channelName: z.string().min(1).max(200).optional(),
   webhookUrl: z.string().url().optional(),
