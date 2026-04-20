@@ -8,16 +8,35 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
 import { badRequest, conflict, forbidden, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
+import { ROLE } from '@/lib/constants'
 import { offCycleCreateSchema, offCycleSearchSchema } from '@/lib/schemas/compensation'
 import { calculateCompaRatio } from '@/lib/compensation'
 import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
+
+// Route-local role allowlists — avoids module-wide compensation:view/create expansion.
+// Split GET vs POST: previous seed only granted compensation perms to HR_ADMIN/SUPER_ADMIN.
+// MANAGER is added here (with handler-body scope to own initiator / direct reports).
+// EXECUTIVE is intentionally excluded — seed only granted them *_export, not compensation read/create.
+const OFF_CYCLE_READ_ROLES: ReadonlyArray<SessionUser['role']> = [
+  ROLE.SUPER_ADMIN,
+  ROLE.HR_ADMIN,
+  ROLE.MANAGER,
+]
+const OFF_CYCLE_CREATE_ROLES: ReadonlyArray<SessionUser['role']> = [
+  ROLE.SUPER_ADMIN,
+  ROLE.HR_ADMIN,
+  ROLE.MANAGER,
+]
+
 // ─── GET /api/v1/compensation/off-cycle ─────────────────────
 
-export const GET = withPermission(
+export const GET = withAuth(
   async (req: NextRequest, _context, user: SessionUser) => {
+    if (!OFF_CYCLE_READ_ROLES.includes(user.role)) {
+      throw forbidden('비정기 보상 요청 조회 권한이 없습니다.')
+    }
     const url = new URL(req.url)
     const params = Object.fromEntries(url.searchParams.entries())
     const parsed = offCycleSearchSchema.safeParse(params)
@@ -95,13 +114,15 @@ export const GET = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.COMPENSATION, ACTION.VIEW),
 )
 
 // ─── POST /api/v1/compensation/off-cycle ────────────────────
 
-export const POST = withPermission(
+export const POST = withAuth(
   async (req: NextRequest, _context, user: SessionUser) => {
+    if (!OFF_CYCLE_CREATE_ROLES.includes(user.role)) {
+      throw forbidden('비정기 보상 요청 권한이 없습니다.')
+    }
     const body: unknown = await req.json()
     const parsed = offCycleCreateSchema.safeParse(body)
 
@@ -224,5 +245,4 @@ export const POST = withPermission(
       throw handlePrismaError(error)
     }
   },
-  perm(MODULE.COMPENSATION, ACTION.CREATE),
 )

@@ -7,10 +7,22 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { badRequest, forbidden } from '@/lib/errors'
+import { withAuth } from '@/lib/permissions'
+import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+
+// Route-local role allowlist — duplicate check is a VIEW-level utility for recruiters,
+// including MANAGER (for their own requisitions / pre-screening support).
+// EXECUTIVE intentionally excluded — seed only granted *_export, not recruitment:read.
+// NOTE: Duplicate matches are scoped to company via `applications.some.posting.companyId`.
+// Per-MANAGER posting/requisition ownership scoping is deferred (follow-up) — current spec treats
+// check-duplicate as a company-wide recruiter utility (Issue #11 spec: "VIEW perm").
+const CHECK_DUPLICATE_ROLES: ReadonlyArray<SessionUser['role']> = [
+  ROLE.SUPER_ADMIN,
+  ROLE.HR_ADMIN,
+  ROLE.MANAGER,
+]
 
 const checkSchema = z.object({
   name: z.string().min(1),
@@ -30,9 +42,17 @@ interface DuplicateMatch {
   lastApplicationAt: string | null
 }
 
-export const POST = withPermission(
+export const POST = withAuth(
   async (req: NextRequest, _context: { params: Promise<Record<string, string>> }, user: SessionUser) => {
-    const body: unknown = await req.json()
+    if (!CHECK_DUPLICATE_ROLES.includes(user.role)) {
+      throw forbidden('후보자 중복 확인 권한이 없습니다.')
+    }
+    let body: unknown
+    try {
+      body = await req.json()
+    } catch {
+      throw badRequest('요청 본문이 올바른 JSON 형식이 아닙니다.')
+    }
     const parsed = checkSchema.safeParse(body)
     if (!parsed.success) {
       throw badRequest('잘못된 요청 데이터입니다.')
@@ -161,13 +181,19 @@ export const POST = withPermission(
 
     // ── Do-Not-Rehire 체크 ─────────────────────────────────
     // 이메일로 기존 퇴직 직원 중 재고용 방지 플래그 확인
+    // Company scope: 직원이 user 회사에 배속된 이력이 있어야 함 (cross-company leak 방지)
+    const doNotRehireEmployeeFilter =
+      user.role === ROLE.SUPER_ADMIN
+        ? { email }
+        : {
+            email,
+            assignments: { some: { companyId: user.companyId } },
+          }
     const doNotRehire = await prisma.employeeOffboarding.findFirst({
       where: {
         isDoNotRehire: true,
         status: 'COMPLETED',
-        employee: {
-          email,
-        },
+        employee: doNotRehireEmployeeFilter,
       },
       select: {
         doNotRehireReason: true,
@@ -189,5 +215,4 @@ export const POST = withPermission(
         : null,
     })
   },
-  perm(MODULE.RECRUITMENT, ACTION.VIEW),
 )

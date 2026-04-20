@@ -6,11 +6,21 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
+import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
+import { withAuth, withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+
+// Route-local role allowlist for listing job postings.
+// Module-wide recruitment:read was too broad (dashboard/talent-pool/costs etc.);
+// list + detail views are opened to MANAGER explicitly.
+// EXECUTIVE intentionally excluded — seed only granted *_export, not recruitment:read.
+const POSTINGS_READ_ROLES: ReadonlyArray<SessionUser['role']> = [
+  ROLE.SUPER_ADMIN,
+  ROLE.HR_ADMIN,
+  ROLE.MANAGER,
+]
 
 // ─── Validation Schemas ──────────────────────────────────
 
@@ -51,8 +61,11 @@ const createSchema = z.object({
 
 // ─── GET /api/v1/recruitment/postings ─────────────────────
 
-export const GET = withPermission(
+export const GET = withAuth(
   async (req: NextRequest, _context, user: SessionUser) => {
+    if (!POSTINGS_READ_ROLES.includes(user.role)) {
+      throw forbidden('채용 공고 조회 권한이 없습니다.')
+    }
     const params = Object.fromEntries(req.nextUrl.searchParams.entries())
     const parsed = searchSchema.safeParse(params)
     if (!parsed.success) {
@@ -99,7 +112,6 @@ export const GET = withPermission(
 
     return apiPaginated(serialized, buildPagination(page, limit, total))
   },
-  perm(MODULE.RECRUITMENT, ACTION.VIEW),
 )
 
 // ─── POST /api/v1/recruitment/postings ────────────────────

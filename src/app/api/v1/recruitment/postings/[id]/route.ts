@@ -6,12 +6,20 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, conflict, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
+import { badRequest, forbidden, notFound, conflict, handlePrismaError } from '@/lib/errors'
+import { withAuth, withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { getSettingValue } from '@/lib/settings/get-setting'
 import type { SessionUser } from '@/types'
+
+// Route-local role allowlist — matches postings list route so MANAGER can read detail after listing.
+// EXECUTIVE intentionally excluded — seed only granted *_export, not recruitment:read.
+const POSTINGS_READ_ROLES: ReadonlyArray<SessionUser['role']> = [
+  ROLE.SUPER_ADMIN,
+  ROLE.HR_ADMIN,
+  ROLE.MANAGER,
+]
 
 // ─── Update Schema ────────────────────────────────────────
 
@@ -37,8 +45,11 @@ const updateSchema = z.object({
 
 // ─── GET /api/v1/recruitment/postings/[id] ────────────────
 
-export const GET = withPermission(
+export const GET = withAuth(
   async (_req: NextRequest, context, user: SessionUser) => {
+    if (!POSTINGS_READ_ROLES.includes(user.role)) {
+      throw forbidden('채용 공고 조회 권한이 없습니다.')
+    }
     const { id } = await context.params
 
     const companyFilter = user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
@@ -71,7 +82,6 @@ export const GET = withPermission(
       },
     })
   },
-  perm(MODULE.RECRUITMENT, ACTION.VIEW),
 )
 
 // ─── PUT /api/v1/recruitment/postings/[id] ────────────────
