@@ -67,7 +67,7 @@ export const GET = withAuth(
         UNION ALL
         SELECT p.id FROM positions p
         JOIN org_tree ot ON p.reports_to_position_id = ot.id
-        WHERE p.is_active = true
+        WHERE p.deleted_at IS NULL
       )
       SELECT DISTINCT ea.employee_id
       FROM org_tree ot
@@ -100,7 +100,7 @@ export const GET = withAuth(
       FROM positions p
       JOIN employee_assignments ea ON ea.position_id = p.id
       WHERE p.reports_to_position_id = ${myPositionId}
-        AND p.is_active = true
+        AND p.deleted_at IS NULL
         AND ea.end_date IS NULL
         AND ea.is_primary = true
     `
