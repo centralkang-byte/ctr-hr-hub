@@ -7,7 +7,7 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest } from '@/lib/errors'
+import { badRequest, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { z } from 'zod'
@@ -64,7 +64,12 @@ export const GET = withPermission(
 // ─── POST ────────────────────────────────────────────────
 
 export const POST = withPermission(
-  async (req: NextRequest, _context, _user: SessionUser) => {
+  async (req: NextRequest, _context, user: SessionUser) => {
+    // 휴가 유형 정의는 HR 관리자 전용 (leave:create는 휴가 신청용 권한이므로
+    // module 권한만으로는 admin config 구분 부족)
+    const isHrOrAbove = ['SUPER_ADMIN', 'HR_ADMIN'].includes(user.role)
+    if (!isHrOrAbove) throw forbidden('휴가 유형 설정은 HR 관리자만 변경할 수 있습니다.')
+
     const body = await req.json()
     const parsed = createSchema.safeParse(body)
     if (!parsed.success) throw badRequest(parsed.error.message)

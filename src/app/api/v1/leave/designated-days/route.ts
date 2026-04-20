@@ -8,7 +8,7 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, handlePrismaError, isAppError } from '@/lib/errors'
+import { badRequest, forbidden, handlePrismaError, isAppError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
@@ -52,6 +52,10 @@ export const GET = withPermission(
 
 export const POST = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
+    // 지정연차는 HR 관리자 전용 admin config (leave:create만으로는 부족)
+    const isHrOrAbove = ['SUPER_ADMIN', 'HR_ADMIN'].includes(user.role)
+    if (!isHrOrAbove) throw forbidden('지정연차 설정은 HR 관리자만 변경할 수 있습니다.')
+
     const body: unknown = await req.json()
     const parsed = createSchema.safeParse(body)
     if (!parsed.success) {

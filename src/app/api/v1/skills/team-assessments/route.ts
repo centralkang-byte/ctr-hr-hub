@@ -39,6 +39,10 @@ const bulkManagerAssessmentSchema = z.object({
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
+    // 팀 스킬 평가 뷰는 매니저+ 전용 (EMPLOYEES.VIEW만으로는 self-view와 구분 부족)
+    const isManagerOrAbove = ['SUPER_ADMIN', 'HR_ADMIN', 'EXECUTIVE', 'MANAGER'].includes(user.role)
+    if (!isManagerOrAbove) throw forbidden('팀 스킬 평가는 매니저 이상만 볼 수 있습니다.')
+
     const { searchParams } = new URL(req.url)
     const period = searchParams.get('period') ?? 'latest'
     const employeeId = searchParams.get('employeeId') // 특정 팀원 조회
