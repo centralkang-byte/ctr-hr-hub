@@ -154,7 +154,7 @@ test.describe('Eval Forms: HR_ADMIN admin views', () => {
     await waitForLoading(page)
 
     await expect(page.locator('main')).toBeVisible()
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 8000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 8000 })
   })
 
   test('can access cycle list page', async ({ page }) => {

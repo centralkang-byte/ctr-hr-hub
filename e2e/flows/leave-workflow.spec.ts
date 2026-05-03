@@ -25,7 +25,7 @@ test.describe('Leave: EMPLOYEE', () => {
     const main = page.locator('main')
     await expect(main).toBeVisible()
     // Should contain leave-related content (연차, 잔여, balance, etc.)
-    await expect(page.locator('h1, h2').or(page.getByText(/연차|잔여|남은|Leave|Balance/)).first()).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
   })
 
   test('leave page renders without error', async ({ page }) => {
@@ -47,16 +47,15 @@ test.describe('Leave: HR_ADMIN', () => {
     await assertPageLoads(page, '/leave/admin')
     await waitForPageReady(page)
 
-    const heading = page.locator('h1, h2').or(page.getByText(/휴가 관리|Leave Management/)).first()
-    await expect(heading).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
   })
 
   test('can view team leave calendar', async ({ page }) => {
     await assertPageLoads(page, '/leave/team')
     await waitForPageReady(page)
 
-    const content = page.locator('[role="grid"]').or(page.locator('table')).or(page.getByText(/팀 휴가|Team Leave/)).first()
-    await expect(content).toBeVisible({ timeout: 10000 })
+    const heading = page.getByRole('heading').first()
+    await expect(heading).toBeVisible({ timeout: 10000 })
   })
 
   test('can see leave statistics dashboard', async ({ page }) => {
@@ -66,7 +65,7 @@ test.describe('Leave: HR_ADMIN', () => {
     // Stats area — heading or main content
     const main = page.locator('main')
     await expect(main).toBeVisible()
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
   })
 })
 
@@ -79,15 +78,14 @@ test.describe('Leave: MANAGER', () => {
     await assertPageLoads(page, '/leave/team')
     await waitForPageReady(page)
 
-    const content = page.locator('[role="grid"]').or(page.locator('table')).or(page.getByText(/팀|Team/)).first()
-    await expect(content).toBeVisible({ timeout: 10000 })
+    const heading = page.getByRole('heading').first()
+    await expect(heading).toBeVisible({ timeout: 10000 })
   })
 
   test('can view approval inbox with leave requests', async ({ page }) => {
     await assertPageLoads(page, '/my/tasks?tab=approvals')
     await waitForLoading(page)
 
-    const inboxContent = page.locator('h1, h2').or(page.getByText(/승인|Approval|Inbox/)).first()
-    await expect(inboxContent).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
   })
 })

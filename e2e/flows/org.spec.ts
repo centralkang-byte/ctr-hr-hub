@@ -24,7 +24,7 @@ test.describe('Org: HR_ADMIN', () => {
     const main = page.locator('main')
     await expect(main).toBeVisible()
     // OrgClient is dynamically imported (ssr: false) — h1 appears after chunk load + API fetch
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 30000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 30000 })
   })
 
   test('skill matrix page loads', async ({ page }) => {

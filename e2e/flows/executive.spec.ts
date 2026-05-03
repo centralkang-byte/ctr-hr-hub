@@ -24,7 +24,7 @@ test.describe('Executive: EXECUTIVE', () => {
 
     const main = page.locator('main')
     await expect(main).toBeVisible()
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
   })
 
   test('analytics overview loads', async ({ page }) => {
@@ -38,7 +38,7 @@ test.describe('Executive: EXECUTIVE', () => {
 
     const main = page.locator('main')
     await expect(main).toBeVisible()
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
   })
 
   test('performance page loads', async ({ page }) => {
