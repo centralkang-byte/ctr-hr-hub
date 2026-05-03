@@ -7,7 +7,12 @@
 // ═══════════════════════════════════════════════════════════
 
 import { defineConfig, devices } from '@playwright/test'
-import 'dotenv/config'
+import dotenv from 'dotenv'
+import path from 'path'
+
+// Next.js 컨벤션 따라 .env.local 우선 로드. fallback .env.
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
+dotenv.config({ path: path.resolve(process.cwd(), '.env') })
 
 const BASE_URL = process.env.BASE_URL
 const BYPASS = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
