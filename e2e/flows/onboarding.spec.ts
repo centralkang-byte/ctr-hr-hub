@@ -56,7 +56,6 @@ test.describe('Onboarding: EMPLOYEE', () => {
     await assertPageLoads(page, '/onboarding/me')
     await waitForPageReady(page)
 
-    const content = page.locator('h1, h2').or(page.getByText(/온보딩|진행/)).first()
-    await expect(content).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
   })
 })

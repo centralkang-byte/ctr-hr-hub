@@ -231,6 +231,8 @@ test.describe('Year-End RBAC: MANAGER Blocked', () => {
 // ═══════════════════════════════════════════════════════════
 
 test.describe('Attrition: HR_ADMIN', () => {
+  // Serial: `employeeId` resolved in first test, consumed by later tests.
+  test.describe.configure({ mode: 'serial' })
   test.use({ storageState: authFile('HR_ADMIN') })
 
   let employeeId = ''

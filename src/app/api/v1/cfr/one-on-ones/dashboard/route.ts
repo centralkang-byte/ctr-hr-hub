@@ -5,15 +5,25 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
+import { forbidden } from '@/lib/errors'
 import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
 
+// Route-local allowlist (Session 187 pattern). Original guard was
+// perm(PERFORMANCE, APPROVE='manage'); MANAGER's seed perms (seed.ts:151)
+// only include performance_read/create/update — no _manage — so the 1:1
+// dashboard, semantically a manager view, 403'd. Explicit allowlist avoids
+// expanding module-wide 'manage' perm to other performance routes.
+const ONE_ON_ONE_DASHBOARD_ROLES = ['SUPER_ADMIN', 'HR_ADMIN', 'MANAGER', 'EXECUTIVE'] as const
+
 // ─── GET /api/v1/cfr/one-on-ones/dashboard ───────────────
 
-export const GET = withPermission(
+export const GET = withAuth(
   async (_req: NextRequest, _context, user: SessionUser) => {
+    if (!ONE_ON_ONE_DASHBOARD_ROLES.includes(user.role as typeof ONE_ON_ONE_DASHBOARD_ROLES[number])) {
+      throw forbidden()
+    }
     // Get direct reports via position hierarchy
     const reportIds = await getDirectReportIds(user.employeeId)
     const teamMembers = await prisma.employee.findMany({
@@ -118,5 +128,4 @@ export const GET = withPermission(
       pendingActionItems: pendingActions.slice(0, 20),
     })
   },
-  perm(MODULE.PERFORMANCE, ACTION.APPROVE),
 )

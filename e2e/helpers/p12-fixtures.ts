@@ -34,14 +34,6 @@ export const runSub = (runId: string, sub: string) => `/api/v1/payroll/${runId}/
 
 const ts = () => Date.now() % 100000
 
-// ─── Date Helpers ────────────────────────────────────────
-
-function futureDateStr(daysAhead: number): string {
-  const d = new Date()
-  d.setDate(d.getDate() + daysAhead)
-  return d.toISOString().split('T')[0]
-}
-
 // ═══════════════════════════════════════════════════════════
 // SEED RESOLVERS
 // ═══════════════════════════════════════════════════════════
@@ -257,8 +249,12 @@ export function buildCalculatePayload(payrollRunId: string) {
 }
 
 export function buildSeverancePayload() {
+  // ISO 8601 datetime (schema requires z.string().datetime(); matches UI
+  // SeveranceCalculator.tsx which sends new Date(dateStr).toISOString()).
+  const d = new Date()
+  d.setDate(d.getDate() + 30)
   return {
-    terminationDate: futureDateStr(30),
+    terminationDate: d.toISOString(),
   }
 }
 

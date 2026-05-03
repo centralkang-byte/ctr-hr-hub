@@ -285,7 +285,7 @@ export function deleteSurvey(client: ApiClient, id: string): Promise<ApiResult> 
 export function respondToSurvey(
   client: ApiClient,
   surveyId: string,
-  data: { answers: Array<{ questionId: string; value: unknown }> },
+  data: { answers: Array<{ questionId: string; answerValue: string }> },
 ): Promise<ApiResult> {
   return client.post(`${PULSE}/surveys/${surveyId}/respond`, data)
 }
@@ -450,7 +450,9 @@ export function buildSurvey() {
     title: `E2E Pulse Survey ${ts}`,
     description: `E2E test survey (${ts})`,
     targetScope: 'ALL' as const,
-    anonymityLevel: 'FULL_ANONYMOUS' as const,
+    // Non-anonymous so duplicate-response check via respondentId works for tests
+    // (FULL_ANONYMOUS stores respondentId: null — dedup needs separate mechanism).
+    anonymityLevel: 'FULL_DIVISION' as const,
     minRespondentsForReport: 1,
     openAt: past.toISOString(),
     closeAt: future.toISOString(),

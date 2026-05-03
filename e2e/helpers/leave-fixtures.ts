@@ -79,6 +79,38 @@ export async function resolveLeaveTypeDef(
   return { id: typeDef.id as string, code: (typeDef.code ?? '') as string }
 }
 
+// Codex Gate 1 HIGH/MED: balance-backed typeDef + matching policy resolution.
+// Route still requires policyId (schema non-null, Zod required); helper must
+// return BOTH ids so POST /leave/requests passes validation AND balance lookup.
+export async function resolveLeaveTypeDefWithBalance(
+  request: APIRequestContext,
+): Promise<{ policyId: string; leaveTypeDefId: string } | null> {
+  // 1. Find a year-balance row with remaining >= 1 for the current session's EMPLOYEE.
+  const balRes = await request.get('/api/v1/leave/year-balances')
+  const balResult = await parseApiResponse<unknown>(balRes)
+  if (!balResult.ok || !balResult.data) return null
+  const balances = Array.isArray(balResult.data) ? balResult.data : []
+  const usable = balances.find((b) => {
+    const rec = b as { remaining?: number }
+    return Number(rec.remaining ?? 0) >= 1
+  }) as { leaveTypeDefId?: string; leaveTypeDef?: { code?: string } } | undefined
+  if (!usable?.leaveTypeDefId || !usable.leaveTypeDef?.code) return null
+
+  // 2. Map typeDef.code → LeavePolicy.leaveType (inverse of resolveLeaveTypeDefId).
+  // code 'annual' → enum 'ANNUAL', etc.
+  const targetLeaveType = usable.leaveTypeDef.code.toUpperCase()
+  const polRes = await request.get(
+    `/api/v1/leave/policies?limit=50&leaveType=${targetLeaveType}`,
+  )
+  const polResult = await parseApiResponse<unknown>(polRes)
+  if (!polResult.ok || !polResult.data) return null
+  const policies = Array.isArray(polResult.data) ? polResult.data : []
+  const policy = policies[0] as { id?: string } | undefined
+  if (!policy?.id) return null
+
+  return { policyId: policy.id, leaveTypeDefId: usable.leaveTypeDefId }
+}
+
 // ─── Leave Request CRUD ─────────────────────────────────────
 
 /**

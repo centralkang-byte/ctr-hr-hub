@@ -188,7 +188,9 @@ export function buildHrDocument() {
   const t = ts()
   return {
     title: `E2E HR Document ${t}`,
-    docType: 'POLICY',
+    // Schema enum: EMPLOYMENT_RULES | HR_POLICY | BENEFIT_GUIDE | SAFETY_MANUAL
+    // | EMPLOYEE_HANDBOOK | OTHER (see src/lib/schemas/hr-chat.ts:19)
+    docType: 'HR_POLICY',
     contentText: `This is an E2E test HR document content ${t}. It contains multiple paragraphs for embedding chunk testing.`,
     version: '1.0',
     locale: 'ko',

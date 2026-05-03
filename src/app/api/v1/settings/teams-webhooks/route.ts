@@ -12,11 +12,16 @@ import { z } from 'zod'
 import { getRequestLocale, serverT } from '@/lib/server-i18n'
 import type { SessionUser } from '@/types'
 
+// TeamsWebhookConfig Prisma model has no isActive column (see schema.prisma
+// model TeamsWebhookConfig). Accepting isActive in Zod then spreading to
+// prisma.create produced a Prisma error → 500. PATCH route already drops it
+// in its data spread for the same reason. Drop from POST schema too — Zod is
+// non-strict so clients sending isActive still validate (field silently
+// ignored).
 const webhookSchema = z.object({
   channelName: z.string().min(1).max(100),
   webhookUrl: z.string().url().max(500),
   eventTypes: z.array(z.string()).default([]),
-  isActive: z.boolean().default(true),
 })
 
 export const GET = withPermission(

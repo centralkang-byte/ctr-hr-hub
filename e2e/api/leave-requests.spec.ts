@@ -10,6 +10,7 @@ import { parseApiResponse, assertError } from '../helpers/api-client'
 import { expectQueryBudget } from '../helpers/query-budget'
 import {
   resolveLeavePolicy,
+  resolveLeaveTypeDefWithBalance,
   createLeaveRequest,
   cancelLeaveRequest,
   approveLeaveRequest,
@@ -38,12 +39,22 @@ test.describe('EMPLOYEE: Leave requests', () => {
   test.describe.configure({ mode: 'serial' })
 
   let policyId: string | null = null
+  let leaveTypeDefId: string | null = null
   let createdRequestId: string | null = null
   let _requestForApproval: string | null = null
 
   test.beforeAll(async ({ request }) => {
-    const policy = await resolveLeavePolicy(request)
-    policyId = policy?.id ?? null
+    // Codex Gate 1: prefer balance-backed typeDef so balance lookup succeeds.
+    // Route requires policyId (schema non-null); helper returns both.
+    const resolved = await resolveLeaveTypeDefWithBalance(request)
+    if (resolved) {
+      policyId = resolved.policyId
+      leaveTypeDefId = resolved.leaveTypeDefId
+    } else {
+      // Fallback — triggers test.skip() paths cleanly if seed has no balances.
+      const policy = await resolveLeavePolicy(request)
+      policyId = policy?.id ?? null
+    }
   })
 
   test.afterAll(async ({ request }) => {
@@ -94,6 +105,7 @@ test.describe('EMPLOYEE: Leave requests', () => {
     const futureDate = futureDateStr(90)
     const leaveReq = await createLeaveRequest(request, {
       policyId,
+      leaveTypeDefId: leaveTypeDefId ?? undefined,
       startDate: futureDate,
       endDate: futureDate,
       days: 1,
@@ -142,6 +154,7 @@ test.describe('EMPLOYEE: Leave requests', () => {
     const futureDate = futureDateStr(120)
     const leaveReq = await createLeaveRequest(request, {
       policyId,
+      leaveTypeDefId: leaveTypeDefId ?? undefined,
       startDate: futureDate,
       endDate: futureDate,
       days: 0.5,

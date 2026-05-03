@@ -55,7 +55,7 @@ test.describe('Recruitment', () => {
     await waitForPageReady(page)
     await waitForLoading(page)
 
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 8000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 8000 })
   })
 
   test('Can view interview schedule page', async ({ page }) => {
@@ -76,6 +76,6 @@ test.describe('Recruitment', () => {
     await expect(main).toBeVisible()
 
     // Dashboard should render heading or stat content (may need extra time to load)
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 15000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 15000 })
   })
 })

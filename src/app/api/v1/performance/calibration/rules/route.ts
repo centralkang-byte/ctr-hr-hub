@@ -6,7 +6,7 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
+import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
@@ -28,6 +28,10 @@ const createSchema = z.object({
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
+    // Calibration rules는 HR/Executive 관리 영역 — PERFORMANCE.VIEW만으로는 부족
+    const isCalibrationAdmin = ['SUPER_ADMIN', 'HR_ADMIN', 'EXECUTIVE'].includes(user.role)
+    if (!isCalibrationAdmin) throw forbidden('캘리브레이션 규칙은 HR/임원만 조회할 수 있습니다.')
+
     const cycleId = req.nextUrl.searchParams.get('cycleId') ?? undefined
 
     const rules = await prisma.calibrationRule.findMany({

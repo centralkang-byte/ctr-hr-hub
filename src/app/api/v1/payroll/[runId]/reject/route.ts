@@ -22,8 +22,17 @@ const schema = z.object({
 export const POST = withPermission(
     async (req: NextRequest, context, user) => {
         const { runId } = await context.params
-        const body = await req.json()
-        const { comment } = schema.parse(body)
+        let body: unknown
+        try {
+            body = await req.json()
+        } catch {
+            throw badRequest('요청 본문이 올바른 JSON 형식이 아닙니다.')
+        }
+        const parsed = schema.safeParse(body)
+        if (!parsed.success) {
+            throw badRequest('반려 사유를 입력해 주세요.')
+        }
+        const { comment } = parsed.data
 
         const run = await prisma.payrollRun.findUnique({
             where: { id: runId },

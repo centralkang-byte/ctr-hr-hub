@@ -67,6 +67,7 @@ export interface SeedData {
   employeeName: string
   departmentId: string
   jobGradeId: string
+  jobCategoryId: string
   companyId: string
   leavePolicyId?: string
   leaveTypeDefId?: string
@@ -118,6 +119,15 @@ export async function resolveSeedData(request: APIRequestContext): Promise<SeedD
     (primary?.jobGrade as Record<string, unknown> | undefined)?.id ??
     ''
   ) as string
+  // jobCategory: GET /api/v1/employees response flattens this to top-level
+  // `emp.jobCategory: { id, name }` (route.ts:135). No dedicated /job-categories
+  // endpoint exists — seed 이민준 carries the canonical OFFICE category for CTR.
+  const jobCategoryId = (
+    primary?.jobCategoryId ??
+    (primary?.jobCategory as Record<string, unknown> | undefined)?.id ??
+    (emp.jobCategory as Record<string, unknown> | undefined)?.id ??
+    ''
+  ) as string
   const companyId = (primary?.companyId ?? emp.companyId ?? '') as string
 
   // 2. Discover leave policy
@@ -150,6 +160,7 @@ export async function resolveSeedData(request: APIRequestContext): Promise<SeedD
     employeeName: '이민준',
     departmentId,
     jobGradeId,
+    jobCategoryId,
     companyId,
     leavePolicyId,
     leaveTypeDefId,

@@ -36,13 +36,17 @@ export const GET = withPermission(
         },
       })
 
-      return apiSuccess({
+      // Double-wrap fix: apiSuccess already wraps as { data: x }. Passing
+      // { data: reports } produced { data: { data: [...] } } and forced the
+      // UI to fall back at AiReportClient.tsx:51. Return the array directly —
+      // UI fallback `j.data?.data || j.data || []` still works.
+      return apiSuccess(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        data: reports.map((r: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma result mapping callback
+        reports.map((r: any) => ({ // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma result mapping callback
           ...r,
           companyName: r.company?.name || '전사',
         })),
-      })
+      )
     } catch (error) {
       return apiError(error)
     }

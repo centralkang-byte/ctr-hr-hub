@@ -55,7 +55,8 @@ test.describe('Training Lifecycle: HR_ADMIN', () => {
   test('PUT /training/enrollments/[id] status update → COMPLETED', async ({ request }) => {
     test.skip(!enrollmentId, 'no enrollment to update')
     const api = new ApiClient(request)
-    const res = await f.updateEnrollment(api, enrollmentId, f.buildEnrollmentUpdate('COMPLETED'))
+    // Schema enum: ENROLLMENT_COMPLETED (not COMPLETED — drift).
+    const res = await f.updateEnrollment(api, enrollmentId, f.buildEnrollmentUpdate('ENROLLMENT_COMPLETED'))
     assertOk(res, 'update enrollment status')
   })
 
@@ -110,7 +111,7 @@ test.describe('Training: EMPLOYEE', () => {
 
   test('PUT /training/enrollments/[id] → 403 (APPROVE perm)', async ({ request }) => {
     const api = new ApiClient(request)
-    const res = await f.updateEnrollment(api, '00000000-0000-0000-0000-000000000000', f.buildEnrollmentUpdate('COMPLETED'))
+    const res = await f.updateEnrollment(api, '00000000-0000-0000-0000-000000000000', f.buildEnrollmentUpdate('ENROLLMENT_COMPLETED'))
     assertError(res, 403, 'employee cannot update enrollment')
   })
 })

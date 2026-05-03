@@ -172,6 +172,8 @@ test.describe('Approval RBAC: MANAGER Blocked', () => {
 // ═══════════════════════════════════════════════════════════
 
 test.describe('Comparison: HR_ADMIN', () => {
+  // Serial: shared `runId` across resolve + consume tests.
+  test.describe.configure({ mode: 'serial' })
   test.use({ storageState: authFile('HR_ADMIN') })
 
   let runId = ''
@@ -372,6 +374,8 @@ test.describe('Exports RBAC: EMPLOYEE Blocked', () => {
 // ═══════════════════════════════════════════════════════════
 
 test.describe('Notify/Publish: HR_ADMIN', () => {
+  // Serial: shared `runId` across resolve + consume tests.
+  test.describe.configure({ mode: 'serial' })
   test.use({ storageState: authFile('HR_ADMIN') })
 
   let runId = ''
@@ -532,6 +536,8 @@ test.describe('Simulation RBAC: EMPLOYEE Blocked', () => {
 // ═══════════════════════════════════════════════════════════
 
 test.describe('Whitelist: HR_ADMIN', () => {
+  // Serial: shared `companyId` across resolve + consume tests.
+  test.describe.configure({ mode: 'serial' })
   test.use({ storageState: authFile('HR_ADMIN') })
 
   let companyId = ''
@@ -557,10 +563,11 @@ test.describe('Whitelist: HR_ADMIN', () => {
     assertError(res, 404, 'non-existent whitelist item')
   })
 
-  test('GET /whitelist without companyId → 400', async ({ request }) => {
+  test('GET /whitelist without companyId defaults to session company (HR_ADMIN)', async ({ request }) => {
+    // resolveCompanyId SSOT: non-SUPER_ADMIN falls back to user.companyId when param missing.
     const api = new ApiClient(request)
     const res = await f.getWhitelist(api, {} as Record<string, string>)
-    assertError(res, 400, 'missing companyId')
+    assertOk(res, 'whitelist defaults to session company')
   })
 })
 

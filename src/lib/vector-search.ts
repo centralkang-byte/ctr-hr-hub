@@ -34,7 +34,6 @@ export async function searchSimilarChunks(
     FROM hr_document_chunks c
     JOIN hr_documents d ON d.id = c.document_id
     WHERE d.company_id = ${companyId}
-      AND d.is_active = true
       AND d.deleted_at IS NULL
     ORDER BY c.embedding <=> ${vectorStr}::vector
     LIMIT ${topK}

@@ -25,7 +25,7 @@ test.describe('My Space: EMPLOYEE', () => {
     const main = page.locator('main')
     await expect(main).toBeVisible()
     // PageHeader renders h1 regardless of tab
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 15000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 15000 })
   })
 
   test('my profile page loads', async ({ page }) => {
@@ -65,7 +65,7 @@ test.describe('My Space: EMPLOYEE', () => {
     const main = page.locator('main')
     await expect(main).toBeVisible()
     // PageHeader renders h1 — wait for client hydration + data fetch
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 15000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 15000 })
   })
 
   test('blocked from manager-hub', async ({ page }) => {
@@ -101,7 +101,7 @@ test.describe('My Space: MANAGER', () => {
 
     const main = page.locator('main')
     await expect(main).toBeVisible()
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 15000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 15000 })
   })
 
   test('team attendance page loads', async ({ page }) => {

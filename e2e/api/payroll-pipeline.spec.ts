@@ -18,7 +18,7 @@ test.describe('Payroll: HR_ADMIN', () => {
 
     const main = page.locator('main')
     await expect(main).toBeVisible()
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 15000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 15000 })
   })
 
   test('can see payroll create button', async ({ page }) => {
@@ -34,16 +34,14 @@ test.describe('Payroll: HR_ADMIN', () => {
     await assertPageLoads(page, '/payroll/adjustments')
     await waitForPageReady(page)
 
-    const content = page.locator('h1, h2').or(page.getByText(/조정|Adjustment|수당/)).first()
-    await expect(content).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
   })
 
   test('can view payroll import page', async ({ page }) => {
     await assertPageLoads(page, '/payroll/import')
     await waitForPageReady(page)
 
-    const content = page.locator('h1, h2').or(page.getByText(/임포트|Import|업로드|Upload/)).first()
-    await expect(content).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
   })
 
   test('can view salary simulation page', async ({ page }) => {
@@ -52,7 +50,7 @@ test.describe('Payroll: HR_ADMIN', () => {
 
     // Simulation page should render
     await expect(page.locator('main')).toBeVisible()
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
   })
 })
 
@@ -65,8 +63,7 @@ test.describe('Payroll: EMPLOYEE', () => {
     await assertPageLoads(page, '/payroll/me')
     await waitForLoading(page)
 
-    const heading = page.locator('h1, h2').or(page.getByText(/급여명세서|Payslip|내 급여/)).first()
-    await expect(heading).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
   })
 
   test('can see payslip content on /payroll/me', async ({ page }) => {

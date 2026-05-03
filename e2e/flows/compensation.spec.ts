@@ -45,7 +45,7 @@ test.describe('Compensation: EMPLOYEE', () => {
     const main = page.locator('main')
     await expect(main).toBeVisible()
     // TotalRewardsClient shows HomeSkeleton during load, then h1 in both data and empty states
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 15000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 15000 })
   })
 
   test('my year-end page loads', async ({ page }) => {

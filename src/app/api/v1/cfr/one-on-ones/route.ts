@@ -6,7 +6,7 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiPaginated, apiSuccess, buildPagination } from '@/lib/api'
-import { badRequest, handlePrismaError, notFound } from '@/lib/errors'
+import { badRequest, forbidden, handlePrismaError, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
@@ -25,7 +25,7 @@ const searchSchema = z.object({
 })
 
 const createSchema = z.object({
-  employeeId: z.string(),
+  employeeId: z.string().min(1),
   scheduledAt: z.string().datetime(),
   meetingType: z.enum(['REGULAR', 'AD_HOC', 'GOAL_REVIEW', 'DEVELOPMENT']).default('REGULAR'),
   agenda: z.string().max(2000).optional(),
@@ -84,6 +84,10 @@ export const GET = withPermission(
 
 export const POST = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
+    // 1:1 미팅은 매니저가 팀원과 예약하는 구조 — EMPLOYEE는 생성 불가
+    const isManagerOrAbove = ['SUPER_ADMIN', 'HR_ADMIN', 'EXECUTIVE', 'MANAGER'].includes(user.role)
+    if (!isManagerOrAbove) throw forbidden('1:1 미팅은 매니저 이상만 예약할 수 있습니다.')
+
     const body: unknown = await req.json()
     const parsed = createSchema.safeParse(body)
     if (!parsed.success) throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })

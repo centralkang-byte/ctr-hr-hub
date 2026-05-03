@@ -422,6 +422,9 @@ test.describe('Calculate RBAC: EMPLOYEE Blocked', () => {
 // ═══════════════════════════════════════════════════════════
 
 test.describe('Payslips: HR_ADMIN', () => {
+  // Serial: `payslipId` is populated by first test and consumed by later tests.
+  // fullyParallel would put tests on different workers with separate module state.
+  test.describe.configure({ mode: 'serial' })
   test.use({ storageState: authFile('HR_ADMIN') })
 
   let payslipId = ''
@@ -509,6 +512,8 @@ test.describe('Payslips RBAC: MANAGER Blocked', () => {
 // ═══════════════════════════════════════════════════════════
 
 test.describe('Severance: HR_ADMIN', () => {
+  // Serial: `employeeId` resolved in first test, consumed by later tests.
+  test.describe.configure({ mode: 'serial' })
   test.use({ storageState: authFile('HR_ADMIN') })
 
   let employeeId = ''

@@ -501,7 +501,8 @@ test.describe('Checkins', () => {
   })
 
   test('2. Get checkin status for cycle', async () => {
-    const result = await pf.getCheckinStatus(empClient, cycleId)
+    // Status endpoint is a manager dashboard (per-employee completion). Query as HR, not EMPLOYEE.
+    const result = await pf.getCheckinStatus(hrClient, cycleId)
     assertOk(result, 'get checkin status')
   })
 
