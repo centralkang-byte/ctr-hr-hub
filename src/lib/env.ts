@@ -6,7 +6,12 @@
 function getRequired(key: string): string {
   const value = process.env[key]
   if (!value) {
-    if (process.env.NODE_ENV === 'production') {
+    // Build 단계에서는 throw 안 함 — Next.js page data collection이
+    // module-level evaluation을 트리거하면 env 누락 시 빌드가 실패함.
+    // 런타임(prod server)에서는 여전히 throw — 안전성 유지.
+    // NEXT_PHASE='phase-production-build'는 next build 단계의 공식 표지.
+    const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build'
+    if (process.env.NODE_ENV === 'production' && !isBuildTime) {
       throw new Error(`필수 환경변수 ${key}이(가) 설정되지 않았습니다.`)
     }
     return ''
