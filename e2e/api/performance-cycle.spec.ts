@@ -48,7 +48,7 @@ test.describe('Performance: HR_ADMIN', () => {
     await waitForLoading(page)
 
     await expect(page.locator('text=페이지를 불러올 수 없습니다')).not.toBeVisible()
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
   })
 
   test('can view 1:1 meetings page', async ({ page }) => {
@@ -57,7 +57,7 @@ test.describe('Performance: HR_ADMIN', () => {
     await waitForLoading(page)
 
     await expect(page.locator('text=페이지를 불러올 수 없습니다')).not.toBeVisible()
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
   })
 
   test('can view recognition page', async ({ page }) => {
@@ -92,6 +92,6 @@ test.describe('Performance: MANAGER', () => {
     await waitForLoading(page)
 
     await expect(page.locator('text=페이지를 불러올 수 없습니다')).not.toBeVisible()
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
   })
 })

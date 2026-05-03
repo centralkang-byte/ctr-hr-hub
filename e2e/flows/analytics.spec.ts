@@ -39,7 +39,7 @@ test.describe('Analytics Dashboards', () => {
     const main = page.locator('main')
     await expect(main).toBeVisible()
     // Page should render heading or content (may take extra time for heavy analytics queries)
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 15000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 15000 })
   })
 
   test('Compensation analytics page loads with salary data', async ({ page }) => {

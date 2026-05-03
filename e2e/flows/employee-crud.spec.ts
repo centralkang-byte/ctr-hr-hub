@@ -72,7 +72,7 @@ test.describe('Employee Management: HR_ADMIN', () => {
     await waitForPageReady(page)
     await waitForLoading(page)
 
-    await expect(page.locator('table, h1, h2').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
   })
 
   test('can view employee directory', async ({ page }) => {
@@ -81,7 +81,7 @@ test.describe('Employee Management: HR_ADMIN', () => {
     await waitForLoading(page)
 
     // Directory: heading 존재 확인 + 콘텐츠(카드 또는 테이블) 로딩 대기
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
     await expect(async () => {
       const items = await page.locator('main img, main svg, tbody tr').count()
       expect(items).toBeGreaterThan(0)
@@ -93,7 +93,7 @@ test.describe('Employee Management: HR_ADMIN', () => {
     await waitForPageReady(page)
     await waitForLoading(page)
 
-    await expect(page.locator('h1, h2, table').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 10000 })
     await expect(page.locator('text=페이지를 불러올 수 없습니다')).not.toBeVisible()
   })
 })

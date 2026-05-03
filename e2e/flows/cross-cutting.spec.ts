@@ -19,7 +19,7 @@ test.describe('Cross-Cutting Features', () => {
 
     // Notifications page should render — heading or filter area
     await expect(page.locator('main')).toBeVisible()
-    await expect(page.locator('h1, h2').first()).toBeVisible({ timeout: 8000 })
+    await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 8000 })
 
     // At least some filter buttons visible
     await expect(page.getByText('전체').first()).toBeVisible()

@@ -11,6 +11,11 @@ import { apiError } from '@/lib/api'
 import { unauthorized, badRequest } from '@/lib/errors'
 import { getRequestLocale, serverT } from '@/lib/server-i18n'
 
+// Webhook은 본질적으로 동적이며, import chain (teams-bot → prisma → env)이
+// module-load 시 DATABASE_URL을 평가하므로 build-time page data collection에서
+// env 누락 시 throw됨. force-dynamic으로 build 단계 evaluation을 우회.
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
   const locale = await getRequestLocale()
   const authHeader = req.headers.get('authorization')
