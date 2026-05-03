@@ -31,10 +31,8 @@ const PwaInstallBanner = nextDynamic(
   () => import('@/components/shared/PwaInstallBanner').then(m => m.PwaInstallBanner),
   { loading: () => null },
 )
-const ServiceWorkerRegistrar = nextDynamic(
-  () => import('@/components/shared/ServiceWorkerRegistrar').then(m => m.ServiceWorkerRegistrar),
-  { loading: () => null },
-)
+// ServiceWorkerRegistrar moved to root Providers so non-dashboard routes
+// (/login, /pre-hire, /offline) can also drive SW activation.
 const SessionTimeoutWarning = nextDynamic(
   () => import('@/components/shared/SessionTimeoutWarning').then(m => m.SessionTimeoutWarning),
   { loading: () => null },
@@ -75,7 +73,6 @@ export default async function DashboardLayout({
       <CommandPalette />
       <HrChatbot />
       <PwaInstallBanner />
-      <ServiceWorkerRegistrar />
       <SessionTimeoutWarning />
     </BrandProvider>
   )
