@@ -118,7 +118,9 @@ export const POST = withPermission(
 
       const scenario = await prisma.simulationScenario.create({
         data: {
-          createdById: user.id,
+          // createdById: Employee FK semantic 통일 (Session 200 audit 후속).
+          // plain String 컬럼이지만 일관성. 기존 row는 user.id 값 → access check 양방향 호환.
+          createdById: user.employeeId,
           mode: parsed.mode,
           title: parsed.title,
           description: parsed.description ?? null,

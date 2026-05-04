@@ -43,9 +43,14 @@ export const DELETE = withPermission(
       })
       if (!scenario) throw notFound('시나리오를 찾을 수 없습니다.')
 
-      // SUPER_ADMIN / HR_ADMIN은 모두 삭제 가능, 나머지는 본인 것만
+      // SUPER_ADMIN / HR_ADMIN은 모두 삭제 가능, 나머지는 본인 것만.
+      // 양방향 호환 (Codex Gate 1 P1): 신규 row는 user.employeeId(Session 203 후속 cleanup),
+      // legacy row는 user.id(NextAuth subject). dev에선 동일하지만 Azure SSO prod에서 분기.
+      // Backfill 후 단방향으로 좁힐 follow-up 예정.
       const isAdmin = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
-      if (!isAdmin && scenario.createdById !== user.id) {
+      const isOwner =
+        scenario.createdById === user.employeeId || scenario.createdById === user.id
+      if (!isAdmin && !isOwner) {
         throw forbidden('본인이 생성한 시나리오만 삭제할 수 있습니다.')
       }
 

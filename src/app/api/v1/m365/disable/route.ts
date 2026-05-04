@@ -74,7 +74,9 @@ export const POST = withPermission(
         licensesRevoked: [],
         convertToSharedMailbox: false,
         errorMessage: disableResult.errorMessage ?? null,
-        executedBy: user.id,
+        // executedBy: Employee FK semantic 통일 (Session 200 audit 후속).
+        // logAudit actorId와 동일 — plain String 컬럼이지만 일관성.
+        executedBy: user.employeeId,
       },
     })
 
@@ -114,7 +116,7 @@ export const POST = withPermission(
           licensesRevoked: revokeResult.licensesRevoked ?? allLicenseIds,
           convertToSharedMailbox: false,
           errorMessage: revokeResult.errorMessage ?? null,
-          executedBy: user.id,
+          executedBy: user.employeeId,
         },
       })
 
@@ -155,7 +157,7 @@ export const POST = withPermission(
           licensesRevoked: [],
           convertToSharedMailbox: true,
           errorMessage: sharedResult.errorMessage ?? null,
-          executedBy: user.id,
+          executedBy: user.employeeId,
         },
       })
 

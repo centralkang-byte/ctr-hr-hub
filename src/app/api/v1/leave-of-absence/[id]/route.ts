@@ -216,7 +216,7 @@ async function handleActivate(id: string, record: RecordWithType, user: SessionU
   })
 
   // Side-effect: 월별 급여 조정 생성 (fire-and-forget)
-  createCrossMonthLoaAdjustments(record, user.employeeId ?? user.id).catch((err) => {
+  createCrossMonthLoaAdjustments(record, user.employeeId).catch((err) => {
     console.error('[LOA Phase 3] 급여 조정 생성 실패:', err)
   })
 
@@ -335,7 +335,7 @@ async function handleComplete(
     }
 
     // 급여 조정 소급 정산 (실제 종료일 기준)
-    await reconcileLoaAdjustments(tx, record, actualEndDate, user.employeeId ?? user.id)
+    await reconcileLoaAdjustments(tx, record, actualEndDate, user.employeeId)
 
     return tx.leaveOfAbsence.update({
       where: { id },
