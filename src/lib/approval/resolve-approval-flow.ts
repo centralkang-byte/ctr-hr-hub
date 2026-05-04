@@ -71,17 +71,44 @@ export async function resolveApproverByRole(
 ): Promise<string | null> {
   switch (role) {
     case 'direct_manager': {
-      // Raw SQL: 대상 직원 → Position → reportsToPosition → 해당 Position 보유 직원
+      // 대상 직원의 primary position → reportsToPosition → 해당 position 보유 직원.
+      //
+      // 비대칭 정책 (direct-reports.ts:13 / validate-requisition-approver.ts:53 정합):
+      //   - mgr_asg: ALL active assignments (primary + secondary 모두) — 매니저가
+      //     보조 직책으로 팀장직 보유 가능 (e.g., primary=일반팀원, secondary=타팀 팀장)
+      //   - ea (대상 직원): primary only — 보고 라인은 primary 기반
+      //
+      // Self-approval 정책 (기존 동작 + Session 204 secondary 지원 정합):
+      //   - primary 매니저 position: self 포함 매칭 — 직원이 자기 매니저 position을
+      //     primary로 보유한 hierarchy(rare)에서 기존 self-skip 자동 승인 경로 보존.
+      //   - secondary 매니저 position: non-self만 매칭 — secondary로 자기 position을
+      //     보유한 케이스에서 self-routing은 차단 (기존 is_primary-only 동작과 정합).
+      //
+      // 결정적 선택을 위해 ORDER BY 명시 (Codex Gate 2 R3 P1):
+      //   1) is_primary DESC — primary 매니저가 있으면 항상 그를 우선 (기존 동작 보존)
+      //   2) created_at ASC — 동일 우선순위 내 가장 오래된 assignment (안정된 매니저)
+      //   3) employee_id ASC — 완전한 deterministic tie-breaker
+      // → 같은 요청이 normal PENDING ↔ self-auto-approval 사이 oscillate 차단.
+      // Validation 용도(다대일 정확 매칭)는 validateApprover의 별도 EXISTS 분기 참조.
+      // 기존 동작 보존: ea(target)/mgr_asg 모두 status 조건 없음. Session 204의
+      // validate-requisition-approver는 status='ACTIVE' 강제하지만, getDirectReportIds
+      // (employee/direct-reports.ts:13)는 status 체크 안 함 — 본 generic resolver는
+      // 후자와 정합 (PROBATION/ON_LEAVE 직원의 결재도 진행 가능). 추가 정합화는
+      // caller 영향 평가 후 별도 PR.
       const rows = await prisma.$queryRaw<Array<{ manager_id: string }>>`
         SELECT mgr_asg.employee_id AS manager_id
         FROM employee_assignments ea
         JOIN positions p ON p.id = ea.position_id
         JOIN positions mgr_p ON mgr_p.id = p.reports_to_position_id
         JOIN employee_assignments mgr_asg ON mgr_asg.position_id = mgr_p.id
-          AND mgr_asg.is_primary = true AND mgr_asg.end_date IS NULL
+          AND mgr_asg.end_date IS NULL
+          AND mgr_asg.company_id = ${companyId}
+          AND (mgr_asg.is_primary = true OR mgr_asg.employee_id <> ${targetEmployeeId})
         WHERE ea.employee_id = ${targetEmployeeId}
           AND ea.company_id = ${companyId}
-          AND ea.is_primary = true AND ea.end_date IS NULL
+          AND ea.is_primary = true
+          AND ea.end_date IS NULL
+        ORDER BY mgr_asg.is_primary DESC, mgr_asg.created_at ASC, mgr_asg.employee_id ASC
         LIMIT 1
       `
       return rows[0]?.manager_id ?? null
@@ -212,6 +239,28 @@ export async function validateApprover(
 
     // role 기반
     if (step.approverRole) {
+      // direct_manager validation은 routing(LIMIT 1)보다 넓은 인증 정책을 채택:
+      // primary 매니저 + secondary 매니저(둘 다 reportsTo position 보유) 어느 쪽도
+      // 결재 인정. 이는 Session 204 패턴(validate-requisition-approver.ts:53)의
+      // generic 적용 — matrix 조직 dotted-line 매니저 지원.
+      //
+      // Race 안전성: 같은 step을 두 매니저가 동시 결재해도 caller route가
+      // status='PENDING' 조건으로 step 찾음 → 첫 결재 후 즉시 APPROVED로 전환되어
+      // 둘째 결재 시도는 "현재 승인 단계를 찾을 수 없습니다" badRequest.
+      //
+      // Self-approval 정책은 isDirectManagerOf docstring 참조.
+      if (step.approverRole === 'direct_manager') {
+        const matched = await isDirectManagerOf({
+          targetEmployeeId,
+          companyId,
+          candidateEmployeeId: currentUserId,
+        })
+        if (matched) {
+          return { allowed: true, matchedStep: step, noFlowConfigured: false }
+        }
+        continue
+      }
+
       const resolverId = await resolveApproverByRole(
         step.approverRole,
         targetEmployeeId,
@@ -224,4 +273,47 @@ export async function validateApprover(
   }
 
   return { allowed: false, noFlowConfigured: false }
+}
+
+/**
+ * candidateEmployeeId가 targetEmployeeId의 직속 상사인지 확인 (validation 전용).
+ *
+ * 비대칭 정책(mgr_asg ALL active / ea primary only)은 resolveApproverByRole의
+ * direct_manager case와 동일. 차이점은 LIMIT 1로 단일 ID를 반환하는 대신 EXISTS만
+ * 검사 — multi-manager 시(primary 매니저 + secondary 매니저 모두 보유) 어느 한 명이
+ * candidate여도 true (LIMIT 1 비결정성 회피).
+ *
+ * Self-approval 정책 (resolveApproverByRole와 동일):
+ *   - primary 매니저 position: self 포함 매칭 — 기존 primary-only 동작 보존.
+ *   - secondary 매니저 position: non-self만 매칭 — secondary self-position을 통한
+ *     authorization escalation 차단 (Codex Gate 2 R4 P1).
+ *
+ * 셀프 결재 정책이 더 엄격해야 하는 모듈(예: requisition)은 별도 helper
+ * (isRequisitionApproverAllowed)에서 추가 self-guard 적용.
+ */
+async function isDirectManagerOf(args: {
+  targetEmployeeId: string
+  companyId: string
+  candidateEmployeeId: string
+}): Promise<boolean> {
+  const { targetEmployeeId, companyId, candidateEmployeeId } = args
+
+  // resolveApproverByRole의 direct_manager case와 동일한 status 정책 (status 조건 없음).
+  const rows = await prisma.$queryRaw<Array<{ ok: number }>>`
+    SELECT 1 AS ok
+    FROM employee_assignments ea
+    JOIN positions p ON p.id = ea.position_id
+    JOIN positions mgr_p ON mgr_p.id = p.reports_to_position_id
+    JOIN employee_assignments mgr_asg ON mgr_asg.position_id = mgr_p.id
+      AND mgr_asg.end_date IS NULL
+      AND mgr_asg.company_id = ${companyId}
+      AND mgr_asg.employee_id = ${candidateEmployeeId}
+      AND (mgr_asg.is_primary = true OR mgr_asg.employee_id <> ${targetEmployeeId})
+    WHERE ea.employee_id = ${targetEmployeeId}
+      AND ea.company_id = ${companyId}
+      AND ea.is_primary = true
+      AND ea.end_date IS NULL
+    LIMIT 1
+  `
+  return rows.length > 0
 }
