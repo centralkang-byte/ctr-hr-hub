@@ -52,16 +52,23 @@ export async function isRequisitionApproverAllowed(args: {
 
     case 'direct_manager': {
       // 사용자가 requester의 직속 상사인지 확인.
-      // mgr_asg, req_asg 모두 동일 법인 + 활성 + primary 보장 — myApprovals 필터의
-      // `directReportIds` 도출 조건과 대칭 (Codex Gate 2 R4 P2): 둘 중 하나만
-      // 'ACTIVE' 거르면 list엔 안 보이지만 approve는 통과하는 false approval 발생.
+      //
+      // 비대칭 정책 (direct-reports.ts:13 정합 — Session 204 secondary 지원):
+      //   - mgr_asg: ALL active assignments (primary + secondary 모두) — 매니저가 보조 직책으로
+      //     팀장직 보유 가능 (e.g., primary=일반팀원, secondary=타팀 팀장)
+      //   - req_asg: primary only — 보고 라인은 primary 기반 (매트릭스 중복 매칭 방지)
+      //
+      // Self-approval guard: requester 자신이 manager position을 secondary로 보유한
+      // 순환 구조에서도 본인 결재 차단 (Codex Gate 1 — secondary 변경 직접 동반).
+      //
+      // mgr_asg / req_asg 모두 동일 법인 + ACTIVE — myApprovals 필터의 directReportIds
+      // 도출과 대칭 유지 (Codex Gate 2 R4 P2).
       const rows = await prisma.$queryRaw<Array<{ ok: number }>>`
         SELECT 1 AS ok
         FROM employee_assignments req_asg
         JOIN positions req_p ON req_p.id = req_asg.position_id
         JOIN positions mgr_p ON mgr_p.id = req_p.reports_to_position_id
         JOIN employee_assignments mgr_asg ON mgr_asg.position_id = mgr_p.id
-          AND mgr_asg.is_primary = true
           AND mgr_asg.end_date IS NULL
           AND mgr_asg.status = 'ACTIVE'
           AND mgr_asg.company_id = ${requisition.companyId}
@@ -71,6 +78,7 @@ export async function isRequisitionApproverAllowed(args: {
           AND req_asg.end_date IS NULL
           AND req_asg.status = 'ACTIVE'
           AND mgr_asg.employee_id = ${user.employeeId}
+          AND mgr_asg.employee_id <> ${requisition.requesterId}
         LIMIT 1
       `
       return rows.length > 0

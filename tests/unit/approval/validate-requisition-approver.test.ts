@@ -199,5 +199,34 @@ describe('isRequisitionApproverAllowed', () => {
       })
       expect(result).toBe(false)
     })
+
+    // Session 204: secondary 지원. SQL은 mocked이므로 raw SQL 자체 변경
+    // (mgr_asg.is_primary 제거 + self-approval guard 추가)는 Codex review로 검증되며,
+    // 본 테스트는 helper의 boolean 결과 계약(`rows.length > 0` → true) 회귀 방지.
+    it('allows MANAGER holding manager position via secondary assignment (Session 204)', async () => {
+      // SQL이 secondary mgr_asg row를 반환하는 시나리오 (primary=일반팀원, secondary=팀장).
+      mockedQueryRaw.mockResolvedValueOnce([{ ok: 1 }] as never)
+      const user = makeUser({ role: 'MANAGER', employeeId: 'manager-via-secondary' })
+      const result = await isRequisitionApproverAllowed({
+        user,
+        approverRole: 'direct_manager',
+        requisition: baseRequisition,
+      })
+      expect(result).toBe(true)
+    })
+
+    it('blocks self-approval via circular secondary assignment (Session 204 guard)', async () => {
+      // requester 본인이 manager position을 secondary로 보유한 순환 구조에서도
+      // SQL의 `mgr_asg.employee_id <> requesterId` 가드로 0 row 반환 → false.
+      mockedQueryRaw.mockResolvedValueOnce([] as never)
+      // user.employeeId === requester.employeeId 시나리오.
+      const user = makeUser({ role: 'MANAGER', employeeId: baseRequisition.requesterId })
+      const result = await isRequisitionApproverAllowed({
+        user,
+        approverRole: 'direct_manager',
+        requisition: baseRequisition,
+      })
+      expect(result).toBe(false)
+    })
   })
 })

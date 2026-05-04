@@ -98,30 +98,44 @@ export const GET = withAuth(
       }
 
       // direct_manager: pre-fetch user의 Position 직속 부하 employeeId 집합.
-      // status='ACTIVE' 명시 — isRequisitionApproverAllowed의 raw SQL과 동일한 활성
-      // 조건 (Codex Gate 2 P2): inactive 매니저가 list엔 보이고 detail/approve에서
-      // 거부되는 false approval task 방지.
+      //
+      // 비대칭 정책 (Session 204 secondary 지원, direct-reports.ts:13 정합):
+      //   - 매니저(user) 측: ALL active positions (primary + secondary) — secondary로 팀장직
+      //     보유 가능 (e.g., primary=일반팀원, secondary=타팀 팀장)
+      //   - 부하(reports) 측: primary only — 보고 라인 기반
+      //
+      // status='ACTIVE' + companyId scope 양쪽 모두 보강 — isRequisitionApproverAllowed
+      // raw SQL과 대칭 유지 (Codex Gate 2 R4 P2): inactive/cross-company 매니저가 list엔
+      // 보이고 approve에서 거부되는 false approval 방지. self-approval(user==requester)는
+      // 아래 set 구성에서 제외 (helper의 mgr_asg<>requesterId 가드와 정합).
       let directReportIds: string[] = []
-      const userAssignment = await prisma.employeeAssignment.findFirst({
+      const userAssignments = await prisma.employeeAssignment.findMany({
         where: {
           employeeId: user.employeeId,
-          isPrimary: true,
+          companyId: myApprovalsScope,
           endDate: null,
           status: 'ACTIVE',
         },
         select: { positionId: true },
       })
-      if (userAssignment?.positionId) {
+      const userPositionIds = userAssignments
+        .map((a) => a.positionId)
+        .filter((id): id is string => id !== null)
+      if (userPositionIds.length > 0) {
         const reports = await prisma.employeeAssignment.findMany({
           where: {
             isPrimary: true,
+            companyId: myApprovalsScope,
             endDate: null,
             status: 'ACTIVE',
-            position: { reportsToPositionId: userAssignment.positionId },
+            position: { reportsToPositionId: { in: userPositionIds } },
           },
           select: { employeeId: true },
         })
-        directReportIds = reports.map((r) => r.employeeId)
+        // dedupe (한 user가 여러 active position으로 같은 부하 커버 가능) + self 제외.
+        directReportIds = [
+          ...new Set(reports.map((r) => r.employeeId).filter((id) => id !== user.employeeId)),
+        ]
       }
 
       // dept_head: user가 head로 지정된 Department의 id 집합.

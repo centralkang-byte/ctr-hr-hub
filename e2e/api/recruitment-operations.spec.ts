@@ -329,6 +329,51 @@ test.describe('EMPLOYEE: Requisition approve denied (existence-masked)', () => {
 })
 
 // ═══════════════════════════════════════════════════════════
+// EMPLOYEE: Detail GET + List access (Session 202/203)
+//
+// Session 202가 detail GET 라우트를 viewer OR requester OR current approver만
+// 통과시키도록 변경 + Session 203이 페이지 ACL을 ALL_ROLES로 widen. EMPLOYEE
+// 비-결재자는 list myApprovals=true 빈 결과, myApprovals=false는 403,
+// detail은 notFound 마스킹.
+// ═══════════════════════════════════════════════════════════
+
+test.describe('EMPLOYEE: Requisition list/detail access gate', () => {
+  test.use({ storageState: authFile('EMPLOYEE') })
+
+  test('GET /requisitions returns 403 for EMPLOYEE without myApprovals (recruitment_view 필요)', async ({ request }) => {
+    // Session 202: list GET myApprovals=false는 recruitment_view 권한 필수.
+    // EMPLOYEE는 미보유 → 403 (notFound 마스킹은 detail에만 적용, list는 403 명시).
+    const api = new ApiClient(request)
+    const res = await api.get('/api/v1/recruitment/requisitions')
+    assertError(res, 403)
+  })
+
+  test('GET /requisitions?myApprovals=true returns 200 + empty for non-approver EMPLOYEE', async ({ request }) => {
+    // Session 200: myApprovals=true는 모든 인증 사용자 허용. role-based filter가
+    // EMPLOYEE의 eligibleRoles/directReportIds/headedDeptIds 모두 빈 결과면
+    // `__NEVER_MATCH__`로 좁혀서 빈 리스트 반환. 권한 게이트 X — UI가 'my' 탭에서 안전.
+    const api = new ApiClient(request)
+    const res = await api.get('/api/v1/recruitment/requisitions?myApprovals=true')
+    assertOk(res, 'list myApprovals for EMPLOYEE')
+    expect(Array.isArray(res.data)).toBe(true)
+    // 일반 EMPLOYEE 시드는 dept_head 미지정 + direct_reports 없음 → 빈 결과 기대.
+    // (만약 EDGE persona가 dept_head로 지정되면 결과 nonzero 가능 — 본 테스트는
+    // employee-a@ctr.co.kr 가정으로 0건.)
+    expect((res.data as unknown[]).length).toBe(0)
+  })
+
+  test('GET /requisitions/[id] returns 404 for EMPLOYEE on unknown ID (existence-masked)', async ({ request }) => {
+    // Session 202: detail GET이 viewer OR requester OR current approver만 통과.
+    // EMPLOYEE는 셋 다 아님 → 존재 여부 leak 차단 위해 notFound 마스킹.
+    const api = new ApiClient(request)
+    const res = await api.get(
+      '/api/v1/recruitment/requisitions/00000000-0000-0000-0000-000000000000',
+    )
+    assertError(res, 404)
+  })
+})
+
+// ═══════════════════════════════════════════════════════════
 // HR_ADMIN: Costs CRUD
 // ═══════════════════════════════════════════════════════════
 
