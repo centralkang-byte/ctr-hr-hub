@@ -59,10 +59,8 @@ export const GET = withPermission(
     // - hr_admin: HR_ADMIN / SUPER_ADMIN
     // - ceo: EXECUTIVE / SUPER_ADMIN
     // - direct_manager: user의 Position 직속 부하 (Position.reportsToPositionId)
-    // - dept_head: Department.head_id 컬럼이 스키마에 부재.
-    //   resolveApproverByRole(src/lib/approval/resolve-approval-flow.ts:92)의
-    //   raw SQL 'd.head_id'는 dead — 임원급 채용 플로우 step 2 자체가
-    //   schema 갖춰질 때까지 모든 코드 경로에서 servable 불가. 별도 schema PR.
+    // - dept_head: user가 head로 지정된 Department(s)의 소속 직원 (Session 201
+    //   `add_department_head_employee_id` 마이그레이션으로 활성화).
     // - 단일 SessionUser.role 기반: 멀티롤 employee(예: MANAGER + HR_ADMIN
     //   동시 보유)는 한 번에 하나의 role로 세션 잡힘 → 추가 role의 approval은
     //   놓침. 코드베이스 내 멀티롤 빈도 낮아 별도 follow-up.
@@ -104,7 +102,26 @@ export const GET = withPermission(
         directReportIds = reports.map((r) => r.employeeId)
       }
 
-      if (eligibleRoles.length === 0 && directReportIds.length === 0) {
+      // dept_head: user가 head로 지정된 Department의 id 집합.
+      // requisition.departmentId(채용 대상 부서)가 이 집합에 속할 때 결재 대상.
+      // requesterId 기반이 아님 — HR이 다른 부서용 채용을 등록하면 그 부서장이
+      // 결재해야 하므로 채용 대상 부서로 매칭.
+      // companyId scope는 myApprovalsScope로 강제 (cross-company head 방어).
+      const headedDepts = await prisma.department.findMany({
+        where: {
+          headEmployeeId: user.employeeId,
+          companyId: myApprovalsScope,
+          deletedAt: null,
+        },
+        select: { id: true },
+      })
+      const headedDeptIds = headedDepts.map((d) => d.id)
+
+      if (
+        eligibleRoles.length === 0 &&
+        directReportIds.length === 0 &&
+        headedDeptIds.length === 0
+      ) {
         // 어떤 역할로도 결재 대기를 가질 수 없음 → 빈 결과
         where.id = '__NEVER_MATCH__'
       } else {
@@ -131,6 +148,18 @@ export const GET = withPermission(
             ],
           })
         }
+        if (headedDeptIds.length > 0) {
+          orFilter.push({
+            AND: [
+              { departmentId: { in: headedDeptIds } },
+              {
+                approvalRecords: {
+                  some: { approverRole: 'dept_head', status: 'pending' },
+                },
+              },
+            ],
+          })
+        }
 
         const candidates = await prisma.requisition.findMany({
           where: {
@@ -142,6 +171,7 @@ export const GET = withPermission(
             id: true,
             currentStep: true,
             requesterId: true,
+            departmentId: true,
             approvalRecords: {
               where: { status: 'pending' },
               select: { stepOrder: true, approverRole: true },
@@ -158,6 +188,12 @@ export const GET = withPermission(
             if (
               current.approverRole === 'direct_manager' &&
               directReportIds.includes(req.requesterId)
+            ) {
+              return true
+            }
+            if (
+              current.approverRole === 'dept_head' &&
+              headedDeptIds.includes(req.departmentId)
             ) {
               return true
             }

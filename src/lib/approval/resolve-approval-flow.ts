@@ -88,18 +88,29 @@ export async function resolveApproverByRole(
     }
 
     case 'dept_head': {
-      // 대상 직원 소속 부서 → department.headId
-      const rows = await prisma.$queryRaw<Array<{ head_id: string }>>`
-        SELECT d.head_id
-        FROM employee_assignments ea
-        JOIN departments d ON d.id = ea.department_id
-        WHERE ea.employee_id = ${targetEmployeeId}
-          AND ea.company_id = ${companyId}
-          AND ea.is_primary = true AND ea.end_date IS NULL
-          AND d.head_id IS NOT NULL
-        LIMIT 1
-      `
-      return rows[0]?.head_id ?? null
+      // 대상 직원 소속 부서 → department.headEmployeeId (Session 201)
+      //
+      // KNOWN LIMITATION (follow-up): 이 함수가 반환하는 dept_head employeeId가
+      // 실제로 결재 라우트에 접근할 RBAC 권한을 보유하는지는 별도 가드 필요.
+      // 예: recruitment requisition의 dept_head step → /requisitions/[id]/approve는
+      // recruitment_update 권한 요구. 부서장이 MANAGER role이면 seed RBAC 상
+      // 해당 권한 없음 → 결재 stall 가능. 해결 방향:
+      //   (a) MANAGER/EXECUTIVE에 module-specific approve 권한 추가
+      //   (b) approve 라우트를 withAuth + route-local allowlist + validateApprover
+      //       조합으로 전환 (Session 187/196 패턴)
+      // Session 200 "Approve route 권한 검증 강화" follow-up과 함께 일괄 처리.
+      const assignment = await prisma.employeeAssignment.findFirst({
+        where: {
+          employeeId: targetEmployeeId,
+          companyId,
+          isPrimary: true,
+          endDate: null,
+        },
+        select: {
+          department: { select: { headEmployeeId: true } },
+        },
+      })
+      return assignment?.department?.headEmployeeId ?? null
     }
 
     case 'hr_admin': {
