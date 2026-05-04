@@ -278,6 +278,26 @@ test.describe('HR_ADMIN: Requisition CRUD', () => {
     expect([200, 400]).toContain(res.status)
   })
 
+  // Session 202: per-step approver 검증 회귀.
+  // submitForApproval=true → status='pending', currentStep=1, step 1=direct_manager.
+  // HR_ADMIN은 requester(한지영)의 direct_manager가 아니므로 기존엔
+  // recruitment_update 권한으로 통과하던 결재가 이제 per-step 검증에서 차단됨.
+  test('POST /requisitions/[id]/approve blocks HR_ADMIN on direct_manager step', async ({ request }) => {
+    const api = new ApiClient(request)
+    const createRes = await api.post('/api/v1/recruitment/requisitions', {
+      ...buildRequisition(seedData.companyId, seedData.departmentId),
+      submitForApproval: true,
+    })
+    assertOk(createRes, 'create pending requisition')
+    const pendingId = (createRes.data as Record<string, unknown>).id as string
+    cleanupIds.push(pendingId)
+
+    const res = await api.post(`/api/v1/recruitment/requisitions/${pendingId}/approve`, {
+      action: 'approve',
+    })
+    assertError(res, 403)
+  })
+
   test('DELETE /requisitions/[id] on draft succeeds', async ({ request }) => {
     const api = new ApiClient(request)
     // Create fresh for clean delete
@@ -286,6 +306,25 @@ test.describe('HR_ADMIN: Requisition CRUD', () => {
     const newId = (createRes.data as Record<string, unknown>).id as string
     const delRes = await deleteRequisition(api, newId)
     assertOk(delRes, 'delete requisition')
+  })
+})
+
+// ═══════════════════════════════════════════════════════════
+// EMPLOYEE: Requisition approve masked to 404 (Session 202)
+// ═══════════════════════════════════════════════════════════
+
+test.describe('EMPLOYEE: Requisition approve denied (existence-masked)', () => {
+  test.use({ storageState: authFile('EMPLOYEE') })
+
+  test('POST /requisitions/[id]/approve returns 404 for EMPLOYEE on unknown ID', async ({ request }) => {
+    const api = new ApiClient(request)
+    // EMPLOYEE는 recruitment_view 미보유 → notFound 마스킹 (존재 leak 방지).
+    // 실재하는 requisition에 대해서도 per-step 검증 실패 시 404로 통일.
+    const res = await api.post(
+      '/api/v1/recruitment/requisitions/00000000-0000-0000-0000-000000000000/approve',
+      { action: 'approve' },
+    )
+    assertError(res, 404)
   })
 })
 

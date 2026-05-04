@@ -7,10 +7,16 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
+import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
+import { withAuth, withPermission, perm, hasPermission } from '@/lib/permissions'
 import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+
+// Session 202: myApprovals=true 조회는 dept_head로 지정된 결재자도 가능해야 함.
+// dept_head는 Department.headEmployeeId 기반이라 role 무관 (EMPLOYEE-role 부서장
+// 가능). 일반 목록(myApprovals=false)은 기존 recruitment_view 권한 유지.
+// EMPLOYEE는 eligibleRoles/directReportIds/headedDeptIds 모두 비면 자연스레
+// `where.id = '__NEVER_MATCH__'` 분기로 빈 결과 (이미 구현됨, 89-119 라인 참조).
 
 const searchSchema = z.object({
   page: z.coerce.number().int().min(1).default(DEFAULT_PAGE),
@@ -37,7 +43,7 @@ const createSchema = z.object({
 })
 
 // ─── GET /api/v1/recruitment/requisitions ──────────────────
-export const GET = withPermission(
+export const GET = withAuth(
   async (req: NextRequest, _context: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const params = Object.fromEntries(req.nextUrl.searchParams)
     const parsed = searchSchema.safeParse(params)
@@ -45,6 +51,13 @@ export const GET = withPermission(
 
     const { page, limit, companyId, status, urgency, myApprovals } = parsed.data
     const skip = (page - 1) * limit
+
+    // 권한 분기 (Session 202): myApprovals=true는 모든 인증 사용자 허용 — 후속
+    // 필터(eligibleRoles + directReportIds + headedDeptIds)가 결재 자격이 없는
+    // 사용자에겐 빈 결과 반환. 일반 목록은 기존 recruitment_view 권한 유지.
+    if (!myApprovals && !hasPermission(user, perm(MODULE.RECRUITMENT, ACTION.VIEW))) {
+      throw forbidden('recruitment:view 권한이 필요합니다.')
+    }
 
     const where: Record<string, unknown> = {}
     if (companyId) where.companyId = companyId
@@ -84,10 +97,18 @@ export const GET = withPermission(
         eligibleRoles.push('ceo')
       }
 
-      // direct_manager: pre-fetch user의 Position 직속 부하 employeeId 집합
+      // direct_manager: pre-fetch user의 Position 직속 부하 employeeId 집합.
+      // status='ACTIVE' 명시 — isRequisitionApproverAllowed의 raw SQL과 동일한 활성
+      // 조건 (Codex Gate 2 P2): inactive 매니저가 list엔 보이고 detail/approve에서
+      // 거부되는 false approval task 방지.
       let directReportIds: string[] = []
       const userAssignment = await prisma.employeeAssignment.findFirst({
-        where: { employeeId: user.employeeId, isPrimary: true, endDate: null },
+        where: {
+          employeeId: user.employeeId,
+          isPrimary: true,
+          endDate: null,
+          status: 'ACTIVE',
+        },
         select: { positionId: true },
       })
       if (userAssignment?.positionId) {
@@ -95,6 +116,7 @@ export const GET = withPermission(
           where: {
             isPrimary: true,
             endDate: null,
+            status: 'ACTIVE',
             position: { reportsToPositionId: userAssignment.positionId },
           },
           select: { employeeId: true },
@@ -239,7 +261,6 @@ export const GET = withPermission(
 
     return apiPaginated(items, buildPagination(page, limit, total))
   },
-  perm(MODULE.RECRUITMENT, ACTION.VIEW),
 )
 
 // ─── POST /api/v1/recruitment/requisitions ─────────────────

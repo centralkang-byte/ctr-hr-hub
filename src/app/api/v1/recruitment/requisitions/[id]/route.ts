@@ -8,9 +8,10 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, conflict, notFound, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
+import { withAuth, withPermission, perm, hasPermission } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { isRequisitionApproverAllowed } from '@/lib/approval/validate-requisition-approver'
 import type { SessionUser } from '@/types'
 
 const updateSchema = z.object({
@@ -27,12 +28,20 @@ const updateSchema = z.object({
 })
 
 // ─── GET ────────────────────────────────────────────────────
-export const GET = withPermission(
-  async (_req: NextRequest, { params }: { params: Promise<Record<string, string>> }, _user: SessionUser) => {
+// Session 202: recruitment_view 미보유 사용자도 자신이 결재해야 할
+// 요청은 조회 가능해야 함 (dept_head MANAGER 등). 권한 분기:
+//   1) recruitment_view 보유 → 무제한 조회 (기존 동작)
+//   2) 미보유 → 현재 결재 단계의 승인자일 때만 조회 허용
+export const GET = withAuth(
+  async (_req: NextRequest, { params }: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const { id } = await params
 
-    const requisition = await prisma.requisition.findUnique({
-      where: { id },
+    // Cross-tenant existence oracle 차단: SUPER_ADMIN 외엔 자체 법인만.
+    const requisition = await prisma.requisition.findFirst({
+      where: {
+        id,
+        ...(user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }),
+      },
       include: {
         company: { select: { id: true, name: true } },
         department: { select: { id: true, name: true } },
@@ -53,9 +62,33 @@ export const GET = withPermission(
     })
 
     if (!requisition) throw notFound('채용 요청을 찾을 수 없습니다.')
+
+    if (!hasPermission(user, perm(MODULE.RECRUITMENT, ACTION.VIEW))) {
+      // 자신이 결재자(requester) 또는 현재 단계 승인자인지 확인.
+      const isRequester = requisition.requester?.id === user.employeeId
+      const currentRecord = requisition.approvalRecords.find(
+        (r) => r.stepOrder === requisition.currentStep && r.status === 'pending',
+      )
+      const isCurrentApprover =
+        !!currentRecord &&
+        (await isRequisitionApproverAllowed({
+          user,
+          approverRole: currentRecord.approverRole,
+          requisition: {
+            companyId: requisition.companyId,
+            departmentId: requisition.departmentId,
+            requesterId: requisition.requesterId,
+          },
+        }))
+      if (!isRequester && !isCurrentApprover) {
+        // 정보 leak 방지 (Codex Gate 2 P2): notFound로 마스킹.
+        // viewer가 아닌 사용자에겐 존재 여부 자체를 노출하지 않음.
+        throw notFound('채용 요청을 찾을 수 없습니다.')
+      }
+    }
+
     return apiSuccess(requisition)
   },
-  perm(MODULE.RECRUITMENT, ACTION.VIEW),
 )
 
 // ─── PATCH ──────────────────────────────────────────────────

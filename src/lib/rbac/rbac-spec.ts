@@ -90,6 +90,15 @@ export const ROUTE_ACL: readonly RouteRule[] = [
   // Recruitment: postings + applicants readable by managers (hiring managers)
   { prefix: '/api/v1/recruitment/postings', allowedRoles: ROLE_GROUPS.MANAGER_UP },
   { prefix: '/api/v1/recruitment/applicants', allowedRoles: ROLE_GROUPS.MANAGER_UP },
+  // Requisitions: dept_head/direct_manager 결재 라우트 (Session 202).
+  // dept_head는 Department.headEmployeeId 기반이라 role 무관 (EMPLOYEE-role 부서장도
+  // 가능). 라우트 핸들러 내부에서 액션별 권한 분기:
+  //   - approve POST: per-step isRequisitionApproverAllowed 검증 (notFound 마스킹)
+  //   - GET list myApprovals=true: role-based filter로 빈 결과 반환
+  //   - GET list myApprovals=false: recruitment_view 권한 필수
+  //   - GET detail: recruitment_view OR requester OR current approver
+  //   - POST/PATCH/DELETE: HR_UP via withPermission
+  { prefix: '/api/v1/recruitment/requisitions', allowedRoles: ROLE_GROUPS.ALL_ROLES },
   { prefix: '/api/v1/recruitment', allowedRoles: ROLE_GROUPS.HR_UP },
   { prefix: '/api/v1/year-end/hr', allowedRoles: ROLE_GROUPS.HR_UP },
   { prefix: '/api/v1/analytics', allowedRoles: ROLE_GROUPS.MANAGER_UP },
