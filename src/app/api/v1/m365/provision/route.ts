@@ -74,7 +74,7 @@ export const POST = withPermission(
     // Audit log
     const meta = extractRequestMeta(req.headers)
     logAudit({
-      actorId: user.id,
+      actorId: user.employeeId,
       action: ACTION.CREATE,
       resourceType: MODULE.SETTINGS,
       resourceId: log.id,

@@ -85,7 +85,7 @@ export const POST = withPermission(
     })
 
     logAudit({
-      actorId: user.id,
+      actorId: user.employeeId,
       action: ACTION.UPDATE,
       resourceType: MODULE.SETTINGS,
       resourceId: disableLog.id,
@@ -125,7 +125,7 @@ export const POST = withPermission(
       })
 
       logAudit({
-        actorId: user.id,
+        actorId: user.employeeId,
         action: ACTION.UPDATE,
         resourceType: MODULE.SETTINGS,
         resourceId: revokeLog.id,
@@ -166,7 +166,7 @@ export const POST = withPermission(
       })
 
       logAudit({
-        actorId: user.id,
+        actorId: user.employeeId,
         action: ACTION.UPDATE,
         resourceType: MODULE.SETTINGS,
         resourceId: sharedLog.id,

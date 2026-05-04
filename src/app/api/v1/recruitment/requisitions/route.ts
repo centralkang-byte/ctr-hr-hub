@@ -139,7 +139,7 @@ export const POST = withPermission(
           reqNumber,
           companyId,
           departmentId,
-          requesterId: user.id,
+          requesterId: user.employeeId,
           positionId: positionId ?? null,
           title,
           headcount,

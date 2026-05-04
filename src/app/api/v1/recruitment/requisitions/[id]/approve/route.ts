@@ -52,7 +52,7 @@ export const POST = withPermission(
             where: { id: currentRecord.id },
             data: {
               status: 'rejected',
-              approverId: user.id,
+              approverId: user.employeeId,
               comment: comment ?? null,
               decidedAt: new Date(),
             },
@@ -74,7 +74,7 @@ export const POST = withPermission(
         where: { id: currentRecord.id },
         data: {
           status: 'approved',
-          approverId: user.id,
+          approverId: user.employeeId,
           comment: comment ?? null,
           decidedAt: new Date(),
         },

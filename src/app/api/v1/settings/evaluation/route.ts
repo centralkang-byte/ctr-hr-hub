@@ -69,7 +69,7 @@ export const PUT = withPermission(
     })
 
     logAudit({
-      actorId: user.id,
+      actorId: user.employeeId,
       action: 'SETTINGS_UPDATE',
       resourceType: 'EvaluationSetting',
       resourceId: existing.id,
