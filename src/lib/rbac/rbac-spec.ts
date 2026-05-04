@@ -52,6 +52,12 @@ export const ROUTE_ACL: readonly RouteRule[] = [
   { prefix: '/offboarding/exit-interviews', allowedRoles: ROLE_GROUPS.HR_UP },
   { prefix: '/discipline', allowedRoles: ROLE_GROUPS.HR_UP },
   // Recruitment (section 5)
+  // Requisitions: dept_head/direct_manager 결재자 진입 허용 (Session 202 follow-up).
+  // /new는 HR_UP 유지 (생성은 HR만), /requisitions(list+detail)는 ALL_ROLES 후
+  // 클라이언트/API가 capability별 게이트(viewer/myApprovals/approve per-step).
+  // 순서: specific(/new) → broader(/requisitions) → catch-all(/recruitment).
+  { prefix: '/recruitment/requisitions/new', allowedRoles: ROLE_GROUPS.HR_UP },
+  { prefix: '/recruitment/requisitions', allowedRoles: ROLE_GROUPS.ALL_ROLES },
   { prefix: '/recruitment', allowedRoles: ROLE_GROUPS.HR_UP },
   { prefix: '/talent', allowedRoles: ROLE_GROUPS.HR_UP },
   // Performance & Compensation admin (section 6)
