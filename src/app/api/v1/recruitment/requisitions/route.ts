@@ -10,6 +10,11 @@ import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
 import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withAuth, withPermission, perm, hasPermission } from '@/lib/permissions'
 import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
+import {
+  getActiveRoleCodes,
+  buildEffectiveRoleCodes,
+  getEligibleApproverRolesForRequisition,
+} from '@/lib/employee/active-roles'
 import type { SessionUser } from '@/types'
 
 // Session 202: myApprovals=true 조회는 dept_head로 지정된 결재자도 가능해야 함.
@@ -89,32 +94,48 @@ export const GET = withAuth(
       const myApprovalsScope =
         user.role === 'SUPER_ADMIN' && companyId ? companyId : user.companyId
       where.companyId = myApprovalsScope
-      const eligibleRoles: string[] = []
-      if (user.role === 'HR_ADMIN' || user.role === 'SUPER_ADMIN') {
-        eligibleRoles.push('hr_admin')
-      }
-      if (user.role === 'EXECUTIVE' || user.role === 'SUPER_ADMIN') {
-        eligibleRoles.push('ceo')
-      }
+
+      // Session 207 멀티롤 지원: SessionUser.role(JWT pin) ∪ active EmployeeRoles(DB)로
+      // effective role set 빌드. MANAGER + HR_ADMIN 동시 보유 등 보조 role의 결재 누락
+      // 차단. validate-requisition-approver와 동일 매핑 helper 사용 → list/validator
+      // 정책 drift 차단 (Codex Gate 1 MED 2).
+      const activeRoleCodes = await getActiveRoleCodes(
+        user.employeeId,
+        myApprovalsScope,
+      )
+      const effectiveRoleCodes = buildEffectiveRoleCodes(activeRoleCodes, user.role)
+      const eligibleRoles = getEligibleApproverRolesForRequisition(effectiveRoleCodes)
 
       // direct_manager: pre-fetch user의 Position 직속 부하 employeeId 집합.
       //
       // 비대칭 정책 (Session 204 secondary 지원, direct-reports.ts:13 정합):
-      //   - 매니저(user) 측: ALL active positions (primary + secondary) — secondary로 팀장직
+      //   - 매니저(user) 측: ALL current positions (primary + secondary) — secondary로 팀장직
       //     보유 가능 (e.g., primary=일반팀원, secondary=타팀 팀장)
       //   - 부하(reports) 측: primary only — 보고 라인 기반
       //
-      // status='ACTIVE' + companyId scope 양쪽 모두 보강 — isRequisitionApproverAllowed
-      // raw SQL과 대칭 유지 (Codex Gate 2 R4 P2): inactive/cross-company 매니저가 list엔
-      // 보이고 approve에서 거부되는 false approval 방지. self-approval(user==requester)는
-      // 아래 set 구성에서 제외 (helper의 mgr_asg<>requesterId 가드와 정합).
+      // "현재" assignment = `endDate IS NULL AND status IN ('ACTIVE', 'ON_LEAVE')`
+      // 결재 전용 allowlist (Session 206 + Codex Gate 2 P1). 이유:
+      //   - ON_LEAVE 포함 → 휴직 중 결재 stuck 방지 (LOA route는 endDate=null인 ON_LEAVE
+      //     assignment 생성, 휴직 복귀 후 결재 연속성).
+      //   - RESIGNED/TERMINATED 제외 → `offboarding/start`는 status만 RESIGNED/TERMINATED
+      //     로 update하고 endDate를 last working date까지 그대로 둔다 → endDate=null
+      //     만으로는 in-progress offboarding 식별 부족. 결재 진행 중 매니저/요청자
+      //     offboarding은 SUPER_ADMIN bypass 또는 별도 reroute 워크플로(미구현)로 해소.
+      //   - 본 status allowlist는 결재 라우트 한정. `getDirectReportIds`(direct-reports.ts)
+      //     같은 cross-cutting helper에는 적용하지 않음 — 광범위 caller 회귀 위험
+      //     (1:1, off-cycle comp 등 ON_LEAVE 부하 권한 확장 + legacy seed status 누락).
+      //   - validate-requisition-approver의 raw SQL과 대칭 유지 (Session 204 패턴).
+      //
+      // companyId scope: myApprovalsScope를 양쪽(userAssignments + reports) 모두에 강제 —
+      // helper SQL과 정합. self-approval(user==requester)는 set 구성 시 제외 (helper의
+      // mgr_asg<>requesterId 가드와 정합).
       let directReportIds: string[] = []
       const userAssignments = await prisma.employeeAssignment.findMany({
         where: {
           employeeId: user.employeeId,
           companyId: myApprovalsScope,
           endDate: null,
-          status: 'ACTIVE',
+          status: { in: ['ACTIVE', 'ON_LEAVE'] },
         },
         select: { positionId: true },
       })
@@ -127,7 +148,7 @@ export const GET = withAuth(
             isPrimary: true,
             companyId: myApprovalsScope,
             endDate: null,
-            status: 'ACTIVE',
+            status: { in: ['ACTIVE', 'ON_LEAVE'] },
             position: { reportsToPositionId: { in: userPositionIds } },
           },
           select: { employeeId: true },
