@@ -51,13 +51,131 @@ export const GET = withPermission(
     if (status) where.status = status
     if (urgency) where.urgency = urgency
 
-    // 나의 결재 대기: 현 단계의 결재 레코드가 자신 것인 요청만
+    // 나의 결재 대기: requisition 생성 시 모든 step의 approvalRecord가
+    // status='pending'으로 미리 생성되며 approverId는 비어 있다 (역할 기반).
+    // 그래서 approverId 직접 비교로는 조회 불가 → approverRole + currentStep
+    // 매칭 + 사용자 역할/관계로 해석한다.
+    //
+    // - hr_admin: HR_ADMIN / SUPER_ADMIN
+    // - ceo: EXECUTIVE / SUPER_ADMIN
+    // - direct_manager: user의 Position 직속 부하 (Position.reportsToPositionId)
+    // - dept_head: Department.head_id 컬럼이 스키마에 부재.
+    //   resolveApproverByRole(src/lib/approval/resolve-approval-flow.ts:92)의
+    //   raw SQL 'd.head_id'는 dead — 임원급 채용 플로우 step 2 자체가
+    //   schema 갖춰질 때까지 모든 코드 경로에서 servable 불가. 별도 schema PR.
+    // - 단일 SessionUser.role 기반: 멀티롤 employee(예: MANAGER + HR_ADMIN
+    //   동시 보유)는 한 번에 하나의 role로 세션 잡힘 → 추가 role의 approval은
+    //   놓침. 코드베이스 내 멀티롤 빈도 낮아 별도 follow-up.
+    //
+    // **반드시 stepOrder === currentStep**으로 한정. Pending 레코드는 미래
+    // 단계까지 모두 미리 생성되므로 단순 some()으로는 다음 결재자가 현재
+    // 단계 결정 전 미리 노출되어 out-of-order 승인 위험.
+    //
+    // **Cross-company 격리**: SUPER_ADMIN이 명시적으로 companyId를 넘기면
+    // 해당 법인 한정, 그 외엔 user.companyId로 강제. 자체 법인 데이터만
+    // 노출되도록 보장 (권한 helper resolveApproverByRole와 동일 정책).
     if (myApprovals) {
-      where.approvalRecords = {
-        some: {
-          approverId: user.id,
-          status: 'pending',
-        },
+      const myApprovalsScope =
+        user.role === 'SUPER_ADMIN' && companyId ? companyId : user.companyId
+      where.companyId = myApprovalsScope
+      const eligibleRoles: string[] = []
+      if (user.role === 'HR_ADMIN' || user.role === 'SUPER_ADMIN') {
+        eligibleRoles.push('hr_admin')
+      }
+      if (user.role === 'EXECUTIVE' || user.role === 'SUPER_ADMIN') {
+        eligibleRoles.push('ceo')
+      }
+
+      // direct_manager: pre-fetch user의 Position 직속 부하 employeeId 집합
+      let directReportIds: string[] = []
+      const userAssignment = await prisma.employeeAssignment.findFirst({
+        where: { employeeId: user.employeeId, isPrimary: true, endDate: null },
+        select: { positionId: true },
+      })
+      if (userAssignment?.positionId) {
+        const reports = await prisma.employeeAssignment.findMany({
+          where: {
+            isPrimary: true,
+            endDate: null,
+            position: { reportsToPositionId: userAssignment.positionId },
+          },
+          select: { employeeId: true },
+        })
+        directReportIds = reports.map((r) => r.employeeId)
+      }
+
+      if (eligibleRoles.length === 0 && directReportIds.length === 0) {
+        // 어떤 역할로도 결재 대기를 가질 수 없음 → 빈 결과
+        where.id = '__NEVER_MATCH__'
+      } else {
+        // 1-pass: status=pending requisition 중 currentStep의 record가
+        // 사용자 역할/관계와 매치되는 id만 추려낸 뒤, 메인 query는 그
+        // id 집합으로 좁힌다. Prisma는 row-correlated 비교를 표현 못 함.
+        const orFilter: Array<Record<string, unknown>> = []
+        if (eligibleRoles.length > 0) {
+          orFilter.push({
+            approvalRecords: {
+              some: { approverRole: { in: eligibleRoles }, status: 'pending' },
+            },
+          })
+        }
+        if (directReportIds.length > 0) {
+          orFilter.push({
+            AND: [
+              { requesterId: { in: directReportIds } },
+              {
+                approvalRecords: {
+                  some: { approverRole: 'direct_manager', status: 'pending' },
+                },
+              },
+            ],
+          })
+        }
+
+        const candidates = await prisma.requisition.findMany({
+          where: {
+            ...where,
+            status: 'pending',
+            OR: orFilter,
+          },
+          select: {
+            id: true,
+            currentStep: true,
+            requesterId: true,
+            approvalRecords: {
+              where: { status: 'pending' },
+              select: { stepOrder: true, approverRole: true },
+            },
+          },
+        })
+
+        const matchingIds = candidates
+          .filter((req) => {
+            const current = req.approvalRecords.find(
+              (r) => r.stepOrder === req.currentStep,
+            )
+            if (!current) return false
+            if (
+              current.approverRole === 'direct_manager' &&
+              directReportIds.includes(req.requesterId)
+            ) {
+              return true
+            }
+            return (
+              current.approverRole !== null &&
+              eligibleRoles.includes(current.approverRole)
+            )
+          })
+          .map((r) => r.id)
+
+        if (matchingIds.length === 0) {
+          where.id = '__NEVER_MATCH__'
+        } else {
+          where.id = { in: matchingIds }
+          // myApprovals만 보는 흐름이라 status 강제 (draft/approved/rejected
+          // 동시 조회는 의미 없음 — 사용자 status query는 무시).
+          where.status = 'pending'
+        }
       }
     }
 
