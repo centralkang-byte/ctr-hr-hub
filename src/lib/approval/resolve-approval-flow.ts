@@ -7,6 +7,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
+import { findActiveRoleHolderId } from '@/lib/employee/active-roles'
 import type { ApprovalModule, ApproverRole } from '@/types/settings'
 
 // ─── ApprovalFlow 조회 ────────────────────────────────────
@@ -141,35 +142,20 @@ export async function resolveApproverByRole(
     }
 
     case 'hr_admin': {
-      const emp = await prisma.employee.findFirst({
-        where: {
-          deletedAt: null,
-          assignments: {
-            some: { companyId, status: 'ACTIVE', isPrimary: true, endDate: null },
-          },
-          employeeRoles: { some: { role: { name: 'HR_ADMIN' } } },
-        },
-        select: { id: true },
-      })
-      return emp?.id ?? null
+      // Session 207 정합화 (findActiveRoleHolderId helper SSOT):
+      //   - `Role.code` 기준 매칭 (기존 `Role.name='HR_ADMIN'`은 seed name='HR Admin'과
+      //     불일치로 항상 0 row → silent routing 실패 버그였음).
+      //   - `EmployeeRole.endDate=null` + `EmployeeRole.companyId` scope (기존 누락).
+      //   - Assignment status `IN ('ACTIVE', 'ON_LEAVE')` (Session 206 정합).
+      //   - Deterministic `orderBy: createdAt asc` (helper 내부 적용).
+      return findActiveRoleHolderId(['HR_ADMIN'], companyId)
     }
 
     case 'ceo': {
-      // SUPER_ADMIN 또는 EXECUTIVE 중 해당 법인 소속
-      const emp = await prisma.employee.findFirst({
-        where: {
-          deletedAt: null,
-          assignments: {
-            some: { companyId, status: 'ACTIVE', isPrimary: true, endDate: null },
-          },
-          employeeRoles: {
-            some: { role: { name: { in: ['SUPER_ADMIN', 'EXECUTIVE'] } } },
-          },
-        },
-        select: { id: true },
-        orderBy: { createdAt: 'asc' }, // 가장 오래된 = 대표
-      })
-      return emp?.id ?? null
+      // SUPER_ADMIN 또는 EXECUTIVE 중 해당 법인 소속 — Session 207 정합화 동일 정책.
+      // 기존 `Role.name in [...]` 매칭은 seed name('Super Admin'/'Executive')과 불일치
+      // 였음. 본 PR로 `Role.code`로 정합 + Session 206 status allowlist 적용.
+      return findActiveRoleHolderId(['SUPER_ADMIN', 'EXECUTIVE'], companyId)
     }
 
     case 'finance': {

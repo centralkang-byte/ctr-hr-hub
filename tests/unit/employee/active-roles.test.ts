@@ -5,6 +5,9 @@ vi.mock('@/lib/prisma', () => ({
     employeeRole: {
       findMany: vi.fn(),
     },
+    employee: {
+      findFirst: vi.fn(),
+    },
   },
 }))
 
@@ -12,10 +15,12 @@ import {
   getActiveRoleCodes,
   buildEffectiveRoleCodes,
   getEligibleApproverRolesForRequisition,
+  findActiveRoleHolderId,
 } from '@/lib/employee/active-roles'
 import { prisma } from '@/lib/prisma'
 
 const mockedFindMany = vi.mocked(prisma.employeeRole.findMany)
+const mockedEmployeeFindFirst = vi.mocked(prisma.employee.findFirst)
 
 describe('getActiveRoleCodes', () => {
   beforeEach(() => {
@@ -162,5 +167,129 @@ describe('getEligibleApproverRolesForRequisition', () => {
     expect(
       getEligibleApproverRolesForRequisition(new Set(['MANAGER', 'EMPLOYEE'])),
     ).toEqual([])
+  })
+})
+
+// Session 207 — resolve-approval-flow.ts:143 hr_admin/ceo routing 정합화 helper.
+describe('findActiveRoleHolderId', () => {
+  beforeEach(() => {
+    mockedEmployeeFindFirst.mockReset()
+  })
+
+  it('returns null when no employee matches in ACTIVE (and falls through to ON_LEAVE which is also empty)', async () => {
+    mockedEmployeeFindFirst
+      .mockResolvedValueOnce(null as never)
+      .mockResolvedValueOnce(null as never)
+
+    const result = await findActiveRoleHolderId(['HR_ADMIN'], 'company-A')
+
+    expect(result).toBeNull()
+  })
+
+  it('returns first matching employee for single role code', async () => {
+    mockedEmployeeFindFirst.mockResolvedValueOnce({ id: 'emp-hr-1' } as never)
+
+    const result = await findActiveRoleHolderId(['HR_ADMIN'], 'company-A')
+
+    expect(result).toBe('emp-hr-1')
+  })
+
+  it('returns first matching for multi-role disjunction (SUPER_ADMIN | EXECUTIVE)', async () => {
+    mockedEmployeeFindFirst.mockResolvedValueOnce({ id: 'emp-ceo' } as never)
+
+    const result = await findActiveRoleHolderId(
+      ['SUPER_ADMIN', 'EXECUTIVE'],
+      'company-A',
+    )
+
+    expect(result).toBe('emp-ceo')
+  })
+
+  it('queries by Role.code (not Role.name) — Session 207 SSOT fix', async () => {
+    // 기존 Role.name 매칭 버그(seed name='HR Admin' vs code='HR_ADMIN' 불일치) fix.
+    // 쿼리가 role.code 사용하는지 invariant 검증.
+    mockedEmployeeFindFirst.mockResolvedValueOnce({ id: 'emp-1' } as never)
+
+    await findActiveRoleHolderId(['HR_ADMIN'], 'company-A')
+
+    const where = mockedEmployeeFindFirst.mock.calls[0]?.[0]?.where as {
+      employeeRoles?: { some?: { role?: { code?: { in?: string[] } } } }
+    }
+    expect(where?.employeeRoles?.some?.role?.code?.in).toEqual(['HR_ADMIN'])
+  })
+
+  it('enforces EmployeeRole.endDate=null + companyId scope', async () => {
+    // 기존 누락 fix: 만료된 EmployeeRole row + 다른 법인 EmployeeRole row 자연 제외.
+    mockedEmployeeFindFirst.mockResolvedValueOnce({ id: 'emp-1' } as never)
+
+    await findActiveRoleHolderId(['HR_ADMIN'], 'company-A')
+
+    const where = mockedEmployeeFindFirst.mock.calls[0]?.[0]?.where as {
+      employeeRoles?: { some?: Record<string, unknown> }
+    }
+    expect(where?.employeeRoles?.some).toMatchObject({
+      companyId: 'company-A',
+      endDate: null,
+    })
+  })
+
+  it('prefers ACTIVE over ON_LEAVE (Codex Gate 2 R1 P2)', async () => {
+    // 1차 쿼리(ACTIVE)에서 직원 발견 → 2차 쿼리(ON_LEAVE) 호출 안 함.
+    mockedEmployeeFindFirst.mockResolvedValueOnce({ id: 'emp-active' } as never)
+
+    const result = await findActiveRoleHolderId(['HR_ADMIN'], 'company-A')
+
+    expect(result).toBe('emp-active')
+    expect(mockedEmployeeFindFirst).toHaveBeenCalledTimes(1)
+    // 1st call queries ACTIVE-only.
+    const firstWhere = mockedEmployeeFindFirst.mock.calls[0]?.[0]?.where as {
+      assignments?: { some?: { status?: string } }
+    }
+    expect(firstWhere?.assignments?.some?.status).toBe('ACTIVE')
+  })
+
+  it('falls back to ON_LEAVE when no ACTIVE holder exists', async () => {
+    // 1차 쿼리(ACTIVE) null → 2차 쿼리(ON_LEAVE) 호출 → 휴직 중 직원 routing.
+    // 법인 전체 ACTIVE HR/CEO 부재 시 결재 stuck 차단 (Session 206 validator 정합).
+    mockedEmployeeFindFirst
+      .mockResolvedValueOnce(null as never)
+      .mockResolvedValueOnce({ id: 'emp-on-leave' } as never)
+
+    const result = await findActiveRoleHolderId(['HR_ADMIN'], 'company-A')
+
+    expect(result).toBe('emp-on-leave')
+    expect(mockedEmployeeFindFirst).toHaveBeenCalledTimes(2)
+    // 2nd call queries ON_LEAVE-only.
+    const secondWhere = mockedEmployeeFindFirst.mock.calls[1]?.[0]?.where as {
+      assignments?: { some?: { status?: string } }
+    }
+    expect(secondWhere?.assignments?.some?.status).toBe('ON_LEAVE')
+  })
+
+  it('applies deterministic orderBy createdAt asc on both ACTIVE and ON_LEAVE queries', async () => {
+    // 다수의 HR admin/CEO 보유 법인에서 결정성 보장 (가장 오래된 직원 = 대표).
+    mockedEmployeeFindFirst
+      .mockResolvedValueOnce(null as never)
+      .mockResolvedValueOnce({ id: 'emp-1' } as never)
+
+    await findActiveRoleHolderId(['HR_ADMIN'], 'company-A')
+
+    expect(mockedEmployeeFindFirst.mock.calls[0]?.[0]?.orderBy).toEqual({
+      createdAt: 'asc',
+    })
+    expect(mockedEmployeeFindFirst.mock.calls[1]?.[0]?.orderBy).toEqual({
+      createdAt: 'asc',
+    })
+  })
+
+  it('returns null when no holder in either ACTIVE or ON_LEAVE', async () => {
+    mockedEmployeeFindFirst
+      .mockResolvedValueOnce(null as never)
+      .mockResolvedValueOnce(null as never)
+
+    const result = await findActiveRoleHolderId(['HR_ADMIN'], 'company-A')
+
+    expect(result).toBeNull()
+    expect(mockedEmployeeFindFirst).toHaveBeenCalledTimes(2)
   })
 })

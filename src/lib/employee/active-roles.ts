@@ -58,6 +58,87 @@ export function buildEffectiveRoleCodes(
 }
 
 /**
+ * 특정 법인에서 지정된 role code 중 하나 이상을 보유한 첫 번째 직원의 employeeId를 반환.
+ *
+ * resolve-approval-flow.ts의 hr_admin/ceo routing 전용 — "이 결재 단계의 결재자
+ * employeeId를 누구로 지정할지" 라는 단일 ID 결정 시 사용.
+ *
+ * 정합 정책 (Session 207 정합화 — 기존 `role.name` 매칭 + `endDate=null` 누락 버그 fix):
+ *   - `Role.code` SSOT 사용 (`Role.name`은 display name으로 'HR Admin' 같은 공백
+ *     포함 → `name='HR_ADMIN'` 매칭은 항상 false였음 — silent routing 실패 버그).
+ *   - `EmployeeRole.endDate IS NULL` + `EmployeeRole.companyId` scope — 만료된 role
+ *     row + 다른 법인 role row 자연 차단.
+ *
+ * Status 우선순위 (Codex Gate 2 R1 P2 — Session 206 정합):
+ *   1) ACTIVE 우선 — 결재자 routing은 단일 ID 반환이므로 휴직 중 직원이 가장 오래
+ *      된 케이스에서 사용 불가능한 결재자 routing 회귀 방지. ACTIVE 직원이 1명이라도
+ *      있으면 그 중에서 선택.
+ *   2) ON_LEAVE fallback — ACTIVE 직원 부재 시(rare: 법인 전체 HR/CEO 모두 휴직)에만
+ *      ON_LEAVE 직원 routing. 휴직 중 결재 stuck 차단(Session 206 validator 정합 —
+ *      validator도 ON_LEAVE 인정).
+ *   3) RESIGNED/TERMINATED 제외 — in-progress offboarding 직원 routing 방지.
+ *
+ * Determinism:
+ *   각 status 분기 내에서 `orderBy: { createdAt: 'asc' }` (employee.createdAt 기준) —
+ *   가장 오래된 직원 row를 "대표"로 선택. 다수의 HR admin/CEO 보유 법인에서 결정적
+ *   결과 보장. 정확한 의미는 "직원 record 생성일이 가장 오래된 자" — 직급/임명일
+ *   기준이 아님 (legacy 동작 보존).
+ *
+ * @param roleCodes 매칭할 role code 배열 (예: `['HR_ADMIN']` 또는 `['SUPER_ADMIN', 'EXECUTIVE']`)
+ * @param companyId 결재 단계 소속 법인
+ */
+export async function findActiveRoleHolderId(
+  roleCodes: readonly string[],
+  companyId: string,
+): Promise<string | null> {
+  const baseWhere = {
+    deletedAt: null,
+    employeeRoles: {
+      some: {
+        role: { code: { in: [...roleCodes] } },
+        companyId,
+        endDate: null,
+      },
+    },
+  }
+  // 1) ACTIVE 우선 — 정상 routing path.
+  const active = await prisma.employee.findFirst({
+    where: {
+      ...baseWhere,
+      assignments: {
+        some: {
+          companyId,
+          status: 'ACTIVE',
+          isPrimary: true,
+          endDate: null,
+        },
+      },
+    },
+    select: { id: true },
+    orderBy: { createdAt: 'asc' },
+  })
+  if (active) return active.id
+
+  // 2) ON_LEAVE fallback — 법인 전체 ACTIVE HR/CEO 부재 시에만.
+  const onLeave = await prisma.employee.findFirst({
+    where: {
+      ...baseWhere,
+      assignments: {
+        some: {
+          companyId,
+          status: 'ON_LEAVE',
+          isPrimary: true,
+          endDate: null,
+        },
+      },
+    },
+    select: { id: true },
+    orderBy: { createdAt: 'asc' },
+  })
+  return onLeave?.id ?? null
+}
+
+/**
  * Requisition 결재 단계의 approverRole 분기 → 사용자가 결재 가능한 step role 매핑.
  *
  * SSOT for "어떤 effective role이 어떤 requisition step을 결재 가능한가" — list filter
