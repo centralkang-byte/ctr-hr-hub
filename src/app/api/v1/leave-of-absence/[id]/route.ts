@@ -229,10 +229,17 @@ async function handleActivate(id: string, record: RecordWithType, user: SessionU
 // HR Admin에 휴직 활성화 알림 발송
 function notifyLoaActivation(record: RecordWithType) {
   // 해당 법인 HR Admin에게 알림 — fire-and-forget
+  // Session 209 (Codex Gate 1 MED 4): employeeRoles.some에 endDate=null + companyId.
   prisma.employee.findMany({
     where: {
       deletedAt: null,
-      employeeRoles: { some: { role: { code: 'HR_ADMIN' } } },
+      employeeRoles: {
+        some: {
+          role: { code: 'HR_ADMIN' },
+          endDate: null,
+          companyId: record.companyId,
+        },
+      },
       assignments: { some: { companyId: record.companyId, isPrimary: true, endDate: null } },
     },
     select: { id: true },

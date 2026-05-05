@@ -73,10 +73,17 @@ export async function POST(req: NextRequest) {
       sentCount++
 
       // 해당 법인 HR Admin에게 알림
+      // Session 209 (Codex Gate 1 MED 4): employeeRoles.some에 endDate=null + companyId.
       const hrAdmins = await prisma.employee.findMany({
         where: {
           deletedAt: null,
-          employeeRoles: { some: { role: { code: 'HR_ADMIN' } } },
+          employeeRoles: {
+            some: {
+              role: { code: 'HR_ADMIN' },
+              endDate: null,
+              companyId: record.company.id,
+            },
+          },
           assignments: { some: { companyId: record.company.id, isPrimary: true, endDate: null } },
         },
         select: { id: true },

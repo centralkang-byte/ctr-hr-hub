@@ -47,6 +47,12 @@ export const POST = withPermission(
             throw badRequest(`PENDING_APPROVAL 상태에서만 반려 가능합니다. (현재: ${run.status})`)
         }
 
+        // Session 209 (Codex Gate 1 HIGH 2): cross-company 반려 차단.
+        // SUPER_ADMIN은 cross-company bypass 허용.
+        if (user.role !== 'SUPER_ADMIN' && run.companyId !== user.companyId) {
+            throw forbidden('다른 법인의 급여를 결재할 수 없습니다.')
+        }
+
         const approval = run.payrollApproval
         if (!approval) throw badRequest('승인 프로세스가 아직 시작되지 않았습니다.')
 
@@ -54,16 +60,21 @@ export const POST = withPermission(
         if (!currentStep) throw badRequest('처리 가능한 단계가 없습니다.')
 
         // 역할 확인
-        const callerRoles = await prisma.employeeRole.findMany({
-            where: {
-                employeeId: user.employeeId,
-                endDate: null,
-                role: { code: currentStep.roleRequired },
-            },
-            select: { id: true },
-        })
-        if (callerRoles.length === 0) {
-            throw forbidden(`이 단계(${currentStep.roleRequired})를 반려할 권한이 없습니다.`)
+        // Session 209: SUPER_ADMIN session bypass + 그 외 role은 companyId scope으로
+        // cross-company false-allow 차단.
+        if (user.role !== 'SUPER_ADMIN') {
+            const callerRoles = await prisma.employeeRole.findMany({
+                where: {
+                    employeeId: user.employeeId,
+                    endDate: null,
+                    companyId: run.companyId,
+                    role: { code: currentStep.roleRequired },
+                },
+                select: { id: true },
+            })
+            if (callerRoles.length === 0) {
+                throw forbidden(`이 단계(${currentStep.roleRequired})를 반려할 권한이 없습니다.`)
+            }
         }
 
         const now = new Date()
