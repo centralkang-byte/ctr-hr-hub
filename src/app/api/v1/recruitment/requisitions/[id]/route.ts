@@ -32,6 +32,14 @@ const updateSchema = z.object({
 // 요청은 조회 가능해야 함 (dept_head MANAGER 등). 권한 분기:
 //   1) recruitment_view 보유 → 무제한 조회 (기존 동작)
 //   2) 미보유 → 현재 결재 단계의 승인자일 때만 조회 허용
+//
+// 응답에 server-derived `canApprove` 포함 (Session 206 follow-up — multi-role 인지):
+//   - SessionUser.role은 단일 JWT pin이라 client UI helper(canApproveRequisition)로
+//     계산하면 multi-role employee(예: HR_ADMIN base + 보조 MANAGER role)의 직속
+//     상사/dept head step 결재 버튼이 false-deny됨.
+//   - server validator(isRequisitionApproverAllowed)는 이미 active EmployeeRoles +
+//     관계 기반 검증으로 multi-role 처리 → 결과 재사용으로 client는 server-trusted
+//     hint만 렌더.
 export const GET = withAuth(
   async (_req: NextRequest, { params }: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const { id } = await params
@@ -63,23 +71,29 @@ export const GET = withAuth(
 
     if (!requisition) throw notFound('채용 요청을 찾을 수 없습니다.')
 
+    // ─── 결재 가능 여부 (multi-role 인지 server-derived hint) ────────────
+    // Hoist된 이유: (a) UI button visibility prop으로 응답에 포함, (b) 미보유
+    // viewer의 access gate에서도 동일 결과 재사용 (validator를 두 번 호출하지 않음).
+    // status='pending'이 아니면 currentRecord가 자동으로 undefined → canApprove=false.
+    const isRequester = requisition.requester?.id === user.employeeId
+    const currentRecord = requisition.approvalRecords.find(
+      (r) => r.stepOrder === requisition.currentStep && r.status === 'pending',
+    )
+    const isCurrentApprover =
+      !!currentRecord &&
+      (await isRequisitionApproverAllowed({
+        user,
+        approverRole: currentRecord.approverRole,
+        requisition: {
+          companyId: requisition.companyId,
+          departmentId: requisition.departmentId,
+          requesterId: requisition.requesterId,
+        },
+      }))
+
+    // Access control 순서는 Session 202와 동일 — canApprove 계산이 분기에 영향 X
+    // (Codex Gate 1 implementation note).
     if (!hasPermission(user, perm(MODULE.RECRUITMENT, ACTION.VIEW))) {
-      // 자신이 결재자(requester) 또는 현재 단계 승인자인지 확인.
-      const isRequester = requisition.requester?.id === user.employeeId
-      const currentRecord = requisition.approvalRecords.find(
-        (r) => r.stepOrder === requisition.currentStep && r.status === 'pending',
-      )
-      const isCurrentApprover =
-        !!currentRecord &&
-        (await isRequisitionApproverAllowed({
-          user,
-          approverRole: currentRecord.approverRole,
-          requisition: {
-            companyId: requisition.companyId,
-            departmentId: requisition.departmentId,
-            requesterId: requisition.requesterId,
-          },
-        }))
       if (!isRequester && !isCurrentApprover) {
         // 정보 leak 방지 (Codex Gate 2 P2): notFound로 마스킹.
         // viewer가 아닌 사용자에겐 존재 여부 자체를 노출하지 않음.
@@ -87,7 +101,7 @@ export const GET = withAuth(
       }
     }
 
-    return apiSuccess(requisition)
+    return apiSuccess({ ...requisition, canApprove: isCurrentApprover })
   },
 )
 

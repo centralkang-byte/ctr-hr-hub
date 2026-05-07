@@ -38,12 +38,9 @@ interface RequisitionContext {
  * 기준으로 검증. myApprovals list filter와 동일 매퍼(getEligibleApproverRolesForRequisition)
  * 사용 → list/validator drift 차단.
  *
- * Detail page UI 후속 (Codex Gate 2 R3 P2 — STATUS.md follow-up):
- *   detail page의 canApproveRequisition(Session 203 helper)은 user.role 기반이라
- *   multi-role 사용자(예: session.role=HR_ADMIN + active EXECUTIVE)는 server가 ceo
- *   step 결재를 허용하지만 detail page 버튼이 비활성. 우회 경로: list myApprovals 탭
- *   → 결재 모달. UI 일치는 별도 PR(canApproveRequisition을 multi-role 인지하도록
- *   refactor 또는 server-derived `canApprove` prop drill).
+ * Detail page UI: requisition GET 응답의 server-derived `canApprove` 필드가 본 함수
+ * 결과를 그대로 노출(route.ts:[id]/route.ts) — client-side helper의 single-role JWT pin
+ * 한계로 인한 false-deny 차단.
  */
 export async function isRequisitionApproverAllowed(args: {
   user: SessionUser
