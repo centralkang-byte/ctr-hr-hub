@@ -24,7 +24,6 @@ import { apiClient } from '@/lib/api'
 import { CARD_STYLES } from '@/lib/styles'
 import { useToast } from '@/hooks/use-toast'
 import { formatDate } from '@/lib/format/date'
-import { canApproveRequisition } from '@/lib/approval/can-approve-requisition'
 import type { SessionUser } from '@/types'
 import RequisitionApproveModal from '../RequisitionApproveModal'
 
@@ -67,6 +66,14 @@ interface Requisition {
   position?: { id: string; titleKo?: string | null; titleEn?: string | null; code: string } | null
   approvalRecords: ApprovalRecord[]
   jobPostings: JobPosting[]
+  /**
+   * Server-derived 결재 가능 hint (route.ts GET 응답).
+   * SessionUser.role 단일 JWT pin 한계로 client에서 multi-role(예: HR_ADMIN base +
+   * 보조 MANAGER role)을 인지하지 못하는 false-deny 차단. validator
+   * (isRequisitionApproverAllowed)가 active EmployeeRoles + 관계 기반 검증으로
+   * 계산해 응답에 포함.
+   */
+  canApprove: boolean
 }
 
 interface Props {
@@ -146,19 +153,11 @@ export default function RequisitionDetailClient({ id, user, canViewAll }: Props)
   const urgency = URGENCY_LABELS[data.urgency]
   const statusInfo = STATUS_LABELS[data.status] ?? STATUS_LABELS.draft
   const totalSteps = data.approvalRecords.length
-  const currentRecord = data.approvalRecords.find(
-    (r) => r.stepOrder === data.currentStep && r.status === 'pending',
-  )
-  const isRequester = data.requester?.id === user.employeeId
-  // canApprove: list page와 동일 SSOT — canApproveRequisition() 참조.
-  // detail GET이 viewer OR requester OR current approver만 통과시키므로 (Session 202)
-  // canViewAll=false + !isRequester면 server-verified approver 확정.
-  const canApprove = canApproveRequisition({
-    role: user.role,
-    status: data.status,
-    currentRecord,
-    passesServerApproverGate: !canViewAll && !isRequester,
-  })
+  // canApprove: server-derived (data.canApprove). validator
+  // (isRequisitionApproverAllowed)가 multi-role + 관계 검증으로 계산.
+  // client는 server-trusted hint만 렌더 — JWT 단일 role 한계로 인한 false-deny
+  // (HR_ADMIN base + MANAGER 보조 role의 direct_manager step 등) 차단.
+  const canApprove = data.canApprove
 
   return (
     <div className="p-6 space-y-6">
