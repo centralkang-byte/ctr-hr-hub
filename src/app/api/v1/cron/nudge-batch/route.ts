@@ -32,6 +32,10 @@ export async function POST(req: NextRequest) {
     companiesChecked++
 
     // 해당 법인의 MANAGER/HR_ADMIN/EXECUTIVE 역할 직원 조회
+    // Session 208: 기존 `role: { name: { in: [...] } }`는 seed name(공백 포함 'HR Admin'
+    // 'Super Admin' 'Executive')과 불일치로 항상 0 row → nudge cron이 *전체 매니저급
+    // 직원 0명*에게 발송하는 silent fail이었음. Role.code SSOT 매칭 + EmployeeRole.
+    // endDate=null + companyId scope 추가.
     const managers = await prisma.employee.findMany({
       where: {
         assignments: {
@@ -44,7 +48,9 @@ export async function POST(req: NextRequest) {
         },
         employeeRoles: {
           some: {
-            role: { name: { in: ['MANAGER', 'HR_ADMIN', 'EXECUTIVE', 'SUPER_ADMIN'] } },
+            role: { code: { in: ['MANAGER', 'HR_ADMIN', 'EXECUTIVE', 'SUPER_ADMIN'] } },
+            companyId: company.id,
+            endDate: null,
           },
         },
       },

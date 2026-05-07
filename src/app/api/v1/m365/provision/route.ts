@@ -67,14 +67,16 @@ export const POST = withPermission(
         licensesRevoked: [],
         convertToSharedMailbox: false,
         errorMessage: result.errorMessage ?? null,
-        executedBy: user.id,
+        // executedBy는 plain String 컬럼이지만 audit consistency 위해 Employee FK semantic로 통일.
+        // logAudit actorId(line 77)와 동일 값 — Session 200 audit 후속 cleanup.
+        executedBy: user.employeeId,
       },
     })
 
     // Audit log
     const meta = extractRequestMeta(req.headers)
     logAudit({
-      actorId: user.id,
+      actorId: user.employeeId,
       action: ACTION.CREATE,
       resourceType: MODULE.SETTINGS,
       resourceId: log.id,

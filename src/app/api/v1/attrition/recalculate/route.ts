@@ -72,7 +72,7 @@ export const POST = withPermission(
       })
 
       logAudit({
-        actorId: user.id,
+        actorId: user.employeeId,
         action: 'attrition.recalculate',
         resourceType: 'employee',
         resourceId: employeeId,
@@ -103,7 +103,7 @@ export const POST = withPermission(
     const batchResult = await calculateAttritionRiskBatch(companyId)
 
     logAudit({
-      actorId: user.id,
+      actorId: user.employeeId,
       action: 'attrition.recalculate',
       resourceType: 'company',
       resourceId: companyId,

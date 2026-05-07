@@ -5,6 +5,8 @@
 
 import type { PrismaClient } from '../../src/generated/prisma/client'
 import { seedLoaTypes } from './43-loa-types'
+import { seedApprovalFlowDefaults } from './42-approval-flow-defaults'
+import { seedDepartmentHeads } from './52-department-heads'
 
 // ─── Deterministic UUID ────────────────────────────────────
 
@@ -801,5 +803,17 @@ export async function seedEdgeCasePersonas(prisma: PrismaClient) {
   }
 
   console.log(`  ✅ Edge case personas: ${created} created, ${skipped} skipped`)
+
+  // Session 201 — orphan seed 호출 (master seed.ts DO NOT TOUCH).
+  // ApprovalFlowDefaults: 글로벌 기본 flow를 모듈별로 1개 보장 (probation,
+  // contract_conversion, off_cycle_comp 등 master seed.ts B1 flowDefs가 다루지
+  // 않는 모듈). recruitment의 '일반 채용 승인'/'임원급 채용' 자체는 master
+  // seed.ts:2155-2160에서 이미 정확한 step chain으로 생성됨.
+  // DepartmentHeads: 부서별 head 휴리스틱 backfill. dept_head 결재 단계가
+  // resolveApproverByRole에서 정상 해석되도록 함. headEmployeeId IS NULL인
+  // 부서만 업데이트 (수동 지정 보존). 모든 employeeAssignment 시드 이후 실행.
+  await seedApprovalFlowDefaults(prisma)
+  await seedDepartmentHeads(prisma)
+
   return { created, skipped }
 }

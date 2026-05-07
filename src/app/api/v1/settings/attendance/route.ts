@@ -124,7 +124,7 @@ export const PUT = withPermission(
       })
 
       logAudit({
-        actorId: user.id,
+        actorId: user.employeeId,
         action: existing ? 'SETTINGS_UPDATE' : 'SETTINGS_CREATE',
         resourceType: 'AttendanceSetting',
         resourceId: setting.id,

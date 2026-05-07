@@ -65,10 +65,33 @@ async function loadEmployeePermissions(employeeId: string): Promise<{
   companyId: string
   permissions: Permission[]
 }> {
-  // Get first (primary) role for the employee — used for RBAC permissions
+  // Session 209: Primary assignment 우선 조회 → role lookup의 companyId scope으로 사용.
+  // Pre-hire(active primary 없음)는 EMPLOYEE/no-perms로 강등 — Codex Gate 1 MED 3:
+  // 입사 전 role pre-provisioning만으로 권한이 세션에 핀되는 경로 차단.
+  const primaryAssignment = await prisma.employeeAssignment.findFirst({
+    where: {
+      employeeId,
+      isPrimary: true,
+      endDate: null,
+      effectiveDate: { lte: new Date() }, // Exclude future assignments (pre-hire)
+    },
+    select: { companyId: true },
+  })
+
+  if (!primaryAssignment) {
+    return { role: 'EMPLOYEE', companyId: '', permissions: [] }
+  }
+
+  // Session 209: endDate=null + companyId scope으로 role lookup 정합화.
+  // - endDate=null: 만료된 (acting/임시) role row가 session pin되는 silent-fail 차단.
+  // - companyId scope: 멀티 법인 employee에서 cross-company role drift 차단
+  //   (예: company A primary + company B HR_ADMIN 보유 시 session.role=HR_ADMIN /
+  //   session.companyId=A drift 가능).
   const employeeRole = await prisma.employeeRole.findFirst({
     where: {
       employeeId,
+      endDate: null,
+      companyId: primaryAssignment.companyId,
     },
     include: {
       role: {
@@ -87,7 +110,7 @@ async function loadEmployeePermissions(employeeId: string): Promise<{
   })
 
   if (!employeeRole) {
-    return { role: 'EMPLOYEE', companyId: '', permissions: [] }
+    return { role: 'EMPLOYEE', companyId: primaryAssignment.companyId, permissions: [] }
   }
 
   const permissions: Permission[] = employeeRole.role.rolePermissions.map(
@@ -97,25 +120,9 @@ async function loadEmployeePermissions(employeeId: string): Promise<{
     }),
   )
 
-  // Track B B-1a+: companyId from Primary Assignment (not from EmployeeRole)
-  // This prevents session companyId pollution when a secondary/dual assignment
-  // has a more recent startDate than the primary assignment's role.
-  const primaryAssignment = await prisma.employeeAssignment.findFirst({
-    where: {
-      employeeId,
-      isPrimary: true,
-      endDate: null,
-      effectiveDate: { lte: new Date() }, // Exclude future assignments (pre-hire)
-    },
-    select: { companyId: true },
-  })
-
-  // Fallback: if no primary assignment found (pre-hire etc.), use role's companyId
-  const companyId = primaryAssignment?.companyId ?? employeeRole.companyId
-
   return {
     role: employeeRole.role.code,
-    companyId,
+    companyId: primaryAssignment.companyId,
     permissions,
   }
 }
@@ -144,7 +151,10 @@ export const authOptions: NextAuthOptions = {
             employee: {
               include: {
                 assignments: {
-                  where: { isPrimary: true, endDate: null },
+                  // Session 209 (Codex Gate 2 P2): effectiveDate <= now 추가 — pre-hire
+                  // (future-dated primary)는 loadEmployeePermissions에서 EMPLOYEE/[]로
+                  // 강등되므로, 로그인 callback도 동일 정책으로 통일해 사용 불가 세션 차단.
+                  where: { isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
                   take: 1,
                   select: { status: true },
                 },
@@ -155,7 +165,9 @@ export const authOptions: NextAuthOptions = {
         // Return null for all failure cases (same generic message shown to user)
         if (!sso?.employee) return null
         const emp = sso.employee
-        const empStatus = emp.assignments?.[0]?.status
+        // Session 209: active primary 부재(pre-hire 또는 종료자) 시 로그인 차단.
+        if (!emp.assignments?.[0]) return null
+        const empStatus = emp.assignments[0].status
         if (empStatus === 'RESIGNED' || empStatus === 'TERMINATED') return null
         return { id: emp.id, email: credentials.email, name: emp.name }
       },
@@ -206,7 +218,8 @@ export const authOptions: NextAuthOptions = {
           employee: {
             include: {
               assignments: {
-                where: { isPrimary: true, endDate: null },
+                // Session 209 (Codex Gate 2 P2): effectiveDate <= now 추가 (authorize와 정합).
+                where: { isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
                 take: 1,
                 select: { status: true },
               },
@@ -221,7 +234,11 @@ export const authOptions: NextAuthOptions = {
       }
 
       const employee = ssoIdentity.employee
-      const employeeStatus = employee.assignments?.[0]?.status
+      // Session 209: active primary 부재(pre-hire 또는 종료자) 시 로그인 차단.
+      if (!employee.assignments?.[0]) {
+        return false
+      }
+      const employeeStatus = employee.assignments[0].status
       if (employeeStatus === 'RESIGNED' || employeeStatus === 'TERMINATED') {
         return false
       }

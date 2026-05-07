@@ -216,7 +216,7 @@ async function handleActivate(id: string, record: RecordWithType, user: SessionU
   })
 
   // Side-effect: 월별 급여 조정 생성 (fire-and-forget)
-  createCrossMonthLoaAdjustments(record, user.employeeId ?? user.id).catch((err) => {
+  createCrossMonthLoaAdjustments(record, user.employeeId).catch((err) => {
     console.error('[LOA Phase 3] 급여 조정 생성 실패:', err)
   })
 
@@ -229,10 +229,17 @@ async function handleActivate(id: string, record: RecordWithType, user: SessionU
 // HR Admin에 휴직 활성화 알림 발송
 function notifyLoaActivation(record: RecordWithType) {
   // 해당 법인 HR Admin에게 알림 — fire-and-forget
+  // Session 209 (Codex Gate 1 MED 4): employeeRoles.some에 endDate=null + companyId.
   prisma.employee.findMany({
     where: {
       deletedAt: null,
-      employeeRoles: { some: { role: { code: 'HR_ADMIN' } } },
+      employeeRoles: {
+        some: {
+          role: { code: 'HR_ADMIN' },
+          endDate: null,
+          companyId: record.companyId,
+        },
+      },
       assignments: { some: { companyId: record.companyId, isPrimary: true, endDate: null } },
     },
     select: { id: true },
@@ -335,7 +342,7 @@ async function handleComplete(
     }
 
     // 급여 조정 소급 정산 (실제 종료일 기준)
-    await reconcileLoaAdjustments(tx, record, actualEndDate, user.employeeId ?? user.id)
+    await reconcileLoaAdjustments(tx, record, actualEndDate, user.employeeId)
 
     return tx.leaveOfAbsence.update({
       where: { id },

@@ -47,6 +47,13 @@ export const POST = withPermission(
             throw badRequest(`PENDING_APPROVAL 상태에서만 승인 가능합니다. (현재: ${run.status})`)
         }
 
+        // Session 209 (Codex Gate 1 HIGH 2): cross-company 승인 차단.
+        // withPermission은 company scope을 강제하지 않으므로 다른 법인 동일 role 보유자가
+        // foreign runId를 알면 통과 가능. SUPER_ADMIN은 cross-company bypass 허용.
+        if (user.role !== 'SUPER_ADMIN' && run.companyId !== user.companyId) {
+            throw forbidden('다른 법인의 급여를 결재할 수 없습니다.')
+        }
+
         // 2. PayrollApproval 없으면 생성 (첫 번째 승인자 호출 시)
         // Settings-connected: approval chain from getApprovalChain (sync fallback, async variant available)
         const chain = getApprovalChain(run.company?.code ?? null)
@@ -79,19 +86,25 @@ export const POST = withPermission(
 
         // 4. 호출자의 역할 확인
         // HR_ADMIN / SUPER_ADMIN은 모든 승인 단계를 대행할 수 있음
-        const OVERRIDE_ROLES = ['HR_ADMIN', 'SUPER_ADMIN']
-        const callerRoles = await prisma.employeeRole.findMany({
-            where: {
-                employeeId: user.employeeId,
-                endDate: null,
-                role: { code: { in: [currentStep.roleRequired, ...OVERRIDE_ROLES] } },
-            },
-            select: { id: true, role: { select: { code: true } } },
-        })
-        if (callerRoles.length === 0) {
-            throw forbidden(
-                `이 단계(${currentStep.roleRequired})를 승인할 권한이 없습니다.`,
-            )
+        // Session 209: SUPER_ADMIN은 JWT session.role pin 기준 bypass (EmployeeRole row는
+        // 보통 CTR-HOLD 소속이라 run.companyId scope 매칭 불가). HR_ADMIN/매처드 role은
+        // companyId scope으로 cross-company false-allow 차단.
+        if (user.role !== 'SUPER_ADMIN') {
+            const OVERRIDE_ROLES = ['HR_ADMIN']
+            const callerRoles = await prisma.employeeRole.findMany({
+                where: {
+                    employeeId: user.employeeId,
+                    endDate: null,
+                    companyId: run.companyId,
+                    role: { code: { in: [currentStep.roleRequired, ...OVERRIDE_ROLES] } },
+                },
+                select: { id: true, role: { select: { code: true } } },
+            })
+            if (callerRoles.length === 0) {
+                throw forbidden(
+                    `이 단계(${currentStep.roleRequired})를 승인할 권한이 없습니다.`,
+                )
+            }
         }
 
         // 5. 현재 단계 승인

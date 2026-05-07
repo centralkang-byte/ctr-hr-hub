@@ -113,6 +113,45 @@ describe('RBAC SSOT (rbac-spec.ts)', () => {
     expect(onboardingMeIdx).toBeLessThan(onboardingIdx)
   })
 
+  // recruitment/requisitions: /new(HR_UP) → /requisitions(ALL_ROLES) → /recruitment(HR_UP).
+  // 순서가 깨지면 dept_head EMPLOYEE/MANAGER가 catch-all에 가로채여 403 redirect.
+  it('more specific prefixes come before general ones (recruitment/requisitions)', () => {
+    const newIdx = ROUTE_ACL.findIndex(r => r.prefix === '/recruitment/requisitions/new')
+    const requisitionsIdx = ROUTE_ACL.findIndex(r => r.prefix === '/recruitment/requisitions')
+    const recruitmentIdx = ROUTE_ACL.findIndex(r => r.prefix === '/recruitment')
+    expect(newIdx).toBeGreaterThanOrEqual(0)
+    expect(requisitionsIdx).toBeGreaterThanOrEqual(0)
+    expect(recruitmentIdx).toBeGreaterThanOrEqual(0)
+    expect(newIdx).toBeLessThan(requisitionsIdx)
+    expect(requisitionsIdx).toBeLessThan(recruitmentIdx)
+  })
+
+  it('/recruitment/requisitions allows ALL_ROLES (dept_head EMPLOYEE/MANAGER 결재자 진입)', () => {
+    const rule = findRouteRule('/recruitment/requisitions')
+    expect(rule).not.toBeNull()
+    expect(rule!.prefix).toBe('/recruitment/requisitions')
+    expect(rule!.allowedRoles).toContain(ROLE.EMPLOYEE)
+    expect(rule!.allowedRoles).toContain(ROLE.MANAGER)
+  })
+
+  it('/recruitment/requisitions/new is restricted to HR_UP (생성은 HR만)', () => {
+    const rule = findRouteRule('/recruitment/requisitions/new')
+    expect(rule).not.toBeNull()
+    expect(rule!.prefix).toBe('/recruitment/requisitions/new')
+    expect(rule!.allowedRoles).not.toContain(ROLE.EMPLOYEE)
+    expect(rule!.allowedRoles).not.toContain(ROLE.MANAGER)
+    expect(rule!.allowedRoles).toContain(ROLE.HR_ADMIN)
+    expect(rule!.allowedRoles).toContain(ROLE.SUPER_ADMIN)
+  })
+
+  it('/recruitment/postings remains HR_UP (catch-all preserved for non-requisitions)', () => {
+    const rule = findRouteRule('/recruitment/postings')
+    expect(rule).not.toBeNull()
+    expect(rule!.prefix).toBe('/recruitment')
+    expect(rule!.allowedRoles).not.toContain(ROLE.EMPLOYEE)
+    expect(rule!.allowedRoles).not.toContain(ROLE.MANAGER)
+  })
+
   // ── findRouteRule ─────────────────────────────────────────
 
   it('returns null for unlisted routes (any authenticated role allowed)', () => {

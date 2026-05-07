@@ -8801,7 +8801,13 @@
     "workMode": "Work Mode",
     "workModeLabel": "Work Mode",
     "yearUnit": "{year}",
-    "years": "year"
+    "years": "year",
+    "approvalFlow": "Approval Flow",
+    "approvedAt": "Approved",
+    "rejectedAt": "Rejected",
+    "linkedPostings": "Linked Job Postings",
+    "targetDate": "Target Date",
+    "justificationAndRequirements": "Justification & Requirements"
   },
   "rewardDetail": {
     "awardedBy": "Awarded By",

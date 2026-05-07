@@ -15,10 +15,10 @@ import {
   XCircle, FileText, Building2,
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
-import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import RequisitionApproveModal from './RequisitionApproveModal'
 import { CARD_STYLES, BUTTON_VARIANTS } from '@/lib/styles'
+import { canApproveRequisition } from '@/lib/approval/can-approve-requisition'
 
 interface Requisition {
   id: string
@@ -65,19 +65,25 @@ const STEP_ROLE_LABELS: Record<string, string> = {
   finance: 'stepRoleFinance',
 }
 
-export default function RequisitionListClient({user }: {
-  user: SessionUser }) {
+interface Props {
+  user: SessionUser
+  /** recruitment:read 권한 (HR_ADMIN/SUPER_ADMIN). 'all'/'pending' 탭 + 다른 부서 결재 큐 조회 가능. */
+  canViewAll: boolean
+  /** recruitment:create 권한. 신규 채용 요청 작성 페이지 진입 가능. */
+  canCreate: boolean
+}
+
+export default function RequisitionListClient({ user, canViewAll, canCreate }: Props) {
   const tCommon = useTranslations('common')
   const t = useTranslations('recruitment')
   const router = useRouter()
   const [items, setItems] = useState<Requisition[]>([])
   const [loading, setLoading] = useState(true)
-  const [tab, setTab] = useState<'all' | 'my' | 'pending'>('all')
+  // canViewAll=false (dept_head/direct_manager 결재자)면 'my' 탭 강제 — 'all'/'pending'은
+  // API에서 recruitment_view 권한 필요 → 403. 'my'는 myApprovals 서버 필터로 빈/매칭 결과만.
+  const [tab, setTab] = useState<'all' | 'my' | 'pending'>(canViewAll ? 'all' : 'my')
   const [search, setSearch] = useState('')
   const [approveTarget, setApproveTarget] = useState<Requisition | null>(null)
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const isHR = [ROLE.HR_ADMIN, ROLE.SUPER_ADMIN].includes(user.role as any)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -108,21 +114,24 @@ export default function RequisitionListClient({user }: {
           <h1 className="text-2xl font-bold text-foreground">{t('requisitionTitle')}</h1>
           <p className="text-sm text-muted-foreground mt-0.5">{t('department_kec9ea5_kecb184ec_kec9a94ec_kebb08f_keab2b0ec_management')}</p>
         </div>
-        <button
-          onClick={() => router.push('/recruitment/requisitions/new')}
-          className={`flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg text-sm font-medium`}
-        >
-          <Plus size={16} />
-          {t('requisition_kec9e91ec')}
-        </button>
+        {canCreate && (
+          <button
+            onClick={() => router.push('/recruitment/requisitions/new')}
+            className={`flex items-center gap-2 ${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg text-sm font-medium`}
+          >
+            <Plus size={16} />
+            {t('requisition_kec9e91ec')}
+          </button>
+        )}
       </div>
 
       {/* 탭 */}
       <div className="flex border-b border-border">
         {[
-          { key: 'all', label: t('all_kec9a94ec') },
-          { key: 'pending', label: t('kr_keab2b0ec_keb8c80ea') },
-          ...(isHR ? [{ key: 'my', label: t('kr_keb8298ec_keab2b0ec') }] : []),
+          // canViewAll=false면 'my' 탭만 — 'all'/'pending'은 API 권한 부재로 403.
+          ...(canViewAll ? [{ key: 'all' as const, label: t('all_kec9a94ec') }] : []),
+          ...(canViewAll ? [{ key: 'pending' as const, label: t('kr_keab2b0ec_keb8c80ea') }] : []),
+          { key: 'my' as const, label: t('kr_keb8298ec_keab2b0ec') },
         ].map((t) => (
           <button
             key={t.key}
@@ -170,11 +179,17 @@ export default function RequisitionListClient({user }: {
             const urgency = URGENCY_LABELS[item.urgency]
             const statusInfo = STATUS_LABELS[item.status] ?? STATUS_LABELS.draft
             const totalSteps = item.approvalRecords.length
-            const canApprove =
-              isHR && item.status === 'pending' &&
-              item.approvalRecords.some(
-                (r) => r.stepOrder === item.currentStep && r.status === 'pending',
-              )
+            const currentRecord = item.approvalRecords.find(
+              (r) => r.stepOrder === item.currentStep && r.status === 'pending',
+            )
+            // 'my' 탭은 myApprovals 서버 필터(Session 200)가 user를 approver로 검증한 결과만
+            // 반환하므로 server-verified gate. 정책 SSOT는 canApproveRequisition() 참조.
+            const canApprove = canApproveRequisition({
+              role: user.role,
+              status: item.status,
+              currentRecord,
+              passesServerApproverGate: tab === 'my',
+            })
 
             return (
               <div

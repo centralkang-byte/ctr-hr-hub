@@ -39,10 +39,19 @@ async function getTargetEmployees(companyId: string, targetGroup: string) {
   }
 
   if (targetGroup === 'manager') {
+    // Session 209 (Codex Gate 1 MED 4): employeeRoles.some에 endDate=null + companyId
+    // 추가 — assignments.some의 companyId와 독립이라 회사 A 재직 + 회사 B MANAGER role
+    // 보유 직원이 manager bucket에 false-allow되는 경로 차단.
     return prisma.employee.findMany({
       where: {
         ...baseWhere,
-        employeeRoles: { some: { role: { code: { in: ['MANAGER', 'HR_ADMIN', 'SUPER_ADMIN'] } } } },
+        employeeRoles: {
+          some: {
+            role: { code: { in: ['MANAGER', 'HR_ADMIN', 'SUPER_ADMIN'] } },
+            endDate: null,
+            companyId,
+          },
+        },
       },
       select: { id: true },
     })

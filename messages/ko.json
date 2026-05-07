@@ -3432,7 +3432,13 @@
     "pageTitle_applicants": "지원자 목록",
     "pageTitle_newApplicant": "지원자 등록",
     "pageTitle_interviews": "면접 일정",
-    "pageTitle_newInterview": "면접 등록"
+    "pageTitle_newInterview": "면접 등록",
+    "approvalFlow": "결재 흐름",
+    "approvedAt": "승인",
+    "rejectedAt": "반려",
+    "linkedPostings": "연결된 채용 공고",
+    "targetDate": "목표 일자",
+    "justificationAndRequirements": "사유 및 요건"
   },
   "offboarding": {
     "title": "퇴직 관리",

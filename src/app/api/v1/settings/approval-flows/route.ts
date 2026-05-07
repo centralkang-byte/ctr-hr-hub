@@ -90,7 +90,7 @@ export const POST = withPermission(
     })
 
     logAudit({
-      actorId: user.id,
+      actorId: user.employeeId,
       action: 'SETTINGS_CREATE',
       resourceType: 'ApprovalFlow',
       resourceId: flow.id,
@@ -139,7 +139,7 @@ export const PUT = withPermission(
     })
 
     logAudit({
-      actorId: user.id,
+      actorId: user.employeeId,
       action: 'SETTINGS_UPDATE',
       resourceType: 'ApprovalFlow',
       resourceId: id,

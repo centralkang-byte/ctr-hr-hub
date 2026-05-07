@@ -7,9 +7,10 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
+import { badRequest, forbidden, notFound, handlePrismaError } from '@/lib/errors'
+import { withAuth, hasPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { isRequisitionApproverAllowed } from '@/lib/approval/validate-requisition-approver'
 import type { SessionUser } from '@/types'
 
 const approveSchema = z.object({
@@ -17,32 +18,68 @@ const approveSchema = z.object({
   comment: z.string().optional(),
 })
 
-export const POST = withPermission(
+// Session 202: 권한 게이트는 isRequisitionApproverAllowed (per-step 검증)에 일임.
+// dept_head는 Department.headEmployeeId 기반이라 role 무관 (EMPLOYEE-role 부서장
+// 가능). 따라서 정적 role allowlist는 사용하지 않고, 모든 인증 사용자에 대해
+// per-step 매칭으로 결정. 매치 실패 시 notFound로 마스킹 (존재 leak 방지).
+// SUPER_ADMIN bypass + tenant guard는 helper 내부에 캡슐화.
+export const POST = withAuth(
   async (req: NextRequest, { params }: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const { id } = await params
+
     const body = await req.json()
     const parsed = approveSchema.safeParse(body)
     if (!parsed.success) throw badRequest(parsed.error.message)
 
     const { action, comment } = parsed.data
 
-    const requisition = await prisma.requisition.findUnique({
-      where: { id },
+    // Cross-tenant existence oracle 차단: SUPER_ADMIN 외엔 자체 법인만.
+    const requisition = await prisma.requisition.findFirst({
+      where: {
+        id,
+        ...(user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }),
+      },
       include: {
         approvalRecords: { orderBy: { stepOrder: 'asc' } },
         position: true,
       },
     })
     if (!requisition) throw notFound('채용 요청을 찾을 수 없습니다.')
+
+    // 정보 leak 방지 (Codex Gate 2 P2): recruitment_view 미보유자는 status/단계
+    // 정보를 alone-standing 응답으로 받지 못하도록 모든 auth 실패를 notFound로 마스킹.
+    // viewer(HR_ADMIN/SUPER_ADMIN)는 디버깅용 정확한 에러 유지.
+    const isViewer = hasPermission(user, perm(MODULE.RECRUITMENT, ACTION.VIEW))
+
     if (requisition.status !== 'pending') {
-      throw badRequest('결재 대기 중이 아닌 채용 요청입니다.')
+      if (isViewer) throw badRequest('결재 대기 중이 아닌 채용 요청입니다.')
+      throw notFound('채용 요청을 찾을 수 없습니다.')
     }
 
     // 현재 단계 결재 레코드 찾기
     const currentRecord = requisition.approvalRecords.find(
       (r) => r.stepOrder === requisition.currentStep && r.status === 'pending',
     )
-    if (!currentRecord) throw badRequest('현재 결재 단계를 찾을 수 없습니다.')
+    if (!currentRecord) {
+      if (isViewer) throw badRequest('현재 결재 단계를 찾을 수 없습니다.')
+      throw notFound('채용 요청을 찾을 수 없습니다.')
+    }
+
+    // Per-step approver 검증: currentRecord.approverRole에 대해 사용자가 실제 승인자인지.
+    // ApprovalFlow를 우회하는 임의 결재(예: HR_ADMIN이 dept_head step 처리) 차단.
+    const allowed = await isRequisitionApproverAllowed({
+      user,
+      approverRole: currentRecord.approverRole,
+      requisition: {
+        companyId: requisition.companyId,
+        departmentId: requisition.departmentId,
+        requesterId: requisition.requesterId,
+      },
+    })
+    if (!allowed) {
+      if (isViewer) throw forbidden('현재 결재 단계의 승인자가 아닙니다.')
+      throw notFound('채용 요청을 찾을 수 없습니다.')
+    }
 
     try {
       if (action === 'reject') {
@@ -52,7 +89,7 @@ export const POST = withPermission(
             where: { id: currentRecord.id },
             data: {
               status: 'rejected',
-              approverId: user.id,
+              approverId: user.employeeId,
               comment: comment ?? null,
               decidedAt: new Date(),
             },
@@ -74,7 +111,7 @@ export const POST = withPermission(
         where: { id: currentRecord.id },
         data: {
           status: 'approved',
-          approverId: user.id,
+          approverId: user.employeeId,
           comment: comment ?? null,
           decidedAt: new Date(),
         },
@@ -154,5 +191,4 @@ export const POST = withPermission(
       throw handlePrismaError(err)
     }
   },
-  perm(MODULE.RECRUITMENT, ACTION.UPDATE),
 )

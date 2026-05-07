@@ -29,7 +29,7 @@ export const GET = withPermission(
     const nominations = await prisma.peerReviewNomination.findMany({
       where: {
         cycleId,
-        nomineeId: user.id,
+        nomineeId: user.employeeId,
         status: 'NOMINATION_APPROVED',
       },
       include: {
@@ -56,7 +56,7 @@ export const GET = withPermission(
     const existingEvals = await prisma.performanceEvaluation.findMany({
       where: {
         cycleId,
-        evaluatorId: user.id,
+        evaluatorId: user.employeeId,
         evalType: 'PEER',
         employeeId: { in: nominations.map((n) => n.employeeId) },
       },

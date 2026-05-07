@@ -8801,7 +8801,13 @@
     "workMode": "Work Mode",
     "workModeLabel": "Work Mode",
     "yearUnit": "{year}",
-    "years": "year"
+    "years": "year",
+    "approvalFlow": "Quy trình phê duyệt",
+    "approvedAt": "Đã duyệt",
+    "rejectedAt": "Đã từ chối",
+    "linkedPostings": "Tin tuyển dụng liên kết",
+    "targetDate": "Ngày mục tiêu",
+    "justificationAndRequirements": "Lý do và yêu cầu"
   },
   "rewardDetail": {
     "awardedBy": "Awarded By",

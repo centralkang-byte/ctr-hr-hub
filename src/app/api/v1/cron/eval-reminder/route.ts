@@ -107,6 +107,12 @@ export async function POST(req: NextRequest) {
 
         // D-day 경과 시 HR_ADMIN 에스컬레이션
         if (cp.daysLeft <= 0 && missing.length > 0) {
+          // Session 208: 기존 `role: { name: 'HR_ADMIN' }`은 seed name='HR Admin'과
+          // 불일치로 항상 0 row → HR 에스컬레이션 알림이 silent fail이었음.
+          // Inline minimal fix: Role.code SSOT + EmployeeRole.endDate=null/companyId
+          // scope 추가. deletedAt + active assignment 가드는 그대로 보존(helper swap
+          // 회피 — Codex Gate 2 P2: getHrAdminIds는 EmployeeRole만 검사하므로 stale
+          // role row가 있는 inactive employee 알림 회귀 위험).
           const hrAdmins = await prisma.employee.findMany({
             where: {
               deletedAt: null,
@@ -119,7 +125,11 @@ export async function POST(req: NextRequest) {
                 },
               },
               employeeRoles: {
-                some: { role: { name: 'HR_ADMIN' } },
+                some: {
+                  role: { code: 'HR_ADMIN' },
+                  companyId: cycle.companyId,
+                  endDate: null,
+                },
               },
             },
             select: { id: true },
@@ -183,6 +193,7 @@ export async function POST(req: NextRequest) {
 
         // D-day 경과 시 HR_ADMIN 에스컬레이션
         if (cp.daysLeft <= 0 && missing.length > 0) {
+          // Session 208: 동일 silent-fail fix (위 goal case와 같은 inline 패턴).
           const hrAdmins = await prisma.employee.findMany({
             where: {
               deletedAt: null,
@@ -195,7 +206,11 @@ export async function POST(req: NextRequest) {
                 },
               },
               employeeRoles: {
-                some: { role: { name: 'HR_ADMIN' } },
+                some: {
+                  role: { code: 'HR_ADMIN' },
+                  companyId: cycle.companyId,
+                  endDate: null,
+                },
               },
             },
             select: { id: true },

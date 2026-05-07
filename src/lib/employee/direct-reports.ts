@@ -9,6 +9,14 @@ import { getCrossCompanyReadFilter } from '@/lib/api/cross-company-access'
  * Why not isPrimary-only: A manager may hold a team lead position as a secondary
  * assignment (e.g., primary=일반팀원, secondary=타팀 팀장). Filtering by isPrimary
  * would make their team invisible.
+ *
+ * Note (Session 206): 본 helper는 status 필터를 적용하지 않는다. RESIGNED/TERMINATED
+ * 직원도 endDate=null assignment를 보유할 수 있으나(in-progress offboarding —
+ * `offboarding/start`는 status만 update), 본 helper의 caller(home/summary, 1:1,
+ * off-cycle comp 등)는 광범위한 도메인이라 일괄 status allowlist는 회귀 위험이
+ * 크다 (probationary/legacy seed status 값 누락 등). 결재 라우트처럼 status 강제가
+ * 필수인 caller는 자체 SQL/쿼리에서 status IN ('ACTIVE', 'ON_LEAVE')를 inline
+ * 처리한다 (validate-requisition-approver.ts, requisitions/route.ts myApprovals).
  */
 export async function getDirectReportIds(managerId: string): Promise<string[]> {
   // Collect ALL active positions held by this manager (primary + secondary)

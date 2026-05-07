@@ -8802,7 +8802,13 @@
     "workMode": "Work Mode",
     "workModeLabel": "Work Mode",
     "yearUnit": "{year}",
-    "years": "year"
+    "years": "year",
+    "approvalFlow": "审批流程",
+    "approvedAt": "已批准",
+    "rejectedAt": "已拒绝",
+    "linkedPostings": "关联职位发布",
+    "targetDate": "目标日期",
+    "justificationAndRequirements": "理由与要求"
   },
   "rewardDetail": {
     "awardedBy": "Awarded By",

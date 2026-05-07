@@ -1,11 +1,12 @@
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Service Worker
-// cache-first(static), network-first(API), push handler
+// CTR HR Hub — Service Worker (template)
+// scripts/bump-sw-version.mjs stamps the version placeholder at build time.
+// cache-first(static), network-first(API/navigation), push handler
 // ═══════════════════════════════════════════════════════════
 
-const CACHE_NAME = 'ctr-hr-hub-v1'
+const CACHE_VERSION = '__CACHE_VERSION__'
+const CACHE_NAME = `ctr-hr-hub-${CACHE_VERSION}`
 const STATIC_ASSETS = [
-  '/',
   '/offline',
   '/manifest.json',
 ]
@@ -14,9 +15,18 @@ const STATIC_ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    (async () => {
+      const cache = await caches.open(CACHE_NAME)
+      await cache.addAll(STATIC_ASSETS)
+      // First install (no prior active worker): activate immediately so
+      // offline fallback, cache, and push are usable in this session.
+      // Upgrade (active worker present): stay in `waiting` until the client
+      // posts SKIP_WAITING via the update toast — user controls the swap.
+      if (!self.registration.active) {
+        self.skipWaiting()
+      }
+    })(),
   )
-  self.skipWaiting()
 })
 
 // ─── Activate ───────────────────────────────────────────────
@@ -32,6 +42,14 @@ self.addEventListener('activate', (event) => {
     )
   )
   self.clients.claim()
+})
+
+// ─── Message (client-driven activation) ─────────────────────
+
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') {
+    self.skipWaiting()
+  }
 })
 
 // ─── Fetch ──────────────────────────────────────────────────

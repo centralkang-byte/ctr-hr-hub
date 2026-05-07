@@ -134,6 +134,9 @@ async function resolveApprover(
       if (!assignment?.department) return null
 
       // Find department head (manager of the department's top-level)
+      // Session 209 (Codex Gate 1 HIGH 1): employeeRoles.some에 endDate=null + companyId
+      // 가드 추가. assignments.some와 employeeRoles.some는 독립 존재 조건이므로 cross-
+      // company role drift(예: 회사 A 부서 + 회사 B MANAGER role) 차단 필요.
       const deptHead = await prisma.employee.findFirst({
         where: {
           assignments: {
@@ -147,6 +150,8 @@ async function resolveApprover(
           employeeRoles: {
             some: {
               role: { code: 'MANAGER' },
+              endDate: null,
+              companyId: assignment.department.companyId,
             },
           },
         },
@@ -176,6 +181,7 @@ async function resolveApprover(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const empCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as any)?.companyId
 
+      // Session 209 (Codex Gate 1 HIGH 1): employeeRoles.some에 endDate=null + companyId.
       const hrAdmin = await prisma.employee.findFirst({
         where: {
           assignments: {
@@ -189,6 +195,8 @@ async function resolveApprover(
           employeeRoles: {
             some: {
               role: { code: 'HR_ADMIN' },
+              endDate: null,
+              companyId: empCompanyId,
             },
           },
         },
@@ -235,6 +243,7 @@ async function resolveApprover(
       const roleEmpCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as any)?.companyId
 
       // Find the role by ID, then find an employee with that role
+      // Session 209 (Codex Gate 1 HIGH 1): employeeRoles.some에 endDate=null + companyId.
       const roleHolder = await prisma.employee.findFirst({
         where: {
           assignments: {
@@ -248,6 +257,8 @@ async function resolveApprover(
           employeeRoles: {
             some: {
               roleId: approverRoleId,
+              endDate: null,
+              companyId: roleEmpCompanyId,
             },
           },
         },

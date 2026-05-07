@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/bump-sw-version.mjs",
     "dev": "next dev --port 3002",
+    "prebuild": "node scripts/bump-sw-version.mjs",
     "build": "next build",
     "analyze": "ANALYZE=true next build",
     "start": "next start",
@@ -12,7 +14,7 @@
     "i18n:fix": "tsx scripts/validate-i18n-keys.ts --fix",
     "i18n:detect": "tsx scripts/detect-hardcoded-korean.ts",
     "qa:inventory": "tsx scripts/qa/inventory.ts",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate && node scripts/bump-sw-version.mjs",
     "seed:dev": "npx tsx prisma/seed-dev.ts",
     "seed:validate": "tsx scripts/seed-validate-phase6b.ts",
     "test:unit": "vitest run",

@@ -1036,8 +1036,10 @@ model Department {
   sortOrder Int       @map("sort_order")
   deletedAt      DateTime? @map("deleted_at")
   costCenterCode String?   @map("cost_center_code") // B-2e: ERP cost center code, e.g., "CC-1001"
+  headEmployeeId String?   @map("head_employee_id") // 부서장 (approval dept_head step)
 
   company             Company              @relation(fields: [companyId], references: [id])
+  head                Employee?            @relation("DepartmentHead", fields: [headEmployeeId], references: [id], onDelete: SetNull)
   parent              Department?          @relation("DepartmentParent", fields: [parentId], references: [id])
   children            Department[]         @relation("DepartmentParent")
   assignments         EmployeeAssignment[]
@@ -1384,6 +1386,9 @@ model Employee {
   // B4: ATS 고도화
   requisitionsRequested  Requisition[]         @relation("RequisitionRequester")
   requisitionApprovals   RequisitionApproval[] @relation("RequisitionApprover")
+
+  // Department head (approval dept_head step)
+  headedDepartments      Department[]          @relation("DepartmentHead")
 
   // Performance
   mboGoals              MboGoal[]               @relation("MboGoalEmployee")

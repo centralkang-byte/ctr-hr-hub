@@ -7,10 +7,21 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
+import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
+import { withAuth, withPermission, perm, hasPermission } from '@/lib/permissions'
 import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
+import {
+  getActiveRoleCodes,
+  buildEffectiveRoleCodes,
+  getEligibleApproverRolesForRequisition,
+} from '@/lib/employee/active-roles'
 import type { SessionUser } from '@/types'
+
+// Session 202: myApprovals=true 조회는 dept_head로 지정된 결재자도 가능해야 함.
+// dept_head는 Department.headEmployeeId 기반이라 role 무관 (EMPLOYEE-role 부서장
+// 가능). 일반 목록(myApprovals=false)은 기존 recruitment_view 권한 유지.
+// EMPLOYEE는 eligibleRoles/directReportIds/headedDeptIds 모두 비면 자연스레
+// `where.id = '__NEVER_MATCH__'` 분기로 빈 결과 (이미 구현됨, 89-119 라인 참조).
 
 const searchSchema = z.object({
   page: z.coerce.number().int().min(1).default(DEFAULT_PAGE),
@@ -37,7 +48,7 @@ const createSchema = z.object({
 })
 
 // ─── GET /api/v1/recruitment/requisitions ──────────────────
-export const GET = withPermission(
+export const GET = withAuth(
   async (req: NextRequest, _context: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const params = Object.fromEntries(req.nextUrl.searchParams)
     const parsed = searchSchema.safeParse(params)
@@ -46,18 +57,218 @@ export const GET = withPermission(
     const { page, limit, companyId, status, urgency, myApprovals } = parsed.data
     const skip = (page - 1) * limit
 
+    // 권한 분기 (Session 202): myApprovals=true는 모든 인증 사용자 허용 — 후속
+    // 필터(eligibleRoles + directReportIds + headedDeptIds)가 결재 자격이 없는
+    // 사용자에겐 빈 결과 반환. 일반 목록은 기존 recruitment_view 권한 유지.
+    if (!myApprovals && !hasPermission(user, perm(MODULE.RECRUITMENT, ACTION.VIEW))) {
+      throw forbidden('recruitment:view 권한이 필요합니다.')
+    }
+
     const where: Record<string, unknown> = {}
     if (companyId) where.companyId = companyId
     if (status) where.status = status
     if (urgency) where.urgency = urgency
 
-    // 나의 결재 대기: 현 단계의 결재 레코드가 자신 것인 요청만
+    // 나의 결재 대기: requisition 생성 시 모든 step의 approvalRecord가
+    // status='pending'으로 미리 생성되며 approverId는 비어 있다 (역할 기반).
+    // 그래서 approverId 직접 비교로는 조회 불가 → approverRole + currentStep
+    // 매칭 + 사용자 역할/관계로 해석한다.
+    //
+    // - hr_admin: HR_ADMIN / SUPER_ADMIN
+    // - ceo: EXECUTIVE / SUPER_ADMIN
+    // - direct_manager: user의 Position 직속 부하 (Position.reportsToPositionId)
+    // - dept_head: user가 head로 지정된 Department(s)의 소속 직원 (Session 201
+    //   `add_department_head_employee_id` 마이그레이션으로 활성화).
+    // - 단일 SessionUser.role 기반: 멀티롤 employee(예: MANAGER + HR_ADMIN
+    //   동시 보유)는 한 번에 하나의 role로 세션 잡힘 → 추가 role의 approval은
+    //   놓침. 코드베이스 내 멀티롤 빈도 낮아 별도 follow-up.
+    //
+    // **반드시 stepOrder === currentStep**으로 한정. Pending 레코드는 미래
+    // 단계까지 모두 미리 생성되므로 단순 some()으로는 다음 결재자가 현재
+    // 단계 결정 전 미리 노출되어 out-of-order 승인 위험.
+    //
+    // **Cross-company 격리**: SUPER_ADMIN이 명시적으로 companyId를 넘기면
+    // 해당 법인 한정, 그 외엔 user.companyId로 강제. 자체 법인 데이터만
+    // 노출되도록 보장 (권한 helper resolveApproverByRole와 동일 정책).
     if (myApprovals) {
-      where.approvalRecords = {
-        some: {
-          approverId: user.id,
-          status: 'pending',
+      const myApprovalsScope =
+        user.role === 'SUPER_ADMIN' && companyId ? companyId : user.companyId
+      where.companyId = myApprovalsScope
+
+      // Session 207 멀티롤 지원: SessionUser.role(JWT pin) ∪ active EmployeeRoles(DB)로
+      // effective role set 빌드. MANAGER + HR_ADMIN 동시 보유 등 보조 role의 결재 누락
+      // 차단. validate-requisition-approver와 동일 매핑 helper 사용 → list/validator
+      // 정책 drift 차단 (Codex Gate 1 MED 2).
+      const activeRoleCodes = await getActiveRoleCodes(
+        user.employeeId,
+        myApprovalsScope,
+      )
+      const effectiveRoleCodes = buildEffectiveRoleCodes(activeRoleCodes, user.role)
+      const eligibleRoles = getEligibleApproverRolesForRequisition(effectiveRoleCodes)
+
+      // direct_manager: pre-fetch user의 Position 직속 부하 employeeId 집합.
+      //
+      // 비대칭 정책 (Session 204 secondary 지원, direct-reports.ts:13 정합):
+      //   - 매니저(user) 측: ALL current positions (primary + secondary) — secondary로 팀장직
+      //     보유 가능 (e.g., primary=일반팀원, secondary=타팀 팀장)
+      //   - 부하(reports) 측: primary only — 보고 라인 기반
+      //
+      // "현재" assignment = `endDate IS NULL AND status IN ('ACTIVE', 'ON_LEAVE')`
+      // 결재 전용 allowlist (Session 206 + Codex Gate 2 P1). 이유:
+      //   - ON_LEAVE 포함 → 휴직 중 결재 stuck 방지 (LOA route는 endDate=null인 ON_LEAVE
+      //     assignment 생성, 휴직 복귀 후 결재 연속성).
+      //   - RESIGNED/TERMINATED 제외 → `offboarding/start`는 status만 RESIGNED/TERMINATED
+      //     로 update하고 endDate를 last working date까지 그대로 둔다 → endDate=null
+      //     만으로는 in-progress offboarding 식별 부족. 결재 진행 중 매니저/요청자
+      //     offboarding은 SUPER_ADMIN bypass 또는 별도 reroute 워크플로(미구현)로 해소.
+      //   - 본 status allowlist는 결재 라우트 한정. `getDirectReportIds`(direct-reports.ts)
+      //     같은 cross-cutting helper에는 적용하지 않음 — 광범위 caller 회귀 위험
+      //     (1:1, off-cycle comp 등 ON_LEAVE 부하 권한 확장 + legacy seed status 누락).
+      //   - validate-requisition-approver의 raw SQL과 대칭 유지 (Session 204 패턴).
+      //
+      // companyId scope: myApprovalsScope를 양쪽(userAssignments + reports) 모두에 강제 —
+      // helper SQL과 정합. self-approval(user==requester)는 set 구성 시 제외 (helper의
+      // mgr_asg<>requesterId 가드와 정합).
+      let directReportIds: string[] = []
+      const userAssignments = await prisma.employeeAssignment.findMany({
+        where: {
+          employeeId: user.employeeId,
+          companyId: myApprovalsScope,
+          endDate: null,
+          status: { in: ['ACTIVE', 'ON_LEAVE'] },
         },
+        select: { positionId: true },
+      })
+      const userPositionIds = userAssignments
+        .map((a) => a.positionId)
+        .filter((id): id is string => id !== null)
+      if (userPositionIds.length > 0) {
+        const reports = await prisma.employeeAssignment.findMany({
+          where: {
+            isPrimary: true,
+            companyId: myApprovalsScope,
+            endDate: null,
+            status: { in: ['ACTIVE', 'ON_LEAVE'] },
+            position: { reportsToPositionId: { in: userPositionIds } },
+          },
+          select: { employeeId: true },
+        })
+        // dedupe (한 user가 여러 active position으로 같은 부하 커버 가능) + self 제외.
+        directReportIds = [
+          ...new Set(reports.map((r) => r.employeeId).filter((id) => id !== user.employeeId)),
+        ]
+      }
+
+      // dept_head: user가 head로 지정된 Department의 id 집합.
+      // requisition.departmentId(채용 대상 부서)가 이 집합에 속할 때 결재 대상.
+      // requesterId 기반이 아님 — HR이 다른 부서용 채용을 등록하면 그 부서장이
+      // 결재해야 하므로 채용 대상 부서로 매칭.
+      // companyId scope는 myApprovalsScope로 강제 (cross-company head 방어).
+      const headedDepts = await prisma.department.findMany({
+        where: {
+          headEmployeeId: user.employeeId,
+          companyId: myApprovalsScope,
+          deletedAt: null,
+        },
+        select: { id: true },
+      })
+      const headedDeptIds = headedDepts.map((d) => d.id)
+
+      if (
+        eligibleRoles.length === 0 &&
+        directReportIds.length === 0 &&
+        headedDeptIds.length === 0
+      ) {
+        // 어떤 역할로도 결재 대기를 가질 수 없음 → 빈 결과
+        where.id = '__NEVER_MATCH__'
+      } else {
+        // 1-pass: status=pending requisition 중 currentStep의 record가
+        // 사용자 역할/관계와 매치되는 id만 추려낸 뒤, 메인 query는 그
+        // id 집합으로 좁힌다. Prisma는 row-correlated 비교를 표현 못 함.
+        const orFilter: Array<Record<string, unknown>> = []
+        if (eligibleRoles.length > 0) {
+          orFilter.push({
+            approvalRecords: {
+              some: { approverRole: { in: eligibleRoles }, status: 'pending' },
+            },
+          })
+        }
+        if (directReportIds.length > 0) {
+          orFilter.push({
+            AND: [
+              { requesterId: { in: directReportIds } },
+              {
+                approvalRecords: {
+                  some: { approverRole: 'direct_manager', status: 'pending' },
+                },
+              },
+            ],
+          })
+        }
+        if (headedDeptIds.length > 0) {
+          orFilter.push({
+            AND: [
+              { departmentId: { in: headedDeptIds } },
+              {
+                approvalRecords: {
+                  some: { approverRole: 'dept_head', status: 'pending' },
+                },
+              },
+            ],
+          })
+        }
+
+        const candidates = await prisma.requisition.findMany({
+          where: {
+            ...where,
+            status: 'pending',
+            OR: orFilter,
+          },
+          select: {
+            id: true,
+            currentStep: true,
+            requesterId: true,
+            departmentId: true,
+            approvalRecords: {
+              where: { status: 'pending' },
+              select: { stepOrder: true, approverRole: true },
+            },
+          },
+        })
+
+        const matchingIds = candidates
+          .filter((req) => {
+            const current = req.approvalRecords.find(
+              (r) => r.stepOrder === req.currentStep,
+            )
+            if (!current) return false
+            if (
+              current.approverRole === 'direct_manager' &&
+              directReportIds.includes(req.requesterId)
+            ) {
+              return true
+            }
+            if (
+              current.approverRole === 'dept_head' &&
+              headedDeptIds.includes(req.departmentId)
+            ) {
+              return true
+            }
+            return (
+              current.approverRole !== null &&
+              eligibleRoles.includes(current.approverRole)
+            )
+          })
+          .map((r) => r.id)
+
+        if (matchingIds.length === 0) {
+          where.id = '__NEVER_MATCH__'
+        } else {
+          where.id = { in: matchingIds }
+          // myApprovals만 보는 흐름이라 status 강제 (draft/approved/rejected
+          // 동시 조회는 의미 없음 — 사용자 status query는 무시).
+          where.status = 'pending'
+        }
       }
     }
 
@@ -85,7 +296,6 @@ export const GET = withPermission(
 
     return apiPaginated(items, buildPagination(page, limit, total))
   },
-  perm(MODULE.RECRUITMENT, ACTION.VIEW),
 )
 
 // ─── POST /api/v1/recruitment/requisitions ─────────────────
@@ -139,7 +349,7 @@ export const POST = withPermission(
           reqNumber,
           companyId,
           departmentId,
-          requesterId: user.id,
+          requesterId: user.employeeId,
           positionId: positionId ?? null,
           title,
           headcount,

@@ -141,7 +141,7 @@ export const PUT = withAuth(async (
   // Audit log (fire-and-forget) — now with real actorId
   prisma.auditLog.create({
     data: {
-      actorId: user.id,
+      actorId: user.employeeId,
       action: existing ? 'SETTINGS_UPDATE' : 'SETTINGS_CREATE',
       resourceType: 'CompanyProcessSetting',
       resourceId: setting.id,
@@ -197,7 +197,7 @@ export const DELETE = withAuth(async (
   if (existing) {
     prisma.auditLog.create({
       data: {
-        actorId: user.id,
+        actorId: user.employeeId,
         action: 'SETTINGS_REVERT',
         resourceType: 'CompanyProcessSetting',
         resourceId: existing.id,
