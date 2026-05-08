@@ -7,7 +7,7 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, forbidden, notFound, handlePrismaError } from '@/lib/errors'
+import { badRequest, conflict, forbidden, notFound, handlePrismaError } from '@/lib/errors'
 import { withAuth, hasPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { isRequisitionApproverAllowed } from '@/lib/approval/validate-requisition-approver'
@@ -81,25 +81,34 @@ export const POST = withAuth(
       throw notFound('채용 요청을 찾을 수 없습니다.')
     }
 
+    // 동시 결재(double-click 등) race 방어: 트랜잭션 안에서 step status 'pending'→
+    // 'approved'/'rejected' 전환을 `updateMany` + status 조건으로 atomic 보호. PostgreSQL
+    // READ COMMITTED 격리에서 row lock으로 첫 tx만 count=1, 둘째는 status 미일치로 count=0
+    // → conflict 응답. mixed approve/reject 동시 클릭 + double-click 모두 안전.
+    // 격상 이전: approve 분기가 트랜잭션 밖 → currentStep + JobPosting 중복 부작용 가능.
+    const now = new Date()
     try {
       if (action === 'reject') {
-        // 반려: 요청 전체 반려
-        await prisma.$transaction([
-          prisma.requisitionApproval.update({
-            where: { id: currentRecord.id },
+        const result = await prisma.$transaction(async (tx) => {
+          const stepUpdate = await tx.requisitionApproval.updateMany({
+            where: { id: currentRecord.id, status: 'pending' },
             data: {
               status: 'rejected',
               approverId: user.employeeId,
               comment: comment ?? null,
-              decidedAt: new Date(),
+              decidedAt: now,
             },
-          }),
-          prisma.requisition.update({
+          })
+          if (stepUpdate.count === 0) return { raceLost: true } as const
+
+          await tx.requisition.update({
             where: { id },
             data: { status: 'rejected' },
-          }),
-        ])
+          })
+          return { raceLost: false } as const
+        })
 
+        if (result.raceLost) throw conflict('이미 처리된 결재 단계입니다.')
         return apiSuccess({ status: 'rejected', message: '채용 요청이 반려되었습니다.' })
       }
 
@@ -107,27 +116,35 @@ export const POST = withAuth(
       const totalSteps = requisition.approvalRecords.length
       const isLastStep = requisition.currentStep >= totalSteps
 
-      await prisma.requisitionApproval.update({
-        where: { id: currentRecord.id },
-        data: {
-          status: 'approved',
-          approverId: user.employeeId,
-          comment: comment ?? null,
-          decidedAt: new Date(),
-        },
-      })
+      const result = await prisma.$transaction(async (tx) => {
+        const stepUpdate = await tx.requisitionApproval.updateMany({
+          where: { id: currentRecord.id, status: 'pending' },
+          data: {
+            status: 'approved',
+            approverId: user.employeeId,
+            comment: comment ?? null,
+            decidedAt: now,
+          },
+        })
+        if (stepUpdate.count === 0) return { raceLost: true } as const
 
-      if (isLastStep) {
-        // 최종 승인 → 공고 초안 자동 생성
-        await prisma.requisition.update({
+        if (!isLastStep) {
+          await tx.requisition.update({
+            where: { id },
+            data: { currentStep: requisition.currentStep + 1 },
+          })
+          return { raceLost: false, finalized: false } as const
+        }
+
+        // 최종 승인 → 공고 초안 자동 생성 (트랜잭션 안에서 atomic)
+        await tx.requisition.update({
           where: { id },
           data: { status: 'approved' },
         })
 
-        // Position이 없으면 신규 생성
         let positionId = requisition.positionId
         if (!positionId) {
-          const newPos = await prisma.position.create({
+          const newPos = await tx.position.create({
             data: {
               code: `POS-${requisition.reqNumber}`,
               titleKo: requisition.title,
@@ -139,19 +156,18 @@ export const POST = withAuth(
             },
           })
           positionId = newPos.id
-          await prisma.requisition.update({
+          await tx.requisition.update({
             where: { id },
             data: { positionId },
           })
         }
 
-        // Job Posting 초안 자동 생성
         const empTypeMap: Record<string, string> = {
           permanent: 'FULL_TIME',
           contract: 'CONTRACT',
           intern: 'INTERN',
         }
-        const jobPosting = await prisma.jobPosting.create({
+        const jobPosting = await tx.jobPosting.create({
           data: {
             companyId: requisition.companyId,
             departmentId: requisition.departmentId,
@@ -169,24 +185,24 @@ export const POST = withAuth(
             requisitionId: id,
           },
         })
+        return { raceLost: false, finalized: true, jobPostingId: jobPosting.id } as const
+      })
 
-        return apiSuccess({
-          status: 'approved',
-          message: '최종 승인 완료. 공고 초안이 생성되었습니다.',
-          jobPostingId: jobPosting.id,
-        })
-      } else {
-        // 다음 단계로 진행
-        await prisma.requisition.update({
-          where: { id },
-          data: { currentStep: requisition.currentStep + 1 },
-        })
+      if (result.raceLost) throw conflict('이미 처리된 결재 단계입니다.')
+
+      if (!result.finalized) {
         return apiSuccess({
           status: 'step_approved',
           nextStep: requisition.currentStep + 1,
           message: `${requisition.currentStep}단계 승인 완료. 다음 단계로 진행됩니다.`,
         })
       }
+
+      return apiSuccess({
+        status: 'approved',
+        message: '최종 승인 완료. 공고 초안이 생성되었습니다.',
+        jobPostingId: result.jobPostingId,
+      })
     } catch (err) {
       throw handlePrismaError(err)
     }

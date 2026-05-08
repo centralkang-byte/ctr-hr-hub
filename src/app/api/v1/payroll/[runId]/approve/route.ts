@@ -14,7 +14,7 @@ import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, forbidden } from '@/lib/errors'
+import { badRequest, conflict, notFound, forbidden } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
@@ -60,22 +60,38 @@ export const POST = withPermission(
         let approval = run.payrollApproval
 
         if (!approval) {
-            // 처음 접근 — Approval + Steps 일괄 생성
-            approval = await prisma.payrollApproval.create({
-                data: {
-                    payrollRunId: runId,
-                    totalSteps: chain.length,
-                    status: 'IN_PROGRESS',
-                    requestedBy: user.employeeId,
-                    steps: {
-                        create: chain.map((role, idx) => ({
-                            stepNumber: idx + 1,
-                            roleRequired: role,
-                        })),
+            // 처음 접근 — Approval + Steps 일괄 생성. 동시 첫 결재 race 시 한 쪽은
+            // unique key violation(payrollRunId @unique) → P2002 catch 후 findUnique
+            // 재조회로 fallback (Codex Gate 1 HIGH 2). upsert 대신 try/catch 명시 처리
+            // 이유: nested `steps.create`를 noop update에 안전하게 결합하기 어려움.
+            try {
+                approval = await prisma.payrollApproval.create({
+                    data: {
+                        payrollRunId: runId,
+                        totalSteps: chain.length,
+                        status: 'IN_PROGRESS',
+                        requestedBy: user.employeeId,
+                        steps: {
+                            create: chain.map((role, idx) => ({
+                                stepNumber: idx + 1,
+                                roleRequired: role,
+                            })),
+                        },
                     },
-                },
-                include: { steps: { orderBy: { stepNumber: 'asc' } } },
-            })
+                    include: { steps: { orderBy: { stepNumber: 'asc' } } },
+                })
+            } catch (e: unknown) {
+                const isUniqueViolation =
+                    typeof e === 'object' && e !== null && 'code' in e &&
+                    (e as { code?: string }).code === 'P2002'
+                if (!isUniqueViolation) throw e
+                const existing = await prisma.payrollApproval.findUnique({
+                    where: { payrollRunId: runId },
+                    include: { steps: { orderBy: { stepNumber: 'asc' } } },
+                })
+                if (!existing) throw e
+                approval = existing
+            }
         }
 
         // 3. 현재 단계 확인
@@ -111,10 +127,13 @@ export const POST = withPermission(
         const isLastStep = currentStep.stepNumber === approval.totalSteps
         const now = new Date()
 
-        await prisma.$transaction(async (tx) => {
-            // 단계 승인
-            await tx.payrollApprovalStep.update({
-                where: { id: currentStep.id },
+        const txResult = await prisma.$transaction(async (tx) => {
+            // 동시 결재 race 방어: PENDING→APPROVED atomic transition. updateMany +
+            // status: 'PENDING' 조건 → READ COMMITTED row lock으로 첫 tx만 count=1,
+            // 둘째는 status 미일치로 count=0 → race lost. eventBus 중복 publish +
+            // PayrollRun status 중복 update + payslip 중복 생성 차단.
+            const stepUpdate = await tx.payrollApprovalStep.updateMany({
+                where: { id: currentStep.id, status: 'PENDING' },
                 data: {
                     status: 'APPROVED',
                     approverId: user.employeeId,
@@ -122,6 +141,7 @@ export const POST = withPermission(
                     decidedAt: now,
                 },
             })
+            if (stepUpdate.count === 0) return { raceLost: true } as const
 
             if (isLastStep) {
                 // 마지막 단계 — PayrollApproval 완료 + PayrollRun APPROVED
@@ -167,7 +187,10 @@ export const POST = withPermission(
                     void notifyNextApprover(nextStep.roleRequired, run.companyId, runId, run.yearMonth)
                 }
             }
+            return { raceLost: false } as const
         })
+
+        if (txResult.raceLost) throw conflict('이미 처리된 결재 단계입니다.')
 
         // 마지막 단계 완료 시 fire-and-forget (알림 재발송 without tx)
         if (isLastStep) {

@@ -11,7 +11,7 @@ import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, forbidden } from '@/lib/errors'
+import { badRequest, conflict, notFound, forbidden } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { sendNotification } from '@/lib/notifications'
 
@@ -79,10 +79,11 @@ export const POST = withPermission(
 
         const now = new Date()
 
-        await prisma.$transaction(async (tx) => {
-            // 현재 단계 반려
-            await tx.payrollApprovalStep.update({
-                where: { id: currentStep.id },
+        // 동시 결재 race 방어: PENDING→REJECTED atomic transition. mixed approve/reject
+        // 동시 클릭 + reject double-click 시 PayrollRun.status 중복 update + 알림 중복 차단.
+        const txResult = await prisma.$transaction(async (tx) => {
+            const stepUpdate = await tx.payrollApprovalStep.updateMany({
+                where: { id: currentStep.id, status: 'PENDING' },
                 data: {
                     status: 'REJECTED',
                     approverId: user.employeeId,
@@ -90,6 +91,7 @@ export const POST = withPermission(
                     decidedAt: now,
                 },
             })
+            if (stepUpdate.count === 0) return { raceLost: true } as const
 
             // PayrollApproval 상태 반려
             await tx.payrollApproval.update({
@@ -102,7 +104,10 @@ export const POST = withPermission(
                 where: { id: runId },
                 data: { status: 'REVIEW' },
             })
+            return { raceLost: false } as const
         })
+
+        if (txResult.raceLost) throw conflict('이미 처리된 결재 단계입니다.')
 
         // HR 요청자에게 반려 알림
         void notifyRequester(approval.requestedBy, runId, run.yearMonth, comment)

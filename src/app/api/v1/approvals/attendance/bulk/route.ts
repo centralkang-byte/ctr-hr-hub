@@ -60,15 +60,18 @@ export const POST = withPermission(
       }
 
       try {
-        await prisma.$transaction(async (tx) => {
-          await tx.attendanceApprovalStep.update({
-            where: { id: currentStep.id },
+        // 동시 결재 race 방어: pending→approved/rejected atomic. race-lost는 명시적
+        // 'skipped' 분기 — generic catch로 흡수되지 않도록 (Codex Gate 1 MED 1).
+        const txResult = await prisma.$transaction(async (tx) => {
+          const stepUpdate = await tx.attendanceApprovalStep.updateMany({
+            where: { id: currentStep.id, status: 'pending' },
             data: {
               status: action === 'APPROVE' ? 'approved' : 'rejected',
               comment,
               decidedAt: now,
             },
           })
+          if (stepUpdate.count === 0) return { raceLost: true } as const
 
           if (action === 'REJECT') {
             await tx.attendanceApprovalRequest.update({
@@ -95,8 +98,14 @@ export const POST = withPermission(
               })
             }
           }
+          return { raceLost: false } as const
         })
-        results.push({ id: approvalReq.id, status: 'processed' })
+
+        if (txResult.raceLost) {
+          results.push({ id: approvalReq.id, status: 'skipped', reason: '이미 처리된 결재 단계' })
+        } else {
+          results.push({ id: approvalReq.id, status: 'processed' })
+        }
       } catch {
         results.push({ id: approvalReq.id, status: 'skipped', reason: '처리 중 오류 발생' })
       }

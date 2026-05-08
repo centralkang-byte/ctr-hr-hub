@@ -8,7 +8,7 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, forbidden, handlePrismaError } from '@/lib/errors'
+import { badRequest, conflict, notFound, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { offCycleRejectSchema } from '@/lib/schemas/compensation'
@@ -64,10 +64,13 @@ export const POST = withPermission(
         throw badRequest('현재 승인 단계를 찾을 수 없습니다.')
       }
 
-      // 트랜잭션: 단계 반려 + 요청 반려
+      // 동시 결재 race 방어: PENDING→REJECTED atomic transition (PR #19와 동일 패턴).
+      // updateMany + status: 'PENDING' 조건 → READ COMMITTED row lock으로 첫 tx만
+      // count=1, 둘째는 PENDING 미일치로 count=0 → race lost. mixed approve/reject
+      // 동시 클릭 시 중복 처리 차단.
       const result = await prisma.$transaction(async (tx) => {
-        await tx.offCycleApprovalStep.update({
-          where: { id: currentStepRecord.id },
+        const stepUpdate = await tx.offCycleApprovalStep.updateMany({
+          where: { id: currentStepRecord.id, status: 'PENDING' },
           data: {
             status: 'REJECTED',
             approverId: user.employeeId,
@@ -75,6 +78,7 @@ export const POST = withPermission(
             decidedAt: now,
           },
         })
+        if (stepUpdate.count === 0) return { raceLost: true } as const
 
         const updated = await tx.offCycleCompRequest.update({
           where: { id },
@@ -84,15 +88,17 @@ export const POST = withPermission(
           },
         })
 
-        return updated
+        return { raceLost: false, updated } as const
       })
+
+      if (result.raceLost) throw conflict('이미 처리된 결재 단계입니다.')
 
       // TODO: eventBus.publish(OFF_CYCLE_COMP_REJECTED, { requestId: id })
 
       return apiSuccess({
-        id: result.id,
-        status: result.status,
-        completedAt: result.completedAt,
+        id: result.updated.id,
+        status: result.updated.status,
+        completedAt: result.updated.completedAt,
       })
     } catch (error) {
       throw handlePrismaError(error)
