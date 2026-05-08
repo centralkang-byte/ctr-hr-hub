@@ -7,7 +7,7 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, forbidden } from '@/lib/errors'
+import { badRequest, conflict, notFound, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { z } from 'zod'
@@ -61,16 +61,20 @@ export const PUT = withPermission(
 
     const now = new Date()
 
-    await prisma.$transaction(async (tx) => {
-      // 현재 단계 업데이트
-      await tx.attendanceApprovalStep.update({
-        where: { id: currentStep.id },
+    // 동시 결재 race 방어: pending→approved/rejected atomic transition. updateMany +
+    // status: 'pending' 조건 → READ COMMITTED row lock으로 첫 tx만 count=1, 둘째는
+    // count=0 → race lost. mixed approve/reject 동시 클릭 + double-click 시 nextStep
+    // 중복 활성화 + currentStep 2번 advance 차단.
+    const txResult = await prisma.$transaction(async (tx) => {
+      const stepUpdate = await tx.attendanceApprovalStep.updateMany({
+        where: { id: currentStep.id, status: 'pending' },
         data: {
           status: action === 'approve' ? 'approved' : 'rejected',
           comment,
           decidedAt: now,
         },
       })
+      if (stepUpdate.count === 0) return { raceLost: true } as const
 
       if (action === 'reject') {
         // 반려 — 요청 최종 반려
@@ -99,7 +103,10 @@ export const PUT = withPermission(
           })
         }
       }
+      return { raceLost: false } as const
     })
+
+    if (txResult.raceLost) throw conflict('이미 처리된 결재 단계입니다.')
 
     // 최신 상태 반환
     const updated = await prisma.attendanceApprovalRequest.findUnique({
