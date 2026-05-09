@@ -81,35 +81,45 @@ export default function LoginPageContent() {
   }, [])
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-card">
       {/* ─── Left: CTR Branding ─── */}
-      <div className="hidden flex-1 flex-col items-center justify-center bg-ctr-primary p-12 lg:flex">
-        <div className="max-w-md text-center">
-          <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-xl bg-white/10">
-            <span className="text-3xl font-bold text-white">CTR</span>
+      <div className="hidden flex-1 flex-col justify-between bg-ctr-primary p-16 lg:flex">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10">
+            <span className="text-sm font-bold text-white tracking-tight">CTR</span>
           </div>
-          <h1 className="mb-4 text-3xl font-bold text-white">CTR HR Hub</h1>
-          <p className="mb-2 text-lg text-white/80">{t('integratedHrSystem')}</p>
-          <p className="text-sm text-white/60">{t('brandSlogan')}</p>
+          <span className="text-sm font-semibold text-white tracking-tight">CTR HR Hub</span>
         </div>
+
+        <div className="max-w-lg">
+          <h1 className="text-5xl xl:text-6xl font-bold text-white leading-[1.05] tracking-tighter">
+            {t('integratedHrSystem')}
+          </h1>
+          <p className="mt-6 text-lg text-white/70 tracking-tight">{t('brandSlogan')}</p>
+        </div>
+
+        <p className="text-xs text-white/50 tracking-tight">© {new Date().getFullYear()} CTR Group</p>
       </div>
 
       {/* ─── Right: Login Form ─── */}
-      <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto bg-card p-8">
+      <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto p-8">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
-          <div className="mb-8 text-center lg:hidden">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-ctr-primary">
-              <span className="text-2xl font-bold text-white">CTR</span>
+          <div className="mb-10 text-center lg:hidden">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-ctr-primary">
+              <span className="text-xl font-bold text-white tracking-tight">CTR</span>
             </div>
-            <h1 className="text-xl font-bold text-ctr-primary">CTR HR Hub</h1>
+            <h1 className="text-lg font-semibold text-foreground tracking-tight">CTR HR Hub</h1>
           </div>
 
-          <Card className="border-0 shadow-none lg:border lg:">
-            <CardHeader className="text-center">
-              <CardTitle className="text-xl">{t('login')}</CardTitle>
+          <Card className="border-0 shadow-none">
+            <CardHeader className="px-0 pb-6 text-left">
+              <CardTitle className="text-3xl font-bold tracking-tighter">{t('login')}</CardTitle>
+              <p className="mt-2 text-sm text-muted-foreground tracking-tight">
+                {t('integratedHrSystem')}
+              </p>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 px-0">
               {/* ── Error Message ── */}
               {errorMessage && (
                 <div className="flex items-start gap-2 rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
@@ -122,7 +132,7 @@ export default function LoginPageContent() {
               <Button
                 onClick={handleM365Login}
                 disabled={loadingId !== null}
-                className="w-full bg-card text-foreground border border-border hover:bg-muted shadow-sm"
+                className="w-full bg-[#2F2F2F] text-white hover:bg-[#1a1a1a] shadow-none border-0"
                 size="lg"
               >
                 {loadingId === 'm365' ? (
@@ -188,13 +198,11 @@ export default function LoginPageContent() {
               )}
 
               {/* Footer */}
-              <div className="mt-4 rounded-lg bg-muted px-4 py-3 text-center">
-                <p className="text-xs text-muted-foreground">
-                  {t.rich('contactHr', {
-                    emphasis: (chunks) => <span className="font-semibold text-foreground">{chunks}</span>,
-                  })}
-                </p>
-              </div>
+              <p className="mt-6 text-center text-xs text-muted-foreground tracking-tight">
+                {t.rich('contactHr', {
+                  emphasis: (chunks) => <span className="font-semibold text-foreground">{chunks}</span>,
+                })}
+              </p>
             </CardContent>
           </Card>
         </div>
