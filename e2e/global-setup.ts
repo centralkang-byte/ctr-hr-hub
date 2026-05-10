@@ -92,7 +92,17 @@ async function globalSetup(config: FullConfig) {
         throw new Error(`Login failed for ${role} (${email})`)
       }
 
-      // 4. Save storageState
+      // 4. Pin Korean locale so tests asserting on Korean strings (전체/조직/부서이동
+      // /Onboarding heading 등) match. next-intl's request handler reads NEXT_LOCALE
+      // cookie and falls back to defaultLocale='en' otherwise — without this, dashboard
+      // pages render in English even though Employee.locale defaults to 'ko' in schema.
+      await context.addCookies([{
+        name: 'NEXT_LOCALE',
+        value: 'ko',
+        url: baseURL,
+      }])
+
+      // 5. Save storageState
       await context.storageState({ path: authFile })
       console.log(`  [auth] ${role} — session saved`)
     } catch (err) {

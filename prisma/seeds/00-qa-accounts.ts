@@ -209,24 +209,47 @@ export async function seedQAAccounts(prisma: PrismaClient) {
     })
     employeeMap[acc.email] = emp.id
 
-    // EmployeeAssignment — only create if no primary active assignment exists
-    const existingAssign = await prisma.employeeAssignment.findFirst({
-      where: { employeeId: emp.id, isPrimary: true, endDate: null },
-    })
-
+    // EmployeeAssignment — bulletproof cleanup. Earlier passes attempted to convert a
+    // single future-effective primary, but observed CI run 25623623168 still hit /pre-hire
+    // for employee-a even after the wrapper ran, suggesting either (a) multiple primary
+    // actives where findFirst missed the future one, or (b) a later mutation. Final pass:
+    //   1. List ALL primary active assignments for this employee
+    //   2. End-date every future-effective one (endDate = effectiveDate − 1 day)
+    //   3. Ensure at least one current-effective primary exists (create fresh if not)
+    //   4. Update positionId/departmentId on the surviving current primary
+    const NOW = new Date()
+    const QA_BASE_EFFECTIVE_DATE = new Date('2024-01-01')
     const posId = acc.positionCode ? positionMap[acc.positionCode] : undefined
 
-    if (existingAssign) {
-      // Update positionId + departmentId on existing assignment for QA positions
-      if (posId) {
+    const allActivePrimaries = await prisma.employeeAssignment.findMany({
+      where: { employeeId: emp.id, isPrimary: true, endDate: null },
+      select: { id: true, effectiveDate: true, departmentId: true },
+    })
+
+    // End-date any future-effective primary so it doesn't shadow the current one.
+    for (const p of allActivePrimaries) {
+      if (p.effectiveDate.getTime() > NOW.getTime()) {
+        const fenceDate = new Date(p.effectiveDate.getTime() - 24 * 60 * 60 * 1000)
         await prisma.employeeAssignment.update({
-          where: { id: existingAssign.id },
-          data: { positionId: posId, departmentId: deptId ?? existingAssign.departmentId },
+          where: { id: p.id },
+          data: { endDate: fenceDate },
         })
       }
-    } else {
+    }
+
+    // Locate (or create) the current-effective primary.
+    let primaryAssign = await prisma.employeeAssignment.findFirst({
+      where: {
+        employeeId: emp.id,
+        isPrimary: true,
+        endDate: null,
+        effectiveDate: { lte: NOW },
+      },
+    })
+
+    if (!primaryAssign) {
       const assignId = deterministicUUID('qa-assign', acc.email)
-      await prisma.employeeAssignment.create({
+      primaryAssign = await prisma.employeeAssignment.create({
         data: {
           id: assignId,
           employeeId: emp.id,
@@ -235,12 +258,17 @@ export async function seedQAAccounts(prisma: PrismaClient) {
           jobGradeId: gradeId,
           jobCategoryId: catId,
           positionId: posId,
-          effectiveDate: new Date('2024-01-01'),
+          effectiveDate: QA_BASE_EFFECTIVE_DATE,
           changeType: 'HIRE',
           employmentType: 'FULL_TIME',
           status: 'ACTIVE',
           isPrimary: true,
         },
+      })
+    } else if (posId) {
+      await prisma.employeeAssignment.update({
+        where: { id: primaryAssign.id },
+        data: { positionId: posId, departmentId: deptId ?? primaryAssign.departmentId },
       })
     }
 
