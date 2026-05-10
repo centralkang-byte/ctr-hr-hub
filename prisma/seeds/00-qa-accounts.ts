@@ -209,15 +209,35 @@ export async function seedQAAccounts(prisma: PrismaClient) {
     })
     employeeMap[acc.email] = emp.id
 
-    // EmployeeAssignment — ensure a CURRENTLY-EFFECTIVE primary active assignment exists.
-    // QA accounts must be reachable in the dashboard layout; layout.tsx redirects to
-    // /pre-hire when fetchPrimaryAssignment (effectiveDate <= now) returns null. Earlier
-    // seed steps may leave only a future-effective primary, so we prefer a current one,
-    // fall back to converting a future one, and create fresh only as a last resort.
+    // EmployeeAssignment — bulletproof cleanup. Earlier passes attempted to convert a
+    // single future-effective primary, but observed CI run 25623623168 still hit /pre-hire
+    // for employee-a even after the wrapper ran, suggesting either (a) multiple primary
+    // actives where findFirst missed the future one, or (b) a later mutation. Final pass:
+    //   1. List ALL primary active assignments for this employee
+    //   2. End-date every future-effective one (endDate = effectiveDate − 1 day)
+    //   3. Ensure at least one current-effective primary exists (create fresh if not)
+    //   4. Update positionId/departmentId on the surviving current primary
     const NOW = new Date()
     const QA_BASE_EFFECTIVE_DATE = new Date('2024-01-01')
     const posId = acc.positionCode ? positionMap[acc.positionCode] : undefined
 
+    const allActivePrimaries = await prisma.employeeAssignment.findMany({
+      where: { employeeId: emp.id, isPrimary: true, endDate: null },
+      select: { id: true, effectiveDate: true, departmentId: true },
+    })
+
+    // End-date any future-effective primary so it doesn't shadow the current one.
+    for (const p of allActivePrimaries) {
+      if (p.effectiveDate.getTime() > NOW.getTime()) {
+        const fenceDate = new Date(p.effectiveDate.getTime() - 24 * 60 * 60 * 1000)
+        await prisma.employeeAssignment.update({
+          where: { id: p.id },
+          data: { endDate: fenceDate },
+        })
+      }
+    }
+
+    // Locate (or create) the current-effective primary.
     let primaryAssign = await prisma.employeeAssignment.findFirst({
       where: {
         employeeId: emp.id,
@@ -228,32 +248,8 @@ export async function seedQAAccounts(prisma: PrismaClient) {
     })
 
     if (!primaryAssign) {
-      const futurePrimary = await prisma.employeeAssignment.findFirst({
-        where: {
-          employeeId: emp.id,
-          isPrimary: true,
-          endDate: null,
-          effectiveDate: { gt: NOW },
-        },
-      })
-      if (futurePrimary) {
-        primaryAssign = await prisma.employeeAssignment.update({
-          where: { id: futurePrimary.id },
-          data: { effectiveDate: QA_BASE_EFFECTIVE_DATE },
-        })
-      }
-    }
-
-    if (primaryAssign) {
-      if (posId) {
-        await prisma.employeeAssignment.update({
-          where: { id: primaryAssign.id },
-          data: { positionId: posId, departmentId: deptId ?? primaryAssign.departmentId },
-        })
-      }
-    } else {
       const assignId = deterministicUUID('qa-assign', acc.email)
-      await prisma.employeeAssignment.create({
+      primaryAssign = await prisma.employeeAssignment.create({
         data: {
           id: assignId,
           employeeId: emp.id,
@@ -269,6 +265,22 @@ export async function seedQAAccounts(prisma: PrismaClient) {
           isPrimary: true,
         },
       })
+    } else if (posId) {
+      await prisma.employeeAssignment.update({
+        where: { id: primaryAssign.id },
+        data: { positionId: posId, departmentId: deptId ?? primaryAssign.departmentId },
+      })
+    }
+
+    if (acc.email === 'employee-a@ctr.co.kr') {
+      const after = await prisma.employeeAssignment.findMany({
+        where: { employeeId: emp.id, isPrimary: true },
+        select: { effectiveDate: true, endDate: true },
+        orderBy: { effectiveDate: 'asc' },
+      })
+      console.log(`  [qa-debug] employee-a primaries:`, after.map(a =>
+        `${a.effectiveDate.toISOString().slice(0, 10)}${a.endDate ? `→${a.endDate.toISOString().slice(0, 10)}` : ''}`
+      ).join(', '))
     }
 
     // EmployeeAuth
