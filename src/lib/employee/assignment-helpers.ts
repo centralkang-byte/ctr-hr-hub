@@ -41,6 +41,12 @@ export async function getCompanyHireDate(
  * Changwon), effectiveDate should be compared in the employee's location timezone.
  * Acceptable for V1 launch; revisit post-deployment.
  */
+// TEMPORARY: module-load marker so we can confirm the build picked up the
+// updated source. Remove together with the fpa-debug log below.
+if (process.env.PRISMA_QUERY_DEBUG === '1') {
+  console.log('[fpa-debug] assignment-helpers module loaded')
+}
+
 export const fetchPrimaryAssignment = cache(async function fetchPrimaryAssignment(employeeId: string) {
   const now = new Date()
   const result = await prisma.employeeAssignment.findFirst({
@@ -59,12 +65,11 @@ export const fetchPrimaryAssignment = cache(async function fetchPrimaryAssignmen
     },
   })
 
-  // TEMPORARY: trace request-time DB state for the QA EMPLOYEE account that
-  // keeps redirecting to /pre-hire despite the seed leaving a single past
-  // 2024-01-01 primary. Gated on PRISMA_QUERY_DEBUG so this is silent in
-  // production; only fires in E2E (playwright.config.ts sets the env var on
-  // the test webServer). Remove once the mutation source is found.
-  if (process.env.PRISMA_QUERY_DEBUG === '1' && !result) {
+  // TEMPORARY: log every call when query debug env is set. Used to confirm
+  // whether the layout actually invokes this helper for the QA EMPLOYEE
+  // account that keeps redirecting to /pre-hire. Remove once root cause
+  // is found.
+  if (process.env.PRISMA_QUERY_DEBUG === '1') {
     const employee = await prisma.employee.findUnique({
       where: { id: employeeId },
       select: { email: true },
@@ -76,7 +81,7 @@ export const fetchPrimaryAssignment = cache(async function fetchPrimaryAssignmen
         orderBy: { effectiveDate: 'asc' },
       })
       console.log(
-        `[fpa-debug] employee-a primaries at request time (now=${now.toISOString()}):`,
+        `[fpa-debug] employee-a CALLED (resultId=${result?.id?.slice(0, 8) ?? 'null'} now=${now.toISOString()}):`,
         all.map(a =>
           `id=${a.id.slice(0, 8)} eff=${a.effectiveDate.toISOString().slice(0, 10)}` +
           `${a.endDate ? `→${a.endDate.toISOString().slice(0, 10)}` : ''}` +
