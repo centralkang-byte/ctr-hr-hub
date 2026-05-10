@@ -43,7 +43,7 @@ export async function getCompanyHireDate(
  */
 export const fetchPrimaryAssignment = cache(async function fetchPrimaryAssignment(employeeId: string) {
   const now = new Date()
-  return prisma.employeeAssignment.findFirst({
+  const result = await prisma.employeeAssignment.findFirst({
     where: {
       employeeId,
       isPrimary: true,
@@ -58,6 +58,35 @@ export const fetchPrimaryAssignment = cache(async function fetchPrimaryAssignmen
       workLocation: true,
     },
   })
+
+  // TEMPORARY: trace request-time DB state for the QA EMPLOYEE account that
+  // keeps redirecting to /pre-hire despite the seed leaving a single past
+  // 2024-01-01 primary. Gated on PRISMA_QUERY_DEBUG so this is silent in
+  // production; only fires in E2E (playwright.config.ts sets the env var on
+  // the test webServer). Remove once the mutation source is found.
+  if (process.env.PRISMA_QUERY_DEBUG === '1' && !result) {
+    const employee = await prisma.employee.findUnique({
+      where: { id: employeeId },
+      select: { email: true },
+    })
+    if (employee?.email === 'employee-a@ctr.co.kr') {
+      const all = await prisma.employeeAssignment.findMany({
+        where: { employeeId, isPrimary: true },
+        select: { id: true, effectiveDate: true, endDate: true, status: true, departmentId: true },
+        orderBy: { effectiveDate: 'asc' },
+      })
+      console.log(
+        `[fpa-debug] employee-a primaries at request time (now=${now.toISOString()}):`,
+        all.map(a =>
+          `id=${a.id.slice(0, 8)} eff=${a.effectiveDate.toISOString().slice(0, 10)}` +
+          `${a.endDate ? `→${a.endDate.toISOString().slice(0, 10)}` : ''}` +
+          ` status=${a.status} dept=${a.departmentId?.slice(0, 8) ?? 'null'}`
+        ).join(' | ') || '<none>',
+      )
+    }
+  }
+
+  return result
 })
 
 /**
