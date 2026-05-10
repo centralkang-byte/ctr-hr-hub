@@ -272,17 +272,6 @@ export async function seedQAAccounts(prisma: PrismaClient) {
       })
     }
 
-    if (acc.email === 'employee-a@ctr.co.kr') {
-      const after = await prisma.employeeAssignment.findMany({
-        where: { employeeId: emp.id, isPrimary: true },
-        select: { effectiveDate: true, endDate: true },
-        orderBy: { effectiveDate: 'asc' },
-      })
-      console.log(`  [qa-debug] employee-a primaries:`, after.map(a =>
-        `${a.effectiveDate.toISOString().slice(0, 10)}${a.endDate ? `→${a.endDate.toISOString().slice(0, 10)}` : ''}`
-      ).join(', '))
-    }
-
     // EmployeeAuth
     const authId = deterministicUUID('qa-auth', acc.email)
     await prisma.employeeAuth.upsert({

@@ -41,15 +41,9 @@ export async function getCompanyHireDate(
  * Changwon), effectiveDate should be compared in the employee's location timezone.
  * Acceptable for V1 launch; revisit post-deployment.
  */
-// TEMPORARY: module-load marker so we can confirm the build picked up the
-// updated source. Remove together with the fpa-debug log below.
-if (process.env.PRISMA_QUERY_DEBUG === '1') {
-  console.log('[fpa-debug] assignment-helpers module loaded')
-}
-
 export const fetchPrimaryAssignment = cache(async function fetchPrimaryAssignment(employeeId: string) {
   const now = new Date()
-  const result = await prisma.employeeAssignment.findFirst({
+  return prisma.employeeAssignment.findFirst({
     where: {
       employeeId,
       isPrimary: true,
@@ -64,34 +58,6 @@ export const fetchPrimaryAssignment = cache(async function fetchPrimaryAssignmen
       workLocation: true,
     },
   })
-
-  // TEMPORARY: log every call when query debug env is set. Used to confirm
-  // whether the layout actually invokes this helper for the QA EMPLOYEE
-  // account that keeps redirecting to /pre-hire. Remove once root cause
-  // is found.
-  if (process.env.PRISMA_QUERY_DEBUG === '1') {
-    const employee = await prisma.employee.findUnique({
-      where: { id: employeeId },
-      select: { email: true },
-    })
-    if (employee?.email === 'employee-a@ctr.co.kr') {
-      const all = await prisma.employeeAssignment.findMany({
-        where: { employeeId, isPrimary: true },
-        select: { id: true, effectiveDate: true, endDate: true, status: true, departmentId: true },
-        orderBy: { effectiveDate: 'asc' },
-      })
-      console.log(
-        `[fpa-debug] employee-a CALLED (resultId=${result?.id?.slice(0, 8) ?? 'null'} now=${now.toISOString()}):`,
-        all.map(a =>
-          `id=${a.id.slice(0, 8)} eff=${a.effectiveDate.toISOString().slice(0, 10)}` +
-          `${a.endDate ? `→${a.endDate.toISOString().slice(0, 10)}` : ''}` +
-          ` status=${a.status} dept=${a.departmentId?.slice(0, 8) ?? 'null'}`
-        ).join(' | ') || '<none>',
-      )
-    }
-  }
-
-  return result
 })
 
 /**
