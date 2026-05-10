@@ -209,19 +209,46 @@ export async function seedQAAccounts(prisma: PrismaClient) {
     })
     employeeMap[acc.email] = emp.id
 
-    // EmployeeAssignment — only create if no primary active assignment exists
-    const existingAssign = await prisma.employeeAssignment.findFirst({
-      where: { employeeId: emp.id, isPrimary: true, endDate: null },
-    })
-
+    // EmployeeAssignment — ensure a CURRENTLY-EFFECTIVE primary active assignment exists.
+    // QA accounts must be reachable in the dashboard layout; layout.tsx redirects to
+    // /pre-hire when fetchPrimaryAssignment (effectiveDate <= now) returns null. Earlier
+    // seed steps may leave only a future-effective primary, so we prefer a current one,
+    // fall back to converting a future one, and create fresh only as a last resort.
+    const NOW = new Date()
+    const QA_BASE_EFFECTIVE_DATE = new Date('2024-01-01')
     const posId = acc.positionCode ? positionMap[acc.positionCode] : undefined
 
-    if (existingAssign) {
-      // Update positionId + departmentId on existing assignment for QA positions
+    let primaryAssign = await prisma.employeeAssignment.findFirst({
+      where: {
+        employeeId: emp.id,
+        isPrimary: true,
+        endDate: null,
+        effectiveDate: { lte: NOW },
+      },
+    })
+
+    if (!primaryAssign) {
+      const futurePrimary = await prisma.employeeAssignment.findFirst({
+        where: {
+          employeeId: emp.id,
+          isPrimary: true,
+          endDate: null,
+          effectiveDate: { gt: NOW },
+        },
+      })
+      if (futurePrimary) {
+        primaryAssign = await prisma.employeeAssignment.update({
+          where: { id: futurePrimary.id },
+          data: { effectiveDate: QA_BASE_EFFECTIVE_DATE },
+        })
+      }
+    }
+
+    if (primaryAssign) {
       if (posId) {
         await prisma.employeeAssignment.update({
-          where: { id: existingAssign.id },
-          data: { positionId: posId, departmentId: deptId ?? existingAssign.departmentId },
+          where: { id: primaryAssign.id },
+          data: { positionId: posId, departmentId: deptId ?? primaryAssign.departmentId },
         })
       }
     } else {
@@ -235,7 +262,7 @@ export async function seedQAAccounts(prisma: PrismaClient) {
           jobGradeId: gradeId,
           jobCategoryId: catId,
           positionId: posId,
-          effectiveDate: new Date('2024-01-01'),
+          effectiveDate: QA_BASE_EFFECTIVE_DATE,
           changeType: 'HIRE',
           employmentType: 'FULL_TIME',
           status: 'ACTIVE',
