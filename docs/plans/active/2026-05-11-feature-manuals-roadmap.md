@@ -69,7 +69,7 @@ docs/manuals/
 | # | 모듈 | 상태 | 복잡도 | ADR 참조 |
 |---|------|------|--------|---------|
 | 1 | **휴가관리 (Leave)** | 🟢 **완료 (템플릿 SSOT)** | ⭐⭐⭐⭐⭐ | `2026-03-27-regulation-alignment-roadmap.md` |
-| 2 | 급여 (Payroll) | ⚪ 대기 | ⭐⭐⭐⭐⭐ | TBD |
+| 2 | 급여 (Payroll) | 🟡 **Draft v1 (CEO 리뷰 전)** | ⭐⭐⭐⭐⭐ | TBD (ADR 없음, 코드·시드 기반 작성) |
 | 3 | 결재/승인 (Approval) | ⚪ 대기 | ⭐⭐⭐⭐ | `2026-03-27-A1-delegation-audit.md` |
 | 4 | 휴직 (LOA) | ⚪ 대기 | ⭐⭐⭐⭐ | `2026-03-28-leave-of-absence-model.md` |
 | 5 | 인사관리 (Employee + Org) | ⚪ 대기 | ⭐⭐⭐⭐ | `2026-03-27-A2-personnel-mgmt-audit.md` + `2026-03-21-entity-transfer-policy.md` + `2026-03-21-bulk-movements-design.md` |
