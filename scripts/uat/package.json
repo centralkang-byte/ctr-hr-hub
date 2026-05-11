@@ -1,0 +1,14 @@
+{
+  "name": "ctr-uat-guide-builder",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Standalone docx-js generator for the UAT guide. Run: npm install && node build-uat-v2.js",
+  "main": "build-uat-v2.js",
+  "scripts": {
+    "build": "node build-uat-v2.js"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "docx": "^9.6.1"
+  }
+}
