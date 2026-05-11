@@ -76,7 +76,7 @@ docs/manuals/
 | 6 | 출퇴근 (Attendance) | ⚪ 대기 | ⭐⭐⭐ | TBD |
 | 7 | 채용 (Recruitment) | ⚪ 대기 | ⭐⭐⭐ | TBD |
 | 8 | 성과평가 (Performance) | ⚪ 대기 | ⭐⭐⭐ | `2026-04-06-performance-grade-enum-fix.md` |
-| 9 | 보상 (Compensation) | ⚪ 대기 | ⭐⭐⭐ | TBD |
+| 9 | 보상 (Compensation) | 🟡 **Draft v1 (CEO 리뷰 전)** | ⭐⭐⭐ | TBD (성과·급여 매뉴얼 cross-ref 풍부) |
 | 10 | 온보딩/오프보딩 | ⚪ 대기 | ⭐⭐ | TBD |
 | 11 | 마스터데이터/설정 (Settings) | ⚪ 대기 | ⭐⭐ | TBD |
 | 12 | 인사이트/분석 (Insights) | ⚪ 대기 | ⭐⭐ | TBD |
