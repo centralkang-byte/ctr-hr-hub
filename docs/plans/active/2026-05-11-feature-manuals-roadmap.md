@@ -74,7 +74,7 @@ docs/manuals/
 | 4 | 휴직 (LOA) | ⚪ 대기 | ⭐⭐⭐⭐ | `2026-03-28-leave-of-absence-model.md` |
 | 5 | 인사관리 (Employee + Org) | ⚪ 대기 | ⭐⭐⭐⭐ | `2026-03-27-A2-personnel-mgmt-audit.md` + `2026-03-21-entity-transfer-policy.md` + `2026-03-21-bulk-movements-design.md` |
 | 6 | 출퇴근 (Attendance) | ⚪ 대기 | ⭐⭐⭐ | TBD |
-| 7 | 채용 (Recruitment) | ⚪ 대기 | ⭐⭐⭐ | TBD |
+| 7 | 채용 (Recruitment) | 🟡 **Draft v1 (CEO 리뷰 전)** | ⭐⭐⭐ | TBD (ADR 없음, 코드·시드 기반 작성) |
 | 8 | 성과평가 (Performance) | ⚪ 대기 | ⭐⭐⭐ | `2026-04-06-performance-grade-enum-fix.md` |
 | 9 | 보상 (Compensation) | ⚪ 대기 | ⭐⭐⭐ | TBD |
 | 10 | 온보딩/오프보딩 | ⚪ 대기 | ⭐⭐ | TBD |
