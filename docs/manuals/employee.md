@@ -62,7 +62,7 @@ CTR HR Hub의 인사관리 모듈은 다음을 통합 관리합니다.
 | 코드 | 이름 | 국가 |
 |------|------|------|
 | CTR-CN | CTR China | 중국 (쑤저우·장자강) |
-| CTR-US | CTR USA | 미국 |
+| CTR-US | CTR America | 미국 |
 | CTR-MX | CTR Mexico | 멕시코 |
 | CTR-VN | CTR Vina | 베트남 |
 | CTR-RU | CTR Russia | 러시아 |
