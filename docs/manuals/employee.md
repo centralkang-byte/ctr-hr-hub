@@ -50,7 +50,7 @@ CTR HR Hub의 인사관리 모듈은 다음을 통합 관리합니다.
 | 코드 | 이름 | 비고 |
 |------|------|------|
 | CTR-HOLD | CTR Holdings | 지주회사 |
-| CTR | CTR Co., Ltd. | 본사 |
+| CTR | CTR | 본사 |
 | CTR-MOB | CTR Mobility | 모빌리티 사업 |
 | CTR-ECO | CTR Eco-Forging | 친환경 단조 |
 | CTR-ROB | CTR Robotics | 로보틱스 |
