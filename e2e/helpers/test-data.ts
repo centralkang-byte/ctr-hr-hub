@@ -17,7 +17,7 @@ export function uniquePrefix(specName: string) {
 export const TEST_ACCOUNTS = {
   SUPER_ADMIN: {
     email: 'super@ctr.co.kr',
-    name: '최상우',
+    name: '대조영',
     company: 'CTR-HOLD',
   },
   HR_ADMIN: {
