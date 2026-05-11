@@ -55,7 +55,7 @@ CTR HR Hub의 인사관리 모듈은 다음을 통합 관리합니다.
 | CTR-ECO | CTR Eco-Forging | 친환경 단조 |
 | CTR-ROB | CTR Robotics | 로보틱스 |
 | CTR-ENR | CTR Energy | 에너지 사업 |
-| CTR-FML | CTR FML | 패밀리 |
+| CTR-FML | 포메이션랩스 (Formation Labs) | — |
 
 **해외 6개 법인**:
 
@@ -64,7 +64,7 @@ CTR HR Hub의 인사관리 모듈은 다음을 통합 관리합니다.
 | CTR-CN | CTR China | 중국 (쑤저우·장자강) |
 | CTR-US | CTR USA | 미국 |
 | CTR-MX | CTR Mexico | 멕시코 |
-| CTR-VN | CTR Vietnam | 베트남 |
+| CTR-VN | CTR Vina | 베트남 |
 | CTR-RU | CTR Russia | 러시아 |
 | CTR-EU | CTR Europe | 폴란드 |
 
