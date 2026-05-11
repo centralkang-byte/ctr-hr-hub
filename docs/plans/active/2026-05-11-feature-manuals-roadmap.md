@@ -75,7 +75,7 @@ docs/manuals/
 | 5 | 인사관리 (Employee + Org) | ⚪ 대기 | ⭐⭐⭐⭐ | `2026-03-27-A2-personnel-mgmt-audit.md` + `2026-03-21-entity-transfer-policy.md` + `2026-03-21-bulk-movements-design.md` |
 | 6 | 출퇴근 (Attendance) | ⚪ 대기 | ⭐⭐⭐ | TBD |
 | 7 | 채용 (Recruitment) | ⚪ 대기 | ⭐⭐⭐ | TBD |
-| 8 | 성과평가 (Performance) | ⚪ 대기 | ⭐⭐⭐ | `2026-04-06-performance-grade-enum-fix.md` |
+| 8 | 성과평가 (Performance) | 🟡 **Draft v1 (CEO 리뷰 전)** | ⭐⭐⭐ | `2026-04-06-performance-grade-enum-fix.md` |
 | 9 | 보상 (Compensation) | ⚪ 대기 | ⭐⭐⭐ | TBD |
 | 10 | 온보딩/오프보딩 | ⚪ 대기 | ⭐⭐ | TBD |
 | 11 | 마스터데이터/설정 (Settings) | ⚪ 대기 | ⭐⭐ | TBD |
