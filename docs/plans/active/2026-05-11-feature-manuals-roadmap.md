@@ -68,7 +68,7 @@ docs/manuals/
 
 | # | 모듈 | 상태 | 복잡도 | ADR 참조 |
 |---|------|------|--------|---------|
-| 1 | **휴가관리 (Leave)** | 🟡 파일럿 작성 중 | ⭐⭐⭐⭐⭐ | `2026-03-27-regulation-alignment-roadmap.md` |
+| 1 | **휴가관리 (Leave)** | 🟢 **완료 (템플릿 SSOT)** | ⭐⭐⭐⭐⭐ | `2026-03-27-regulation-alignment-roadmap.md` |
 | 2 | 급여 (Payroll) | ⚪ 대기 | ⭐⭐⭐⭐⭐ | TBD |
 | 3 | 결재/승인 (Approval) | ⚪ 대기 | ⭐⭐⭐⭐ | `2026-03-27-A1-delegation-audit.md` |
 | 4 | 휴직 (LOA) | ⚪ 대기 | ⭐⭐⭐⭐ | `2026-03-28-leave-of-absence-model.md` |
@@ -187,7 +187,19 @@ docs/manuals/
 다음 세션에서 이어가려면:
 
 1. 이 플랜 문서를 먼저 읽기 (`docs/plans/active/2026-05-11-feature-manuals-roadmap.md`)
-2. 위 Module Roadmap 표에서 진행 중인/대기 중인 모듈 확인
-3. 각 모듈의 "Source materials" 참고하여 작성 시작
-4. 매뉴얼 완료 시 표의 상태 갱신 (⚪ → 🟢 Done)
-5. STATUS.md의 "Feature Manuals 진행 현황" 섹션 갱신
+2. **템플릿 SSOT 읽기**: [`docs/manuals/leave.md`](../../manuals/leave.md) — CEO 리뷰 Round 1-3 반영된 파일럿. 동일한 형식·톤·구조 유지
+3. 위 Module Roadmap 표에서 진행 중인/대기 중인 모듈 확인
+4. 각 모듈의 "Source materials" 참고하여 작성 시작
+5. 매뉴얼 완료 시 표의 상태 갱신 (⚪ → 🟢 Done)
+6. STATUS.md의 "Feature Manuals 진행 현황" 섹션 갱신
+
+### leave.md에서 검증된 작성 패턴 (필수 준수)
+
+- **본문(§1-§9) jargon 0건**: 모델명/파일경로/API경로/영문 enum/내부 작업 ID는 본문 금지
+- **§10 부록에 기술 reference 일원화**: 데이터 모델 / 핵심 함수 / API 라우트 / ADR 링크 / 위험 코드 / 추후 개선
+- **알려진 제약 표**: # / 항목 / 상태 + "추후 개선" 명시
+- **FAQ**: 실제 발생 가능한 질문 (시스템 한계 포함)
+- **Changelog**: 리뷰 라운드 기록
+- **§5 권한**: 행위 주체 매트릭스(§5.1) + 결재 라우팅(§5.2) 분리
+- **데이터 흐름 주의 박스**: 시드/마스터/실DB 사이 drift 가능성 명시
+- **HR팀 확인 / 인사담당자** 용어 통일 (법무팀 X)
