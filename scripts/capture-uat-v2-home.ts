@@ -22,11 +22,18 @@ interface Role {
 }
 
 const ROLES: Role[] = [
-  { key: 'super-admin', email: 'super@ctr.co.kr', label: 'SUPER_ADMIN (최상우)' },
+  { key: 'super-admin', email: 'super@ctr.co.kr', label: 'SUPER_ADMIN (대조영)' },
   { key: 'hr-admin', email: 'hr@ctr.co.kr', label: 'HR_ADMIN (한지영)' },
   { key: 'manager', email: 'manager@ctr.co.kr', label: 'MANAGER (박준혁)' },
   { key: 'employee', email: 'employee-a@ctr.co.kr', label: 'EMPLOYEE (이민준)' },
 ]
+
+// Optional CLI filter: `npx tsx ... --role super-admin` to re-capture a single role.
+const roleFilter = process.argv.find((arg) => arg.startsWith('--role='))?.split('=')[1]
+  ?? (process.argv.includes('--role') ? process.argv[process.argv.indexOf('--role') + 1] : undefined)
+const SELECTED_ROLES = roleFilter
+  ? ROLES.filter((r) => r.key === roleFilter)
+  : ROLES
 
 const PAGES: Array<{ slug: string; path: string; label: string }> = [
   { slug: 'home', path: '/home', label: '홈 대시보드 (V2)' },
@@ -42,7 +49,7 @@ async function main() {
   let total = 0
   let errors = 0
 
-  for (const role of ROLES) {
+  for (const role of SELECTED_ROLES) {
     console.log(`\n👤 ${role.label}`)
     const context = await browser.newContext({
       viewport: { width: 1440, height: 900 },
