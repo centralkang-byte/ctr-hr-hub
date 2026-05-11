@@ -320,7 +320,7 @@ function section4() {
     buildTable(
       ['#', '이메일', '이름', '역할', '회사', '부서', '보고 라인'],
       [
-        ['1', 'super@ctr.co.kr', '최상우', 'SUPER_ADMIN', 'CTR-HOLD', '—', '—'],
+        ['1', 'super@ctr.co.kr', '대조영', 'SUPER_ADMIN', 'CTR-HOLD', '—', '—'],
         ['2', 'hr@ctr.co.kr', '한지영', 'HR_ADMIN', 'CTR', '—', '—'],
         ['3', 'hr@ctr-cn.com', '陈美玲', 'HR_ADMIN', 'CTR-CN', 'ADMIN', '—'],
         ['4', 'manager@ctr.co.kr', '박준혁', 'MANAGER', 'CTR', '생산기술팀', '—'],
@@ -398,7 +398,7 @@ function section5() {
     p('HR 담당자가 보는 홈입니다. 전사 출근 현황, 결재 대기, 온보딩/오프보딩 트래커, 휴가 통계가 노출됩니다.'),
     ...image('home-hr-admin.png', '그림 5-3. HR_ADMIN 역할 홈 대시보드'),
 
-    h3('5.1.4 SUPER_ADMIN — 최상우 (super@ctr.co.kr)'),
+    h3('5.1.4 SUPER_ADMIN — 대조영 (super@ctr.co.kr)'),
     p('지주사 최고 관리자가 보는 홈입니다. 전 법인 통합 KPI, 회사 스위처(cross-company), 시스템 알림이 표시됩니다.'),
     ...image('home-super-admin.png', '그림 5-4. SUPER_ADMIN 역할 홈 대시보드'),
 

@@ -25,7 +25,7 @@ const QA_ACCOUNT_GROUPS: QAGroup[] = [
   {
     group: '전사관리',
     accounts: [
-      { email: 'super@ctr.co.kr', name: '최상우 (전사관리)', roleBadge: 'SA', color: 'bg-purple-500/15 text-purple-700' },
+      { email: 'super@ctr.co.kr', name: '대조영 (전사관리)', roleBadge: 'SA', color: 'bg-purple-500/15 text-purple-700' },
     ],
   },
   {

@@ -49,7 +49,7 @@ interface QAAccount {
 
 const QA_ACCOUNTS: QAAccount[] = [
   // Session 45 확정: E1(경영리더), S1(전문리더), L2(책임매니저), L1(매니저)
-  { email: 'super@ctr.co.kr',      name: '최상우',   nameEn: 'Sangwoo Choi',   employeeNo: 'CTR-QA-0001', roleCode: 'SUPER_ADMIN', companyCode: 'CTR-HOLD', deptCode: null,      gradeCode: 'E1', positionCode: null },
+  { email: 'super@ctr.co.kr',      name: '대조영',   nameEn: 'Daejoyoung',     employeeNo: 'CTR-QA-0001', roleCode: 'SUPER_ADMIN', companyCode: 'CTR-HOLD', deptCode: null,      gradeCode: 'E1', positionCode: null },
   { email: 'hr@ctr.co.kr',         name: '한지영',   nameEn: 'Jiyoung Han',    employeeNo: 'CTR-KR-0001', roleCode: 'HR_ADMIN',    companyCode: 'CTR', deptCode: null,      gradeCode: 'L2', positionCode: null },
   { email: 'hr@ctr-cn.com',        name: '陈美玲',   nameEn: 'Meiling Chen',   employeeNo: 'CTR-QA-0003', roleCode: 'HR_ADMIN',    companyCode: 'CTR-CN', deptCode: 'ADMIN',   gradeCode: 'L2', positionCode: null },
   { email: 'manager@ctr.co.kr',    name: '박준혁',   nameEn: 'Junhyuk Park',   employeeNo: 'CTR-KR-0002', roleCode: 'MANAGER',     companyCode: 'CTR', deptCode: 'QA-TEAM-A', gradeCode: 'L2', positionCode: 'CTR-KR-QA-TEAM-A-MGR' },

@@ -83,7 +83,7 @@ Detailed rules in `.claude/rules/` (auto-loaded when editing matching files).
 
 | Email | Name | Role | Company |
 |-------|------|------|---------|
-| `super@ctr.co.kr` | 최상우 | SUPER_ADMIN | CTR-HOLD |
+| `super@ctr.co.kr` | 대조영 | SUPER_ADMIN | CTR-HOLD |
 | `hr@ctr.co.kr` | 한지영 | HR_ADMIN | CTR |
 | `hr@ctr-cn.com` | 陈美玲 | HR_ADMIN | CTR-CN |
 | `manager@ctr.co.kr` | 박준혁 | MANAGER | CTR |
