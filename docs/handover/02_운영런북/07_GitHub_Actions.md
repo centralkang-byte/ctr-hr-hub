@@ -102,5 +102,5 @@ CI는 GitHub repository secrets 에서 다음을 사용 (예상):
 
 ## 관련 문서
 
-- [01-deploy-pipeline.md](01-deploy-pipeline.md) — Vercel 배포 (별도)
-- [08-monitoring.md](08-monitoring.md) — Sentry 알림 연동
+- [01_배포_파이프라인.md](01_배포_파이프라인.md) — Vercel 배포 (별도)
+- [08_모니터링.md](08_모니터링.md) — Sentry 알림 연동

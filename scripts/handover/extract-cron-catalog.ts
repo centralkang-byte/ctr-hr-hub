@@ -3,7 +3,7 @@
  * Cron 카탈로그 자동 추출기.
  *
  * Run: npx tsx scripts/handover/extract-cron-catalog.ts
- * Output: docs/handover/02-operational-runbooks/04-cron-catalog.md
+ * Output: docs/handover/02_운영런북/04_Cron_카탈로그.md
  *
  * 동작: vercel.json crons + src/app/api/v1/cron/<name>/route.ts 코드를 스캔해서
  *      등록 vs 미등록 cron을 자동으로 매핑한 markdown 표 생성.
@@ -17,7 +17,7 @@ import * as path from 'path'
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
 const VERCEL_JSON = path.join(REPO_ROOT, 'vercel.json')
 const CRON_DIR = path.join(REPO_ROOT, 'src/app/api/v1/cron')
-const OUT_FILE = path.join(REPO_ROOT, 'docs/handover/02-operational-runbooks/04-cron-catalog.md')
+const OUT_FILE = path.join(REPO_ROOT, 'docs/handover/02_운영런북/04_Cron_카탈로그.md')
 
 interface RegisteredCron {
   path: string

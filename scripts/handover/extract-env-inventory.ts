@@ -3,7 +3,7 @@
  * 환경 변수 인벤토리 자동 추출기.
  *
  * Run: npx tsx scripts/handover/extract-env-inventory.ts
- * Output: docs/handover/03-security-access-env-inventory.md (보안 문서가 import)
+ * Output: docs/handover/03_보안_환경변수_인벤토리.md (보안 문서가 import)
  *
  * 동작:
  *   1. .env.example 의 모든 변수 추출 (값 X, 변수명만)
@@ -20,7 +20,7 @@ import { execFileSync } from 'child_process'
 const REPO_ROOT = path.resolve(__dirname, '..', '..')
 const ENV_EXAMPLE = path.join(REPO_ROOT, '.env.example')
 const SRC_DIR = path.join(REPO_ROOT, 'src')
-const OUT_FILE = path.join(REPO_ROOT, 'docs/handover/03-security-access-env-inventory.md')
+const OUT_FILE = path.join(REPO_ROOT, 'docs/handover/03_보안_환경변수_인벤토리.md')
 
 interface EnvVar {
   name: string
@@ -151,7 +151,7 @@ function renderMarkdown(vars: EnvVar[]): string {
 > **생성일**: ${generatedAt}
 > **원본**: \`.env.example\` + \`src/**/*.ts(x)\` 내 \`process.env.*\` 참조
 > ⚠️ 본 문서는 수동 편집 금지. \`.env.example\` 또는 코드 변경 시 스크립트 재실행.
-> 본 문서는 \`docs/handover/03-security-access.md\` 의 일부로 import 됩니다.
+> 본 문서는 \`docs/handover/03_보안_접근권한.md\` 의 일부로 import 됩니다.
 
 ---
 

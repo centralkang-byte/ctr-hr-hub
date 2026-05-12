@@ -2,7 +2,7 @@
 
 > **대상**: 인프라팀 + HR 운영
 > **배경**: 현재 5개 cron이 `vercel.json` 에 미등록이라 자동 실행되지 않음. 등록 전까지 수동 트리거 또는 영향 감수.
-> **자동 카탈로그**: [04-cron-catalog.md](04-cron-catalog.md)
+> **자동 카탈로그**: [04_Cron_카탈로그.md](04_Cron_카탈로그.md)
 
 ## 미등록 cron 5개
 
@@ -63,7 +63,7 @@ curl -X GET \
 
 ## 등록 권장
 
-각 cron의 영구 등록은 [04-cron-catalog.md](04-cron-catalog.md) §운영 SOP 참조. `vercel.json` 에 path + schedule 추가 후 push.
+각 cron의 영구 등록은 [04_Cron_카탈로그.md](04_Cron_카탈로그.md) §운영 SOP 참조. `vercel.json` 에 path + schedule 추가 후 push.
 
 권장 schedule (운영 정책 확정 후 적용):
 
@@ -83,6 +83,6 @@ curl -X GET \
 
 ## 관련 문서
 
-- [04-cron-catalog.md](04-cron-catalog.md) — 전체 cron 카탈로그 (자동 생성)
+- [04_Cron_카탈로그.md](04_Cron_카탈로그.md) — 전체 cron 카탈로그 (자동 생성)
 - [docs/manuals/leave.md §9 #10·#11](../../manuals/leave.md) — leave-promotion 알려진 제약
 - [STATUS.md §10 #1, #4, #8](../../../../Documents/Obsidian%20Vault/projects/hr-hub/STATUS.md) — 시스템 fix 트랙
