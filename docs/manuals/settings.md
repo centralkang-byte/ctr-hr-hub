@@ -358,8 +358,12 @@ CTR HR Hub의 마스터데이터·설정 모듈은 다음을 통합 관리합니
 ### 7.2 회사 마스터 삭제 (법인 폐쇄)
 
 - 회사 마스터 삭제 시 소속 직원·발령·급여 등 모든 데이터 영향
-- 실제 운영에서는 hard delete 차단, soft delete만 허용 (deletedAt)
-- 폐쇄 법인 데이터는 영구 보존 (감사·법규 요구)
+- **Company 모델**: `deletedAt` 필드만 존재 (`closedAt`·`isActive` 없음). Soft delete 방식
+- **폐쇄 법인 마스터 레코드 자체는 영구 보존** (감사·법규 요구)
+- 단, 법인 소속 데이터(급여·근태·감사로그·채용자료 등)는 `DataRetentionPolicy` 카테고리별 보존 기간 적용:
+  - 고용기록 36개월, 급여 데이터 60개월, 감사 로그 12개월, 불합격 지원자 6개월 등
+  - 시드: `prisma/seeds/33-compliance-gaps.ts`
+- **자동 삭제·익명화 cron**: `/api/v1/compliance/cron/retention` 코드는 존재하나 **`vercel.json` 미등록 → 자동 실행 안 됨** (수동 호출만 가능). §9 참조
 
 ### 7.3 직위·직급 폐지
 
@@ -457,6 +461,7 @@ A. 시드는 초기값, 운영 DB가 실제 동작값입니다. 운영 중에는
 | 12 | 권한 세분화 한계 | 모듈 × 액션 단위 권한만 지원 (예: payroll:manage). 필드 단위·조건부 권한 미지원. **추후 개선** — 세분화 정책 |
 | 13 | 시드 자동 적용 cron 부재 | 새 환경 구성 시 시드 수동 실행. 운영 중 점진적 시드 보완은 별도 작업. **추후 개선** — 시드 변경 사항 자동 적용 옵션 |
 | 14 | ProcessSetting/요율 effectiveDate-based row 정리 미구현 | `apply-scheduled-comp` cron은 compensation 모듈(개별 직원 보상) 전용. ProcessSetting·4대보험 요율·세금 테이블의 시행일 기반 자동 활성/종료 cron은 별도로 존재하지 않음. 조회 시점에 `effectiveDate <= now` 동적 판정으로 시행 적용은 정상 동작하나, **종료일 자동 설정은 미구현** — 새 row 등록 시 인사담당자가 기존 row의 `endDate`를 명시적으로 설정해야 함. **추후 개선** — 신규 row 등록 시 직전 row endDate 자동 설정 |
+| 15 | 폐쇄 법인 데이터 보존 nuance | Company 마스터 자체는 영구 보존(soft delete)이나 내부 데이터(급여·근태·감사로그·채용자료 등)는 `DataRetentionPolicy` 카테고리별 보존(36-60개월). retention cron(`/api/v1/compliance/cron/retention`)은 코드만 있고 `vercel.json` 미등록 → **자동 삭제·익명화가 동작하지 않음**. 운영 시 인사담당자 수동 처리 필요. **추후 개선** — cron 등록 + `enforceRetention()` 미구현 카테고리 (PAYROLL_DATA 등) 구현 (시스템 fix 트랙) |
 
 ---
 
@@ -486,6 +491,9 @@ A. 시드는 초기값, 운영 DB가 실제 동작값입니다. 운영 중에는
 
 **데이터 모델**:
 13. 회사 마스터 cascade 정책 명문화 (§9 #4)
+
+**컴플라이언스·자동화**:
+14. retention cron `vercel.json` 등록 + `enforceRetention()` 카테고리별 구현 (§9 #15)
 
 ---
 
