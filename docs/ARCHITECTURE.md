@@ -1,6 +1,8 @@
 # Architecture Overview — CTR HR Hub
 
-> Generated from codebase analysis (2026-03-12, Q-1)
+> Generated from codebase analysis (2026-05-12, Session 218 refresh)
+> Last code base scan: 209 models / 142 enums / 600 API routes / 163 pages / 43 migrations / 49 seeds / 8 cron handlers
+> Related: `docs/handover/01_시스템_오버뷰.md` (인계용 통합 오버뷰)
 
 ---
 
@@ -30,17 +32,23 @@ graph TD
     APP --> DASH
     APP --> API
 
-    DASH --> D_HOME["home/"]
-    DASH --> D_MY["my/ (9 pages)"]
+    DASH --> D_HOME["home/ (V2 — 4 역할별 분기)"]
+    DASH --> D_MY["my/ (20 페이지 — Total Rewards 포함)"]
     DASH --> D_EMP["employees/"]
     DASH --> D_ATT["attendance/"]
     DASH --> D_LEAVE["leave/"]
-    DASH --> D_PERF["performance/"]
+    DASH --> D_LOA["leave-of-absence/ (LOA Phase 1-3)"]
+    DASH --> D_PERF["performance/ (GoalRevision, QuarterlyReview, Calibration DnD)"]
     DASH --> D_PAY["payroll/"]
+    DASH --> D_COMP_MOD["compensation/ (Off-Cycle 3 paths + Letter PDF)"]
     DASH --> D_REC["recruitment/"]
-    DASH --> D_ANA["analytics/"]
-    DASH --> D_SET["settings/ (hub + 6 cat)"]
-    DASH --> D_COMP["compliance/"]
+    DASH --> D_ANA["analytics/ (7 dashboards + AI report)"]
+    DASH --> D_ONB["onboarding/ + offboarding/ (4 게이트)"]
+    DASH --> D_APP["approvals/ (통합 inbox)"]
+    DASH --> D_NOTIF["notifications/"]
+    DASH --> D_MGR["manager-hub/ + team/"]
+    DASH --> D_SET["settings/ (hub + 6 cat, 44+ tabs)"]
+    DASH --> D_COMPLIANCE["compliance/ (GDPR/DPIA/PII)"]
 
     LIB --> L_FMT["format/ (number, date, text)"]
     LIB --> L_STY["styles/ (11 constants)"]

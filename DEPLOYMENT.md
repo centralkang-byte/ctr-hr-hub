@@ -1,7 +1,8 @@
 # Deployment Guide — CTR HR Hub
 
-> **Last Updated:** 2026-03-12 (Q-4 P7)
+> **Last Updated:** 2026-05-12 (Session 218 refresh — Sessions 168~217 패턴 반영)
 > **Platform:** Vercel (Frontend + API) + Supabase (PostgreSQL)
+> **Related**: `docs/handover/02_운영런북/` (task별 1p 런북), `docs/handover/03_보안_접근권한.md` (시크릿 회수 SOP)
 
 ---
 
@@ -36,14 +37,38 @@
    | `AZURE_AD_CLIENT_SECRET` | ✅ | Entra ID client secret |
    | `AZURE_AD_TENANT_ID` | ✅ | Entra ID tenant ID |
    | `CRON_SECRET` | ✅ | Used by cron jobs for authentication |
-   | `ANTHROPIC_API_KEY` | ⬜ | For AI reports (optional) |
+   | `ANTHROPIC_API_KEY` | ⬜ | For AI reports + AI evaluation drafts (optional) |
    | `OPENAI_API_KEY` | ⬜ | For document embedding (optional) |
+   | `EMBEDDING_PROVIDER` | ⬜ | Embedding provider selector (default OpenAI) |
    | `REDIS_URL` | ⬜ | For caching (optional, falls back to in-memory) |
+   | `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_REGION` | ⬜ | For S3 storage (resumes, comp letters PDF) + SES email |
+   | `S3_BUCKET` | ⬜ | S3 bucket name for documents |
+   | `SES_FROM_EMAIL` | ⬜ | SES sender (e.g., `hr-noreply@ctr.co.kr`) |
+   | `NEXT_PUBLIC_SENTRY_DSN` | ⬜ | Sentry error monitoring + INP |
+   | `SENTRY_AUTH_TOKEN` | ⬜ | CI source map upload (build-time only) |
+   | `TEAMS_BOT_ID` / `TEAMS_BOT_PASSWORD` / `TEAMS_APP_ID` / `TEAMS_WEBHOOK_SECRET` | ⬜ | Microsoft Teams 알림 봇 |
+   | `FIREBASE_PROJECT_ID` / `FIREBASE_PRIVATE_KEY` / `FIREBASE_CLIENT_EMAIL` | ⬜ | Firebase 푸시 (사용 시) |
+   | `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` / `WEB_PUSH_EMAIL` | ⬜ | Web Push (브라우저 푸시) |
+   | `TERMINAL_API_SECRET` / `TERMINAL_HEARTBEAT_INTERVAL` | ⬜ | 출퇴근 단말기 인증·헬스 체크 |
+
+   > **전체 env 인벤토리 자동 추출**: `npx tsx scripts/handover/extract-env-inventory.ts` → `docs/handover/03_보안_환경변수_인벤토리.md` (49 변수 카탈로그). 자동 인벤토리가 항상 가장 최신.
+
+   > **⚠️ Session 218 발견**: `.env.example`에 등록되지 않았으나 코드에서 사용 중인 변수 12개 — 인계 전 보강 필수. 자동 인벤토리 §즉시 조치 필요 섹션 참조.
 
 4. **Deploy**
    ```bash
    npx vercel --prod --yes
    ```
+
+5. **Codex Outside Voice 리뷰** (3+ 파일 변경 시 필수, Session 218 정합화):
+   ```bash
+   # Gate 1 — Plan Review (구현 전)
+   cat /tmp/codex-prompt.txt | /opt/homebrew/bin/codex exec -
+
+   # Gate 2 — Post-Impl Review (tsc + lint 통과 후, commit 전)
+   /opt/homebrew/bin/codex review --uncommitted
+   ```
+   HIGH finding은 commit 전 처리 필수. (`CLAUDE.md` 정책)
 
 ### 1.2 Auto-Deploy
 
@@ -53,8 +78,51 @@ After initial setup, every `git push origin main` triggers an automatic Vercel d
 git add -A
 git commit -m "your message"
 git push origin main
-# → Vercel auto-deploys in ~2 minutes
+# → Vercel auto-deploys in ~3-5 minutes
 ```
+
+Pre-commit hook이 자동으로 `npx tsc --noEmit` + `npm run lint` 실행 — 실패 시 commit 차단. 우회는 CEO 정책상 금지 (CLAUDE.md).
+
+### 1.3 환경 변수 수정 (Session 212 패턴)
+
+```bash
+# 추가 (production · preview · development 각각 명시 필수)
+vercel env add VAR_NAME production
+vercel env add VAR_NAME preview
+vercel env add VAR_NAME development
+
+# 조회
+vercel env ls
+
+# 회수
+vercel env rm VAR_NAME production
+
+# 로컬 동기화
+vercel env pull .env.local
+
+# 변경 후 즉시 반영
+vercel redeploy <deployment-id> --prod
+```
+
+⚠️ **Session 212 가르침**: `vercel env rm` 실행 시 environment 명시 안 하면 preview/development의 같은 변수도 함께 제거될 수 있음. 항상 명시.
+
+### 1.4 롤백
+
+```bash
+# 직전 정상 deployment 찾기
+vercel ls
+
+# alias 전환 (즉시 적용)
+vercel promote <previous-deployment-id> --prod
+```
+
+또는 GitHub에서 revert PR 머지 (안전한 방법):
+```bash
+git revert <bad-commit-sha>
+git push origin main
+```
+
+상세 절차: `docs/handover/02_운영런북/10_장애_대응.md`
 
 ---
 
