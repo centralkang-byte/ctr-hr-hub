@@ -78,7 +78,7 @@ docs/manuals/
 | 8 | 성과평가 (Performance) | ⚪ 대기 | ⭐⭐⭐ | `2026-04-06-performance-grade-enum-fix.md` |
 | 9 | 보상 (Compensation) | ⚪ 대기 | ⭐⭐⭐ | TBD |
 | 10 | 온보딩/오프보딩 | ⚪ 대기 | ⭐⭐ | TBD |
-| 11 | 마스터데이터/설정 (Settings) | ⚪ 대기 | ⭐⭐ | TBD |
+| 11 | 마스터데이터/설정 (Settings) | 🟡 **Draft v1 (CEO 리뷰 전)** | ⭐⭐ | 메타 매뉴얼 (전 모듈 cross-ref) |
 | 12 | 인사이트/분석 (Insights) | ⚪ 대기 | ⭐⭐ | TBD |
 
 **참고**: 11개 기존 ADR + 11개 plan 문서가 `~/Documents/Obsidian Vault/projects/hr-hub/decisions/` 및 `docs/plans/active/`에 존재. 작성 시 매뉴얼별로 매핑.
