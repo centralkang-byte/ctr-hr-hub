@@ -50,7 +50,7 @@ const DOMESTIC_COMMON_TYPES: LeaveTypeSeed[] = [
 
   // ── 경조 — 축하 (제49조) ──
   { code: 'marriage_self', name: '본인결혼', nameEn: 'Marriage (Self)',
-    isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 7,
+    isPaid: true, allowHalfDay: false, requiresProof: true, maxConsecutiveDays: 5,
     category: 'family_event', subcategory: 'celebration',
     countingMethod: 'calendar_day', includesHolidays: true,
     condolenceAmount: 500000, displayOrder: 10 },
