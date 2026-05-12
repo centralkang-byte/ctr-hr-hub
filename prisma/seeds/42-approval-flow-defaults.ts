@@ -5,7 +5,7 @@
  * 규정 참조: docs/regulation-audit/A1-delegation-authority-matrix.md
  * - 휴가: 팀장(직속상관) 전결
  * - 급여: 본부장(dept_head) → 대표(ceo) 2단계
- * - 채용: 본부장(dept_head) 전결 (합의: HR)
+ * - 채용 (충원요청): 본부장(dept_head) → 대표(ceo) 2단계 (위임전결규정 Rev13: CEO 전결, 본부장 합의를 결재 단계로 격상; HR 합의는 시스템 외부 처리)
  * - 징계: HR 기안 → 대표(ceo) 전결
  * - 증명서: 직속 팀장 전결
  * - 근태: 직속 팀장 전결
@@ -40,7 +40,12 @@ const DEFAULT_FLOWS: FlowDef[] = [
   {
     module: 'recruitment',
     name: '채용 승인',
-    steps: [{ approverRole: 'dept_head' }],
+    // 위임전결규정 Rev13 정합 (2026-05-12): CEO 전결, 본부장 합의를 결재 단계로 격상.
+    // HR 합의(피플앤컬처팀)는 시스템 외부 처리 (HR 합의 워크플로 미구현).
+    steps: [
+      { approverRole: 'dept_head' },
+      { approverRole: 'ceo' },
+    ],
   },
   {
     module: 'discipline',
