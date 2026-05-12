@@ -1,7 +1,8 @@
 # Troubleshooting Guide — CTR HR Hub
 
-> **Last Updated:** 2026-03-12 (Q-4 P7)
+> **Last Updated:** 2026-05-12 (Session 218 — Sessions 168~217 신규 패턴 추가)
 > **Quick Reference:** Search by error message or symptom keyword
+> **Related**: `docs/handover/02_운영런북/10_장애_대응.md` (장애 대응 시나리오)
 
 ---
 
@@ -15,6 +16,10 @@
 6. [Multi-Tenant](#6-multi-tenant)
 7. [i18n (Internationalization)](#7-i18n-internationalization)
 8. [Known Issues & Limitations](#8-known-issues--limitations)
+9. [Approval & Workflow (Sessions 168~217 신규)](#9-approval--workflow)
+10. [Cron & Background Jobs](#10-cron--background-jobs)
+11. [Notifications](#11-notifications)
+12. [Vercel & Environment (Session 212 패턴)](#12-vercel--environment)
 
 ---
 
@@ -488,3 +493,146 @@ const companyId = resolveCompanyId(user, req.nextUrl.searchParams.get('companyId
 | Performance Cycle | No data masking for pre-FINALIZED results in my-result API | 🟡 Medium |
 | Offboarding | Duplicate completion files (`offboarding-complete.ts` vs `complete-offboarding.ts`) | 🟢 Low |
 | Crossboarding | Missing auto-crossboarding template (departure + arrival onboarding) | 🟡 Medium |
+
+---
+
+## 9. Approval & Workflow
+
+### 9.1 Off-cycle 보상 결재 `PENDING_APPROVAL` stuck (Session 210 PR #19 fix됨)
+
+**Symptom**: HR_ADMIN이 off-cycle 보상 발의 후 매니저 결재(step 1) 완료했는데 status가 `APPROVED`로 finalize 안 되고 `PENDING_APPROVAL` 그대로.
+
+**Cause** (Session 210 분석): `[direct_manager → hr_admin]` flow에서 HR_ADMIN 발의 시 self-skip으로 step 2 자동 APPROVED. 매니저가 step 1 결재 시 `currentStep + 1` (1→2)만 advance하나 step 2 이미 APPROVED라 후속 트리거 없음 → finalize 안 됨.
+
+**Fix** (PR #19): `currentStep >= totalSteps` boolean을 "남은 PENDING step 존재?" 쿼리로 교체. atomic transition (`updateMany` + `status='PENDING'` race protection).
+
+**재발 시**: 다른 모듈(probation, contract_conversion)도 self-skip trailing step audit 필요. PR #19 패턴 적용.
+
+### 9.2 `Role.name` 매칭 silent-fail (Session 207-208 fix됨)
+
+**Symptom**: 결재 routing이 작동 안 함 (HR 챗봇 에스컬레이션 미발송, 매니저 nudge 0건 등). 코드는 에러 없이 0 row 반환.
+
+**Cause**: 코드가 `role: { name: 'HR_ADMIN' }` 매칭. 시드는 display name `'HR Admin'` (공백). 항상 0 row → silent fail.
+
+**Fix**: `Role.code`가 unique SSOT. `code: 'HR_ADMIN'` 매칭 사용. Helper: `src/lib/employee/active-roles.ts` `findActiveRoleHolderId()`.
+
+**재발 방지**: 신규 결재 라우팅 코드 작성 시 항상 `role.code` 사용. `role.name` grep audit 권장.
+
+### 9.3 `EmployeeRole.endDate` 만료된 row 매칭 (Session 209 fix됨)
+
+**Symptom**: 만료된 role row가 결재자에 포함됨 (cross-company role drift).
+
+**Cause**: `employeeRoles.some` 매칭에 `endDate: null` 필터 누락. 만료된 role + 다른 법인 role도 매칭 가능.
+
+**Fix**: `employeeRoles.some({ endDate: null, companyId: <scope> })` 패턴 필수. Session 209에서 7 사이트 fix.
+
+### 9.4 Multi-role employee detail page false-deny (Session 210 PR #18 fix됨)
+
+**Symptom**: HR_ADMIN base + 보조 MANAGER active EmployeeRole 사용자가 채용요청서 detail page에서 결재 버튼이 비활성화됨.
+
+**Cause**: client helper `canApproveRequisition`이 단일 role만 검사.
+
+**Fix** (PR #18): GET `/api/v1/recruitment/requisitions/[id]` 응답에 server-derived `canApprove` 추가. validator(`isRequisitionApproverAllowed`)가 multi-role 인지. List page는 myApprovals matcher SSOT가 처리.
+
+### 9.5 동시 결재 race condition
+
+**Symptom**: 같은 사용자가 결재 버튼 2회 연속 클릭 또는 mixed approve/reject 시 status 일관성 깨짐.
+
+**Cause**: Session 211 audit. `payroll/approve`, `payroll/reject`, `requisition/approve`, `off-cycle reject`, `attendance/approve` 등 6 라우트가 race-vulnerable이었음.
+
+**Fix** (PR #20): `updateMany` + `status='PENDING'` 조건으로 row lock. PostgreSQL READ COMMITTED 격리에서 race-safe. 첫 tx만 count=1, 둘째 count=0.
+
+---
+
+## 10. Cron & Background Jobs
+
+### 10.1 미등록 cron 5건 — silent fail
+
+**Symptom**: 다음 기능이 발생 안 함:
+- 연차 사용촉진 통보 발송
+- 평가 마감 D-day 알림
+- 결재 over-due 알림
+- 조직도 일별 스냅샷
+- acknowledge 큐 자동 처리
+
+**Cause**: 코드는 `src/app/api/v1/cron/{leave-promotion,eval-reminder,overdue-check,org-snapshot,auto-acknowledge}/route.ts` 존재하나 `vercel.json` crons 배열에 미등록.
+
+**Fix (임시)**: 수동 트리거 — `docs/handover/02_운영런북/11_Cron_수동_트리거.md` 참조. `curl -H "Authorization: Bearer $CRON_SECRET" ...`
+
+**Fix (영구)**: `vercel.json` crons에 추가 + 배포. `leave-promotion`은 한국 §61 시점 정합화(6개월/2개월 전) 함께 검토 — `docs/handover/04_위험_결함_등록부.md` §1.4
+
+### 10.2 cron 실행 확인
+
+```bash
+# Vercel logs에서 cron path 호출 추적
+vercel logs --follow | grep "/api/v1/cron/"
+
+# 또는 대시보드 UI에서 path filter
+```
+
+각 cron은 200 + `{ ok: true, processed: N }` 반환.
+
+---
+
+## 11. Notifications
+
+### 11.1 Teams / SES / Web Push 알림 미발송
+
+**점검 순서**:
+1. DB `NotificationLog` 또는 동등 테이블에 row 생성됐는지 — 안 됐으면 코드 진입 부분 문제
+2. row 있는데 발송 안 됨 — 외부 채널 (Teams webhook secret 만료? SES sandbox 한도? Firebase 키 만료?)
+3. Sentry에 발송 관련 에러 확인
+4. AWS SES sending statistics 확인 (CloudWatch alarm 설정 권장)
+
+### 11.2 알림 디버깅 진입점
+
+- 코드: `src/lib/email.ts`, `src/lib/notifications/` 또는 동등
+- Teams: `src/lib/notifications/teams.ts` 또는 동등 (`TEAMS_*` envs)
+- Web Push: `src/lib/push.ts` 또는 동등 (`VAPID_*` envs)
+- Firebase: 사용 중인지 확인 후 (현재 활성 여부 불명확 — handover 작성 시 CEO 확인)
+
+---
+
+## 12. Vercel & Environment
+
+### 12.1 `vercel env rm` 후 preview/development에서도 변수 사라짐 (Session 212 패턴)
+
+**Symptom**: `vercel env rm VAR_NAME` 후 preview/development 환경에서도 해당 변수가 사라져 빌드 실패.
+
+**Cause**: `vercel env rm`에 environment 명시 안 하면 전체 환경에서 제거됨.
+
+**Fix**: 항상 environment 명시 — `vercel env rm VAR_NAME production` (production만), `vercel env rm VAR_NAME preview` (preview만).
+
+### 12.2 Service Worker 새 버전 toast 안 뜸
+
+**Symptom**: 배포 후 사용자에게 "새 버전이 있습니다 / 새로고침" toast 미노출.
+
+**Cause**: `predev`/`prebuild` 시 `scripts/bump-sw-version.mjs` 실행 안 됨.
+
+**Fix**: `package.json` scripts에 hook 등록 확인. 강제: `node scripts/bump-sw-version.mjs && npm run build`.
+
+Session 199 prod 검증됨 — v1 → versioned cache swap + 1-click flow.
+
+### 12.3 Pre-hire 로그인 차단 (Session 209)
+
+**Symptom**: 입사일 전 신규 직원 계정으로 로그인 시도 → 빈 권한 세션이 아니라 로그인 자체 차단.
+
+**Cause/Fix**: Session 209에서 의도된 정책. `loadEmployeePermissions` + `authorize`/`signIn` callbacks 모두 active primary assignment + `effectiveDate <= now` 강제.
+
+**운영 영향**: 입사일 전 시스템 체험이 안 됨. 운영 시 HR에 사전 안내 필요.
+
+---
+
+## 13. Phase 9 잔존 E2E Fail (Cluster D)
+
+[STATUS Phase 9](../../Documents/Obsidian%20Vault/projects/hr-hub/STATUS.md) Session 214 이후 14건 잔존.
+
+| Cluster | 패턴 | 처리 |
+|---------|------|------|
+| 503 rate limit | AI rate limit 호출 | 테스트 환경 limit 완화 / fixture mock |
+| boolean drift | spec 미동기화 | 코드 변경 후 spec 재정렬 |
+| 409 sequence | cleanup 누락 | always-cleanup pattern |
+| 500 server error | log 분석 필요 | root cause 추적 |
+| edge case 2 | evaluation-forms:49, onboarding:24 | spec 케이스 재현 |
+
+**Mystery**: Next.js 15 production build의 server-side console.log 미해결 — escape hatch 우회 (Session 214).

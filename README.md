@@ -1,6 +1,8 @@
 # CTR HR Hub
 
-> Enterprise HR SaaS platform for CTR Group — a multinational manufacturer operating across 6 countries (Korea, China, Russia, Vietnam, Spain, Japan) with 1,200+ employees.
+> Enterprise HR SaaS platform for CTR Group — a multinational manufacturer operating 13 legal entities across 6 countries (Korea, China, Russia, Vietnam, Spain, Japan) with 1,200+ employees.
+
+> **Last metrics refresh**: 2026-05-12 (Session 218). Re-generate via the commands in `docs/handover/01_시스템_오버뷰.md` §2.
 
 ---
 
@@ -8,16 +10,23 @@
 
 | Metric | Count |
 |--------|:-----:|
-| Prisma Models | 194 |
-| Prisma Enums | 131 |
-| API Routes | 523 |
-| Client Pages | 146 |
-| Domain Event Handlers | 13 |
+| Prisma Models | 209 |
+| Prisma Enums | 142 |
+| API Routes | 600 |
+| Client Pages | 163 |
+| Prisma Migrations | 43 |
+| Seed Scripts | 49 |
+| Cron Handlers (code) | 8 (registered 3 / unregistered 5 — see `docs/handover/02_운영런북/04_Cron_카탈로그.md`) |
+| Domain Event Handlers | 27 |
 | Nudge Rules | 11 |
-| Locales (i18n) | 7 (ko, en, zh, ru, vi, es, pt) |
-| Seed Scripts | 26 |
-| Cron Jobs | 6 |
-| Protected Infrastructure Files | 44 |
+| Locales (i18n) | 5 (ko, en, zh, vi, es) |
+| EDGE Personas (UAT) | 30 |
+| Test Accounts (QA) | 9 |
+| Unit Tests | ~525 |
+| API Tests | ~1,500 |
+| E2E Tests | ~150 (잔존 14 fail — Cluster D) |
+| Visual Baselines | 330 (Linux Chromium) |
+| Protected Infrastructure Files | 44+ (DO NOT TOUCH 목록은 `CLAUDE.md` 참조) |
 
 ---
 

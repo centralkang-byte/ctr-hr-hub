@@ -407,7 +407,7 @@ A. 설정 → 시스템 → 결재 플로우 탭에서 화면상으로는 등록
 | 7 | 경조금 자동 지급 워크플로 미구현 | 경조사 휴가 승인 → 급여 자동 반영은 향후 작업 |
 | 8 | 임원·계약직별 특수 정책 | 표준 직원과 동일 정책 적용 중. 회사별 분리는 가능하나 미활용 |
 | 9 | 비정기 보상 변경 알림 미발송 | UAT 가이드 §9 알려진 이슈와 동일 (다른 모듈) |
-| 10 | 휴가 사용촉진 자동 통보 cron 미구현 | `src/app/api/v1/cron/leave-promotion/route.ts` 코드는 존재(60/30/10일 의도)하나 `vercel.json` crons에 미등록 — 실제 비동작. 인사담당자 수동 처리. **추후 개선** §10 참조 |
+| 10 | 휴가 사용촉진 자동 통보 cron 미구현 | `src/app/api/v1/cron/leave-promotion/route.ts` 코드는 존재(60/30/10일 의도)하나 `vercel.json` crons에 미등록 — 실제 비동작. 인사담당자 수동 처리. **추후 개선** §10 참조. (자동 cron 카탈로그 `scripts/handover/extract-cron-catalog.ts` 기준 미등록 cron 총 **5개**: leave-promotion, auto-acknowledge, eval-reminder, overdue-check, org-snapshot — Session 218 핸드오버 Tier 1에서 자동 추출됨) |
 | 11 | 사용촉진 시점이 한국 근기법 §61과 불일치 | 시스템 코드 의도는 회계연도 종료 60/30/10일 전 통보. 한국 §61이 요구하는 시점(이행기 종료 6개월 전 1차 + 2개월 전 2차)과 다름. cron 등록 시 §61 정합화도 함께 검토 필요. **추후 개선** — 시스템 fix 트랙 |
 
 ---

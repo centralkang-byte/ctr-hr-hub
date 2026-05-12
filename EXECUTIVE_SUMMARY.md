@@ -1,48 +1,52 @@
 # Executive Summary — CTR HR Hub
 
-> **Date:** 2026-03-12
+> **Date:** 2026-05-12 (Session 218 refresh — Sessions 168~217 추가분 반영)
 > **For:** CTR Group Leadership
-> **Prepared by:** Engineering Team
+> **Prepared by:** Engineering Team (CEO 솔로 개발 → IT 팀 인계 단계)
 
 ---
 
 ## What It Is
 
-CTR HR Hub is a unified, enterprise-grade Human Resources management platform purpose-built for CTR Group. It replaces fragmented HR tools across our 6 country operations (Korea, China, Russia, Vietnam, Spain, Japan) with a single, multilingual system that manages the full employee lifecycle — from recruiting and onboarding through performance management, payroll, and offboarding. The platform currently handles 1,200+ employee records across multiple legal entities, with role-based access control ensuring that each employee, manager, and HR administrator sees exactly the data relevant to their role and company.
+CTR HR Hub is a unified, enterprise-grade Human Resources management platform purpose-built for CTR Group. It replaces fragmented HR tools across our 6 country operations (Korea, China, Russia, Vietnam, Spain, Japan) — operating **13 legal entities** — with a single, multilingual system that manages the full employee lifecycle from recruiting and onboarding through performance management, payroll, and offboarding. The platform currently handles 1,200+ employee records with role-based access control ensuring that each employee, manager, and HR administrator sees exactly the data relevant to their role and company.
 
 ---
 
 ## What It Does
 
 ### Core HR (Foundation)
-- **Employee Management:** Central employee registry with effective dating — every organizational change (transfer, promotion, reassignment) is tracked with full history
-- **Organization Chart:** Real-time interactive org chart based on position hierarchy, not individual reporting lines
-- **Multi-Entity Support:** 6 legal entities managed under one platform with data isolation between companies
+- **Employee Management:** Central employee registry with effective dating (`EmployeeAssignment` append-only) — every organizational change (transfer, promotion, reassignment) is tracked with full history
+- **Organization Chart:** Real-time interactive org chart based on position hierarchy + 52 부서장(`Department.head_employee_id`) for approval routing (Session 201)
+- **Multi-Entity Support:** 13 legal entities managed under one platform with data isolation between companies (RLS + `resolveCompanyId` SSOT)
 - **Position Management:** 140+ positions across 15 global job families, supporting cross-entity comparisons
 
 ### Talent Management
-- **Recruitment ATS:** AI-powered applicant screening through an 8-stage hiring pipeline with kanban board and duplicate detection
-- **Performance Management:** Complete 7-step annual cycle — goal setting (MBO), mid-year check-in, evaluation (self + manager + peer), calibration, and result notification — with AI-drafted evaluations and bias detection
-- **Succession Planning:** Readiness assessment and candidate tracking for critical positions
+- **Recruitment ATS:** AI-powered applicant screening through a 10-stage hiring pipeline (OFFER_ACCEPTED/DECLINED 포함), kanban board, duplicate detection, do-not-rehire 통합 차단
+- **Performance Management:** Complete 7-step annual cycle — goal setting (MBO) + **GoalRevision 배치 수정**, **AI 자기평가 도우미** (Claude), **QuarterlyReview 듀얼 제출** (직원·매니저 + 마스킹), **캘리브레이션 DnD 배치 조정** (@dnd-kit 9-block), 결과 통지, 성장 여정 시각화 (MyResult 라인 차트)
+- **Compensation Management:** **Off-Cycle Comp 3 발의 경로** (매니저 제안 / HR 주도 / 자동 트리거) + ApprovalFlow 다단계 + 급여 역전 방어 + Self-approval Skip + 미래 시행일 cron. **Compensation Letter PDF** 생성 → S3 저장 → 이메일 배치 발송 → 버전 관리. **Total Rewards Statement** (`/my/total-rewards`) — 기본급/상여/수당/복리후생/포상 연간 집계 + 도넛 차트. **PayBandChart** 4곳 시각화
 - **Skills & Competency:** Skill matrix with gap analysis, self-assessment, and training recommendations
 
 ### Operations
 - **Attendance:** Flexible shift management including 3-shift rotation, 52-hour weekly monitoring (Korean labor law), and mobile GPS-based clock-in
-- **Leave Management:** Policy engine supporting unlimited leave types, accrual rules, negative balance, and a unified approval inbox for managers
-- **Payroll:** Korean payroll tax engine (6 deduction categories), year-end settlement, global payroll integration, and automatic anomaly detection before disbursement
+- **Leave Management:** Policy engine supporting 220+ leave types (6 카테고리), accrual rules, negative balance, **DesignatedLeaveDay 지정연차** 자동 차감, 통합 결재 inbox. 사용촉진 cron 미구현 (수동 운영)
+- **Leave of Absence (휴직):** 6-state 워크플로 (REQUESTED→APPROVED→ACTIVE→RETURN_REQUESTED→COMPLETED/REJECTED) + 복직 신청 + CRON 복귀 알림 (D-7/D-3/D-1) + **PayrollAdjustment cross-month 일할계산 자동 생성**
+- **Payroll:** Korean payroll tax engine (4대보험 + 소득세, 9-state pipeline), year-end settlement, 해외 5개 법인 외부 처리 결과 업로드, 6개 이상 감지 규칙
+- **Onboarding/Offboarding:** DAY_1/7/30/90 마일스톤, **4 게이트 강제 집행 엔진** (IT계정/퇴직면담/인수인계/자산반납), 인수인계 워크플로 UI (인수자 지정 + 인계 태스크), **재고용 방지(do-not-rehire) 토글**, OffboardingDocument 4 종 (CONSENT/HANDOVER/EXIT/NDA), 퇴직 분석 대시보드
 - **Benefits:** Benefit plans with dynamic enrollment forms, approval workflows, and budget tracking
 
 ### Intelligence
+- **V2 홈 (4 역할별)**: `/home`에서 SUPER_ADMIN/HR_ADMIN/MANAGER/EXECUTIVE/EMPLOYEE 각 역할별 맞춤 대시보드 (결재 inbox, 팀 현황, KPI, 인정 피드, 출퇴근 위젯)
 - **7 Analytics Dashboards:** Executive summary, workforce demographics, payroll analysis, performance distribution, attendance patterns, turnover trends, and team health metrics
-- **AI Reports:** Automated HR insight reports powered by Claude AI (optional integration)
+- **AI Reports:** Automated HR insight reports powered by Claude AI (Anthropic SDK)
 - **Turnover Prediction:** ML-based attrition risk scoring using tenure, compensation, and engagement signals
 - **Burnout Detection:** Overtime patterns and leave usage analysis to identify at-risk employees
 
 ### Platform
-- **7 Languages:** Korean (primary), English, Chinese, Russian, Vietnamese, Spanish, Portuguese — all UI elements, notifications, and error messages are localized
-- **Notifications:** In-app bell notifications, email alerts, and Microsoft Teams integration
-- **Compliance:** Korean KEDO electronic document management, Chinese social insurance calculation, Russian labor code automation, GDPR/PII data protection, and privacy impact assessments (DPIA)
-- **Self-Service Portal:** Employees can view payslips, request leave, update personal information, view attendance records, and track their year-end settlement — all without contacting HR
+- **5 Languages:** Korean (primary), English, Chinese, Vietnamese, Spanish — UI / 알림 / 에러 메시지 / Teams·이메일 / 서버사이드 PDF·Excel 포함 완전 i18n (Phase 1 6,963건 → Batch 1-15)
+- **Notifications:** In-app 알림 센터 (`/notifications`), AWS SES email, Microsoft Teams Bot, Web Push (VAPID)
+- **Compliance:** Korean labor law, Chinese 사회보험 계산, Russian labor code automation, GDPR/PII 자동 logging, DPIA + 데이터 보존
+- **Self-Service Portal:** Employees can view payslips, request leave + LOA, update personal information, view attendance records, year-end settlement, **내 총보상**, **내 분기리뷰**, **내 인정·칭찬**, **내 온보딩**, **내 오프보딩**, **내 내부공모** — all without contacting HR
+- **Performance & Quality:** Phase 7 성능 — 번들 분석 + dynamic import 15곳 + cache 19종 + Sentry INP. Phase 5 visual baseline 330 자동 회귀. Phase 8 k6 부하 테스트 인프라.
 
 ---
 
@@ -50,14 +54,20 @@ CTR HR Hub is a unified, enterprise-grade Human Resources management platform pu
 
 | Category | Metric | Count |
 |----------|--------|:-----:|
-| **Data Model** | Database tables | 194 |
-| | Enum types | 131 |
-| **Backend** | API endpoints | 523 |
-| | Domain event handlers | 13 |
+| **Data Model** | Database tables (Prisma models) | 209 |
+| | Enum types | 142 |
+| | Prisma migrations | 43 |
+| | Seed scripts | 49 |
+| **Backend** | API endpoints | 600 |
+| | Domain event handlers | 27 |
 | | Automated nudge rules | 11 |
-| | Scheduled cron jobs | 6 |
-| **Frontend** | Interactive pages | 146 |
+| | Cron handlers (code) | 8 (registered 3 / unregistered 5) |
+| **Frontend** | Interactive pages | 163 |
 | | Sidebar menu items | 30+ |
+| **Quality** | Unit tests | ~525 |
+| | API tests | ~1,500 |
+| | E2E tests | ~150 (잔존 14 fail) |
+| | Visual baselines | 330 |
 | **Seed Data** | Demo data scripts | 26 |
 | **Security** | Protected infrastructure files | 44 |
 | **i18n** | Supported languages | 7 |
