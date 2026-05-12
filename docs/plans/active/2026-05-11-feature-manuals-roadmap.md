@@ -79,7 +79,7 @@ docs/manuals/
 | 9 | 보상 (Compensation) | ⚪ 대기 | ⭐⭐⭐ | TBD |
 | 10 | 온보딩/오프보딩 | ⚪ 대기 | ⭐⭐ | TBD |
 | 11 | 마스터데이터/설정 (Settings) | ⚪ 대기 | ⭐⭐ | TBD |
-| 12 | 인사이트/분석 (Insights) | ⚪ 대기 | ⭐⭐ | TBD |
+| 12 | 인사이트/분석 (Insights) | 🟡 **Draft v1 (CEO 리뷰 전)** | ⭐⭐ | 데이터 소비 모듈 (모든 모듈 cross-ref) |
 
 **참고**: 11개 기존 ADR + 11개 plan 문서가 `~/Documents/Obsidian Vault/projects/hr-hub/decisions/` 및 `docs/plans/active/`에 존재. 작성 시 매뉴얼별로 매핑.
 
