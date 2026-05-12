@@ -68,3 +68,4 @@ data/*.json
 # Python bytecode cache (scripts/uat/build-*.py)
 __pycache__/
 *.pyc
+~$*
