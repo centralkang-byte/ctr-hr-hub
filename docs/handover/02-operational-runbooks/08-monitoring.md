@@ -1,0 +1,122 @@
+# 08. 모니터링 (Sentry / Vercel)
+
+> **대상**: 인프라팀
+> **목적**: 어디서 무엇을 봐야 하는지의 navigational guide
+
+## 진입점 매트릭스
+
+| 도구 | 용도 | 진입 URL | 필요 env / 권한 |
+|------|------|---------|----------------|
+| **Sentry** | 런타임 에러 + 트랜잭션 + INP | https://sentry.io/organizations/<org>/projects/ctr-hr-hub/ | `NEXT_PUBLIC_SENTRY_DSN` (클라이언트), `SENTRY_AUTH_TOKEN` (CI source map upload) |
+| **Vercel Analytics** | 페이지 뷰 + 사용자 | Vercel dashboard → ctr-hr-hub → Analytics | Vercel team member 권한 |
+| **Vercel Speed Insights** | Core Web Vitals (LCP/INP/CLS) | Vercel dashboard → ctr-hr-hub → Speed Insights | 동일 |
+| **Vercel Logs** | 함수 실행 로그 (cron 포함) | Vercel dashboard → ctr-hr-hub → Logs | 동일 |
+| **Supabase Dashboard** | DB metrics + 쿼리 + 백업 | https://supabase.com/dashboard/project/<id> | Supabase org member |
+| **GitHub Actions** | CI 상태 | https://github.com/centralkang-byte/ctr-hr-hub/actions | GitHub org member |
+
+## Sentry 일상 모니터링
+
+### 데일리 체크 (인프라팀 아침 10분)
+
+1. **Issues 탭** → "Last 24h" → 신규 에러 검토
+2. **신규 INP / LCP regression** (Speed Insights 통합) — Phase 7 작업
+3. **에러 빈도 상위 5건** — 동일 에러 반복이면 root cause 추적
+4. **Releases 탭** → 직전 배포 vs 그 이전 비교 — 새 에러 도입 확인
+
+### 알람 설정 (권장)
+
+- Critical: 같은 에러 5분 내 100건 이상 → 즉시 알림 (Slack/이메일)
+- Major: 새 에러 1건 발생 (Sentry "First seen") → 30분 내 알림
+- Performance: P95 응답시간 2초 초과 → 시간당 알림
+
+⚠️ 현재 알람 채널이 CEO 개인 이메일에 묶여있을 수 있음 — 인계 시 CTR 그룹 메일 또는 Slack 채널로 전환.
+
+### Source map 업로드
+
+`SENTRY_AUTH_TOKEN` 환경 변수로 빌드 시 source map 자동 업로드 (예상). 미동작 시 에러 stack trace가 minified 상태로 표시되어 디버깅 어려움 → 인계 직후 검증.
+
+## Vercel Logs
+
+```bash
+# Vercel CLI 로그 (실시간 tail)
+vercel logs --follow
+
+# 특정 deployment 로그
+vercel logs <deployment-id>
+
+# 특정 함수 로그
+vercel logs <deployment-id> --since 1h
+```
+
+또는 대시보드 UI 사용 (검색·필터 편리).
+
+**Cron 실행 확인**: Vercel Logs 에서 path filter `/api/v1/cron/*` 로 cron 실행 결과 추적.
+
+## Supabase 모니터링
+
+### 정기 체크
+
+- **DB Size** (Supabase 대시보드 → Database → Storage) — Pro plan 한도 8GB 가까워지면 archival 검토
+- **Slow Query** (Database → Reports → Slow Queries) — P95 100ms+ 쿼리는 인덱스 검토
+- **Connection pool 사용량** — 80% 넘으면 DATABASE_POOL_SIZE 조정
+- **Backups** — Pro+ 자동 백업 + PITR 가용 시간 확인
+
+### Performance Advisor
+
+Supabase 대시보드 → Database → Performance Advisor — 미사용 인덱스 + 누락 인덱스 자동 제안.
+
+## 비용 모니터링
+
+| 서비스 | 청구 페이지 | 한도 알람 권장 |
+|--------|------------|---------------|
+| Vercel | Dashboard → Team Settings → Billing | 월 한도 70% |
+| Supabase | Dashboard → Organization → Billing | 월 한도 70% |
+| AWS (S3 + SES) | AWS Console → Billing → Budgets | 월 한도 + AWS Budget Alert |
+| Anthropic | console.anthropic.com → Usage | 월 한도 70% |
+| OpenAI | platform.openai.com → Usage | 월 한도 70% |
+| Sentry | sentry.io → Settings → Subscription → Usage & Billing | event quota 80% |
+
+⚠️ 청구 카드가 CEO 개인 카드에 묶였을 가능성 — 인계 시 CTR 법인 카드로 전환.
+
+## 알림 흐름 (현재 추정)
+
+```
+Sentry error → 이메일 (CEO?) ──────────────┐
+                                           ↓
+Vercel build fail → GitHub PR commit ──→ CEO 알림
+                                           ↓
+Supabase incident → 이메일 (CEO?) ─────────┘
+```
+
+인계 후:
+```
+Sentry error → Slack #ctr-hr-incidents (인프라팀 알림)
+Vercel build fail → 동일
+Supabase incident → 동일
+```
+
+## INP / Core Web Vitals 모니터링
+
+Phase 7 Batch에서 Sentry INP 통합 완료. 모니터링:
+- Sentry → Performance → INP
+- 또는 Vercel Speed Insights (대시보드 자체)
+
+악화 시 대응:
+- 어느 페이지인지 식별 (Sentry transaction.op 으로 grouping)
+- 직전 PR diff에 React re-render 추가 / 무거운 client component 추가 / blocking script 추가가 있었는지 확인
+- 롤백 또는 dynamic import 적용
+
+## 알려진 사각지대
+
+| 영역 | 모니터링 부재 | 대응 권장 |
+|------|--------------|----------|
+| Cron 미동작 (등록 X) | 5개 cron 호출 0건 → 알람 없음 | 등록 후 Sentry transaction 모니터링 |
+| 미사용 인덱스 | Supabase Advisor 수동 확인 필요 | 분기 1회 리뷰 |
+| 외부 API 키 만료 (Anthropic 등) | 만료 시 first error만 Sentry로 잡힘 | 키 expiry 캘린더 별도 관리 |
+| AWS SES 발송 한도 | 한도 초과 시 5xx, Sentry 잡음 | CloudWatch alarm 설정 |
+| 결제 카드 실패 | Vercel / Supabase 일시 서비스 중단 | 청구 카드 만료일 캘린더 + 자동 갱신 카드 사용 |
+
+## 관련 문서
+
+- [10-incident-response.md](10-incident-response.md) — 알람 → 대응 흐름
+- [TROUBLESHOOTING.md](../../../TROUBLESHOOTING.md) — 에러 패턴별 해결

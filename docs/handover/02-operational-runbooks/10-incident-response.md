@@ -1,0 +1,208 @@
+# 10. 장애 대응
+
+> **대상**: 인프라팀 (1차) + 개발팀 (2차 — root cause 분석)
+> **작성 상태**: 🟡 **CEO 부분 작성 필요** — 프레임워크는 제공, 과거 사고 사례·on-call 정책은 CEO만 알고 있음.
+
+## 장애 심각도 정의
+
+| 심각도 | 정의 | 응답 SLA | 알림 |
+|--------|------|----------|------|
+| **P0 Critical** | 시스템 사용 불가 (로그인 불가, 전사 영향, 데이터 손실 위험) | 15분 내 인지 + 1시간 내 mitigation | 즉시 (전화/Slack #incidents) |
+| **P1 Major** | 핵심 기능 차단 (급여 실행 불가, 결재 stuck, 한 법인 영향) | 1시간 내 인지 + 4시간 내 mitigation | 30분 내 (Slack) |
+| **P2 Minor** | 일부 기능 저하 (UI 깨짐, 느린 로딩) | 8시간 내 인지 + 다음 영업일 mitigation | 영업시간 내 (이메일) |
+| **P3 개선** | 사용자 인지 불가 또는 매우 적음 | 다음 sprint | 백로그 등록 |
+
+## 일반 대응 흐름
+
+```
+1. 인지 (Sentry / 사용자 보고 / 모니터링 알림)
+        ↓
+2. Triage (어느 시스템? 어느 모듈? P0~P3?)
+        ↓
+3. Communicate (Slack 채널 + 사용자 공지 — P0/P1만)
+        ↓
+4. Mitigate (롤백 / hotfix / feature flag off)
+        ↓
+5. Resolve (재발 방지 PR 또는 root cause fix)
+        ↓
+6. Postmortem (P0/P1만, 24시간 내)
+```
+
+## 즉시 mitigation 옵션
+
+### A) Vercel 롤백 (배포 직후 장애)
+
+```bash
+# 1. 직전 정상 deployment 찾기
+vercel ls
+
+# 2. promote
+vercel promote <previous-deployment-id> --prod
+
+# 3. 확인 (1~2분 내 alias 전환)
+curl -I https://hr.ctr.co.kr
+```
+
+### B) Hotfix PR (코드 버그)
+
+```bash
+# main 에서 분기
+git checkout -b hotfix/<short-description> main
+# 수정
+git commit -m "hotfix: <description>"
+# push + PR (정상 리뷰 흐름 — CI 빠르게)
+gh pr create --base main --title "hotfix: <description>"
+# admin merge (긴급 시)
+gh pr merge --admin --squash
+```
+
+### C) Feature flag off (특정 기능 차단)
+
+현재 feature flag 시스템 부재 — env 변수 또는 DB 설정 토글이 있는 경우 사용.
+
+⚠️ **CTR HR Hub는 명시적 feature flag 인프라가 없음**. 추후 개선 후보.
+
+### D) DB 백업 복원 (Supabase PITR)
+
+```
+1. Supabase 대시보드 → Database → Backups → Point In Time Recovery
+2. 복원 시점 선택 (장애 발생 직전)
+3. 새 branch로 복원 (운영 DB는 그대로 두고 비교용)
+4. 데이터 비교 후 SQL 패치 또는 전체 복원 결정
+```
+
+⚠️ PITR는 Pro+ 플랜만 제공. 현재 플랜 확인 필요.
+
+## 시나리오별 런북
+
+### 시나리오 1: 사용자가 로그인 못 함
+
+**점검 순서**:
+1. Vercel deployment status — Ready인지
+2. https://hr.ctr.co.kr 헬스 (200 OK?)
+3. Azure AD 상태 — Microsoft 365 admin center
+4. Sentry — auth 관련 새 에러
+5. DB connection — Supabase 대시보드 헬스
+6. NextAuth secret 변경됐는지 (모든 세션 invalidate)
+
+**일반적 원인**:
+- Azure AD 앱 client secret 만료 → 새 secret 발급
+- DATABASE_URL pooler/direct 잘못 (Pooler 사용 시 인증 실패) → Direct connection
+- 새 배포에서 NextAuth config 변경
+
+### 시나리오 2: 급여 실행 실패
+
+**점검 순서**:
+1. 어느 단계에서 실패 (DRAFT 생성 / 출퇴근 마감 연동 / 4대보험 계산 / 결재 / 이체 파일 생성)?
+2. Sentry — payroll 에러
+3. DB — PayrollRun 상태
+4. 결재 stuck인지 ([매뉴얼 §결재·승인 알려진 제약](../../manuals/approval.md))
+
+**일반적 원인**:
+- 결재 trailing self-skip stuck (Session 210 PR #19 패턴) — fix 적용됨, 재발 시 새 패턴
+- 4대보험 요율 시드 누락 (매년 1월 위험)
+- ApprovalFlow race condition
+
+### 시나리오 3: Cron 실행 안 됨
+
+→ [11-cron-manual-trigger.md](11-cron-manual-trigger.md) 수동 트리거 + Vercel Logs 확인.
+
+### 시나리오 4: 알림 발송 안 됨
+
+→ [09-alert-channels.md](09-alert-channels.md) 디버깅 흐름.
+
+### 시나리오 5: 한 법인 데이터 안 보임 (cross-company 격리 의심)
+
+**점검 순서**:
+1. 사용자 권한 확인 (`Employee.companyId`, `EmployeeRole.companyId`)
+2. RLS 적용 확인 (`src/lib/api/companyFilter.ts`)
+3. SUPER_ADMIN 회사 전환 동작 (`session.role` JWT pin 기반)
+
+**일반적 원인**:
+- `resolveCompanyId` 누락 (DO NOT TOUCH 파일 우회)
+- 신규 라우트가 RLS 우회 (보안 audit 필요)
+
+## TODO: CEO 채우기
+
+### 과거 사고 사례 (최소 3건)
+
+각 사례에 대해:
+- 일시:
+- 심각도 (P0~P3):
+- 증상:
+- root cause:
+- mitigation:
+- 재발 방지 PR:
+- lesson:
+
+**사례 1**: (CEO 작성)
+
+**사례 2**: (CEO 작성)
+
+**사례 3**: (CEO 작성)
+
+### On-call 정책 (인계 후 IT팀 합의)
+
+- [ ] 영업시간 on-call: 누가?
+- [ ] 야간/주말 on-call: 누가?
+- [ ] P0 발생 시 escalation 경로:
+- [ ] CTR Group 임원·HR 알림 정책:
+
+### 사용자 공지 템플릿
+
+P0/P1 발생 시 사용자에게 공지 — 어디로? (사내 공지 게시판 / Teams / 이메일 일괄):
+
+- [ ] 공지 채널:
+- [ ] 공지 권한자:
+- [ ] 공지 템플릿 (한국어):
+
+## 포스트모템 (postmortem) 템플릿
+
+P0/P1 발생 후 24시간 내 작성, `docs/incidents/<date>-<title>.md` 권장 위치:
+
+```markdown
+# Incident: <짧은 제목>
+
+> **일시**: 2026-XX-XX HH:MM ~ HH:MM KST
+> **심각도**: P0 / P1
+> **작성자**: <name>
+> **상태**: 종결 / 후속 작업 진행 중
+
+## 요약
+한 단락.
+
+## 영향
+- 사용자 수:
+- 영향 받은 기능:
+- 데이터 손실: yes/no
+
+## 타임라인
+- HH:MM — 인지 (어떻게)
+- HH:MM — triage
+- HH:MM — mitigation 시작
+- HH:MM — 정상화
+
+## Root Cause
+무엇이, 왜.
+
+## Mitigation
+즉시 조치.
+
+## 재발 방지
+- [ ] PR 1: ...
+- [ ] PR 2: ...
+
+## What went well
+## What went poorly
+## Lessons
+```
+
+## 관련 문서
+
+- [TROUBLESHOOTING.md](../../../TROUBLESHOOTING.md) — 8 카테고리별 트러블슈팅
+- [01-deploy-pipeline.md](01-deploy-pipeline.md) — 롤백 명령
+- [04-cron-catalog.md](04-cron-catalog.md) — cron 장애 시 참조
+
+---
+
+**CEO 작성 완료 후**: 본 문서 상단의 🟡 마크를 🟢로 변경.

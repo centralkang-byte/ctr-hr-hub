@@ -1,0 +1,94 @@
+# 01. 배포 파이프라인
+
+> **대상**: 인프라팀
+> **빈도**: 매일 (자동) + hotfix 시 (수동)
+> **핵심 사실**: `git push origin main` → Vercel auto-deploy. 그 외 수동 명령 거의 없음.
+
+## 배포 흐름 한눈에
+
+```
+git commit → pre-commit hook (tsc + lint) → git push origin main
+                                                       ↓
+                                  GitHub Actions (E2E gating 별도)
+                                                       ↓
+                                  Vercel auto-deploy (~3~5분)
+                                                       ↓
+                                  Sentry 헬스 체크 + canary alarm
+```
+
+## 환경 매트릭스
+
+| 환경 | 브랜치 | URL | DB | 자동 배포 |
+|------|--------|-----|-----|----------|
+| production | `main` | https://hr.ctr.co.kr | Supabase prod | ✅ `git push origin main` |
+| staging | `staging` | https://ctr-hr-hub-git-staging-sangwoos-projects-b01c065c.vercel.app | Supabase staging branch | ✅ `git push origin staging` |
+| preview | PR 브랜치 | `<deployment-id>.vercel.app` | Supabase preview branch | ✅ PR open 시 자동 |
+
+## Pre-commit hook
+
+`git commit` 실행 시 자동으로:
+1. `npx tsc --noEmit` (TypeScript 컴파일 체크)
+2. `npm run lint` (ESLint)
+
+실패 시 commit 차단. 우회는 `--no-verify`이나 **CEO 정책상 금지** (CLAUDE.md 참조).
+
+## Codex Outside Voice 리뷰 게이트 (3+ 파일 변경 시)
+
+CLAUDE.md 정책: 계획 단계에서 3+ 파일 touch가 예상되면 두 단계 검토 필수.
+
+| 게이트 | 시점 | 명령 |
+|--------|------|------|
+| Gate 1 — Plan Review | 계획 작성 후, 구현 전 | `cat /tmp/codex-prompt.txt \| /opt/homebrew/bin/codex exec -` |
+| Gate 2 — Post-Impl Review | tsc + lint 통과 후, commit 전 | `/opt/homebrew/bin/codex review --uncommitted` |
+
+Gate 1·2 모두 HIGH finding은 commit 전 처리 필수.
+
+## 수동 배포 명령 (예외 상황만)
+
+```bash
+# 프로덕션 강제 재배포 (env 변경 후)
+vercel redeploy <deployment-id> --prod
+
+# 신규 deployment (보통은 push로 충분)
+npx vercel --prod --yes
+
+# 최근 배포 목록
+vercel ls
+```
+
+## 롤백
+
+```bash
+# 1. 직전 정상 deployment 찾기
+vercel ls
+
+# 2. promote (alias 전환)
+vercel promote <previous-deployment-id> --prod
+```
+
+또는 GitHub에서 `main` 브랜치를 직전 commit으로 force-push (위험, 신중):
+```bash
+git revert <bad-commit-sha>  # 권장: revert
+git push origin main
+```
+
+## 검증 체크리스트
+
+배포 후 다음 확인:
+- [ ] Vercel deployment status = Ready (대시보드)
+- [ ] https://hr.ctr.co.kr 200 OK + 로그인 화면 표시
+- [ ] Sentry 새 에러 0건 (배포 후 5분)
+- [ ] 4 역할 (SUPER_ADMIN/HR_ADMIN/MANAGER/EMPLOYEE) 각각 `/home` 진입 정상
+
+## 알려진 함정
+
+- **Prisma generate**: `postinstall` script 보장. 만약 빌드에서 "@prisma/client not found" → `package.json`에 `"postinstall": "prisma generate"` 있는지 확인.
+- **DATABASE_URL 포트**: Supabase **Direct Connection (5432)** 사용. Pooler (6543)는 DDL 차단 → 빌드 hang. (`DEPLOYMENT.md` §1.1 참조)
+- **Service Worker 캐시**: `predev`/`prebuild` 시 `scripts/bump-sw-version.mjs` 자동 실행. 배포 후 클라이언트에 "새 버전" toast 표시.
+
+## 관련 문서
+
+- [DEPLOYMENT.md](../../../DEPLOYMENT.md) — Vercel + Supabase 초기 셋업
+- [TROUBLESHOOTING.md](../../../TROUBLESHOOTING.md) — 배포 실패 패턴 모음
+- [02-env-add-remove.md](02-env-add-remove.md) — 환경 변수 수정
+- [10-incident-response.md](10-incident-response.md) — 장애 시 절차
