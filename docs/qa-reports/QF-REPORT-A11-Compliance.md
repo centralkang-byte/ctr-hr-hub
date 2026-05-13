@@ -3,7 +3,7 @@
 Date: 2026-03-18
 Tool: Claude Code Desktop (Opus 4.6)
 Duration: ~30 min
-Accounts: SA(최상우), HK(한지영), HC(陈美玲), EA(이민준)
+Accounts: SA(대조영), HK(한지영), HC(陈美玲), EA(이민준)
 
 ---
 

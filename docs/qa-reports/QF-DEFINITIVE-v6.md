@@ -232,7 +232,7 @@ S-1 프롬프트는 작성 완료. S-2는 S-1 결과 후 작성.
 
 | # | 약어 | 역할 | 법인 | 이메일 | 이름 |
 |---|------|------|------|--------|------|
-| 1 | **SA** | SUPER_ADMIN | 전체 | super@ctr.co.kr | 최상우 |
+| 1 | **SA** | SUPER_ADMIN | 전체 | super@ctr.co.kr | 대조영 |
 | 2 | **HK** | HR_ADMIN | CTR-KR | hr@ctr.co.kr | 한지영 |
 | 3 | **HC** | HR_ADMIN | CTR-CN | hr@ctr-cn.com | 陈美玲 |
 | 4 | **M1** | MANAGER | CTR-KR | manager@ctr.co.kr | 박준혁 |
