@@ -433,7 +433,7 @@ Login as: `manager@ctr.co.kr` (박준혁 — MANAGER)
 
 **Step 3: Test with Super Admin**
 
-Login as: `super@ctr.co.kr` (최상우)
+Login as: `super@ctr.co.kr` (대조영)
 - Verify card behavior for SUPER_ADMIN role
 
 **Step 4: Console/network 에러 확인**
