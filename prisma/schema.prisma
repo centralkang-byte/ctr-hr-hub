@@ -1355,6 +1355,12 @@ model Employee {
   // ─── Stage C: PII 분리 모델 ───
   rrn EmployeeRrn?
 
+  // ─── Stage D: 레거시 ERP 부속 모델 (relations only) ───
+  addresses             EmployeeAddress[]
+  bankAccounts          EmployeeBankAccount[]
+  koreaSocialInsurances KoreaSocialInsurance[]
+  statutoryStatus       EmployeeStatutoryStatus?
+
   // A2-1: employee_assignments로 이관된 필드들은 아래 relation으로 접근
   assignments         EmployeeAssignment[] @relation("EmployeeAssignments")
   assignmentApprovals EmployeeAssignment[] @relation("AssignmentApprover")
@@ -4532,6 +4538,11 @@ model MilitaryRegistration {
   registrationDate   DateTime?        @map("registration_date")
   deregistrationDate DateTime?        @map("deregistration_date")
   notes              String?
+  // Stage D: IS_PE01 호환 컬럼 추가 — CodeMaster 그룹 참조 (E305/E306/E307)
+  exemptReason       String?          @map("exempt_reason") // 미필사유 (E307)
+  serviceType        String?          @map("service_type") // 역종 (E306)
+  dischargeType      String?          @map("discharge_type") // 전역구분 (E305)
+  militaryNumber     String?          @map("military_number") // 군번
   createdAt          DateTime         @default(now()) @map("created_at")
   updatedAt          DateTime         @updatedAt @map("updated_at")
 
@@ -6736,6 +6747,113 @@ model EmployeeRrn {
   employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   @@map("employee_rrns")
+}
+
+// ================================================================
+// Stage D: 레거시 ERP(IS_PE01) 호환 부속 모델 4종
+// 모두 Employee 와 별개 테이블 — explicit include 필요 (PII 자동 누설 방지)
+// 민감 데이터(BankAccount/SocialInsurance/StatutoryStatus)는 RLS 적용
+// ================================================================
+
+/// 직원 주소 — REGISTERED(주민등록) | RESIDENCE(실거주) | FOREIGN(외국인본국)
+/// 본적(HOMETOWN)은 사용 빈도 낮아 제외 (plan 결정).
+/// 법정 자료 발급 = REGISTERED, 통근비/주거지원 = RESIDENCE, 외국인 비자 = FOREIGN
+model EmployeeAddress {
+  id            String    @id @default(uuid())
+  employeeId    String    @map("employee_id")
+  type          String // REGISTERED | RESIDENCE | FOREIGN
+  postalCode    String?   @map("postal_code")
+  addressLine1  String?   @map("address_line1")
+  addressLine2  String?   @map("address_line2")
+  countryCode   String?   @default("KR") @map("country_code")
+  isActive      Boolean   @default(true) @map("is_active")
+  /// 효력 시작일. 알 수 없는 historical import 는 1900-01-01 sentinel 사용.
+  /// NOT NULL 이라 @@unique([employeeId, type, effectiveFrom]) 가 PostgreSQL 에서 실제로 enforce 됨.
+  effectiveFrom DateTime  @default(dbgenerated("CURRENT_DATE")) @map("effective_from") @db.Date
+  effectiveTo   DateTime? @map("effective_to") @db.Date
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, type, effectiveFrom])
+  @@index([employeeId])
+  @@map("employee_addresses")
+}
+
+/// 직원 은행계좌 — PAYROLL(급여) | EXPENSE(경비) | PENSION(연금 IRP)
+/// 계좌번호는 src/lib/pii/account 헬퍼로 암호화 저장. 표시는 numberMasked 사용.
+model EmployeeBankAccount {
+  id              String   @id @default(uuid())
+  employeeId      String   @map("employee_id")
+  purpose         String // PAYROLL | EXPENSE | PENSION
+  bankCode        String   @map("bank_code") // CodeGroup="BANK_KR" 참조 (느슨한 결합)
+  numberEncrypted String   @map("number_encrypted") // src/lib/pii/account v1:iv:tag:ct
+  numberMasked    String   @map("number_masked") // "*********6789"
+  accountHolder   String   @map("account_holder")
+  isPrimary       Boolean  @default(true) @map("is_primary")
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])
+  @@index([employeeId, purpose])
+  @@map("employee_bank_accounts")
+}
+
+/// 한국 4대보험 가입정보 — HEALTH | NATIONAL_PENSION | EMPLOYMENT | INDUSTRIAL_ACCIDENT
+/// 중국용 SocialInsuranceRecord 와는 별개 (그건 월별 납부내역).
+/// 보수월액·취득/상실일·조합기호 등 가입 마스터 정보.
+model KoreaSocialInsurance {
+  id                 String    @id @default(uuid())
+  employeeId         String    @map("employee_id")
+  insuranceType      String    @map("insurance_type") // HEALTH | NATIONAL_PENSION | EMPLOYMENT | INDUSTRIAL_ACCIDENT
+  isEnrolled         Boolean   @map("is_enrolled")
+  monthlySalary      Decimal?  @map("monthly_salary") // 보수월액
+  acquireDate        DateTime? @map("acquire_date") @db.Date // 취득일
+  loseDate           DateTime? @map("lose_date") @db.Date // 상실일
+  groupCode          String?   @map("group_code") // 조합기호
+  certNumber         String?   @map("cert_number") // 증번호
+  exemptReason       String?   @map("exempt_reason") // 미가입사유 (CodeMaster 참조)
+  longTermCareAmount Decimal?  @map("long_term_care_amount") // 장기요양 (HEALTH 한정)
+  employerAmount     Decimal?  @map("employer_amount") // 회사 부담분 (EMPLOYMENT 등)
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, insuranceType])
+  @@index([employeeId])
+  @@map("korea_social_insurance")
+}
+
+/// 직원 법정 신분 — 보훈/장애/노조 통합 (1:1, 대부분 null)
+/// 법정 가산점·세제혜택 산정에 사용. 보훈/장애는 특수 보호 대상 PII.
+model EmployeeStatutoryStatus {
+  id              String    @id @default(uuid())
+  employeeId      String    @unique @map("employee_id")
+  // 보훈
+  veteranType     String?   @map("veteran_type") // CodeGroup="E203"
+  veteranBenefit  String?   @map("veteran_benefit") // CodeGroup="E235"
+  veteranNumber   String?   @map("veteran_number")
+  veteranRelation String?   @map("veteran_relation") // CodeGroup="E401"
+  veteranOrg      String?   @map("veteran_org") // 소관보훈지청
+  // 장애
+  disabilityType  String?   @map("disability_type") // CodeGroup="E206"
+  disabilityClass String?   @map("disability_class") // CodeGroup="E207"
+  disabilityDate  DateTime? @map("disability_date") @db.Date
+  // 노조
+  unionMember     Boolean   @default(false) @map("union_member")
+  unionJoinDate   DateTime? @map("union_join_date") @db.Date
+  unionRank       String?   @map("union_rank") // 노조간부등급
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("employee_statutory_status")
 }
 
 // ================================================================
