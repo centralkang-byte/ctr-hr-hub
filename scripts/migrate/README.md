@@ -47,6 +47,25 @@ npx tsx scripts/migrate/01-import-codes.ts /path/to/IS_SY02.xlsx
 | `8c9d2c3e-1f4b-4a5e-9e7c-0b1f2c3d4e5f` | CodeMaster (group/item) — seed 와 동일 |
 | (TBD) | Employee, Assignment 등 |
 
+## CodeMaster 매핑 키 규칙 (Stage 2)
+
+회사별로 의미가 다른 legacy 코드 (DEPTCD/JIKGUBCD/JIKWICD/JIKCKCD/WORK_AREA 등) 는
+CodeMaster 에 **컴포지트 키** `<COMPYCD>:<LEGACY>` 형식으로 등록해야 함.
+
+예: 회사 코드 `620` 의 부서 `02` 가 우리 시스템의 `R&D` 부서라면:
+```
+CodeGroup code = "DEPTCD"
+CodeItem  code = "620:02", reference1 = "R&D"
+```
+
+회사 단위 unique 가 아닌 코드 (COMPYCD/JIKMUCD) 는 단순 `<LEGACY>` 형식:
+```
+CodeGroup code = "COMPYCD"
+CodeItem  code = "620", reference1 = "CTR"
+```
+
+Stage 2 (`02-map-org.ts`) 가 이 규칙으로 lookup. 누락/오매핑은 exit 1.
+
 ## Rollback
 
 각 stage 는 독립 transaction. 실패 시:
