@@ -1336,6 +1336,25 @@ model Employee {
   probationEndDate        DateTime?       @map("probation_end_date")
   probationStatus         ProbationStatus @default(IN_PROGRESS) @map("probation_status")
 
+  // ─── Stage C: 레거시 ERP(IS_PE01) 호환 신원·일자 필드 ───
+  // 모두 optional — 기존 코드 영향 없음.
+  // 주민번호는 별도 EmployeeRrn 모델로 분리 (PII 자동 누설 방지 — explicit include 필요)
+  nameHanja          String?   @map("name_hanja") // 한자명 (JNAME) — 임원 등기·중국 비자 등
+  birthCalendar      String?   @default("SOLAR") @map("birth_calendar") // SOLAR | LUNAR
+  isMarried          Boolean?  @map("is_married") // 결혼여부 (E310: Y/N → boolean)
+  marriageDate       DateTime? @map("marriage_date") @db.Date // 결혼기념일
+  officePhone        String?   @map("office_phone") // 사내전화 (내선)
+  faxNumber          String?   @map("fax_number")
+  carLicensePlate    String?   @map("car_license_plate") // 차량번호 (출입증)
+  // 일자 추적 — EmployeeAssignment effectiveDate 로 derive 가능하나 자주 조회되는 KPI 라 캐시
+  groupHireDate      DateTime? @map("group_hire_date") @db.Date // 그룹입사일 (FSTIGENTDAT) — 근속연차 산정
+  lastOrderDate      DateTime? @map("last_order_date") @db.Date // 최종발령일
+  midSettlementDate  DateTime? @map("mid_settlement_date") @db.Date // 퇴직금 중간정산일
+  retireCalcBaseDate DateTime? @map("retire_calc_base_date") @db.Date // 퇴직금 산정기준일
+
+  // ─── Stage C: PII 분리 모델 ───
+  rrn EmployeeRrn?
+
   // A2-1: employee_assignments로 이관된 필드들은 아래 relation으로 접근
   assignments         EmployeeAssignment[] @relation("EmployeeAssignments")
   assignmentApprovals EmployeeAssignment[] @relation("AssignmentApprover")
@@ -6697,6 +6716,26 @@ model LeaveOfAbsence {
   @@index([companyId, status])
   @@index([startDate])
   @@map("leave_of_absences")
+}
+
+// ================================================================
+// Stage C: Resident Registration Number (주민등록번호) — 1:1 분리 모델
+// Employee 의 일반 쿼리(`include` 미명시)에 노출되지 않도록 별도 테이블.
+// src/lib/pii/rrn 헬퍼로 암호화 후 numberEncrypted 에 저장, 마스킹은 numberMasked.
+// 접근 시 PiiAccessLog 기록 필수.
+// ================================================================
+
+model EmployeeRrn {
+  id              String   @id @default(uuid())
+  employeeId      String   @unique @map("employee_id")
+  numberEncrypted String   @map("number_encrypted") // src/lib/pii/encryption v1:iv:tag:ct
+  numberMasked    String   @map("number_masked") // "880808-1******" — 표시·검색용
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("employee_rrns")
 }
 
 // ================================================================
