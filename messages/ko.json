@@ -10080,7 +10080,15 @@
     },
     "leavePromotion": {
       "title": "연차 사용 권장",
-      "body": "{name}님, 잔여 연차가 {remainingDays}일입니다. 입사일까지 {daysUntilAnniversary}일 남았습니다. 연차 사용을 권장드립니다."
+      "body": "{name}님, 잔여 연차가 {remainingDays}일입니다. 입사일까지 {daysUntilAnniversary}일 남았습니다. 연차 사용을 권장드립니다.",
+      "stage1": {
+        "title": "연차 사용촉진 1차 통보 (사용시기 지정 요청)",
+        "body": "{name}님, 미사용 연차가 {remainingDays}일 남아 있습니다. 근로기준법 §61에 따라 사용시기를 지정하여 통보해 주시기 바랍니다. (신청 중 {pendingDays}일 별도)"
+      },
+      "stage2": {
+        "title": "연차 사용촉진 2차 통보",
+        "body": "{name}님, 미사용 연차 {remainingDays}일에 대한 사용시기 미지정분 2차 통보입니다. 사용기간 종료 전 사용을 권장드립니다. (신청 중 {pendingDays}일 별도)"
+      }
     },
     "recruitment": {
       "offerSent": {
