@@ -59,6 +59,7 @@ import { seedCalibrationQA } from './seeds/46-calibration-qa'
 import { seedLaborContractSettings } from './seeds/47-labor-contract-settings'
 import { seedQAAccounts } from './seeds/00-qa-accounts'
 import { seedLoaTypes } from './seeds/43-loa-types'
+import { seedCodeMaster } from './seeds/44-code-master'
 import { seedEdgeCasePersonas } from './seeds/49-edge-case-personas'
 import { seedVolumeStress } from './seeds/50-volume-stress'
 import { seedHistorical3Years } from './seeds/51-historical-3years'
@@ -3635,6 +3636,9 @@ async function main() {
 
   // LOA types (leave of absence categories per company)
   await seedLoaTypes(prisma)
+
+  // Code Master (IS_SY02 호환 통합 코드 마스터 — E106/E108/E310 등)
+  await seedCodeMaster(prisma)
 
   // H-2c: Process settings defaults (payroll/attendance/performance/system)
   await seedProcessSettings(prisma)

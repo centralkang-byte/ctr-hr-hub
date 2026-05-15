@@ -408,31 +408,31 @@ enum GoalTrackingStatus {
 
 enum CycleStatus {
   // Existing 5 states — DO NOT RENAME (breaks Prisma migrate)
-  DRAFT          // GP#4: acts as SETUP (개시)
-  ACTIVE         // GP#4: acts as GOAL_SETTING (목표 설정)
-  EVAL_OPEN      // GP#4: acts as EVALUATION (평가 실시)
-  CALIBRATION    // GP#4: same (캘리브레이션)
-  CLOSED         // GP#4: same (종료)
+  DRAFT // GP#4: acts as SETUP (개시)
+  ACTIVE // GP#4: acts as GOAL_SETTING (목표 설정)
+  EVAL_OPEN // GP#4: acts as EVALUATION (평가 실시)
+  CALIBRATION // GP#4: same (캘리브레이션)
+  CLOSED // GP#4: same (종료)
 
   // GP#4 new states (APPEND ONLY — safe migration)
-  CHECK_IN       // 중간 체크인
-  FINALIZED      // 캘리브레이션 승인 완료, 결과 통보 대기
-  COMP_REVIEW    // 보상 기획
+  CHECK_IN // 중간 체크인
+  FINALIZED // 캘리브레이션 승인 완료, 결과 통보 대기
+  COMP_REVIEW // 보상 기획
   COMP_COMPLETED // 보상 승인 → PayrollRun 연동 완료
 }
 
 // GP#4: 체크인 운영 모드
 enum CheckInMode {
-  MANDATORY     // 게이트 — 미완료 시 Overdue 처리
-  RECOMMENDED   // 권장 — 경고만, 사이클은 정상 진행
+  MANDATORY // 게이트 — 미완료 시 Overdue 처리
+  RECOMMENDED // 권장 — 경고만, 사이클은 정상 진행
 }
 
 // GP#4: 4등급 체계 — CEO 확정 (2026-04-06)
 enum PerformanceGrade {
-  O        // Outstanding (탁월) — 10% 가이드라인
-  E        // Exceeds (우수) — 30%
-  M        // Meets (보통) — 50%
-  S        // Sufficient (미흡) — 10%
+  O // Outstanding (탁월) — 10% 가이드라인
+  E // Exceeds (우수) — 30%
+  M // Meets (보통) — 50%
+  S // Sufficient (미흡) — 10%
 }
 
 // GP#4: 개인별 평가 진행 상태 (설계서 섹션 14)
@@ -577,13 +577,13 @@ enum AllowanceType {
 
 enum PayrollStatus {
   DRAFT
-  ATTENDANCE_CLOSED  // 근태 마감 완료
-  CALCULATING        // 자동 계산 진행 중
-  ADJUSTMENT         // 수동 조정 단계
-  REVIEW             // 이상 검토 단계
-  PENDING_APPROVAL   // 결재 대기
-  APPROVED           // 승인 완료
-  PAID               // 지급 완료 (급여명세서 발행)
+  ATTENDANCE_CLOSED // 근태 마감 완료
+  CALCULATING // 자동 계산 진행 중
+  ADJUSTMENT // 수동 조정 단계
+  REVIEW // 이상 검토 단계
+  PENDING_APPROVAL // 결재 대기
+  APPROVED // 승인 완료
+  PAID // 지급 완료 (급여명세서 발행)
   CANCELLED
 
   @@map("PayrollStatus")
@@ -952,14 +952,14 @@ model Company {
   processSettings          CompanyProcessSetting[]
 
   // B1: 법인별 커스터마이징 엔진
-  evaluationSettings   EvaluationSetting[]
-  promotionSettings    PromotionSetting[]
-  compensationSettings CompensationSetting[]
-  attendanceSettings   AttendanceSetting[]
-  leaveSettings        LeaveSetting[]
-  onboardingSettings   OnboardingSetting[]
-  approvalFlows        ApprovalFlow[]
-  requisitions         Requisition[]
+  evaluationSettings    EvaluationSetting[]
+  promotionSettings     PromotionSetting[]
+  compensationSettings  CompensationSetting[]
+  attendanceSettings    AttendanceSetting[]
+  leaveSettings         LeaveSetting[]
+  onboardingSettings    OnboardingSetting[]
+  approvalFlows         ApprovalFlow[]
+  requisitions          Requisition[]
   payrollImportMappings PayrollImportMapping[]
   payrollImportLogs     PayrollImportLog[]
 
@@ -987,8 +987,8 @@ model Company {
   payslips Payslip[] @relation("CompanyPayslips")
 
   // B9-2: Benefit Plans / Budgets
-  benefitPlans    BenefitPlan[]
-  benefitBudgets  BenefitBudget[]
+  benefitPlans   BenefitPlan[]
+  benefitBudgets BenefitBudget[]
 
   // B10-1: 예측 애널리틱스
   teamHealthScores   TeamHealthScore[]   @relation("CompanyTeamHealthScores")
@@ -996,44 +996,44 @@ model Company {
   analyticsConfigs   AnalyticsConfig[]   @relation("CompanyAnalyticsConfigs")
 
   // GP#4: Performance Pipeline
-  performanceReviews     PerformanceReview[]
-  employeeLevelMappings  EmployeeLevelMapping[]
+  performanceReviews    PerformanceReview[]
+  employeeLevelMappings EmployeeLevelMapping[]
 
   // F-2: Approval Delegation
-  approvalDelegations    ApprovalDelegation[]
+  approvalDelegations ApprovalDelegation[]
 
   // G-2: AI Reports
-  aiReports              AiReport[]
+  aiReports AiReport[]
 
   // 직급 리팩터링: 호칭 관리
-  employeeTitles         EmployeeTitle[]
-  gradeTitleMappings     GradeTitleMapping[]
+  employeeTitles     EmployeeTitle[]
+  gradeTitleMappings GradeTitleMapping[]
 
   // B-2a: Work Locations
-  workLocations          WorkLocation[]
+  workLocations WorkLocation[]
 
   // Certificate Requests
-  certificateRequests    CertificateRequest[]
+  certificateRequests CertificateRequest[]
 
   // B1: Leave of Absence (휴직)
-  leaveOfAbsenceTypes    LeaveOfAbsenceType[]
-  leaveOfAbsences        LeaveOfAbsence[]
+  leaveOfAbsenceTypes LeaveOfAbsenceType[]
+  leaveOfAbsences     LeaveOfAbsence[]
 
   // B2-B2 Step 3: 시뮬레이션 시나리오
-  simulationScenarios    SimulationScenario[]
+  simulationScenarios SimulationScenario[]
 
   @@map("companies")
 }
 
 model Department {
-  id        String    @id @default(uuid())
-  companyId String    @map("company_id")
-  parentId  String?   @map("parent_id")
-  code      String
-  name      String
-  nameEn    String?   @map("name_en")
-  level     Int
-  sortOrder Int       @map("sort_order")
+  id             String    @id @default(uuid())
+  companyId      String    @map("company_id")
+  parentId       String?   @map("parent_id")
+  code           String
+  name           String
+  nameEn         String?   @map("name_en")
+  level          Int
+  sortOrder      Int       @map("sort_order")
   deletedAt      DateTime? @map("deleted_at")
   costCenterCode String?   @map("cost_center_code") // B-2e: ERP cost center code, e.g., "CC-1001"
   headEmployeeId String?   @map("head_employee_id") // 부서장 (approval dept_head step)
@@ -1052,23 +1052,23 @@ model Department {
   entityTransfers     EntityTransfer[]
   positions           Position[]
   requisitions        Requisition[]
-  teamHealthScores    TeamHealthScore[] @relation("DepartmentTeamHealthScores")
+  teamHealthScores    TeamHealthScore[]    @relation("DepartmentTeamHealthScores")
 
   @@unique([companyId, code])
   @@map("departments")
 }
 
 model JobGrade {
-  id        String    @id @default(uuid())
-  companyId String    @map("company_id")
-  code      String
-  name      String
-  rankOrder Int       @map("rank_order")
-  deletedAt DateTime? @map("deleted_at")
+  id                String    @id @default(uuid())
+  companyId         String    @map("company_id")
+  code              String
+  name              String
+  rankOrder         Int       @map("rank_order")
+  deletedAt         DateTime? @map("deleted_at")
   // 직급 리팩터링: 법인별 가변 직급 체계
-  gradeType         String  @default("STAFF") @map("grade_type") // STAFF | SPECIALIST | EXECUTIVE
-  nameEn            String? @map("name_en")
-  minPromotionYears Int?    @map("min_promotion_years")
+  gradeType         String    @default("STAFF") @map("grade_type") // STAFF | SPECIALIST | EXECUTIVE
+  nameEn            String?   @map("name_en")
+  minPromotionYears Int?      @map("min_promotion_years")
 
   company               Company              @relation(fields: [companyId], references: [id])
   assignments           EmployeeAssignment[]
@@ -1124,7 +1124,7 @@ model JobCategory {
   code        JobCategoryCode
   name        String
   description String?
-  deletedAt      DateTime? @map("deleted_at")
+  deletedAt   DateTime?       @map("deleted_at")
 
   company     Company              @relation(fields: [companyId], references: [id])
   assignments EmployeeAssignment[]
@@ -1135,16 +1135,16 @@ model JobCategory {
 }
 
 model Job {
-  id        String     @id @default(uuid())
-  code      String     @unique
-  titleKo   String     @map("title_ko")
-  titleEn   String     @map("title_en")
-  companyId String?    @map("company_id")
-  company                Company?               @relation(fields: [companyId], references: [id])
+  id                     String                  @id @default(uuid())
+  code                   String                  @unique
+  titleKo                String                  @map("title_ko")
+  titleEn                String                  @map("title_en")
+  companyId              String?                 @map("company_id")
+  company                Company?                @relation(fields: [companyId], references: [id])
   positions              Position[]
   competencyRequirements CompetencyRequirement[]
-  createdAt              DateTime               @default(now()) @map("created_at")
-  updatedAt              DateTime               @updatedAt @map("updated_at")
+  createdAt              DateTime                @default(now()) @map("created_at")
+  updatedAt              DateTime                @updatedAt @map("updated_at")
 
   @@index([companyId])
   @@map("jobs")
@@ -1170,7 +1170,7 @@ model Position {
   dottedLineTo         Position?            @relation("DottedLine", fields: [dottedLinePositionId], references: [id])
   dottedLineReports    Position[]           @relation("DottedLine")
   isHeadcount          Boolean              @default(true) @map("is_headcount")
-  deletedAt      DateTime? @map("deleted_at")
+  deletedAt            DateTime?            @map("deleted_at")
   isFilled             Boolean              @default(false) @map("is_filled") // B4: 충원 완료 여부
   assignments          EmployeeAssignment[]
   jobPostings          JobPosting[]
@@ -1267,7 +1267,7 @@ model OrgChangeHistory {
   toData               Json?         @map("to_data")
   effectiveDate        DateTime      @map("effective_date")
   reason               String?
-  approvedById           String?       @map("approved_by")
+  approvedById         String?       @map("approved_by")
   documentKey          String?       @map("document_key")
   createdAt            DateTime      @default(now()) @map("created_at")
 
@@ -1286,14 +1286,14 @@ model OrgRestructurePlan {
   effectiveDate DateTime  @map("effective_date") @db.Date
   status        String    @default("draft") @db.VarChar(20)
   changes       Json
-  createdById     String    @map("created_by")
-  approvedById    String?   @map("approved_by")
+  createdById   String    @map("created_by")
+  approvedById  String?   @map("approved_by")
   approvedAt    DateTime? @map("approved_at")
   appliedAt     DateTime? @map("applied_at")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
-  company  Company @relation(fields: [companyId], references: [id])
+  company Company @relation(fields: [companyId], references: [id])
 
   @@map("org_restructure_plans")
 }
@@ -1336,6 +1336,31 @@ model Employee {
   probationEndDate        DateTime?       @map("probation_end_date")
   probationStatus         ProbationStatus @default(IN_PROGRESS) @map("probation_status")
 
+  // ─── Stage C: 레거시 ERP(IS_PE01) 호환 신원·일자 필드 ───
+  // 모두 optional — 기존 코드 영향 없음.
+  // 주민번호는 별도 EmployeeRrn 모델로 분리 (PII 자동 누설 방지 — explicit include 필요)
+  nameHanja          String?   @map("name_hanja") // 한자명 (JNAME) — 임원 등기·중국 비자 등
+  birthCalendar      String?   @default("SOLAR") @map("birth_calendar") // SOLAR | LUNAR
+  isMarried          Boolean?  @map("is_married") // 결혼여부 (E310: Y/N → boolean)
+  marriageDate       DateTime? @map("marriage_date") @db.Date // 결혼기념일
+  officePhone        String?   @map("office_phone") // 사내전화 (내선)
+  faxNumber          String?   @map("fax_number")
+  carLicensePlate    String?   @map("car_license_plate") // 차량번호 (출입증)
+  // 일자 추적 — EmployeeAssignment effectiveDate 로 derive 가능하나 자주 조회되는 KPI 라 캐시
+  groupHireDate      DateTime? @map("group_hire_date") @db.Date // 그룹입사일 (FSTIGENTDAT) — 근속연차 산정
+  lastOrderDate      DateTime? @map("last_order_date") @db.Date // 최종발령일
+  midSettlementDate  DateTime? @map("mid_settlement_date") @db.Date // 퇴직금 중간정산일
+  retireCalcBaseDate DateTime? @map("retire_calc_base_date") @db.Date // 퇴직금 산정기준일
+
+  // ─── Stage C: PII 분리 모델 ───
+  rrn EmployeeRrn?
+
+  // ─── Stage D: 레거시 ERP 부속 모델 (relations only) ───
+  addresses             EmployeeAddress[]
+  bankAccounts          EmployeeBankAccount[]
+  koreaSocialInsurances KoreaSocialInsurance[]
+  statutoryStatus       EmployeeStatutoryStatus?
+
   // A2-1: employee_assignments로 이관된 필드들은 아래 relation으로 접근
   assignments         EmployeeAssignment[] @relation("EmployeeAssignments")
   assignmentApprovals EmployeeAssignment[] @relation("AssignmentApprover")
@@ -1364,12 +1389,12 @@ model Employee {
   rewardIssued        RewardRecord[]       @relation("RewardIssuer")
 
   // Onboarding
-  employeeOnboardings      EmployeeOnboarding[]     @relation("OnboardingEmployee")
-  onboardingBuddy          EmployeeOnboarding[]     @relation("OnboardingBuddy")
-  onboardingTasksCompleted EmployeeOnboardingTask[] @relation("OnboardingTaskCompleter")
+  employeeOnboardings       EmployeeOnboarding[]     @relation("OnboardingEmployee")
+  onboardingBuddy           EmployeeOnboarding[]     @relation("OnboardingBuddy")
+  onboardingTasksCompleted  EmployeeOnboardingTask[] @relation("OnboardingTaskCompleter")
   onboardingTaskAssignments EmployeeOnboardingTask[] @relation("OnboardingTaskAssignee")
-  onboardingSignOffs       EmployeeOnboarding[]     @relation("OnboardingSignOff")
-  onboardingCheckins       OnboardingCheckin[]
+  onboardingSignOffs        EmployeeOnboarding[]     @relation("OnboardingSignOff")
+  onboardingCheckins        OnboardingCheckin[]
 
   // Attendance & Leave
   employeeSchedules     EmployeeSchedule[]
@@ -1388,7 +1413,7 @@ model Employee {
   requisitionApprovals   RequisitionApproval[] @relation("RequisitionApprover")
 
   // Department head (approval dept_head step)
-  headedDepartments      Department[]          @relation("DepartmentHead")
+  headedDepartments Department[] @relation("DepartmentHead")
 
   // Performance
   mboGoals              MboGoal[]               @relation("MboGoalEmployee")
@@ -1398,13 +1423,13 @@ model Employee {
   performanceEvalsGiven PerformanceEvaluation[] @relation("EvalEvaluator")
 
   // CFR
-  oneOnOnesAsEmployee          OneOnOne[]          @relation("OneOnOneEmployee")
-  oneOnOnesAsManager           OneOnOne[]          @relation("OneOnOneManager")
-  quarterlyReviewsAsEmployee   QuarterlyReview[]   @relation("QuarterlyReviewEmployee")
-  quarterlyReviewsAsManager    QuarterlyReview[]   @relation("QuarterlyReviewManager")
-  recognitionsSent     Recognition[]     @relation("RecognitionSender")
-  recognitionsReceived Recognition[]     @relation("RecognitionReceiver")
-  recognitionLikes     RecognitionLike[]
+  oneOnOnesAsEmployee        OneOnOne[]        @relation("OneOnOneEmployee")
+  oneOnOnesAsManager         OneOnOne[]        @relation("OneOnOneManager")
+  quarterlyReviewsAsEmployee QuarterlyReview[] @relation("QuarterlyReviewEmployee")
+  quarterlyReviewsAsManager  QuarterlyReview[] @relation("QuarterlyReviewManager")
+  recognitionsSent           Recognition[]     @relation("RecognitionSender")
+  recognitionsReceived       Recognition[]     @relation("RecognitionReceiver")
+  recognitionLikes           RecognitionLike[]
 
   // Calibration
   calibrationRulesCreated    CalibrationRule[]
@@ -1414,32 +1439,32 @@ model Employee {
   calibrationAdjustedBy      CalibrationAdjustment[] @relation("CalibrationAdjuster")
 
   // Compensation
-  compensationHistories CompensationHistory[] @relation("CompensationEmployee")
-  compensationApprovals CompensationHistory[] @relation("CompensationApprover")
-  compensationLetters          CompensationLetter[] @relation("CompLetterEmployee")
-  compensationLetterGenerated  CompensationLetter[] @relation("CompLetterGenerator")
-  offCycleRequests             OffCycleCompRequest[] @relation("OffCycleEmployee")
-  offCycleInitiated            OffCycleCompRequest[] @relation("OffCycleInitiator")
-  offCycleApprovals            OffCycleApprovalStep[] @relation("OffCycleApprover")
-  allowanceRecords      AllowanceRecord[]     @relation("AllowanceEmployee")
-  allowanceApprovals    AllowanceRecord[]     @relation("AllowanceApprover")
+  compensationHistories       CompensationHistory[]  @relation("CompensationEmployee")
+  compensationApprovals       CompensationHistory[]  @relation("CompensationApprover")
+  compensationLetters         CompensationLetter[]   @relation("CompLetterEmployee")
+  compensationLetterGenerated CompensationLetter[]   @relation("CompLetterGenerator")
+  offCycleRequests            OffCycleCompRequest[]  @relation("OffCycleEmployee")
+  offCycleInitiated           OffCycleCompRequest[]  @relation("OffCycleInitiator")
+  offCycleApprovals           OffCycleApprovalStep[] @relation("OffCycleApprover")
+  allowanceRecords            AllowanceRecord[]      @relation("AllowanceEmployee")
+  allowanceApprovals          AllowanceRecord[]      @relation("AllowanceApprover")
 
   // Benefits
   employeeBenefits      EmployeeBenefit[]
-  benefitClaims         BenefitClaim[] @relation("EmployeeBenefitClaims")
-  approvedBenefitClaims BenefitClaim[] @relation("BenefitClaimApprover")
+  benefitClaims         BenefitClaim[]    @relation("EmployeeBenefitClaims")
+  approvedBenefitClaims BenefitClaim[]    @relation("BenefitClaimApprover")
 
   // Payroll
-  payrollItems           PayrollItem[]
-  payrollRunApprovals    PayrollRun[]           @relation("PayrollApprover")
-  payrollApprovalSteps   PayrollApprovalStep[]  @relation("PayrollApprover2")
-  payrollSimulations     PayrollSimulation[]
-  payrollAdjustments     PayrollAdjustment[]    @relation("PayrollAdjustmentEmployee")
-  payrollAnomalies       PayrollAnomaly[]       @relation("PayrollAnomalyEmployee")
+  payrollItems         PayrollItem[]
+  payrollRunApprovals  PayrollRun[]          @relation("PayrollApprover")
+  payrollApprovalSteps PayrollApprovalStep[] @relation("PayrollApprover2")
+  payrollSimulations   PayrollSimulation[]
+  payrollAdjustments   PayrollAdjustment[]   @relation("PayrollAdjustmentEmployee")
+  payrollAnomalies     PayrollAnomaly[]      @relation("PayrollAnomalyEmployee")
 
   // Notifications
-  notifications           Notification[]
-  notificationPreference  NotificationPreference?
+  notifications          Notification[]
+  notificationPreference NotificationPreference?
 
   // AI
   aiLogs AiLog[]
@@ -1448,7 +1473,7 @@ model Employee {
   trainingEnrollments TrainingEnrollment[]
 
   // B9-1: LMS Lite — Skill Assessments
-  skillAssessments          EmployeeSkillAssessment[] @relation("EmployeeSkillAssessments")
+  skillAssessments           EmployeeSkillAssessment[] @relation("EmployeeSkillAssessments")
   skillAssessmentsAsAssessor EmployeeSkillAssessment[] @relation("SkillAssessmentAssessor")
 
   // Pulse
@@ -1459,8 +1484,8 @@ model Employee {
   profileExtension      EmployeeProfileExtension?
   emergencyContacts     EmergencyContact[]
   profileVisibility     ProfileVisibility?
-  profileChangeRequests ProfileChangeRequest[] @relation("ProfileChangeEmployee")
-  profileChangeReviews  ProfileChangeRequest[] @relation("ProfileChangeReviewer")
+  profileChangeRequests ProfileChangeRequest[]    @relation("ProfileChangeEmployee")
+  profileChangeReviews  ProfileChangeRequest[]    @relation("ProfileChangeReviewer")
 
   // Succession
   successionCurrentHolder SuccessionPlan[]      @relation("SuccessionHolder")
@@ -1533,10 +1558,10 @@ model Employee {
   workHourAlerts WorkHourAlert[]
 
   // B6-2: 휴가 고도화 + 통합 승인함
-  leaveYearBalances          LeaveYearBalance[]        @relation("EmployeeLeaveYearBalances")
+  leaveYearBalances          LeaveYearBalance[]          @relation("EmployeeLeaveYearBalances")
   attendanceApprovalRequests AttendanceApprovalRequest[] @relation("AttApprovalRequester")
-  attendanceApprovalSteps    AttendanceApprovalStep[]  @relation("AttApprovalApprover")
-  payslips                   Payslip[]                 @relation("EmployeePayslips")
+  attendanceApprovalSteps    AttendanceApprovalStep[]    @relation("AttApprovalApprover")
+  payslips                   Payslip[]                   @relation("EmployeePayslips")
 
   // STEP 9-2: Compliance
   militaryRegistration      MilitaryRegistration?
@@ -1554,36 +1579,36 @@ model Employee {
   severanceInterimApprovals SeveranceInterimPayment[] @relation("SeveranceApprover")
 
   // B3-2: Talent Review
-  aiDraftsAsEmployee   AiEvaluationDraft[] @relation("AiDraftEmployee")
-  aiDraftsAsReviewer   AiEvaluationDraft[] @relation("AiDraftReviewer")
-  biasLogsAsReviewer   BiasDetectionLog[]  @relation("BiasLogReviewer")
+  aiDraftsAsEmployee AiEvaluationDraft[] @relation("AiDraftEmployee")
+  aiDraftsAsReviewer AiEvaluationDraft[] @relation("AiDraftReviewer")
+  biasLogsAsReviewer BiasDetectionLog[]  @relation("BiasLogReviewer")
 
   // B7-1b: Year-End Tax Settlement
   yearEndSettlements  YearEndSettlement[]  @relation("EmployeeYearEndSettlements")
   withholdingReceipts WithholdingReceipt[] @relation("EmployeeWithholdingReceipts")
 
   // GP#4: Performance Pipeline
-  performanceReviews     PerformanceReview[]      @relation("ReviewEmployee")
-  performanceReviewsNotified PerformanceReview[]   @relation("ReviewNotifier")
+  performanceReviews         PerformanceReview[] @relation("ReviewEmployee")
+  performanceReviewsNotified PerformanceReview[] @relation("ReviewNotifier")
 
   // F-2: Approval Delegation
-  delegationsAsDelegator ApprovalDelegation[]     @relation("DelegationDelegator")
-  delegationsAsDelegatee ApprovalDelegation[]     @relation("DelegationDelegatee")
-  leaveApprovalsDelegated LeaveRequest[]          @relation("LeaveDelegatee")
-  leaveCancelled          LeaveRequest[]          @relation("LeaveCanceller")
+  delegationsAsDelegator  ApprovalDelegation[] @relation("DelegationDelegator")
+  delegationsAsDelegatee  ApprovalDelegation[] @relation("DelegationDelegatee")
+  leaveApprovalsDelegated LeaveRequest[]       @relation("LeaveDelegatee")
+  leaveCancelled          LeaveRequest[]       @relation("LeaveCanceller")
 
   // Certificate Requests
   certificateRequests         CertificateRequest[] @relation("CertRequestEmployee")
   certificateRequestApprovals CertificateRequest[] @relation("CertRequestApprover")
 
   // B1: Leave of Absence (휴직)
-  leaveOfAbsences            LeaveOfAbsence[]  @relation("LOAEmployee")
-  leaveOfAbsenceApprovals    LeaveOfAbsence[]  @relation("LOAApprover")
-  leaveOfAbsenceRejections   LeaveOfAbsence[]  @relation("LOARejecter")
+  leaveOfAbsences          LeaveOfAbsence[] @relation("LOAEmployee")
+  leaveOfAbsenceApprovals  LeaveOfAbsence[] @relation("LOAApprover")
+  leaveOfAbsenceRejections LeaveOfAbsence[] @relation("LOARejecter")
 
   // Phase C: Goal Revision
-  goalRevisionsProposed      GoalRevision[]    @relation("GoalRevisionProposer")
-  goalRevisionsReviewed      GoalRevision[]    @relation("GoalRevisionReviewer")
+  goalRevisionsProposed GoalRevision[] @relation("GoalRevisionProposer")
+  goalRevisionsReviewed GoalRevision[] @relation("GoalRevisionReviewer")
 
   @@index([deletedAt])
   @@index([hireDate])
@@ -1613,18 +1638,18 @@ model EmployeeAssignment {
   titleId        String?   @map("title_id") // 호칭 (직급과 독립)
   reason         String?
   orderNumber    String?   @map("order_number")
-  approvedById     String?   @map("approved_by")
+  approvedById   String?   @map("approved_by")
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
 
-  employee    Employee     @relation("EmployeeAssignments", fields: [employeeId], references: [id], onDelete: Cascade)
-  company     Company      @relation(fields: [companyId], references: [id])
-  department  Department?  @relation(fields: [departmentId], references: [id])
-  jobGrade    JobGrade?    @relation(fields: [jobGradeId], references: [id])
-  jobCategory JobCategory? @relation(fields: [jobCategoryId], references: [id])
-  position     Position?     @relation(fields: [positionId], references: [id])
-  approver     Employee?     @relation("AssignmentApprover", fields: [approvedById], references: [id])
-  workLocation WorkLocation? @relation(fields: [workLocationId], references: [id], onDelete: SetNull)
+  employee     Employee       @relation("EmployeeAssignments", fields: [employeeId], references: [id], onDelete: Cascade)
+  company      Company        @relation(fields: [companyId], references: [id])
+  department   Department?    @relation(fields: [departmentId], references: [id])
+  jobGrade     JobGrade?      @relation(fields: [jobGradeId], references: [id])
+  jobCategory  JobCategory?   @relation(fields: [jobCategoryId], references: [id])
+  position     Position?      @relation(fields: [positionId], references: [id])
+  approver     Employee?      @relation("AssignmentApprover", fields: [approvedById], references: [id])
+  workLocation WorkLocation?  @relation(fields: [workLocationId], references: [id], onDelete: SetNull)
   title        EmployeeTitle? @relation(fields: [titleId], references: [id])
 
   @@index([employeeId])
@@ -1697,7 +1722,7 @@ model EmployeeHistory {
   toGradeId     String?           @map("to_grade_id")
   effectiveDate DateTime          @map("effective_date")
   reason        String?
-  approvedById    String?           @map("approved_by")
+  approvedById  String?           @map("approved_by")
   createdAt     DateTime          @default(now()) @map("created_at")
 
   employee    Employee    @relation(fields: [employeeId], references: [id])
@@ -1713,17 +1738,17 @@ model EmployeeHistory {
 }
 
 model EmployeeDocument {
-  id         String    @id @default(uuid())
-  employeeId String    @map("employee_id")
-  companyId  String    @map("company_id")
-  docType    DocType   @map("doc_type")
-  title      String
-  fileKey    String    @map("file_key")
-  fileSize   Int?      @map("file_size")
-  mimeType   String?   @map("mime_type")
+  id           String    @id @default(uuid())
+  employeeId   String    @map("employee_id")
+  companyId    String    @map("company_id")
+  docType      DocType   @map("doc_type")
+  title        String
+  fileKey      String    @map("file_key")
+  fileSize     Int?      @map("file_size")
+  mimeType     String?   @map("mime_type")
   uploadedById String?   @map("uploaded_by")
-  createdAt  DateTime  @default(now()) @map("created_at")
-  deletedAt  DateTime? @map("deleted_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  deletedAt    DateTime? @map("deleted_at")
 
   employee Employee  @relation(fields: [employeeId], references: [id])
   company  Company   @relation(fields: [companyId], references: [id])
@@ -1742,7 +1767,7 @@ model OffboardingChecklist {
   companyId  String                @map("company_id")
   name       String
   targetType OffboardingTargetType @map("target_type")
-  deletedAt      DateTime? @map("deleted_at")
+  deletedAt  DateTime?             @map("deleted_at")
   createdAt  DateTime              @default(now()) @map("created_at")
 
   company              Company               @relation(fields: [companyId], references: [id])
@@ -1771,24 +1796,24 @@ model OffboardingTask {
 
 /// 직원별 오프보딩 인스턴스 (OffboardingChecklist 기반)
 model EmployeeOffboarding {
-  id                     String            @id @default(uuid())
-  employeeId             String            @map("employee_id")
-  checklistId            String            @map("checklist_id")
-  resignType             ResignType        @map("resign_type")
-  lastWorkingDate        DateTime          @map("last_working_date")
-  resignReasonCode       String?           @map("resign_reason_code")
-  resignReasonDetail     String?           @map("resign_reason_detail")
-  handoverToId           String?           @map("handover_to_id")
-  status                 OffboardingStatus
+  id                       String            @id @default(uuid())
+  employeeId               String            @map("employee_id")
+  checklistId              String            @map("checklist_id")
+  resignType               ResignType        @map("resign_type")
+  lastWorkingDate          DateTime          @map("last_working_date")
+  resignReasonCode         String?           @map("resign_reason_code")
+  resignReasonDetail       String?           @map("resign_reason_detail")
+  handoverToId             String?           @map("handover_to_id")
+  status                   OffboardingStatus
   isSeveranceCalculated    Boolean           @default(false) @map("severance_calculated")
   isItAccountDeactivated   Boolean           @default(false) @map("it_account_deactivated")
   isExitInterviewCompleted Boolean           @default(false) @map("exit_interview_completed")
   isDoNotRehire            Boolean           @default(false) @map("do_not_rehire")
   doNotRehireReason        String?           @map("do_not_rehire_reason")
   doNotRehireSetById       String?           @map("do_not_rehire_set_by_id")
-  startedAt              DateTime          @map("started_at")
-  completedAt            DateTime?         @map("completed_at")
-  createdAt              DateTime          @default(now()) @map("created_at")
+  startedAt                DateTime          @map("started_at")
+  completedAt              DateTime?         @map("completed_at")
+  createdAt                DateTime          @default(now()) @map("created_at")
 
   employee         Employee                  @relation(fields: [employeeId], references: [id])
   checklist        OffboardingChecklist      @relation(fields: [checklistId], references: [id])
@@ -1797,23 +1822,23 @@ model EmployeeOffboarding {
   exitInterviews   ExitInterview[]
   assetReturns     AssetReturn[]
 
-  documents        OffboardingDocument[]
+  documents OffboardingDocument[]
 
   @@map("employee_offboarding")
 }
 
 model OffboardingDocument {
-  id              String   @id @default(uuid())
-  offboardingId   String   @map("offboarding_id")
-  type            String   // CONSENT | HANDOVER | EXIT | NDA | OTHER
-  fileName        String   @map("file_name")
-  fileKey         String   @map("file_key") // S3 key
-  fileSize        Int?     @map("file_size")
-  uploadedById    String   @map("uploaded_by_id")
-  createdAt       DateTime @default(now()) @map("created_at")
+  id            String   @id @default(uuid())
+  offboardingId String   @map("offboarding_id")
+  type          String // CONSENT | HANDOVER | EXIT | NDA | OTHER
+  fileName      String   @map("file_name")
+  fileKey       String   @map("file_key") // S3 key
+  fileSize      Int?     @map("file_size")
+  uploadedById  String   @map("uploaded_by_id")
+  createdAt     DateTime @default(now()) @map("created_at")
 
-  offboarding  EmployeeOffboarding @relation(fields: [offboardingId], references: [id])
-  uploadedBy   Employee            @relation("OffboardingDocUploader", fields: [uploadedById], references: [id])
+  offboarding EmployeeOffboarding @relation(fields: [offboardingId], references: [id])
+  uploadedBy  Employee            @relation("OffboardingDocUploader", fields: [uploadedById], references: [id])
 
   @@map("offboarding_documents")
 }
@@ -1824,16 +1849,16 @@ model EmployeeOffboardingTask {
   employeeOffboardingId String             @map("employee_offboarding_id")
   taskId                String             @map("task_id")
   status                TaskProgressStatus @default(PENDING)
-  completedById           String?            @map("completed_by")
+  completedById         String?            @map("completed_by")
   completedAt           DateTime?          @map("completed_at")
   note                  String?
 
   // E-2: New fields (matching onboarding task pattern)
-  assigneeId            String?            @map("assignee_id")
-  dueDate               DateTime?          @map("due_date")
-  blockedReason         String?            @map("blocked_reason")
-  blockedAt             DateTime?          @map("blocked_at")
-  unblockedAt           DateTime?          @map("unblocked_at")
+  assigneeId    String?   @map("assignee_id")
+  dueDate       DateTime? @map("due_date")
+  blockedReason String?   @map("blocked_reason")
+  blockedAt     DateTime? @map("blocked_at")
+  unblockedAt   DateTime? @map("unblocked_at")
 
   employeeOffboarding EmployeeOffboarding @relation(fields: [employeeOffboardingId], references: [id])
   task                OffboardingTask     @relation(fields: [taskId], references: [id])
@@ -1845,22 +1870,22 @@ model EmployeeOffboardingTask {
 
 // E-2: Asset Return tracking for offboarding
 model AssetReturn {
-  id                String            @id @default(uuid())
-  employeeId        String            @map("employee_id")
-  offboardingId     String            @map("offboarding_id")
-  assetName         String            @map("asset_name")
-  assetTag          String?           @map("asset_tag")
-  purchaseDate      DateTime?         @map("purchase_date")
-  purchasePrice     Decimal?          @db.Decimal(15, 2) @map("purchase_price")
-  residualValue     Decimal?          @db.Decimal(15, 2) @map("residual_value")
-  status            AssetReturnStatus @default(PENDING)
-  returnedAt        DateTime?         @map("returned_at")
+  id                  String            @id @default(uuid())
+  employeeId          String            @map("employee_id")
+  offboardingId       String            @map("offboarding_id")
+  assetName           String            @map("asset_name")
+  assetTag            String?           @map("asset_tag")
+  purchaseDate        DateTime?         @map("purchase_date")
+  purchasePrice       Decimal?          @map("purchase_price") @db.Decimal(15, 2)
+  residualValue       Decimal?          @map("residual_value") @db.Decimal(15, 2)
+  status              AssetReturnStatus @default(PENDING)
+  returnedAt          DateTime?         @map("returned_at")
   isDeductionApproved Boolean           @default(false) @map("deduction_approved")
-  deductionAmount   Decimal?          @db.Decimal(15, 2) @map("deduction_amount")
-  consentDocExists  Boolean           @default(false) @map("consent_doc_exists")
-  companyId         String            @map("company_id")
-  createdAt         DateTime          @default(now()) @map("created_at")
-  updatedAt         DateTime          @updatedAt @map("updated_at")
+  deductionAmount     Decimal?          @map("deduction_amount") @db.Decimal(15, 2)
+  consentDocExists    Boolean           @default(false) @map("consent_doc_exists")
+  companyId           String            @map("company_id")
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
 
   employee    Employee            @relation(fields: [employeeId], references: [id])
   offboarding EmployeeOffboarding @relation(fields: [offboardingId], references: [id])
@@ -1886,13 +1911,13 @@ model ExitInterview {
   interviewerId         String     @map("interviewer_id")
   interviewDate         DateTime   @map("interview_date")
   primaryReason         ExitReason @map("primary_reason")
-  detailedReason        String?    @map("detailed_reason")  // B5 추가: 상세 퇴직 사유
+  detailedReason        String?    @map("detailed_reason") // B5 추가: 상세 퇴직 사유
   satisfactionScore     Int        @map("satisfaction_score")
-  satisfactionDetail    Json?      @map("satisfaction_detail")  // B5 추가: { overall, compensation, culture, management, growth }
+  satisfactionDetail    Json?      @map("satisfaction_detail") // B5 추가: { overall, compensation, culture, management, growth }
   wouldRecommend        Boolean?   @map("would_recommend")
   feedbackText          String     @map("feedback_text")
-  suggestions           String?    @map("suggestions")     // B5 추가: 개선 제안
-  isConfidential        Boolean    @default(true) @map("is_confidential")  // B5 추가
+  suggestions           String?    @map("suggestions") // B5 추가: 개선 제안
+  isConfidential        Boolean    @default(true) @map("is_confidential") // B5 추가
   aiSummary             String?    @map("ai_summary")
   createdAt             DateTime   @default(now()) @map("created_at")
 
@@ -1934,7 +1959,7 @@ model DisciplinaryAction {
   demotionGradeId       String?              @map("demotion_grade_id")
   salaryReductionRate   Decimal?             @map("salary_reduction_rate")
   salaryReductionMonths Int?                 @map("salary_reduction_months")
-  issuedById              String               @map("issued_by")
+  issuedById            String               @map("issued_by")
   createdAt             DateTime             @default(now()) @map("created_at")
   deletedAt             DateTime?            @map("deleted_at")
 
@@ -1957,7 +1982,7 @@ model RewardRecord {
   description  String?
   amount       Decimal?
   awardedDate  DateTime   @map("awarded_date")
-  awardedById    String     @map("awarded_by")
+  awardedById  String     @map("awarded_by")
   documentKey  String?    @map("document_key")
   ctrValue     String?    @map("ctr_value")
   serviceYears Int?       @map("service_years")
@@ -1977,11 +2002,11 @@ model RewardRecord {
 /// 온보딩 마스터 템플릿 (시나리오별: 신입/전보/내부이동/크로스보딩)
 model OnboardingTemplate {
   id          String               @id @default(uuid())
-  companyId   String?              @map("company_id")     // NULL = 글로벌 기본 템플릿
+  companyId   String?              @map("company_id") // NULL = 글로벌 기본 템플릿
   name        String
   description String?
   targetType  OnboardingTargetType @default(NEW_HIRE) @map("target_type")
-  planType    OnboardingPlanType   @default(ONBOARDING) @map("plan_type")  // 온보딩/오프보딩/크로스보딩 구분
+  planType    OnboardingPlanType   @default(ONBOARDING) @map("plan_type") // 온보딩/오프보딩/크로스보딩 구분
   createdAt   DateTime             @default(now()) @map("created_at")
   deletedAt   DateTime?            @map("deleted_at")
 
@@ -1994,16 +2019,16 @@ model OnboardingTemplate {
 
 /// 온보딩 작업 템플릿 (OnboardingTemplate 하위)
 model OnboardingTask {
-  id           String                 @id @default(uuid())
-  templateId   String                 @map("template_id")
-  title        String
-  description  String?
-  assigneeType OnboardingAssignee     @map("assignee_type")
-  dueDaysAfter Int                    @map("due_days_after")
-  sortOrder    Int                    @map("sort_order")
-  isRequired   Boolean                @default(true) @map("is_required")
-  isSignOffTask Boolean               @default(false) @map("is_sign_off_task")
-  category     OnboardingTaskCategory
+  id            String                 @id @default(uuid())
+  templateId    String                 @map("template_id")
+  title         String
+  description   String?
+  assigneeType  OnboardingAssignee     @map("assignee_type")
+  dueDaysAfter  Int                    @map("due_days_after")
+  sortOrder     Int                    @map("sort_order")
+  isRequired    Boolean                @default(true) @map("is_required")
+  isSignOffTask Boolean                @default(false) @map("is_sign_off_task")
+  category      OnboardingTaskCategory
 
   template                OnboardingTemplate       @relation(fields: [templateId], references: [id])
   employeeOnboardingTasks EmployeeOnboardingTask[]
@@ -2016,12 +2041,12 @@ model EmployeeOnboarding {
   id              String                   @id @default(uuid())
   employeeId      String                   @map("employee_id")
   templateId      String                   @map("template_id")
-  companyId       String?                  @map("company_id")     // 법인 구분 (B5 추가)
+  companyId       String?                  @map("company_id") // 법인 구분 (B5 추가)
   buddyId         String?                  @map("buddy_id")
-  planType        OnboardingPlanType       @default(ONBOARDING) @map("plan_type")  // B5 추가
+  planType        OnboardingPlanType       @default(ONBOARDING) @map("plan_type") // B5 추가
   linkedPlanId    String?                  @map("linked_plan_id") // Cross-boarding 반대쪽 플랜 (B5 추가)
   status          OnboardingProgressStatus
-  lastWorkingDate DateTime?                @map("last_working_date") @db.Date  // 오프보딩 최종 근무일 (B5 추가)
+  lastWorkingDate DateTime?                @map("last_working_date") @db.Date // 오프보딩 최종 근무일 (B5 추가)
   startedAt       DateTime?                @map("started_at")
   completedAt     DateTime?                @map("completed_at")
   createdAt       DateTime                 @default(now()) @map("created_at")
@@ -2050,7 +2075,7 @@ model EmployeeOnboardingTask {
   employeeOnboardingId String             @map("employee_onboarding_id")
   taskId               String             @map("task_id")
   status               TaskProgressStatus
-  completedById          String?            @map("completed_by")
+  completedById        String?            @map("completed_by")
   completedAt          DateTime?          @map("completed_at")
   note                 String?
 
@@ -2163,7 +2188,7 @@ model AttendanceTerminal {
   locationName    String       @map("location_name")
   ipAddress       String?      @map("ip_address")
   apiSecret       String       @map("api_secret")
-  deletedAt      DateTime? @map("deleted_at")
+  deletedAt       DateTime?    @map("deleted_at")
   lastHeartbeatAt DateTime?    @map("last_heartbeat_at")
   createdAt       DateTime     @default(now()) @map("created_at")
 
@@ -2227,12 +2252,12 @@ model LeaveRequest {
   halfDayType     String?            @map("half_day_type")
   reason          String?
   status          LeaveRequestStatus
-  approvedById      String?            @map("approved_by")
+  approvedById    String?            @map("approved_by")
   approvedAt      DateTime?          @map("approved_at")
   rejectionReason String?            @map("rejection_reason")
-  delegatedById     String?            @map("delegated_by")
-  cancelledById     String?            @map("cancelled_by")     // F-3: 취소 처리자
-  cancelNote      String?            @map("cancel_note")      // F-3: 취소 사유/메모
+  delegatedById   String?            @map("delegated_by")
+  cancelledById   String?            @map("cancelled_by") // F-3: 취소 처리자
+  cancelNote      String?            @map("cancel_note") // F-3: 취소 사유/메모
   leaveTypeDefId  String?            @map("leave_type_def_id") // Phase 5: 규정 기반 연결
   createdAt       DateTime           @default(now()) @map("created_at")
   updatedAt       DateTime           @updatedAt @map("updated_at")
@@ -2243,7 +2268,7 @@ model LeaveRequest {
   delegatee    Employee?     @relation("LeaveDelegatee", fields: [delegatedById], references: [id])
   canceller    Employee?     @relation("LeaveCanceller", fields: [cancelledById], references: [id])
   company      Company       @relation(fields: [companyId], references: [id])
-  companyId    String         @map("company_id")
+  companyId    String        @map("company_id")
   leaveTypeDef LeaveTypeDef? @relation(fields: [leaveTypeDefId], references: [id])
 
   @@index([employeeId, status])
@@ -2270,7 +2295,7 @@ model DesignatedLeaveDay {
   id        String   @id @default(uuid())
   companyId String   @map("company_id")
   date      DateTime
-  name      String   @db.VarChar(100)  // 예: "여름 집단휴가", "설 연휴 사이"
+  name      String   @db.VarChar(100) // 예: "여름 집단휴가", "설 연휴 사이"
   year      Int
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -2308,7 +2333,7 @@ model JobPosting {
   status               PostingStatus
   postedAt             DateTime?      @map("posted_at")
   closedAt             DateTime?      @map("closed_at")
-  createdById            String         @map("created_by")
+  createdById          String         @map("created_by")
   createdAt            DateTime       @default(now()) @map("created_at")
   deletedAt            DateTime?      @map("deleted_at")
   // B4: ATS 고도화 확장 필드
@@ -2425,14 +2450,14 @@ model InterviewEvaluation {
 }
 
 model CompetencyLibrary {
-  id                   String   @id @default(uuid())
-  companyId            String?  @map("company_id")
+  id                   String    @id @default(uuid())
+  companyId            String?   @map("company_id")
   name                 String
   category             String
   description          String?
-  behavioralIndicators Json?    @map("behavioral_indicators")
-  deletedAt      DateTime? @map("deleted_at")
-  createdAt            DateTime @default(now()) @map("created_at")
+  behavioralIndicators Json?     @map("behavioral_indicators")
+  deletedAt            DateTime? @map("deleted_at")
+  createdAt            DateTime  @default(now()) @map("created_at")
 
   company Company? @relation(fields: [companyId], references: [id])
 
@@ -2447,10 +2472,10 @@ model CompetencyCategory {
   id           String       @id @default(uuid())
   code         String       @unique @db.VarChar(50)
   name         String       @db.VarChar(100)
-  nameEn       String?      @db.VarChar(100) @map("name_en")
+  nameEn       String?      @map("name_en") @db.VarChar(100)
   description  String?      @db.Text
   displayOrder Int          @default(0) @map("display_order")
-  deletedAt      DateTime? @map("deleted_at")
+  deletedAt    DateTime?    @map("deleted_at")
   competencies Competency[]
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime     @updatedAt @map("updated_at")
@@ -2459,21 +2484,21 @@ model CompetencyCategory {
 }
 
 model Competency {
-  id           String              @id @default(uuid())
-  categoryId   String              @map("category_id")
-  category     CompetencyCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  code         String              @db.VarChar(50)
-  name         String              @db.VarChar(100)
-  nameEn       String?             @db.VarChar(100) @map("name_en")
-  description  String?             @db.Text
-  displayOrder Int                 @default(0) @map("display_order")
-  deletedAt      DateTime? @map("deleted_at")
+  id               String                    @id @default(uuid())
+  categoryId       String                    @map("category_id")
+  category         CompetencyCategory        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  code             String                    @db.VarChar(50)
+  name             String                    @db.VarChar(100)
+  nameEn           String?                   @map("name_en") @db.VarChar(100)
+  description      String?                   @db.Text
+  displayOrder     Int                       @default(0) @map("display_order")
+  deletedAt        DateTime?                 @map("deleted_at")
   levels           CompetencyLevel[]
   indicators       CompetencyIndicator[]
   requirements     CompetencyRequirement[]
   skillAssessments EmployeeSkillAssessment[] @relation("CompetencySkillAssessments")
-  createdAt        DateTime            @default(now()) @map("created_at")
-  updatedAt        DateTime            @updatedAt @map("updated_at")
+  createdAt        DateTime                  @default(now()) @map("created_at")
+  updatedAt        DateTime                  @updatedAt @map("updated_at")
 
   @@unique([categoryId, code])
   @@map("competencies")
@@ -2496,10 +2521,10 @@ model CompetencyIndicator {
   id              String     @id @default(uuid())
   competencyId    String     @map("competency_id")
   competency      Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
-  indicatorText   String     @db.Text @map("indicator_text")
-  indicatorTextEn String?    @db.Text @map("indicator_text_en")
+  indicatorText   String     @map("indicator_text") @db.Text
+  indicatorTextEn String?    @map("indicator_text_en") @db.Text
   displayOrder    Int        @default(0) @map("display_order")
-  deletedAt      DateTime? @map("deleted_at")
+  deletedAt       DateTime?  @map("deleted_at")
   createdAt       DateTime   @default(now()) @map("created_at")
   updatedAt       DateTime   @updatedAt @map("updated_at")
 
@@ -2513,7 +2538,7 @@ model CompetencyRequirement {
   competency    Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
   jobId         String?    @map("job_id")
   job           Job?       @relation(fields: [jobId], references: [id])
-  jobLevelCode  String?    @db.VarChar(20) @map("job_level_code")
+  jobLevelCode  String?    @map("job_level_code") @db.VarChar(20)
   expectedLevel Int        @map("expected_level")
   companyId     String?    @map("company_id")
   company       Company?   @relation(fields: [companyId], references: [id])
@@ -2541,15 +2566,15 @@ model PerformanceCycle {
   status    CycleStatus
 
   // GP#4: 추가 설정 필드
-  checkInDeadline    DateTime?     @map("check_in_deadline")
-  checkInMode        CheckInMode   @default(RECOMMENDED) @map("check_in_mode")
-  peerReviewEnabled  Boolean       @default(true) @map("peer_review_enabled")
-  peerReviewMinCount Int           @default(3) @map("peer_review_min_count")
-  peerReviewMaxCount Int           @default(5) @map("peer_review_max_count")
-  mboWeight          Int           @default(60) @map("mbo_weight")
-  beiWeight          Int           @default(40) @map("bei_weight")
-  excludeProbation   Boolean       @default(true) @map("exclude_probation")
-  targetFilter       Json?         @map("target_filter") // { companies: [], departments: [], levels: [] }
+  checkInDeadline    DateTime?   @map("check_in_deadline")
+  checkInMode        CheckInMode @default(RECOMMENDED) @map("check_in_mode")
+  peerReviewEnabled  Boolean     @default(true) @map("peer_review_enabled")
+  peerReviewMinCount Int         @default(3) @map("peer_review_min_count")
+  peerReviewMaxCount Int         @default(5) @map("peer_review_max_count")
+  mboWeight          Int         @default(60) @map("mbo_weight")
+  beiWeight          Int         @default(40) @map("bei_weight")
+  excludeProbation   Boolean     @default(true) @map("exclude_probation")
+  targetFilter       Json?       @map("target_filter") // { companies: [], departments: [], levels: [] }
 
   company                Company                  @relation(fields: [companyId], references: [id])
   mboGoals               MboGoal[]
@@ -2559,8 +2584,8 @@ model PerformanceCycle {
   salaryAdjustmentMatrix SalaryAdjustmentMatrix[]
   peerReviewNominations  PeerReviewNomination[]
   performanceReviews     PerformanceReview[]
-  oneOnOnes              OneOnOne[]                @relation("CycleOneOnOnes")
-  quarterlyReviews       QuarterlyReview[]         @relation("CycleQuarterlyReviews")
+  oneOnOnes              OneOnOne[]               @relation("CycleOneOnOnes")
+  quarterlyReviews       QuarterlyReview[]        @relation("CycleQuarterlyReviews")
   createdAt              DateTime                 @default(now()) @map("created_at")
 
   @@map("performance_cycles")
@@ -2577,19 +2602,19 @@ model MboGoal {
   targetValue      String?    @map("target_value")
   status           GoalStatus
   achievementScore Decimal?   @map("achievement_score")
-  approvedById       String?    @map("approved_by")
+  approvedById     String?    @map("approved_by")
   approvedAt       DateTime?  @map("approved_at")
   aiGenerated      Boolean    @default(false) @map("ai_generated")
   createdAt        DateTime   @default(now()) @map("created_at")
   updatedAt        DateTime   @updatedAt @map("updated_at")
 
   // GP#4: Lock + Overdue
-  isLocked         Boolean    @default(false) @map("is_locked")
-  overdueAt        DateTime?  @map("overdue_at")
+  isLocked  Boolean   @default(false) @map("is_locked")
+  overdueAt DateTime? @map("overdue_at")
 
-  cycle     PerformanceCycle @relation(fields: [cycleId], references: [id])
-  employee  Employee         @relation("MboGoalEmployee", fields: [employeeId], references: [id])
-  approver  Employee?        @relation("MboGoalApprover", fields: [approvedById], references: [id])
+  cycle             PerformanceCycle        @relation(fields: [cycleId], references: [id])
+  employee          Employee                @relation("MboGoalEmployee", fields: [employeeId], references: [id])
+  approver          Employee?               @relation("MboGoalApprover", fields: [approvedById], references: [id])
   company           Company                 @relation(fields: [companyId], references: [id])
   companyId         String                  @map("company_id")
   progress          MboProgress[]
@@ -2605,7 +2630,7 @@ model MboProgress {
   goalId      String   @map("goal_id")
   progressPct Int      @map("progress_pct")
   note        String?
-  createdById   String   @map("created_by")
+  createdById String   @map("created_by")
   createdAt   DateTime @default(now()) @map("created_at")
 
   goal    MboGoal  @relation(fields: [goalId], references: [id])
@@ -2625,17 +2650,17 @@ model PerformanceEvaluation {
   emsBlock          String?    @map("ems_block")
   performanceDetail Json?      @map("performance_detail")
   competencyDetail  Json?      @map("competency_detail")
-  performanceGrade  String?    @db.VarChar(20) @map("performance_grade")
-  competencyGrade   String?    @db.VarChar(20) @map("competency_grade")
+  performanceGrade  String?    @map("performance_grade") @db.VarChar(20)
+  competencyGrade   String?    @map("competency_grade") @db.VarChar(20)
   comment           String?
   status            EvalStatus
   submittedAt       DateTime?  @map("submitted_at")
   createdAt         DateTime   @default(now()) @map("created_at")
 
   // GP#4: 투트랙 등급 보존 + Overdue
-  originalGradeEnum  PerformanceGrade?  @map("original_grade_enum")
-  finalGradeEnum     PerformanceGrade?  @map("final_grade_enum")
-  overdueAt          DateTime?          @map("overdue_at")
+  originalGradeEnum PerformanceGrade? @map("original_grade_enum")
+  finalGradeEnum    PerformanceGrade? @map("final_grade_enum")
+  overdueAt         DateTime?         @map("overdue_at")
 
   cycle     PerformanceCycle @relation(fields: [cycleId], references: [id])
   employee  Employee         @relation("EvalEmployee", fields: [employeeId], references: [id])
@@ -2653,15 +2678,15 @@ model PerformanceEvaluation {
 
 /// 성과 평가 블록 매트릭스 설정 (EMS = Employee Management System)
 model EmsBlockConfig {
-  id                    String   @id @default(uuid())
-  companyId             String   @map("company_id")
-  performanceAxisLabels Json     @map("performance_axis_labels")
-  competencyAxisLabels  Json     @map("competency_axis_labels")
-  blockDefinitions      Json     @map("block_definitions")
-  performanceThresholds Json     @map("performance_thresholds")
-  competencyThresholds  Json     @map("competency_thresholds")
-  deletedAt      DateTime? @map("deleted_at")
-  createdAt             DateTime @default(now()) @map("created_at")
+  id                    String    @id @default(uuid())
+  companyId             String    @map("company_id")
+  performanceAxisLabels Json      @map("performance_axis_labels")
+  competencyAxisLabels  Json      @map("competency_axis_labels")
+  blockDefinitions      Json      @map("block_definitions")
+  performanceThresholds Json      @map("performance_thresholds")
+  competencyThresholds  Json      @map("competency_thresholds")
+  deletedAt             DateTime? @map("deleted_at")
+  createdAt             DateTime  @default(now()) @map("created_at")
 
   company Company @relation(fields: [companyId], references: [id])
 
@@ -2673,24 +2698,24 @@ model EmsBlockConfig {
 // ================================================================
 
 model OneOnOne {
-  id          String         @id @default(uuid())
-  employeeId  String         @map("employee_id")
-  managerId   String         @map("manager_id")
-  scheduledAt DateTime       @map("scheduled_at")
-  completedAt DateTime?      @map("completed_at")
-  status      OneOnOneStatus
-  meetingType OneOnOneType   @default(REGULAR) @map("meeting_type")
-  agenda      String?
-  notes       String?
-  aiGuide     String?        @map("ai_guide")
-  aiSummary   String?        @map("ai_summary")
+  id           String         @id @default(uuid())
+  employeeId   String         @map("employee_id")
+  managerId    String         @map("manager_id")
+  scheduledAt  DateTime       @map("scheduled_at")
+  completedAt  DateTime?      @map("completed_at")
+  status       OneOnOneStatus
+  meetingType  OneOnOneType   @default(REGULAR) @map("meeting_type")
+  agenda       String?
+  notes        String?
+  aiGuide      String?        @map("ai_guide")
+  aiSummary    String?        @map("ai_summary")
   actionItems  Json?          @map("action_items")
   sentimentTag String?        @map("sentiment_tag")
   createdAt    DateTime       @default(now()) @map("created_at")
 
   // GP#4: 체크인 연동
-  cycleId         String?           @map("cycle_id")
-  isCheckinRecord Boolean           @default(false) @map("is_checkin_record")
+  cycleId         String? @map("cycle_id")
+  isCheckinRecord Boolean @default(false) @map("is_checkin_record")
 
   employee  Employee          @relation("OneOnOneEmployee", fields: [employeeId], references: [id])
   manager   Employee          @relation("OneOnOneManager", fields: [managerId], references: [id])
@@ -2708,45 +2733,45 @@ model OneOnOne {
 // ═══════════════════════════════════════════════════════════
 
 model QuarterlyReview {
-  id          String                 @id @default(uuid())
-  companyId   String                 @map("company_id")
-  employeeId  String                 @map("employee_id")
-  managerId   String                 @map("manager_id")
-  year        Int
-  quarter     Quarter
-  cycleId     String?                @map("cycle_id")
-  status      QuarterlyReviewStatus  @default(DRAFT)
+  id         String                @id @default(uuid())
+  companyId  String                @map("company_id")
+  employeeId String                @map("employee_id")
+  managerId  String                @map("manager_id")
+  year       Int
+  quarter    Quarter
+  cycleId    String?               @map("cycle_id")
+  status     QuarterlyReviewStatus @default(DRAFT)
 
   // ── Employee Sections ──
-  goalHighlights       String?   @map("goal_highlights")
-  challenges           String?
-  developmentNeeds     String?   @map("development_needs")
-  employeeComments     String?   @map("employee_comments")
-  employeeSubmittedAt  DateTime? @map("employee_submitted_at")
+  goalHighlights      String?   @map("goal_highlights")
+  challenges          String?
+  developmentNeeds    String?   @map("development_needs")
+  employeeComments    String?   @map("employee_comments")
+  employeeSubmittedAt DateTime? @map("employee_submitted_at")
 
   // ── Manager Sections ──
-  managerFeedback      String?        @map("manager_feedback")
-  coachingNotes        String?        @map("coaching_notes")
-  developmentPlan      String?        @map("development_plan")
-  overallSentiment     SentimentType? @map("overall_sentiment")
-  managerSubmittedAt   DateTime?      @map("manager_submitted_at")
+  managerFeedback    String?        @map("manager_feedback")
+  coachingNotes      String?        @map("coaching_notes")
+  developmentPlan    String?        @map("development_plan")
+  overallSentiment   SentimentType? @map("overall_sentiment")
+  managerSubmittedAt DateTime?      @map("manager_submitted_at")
 
   // ── Shared ──
-  actionItems          Json?     @map("action_items")
+  actionItems Json? @map("action_items")
 
   // ── AI ──
-  aiSummary            String?   @map("ai_summary")
+  aiSummary String? @map("ai_summary")
 
   // ── Audit ──
-  createdAt            DateTime  @default(now()) @map("created_at")
-  updatedAt            DateTime  @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // ── Relations ──
-  company      Company           @relation(fields: [companyId], references: [id])
-  employee     Employee          @relation("QuarterlyReviewEmployee", fields: [employeeId], references: [id])
-  manager      Employee          @relation("QuarterlyReviewManager", fields: [managerId], references: [id])
-  cycle        PerformanceCycle? @relation("CycleQuarterlyReviews", fields: [cycleId], references: [id])
-  goalProgress QuarterlyGoalProgress[]
+  company       Company                 @relation(fields: [companyId], references: [id])
+  employee      Employee                @relation("QuarterlyReviewEmployee", fields: [employeeId], references: [id])
+  manager       Employee                @relation("QuarterlyReviewManager", fields: [managerId], references: [id])
+  cycle         PerformanceCycle?       @relation("CycleQuarterlyReviews", fields: [cycleId], references: [id])
+  goalProgress  QuarterlyGoalProgress[]
   goalRevisions GoalRevision[]
 
   @@unique([employeeId, companyId, year, quarter])
@@ -2756,26 +2781,26 @@ model QuarterlyReview {
 }
 
 model QuarterlyGoalProgress {
-  id                 String  @id @default(uuid())
-  quarterlyReviewId  String  @map("quarterly_review_id")
-  goalId             String  @map("goal_id")
+  id                String @id @default(uuid())
+  quarterlyReviewId String @map("quarterly_review_id")
+  goalId            String @map("goal_id")
 
   // ── Snapshot (생성 시 MboGoal에서 냉동) ──
-  snapshotTitle      String  @map("snapshot_title")
-  snapshotWeight     Int     @default(0) @map("snapshot_weight")
-  snapshotTarget     String? @map("snapshot_target")
+  snapshotTitle  String  @map("snapshot_title")
+  snapshotWeight Int     @default(0) @map("snapshot_weight")
+  snapshotTarget String? @map("snapshot_target")
 
   // ── Progress ──
-  progressPct        Int                 @default(0)
-  employeeComment    String?             @map("employee_comment")
-  managerComment     String?             @map("manager_comment")
-  trackingStatus     GoalTrackingStatus? @map("tracking_status")
+  progressPct     Int                 @default(0)
+  employeeComment String?             @map("employee_comment")
+  managerComment  String?             @map("manager_comment")
+  trackingStatus  GoalTrackingStatus? @map("tracking_status")
 
   // ── Phase C: 목표 수정 승인 시 진행률 입력된 QGP 보호
-  isRevisedMidQuarter Boolean            @default(false) @map("is_revised_mid_quarter")
+  isRevisedMidQuarter Boolean @default(false) @map("is_revised_mid_quarter")
 
-  quarterlyReview    QuarterlyReview @relation(fields: [quarterlyReviewId], references: [id], onDelete: Cascade)
-  goal               MboGoal         @relation(fields: [goalId], references: [id])
+  quarterlyReview QuarterlyReview @relation(fields: [quarterlyReviewId], references: [id], onDelete: Cascade)
+  goal            MboGoal         @relation(fields: [goalId], references: [id])
 
   @@unique([quarterlyReviewId, goalId])
   @@map("quarterly_goal_progress")
@@ -2786,43 +2811,43 @@ model QuarterlyGoalProgress {
 // ================================================================
 
 model GoalRevision {
-  id              String   @id @default(uuid())
-  goalId          String   @map("goal_id")
-  version         Int      // 1-based, 목표당 자동 증가 (SELECT FOR UPDATE로 채번)
+  id      String @id @default(uuid())
+  goalId  String @map("goal_id")
+  version Int // 1-based, 목표당 자동 증가 (SELECT FOR UPDATE로 채번)
 
   // ── 변경 전 (snapshot)
-  prevTitle       String   @map("prev_title")
-  prevDescription String?  @map("prev_description")
-  prevWeight      Decimal  @map("prev_weight") @db.Decimal(5, 2)
+  prevTitle        String  @map("prev_title")
+  prevDescription  String? @map("prev_description")
+  prevWeight       Decimal @map("prev_weight") @db.Decimal(5, 2)
   prevTargetMetric String? @map("prev_target_metric")
   prevTargetValue  String? @map("prev_target_value")
 
   // ── 변경 후 (제안)
-  newTitle        String   @map("new_title")
-  newDescription  String?  @map("new_description")
-  newWeight       Decimal  @map("new_weight") @db.Decimal(5, 2)
-  newTargetMetric String?  @map("new_target_metric")
-  newTargetValue  String?  @map("new_target_value")
+  newTitle        String  @map("new_title")
+  newDescription  String? @map("new_description")
+  newWeight       Decimal @map("new_weight") @db.Decimal(5, 2)
+  newTargetMetric String? @map("new_target_metric")
+  newTargetValue  String? @map("new_target_value")
 
   // ── 메타
-  reason          String   // 수정 사유 (직원 작성, 필수)
-  status          GoalRevisionStatus @default(PENDING)
-  proposedById    String   @map("proposed_by_id")
-  reviewedById    String?  @map("reviewed_by_id")
-  reviewComment   String?  @map("review_comment")
-  reviewedAt      DateTime? @map("reviewed_at")
+  reason        String // 수정 사유 (직원 작성, 필수)
+  status        GoalRevisionStatus @default(PENDING)
+  proposedById  String             @map("proposed_by_id")
+  reviewedById  String?            @map("reviewed_by_id")
+  reviewComment String?            @map("review_comment")
+  reviewedAt    DateTime?          @map("reviewed_at")
 
   // ── QuarterlyReview 연동 (optional)
   quarterlyReviewId String? @map("quarterly_review_id")
 
   // ── Batch 연동 (여러 목표 동시 수정)
-  batchId         String?  @map("batch_id")
+  batchId String? @map("batch_id")
 
   // ── FK
-  companyId       String   @map("company_id")
+  companyId String @map("company_id")
 
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // ── Relations
   goal            MboGoal          @relation(fields: [goalId], references: [id], onDelete: Restrict)
@@ -2882,7 +2907,7 @@ model CalibrationRule {
   recommendedPct Decimal  @map("recommended_pct")
   minPct         Decimal? @map("min_pct")
   maxPct         Decimal? @map("max_pct")
-  createdById      String   @map("created_by")
+  createdById    String   @map("created_by")
   createdAt      DateTime @default(now()) @map("created_at")
 
   company Company           @relation(fields: [companyId], references: [id])
@@ -2902,7 +2927,7 @@ model CalibrationSession {
   status            CalibrationStatus
   blockDistribution Json?             @map("block_distribution")
   notes             String?
-  createdById         String            @map("created_by")
+  createdById       String            @map("created_by")
   completedAt       DateTime?         @map("completed_at")
   createdAt         DateTime          @default(now()) @map("created_at")
 
@@ -2978,28 +3003,28 @@ model CompensationHistory {
   changePct          Decimal                @map("change_pct")
   effectiveDate      DateTime               @map("effective_date")
   reason             String?
-  approvedById         String?                @map("approved_by")
+  approvedById       String?                @map("approved_by")
   emsBlockAtTime     String?                @map("ems_block_at_time")
   compaRatio         Decimal?               @map("compa_ratio")
   createdAt          DateTime               @default(now()) @map("created_at")
 
   // GP#4: 보상 기획 연동
-  cycleId            String?                @map("cycle_id")
-  performanceGradeAtTime String?            @map("performance_grade_at_time")
-  isException        Boolean                @default(false) @map("is_exception")
-  exceptionReason    String?                @map("exception_reason")
-  payrollRunId       String?                @map("payroll_run_id")
+  cycleId                String? @map("cycle_id")
+  performanceGradeAtTime String? @map("performance_grade_at_time")
+  isException            Boolean @default(false) @map("is_exception")
+  exceptionReason        String? @map("exception_reason")
+  payrollRunId           String? @map("payroll_run_id")
 
   // Off-cycle: 미래 시행일 배치 반영
-  isScheduled        Boolean                @default(false) @map("is_scheduled")
-  appliedAt          DateTime?              @map("applied_at")
+  isScheduled Boolean   @default(false) @map("is_scheduled")
+  appliedAt   DateTime? @map("applied_at")
 
   employee Employee  @relation("CompensationEmployee", fields: [employeeId], references: [id])
   company  Company   @relation(fields: [companyId], references: [id])
   approver Employee? @relation("CompensationApprover", fields: [approvedById], references: [id])
 
-  letters            CompensationLetter[]
-  offCycleRequest    OffCycleCompRequest?
+  letters         CompensationLetter[]
+  offCycleRequest OffCycleCompRequest?
 
   @@map("compensation_history")
 }
@@ -3039,44 +3064,44 @@ model CompensationLetter {
 
 // Off-Cycle Compensation Request — 비정기 급여 조정 요청 + 승인 워크플로
 model OffCycleCompRequest {
-  id                    String                  @id @default(uuid())
-  companyId             String                  @map("company_id")
-  employeeId            String                  @map("employee_id")
-  initiatorId           String                  @map("initiator_id")
-  initiatorType         OffCycleInitiatorType   @map("initiator_type")
+  id            String                @id @default(uuid())
+  companyId     String                @map("company_id")
+  employeeId    String                @map("employee_id")
+  initiatorId   String                @map("initiator_id")
+  initiatorType OffCycleInitiatorType @map("initiator_type")
 
   // 보상 상세
-  reasonCategory        OffCycleReasonCategory  @map("reason_category")
-  reason                String?
-  currentBaseSalary     Decimal                 @map("current_base_salary")
-  proposedBaseSalary    Decimal                 @map("proposed_base_salary")
-  currency              String                  @default("KRW")
-  changePct             Decimal                 @map("change_pct")
-  effectiveDate         DateTime                @map("effective_date")
-  proposedCompaRatio    Decimal?                @map("proposed_compa_ratio")
+  reasonCategory     OffCycleReasonCategory @map("reason_category")
+  reason             String?
+  currentBaseSalary  Decimal                @map("current_base_salary")
+  proposedBaseSalary Decimal                @map("proposed_base_salary")
+  currency           String                 @default("KRW")
+  changePct          Decimal                @map("change_pct")
+  effectiveDate      DateTime               @map("effective_date")
+  proposedCompaRatio Decimal?               @map("proposed_compa_ratio")
 
   // 상태머신
-  status                OffCycleRequestStatus   @default(DRAFT)
-  currentStep           Int                     @default(0) @map("current_step")
-  totalSteps            Int                     @default(0) @map("total_steps")
-  submittedAt           DateTime?               @map("submitted_at")
-  completedAt           DateTime?               @map("completed_at")
+  status      OffCycleRequestStatus @default(DRAFT)
+  currentStep Int                   @default(0) @map("current_step")
+  totalSteps  Int                   @default(0) @map("total_steps")
+  submittedAt DateTime?             @map("submitted_at")
+  completedAt DateTime?             @map("completed_at")
 
   // 승인 완료 시 CompensationHistory 연결
-  compensationHistoryId String?                 @unique @map("compensation_history_id")
+  compensationHistoryId String? @unique @map("compensation_history_id")
 
   // 자동 트리거 맥락 (승진/전적 등)
-  triggerEventType      String?                 @map("trigger_event_type")
-  triggerEventId        String?                 @map("trigger_event_id")
+  triggerEventType String? @map("trigger_event_type")
+  triggerEventId   String? @map("trigger_event_id")
 
-  createdAt             DateTime                @default(now()) @map("created_at")
-  updatedAt             DateTime                @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  company               Company                 @relation(fields: [companyId], references: [id])
-  employee              Employee                @relation("OffCycleEmployee", fields: [employeeId], references: [id])
-  initiator             Employee                @relation("OffCycleInitiator", fields: [initiatorId], references: [id])
-  compensationHistory   CompensationHistory?    @relation(fields: [compensationHistoryId], references: [id])
-  approvalSteps         OffCycleApprovalStep[]
+  company             Company                @relation(fields: [companyId], references: [id])
+  employee            Employee               @relation("OffCycleEmployee", fields: [employeeId], references: [id])
+  initiator           Employee               @relation("OffCycleInitiator", fields: [initiatorId], references: [id])
+  compensationHistory CompensationHistory?   @relation(fields: [compensationHistoryId], references: [id])
+  approvalSteps       OffCycleApprovalStep[]
 
   @@index([companyId, status])
   @@index([employeeId])
@@ -3095,8 +3120,8 @@ model OffCycleApprovalStep {
   decidedAt    DateTime?                 @map("decided_at")
   createdAt    DateTime                  @default(now()) @map("created_at")
 
-  request      OffCycleCompRequest       @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  approver     Employee?                 @relation("OffCycleApprover", fields: [approverId], references: [id])
+  request  OffCycleCompRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  approver Employee?           @relation("OffCycleApprover", fields: [approverId], references: [id])
 
   @@unique([requestId, stepNumber])
   @@index([requestId])
@@ -3114,11 +3139,11 @@ model SalaryAdjustmentMatrix {
   createdAt              DateTime @default(now()) @map("created_at")
 
   // GP#4: Merit Matrix 확장 (4등급 × 3밴드)
-  gradeKey               String?  @map("grade_key")       // E | M_PLUS | M | B
-  comparatioBand         String?  @map("comparatio_band") // LOW | MID | HIGH
-  meritMinPct            Decimal? @db.Decimal(5, 2) @map("merit_min_pct")
-  meritMaxPct            Decimal? @db.Decimal(5, 2) @map("merit_max_pct")
-  meritRecommendedPct    Decimal? @db.Decimal(5, 2) @map("merit_recommended_pct")
+  gradeKey            String?  @map("grade_key") // E | M_PLUS | M | B
+  comparatioBand      String?  @map("comparatio_band") // LOW | MID | HIGH
+  meritMinPct         Decimal? @map("merit_min_pct") @db.Decimal(5, 2)
+  meritMaxPct         Decimal? @map("merit_max_pct") @db.Decimal(5, 2)
+  meritRecommendedPct Decimal? @map("merit_recommended_pct") @db.Decimal(5, 2)
 
   company Company           @relation(fields: [companyId], references: [id])
   cycle   PerformanceCycle? @relation(fields: [cycleId], references: [id])
@@ -3173,29 +3198,29 @@ model EmployeeBenefit {
 // ================================================================
 
 model BenefitPlan {
-  id              String   @id @default(uuid())
-  companyId       String?  @map("company_id")
-  company         Company? @relation(fields: [companyId], references: [id])
-  code            String   @db.VarChar(30)
-  name            String   @db.VarChar(100)
-  nameEn          String?  @db.VarChar(100) @map("name_en")
-  category        String   @db.VarChar(30)
-  description     String?  @db.Text
-  benefitType     String   @db.VarChar(20) @map("benefit_type")
-  amount          Int?
-  maxAmount       Int?     @map("max_amount")
-  currency        String   @default("KRW") @db.VarChar(3)
-  frequency       String   @default("once") @db.VarChar(20)
-  eligibility     Json?
-  requiresApproval Boolean @default(true) @map("requires_approval")
-  requiresProof   Boolean  @default(false) @map("requires_proof")
-  isActive        Boolean  @default(true) @map("is_active")
-  deletedAt      DateTime? @map("deleted_at")
-  displayOrder    Int      @default(0) @map("display_order")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  id               String    @id @default(uuid())
+  companyId        String?   @map("company_id")
+  company          Company?  @relation(fields: [companyId], references: [id])
+  code             String    @db.VarChar(30)
+  name             String    @db.VarChar(100)
+  nameEn           String?   @map("name_en") @db.VarChar(100)
+  category         String    @db.VarChar(30)
+  description      String?   @db.Text
+  benefitType      String    @map("benefit_type") @db.VarChar(20)
+  amount           Int?
+  maxAmount        Int?      @map("max_amount")
+  currency         String    @default("KRW") @db.VarChar(3)
+  frequency        String    @default("once") @db.VarChar(20)
+  eligibility      Json?
+  requiresApproval Boolean   @default(true) @map("requires_approval")
+  requiresProof    Boolean   @default(false) @map("requires_proof")
+  isActive         Boolean   @default(true) @map("is_active")
+  deletedAt        DateTime? @map("deleted_at")
+  displayOrder     Int       @default(0) @map("display_order")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
 
-  claims          BenefitClaim[]
+  claims BenefitClaim[]
 
   @@unique([companyId, code])
   @@map("benefit_plans")
@@ -3208,20 +3233,20 @@ model BenefitClaim {
   employeeId     String      @map("employee_id")
   claimAmount    Int         @map("claim_amount")
   approvedAmount Int?        @map("approved_amount")
-  eventDate      DateTime?   @db.Date @map("event_date")
-  eventDetail    String?     @db.Text @map("event_detail")
+  eventDate      DateTime?   @map("event_date") @db.Date
+  eventDetail    String?     @map("event_detail") @db.Text
   proofPaths     String[]    @default([]) @map("proof_paths")
   status         String      @default("pending") @db.VarChar(20)
-  approvedById     String?     @map("approved_by")
+  approvedById   String?     @map("approved_by")
   approvedAt     DateTime?   @map("approved_at")
-  rejectedReason String?     @db.Text @map("rejected_reason")
+  rejectedReason String?     @map("rejected_reason") @db.Text
   paidAt         DateTime?   @map("paid_at")
   notes          String?     @db.Text
   createdAt      DateTime    @default(now()) @map("created_at")
   updatedAt      DateTime    @updatedAt @map("updated_at")
 
-  employee       Employee    @relation("EmployeeBenefitClaims", fields: [employeeId], references: [id])
-  approver       Employee?   @relation("BenefitClaimApprover", fields: [approvedById], references: [id])
+  employee Employee  @relation("EmployeeBenefitClaims", fields: [employeeId], references: [id])
+  approver Employee? @relation("BenefitClaimApprover", fields: [approvedById], references: [id])
 
   @@index([employeeId, status])
   @@map("benefit_claims")
@@ -3253,10 +3278,10 @@ model AllowanceRecord {
   note          String?
   createdAt     DateTime      @default(now()) @map("created_at")
 
-  employee   Employee  @relation("AllowanceEmployee", fields: [employeeId], references: [id])
-  company    Company   @relation(fields: [companyId], references: [id])
+  employee     Employee  @relation("AllowanceEmployee", fields: [employeeId], references: [id])
+  company      Company   @relation(fields: [companyId], references: [id])
   approvedById String?   @map("approved_by")
-  approver   Employee? @relation("AllowanceApprover", fields: [approvedById], references: [id])
+  approver     Employee? @relation("AllowanceApprover", fields: [approvedById], references: [id])
 
   @@map("allowance_records")
 }
@@ -3270,9 +3295,9 @@ model PayrollRun {
   companyId       String           @map("company_id")
   name            String           @default("")
   runType         PayrollRunType   @default(MONTHLY) @map("run_type")
-  yearMonth       String           @map("year_month")       // "yyyy-MM" format
-  year            Int?                                      // GP#3: 월 분리 편의를 위해
-  month           Int?                                      // GP#3: 월 분리 편의를 위해
+  yearMonth       String           @map("year_month") // "yyyy-MM" format
+  year            Int? // GP#3: 월 분리 편의를 위해
+  month           Int? // GP#3: 월 분리 편의를 위해
   frequency       PayrollFrequency @default(MONTHLY)
   periodStart     DateTime         @default(now()) @map("period_start")
   periodEnd       DateTime         @default(now()) @map("period_end")
@@ -3284,17 +3309,17 @@ model PayrollRun {
   headcount       Int              @default(0)
   currency        String           @default("KRW")
   importedFileKey String?          @map("imported_file_key")
-  approvedById      String?          @map("approved_by")
+  approvedById    String?          @map("approved_by")
   approvedAt      DateTime?        @map("approved_at")
   paidAt          DateTime?        @map("paid_at")
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
-  createdById       String?          @map("created_by")
+  createdById     String?          @map("created_by")
 
   // GP#3-A: 근태 마감 (STEP 1)
-  attendanceClosedAt  DateTime?  @map("attendance_closed_at")
-  attendanceClosedBy  String?    @map("attendance_closed_by")
-  excludedEmployeeIds String[]   @default([]) @map("excluded_employee_ids")
+  attendanceClosedAt  DateTime? @map("attendance_closed_at")
+  attendanceClosedBy  String?   @map("attendance_closed_by")
+  excludedEmployeeIds String[]  @default([]) @map("excluded_employee_ids")
 
   // GP#3-A: 수동 조정 (STEP 2.5)
   adjustmentCount Int     @default(0) @map("adjustment_count")
@@ -3308,12 +3333,12 @@ model PayrollRun {
   previousMonthRunId String? @map("previous_month_run_id")
   notes              String?
 
-  company      Company            @relation(fields: [companyId], references: [id])
-  approver     Employee?          @relation("PayrollApprover", fields: [approvedById], references: [id])
-  payrollItems PayrollItem[]
-  adjustments  PayrollAdjustment[]
-  anomalies    PayrollAnomaly[]
-  payrollApproval PayrollApproval?  @relation("PayrollApproval")
+  company         Company             @relation(fields: [companyId], references: [id])
+  approver        Employee?           @relation("PayrollApprover", fields: [approvedById], references: [id])
+  payrollItems    PayrollItem[]
+  adjustments     PayrollAdjustment[]
+  anomalies       PayrollAnomaly[]
+  payrollApproval PayrollApproval?    @relation("PayrollApproval")
 
   @@index([companyId, yearMonth])
   @@index([companyId, status])
@@ -3350,27 +3375,27 @@ model PayrollItem {
 
 // GP#3-A: 수동 조정 (소급 지급, 보너스, 오류 정정 등)
 model PayrollAdjustment {
-  id           String         @id @default(uuid())
-  payrollRunId String         @map("payroll_run_id")
-  payrollRun   PayrollRun     @relation(fields: [payrollRunId], references: [id])
+  id           String     @id @default(uuid())
+  payrollRunId String     @map("payroll_run_id")
+  payrollRun   PayrollRun @relation(fields: [payrollRunId], references: [id])
 
   employeeId String   @map("employee_id")
   employee   Employee @relation("PayrollAdjustmentEmployee", fields: [employeeId], references: [id])
 
   type        AdjustmentType
-  category    String           // 급여 항목 카테고리 (기본급, 수당, 복리후생 등)
-  description String           // 사유/메모 (required)
-  amount      Decimal          @db.Decimal(15, 0) // 양수=추가, 음수=공제
+  category    String // 급여 항목 카테고리 (기본급, 수당, 복리후생 등)
+  description String // 사유/메모 (required)
+  amount      Decimal        @db.Decimal(15, 0) // 양수=추가, 음수=공제
 
-  evidenceUrl String?  @map("evidence_url") // 첨부파일 URL
+  evidenceUrl String? @map("evidence_url") // 첨부파일 URL
 
   // LOA 연동 (Phase 3: 월별 급여 차액 자동 생성)
-  loaId        String?  @map("loa_id")
-  loaYearMonth String?  @map("loa_year_month")  // "YYYY-MM"
+  loaId        String? @map("loa_id")
+  loaYearMonth String? @map("loa_year_month") // "YYYY-MM"
 
   leaveOfAbsence LeaveOfAbsence? @relation(fields: [loaId], references: [id])
 
-  createdById   String   @map("created_by")
+  createdById String   @map("created_by")
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@index([payrollRunId])
@@ -3380,10 +3405,10 @@ model PayrollAdjustment {
 }
 
 enum AdjustmentType {
-  RETROACTIVE  // 소급 지급
-  BONUS        // 경조사비, 성과급 등
-  CORRECTION   // 오류 정정
-  DEDUCTION    // 과지급 환수
+  RETROACTIVE // 소급 지급
+  BONUS // 경조사비, 성과급 등
+  CORRECTION // 오류 정정
+  DEDUCTION // 과지급 환수
   OTHER
 
   @@map("AdjustmentType")
@@ -3391,26 +3416,26 @@ enum AdjustmentType {
 
 // GP#3-A: 이상 감지 (데이터 생성, UI는 GP#3-B에서 구현)
 model PayrollAnomaly {
-  id           String       @id @default(uuid())
-  payrollRunId String       @map("payroll_run_id")
-  payrollRun   PayrollRun   @relation(fields: [payrollRunId], references: [id])
+  id           String     @id @default(uuid())
+  payrollRunId String     @map("payroll_run_id")
+  payrollRun   PayrollRun @relation(fields: [payrollRunId], references: [id])
 
   employeeId String   @map("employee_id")
   employee   Employee @relation("PayrollAnomalyEmployee", fields: [employeeId], references: [id])
 
-  ruleCode    String  @map("rule_code")     // e.g. "MOM_CHANGE_30PCT", "BAND_EXCEEDED"
+  ruleCode    String          @map("rule_code") // e.g. "MOM_CHANGE_30PCT", "BAND_EXCEEDED"
   severity    AnomalySeverity
   description String
 
   currentValue  Decimal? @map("current_value") @db.Decimal(15, 0)
   previousValue Decimal? @map("previous_value") @db.Decimal(15, 0)
-  threshold     String?  // e.g. "30%", "52h"
+  threshold     String? // e.g. "30%", "52h"
 
   // 해소
   status     AnomalyStatus @default(OPEN)
   resolvedBy String?       @map("resolved_by")
   resolvedAt DateTime?     @map("resolved_at")
-  resolution String?       // "CONFIRMED_NORMAL", "CORRECTED", "WHITELISTED"
+  resolution String? // "CONFIRMED_NORMAL", "CORRECTED", "WHITELISTED"
 
   // 화이트리스트
   whitelisted     Boolean @default(false)
@@ -3427,17 +3452,17 @@ model PayrollAnomaly {
 
 // TODO: Move to Settings (Payroll) — 법인별 급여 승인 체계 (역할 코드 목록)
 model PayrollApproval {
-  id           String               @id @default(uuid())
-  payrollRunId String               @unique @map("payroll_run_id")
-  payrollRun   PayrollRun           @relation("PayrollApproval", fields: [payrollRunId], references: [id])
-  currentStep  Int                  @default(1) @map("current_step")
-  totalSteps   Int                  @map("total_steps")
+  id           String                @id @default(uuid())
+  payrollRunId String                @unique @map("payroll_run_id")
+  payrollRun   PayrollRun            @relation("PayrollApproval", fields: [payrollRunId], references: [id])
+  currentStep  Int                   @default(1) @map("current_step")
+  totalSteps   Int                   @map("total_steps")
   status       PayrollApprovalStatus @default(PENDING)
-  requestedBy  String               @map("requested_by")
-  requestedAt  DateTime             @default(now()) @map("requested_at")
-  completedAt  DateTime?            @map("completed_at")
-  createdAt    DateTime             @default(now()) @map("created_at")
-  updatedAt    DateTime             @updatedAt @map("updated_at")
+  requestedBy  String                @map("requested_by")
+  requestedAt  DateTime              @default(now()) @map("requested_at")
+  completedAt  DateTime?             @map("completed_at")
+  createdAt    DateTime              @default(now()) @map("created_at")
+  updatedAt    DateTime              @updatedAt @map("updated_at")
 
   steps PayrollApprovalStep[]
 
@@ -3446,17 +3471,17 @@ model PayrollApproval {
 }
 
 model PayrollApprovalStep {
-  id           String               @id @default(uuid())
-  approvalId   String               @map("approval_id")
-  approval     PayrollApproval      @relation(fields: [approvalId], references: [id], onDelete: Cascade)
-  stepNumber   Int                  @map("step_number")   // 1-indexed
-  roleRequired String               @map("role_required") // e.g. "HR_MANAGER", "CFO"
-  approverId   String?              @map("approver_id")
-  approver     Employee?            @relation("PayrollApprover2", fields: [approverId], references: [id])
+  id           String                    @id @default(uuid())
+  approvalId   String                    @map("approval_id")
+  approval     PayrollApproval           @relation(fields: [approvalId], references: [id], onDelete: Cascade)
+  stepNumber   Int                       @map("step_number") // 1-indexed
+  roleRequired String                    @map("role_required") // e.g. "HR_MANAGER", "CFO"
+  approverId   String?                   @map("approver_id")
+  approver     Employee?                 @relation("PayrollApprover2", fields: [approverId], references: [id])
   status       PayrollApprovalStepStatus @default(PENDING)
   comment      String?
-  decidedAt    DateTime?            @map("decided_at")
-  createdAt    DateTime             @default(now()) @map("created_at")
+  decidedAt    DateTime?                 @map("decided_at")
+  createdAt    DateTime                  @default(now()) @map("created_at")
 
   @@unique([approvalId, stepNumber])
   @@index([approvalId])
@@ -3481,9 +3506,9 @@ enum PayrollApprovalStepStatus {
 }
 
 enum AnomalySeverity {
-  CRITICAL  // 법정 한도 초과 등
-  WARNING   // 전월 대비 급변동 등
-  INFO      // 신규입사자 첫 급여 등
+  CRITICAL // 법정 한도 초과 등
+  WARNING // 전월 대비 급변동 등
+  INFO // 신규입사자 첫 급여 등
 
   @@map("AnomalySeverity")
 }
@@ -3501,13 +3526,13 @@ enum AnomalyStatus {
 // ================================================================
 
 model NotificationTrigger {
-  id        String   @id @default(uuid())
-  eventType String   @unique @map("event_type")
+  id        String    @id @default(uuid())
+  eventType String    @unique @map("event_type")
   template  String
   channels  Json
-  isActive  Boolean  @default(true) @map("is_active")
-  deletedAt      DateTime? @map("deleted_at")
-  createdAt DateTime @default(now()) @map("created_at")
+  isActive  Boolean   @default(true) @map("is_active")
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
 
   company   Company? @relation(fields: [companyId], references: [id])
   companyId String?  @map("company_id")
@@ -3530,9 +3555,9 @@ model Notification {
   createdAt   DateTime            @default(now()) @map("created_at")
 
   // B11 추가
-  priority  String   @default("normal") @db.VarChar(10)
-  metadata  Json?
-  channels  String[] @default([])
+  priority String   @default("normal") @db.VarChar(10)
+  metadata Json?
+  channels String[] @default([])
 
   employee  Employee             @relation(fields: [employeeId], references: [id])
   trigger   NotificationTrigger? @relation(fields: [triggerId], references: [id])
@@ -3560,14 +3585,14 @@ model NotificationPreference {
 }
 
 model TeamsWebhookConfig {
-  id          String   @id @default(uuid())
-  companyId   String   @map("company_id")
-  channelName String   @map("channel_name") @db.VarChar(100)
-  webhookUrl  String   @map("webhook_url") @db.VarChar(500)
-  eventTypes  String[] @default([]) @map("event_types")
-  deletedAt      DateTime? @map("deleted_at")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id          String    @id @default(uuid())
+  companyId   String    @map("company_id")
+  channelName String    @map("channel_name") @db.VarChar(100)
+  webhookUrl  String    @map("webhook_url") @db.VarChar(500)
+  eventTypes  String[]  @default([]) @map("event_types")
+  deletedAt   DateTime? @map("deleted_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
   company Company @relation(fields: [companyId], references: [id])
 
@@ -3605,28 +3630,28 @@ model AiLog {
 model TrainingCourse {
   id                  String           @id @default(uuid())
   companyId           String?          @map("company_id")
-  code                String?          @db.VarChar(30)              // e.g. SAF-001
+  code                String?          @db.VarChar(30) // e.g. SAF-001
   title               String
   titleEn             String?          @map("title_en")
   description         String?
   category            TrainingCategory
-  format              String           @default("offline") @db.VarChar(20) @map("format") // online | offline | blended | ojt
+  format              String           @default("offline") @map("format") @db.VarChar(20) // online | offline | blended | ojt
   isMandatory         Boolean          @default(false) @map("is_mandatory")
   targetJobCategories Json?            @map("target_job_categories")
   targetJobLevels     String[]         @default([]) @map("target_job_levels") // e.g. ["S1","S2"]
   linkedCompetencyIds String[]         @default([]) @map("linked_competency_ids")
   expectedLevelGain   Int?             @map("expected_level_gain")
   durationHours       Decimal?         @map("duration_hours")
-  validityMonths      Int?             @map("validity_months")       // 법정교육 유효기간
+  validityMonths      Int?             @map("validity_months") // 법정교육 유효기간
   provider            String?
   externalUrl         String?          @map("external_url")
   createdAt           DateTime         @default(now()) @map("created_at")
   deletedAt           DateTime?        @map("deleted_at")
 
-  company              Company?               @relation(fields: [companyId], references: [id])
-  enrollments          TrainingEnrollment[]
-  mandatoryTrainings   MandatoryTraining[]
-  mandatoryConfigs     MandatoryTrainingConfig[]
+  company            Company?                  @relation(fields: [companyId], references: [id])
+  enrollments        TrainingEnrollment[]
+  mandatoryTrainings MandatoryTraining[]
+  mandatoryConfigs   MandatoryTrainingConfig[]
 
   @@map("training_courses")
 }
@@ -3638,9 +3663,9 @@ model TrainingEnrollment {
   status         EnrollmentStatus
   source         String           @default("manual") @db.VarChar(20) // manual | gap_recommendation | mandatory_auto | onboarding
   enrolledAt     DateTime         @map("enrolled_at")
-  startDate      DateTime?        @db.Date @map("start_date")
+  startDate      DateTime?        @map("start_date") @db.Date
   completedAt    DateTime?        @map("completed_at")
-  expiresAt      DateTime?        @map("expires_at")  // 법정교육 유효기간 만료일
+  expiresAt      DateTime?        @map("expires_at") // 법정교육 유효기간 만료일
   score          Decimal?
   certificateKey String?          @map("certificate_key")
   notes          String?          @db.Text
@@ -3671,7 +3696,7 @@ model PulseSurvey {
   openAt                  DateTime       @map("open_at")
   closeAt                 DateTime       @map("close_at")
   status                  PulseStatus
-  createdById               String         @map("created_by")
+  createdById             String         @map("created_by")
   createdAt               DateTime       @default(now()) @map("created_at")
   deletedAt               DateTime?      @map("deleted_at")
 
@@ -3809,7 +3834,7 @@ model SuccessionPlan {
   criticality     Criticality
   status          PlanStatus
   notes           String?
-  createdById       String      @map("created_by")
+  createdById     String      @map("created_by")
   createdAt       DateTime    @default(now()) @map("created_at")
   updatedAt       DateTime    @updatedAt @map("updated_at")
 
@@ -3828,9 +3853,9 @@ model SuccessionCandidate {
   employeeId       String    @map("employee_id")
   readiness        Readiness
   developmentAreas Json?     @map("development_areas")
-  notes           String?
-  ranking         Int     @default(0)
-  developmentNote String? @db.Text @map("development_note")
+  notes            String?
+  ranking          Int       @default(0)
+  developmentNote  String?   @map("development_note") @db.Text
   nominatedBy      String    @map("nominated_by")
   createdAt        DateTime  @default(now()) @map("created_at")
 
@@ -3893,18 +3918,18 @@ model AuditLog {
 // ================================================================
 
 model HrDocument {
-  id          String    @id @default(uuid())
-  companyId   String    @map("company_id")
-  title       String
-  docType     HrDocType @map("doc_type")
-  fileUrl     String?   @map("file_url")
-  contentText String    @map("content_text")
-  version     String    @default("1.0")
-  locale      String    @default("ko")
-  uploadedById  String    @map("uploaded_by")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  id           String    @id @default(uuid())
+  companyId    String    @map("company_id")
+  title        String
+  docType      HrDocType @map("doc_type")
+  fileUrl      String?   @map("file_url")
+  contentText  String    @map("content_text")
+  version      String    @default("1.0")
+  locale       String    @default("ko")
+  uploadedById String    @map("uploaded_by")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
 
   company  Company           @relation(fields: [companyId], references: [id])
   uploader Employee          @relation(fields: [uploadedById], references: [id])
@@ -3930,13 +3955,13 @@ model HrDocumentChunk {
 }
 
 model HrChatSession {
-  id         String   @id @default(uuid())
-  employeeId String   @map("employee_id")
-  companyId  String   @map("company_id")
+  id         String    @id @default(uuid())
+  employeeId String    @map("employee_id")
+  companyId  String    @map("company_id")
   title      String?
-  deletedAt      DateTime? @map("deleted_at")
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
+  deletedAt  DateTime? @map("deleted_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
   employee Employee        @relation(fields: [employeeId], references: [id])
   company  Company         @relation(fields: [companyId], references: [id])
@@ -3997,14 +4022,14 @@ model PeerReviewNomination {
   nominationSource        NominationSource @map("nomination_source")
   collaborationTotalScore Decimal?         @map("collaboration_total_score")
   status                  NominationStatus
-  approvedById              String?          @map("approved_by")
+  approvedById            String?          @map("approved_by")
   approvedAt              DateTime?        @map("approved_at")
   createdAt               DateTime         @default(now()) @map("created_at")
 
-  cycle    PerformanceCycle @relation(fields: [cycleId], references: [id])
-  employee Employee         @relation("PeerReviewEmployee", fields: [employeeId], references: [id])
-  nominee  Employee         @relation("PeerReviewNominee", fields: [nomineeId], references: [id])
-  approver Employee?        @relation("PeerReviewApprover", fields: [approvedById], references: [id])
+  cycle    PerformanceCycle  @relation(fields: [cycleId], references: [id])
+  employee Employee          @relation("PeerReviewEmployee", fields: [employeeId], references: [id])
+  nominee  Employee          @relation("PeerReviewNominee", fields: [nomineeId], references: [id])
+  approver Employee?         @relation("PeerReviewApprover", fields: [approvedById], references: [id])
   answer   PeerReviewAnswer?
 
   @@unique([cycleId, employeeId, nomineeId])
@@ -4063,17 +4088,17 @@ model TermOverride {
 
 /// 테넌트별 커스텀 드롭다운 옵션 (enum 확장 — 퇴직 사유, 평가 등급 등)
 model TenantEnumOption {
-  id        String   @id @default(uuid())
-  companyId String   @map("company_id")
-  enumGroup String   @map("enum_group")
-  optionKey String   @map("option_key")
+  id        String    @id @default(uuid())
+  companyId String    @map("company_id")
+  enumGroup String    @map("enum_group")
+  optionKey String    @map("option_key")
   label     String
   color     String?
   icon      String?
-  sortOrder Int      @default(0) @map("sort_order")
-  isSystem  Boolean  @default(false) @map("is_system")
-  deletedAt      DateTime? @map("deleted_at")
-  createdAt DateTime @default(now()) @map("created_at")
+  sortOrder Int       @default(0) @map("sort_order")
+  isSystem  Boolean   @default(false) @map("is_system")
+  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
 
   company Company @relation(fields: [companyId], references: [id])
 
@@ -4171,7 +4196,7 @@ model EmailTemplate {
   body      String
   variables Json
   isActive  Boolean         @default(true) @map("is_active")
-  deletedAt      DateTime? @map("deleted_at")
+  deletedAt DateTime?       @map("deleted_at")
   isSystem  Boolean         @default(false) @map("is_system")
   createdAt DateTime        @default(now()) @map("created_at")
   updatedAt DateTime        @updatedAt @map("updated_at")
@@ -4183,17 +4208,17 @@ model EmailTemplate {
 }
 
 model ExportTemplate {
-  id         String       @id @default(uuid())
-  companyId  String       @map("company_id")
-  entityType String       @map("entity_type")
-  name       String
-  columns    Json
-  fileFormat ExportFormat @default(XLSX) @map("file_format")
-  isDefault  Boolean      @default(false) @map("is_default")
-  createdById  String?      @map("created_by")
-  createdAt  DateTime     @default(now()) @map("created_at")
-  updatedAt  DateTime     @updatedAt @map("updated_at")
-  deletedAt  DateTime?    @map("deleted_at")
+  id          String       @id @default(uuid())
+  companyId   String       @map("company_id")
+  entityType  String       @map("entity_type")
+  name        String
+  columns     Json
+  fileFormat  ExportFormat @default(XLSX) @map("file_format")
+  isDefault   Boolean      @default(false) @map("is_default")
+  createdById String?      @map("created_by")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  deletedAt   DateTime?    @map("deleted_at")
 
   company Company   @relation(fields: [companyId], references: [id])
   creator Employee? @relation(fields: [createdById], references: [id])
@@ -4245,7 +4270,7 @@ model WorkPermit {
   status           WorkPermitStatus @default(ACTIVE)
   documentKey      String?          @map("document_key")
   notes            String?
-  createdById        String?          @map("created_by")
+  createdById      String?          @map("created_by")
   createdAt        DateTime         @default(now()) @map("created_at")
   updatedAt        DateTime         @updatedAt @map("updated_at")
   deletedAt        DateTime?        @map("deleted_at")
@@ -4264,7 +4289,7 @@ model OrgSnapshot {
   companyId    String   @map("company_id")
   snapshotDate DateTime @map("snapshot_date")
   snapshotData Json     @map("snapshot_data")
-  createdById    String?  @map("created_by")
+  createdById  String?  @map("created_by")
   createdAt    DateTime @default(now()) @map("created_at")
 
   company Company   @relation(fields: [companyId], references: [id])
@@ -4513,6 +4538,11 @@ model MilitaryRegistration {
   registrationDate   DateTime?        @map("registration_date")
   deregistrationDate DateTime?        @map("deregistration_date")
   notes              String?
+  // Stage D: IS_PE01 호환 컬럼 추가 — CodeMaster 그룹 참조 (E305/E306/E307)
+  exemptReason       String?          @map("exempt_reason") // 미필사유 (E307)
+  serviceType        String?          @map("service_type") // 역종 (E306)
+  dischargeType      String?          @map("discharge_type") // 전역구분 (E305)
+  militaryNumber     String?          @map("military_number") // 군번
   createdAt          DateTime         @default(now()) @map("created_at")
   updatedAt          DateTime         @updatedAt @map("updated_at")
 
@@ -4568,7 +4598,7 @@ model SocialInsuranceConfig {
   effectiveFrom DateTime            @map("effective_from")
   effectiveTo   DateTime?           @map("effective_to")
   isActive      Boolean             @default(true) @map("is_active")
-  deletedAt      DateTime? @map("deleted_at")
+  deletedAt     DateTime?           @map("deleted_at")
   createdAt     DateTime            @default(now()) @map("created_at")
   updatedAt     DateTime            @updatedAt @map("updated_at")
 
@@ -4653,7 +4683,7 @@ model DataRetentionPolicy {
   autoDelete      Boolean               @default(false) @map("auto_delete")
   anonymize       Boolean               @default(true)
   lastRunAt       DateTime?             @map("last_run_at")
-  deletedAt      DateTime? @map("deleted_at")
+  deletedAt       DateTime?             @map("deleted_at")
   createdAt       DateTime              @default(now()) @map("created_at")
   updatedAt       DateTime              @updatedAt @map("updated_at")
 
@@ -4716,7 +4746,7 @@ model MandatoryTraining {
   year          Int
   dueDate       DateTime              @map("due_date")
   requiredHours Decimal               @map("required_hours")
-  deletedAt      DateTime? @map("deleted_at")
+  deletedAt     DateTime?             @map("deleted_at")
   createdAt     DateTime              @default(now()) @map("created_at")
   updatedAt     DateTime              @updatedAt @map("updated_at")
 
@@ -4855,7 +4885,7 @@ model ShiftPattern {
   weeklyHoursLimit Decimal?         @map("weekly_hours_limit")
   description      String?
   isActive         Boolean          @default(true) @map("is_active")
-  deletedAt      DateTime? @map("deleted_at")
+  deletedAt        DateTime?        @map("deleted_at")
   createdAt        DateTime         @default(now()) @map("created_at")
   updatedAt        DateTime         @updatedAt @map("updated_at")
 
@@ -4868,13 +4898,13 @@ model ShiftPattern {
 }
 
 model ShiftGroup {
-  id             String   @id @default(uuid())
-  companyId      String   @map("company_id")
-  shiftPatternId String   @map("shift_pattern_id")
+  id             String    @id @default(uuid())
+  companyId      String    @map("company_id")
+  shiftPatternId String    @map("shift_pattern_id")
   name           String // A조, B조, C조
   color          String? // UI 색상 코드
   deletedAt      DateTime? @map("deleted_at")
-  createdAt      DateTime @default(now()) @map("created_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
 
   company      Company            @relation(fields: [companyId], references: [id])
   shiftPattern ShiftPattern       @relation(fields: [shiftPatternId], references: [id])
@@ -4938,7 +4968,7 @@ model ShiftChangeRequest {
   requestedSlotIndex Int?                     @map("requested_slot_index")
   reason             String
   status             ShiftChangeRequestStatus @default(SCR_PENDING)
-  approvedById         String?                  @map("approved_by")
+  approvedById       String?                  @map("approved_by")
   approvedAt         DateTime?                @map("approved_at")
   rejectionReason    String?                  @map("rejection_reason")
   createdAt          DateTime                 @default(now()) @map("created_at")
@@ -4971,7 +5001,7 @@ model PayAllowanceType {
   description        String?
   sortOrder          Int               @default(0) @map("sort_order")
   isActive           Boolean           @default(true) @map("is_active")
-  deletedAt      DateTime? @map("deleted_at")
+  deletedAt          DateTime?         @map("deleted_at")
   createdAt          DateTime          @default(now()) @map("created_at")
   updatedAt          DateTime          @updatedAt @map("updated_at")
 
@@ -4994,7 +5024,7 @@ model PayDeductionType {
   description       String?
   sortOrder         Int               @default(0) @map("sort_order")
   isActive          Boolean           @default(true) @map("is_active")
-  deletedAt      DateTime? @map("deleted_at")
+  deletedAt         DateTime?         @map("deleted_at")
   createdAt         DateTime          @default(now()) @map("created_at")
   updatedAt         DateTime          @updatedAt @map("updated_at")
 
@@ -5181,7 +5211,7 @@ model BankTransferBatch {
   generatedAt   DateTime?               @map("generated_at")
   submittedAt   DateTime?               @map("submitted_at")
   completedAt   DateTime?               @map("completed_at")
-  createdById     String                  @map("created_by")
+  createdById   String                  @map("created_by")
   note          String?
   createdAt     DateTime                @default(now()) @map("created_at")
   updatedAt     DateTime                @updatedAt @map("updated_at")
@@ -5234,7 +5264,7 @@ model TaxBracket {
   effectiveTo   DateTime? @map("effective_to")
   description   String?
   isActive      Boolean   @default(true) @map("is_active")
-  deletedAt      DateTime? @map("deleted_at")
+  deletedAt     DateTime? @map("deleted_at")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
@@ -5264,7 +5294,7 @@ model MigrationJob {
   validationErrors Json?              @map("validation_errors")
   startedAt        DateTime?          @map("started_at")
   completedAt      DateTime?          @map("completed_at")
-  createdById        String             @map("created_by")
+  createdById      String             @map("created_by")
   createdAt        DateTime           @default(now()) @map("created_at")
   updatedAt        DateTime           @updatedAt @map("updated_at")
 
@@ -5359,7 +5389,7 @@ model RecruitmentCost {
   description     String?
   vendorName      String?             @map("vendor_name")
   invoiceDate     DateTime?           @map("invoice_date")
-  createdById       String              @map("created_by")
+  createdById     String              @map("created_by")
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @updatedAt @map("updated_at")
 
@@ -5496,7 +5526,7 @@ model AttendanceSetting {
   flexWork Json @default("{}") @map("flex_work")
 
   // 52시간 경고 임계값 (JSON: {caution: 44, warning: 48, blocked: 52})
-  alertThresholds Json    @default("{\"caution\":44,\"warning\":48,\"blocked\":52}") @map("alert_thresholds")
+  alertThresholds Json @default("{\"caution\":44,\"warning\":48,\"blocked\":52}") @map("alert_thresholds")
 
   // 차단 기능 (true=KR, false=기타 법인)
   enableBlocking Boolean @default(false) @map("enable_blocking")
@@ -5514,18 +5544,18 @@ model AttendanceSetting {
 
 // ─── 52시간 경고 로그 (B6-1) ──────────────────────────────────────
 model WorkHourAlert {
-  id          String   @id @default(uuid())
-  employeeId  String   @map("employee_id")
-  employee    Employee @relation(fields: [employeeId], references: [id])
-  weekStart   DateTime @map("week_start") @db.Date
-  totalHours  Float    @map("total_hours")
-  alertLevel  String   @map("alert_level") @db.VarChar(20) // 'caution'|'warning'|'blocked'
+  id          String    @id @default(uuid())
+  employeeId  String    @map("employee_id")
+  employee    Employee  @relation(fields: [employeeId], references: [id])
+  weekStart   DateTime  @map("week_start") @db.Date
+  totalHours  Float     @map("total_hours")
+  alertLevel  String    @map("alert_level") @db.VarChar(20) // 'caution'|'warning'|'blocked'
   threshold   Float
-  isResolved  Boolean  @default(false) @map("is_resolved")
-  resolvedBy  String?  @map("resolved_by")
+  isResolved  Boolean   @default(false) @map("is_resolved")
+  resolvedBy  String?   @map("resolved_by")
   resolvedAt  DateTime? @map("resolved_at")
-  resolveNote String?  @map("resolve_note") @db.Text
-  createdAt   DateTime @default(now()) @map("created_at")
+  resolveNote String?   @map("resolve_note") @db.Text
+  createdAt   DateTime  @default(now()) @map("created_at")
 
   @@unique([employeeId, weekStart, alertLevel])
   @@index([employeeId, weekStart])
@@ -5546,8 +5576,8 @@ model LeaveSetting {
   annualLeaveRule Json @default("{}") @map("annual_leave_rule")
 
   // F-3: 마이너스 연차 설정
-  allowNegativeBalance  Boolean @default(false) @map("allow_negative_balance")
-  negativeBalanceLimit  Float   @default(0)     @map("negative_balance_limit")  // e.g., -3.0
+  allowNegativeBalance Boolean @default(false) @map("allow_negative_balance")
+  negativeBalanceLimit Float   @default(0) @map("negative_balance_limit") // e.g., -3.0
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -5579,15 +5609,15 @@ model OnboardingSetting {
 
 // ─── 7. 환율 ──────────────────────────────────────────────────
 model ExchangeRate {
-  id            String   @id @default(uuid())
-  year          Int      @map("year")
-  month         Int      @map("month")
-  fromCurrency  String   @map("from_currency")
-  toCurrency    String   @default("KRW") @map("to_currency")
-  rate          Decimal  @map("rate") @db.Decimal(18, 6)
-  source        String   @default("manual") @map("source")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(uuid())
+  year         Int      @map("year")
+  month        Int      @map("month")
+  fromCurrency String   @map("from_currency")
+  toCurrency   String   @default("KRW") @map("to_currency")
+  rate         Decimal  @map("rate") @db.Decimal(18, 6)
+  source       String   @default("manual") @map("source")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   @@unique([year, month, fromCurrency, toCurrency])
   @@index([fromCurrency, toCurrency])
@@ -5597,45 +5627,45 @@ model ExchangeRate {
 
 // ─── 7-B. 해외 급여 업로드 매핑 ───────────────────────────────
 model PayrollImportMapping {
-  id          String   @id @default(uuid())
-  companyId   String   @map("company_id")
-  name        String   @map("name")
-  fileType    String   @default("xlsx") @map("file_type")
-  headerRow   Int      @default(1) @map("header_row")
-  mappings    Json     @map("mappings")
-  currency    String   @map("currency")
-  isDefault   Boolean  @default(false) @map("is_default")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id        String   @id @default(uuid())
+  companyId String   @map("company_id")
+  name      String   @map("name")
+  fileType  String   @default("xlsx") @map("file_type")
+  headerRow Int      @default(1) @map("header_row")
+  mappings  Json     @map("mappings")
+  currency  String   @map("currency")
+  isDefault Boolean  @default(false) @map("is_default")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  company     Company  @relation(fields: [companyId], references: [id])
-  importLogs  PayrollImportLog[]
+  company    Company            @relation(fields: [companyId], references: [id])
+  importLogs PayrollImportLog[]
 
   @@map("payroll_import_mappings")
 }
 
 // ─── 7-C. 업로드 이력 ─────────────────────────────────────────
 model PayrollImportLog {
-  id            String   @id @default(uuid())
-  companyId     String   @map("company_id")
-  mappingId     String   @map("mapping_id")
-  runId         String?  @map("run_id")
-  year          Int      @map("year")
-  month         Int      @map("month")
-  fileName      String   @map("file_name")
-  filePath      String?  @map("file_path")
-  employeeCount Int      @default(0) @map("employee_count")
-  totalGross    Decimal  @default(0) @map("total_gross") @db.Decimal(18, 2)
-  totalNet      Decimal  @default(0) @map("total_net") @db.Decimal(18, 2)
-  currency      String   @map("currency")
-  status        String   @default("uploaded") @map("status")
-  errorDetails  Json?    @map("error_details")
-  uploadedById    String   @map("uploaded_by")
+  id            String    @id @default(uuid())
+  companyId     String    @map("company_id")
+  mappingId     String    @map("mapping_id")
+  runId         String?   @map("run_id")
+  year          Int       @map("year")
+  month         Int       @map("month")
+  fileName      String    @map("file_name")
+  filePath      String?   @map("file_path")
+  employeeCount Int       @default(0) @map("employee_count")
+  totalGross    Decimal   @default(0) @map("total_gross") @db.Decimal(18, 2)
+  totalNet      Decimal   @default(0) @map("total_net") @db.Decimal(18, 2)
+  currency      String    @map("currency")
+  status        String    @default("uploaded") @map("status")
+  errorDetails  Json?     @map("error_details")
+  uploadedById  String    @map("uploaded_by")
   confirmedAt   DateTime? @map("confirmed_at")
-  createdAt     DateTime @default(now()) @map("created_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
 
-  company   Company              @relation(fields: [companyId], references: [id])
-  mapping   PayrollImportMapping @relation(fields: [mappingId], references: [id])
+  company Company              @relation(fields: [companyId], references: [id])
+  mapping PayrollImportMapping @relation(fields: [mappingId], references: [id])
 
   @@index([companyId, year, month])
   @@map("payroll_import_logs")
@@ -5643,14 +5673,14 @@ model PayrollImportLog {
 
 // ─── 7-D. 급여 시뮬레이션 ─────────────────────────────────────
 model PayrollSimulation {
-  id         String   @id @default(uuid())
-  createdById  String   @map("created_by")
-  type       String   @map("type")
-  title      String   @map("title")
-  employeeId String   @map("employee_id")
-  parameters Json     @map("parameters")
-  results    Json     @map("results")
-  createdAt  DateTime @default(now()) @map("created_at")
+  id          String   @id @default(uuid())
+  createdById String   @map("created_by")
+  type        String   @map("type")
+  title       String   @map("title")
+  employeeId  String   @map("employee_id")
+  parameters  Json     @map("parameters")
+  results     Json     @map("results")
+  createdAt   DateTime @default(now()) @map("created_at")
 
   employee Employee @relation(fields: [employeeId], references: [id])
 
@@ -5687,10 +5717,10 @@ model ApprovalFlow {
   company     Company? @relation(fields: [companyId], references: [id])
 
   // 모듈: benefits | recruitment | leave | promotion | general
-  module   String             @map("module")
-  isActive Boolean            @default(true) @map("is_active")
-  deletedAt      DateTime? @map("deleted_at")
-  steps    ApprovalFlowStep[]
+  module    String             @map("module")
+  isActive  Boolean            @default(true) @map("is_active")
+  deletedAt DateTime?          @map("deleted_at")
+  steps     ApprovalFlowStep[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -5878,18 +5908,18 @@ model BiasDetectionLog {
 
 // 법인별 의무교육 자동 등록 설정
 model MandatoryTrainingConfig {
-  id            String          @id @default(uuid())
-  companyId     String?         @map("company_id")             // NULL = 전사 공통
-  courseId      String          @map("course_id")
-  targetGroup   String          @db.VarChar(30) @map("target_group")  // all | manager | new_hire | production
-  frequency     String          @db.VarChar(20)                // annual | biennial | once
-  deadlineMonth Int?            @map("deadline_month")         // 이수 마감 월 (12 = 12월)
-  deletedAt      DateTime? @map("deleted_at")
-  createdAt     DateTime        @default(now()) @map("created_at")
-  updatedAt     DateTime        @updatedAt @map("updated_at")
+  id            String    @id @default(uuid())
+  companyId     String?   @map("company_id") // NULL = 전사 공통
+  courseId      String    @map("course_id")
+  targetGroup   String    @map("target_group") @db.VarChar(30) // all | manager | new_hire | production
+  frequency     String    @db.VarChar(20) // annual | biennial | once
+  deadlineMonth Int?      @map("deadline_month") // 이수 마감 월 (12 = 12월)
+  deletedAt     DateTime? @map("deleted_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
 
-  company Company?        @relation(fields: [companyId], references: [id])
-  course  TrainingCourse  @relation(fields: [courseId], references: [id])
+  company Company?       @relation(fields: [companyId], references: [id])
+  course  TrainingCourse @relation(fields: [courseId], references: [id])
 
   @@index([companyId])
   @@index([courseId])
@@ -5898,23 +5928,23 @@ model MandatoryTrainingConfig {
 
 // 직원 역량 평가 (B8-3 placeholder — 스킬 갭 추천용)
 model EmployeeSkillAssessment {
-  id               String    @id @default(uuid())
-  employeeId       String    @map("employee_id")
-  competencyId     String    @map("competency_id")
-  assessmentPeriod String    @default("latest") @db.VarChar(20) @map("assessment_period") // '2025-H1', '2025-Q1', 'latest'
+  id               String   @id @default(uuid())
+  employeeId       String   @map("employee_id")
+  competencyId     String   @map("competency_id")
+  assessmentPeriod String   @default("latest") @map("assessment_period") @db.VarChar(20) // '2025-H1', '2025-Q1', 'latest'
   // B9-1 LMS 호환 — 단순 현재 레벨
-  currentLevel     Int?      @map("current_level")
+  currentLevel     Int?     @map("current_level")
   // B8-3 스킬 매트릭스 — 자기평가 + 매니저 평가
-  selfLevel        Int?      @map("self_level")         // 자기평가 (1~5)
-  managerLevel     Int?      @map("manager_level")      // 매니저 평가 (1~5)
-  finalLevel       Int?      @map("final_level")        // 최종 (매니저 우선)
-  selfComment      String?   @db.Text @map("self_comment")
-  managerComment   String?   @db.Text @map("manager_comment")
-  assessedAt       DateTime  @default(now()) @map("assessed_at")
-  assessedById     String?   @map("assessed_by_id")
-  notes            String?   @db.Text
-  createdAt        DateTime  @default(now()) @map("created_at")
-  updatedAt        DateTime  @updatedAt @map("updated_at")
+  selfLevel        Int?     @map("self_level") // 자기평가 (1~5)
+  managerLevel     Int?     @map("manager_level") // 매니저 평가 (1~5)
+  finalLevel       Int?     @map("final_level") // 최종 (매니저 우선)
+  selfComment      String?  @map("self_comment") @db.Text
+  managerComment   String?  @map("manager_comment") @db.Text
+  assessedAt       DateTime @default(now()) @map("assessed_at")
+  assessedById     String?  @map("assessed_by_id")
+  notes            String?  @db.Text
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
 
   employee   Employee   @relation("EmployeeSkillAssessments", fields: [employeeId], references: [id])
   competency Competency @relation("CompetencySkillAssessments", fields: [competencyId], references: [id])
@@ -5931,12 +5961,12 @@ model SkillGapReport {
   id               String   @id @default(uuid())
   companyId        String   @map("company_id")
   departmentId     String?  @map("department_id")
-  assessmentPeriod String   @db.VarChar(20) @map("assessment_period")
+  assessmentPeriod String   @map("assessment_period") @db.VarChar(20)
   reportData       Json     @map("report_data")
   generatedAt      DateTime @default(now()) @map("generated_at")
   generatedBy      String   @map("generated_by")
 
-  company    Company     @relation("CompanySkillGapReports", fields: [companyId], references: [id])
+  company Company @relation("CompanySkillGapReports", fields: [companyId], references: [id])
 
   @@map("skill_gap_reports")
 }
@@ -5947,33 +5977,33 @@ model SkillGapReport {
 
 // ── 1. 법인별 휴가 유형 정의 ────────────────────────────────────
 model LeaveTypeDef {
-  id                 String   @id @default(uuid())
-  companyId          String?  @map("company_id")
-  code               String   @db.VarChar(30)
-  name               String   @db.VarChar(100)
-  nameEn             String?  @map("name_en") @db.VarChar(100)
-  isPaid             Boolean  @default(true) @map("is_paid")
-  allowHalfDay       Boolean  @default(true) @map("allow_half_day")
-  requiresProof      Boolean  @default(false) @map("requires_proof")
-  maxConsecutiveDays Int?     @map("max_consecutive_days")
-  minAdvanceDays     Int?     @map("min_advance_days")      // F-3: 최소 N일 전 신청
-  isActive           Boolean  @default(true) @map("is_active")
-  deletedAt      DateTime? @map("deleted_at")
-  displayOrder       Int      @default(0) @map("display_order")
+  id                 String    @id @default(uuid())
+  companyId          String?   @map("company_id")
+  code               String    @db.VarChar(30)
+  name               String    @db.VarChar(100)
+  nameEn             String?   @map("name_en") @db.VarChar(100)
+  isPaid             Boolean   @default(true) @map("is_paid")
+  allowHalfDay       Boolean   @default(true) @map("allow_half_day")
+  requiresProof      Boolean   @default(false) @map("requires_proof")
+  maxConsecutiveDays Int?      @map("max_consecutive_days")
+  minAdvanceDays     Int?      @map("min_advance_days") // F-3: 최소 N일 전 신청
+  isActive           Boolean   @default(true) @map("is_active")
+  deletedAt          DateTime? @map("deleted_at")
+  displayOrder       Int       @default(0) @map("display_order")
 
   // ── 규정 정합성 필드 (2026-03-26) ──
-  category          String?  @db.VarChar(30) @map("category")           // annual, family_event, maternity, health, military, other
-  subcategory       String?  @db.VarChar(30) @map("subcategory")        // celebration, condolence
-  countingMethod    String   @default("business_day") @db.VarChar(20) @map("counting_method") // business_day, calendar_day
-  includesHolidays  Boolean  @default(false) @map("includes_holidays")  // true: 공휴일 포함 통산 (경조)
-  isSplittable      Boolean  @default(false) @map("is_splittable")      // 분할사용 가능 (배우자출산 등)
-  splitDeadlineDays Int?     @map("split_deadline_days")                // 분할사용 기한 (일)
-  maxPerYear        Int?     @map("max_per_year")                       // 연간 최대 사용 횟수
-  paidDaysPerYear   Int?     @map("paid_days_per_year")                 // 부분유급 시 유급일수
-  condolenceAmount  Int?     @map("condolence_amount")                  // 경조금 (KRW)
+  category          String? @map("category") @db.VarChar(30) // annual, family_event, maternity, health, military, other
+  subcategory       String? @map("subcategory") @db.VarChar(30) // celebration, condolence
+  countingMethod    String  @default("business_day") @map("counting_method") @db.VarChar(20) // business_day, calendar_day
+  includesHolidays  Boolean @default(false) @map("includes_holidays") // true: 공휴일 포함 통산 (경조)
+  isSplittable      Boolean @default(false) @map("is_splittable") // 분할사용 가능 (배우자출산 등)
+  splitDeadlineDays Int?    @map("split_deadline_days") // 분할사용 기한 (일)
+  maxPerYear        Int?    @map("max_per_year") // 연간 최대 사용 횟수
+  paidDaysPerYear   Int?    @map("paid_days_per_year") // 부분유급 시 유급일수
+  condolenceAmount  Int?    @map("condolence_amount") // 경조금 (KRW)
 
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   company       Company?           @relation("CompanyLeaveTypeDefs", fields: [companyId], references: [id])
   accrualRules  LeaveAccrualRule[]
@@ -5992,18 +6022,18 @@ model LeaveTypeDef {
 //   { "minTenureMonths": 36, "maxTenureMonths": null, "daysPerYear": 15, "bonusPerTwoYears": 1, "maxDays": 25, "type": "annual" }
 // ]
 model LeaveAccrualRule {
-  id                    String       @id @default(uuid())
-  leaveTypeDefId        String       @map("leave_type_def_id")
-  accrualType           String       @default("annual") @map("accrual_type") @db.VarChar(30)
-  accrualBasis          String       @default("calendar_year") @map("accrual_basis") @db.VarChar(30)
+  id                    String    @id @default(uuid())
+  leaveTypeDefId        String    @map("leave_type_def_id")
+  accrualType           String    @default("annual") @map("accrual_type") @db.VarChar(30)
+  accrualBasis          String    @default("calendar_year") @map("accrual_basis") @db.VarChar(30)
   rules                 Json
-  carryOverType         String       @default("none") @map("carry_over_type") @db.VarChar(20)
-  carryOverMaxDays      Int?         @map("carry_over_max_days")
-  carryOverExpiryMonths Int?         @map("carry_over_expiry_months")
-  isActive              Boolean      @default(true) @map("is_active")
-  deletedAt      DateTime? @map("deleted_at")
-  createdAt             DateTime     @default(now()) @map("created_at")
-  updatedAt             DateTime     @updatedAt @map("updated_at")
+  carryOverType         String    @default("none") @map("carry_over_type") @db.VarChar(20)
+  carryOverMaxDays      Int?      @map("carry_over_max_days")
+  carryOverExpiryMonths Int?      @map("carry_over_expiry_months")
+  isActive              Boolean   @default(true) @map("is_active")
+  deletedAt             DateTime? @map("deleted_at")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   leaveTypeDef LeaveTypeDef @relation(fields: [leaveTypeDefId], references: [id], onDelete: Cascade)
 
@@ -6013,18 +6043,18 @@ model LeaveAccrualRule {
 // ── 3. 직원별 연도별 휴가 잔여 (신 부여 엔진용) ──────────────────
 // 잔여 = entitled + carriedOver + adjusted - used - pending
 model LeaveYearBalance {
-  id             String   @id @default(uuid())
-  employeeId     String   @map("employee_id")
-  leaveTypeDefId String   @map("leave_type_def_id")
+  id             String    @id @default(uuid())
+  employeeId     String    @map("employee_id")
+  leaveTypeDefId String    @map("leave_type_def_id")
   year           Int
-  entitled       Float    @default(0)
-  used           Float    @default(0)
-  carriedOver    Float    @default(0) @map("carried_over")
-  adjusted       Float    @default(0)
-  pending        Float    @default(0)
+  entitled       Float     @default(0)
+  used           Float     @default(0)
+  carriedOver    Float     @default(0) @map("carried_over")
+  adjusted       Float     @default(0)
+  pending        Float     @default(0)
   expiresAt      DateTime? @map("expires_at")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
 
   employee     Employee     @relation("EmployeeLeaveYearBalances", fields: [employeeId], references: [id])
   leaveTypeDef LeaveTypeDef @relation(fields: [leaveTypeDefId], references: [id])
@@ -6050,8 +6080,8 @@ model AttendanceApprovalRequest {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
-  requester Employee                    @relation("AttApprovalRequester", fields: [requesterId], references: [id])
-  company   Company                     @relation("CompanyAttApprovalRequests", fields: [companyId], references: [id])
+  requester Employee                 @relation("AttApprovalRequester", fields: [requesterId], references: [id])
+  company   Company                  @relation("CompanyAttApprovalRequests", fields: [companyId], references: [id])
   steps     AttendanceApprovalStep[]
 
   @@index([requesterId, status])
@@ -6062,14 +6092,14 @@ model AttendanceApprovalRequest {
 
 // ── 5. 통합 승인 단계 ─────────────────────────────────────────────
 model AttendanceApprovalStep {
-  id         String   @id @default(uuid())
-  requestId  String   @map("request_id")
-  stepOrder  Int      @map("step_order")
-  approverId String   @map("approver_id")
-  status     String   @default("pending") @db.VarChar(20)
-  comment    String?  @db.Text
+  id         String    @id @default(uuid())
+  requestId  String    @map("request_id")
+  stepOrder  Int       @map("step_order")
+  approverId String    @map("approver_id")
+  status     String    @default("pending") @db.VarChar(20)
+  comment    String?   @db.Text
   decidedAt  DateTime? @map("decided_at")
-  createdAt  DateTime @default(now()) @map("created_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
 
   request  AttendanceApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
   approver Employee                  @relation("AttApprovalApprover", fields: [approverId], references: [id])
@@ -6087,17 +6117,17 @@ model AttendanceApprovalStep {
 //       'employment_insurance' | 'industrial_accident'
 // long_term_care.employeeRate = 건강보험료 × rate (특수 계산 방식)
 model InsuranceRate {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   year         Int
-  type         String   @db.VarChar(30)   // 보험 종류
-  employeeRate Float    @map("employee_rate")   // 근로자 부담률 (%)
-  employerRate Float    @map("employer_rate")   // 사업주 부담률 (%)
-  upperLimit   Float?   @map("upper_limit")     // 보수월액 상한 (원)
-  lowerLimit   Float?   @map("lower_limit")     // 보수월액 하한 (원)
-  notes        String?  @db.Text
-  isActive     Boolean  @default(true) @map("is_active")
-  deletedAt      DateTime? @map("deleted_at")
-  createdAt    DateTime @default(now()) @map("created_at")
+  type         String    @db.VarChar(30) // 보험 종류
+  employeeRate Float     @map("employee_rate") // 근로자 부담률 (%)
+  employerRate Float     @map("employer_rate") // 사업주 부담률 (%)
+  upperLimit   Float?    @map("upper_limit") // 보수월액 상한 (원)
+  lowerLimit   Float?    @map("lower_limit") // 보수월액 하한 (원)
+  notes        String?   @db.Text
+  isActive     Boolean   @default(true) @map("is_active")
+  deletedAt    DateTime? @map("deleted_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
 
   @@unique([year, type])
   @@map("insurance_rates")
@@ -6106,15 +6136,15 @@ model InsuranceRate {
 // ── 2. 비과세 한도 (연도별) ──────────────────────────────────────
 // code: 'meal_allowance' | 'vehicle_allowance' | 'childcare' 등
 model NontaxableLimit {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   year         Int
-  code         String   @db.VarChar(30)
-  name         String   @db.VarChar(100)
-  monthlyLimit Int      @map("monthly_limit")   // 월 한도 (원)
-  annualLimit  Int?     @map("annual_limit")    // 연 한도 (null이면 월×12)
-  isActive     Boolean  @default(true) @map("is_active")
-  deletedAt      DateTime? @map("deleted_at")
-  createdAt    DateTime @default(now()) @map("created_at")
+  code         String    @db.VarChar(30)
+  name         String    @db.VarChar(100)
+  monthlyLimit Int       @map("monthly_limit") // 월 한도 (원)
+  annualLimit  Int?      @map("annual_limit") // 연 한도 (null이면 월×12)
+  isActive     Boolean   @default(true) @map("is_active")
+  deletedAt    DateTime? @map("deleted_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
 
   @@unique([year, code])
   @@map("nontaxable_limits")
@@ -6150,16 +6180,16 @@ model Payslip {
 
 // ── 연말정산 공제 항목 설정 (매년 업데이트) ──
 model YearEndDeductionConfig {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   year         Int
-  category     String   @db.VarChar(30)    // 'income_deduction' | 'tax_credit'
-  code         String   @db.VarChar(50)    // 'personal', 'pension', etc.
-  name         String   @db.VarChar(100)
+  category     String    @db.VarChar(30) // 'income_deduction' | 'tax_credit'
+  code         String    @db.VarChar(50) // 'personal', 'pension', etc.
+  name         String    @db.VarChar(100)
   rules        Json
-  displayOrder Int      @default(0) @map("display_order")
-  isActive     Boolean  @default(true) @map("is_active")
-  deletedAt      DateTime? @map("deleted_at")
-  createdAt    DateTime @default(now()) @map("created_at")
+  displayOrder Int       @default(0) @map("display_order")
+  isActive     Boolean   @default(true) @map("is_active")
+  deletedAt    DateTime? @map("deleted_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
 
   @@unique([year, code])
   @@map("year_end_deduction_configs")
@@ -6206,7 +6236,7 @@ model YearEndSettlement {
   createdAt             DateTime  @default(now()) @map("created_at")
   updatedAt             DateTime  @updatedAt @map("updated_at")
 
-  employee           Employee           @relation("EmployeeYearEndSettlements", fields: [employeeId], references: [id])
+  employee           Employee            @relation("EmployeeYearEndSettlements", fields: [employeeId], references: [id])
   dependents         YearEndDependent[]
   deductions         YearEndDeduction[]
   documents          YearEndDocument[]
@@ -6223,7 +6253,7 @@ model YearEndDependent {
   relationship        String    @db.VarChar(20)
   name                String    @db.VarChar(50)
   residentNumber      String?   @map("resident_number") @db.VarChar(20)
-  birthDate           DateTime? @db.Date @map("birth_date")
+  birthDate           DateTime? @map("birth_date") @db.Date
   isDisabled          Boolean   @default(false) @map("is_disabled")
   isSenior            Boolean   @default(false) @map("is_senior")
   isSingleParent      Boolean   @default(false) @map("is_single_parent")
@@ -6296,7 +6326,7 @@ model TurnoverRiskScore {
   employeeId   String   @map("employee_id")
   calculatedAt DateTime @default(now()) @map("calculated_at")
   overallScore Float    @map("overall_score") // 0~100 (높을수록 위험)
-  riskLevel    String   @db.VarChar(20) @map("risk_level") // 'low' | 'medium' | 'high' | 'critical' | 'insufficient_data'
+  riskLevel    String   @map("risk_level") @db.VarChar(20) // 'low' | 'medium' | 'high' | 'critical' | 'insufficient_data'
   signals      Json // [{ signal, weight, score, rawData, available }]
   topFactors   String[] @default([]) @map("top_factors")
   createdAt    DateTime @default(now()) @map("created_at")
@@ -6313,7 +6343,7 @@ model BurnoutScore {
   employeeId   String   @map("employee_id")
   calculatedAt DateTime @default(now()) @map("calculated_at")
   overallScore Float    @map("overall_score") // 0~100
-  riskLevel    String   @db.VarChar(20) @map("risk_level") // 'low' | 'medium' | 'high' | 'critical'
+  riskLevel    String   @map("risk_level") @db.VarChar(20) // 'low' | 'medium' | 'high' | 'critical'
   indicators   Json // [{ indicator, weight, score, available }]
   createdAt    DateTime @default(now()) @map("created_at")
 
@@ -6331,7 +6361,7 @@ model TeamHealthScore {
   calculatedAt DateTime @default(now()) @map("calculated_at")
   overallScore Float    @map("overall_score") // 0~100 (높을수록 건강)
   metrics      Json // { avgSentiment, turnoverRate, leaveUsageRate, overtimeVariance, exitSatisfaction }
-  riskLevel    String   @db.VarChar(20) @map("risk_level") // 'healthy' | 'caution' | 'at_risk'
+  riskLevel    String   @map("risk_level") @db.VarChar(20) // 'healthy' | 'caution' | 'at_risk'
   memberCount  Int      @map("member_count")
   createdAt    DateTime @default(now()) @map("created_at")
 
@@ -6346,7 +6376,7 @@ model TeamHealthScore {
 model AnalyticsSnapshot {
   id           String   @id @default(uuid())
   companyId    String   @map("company_id")
-  snapshotDate DateTime @db.Date @map("snapshot_date")
+  snapshotDate DateTime @map("snapshot_date") @db.Date
   type         String   @db.VarChar(30) // 'turnover_risk' | 'burnout' | 'team_health'
   data         Json // 스냅샷 데이터 (분포 집계 등)
   createdAt    DateTime @default(now()) @map("created_at")
@@ -6359,14 +6389,14 @@ model AnalyticsSnapshot {
 
 // 분석 가중치 설정 (법인별 조정 가능)
 model AnalyticsConfig {
-  id         String   @id @default(uuid())
-  companyId  String   @map("company_id")
-  configType String   @db.VarChar(30) @map("config_type") // 'turnover_weights' | 'burnout_weights' | 'team_health_weights'
+  id         String    @id @default(uuid())
+  companyId  String    @map("company_id")
+  configType String    @map("config_type") @db.VarChar(30) // 'turnover_weights' | 'burnout_weights' | 'team_health_weights'
   config     Json // { signals: [{ key, weight, threshold }] }
-  isActive   Boolean  @default(true) @map("is_active")
-  deletedAt      DateTime? @map("deleted_at")
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
+  isActive   Boolean   @default(true) @map("is_active")
+  deletedAt  DateTime? @map("deleted_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
   company Company @relation("CompanyAnalyticsConfigs", fields: [companyId], references: [id])
 
@@ -6396,38 +6426,38 @@ model KpiDashboardConfig {
 // ================================================================
 
 model PerformanceReview {
-  id                  String           @id @default(uuid())
-  cycleId             String           @map("cycle_id")
-  employeeId          String           @map("employee_id")
-  companyId           String           @map("company_id")
-  status              ReviewStatus     @default(NOT_STARTED)
+  id         String       @id @default(uuid())
+  cycleId    String       @map("cycle_id")
+  employeeId String       @map("employee_id")
+  companyId  String       @map("company_id")
+  status     ReviewStatus @default(NOT_STARTED)
 
   // Two-track grade preservation (Design Spec Section 11)
-  originalGrade       PerformanceGrade?  @map("original_grade")
-  finalGrade          PerformanceGrade?  @map("final_grade")
-  calibrationNote     String?            @map("calibration_note")
+  originalGrade   PerformanceGrade? @map("original_grade")
+  finalGrade      PerformanceGrade? @map("final_grade")
+  calibrationNote String?           @map("calibration_note")
 
   // Overdue flags (Design Spec Section 3)
-  overdueFlags        Json               @default("[]") @map("overdue_flags")
+  overdueFlags Json @default("[]") @map("overdue_flags")
 
   // Result notification (Design Spec Section 12)
-  notifiedAt          DateTime?          @map("notified_at")
-  notifiedBy          String?            @map("notified_by")
-  acknowledgedAt      DateTime?          @map("acknowledged_at")
-  isAutoAcknowledged  Boolean            @default(false) @map("is_auto_acknowledged")
+  notifiedAt         DateTime? @map("notified_at")
+  notifiedBy         String?   @map("notified_by")
+  acknowledgedAt     DateTime? @map("acknowledged_at")
+  isAutoAcknowledged Boolean   @default(false) @map("is_auto_acknowledged")
 
   // Calculated scores
-  mboScore            Decimal?           @db.Decimal(5, 2) @map("mbo_score")
-  beiScore            Decimal?           @db.Decimal(5, 2) @map("bei_score")
-  totalScore          Decimal?           @db.Decimal(5, 2) @map("total_score")
+  mboScore   Decimal? @map("mbo_score") @db.Decimal(5, 2)
+  beiScore   Decimal? @map("bei_score") @db.Decimal(5, 2)
+  totalScore Decimal? @map("total_score") @db.Decimal(5, 2)
 
-  createdAt           DateTime           @default(now()) @map("created_at")
-  updatedAt           DateTime           @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  cycle               PerformanceCycle   @relation(fields: [cycleId], references: [id])
-  employee            Employee           @relation("ReviewEmployee", fields: [employeeId], references: [id])
-  notifier            Employee?          @relation("ReviewNotifier", fields: [notifiedBy], references: [id])
-  company             Company            @relation(fields: [companyId], references: [id])
+  cycle    PerformanceCycle @relation(fields: [cycleId], references: [id])
+  employee Employee         @relation("ReviewEmployee", fields: [employeeId], references: [id])
+  notifier Employee?        @relation("ReviewNotifier", fields: [notifiedBy], references: [id])
+  company  Company          @relation(fields: [companyId], references: [id])
 
   @@unique([cycleId, employeeId])
   @@index([cycleId])
@@ -6437,41 +6467,41 @@ model PerformanceReview {
 }
 
 model PeerReviewAnswer {
-  id                    String    @id @default(uuid())
-  nominationId          String    @unique @map("nomination_id")
+  id           String @id @default(uuid())
+  nominationId String @unique @map("nomination_id")
 
   // CTR Core Values scores (1-5 each)
-  scoreChallenge        Int       @map("score_challenge")
-  scoreTrust            Int       @map("score_trust")
-  scoreResponsibility   Int       @map("score_responsibility")
-  scoreRespect          Int       @map("score_respect")
+  scoreChallenge      Int @map("score_challenge")
+  scoreTrust          Int @map("score_trust")
+  scoreResponsibility Int @map("score_responsibility")
+  scoreRespect        Int @map("score_respect")
 
   // Comments per value (optional per item, overall required)
-  commentChallenge      String?   @map("comment_challenge")
-  commentTrust          String?   @map("comment_trust")
-  commentResponsibility String?   @map("comment_responsibility")
-  commentRespect        String?   @map("comment_respect")
-  overallComment        String    @map("overall_comment")
+  commentChallenge      String? @map("comment_challenge")
+  commentTrust          String? @map("comment_trust")
+  commentResponsibility String? @map("comment_responsibility")
+  commentRespect        String? @map("comment_respect")
+  overallComment        String  @map("overall_comment")
 
-  submittedAt           DateTime  @default(now()) @map("submitted_at")
+  submittedAt DateTime @default(now()) @map("submitted_at")
 
-  nomination            PeerReviewNomination @relation(fields: [nominationId], references: [id])
+  nomination PeerReviewNomination @relation(fields: [nominationId], references: [id])
 
   @@map("peer_review_answers")
 }
 
 model EmployeeLevelMapping {
-  id            String   @id @default(uuid())
-  companyId     String   @map("company_id")
-  jobGradeCode  String   @map("job_grade_code")
-  levelCode     String   @map("level_code")  // L1 | L2 | L3 | L4 | L5 | EXEC
-  mboWeight     Int?     @map("mbo_weight")  // Level-specific override (null = cycle default)
-  beiWeight     Int?     @map("bei_weight")
+  id           String @id @default(uuid())
+  companyId    String @map("company_id")
+  jobGradeCode String @map("job_grade_code")
+  levelCode    String @map("level_code") // L1 | L2 | L3 | L4 | L5 | EXEC
+  mboWeight    Int?   @map("mbo_weight") // Level-specific override (null = cycle default)
+  beiWeight    Int?   @map("bei_weight")
 
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  company       Company  @relation(fields: [companyId], references: [id])
+  company Company @relation(fields: [companyId], references: [id])
 
   @@unique([companyId, jobGradeCode])
   @@map("employee_level_mappings")
@@ -6493,19 +6523,19 @@ enum DelegationStatus {
 }
 
 model ApprovalDelegation {
-  id           String           @id @default(uuid())
-  delegatorId  String           @map("delegator_id")
-  delegateeId  String           @map("delegatee_id")
-  companyId    String           @map("company_id")
-  scope        DelegationScope  @default(LEAVE_ONLY)
-  status       DelegationStatus @default(ACTIVE)
-  reason       String?
-  startDate    DateTime         @map("start_date")
-  endDate      DateTime         @map("end_date")
-  revokedAt    DateTime?        @map("revoked_at")
-  revokedBy    String?          @map("revoked_by")
-  createdAt    DateTime         @default(now()) @map("created_at")
-  updatedAt    DateTime         @updatedAt @map("updated_at")
+  id          String           @id @default(uuid())
+  delegatorId String           @map("delegator_id")
+  delegateeId String           @map("delegatee_id")
+  companyId   String           @map("company_id")
+  scope       DelegationScope  @default(LEAVE_ONLY)
+  status      DelegationStatus @default(ACTIVE)
+  reason      String?
+  startDate   DateTime         @map("start_date")
+  endDate     DateTime         @map("end_date")
+  revokedAt   DateTime?        @map("revoked_at")
+  revokedBy   String?          @map("revoked_by")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
 
   delegator Employee @relation("DelegationDelegator", fields: [delegatorId], references: [id])
   delegatee Employee @relation("DelegationDelegatee", fields: [delegateeId], references: [id])
@@ -6530,15 +6560,15 @@ enum AiReportStatus {
 model AiReport {
   id          String         @id @default(uuid())
   companyId   String?        @map("company_id")
-  period      String         // "2026-03" (year-month)
+  period      String // "2026-03" (year-month)
   content     String         @default("")
-  metadata    Json?          // { tokensUsed, model, generatedAt, kpiSnapshot }
+  metadata    Json? // { tokensUsed, model, generatedAt, kpiSnapshot }
   status      AiReportStatus @default(GENERATING)
   generatedBy String?        @map("generated_by")
   createdAt   DateTime       @default(now()) @map("created_at")
   updatedAt   DateTime       @updatedAt @map("updated_at")
 
-  company     Company?       @relation(fields: [companyId], references: [id])
+  company Company? @relation(fields: [companyId], references: [id])
 
   @@unique([companyId, period])
   @@index([period])
@@ -6547,19 +6577,19 @@ model AiReport {
 
 // B-2a: Work Location model
 model WorkLocation {
-  id           String   @id @default(cuid())
-  companyId    String   @map("company_id")
+  id           String    @id @default(cuid())
+  companyId    String    @map("company_id")
   code         String
   name         String
-  nameEn       String?  @map("name_en")
-  country      String   // ISO 3166-1 alpha-2: "KR", "CN", "US", "MX", "VN", "RU", "PL", "CL", "TH", "ID"
+  nameEn       String?   @map("name_en")
+  country      String // ISO 3166-1 alpha-2: "KR", "CN", "US", "MX", "VN", "RU", "PL", "CL", "TH", "ID"
   city         String?
-  timezone     String?  // e.g., "Asia/Seoul", "America/Detroit", "America/Monterrey"
+  timezone     String? // e.g., "Asia/Seoul", "America/Detroit", "America/Monterrey"
   address      String?
-  locationType String?  @map("location_type") // "OFFICE", "PLANT", "WAREHOUSE", "BRANCH_OFFICE"
-  deletedAt      DateTime? @map("deleted_at")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  locationType String?   @map("location_type") // "OFFICE", "PLANT", "WAREHOUSE", "BRANCH_OFFICE"
+  deletedAt    DateTime? @map("deleted_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
 
   company     Company              @relation(fields: [companyId], references: [id])
   assignments EmployeeAssignment[]
@@ -6573,18 +6603,18 @@ model WorkLocation {
 // ================================================================
 
 model CertificateRequest {
-  id             String                    @id @default(uuid())
-  employeeId     String                    @map("employee_id")
-  companyId      String                    @map("company_id")
+  id             String                   @id @default(uuid())
+  employeeId     String                   @map("employee_id")
+  companyId      String                   @map("company_id")
   type           CertificateRequestType
   purpose        String?
-  status         CertificateRequestStatus  @default(REQUESTED)
-  rejectedReason String?                   @map("rejected_reason")
-  issuedFileKey  String?                   @map("issued_file_key")
-  requestedAt    DateTime                  @default(now()) @map("requested_at")
-  approvedAt     DateTime?                 @map("approved_at")
-  issuedAt       DateTime?                 @map("issued_at")
-  approvedById     String?                   @map("approved_by")
+  status         CertificateRequestStatus @default(REQUESTED)
+  rejectedReason String?                  @map("rejected_reason")
+  issuedFileKey  String?                  @map("issued_file_key")
+  requestedAt    DateTime                 @default(now()) @map("requested_at")
+  approvedAt     DateTime?                @map("approved_at")
+  issuedAt       DateTime?                @map("issued_at")
+  approvedById   String?                  @map("approved_by")
 
   employee Employee  @relation("CertRequestEmployee", fields: [employeeId], references: [id])
   company  Company   @relation(fields: [companyId], references: [id])
@@ -6601,31 +6631,31 @@ model CertificateRequest {
 
 /// 법인별 휴직 유형 정의
 model LeaveOfAbsenceType {
-  id                       String    @id @default(uuid())
-  companyId                String    @map("company_id")
-  code                     String                          // PARENTAL, MATERNITY, FAMILY_CARE, MEDICAL, WORK_INJURY, MILITARY, PERSONAL, STUDY, ...
-  name                     String                          // "육아휴직"
-  nameEn                   String?   @map("name_en")       // "Parental Leave"
-  category                 String                          // STATUTORY | CONTRACTUAL
-  maxDurationDays          Int?      @map("max_duration_days")   // null = 무제한 (산재 등)
-  payType                  String    @default("UNPAID") @map("pay_type")    // PAID | UNPAID | PARTIAL | INSURANCE | MIXED
-  payRate                  Int?      @map("pay_rate")            // 급여 비율 % (null = N/A)
-  paySource                String?   @map("pay_source")          // EMPLOYER | GOVERNMENT | INSURANCE | MIXED
-  eligibilityMonths        Int?      @map("eligibility_months")  // 최소 근속 요건 (개월)
-  countsAsService          Boolean   @default(true)  @map("counts_as_service")     // 근속기간 산입
-  countsAsAttendance       Boolean   @default(false) @map("counts_as_attendance")  // 연차 출근일수 산입
-  splittable               Boolean   @default(false)             // 분할 사용 가능
-  maxSplitCount            Int?      @map("max_split_count")
-  requiresProof            Boolean   @default(false) @map("requires_proof")
-  proofDescription         String?   @map("proof_description")   // "의사 진단서, 출생증명서"
-  advanceNoticeDays        Int?      @map("advance_notice_days") // 사전 신청 기한 (일)
-  reinstatementGuaranteed  Boolean   @default(false) @map("reinstatement_guaranteed") // 원직 복귀 보장
-  sortOrder                Int       @default(0) @map("sort_order")
-  isActive                 Boolean   @default(true) @map("is_active")
-  deletedAt                DateTime? @map("deleted_at")
+  id                      String    @id @default(uuid())
+  companyId               String    @map("company_id")
+  code                    String // PARENTAL, MATERNITY, FAMILY_CARE, MEDICAL, WORK_INJURY, MILITARY, PERSONAL, STUDY, ...
+  name                    String // "육아휴직"
+  nameEn                  String?   @map("name_en") // "Parental Leave"
+  category                String // STATUTORY | CONTRACTUAL
+  maxDurationDays         Int?      @map("max_duration_days") // null = 무제한 (산재 등)
+  payType                 String    @default("UNPAID") @map("pay_type") // PAID | UNPAID | PARTIAL | INSURANCE | MIXED
+  payRate                 Int?      @map("pay_rate") // 급여 비율 % (null = N/A)
+  paySource               String?   @map("pay_source") // EMPLOYER | GOVERNMENT | INSURANCE | MIXED
+  eligibilityMonths       Int?      @map("eligibility_months") // 최소 근속 요건 (개월)
+  countsAsService         Boolean   @default(true) @map("counts_as_service") // 근속기간 산입
+  countsAsAttendance      Boolean   @default(false) @map("counts_as_attendance") // 연차 출근일수 산입
+  splittable              Boolean   @default(false) // 분할 사용 가능
+  maxSplitCount           Int?      @map("max_split_count")
+  requiresProof           Boolean   @default(false) @map("requires_proof")
+  proofDescription        String?   @map("proof_description") // "의사 진단서, 출생증명서"
+  advanceNoticeDays       Int?      @map("advance_notice_days") // 사전 신청 기한 (일)
+  reinstatementGuaranteed Boolean   @default(false) @map("reinstatement_guaranteed") // 원직 복귀 보장
+  sortOrder               Int       @default(0) @map("sort_order")
+  isActive                Boolean   @default(true) @map("is_active")
+  deletedAt               DateTime? @map("deleted_at")
 
-  company  Company            @relation(fields: [companyId], references: [id])
-  records  LeaveOfAbsence[]
+  company Company          @relation(fields: [companyId], references: [id])
+  records LeaveOfAbsence[]
 
   @@unique([companyId, code])
   @@map("leave_of_absence_types")
@@ -6633,63 +6663,63 @@ model LeaveOfAbsenceType {
 
 /// 휴직 기록 (6-state 워크플로: REQUESTED → APPROVED → ACTIVE → RETURN_REQUESTED → COMPLETED)
 model LeaveOfAbsence {
-  id                 String    @id @default(uuid())
-  employeeId         String    @map("employee_id")
-  companyId          String    @map("company_id")
-  typeId             String    @map("type_id")
+  id         String @id @default(uuid())
+  employeeId String @map("employee_id")
+  companyId  String @map("company_id")
+  typeId     String @map("type_id")
 
   // 기간
-  startDate          DateTime  @map("start_date") @db.Date
-  expectedEndDate    DateTime? @map("expected_end_date") @db.Date   // 예정 복귀일
-  actualEndDate      DateTime? @map("actual_end_date") @db.Date     // 실제 복귀일
+  startDate       DateTime  @map("start_date") @db.Date
+  expectedEndDate DateTime? @map("expected_end_date") @db.Date // 예정 복귀일
+  actualEndDate   DateTime? @map("actual_end_date") @db.Date // 실제 복귀일
 
   // 상태
-  status             String    @default("REQUESTED")
+  status String @default("REQUESTED")
   // REQUESTED → APPROVED → ACTIVE → RETURN_REQUESTED → COMPLETED
   //                                                   ↘ CANCELLED
   //           → REJECTED
 
   // 급여 (유형 기본값 오버라이드)
-  payType            String?   @map("pay_type")
-  payRate            Int?      @map("pay_rate")
+  payType String? @map("pay_type")
+  payRate Int?    @map("pay_rate")
 
   // 사유 & 증빙
-  reason             String?
-  proofFileUrl       String?   @map("proof_file_url")
+  reason       String?
+  proofFileUrl String? @map("proof_file_url")
 
   // 승인
-  requestedAt        DateTime  @default(now()) @map("requested_at")
-  approvedById         String?   @map("approved_by")
-  approvedAt         DateTime? @map("approved_at")
-  rejectedBy         String?   @map("rejected_by")
-  rejectedAt         DateTime? @map("rejected_at")
-  rejectionReason    String?   @map("rejection_reason")
+  requestedAt     DateTime  @default(now()) @map("requested_at")
+  approvedById    String?   @map("approved_by")
+  approvedAt      DateTime? @map("approved_at")
+  rejectedBy      String?   @map("rejected_by")
+  rejectedAt      DateTime? @map("rejected_at")
+  rejectionReason String?   @map("rejection_reason")
 
   // 복직
-  returnPositionId   String?   @map("return_position_id")  // 복귀 직위 (null = 원직)
-  returnNotes        String?   @map("return_notes")
+  returnPositionId String? @map("return_position_id") // 복귀 직위 (null = 원직)
+  returnNotes      String? @map("return_notes")
 
   // Assignment 연동
-  loaAssignmentId    String?   @map("loa_assignment_id")    // ON_LEAVE 발령 ID
-  returnAssignmentId String?   @map("return_assignment_id") // 복직 발령 ID
+  loaAssignmentId    String? @map("loa_assignment_id") // ON_LEAVE 발령 ID
+  returnAssignmentId String? @map("return_assignment_id") // 복직 발령 ID
 
   // 분할 사용 (splittable인 경우)
-  splitSequence      Int       @default(1) @map("split_sequence")
-  parentId           String?   @map("parent_id")
+  splitSequence Int     @default(1) @map("split_sequence")
+  parentId      String? @map("parent_id")
 
   // 메타
-  createdAt          DateTime  @default(now()) @map("created_at")
-  updatedAt          DateTime  @updatedAt @map("updated_at")
-  deletedAt          DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   // Relations
-  employee  Employee             @relation("LOAEmployee", fields: [employeeId], references: [id])
-  company   Company              @relation(fields: [companyId], references: [id])
-  type      LeaveOfAbsenceType   @relation(fields: [typeId], references: [id])
-  approver  Employee?            @relation("LOAApprover", fields: [approvedById], references: [id])
-  rejecter  Employee?            @relation("LOARejecter", fields: [rejectedBy], references: [id])
-  parent    LeaveOfAbsence?      @relation("LOASplit", fields: [parentId], references: [id])
-  splits    LeaveOfAbsence[]     @relation("LOASplit")
+  employee Employee           @relation("LOAEmployee", fields: [employeeId], references: [id])
+  company  Company            @relation(fields: [companyId], references: [id])
+  type     LeaveOfAbsenceType @relation(fields: [typeId], references: [id])
+  approver Employee?          @relation("LOAApprover", fields: [approvedById], references: [id])
+  rejecter Employee?          @relation("LOARejecter", fields: [rejectedBy], references: [id])
+  parent   LeaveOfAbsence?    @relation("LOASplit", fields: [parentId], references: [id])
+  splits   LeaveOfAbsence[]   @relation("LOASplit")
 
   payrollAdjustments PayrollAdjustment[]
 
@@ -6697,4 +6727,184 @@ model LeaveOfAbsence {
   @@index([companyId, status])
   @@index([startDate])
   @@map("leave_of_absences")
+}
+
+// ================================================================
+// Stage C: Resident Registration Number (주민등록번호) — 1:1 분리 모델
+// Employee 의 일반 쿼리(`include` 미명시)에 노출되지 않도록 별도 테이블.
+// src/lib/pii/rrn 헬퍼로 암호화 후 numberEncrypted 에 저장, 마스킹은 numberMasked.
+// 접근 시 PiiAccessLog 기록 필수.
+// ================================================================
+
+model EmployeeRrn {
+  id              String   @id @default(uuid())
+  employeeId      String   @unique @map("employee_id")
+  numberEncrypted String   @map("number_encrypted") // src/lib/pii/encryption v1:iv:tag:ct
+  numberMasked    String   @map("number_masked") // "880808-1******" — 표시·검색용
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("employee_rrns")
+}
+
+// ================================================================
+// Stage D: 레거시 ERP(IS_PE01) 호환 부속 모델 4종
+// 모두 Employee 와 별개 테이블 — explicit include 필요 (PII 자동 누설 방지)
+// 민감 데이터(BankAccount/SocialInsurance/StatutoryStatus)는 RLS 적용
+// ================================================================
+
+/// 직원 주소 — REGISTERED(주민등록) | RESIDENCE(실거주) | FOREIGN(외국인본국)
+/// 본적(HOMETOWN)은 사용 빈도 낮아 제외 (plan 결정).
+/// 법정 자료 발급 = REGISTERED, 통근비/주거지원 = RESIDENCE, 외국인 비자 = FOREIGN
+model EmployeeAddress {
+  id            String    @id @default(uuid())
+  employeeId    String    @map("employee_id")
+  type          String // REGISTERED | RESIDENCE | FOREIGN
+  postalCode    String?   @map("postal_code")
+  addressLine1  String?   @map("address_line1")
+  addressLine2  String?   @map("address_line2")
+  countryCode   String?   @default("KR") @map("country_code")
+  isActive      Boolean   @default(true) @map("is_active")
+  /// 효력 시작일. 알 수 없는 historical import 는 1900-01-01 sentinel 사용.
+  /// NOT NULL 이라 @@unique([employeeId, type, effectiveFrom]) 가 PostgreSQL 에서 실제로 enforce 됨.
+  effectiveFrom DateTime  @default(dbgenerated("CURRENT_DATE")) @map("effective_from") @db.Date
+  effectiveTo   DateTime? @map("effective_to") @db.Date
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, type, effectiveFrom])
+  @@index([employeeId])
+  @@map("employee_addresses")
+}
+
+/// 직원 은행계좌 — PAYROLL(급여) | EXPENSE(경비) | PENSION(연금 IRP)
+/// 계좌번호는 src/lib/pii/account 헬퍼로 암호화 저장. 표시는 numberMasked 사용.
+model EmployeeBankAccount {
+  id              String   @id @default(uuid())
+  employeeId      String   @map("employee_id")
+  purpose         String // PAYROLL | EXPENSE | PENSION
+  bankCode        String   @map("bank_code") // CodeGroup="BANK_KR" 참조 (느슨한 결합)
+  numberEncrypted String   @map("number_encrypted") // src/lib/pii/account v1:iv:tag:ct
+  numberMasked    String   @map("number_masked") // "*********6789"
+  accountHolder   String   @map("account_holder")
+  isPrimary       Boolean  @default(true) @map("is_primary")
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId])
+  @@index([employeeId, purpose])
+  @@map("employee_bank_accounts")
+}
+
+/// 한국 4대보험 가입정보 — HEALTH | NATIONAL_PENSION | EMPLOYMENT | INDUSTRIAL_ACCIDENT
+/// 중국용 SocialInsuranceRecord 와는 별개 (그건 월별 납부내역).
+/// 보수월액·취득/상실일·조합기호 등 가입 마스터 정보.
+model KoreaSocialInsurance {
+  id                 String    @id @default(uuid())
+  employeeId         String    @map("employee_id")
+  insuranceType      String    @map("insurance_type") // HEALTH | NATIONAL_PENSION | EMPLOYMENT | INDUSTRIAL_ACCIDENT
+  isEnrolled         Boolean   @map("is_enrolled")
+  monthlySalary      Decimal?  @map("monthly_salary") // 보수월액
+  acquireDate        DateTime? @map("acquire_date") @db.Date // 취득일
+  loseDate           DateTime? @map("lose_date") @db.Date // 상실일
+  groupCode          String?   @map("group_code") // 조합기호
+  certNumber         String?   @map("cert_number") // 증번호
+  exemptReason       String?   @map("exempt_reason") // 미가입사유 (CodeMaster 참조)
+  longTermCareAmount Decimal?  @map("long_term_care_amount") // 장기요양 (HEALTH 한정)
+  employerAmount     Decimal?  @map("employer_amount") // 회사 부담분 (EMPLOYMENT 등)
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, insuranceType])
+  @@index([employeeId])
+  @@map("korea_social_insurance")
+}
+
+/// 직원 법정 신분 — 보훈/장애/노조 통합 (1:1, 대부분 null)
+/// 법정 가산점·세제혜택 산정에 사용. 보훈/장애는 특수 보호 대상 PII.
+model EmployeeStatutoryStatus {
+  id              String    @id @default(uuid())
+  employeeId      String    @unique @map("employee_id")
+  // 보훈
+  veteranType     String?   @map("veteran_type") // CodeGroup="E203"
+  veteranBenefit  String?   @map("veteran_benefit") // CodeGroup="E235"
+  veteranNumber   String?   @map("veteran_number")
+  veteranRelation String?   @map("veteran_relation") // CodeGroup="E401"
+  veteranOrg      String?   @map("veteran_org") // 소관보훈지청
+  // 장애
+  disabilityType  String?   @map("disability_type") // CodeGroup="E206"
+  disabilityClass String?   @map("disability_class") // CodeGroup="E207"
+  disabilityDate  DateTime? @map("disability_date") @db.Date
+  // 노조
+  unionMember     Boolean   @default(false) @map("union_member")
+  unionJoinDate   DateTime? @map("union_join_date") @db.Date
+  unionRank       String?   @map("union_rank") // 노조간부등급
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("employee_statutory_status")
+}
+
+// ================================================================
+// Code Master (IS_SY02 호환) — 운영자 자력 관리 가능한 통합 코드 마스터
+// 다국어(ko/en/zh/vi/es), 시계열(start/endDate), 활성/정렬, 외부 매핑 5개
+// ================================================================
+
+model CodeGroup {
+  id              String   @id @default(uuid())
+  code            String   @unique // "E108", "E310", "BANK_KR"
+  name            String // "고용형태-직군"
+  description     String?
+  reference1Label String?  @map("ref1_label") // 외부 매핑 컬럼의 의미 (예: "Legacy ERP code")
+  reference2Label String?  @map("ref2_label")
+  reference3Label String?  @map("ref3_label")
+  reference4Label String?  @map("ref4_label")
+  reference5Label String?  @map("ref5_label")
+  isSystem        Boolean  @default(false) @map("is_system") // 시스템 코드(편집 잠금)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  items CodeItem[]
+
+  @@map("code_groups")
+}
+
+model CodeItem {
+  id         String    @id @default(uuid())
+  groupId    String    @map("group_id")
+  code       String // 그룹 내 코드값 (예: "01", "Y", "KR")
+  label      String // 기본(ko) 라벨
+  labelEn    String?   @map("label_en")
+  labelZh    String?   @map("label_zh")
+  labelVi    String?   @map("label_vi")
+  labelEs    String?   @map("label_es")
+  sortOrder  Int       @default(0) @map("sort_order")
+  isActive   Boolean   @default(true) @map("is_active")
+  startDate  DateTime? @map("start_date") @db.Date // 시계열 활성 시작
+  endDate    DateTime? @map("end_date") @db.Date // 시계열 활성 종료
+  reference1 String?   @map("ref_1") // 외부 시스템 매핑 값
+  reference2 String?   @map("ref_2")
+  reference3 String?   @map("ref_3")
+  reference4 String?   @map("ref_4")
+  reference5 String?   @map("ref_5")
+  remark     String?
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  group CodeGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, code])
+  @@index([groupId, isActive])
+  @@map("code_items")
 }
