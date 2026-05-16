@@ -4767,7 +4767,15 @@
     },
     "leavePromotion": {
       "body": "{name}, bạn còn {remainingDays} ngày phép. Còn {daysUntilAnniversary} ngày đến ngày kỷ niệm. Khuyến nghị sử dụng phép.",
-      "title": "Khuyến nghị sử dụng phép"
+      "title": "Khuyến nghị sử dụng phép",
+      "stage1": {
+        "title": "Thúc đẩy sử dụng phép năm — Thông báo lần 1 (Đề nghị chỉ định thời gian nghỉ)",
+        "body": "{name}, bạn còn {remainingDays} ngày phép năm chưa sử dụng. Theo Điều 61 Luật Tiêu chuẩn Lao động, vui lòng chỉ định và thông báo thời gian nghỉ phép. ({pendingDays} ngày đang chờ duyệt tính riêng)"
+      },
+      "stage2": {
+        "title": "Thúc đẩy sử dụng phép năm — Thông báo lần 2",
+        "body": "{name}, đây là thông báo lần 2 về {remainingDays} ngày phép năm chưa sử dụng và chưa chỉ định thời gian. Vui lòng sử dụng trước khi hết thời hạn. ({pendingDays} ngày đang chờ duyệt tính riêng)"
+      }
     },
     "leaveRejected": {
       "body": "Lý do từ chối: {reason}",
