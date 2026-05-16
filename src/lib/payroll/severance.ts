@@ -7,12 +7,25 @@ import { prisma } from '@/lib/prisma'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import { differenceInDays, subMonths, format, startOfMonth, endOfMonth } from 'date-fns'
 import { calculateIncomeTax } from './kr-tax'
+import {
+  computeTrailingFourWeekAvgWeeklyHours,
+  evaluateSeveranceEligibility,
+} from './severance-eligibility'
 import type { SeveranceDetail } from './types'
 
 export async function calculateSeverance(
   employeeId: string,
   terminationDate: Date,
 ): Promise<SeveranceDetail> {
+  // 4주 윈도 사전 필터 하한: helper 와 동일한 UTC day-start 기준으로 정규화
+  // (비자정 terminationDate 에서 윈도 첫날 스케줄 누락 방지 — loose pre-filter)
+  const termDayStartMs = Date.UTC(
+    terminationDate.getUTCFullYear(),
+    terminationDate.getUTCMonth(),
+    terminationDate.getUTCDate(),
+  )
+  const windowStart = new Date(termDayStartMs - 28 * 24 * 60 * 60 * 1000)
+
   const employee = await prisma.employee.findUniqueOrThrow({
     where: { id: employeeId },
     select: {
@@ -24,13 +37,41 @@ export async function calculateSeverance(
         take: 1,
         select: { companyId: true },
       },
+      // 퇴직일 직전 4주(28일) 윈도와 교차하는 근로시간 스케줄
+      employeeSchedules: {
+        where: {
+          effectiveFrom: { lte: terminationDate },
+          OR: [
+            { effectiveTo: null },
+            { effectiveTo: { gte: windowStart } },
+          ],
+        },
+        select: {
+          id: true,
+          effectiveFrom: true,
+          effectiveTo: true,
+          schedule: { select: { weeklyHours: true } },
+        },
+      },
     },
   })
   const companyId = extractPrimaryAssignment(employee.assignments)?.companyId ?? ''
 
   const tenureDays = differenceInDays(terminationDate, employee.hireDate)
   const tenureYears = tenureDays / 365
-  const isEligible = tenureDays >= 365
+
+  // 근로자퇴직급여보장법 §4①: 계속근로 1년 이상 AND 4주 평균 주 15h 이상
+  const { avgWeeklyHours } = computeTrailingFourWeekAvgWeeklyHours(
+    employee.employeeSchedules.map((es) => ({
+      id: es.id,
+      effectiveFrom: es.effectiveFrom,
+      effectiveTo: es.effectiveTo,
+      weeklyHours: Number(es.schedule.weeklyHours),
+    })),
+    terminationDate,
+  )
+  const eligibility = evaluateSeveranceEligibility({ tenureDays, avgWeeklyHours })
+  const isEligible = eligibility.eligible
 
   // 최근 3개월 급여 데이터 조회
   const recentThreeMonths: SeveranceDetail['recentThreeMonths'] = []
@@ -133,6 +174,10 @@ export async function calculateSeverance(
     tenureDays,
     tenureYears: Math.round(tenureYears * 100) / 100,
     isEligible,
+    avgWeeklyHours:
+      avgWeeklyHours == null ? null : Math.round(avgWeeklyHours * 100) / 100,
+    ineligibleReason: eligibility.reason,
+    eligibilityWarning: eligibility.warning,
     recentThreeMonths,
     averageMonthlyPay,
     severancePay,
