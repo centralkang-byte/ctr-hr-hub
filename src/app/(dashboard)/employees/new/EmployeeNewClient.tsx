@@ -61,7 +61,24 @@ interface ManagerSearchResult {
   jobGrade: { name: string } | null
 }
 
-// Grade↔Title 매핑 (서버에서 전달)
+// 직급(JobGrade) — 드롭다운 1차 소스 (독립 축)
+interface JobGradeOption {
+  id: string
+  code: string
+  name: string
+  gradeType: string
+  rankOrder: number
+  companyId: string
+}
+
+// 직군(JobCategory) — 법인 스코프 옵션
+interface JobCategoryOption {
+  id: string
+  name: string
+  companyId: string
+}
+
+// Grade↔Title 매핑 (서버에서 전달) — 호칭 자동완성 보조용만
 interface GradeTitleMappingItem {
   id: string
   jobGrade: { id: string; code: string; name: string; gradeType: string; rankOrder: number; companyId: string }
@@ -79,7 +96,8 @@ interface EmployeeNewClientProps {
   user: SessionUser
   companies: RefOption[]
   departments: DeptOption[]
-  jobCategories: RefOption[]
+  jobGrades: JobGradeOption[]
+  jobCategories: JobCategoryOption[]
   gradeTitleMappings: GradeTitleMappingItem[]
   positions: PositionOption[]
 }
@@ -136,6 +154,7 @@ export function EmployeeNewClient({
   user,
   companies,
   departments,
+  jobGrades,
   jobCategories,
   gradeTitleMappings,
   positions,
@@ -180,7 +199,15 @@ export function EmployeeNewClient({
   // Filtered positions by selected company
   const filteredPositions = positions.filter((p) => p.companyId === data.companyId)
 
-  // Grade↔Title 매핑: 선택된 법인의 매핑만 필터
+  // 직급: 선택 법인의 JobGrade만 (rankOrder 순). 1차 소스 — 매핑 미등록이어도 동작
+  const filteredJobGrades = jobGrades
+    .filter((g) => g.companyId === data.companyId)
+    .sort((a, b) => a.rankOrder - b.rankOrder)
+
+  // 직군: 선택 법인의 JobCategory만 (법인당 4종, 교차 중복 방지)
+  const filteredJobCategories = jobCategories.filter((c) => c.companyId === data.companyId)
+
+  // Grade↔Title 매핑: 선택 법인 한정 — 호칭(EmployeeTitle) 자동완성 보조용만
   const companyMappings = gradeTitleMappings.filter((m) => m.jobGrade.companyId === data.companyId)
   const mappedTitle = companyMappings.find((m) => m.jobGrade.id === data.jobGradeId) ?? null
 
@@ -380,8 +407,12 @@ export function EmployeeNewClient({
         <Select
           value={data.companyId || '__NONE__'}
           onValueChange={(v) => {
+            // 법인 변경 시 법인 종속 선택값 초기화 — 타 법인 id 제출 방지 (FK 정합)
             set('companyId', v === '__NONE__' ? '' : v)
             set('departmentId', '')
+            set('jobGradeId', '')
+            set('jobCategoryId', '')
+            set('positionId', '')
           }}
         >
           <SelectTrigger>
@@ -419,9 +450,9 @@ export function EmployeeNewClient({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-            {companyMappings.map((m) => (
-              <SelectItem key={m.jobGrade.id} value={m.jobGrade.id}>
-                {m.jobGrade.code} ({m.employeeTitle.name})
+            {filteredJobGrades.map((g) => (
+              <SelectItem key={g.id} value={g.id}>
+                {g.code} {g.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -434,7 +465,7 @@ export function EmployeeNewClient({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-            {jobCategories.map((c) => (
+            {filteredJobCategories.map((c) => (
               <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
             ))}
           </SelectContent>
@@ -528,7 +559,7 @@ export function EmployeeNewClient({
   const renderStep4 = () => {
     const company = companies.find((c) => c.id === data.companyId)
     const dept = departments.find((d) => d.id === data.departmentId)
-    const gradeMapping = companyMappings.find((m) => m.jobGrade.id === data.jobGradeId)
+    const grade = filteredJobGrades.find((g) => g.id === data.jobGradeId)
     const category = jobCategories.find((c) => c.id === data.jobCategoryId)
 
     const GENDER_LABELS: Record<string, string> = { M: t('male'), F: t('female') }
@@ -548,7 +579,7 @@ export function EmployeeNewClient({
       [t('hireDate'), data.hireDate],
       [t('companyEntity'), company?.name ?? '-'],
       [t('department'), dept?.name ?? '-'],
-      [t('jobGrade'), gradeMapping ? `${gradeMapping.jobGrade.code} (${gradeMapping.employeeTitle.name})` : '-'],
+      [t('jobGrade'), grade ? `${grade.code} ${grade.name}${mappedTitle ? ` (${mappedTitle.employeeTitle.name})` : ''}` : '-'],
       [t('jobCategory'), category?.name ?? '-'],
       [t('manager'), data.managerName || '-'],
     ]
