@@ -38,7 +38,7 @@ export default async function EmployeeDetailPage({
       ? {}
       : { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
 
-  const [rawEmployee, companies, departments, jobCategories, gradeTitleMappings] = await Promise.all([
+  const [rawEmployee, companies, departments, jobGrades, jobCategories, gradeTitleMappings] = await Promise.all([
     prisma.employee.findFirst({
       where: { id, deletedAt: null, ...assignmentFilter },
       include: {
@@ -77,12 +77,19 @@ export default async function EmployeeDetailPage({
       select: { id: true, name: true, companyId: true },
       orderBy: { name: 'asc' },
     }),
+    prisma.jobGrade.findMany({
+      where: { deletedAt: null, ...deptFilter },
+      select: { id: true, code: true, name: true, gradeType: true, rankOrder: true, companyId: true },
+      orderBy: { rankOrder: 'asc' },
+    }),
     prisma.jobCategory.findMany({
-      select: { id: true, name: true },
+      where: { deletedAt: null, ...deptFilter },
+      select: { id: true, name: true, companyId: true },
       orderBy: { name: 'asc' },
     }),
     prisma.gradeTitleMapping.findMany({
       where: {
+        ...deptFilter,
         jobGrade: { deletedAt: null },
         employeeTitle: { deletedAt: null },
       },
@@ -160,6 +167,7 @@ export default async function EmployeeDetailPage({
         employee={employee as Parameters<typeof EmployeeDetailClient>[0]['employee']}
         companies={companies}
         departments={departments as DeptOption[]}
+        jobGrades={jobGrades}
         jobCategories={jobCategories}
         gradeTitleMappings={gradeTitleMappings}
         division={division}

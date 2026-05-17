@@ -105,21 +105,23 @@ export async function seedQAAccounts(prisma: PrismaClient) {
   const qaTeamAId = deterministicUUID('qa-dept', 'QA-TEAM-A')
   const qaTeamBId = deterministicUUID('qa-dept', 'QA-TEAM-B')
 
+  // QA 전용 부서 — 마스터 시드 부서명과 충돌하지 않도록 [QA] 접두 (드롭다운 중복 방지).
+  // code/id 불변 → 기존 배정 FK 영향 없음 (name/nameEn만 idempotent 갱신).
   await prisma.department.upsert({
     where: { companyId_code: { companyId: krId, code: 'QA-TEAM-A' } },
-    update: { name: '생산기술팀', nameEn: 'Production Engineering' },
-    create: { id: qaTeamAId, companyId: krId, code: 'QA-TEAM-A', name: '생산기술팀', nameEn: 'Production Engineering', level: 1, sortOrder: 90 },
+    update: { name: '[QA] 생산기술팀', nameEn: '[QA] Production Engineering' },
+    create: { id: qaTeamAId, companyId: krId, code: 'QA-TEAM-A', name: '[QA] 생산기술팀', nameEn: '[QA] Production Engineering', level: 1, sortOrder: 90 },
   })
   deptMap['CTR:QA-TEAM-A'] = qaTeamAId
 
   await prisma.department.upsert({
     where: { companyId_code: { companyId: krId, code: 'QA-TEAM-B' } },
-    update: { name: '품질관리팀', nameEn: 'Quality Control' },
-    create: { id: qaTeamBId, companyId: krId, code: 'QA-TEAM-B', name: '품질관리팀', nameEn: 'Quality Control', level: 1, sortOrder: 91 },
+    update: { name: '[QA] 품질관리팀', nameEn: '[QA] Quality Control' },
+    create: { id: qaTeamBId, companyId: krId, code: 'QA-TEAM-B', name: '[QA] 품질관리팀', nameEn: '[QA] Quality Control', level: 1, sortOrder: 91 },
   })
   deptMap['CTR:QA-TEAM-B'] = qaTeamBId
 
-  console.log('  ✅ QA departments: 생산기술팀, 품질관리팀')
+  console.log('  ✅ QA departments: [QA] 생산기술팀, [QA] 품질관리팀')
 
   // ── Create Positions for manager/employee reporting chain ──
   const posM1Id = deterministicUUID('qa-pos', 'CTR-KR-QA-TEAM-A-MGR')
