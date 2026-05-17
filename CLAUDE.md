@@ -167,20 +167,18 @@ Timeout: 300s (codex exec scans full codebase).
 ### /wrap-up (session end)
 Bundles: commit → STATUS.md update → Vercel deploy. See `/wrap-up` for details.
 
-## 디자인 참고 — UI 리팩터링 가이드
+## Design Reference
 
-`_design-reference/` 에 HR Hub 디자인 시스템 프로토타입이 있어요.
+`_design-reference/` 에 HR Hub 프로토타입 (Babel-in-browser JSX) 이 있어요.
+시각 디자인·페이지 IA·KPI 패턴·인터랙션의 source of truth 예요.
 
-목표: 이 Next.js HR 시스템의 UI/UX 를 HR Hub 디자인으로 리팩터링.
+작업 원칙:
+- 백엔드 (prisma, API, lib, middleware) 절대 건드리지 말 것
+- 기존 DESIGN.md 의 디자인 시스템을 HR Hub 컨벤션으로 점진 교체
+- Phase 1 (토큰) → Phase 2 (핵심 컴포넌트) → Phase 3 (페이지별) → Phase 4 (폴리시)
+- 각 Phase 는 별도 PR
 
-원칙:
-- 백엔드 (Prisma, API, 비즈니스 로직) 는 절대 건드리지 말 것
-- UI 컴포넌트와 페이지 레이아웃만 교체
-- 한 페이지씩 작업 (대시보드 → 직원 관리 → 휴가 → ... 순서)
-- 각 페이지 작업 후 동작 확인 (콘솔 에러 0)
-
-참고 순서:
-1. `_design-reference/CLAUDE.md`
+참고 우선순위:
+1. `_design-reference/DESIGN_RULES.md` ← 가장 중요
 2. `_design-reference/HANDOVER.md`
-3. `_design-reference/DESIGN_RULES.md` ← 가장 중요
-4. `_design-reference/REVIEW_REPORT.md`
+3. `_design-reference/REVIEW_REPORT.md`
