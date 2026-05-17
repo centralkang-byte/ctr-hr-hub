@@ -113,8 +113,11 @@ Dev login: `NEXT_PUBLIC_SHOW_TEST_ACCOUNTS=true`
 
 ## Design System
 
-See `DESIGN.md`. Token enforcement via `rules/design.md` (auto-loaded on UI file edits).
-In QA mode, flag any code that doesn't match DESIGN.md.
+- **현재 SSOT**: `DESIGN.md` (Violet `#6366f1` 기반)
+- **마이그레이션 타겟**: `_design-reference/DESIGN_RULES.md` (Workday Navy 기반)
+- **Phase 1 진행 중**: 토큰 교체 단계 — 두 시스템이 일시 공존
+- Token enforcement via `rules/design.md` (auto-loaded on UI file edits)
+- In QA mode, flag any code that doesn't match DESIGN.md
 
 ## Gotchas
 
@@ -166,3 +169,35 @@ Timeout: 300s (codex exec scans full codebase).
 
 ### /wrap-up (session end)
 Bundles: commit → STATUS.md update → Vercel deploy. See `/wrap-up` for details.
+
+## Design Refactor — HR Hub Migration
+
+`_design-reference/` 에 HR Hub 프로토타입 (Babel-in-browser JSX) 이 있어요.
+**시각 디자인·페이지 IA·KPI 패턴·인터랙션의 source of truth** 입니다.
+
+### 원칙
+
+- **백엔드 절대 보존**: prisma, API, lib, middleware, RLS, companyFilter 손대지 말 것
+- **DESIGN.md 점진 갱신**: 기존 Violet 디자인 시스템 → HR Hub 컨벤션 (Workday Navy + Workday Orange)
+- **Phase 단위 PR**: 각 Phase 별 별도 브랜치/PR 로 머지
+
+### Phase 진행
+
+| Phase | 범위 | 기간 |
+|---|---|---|
+| 1. 디자인 토큰 | tailwind.config.ts 색·radius·shadow, globals.css, DESIGN.md 갱신 | 1-2일 |
+| 2. 핵심 컴포넌트 | wd-stat-strip / wd-status-chips / wd-summary-lead / EmptyState / WdDrawer / Inspector / BulkActionBar 패턴을 shadcn 위에 구현 | 1주 |
+| 3. 페이지별 적용 | 대시보드 → 직원 → 휴가/근태 → 인사이트 → 설정 순으로 점진 | 수주 |
+| 4. 폴리시 | ⌘K 강화, 미니카드, 모바일 카드 reflow | 1주 |
+
+### 참고 우선순위 (HR Hub 폴더 안)
+
+1. `_design-reference/DESIGN_RULES.md` ← 가장 중요 (페이지 골격·KPI 5패턴·카피 톤·라벨 컨벤션)
+2. `_design-reference/HANDOVER.md` (HR Hub 아키텍처·함정·완료된 작업)
+3. `_design-reference/REVIEW_REPORT.md` (P0-P4 정리 기록 — 어떤 디자인 결정이 왜 내려졌는지)
+
+### 작업 시 추가 가드
+
+- Phase 1 끝나기 전엔 `src/components/ui/*` (shadcn 베이스) 수정 금지 — 토큰만 바뀌면 자동 적용됨
+- `messages/*.json` 키 그대로 — 친근 톤 변환은 한국어 (`ko.json` 등) 만, 다른 언어는 그대로
+- 각 Phase 끝나면 Playwright visual test 스냅샷 업데이트 + 검토 필수
