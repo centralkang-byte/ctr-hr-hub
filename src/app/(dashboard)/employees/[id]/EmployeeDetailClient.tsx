@@ -89,7 +89,24 @@ type EmployeeDetail = {
 }
 
 
-// Grade↔Title 매핑 (서버에서 전달)
+// 직급(JobGrade) — 드롭다운 1차 소스 (독립 축)
+interface JobGradeOption {
+  id: string
+  code: string
+  name: string
+  gradeType: string
+  rankOrder: number
+  companyId: string
+}
+
+// 직군(JobCategory) — 법인 스코프 옵션
+interface JobCategoryOption {
+  id: string
+  name: string
+  companyId: string
+}
+
+// Grade↔Title 매핑 (서버에서 전달) — 호칭 자동완성 보조용만
 interface GradeTitleMappingItem {
   id: string
   jobGrade: { id: string; code: string; name: string; gradeType: string; rankOrder: number; companyId: string }
@@ -101,7 +118,8 @@ interface EmployeeDetailClientProps {
   employee: EmployeeDetail
   companies: RefOption[]
   departments: DeptOption[]
-  jobCategories: RefOption[]
+  jobGrades: JobGradeOption[]
+  jobCategories: JobCategoryOption[]
   gradeTitleMappings: GradeTitleMappingItem[]
   division: string | null
   canViewGrade: boolean
@@ -164,6 +182,7 @@ export function EmployeeDetailClient({
   employee: initialEmployee,
   companies: _companies,
   departments,
+  jobGrades,
   jobCategories,
   gradeTitleMappings,
   division,
@@ -335,7 +354,22 @@ export function EmployeeDetailClient({
     [departments, employee.companyId],
   )
 
-  // Grade↔Title 매핑: 해당 법인만 필터
+  // 직급: 해당 법인 JobGrade만 (rankOrder 순) — 1차 소스, 매핑 미등록이어도 동작
+  const filteredJobGrades = useMemo(
+    () =>
+      jobGrades
+        .filter((g) => g.companyId === employee.companyId)
+        .sort((a, b) => a.rankOrder - b.rankOrder),
+    [jobGrades, employee.companyId],
+  )
+
+  // 직군: 해당 법인 JobCategory만 (법인당 4종, 교차 중복 방지)
+  const filteredJobCategories = useMemo(
+    () => jobCategories.filter((c) => c.companyId === employee.companyId),
+    [jobCategories, employee.companyId],
+  )
+
+  // Grade↔Title 매핑: 해당 법인만 — 호칭 자동완성 보조용만
   const companyMappings = useMemo(
     () => gradeTitleMappings.filter((m) => m.jobGrade.companyId === employee.companyId),
     [gradeTitleMappings, employee.companyId],
@@ -434,9 +468,9 @@ export function EmployeeDetailClient({
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-                    {companyMappings.map((m) => (
-                      <SelectItem key={m.jobGrade.id} value={m.jobGrade.id}>
-                        {m.jobGrade.code} ({m.employeeTitle.name})
+                    {filteredJobGrades.map((g) => (
+                      <SelectItem key={g.id} value={g.id}>
+                        {g.code} {g.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -454,7 +488,7 @@ export function EmployeeDetailClient({
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-                    {jobCategories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                    {filteredJobCategories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>

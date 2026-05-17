@@ -58,6 +58,7 @@ import { seedGoalRevisions } from './seeds/45-goal-revisions'
 import { seedCalibrationQA } from './seeds/46-calibration-qa'
 import { seedLaborContractSettings } from './seeds/47-labor-contract-settings'
 import { seedQAAccounts } from './seeds/00-qa-accounts'
+import { seedJobGrades } from './seeds/37-job-grades'
 import { seedLoaTypes } from './seeds/43-loa-types'
 import { seedCodeMaster } from './seeds/44-code-master'
 import { seedEdgeCasePersonas } from './seeds/49-edge-case-personas'
@@ -3553,6 +3554,13 @@ async function main() {
 
   console.log(`  ✅ ${budgetCount} benefit budgets (2025)`)
   console.log('========================================\n')
+
+  // ─────────────────────────────────────────────────────────
+  // Job Grades + Employee Titles — 전 12개 법인 (국내 4단계 / 해외 7단계)
+  // 인라인 Step 7(CTR-HQ/CTR-KR 한정) 이후·QA계정/직원 시드 이전에 실행.
+  // seedJobGrades는 (companyId,code) findFirst 기반이라 재실행/중복 안전.
+  // ─────────────────────────────────────────────────────────
+  await seedJobGrades(prisma)
 
   // ─────────────────────────────────────────────────────────
   // QA Accounts (super/hr/manager/employee test users)
