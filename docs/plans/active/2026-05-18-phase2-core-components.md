@@ -25,17 +25,28 @@ Phase 1에서 색상·radius·shadow **토큰**을 Workday Navy로 교체해 sha
   토큰 클래스로 치환. `sm:rounded-2xl`은 Phase 1 radius(12px) 자동 적용 — 확인만.
 - 검증: Dialog/Sheet 열어 그림자색 navy, 콘솔 0.
 
-**P0-2. 레거시 `ctr-primary` 다크모드 대비** (Codex Gate 2 P2 회수)
-- `tailwind.config.ts` `ctr-primary`/`ctr-primary-dark`/`ctr-primary-light`/`ctr-info`
-  /`ctr-info-bg`가 고정 hex → `.dark`에서 `text-ctr-primary`(manager 카드·아바타·
-  로더 등) 가독성 붕괴.
-- 옵션 A(권장): 이 토큰들을 `hsl(var(--primary))` 등 **CSS 변수 기반**으로 전환
-  → 다크 자동 대응(이미 `.dark`에 `--primary` indigo 정의 존재). 단 `-light/-bg`는
-  `--primary-container`, `-dark`는 `--primary-dim` 매핑. 레거시 페이지 라이트
-  외관은 동일 유지(여전히 navy).
-- 옵션 B: 다크 전용 override 토큰 추가(`dark:text-ctr-primary-onDark`)—사용처
-  수정 多, 비권장.
-- 검증: `.dark` 토글 후 manager 카드/아바타/로더 텍스트 대비 WCAG AA, 라이트 무변.
+**P0-2. (축소·확정 — 2026-05-18)** 토큰 var 전환은 **철회**.
+- 시도했던 `ctr-primary*`→`hsl(var(--…)/<alpha-value>)` 전환은 원래 좁은 버그
+  (`text-ctr-primary` 다크 카드 1.39:1)는 고쳤으나, `bg-ctr-primary`+흰글자
+  **13파일/11곳**(로그인 패널·주요 버튼·챗봇)이 다크에서 흰글자 on #818cf8 = 2.95:1
+  **광범위 신규 회귀**. → **전면 철회**, `ctr-primary` 계열은 Phase 1 고정 navy hex 유지.
+- **남긴 것(축소 P0-2)**: `ProfileSidebar` 아바타 2곳 `text-ctr-primary`→`text-[#003953]`
+  (DESIGN.md 예외① WCAG AA text). 토큰 고정 상태에서 #003953 on #bedded =
+  **라이트·다크 모두 8.82:1 AA**. 토큰값 변동과 무관하게 견고.
+- **무회귀**: 토큰을 Phase 1 고정값으로 되돌렸으므로 13파일/foreground 11곳은
+  main 대비 **변경 0 = 회귀 0**.
+- **미해결·이월**: `text-ctr-primary` 다크 카드/로더 가독성(1.39), `EmployeeDetailClient`
+  아바타 등 레거시 토큰 이중용도(bg/fg 분리 설계). 다크 본격 범위.
+
+### 별도 다크모드 Phase (Phase 2 이후 이월)
+다크모드 전면 재설계는 본 마이그레이션 범위 밖 — 후속 전담 Phase에서 통합 처리:
+- 레거시 `ctr-primary` 계열 bg/fg 분리(예: `bg-primary text-primary-foreground`
+  패턴 정착) — 영향: `bg-ctr-primary`+흰글자 **13파일/11곳**
+- `text-ctr-primary` 다크 카드·로더 가독성(1.39:1) 정합
+- 아바타 전수(`bg-ctr-primary-light`+text) — `ProfileSidebar`(이번 선반영) 외
+  `EmployeeDetailClient.tsx:161` 포함 일괄 통일
+- `.dark` 팔레트 자체(`--primary` indigo 등) 적정성 재검토
+- 검증 기준: 라이트·다크 양모드 전 surface WCAG AA, 회귀 0
 
 ### P1 — 시그니처 컴포넌트 (shadcn 위 구현)
 
