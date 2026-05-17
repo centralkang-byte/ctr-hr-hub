@@ -32,6 +32,36 @@
 | F4 | qa-accounts 부서명 `[QA]` 접두 → 마스터 시드명 비충돌 (code/id 불변, FK 무영향) | S1-D3, L1-B2 | `prisma/seeds/00-qa-accounts.ts` |
 | F5 | 스윕 CHECK C: 매핑 0건 HIGH→LOW(정보성) — F2로 매핑 선택사항화 | (게이트 정합) | `scripts/qa/integrity-sweep.ts` |
 
+### Settings global 등록 — 근본 + 분류 (CEO 원칙: 정책/기본값=global, 법인고유=company)
+**근본**: `SettingsSubPageLayout` `showCompanyGuide = companyId===null && !isGlobalOnly && !hasGlobalDefault`
+→ 두 플래그 없는 탭은 global에서 등록 UI 대신 "법인 선택" 안내. `settings-config.ts` 메타 누락이 원인.
+
+**플래그 부여 대상 (정책/기본값 → `hasGlobalDefault: true`)**:
+- 근태/휴가: leave-types, leave-accrual, leave-promotion, holidays, loa-types, shift-patterns, work-schedules
+- 급여/보상: earnings, deductions, tax-free, salary-bands, merit-matrix, bonus-rules
+- 성과/평가: cycle, grade-scale
+- 채용/온보딩: onboarding-templates, offboarding-checklist
+- 시스템: notification-rules, approval-flows, audit
+- 조직/인사: grade-title-mappings, job-families
+
+**company-only 유지 (법인 고유 구조/마스터 — 안내 정상)**:
+- company-info, departments, positions, custom-fields, code-management, locations, currency,
+  designated-leave, weekly-hours, pay-schedule (description상 "법인별" 명시)
+
+**구현 주의 (Codex 관점)**: 플래그 flip ≠ 작동하는 global UI. 부여 대상 각 탭은 global 경로
+(companyId 없이 조회·기본값 저장·전파·법인 override)를 실제 구현/검증해야 함 → F1–F5처럼
+별도 수정+탭별 검증 1세트. **분류 확정 후 착수.**
+
+**🔴 정밀 근본 (템플릿 grade-title-mappings 조사 중 발견 — 더 깊음)**:
+레이아웃 안내는 표면. 진짜 근본 = **API 시맨틱**. `/api/v1/settings/grade-title-mappings`:
+- GET `companyId = searchParams.get('companyId') ?? user.companyId` → global이어도 본인 법인만
+- POST `companyId = body.companyId ?? user.companyId` → global 등록이 본인 법인에만
+즉 플래그를 켜도 "global=전 법인"이 **동작 안 함**(조용히 본인 법인 스코프). 22개 탭 대부분 동일 API 패턴 추정 = CEO "global 안 됨"의 진짜 정체.
+**올바른 템플릿** = 레이아웃 플래그 + API global 시맨틱(SUPER_ADMIN+companyId 없음 →
+GET 전 법인, POST 전 법인 일괄 upsert, PUT/DELETE 법인별 override). cross-company
+일괄 쓰기 = 권한·resolveCompanyId SSOT 인접·Codex 게이트 필요 → **전용 세션 권장**
+(긴 세션 말미 급조 금지).
+
 ### 별도 트랙 (본 수정 범위 밖, 기록)
 - **직원 편집 배정 미저장**: `PUT /api/v1/employees/[id]`가 직급/직군/호칭 등 배정 필드를 버림 → 편집해도 저장 안 됨 (기존 결함, Codex Gate1 발견). 별도 트랙.
 - **레거시 중복 정리**: 이미 시드된 DB의 기존 중복(대표이사 등)은 FK 재매핑 포함 승인형 정리 스크립트 (원 플랜 Codex HIGH 2 트랙).
