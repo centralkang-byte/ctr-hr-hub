@@ -14,7 +14,7 @@ paths: ["src/app/**/*.tsx", "src/components/**/*.tsx", "src/lib/styles/**"]
 ## 색상 (Color) — 핵심 체크
 
 - 순수 검정 `#000`/`#000000` 사용 금지 → `on-surface` (#2d2f2f)
-- Primary: #6366f1 / Primary-dim: #4f46e5 / Primary-container: #a5b4fc
+- Primary: #004964 / Primary-dim: #003953 / Primary-container: #bedded (HR Hub Phase 1 Workday Navy)
 - 하드코딩 hex 금지 (CSS 변수/Tailwind 토큰 사용). 예외 3가지:
   1. **WCAG AA text**: `text-[#15803d]` (badge success)
   2. **Opacity 미지원 토큰**: `bg-[#b45309]/10` (badge warning)
@@ -81,7 +81,7 @@ bg와 text에 같은 토큰 사용 금지. bg는 밝은 색, text는 WCAG AA 만
 - Label: 항상 top, 11px semibold
 - Required: red `*`
 - Error: inline + red border + `XCircle` icon
-- Input: border 1px (Tailwind 기본), `rounded-lg`, focus Violet ring
+- Input: border 1px (Tailwind 기본), `rounded-lg`, focus Navy ring (--ring #004964)
 - Buttons (right-align): cancel(ghost) → draft(outline) → submit(primary pill)
 
 ## Tabs = Segmented Control

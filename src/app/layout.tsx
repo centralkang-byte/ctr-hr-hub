@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#6366f1',
+  themeColor: '#004964', // Phase 1: Workday navy (was #6366f1 violet) — oklch(38% 0.08 230)
 }
 
 export default async function RootLayout({
