@@ -211,7 +211,7 @@ export async function checkWorkHourAlert(
         body: '이번 주 근무시간이 48시간을 초과했습니다. 추가 초과근무에 주의하세요.',
         titleKey: 'notifications.overtimeWarning48h.title',
         bodyKey: 'notifications.overtimeWarning48h.body',
-        link: `/my/attendance`,
+        link: `/attendance`,
         priority: 'high',
         metadata: { weeklyHours },
       })
@@ -223,7 +223,7 @@ export async function checkWorkHourAlert(
         body: '법정 최대 근무시간(52시간)에 도달했습니다. 추가 근무가 제한됩니다.',
         titleKey: 'notifications.overtimeBlocked52h.title',
         bodyKey: 'notifications.overtimeBlocked52h.body',
-        link: `/my/attendance`,
+        link: `/attendance`,
         priority: 'urgent',
         metadata: { weeklyHours },
       })
