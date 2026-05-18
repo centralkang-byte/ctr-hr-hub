@@ -146,7 +146,7 @@ HR_ADMIN은 `/leave/admin`·`/leave/team` 별 라우트=본 batch 외) 가시성
 | Q1 | **P0 확정** | 휴가 = 실 운영 마일스톤 핵심 |
 | Q2 | **(1) `/my/leave` redirect 폐기** | `/my/leave`=redirect-only 라우트 잔존(북마크 보호). 링크 일괄 `/leave` 갱신: `src/config/navigation.ts`(my-leave 이미 /leave) · `MySpaceClient.tsx:69,164` · `EmployeeHomeV2.tsx:197,256,324` · `useRecentPages.ts:69` · `leave-approved.handler.ts` · `leave-rejected.handler.ts` · `requests/[id]/approve|reject/route.ts` link. /my/leave 잔여정보 = 홈/허브 카드 **인라인 컴포넌트**로 (= Q6 WdLeaveBalanceCard 재사용) |
 | Q3 | **별도 트랙** | LV-007 이력 다운로드 = 본 batch 제외. 휴가 batch 종료 후 LV-007 단독 카드 |
-| Q4 | **batch 포함** | LV-002 = `chart.ts` SSOT **첫 소비처**, P2b 자산 즉시 검증 |
+| Q4 | **batch 포함** | LV-002 = `chart.ts` **첫(단독) 소비처** — 단일 시리즈 월별 막대, `CHART_THEME.colors[0]`+axis/grid/tooltip **정확 수용**(확장 0). chart.ts **2-shot 검증은 다음 batch 이연**(AT-004는 chart.ts 부적합→status.ts home, PR-2 audit 발견 2026-05-19). 계획서 §2 WS-B 정정 SSOT |
 | Q5 | **동시 교정 OK** | LV-005 raw statusBadgeClass→StatusBadge · L542 그라데이션→토큰 · L313 무음 catch→toast |
 | Q6 | **(B-rewrite) `WdGroupedStatCard` 베이스 + `WdLeaveBalanceCard` 래퍼** | Stage 3 백포팅(#02 근태 AT-005=2번째 수요로 (C)일반화 **승격 확정**). 범용 베이스=그룹 라벨+N지표/진행바 슬롯. 휴가 래퍼=잔여 의미색·잔여율(Q7) 주입, `/leave`+홈/허브 인라인(Q2) 공용. 근태 AT-005=동일 베이스 별도 래퍼 |
 | Q7 | **(c) 잔여율 의미색** | 기본 임계값 ≥30% `--success` / 10–30% `--accent` / <10% `--warning`. 임계값은 Stage 4 PR 코멘트 미세조정 토픽 |
