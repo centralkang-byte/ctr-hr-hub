@@ -12,6 +12,7 @@ import { apiClient } from '@/lib/api'
 import { TABLE_STYLES } from '@/lib/styles'
 import { toast } from '@/hooks/use-toast'
 import { EmployeeMiniCard } from '@/components/shared/EmployeeMiniCard'
+import { wtAvatarColor } from '@/lib/styles/wt-avatar'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -52,11 +53,8 @@ interface DirectoryViewProps {
 }
 
 // ─── Constants ──────────────────────────────────────────────
-
-const AVATAR_PALETTE = [
-  '#6366f1', '#0ea5e9', '#16a34a', '#f59e0b', '#e11d48',
-  '#7c3aed', '#06b6d4', '#ea580c', '#84cc16', '#ec4899',
-] as const
+// 아바타 색 = wtAvatarColor(emp.id) — Workday wt SSOT, id 안정 해시
+// (같은 직원 = 어느 화면에서나 같은 색). 기존 위치인덱스 팔레트 제거.
 
 // ─── Helpers ────────────────────────────────────────────────
 
@@ -305,19 +303,19 @@ export function DirectoryView({ tree, selectedCompanyId }: DirectoryViewProps) {
                   <td colSpan={5} className="text-center py-8 text-xs text-muted-foreground">{t('noEmployees')}</td>
                 </tr>
               ) : (
-                employees.map((emp, i) => (
+                employees.map((emp) => (
                   <tr key={emp.id} className="hover:bg-muted/30">
                     <td className="px-3 py-2">
                       <div className="flex items-center gap-1.5">
                         <div
                           className="w-[26px] h-[26px] rounded-md flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0"
-                          style={{ backgroundColor: AVATAR_PALETTE[i % AVATAR_PALETTE.length] }}
+                          style={{ backgroundColor: wtAvatarColor(emp.id) }}
                         >
                           {emp.name.slice(0, 1)}
                         </div>
                         <EmployeeMiniCard
                           employee={{ name: emp.name, nameEn: emp.nameEn }}
-                          avatarColor={AVATAR_PALETTE[i % AVATAR_PALETTE.length]}
+                          avatarColor={wtAvatarColor(emp.id)}
                           meta={[
                             emp.department?.name && { k: t('department'), v: emp.department.name },
                             emp.title?.name && { k: t('positionTitle'), v: emp.title.name },

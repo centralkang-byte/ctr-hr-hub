@@ -27,6 +27,7 @@ import { WdStatusChips } from '@/components/shared/WdStatusChips'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { DetailPanel } from '@/components/shared/DetailPanel'
 import { EmployeeInspector } from '@/components/shared/EmployeeInspector'
+import { wtAvatarColor } from '@/lib/styles/wt-avatar'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { EmployeeFilterPanel, type FilterValues } from '@/components/employees/EmployeeFilterPanel'
 // BulkUploadWizard deprecated — 새 bulk-movements 페이지로 이동
@@ -208,7 +209,7 @@ function EmployeeQuickPanel({
       nameEn={employee.nameEn}
       code={employee.employeeNo}
       photoUrl={employee.photoUrl}
-      avatarColor="#0ea5e9"
+      avatarColor={wtAvatarColor(employee.id)}
       tags={tags.length > 0 ? tags : undefined}
       // Message/Document/1:1 — 미구현(P3 라우팅·i18n P1-6c). disabled로
       // 시각 충실도 유지 + dead-control 방지 (Codex P2).

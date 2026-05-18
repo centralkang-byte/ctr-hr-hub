@@ -8,6 +8,7 @@
 import { useTranslations } from 'next-intl'
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import { User } from 'lucide-react'
+import { wtDeptColor } from '@/lib/styles/wt-avatar'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -43,20 +44,6 @@ export type DeptFlowNodeData = {
 
 // ─── Constants ──────────────────────────────────────────────
 
-/** 10색 순환 팔레트 (목업 추출) */
-const AVATAR_PALETTE = [
-  '#6366f1', // primary (violet)
-  '#0ea5e9', // sky
-  '#16a34a', // tertiary (green)
-  '#f59e0b', // warning (amber)
-  '#e11d48', // error (rose)
-  '#7c3aed', // accent (purple)
-  '#06b6d4', // cyan
-  '#ea580c', // orange
-  '#84cc16', // lime
-  '#ec4899', // pink
-] as const
-
 /** 레벨별 노드 크기 (목업 일치) */
 export const NODE_SIZES = {
   root:    { w: 220, h: 100 },
@@ -71,9 +58,10 @@ export function getNodeSize(level: number, isRoot: boolean) {
 }
 
 // ─── Helpers ────────────────────────────────────────────────
+// 부서 노드 색 = wtDeptColor(index) — Workday wt SSOT (부서 인덱스 기반).
 
 function getAvatarColor(index: number): string {
-  return AVATAR_PALETTE[index % AVATAR_PALETTE.length]
+  return wtDeptColor(index)
 }
 
 function getInitials(name?: string | null, nameEn?: string | null): string {
