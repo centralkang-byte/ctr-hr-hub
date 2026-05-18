@@ -2,7 +2,6 @@
 
 import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { BulkActionBar } from '@/components/shared/BulkActionBar'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — Approval Inbox Client (Stage 5-B)
@@ -661,21 +660,29 @@ export function ApprovalInboxClient({ user: _user }: ApprovalInboxClientProps) {
         </div>
       )}
 
-      {/* ── Bulk floating action bar (Workday wd-bulk-bar) ── */}
-      <BulkActionBar
-        count={selectedIds.size}
-        label={`${selectedIds.size}건 선택됨`}
-        onClear={() => setSelectedIds(new Set())}
-        clearAriaLabel="선택 해제"
-        actions={[
-          {
-            label: '일괄 승인',
-            icon: CheckSquare,
-            primary: true,
-            onClick: () => setShowBulkConfirm(true),
-          },
-        ]}
-      />
+      {/* ── Bulk floating action bar ── */}
+      {selectedIds.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2">
+          <div className="flex items-center gap-3 rounded-xl bg-foreground px-5 py-3 text-white shadow-lg">
+            <CheckSquare className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">{selectedIds.size}건 선택됨</span>
+            <Button
+              size="sm"
+              className={BUTTON_VARIANTS.primary}
+              onClick={() => setShowBulkConfirm(true)}
+            >
+              일괄 승인
+            </Button>
+            <button
+              type="button"
+              className="text-xs text-muted-foreground hover:text-white"
+              onClick={() => setSelectedIds(new Set())}
+            >
+              선택 해제
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── Approve Confirm Modal ── */}
       {approveTarget && (
