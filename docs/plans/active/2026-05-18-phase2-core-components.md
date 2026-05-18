@@ -86,6 +86,19 @@ tailwind에 매핑. 그 위에서 소비처를 토큰 참조로 전환:
 - WCAG AA 유지(D17): bg/text 분리 토큰 깨지지 않게 검증
 → 인사이트 페이지 실사용 색은 Phase 3에서 재평가.
 
+### P1-6b 아키텍처 결정 (α 채택, 2026-05-18)
+
+레퍼런스 `inspector.jsx`가 Radix Sheet가 아닌 **커스텀 backdrop+slide**이고,
+EmployeesPage에 이미 `shared/DetailPanel`(커스텀 slide, role=dialog,
+aria-label=직원명) + `EmployeeQuickPanel`(/api fetch) + onRowClick·URL
+deeplink가 작동 중 → **α: DetailPanel 인플레이스 리스킨** 채택.
+EmployeeInspector = 순수 표현 컴포넌트(banner/quick-actions/KV/quick-stats/
+activity=EmptyState)만, slide chrome은 기존 DetailPanel 재사용.
+**Q3(Sheet 기반) → 본 결정으로 상위 갱신** (오정보 기반이었음).
+파생: sheet.tsx 무변경 → **A3(⑧ 회귀 스모크)·A4(SheetTitle) 불요**.
+`shared/DetailPanel` 소비처 = EmployeeListClient 단 1곳(폭 조정 회귀
+위험 0), 호출부에서 `w-[min(480px,92vw)]` 주입(레퍼런스 정합).
+
 ### 후속 트랙 (P1-6 파생)
 
 - **P1-6c — MiniCard/Inspector 액션 i18n 라벨 채움**: P1-6a-hotfix에서
