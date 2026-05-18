@@ -7,10 +7,11 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { ChevronDown, ChevronRight, Search } from 'lucide-react'
+import { ChevronDown, ChevronRight, Search, Eye } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { TABLE_STYLES } from '@/lib/styles'
 import { toast } from '@/hooks/use-toast'
+import { EmployeeMiniCard } from '@/components/shared/EmployeeMiniCard'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -150,6 +151,7 @@ function TreeItem({
 
 export function DirectoryView({ tree, selectedCompanyId }: DirectoryViewProps) {
   const t = useTranslations('org')
+  const tCommon = useTranslations('common')
   const SENTINEL_ALL = '__ALL__'
 
   const [selectedDeptId, setSelectedDeptId] = useState<string | null>(null)
@@ -313,7 +315,21 @@ export function DirectoryView({ tree, selectedCompanyId }: DirectoryViewProps) {
                         >
                           {emp.name.slice(0, 1)}
                         </div>
-                        <span className="text-[11px] font-semibold text-foreground">{emp.name}</span>
+                        <EmployeeMiniCard
+                          employee={{ name: emp.name, nameEn: emp.nameEn }}
+                          avatarColor={AVATAR_PALETTE[i % AVATAR_PALETTE.length]}
+                          meta={[
+                            { k: t('department'), v: emp.department?.name ?? '-' },
+                            { k: t('positionTitle'), v: emp.title?.name ?? '-' },
+                            { k: t('grade'), v: emp.jobGrade?.name ?? '-' },
+                            { k: t('email'), v: emp.email },
+                          ]}
+                          actions={[
+                            { label: tCommon('detail'), icon: Eye, onClick: () => {} },
+                          ]}
+                        >
+                          <span className="text-[11px] font-semibold text-foreground">{emp.name}</span>
+                        </EmployeeMiniCard>
                       </div>
                     </td>
                     <td className="px-3 py-2 text-[10px] text-muted-foreground">{emp.email}</td>
