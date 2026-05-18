@@ -8,10 +8,11 @@
 
 // hue 패밀리 교차 순: 시각 인접 슬롯의 색을 분리해 식별성 최대화
 // (navy → terracotta → forest → gold → purple → teal → coral → steel)
-const WT_ORDER = [1, 3, 5, 6, 4, 2, 8, 7] as const
+// avatar·dept·chart 시리즈 공용 wt 슬롯 SSOT (P2b-chart에서 재사용).
+export const WT_ORDER = [1, 3, 5, 6, 4, 2, 8, 7] as const
 
-/** 슬롯(0~7) → `hsl(var(--wt-N))` inline 색 문자열 */
-function wtSlotColor(slot: number): string {
+/** 슬롯(임의 정수) → `hsl(var(--wt-N))`. 8 초과는 교차순 순환 재사용. */
+export function wtSlotColor(slot: number): string {
   const n = WT_ORDER[((slot % 8) + 8) % 8]
   return `hsl(var(--wt-${n}))`
 }

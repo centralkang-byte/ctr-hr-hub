@@ -62,6 +62,10 @@ Phase 2 작업 중 발견한 다크 인스턴스 누적 보드 (별도 다크 Ph
 - 공통 근인 = 위 "`.dark` 팔레트 자체(`--primary` indigo 등) 재검토"
   bullet. 컴포넌트는 토큰을 올바르게 소비 — 회귀 아님. 이후 발견분도
   본 보드에 누적.
+- **P2b-chart `chart-colors.ts` @deprecated shim**: 차트색 SSOT는
+  `lib/styles/chart.ts`로 통합 완료. `components/analytics/chart-colors.ts`는
+  소비처 8개 무변경 호환 재export shim만 잔존 — Phase 3 페이지 마이그레이션
+  트랙에서 소비처 import 경로를 `@/lib/styles/chart`로 정리하며 자연 제거.
 
 ### 향후 검토 (SSOT 통합 후보)
 
