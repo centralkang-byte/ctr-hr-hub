@@ -20,7 +20,6 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -30,23 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  SheetFooter,
-} from '@/components/ui/sheet'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { WdDrawer, WdField, WdNote } from '@/components/shared/WdDrawer'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
@@ -138,8 +121,6 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     REJECTED: t('rejected'),
     CANCELLED: t('cancelled'),
   }
-
-  const isMobile = useIsMobile()
 
   // ─── State ───
   const [balances, setBalances] = useState<LeaveBalanceLocal[]>([])
@@ -609,14 +590,15 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         rowKey={(row) => (row as unknown as LeaveRequestLocal).id}
       />
 
-      {/* ─── Section 2: Leave Request Form ─── */}
+      {/* ─── Section 2: Leave Request Form (WdDrawer 카나리) ─── */}
       {(() => {
         const formContent = (
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
+            <WdNote>{t('requestDescription')}</WdNote>
+
             {/* policyId */}
-            <div className="space-y-2">
-              <Label htmlFor="leave-policy">{t('policy')}</Label>
+            <WdField label={t('policy')}>
               <Controller
                 control={control}
                 name="policyId"
@@ -638,7 +620,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               {errors.policyId && (
                 <p className="text-sm text-destructive">{errors.policyId.message}</p>
               )}
-            </div>
+            </WdField>
 
             {/* ─── Balance preview ─── */}
             {selectedBalance && selectedRemaining !== null && (
@@ -671,8 +653,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
             {/* ─── Preset Toggle ─── */}
             {/* i18n: DB policy name matching — preset toggle only for annual leave */}
             {policies.find(p => p.id === watchedPolicyId)?.name.includes('연차') && (
-              <div className="space-y-2">
-                <Label>{t('balancePreview.selectType')}</Label>
+              <WdField label={t('balancePreview.selectType')}>
                 <div className="flex flex-wrap gap-2">
                   {[
                     { id: 'FULL', label: t('preset.annual') },
@@ -698,12 +679,11 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                     </button>
                   ))}
                 </div>
-              </div>
+              </WdField>
             )}
 
             {/* startDate */}
-            <div className="space-y-2">
-              <Label htmlFor="leave-start">{presetType === 'CUSTOM' || presetType === 'FULL' ? t('startDate') : t('balancePreview.leaveDate')}</Label>
+            <WdField label={presetType === 'CUSTOM' || presetType === 'FULL' ? t('startDate') : t('balancePreview.leaveDate')}>
               <Controller
                 control={control}
                 name="startDate"
@@ -747,12 +727,11 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               {errors.startDate && (
                 <p className="text-sm text-destructive">{errors.startDate.message}</p>
               )}
-            </div>
+            </WdField>
 
             {/* endDate - show for CUSTOM and FULL (multi-day) */}
             {(presetType === 'CUSTOM' || presetType === 'FULL') && (
-              <div className="space-y-2">
-                <Label htmlFor="leave-end">{t('endDate')}</Label>
+              <WdField label={t('endDate')}>
                 <Controller
                   control={control}
                   name="endDate"
@@ -785,31 +764,29 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                 {errors.endDate && (
                   <p className="text-sm text-destructive">{errors.endDate.message}</p>
                 )}
-              </div>
+              </WdField>
             )}
 
             {/* days - show for CUSTOM (editable) and FULL (read-only, auto-calculated) */}
             {(presetType === 'CUSTOM' || presetType === 'FULL') && (
-              <div className="space-y-2">
-                <Label htmlFor="leave-days">{t('days')}</Label>
-              <Input
-                id="leave-days"
-                type="number"
-                step="0.25"
-                min="0.25"
-                readOnly={presetType === 'FULL'}
-                {...register('days')}
-              />
-              {errors.days && (
-                <p className="text-sm text-destructive">{errors.days.message}</p>
-              )}
-            </div>
+              <WdField label={t('days')}>
+                <Input
+                  id="leave-days"
+                  type="number"
+                  step="0.25"
+                  min="0.25"
+                  readOnly={presetType === 'FULL'}
+                  {...register('days')}
+                />
+                {errors.days && (
+                  <p className="text-sm text-destructive">{errors.days.message}</p>
+                )}
+              </WdField>
             )}
 
             {/* halfDayType — only show when Custom and days is 0.5. (Presets handle this implicitly via state) */}
             {presetType === 'CUSTOM' && watchedDays === 0.5 && (
-              <div className="space-y-2">
-                <Label htmlFor="leave-half">{t('halfDay')}</Label>
+              <WdField label={t('halfDay')}>
                 <Controller
                   control={control}
                   name="halfDayType"
@@ -828,12 +805,11 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                     </Select>
                   )}
                 />
-              </div>
+              </WdField>
             )}
 
             {/* reason */}
-            <div className="space-y-2">
-              <Label htmlFor="leave-reason">{t('reason')}</Label>
+            <WdField label={t('reason')}>
               <Textarea
                 id="leave-reason"
                 rows={3}
@@ -844,47 +820,26 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               {errors.reason && (
                 <p className="text-sm text-destructive">{errors.reason.message}</p>
               )}
-            </div>
-
-            <div className="flex justify-end gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setDialogOpen(false)}
-              >
-                {tc('cancel')}
-              </Button>
-              <Button
-                type="submit"
-                disabled={saving || (projectedRemaining !== null && projectedRemaining < 0)}
-              >
-                {saving && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
-                {t('request')}
-              </Button>
-            </div>
+            </WdField>
           </form>
         )
 
-        return isMobile ? (
-          <Sheet open={dialogOpen} onOpenChange={setDialogOpen}>
-            <SheetContent side="bottom" className="h-[85vh] overflow-y-auto rounded-t-2xl">
-              <SheetHeader>
-                <SheetTitle>{t('request')}</SheetTitle>
-                <SheetDescription>{t('requestDescription')}</SheetDescription>
-              </SheetHeader>
-              {formContent}
-            </SheetContent>
-          </Sheet>
-        ) : (
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogContent className="sm:max-w-[520px]">
-              <DialogHeader>
-                <DialogTitle>{t('request')}</DialogTitle>
-                <DialogDescription>{t('requestDescription')}</DialogDescription>
-              </DialogHeader>
-              {formContent}
-            </DialogContent>
-          </Dialog>
+        return (
+          <WdDrawer
+            open={dialogOpen}
+            onClose={() => setDialogOpen(false)}
+            title={t('request')}
+            secondary={{ label: tc('cancel'), onClick: () => setDialogOpen(false) }}
+            primary={{
+              label: t('request'),
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onClick: () => { void handleSubmit(onSubmit as any)() },
+              disabled: saving || (projectedRemaining !== null && projectedRemaining < 0),
+              icon: saving ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined,
+            }}
+          >
+            {formContent}
+          </WdDrawer>
         )
       })()}
     </div>
