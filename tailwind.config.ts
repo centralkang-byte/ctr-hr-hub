@@ -60,6 +60,17 @@ const config: Config = {
 					'5': 'hsl(var(--chart-5))',
 					'6': 'hsl(var(--chart-6))',
 				},
+				// Workday worklet palette (wt) — 도메인색 SSOT (P2a, 라이트만)
+				wt: {
+					'1': 'hsl(var(--wt-1))',
+					'2': 'hsl(var(--wt-2))',
+					'3': 'hsl(var(--wt-3))',
+					'4': 'hsl(var(--wt-4))',
+					'5': 'hsl(var(--wt-5))',
+					'6': 'hsl(var(--wt-6))',
+					'7': 'hsl(var(--wt-7))',
+					'8': 'hsl(var(--wt-8))',
+				},
 
 				// V3 Dashboard 확장 토큰 (CSS variable 기반)
 				tertiary: {
