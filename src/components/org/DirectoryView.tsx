@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { ChevronDown, ChevronRight, Search, Eye } from 'lucide-react'
+import { ChevronDown, ChevronRight, Search, Eye, Mail, Calendar } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { TABLE_STYLES } from '@/lib/styles'
 import { toast } from '@/hooks/use-toast'
@@ -319,13 +319,16 @@ export function DirectoryView({ tree, selectedCompanyId }: DirectoryViewProps) {
                           employee={{ name: emp.name, nameEn: emp.nameEn }}
                           avatarColor={AVATAR_PALETTE[i % AVATAR_PALETTE.length]}
                           meta={[
-                            { k: t('department'), v: emp.department?.name ?? '-' },
-                            { k: t('positionTitle'), v: emp.title?.name ?? '-' },
-                            { k: t('grade'), v: emp.jobGrade?.name ?? '-' },
-                            { k: t('email'), v: emp.email },
-                          ]}
+                            emp.department?.name && { k: t('department'), v: emp.department.name },
+                            emp.title?.name && { k: t('positionTitle'), v: emp.title.name },
+                            emp.jobGrade?.name && { k: t('grade'), v: emp.jobGrade.name },
+                            emp.email && { k: t('email'), v: emp.email },
+                          ].filter((r): r is { k: string; v: string } => Boolean(r))}
+                          // Message/1:1 aria-label 임시 영문 — i18n 키 채움은 P1-6c (messages 무수정 약속)
                           actions={[
-                            { label: tCommon('detail'), icon: Eye, onClick: () => {} },
+                            { ariaLabel: tCommon('detail'), icon: Eye, onClick: () => {} },
+                            { ariaLabel: 'Message', icon: Mail, onClick: () => {} },
+                            { ariaLabel: '1:1', icon: Calendar, onClick: () => {} },
                           ]}
                         >
                           <span className="text-[11px] font-semibold text-foreground">{emp.name}</span>

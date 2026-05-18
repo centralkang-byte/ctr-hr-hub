@@ -33,7 +33,10 @@ interface MiniCardMetaRow {
 }
 
 interface MiniCardAction {
-  label: string
+  /** 라벨 텍스트. 생략 시 icon-only(접근성은 ariaLabel) */
+  label?: string
+  /** icon-only일 때 접근성 라벨 (필수 권장) */
+  ariaLabel?: string
   icon?: LucideIcon
   onClick: () => void
 }
@@ -120,10 +123,12 @@ export function EmployeeMiniCard({
                   key={i}
                   type="button"
                   onClick={a.onClick}
+                  aria-label={a.ariaLabel ?? a.label}
+                  title={a.ariaLabel ?? a.label}
                   className="inline-flex flex-1 items-center justify-center gap-1 rounded-md border border-border bg-card px-2 py-1.5 text-[11px] font-medium text-foreground transition-colors hover:bg-muted"
                 >
-                  {Icon && <Icon size={11} />}
-                  {a.label}
+                  {Icon && <Icon size={12} />}
+                  {a.label && <span>{a.label}</span>}
                 </button>
               )
             })}
