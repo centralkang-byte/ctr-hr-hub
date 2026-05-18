@@ -48,6 +48,14 @@ Phase 1에서 색상·radius·shadow **토큰**을 Workday Navy로 교체해 sha
 - `.dark` 팔레트 자체(`--primary` indigo 등) 적정성 재검토
 - 검증 기준: 라이트·다크 양모드 전 surface WCAG AA, 회귀 0
 
+**known-deferred 누적 (다크 Phase 이월 — Phase 2 발견 인스턴스)**:
+- P1-5 WdDrawer: 다크 `bg-primary` primary 버튼 lavender(레거시 ctr
+  `--primary`), secondary 저대비. (gstack 다크 스모크 확인)
+- P1-6b EmployeeInspector: "View Full Profile" CTA 다크 lavender
+  rgba(130,141,248) — 동일 근인(`.dark --primary` 미마이그레이션).
+- 공통 근인 = 위 "`.dark` 팔레트 자체(`--primary` indigo 등) 재검토"
+  bullet. 컴포넌트는 토큰을 올바르게 소비 — 회귀 아님.
+
 ### P1 — 시그니처 컴포넌트 (shadcn 위 구현)
 
 `_design-reference/`의 패턴을 shadcn 컴포넌트로 이식. 신규는 `src/components/shared/`
@@ -101,11 +109,13 @@ activity=EmptyState)만, slide chrome은 기존 DetailPanel 재사용.
 
 ### 후속 트랙 (P1-6 파생)
 
-- **P1-6c — MiniCard/Inspector 액션 i18n 라벨 채움**: P1-6a-hotfix에서
-  EmployeeMiniCard 액션 Message/1:1 aria-label이 임시 영문(messages 키
-  무수정 약속). P1-6b Inspector quick-actions도 동일 패턴 예상. messages
-  신규 키 5locale 추가 + caller label prop 노출로 일괄 i18n 정합.
-  (Codex P3 추적, 코드 주석 `// ... P1-6c` 명시됨.)
+- **P1-6c — MiniCard/Inspector i18n 라벨 채움**: 임시 영문 → messages
+  신규 키 5locale 추가 + caller prop 노출로 일괄 정합. 범위 3건:
+  (가) MiniCard 액션 Message/1:1 aria-label (P1-6a-hotfix);
+  (나) Inspector quick-actions Message/Document/1:1 aria-label (P1-6b);
+  (다) Inspector 섹션 라벨 BASIC INFO/QUICK STATS/Recent Activity (P1-6b).
+  (Codex P3 추적, 코드 주석 `// ... P1-6c` 명시됨. "전체 보기" CTA는
+  기존 키 `listViewFullProfile` 사용 — i18n 정상, 본 트랙 범위 밖.)
 
 ### 범위 밖 / 보류
 
