@@ -101,6 +101,20 @@ tailwind에 매핑. 그 위에서 소비처를 토큰 참조로 전환:
 - WCAG AA 유지(D17): bg/text 분리 토큰 깨지지 않게 검증
 → 인사이트 페이지 실사용 색은 Phase 3에서 재평가.
 
+**3단계 분리 (2026-05-18 — 블라스트 리스크 대응)**: chart.ts/chart-colors.ts
+가 각각 10+ 페이지 소비 = 초고블라스트 → 5파일 일괄 폐기, 단계 분리:
+1. **P2a-status** (저블라스트): `status.ts` info/accent 2토큰 → wt.
+   카나리 1곳 검증 후 확산. (제안 매핑 accent→wt-4 / info→wt-7,
+   F2 시각 구분성 검증 후 확정.)
+2. **P2a-avatar** (/org 격리): `AVATAR_PALETTE`(DirectoryView+DeptFlowNode
+   중복 + MiniCard/Inspector 영향) → wt 단일 소스.
+3. **P2b-chart 서브트랙** (고블라스트): chart.ts + chart-colors.ts 중복
+   제거·통합·wt 매핑. 자체 카나리 1페이지 후 확산.
+각 단계 보고+승인 게이트. 다크 wt 미정의(레퍼런스) → **라이트만 통합,
+다크 known-deferred 합류**. `--primary` lavender 3건은 P2 무관(P4).
+표준: `CLAUDE.md` "P2 토큰통합 트랙 변형"(N1 색매핑표 / N2 3축 시각회귀 /
+변환 수동금지·swatch 사전보고). 상세 = `~/.claude/plans/p1-4-ancient-floyd.md`.
+
 ### P1-6b 아키텍처 결정 (α 채택, 2026-05-18)
 
 레퍼런스 `inspector.jsx`가 Radix Sheet가 아닌 **커스텀 backdrop+slide**이고,
