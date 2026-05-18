@@ -104,7 +104,10 @@ Phase 2 작업 중 발견한 다크 인스턴스 누적 보드 (별도 다크 Ph
 먼저 `src/app/globals.css`에 `--wt-1`~`--wt-8`(+필요시 `--chart-3..6` 정합)을
 Workday wt(oklch, `_design-reference/styles.css` L579-586) → HSL 변환해 추가하고,
 tailwind에 매핑. 그 위에서 소비처를 토큰 참조로 전환:
-- `src/lib/styles/chart.ts` — `colors`(6색) → wt-1~wt-6 매핑
+- `src/lib/styles/chart.ts` — `colors` 카테고리 idx → wt 매핑
+  (**보정 2026-05-18, Codex Gate2 P2**: idx 2/3/4 는 다수 소비처가
+  success/warning/danger 의미색으로 위치 고정 → 시맨틱 hex 보존,
+  순수 카테고리 idx(0/1/5/6~9)만 wt. 상세 = `docs/phase-2-closeout.md` §4.1)
 - `src/components/analytics/chart-colors.ts` — primary/secondary 배열 동일 정렬
 - `src/lib/styles/status.ts` — `info`/`accent` → Workday accent 토큰
 - `src/components/org/DirectoryView.tsx`·`DeptFlowNode.tsx` — wt 팔레트 유사색
@@ -122,6 +125,9 @@ tailwind에 매핑. 그 위에서 소비처를 토큰 참조로 전환:
    중복 + MiniCard/Inspector 영향) → wt 단일 소스.
 3. **P2b-chart 서브트랙** (고블라스트): chart.ts + chart-colors.ts 중복
    제거·통합·wt 매핑. 자체 카나리 1페이지 후 확산.
+   **완료** `61882a22` — chart.ts SSOT + chart-colors.ts @deprecated shim
+   + dead dark 제거. 매핑은 위 보정 계약(idx 2/3/4 시맨틱 보존). Phase 2
+   종료 = `docs/phase-2-closeout.md`.
 각 단계 보고+승인 게이트. 다크 wt 미정의(레퍼런스) → **라이트만 통합,
 다크 known-deferred 합류**. `--primary` lavender 3건은 P2 무관(P4).
 표준: `CLAUDE.md` "P2 토큰통합 트랙 변형"(N1 색매핑표 / N2 3축 시각회귀 /
