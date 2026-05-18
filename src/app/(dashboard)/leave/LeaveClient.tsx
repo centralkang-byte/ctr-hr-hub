@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { WdDrawer, WdField, WdNote } from '@/components/shared/WdDrawer'
+import { WdLeaveBalanceCard } from '@/components/shared/WdLeaveBalanceCard'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
@@ -486,75 +487,8 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         }
       />
 
-      {/* ─── Section 1: Leave Balance Cards (카테고리 그룹핑) ─── */}
-      {!balances?.length && !loading && (
-        <p className="py-4 text-sm text-muted-foreground">{tc('noData')}</p>
-      )}
-      {balances?.length > 0 && (() => {
-        // 카테고리별 그룹핑
-        const CATEGORY_ORDER = ['annual', 'sick', 'maternity', 'paternity', 'bereavement', 'special', 'compensatory', 'other']
-        const CATEGORY_LABEL_KEYS: Record<string, string> = {
-          annual: 'category.annual', sick: 'category.health', maternity: 'category.maternity',
-          paternity: 'category.paternity', bereavement: 'category.familyEvent', special: 'category.special',
-          compensatory: 'category.compensatory', other: 'category.other',
-        }
-        const groups: Record<string, LeaveBalanceLocal[]> = {}
-        for (const b of balances) {
-          const cat = b.leaveTypeDef?.code ?? 'other'
-          if (!CATEGORY_LABEL_KEYS[cat]) {
-            if (!groups['other']) groups['other'] = []
-            groups['other'].push(b)
-          } else {
-            if (!groups[cat]) groups[cat] = []
-            groups[cat].push(b)
-          }
-        }
-        const orderedGroups = CATEGORY_ORDER.filter(c => groups[c]?.length)
-
-        return (
-          <div className="space-y-4">
-            {orderedGroups.map(cat => (
-              <div key={cat}>
-                <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
-                  {CATEGORY_LABEL_KEYS[cat] ? t(CATEGORY_LABEL_KEYS[cat]) : cat}
-                </p>
-                <div className="flex gap-4 overflow-x-auto pb-1">
-                  {groups[cat].map((b) => {
-                    const remaining = getRemainingDays(b)
-                    const total = b.entitled + b.carriedOver + b.adjusted
-                    const usagePct = total > 0 ? Math.round(((total - remaining) / total) * 100) : 0
-                    return (
-                      <div
-                        key={b.id}
-                        className="min-w-[200px] flex-shrink-0 bg-card border border-border rounded-xl p-5"
-                      >
-                        <p className="text-xs text-muted-foreground font-medium mb-2">
-                          {b.leaveTypeDef?.name ?? b.policy?.name ?? '-'}
-                        </p>
-                        <div className="flex items-end gap-1">
-                          <p className={`text-2xl font-bold tracking-[-0.02em] ${remaining > 0 ? 'text-primary' : 'text-muted-foreground'}`}>
-                            {remaining}
-                          </p>
-                          <p className="text-sm text-muted-foreground mb-0.5">/ {total} {t('fullDay')}</p>
-                        </div>
-                        <div className="mt-2 h-1.5 rounded-full bg-border overflow-hidden">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-[#5E81F4] to-[#00BFA5]"
-                            style={{ width: `${Math.min(usagePct, 100)}%` }}
-                          />
-                        </div>
-                        <p className="mt-1.5 text-xs text-muted-foreground">
-                          {t('usedDays')} {b.used}{t('fullDay')} / {t('pendingDays')} {b.pending}{t('fullDay')}
-                        </p>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        )
-      })()}
+      {/* ─── Section 1: Leave Balance Cards (PR-1 카나리 — WdGroupedStatCard SSOT) ─── */}
+      <WdLeaveBalanceCard balances={balances} loading={loading} />
 
       {/* ─── Section 3: Status filter + Request History ─── */}
       <div className="flex items-center gap-2">
