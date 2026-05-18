@@ -63,6 +63,14 @@ Phase 2 작업 중 발견한 다크 인스턴스 누적 보드 (별도 다크 Ph
   bullet. 컴포넌트는 토큰을 올바르게 소비 — 회귀 아님. 이후 발견분도
   본 보드에 누적.
 
+### 향후 검토 (SSOT 통합 후보)
+
+- **`--primary-dim` navy-ink 체계**: P2a-status에서 badge.tsx info가
+  `--primary-dim`(다크 폴백) 참조 유지. `--primary-dim`은 15+ 소비처
+  (Sidebar/button/KpiCard/OffCycle/MyProfile 그라디언트 등) = wt와 별도
+  navy-ink 체계. **Phase 4 폴리시 또는 다크 Phase 진입 시 wt SSOT 통합
+  검토 대상**. P2 범위 밖.
+
 ### P1 — 시그니처 컴포넌트 (shadcn 위 구현)
 
 `_design-reference/`의 패턴을 shadcn 컴포넌트로 이식. 신규는 `src/components/shared/`
