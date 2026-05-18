@@ -12,9 +12,9 @@ export const STATUS_BADGE_FG: Record<StatusCategory, string> = {
   success: '#15803d',
   warning: '#b45309',
   error: '#e11d48',
-  info: '#4f46e5',
+  info: 'hsl(var(--wt-7))',   // P2a-status: Workday steel-blue SSOT
   neutral: '#64748b',
-  accent: '#7c3aed',
+  accent: 'hsl(var(--wt-4))', // P2a-status: Workday purple SSOT
 } as const
 
 // ─── Chart / Inline FG & BG ────────────────────────────────
@@ -24,9 +24,9 @@ export const STATUS_FG: Record<StatusCategory, string> = {
   success: '#16a34a',
   warning: '#b45309',
   error: '#e11d48',
-  info: '#6366f1',
+  info: 'hsl(var(--wt-7))',   // P2a-status: Workday steel-blue SSOT
   neutral: '#64748b',
-  accent: '#7c3aed',
+  accent: 'hsl(var(--wt-4))', // P2a-status: Workday purple SSOT
 } as const
 
 /** 시맨틱 background 색상 (차트 fill, 배경색용) */
@@ -34,9 +34,9 @@ export const STATUS_BG: Record<StatusCategory, string> = {
   success: '#dcfce7',
   warning: '#fef3c7',
   error: '#fce7f3',
-  info: '#e0e7ff',
+  info: 'hsl(var(--wt-7) / 0.14)',   // P2a-status: steel-blue soft tint SSOT
   neutral: '#f1f5f9',
-  accent: '#ede9fe',
+  accent: 'hsl(var(--wt-4) / 0.14)', // P2a-status: purple soft tint SSOT
 } as const
 
 // ─── STATUS_MAP — status string → category ─────────────────

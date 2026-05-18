@@ -1,8 +1,32 @@
-// DESIGN.md Section 1 — Chart Palette (6색: Violet, Violet-light, Green, Amber, Red, Slate)
-// 10색 확장: Purple, Sky, Lime, Orange (법인 비교 등 6색 초과 시)
+// CTR HR Hub — 차트 카테고리색 SSOT (Phase 2 P2b-chart)
+// 카테고리 시리즈색을 Workday --wt 팔레트 단일 소스로 통합.
+// 슬롯 순서 = wt-avatar.ts WT_ORDER 교차순 (avatar/dept/chart 공용 SSOT).
+// 8 초과 시리즈는 wtSlotColor 가 교차순 순환 재사용 (법인비교 등 희소 케이스).
+// 라이트만 (다크 wt 미정의 = known-deferred, 별도 다크 Phase).
+// axis/grid/tooltip + RISK/HEATMAP 의미색은 비카테고리 → wt 미적용·보존.
+
+import { wtSlotColor } from './wt-avatar'
+
+// 시리즈 슬롯 계약: idx 2/3/4 는 다수 소비처(CompaRatioTab·Succession·
+// Attrition·predictive 등)가 success-green / warning-amber / danger-red
+// 의미색으로 위치 고정 사용 → wt 미적용·기존 시맨틱 hex 보존 (사용자 Q3
+// "의미색 유지" 원칙. Codex Gate2 P2 반영, 2026-05-18). 나머지 idx 는
+// 순수 카테고리라 wt 교차순 슬롯으로 통합.
+const SEMANTIC_SLOTS: Record<number, string> = {
+  2: '#16a34a', // success green (RISK_COLORS.low / STATUS success 정합)
+  3: '#f59e0b', // warning amber (RISK_COLORS.medium 정합)
+  4: '#e11d48', // danger red   (RISK_COLORS.critical / STATUS error 정합)
+}
+
+/** 시리즈 10색 — 카테고리 idx = wt 교차순, 의미 idx(2/3/4) = 시맨틱 hex 보존 */
+const CHART_SERIES = Array.from(
+  { length: 10 },
+  (_, i) => SEMANTIC_SLOTS[i] ?? wtSlotColor(i),
+)
 
 export const CHART_THEME = {
-  colors: ['#6366f1', '#a5b4fc', '#16a34a', '#f59e0b', '#e11d48', '#64748b'],
+  // 6 기본 시리즈 (idx 0~5). 6색 초과 시 CHART_COLORS_EXTENDED 이어 사용.
+  colors: CHART_SERIES.slice(0, 6),
   axis: {
     stroke: '#E2E8F0',
     tick: { fontSize: 12, fill: '#64748B' },
@@ -24,38 +48,29 @@ export const CHART_THEME = {
   responsive: { width: '100%', height: 320 },
 } as const
 
-// Dark mode variant — DESIGN.md: fg=400 level, bg=900 level, WCAG AA 4.5:1 대비
-export const CHART_THEME_DARK = {
-  colors: ['#818CF8', '#c7d2fe', '#4ade80', '#fbbf24', '#fb7185', '#94A3B8'],
-  axis: {
-    stroke: '#334155',
-    tick: { fontSize: 12, fill: '#94A3B8' },
-    label: { fontSize: 13, fill: '#CBD5E1', fontWeight: 500 },
-  },
-  grid: { stroke: '#1E293B', strokeDasharray: '3 3' },
-  tooltip: {
-    contentStyle: {
-      backgroundColor: '#1E293B',
-      border: '1px solid #334155',
-      borderRadius: '8px',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-      padding: '12px 16px',
-      fontSize: '13px',
-      color: '#E2E8F0',
-    },
-    labelStyle: { fontWeight: 600, marginBottom: '4px', color: '#F1F5F9' },
-  },
-  legend: { wrapperStyle: { paddingTop: '16px', fontSize: '13px', color: '#CBD5E1' } },
-  responsive: { width: '100%', height: 320 },
-} as const
-
 /** 10색 확장 팔레트 — 법인 비교 등 6색 초과 시 CHART_THEME.colors 뒤에 이어서 사용 */
-export const CHART_COLORS_EXTENDED = [
-  '#7c3aed', '#0ea5e9', '#84cc16', '#f97316',
-] as const
+export const CHART_COLORS_EXTENDED = CHART_SERIES.slice(6, 10)
+
+/**
+ * 차트 카테고리색 SSOT (이전 `components/analytics/chart-colors.ts` 통합).
+ * primary = 시리즈 idx 0, secondary = idx 1~9. grid/text/background/semantic
+ * 키는 비카테고리(축·배경·시맨틱)라 wt 미적용·기존값 보존.
+ */
+export const CHART_COLORS = {
+  primary: CHART_SERIES[0],
+  secondary: CHART_SERIES.slice(1, 10),
+  grid: '#F1F5F9',
+  text: '#64748b',
+  background: '#F8FAFC',
+  danger: '#e11d48',
+  warning: '#f59e0b',
+  success: '#16a34a',
+  neutral: '#64748b',
+}
 
 /** Risk-level semantic colors — attrition, predictive, succession 차트용
- *  Severity 순: low(green) → medium(amber) → high(orange) → critical(red) */
+ *  Severity 순: low(green) → medium(amber) → high(orange) → critical(red)
+ *  의미색(심각도 인코딩) → wt 미적용·보존 (P2b 결정, 2026-05-18). */
 export const RISK_COLORS = {
   low: '#16a34a',
   medium: '#f59e0b',
@@ -63,7 +78,8 @@ export const RISK_COLORS = {
   critical: '#e11d48',
 } as const
 
-/** Heatmap 시맨틱 스펙트럼: Green(낮음/좋음) → Amber(중간) → Red(높음/나쁨) */
+/** Heatmap 시맨틱 스펙트럼: Green(낮음/좋음) → Amber(중간) → Red(높음/나쁨)
+ *  의미색(심각도 인코딩) → wt 미적용·보존 (P2b 결정, 2026-05-18). */
 export const HEATMAP_COLORS = {
   scale: [
     'rgba(22,163,74,0.1)', 'rgba(22,163,74,0.2)', 'rgba(22,163,74,0.3)',

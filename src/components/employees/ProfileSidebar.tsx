@@ -112,7 +112,7 @@ export function ProfileSidebar({
         {photoUrl ? (
           <Image src={photoUrl} alt={name} width={40} height={40} unoptimized className="w-10 h-10 rounded-full object-cover" />
         ) : (
-          <div className="w-10 h-10 rounded-full bg-ctr-primary-light flex items-center justify-center text-sm font-semibold text-ctr-primary">
+          <div className="w-10 h-10 rounded-full bg-ctr-primary-light flex items-center justify-center text-sm font-semibold text-[#003953]">
             {getInitials(name)}
           </div>
         )}
@@ -141,7 +141,7 @@ export function ProfileSidebar({
               className="w-[72px] h-[72px] rounded-full object-cover"
             />
           ) : (
-            <div className="w-[72px] h-[72px] rounded-full bg-ctr-primary-light flex items-center justify-center text-xl font-semibold text-ctr-primary">
+            <div className="w-[72px] h-[72px] rounded-full bg-ctr-primary-light flex items-center justify-center text-xl font-semibold text-[#003953]">
               {getInitials(name)}
             </div>
           )}

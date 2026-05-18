@@ -65,6 +65,19 @@
     --chart-4: 215 16% 47%;                 /* #64748b slate */
     --chart-5: 347 77% 50%;                /* #e11d48 destructive */
     --chart-6: 180 1.7% 35.9%;             /* #5a5c5c on-surface-variant */
+
+    /* Workday worklet palette (wt) — 도메인색 SSOT. 출처:
+       _design-reference/styles.css L579-586 oklch → canvas readback HSL.
+       라이트만 (다크 wt 미정의 = known-deferred, 별도 다크 Phase). */
+    --wt-1: 196 100% 20%;                  /* #004964 navy   oklch(38% .08 230) */
+    --wt-2: 171 100% 24%;                  /* #007866 teal   oklch(50% .12 180) */
+    --wt-3: 12 56% 49%;                    /* #c25237 terracotta oklch(58% .15 35) */
+    --wt-4: 254 57% 58%;                   /* #7457d1 purple oklch(55% .18 290) */
+    --wt-5: 126 49% 35%;                   /* #2d8336 forest oklch(54% .14 145) */
+    --wt-6: 40 100% 38%;                   /* #c08000 gold   oklch(65% .14 75) */
+    --wt-7: 209 54% 38%;                   /* #2c6194 steel  oklch(48% .10 250) */
+    --wt-8: 353 39% 51%;                   /* #b3505b coral  oklch(56% .13 15) */
+
     --radius: 0.5rem;
   }
   /* Violet Palette — Dark Mode */
