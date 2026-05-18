@@ -33,6 +33,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { WdStatStrip } from '@/components/shared/WdStatStrip'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
@@ -294,69 +295,41 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
       )}
 
       {/* ═══ KPI Cards ═══ */}
-      {hasData && <><div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        {/* Usage Rate */}
-        <Card className="border-l-4 border-l-[#5E81F4] bg-card">
-          <CardContent className="pt-5 pb-4 px-5">
-            <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="h-4 w-4 text-primary" />
-              <p className="text-xs text-muted-foreground font-medium">{t('admin.usageRate')}</p>
-            </div>
-            <p className="text-3xl font-bold text-foreground tracking-tight">{kpi.usageRate}%</p>
-            <p className="text-[10px] text-muted-foreground mt-1">
-              {kpi.totalUsed.toFixed(1)} / {t('admin.daysSuffix', { days: kpi.totalGranted.toFixed(1) })}
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Avg Remaining */}
-        <Card className="border-l-4 border-l-[#10B981] bg-card">
-          <CardContent className="pt-5 pb-4 px-5">
-            <div className="flex items-center gap-2 mb-2">
-              <CalendarDays className="h-4 w-4 text-emerald-500" />
-              <p className="text-xs text-muted-foreground font-medium">{t('admin.avgRemaining')}</p>
-            </div>
-            <p className="text-3xl font-bold text-foreground tracking-tight">{t('admin.daysSuffix', { days: kpi.avgRemainingDays })}</p>
-            <p className="text-[10px] text-muted-foreground mt-1">
-              {t('admin.employeeBasis', { count: kpi.employeeCount })}
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Negative Balance */}
-        <Card className={`border-l-4 bg-card ${kpi.negativeCount > 0 ? 'border-l-[#EF4444]' : 'border-l-[#E8E8E8]'}`}>
-          <CardContent className="pt-5 pb-4 px-5">
-            <div className="flex items-center gap-2 mb-2">
-              <AlertTriangle className={`h-4 w-4 ${kpi.negativeCount > 0 ? 'text-red-500' : 'text-muted-foreground'}`} />
-              <p className="text-xs text-muted-foreground font-medium">{t('admin.negativeStatus')}</p>
-            </div>
-            <p className={`text-3xl font-bold tracking-tight ${kpi.negativeCount > 0 ? 'text-red-500' : 'text-foreground'}`}>
-              {t('admin.personSuffix', { count: kpi.negativeCount })}
-            </p>
-            {kpi.negativeCount > 0 && (
-              <p className="text-[10px] text-red-500 font-medium mt-1">
-                {t('admin.excessUsage', { days: Math.abs(kpi.negativeTotalDays) })}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Pending */}
-        <Card className={`border-l-4 bg-card ${kpi.pendingCount > 0 ? 'border-l-[#F59E0B]' : 'border-l-[#E8E8E8]'}`}>
-          <CardContent className="pt-5 pb-4 px-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Clock className={`h-4 w-4 ${kpi.pendingCount > 0 ? 'text-amber-500' : 'text-muted-foreground'}`} />
-              <p className="text-xs text-muted-foreground font-medium">{t('admin.pendingApproval')}</p>
-            </div>
-            <p className={`text-3xl font-bold tracking-tight ${kpi.pendingCount > 0 ? 'text-amber-500' : 'text-foreground'}`}>
-              {t('admin.caseSuffix', { count: kpi.pendingCount })}
-            </p>
-            {kpi.pendingCount > 0 && (
-              <p className="text-[10px] text-orange-800 font-medium mt-1">{t('admin.actionRequired')}</p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      {hasData && <><WdStatStrip
+        items={[
+          {
+            icon: TrendingUp,
+            label: t('admin.usageRate'),
+            value: kpi.usageRate,
+            unit: '%',
+            tone: 'info',
+            foot: `${kpi.totalUsed.toFixed(1)} / ${t('admin.daysSuffix', { days: kpi.totalGranted.toFixed(1) })}`,
+          },
+          {
+            icon: CalendarDays,
+            label: t('admin.avgRemaining'),
+            value: t('admin.daysSuffix', { days: kpi.avgRemainingDays }),
+            tone: 'success',
+            foot: t('admin.employeeBasis', { count: kpi.employeeCount }),
+          },
+          {
+            icon: AlertTriangle,
+            label: t('admin.negativeStatus'),
+            value: t('admin.personSuffix', { count: kpi.negativeCount }),
+            tone: kpi.negativeCount > 0 ? 'danger' : 'default',
+            foot: kpi.negativeCount > 0
+              ? t('admin.excessUsage', { days: Math.abs(kpi.negativeTotalDays) })
+              : undefined,
+          },
+          {
+            icon: Clock,
+            label: t('admin.pendingApproval'),
+            value: t('admin.caseSuffix', { count: kpi.pendingCount }),
+            tone: kpi.pendingCount > 0 ? 'warning' : 'default',
+            foot: kpi.pendingCount > 0 ? t('admin.actionRequired') : undefined,
+          },
+        ]}
+      />
 
       {/* ═══ Charts Row 1: Department + Distribution ═══ */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
