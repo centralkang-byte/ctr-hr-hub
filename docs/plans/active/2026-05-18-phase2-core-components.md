@@ -86,6 +86,14 @@ tailwind에 매핑. 그 위에서 소비처를 토큰 참조로 전환:
 - WCAG AA 유지(D17): bg/text 분리 토큰 깨지지 않게 검증
 → 인사이트 페이지 실사용 색은 Phase 3에서 재평가.
 
+### 후속 트랙 (P1-6 파생)
+
+- **P1-6c — MiniCard/Inspector 액션 i18n 라벨 채움**: P1-6a-hotfix에서
+  EmployeeMiniCard 액션 Message/1:1 aria-label이 임시 영문(messages 키
+  무수정 약속). P1-6b Inspector quick-actions도 동일 패턴 예상. messages
+  신규 키 5locale 추가 + caller label prop 노출로 일괄 i18n 정합.
+  (Codex P3 추적, 코드 주석 `// ... P1-6c` 명시됨.)
+
 ### 범위 밖 / 보류
 
 - `src/components/layout/Sidebar.tsx:403` violet glow `rgba(99,102,241,0.25)` —
