@@ -107,6 +107,14 @@ activity=EmptyState)만, slide chrome은 기존 DetailPanel 재사용.
 `shared/DetailPanel` 소비처 = EmployeeListClient 단 1곳(폭 조정 회귀
 위험 0), 호출부에서 `w-[min(480px,92vw)]` 주입(레퍼런스 정합).
 
+### 후속 트랙 (P1-7 파생)
+
+- **EmployeesPage 다중선택 UI 신규 (별도 트랙)**: P1-7 카나리는
+  ApprovalInbox(다중선택 기완비)로 결정. EmployeesPage/DataTable은 행
+  다중선택 state·체크박스 부재 → 신규 구축 시 공유 `DataTable` API 변경
+  (다수 페이지 사용, 광범위 회귀) = 시그니처 범위 초과. 별도 트랙으로
+  분리(DataTable rowSelection 도입 + 회귀 audit 동반). P1-7과 무관 진행.
+
 ### 후속 트랙 (P1-6 파생)
 
 - **P1-6c — MiniCard/Inspector i18n 라벨 채움**: 임시 영문 → messages
