@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/select'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { WdStatusChips } from '@/components/shared/WdStatusChips'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { DetailPanel } from '@/components/shared/DetailPanel'
 import { EmployeeFilterPanel, type FilterValues } from '@/components/employees/EmployeeFilterPanel'
@@ -509,6 +510,40 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
           ) : undefined
         }
       />
+
+      {!loading && pagination ? (() => {
+        // 쿼리에 실제 반영되는 effective 필터(빠른+고급 패널) 기준으로 칩 도출
+        const otherFilterActive =
+          !!departmentId ||
+          !!employmentType ||
+          Object.values(filters).some((v) => v != null && v !== '')
+        const anyFilter = !!status || !!debouncedSearch || otherFilterActive
+        const statusTone = (status === 'ACTIVE'
+          ? 'success'
+          : status === 'ON_LEAVE'
+            ? 'warn'
+            : status === 'RESIGNED' || status === 'TERMINATED'
+              ? 'danger'
+              : 'default') as 'success' | 'warn' | 'danger' | 'default'
+        return (
+          <WdStatusChips
+            aria-label={t('listDescription')}
+            items={[
+              { label: tc('total'), value: pagination.total, tone: 'accent' },
+              ...(status
+                ? [{ label: STATUS_LABELS[status] ?? status, tone: statusTone }]
+                : []),
+              ...(debouncedSearch
+                ? [{ label: debouncedSearch, tone: 'default' as const }]
+                : []),
+              ...(otherFilterActive
+                ? [{ label: tc('filter'), tone: 'default' as const }]
+                : []),
+              ...(!anyFilter ? [{ label: tc('filter'), muted: true }] : []),
+            ]}
+          />
+        )
+      })() : null}
 
       {/* ─── Advanced Filter Panel ─── */}
       <EmployeeFilterPanel
