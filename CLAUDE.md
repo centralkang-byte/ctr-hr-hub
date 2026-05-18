@@ -201,3 +201,34 @@ Bundles: commit → STATUS.md update → Vercel deploy. See `/wrap-up` for detai
 - Phase 1 끝나기 전엔 `src/components/ui/*` (shadcn 베이스) 수정 금지 — 토큰만 바뀌면 자동 적용됨
 - `messages/*.json` 키 그대로 — 친근 톤 변환은 한국어 (`ko.json` 등) 만, 다른 언어는 그대로
 - 각 Phase 끝나면 Playwright visual test 스냅샷 업데이트 + 검토 필수
+
+## 카나리 작업 표준 (P1-7부터 모든 카나리에 적용)
+
+### N1 — 기능 충실도 3분법
+
+카나리 컴포넌트가 노출하는 액션마다 사전 audit 후 분류:
+
+| 분류 | 조건 | 처리 |
+|---|---|---|
+| (가) 완전 존재 | 7레이어 모두 작동 | 연결만. 신규 구현 0 |
+| (나) 부분 존재 | 일부 레이어만 존재 | 누락 레이어만 구현 + 연결 |
+| (다) 미존재 | 어느 레이어도 없음 | 전체 구현 (권한·API·DB·상태·UX 끝까지) |
+
+"존재" = end-to-end 7레이어: ① Prisma mutation ② API endpoint(route+validation+RLS)
+③ 권한 가드(롤별) ④ FE mutation ⑤ UI 트리거 ⑥ 사용자 피드백(toast/loading/error)
+⑦ 상태 갱신(선택 해제·refetch). 1개라도 누락 → (나). **mock·stub·"준비 중
+disabled" 금지** (P1-6b quick-actions disabled는 시그니처 외 액션 한정 예외).
+누락분 구현이 시그니처 범위를 크게 초과하면 사전 보고 후 사용자 판단
+(A: P1-7 내 구현 / B: 해당 액션 제외 + 별도 트랙 + 카나리 비노출).
+
+### N2 — E2E 테스트 의무
+
+카나리 액션마다 Playwright E2E 작성: 다중선택→바 노출→액션→실결과 검증
+(DB/UI/toast) + 롤별(가능 롤 / 비가시 롤). 위치 `e2e/flows/*.spec.ts`
+(`npm run test:e2e`). **gstack 라이브(시각) ≠ E2E(자동화) — 둘 다 PASS해야 완료.**
+
+### 검증 게이트 (강화)
+
+tsc 0 · lint clean · Codex Gate 2 HIGH 0 · **E2E PASS(롤별)** · gstack 3구간
+(라이트 풀 + 다크 스모크 + ctr-* known-deferred) → 커밋·푸시 → 보고 → 승인.
+D3 사전 audit = 액션 × 7레이어 매트릭스 표로 보고.

@@ -48,13 +48,17 @@ Phase 1에서 색상·radius·shadow **토큰**을 Workday Navy로 교체해 sha
 - `.dark` 팔레트 자체(`--primary` indigo 등) 적정성 재검토
 - 검증 기준: 라이트·다크 양모드 전 surface WCAG AA, 회귀 0
 
-**known-deferred 누적 (다크 Phase 이월 — Phase 2 발견 인스턴스)**:
-- P1-5 WdDrawer: 다크 `bg-primary` primary 버튼 lavender(레거시 ctr
+### known-deferred (다크 Phase 이월)
+
+Phase 2 작업 중 발견한 다크 인스턴스 누적 보드 (별도 다크 Phase에서 일괄 해소):
+
+- **P1-5 WdDrawer**: 다크 `bg-primary` primary 버튼 lavender(레거시 ctr
   `--primary`), secondary 저대비. (gstack 다크 스모크 확인)
-- P1-6b EmployeeInspector: "View Full Profile" CTA 다크 lavender
+- **P1-6b EmployeeInspector**: "View Full Profile" CTA 다크 lavender
   rgba(130,141,248) — 동일 근인(`.dark --primary` 미마이그레이션).
 - 공통 근인 = 위 "`.dark` 팔레트 자체(`--primary` indigo 등) 재검토"
-  bullet. 컴포넌트는 토큰을 올바르게 소비 — 회귀 아님.
+  bullet. 컴포넌트는 토큰을 올바르게 소비 — 회귀 아님. 이후 P1-7+
+  발견분도 본 보드에 누적.
 
 ### P1 — 시그니처 컴포넌트 (shadcn 위 구현)
 
