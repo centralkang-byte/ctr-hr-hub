@@ -64,6 +64,13 @@
 CC 제안: **(B)** — Q2(/my/leave 정본화)와 묶으면 중복 자연 해소, 범용화(C)는
 타 페이지 audit 전 과설계. 단 최종은 사용자 Q6.
 
+> **🔄 Stage 3 백포팅 (#02 근태 게이트 결정 반영)**: 근태 AT-005 월간 통계가
+> "그룹 라벨 + N지표 카드" **2번째 수요**로 확인됨 → (C) 일반화 **승격 확정**.
+> 최종 구조 = **(B-rewrite)**: `WdGroupedStatCard`(범용 베이스 — 그룹 라벨 +
+> N개 지표/진행바 슬롯) + `WdLeaveBalanceCard`(그 위 **얇은 래퍼**, 휴가 잔여
+> 의미색·잔여율 도메인 로직 주입). 근태 AT-005도 동일 베이스의 별도 얇은 래퍼.
+> 과설계 우려 = 2-shot 실수요(휴가+근태)로 해소. 상세 = §7 Q6.
+
 ## 4. N1/N2 표준 적용 계획
 
 **N1 7레이어 audit (`/leave` LeaveClient 기준)**
@@ -141,7 +148,7 @@ HR_ADMIN은 `/leave/admin`·`/leave/team` 별 라우트=본 batch 외) 가시성
 | Q3 | **별도 트랙** | LV-007 이력 다운로드 = 본 batch 제외. 휴가 batch 종료 후 LV-007 단독 카드 |
 | Q4 | **batch 포함** | LV-002 = `chart.ts` SSOT **첫 소비처**, P2b 자산 즉시 검증 |
 | Q5 | **동시 교정 OK** | LV-005 raw statusBadgeClass→StatusBadge · L542 그라데이션→토큰 · L313 무음 catch→toast |
-| Q6 | **(B) `WdLeaveBalanceCard`** | 도메인 특화 신규 SSOT. `/leave` + 홈/허브 인라인(Q2) 공용. 2번째 use case 발견 시 (C)일반화 승격 |
+| Q6 | **(B-rewrite) `WdGroupedStatCard` 베이스 + `WdLeaveBalanceCard` 래퍼** | Stage 3 백포팅(#02 근태 AT-005=2번째 수요로 (C)일반화 **승격 확정**). 범용 베이스=그룹 라벨+N지표/진행바 슬롯. 휴가 래퍼=잔여 의미색·잔여율(Q7) 주입, `/leave`+홈/허브 인라인(Q2) 공용. 근태 AT-005=동일 베이스 별도 래퍼 |
 | Q7 | **(c) 잔여율 의미색** | 기본 임계값 ≥30% `--success` / 10–30% `--accent` / <10% `--warning`. 임계값은 Stage 4 PR 코멘트 미세조정 토픽 |
 
 **M. 모바일 reflow (프로토타입 결함 복제 금지)**:
