@@ -56,9 +56,12 @@ Phase 2 작업 중 발견한 다크 인스턴스 누적 보드 (별도 다크 Ph
   `--primary`), secondary 저대비. (gstack 다크 스모크 확인)
 - **P1-6b EmployeeInspector**: "View Full Profile" CTA 다크 lavender
   rgba(130,141,248) — 동일 근인(`.dark --primary` 미마이그레이션).
+- **P1-7 BulkActionBar**: "일괄 승인" primary 버튼 다크 lavender
+  rgb(130,141,248) — 동일 근인. (바 자체는 bg-foreground 인버스 pill로
+  다크 고대비 정상, dot=wd-orange 정상.)
 - 공통 근인 = 위 "`.dark` 팔레트 자체(`--primary` indigo 등) 재검토"
-  bullet. 컴포넌트는 토큰을 올바르게 소비 — 회귀 아님. 이후 P1-7+
-  발견분도 본 보드에 누적.
+  bullet. 컴포넌트는 토큰을 올바르게 소비 — 회귀 아님. 이후 발견분도
+  본 보드에 누적.
 
 ### P1 — 시그니처 컴포넌트 (shadcn 위 구현)
 
