@@ -160,6 +160,16 @@ HR_ADMIN은 `/leave/admin`·`/leave/team` 별 라우트=본 batch 외) 가시성
 `.claude/worktrees/phase3a` 워크트리에 이미 체크아웃됨(git 잠금) → 현 워크트리
 checkout 불가. 안전 경로 = phase3a 워크트리에서 커밋(파괴 0). 절차 보고 후 진행.
 
+### N+1. LV-002 insight 슬롯 미배선 (i18n-heavy 이연)
+
+- 프로토 (`page-my-space.jsx` L268~) = bg-sunk 패널 + `<b>인사이트</b>` ·
+  평균 X일/월 사용 + 액션 권장 텍스트
+- PR-2 카나리는 `insight={null}` 전달, 슬롯 자체는 `WdUsageBarChart` 에 존재
+  (dev fixture `fx-lv002` 에서 시연)
+- 사유: 인사이트 텍스트 i18n-heavy (신규 키 ↑), F1 "신규 키 최소" 원칙 충돌
+- 해소 트랙: WS-E i18n 또는 LV-007 이력 다운로드 batch
+- 가디언 판정: F5 조건부 이연 (m0008). 결정 SHA: 본 커밋
+
 ### 저확실 항목 (Stage 4 가디언 우선검토 — 결정 후 잔존 리스크)
 
 - **LV-002** (월별 패턴+인사이트) — batch 포함 확정이나 chart.ts SSOT **첫 소비처** =
