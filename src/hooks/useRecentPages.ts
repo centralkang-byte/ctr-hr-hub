@@ -65,7 +65,6 @@ const PATH_TITLES: Record<string, string> = {
     '/settings': '설정',
     '/notifications': '알림',
     '/my/profile': '내 프로필',
-    '/my/leave': '내 휴가',
     '/my/payroll': '내 급여',
     '/my/onboarding': '내 온보딩',
     '/my/offboarding': '내 퇴직 처리',

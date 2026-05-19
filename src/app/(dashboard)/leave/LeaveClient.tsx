@@ -21,6 +21,8 @@ import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
+import { ToastAction } from '@/components/ui/toast'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
@@ -86,14 +88,9 @@ interface LeavePolicyLocal {
   leaveType: string
 }
 
-// ─── Status badge styles ────────────────────────────────────
-
-const statusBadgeClass: Record<string, string> = {
-  PENDING: 'bg-orange-500/10 text-orange-500',
-  APPROVED: 'bg-primary/10 text-tertiary',
-  REJECTED: 'bg-destructive/5 text-red-500',
-  CANCELLED: 'bg-muted text-muted-foreground',
-}
+// ─── Constants ──────────────────────────────────────────────
+// WS-D(LV-005): raw statusBadgeClass 제거 → StatusBadge SSOT(status.ts
+// STATUS_MAP: PENDING→warning/APPROVED→success/REJECTED→error/CANCELLED→neutral).
 
 const SINGLE_DAY_PRESETS = new Set(['AM', 'PM', 'QUARTER'])
 
@@ -314,12 +311,24 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       const res = await apiClient.getList<LeaveRequestLocal>('/api/v1/leave/requests', params)
       setRequests(res.data)
       setPagination(res.pagination)
-    } catch {
+    } catch (err) {
+      // WS-D: 무음 catch 제거 → toast(에러 사유) + 재시도 CTA. 빈 상태 노출(stale 방지)
       setRequests([])
       setPagination(undefined)
+      toast({
+        title: tc('loadFailed'),
+        description: err instanceof Error ? err.message : t('submit.error'),
+        variant: 'destructive',
+        action: (
+          <ToastAction altText={tc('retry')} onClick={() => { void fetchRequests() }}>
+            {tc('retry')}
+          </ToastAction>
+        ),
+      })
     } finally {
       setLoading(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, statusFilter])
 
   // ─── Fetch monthly usage (LV-002 — 전용 fetch, 페이지네이션 history 와 분리) ───
@@ -437,6 +446,13 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       await apiClient.put(`/api/v1/leave/requests/${id}/cancel`)
       void fetchBalances()
       void fetchRequests()
+    } catch (err) {
+      // WS-D: 취소 실패 무음 제거 → toast(에러 사유)
+      toast({
+        title: tc('error'),
+        description: err instanceof Error ? err.message : t('submit.error'),
+        variant: 'destructive',
+      })
     } finally {
       setCancellingId(null)
     }
@@ -448,31 +464,39 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       key: 'leaveType',
       header: t('policy'),
       render: (row: LeaveRequestLocal) => (
-        <Badge variant="outline">{row.policy?.name ?? '-'}</Badge>
+        <Badge variant="accent">{row.policy?.name ?? '-'}</Badge>
       ),
     },
     {
       key: 'startDate',
       header: t('startDate'),
-      render: (row: LeaveRequestLocal) => formatDateLocale(row.startDate),
+      render: (row: LeaveRequestLocal) => (
+        <span className="tabular-nums">{formatDateLocale(row.startDate)}</span>
+      ),
     },
     {
       key: 'endDate',
       header: t('endDate'),
-      render: (row: LeaveRequestLocal) => formatDateLocale(row.endDate),
+      render: (row: LeaveRequestLocal) => (
+        <span className="tabular-nums">{formatDateLocale(row.endDate)}</span>
+      ),
     },
     {
       key: 'days',
       header: t('days'),
-      render: (row: LeaveRequestLocal) => `${parseFloat(Number(row.days).toFixed(2))}${t('dayUnit')}`,
+      render: (row: LeaveRequestLocal) => (
+        <span className="tabular-nums">
+          {parseFloat(Number(row.days).toFixed(2))}{t('dayUnit')}
+        </span>
+      ),
     },
     {
       key: 'status',
       header: te('status'),
       render: (row: LeaveRequestLocal) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${statusBadgeClass[row.status] ?? 'bg-muted text-muted-foreground'}`}>
+        <StatusBadge status={row.status}>
           {statusLabel[row.status] ?? row.status}
-        </span>
+        </StatusBadge>
       ),
     },
     {
@@ -509,8 +533,10 @@ export function LeaveClient({ user }: { user: SessionUser }) {
   // ─── Render ───
   return (
     <div className="space-y-6">
+      {/* A.2 page-h: 프로토 LeaveReqPage h1="휴가 신청"(F10(a) t('request') 재사용,
+          신규 키 0). F7 = 단일 휴가 신청 btn-primary (이력 다운로드 미포함) */}
       <PageHeader
-        title={t('title')}
+        title={t('request')}
         description={t('balance')}
         actions={
           <Button onClick={openRequestDialog}>
@@ -520,39 +546,56 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         }
       />
 
-      {/* ─── Section 1: Leave Balance Cards (PR-1 카나리 — WdGroupedStatCard SSOT) ─── */}
-      <WdLeaveBalanceCard balances={balances} loading={loading} />
+      {/* ─── F6: 잔여 카드 | 월별 패턴 grid-2 2열 병치 (컴포넌트 내부 불변) ─── */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {/* Section 1: PR-1 카나리 — WdGroupedStatCard SSOT */}
+        <WdLeaveBalanceCard balances={balances} loading={loading} />
+        {/* Section 1b: PR-2 LV-002 카나리 — chart.ts SSOT */}
+        <WdUsageBarChart
+          title={t('monthlyUsagePattern')}
+          data={usageData}
+          unit="건"
+          insight={null}
+          emptyState={<EmptyState />}
+        />
+      </div>
 
-      {/* ─── Section 1b: 월별 사용 패턴 (PR-2 LV-002 카나리 — chart.ts SSOT) ─── */}
-      <WdUsageBarChart
-        title={t('monthlyUsagePattern')}
-        data={usageData}
-        unit="건"
-        insight={null}
-        emptyState={<EmptyState />}
-      />
-
-      {/* ─── Section 3: Status filter + Request History ─── */}
-      <div className="flex items-center gap-2">
-        {[
-          { value: 'ALL', label: tc('all') },
-          { value: 'PENDING', label: t('pending') },
-          { value: 'APPROVED', label: t('approved') },
-          { value: 'REJECTED', label: t('rejected') },
-          { value: 'CANCELLED', label: t('cancelled') },
-        ].map((f) => (
-          <button
-            key={f.value}
-            onClick={() => setStatusFilter(f.value)}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
-              statusFilter === f.value
-                ? 'bg-foreground text-white border-foreground'
-                : 'bg-card text-muted-foreground border-border hover:bg-muted'
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
+      {/* ─── Section 3: wd-result-toolbar (프로토 .pill-tabs + .count-display) ─── */}
+      {/* 세그먼트 컨트롤(design.md "Tabs=Segmented") + 우측 건수 */}
+      <div className="flex items-center justify-between gap-2">
+        <div
+          role="tablist"
+          aria-label={te('status')}
+          className="inline-flex flex-wrap gap-1 rounded-lg bg-muted/50 p-1"
+        >
+          {[
+            { value: 'ALL', label: tc('all') },
+            { value: 'PENDING', label: t('pending') },
+            { value: 'APPROVED', label: t('approved') },
+            { value: 'REJECTED', label: t('rejected') },
+            { value: 'CANCELLED', label: t('cancelled') },
+          ].map((f) => (
+            <button
+              key={f.value}
+              type="button"
+              role="tab"
+              aria-selected={statusFilter === f.value}
+              onClick={() => setStatusFilter(f.value)}
+              className={cn(
+                'rounded-md px-3 py-1.5 text-xs font-semibold motion-safe:transition-all',
+                statusFilter === f.value
+                  ? 'bg-card text-primary shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground',
+              )}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
+          {/* 단위 "건" = 카운터 리터럴 (PR-2 WdUsageBarChart unit="건" 선례, 신규 i18n 0) */}
+          <b className="text-foreground">{pagination?.total ?? requests.length}</b>건
+        </span>
       </div>
 
       <DataTable
