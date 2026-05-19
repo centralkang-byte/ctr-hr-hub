@@ -21,6 +21,8 @@ import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
+import { ToastAction } from '@/components/ui/toast'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
@@ -86,14 +88,9 @@ interface LeavePolicyLocal {
   leaveType: string
 }
 
-// ─── Status badge styles ────────────────────────────────────
-
-const statusBadgeClass: Record<string, string> = {
-  PENDING: 'bg-orange-500/10 text-orange-500',
-  APPROVED: 'bg-primary/10 text-tertiary',
-  REJECTED: 'bg-destructive/5 text-red-500',
-  CANCELLED: 'bg-muted text-muted-foreground',
-}
+// ─── Constants ──────────────────────────────────────────────
+// WS-D(LV-005): raw statusBadgeClass 제거 → StatusBadge SSOT(status.ts
+// STATUS_MAP: PENDING→warning/APPROVED→success/REJECTED→error/CANCELLED→neutral).
 
 const SINGLE_DAY_PRESETS = new Set(['AM', 'PM', 'QUARTER'])
 
@@ -314,12 +311,24 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       const res = await apiClient.getList<LeaveRequestLocal>('/api/v1/leave/requests', params)
       setRequests(res.data)
       setPagination(res.pagination)
-    } catch {
+    } catch (err) {
+      // WS-D: 무음 catch 제거 → toast(에러 사유) + 재시도 CTA. 빈 상태 노출(stale 방지)
       setRequests([])
       setPagination(undefined)
+      toast({
+        title: tc('loadFailed'),
+        description: err instanceof Error ? err.message : t('submit.error'),
+        variant: 'destructive',
+        action: (
+          <ToastAction altText={tc('retry')} onClick={() => { void fetchRequests() }}>
+            {tc('retry')}
+          </ToastAction>
+        ),
+      })
     } finally {
       setLoading(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, statusFilter])
 
   // ─── Fetch monthly usage (LV-002 — 전용 fetch, 페이지네이션 history 와 분리) ───
@@ -437,6 +446,13 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       await apiClient.put(`/api/v1/leave/requests/${id}/cancel`)
       void fetchBalances()
       void fetchRequests()
+    } catch (err) {
+      // WS-D: 취소 실패 무음 제거 → toast(에러 사유)
+      toast({
+        title: tc('error'),
+        description: err instanceof Error ? err.message : t('submit.error'),
+        variant: 'destructive',
+      })
     } finally {
       setCancellingId(null)
     }
@@ -470,9 +486,9 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       key: 'status',
       header: te('status'),
       render: (row: LeaveRequestLocal) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${statusBadgeClass[row.status] ?? 'bg-muted text-muted-foreground'}`}>
+        <StatusBadge status={row.status}>
           {statusLabel[row.status] ?? row.status}
-        </span>
+        </StatusBadge>
       ),
     },
     {
