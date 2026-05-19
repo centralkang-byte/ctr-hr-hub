@@ -32,6 +32,8 @@ export interface MonthlyAggregateSummary {
  * tz 보정 후 time-of-day(분) 산술평균 → "HH:mm".
  * null 제외. 전부 null → EMPTY_TIME.
  * F17: tz 변환은 formatToTz SSOT 만 사용 (인라인 toLocaleTimeString 없음).
+ * @remarks circadian wrap (예: 23:50/00:10 → 12:00 왜곡) 미가정.
+ *   근태 출퇴근 = 정상 주간 분포 전제 (자정 교차 비현실).
  */
 function averageTimeOfDay(times: (string | null)[], timezone: string): string {
   const minutes: number[] = []
