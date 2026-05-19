@@ -31,6 +31,8 @@ import {
 } from '@/components/ui/select'
 import { WdDrawer, WdField, WdNote } from '@/components/shared/WdDrawer'
 import { WdLeaveBalanceCard } from '@/components/shared/WdLeaveBalanceCard'
+import { WdUsageBarChart, type WdUsageBarDatum } from '@/components/shared/WdUsageBarChart'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
@@ -125,6 +127,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
   // ─── State ───
   const [balances, setBalances] = useState<LeaveBalanceLocal[]>([])
+  const [usageData, setUsageData] = useState<WdUsageBarDatum[]>([])
   const [requests, setRequests] = useState<LeaveRequestLocal[]>([])
   const [policies, setPolicies] = useState<LeavePolicyLocal[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | undefined>()
@@ -319,11 +322,41 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     }
   }, [page, statusFilter])
 
+  // ─── Fetch monthly usage (LV-002 — 전용 fetch, 페이지네이션 history 와 분리) ───
+  // N4: /leave/requests limit cap 100, date param 없음. 개인 휴가 100행
+  // (createdAt desc) ≫ 6개월 → 클라이언트 월별 집계. 백엔드 0 변경.
+  const fetchUsage = useCallback(async () => {
+    try {
+      const res = await apiClient.getList<LeaveRequestLocal>('/api/v1/leave/requests', {
+        limit: 100,
+      })
+      const now = new Date()
+      const months = Array.from({ length: 6 }, (_, idx) => {
+        const d = new Date(now.getFullYear(), now.getMonth() - (5 - idx), 1)
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+        return { key, label: `${d.getMonth() + 1}월` }
+      })
+      // F3 (가디언 m0008): 프로토 byMonth.n = 신청 "건수" (days 합산 아님,
+      // 1st principle 충실). REJECTED/CANCELLED 제외 = 승인/대기 = 사용한 휴가.
+      const counts: Record<string, number> = {}
+      for (const r of res.data) {
+        if (r.status === 'REJECTED' || r.status === 'CANCELLED') continue
+        const ym = (r.startDate ?? '').slice(0, 7) // 'YYYY-MM' (tz-safe)
+        if (!ym) continue
+        counts[ym] = (counts[ym] ?? 0) + 1
+      }
+      setUsageData(months.map((m) => ({ label: m.label, value: counts[m.key] ?? 0 })))
+    } catch {
+      setUsageData([])
+    }
+  }, [])
+
   // ─── Effects ───
   useEffect(() => {
     void fetchBalances()
     void fetchPolicies()
-  }, [fetchBalances, fetchPolicies])
+    void fetchUsage()
+  }, [fetchBalances, fetchPolicies, fetchUsage])
 
   // Handle Preset Reset on Policy Change
   useEffect(() => {
@@ -489,6 +522,15 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
       {/* ─── Section 1: Leave Balance Cards (PR-1 카나리 — WdGroupedStatCard SSOT) ─── */}
       <WdLeaveBalanceCard balances={balances} loading={loading} />
+
+      {/* ─── Section 1b: 월별 사용 패턴 (PR-2 LV-002 카나리 — chart.ts SSOT) ─── */}
+      <WdUsageBarChart
+        title={t('monthlyUsagePattern')}
+        data={usageData}
+        unit="건"
+        insight={null}
+        emptyState={<EmptyState />}
+      />
 
       {/* ─── Section 3: Status filter + Request History ─── */}
       <div className="flex items-center gap-2">
