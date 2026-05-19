@@ -66,7 +66,7 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
 
   const QUICK_LINKS = [
     { label: t('quickLink.myProfile'), href: '/my/profile', icon: User, color: 'bg-primary/10 text-primary/90' },
-    { label: t('quickLink.leaveRequest'), href: '/my/leave', icon: CalendarDays, color: 'bg-indigo-500/15 text-primary/90' },
+    { label: t('quickLink.leaveRequest'), href: '/leave', icon: CalendarDays, color: 'bg-indigo-500/15 text-primary/90' },
     { label: t('quickLink.myPerformance'), href: '/performance', icon: Target, color: 'bg-amber-500/15 text-amber-700' },
     { label: t('quickLink.trainingApply'), href: '/my/training', icon: BookOpen, color: 'bg-destructive/10 text-destructive' },
     { label: t('quickLink.internalJob'), href: '/my/internal-jobs', icon: Briefcase, color: 'bg-tertiary-container/10 text-tertiary' },
@@ -161,7 +161,7 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
               <Clock className="w-4 h-4 text-primary" />
               <h2 className="text-base font-semibold text-foreground">{t('leaveBalanceTitle')}</h2>
             </div>
-            <Link href="/my/leave" className="text-sm text-primary hover:underline">{t('viewDetail')}</Link>
+            <Link href="/leave" className="text-sm text-primary hover:underline">{t('viewDetail')}</Link>
           </div>
           <div className="space-y-2">
             {leaveBalances.slice(0, 5).map((lb) => {

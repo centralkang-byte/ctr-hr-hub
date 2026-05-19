@@ -146,7 +146,7 @@ export const PUT = withPermission(
       titleKey:    'notifications.leaveApproved.title',
       bodyKey:     'notifications.leaveApproved.body',
       bodyParams:  { startDate: request.startDate.toISOString().slice(0, 10), endDate: request.endDate.toISOString().slice(0, 10) },
-      link:        '/my/leave',
+      link:        '/leave',
       priority:    'normal',
     })
 
