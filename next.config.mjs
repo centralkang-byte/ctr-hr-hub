@@ -37,6 +37,16 @@ const nextConfig = {
     ],
   },
 
+  // ── DEV 라우트 가드 2 (이중 안전망) ──────────────────────
+  // page-level notFound() 가 primary. production 빌드에서 /dev/* 가
+  // 라우트로 노출되지 않도록 config 레벨에서 추가 차단.
+  // (사용자 명세 "rewrites 제외" → Next 안정 메커니즘 redirects 로 구현,
+  //  rewrites-to-404 는 버전 취약 → diff 검토 보고.)
+  redirects: async () =>
+    process.env.NODE_ENV === 'production'
+      ? [{ source: '/dev/:path*', destination: '/', permanent: false }]
+      : [],
+
   headers: async () => [
     {
       source: '/sw.js',
