@@ -13,6 +13,9 @@ import {
   WdLeaveBalanceCard,
   type WdLeaveBalanceInput,
 } from '@/components/shared/WdLeaveBalanceCard'
+import { WdUsageBarChart } from '@/components/shared/WdUsageBarChart'
+import { WdStatusHeatGrid, type WdHeatCell } from '@/components/shared/WdStatusHeatGrid'
+import { EmptyState } from '@/components/ui/EmptyState'
 
 // ─── Constants (결정적 픽스처) ──────────────────────────────
 
@@ -83,6 +86,53 @@ export function DevComponentFixtures() {
       <section data-testid="fx-loading">
         <h2 className="mb-2 text-sm font-semibold text-muted-foreground">loading → null</h2>
         <WdLeaveBalanceCard balances={MULTICAT_BALANCES} loading />
+      </section>
+
+      <section data-testid="fx-lv002">
+        <h2 className="mb-2 text-sm font-semibold text-muted-foreground">LV-002 월별 막대 (chart.ts)</h2>
+        <WdUsageBarChart
+          title="월별 사용 패턴"
+          subtitle="최근 6개월"
+          data={[
+            { label: '9월', value: 1 }, { label: '10월', value: 1 },
+            { label: '11월', value: 2 }, { label: '12월', value: 2 },
+            { label: '1월', value: 0 }, { label: '2월', value: 3 },
+          ]}
+          insight={<span><b className="text-foreground">인사이트</b> · 6개월 평균 1.5일/월</span>}
+          emptyState={<EmptyState />}
+        />
+      </section>
+
+      <section data-testid="fx-lv002-empty">
+        <h2 className="mb-2 text-sm font-semibold text-muted-foreground">LV-002 빈 데이터 → EmptyState</h2>
+        <WdUsageBarChart
+          title="월별 사용 패턴"
+          data={[{ label: '1월', value: 0 }, { label: '2월', value: 0 }]}
+          emptyState={<EmptyState />}
+        />
+      </section>
+
+      <section data-testid="fx-at004">
+        <h2 className="mb-2 text-sm font-semibold text-muted-foreground">AT-004 히트 그리드 (status.ts)</h2>
+        <WdStatusHeatGrid
+          title="월별 근태"
+          subtitle="5월"
+          cells={
+            Array.from({ length: 30 }, (_, i): WdHeatCell => {
+              const order = ['present', 'late', 'absent', 'leave', 'overtime', 'off'] as const
+              return { date: `2026-05-${String(i + 1).padStart(2, '0')}`, status: order[i % 6] }
+            })
+          }
+        />
+      </section>
+
+      <section data-testid="fx-at004-empty">
+        <h2 className="mb-2 text-sm font-semibold text-muted-foreground">AT-004 무기록 → EmptyState</h2>
+        <WdStatusHeatGrid
+          title="월별 근태"
+          cells={[{ date: '2026-05-01', status: null }, { date: '2026-05-02', status: null }]}
+          emptyState={<EmptyState />}
+        />
       </section>
     </main>
   )

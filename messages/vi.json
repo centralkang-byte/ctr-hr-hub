@@ -3327,6 +3327,7 @@
     "approve": "Approve",
     "approved": "Approved",
     "balance": "Leave Balance",
+    "monthlyUsagePattern": "Mẫu sử dụng hàng tháng",
     "balancePreview": {
       "currentRemaining": "Còn lại hiện tại:",
       "insufficientWarning": "Số dư nghỉ phép không đủ.",

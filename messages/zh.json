@@ -3327,6 +3327,7 @@
     "approve": "Approve",
     "approved": "Approved",
     "balance": "Leave Balance",
+    "monthlyUsagePattern": "每月使用模式",
     "balancePreview": {
       "currentRemaining": "当前剩余:",
       "insufficientWarning": "休假余额不足。",

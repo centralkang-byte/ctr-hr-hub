@@ -77,4 +77,39 @@ test.describe('WdGroupedStatCard 컴포넌트 N2', () => {
     await expect(fx).toBeVisible()
     await expect(fx.locator('section')).toHaveCount(0)
   })
+
+  // ─── PR-2: LV-002 (chart.ts) / AT-004 (status.ts) ───
+
+  test('LV-002 월별 막대: recharts 렌더 + 인사이트 슬롯', async ({ page }) => {
+    const fx = page.getByTestId('fx-lv002')
+    await expect(fx).toBeVisible()
+    // recharts SVG 바 렌더
+    await expect(fx.locator('.recharts-bar-rectangle').first()).toBeVisible()
+    await expect(fx.getByText('월별 사용 패턴')).toBeVisible()
+    await expect(fx.getByText(/인사이트/)).toBeVisible()
+  })
+
+  test('LV-002 빈(전부 0) → EmptyState, 차트 미렌더', async ({ page }) => {
+    const fx = page.getByTestId('fx-lv002-empty')
+    await expect(fx).toBeVisible()
+    await expect(fx.locator('.recharts-bar-rectangle')).toHaveCount(0)
+    await expect(fx.locator('svg').first()).toBeVisible() // EmptyState 아이콘
+  })
+
+  test('AT-004 히트 그리드: 30셀 + 5상태 색(status.ts) + 범례', async ({ page }) => {
+    const fx = page.getByTestId('fx-at004')
+    await expect(fx).toBeVisible()
+    await expect(fx.locator('[role="listitem"]')).toHaveCount(30)
+    // 범례 5상태
+    for (const label of ['정상', '지각', '결근', '휴가', '초과근무']) {
+      await expect(fx.getByText(label, { exact: true })).toBeVisible()
+    }
+  })
+
+  test('AT-004 무기록 전부 → EmptyState', async ({ page }) => {
+    const fx = page.getByTestId('fx-at004-empty')
+    await expect(fx).toBeVisible()
+    await expect(fx.locator('[role="listitem"]')).toHaveCount(0)
+    await expect(fx.locator('svg').first()).toBeVisible()
+  })
 })

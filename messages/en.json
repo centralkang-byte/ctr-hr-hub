@@ -3327,6 +3327,7 @@
     "approve": "Approve",
     "approved": "Approved",
     "balance": "Leave Balance",
+    "monthlyUsagePattern": "Monthly Usage Pattern",
     "balancePreview": {
       "currentRemaining": "Current remaining:",
       "insufficientWarning": "Insufficient leave balance.",
