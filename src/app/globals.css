@@ -55,6 +55,8 @@
     --wd-orange: 24 77% 53%;                 /* #e4762c — oklch(68% 0.16 50) */
     --wd-orange-soft: 31 100% 92%;           /* #ffecd8 — oklch(96% 0.04 60) */
     --wd-orange-ink: 19 100% 32%;            /* #a23300 — oklch(48% 0.16 45) */
+    /* PR-5A: sky blue (HR Admin worklet ID 8 analytics) — light only, dark known-deferred (Phase 4) */
+    --info: 199 89% 48%;                     /* #0ea5e9 sky blue */
     --surface-container-low: 0 0% 94.5%;     /* #f0f1f1 */
     --surface-container-high: 180 1.5% 88.6%; /* #e1e3e3 */
     --surface-container: 0 0% 90.8%;         /* #e7e8e8 */
