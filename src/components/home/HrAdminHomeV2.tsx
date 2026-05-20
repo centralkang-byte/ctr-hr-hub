@@ -8,7 +8,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect, useCallback } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import {
   Pencil,
   FileText,
@@ -37,7 +37,6 @@ import { DashboardErrorBanner } from './DashboardErrorBanner'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import { useTimeOfDay } from '@/hooks/useTimeOfDay'
-import { formatToTz } from '@/lib/timezone'
 import type { SessionUser, HrAdminSummary, OnboardingItem } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -76,6 +75,7 @@ function sparkTrendDirection(data: number[]): 'up' | 'down' | 'flat' {
 
 export function HrAdminHomeV2({ user }: Props) {
   const t = useTranslations('home.hrAdmin.v2')
+  const locale = useLocale()
   const timeOfDay = useTimeOfDay()
   const [summary, setSummary] = useState<HrAdminSummary | null>(null)
   const [loading, setLoading] = useState(true)
@@ -125,8 +125,15 @@ export function HrAdminHomeV2({ user }: Props) {
   // SSR/초기 hydration 중에는 timeOfDay === null → AM 디폴트.
   const greetingKey = timeOfDay === 'pm' ? 'workdayHero.greetingPm' : 'workdayHero.greetingAm'
   const greeting = t(greetingKey, { name: user.name ?? '' })
-  // 날짜 SSOT: timezone.ts formatToTz (Asia/Seoul 기본)
-  const dateStr = formatToTz(new Date(), 'Asia/Seoul', 'yyyy년 M월 d일 EEEE')
+  // 날짜 SSOT: P2-2 정정 — Intl.DateTimeFormat locale 기반 (한국어 리터럴 의존 제거).
+  // timeZone: Asia/Seoul 유지 (회사 timezone 기본, Phase 6에서 user.companyId 기반 해소).
+  const dateStr = new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+    timeZone: 'Asia/Seoul',
+  }).format(new Date())
 
   // 총 처리 건수 = pendingLeaves + delayed onboarding
   const delayedOnboardingCount = activeOnboarding.filter(
@@ -378,8 +385,13 @@ export function HrAdminHomeV2({ user }: Props) {
           }}
           approveLabel={t('approvalPreview.approveCta')}
           submittedFormatter={(iso) =>
+            // P2-2 정정: locale-aware. Intl.DateTimeFormat이 localized 단·월 라벨 생성
             t('approvalPreview.submittedFmt', {
-              date: formatToTz(new Date(iso), 'Asia/Seoul', 'M월 d일'),
+              date: new Intl.DateTimeFormat(locale, {
+                month: 'long',
+                day: 'numeric',
+                timeZone: 'Asia/Seoul',
+              }).format(new Date(iso)),
             })
           }
           emptyLabel={t('approvalPreview.empty')}
