@@ -15,8 +15,8 @@ test.describe('Attendance PR-4: EMPLOYEE', () => {
   test('S1 AT-005 월간통계 카드 마운트 + 5지표 라벨', async ({ page }) => {
     await assertPageLoads(page, '/attendance')
     await waitForLoading(page)
-    // WdGroupedStatCard section (title=t('monthlySummary')="월간 요약")
-    const card = page.getByRole('region', { name: /월간 요약|Monthly/ })
+    // WdGroupedStatCard section (title=t('monthlySummary')="월간 요약"; M-2: 영문은 Summary 한정)
+    const card = page.getByRole('region', { name: /월간 요약|Monthly Summary/ })
     await expect(card).toBeVisible({ timeout: 10000 })
     // 5지표 라벨 (i18n 기존 키 재사용): 근무일/출근/퇴근/초과근무/지각
     for (const label of [/근무일/, /출근/, /퇴근/, /초과근무/, /지각/]) {
@@ -28,7 +28,7 @@ test.describe('Attendance PR-4: EMPLOYEE', () => {
   test('S2 WdMonthlyStatCard 빈 표현 / 데이터 행 정합', async ({ page }) => {
     await assertPageLoads(page, '/attendance')
     await waitForLoading(page)
-    const card = page.getByRole('region', { name: /월간 요약|Monthly/ })
+    const card = page.getByRole('region', { name: /월간 요약|Monthly Summary/ })
     await expect(card).toBeVisible({ timeout: 10000 })
     // 데이터 有 = role=list StatRow / 데이터 無 = EmptyState. 둘 중 하나 정상.
     const hasRows = await card.getByRole('list').isVisible().catch(() => false)
@@ -43,9 +43,15 @@ test.describe('Attendance PR-4: EMPLOYEE', () => {
     // PR-2 AT-004 = WdStatusHeatGrid (title=t('monthlyRecord')="월별 근태")
     const heat = page.getByRole('region', { name: /월별 근태|Monthly Record/ })
     await expect(heat).toBeVisible({ timeout: 10000 })
-    // 월간통계(AT-005)와 히트그리드(AT-004) 동시 공존 (proto 시각 순서)
-    const monthly = page.getByRole('region', { name: /월간 요약|Monthly/ })
+    // 월간통계(AT-005)와 히트그리드(AT-004) 동시 공존 (M-2: Summary 한정 selector)
+    const monthly = page.getByRole('region', { name: /월간 요약|Monthly Summary/ })
     await expect(monthly).toBeVisible({ timeout: 10000 })
+    // M-1: proto 시각 순서 DOM 단언 — AT-005가 AT-004보다 상위 (y 좌표)
+    const monthlyBox = await monthly.first().boundingBox()
+    const heatBox = await heat.first().boundingBox()
+    expect(monthlyBox, 'AT-005 region bounding box').not.toBeNull()
+    expect(heatBox, 'AT-004 region bounding box').not.toBeNull()
+    expect(monthlyBox!.y).toBeLessThan(heatBox!.y)
   })
 
   // S4: 가디언 회귀 — 에러바운더리 0 / 치명 콘솔 0
@@ -69,7 +75,15 @@ test.describe('Attendance PR-4: EMPLOYEE', () => {
     await assertPageLoads(page, '/attendance')
     await waitForLoading(page)
     await expect(page.locator('main')).toBeVisible()
-    const card = page.getByRole('region', { name: /월간 요약|Monthly/ })
+    const card = page.getByRole('region', { name: /월간 요약|Monthly Summary/ })
     await expect(card).toBeVisible({ timeout: 10000 })
+    // M-1: 가로 overflow 0 (main scrollWidth ≤ clientWidth, 375 reflow 정합)
+    const dims = await page
+      .locator('main')
+      .evaluate((el) => ({ scroll: el.scrollWidth, client: el.clientWidth }))
+    expect(dims.scroll).toBeLessThanOrEqual(dims.client)
+    // M-1: rows=5 단언 — 데이터 有 시 5건 / 데이터 無 시 0건 (EmptyState 경로) 정합
+    const rowCount = await card.getByRole('listitem').count()
+    expect([0, 5]).toContain(rowCount)
   })
 })
