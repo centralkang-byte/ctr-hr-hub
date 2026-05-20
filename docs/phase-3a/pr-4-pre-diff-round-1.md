@@ -18,7 +18,10 @@
 - B1 `2ed7f747` — monthly-aggregate helper + vitest 12
 - B2 `fb1791b1` — AttendanceClient 마운트
 - C `cc726e61` — JSDoc @remarks 보강 (F23, 로직 0)
-- 누적 **4 files +326/−2** (monthly API route 부재)
+- E.1 `b85f91d2` — e2e 5 시나리오 (별 commit, src/ 무관)
+- 누적 (LOW 분리 표기):
+  - **코드 only** (`1260a95f..cc726e61`): **4 files +326/−2** (monthly API route 부재)
+  - **e2e 포함** (`1260a95f..b85f91d2`): **5 files +401/−2** (e2e +75)
 - 추가 RECORD (`claude/phase3a-audit` 별 트랙):
   - B' N+12 `1b057505` (F21 신규 워크트리 prisma generate 2-step)
   - B0 N+13 `0bf1940a` (F22 AT-005 case iii + monthly API 갭)
@@ -114,7 +117,7 @@ vitest:   12/12 pass  (회귀 0)
 |---|---|---|
 | F15 i18n | (a) 기존 키 재사용 + 갭 F1 위임 (N+6 동형) | — |
 | F16 violet/amber→wt | (a) valueTone 4토큰 최근접-hue, swatch 0 | — |
-| F17 timezone | (a) 래퍼 미포맷 + helper formatToTz SSOT | — |
+| F17 timezone | (a) 래퍼 미포맷 + helper `formatToTz` SSOT 사용 (현 월간 API/KST hardcode 전제 범위 내 — caller 미전달 시 helper default `Asia/Seoul`, i18n timezone 확장 시 tz param 활용 가능) | — |
 | F18 monthly API | (a) 클라 집계 (m0051), route 변경 0 정량 | N+13 |
 | F19 다크 known-deferred | (a) N+10 **미합류** 정밀화 — `textPrimaryEls=0` 정량 확정 (E.2.2 측정), PR-5+ 진입 가드 자산 | N+10 |
 | F20 베이스 회귀 | (a) 종결 확정 = git ∅ (D N2 9 surface) + 시각 (E.2.4 LV-001 N+10 rgb 전수 동일) **이중 시그널 누적** | — |
