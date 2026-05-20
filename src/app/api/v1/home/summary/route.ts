@@ -1,4 +1,5 @@
 import { type NextRequest } from 'next/server'
+import { Prisma } from '@/generated/prisma/client'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { isAppError, handlePrismaError } from '@/lib/errors'
@@ -8,7 +9,7 @@ import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import { getPeerCount } from '@/lib/employee/peers'
 import { getStartOfDayTz, formatToTz } from '@/lib/timezone'
-import type { SessionUser, OnboardingItem, TrendPoint } from '@/types'
+import type { SessionUser, OnboardingItem, TrendPoint, ApprovalPreviewItem } from '@/types'
 
 // Default company timezone for D-day calculations.
 // Phase 6: resolve from user.companyId via timezone helper.
@@ -180,6 +181,41 @@ function toOffboardingItem(
     progress,
     completedTasks: completed,
     totalTasks: total,
+  }
+}
+
+/**
+ * PR-5A: LeaveRequest top-pending → ApprovalPreviewItem.
+ * urgency = startDate vs todayStart (overdue / today / queued).
+ * type = 'LEAVE' (Payroll/Other는 PR-5C 이후 분기).
+ */
+function toApprovalPreviewItem(
+  lr: {
+    id: string
+    startDate: Date
+    days: Prisma.Decimal
+    reason: string | null
+    createdAt: Date
+    employee: {
+      name: string
+      assignments: { department: { name: string } | null }[]
+    }
+    policy: { name: string }
+  },
+  now: Date,
+): ApprovalPreviewItem {
+  const dueDay = daysBetween(lr.startDate, now)
+  const urgency: ApprovalPreviewItem['urgency'] =
+    dueDay < 0 ? 'overdue' : dueDay === 0 ? 'today' : 'queued'
+  return {
+    id: lr.id,
+    requesterName: lr.employee.name,
+    team: lr.employee.assignments[0]?.department?.name ?? '',
+    type: 'LEAVE',
+    description: `${lr.policy.name} ${Number(lr.days)}일`,
+    submittedAt: lr.createdAt.toISOString(),
+    urgency,
+    note: lr.reason ?? null,
   }
 }
 
@@ -513,6 +549,11 @@ export const GET = withCache(withPermission(
         onboardingTotal,
         pendingLeavesTrendRaw,
         newHiresTrendRaw,
+        // PR-5A: HR/SuperAdmin 전용 (Executive 분기는 placeholder 0/[])
+        attendancePresent,
+        attendanceLate,
+        attendanceAbsent,
+        topPendingApprovalsRaw,
       ] = await Promise.all([
         prisma.employee.count({
           where: {
@@ -620,6 +661,66 @@ export const GET = withCache(withPermission(
           },
           select: { hireDate: true },
         }),
+        // PR-5A: attendanceToday — present/late/absent count (HR/SuperAdmin only)
+        // Gate 2 P2 정정: tzMidnight(KST) 사용 — server timezone(UTC)과 attendance.workDate(KST) 불일치 회피
+        isExecutive
+          ? Promise.resolve(0)
+          : prisma.attendance.count({
+              where: { companyId, workDate: tzMidnight, clockIn: { not: null } },
+            }),
+        isExecutive
+          ? Promise.resolve(0)
+          : prisma.attendance.count({
+              where: { companyId, workDate: tzMidnight, status: 'LATE' },
+            }),
+        isExecutive
+          ? Promise.resolve(0)
+          : prisma.attendance.count({
+              where: {
+                companyId,
+                workDate: tzMidnight,
+                clockIn: null,
+                status: 'ABSENT',
+              },
+            }),
+        // PR-5A: topPendingApprovals — LeaveRequest direct query top 4 (urgency 정렬 = startDate asc)
+        isExecutive
+          ? Promise.resolve([] as Array<{
+              id: string
+              startDate: Date
+              days: Prisma.Decimal
+              reason: string | null
+              createdAt: Date
+              employee: {
+                name: string
+                assignments: { department: { name: string } | null }[]
+              }
+              policy: { name: string }
+            }>)
+          : prisma.leaveRequest.findMany({
+              where: { companyId, status: 'PENDING' },
+              include: {
+                employee: {
+                  select: {
+                    id: true,
+                    name: true,
+                    assignments: {
+                      where: {
+                        isPrimary: true,
+                        endDate: null,
+                        companyId,
+                        effectiveDate: { lte: now },
+                      },
+                      select: { department: { select: { name: true } } },
+                      take: 1,
+                    },
+                  },
+                },
+                policy: { select: { name: true } },
+              },
+              orderBy: { startDate: 'asc' },
+              take: 4,
+            }),
       ])
 
       const turnoverRate =
@@ -692,6 +793,13 @@ export const GET = withCache(withPermission(
         onboardingCount: onboardingTotal,
         pendingLeavesTrend,
         newHiresTrend,
+        // PR-5A: HR/SuperAdmin only — Executive 분기는 undefined
+        attendanceToday: isExecutive
+          ? undefined
+          : { present: attendancePresent, late: attendanceLate, absent: attendanceAbsent },
+        topPendingApprovals: isExecutive
+          ? undefined
+          : topPendingApprovalsRaw.map((lr) => toApprovalPreviewItem(lr, now)),
       })
     } catch (error) {
       if (isAppError(error)) throw error
