@@ -531,6 +531,9 @@ export const GET = withCache(withPermission(
 
       // R3: trend 버킷 경계 — MANAGER 브랜치와 동일한 TZ-consistent 패턴
       const tzMidnight = getStartOfDayTz(now, DEFAULT_TZ)
+      // PR-5A P2-1 정정: attendanceToday 쿼리 범위 [dayStart, dayEnd) — 기존 attendance API 정합
+      const dayEnd = new Date(tzMidnight)
+      dayEnd.setDate(dayEnd.getDate() + 1)
       const sevenDaysAgo = new Date(tzMidnight)
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6) // 7 days inclusive of today
       const fourWeeksAgo = new Date(tzMidnight)
@@ -662,23 +665,32 @@ export const GET = withCache(withPermission(
           select: { hireDate: true },
         }),
         // PR-5A: attendanceToday — present/late/absent count (HR/SuperAdmin only)
-        // Gate 2 P2 정정: tzMidnight(KST) 사용 — server timezone(UTC)과 attendance.workDate(KST) 불일치 회피
+        // P2-1 정정 (Codex Gate 3): workDate는 exact UTC instant 비교라 점 비교 시 미매칭.
+        // 기존 attendance API와 동형으로 [tzMidnight, dayEnd) range 쿼리 사용.
         isExecutive
           ? Promise.resolve(0)
           : prisma.attendance.count({
-              where: { companyId, workDate: tzMidnight, clockIn: { not: null } },
-            }),
-        isExecutive
-          ? Promise.resolve(0)
-          : prisma.attendance.count({
-              where: { companyId, workDate: tzMidnight, status: 'LATE' },
+              where: {
+                companyId,
+                workDate: { gte: tzMidnight, lt: dayEnd },
+                clockIn: { not: null },
+              },
             }),
         isExecutive
           ? Promise.resolve(0)
           : prisma.attendance.count({
               where: {
                 companyId,
-                workDate: tzMidnight,
+                workDate: { gte: tzMidnight, lt: dayEnd },
+                status: 'LATE',
+              },
+            }),
+        isExecutive
+          ? Promise.resolve(0)
+          : prisma.attendance.count({
+              where: {
+                companyId,
+                workDate: { gte: tzMidnight, lt: dayEnd },
                 clockIn: null,
                 status: 'ABSENT',
               },
