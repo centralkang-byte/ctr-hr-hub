@@ -591,6 +591,77 @@ prisma.attendance.count({
 
 - 가디언: PR-5A P2-1 회귀 책임 m0083. 결정 SHA: 본 커밋
 
+### N+16. F26 — P2-2 i18n date format 일관성 + formatToTz Korean literal inventory
+
+> Codex 외부 리뷰 (PR #63 [comment-4500940912](https://github.com/centralkang-byte/ctr-hr-hub/pull/63#issuecomment-4500940912))
+> P2-2 발견 = `formatToTz` 사용 시 한국어 리터럴(`yyyy년 M월 d일 EEEE`,
+> `M월 d일`) 의존이 다국어 사용자에게 한국어 노출. PR-5A patch 9 완료
+> (`742dab35`, `Intl.DateTimeFormat(locale)`). 본 N+16 = F19 가드 확장 +
+> Phase 4 i18n 트랙 인벤토리.
+
+**(1) 발견 경위**
+- Codex 외부 리뷰 (PR #63 comment-4500940912) P2-2 지적
+- `HrAdminHomeV2.tsx:129` (WorkdayHero eyebrow) = `formatToTz(now,
+  'Asia/Seoul', 'yyyy년 M월 d일 EEEE')`
+- `HrAdminHomeV2.tsx:382` (ApprovalPreview submittedFormatter) = `formatToTz
+  (iso, 'Asia/Seoul', 'M월 d일')`
+- en / es / vi / zh locale 사용자에게 한국어 (`년 M월 d일`) 노출 = i18n 위반
+
+**(2) F19 가드 확장 관점 (Korean literal = locale 위반 차단)**
+- F19 = `text-primary`/`bg-primary` 직접 의존 차단 패턴 (디자인 토큰 직접
+  의존 금지)
+- F26 = 동형 패턴 → `formatToTz` + 한국어 리터럴 = i18n locale 일관성 위반
+  가드 신설
+- 컴포넌트가 i18n hook (`useTranslations`, `useLocale`) 활용 시 = 모든 표시
+  문자열이 locale-aware여야 함 (date format 포함)
+
+**(3) 정확한 해결책 (P2-2 patch `742dab35` 적용)**
+```ts
+import { useLocale } from 'next-intl'
+
+// component 내부
+const locale = useLocale()
+
+// eyebrow date
+const dateStr = new Intl.DateTimeFormat(locale, {
+  year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
+  timeZone: 'Asia/Seoul',
+}).format(new Date())
+
+// ApprovalPreview submittedFormatter (M월 d일 등)
+new Intl.DateTimeFormat(locale, {
+  month: 'long', day: 'numeric', timeZone: 'Asia/Seoul',
+}).format(new Date(iso))
+```
+- `formatToTz` import 제거 (HrAdminHomeV2 잔존 0)
+- 신규 i18n 키 0 (scope minimal)
+- commit 9 = `742dab35` (`feat/hr-admin-dashboard-workday`, push origin
+  반영)
+
+**(4) 다른 컴포넌트 inventory (Phase 4 i18n 트랙 후보)**
+- 사전 grep 권고:
+  ```
+  grep -rnE "formatToTz.*['\"][^'\"]*(년|월|일|요일|시|분|초)['\"]" src/
+  ```
+- 발견 시 PR-5A patch 동형 마이그레이션 의무 (`Intl.DateTimeFormat(locale)`)
+- Phase 4 i18n 트랙 진입 시 일괄 처리
+- PR-5A 미수정 컴포넌트 = inventory 우선 작성 (본 RECORD = 시작점)
+
+**(5) PR-5+ 카나리 진입 가드 (신설)**
+- 사전 grep `formatToTz.*['\"][^'\"]*(년|월|일|요일)` 의무 — Korean literal
+  검출
+- 신규 컴포넌트 = `Intl.DateTimeFormat(locale, ...)` 우선 채택
+- Korean literal 발견 시 quick patch 또는 RECORD 신설 (본 N+16 인용 의무)
+
+**(6) Phase 4 i18n 트랙 사전 합의 (가디언 별도 합의 필요)**
+- WorkdayHero 다크 (F24 N+14) + i18n date format (F26 N+16) + lavender
+  의존 (F19) 일괄 처리
+- 트랙 진입 시점 별도 합의 (현재 미정)
+- Phase 4 입구에서 본 RECORD 3건 (F19 / F24 / F26) + handover §7 inventory
+  합본 → 마이그레이션 plan 작성
+
+- 가디언: PR-5A P2-2 i18n 회복 m0083. 결정 SHA: 본 커밋
+
 ### 저확실 항목 (Stage 4 가디언 우선검토 — 결정 후 잔존 리스크)
 
 - **LV-002** (월별 패턴+인사이트) — batch 포함 확정이나 chart.ts SSOT **첫 소비처** =
