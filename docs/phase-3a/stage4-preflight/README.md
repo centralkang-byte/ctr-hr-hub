@@ -1,7 +1,7 @@
 # Phase 3a · Stage 4 Pre-flight — 코드베이스 적용 사전 검증
 
-> **base SHA**: `1401e8ca` (Session 228, batch 04 + 05 + 07 + 08 Stage 3 통과 후)
-> **작성일**: 2026-05-21 KST (batch 04 / 05 / 07 / 08 누적)
+> **base SHA**: `4ff48de6` (Session 228, batch 04 + 05 + 07 + 08 + 09 Stage 3 통과 후)
+> **작성일**: 2026-05-21 KST (batch 04 / 05 / 07 / 08 / 09 누적)
 > **작성자**: 가디언 (proto 디자인 SSOT 트랙)
 > **목적**: PR-5A 머지 전 HOLD 슬롯 활용한 코드베이스 트랙 사전 audit. src/ 변경 0, read-only audit only.
 
@@ -51,7 +51,7 @@
 | N+35 | [n35-action-alignment.md](./n35-action-alignment.md) | force-complete API 재사용, remind endpoint 신설 가능성 |
 | N+36 | [n36-category-color-tokens.md](./n36-category-color-tokens.md) | 8 enum × wt-1~8 매핑, Phase 4 다크 inventory +1 |
 
-### Batch 08 트랙 (신규)
+### Batch 08 트랙
 
 | RECORD | 파일 | 핵심 결론 |
 |---|---|---|
@@ -60,6 +60,17 @@
 | N+45 | [n45-onboarding-filter-batch07-merge.md](./n45-onboarding-filter-batch07-merge.md) | Onboarding/Offboarding Filter radiogroup, **batch 07 N+34 합본 PR 권고** |
 | N+46 ⭐ | [n46-orgviewmode-3way-merge.md](./n46-orgviewmode-3way-merge.md) | OrgViewModeToggle Radix Tabs, **3-way 합본 권고 = (b) 분할 진입** (의존성 0, 회귀 격리) |
 | N+47 | [n47-a11y-ssot-axe-baseline.md](./n47-a11y-ssot-axe-baseline.md) | ⭐ **`.claude/rules/accessibility.md` 기존 존재** — 신규 SSOT X, 기존 확장 |
+
+### Batch 09 트랙 (신규)
+
+| RECORD | 파일 | 핵심 결론 |
+|---|---|---|
+| N+48 ⭐ | [n48-wizardshell-ssot-shared.md](./n48-wizardshell-ssot-shared.md) | ✅ **`src/components/shared/` 정합** (PageHeader 패턴). Radix Dialog 기반 |
+| N+49 | [n49-hire-wizard-migration.md](./n49-hire-wizard-migration.md) | HireWorkerWizard 마이그레이션 (-75 net), batch 04 N+21 DemoLimitBanner cross-batch |
+| N+50 | [n50-orgrestructure-ssot-application.md](./n50-orgrestructure-ssot-application.md) | OrgRestructureWizard SSOT 적용 (-70 net), batch 05 N+27 분리 PR (batch 08 N+46 패턴) |
+| N+51 ⚠️ | [n51-jobposting-migration.md](./n51-jobposting-migration.md) | **가디언 사전 가정 정정** — PostingFormClient = 단일 form (wizard 부재), 옵션 B (현행 유지) 권고 |
+| N+52 ⚠️ | [n52-perfcycle-migration.md](./n52-perfcycle-migration.md) | **가디언 사전 가정 정정** — CreateCycleModal = 단일 modal form (wizard 부재), 옵션 B 권고 |
+| N+53 | [n53-bulkupload-migration.md](./n53-bulkupload-migration.md) | BulkUploadWizard 마이그레이션 (-30 net), Q6=A 포함 결정 정합 |
 
 ## §2. Stage 4 진입 순서 재권고 (cross-batch)
 
