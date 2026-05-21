@@ -239,6 +239,18 @@ model OrgSnapshot         (line 4287)
 > `RestructureModal` (drawer) 은 codebase 단독 패턴, proto와 결렬.
 > **Q2 추천 = proto full-screen** (4종 정합).
 
+> **Stage 3 게이트 통과 (2026-05-21)** — 사용자 가디언 추천안 **전체 채택 확정**.
+> **Paradigm**: batch 04 (proto leader) 와 정반대 — batch 05 = **codebase leader** (production 보존 default).
+> | Q | 결정 | Stage 4 입력 |
+> |---|---|---|
+> | Q1 | **A** | codebase 4 mode 키 SSOT 유지, proto 갱신 |
+> | Q2 | **A** | proto WizardShell full-screen 채택, RestructureModal 재작업 ⭐ |
+> | Q3 | **A** | DeptFlowNode SSOT 유지, proto 색상만 토큰화 |
+> | Q4 | **A** | codebase EffectiveDatePicker 유지, proto button reskin |
+> | Q5 | **A** | codebase에 page-h + wd-status-chips 4건 도입 |
+> | Q6 | **전수 유지** | Matrix/Snapshot/ChangeHistory/RestructurePlan/DnD/Multi-company/Directory/DetailPanel |
+> | Q7 | **A** | Phase 4 다크 트랙 합본 (F19/F24/F26/EM-019/OG-018) |
+
 ### Q1 — View mode 명명 정렬 (OG-001 + X1)
 - **A** (codebase 키 SSOT `tree/directory/list/grid` 유지, proto 갱신)
 - **B** (proto 키 `tree/dir/card` 채택, codebase 변경)
@@ -279,25 +291,141 @@ model OrgSnapshot         (line 4287)
 
 ---
 
-## §7. RECORD 후보 인벤토리
+## §7. RECORD N+24~N+30 plan body 사양화
 
-사용자 게이트 통과 후 N+ 시리즈 promote 권고. **batch 04 사양화 N+17~N+23 사용 후 다음 SHA**:
+**Stage 3 게이트 통과 후 promote 완료 (2026-05-21).** 각 entry = Stage 4 작업계획 SSOT.
 
-| RECORD 후보 | 묶음 finding | 우선 |
-|---|---|---|
-| **N+24** | OG-004 + OG-014 (page-h + wd-status-chips 도입) + Q5 | HIGH |
-| **N+25** | OG-001 + X1 (View mode 명명 정렬) + Q1 | MEDIUM |
-| **N+26** | OG-003 + OG-015 + X3 (Tree node 시각 토큰화 — DeptFlowNode + proto SSOT 정합) + Q3 | HIGH |
-| **N+27** | OG-002 + X2 (Restructure 위저드 vs 모달 패턴 정합 — full-screen 채택) + Q2 | HIGH |
-| **N+28** | OG-005 + OG-008 (EffectiveDatePicker proto visual reskin) + Q4 | LOW |
-| **N+29** | OG-007 + OG-009 (zoom controls + 검색 opacity highlight 정합) | LOW |
-| **N+30** | OG-010 + X7 (4 step + 6 changeType — proto 위저드 ↔ codebase OrgRestructurePlan 매핑 layer) | MEDIUM |
+---
 
-**Phase 4 다크 트랙 합본 후보**:
-- OG-018 (proto OrgNode oklch 인라인 + 다크 변형 부재) → F19/F24/F26 + EM-019와 합본 plan inventory
+### N+24 — page-h + wd-status-chips 도입 (OG-004 + OG-014 + Q5=A) [HIGH]
 
-**별도 i18n 트랙 후보**:
-- X6 "발효일/적용일/시행일" 3 라벨 결렬 → i18n 정합 트랙 inventory entry 1건
+- **결정**: OrgClient toolbar (`<h1>` + flex flex-wrap) → page-h + wd-status-chips 4건 (root 법인 + 부서 카운트 + 내 팀 + 발효일). batch 03/04 SSOT 정합.
+- **영향**:
+  - `src/app/(dashboard)/org/OrgClient.tsx` toolbar 영역 (~60 lines) → page-h 패턴
+  - 신규 또는 기존 SSOT 컴포넌트 재사용 (batch 03/04 page-h 패턴 grep 후 결정)
+  - 4 chips 데이터 source: existing state (`tree`/`departments`/`hrTeam`/`effectiveDate`)
+- **수락 기준**:
+  - page-h 가로 정렬 batch 03/04 정합
+  - 4 chips 데이터 binding 검증 (실시간 부서 카운트, 발효일 동기)
+  - 모바일 reflow (chips wrap, 가로 overflow 0)
+  - 다크 known-deferred (Phase 4 합본)
+- **우선**: HIGH (production 첫 surface)
+- **E2E**: page-h 렌더 + 4 chips 데이터 정합 + 모바일 reflow
+- **블로커**: PR-5A 머지 후 진입
+
+---
+
+### N+25 — View mode 명명 정렬 (OG-001 + X1 + Q1=A) [MEDIUM, proto only]
+
+- **결정**: codebase 4 mode 키 SSOT 유지 (`tree/directory/list/grid`), proto 3 mode → 4 mode 갱신
+- **영향**:
+  - `_design-reference/page-org.jsx` view tab 3 → 4 (directory/list/grid)
+  - codebase 변경 0
+  - codebase i18n 이미 정합 (`org.viewTree/viewDirectory/viewList/viewGrid` 5 locale 확정)
+- **수락 기준**:
+  - proto 4 view tab 시각 정합
+  - dir/list/grid view 본문 placeholder OK (mock 한계)
+- **우선**: MEDIUM (proto only)
+- **E2E**: N/A (proto only, 시각 검증)
+
+---
+
+### N+26 — Tree node 시각 토큰화 (OG-003 + OG-015 + X3 + Q3=A) [HIGH]
+
+- **결정**: codebase DeptFlowNode SSOT 유지 (B3I production), proto OrgNode 색상 인라인 → 토큰화 + mine highlight 정합
+- **영향**:
+  - `_design-reference/page-org.jsx` OrgNode (L88-120): 인라인 `oklch(60% 0.18 263)` / `oklch(95% 0.05 155)` / `var(--accent)` → CSS 변수 정합
+  - `src/components/org/DeptFlowNode.tsx`: mine prop (사용자 본인 팀 highlight) 추가 — proto 정합 (Q3=A "proto 색상만 토큰화")
+  - tailwind config wt token 검증 (wt-success / wt-accent / wt-primary)
+- **수락 기준**:
+  - DeptFlowNode mine highlight visual = proto green tint 정합
+  - root highlight = wt-primary 토큰
+  - proto OrgNode 인라인 oklch 0건 (전수 토큰화)
+  - 다크 known-deferred → OG-018 entry, Phase 4 합본
+- **우선**: HIGH (B3I production surface visual 강화)
+- **E2E**: DeptFlowNode render visual 회귀 (light/dark)
+- **블로커**: PR-5A 머지 후 진입
+
+---
+
+### N+27 — Restructure 위저드 vs 모달 정합 (OG-002 + X2 + Q2=A) [HIGH]
+
+- **결정**: proto WizardShell full-screen 채택, codebase RestructureModal drawer → full-screen wizard 재작업. **위저드 4종 패턴 SSOT 정합** (정합성 grep 우선 결정, batch 04 Q4 reversal 같은 패턴).
+- **영향**:
+  - `src/components/org/RestructureModal.tsx`: drawer (Sheet) → full-screen wizard 패턴
+  - 신규 컴포넌트 또는 기존 WizardShell 재사용 (사전 검증 필요)
+  - 4 step (변경유형 / 변경내용 / 영향분석 / 결재선) + 6 changeType (merge/split/new/move/close/rename) 정합
+  - toast + onComplete + 데모 한계 배너 (N+21 SSOT) 정합
+- **수락 기준**:
+  - 위저드 4종 (Hire/Job/PerfCycle/Restructure) 동일 패턴 (full-screen + step indicator + nav buttons + toast)
+  - changeType 6종 모두 step 1에서 button grid 선택
+  - step 3 영향분석 = restructure-plans API preview 연동 (production)
+  - step 4 결재선 = ApprovalFlow 정합 (codebase 기존 패턴)
+- **우선**: HIGH (정합성 우선)
+- **E2E**: 4 step 통과 + 6 changeType 각각 + toast + onComplete + API 연동 (e2e/flows/restructure-wizard.spec.ts)
+- **블로커**: PR-5A 머지 + N+30 (매핑 layer) 선행 권고
+
+---
+
+### N+28 — EffectiveDatePicker proto visual reskin (OG-005 + OG-008 + Q4=A) [LOW, proto only]
+
+- **결정**: codebase EffectiveDatePicker 유지 (production), proto button placeholder → DatePicker visual reskin
+- **영향**:
+  - `_design-reference/page-org.jsx` 발효일 button → DatePicker dropdown 형태 (드롭다운 아이콘 + 날짜 표시)
+  - codebase 변경 0
+- **수락 기준**:
+  - proto button visual = codebase EffectiveDatePicker 형태 정합
+  - dialog 구현은 proto 한계로 placeholder 유지
+- **우선**: LOW (proto only, mock 한계)
+- **E2E**: N/A
+
+---
+
+### N+29 — Zoom controls + 검색 opacity highlight (OG-007 + OG-009) [LOW, proto only]
+
+- **결정**: codebase 패턴 유지 (ReactFlow Controls + opacity 0.2 highlight), proto 정합
+- **영향**:
+  - `_design-reference/page-org.jsx`:
+    - 4 custom zoom button (zoom in/out/eye/shield) → ReactFlow Controls 4 button (zoom in/out/fit/lock) 시각 정합
+    - search input onChange 핸들러 추가 → 매칭 노드만 풀 opacity, 나머지 opacity 0.2
+  - codebase 변경 0
+- **수락 기준**:
+  - proto eye/shield button 폐기 또는 의미 명시 (codebase 동등 기능 부재 시 폐기)
+  - proto search 결과 opacity 0.2 시각 정합
+- **우선**: LOW (proto only)
+- **E2E**: N/A
+
+---
+
+### N+30 — 위저드 매핑 layer (OG-010 + X7) [MEDIUM]
+
+- **결정**: proto 4 step + 6 changeType (merge/split/new/move/close/rename) ↔ codebase `OrgRestructurePlan` 모델 매핑 pure functions 신설
+- **영향**:
+  - 신규 `src/lib/org/restructure-mapping.ts` (pure functions):
+    - `mapChangeTypeToPlanAction(changeType)` → OrgRestructurePlan.action enum
+    - `mapChangeTypeToFields(changeType, formData)` → plan fields (sourceDept/targetDept/newName/newParent 등)
+    - reverse mapping (plan → wizard form) for edit case
+  - `prisma/schema.prisma` OrgRestructurePlan 모델 검증 (action enum 6 cases 정합 여부)
+    - 부재 시 schema migration 동반 (별도 사전 합의 게이트)
+  - i18n: 6 changeType 라벨 5 locale (기존 `org.*` namespace 확장)
+- **수락 기준**:
+  - 6 changeType 매핑 완전 (모든 case OrgRestructurePlan 표현 가능)
+  - unit test (pure function) — `vitest src/lib/org/restructure-mapping.test.ts`
+  - i18n 6 키 × 5 locale = 30 entries
+- **우선**: MEDIUM (N+27 dependency)
+- **E2E**: N+27 통합 시 (별도 E2E 0)
+- **블로커**: N+27 선행 권고 (단 매핑 layer 자체는 독립 진입 가능)
+
+---
+
+### Phase 4 다크 트랙 합본 후보 (별도)
+
+- **OG-018** (proto OrgNode oklch 인라인 + 다크 변형 부재) → F19/F24/F26 + EM-019 합본 plan inventory entry 1건 추가
+- **별도 트랙**: 본 batch 진입 0, Phase 4 다크 트랙 일괄 처리 시 cross-ref만 보장
+
+### 별도 i18n 트랙 후보 (신규)
+
+- **X6 "발효일/적용일/시행일" 3 라벨 결렬**: ko.json 안에 동시 공존 (line 3730/3830/4108/7970/8079/8223/8274). 별도 i18n 정합 트랙 inventory entry 1건 — batch 05 진입 0, Stage 4 후속
 
 ---
 
@@ -311,5 +439,18 @@ model OrgSnapshot         (line 4287)
 
 ---
 
-**상태**: DRAFT (게이트 미 수신, RECORD 미 promote)
-**다음 갱신**: 사용자 Q1-Q7 결정 수신 시 RECORD §7 사양 보강
+**상태**: ACTIVE (Stage 3 게이트 통과 2026-05-21, RECORD N+24~N+30 사양화 완료)
+**다음 갱신**: Stage 4 구현 진입 시 (PR-5A 머지 ~2026-05-24 02:43 KST 이후).
+**Paradigm**: batch 05 = codebase leader (production 보존 default, proto visual SSOT 만 적용).
+**Stage 4 진입 순서 권고**:
+1. **N+25** (view tab 4 mode, proto only) — 가장 작은 블라스트
+2. **N+28** (DatePicker visual, proto only) — 작음
+3. **N+29** (zoom + opacity, proto only) — 작음
+4. **N+24** (page-h + chips, **production 첫 surface**) — 카나리 1번 (codebase)
+5. **N+26** (DeptFlowNode 토큰화, **codebase**) — B3I production surface 카나리
+6. **N+30** (위저드 매핑 layer, **codebase**) — N+27 선행 layer
+7. **N+27** (RestructureModal full-screen 재작업, **codebase 최대 변경**) — 정합성 우선 결정, 최후 진입
+
+**Stage 4 pre-flight 권고 (별도 turn)**:
+- 코드베이스 트랙 4건 (N+24/N+26/N+27/N+30) — batch 04 패턴 정합 사전 audit
+- N+27 schema migration 여부 (OrgRestructurePlan.action enum 6 cases 정합 검증) — pre-flight 우선 항목
