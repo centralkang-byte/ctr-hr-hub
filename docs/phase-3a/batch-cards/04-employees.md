@@ -388,7 +388,7 @@
 
 ---
 
-### N+23 — 탭 키보드 네비 a11y (EM-016 + Session 227 F14 합본) [HIGH]
+### N+23 — 탭 키보드 네비 a11y (EM-016) — proto only, F14 합본 부적합 (Radix Tabs SSOT) [MEDIUM]
 
 - **결정**: detail 탭 7개 (proto) / 6→7개 (코드베이스) 에 WAI-ARIA tablist 패턴 + ←→/Home/End 키보드 핸들러 적용
 - **영향**:
