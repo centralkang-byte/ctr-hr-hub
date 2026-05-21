@@ -1,7 +1,7 @@
 # Phase 3a · Stage 4 Pre-flight — 코드베이스 적용 사전 검증
 
-> **base SHA**: `ac243446` (Session 228, batch 04 + 05 Stage 3 통과 후)
-> **작성일**: 2026-05-21 KST (batch 04 부분), 2026-05-21 KST (batch 05 부분 추가)
+> **base SHA**: `1cd4a77c` (Session 228, batch 04 + 05 + 07 Stage 3 통과 후)
+> **작성일**: 2026-05-21 KST (batch 04 / 05 / 07 누적)
 > **작성자**: 가디언 (proto 디자인 SSOT 트랙)
 > **목적**: PR-5A 머지 전 HOLD 슬롯 활용한 코드베이스 트랙 사전 audit. src/ 변경 0, read-only audit only.
 
@@ -32,7 +32,7 @@
 | N+18 | [n18-7tab-alignment.md](./n18-7tab-alignment.md) | **DB 부재 finding** — graceful empty 또는 batch 06 격상 |
 | N+23 | [n23-tab-a11y-f14-merge.md](./n23-tab-a11y-f14-merge.md) | **F14 합본 부적합** — 코드베이스 작업 0, proto만 |
 
-### Batch 05 트랙 (신규)
+### Batch 05 트랙
 
 | RECORD | 파일 | 핵심 결론 |
 |---|---|---|
@@ -40,6 +40,16 @@
 | N+26 | [n26-deptflownode-tokenize.md](./n26-deptflownode-tokenize.md) | AVATAR_PALETTE 토큰화 + mine highlight prop 추가 |
 | N+27 ⭐ | [n27-restructure-wizard-rework.md](./n27-restructure-wizard-rework.md) | **schema migration 불필요** (Json free-form) |
 | N+30 | [n30-step-changetype-mapping.md](./n30-step-changetype-mapping.md) | pure functions 매핑 layer ~80 lines + 16 unit test |
+
+### Batch 07 트랙 (신규)
+
+| RECORD | 파일 | 핵심 결론 |
+|---|---|---|
+| N+31 | [n31-status-chips-8-surface.md](./n31-status-chips-8-surface.md) | ⭐ batch 05 N+24 선행 의존. 2 dashboard surface consumer |
+| N+32 ⭐ | [n32-view-mode-hire-card-journey.md](./n32-view-mode-hire-card-journey.md) | ✅ **schema migration 불필요** (OnboardingTask + EmployeeOnboardingTask 완전 정합) |
+| N+34 | [n34-pill-tabs-filter.md](./n34-pill-tabs-filter.md) | ⚠️ **F14 임계 도달** (누적 2→5, 별도 a11y 트랙 진입 임박) |
+| N+35 | [n35-action-alignment.md](./n35-action-alignment.md) | force-complete API 재사용, remind endpoint 신설 가능성 |
+| N+36 | [n36-category-color-tokens.md](./n36-category-color-tokens.md) | 8 enum × wt-1~8 매핑, Phase 4 다크 inventory +1 |
 
 ## §2. Stage 4 진입 순서 재권고 (cross-batch)
 
@@ -74,9 +84,16 @@
 
 ### Batch 05 부산물 (신규)
 
-3. **StatusChips SSOT cross-batch 공통화** (N+24): batch 03 dashboard + batch 04 employees + batch 05 org 모두 chip 패턴. 합본 SSOT 신설 별도 PR 권고
+3. **StatusChips SSOT cross-batch 공통화** (N+24): batch 03 dashboard + batch 04 employees + batch 05 org + **batch 07 onboarding** 모두 chip 패턴. 합본 SSOT 신설 별도 PR 권고 (consumer = 4 batch)
 4. **WizardShell SSOT cross-batch 공통화** (N+27): Hire/Job/PerfCycle/Restructure 4 위저드 모두 proto 정합 → 공통 SSOT 신설 별도 batch 트랙 후보
 5. **AVATAR_PALETTE wt 토큰 확장** (N+26): 8 토큰 vs 10색 cycling 정책 사전 결정 필요. 신규 토큰 `--org-node-mine-*` 또는 `--wt-9`/`--wt-10` 결정 게이트
+
+### Batch 07 부산물 (신규)
+
+6. **CountDisplay SSOT cross-batch 공통화** (N+34): 2 onboarding dashboard + batch 04 employees count 패턴 정합 — SSOT 신설 후보
+7. **OnboardingTaskCategory wt 토큰 매핑 layer** (N+36): 8 enum × wt-1~8 SSOT (`src/lib/onboarding/category-color.ts`). cross-batch 가용성 (batch 04 EmployeeStatusChip + batch 05 DeptFlowNode + batch 07 카테고리)
+8. **F14 a11y 트랙 진입 임박** (N+34 부산물): 임계 카운트 누적 2 → 5 도달 (LeaveClient/MyTasksClient/OnboardingFilter/OffboardingFilter/ViewModeToggle). 별도 a11y batch 트랙 우선순위 격상
+9. **Phase 4 다크 inventory +1** (N+36): F19/F24/F26/EM-019/OG-018/ON-016 → **+N+36** = 누적 7 entry
 
 ## §4. 가드 (본 pre-flight 준수)
 
