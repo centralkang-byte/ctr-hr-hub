@@ -11,6 +11,7 @@
 | 04 | 직원 (employees) — list/detail/new/directory | done · gate passed | `9a940408` |
 | 05 | 조직도 (`/org`) | done · gate passed | `7321f766` |
 | 06 | 직원 경력 데이터 (Education/Certification/Activity) | reserved (격상 후보 — N+18 pre-flight) | — |
+| 07 | 온보딩/오프보딩 | done · gate pending | (this commit) |
 
 ## 격상 후보 근거
 

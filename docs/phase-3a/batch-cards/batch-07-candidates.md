@@ -205,15 +205,23 @@
 
 ## §5. 가디언 default 결정
 
-(가디언이 별도 turn 에서 결정 후 추가 commit. 본 섹션은 CC 미작성 placeholder.)
+**Batch 07 = D 온보딩/오프보딩** 채택 (CC 1순위)
 
-```
-batch 07 = ___
-근거: ___
-RECORD 후보 SHA reserve: N+31~ (또는 별도)
-```
+**근거**:
+1. 2 surface = batch fit (batch 04/05 정합 대역) — 단, audit 결과 codebase 측은 **8 surface** 발견 (Paradigm = codebase leader 확정, batch 05 정합)
+2. 의존성 0 (batch 04 직원 종결, cascading 위험 회피)
+3. schema 위험 낮음 (OnboardingTemplate / OnboardingTask / EmployeeOnboarding / EmployeeOffboarding / ExitInterview 등 10 모델 well-established)
+4. production sensitive 중-높음 (workflow 패턴, 사용자 워크플로 디자인)
+
+**차순위 defer**:
+- **J 알림+업무**: batch 06 격상 결정 + WizardShell SSOT 격상 후보와 묶어서 light batch 합본 후보로 reserve
+- **H 인사이트**: 8 sub-surface 분할 필요, batch 08+ defer
+
+**결정 일자**: 2026-05-21 KST (Session 228)
+**가디언 트랙 commit**: 본 audit commit과 함께 (batch 07 카드 신규 + §5 fill)
+**RECORD reserve**: N+31~N+36 (batch 07 §7 6 entries)
 
 ---
 
-**상태**: DRAFT (CC inventory 완료, 가디언 default 결정 대기)
-**다음 갱신**: 가디언 default 결정 수신 시 §5 채움 + batch 07 본문 audit 작성 별도 turn
+**상태**: CONFIRMED (가디언 default 결정 수신, batch 07 본문 audit 카드 작성 완료 in `07-onboarding-offboarding.md`)
+**다음 갱신**: Q1-Q7 게이트 수신 시 batch 07 카드 §7 사양화
