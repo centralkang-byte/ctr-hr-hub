@@ -133,5 +133,15 @@ Stage 1 audit 진입 시 추가 surface 발견 가능성:
 
 ---
 
-**상태**: 격상 결정 (Stage 1 P0 audit 대기)
-**다음 갱신**: batch 08 Stage 1 audit 별도 turn (5 surface 결함 inventory + Radix vs hook 결정 게이트)
+**상태**: ACTIVE — Stage 1 P0 audit done (`e3e6cb90`) + Stage 2 카드 done + Stage 3 게이트 통과 (가디언 default, 사용자 결재 skip)
+**다음 갱신**: Stage 4 pre-flight 별도 turn
+
+## §8. 진행 이력
+
+| Stage | 일자 | Commit | 산출물 |
+|---|---|---|---|
+| 격상 결정 | 2026-05-21 | `dad5386b` | inventory (본 파일) |
+| Stage 1 P0 audit | 2026-05-21 | `e3e6cb90` | `08-a11y-tabs-stage1.md` (5 surface inventory + 18 findings + Q1-Q5 사전 의제) |
+| Stage 2 카드 + Stage 3 게이트 + RECORD 사양화 | 2026-05-21 | (this commit) | `08-a11y-tabs.md` (Stage 2 본문 + Q1-Q5 결정 + N+43~N+47 plan body) |
+| Stage 4 pre-flight | (예정) | — | `stage4-preflight/n43~n47-*.md` |
+| Stage 4 implementation | (예정, PR-5A 머지 후) | — | 5 PR (또는 cross-batch 합본 PR) |

@@ -12,7 +12,7 @@
 | 05 | 조직도 (`/org`) | done · gate passed · pre-flight done | `ac243446` |
 | 06 | 직원 경력 데이터 (Education/Certification/Activity) | 격상 결정 (Stage 2 대기) | (this commit) |
 | 07 | 온보딩/오프보딩 | done · gate passed · pre-flight done | `1cd4a77c` |
-| 08 | Tabs a11y (F14 격상) | Stage 1 done · Stage 2 대기 | (this commit) |
+| 08 | Tabs a11y (F14 격상) | Stage 1+2 done · gate passed · pre-flight 대기 | `e3e6cb90` |
 | 09 | WizardShell SSOT 격상 | 격상 결정 (Stage 1 대기) | (this commit) |
 
 ## 격상 트랙 신설 근거 (2026-05-21 KST, Session 228 사용자 결재 통과)
