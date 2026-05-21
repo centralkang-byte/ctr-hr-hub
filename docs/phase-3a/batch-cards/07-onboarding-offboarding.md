@@ -247,6 +247,19 @@ i18n: 75 keys (`onboarding.*` + `offboarding.*` namespace 정합)
 > Paradigm 확정 = **codebase leader** (batch 05 정합).
 > 정합성 우선 결정: codebase production feature 전수 유지 + proto visual SSOT 만 적용.
 
+> **Stage 3 게이트 통과 (2026-05-21 KST, 가디언 default 결정)**
+> Q1-Q7 **전체 채택**. 사용자 결재 round skip — 7건 전부 **data-decidable** (정합성 데이터로 결정 가능, 사용자 mental model 의제 0) + **batch 05 paradigm 정합** + **cross-batch SSOT 활용** (Q4 → batch 05 N+24).
+> 가디언 메타룰 "정합성 데이터로 결정 가능한 의제 = default 채택" 적용. 사용자 batch 04/05 round "전체 채택" 일관성 정합.
+> | Q | 결정 | Stage 4 입력 |
+> |---|---|---|
+> | Q1 | **A** | codebase 8 surface 분리 유지 (production B5 보존) |
+> | Q2 | **A** | 4 view mode (grid/table/journey/analytics) 도입 |
+> | Q3 | **A** | OnboardingHireCard + OnboardingJourneyView 신규 컴포넌트 |
+> | Q4 | **A** | wd-stat-strip 4 chips — **batch 05 N+24 SSOT cross-batch 활용** ⭐ |
+> | Q5 | **전수 유지** | 감정펄스/체크인/ExitInterview/crossboarding/planType/법인필터/지연하이라이트 |
+> | Q6 | **A** | ONBOARD_STEPS 6단계 → OnboardingTemplate default seed |
+> | Q7 | **A** | Phase 4 다크 트랙 합본 (F19/F24/F26/EM-019/OG-018/ON-016) |
+
 ### Q1 — IA 통합 vs 분리 결정 (ON-005 + X2)
 - **A** (codebase 8 surface 분리 유지, production feature 보존)
 - **B** (proto 1 page 통합 채택, codebase 재작업)
@@ -285,24 +298,164 @@ i18n: 75 keys (`onboarding.*` + `offboarding.*` namespace 정합)
 
 ---
 
-## §7. RECORD 후보 인벤토리
+## §7. RECORD N+31~N+36 plan body 사양화
 
-사용자 게이트 통과 후 N+ 시리즈 promote 권고. **batch 05 사양화 N+24~N+30 사용 후 다음 SHA**:
+**Stage 3 게이트 통과 후 promote 완료 (2026-05-21).** 각 entry = Stage 4 작업계획 SSOT.
 
-| RECORD 후보 | 묶음 finding | 우선 |
-|---|---|---|
-| **N+31** | ON-002 + X4 (wd-stat-strip 4 chips 도입) + Q4 — batch 05 N+24 SSOT cross-batch 활용 | HIGH |
-| **N+32** | ON-001 + ON-003 + X1 + X5 + X7 (4 view mode + Hire Card + journey view) + Q2 + Q3 | HIGH |
-| **N+33** | ON-004 + X3 (ONBOARD_STEPS 6단계 cross-match default seed) + Q6 | MEDIUM |
-| **N+34** | ON-012 (pill-tabs 상태 필터 정합) | MEDIUM |
-| **N+35** | ON-006 + ON-010 (강제완료/리마인드 액션 정합 — 실 API + visual reference) | LOW |
-| **N+36** | ON-013 (6단계 카테고리 색상 wt 토큰) | LOW |
+| RECORD | 묶음 finding | 우선 | 트랙 |
+|---|---|---|---|
+| **N+31** | ON-002 + X4 (wd-stat-strip 4 chips) + Q4 | HIGH | codebase + cross-batch SSOT 의존 |
+| **N+32** | ON-001 + ON-003 + X1 + X5 + X7 (4 view mode + Hire Card + journey view) + Q2/Q3 | HIGH | codebase (최대 변경) |
+| **N+33** | ON-004 + X3 (ONBOARD_STEPS 6단계 default seed) + Q6 | MEDIUM | proto + DB seed |
+| **N+34** | ON-012 (pill-tabs 상태 필터 정합) | MEDIUM | codebase 정합 |
+| **N+35** | ON-006 + ON-010 (강제완료/리마인드 액션 정합) | LOW | codebase 미세 정합 |
+| **N+36** | ON-013 (6단계 카테고리 색상 wt 토큰) | LOW | codebase 토큰화 |
+
+---
+
+### N+31 — wd-stat-strip 4 chips 도입 (Q4) [HIGH]
+
+- **트랙**: codebase (`/onboarding` + `/offboarding` 대시보드 2 surface)
+- **우선**: HIGH
+- **의존성**: ⭐ **batch 05 N+24 (StatusChips + PageHeader cross-batch SSOT) 선행 필수**
+- **Stage 4 입력**:
+  - ON-002 (wd-stat-strip 4 chips) + 정합성 검증 결과 (batch 03/04/05 SSOT 정합)
+  - N+24 SSOT 활용: `<StatusChips chips={[...]}/>` 컴포넌트 cross-batch reuse
+  - 4 chip 데이터 source (proto 정합):
+    - 진행 중: `inProgress + delayed.length` (Onboarding+Offboarding 합산 또는 분리)
+    - 지연: `delayed.length` (danger variant)
+    - 완료: `done` (success variant)
+    - 이번 주 입사: 입사일 ≤ 7일 (warning variant)
+  - i18n: 4 chip 라벨 × 5 locale = 20 entries (또는 `onboarding.statChip.*` namespace)
+- **Stage 4 검증**:
+  - 8 surface 중 dashboard 2개 (`/onboarding` + `/offboarding`)에 chip data 정합
+  - N+24 SSOT 와 cross-ref (StatusChips 시그니처 변경 0)
+  - 모바일 reflow (chips wrap, 가로 overflow 0)
+  - e2e: 4 chips 데이터 정합 + 변동 회귀 0 시나리오
+
+---
+
+### N+32 — 4 view mode + OnboardingHireCard + OnboardingJourneyView (Q2 + Q3) [HIGH]
+
+- **트랙**: codebase (`/onboarding/page.tsx` 대시보드 + 신규 컴포넌트 2종)
+- **우선**: HIGH (최대 변경)
+- **의존성**:
+  - **N+31 선행 권고** (StatusChips SSOT 정합 후 진입)
+  - **batch 05 N+25 (View mode 명명 정렬)** cross-ref — 동일 4 mode 키 정합 (`tree/directory/list/grid` vs `grid/table/journey/analytics`)
+- **Stage 4 입력**:
+  - ON-001 + X1: 4 view mode 토글 (grid/table/journey/analytics)
+    - grid = Hire Card grid (3-col → 1-col 모바일)
+    - table = 현행 list view 유지
+    - journey = 단계별 timeline (직원 클릭 시 진입)
+    - analytics = chart variant (배치 진행률 통계)
+  - ON-003 + X5: **신규 `OnboardingHireCard.tsx`** (~150 lines)
+    - 배너 status pill (delay/progress/done/offboarding)
+    - avatar (av-hue) + name + role + meta (joinDate/D-day/buddy)
+    - progress bar (proto `<bar><i>` 패턴)
+    - 2 actions (여정 보기 + 강제 완료 or 리마인드)
+  - ON-003 + X7: **신규 `OnboardingJourneyView.tsx`** (~120 lines)
+    - 6 ONBOARD_STEPS 단계별 timeline
+    - 각 단계 status + 카테고리 색상 + 완료 일시
+    - inspector 패턴 (우측 슬라이드)
+  - 라이브러리: 기존 `@xyflow/react` 재사용 검토 (또는 단순 timeline component)
+  - i18n: 4 view mode 라벨 + Hire Card meta 라벨 + journey 단계 라벨 × 5 locale = **~50 entries**
+- **Stage 4 검증**:
+  - 4 view mode 토글 + URL persist (?view=grid|table|journey|analytics)
+  - Hire Card grid 모바일 reflow (3-col → 1-col)
+  - journey view 단계 timeline 시각 정합 (proto SSOT)
+  - codebase 기존 list/table view 회귀 0 (default = list 유지, opt-in 4 mode)
+  - e2e: 4 view mode 각 + Hire Card 클릭 → journey view 진입 시나리오
+
+---
+
+### N+33 — ONBOARD_STEPS 6단계 OnboardingTemplate default seed (Q6) [MEDIUM]
+
+- **트랙**: DB seed + proto data.js
+- **우선**: MEDIUM
+- **의존성**: 0 (독립 진입 가능)
+- **Stage 4 입력**:
+  - ON-004 + X3: proto `ONBOARD_STEPS` 6단계 → `OnboardingTemplate` default seed
+  - `prisma/seed.ts` 또는 `prisma/seed-onboarding-default.ts` 신규
+  - 6단계 (proto 정합):
+    1. 서류 제출 (DOCUMENT)
+    2. OJT 교육 (TRAINING)
+    3. 보안 교육 (TRAINING)
+    4. 버디 매칭 + 미팅 (MEETING)
+    5. 시스템 접근 권한 (ACCESS)
+    6. 팀 소개 + 인사 (MEETING)
+  - 카테고리 enum: DOCUMENT / TRAINING / MEETING / ACCESS — 4종
+  - 회사별 customization 여지 보존 (default 적용 + override 가능)
+  - proto `data.js` 측 ONBOARD_STEPS 동일 SSOT 정합
+- **Stage 4 검증**:
+  - 12 법인 (CTR + 외 11) 각 default seed 생성 idempotent
+  - 기존 회사별 custom template 회귀 0 (덮어쓰기 금지)
+  - unit test: 6 step seed + 4 카테고리 mapping
+  - proto data.js (`_design-reference/data.js`) ONBOARD_STEPS 정합
+
+---
+
+### N+34 — pill-tabs 상태 필터 정합 (ON-012) [MEDIUM]
+
+- **트랙**: codebase (`/onboarding` + `/offboarding` 대시보드 필터)
+- **우선**: MEDIUM
+- **의존성**: 0 (독립 진입 가능)
+- **Stage 4 입력**:
+  - ON-012: proto `pill-tabs` 4 상태 필터 (all/progress/done/delay)
+  - codebase: StatusBadge 적용 추정 → pill-tabs 패턴 정합 보강
+  - count display: `<count-display><b>{filtered.length}</b>건</count-display>` SSOT
+  - 4 status × i18n × 5 locale = 20 entries (또는 기존 status 키 재사용)
+- **Stage 4 검증**:
+  - 4 status 필터 클릭 → URL persist (?status=all|progress|done|delay)
+  - count display 데이터 정합
+  - F14 수동 tablist 임계 카운트 영향 검증 (현재 2/5, +1 시 3/5)
+  - e2e: 4 status 필터 통과 + count 정합 시나리오
+
+---
+
+### N+35 — 강제완료/리마인드 액션 정합 (ON-006 + ON-010) [LOW]
+
+- **트랙**: codebase 미세 정합 (Hire Card actions)
+- **우선**: LOW
+- **의존성**: **N+32 선행 필수** (Hire Card 컴포넌트 안의 actions area)
+- **Stage 4 입력**:
+  - ON-006: 강제 완료 action — `POST /api/v1/onboarding/[id]/force-complete` 기존 API 재사용 (proto는 toast만)
+  - ON-010: 리마인드 action — notification API 기존 (검증 필요) 또는 신규 endpoint
+  - delay status 시 강제 완료, 그 외 status 시 리마인드 (proto 분기 정합)
+  - toast UX + ApprovalFlow 통합 검토 (관리자 권한 분기)
+- **Stage 4 검증**:
+  - 강제 완료 → 상태 'done' 전환 + audit log
+  - 리마인드 → 알림 발송 + delivery 추적
+  - 권한 가드: HR_ADMIN / EXECUTIVE만 강제 완료 가능
+  - e2e: 2 action × 권한 매트릭스 시나리오
+
+---
+
+### N+36 — 6단계 카테고리 색상 wt 토큰 (ON-013) [LOW]
+
+- **트랙**: codebase 토큰화
+- **우선**: LOW
+- **의존성**: **N+32 선행 권고** (Hire Card + journey view 안의 카테고리 색상)
+- **Stage 4 입력**:
+  - ON-013: 4 enum (DOCUMENT/TRAINING/MEETING/ACCESS) 카테고리 색상
+  - Workday wt 토큰 매핑 (batch 05 N+26 DeptFlowNode 패턴 정합):
+    - DOCUMENT → `--wt-1` (또는 info)
+    - TRAINING → `--wt-3` (또는 success)
+    - MEETING → `--wt-4` (또는 accent)
+    - ACCESS → `--wt-5` (또는 warning)
+  - status SSOT cross-ref (N+22 batch 04 EmployeeStatusChip)
+  - 다크 known-deferred → ON-016 / Phase 4 합본
+- **Stage 4 검증**:
+  - 4 카테고리 시각 회귀 (라이트 + 다크 known-deferred)
+  - 인라인 hex 0건 (grep 검증)
+  - journey view + Hire Card + table view 일관
+
+---
 
 **Phase 4 다크 트랙 합본 후보**:
-- **ON-016** (proto 인라인 `av-hue` + status pill oklch + 다크 변형 부재) → F19/F24/F26 + EM-019 + OG-018 합본 plan inventory entry 1건 추가
+- **ON-016** (proto 인라인 `av-hue` + status pill oklch + 다크 변형 부재) → F19/F24/F26 + EM-019 + OG-018 + ON-016 합본 plan inventory entry 1건 추가
 
 **별도 트랙 후보 (신규)**:
-- **ON-009 버디 일괄 매칭**: codebase Buddy 모델/API 존재 여부 확인 후 분기 — 부재 시 batch 08+ 격상 후보, 존재 시 N+35에 합본
+- **ON-009 버디 일괄 매칭**: codebase Buddy 모델/API 존재 여부 검증 → 부재 시 batch 08+ 격상 후보, 존재 시 N+35에 합본
 - **ON-015 모바일 reflow**: Phase 4 모바일 polish 트랙 합본
 
 ---
@@ -316,5 +469,24 @@ i18n: 75 keys (`onboarding.*` + `offboarding.*` namespace 정합)
 
 ---
 
-**상태**: DRAFT (게이트 미 수신, RECORD 미 promote)
-**다음 갱신**: 사용자 Q1-Q7 결정 수신 시 RECORD §7 사양 보강
+**상태**: ACTIVE (Stage 3 게이트 통과 2026-05-21, RECORD N+31~N+36 사양화 완료, 가디언 default 결정)
+**다음 갱신**: Stage 4 진입 시 (PR-5A 머지 ~2026-05-24 02:43 KST 이후).
+**Paradigm**: batch 07 = codebase leader (batch 05 정합).
+**Stage 4 진입 순서 권고** (cross-batch 20 RECORD 누적):
+
+```
+proto only (11건):
+N+21 → N+19 → N+20 → N+22 → N+23 → N+25 → N+28 → N+29 → N+33 → N+35 → N+36
+
+SSOT 신설 (1건):
+N+24 (StatusChips + PageHeader cross-batch SSOT — batch 05)
+
+codebase (8건):
+N+17 → N+26 → N+18 → N+30 → N+27 → N+31 → N+34 → N+32
+```
+
+**Cross-batch 의존성 명시**:
+- **N+31 (batch 07) ← N+24 (batch 05)**: StatusChips SSOT cross-batch reuse — batch 05 N+24 선행 머지 후 batch 07 N+31 진입
+- **N+32 ↔ N+25**: View mode 명명 4 mode 정합 (proto/codebase 양쪽 동시 진입)
+- **N+35 ← N+32**: Hire Card actions area는 N+32 컴포넌트 신설 후 진입
+- **N+36 ← N+32**: 카테고리 색상은 N+32 컴포넌트 신설 후 토큰 적용
