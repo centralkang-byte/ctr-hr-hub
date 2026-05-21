@@ -14,6 +14,24 @@
       "runtimeArgs": ["-lc", "PATH=/opt/homebrew/bin:$PATH HOME_PREVIEW=true npm run dev"],
       "port": 3002,
       "autoPort": true
+    },
+    {
+      "name": "pr3-verify",
+      "runtimeExecutable": "/bin/zsh",
+      "runtimeArgs": ["-c", "cd /Users/sangwoo/Documents/Project/HR_Hub/ctr-hr-hub/.claude/worktrees/pr3-leave-reskin && PATH=/opt/homebrew/bin:$PATH exec ./node_modules/.bin/next dev --port 3014"],
+      "port": 3014
+    },
+    {
+      "name": "pr4-verify",
+      "runtimeExecutable": "/bin/zsh",
+      "runtimeArgs": ["-c", "cd /Users/sangwoo/Documents/Project/HR_Hub/ctr-hr-hub/.claude/worktrees/pr4-monthly-canary && PATH=/opt/homebrew/bin:$PATH exec ./node_modules/.bin/next dev --port 3014"],
+      "port": 3014
+    },
+    {
+      "name": "pr5a-verify",
+      "runtimeExecutable": "/bin/zsh",
+      "runtimeArgs": ["-c", "cd /Users/sangwoo/Documents/Project/HR_Hub/ctr-hr-hub/.claude/worktrees/pr5a-dashboard-workday && PATH=/opt/homebrew/bin:$PATH exec ./node_modules/.bin/next dev --port 3015"],
+      "port": 3015
     }
   ]
 }
