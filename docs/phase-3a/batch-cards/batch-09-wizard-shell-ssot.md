@@ -155,5 +155,20 @@ interface WizardShellProps {
 
 ---
 
-**상태**: 격상 결정 (Stage 1 P0 audit 대기)
-**다음 갱신**: batch 09 Stage 1 audit 별도 turn (4 위저드 inline 패턴 inventory + SSOT API design)
+**상태**: ACTIVE — Stage 1 P0 audit done (`9289a792`) + Stage 2 카드 done + Stage 3 게이트 통과 (가디언 default, 사용자 결재 skip)
+**다음 갱신**: Stage 4 pre-flight 별도 turn
+
+## §6. 진행 이력
+
+| Stage | 일자 | Commit | 산출물 |
+|---|---|---|---|
+| 격상 결정 | 2026-05-21 | `dad5386b` | inventory (본 파일) |
+| Stage 1 P0 audit | 2026-05-21 | `9289a792` | `09-wizardshell-ssot-stage1.md` (5 wizard inventory + 14 findings + Q1-Q6 사전 의제) ⚠️ BulkUploadWizard 추가 발견 |
+| Stage 2 카드 + Stage 3 게이트 + RECORD 사양화 | 2026-05-21 | (this commit) | `09-wizardshell-ssot.md` (Stage 2 본문 + Q1-Q6 결정 + N+48~N+53 plan body) |
+| Stage 4 pre-flight | (예정) | — | `stage4-preflight/n48~n53-*.md` |
+| Stage 4 implementation | (예정, PR-5A 머지 후) | — | 6 PR (점진 마이그레이션, N+50 = batch 05 N+27 분리 PR) |
+
+## §7. Q6 결정 (BulkUploadWizard 포함)
+
+Stage 1 audit 에서 BulkUploadWizard (codebase only B2 era) 추가 발견 → 격상 scope 정정.
+Stage 3 게이트 통과 시 Q6=A 채택: 5번째 wizard SSOT 적용 (batch 05 Q6 패턴 정합 — codebase only 기능 전수 유지).
