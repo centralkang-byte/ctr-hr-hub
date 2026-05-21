@@ -1,7 +1,7 @@
 # Phase 3a · Stage 4 Pre-flight — 코드베이스 적용 사전 검증
 
-> **base SHA**: `1cd4a77c` (Session 228, batch 04 + 05 + 07 Stage 3 통과 후)
-> **작성일**: 2026-05-21 KST (batch 04 / 05 / 07 누적)
+> **base SHA**: `1401e8ca` (Session 228, batch 04 + 05 + 07 + 08 Stage 3 통과 후)
+> **작성일**: 2026-05-21 KST (batch 04 / 05 / 07 / 08 누적)
 > **작성자**: 가디언 (proto 디자인 SSOT 트랙)
 > **목적**: PR-5A 머지 전 HOLD 슬롯 활용한 코드베이스 트랙 사전 audit. src/ 변경 0, read-only audit only.
 
@@ -41,15 +41,25 @@
 | N+27 ⭐ | [n27-restructure-wizard-rework.md](./n27-restructure-wizard-rework.md) | **schema migration 불필요** (Json free-form) |
 | N+30 | [n30-step-changetype-mapping.md](./n30-step-changetype-mapping.md) | pure functions 매핑 layer ~80 lines + 16 unit test |
 
-### Batch 07 트랙 (신규)
+### Batch 07 트랙
 
 | RECORD | 파일 | 핵심 결론 |
 |---|---|---|
 | N+31 | [n31-status-chips-8-surface.md](./n31-status-chips-8-surface.md) | ⭐ batch 05 N+24 선행 의존. 2 dashboard surface consumer |
 | N+32 ⭐ | [n32-view-mode-hire-card-journey.md](./n32-view-mode-hire-card-journey.md) | ✅ **schema migration 불필요** (OnboardingTask + EmployeeOnboardingTask 완전 정합) |
-| N+34 | [n34-pill-tabs-filter.md](./n34-pill-tabs-filter.md) | ⚠️ **F14 임계 도달** (누적 2→5, 별도 a11y 트랙 진입 임박) |
+| N+34 | [n34-pill-tabs-filter.md](./n34-pill-tabs-filter.md) | ⚠️ **F14 임계 도달** (누적 2→5, batch 08 진입 트리거) |
 | N+35 | [n35-action-alignment.md](./n35-action-alignment.md) | force-complete API 재사용, remind endpoint 신설 가능성 |
 | N+36 | [n36-category-color-tokens.md](./n36-category-color-tokens.md) | 8 enum × wt-1~8 매핑, Phase 4 다크 inventory +1 |
+
+### Batch 08 트랙 (신규)
+
+| RECORD | 파일 | 핵심 결론 |
+|---|---|---|
+| N+43 | [n43-arrow-key-hook.md](./n43-arrow-key-hook.md) | `useArrowKeyNavigation` hook 신설 (선행, src/hooks/ SSOT) |
+| N+44 | [n44-mytasks-leave-migration.md](./n44-mytasks-leave-migration.md) | MyTasksClient Radix Tabs + LeaveClient radiogroup ⭐ F14 N+9 해소 |
+| N+45 | [n45-onboarding-filter-batch07-merge.md](./n45-onboarding-filter-batch07-merge.md) | Onboarding/Offboarding Filter radiogroup, **batch 07 N+34 합본 PR 권고** |
+| N+46 ⭐ | [n46-orgviewmode-3way-merge.md](./n46-orgviewmode-3way-merge.md) | OrgViewModeToggle Radix Tabs, **3-way 합본 권고 = (b) 분할 진입** (의존성 0, 회귀 격리) |
+| N+47 | [n47-a11y-ssot-axe-baseline.md](./n47-a11y-ssot-axe-baseline.md) | ⭐ **`.claude/rules/accessibility.md` 기존 존재** — 신규 SSOT X, 기존 확장 |
 
 ## §2. Stage 4 진입 순서 재권고 (cross-batch)
 
