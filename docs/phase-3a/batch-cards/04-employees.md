@@ -206,6 +206,17 @@
 > 근거: 위저드 4종(Hire/JobPosting/PerfCycle/OrgRestructure) 패턴 분석,
 > KPI 패턴 사용 빈도, drawer 12종 패턴 분석.
 
+> **Stage 3 게이트 통과 (2026-05-21)** — 사용자 가디언 추천안 **전체 채택 확정**.
+> | Q | 결정 | Stage 4 입력 |
+> |---|---|---|
+> | Q1 | **B** | /directory → /employees?view=card 흡수 + 토글 |
+> | Q2 | **B** | 코드베이스 6탭 → 7탭 갱신 (career 추가) |
+> | Q3 | **A** | 패턴 B chips (재직/휴직/퇴사예정/입사예정) |
+> | Q4 | **B** | 위저드 4종 데모 한계 배너 SSOT |
+> | Q5 | **A** | data.js 5 SSOT 키 신설 |
+> | Q6 | **drawer 폼** | 메시지/엑셀/일괄발령 = drawer 패턴 |
+> | Q7 | **A** | 현행 유지 + quickStats SSOT 보강 |
+
 ### Q1 — /directory SSOT 결정 (EM-001)
 - **A** (proto 신설): 카드 grid + 사진 큰 thumbnail, list와 다른 mental model
 - **B** (코드베이스 SSOT만): /employees 가 directory 역할 흡수, 카드 grid 토글
@@ -259,22 +270,147 @@
 
 ---
 
-## §7. RECORD 후보 인벤토리
+## §7. RECORD N+17~N+23 plan body 사양화
 
-사용자 게이트 통과 후 N+ 시리즈로 promote 권고. **현재까지 F1~F26 사용, batch 03 에서 추가 미확정**. 다음 SHA 사전 reserve:
+**Stage 3 게이트 통과 후 promote 완료 (2026-05-21).** 각 entry = Stage 4 작업계획 SSOT.
 
-| RECORD 후보 | 묶음 finding | 우선 |
-|---|---|---|
-| **N+17** | EM-001 (directory SSOT) + Q1 결정 | HIGH |
-| **N+18** | EM-002 (탭 수) + Q2 결정 | HIGH |
-| **N+19** | EM-003 / 004 / 005 / 007 / 008 (data.js SSOT 누락 5건) | MEDIUM |
-| **N+20** | EM-009 + Q5 (위저드 옵션 SSOT 통합) | MEDIUM |
-| **N+21** | EM-010 + Q4 (위저드 완결성) | HIGH |
-| **N+22** | EM-011 + X1 (상태 chip SSOT) | MEDIUM |
-| **N+23** | EM-016 (탭 키보드 네비) + Session 227 F14 a11y 합본 | HIGH |
+---
 
-**Phase 4 다크 트랙 합본 후보**:
-- EM-019 (oklch light-tinted 배경 다수) → F19/F24/F26 합본 plan inventory 에 추가
+### N+17 — /directory surface SSOT 흡수 (EM-001 + Q1=B) [HIGH]
+
+- **결정**: 코드베이스 `/directory` 를 `/employees?view=card` 로 자동 redirect, /employees 가 카드 grid 토글 모드로 흡수
+- **영향 surface**:
+  - `src/app/(dashboard)/directory/page.tsx` → redirect to `/employees?view=card`
+  - `src/app/(dashboard)/directory/DirectoryClient.tsx` → 폐기 후보 (병합 후 삭제 1주 안정화)
+  - `src/app/(dashboard)/employees/page.tsx` → searchParams.view 분기
+  - `src/app/(dashboard)/employees/EmployeeListClient.tsx` → 상단 우측 list/card 토글 버튼 + grid 모드 추가 (~80 lines)
+- **카드 모드 spec**: 사진 thumbnail + 이름 + 부서 + 직급 + 상태 chip + grid-cols-2/4 reflow
+- **수락 기준**:
+  - `/directory` 진입 시 자동 redirect (HTTP 308 또는 클라이언트 router.replace)
+  - 토글 상태 URL persist (?view=list|card)
+  - 카드 모드 다중선택 + bulk action 정합 유지
+- **E2E**: list-card 토글 전환 + URL persist 2 시나리오
+- **우선**: HIGH (P0 surface 통합 핵심)
+- **블로커**: PR-5A 머지 (`/home` 안정화 후 employees 트랙 진입)
+
+---
+
+### N+18 — Detail 6탭 → 7탭 정렬 (EM-002 + Q2=B) [HIGH]
+
+- **결정**: 코드베이스 spec 6탭 (profile/assignment-history/compensation-info/attendance/loa/performance) → **7탭** (career 추가)
+- **영향**:
+  - `src/app/(dashboard)/employees/[id]/EmployeeDetailClient.tsx` 에 7번째 TabsTrigger 'career' 추가
+  - 신규 `src/components/employees/tabs/CareerTab.tsx` (~120 lines)
+  - 4 섹션: 학력 / 자격증 / 사내교육 / 사내활동
+  - i18n: `messages/{ko,en,zh,vi,es}.json` 에 `detailTabCareer` + 4 섹션 라벨 키 ~20 추가
+- **DB**: 기존 모델 검토 (`Education`, `Certification`, `TrainingRecord` 존재 여부 grep — 부재 시 schema migration 별도 트랙 — proto only 우선 진입)
+- **수락 기준**:
+  - 7번째 탭 'career' 클릭 시 4 섹션 렌더 + 빈 상태 EmptyState
+  - DB 미존재 시 graceful empty
+- **E2E**: 탭 전환 + 4 섹션 표시 1 시나리오
+- **우선**: HIGH (proto SSOT 정합)
+- **블로커**: schema migration 합의 (DB 모델 부재 시)
+
+---
+
+### N+19 — data.js SSOT 누락 5건 (EM-003/004/005/007/008) [MEDIUM, proto only]
+
+- **결정**: `_design-reference/data.js` 에 mock 데이터 SSOT 키 5건 신설:
+  - `employeeDetail.mboHistory[]` (EM-003, perf 탭)
+  - `employeeDetail.praises[]` (EM-003, perf 탭)
+  - `employeeDetail.evaluation[]` 확장 (EM-003)
+  - `employeeDetail.education[]` / `certifications[]` / `trainings[]` / `activities[]` (EM-004, career 탭)
+  - `employeeDetail.attendance30.daily[]` 직원별 30 entries (EM-005, attendance 탭)
+  - `directory[i].quickStats` (EM-007, inspector)
+  - `directory[i].recentActivity[]` (EM-008, inspector)
+- **영향 컴포넌트**:
+  - `page-employee-detail.jsx` (perf/career/attendance 탭) 인라인 array literal → SSOT 참조
+  - `inspector.jsx` (quickStats/recentActivity) 고정 값 → employee.code 로 lookup
+- **수락 기준**:
+  - 인라인 array literal 0건 (grep `\[.*\{.*name.*\}` 검증)
+  - 직원별 quickStats/recentActivity 다양화 (전 직원 동일 패턴 해소)
+- **우선**: MEDIUM (proto only — 코드베이스 무관)
+- **E2E**: N/A (proto only, 시각 검증으로 갈음)
+
+---
+
+### N+20 — 위저드 옵션 SSOT 통합 (EM-009 + Q5=A) [MEDIUM]
+
+- **결정**: `_design-reference/data.js` 에 5 SSOT 키 신설:
+  - `data.departments` 단일화 (현 15개 유지, wizard 6개 인라인 제거)
+  - `data.ranks[]` (사원 ~ 임원, 위저드 step 2 약식 → SSOT)
+  - `data.salaryBands[]` (L0-L6/M1/M2 또는 R0-R5 — Q5 후속 결정)
+  - `data.onboardingTemplates[]` (위저드 step 4, 4종)
+  - `data.employmentTypes[]` (위저드 + directory 공용)
+- **영향**:
+  - `_design-reference/wizards.jsx` HireWorkerWizard step 2/3/4 옵션 인라인 → SSOT 참조
+  - 연봉 밴드 표기 통일: proto `L0-L6/M1/M2` vs `employeeDetail.payroll.band="R3"` → **매핑 layer** 추가 (단일 체계 채택은 X4 cross-surface 별도 트랙)
+- **수락 기준**:
+  - 위저드 옵션 인라인 array 0건
+  - departments 15개 = data.directory 부서 매핑 100% 일치
+  - employmentTypes = directory.employment 값 매핑 100% 일치
+- **우선**: MEDIUM (5 SSOT cascading 1회로 다수 finding 해소)
+- **E2E**: HireWorker 위저드 6 step 통과 + 옵션 dropdown 항목 정합 시나리오
+
+---
+
+### N+21 — 위저드 4종 데모 한계 배너 SSOT (EM-010 + Q4=B) [HIGH]
+
+- **결정**: 위저드 4종(Hire/JobPosting/PerfCycle/OrgRestructure) 완료 step 에 공통 데모 한계 배너 추가. **persist/auto-navigate 추가 0** (proto 일관성).
+- **영향**:
+  - `_design-reference/ui.jsx` 에 `<DemoLimitBanner>` SSOT 컴포넌트 신설 (~20 lines)
+  - 4 위저드 완료 화면 (`wizards.jsx`) 토스트 호출 직전/직후에 배너 1줄 노출
+  - 디자인: amber bg + info icon + "데모: 새로고침 시 데이터 미저장" 텍스트
+- **수락 기준**:
+  - 4 위저드 완료 화면 모두 동일 배너 컴포넌트 호출
+  - 배너 디자인 inline 0건 (SSOT만)
+  - **Hire 단독 persist 시도 0** (정합성 가드)
+  - 토스트 + 배너 + onComplete() 패턴 4종 모두 정합
+- **우선**: HIGH (proto 일관성 핵심, Q4 reversal 결정 구현)
+- **E2E**: 4 위저드 각 완료 step 에서 배너 표시 + 새로고침 후 디렉토리 미변경 4 시나리오
+
+---
+
+### N+22 — 상태 chip SSOT 통합 (EM-011 + X1) [MEDIUM]
+
+- **결정**: `_design-reference/ui.jsx` 에 `<EmployeeStatusChip status={"재직"|"휴직"|"퇴사예정"} />` SSOT 신설
+- **영향**:
+  - `ui.jsx` 컴포넌트 추가 (~30 lines, STATUS_MAP { 재직: "success", 휴직: "warning", 퇴사예정: "danger" })
+  - `page-employees.jsx` if-else 분기 3개 → 컴포넌트 호출 1줄
+  - `inspector.jsx` 동일 분기 → 컴포넌트 호출
+  - `page-employee-detail.jsx` wb-status `<span className="d">` 인라인 oklch → 컴포넌트
+- **수락 기준**:
+  - 상태 chip if-else 0건 (grep `e\.status === "재직"` 검증)
+  - 색상 mapping 단일 진실 (3 location 색상 정합)
+  - 코드베이스: shadcn `<Badge>` variant 매핑 검토 (별도 트랙)
+- **우선**: MEDIUM (코드 중복 제거)
+- **시각 회귀**: 상태 chip 색상 정합 시각 회귀 1축 (라이트 + 다크)
+
+---
+
+### N+23 — 탭 키보드 네비 a11y (EM-016 + Session 227 F14 합본) [HIGH]
+
+- **결정**: detail 탭 7개 (proto) / 6→7개 (코드베이스) 에 WAI-ARIA tablist 패턴 + ←→/Home/End 키보드 핸들러 적용
+- **영향**:
+  - `_design-reference/page-employee-detail.jsx`:
+    - 탭 컨테이너 → `role="tablist"`, `aria-orientation="horizontal"`
+    - 각 button → `role="tab"`, `aria-selected`, `aria-controls={panelId}`, `tabindex={selected ? 0 : -1}`
+    - 키보드 핸들러: `onKeyDown` (←: 이전 / →: 다음 / Home: 첫번째 / End: 마지막) + focus follows selection
+    - 패널 → `role="tabpanel"`, `aria-labelledby={tabId}`, `tabindex={0}`
+  - 코드베이스 `EmployeeDetailClient.tsx` 의 shadcn `Tabs` 는 Radix UI 기반 = 이미 WAI-ARIA 정합 → 검증만
+- **수락 기준**:
+  - axe-core a11y 검사 통과 (detail 페이지)
+  - Playwright `page.keyboard.press('ArrowRight')` 시나리오 PASS
+  - **Session 227 F14 inventory entry 1건 해소** (수동 tablist a11y 미구현)
+- **우선**: HIGH (WCAG 2.1 keyboard navigation 핵심)
+- **E2E**: 키보드 ←→ 탭 이동 + focus follows selection 1 시나리오
+
+---
+
+### Phase 4 다크 트랙 합본 후보 (별도)
+
+- **EM-019** (oklch light-tinted 배경 다수: perf "받은 칭찬" ico, 등급 카드, praise 칩 등) → F19/F24/F26 합본 plan inventory 에 entry 1건 추가
+- **별도 트랙**: 본 batch 진입 0, Phase 4 다크 트랙 일괄 처리 시 cross-ref 만 보장
 
 ---
 
@@ -287,5 +423,13 @@
 
 ---
 
-**상태**: DRAFT (게이트 미 수신, RECORD 미 promote)
-**다음 갱신**: 사용자 Q1-Q7 결정 수신 시 RECORD §7 사양 보강
+**상태**: ACTIVE (Stage 3 게이트 통과 2026-05-21, RECORD N+17~N+23 사양화 완료)
+**다음 갱신**: Stage 4 구현 진입 시 (PR-5A 머지 ~2026-05-24 02:43 KST 이후). 각 N+ entry = 독립 PR 또는 batch grouping.
+**Stage 4 진입 순서 권고**:
+1. **N+21** (위저드 데모 한계 배너, proto only) — 가장 작은 블라스트, 카나리 1번
+2. **N+19** (data.js 5건 SSOT, proto only) — 후속 카나리 2번
+3. **N+20** (위저드 옵션 SSOT, proto only) — 후속 카나리 3번
+4. **N+22** (상태 chip SSOT, proto only) — 4번
+5. **N+17** (/directory 흡수, **코드베이스 포함**) — 5번, schema 무변경 + redirect
+6. **N+18** (7탭 정렬, **코드베이스 + DB 모델 검토**) — 6번, schema migration 합의 후
+7. **N+23** (탭 키보드 네비 a11y) — 7번, proto + 코드베이스 검증
