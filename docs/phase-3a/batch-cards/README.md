@@ -9,7 +9,7 @@
 | 02 | 나의공간 — 근태 (`/attendance`) | done | `6632f06b` |
 | 03 | 대시보드 (`/home`) | done | `27af20b8` |
 | 04 | 직원 (employees) — list/detail/new/directory | done · gate passed | `9a940408` |
-| 05 | 조직도 (`/org`) | reserved (TBD) | — |
+| 05 | 조직도 (`/org`) | done · gate pending | (this commit) |
 | 06 | 직원 경력 데이터 (Education/Certification/Activity) | reserved (격상 후보 — N+18 pre-flight) | — |
 
 ## 격상 후보 근거
