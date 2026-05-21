@@ -164,9 +164,10 @@ interface WizardShellProps {
 |---|---|---|---|
 | 격상 결정 | 2026-05-21 | `dad5386b` | inventory (본 파일) |
 | Stage 1 P0 audit | 2026-05-21 | `9289a792` | `09-wizardshell-ssot-stage1.md` (5 wizard inventory + 14 findings + Q1-Q6 사전 의제) ⚠️ BulkUploadWizard 추가 발견 |
-| Stage 2 카드 + Stage 3 게이트 + RECORD 사양화 | 2026-05-21 | (this commit) | `09-wizardshell-ssot.md` (Stage 2 본문 + Q1-Q6 결정 + N+48~N+53 plan body) |
-| Stage 4 pre-flight | (예정) | — | `stage4-preflight/n48~n53-*.md` |
-| Stage 4 implementation | (예정, PR-5A 머지 후) | — | 6 PR (점진 마이그레이션, N+50 = batch 05 N+27 분리 PR) |
+| Stage 2 카드 + Stage 3 게이트 + RECORD 사양화 | 2026-05-21 | `4ff48de6` | `09-wizardshell-ssot.md` (Stage 2 본문 + Q1-Q6 결정 + N+48~N+53 plan body) |
+| Stage 4 pre-flight | 2026-05-21 | `51b1b712` | `stage4-preflight/n48~n53-*.md` (6 신규, ⚠️ N+51/N+52 사전 가정 정정 catch) |
+| §7 정정 (N+51/N+52 옵션 B) | 2026-05-21 | (this commit) | actual scope 6 → **4 RECORD** (N+48/N+49/N+50/N+53). 가디언 default (data-decidable, pre-flight 결과). batch 05 Q6 패턴 정합. |
+| Stage 4 implementation | (예정, PR-5A 머지 후) | — | **4 PR** (점진 마이그레이션, N+50 = batch 05 N+27 분리 PR) |
 
 ## §7. Q6 결정 (BulkUploadWizard 포함)
 
