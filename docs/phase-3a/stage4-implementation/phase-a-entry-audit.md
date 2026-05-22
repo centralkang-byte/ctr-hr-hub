@@ -51,11 +51,11 @@
 
 | RECORD | batch | 본 audit 권고 | 재분류 근거 |
 |---|---|---|---|
-| **N+33** | 07 | **Phase B 또는 Phase C** | DB seed (`prisma/seed.ts` 또는 신규) + proto data.js 양면. 12 법인 idempotent seed = codebase 의존 |
-| **N+35** | 07 | **Phase C (N+32 선행 의존)** | Hire Card actions area = N+32 컴포넌트 신설 후 진입 (batch 07 카드 §7 `의존성: N+32 선행 필수` 명시) |
-| **N+36** | 07 | **Phase C (N+32 선행 의존)** | 4 enum × wt 토큰 매핑 = N+32 카테고리 색상 컴포넌트 후 (`의존성: N+32 선행 권고`) |
+| **N+33** | 07 | **Phase B** ✅ | DB seed (`prisma/seed.ts` 또는 신규) + proto `data.js` 양면 SSOT 신설. 의존성 0, cross-batch consumer 가능 (§9.1) |
+| **N+35** | 07 | **Phase C** ✅ | codebase 미세 정합 (Hire Card actions area), **N+32 선행 필수** — Phase C 내 N+32 머지 후 진입 (§9.2) |
+| **N+36** | 07 | **Phase C** ✅ | codebase 토큰화 (4 enum × wt 매핑), **N+32 선행 권고** — Phase C 내 순차 진입 (§9.3) |
 
-→ 사양서가 Phase A에 포함한 batch 07 3건은 모두 codebase 트랙. **Phase A에서 제외 권고**.
+→ 사양서가 Phase A에 포함한 batch 07 3건은 모두 codebase/SSOT 트랙. **Phase A에서 제외 + Phase B/C 정확한 할당 확정** (상세 결정 근거: §9).
 
 ---
 
@@ -260,6 +260,133 @@ Phase C/D/E (codebase 적용)
 
 ---
 
-**상태**: ACTIVE (Phase A 진입 input SSOT)
+## §9. batch 07 N+33/N+35/N+36 Phase 재분류 결정 근거 (surgical 정정)
+
+> 본 §9는 §1.2 표의 추정 표기 ("Phase B 또는 Phase C")를 사양 본문 read 후 정확한 Phase 할당으로 정정한 결정 trace.
+> 정정 trigger: Session 230 HOLD 슬롯 surgical 정정 turn. wizards.jsx 후속 PR과 doc 영역 분리 (충돌 0).
+
+### 9.1 N+33 → Phase B 확정 (SSOT 신설)
+
+**사양 근거** (`batch-cards/07-onboarding-offboarding.md` §7 line 371-394):
+
+- 트랙: DB seed + proto `data.js` (양면 SSOT 신설)
+- 우선: MEDIUM
+- **의존성: 0 (독립 진입 가능)**
+- Stage 4 입력: `prisma/seed.ts` 또는 `prisma/seed-onboarding-default.ts` 신규 + 6단계 `OnboardingTemplate` default + 4 카테고리 enum 정합 + 12 법인 idempotent
+- proto `data.js` `ONBOARD_STEPS` SSOT 정합
+
+**Phase B 분류 근거**:
+
+1. **SSOT 신설** (DB seed + proto data 양면 SSOT) — Phase B 정의 "SSOT 신설 / codebase 카나리" 정합
+2. **의존성 0** — 단독 진입 가능 (Phase B 특성, N+24/N+43/N+48과 동일 패턴)
+3. **cross-batch consumer 가능** — `OnboardingTemplate` default seed가 다른 RECORD/feature에서 default 참조 가능 (cross-batch upstream)
+4. **LOC 작음** — DB seed 스크립트 + proto data SSOT 정합만, ~30 LOC + 12 법인 idempotent seed
+5. **카나리 적합** — 의존성 0 + cross-batch SSOT 신설 = Phase B 카나리 entry 정합
+
+→ **N+33 = Phase B** ✅ ("Phase B 또는 Phase C" 추정 표기 → **Phase B 확정**)
+
+### 9.2 N+35 → Phase C 확정 (N+32 선행 필수)
+
+**사양 근거** (`batch-cards/07-onboarding-offboarding.md` §7 line 415-430):
+
+- 트랙: codebase 미세 정합 (Hire Card actions)
+- 우선: LOW
+- **의존성: N+32 선행 필수** (Hire Card 컴포넌트 안의 actions area)
+- Stage 4 입력: force-complete API 재사용 (기존) + 리마인드 action notification API + delay status 시 force-complete, 그 외 status 시 리마인드
+
+**Phase C 분류 근거**:
+
+1. **codebase 적용** — codebase 미세 정합 (force-complete + 리마인드 액션, 기존 API 재사용)
+2. **소~중 블라스트** — Hire Card actions area 한정 (작음)
+3. **N+32 선행 필수** — Hire Card 컴포넌트 자체가 N+32 신설 산물. Phase C 내에서 **N+32 머지 후 N+35 진입** (Phase 내 순차)
+4. **SSOT 신설 0** — 기존 force-complete API 재사용 + 액션 분기. Phase B 적합성 부재
+5. **권한 가드** — HR_ADMIN / EXECUTIVE 분기, ApprovalFlow 통합
+
+→ **N+35 = Phase C** ✅ ("Phase C with N+32 선행 의존" → **Phase C 확정, N+32 선행 필수 명시**)
+
+### 9.3 N+36 → Phase C 확정 (N+32 선행 권고)
+
+**사양 근거** (`batch-cards/07-onboarding-offboarding.md` §7 line 433-450):
+
+- 트랙: codebase 토큰화
+- 우선: LOW
+- **의존성: N+32 선행 권고** (Hire Card + journey view 안의 카테고리 색상)
+- Stage 4 입력: 4 enum × wt-1~8 매핑 + status SSOT cross-ref (N+22 EmployeeStatusChip)
+- 다크 known-deferred → ON-016 / Phase 4 합본
+
+**Phase C 분류 근거**:
+
+1. **codebase 적용** — 토큰화 (4 enum × wt 토큰 매핑 layer)
+2. **소 블라스트** — 색상 매핑 layer만 (작음, 인라인 hex 0건)
+3. **N+32 선행 권고** — Hire Card + journey view 안의 카테고리 색상은 N+32 컴포넌트 후 토큰 적용. Phase C 내 순차 진입
+4. **SSOT cross-ref 정방향** — N+22 EmployeeStatusChip SSOT 측 cross-ref만 (역의존 0, §3.3 단방향 그래프 정합)
+
+→ **N+36 = Phase C** ✅ ("Phase C with N+32 선행 의존" → **Phase C 확정, N+32 선행 권고 명시**)
+
+### 9.4 N+32 정합 결정 — (c) audit 표기 정합 유지
+
+**사양서 §3 의제**: "HANDOVER §2 = N+32 가 Phase D 명시 → audit '`Phase C with N+32 선행`' 표기 = N+32 도 Phase C 이동 권고인지 또는 audit 표기 오류인지 확인"
+
+**검증 결과**:
+
+1. **HANDOVER_PHASE3A.md 파일 부재** (Stage 4 pre-flight 종결 SHA `a147d919` 시점에 미존재). 사양서의 "HANDOVER §2" 인용 = **phantom doc**.
+2. **audit README §2 (`docs/phase-3a/stage4-implementation/README.md`) = N+32 Phase C 명시** (Phase C "codebase 적용 소~중 블라스트" 대표 RECORD: "N+32 (view mode + Hire Card + journey)")
+3. **audit §6 (본문) = "Phase C with N+32 선행"** — audit README §2와 정합 ✅
+4. **충돌 없음**: 사양서 §3 단언은 phantom doc 인용. audit README §2 + audit §6 본문은 일관되게 N+32 Phase C 명시.
+
+**(a) N+32 Phase D 이동 권고 — 거부**:
+- N+32 사이즈만 보면 (~270 LOC + 신규 컴포넌트 2종 + i18n ~50 entries) Phase D 급
+- 하지만 **Phase 분류 기준 = entry/SSOT 의존 순서 (LOC 사이즈 아님, §9.5 참조)**
+- N+32 = cross-batch consumer 진입의 핵심 컴포넌트 신설 (Hire Card + journey view) — entry 순서상 Phase C 정합
+- Phase D ("위저드 4종 migration 등 SSOT consumer 합본") 와 성격 다름
+
+**(b) audit 표기 오류 — 거부**:
+- audit README §2 + audit §6 본문 둘 다 일관되게 N+32 Phase C — 표기 오류 없음
+
+**(c) audit 표기 정합 유지 + Phase 분류 기준 명시 — 채택** ✅:
+- N+32 = Phase C 유지 (audit README §2 + audit §6 정합 그대로)
+- §9.5 신설로 Phase 분류 기준 (entry 순서 vs LOC 사이즈) 단일 진실 명시
+- 사양서 §3 phantom doc 인용은 가디언 dictate에서 정정 (§9.6)
+
+→ **N+32 = Phase C 유지** ✅. audit README + audit 본문 정정 0.
+
+### 9.5 Phase 분류 기준 정의 (단일 진실 명시)
+
+본 audit이 정의하는 5-Phase 분류 기준 = **entry/SSOT 의존 순서** (LOC 사이즈 아님):
+
+| Phase | 기준 | 대표 RECORD |
+|---|---|---|
+| **Phase A** | proto only (codebase mutation 0) | N+19/N+20/N+21/N+22/N+23/N+25/N+28/N+29 (8건) |
+| **Phase B** | SSOT 신설 / 카나리 (의존성 0, cross-batch upstream) | N+24 · N+33 · N+43 · N+48 |
+| **Phase C** | codebase 적용 (cross-batch consumer 진입, 소~중 블라스트, Phase 내 순차 가능) | N+17 · N+18 · N+26 · N+30 · N+31 · N+32 · N+35 · N+36 |
+| **Phase D** | codebase 대 블라스트 (위저드 4종 migration 등 SSOT consumer 합본 + a11y 합본 PR) | N+27 · N+44 · N+45/N+46 · N+49/N+50/N+53 |
+| **Phase E** | 격상 batch 풀스택 (DB schema migration 동반) | N+37~N+42 (batch 06) |
+
+**핵심 단언**:
+- Phase 분류 = **entry/SSOT 의존 순서** 기준 (carrier 의존성 그래프 단방향)
+- N+32 LOC가 Phase D 급이나 entry 순서상 Phase C (cross-batch consumer 진입의 핵심 컴포넌트 신설)
+- Phase C 내 순차 진입 가능 (N+32 머지 → N+35 → N+36 또는 N+35/N+36 합본)
+
+### 9.6 가디언 측 HANDOVER §2 정정용 인용 dictate
+
+가디언 측 인계 prompt에 다음 정정 인용 합류 권고:
+
+```text
+HANDOVER §2 (현재 부재 또는 phantom doc) → audit README §2 + audit phase-a-entry-audit.md §9 단일 진실 참조 정정
+
+확정 사항:
+- N+32 = Phase C (audit README §2 대표 RECORD 명시, audit §6 "Phase C with N+32 선행" 정합 — §9.4 참조)
+- N+33 = Phase B (audit §9.1, SSOT 신설 + 의존성 0, cross-batch upstream)
+- N+35 = Phase C (audit §9.2, N+32 선행 필수, Phase C 내 순차)
+- N+36 = Phase C (audit §9.3, N+32 선행 권고, Phase C 내 순차)
+
+Phase 분류 기준 (§9.5) = entry/SSOT 의존 순서 (LOC 사이즈 아님). 5-Phase 정의 참조.
+
+HANDOVER §2 신설 시 위 4 RECORD 정확한 Phase 할당 + §9.5 분류 기준 cross-link 권고.
+```
+
+---
+
+**상태**: ACTIVE (Phase A 진입 input SSOT + §9 재분류 결정 SSOT)
 **다음 갱신**: Phase A 첫 PR (N+21) 진입 후 추후 RECORD 진입 시점에 cross-ref 갱신
-**책임 단언**: 본 audit이 Phase A 카운트 / scope / 권고 순서의 **단일 진실**. 다른 문서와 충돌 시 본 audit 우선.
+**책임 단언**: 본 audit이 Phase A 카운트 / scope / 권고 순서 + N+33/N+35/N+36 Phase 할당 + 5-Phase 분류 기준의 **단일 진실**. 다른 문서와 충돌 시 본 audit 우선.
