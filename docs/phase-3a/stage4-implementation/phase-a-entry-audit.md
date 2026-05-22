@@ -354,18 +354,27 @@ Phase C/D/E (codebase 적용)
 
 본 audit이 정의하는 5-Phase 분류 기준 = **entry/SSOT 의존 순서** (LOC 사이즈 아님):
 
-| Phase | 기준 | 대표 RECORD |
-|---|---|---|
-| **Phase A** | proto only (codebase mutation 0) | N+19/N+20/N+21/N+22/N+23/N+25/N+28/N+29 (8건) |
-| **Phase B** | SSOT 신설 / 카나리 (의존성 0, cross-batch upstream) | N+24 · N+33 · N+43 · N+48 |
-| **Phase C** | codebase 적용 (cross-batch consumer 진입, 소~중 블라스트, Phase 내 순차 가능) | N+17 · N+18 · N+26 · N+30 · N+31 · N+32 · N+35 · N+36 |
-| **Phase D** | codebase 대 블라스트 (위저드 4종 migration 등 SSOT consumer 합본 + a11y 합본 PR) | N+27 · N+44 · N+45/N+46 · N+49/N+50/N+53 |
-| **Phase E** | 격상 batch 풀스택 (DB schema migration 동반) | N+37~N+42 (batch 06) |
+| Phase | 기준 | 대표 RECORD | RECORD 카운트 |
+|---|---|---|---|
+| **Phase A** | proto only (codebase mutation 0) | N+19 · N+20 · N+21 · N+22 · N+23 · N+25 · N+28 · N+29 | 8 |
+| **Phase B** | SSOT 신설 / 카나리 (의존성 0, cross-batch upstream) | N+24 · N+33 · N+43 · N+48 | 4 |
+| **Phase C** | codebase 적용 (cross-batch consumer 진입, 소~중 블라스트, Phase 내 순차 가능) | N+17 · N+18 · N+26 · N+30 · N+31 · N+32 · N+35 · N+36 | 8 |
+| **Phase D** | codebase 대 블라스트 (위저드 4종 migration 등 SSOT consumer 합본 + a11y 합본 PR) | N+27 · N+44 · N+34/N+45 (합본 PR) · N+46 · N+47 (별 PR 최후) · N+49/N+50/N+53 | 9 |
+| **Phase E** | 격상 batch 풀스택 (DB schema migration 동반) | N+37 ~ N+42 (batch 06) | 6 |
+
+**합계 단언** (본 정정 후):
+
+- **Phase D = 9 RECORD / 7 PR** — N+27 (1) · N+44 (1) · N+34·N+45 합본 (1) · N+46 (1) · N+47 별 PR (1) · N+49 (1) · N+50/N+53 합본 (1) = 7 PR
+- **ACTIVE 합계 = 35 RECORD** (Phase A 8 + B 4 + C 8 + D 9 + E 6)
+- **DEFERRED 별도 = 2 RECORD** (N+51 / N+52, audit §2 명시 — `PostingFormClient` / `CreateCycleModal` wizard 부재 사전 가정 정정)
+- **전체 entries = 37** (ACTIVE 35 + DEFERRED 2, N+17 ~ N+53 numeric range 정합)
 
 **핵심 단언**:
 - Phase 분류 = **entry/SSOT 의존 순서** 기준 (carrier 의존성 그래프 단방향)
 - N+32 LOC가 Phase D 급이나 entry 순서상 Phase C (cross-batch consumer 진입의 핵심 컴포넌트 신설)
 - Phase C 내 순차 진입 가능 (N+32 머지 → N+35 → N+36 또는 N+35/N+36 합본)
+- **N+34 / N+47 Phase D 추가 근거** (본 정정 trigger): [n34-n47-phase-assignment.md](./n34-n47-phase-assignment.md) §1 (N+34 = N+45 합본 PR 흡수, N+45 사양 §1·§4 인용) + §2 (N+47 = batch 08 a11y 트랙 수렴 RECORD, 별 PR 최후, N+47 사양 §4 의존성 인용)
+- **Phase D PR 분해 가변성**: N+49/N+50/N+53 위저드 migration 트랙 합본 가능성 (n50 사양 명시 "batch 05 N+27 분리 PR") — 본 audit은 N+50/N+53 합본으로 7 PR 카운트, 실제 분해는 implementation 단계 별도 결정
 
 ### 9.6 가디언 측 HANDOVER §2 정정용 인용 dictate
 
