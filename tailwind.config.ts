@@ -90,6 +90,8 @@ const config: Config = {
 					soft: 'hsl(var(--wd-orange-soft))',
 					ink: 'hsl(var(--wd-orange-ink))',
 				},
+				// PR-5A: sky blue (HR Admin worklet ID 8 analytics) — light only, dark known-deferred
+				info: 'hsl(var(--info))',
 				'surface-container-low': 'hsl(var(--surface-container-low))',
 				'surface-container-high': 'hsl(var(--surface-container-high))',
 				'surface-container': 'hsl(var(--surface-container))',

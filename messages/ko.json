@@ -9503,6 +9503,79 @@
         "pilotBanner": {
           "title": "HR Admin Pilot — Preview",
           "envLabel": "{role} · HOME_PREVIEW=true"
+        },
+        "workdayHero": {
+          "greetingAm": "좋은 아침입니다, {name}님",
+          "greetingPm": "안녕하세요, {name}님",
+          "subBefore": "오늘 처리하실 일이 ",
+          "subMiddle": "건 있어요. 그중 ",
+          "subAfter": "건은 시작일이 지났으니 먼저 살펴봐 주세요.",
+          "ctaInbox": "결재함 열기",
+          "ctaAlerts": "알림 보기",
+          "kpi": {
+            "headcount": "전사 인원",
+            "openRoles": "채용 진행",
+            "turnoverRate": "이직률 (30일)"
+          }
+        },
+        "worklet": {
+          "heading": "주요 메뉴",
+          "inline": {
+            "danger": "위험",
+            "warn": "주의",
+            "neutral": "정상"
+          },
+          "employees": {
+            "title": "직원 관리",
+            "subtitle": "전사 {total}명 · 신규 {newHires}",
+            "inline1": "이번 달 신규 입사 {count}명"
+          },
+          "recruitment": {
+            "title": "채용",
+            "subtitle": "공개 포지션 {open}개"
+          },
+          "attendance": {
+            "title": "근태 관리",
+            "subtitle": "오늘 출근 {present} · 지각 {late}",
+            "subtitleEmpty": "오늘 근태 데이터 없음",
+            "inline1": "결근 {absent}명",
+            "inline2": "지각 {late}명"
+          },
+          "leave": {
+            "title": "휴가 관리",
+            "subtitle": "승인 대기 {pending}건",
+            "inline1": "연체 {count}건 · 우선 처리"
+          },
+          "performance": {
+            "title": "성과/평가",
+            "subtitle": "완료 {rate}% ({completed}/{total})",
+            "subtitleEmpty": "분기 데이터 준비 중"
+          },
+          "payroll": {
+            "title": "급여",
+            "subtitle": "다음 지급 주기 처리 중"
+          },
+          "organization": {
+            "title": "조직 관리",
+            "subtitle": "부서/직책 구조"
+          },
+          "analytics": {
+            "title": "분석/리포트",
+            "subtitle": "이직률 {rate}% · 인사이트"
+          }
+        },
+        "approvalPreview": {
+          "heading": "처리 대기",
+          "subHeading": "{count}건 · 우선순위 정렬",
+          "viewAll": "전체 결재함",
+          "urgency": {
+            "overdue": "연체",
+            "today": "오늘",
+            "queued": "대기"
+          },
+          "approveCta": "검토",
+          "submittedFmt": "{date} 제출",
+          "empty": "처리 대기 중인 결재가 없습니다"
         }
       }
     },
