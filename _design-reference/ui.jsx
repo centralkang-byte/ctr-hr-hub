@@ -227,7 +227,22 @@ function EmptyState({ icon: IconCmp = Icons.EmptyBox, title, sub, action, size =
   );
 }
 
+// ──────────────────────────────────────────────────────
+// DemoLimitBanner — 위저드 4종 데모 한계 배너 SSOT (N+21)
+//   <DemoLimitBanner />                                    ← 기본 카피
+//   <DemoLimitBanner message="..." icon={Icons.Sparkle} /> ← 카피/아이콘 override
+// ──────────────────────────────────────────────────────
+function DemoLimitBanner({ icon: IconCmp = Icons.Alert, message = "데모 화면이라 새로고침하면 입력한 내용이 사라져요.", className = "", style }) {
+  const cls = `demo-limit-banner ${className}`.trim();
+  return (
+    <div className={cls} role="status" aria-live="polite" style={style}>
+      <IconCmp size={14} />
+      <span>{message}</span>
+    </div>
+  );
+}
+
 Object.assign(window, {
-  Icons, Ico, Avatar, Card, CardHead, Sparkline, ToastHost, ToastContext, EmptyState, useEscClose,
+  Icons, Ico, Avatar, Card, CardHead, Sparkline, ToastHost, ToastContext, EmptyState, DemoLimitBanner, useEscClose,
   fmtKDate, fmtKDateShort, fmtWon, fmtWonShort, daysBetween, tenureFromISO, dDayLabel,
 });
