@@ -159,5 +159,22 @@ batch 04 N+18 의 graceful empty CareerTab → 풀 CRUD UI:
 
 ---
 
-**상태**: 격상 결정 (Stage 2 카드 작성 대기)
-**다음 갱신**: batch 06 Stage 2 audit card 작성 별도 turn
+**상태**: ACTIVE — Stage 1 P0 audit done (`ff8307fd`) + Stage 2 카드 done + Stage 3 게이트 통과 (Q1-Q4+Q6 가디언 default + Q5 사용자 결재 = B 점진 폐기)
+**다음 갱신**: Stage 4 pre-flight 별도 turn
+
+## §7. 진행 이력
+
+| Stage | 일자 | Commit | 산출물 |
+|---|---|---|---|
+| 격상 결정 | 2026-05-21 | `dad5386b` | inventory (본 파일) |
+| Stage 1 P0 audit | 2026-05-21 | `ff8307fd` | `06-employee-career-stage1.md` (4 섹션 inventory + 15 findings + Q1-Q6 사전 의제) ✅ Schema 부재 재확인 정합 |
+| Stage 2 카드 + Stage 3 게이트 + RECORD 사양화 | 2026-05-22 | (this commit) | `06-employee-career.md` (Stage 2 본문 + Q1-Q6 결정 + N+37~N+42 plan body). Q5 사용자 결재 = B 점진 폐기. |
+| Stage 4 pre-flight | (예정) | — | `stage4-preflight/n37~n42-*.md` |
+| Stage 4 implementation | (예정, PR-5A + batch 04 N+18 머지 + ~1주 안정화 후) | — | 6 PR (점진, N+41 = N+18 폐기 동반 + ~1주 안정화 후) |
+
+## §8. Q5 사용자 결재 결과 (2026-05-22)
+
+Stage 3 게이트 → Q5 trade-off 의제 사용자 결재 round 통과:
+- **결정**: 옵션 B (점진 폐기)
+- **근거**: batch 08 N+46 (b) 분할 진입 SSOT 정합, 회귀 격리, EmptyState 노출 production 명백
+- **시퀀스**: N+18 implementation 머지 → 안정화 ~1주 → batch 06 별도 PR (Q5=B)
