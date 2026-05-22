@@ -152,6 +152,13 @@ window.HR_DATA = {
   ],
   departments: ["전체 부서", "연구개발팀", "인사팀", "생산/제조팀", "구매/조달팀", "품질관리팀", "영업팀", "재무/회계팀", "생산기술팀", "개발팀", "경영지원본부"],
   employmentTypes: ["전체 고용형태", "정규직", "계약직", "수습", "파트타임"],
+  // N+20: HireWorker 위저드 옵션 SSOT (인라인 → 동적 생성)
+  ranks: ["사원", "주임", "대리", "과장", "차장", "부장", "임원"],
+  salaryBands: ["L0", "L1", "L2", "L3", "L4", "L5", "L6", "M1", "M2"],
+  onboardingTemplates: ["신규입사 온보딩", "경력입사 온보딩 (시니어)", "인턴 온보딩", "임원 온보딩"],
+  // N+20: 매핑 layer (proto L 체계 ↔ codebase R 체계, employeeDetail.payroll.band="R3" 정합)
+  // 단일 체계 채택은 X4 cross-surface 별도 트랙
+  salaryBandMapping: { L0: "R0", L1: "R1", L2: "R2", L3: "R3", L4: "R4", L5: "R5", L6: "R5", M1: "R5", M2: "R5" },
   statuses: ["전체 상태", "재직", "휴직", "퇴사예정"],
   // 알림 피드
   notifications: [

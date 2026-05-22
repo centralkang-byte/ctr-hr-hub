@@ -170,8 +170,9 @@ function HireWorkerWizard({ onCancel, onComplete }) {
             <div className="wz-field"><label>부서 <span className="req">*</span></label>
               <select value={f.dept} onChange={(e) => set("dept", e.target.value)}>
                 <option value="">선택</option>
-                <option>개발팀</option><option>영업팀</option><option>인사팀</option>
-                <option>재무/회계팀</option><option>품질관리팀</option><option>생산/제조팀</option>
+                {data.departments.filter((d) => d !== "전체 부서").map((d) => (
+                  <option key={d}>{d}</option>
+                ))}
               </select>
             </div>
             <div className="wz-field"><label>직군</label>
@@ -184,7 +185,7 @@ function HireWorkerWizard({ onCancel, onComplete }) {
             </div>
             <div className="wz-field"><label>직급</label>
               <select value={f.rank} onChange={(e) => set("rank", e.target.value)}>
-                <option>사원</option><option>주임</option><option>대리</option><option>과장</option><option>차장</option><option>부장</option><option>임원</option>
+                {data.ranks.map((r) => <option key={r}>{r}</option>)}
               </select>
             </div>
           </div>
@@ -203,7 +204,7 @@ function HireWorkerWizard({ onCancel, onComplete }) {
             </div>
             <div className="wz-field"><label>연봉 밴드</label>
               <select value={f.band} onChange={(e) => set("band", e.target.value)}>
-                <option>L0</option><option>L1</option><option>L2</option><option>L3</option><option>L4</option><option>L5</option><option>L6</option><option>M1</option><option>M2</option>
+                {data.salaryBands.map((b) => <option key={b}>{b}</option>)}
               </select>
             </div>
           </div>
@@ -218,10 +219,7 @@ function HireWorkerWizard({ onCancel, onComplete }) {
           <h3>온보딩</h3>
           <div className="wz-field"><label>온보딩 템플릿</label>
             <select value={f.template} onChange={(e) => set("template", e.target.value)}>
-              <option>신규입사 온보딩</option>
-              <option>경력입사 온보딩 (시니어)</option>
-              <option>인턴 온보딩</option>
-              <option>임원 온보딩</option>
+              {data.onboardingTemplates.map((t) => <option key={t}>{t}</option>)}
             </select>
           </div>
           <div className="wz-field"><label>버디 (선택)</label>
