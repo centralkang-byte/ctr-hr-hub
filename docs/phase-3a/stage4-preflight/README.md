@@ -141,3 +141,16 @@
 
 **상태**: ACTIVE (Stage 4 진입 입력 SSOT, batch 04 + 05 합본)
 **다음 갱신**: PR-5A 머지 후 N+21 카나리 진입 시
+
+---
+
+## 참조 (audit 단일 진실 cross-link)
+
+본 pre-flight = **codebase 트랙 사전 검증 SSOT** (6 batch × 누적 29 RECORD, proto only 8건 미포함). Phase 분류 (A/B/C/D/E) + 전체 entries 카운트는 별도 audit 단일 진실:
+
+- **5-Phase 분류 단일 진실**: [`../stage4-implementation/phase-a-entry-audit.md` §9.5](../stage4-implementation/phase-a-entry-audit.md#95-phase-분류-기준-정의-단일-진실-명시) (`5e063d37`)
+  - Phase A 8 (proto only) / B 4 (SSOT) / C 8 (codebase 소~중) / D 9 (대 블라스트) / E 6 (격상 batch)
+  - **ACTIVE 35 + DEFERRED 2 (N+51/N+52) = 37 entries**
+- **N+34/N+47 Phase D 결정**: [`../stage4-implementation/n34-n47-phase-assignment.md`](../stage4-implementation/n34-n47-phase-assignment.md) (`8e09a3f1`) — §1 (N+34 = N+45 합본) + §2 (N+47 = batch 08 a11y 수렴, 별 PR 최후)
+
+본 README §2 "Stage 4 진입 순서 재권고" 14 RECORD 표 = **batch 04 + 05만** (batch 06/07/08/09 미포함). 전체 진입 순서는 audit §6 권고 참조. 본 README count (29 pre-flight) 와 audit count (35 ACTIVE) 정의 차이 명시 — **proto only 8건 pre-flight 무관**.
