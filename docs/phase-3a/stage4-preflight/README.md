@@ -1,9 +1,10 @@
 # Phase 3a · Stage 4 Pre-flight — 코드베이스 적용 사전 검증
 
-> **base SHA**: `4ff48de6` (Session 228, batch 04 + 05 + 07 + 08 + 09 Stage 3 통과 후)
-> **작성일**: 2026-05-21 KST (batch 04 / 05 / 07 / 08 / 09 누적)
+> **base SHA**: `6f4ffe84` (Session 228, batch 04 + 05 + 06 + 07 + 08 + 09 Stage 3 통과 후)
+> **작성일**: 2026-05-21 ~ 2026-05-22 KST (6 batch 누적)
 > **작성자**: 가디언 (proto 디자인 SSOT 트랙)
 > **목적**: PR-5A 머지 전 HOLD 슬롯 활용한 코드베이스 트랙 사전 audit. src/ 변경 0, read-only audit only.
+> **상태**: ✅ **Phase 3a Stage 4 pre-flight 완료** (6 batch × 누적 29 RECORD)
 
 ---
 
@@ -61,16 +62,27 @@
 | N+46 ⭐ | [n46-orgviewmode-3way-merge.md](./n46-orgviewmode-3way-merge.md) | OrgViewModeToggle Radix Tabs, **3-way 합본 권고 = (b) 분할 진입** (의존성 0, 회귀 격리) |
 | N+47 | [n47-a11y-ssot-axe-baseline.md](./n47-a11y-ssot-axe-baseline.md) | ⭐ **`.claude/rules/accessibility.md` 기존 존재** — 신규 SSOT X, 기존 확장 |
 
-### Batch 09 트랙 (신규)
+### Batch 09 트랙
 
 | RECORD | 파일 | 핵심 결론 |
 |---|---|---|
 | N+48 ⭐ | [n48-wizardshell-ssot-shared.md](./n48-wizardshell-ssot-shared.md) | ✅ **`src/components/shared/` 정합** (PageHeader 패턴). Radix Dialog 기반 |
 | N+49 | [n49-hire-wizard-migration.md](./n49-hire-wizard-migration.md) | HireWorkerWizard 마이그레이션 (-75 net), batch 04 N+21 DemoLimitBanner cross-batch |
 | N+50 | [n50-orgrestructure-ssot-application.md](./n50-orgrestructure-ssot-application.md) | OrgRestructureWizard SSOT 적용 (-70 net), batch 05 N+27 분리 PR (batch 08 N+46 패턴) |
-| N+51 ⚠️ | [n51-jobposting-migration.md](./n51-jobposting-migration.md) | **가디언 사전 가정 정정** — PostingFormClient = 단일 form (wizard 부재), 옵션 B (현행 유지) 권고 |
-| N+52 ⚠️ | [n52-perfcycle-migration.md](./n52-perfcycle-migration.md) | **가디언 사전 가정 정정** — CreateCycleModal = 단일 modal form (wizard 부재), 옵션 B 권고 |
+| N+51 ⚠️ | [n51-jobposting-migration.md](./n51-jobposting-migration.md) | **가디언 사전 가정 정정** — PostingFormClient = 단일 form (wizard 부재), 옵션 B (DEFERRED) |
+| N+52 ⚠️ | [n52-perfcycle-migration.md](./n52-perfcycle-migration.md) | **가디언 사전 가정 정정** — CreateCycleModal = 단일 modal form (wizard 부재), 옵션 B (DEFERRED) |
 | N+53 | [n53-bulkupload-migration.md](./n53-bulkupload-migration.md) | BulkUploadWizard 마이그레이션 (-30 net), Q6=A 포함 결정 정합 |
+
+### Batch 06 트랙 (신규, Stage 4 pre-flight 마지막)
+
+| RECORD | 파일 | 핵심 결론 |
+|---|---|---|
+| N+37 ⭐ | [n37-schema-migration.md](./n37-schema-migration.md) | 3 model + 3 enum + Employee/Company relation + migration (선행) |
+| N+38 | [n38-education-api.md](./n38-education-api.md) | RESTful CRUD 4 endpoint (기존 `/api/v1/employees/[id]/*` 12+ surface 패턴 정합) |
+| N+39 ⭐ | [n39-certification-api-s3-decision.md](./n39-certification-api-s3-decision.md) | ✅ **S3 결정 = (a) 재사용** (`src/lib/s3.ts` + `/api/v1/files/presigned/` SSOT 기존 존재) |
+| N+40 | [n40-activity-api.md](./n40-activity-api.md) | RESTful CRUD (N+38 패턴 정합), S3/derived 무관 |
+| N+41 ⭐ | [n41-ui-drawer-cross-batch.md](./n41-ui-drawer-cross-batch.md) | UI 4 섹션 + drawer (Radix Sheet SSOT 재사용). **batch 04 N+18 머지 + ~1주 안정화 후 진입** (Q5=B) |
+| N+42 | [n42-i18n-a11y-cleanup.md](./n42-i18n-a11y-cleanup.md) | i18n 5 locale × ~58 unique keys + N+18 우회로 grep verification (최후 RECORD) |
 
 ## §2. Stage 4 진입 순서 재권고 (cross-batch)
 
