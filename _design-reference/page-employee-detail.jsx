@@ -282,30 +282,18 @@ function EmployeeDetailPage({ data, code, onBack }) {
               <table className="tbl">
                 <thead><tr><th>사이클</th><th>목표 수</th><th className="right">달성률</th><th>주요 목표</th></tr></thead>
                 <tbody>
-                  <tr>
-                    <td className="fw-6">2025 H2</td>
-                    <td className="mono">4개</td>
-                    <td className="right mono tnum"><span style={{ color: "var(--success)", fontWeight: 700 }}>115%</span></td>
-                    <td className="small muted">매출 목표 초과 · 신규 클라이언트 3건 영입</td>
-                  </tr>
-                  <tr>
-                    <td className="fw-6">2025 H1</td>
-                    <td className="mono">3개</td>
-                    <td className="right mono tnum"><span style={{ color: "var(--success)", fontWeight: 700 }}>108%</span></td>
-                    <td className="small muted">팀 프로세스 개선 · 신규 입사자 멘토링 완료</td>
-                  </tr>
-                  <tr>
-                    <td className="fw-6">2024 H2</td>
-                    <td className="mono">4개</td>
-                    <td className="right mono tnum">102%</td>
-                    <td className="small muted">시스템 마이그레이션 주도</td>
-                  </tr>
-                  <tr>
-                    <td className="fw-6">2024 H1</td>
-                    <td className="mono">3개</td>
-                    <td className="right mono tnum">106%</td>
-                    <td className="small muted">신규 기능 출시 + 안정화</td>
-                  </tr>
+                  {detail.mboHistory.map((m, i) => (
+                    <tr key={i}>
+                      <td className="fw-6">{m.cycle}</td>
+                      <td className="mono">{m.goals}개</td>
+                      <td className="right mono tnum">
+                        {m.achievement >= 105
+                          ? <span style={{ color: "var(--success)", fontWeight: 700 }}>{m.achievement}%</span>
+                          : `${m.achievement}%`}
+                      </td>
+                      <td className="small muted">{m.summary}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -314,14 +302,7 @@ function EmployeeDetailPage({ data, code, onBack }) {
           <Card className="wd-section">
             <div className="card-head"><span className="title">받은 칭찬</span><span className="sub">최근 6건</span></div>
             <div className="list">
-              {[
-                { from: "한지영", value: "리더십",  reason: "릴리즈 일정 지키며 품질 유지", date: "어제" },
-                { from: "홍채원", value: "주도성",  reason: "긴급 장비 트러블 신속 해결", date: "1주 전" },
-                { from: "이정환", value: "전문성",  reason: "월말 결산 빠른 마감", date: "2주 전" },
-                { from: "박서연", value: "협업",    reason: "타팀 협의 잘 이끌어줌", date: "1개월 전" },
-                { from: "한지영", value: "성과",    reason: "신규 클라이언트 성공적 영입", date: "2개월 전" },
-                { from: "정유진", value: "친절함",  reason: "온보딩 도움이 됐어요", date: "3개월 전" },
-              ].map((k, i) => (
+              {detail.praises.map((k, i) => (
                 <div key={i} className="item">
                   <div style={{ width: 36, height: 36, borderRadius: 10, background: "oklch(95% 0.05 25)", color: "oklch(50% 0.18 25)", display: "grid", placeItems: "center", flexShrink: 0 }}>
                     <Icons.Heart size={16} sw={1.8} />
@@ -346,11 +327,7 @@ function EmployeeDetailPage({ data, code, onBack }) {
           <Card className="wd-section">
             <div className="card-head"><span className="title">학력</span></div>
             <div className="list">
-              {[
-                { school: "서울대학교 대학원", major: "산업공학 석사", period: "2018.03 — 2020.02", status: "졸업" },
-                { school: "한양대학교",       major: "산업공학 학사", period: "2014.03 — 2018.02", status: "졸업" },
-                { school: "서울고등학교",     major: "이공계열",     period: "2011.03 — 2014.02", status: "졸업" },
-              ].map((s, i) => (
+              {detail.education.map((s, i) => (
                 <div key={i} className="item">
                   <div style={{ width: 36, height: 36, borderRadius: 10, background: "var(--accent-soft)", color: "var(--accent-ink)", display: "grid", placeItems: "center", flexShrink: 0 }}>
                     <Icons.Book size={16} sw={1.8} />
@@ -375,11 +352,16 @@ function EmployeeDetailPage({ data, code, onBack }) {
               <table className="tbl">
                 <thead><tr><th>자격증</th><th>발급기관</th><th className="right">취득일</th><th className="right">상태</th></tr></thead>
                 <tbody>
-                  <tr><td className="fw-6">PMP</td><td className="small muted">PMI</td><td className="right mono">2023.06</td><td className="right"><span className="chip success">유효</span></td></tr>
-                  <tr><td className="fw-6">정보처리기사</td><td className="small muted">한국산업인력공단</td><td className="right mono">2019.05</td><td className="right"><span className="chip success">유효</span></td></tr>
-                  <tr><td className="fw-6">TOEIC 950</td><td className="small muted">ETS</td><td className="right mono">2022.11</td><td className="right"><span className="chip warning">갱신 임박</span></td></tr>
-                  <tr><td className="fw-6">AWS Solutions Architect</td><td className="small muted">Amazon</td><td className="right mono">2024.03</td><td className="right"><span className="chip success">유효</span></td></tr>
-                  <tr><td className="fw-6">Six Sigma Green Belt</td><td className="small muted">사내</td><td className="right mono">2024.09</td><td className="right"><span className="chip success">유효</span></td></tr>
+                  {detail.certifications.map((c, i) => (
+                    <tr key={i}>
+                      <td className="fw-6">{c.name}</td>
+                      <td className="small muted">{c.issuer}</td>
+                      <td className="right mono">{c.date}</td>
+                      <td className="right">
+                        <span className={`chip ${c.status === "유효" ? "success" : "warning"}`}>{c.status}</span>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -388,13 +370,7 @@ function EmployeeDetailPage({ data, code, onBack }) {
           <Card className="wd-section">
             <div className="card-head"><span className="title">교육 이수 이력</span><span className="sub">12개월</span></div>
             <div className="list">
-              {[
-                { course: "리더십 부트캠프 Lv.2", hours: 24, type: "내부", date: "2025.11", status: "수료" },
-                { course: "데이터 분석 입문",      hours: 16, type: "외부", date: "2025.09", status: "수료" },
-                { course: "직장 내 괴롭힘 예방 (법정)", hours: 1, type: "법정", date: "2025.06", status: "수료" },
-                { course: "정보보안 기초 (법정)",    hours: 2, type: "법정", date: "2025.03", status: "수료" },
-                { course: "Workday 사용자 교육",   hours: 4, type: "내부", date: "2025.02", status: "수료" },
-              ].map((c, i) => (
+              {detail.trainings.map((c, i) => (
                 <div key={i} className="item">
                   <div style={{ width: 36, height: 36, borderRadius: 10, background: "oklch(94% 0.04 230)", color: "oklch(45% 0.13 230)", display: "grid", placeItems: "center", flexShrink: 0 }}>
                     <Icons.Book size={16} sw={1.8} />
@@ -419,7 +395,7 @@ function EmployeeDetailPage({ data, code, onBack }) {
             <div className="card-head"><span className="title">사내 활동</span></div>
             <div className="card-pad">
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {["사내 봉사단", "독서 동아리 회장", "OKR 워킹그룹", "사내 발표 (2025 H1)", "신입 멘토"].map((a) => (
+                {detail.activities.map((a) => (
                   <span key={a} className="chip accent" style={{ padding: "5px 12px", fontSize: 12 }}>{a}</span>
                 ))}
               </div>
@@ -432,14 +408,11 @@ function EmployeeDetailPage({ data, code, onBack }) {
 }
 
 function AttendanceMiniCalendar() {
-  const days = Array.from({ length: 30 }, (_, i) => {
-    const r = (i * 31) % 100;
-    let kind = "present";
-    if (r < 5) kind = "absent";
-    else if (r < 12) kind = "late";
-    else if (r < 18) kind = "leave";
-    return kind;
-  });
+  // N+19: data.employeeDetail.attendance30.daily SSOT 참조 (의사난수 EM-005 해소)
+  // proto data kind 1-char codes: p=present, l=late, a=absent, v=leave
+  const KIND_MAP = { p: "present", l: "late", a: "absent", v: "leave" };
+  const daily = data.employeeDetail.attendance30.daily || [];
+  const days = Array.from({ length: 30 }, (_, i) => KIND_MAP[daily[i]] || "present");
   const colorOf = (k) => ({ present: "var(--success)", late: "var(--warning)", absent: "var(--danger)", leave: "var(--info)" })[k];
   const labelOf = (k) => ({ present: "정상", late: "지각", absent: "결근", leave: "휴가" })[k];
   return (

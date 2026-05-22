@@ -456,12 +456,164 @@ window.HR_DATA = {
       lastPaid: { date: "2026-04-25", net: 3621400, gross: 4333333 },
       band: "R3 (52,000 ~ 58,000)",
     },
-    attendance30: { workDays: 22, late: 1, absent: 0, leaveUsed: 1, avgWork: "8h 24m" },
+    attendance30: {
+      workDays: 22, late: 1, absent: 0, leaveUsed: 1, avgWork: "8h 24m",
+      // N+19: 30일 일별 status (p=present, l=late, a=absent, v=leave) — 강성민 시드 다양화
+      daily: ["p","p","l","p","p","p","p","a","p","v","p","p","p","p","l","p","p","p","p","p","v","p","p","p","p","p","p","p","p","p"],
+    },
     leaveBalance: { remaining: 12.5, total: 18, used: 5.5 },
     evaluation: [
+      { period: "2025 상반기", score: "A", manager: "홍채원", comment: "신규 클라이언트 영입 우수, 멘토링 모범" },
       { period: "2024 하반기", score: "A", manager: "홍채원", comment: "신제품 라인 개발 기여 우수" },
       { period: "2024 상반기", score: "B+", manager: "홍채원", comment: "안정적 수행, 협업 강화 필요" },
       { period: "2023 하반기", score: "A-", manager: "홍채원", comment: "성장 가속 구간" },
     ],
+    // N+19: MBO 달성 이력 (perf 탭 EM-003 해소)
+    mboHistory: [
+      { cycle: "2025 H2", goals: 4, achievement: 115, summary: "매출 목표 초과 · 신규 클라이언트 3건 영입" },
+      { cycle: "2025 H1", goals: 3, achievement: 108, summary: "팀 프로세스 개선 · 신규 입사자 멘토링 완료" },
+      { cycle: "2024 H2", goals: 4, achievement: 102, summary: "시스템 마이그레이션 주도" },
+      { cycle: "2024 H1", goals: 3, achievement: 106, summary: "신규 기능 출시 + 안정화" },
+    ],
+    // N+19: 받은 칭찬 (perf 탭 EM-003 해소)
+    praises: [
+      { from: "한지영", value: "리더십", reason: "릴리즈 일정 지키며 품질 유지", date: "어제" },
+      { from: "홍채원", value: "주도성", reason: "긴급 장비 트러블 신속 해결", date: "1주 전" },
+      { from: "이정환", value: "전문성", reason: "월말 결산 빠른 마감", date: "2주 전" },
+      { from: "박서연", value: "협업", reason: "타팀 협의 잘 이끌어줌", date: "1개월 전" },
+      { from: "한지영", value: "성과", reason: "신규 클라이언트 성공적 영입", date: "2개월 전" },
+      { from: "정유진", value: "친절함", reason: "온보딩 도움이 됐어요", date: "3개월 전" },
+    ],
+    // N+19: 학력 (career 탭 EM-004 해소)
+    education: [
+      { school: "서울대학교 대학원", major: "산업공학 석사", period: "2018.03 — 2020.02", status: "졸업" },
+      { school: "한양대학교",       major: "산업공학 학사", period: "2014.03 — 2018.02", status: "졸업" },
+      { school: "서울고등학교",     major: "이공계열",     period: "2011.03 — 2014.02", status: "졸업" },
+    ],
+    // N+19: 자격증 / 인증 (career 탭 EM-004 해소)
+    certifications: [
+      { name: "PMP",                     issuer: "PMI",            date: "2023.06", status: "유효" },
+      { name: "정보처리기사",            issuer: "한국산업인력공단", date: "2019.05", status: "유효" },
+      { name: "TOEIC 950",               issuer: "ETS",            date: "2022.11", status: "갱신 임박" },
+      { name: "AWS Solutions Architect", issuer: "Amazon",         date: "2024.03", status: "유효" },
+      { name: "Six Sigma Green Belt",    issuer: "사내",           date: "2024.09", status: "유효" },
+    ],
+    // N+19: 교육 이수 이력 (career 탭 EM-004 해소)
+    trainings: [
+      { course: "리더십 부트캠프 Lv.2",         hours: 24, type: "내부", date: "2025.11", status: "수료" },
+      { course: "데이터 분석 입문",              hours: 16, type: "외부", date: "2025.09", status: "수료" },
+      { course: "직장 내 괴롭힘 예방 (법정)",    hours: 1,  type: "법정", date: "2025.06", status: "수료" },
+      { course: "정보보안 기초 (법정)",          hours: 2,  type: "법정", date: "2025.03", status: "수료" },
+      { course: "Workday 사용자 교육",           hours: 4,  type: "내부", date: "2025.02", status: "수료" },
+    ],
+    // N+19: 사내 활동 (career 탭 EM-004 해소)
+    activities: ["사내 봉사단", "독서 동아리 회장", "OKR 워킹그룹", "사내 발표 (2025 H1)", "신입 멘토"],
+  },
+
+  // N+19: directory entry quickStats + recentActivity SSOT (inspector EM-007/EM-008 해소)
+  // employee code → { quickStats: {잔여연차/평균OT/최근등급}, recentActivity: [{date,action,icon,color}] }
+  directoryStats: {
+    "CTR-KR-3026": { // 강성민 (연구개발, 사원)
+      quickStats: { leaveRemaining: 12.5, avgOt: 4.2, recentGrade: "A" },
+      recentActivity: [
+        { date: "어제",    action: "1:1 미팅 완료",            icon: "Users",    color: "var(--accent)" },
+        { date: "3일 전",  action: "분기 리뷰 제출",            icon: "Doc",      color: "oklch(50% 0.16 290)" },
+        { date: "1주 전",  action: "휴가 1일 사용",             icon: "Calendar", color: "var(--success)" },
+        { date: "2주 전",  action: "교육 수료 (HR 애널리틱스)", icon: "Book",     color: "oklch(45% 0.13 230)" },
+      ],
+    },
+    "CTR-KR-3066": { // 강하준 (인사, 주임)
+      quickStats: { leaveRemaining: 8.0, avgOt: 2.1, recentGrade: "B+" },
+      recentActivity: [
+        { date: "오늘",    action: "온보딩 자료 검토",   icon: "Doc",      color: "var(--accent)" },
+        { date: "2일 전",  action: "팀 미팅 참여",       icon: "Users",    color: "oklch(50% 0.16 290)" },
+        { date: "1주 전",  action: "법정 교육 수료",     icon: "Book",     color: "var(--success)" },
+      ],
+    },
+    "CTR-KR-3006": { // 강하준 (생산/제조, 기사)
+      quickStats: { leaveRemaining: 14.0, avgOt: 6.8, recentGrade: "B" },
+      recentActivity: [
+        { date: "어제",    action: "야간 교대 완료",     icon: "Clock",    color: "var(--warning)" },
+        { date: "4일 전",  action: "안전 교육 수료",     icon: "Shield",   color: "var(--success)" },
+      ],
+    },
+    "CTR-KR-3055": { // 권동혁 (구매/조달, 대리)
+      quickStats: { leaveRemaining: 5.5, avgOt: 3.4, recentGrade: "A-" },
+      recentActivity: [
+        { date: "오늘",    action: "벤더 미팅",          icon: "Users",    color: "var(--accent)" },
+        { date: "1주 전",  action: "발주 결재 완료",     icon: "Check",    color: "var(--success)" },
+        { date: "3주 전",  action: "1:1 미팅",          icon: "Users",    color: "oklch(50% 0.16 290)" },
+      ],
+    },
+    "CTR-KR-3035": { // 권시우 (품질관리, 사원)
+      quickStats: { leaveRemaining: 11.0, avgOt: 1.5, recentGrade: "B" },
+      recentActivity: [
+        { date: "2일 전",  action: "품질 점검 보고",     icon: "Doc",      color: "var(--accent)" },
+        { date: "2주 전",  action: "휴가 2일 사용",      icon: "Calendar", color: "var(--success)" },
+      ],
+    },
+    "CTR-KR-3015": { // 권하은 (생산/제조, 주임) — 휴직
+      quickStats: { leaveRemaining: 9.5, avgOt: 0,   recentGrade: "—" },
+      recentActivity: [
+        { date: "2개월 전", action: "휴직 개시",         icon: "Pin",      color: "var(--warning)" },
+      ],
+    },
+    "CTR-KR-3001": { // 김민준 (생산/제조, 기장)
+      quickStats: { leaveRemaining: 7.0, avgOt: 8.2, recentGrade: "A" },
+      recentActivity: [
+        { date: "어제",    action: "팀 빌딩 진행",       icon: "Users",    color: "var(--accent)" },
+        { date: "5일 전",  action: "안전 점검 완료",     icon: "Shield",   color: "var(--success)" },
+      ],
+    },
+    "CTR-KR-3061": { // 김민준 (재무/회계, 대리)
+      quickStats: { leaveRemaining: 6.5, avgOt: 4.5, recentGrade: "B+" },
+      recentActivity: [
+        { date: "오늘",    action: "월말 결산 마감",     icon: "Receipt",  color: "var(--success)" },
+        { date: "1주 전",  action: "분기 리뷰 제출",     icon: "Doc",      color: "oklch(50% 0.16 290)" },
+      ],
+    },
+    "CTR-KR-3041": { // 김수빈 (영업, 사원)
+      quickStats: { leaveRemaining: 10.5, avgOt: 5.0, recentGrade: "A-" },
+      recentActivity: [
+        { date: "2일 전",  action: "고객사 미팅",        icon: "Users",    color: "var(--accent)" },
+        { date: "1주 전",  action: "제안서 제출",        icon: "Doc",      color: "oklch(50% 0.16 290)" },
+      ],
+    },
+    "CTR-KR-3088": { // 박지훈 (생산기술, 선임)
+      quickStats: { leaveRemaining: 4.0, avgOt: 7.1, recentGrade: "S" },
+      recentActivity: [
+        { date: "어제",    action: "신규 라인 가동",     icon: "Hammer",   color: "var(--success)" },
+        { date: "1주 전",  action: "기술 리뷰 주재",     icon: "Users",    color: "var(--accent)" },
+      ],
+    },
+    "CTR-KR-3091": { // 이상민 (영업, 차장)
+      quickStats: { leaveRemaining: 3.5, avgOt: 5.8, recentGrade: "A" },
+      recentActivity: [
+        { date: "오늘",    action: "월간 영업 리뷰",     icon: "Chart",    color: "var(--accent)" },
+        { date: "3일 전",  action: "팀원 1:1 (3건)",    icon: "Users",    color: "oklch(50% 0.16 290)" },
+      ],
+    },
+    "CTR-KR-3022": { // 정유진 (재무/회계, 과장)
+      quickStats: { leaveRemaining: 6.0, avgOt: 4.8, recentGrade: "A-" },
+      recentActivity: [
+        { date: "오늘",    action: "결산 보고 제출",     icon: "Receipt",  color: "var(--success)" },
+        { date: "1주 전",  action: "예산 검토 회의",     icon: "Users",    color: "var(--accent)" },
+      ],
+    },
+    "CTR-KR-3077": { // 홍채원 (연구개발, 수석)
+      quickStats: { leaveRemaining: 2.0, avgOt: 9.5, recentGrade: "S" },
+      recentActivity: [
+        { date: "어제",    action: "팀원 5명 평가 작성", icon: "Doc",      color: "var(--accent)" },
+        { date: "3일 전",  action: "기술 위원회 참석",   icon: "Users",    color: "oklch(50% 0.16 290)" },
+        { date: "1주 전",  action: "신제품 데모",        icon: "Sparkle",  color: "var(--success)" },
+      ],
+    },
+    "CTR-KR-3045": { // 최승현 (개발, 책임)
+      quickStats: { leaveRemaining: 8.5, avgOt: 6.3, recentGrade: "A" },
+      recentActivity: [
+        { date: "오늘",    action: "코드 리뷰 (8건)",    icon: "Check",    color: "var(--success)" },
+        { date: "2일 전",  action: "스프린트 플래닝",    icon: "Users",    color: "var(--accent)" },
+      ],
+    },
   },
 };

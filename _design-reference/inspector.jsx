@@ -88,6 +88,11 @@ function EmployeeInspector({ open, employee, onClose, onOpenDetail }) {
 
   if (!open || !employee) return null;
 
+  // N+19: 직원별 SSOT lookup (EM-007 quickStats + EM-008 recentActivity 해소)
+  const stats = (data.directoryStats && data.directoryStats[employee.code]) || {};
+  const qs = stats.quickStats || { leaveRemaining: "—", avgOt: "—", recentGrade: "—" };
+  const recentActivity = stats.recentActivity || [];
+
   const sections = [
     { k: "사번",       v: <span className="mono">{employee.code}</span> },
     { k: "한국어 이름", v: employee.name },
@@ -153,26 +158,21 @@ function EmployeeInspector({ open, employee, onClose, onOpenDetail }) {
           <div className="ei-quick-stats">
             <div className="card">
               <div className="lbl">잔여 연차</div>
-              <div className="val">12.5<span className="u">일</span></div>
+              <div className="val">{qs.leaveRemaining}<span className="u">일</span></div>
             </div>
             <div className="card">
               <div className="lbl">평균 OT</div>
-              <div className="val">4.2<span className="u">h</span></div>
+              <div className="val">{qs.avgOt}<span className="u">h</span></div>
             </div>
             <div className="card">
               <div className="lbl">최근 등급</div>
-              <div className="val" style={{ color: "oklch(45% 0.16 290)" }}>E</div>
+              <div className="val" style={{ color: "oklch(45% 0.16 290)" }}>{qs.recentGrade}</div>
             </div>
           </div>
 
           <div className="ei-section-h">최근 활동</div>
           <div className="ei-activity">
-            {[
-              { date: "어제",      action: "1:1 미팅 완료", icon: "Users",    color: "var(--accent)" },
-              { date: "3일 전",    action: "분기 리뷰 제출", icon: "Doc",     color: "oklch(50% 0.16 290)" },
-              { date: "1주 전",    action: "휴가 1일 사용",  icon: "Calendar", color: "var(--success)" },
-              { date: "2주 전",    action: "교육 수료 (HR 애널리틱스)", icon: "Book", color: "oklch(45% 0.13 230)" },
-            ].map((a, i) => {
+            {recentActivity.map((a, i) => {
               const Ic = Icons[a.icon];
               return (
                 <div key={i} className="act">
