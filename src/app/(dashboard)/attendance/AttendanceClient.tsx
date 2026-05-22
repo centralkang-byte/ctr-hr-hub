@@ -22,6 +22,11 @@ import {
   type AttStatusKey,
   type WdHeatCell,
 } from '@/components/shared/WdStatusHeatGrid'
+import {
+  WdMonthlyStatCard,
+  type WdMonthlyStatInput,
+} from '@/components/shared/WdMonthlyStatCard'
+import { aggregateMonthlyStats } from '@/lib/attendance/monthly-aggregate'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -62,6 +67,12 @@ interface MonthlyApiDay {
   date: string
   status: string | null
   overtimeMinutes: number
+}
+
+// AT-005 — monthly 라우트 전체 응답 (AT-004 MonthlyApiDay 불변, clockIn/Out·summary 가산)
+interface MonthlyApiResponse {
+  days: (MonthlyApiDay & { clockIn: string | null; clockOut: string | null })[]
+  summary: { workedDays: number; totalOvertimeMinutes: number }
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -163,6 +174,9 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
   const [today, setToday] = useState<AttendanceRecord | null>(null)
   const [weekly, setWeekly] = useState<WeeklySummary | null>(null)
   const [monthlyCells, setMonthlyCells] = useState<WdHeatCell[]>([])
+  const [monthlyStats, setMonthlyStats] = useState<
+    { stats: WdMonthlyStatInput; year: number; month: number } | null
+  >(null)
   const [loading, setLoading] = useState(true)
   const [clockLoading, setClockLoading] = useState(false)
   const [elapsed, setElapsed] = useState(0)
@@ -191,8 +205,10 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
   const fetchMonthly = useCallback(async () => {
     try {
       const now = new Date()
-      const res = await apiClient.get<{ days: MonthlyApiDay[] }>(
-        `/api/v1/attendance/monthly/${now.getFullYear()}/${now.getMonth() + 1}`,
+      const year = now.getFullYear()
+      const month = now.getMonth() + 1
+      const res = await apiClient.get<MonthlyApiResponse>(
+        `/api/v1/attendance/monthly/${year}/${month}`,
       )
       setMonthlyCells(
         (res.data?.days ?? []).map((d) => ({
@@ -200,8 +216,16 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
           status: ATT_STATUS_FROM_RECORD(d.status, d.overtimeMinutes),
         })),
       )
+      // AT-005 — 월간 통계 카나리 (동일 monthly 라우트 재사용, 클라이언트 집계 helper)
+      const summary = res.data?.summary
+      setMonthlyStats(
+        summary
+          ? { stats: aggregateMonthlyStats(res.data.days ?? [], summary), year, month }
+          : null,
+      )
     } catch {
       setMonthlyCells([])
+      setMonthlyStats(null)
     }
   }, [])
 
@@ -437,6 +461,14 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
             </p>
           )}
       </div>
+
+      {/* ─── Section 2a: 월간 통계 (PR-4 AT-005 카나리 — WdGroupedStatCard SSOT) ─── */}
+      <WdMonthlyStatCard
+        data={monthlyStats?.stats ?? null}
+        year={monthlyStats?.year}
+        month={monthlyStats?.month}
+        loading={loading}
+      />
 
       {/* ─── Section 2b: 최근 월 근태 히트 그리드 (PR-2 AT-004 카나리 — status.ts SSOT) ─── */}
       <WdStatusHeatGrid
