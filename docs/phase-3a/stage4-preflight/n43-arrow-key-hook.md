@@ -52,7 +52,7 @@ useUnsavedChanges.ts
 | 파일 | 변경 | line delta |
 |---|---|---|
 | `src/hooks/useArrowKeyNavigation.ts` | **신규** (~80 lines) | +80 |
-| `src/hooks/useArrowKeyNavigation.test.ts` | **신규** (vitest, ~70 lines) | +70 |
+| `tests/unit/hooks/useArrowKeyNavigation.test.ts` | **신규** (vitest, ~70 lines, `vitest.config.ts` `include` 정합) | +70 |
 
 ### (b) Hook API spec
 
@@ -152,12 +152,12 @@ function LeaveStatusFilter() {
 
 ### 의존성
 - **PR-5A 머지** 후 진입
-- **N+44/N+45 implementation 선행 의존** (consumer)
+- **N+44/N+45 후속 의존** (consumer, Phase D 진입 시 — audit §6.2 (A) 단독 PR 권고 정합)
 
 ### 가드
 - ❌ DOM 접근 raw `document.querySelector` 금지 (ref pattern only)
 - ❌ event.preventDefault() 조건부 (Home/End는 brower default와 충돌 가능)
-- ❌ N+44/N+45 implementation 전 단독 PR 진행 금지 (consumer 부재 시 dead code)
+- ✅ 단독 PR 진행 시 audit §7.3 N+44/N+45 consumer 후속 PR commitment 의무 (Phase D 진입 시 자연 consumer — audit §6.2 (A) 권고 정합). commitment 부재 시 dead code 위험
 - ✅ TypeScript strict 정합 (`KeyboardEvent<HTMLElement>` generic)
 - ✅ vitest 단위 5+ 키 × 2 orientation × loop on/off = 20+ case
 - ✅ WCAG 2.1 + WAI-ARIA Authoring Practices 정합
@@ -183,7 +183,7 @@ function LeaveStatusFilter() {
 ## §6. Verification (verify 계획)
 
 - ✅ **tsc**: 0 error (strict generic 정합)
-- ✅ **vitest**: 20+ case PASS (`npm test src/hooks/useArrowKeyNavigation.test.ts`)
+- ✅ **vitest**: 20+ case PASS (`npx vitest run tests/unit/hooks/useArrowKeyNavigation.test.ts`)
 - ✅ **lint**: clean
 - ✅ **TypeScript export**: hook API 명시
 - ✅ **회귀 0**: 다른 hook 시그니처 변동 0
