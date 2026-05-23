@@ -1,7 +1,10 @@
 /* global React, Icons, Avatar, Card, fmtKDate, fmtWon, fmtWonShort, tenureFromISO */
 // CTR HR Hub — 직원 프로필 상세 (Workday Worker Profile)
 
-const { useState: useStateED } = React;
+const { useState: useStateED, useRef: useRefED } = React;
+
+// N+23: WAI-ARIA tablist keyboard handler 정의 — 7 tab IDs (제목 동순)
+const TAB_IDS = ["summary", "job", "payroll", "attendance", "leave", "perf", "career"];
 
 const KV = ({ k, v, empty }) => (
   <div className="wd-kv">
@@ -14,6 +17,20 @@ function EmployeeDetailPage({ data, code, onBack }) {
   const employee = data.directory.find((e) => e.code === code) || data.directory[0];
   const detail = data.employeeDetail;
   const [tab, setTab] = useStateED("summary");
+  // N+23: tabs ref 배열 + ←/→/Home/End 키보드 핸들러 (focus follows selection)
+  const tabsRef = useRefED([]);
+  function handleTabKeyDown(e) {
+    const idx = TAB_IDS.indexOf(tab);
+    let next = idx;
+    if (e.key === "ArrowRight") next = (idx + 1) % TAB_IDS.length;
+    else if (e.key === "ArrowLeft") next = (idx - 1 + TAB_IDS.length) % TAB_IDS.length;
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = TAB_IDS.length - 1;
+    else return;
+    e.preventDefault();
+    setTab(TAB_IDS[next]);
+    tabsRef.current[next] && tabsRef.current[next].focus();
+  }
 
   return (
     <div className="content" style={{ padding: "var(--space-5) var(--space-6) var(--space-10)", maxWidth: 1440, margin: "0 auto" }}>
@@ -61,7 +78,7 @@ function EmployeeDetailPage({ data, code, onBack }) {
       </div>
 
       {/* ── Tab Bar ──────────────────────────────── */}
-      <div className="wd-tab-bar">
+      <div className="wd-tab-bar" role="tablist" aria-orientation="horizontal">
         {[
           ["summary",    "요약",       Icons.User],
           ["job",        "직무 정보",  Icons.Briefcase],
@@ -70,8 +87,18 @@ function EmployeeDetailPage({ data, code, onBack }) {
           ["leave",      "휴가/휴직",  Icons.Calendar],
           ["perf",       "성과 평가",  Icons.Trophy],
           ["career",     "경력 이력",  Icons.ArrowR],
-        ].map(([id, label, Icon]) => (
-          <button key={id} aria-selected={tab === id} onClick={() => setTab(id)}>
+        ].map(([id, label, Icon], idx) => (
+          <button
+            key={id}
+            ref={(el) => (tabsRef.current[idx] = el)}
+            role="tab"
+            id={`tab-${id}`}
+            aria-controls={`panel-${id}`}
+            aria-selected={tab === id}
+            tabIndex={tab === id ? 0 : -1}
+            onClick={() => setTab(id)}
+            onKeyDown={handleTabKeyDown}
+          >
             <Icon size={14} sw={1.8} /> {label}
           </button>
         ))}
@@ -79,7 +106,7 @@ function EmployeeDetailPage({ data, code, onBack }) {
 
       {/* ── Tab Content ──────────────────────────── */}
       {tab === "summary" && (
-        <>
+        <div role="tabpanel" id="panel-summary" aria-labelledby="tab-summary" tabIndex={0}>
           <Card className="wd-section">
             <div className="card-head">
               <span className="title">인적 사항</span>
@@ -123,10 +150,11 @@ function EmployeeDetailPage({ data, code, onBack }) {
               </div>
             </div>
           </Card>
-        </>
+        </div>
       )}
 
       {tab === "job" && (
+        <div role="tabpanel" id="panel-job" aria-labelledby="tab-job" tabIndex={0}>
         <Card className="wd-section">
           <div className="card-head"><span className="title">발령 이력</span></div>
           <div style={{ padding: "var(--space-5) var(--space-6)" }}>
@@ -147,10 +175,11 @@ function EmployeeDetailPage({ data, code, onBack }) {
             </div>
           </div>
         </Card>
+        </div>
       )}
 
       {tab === "payroll" && (
-        <>
+        <div role="tabpanel" id="panel-payroll" aria-labelledby="tab-payroll" tabIndex={0}>
           <div className="kpi-grid cols-3" style={{ marginBottom: "var(--space-4)" }}>
             <div className="kpi">
               <div className="label">연봉</div>
@@ -193,11 +222,11 @@ function EmployeeDetailPage({ data, code, onBack }) {
               </table>
             </div>
           </Card>
-        </>
+        </div>
       )}
 
       {tab === "attendance" && (
-        <>
+        <div role="tabpanel" id="panel-attendance" aria-labelledby="tab-attendance" tabIndex={0}>
           <div className="kpi-grid" style={{ marginBottom: "var(--space-4)" }}>
             <div className="kpi"><div className="label">근무일수</div><div className="val tnum">{detail.attendance30.workDays}<span className="unit">일</span></div></div>
             <div className="kpi"><div className="label">지각</div><div className="val tnum">{detail.attendance30.late}<span className="unit">회</span></div></div>
@@ -208,10 +237,11 @@ function EmployeeDetailPage({ data, code, onBack }) {
             <div className="card-head"><span className="title">최근 30일 근태</span></div>
             <div className="card-pad"><AttendanceMiniCalendar /></div>
           </Card>
-        </>
+        </div>
       )}
 
       {tab === "leave" && (
+        <div role="tabpanel" id="panel-leave" aria-labelledby="tab-leave" tabIndex={0}>
         <Card>
           <div className="card-head"><span className="title">연차 / 휴직</span></div>
           <div className="card-pad">
@@ -226,10 +256,11 @@ function EmployeeDetailPage({ data, code, onBack }) {
             </div>
           </div>
         </Card>
+        </div>
       )}
 
       {tab === "perf" && (
-        <>
+        <div role="tabpanel" id="panel-perf" aria-labelledby="tab-perf" tabIndex={0}>
           <div className="grid-3" style={{ marginBottom: "var(--space-4)" }}>
             <Card>
               <div className="card-pad">
@@ -338,11 +369,11 @@ function EmployeeDetailPage({ data, code, onBack }) {
               ))}
             </div>
           </Card>
-        </>
+        </div>
       )}
 
       {tab === "career" && (
-        <>
+        <div role="tabpanel" id="panel-career" aria-labelledby="tab-career" tabIndex={0}>
           <Card className="wd-section">
             <div className="card-head"><span className="title">학력</span></div>
             <div className="list">
@@ -425,7 +456,7 @@ function EmployeeDetailPage({ data, code, onBack }) {
               </div>
             </div>
           </Card>
-        </>
+        </div>
       )}
     </div>
   );
