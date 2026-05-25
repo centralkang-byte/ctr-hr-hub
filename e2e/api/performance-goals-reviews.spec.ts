@@ -125,21 +125,35 @@ test.describe('Goals Workflow', () => {
   })
 
   test('10. HR_ADMIN requests revision on PENDING_APPROVAL goal', async () => {
-    // Cat E8 H-7: API contract request-revision/route.ts:44-45 only allows
-    // PENDING_APPROVAL → REJECTED. goal1/goal2 are already APPROVED (tests 8/9),
-    // so create a dedicated goal3 to exercise the revision path without
-    // disturbing the goal1/goal2 lifecycle relied on by tests 11~14.
-    const created = await pf.createGoal(empClient, pf.buildGoal(cycleId, 3))
-    assertOk(created, 'create goal 3')
-    const goalId3 = (created.data as Record<string, unknown>).id as string
-
-    const submitted = await pf.submitGoal(empClient, goalId3)
-    assertOk(submitted, 'submit goal 3')
-
-    const result = await pf.requestRevision(hrClient, goalId3, {
-      comment: 'E2E test: please revise the goal scope',
+    // Cat E8 H-7 v2: API contract submit/route.ts:48-50 requires weight 합계 100.
+    // v1 (goal3 weight=40 in same cycle) made total 60+40+40=140 → 400. Use an
+    // isolated cycle with a single weight-100 goal so the revision flow can be
+    // exercised without touching the goal1/goal2 lifecycle relied on by tests
+    // 4 (weight=60 assertion) and 11~14.
+    const isoCycleId = await createTestCycle(hrRequest, {
+      name: `E2E Goal Revision Isolated ${Date.now()}`,
+      half: 'H1',
     })
-    assertOk(result, 'request revision on goal 3')
+    try {
+      await initializeCycle(hrRequest, isoCycleId)
+
+      const isoGoal = await pf.createGoal(empClient, {
+        ...pf.buildGoal(isoCycleId, 1),
+        weight: 100,
+      })
+      assertOk(isoGoal, 'create isolated goal')
+      const isoGoalId = (isoGoal.data as Record<string, unknown>).id as string
+
+      const submitted = await pf.submitGoal(empClient, isoGoalId)
+      assertOk(submitted, 'submit isolated goal')
+
+      const result = await pf.requestRevision(hrClient, isoGoalId, {
+        comment: 'E2E test: please revise the goal scope',
+      })
+      assertOk(result, 'request revision on isolated goal')
+    } finally {
+      await cleanupTestCycle(hrRequest, isoCycleId).catch(() => {})
+    }
   })
 
   test('11. EMPLOYEE adds progress (60%) on approved goal 2', async () => {
