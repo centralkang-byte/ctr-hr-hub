@@ -124,11 +124,22 @@ test.describe('Goals Workflow', () => {
     assertOk(result, 'approve goal 2')
   })
 
-  test('10. HR_ADMIN requests revision on goal 1', async () => {
-    const result = await pf.requestRevision(hrClient, goalId1, {
+  test('10. HR_ADMIN requests revision on PENDING_APPROVAL goal', async () => {
+    // Cat E8 H-7: API contract request-revision/route.ts:44-45 only allows
+    // PENDING_APPROVAL → REJECTED. goal1/goal2 are already APPROVED (tests 8/9),
+    // so create a dedicated goal3 to exercise the revision path without
+    // disturbing the goal1/goal2 lifecycle relied on by tests 11~14.
+    const created = await pf.createGoal(empClient, pf.buildGoal(cycleId, 3))
+    assertOk(created, 'create goal 3')
+    const goalId3 = (created.data as Record<string, unknown>).id as string
+
+    const submitted = await pf.submitGoal(empClient, goalId3)
+    assertOk(submitted, 'submit goal 3')
+
+    const result = await pf.requestRevision(hrClient, goalId3, {
       comment: 'E2E test: please revise the goal scope',
     })
-    assertOk(result, 'request revision on goal 1')
+    assertOk(result, 'request revision on goal 3')
   })
 
   test('11. EMPLOYEE adds progress (60%) on approved goal 2', async () => {
