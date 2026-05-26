@@ -53,6 +53,22 @@ window.HR_DATA = {
     { id: "APR-1023", type: "증명서",   who: "김수빈", team: "영업팀",     what: "재직증명서 발급",         submitted: "2026-05-16", days: 0, urgency: "today" },
     { id: "APR-1022", type: "발령",     who: "오승현", team: "개발팀",     what: "팀 이동 (개발 → 연구개발)", submitted: "2026-05-12", days: 0, urgency: "soon" },
   ],
+  // 온보딩 단계 SSOT (N+33) — proto design 청사진
+  // schema `OnboardingTaskCategory` enum 정합 (DOCUMENT / TRAINING / INTRODUCTION / SETUP)
+  // 참고: prisma 측 글로벌 기본 템플릿은 별도 7-task SSOT (prisma/seed.ts:961-991 `globalObTplId`)
+  //
+  // TODO(후속 RECORD): page-onboarding.jsx 모듈로컬 ONBOARD_STEPS (line 7-14) 와 본 SSOT 단일화 + UI 연결.
+  // 본 PR (N+33) 범위는 상수 신설 only — UI 연결은 별도 RECORD (인계 prompt scope 분리 준수).
+  // codex review --uncommitted 의 "dead code (consumer 없음)" P2 finding 은 본 의도된 dead drop 으로
+  // suppress (consumer 정합은 후속 RECORD). cross-ref: docs/phase-3a/batch-cards/07-onboarding-offboarding.md §N+33.
+  ONBOARD_STEPS: [
+    { id: "docs",     label: "서류 제출",         category: "DOCUMENT",     order: 1 },
+    { id: "ojt",      label: "OJT",               category: "TRAINING",     order: 2 },
+    { id: "security", label: "보안 교육",         category: "TRAINING",     order: 3 },
+    { id: "buddy",    label: "버디 매칭",         category: "INTRODUCTION", order: 4 },
+    { id: "access",   label: "시스템 권한 부여",  category: "SETUP",        order: 5 },
+    { id: "team",     label: "팀 소개",           category: "INTRODUCTION", order: 6 },
+  ],
   // 온보딩 진행 현황
   onboarding: [
     { name: "이민준",  hue: 200, joinDate: "2026-05-04", template: "신규입사 온보딩", progress: 0,   total: 6, dDay: -12, buddy: null,   status: "delay" },
