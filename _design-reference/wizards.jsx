@@ -255,6 +255,7 @@ function HireWorkerWizard({ onCancel, onComplete }) {
           <div style={{ marginTop: 18, padding: 12, background: "var(--accent-soft)", borderRadius: 8, fontSize: 12, color: "var(--accent-ink)", lineHeight: 1.5 }}>
             등록 완료 시 입사자에게 자동 안내 이메일이 발송되고, 온보딩 체크리스트가 생성돼요.
           </div>
+          <DemoLimitBanner />
         </div>
       )}
     </WizardShell>
@@ -425,6 +426,7 @@ function JobPostingWizard({ onCancel, onComplete }) {
               </div>
             ))}
           </div>
+          <DemoLimitBanner />
         </div>
       )}
     </WizardShell>
@@ -605,6 +607,7 @@ function PerfCycleWizard({ onCancel, onComplete }) {
               </div>
             ))}
           </div>
+          <DemoLimitBanner />
         </div>
       )}
     </WizardShell>
@@ -820,6 +823,7 @@ function OrgRestructureWizard({ onCancel, onComplete }) {
               </div>
             ))}
           </div>
+          <DemoLimitBanner />
         </div>
       )}
     </WizardShell>
