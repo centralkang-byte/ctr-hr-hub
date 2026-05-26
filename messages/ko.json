@@ -914,7 +914,6 @@
     "newPhonePlaceholder": "010-0000-0000",
     "newPositionOptional": "직위 (선택)",
     "newSelectPosition": "직위 선택",
-    "newStepLabel": "{number}단계: {label}",
     "detailTabProfile": "프로필",
     "detailTabAssignment": "발령이력",
     "detailTabCompensation": "급여정보",
