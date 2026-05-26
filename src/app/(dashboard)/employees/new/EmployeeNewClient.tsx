@@ -10,9 +10,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Check, ChevronLeft, ChevronRight, User, Briefcase, Building2, ClipboardCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import StickyActionBar from '@/components/shared/StickyActionBar'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -22,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { PageHeader } from '@/components/shared/PageHeader'
+import { WizardShell, type WizardStep } from '@/components/shared/WizardShell'
 import { apiClient } from '@/lib/api'
 import type { SessionUser, DeptOption, RefOption } from '@/types'
 
@@ -171,11 +169,11 @@ export function EmployeeNewClient({
     INTERN: t('intern'),
   }
 
-  const STEPS = [
-    { label: t('basicInfo'), icon: User },
-    { label: t('employmentInfo'), icon: Briefcase },
-    { label: t('assignment'), icon: Building2 },
-    { label: tc('confirm'), icon: ClipboardCheck },
+  const STEPS: WizardStep[] = [
+    { key: 'basic', label: t('basicInfo') },
+    { key: 'employment', label: t('employmentInfo') },
+    { key: 'assignment', label: t('assignment') },
+    { key: 'confirm', label: tc('confirm') },
   ]
 
   const [step, setStep] = useState(0)
@@ -599,103 +597,27 @@ export function EmployeeNewClient({
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 p-6">
-      <PageHeader
-        title={t('newEmployee')}
-        description={t('newEmployeeDescription')}
-      />
-
-      {/* ─── Step indicator ─── */}
-      <div className="flex items-center justify-between">
-        {STEPS.map((s, i) => {
-          const Icon = s.icon
-          const isCompleted = i < step
-          const isCurrent = i === step
-          return (
-            <div key={i} className="flex flex-1 items-center">
-              <div className="flex flex-col items-center gap-1">
-                <div
-                  className={[
-                    'flex h-9 w-9 items-center justify-center rounded-full border-2 transition-colors',
-                    isCompleted
-                      ? 'border-ctr-primary bg-ctr-primary text-white'
-                      : isCurrent
-                        ? 'border-ctr-primary text-ctr-primary'
-                        : 'border-muted-foreground/30 text-muted-foreground',
-                  ].join(' ')}
-                >
-                  {isCompleted ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    <Icon className="h-4 w-4" />
-                  )}
-                </div>
-                <span
-                  className={[
-                    'text-xs',
-                    isCurrent ? 'font-medium text-ctr-primary' : 'text-muted-foreground',
-                  ].join(' ')}
-                >
-                  {s.label}
-                </span>
-              </div>
-              {i < STEPS.length - 1 && (
-                <div
-                  className={[
-                    'mx-2 h-0.5 flex-1',
-                    i < step ? 'bg-ctr-primary' : 'bg-muted-foreground/30',
-                  ].join(' ')}
-                />
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {/* ─── Step content ─── */}
-      <div className="rounded-xl border border-border bg-card p-6">
-        <h2 className="mb-5 text-base font-bold text-foreground tracking-ctr">
-          {t('newStepLabel', { number: step + 1, label: STEPS[step]!.label })}
-        </h2>
-        {step === 0 && renderStep1()}
-        {step === 1 && renderStep2()}
-        {step === 2 && renderStep3()}
-        {step === 3 && renderStep4()}
-      </div>
-
-      {/* ─── Error ─── */}
+    <WizardShell
+      open={true}
+      title={t('newEmployee')}
+      sub={t('newEmployeeDescription')}
+      steps={STEPS}
+      currentStep={step}
+      onCancel={() => router.push('/employees')}
+      onPrev={goBack}
+      onNext={goNext}
+      onSubmit={handleSubmit}
+      canProceed={validateStep(step, data) === null && !submitting}
+    >
       {error && (
         <p className="rounded-md border border-destructive/50 bg-destructive/10 px-4 py-2 text-sm text-destructive">
           {error}
         </p>
       )}
-
-      {/* ─── Navigation buttons ─── */}
-      <StickyActionBar className="flex justify-between">
-        <Button
-          variant="outline"
-          onClick={step === 0 ? () => router.push('/employees') : goBack}
-        >
-          <ChevronLeft className="mr-1 h-4 w-4" />
-          {step === 0 ? tc('cancel') : tc('prev')}
-        </Button>
-
-        {step < STEPS.length - 1 ? (
-          <Button onClick={goNext} className="bg-ctr-primary hover:bg-ctr-primary-dark text-white">
-            {tc('next')}
-            <ChevronRight className="ml-1 h-4 w-4" />
-          </Button>
-        ) : (
-          <Button
-            onClick={handleSubmit}
-            disabled={submitting}
-            className="bg-ctr-primary hover:bg-ctr-primary-dark text-white"
-          >
-            {submitting ? t('creating') : t('newEmployee')}
-            <Check className="ml-1 h-4 w-4" />
-          </Button>
-        )}
-      </StickyActionBar>
-    </div>
+      {step === 0 && renderStep1()}
+      {step === 1 && renderStep2()}
+      {step === 2 && renderStep3()}
+      {step === 3 && renderStep4()}
+    </WizardShell>
   )
 }
