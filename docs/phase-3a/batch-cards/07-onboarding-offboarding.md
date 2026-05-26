@@ -368,29 +368,29 @@ i18n: 75 keys (`onboarding.*` + `offboarding.*` namespace 정합)
 
 ---
 
-### N+33 — ONBOARD_STEPS 6단계 OnboardingTemplate default seed (Q6) [MEDIUM]
+### N+33 — ONBOARD_STEPS 6단계 proto data.js 상수 신설 (Q6) [MEDIUM]
 
-- **트랙**: DB seed + proto data.js
+> **사전 가정 정정 5건** (Phase B 진입 시 N+33 cross-ref): MEETING/ACCESS enum 부재 → INTRODUCTION/SETUP 매핑 / "12 법인 idempotent" → schema `companyId? // NULL=global` 의도 / 기존 `globalObTplId` upsert (`prisma/seed.ts:961-991`) 존재 → 신규 신설 X / 6 step vs 기존 7 task 충돌 → minimal 양면 비균질 / proto `ONBOARD_STEPS` 부재 → 신설 필요. 자세한 cross-ref는 [phase-b-entry-audit.md §1.1 N+33](../stage4-implementation/phase-b-entry-audit.md) 참조.
+
+- **트랙**: proto data.js (minimal scope — prisma 변경 0)
 - **우선**: MEDIUM
 - **의존성**: 0 (독립 진입 가능)
 - **Stage 4 입력**:
-  - ON-004 + X3: proto `ONBOARD_STEPS` 6단계 → `OnboardingTemplate` default seed
-  - `prisma/seed.ts` 또는 `prisma/seed-onboarding-default.ts` 신규
-  - 6단계 (proto 정합):
-    1. 서류 제출 (DOCUMENT)
-    2. OJT 교육 (TRAINING)
-    3. 보안 교육 (TRAINING)
-    4. 버디 매칭 + 미팅 (MEETING)
-    5. 시스템 접근 권한 (ACCESS)
-    6. 팀 소개 + 인사 (MEETING)
-  - 카테고리 enum: DOCUMENT / TRAINING / MEETING / ACCESS — 4종
-  - 회사별 customization 여지 보존 (default 적용 + override 가능)
-  - proto `data.js` 측 ONBOARD_STEPS 동일 SSOT 정합
+  - ON-004 + X3: proto `ONBOARD_STEPS` 6단계 상수 신설 (`_design-reference/data.js`)
+  - prisma 측 변경 0: 기존 글로벌 7-task `globalObTplId` upsert (`prisma/seed.ts:961-991`, companyId=null) + CTR-KR/CTR-US 법인 override 유지
+  - 6단계 (proto SSOT, schema enum 매핑):
+    1. 서류 제출 → `DOCUMENT`
+    2. OJT 교육 → `TRAINING`
+    3. 보안 교육 → `TRAINING`
+    4. 버디 매칭 + 미팅 → `INTRODUCTION` (audit MEETING 정정)
+    5. 시스템 접근 권한 → `SETUP` (audit ACCESS 정정)
+    6. 팀 소개 + 인사 → `INTRODUCTION` (audit MEETING 정정)
+  - 카테고리 매핑 정합 enum 4종: `DOCUMENT` / `TRAINING` / `INTRODUCTION` / `SETUP` (schema `OnboardingTaskCategory` 10종 안)
 - **Stage 4 검증**:
-  - 12 법인 (CTR + 외 11) 각 default seed 생성 idempotent
-  - 기존 회사별 custom template 회귀 0 (덮어쓰기 금지)
-  - unit test: 6 step seed + 4 카테고리 mapping
-  - proto data.js (`_design-reference/data.js`) ONBOARD_STEPS 정합
+  - schema `OnboardingTaskCategory` enum 4 매핑 정합 (수동 cross-ref)
+  - prisma 측 기존 `globalObTplId` + 법인 override 미터치 (회귀 0)
+  - proto data.js `ONBOARD_STEPS` 상수 신설 only (~+30 LOC, 1 file)
+  - 양면 비균질 명시: prisma 글로벌 7 task ≠ proto 6 step (design 청사진 측만 6 step)
 
 ---
 
