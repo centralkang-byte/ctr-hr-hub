@@ -11387,5 +11387,8 @@
     "submit": "[TODO:zh] Submit",
     "cancel": "[TODO:zh] Cancel",
     "stepLabel": "[TODO:zh] step"
+  },
+  "demoLimitBanner": {
+    "defaultMessage": "[TODO:zh] This is a demo screen — refreshing will discard your input."
   }
 }

@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { WizardShell, type WizardStep } from '@/components/shared/WizardShell'
+import { DemoLimitBanner } from '@/components/shared/DemoLimitBanner'
 import { apiClient } from '@/lib/api'
 import type { SessionUser, DeptOption, RefOption } from '@/types'
 
@@ -617,7 +618,12 @@ export function EmployeeNewClient({
       {step === 0 && renderStep1()}
       {step === 1 && renderStep2()}
       {step === 2 && renderStep3()}
-      {step === 3 && renderStep4()}
+      {step === 3 && (
+        <>
+          {renderStep4()}
+          <DemoLimitBanner />
+        </>
+      )}
     </WizardShell>
   )
 }

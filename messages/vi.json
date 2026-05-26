@@ -11386,5 +11386,8 @@
     "submit": "[TODO:vi] Submit",
     "cancel": "[TODO:vi] Cancel",
     "stepLabel": "[TODO:vi] step"
+  },
+  "demoLimitBanner": {
+    "defaultMessage": "[TODO:vi] This is a demo screen — refreshing will discard your input."
   }
 }
