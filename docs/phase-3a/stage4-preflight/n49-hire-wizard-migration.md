@@ -104,7 +104,7 @@ export function EmployeeNewClient() {
       }}
       onSubmit={() => handleSubmit()}
       canProceed={!validateStep(step, data)}
-      banner={step === HIRE_STEPS.length - 1 ? <DemoLimitBanner /> : null}
+      // banner prop 부재 (actual main `90c88ac1` WizardShell.tsx, N+48 inquiry 1 옵션 c 결재 반영, Session 233) → N+55 별 PR 머지 후 children 안 consumer wire (옵션 β)
     >
       {step === 0 && <Step0BasicInfo data={data} onChange={setData} />}
       {step === 1 && <Step1Employment data={data} onChange={setData} />}
