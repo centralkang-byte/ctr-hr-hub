@@ -249,8 +249,13 @@ test.describe('Peer Review Pipeline', () => {
     hrClient = new ApiClient(hrRequest)
     empClient = new ApiClient(empRequest)
 
-    // Resolve seed employee IDs for nomination
-    employeeAId = (await resolveSeedData(hrRequest)).employeeId
+    // Resolve seed employee IDs for nomination.
+    // Cat E7-B H-6-B: peer-review/candidates route line 50 requires the target
+    // employee to have a primary EmployeeAssignment (or it throws "직원의 소속
+    // 정보가 없습니다"). resolveSeedData's employeeId doesn't guarantee that
+    // assignment; '이민준' (employee-a@ctr.co.kr) carries the canonical CTR
+    // OFFICE primary assignment — see e2e/helpers/employee-fixtures.ts:47-50.
+    employeeAId = await resolveEmployeeId(hrRequest, '이민준')
 
     // Resolve 3 employees as potential peer reviewers
     const empB = await resolveEmployeeId(hrRequest, '정다은')
