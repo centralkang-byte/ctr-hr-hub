@@ -53,6 +53,17 @@ window.HR_DATA = {
     { id: "APR-1023", type: "증명서",   who: "김수빈", team: "영업팀",     what: "재직증명서 발급",         submitted: "2026-05-16", days: 0, urgency: "today" },
     { id: "APR-1022", type: "발령",     who: "오승현", team: "개발팀",     what: "팀 이동 (개발 → 연구개발)", submitted: "2026-05-12", days: 0, urgency: "soon" },
   ],
+  // 온보딩 단계 SSOT (N+33) — proto design 청사진
+  // schema `OnboardingTaskCategory` enum 정합 (DOCUMENT / TRAINING / INTRODUCTION / SETUP)
+  // 참고: prisma 측 글로벌 기본 템플릿은 별도 7-task SSOT (prisma/seed.ts:961-991 `globalObTplId`)
+  ONBOARD_STEPS: [
+    { id: "doc_submission",    sortOrder: 1, title: "서류 제출",        category: "DOCUMENT",     assignee: "HR",       dueDaysAfter: 1,  description: "재직증명서 등 입사 서류 제출" },
+    { id: "ojt_training",      sortOrder: 2, title: "OJT 교육",         category: "TRAINING",     assignee: "MANAGER",  dueDaysAfter: 7,  description: "직무 OJT 교육 이수" },
+    { id: "security_training", sortOrder: 3, title: "보안 교육",        category: "TRAINING",     assignee: "EMPLOYEE", dueDaysAfter: 7,  description: "보안 정책·정보보호 교육 이수" },
+    { id: "buddy_meeting",     sortOrder: 4, title: "버디 매칭 + 미팅", category: "INTRODUCTION", assignee: "BUDDY",    dueDaysAfter: 3,  description: "버디 배정 및 초기 적응 미팅" },
+    { id: "system_access",     sortOrder: 5, title: "시스템 접근 권한", category: "SETUP",        assignee: "IT",       dueDaysAfter: 1,  description: "이메일·사내 시스템·장비 접근 권한 설정" },
+    { id: "team_intro",        sortOrder: 6, title: "팀 소개 + 인사",   category: "INTRODUCTION", assignee: "MANAGER",  dueDaysAfter: 2,  description: "팀 소개 및 핵심 협업 부서 인사" },
+  ],
   // 온보딩 진행 현황
   onboarding: [
     { name: "이민준",  hue: 200, joinDate: "2026-05-04", template: "신규입사 온보딩", progress: 0,   total: 6, dDay: -12, buddy: null,   status: "delay" },

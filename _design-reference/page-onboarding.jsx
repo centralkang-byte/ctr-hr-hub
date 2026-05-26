@@ -3,17 +3,10 @@
 
 const { useState: useStateOB, useMemo: useMemoOB, useContext: useCtxOB } = React;
 
-// 신규입사 온보딩 템플릿 (6단계)
-const ONBOARD_STEPS = [
-  { key: "doc",     label: "서류 제출",       cat: "DOCUMENT" },
-  { key: "ojt",     label: "OJT 교육",        cat: "TRAINING" },
-  { key: "security", label: "보안 교육",       cat: "TRAINING" },
-  { key: "buddy",   label: "버디 매칭 + 미팅", cat: "MEETING" },
-  { key: "system",  label: "시스템 접근 권한",  cat: "ACCESS" },
-  { key: "intro",   label: "팀 소개 + 인사",    cat: "MEETING" },
-];
+// 신규입사 온보딩 템플릿 (6단계) — N+33 SSOT 이전 (data.js HR_DATA.ONBOARD_STEPS 단일 정의)
 
 function OnboardingPage({ data }) {
+  const ONBOARD_STEPS = data.ONBOARD_STEPS;
   const toast = useCtxOB(ToastContext);
   const [tab, setTab] = useStateOB("all");
   const [status, setStatus] = useStateOB("all");
@@ -430,16 +423,16 @@ function OnboardingPage({ data }) {
                     stepStatus = selectedPerson.status === "delay" ? "overdue" : "current";
                   }
                   return (
-                    <div key={step.key} className={`jr-step ${stepStatus}`}>
+                    <div key={step.id} className={`jr-step ${stepStatus}`}>
                       <div className="jr-dot">
                         {stepStatus === "done" ? <Icons.Check size={12} sw={2.4} /> :
                           stepStatus === "current" || stepStatus === "overdue" ? i + 1 :
                           i + 1}
                       </div>
                       <div className="jr-body">
-                        <div className="jr-title">{step.label}</div>
+                        <div className="jr-title">{step.title}</div>
                         <div className="jr-meta">
-                          <span>{step.cat}</span>
+                          <span>{step.category}</span>
                           <span className="sep">·</span>
                           <span>
                             {stepStatus === "done" && "완료"}
