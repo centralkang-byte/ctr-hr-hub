@@ -4,6 +4,8 @@
 > **결정 (Stage 3 Q1=A)**: proto WizardShell prop 시그니처 채택, Radix Dialog 기반
 > **본 pre-flight 결과 (요약)**: ✅ **`src/components/shared/` SSOT 정합** (가디언 사전 가정 정합). PageHeader/StatusBadge/EmptyState 등 15+ shared SSOT 패턴 정합.
 
+> ⚠️ **inquiry 1 결재 후속 (Phase B 4/4 진입, 사용자 round)**: 옵션 (c) **banner prop 제외, consumer-driven**. 본 pre-flight 본문 §2(b)/§2(d)/§4/§5/§6 측 `banner` 측면 모두 **stale** — batch 09 §N+48 (`bdab6b2c` 정정 commit) + phase-b-entry-audit.md §1.1 N+48 (inquiry 1 cross-ref 박스) 측이 단일 진실. codebase 측 `<DemoLimitBanner />` 실 컴포넌트 신설 = batch 04 §N+55 예약 (`bdab6b2c`). Codex Gate 2 P2 "missing banner slot" finding 은 본 stale catch (PR #82+ implementation 측 인용 불가).
+
 ---
 
 ## §1. 검증 대상 파일 (read-only 확인 결과)
