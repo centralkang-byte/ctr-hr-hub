@@ -11374,5 +11374,12 @@
         "OTHER": "기타"
       }
     }
+  },
+  "wizard": {
+    "prev": "이전",
+    "next": "다음",
+    "submit": "제출",
+    "cancel": "취소",
+    "stepLabel": "단계"
   }
 }

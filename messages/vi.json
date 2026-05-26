@@ -11380,5 +11380,12 @@
         "OTHER": "[TODO:vi] Other"
       }
     }
+  },
+  "wizard": {
+    "prev": "[TODO:vi] Previous",
+    "next": "[TODO:vi] Next",
+    "submit": "[TODO:vi] Submit",
+    "cancel": "[TODO:vi] Cancel",
+    "stepLabel": "[TODO:vi] step"
   }
 }

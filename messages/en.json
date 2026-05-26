@@ -11380,5 +11380,12 @@
         "OTHER": "Other"
       }
     }
+  },
+  "wizard": {
+    "prev": "Previous",
+    "next": "Next",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "stepLabel": "step"
   }
 }
