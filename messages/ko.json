@@ -4071,6 +4071,8 @@
     "company": "법인",
     "department": "부서",
     "orgChart": "조직도",
+    "orgChartDesc": "전사 조직 구조를 한눈에 탐색해요",
+    "deptCountLabel": "부서",
     "restructure": "조직 개편",
     "orgChanges": "조직 변경",
     "headcount": "인원수",
