@@ -394,6 +394,18 @@ i18n: 75 keys (`onboarding.*` + `offboarding.*` namespace 정합)
 
 ---
 
+### N+54 — page-onboarding.jsx ONBOARD_STEPS 단일화 (N+33 후속, dead code 해소) [LOW]
+
+> **schedule 예약 only** (본문 미작성, 인계 prompt Out of Scope 준수). N+33 PR #81 Codex Gate 2 P2 finding 의도된 dead drop으로 본 RECORD 로 이연. cross-ref: `_design-reference/data.js` ONBOARD_STEPS TODO 주석.
+
+- **트랙**: proto (`_design-reference/page-onboarding.jsx`)
+- **우선**: LOW
+- **의존성**: N+33 (data.js ONBOARD_STEPS SSOT 신설) 머지
+- **Stage 4 입력 (예약)**: 모듈로컬 `ONBOARD_STEPS` (line 7-14) 제거 → `data.ONBOARD_STEPS` consume + 필드명 정합 (`key`→`id` / `cat`→`category`, `label` 유지)
+- **Stage 4 검증 (예약)**: journey view 카테고리 MEETING→INTRODUCTION + ACCESS→SETUP 표시 전환 verify, dead code P2 해소
+
+---
+
 ### N+34 — pill-tabs 상태 필터 정합 (ON-012) [MEDIUM]
 
 - **트랙**: codebase (`/onboarding` + `/offboarding` 대시보드 필터)
