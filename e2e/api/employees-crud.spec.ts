@@ -146,11 +146,16 @@ test.describe('HR_ADMIN: Employee CRUD', () => {
     assertError(result, 400, 'invalid update')
   })
 
-  test('DELETE /employees/[newId] soft deletes', async ({ request }) => {
+  test('DELETE /employees/[newId] is blocked by auto-created onboarding (FK protection)', async ({ request }) => {
     if (!createdEmployeeId) return test.skip()
     const result = await deleteEmployee(request, createdEmployeeId)
-    // 200 or 204 are both acceptable
-    expect([200, 204].includes(result.status) || result.ok).toBe(true)
+    // POST /employees publishes EMPLOYEE_HIRED → Session B handler auto-creates
+    // EmployeeOnboarding (src/app/api/v1/employees/route.ts:213). DELETE handler's
+    // pre-delete dependency check counts pending onboarding (route.ts:223) and
+    // throws 400 with "진행 중 온보딩 1건" blocker. To enable actual soft-delete,
+    // the auto-created onboarding must be completed/cleaned up first.
+    // (H-6-A housekeeping — was asserting [200, 204] ignoring this FK protection)
+    expect(result.status).toBe(400)
   })
 
   // ─── Sub-resources (seed employee) ──────────────────────
