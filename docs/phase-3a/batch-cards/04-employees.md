@@ -371,6 +371,18 @@
 
 ---
 
+### N+55 — codebase 측 `<DemoLimitBanner />` 실 컴포넌트 신설 (N+21 codebase consumer 트랙) [LOW, 예약]
+
+> **schedule 예약 only** (본문 미작성, N+48 inquiry 1 옵션 c 결재 cross-ref). N+21 (`_design-reference/ui.jsx` proto SSOT) 머지 완료 (PR #64/#65 Session 232) 후 codebase 측 실 컴포넌트는 별 RECORD 필요 catch. N+48 WizardShell banner slot 미포함 결재 → consumer-driven (N+49 HireWorker 진입 시 동반 추가) 시 본 RECORD 동반 신설 또는 단독 진입.
+
+- **트랙**: codebase (`src/components/shared/DemoLimitBanner.tsx` 신규)
+- **우선**: LOW
+- **의존성**: N+21 proto 머지 ✅ (cross-ref 청사진)
+- **Stage 4 입력 (예약)**: proto `ui.jsx` `<DemoLimitBanner>` (~20 lines) 청사진 정합 codebase 측 신규 컴포넌트 (`src/components/shared/`) + amber bg + info icon + "데모: 새로고침 시 데이터 미저장" i18n (5 locale)
+- **Stage 4 검증 (예약)**: 4 위저드 codebase consumer 진입 시 동일 컴포넌트 호출, 인라인 banner 0건
+
+---
+
 ### N+22 — 상태 chip SSOT 통합 (EM-011 + X1) [MEDIUM]
 
 - **결정**: `_design-reference/ui.jsx` 에 `<EmployeeStatusChip status={"재직"|"휴직"|"퇴사예정"} />` SSOT 신설
