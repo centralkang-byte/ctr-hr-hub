@@ -180,10 +180,14 @@ MED 7건 (WS-005~WS-011) + LOW 3건 (WS-012~WS-014) = Stage 1 audit 그대로 �
   - **default footer**: 이전 / 다음 / 취소 (마지막 step = next → 제출 라벨 전환). `canProceed=false` 면 next/submit disabled.
   - **footer slot**: caller 정의 시 default override
   - **banner slot 미포함** (Inquiry 1 옵션 c): consumer-driven banner — N+49 HireWorker 진입 시 동반 추가 또는 별 RECORD (N+55 codebase `<DemoLimitBanner />` 신설 트랙)
-- **Stage 4 검증**:
-  - vitest 단위 (props + step state + footer override + canProceed disabled + last-step submit 전환)
-  - Storybook entry (있으면) 또는 dev test page
-  - axe-core 0 violation (Dialog focus trap + ARIA)
+- **Stage 4 검증** (Inquiry 3 결재, N+43 `4c7454f4` 패턴 정합):
+  - vitest 단위 = **pure helper export 검증 only** (`tests/unit/components/WizardShell.test.ts`, `.ts` not `.tsx`, node 환경 정합). 4 helper × ~8 avg = ~30-50 cases:
+    - `stepIndicatorState(stepIndex, currentStep) → 'done' | 'current' | 'upcoming'`
+    - `nextButtonRole(currentStep, totalSteps) → 'next' | 'submit'`
+    - `isPrimaryDisabled(canProceed?: boolean) → boolean`
+    - `progressText(currentStep, totalSteps) → string`
+  - **React 렌더 test + axe-core 0 violation 검증 = N+47 (axe-core baseline, Phase D 진입 시) 위임**. 근거: codebase 측 `@testing-library/react` + `jsdom` + `jest-axe` / `@axe-core/playwright` 전부 미설치, vitest config `environment: 'node'` + `.ts` only. vitest config 전역 변경은 inquiry round Out of Scope.
+  - Storybook entry (있으면) 또는 dev test page (선택)
 - **블로커**: ~~PR-5A 머지 후 진입~~ ✅ Session 230 `d868be4d` 머지 완료, 블로커 해소
 
 ---
