@@ -284,9 +284,7 @@ function EmployeesPage({ data, openEmployee }) {
                   <td data-label="근속" style={{ color: "var(--fg-muted)", fontSize: 12 }}>{tenureFromISO(e.joinDate)}</td>
                   <td data-label="고용 형태">{e.employment}</td>
                   <td data-label="상태">
-                    {e.status === "재직" && <span className="chip success">재직</span>}
-                    {e.status === "휴직" && <span className="chip warning">휴직</span>}
-                    {e.status === "퇴사예정" && <span className="chip danger">퇴사예정</span>}
+                    <EmployeeStatusChip status={e.status} />
                   </td>
                 </tr>
               ))}

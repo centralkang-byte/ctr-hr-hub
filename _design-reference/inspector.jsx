@@ -54,9 +54,7 @@ function EmployeeMiniCard({ employee, children, onOpenDetail }) {
               <div className="emc-name">{employee.name}</div>
               <div className="emc-en">{employee.nameEn} · <span className="mono">{employee.code}</span></div>
             </div>
-            {employee.status === "재직" && <span className="chip success" style={{ fontSize: 10 }}>재직</span>}
-            {employee.status === "휴직" && <span className="chip warning" style={{ fontSize: 10 }}>휴직</span>}
-            {employee.status === "퇴사예정" && <span className="chip danger" style={{ fontSize: 10 }}>퇴사예정</span>}
+            <EmployeeStatusChip status={employee.status} size="sm" />
           </div>
           <div className="emc-meta">
             <div><span className="k">부서</span><span className="v">{employee.dept}</span></div>
@@ -105,13 +103,7 @@ function EmployeeInspector({ open, employee, onClose, onOpenDetail }) {
     { k: "입사일",     v: <span className="mono">{fmtKDate(employee.joinDate)}</span> },
     { k: "근속",       v: tenureFromISO(employee.joinDate) },
     { k: "이메일",     v: <span className="mono" style={{ fontSize: 11.5 }}>{employee.email || `kr${employee.code.slice(-4)}@ctr.co.kr`}</span> },
-    { k: "상태",       v: (
-      <>
-        {employee.status === "재직" && <span className="chip success">재직</span>}
-        {employee.status === "휴직" && <span className="chip warning">휴직</span>}
-        {employee.status === "퇴사예정" && <span className="chip danger">퇴사예정</span>}
-      </>
-    ) },
+    { k: "상태",       v: <EmployeeStatusChip status={employee.status} /> },
   ];
 
   return (

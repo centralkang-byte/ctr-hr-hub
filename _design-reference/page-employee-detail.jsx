@@ -48,11 +48,7 @@ function EmployeeDetailPage({ data, code, onBack }) {
               <span>{data.company.name}</span>
               <span style={{ opacity: 0.5 }}>·</span>
               <span className="wb-status">
-                <span className="d" style={{
-                  background: employee.status === "재직" ? "oklch(76% 0.16 145)" :
-                             employee.status === "휴직" ? "oklch(76% 0.16 75)" :
-                             "oklch(70% 0.18 25)"
-                }} />
+                <span className="d" style={{ background: employeeStatusColor(employee.status) }} />
                 {employee.status}
               </span>
             </div>

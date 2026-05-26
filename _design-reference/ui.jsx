@@ -242,7 +242,30 @@ function DemoLimitBanner({ icon: IconCmp = Icons.Alert, message = "데모 화면
   );
 }
 
+// ──────────────────────────────────────────────────────
+// EmployeeStatusChip — 직원 status chip SSOT (N+22)
+//   <EmployeeStatusChip status="재직" />           ← 기본 (chip success)
+//   <EmployeeStatusChip status="휴직" size="sm" /> ← inspector mini card (fontSize 10)
+// STATUS_MAP: 재직 → success / 휴직 → warning / 퇴사예정 → danger
+// ──────────────────────────────────────────────────────
+function EmployeeStatusChip({ status, size, className = "", style }) {
+  const variant = ({ 재직: "success", 휴직: "warning", 퇴사예정: "danger" }[status]) || "default";
+  const sizeStyle = size === "sm" ? { fontSize: 10 } : null;
+  const cls = `chip ${variant} ${className}`.trim();
+  return <span className={cls} style={{ ...sizeStyle, ...style }}>{status}</span>;
+}
+
+// employeeStatusColor — page-employee-detail.jsx wb-status dot 색상 SSOT (N+22 옵션 B)
+// wb-status block의 dot+label 패턴 유지, 색상만 SSOT 헬퍼로 변환
+function employeeStatusColor(status) {
+  return ({
+    재직: "oklch(76% 0.16 145)",
+    휴직: "oklch(76% 0.16 75)",
+    퇴사예정: "oklch(70% 0.18 25)",
+  }[status]) || "oklch(70% 0.05 280)";
+}
+
 Object.assign(window, {
-  Icons, Ico, Avatar, Card, CardHead, Sparkline, ToastHost, ToastContext, EmptyState, DemoLimitBanner, useEscClose,
+  Icons, Ico, Avatar, Card, CardHead, Sparkline, ToastHost, ToastContext, EmptyState, DemoLimitBanner, EmployeeStatusChip, employeeStatusColor, useEscClose,
   fmtKDate, fmtKDateShort, fmtWon, fmtWonShort, daysBetween, tenureFromISO, dDayLabel,
 });
