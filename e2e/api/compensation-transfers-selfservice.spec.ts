@@ -177,8 +177,9 @@ test.describe('Compensation Simulation: HR_ADMIN', () => {
     const cycleId = await f.resolveCycleId(api)
     const empId = await f.resolveEmployeeId(api)
     const res = await f.postAiRecommend(api, f.buildAiRecommend(cycleId, empId))
-    // Accept 200 (AI working) or 500 (API key missing)
-    expect([200, 500]).toContain(res.status)
+    // Accept 200 (AI working), 500 (API key missing), or 503 (AI service unavailable in CI)
+    // CI env has no Anthropic API key → moduleDisabled/serviceUnavailable → 503 (H-5 housekeeping)
+    expect([200, 500, 503]).toContain(res.status)
   })
 
   test('POST /compensation/simulation/ai-recommend missing fields → 400', async ({ request }) => {
