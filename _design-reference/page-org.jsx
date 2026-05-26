@@ -7,6 +7,7 @@ function OrgPage({ data }) {
   const [view, setView] = useStateOR("tree");
   const [showDotted, setShowDotted] = useStateOR(false);
   const [wizOpen, setWizOpen] = useStateOR(false);
+  const [searchValue, setSearchValue] = useStateOR(""); // N+29: 검색 opacity highlight
 
   const root = data.orgTree.root;
   const depts = data.orgTree.departments;
@@ -31,20 +32,26 @@ function OrgPage({ data }) {
         <div className="right">
           <div className="search-wrap" style={{ width: 240 }}>
             <Icons.Search/>
-            <input className="input" placeholder="부서 검색..."/>
+            <input className="input" placeholder="부서 검색..." value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
           </div>
-          <button className="btn"><Icons.Calendar size={13} sw={2}/> 발효일</button>
+          <button className="btn">
+            <Icons.Calendar size={13} sw={2}/>
+            <span>2026.05.16</span>
+            <Icons.ChevD size={11} sw={2}/>
+          </button>
           <button className="btn btn-primary" onClick={() => setWizOpen(true)}><Icons.Hammer size={13} sw={2}/> 조직 개편</button>
         </div>
       </div>
 
       <div className="wd-tab-bar" style={{ marginBottom: 'var(--space-4)' }}>
         <button aria-selected={view === "tree"} onClick={() => setView("tree")}><Icons.Org size={13} sw={1.8}/> 트리</button>
-        <button aria-selected={view === "dir"} onClick={() => setView("dir")}><Icons.Users size={13} sw={1.8}/> 디렉토리</button>
-        <button aria-selected={view === "card"} onClick={() => setView("card")}><Icons.Grid size={13} sw={1.8}/> 카드</button>
+        <button aria-selected={view === "directory"} onClick={() => setView("directory")}><Icons.Users size={13} sw={1.8}/> 디렉토리</button>
+        <button aria-selected={view === "list"} onClick={() => setView("list")}><Icons.Receipt size={13} sw={1.8}/> 목록</button>
+        <button aria-selected={view === "grid"} onClick={() => setView("grid")}><Icons.Grid size={13} sw={1.8}/> 카드</button>
       </div>
 
       <Card>
+        {view === "tree" ? (
         <div style={{
           position: "relative",
           background: "var(--bg-sunk)",
@@ -63,23 +70,41 @@ function OrgPage({ data }) {
             <svg style={{ position: "absolute", inset: 0, pointerEvents: "none", width: "100%", height: "100%" }}>
               {/* connector lines drawn via CSS instead for simplicity */}
             </svg>
-            {depts.map((d, i) => (
-              <OrgNode key={i} title={d.name} role={d.title} count={d.count}/>
-            ))}
+            {depts.map((d, i) => {
+              const matched = !searchValue || d.name.includes(searchValue);
+              return (
+                <div key={i} style={{ opacity: matched ? 1 : 0.2, transition: "opacity 0.2s" }}>
+                  <OrgNode title={d.name} role={d.title} count={d.count}/>
+                </div>
+              );
+            })}
           </div>
           {/* HR team highlighted */}
           <div style={{ display: "flex", justifyContent: "flex-start", marginTop: 32, paddingLeft: 80 }}>
-            <OrgNode title={data.orgTree.hrTeam.name} role={data.orgTree.hrTeam.title} count={data.orgTree.hrTeam.count} mine/>
+            <div style={{ opacity: (!searchValue || data.orgTree.hrTeam.name.includes(searchValue)) ? 1 : 0.2, transition: "opacity 0.2s" }}>
+              <OrgNode title={data.orgTree.hrTeam.name} role={data.orgTree.hrTeam.title} count={data.orgTree.hrTeam.count} mine/>
+            </div>
           </div>
 
-          {/* Zoom controls */}
+          {/* Zoom controls (N+29: aria-label 의미 명시) */}
           <div style={{ position: "absolute", left: 16, bottom: 16, display: "flex", flexDirection: "column", gap: 4 }}>
-            <button className="btn sm" style={{ width: 36, height: 36, borderRadius: 8, padding: 0, justifyContent: "center" }}>+</button>
-            <button className="btn sm" style={{ width: 36, height: 36, borderRadius: 8, padding: 0, justifyContent: "center" }}>−</button>
-            <button className="btn sm" style={{ width: 36, height: 36, borderRadius: 8, padding: 0, justifyContent: "center" }}><Icons.Eye size={12}/></button>
-            <button className="btn sm" style={{ width: 36, height: 36, borderRadius: 8, padding: 0, justifyContent: "center" }}><Icons.Shield size={12}/></button>
+            <button className="btn sm" aria-label="확대" style={{ width: 36, height: 36, borderRadius: 8, padding: 0, justifyContent: "center" }}>+</button>
+            <button className="btn sm" aria-label="축소" style={{ width: 36, height: 36, borderRadius: 8, padding: 0, justifyContent: "center" }}>−</button>
+            <button className="btn sm" aria-label="전체 보기 (fit)" style={{ width: 36, height: 36, borderRadius: 8, padding: 0, justifyContent: "center" }}><Icons.Eye size={12}/></button>
+            <button className="btn sm" aria-label="잠금 (lock)" style={{ width: 36, height: 36, borderRadius: 8, padding: 0, justifyContent: "center" }}><Icons.Shield size={12}/></button>
           </div>
         </div>
+        ) : (
+          <div className="card-pad" style={{ padding: 80, textAlign: "center", color: "var(--fg-faint)" }}>
+            <Icons.EmptyBox size={28}/>
+            <div style={{ marginTop: 12 }}>
+              {view === "directory" && "디렉토리 보기"}
+              {view === "list" && "목록 보기"}
+              {view === "grid" && "카드 보기"}
+              {" — 데모 한계"}
+            </div>
+          </div>
+        )}
       </Card>
     </div>
   );
