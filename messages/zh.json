@@ -11381,5 +11381,12 @@
         "OTHER": "[TODO:zh] Other"
       }
     }
+  },
+  "wizard": {
+    "prev": "[TODO:zh] Previous",
+    "next": "[TODO:zh] Next",
+    "submit": "[TODO:zh] Submit",
+    "cancel": "[TODO:zh] Cancel",
+    "stepLabel": "[TODO:zh] step"
   }
 }

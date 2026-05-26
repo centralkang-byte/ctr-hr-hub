@@ -11380,5 +11380,12 @@
         "OTHER": "[TODO:es] Other"
       }
     }
+  },
+  "wizard": {
+    "prev": "[TODO:es] Previous",
+    "next": "[TODO:es] Next",
+    "submit": "[TODO:es] Submit",
+    "cancel": "[TODO:es] Cancel",
+    "stepLabel": "[TODO:es] step"
   }
 }
