@@ -11386,5 +11386,8 @@
     "submit": "Submit",
     "cancel": "Cancel",
     "stepLabel": "step"
+  },
+  "demoLimitBanner": {
+    "defaultMessage": "This is a demo screen — refreshing will discard your input."
   }
 }

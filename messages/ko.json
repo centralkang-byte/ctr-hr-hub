@@ -11380,5 +11380,8 @@
     "submit": "제출",
     "cancel": "취소",
     "stepLabel": "단계"
+  },
+  "demoLimitBanner": {
+    "defaultMessage": "데모 화면이라 새로고침하면 입력한 내용이 사라져요."
   }
 }
