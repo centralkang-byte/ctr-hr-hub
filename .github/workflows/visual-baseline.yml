@@ -53,6 +53,10 @@ jobs:
       REDIS_URL: redis://localhost:6379
       NODE_ENV: test
       PLAYWRIGHT_BASE_URL: http://localhost:3002
+      # Required since auth.ts gates the credentials provider in production
+      # builds (next build forces NODE_ENV=production). Visual tests log in
+      # via /api/auth/callback/credentials, so the provider must be enabled.
+      ALLOW_CREDENTIALS_LOGIN: 'true'
       # Dummy Azure AD env vars — required by src/lib/env.ts getRequired()
       # when NODE_ENV=production, which `next build` internally sets even
       # though NODE_ENV: test is declared above. Visual tests log in via
