@@ -1,8 +1,18 @@
-# N+27 Pre-flight — RestructureModal drawer → full-screen wizard 재작업 (OG-002 + X2 + Q2=A) ⭐ critical path
+# N+27 Pre-flight — RestructureModal WizardShell 형태 정합 (OG-002 + X2 + Q2=A) ⭐ critical path
 
 > **base SHA**: `ac243446` · **트랙**: codebase (최대 변경) · **우선**: HIGH
-> **결정 (Stage 3 Q2=A)**: proto WizardShell full-screen 채택, RestructureModal drawer → full-screen 재작업. 위저드 4종 (Hire/Job/PerfCycle/Org) 패턴 SSOT 정합 (정합성 우선 결정).
+> **결정 (Stage 3 Q2=A)**: proto WizardShell full-screen 채택, RestructureModal을 WizardShell SSOT로 형태 정합 (코드가 이미 centered-overlay wizard라 drawer 재작업은 무의미 — 아래 정정 박스 참조). 위저드 4종 (Hire/Job/PerfCycle/Org) 패턴 SSOT 정합 (정합성 우선 결정).
 > **본 pre-flight 결과 (요약)**: ✅ **schema migration 불필요** (Json free-form 사용). TypeScript ChangeType union 매핑만 정리.
+
+---
+
+> **⚠️ 정정 (Session 235, 2026-05-29 — 6-agent workflow 코드 검증 + Codex Gate 1 HIGH 반영)**
+> 본 문서의 N+27/N+50 전제가 실제 코드와 불일치하여 정정합니다 (기존 결정 배경은 아래 본문에 보존):
+> - **`src/components/org/RestructureModal.tsx` 는 drawer가 아니라 이미 centered-overlay 3-step wizard** (Step 타입 `'edit'|'diff'|'confirm'`, custom StepIndicator, inline footer, `MODAL_STYLES.container`). "drawer → full-screen wizard 재작업" 전제는 코드상 무의미.
+> - **WizardShell SSOT는 N+48이 `src/components/shared/WizardShell.tsx` 에 신설·머지(#83 `90c88ac1`)** — N+27이 `src/components/wizards/` 에 자체 신설한다는 계획은 superseded.
+> - **N+27 charter = A (순수 형태 정합, 거의 no-op → N+50 WizardShell wrap에 흡수)**. 기능 항목(`split` changeType / `CHANGE_TYPE_LABELS` i18n 추출 / N+30 mapping layer)은 폐기가 아니라 **별도 feature 트랙으로 재분류**.
+> - 따라서 **N+50은 N+27 머지 의존 없이 순수 WizardShell wrap으로 진입 가능** (N+49 #85 모델). 실제 작업 = string-union step → numeric currentStep 매핑 + dual-action(저장 초안/즉시 적용) custom footer.
+> 근거: workflow 판정 insufficient-evidence → 코드 검증 (RestructureModal.tsx:365/367/631-672, modal.ts:3), Codex Gate 1 HIGH(수정 범위) 반영. 정정 트랙 = `docs/n27-n50-drift-fix`.
 
 ---
 
@@ -72,7 +82,7 @@ type ChangeType =
 ### 코드베이스 RestructureModal 구조
 
 **파일**: `src/components/org/RestructureModal.tsx` (676 lines)
-**현재 패턴**: drawer/modal (B8-1 Task 4)
+**현재 패턴**: ✅ **이미 centered-overlay 3-step wizard** — root = `MODAL_STYLES.container` (`fixed inset-0 flex items-center justify-center`, `src/lib/styles/modal.ts:3`), Step 타입 `'edit'|'diff'|'confirm'` (L365), custom StepIndicator (L367), inline footer 이전/다음/취소/즉시적용 (L631-672). WizardShell import 없음. drawer/Sheet 아님.
 **주요 컴포넌트**:
 - `ChangeType` union (6종)
 - `CHANGE_TYPE_LABELS` (한국어 literal 6건 — i18n 미적용)
@@ -85,18 +95,18 @@ type ChangeType =
 - proto = **단일** changeType 위저드 (한 번에 1개 변경)
 - codebase = **다중** changes 배열 편집기 (한 번에 N개 변경 그룹)
 
-**→ 정합성 해석**:
-- "drawer → full-screen wizard 재작업" 의 의미:
-  - **단순 시각 변경** (drawer ↔ full-screen 패턴 정합) vs
-  - **데이터 모델 변경** (다중 changes[] → 단일 1 change per wizard run)
-- **권고**: drawer→full-screen은 시각 패턴, 다중 changes[] 데이터 모델은 **유지** (production 실수요). 즉 **WizardShell 안에 다중 ChangeEditor** 배치 (proto의 단일 위저드와는 데이터 모델 차이 명시)
+**→ 정합성 해석** (정정 후):
+- 코드가 **이미 centered-overlay wizard** 이므로 "drawer → full-screen wizard 재작업" 은 무의미. 남은 작업은 **N+48 WizardShell SSOT(`src/components/shared/WizardShell.tsx`)로의 형태 정합** (N+50 wrap) 뿐:
+  - **순수 형태 정합** (자체 StepIndicator/inline footer → WizardShell 12 props) — N+27 charter A
+  - **데이터 모델은 불변** (다중 changes[] 유지)
+- **권고**: 다중 changes[] 데이터 모델은 **유지** (production 실수요). WizardShell wrap 시에도 그 안에 다중 ChangeEditor 배치 (proto의 단일 위저드와는 데이터 모델 차이 명시)
 
 ### WizardShell SSOT
 
-**grep 결과**: `src/components/wizards/` 또는 `WizardShell.tsx` 부재 (proto에만 존재)
+**정정**: WizardShell SSOT는 **이미 존재** — N+48이 `src/components/shared/WizardShell.tsx` 에 신설·머지 (PR #83, `90c88ac1`). `src/components/wizards/` 경로는 존재하지 않으며, N+27이 자체 신설한다는 계획은 superseded.
 
-- codebase에 WizardShell SSOT 없음 → **신규 SSOT 신설 필요**
-- 또는 Modal 컨테이너에 step indicator + nav buttons 패턴 직접 적용 (전체 화면 modal)
+- codebase에 WizardShell SSOT **존재** (`src/components/shared/WizardShell.tsx`, 12 props, Radix Dialog + pure helpers) → **신규 신설 불필요**
+- N+50이 RestructureModal을 이 SSOT로 wrap (N+49 HireWorker #85 모델). N+27은 wrap에 흡수되는 순수 형태 정합(charter A)
 
 ---
 
@@ -106,11 +116,11 @@ type ChangeType =
 
 | 파일 | 변경 | line delta |
 |---|---|---|
-| `src/components/wizards/WizardShell.tsx` (또는 동등) | **신규** SSOT — full-screen modal + step indicator + nav | +120~150 |
-| `src/components/org/RestructureModal.tsx` | drawer → WizardShell 적용, 4 step 구조 (proto 정합) | +50 / -100 (재작업) |
-| `ChangeType` union 확장 | `'split'` 추가, 'create' ↔ 'new' 라벨 정합 결정 | +5 |
-| i18n 6 changeType 라벨 | `CHANGE_TYPE_LABELS` 한국어 literal → i18n 키 (5 locale) | -10 in src + 30 i18n entries |
-| `src/app/(dashboard)/org/OrgClient.tsx` | RestructureModal invoke 패턴 미변경 (단지 시각 변경) | ~5 line 변경 |
+| `src/components/shared/WizardShell.tsx` | **재사용** (N+48 신설·머지 #83) — 신규 신설 불필요 | 0 |
+| `src/components/org/RestructureModal.tsx` | 자체 StepIndicator/inline footer → WizardShell wrap (N+50, string-union step → numeric currentStep 매핑 + dual-action custom footer) | +50 / -80 |
+| ⟂ `ChangeType` union 확장 **(별도 feature 트랙 — N+50 wrap scope 외)** | `'split'` 추가, 'create' ↔ 'new' 라벨 정합 결정 | +5 |
+| ⟂ i18n 6 changeType 라벨 **(별도 feature 트랙 — N+50 wrap scope 외)** | `CHANGE_TYPE_LABELS` 한국어 literal → i18n 키 (5 locale) | -10 in src + 30 i18n entries |
+| `src/app/(dashboard)/org/OrgClient.tsx` | RestructureModal invoke 패턴 미변경 (caller 동일) | ~0 |
 
 ### (b) 4 step 구조 (proto 정합)
 
@@ -140,12 +150,10 @@ type ChangeType =
 
 ### (d) 예상 총 line delta
 
-- WizardShell SSOT 신규: +120~150
-- RestructureModal 재작업: +50 / -100 (net -50)
-- ChangeType 확장: +5
-- i18n: 30 entries
-- OrgClient: ~5
-- **순 총합**: +130 lines + 30 i18n entries
+- WizardShell SSOT: 0 (N+48 #83 재사용, 신설 불필요)
+- **N+50 wrap scope (순수 형태 정합)**: RestructureModal `+50 / -80 = net -30` + OrgClient invoke 미변경 `~0`. i18n/ChangeType 무관.
+- **별도 feature 트랙 (N+50 wrap scope 외, 각 독립 진입)**: `ChangeType 'split'` 확장 `+5` / `CHANGE_TYPE_LABELS` i18n `30 entries` / N+30 mapping layer
+- **순 총합**: N+50 wrap = **net -30** (형태 정합, 본 트랙) · feature 트랙 = `+5 + 30 i18n` (별도)
 
 ---
 
@@ -175,47 +183,43 @@ type ChangeType =
   - (a) 단일 changeType wizard로 단순화 (codebase 다중 기능 손실)
   - (b) WizardShell + 다중 ChangeEditor (codebase 모델 유지, proto 시각만)
   - **추천**: (b) — production 다중 변경 실수요 유지
-- **R2 (MEDIUM)**: WizardShell SSOT 신설이 cross-batch 영향 (Hire/Job/PerfCycle 위저드도 proto SSOT 정합 권고). **별도 batch 트랙** 후보 (WizardShell 공통 SSOT) 또는 Restructure 단독 진입 후 다른 위저드 후속
+- **R2 (LOW, 해소)**: WizardShell SSOT는 N+48 #83에서 기 신설·머지 — cross-batch 신설 리스크 없음. 각 위저드(Hire/Job/PerfCycle/Restructure)는 consumer-side wrap을 독립 진행 (N+49 HireWorker #85 = 첫 consumer)
 - **R3 (LOW)**: proto 'split' (부서 분리) 추가 — codebase에 없는 기능. data model + UI 신규 (~40 lines)
 
 ### 의존성
 - **PR-5A 머지** 후 진입
-- **N+30 (mapping layer) 선행 권고** — 6 changeType 매핑 pure function 정합 후 진입
-- WizardShell SSOT는 별도 trade-off 결정 게이트 (단독 vs cross-batch)
+- **N+27 선행 의존 없음** — 코드가 이미 wizard라 drawer 회귀 불가. N+27 구조작업 불필요, N+50은 순수 WizardShell wrap으로 독립 진입 가능 (N+49 #85 모델)
+- **N+30 (mapping layer)·`split` changeType·`CHANGE_TYPE_LABELS` i18n 추출은 별도 feature 트랙으로 재분류** — N+50 형태 정합의 선행 아님
+- WizardShell SSOT는 N+48 #83에서 이미 신설·머지 — 신설/trade-off 게이트 불필요
 
 ### 가드
 - ❌ `OrgRestructurePlan` schema 변경 금지 (Json free-form 정합)
 - ❌ `transfer_employee` ChangeType 제거 금지 (production 기능)
 - ❌ `RestructureDiffView` 재사용 (별도 컴포넌트 신설 금지)
-- ✅ WizardShell SSOT 신설 또는 inline 패턴 일관 적용
-- ✅ ChangeType union 'split' 추가 후 i18n + ChangeEditor 분기 보강
+- ✅ N+48 WizardShell SSOT (`src/components/shared/WizardShell.tsx`) 재사용 — 신규 신설 금지
+- ✅ ChangeType union 'split' 추가·i18n·ChangeEditor 분기는 별도 feature 트랙 (N+50 형태 정합과 분리)
 
 ---
 
 ## §5. Implementation 단계 (PR-5A 머지 후)
 
-1. **사전 합의 게이트** (CRITICAL):
+1. **사전 합의 게이트**:
    - 데이터 모델 결정: 단일 vs 다중 changes[] (추천 = 다중 유지)
-   - WizardShell SSOT 단독 vs cross-batch
-   - 'split' ChangeType 추가 여부 + UI spec
-2. **선행**: **N+30 mapping layer commit 진입** (pure functions, 본 PR과 독립 가능)
-3. **branch**: `feat/org-restructure-wizard-rework`
-4. **commit 1 (WizardShell SSOT 신설, 선택)**:
-   - `src/components/wizards/WizardShell.tsx` (~120 lines)
-   - step indicator + nav buttons + content slot
-5. **commit 2 (ChangeType 확장)**:
-   - `'split'` 추가 + `CHANGE_TYPE_LABELS` i18n key 적용
-   - `OrgChange` interface 'split' 데이터 필드 추가
-6. **commit 3 (RestructureModal 재작업)**:
-   - drawer → WizardShell 적용
-   - 4 step 구조 (변경 유형 / 내용 / 영향 / 결재선)
-   - ChangeEditor 재사용 (per-type fields)
-7. **commit 4 (i18n 5 locale)**:
-   - ~70 entries
+   - (WizardShell SSOT는 N+48 #83 기 신설 — 게이트 불필요. 'split' ChangeType·i18n 추출은 별도 feature 트랙으로 분리)
+2. **선행 의존 없음**: N+30 mapping layer·'split'·i18n 추출은 별도 feature 트랙 (N+50 형태 정합과 독립). N+50은 N+27 머지 의존 없이 바로 진입 가능
+3. **branch**: `feat/org-restructure-wizard-wrap` (N+50)
+4. **commit 1 (WizardShell SSOT)**:
+   - 신설 불필요 — `src/components/shared/WizardShell.tsx` (N+48 #83) 재사용
+5. **commit 2 (RestructureModal WizardShell wrap, N+50)**:
+   - 자체 StepIndicator/inline footer → WizardShell 적용
+   - string-union step (`'edit'|'diff'|'confirm'`) → numeric `currentStep` 매핑
+   - dual-action(저장 초안 `handleSaveDraft` / 즉시 적용 `handleApplyNow`) custom footer
+   - ChangeEditor 재사용 (per-type fields, 다중 changes[] 모델 유지)
+   - (caller state 유지 — N+49 #85 모델)
 8. **e2e**: `e2e/flows/restructure-wizard.spec.ts` — 6 (or 7) changeType 각각 4 step 통과 + 영향 분석 + 결재선 + 제출 + toast
 9. **gstack 시각**: full-screen 모달 라이트/모바일 (다크 known-deferred)
 10. **codex Gate 1+2**: 표준
-11. **PR open**: `feat/org-restructure-wizard-rework` → main
+11. **PR open**: `feat/org-restructure-wizard-wrap` → main
 
 ---
 
@@ -247,7 +251,7 @@ type ChangeType =
 
 ## §8. 별도 트랙 후보
 
-- **WizardShell SSOT cross-batch 공통화**: Hire/Job/PerfCycle/Restructure 4 위저드 모두 proto 정합 시 SSOT 신설 필요. 단독 진입 vs 별도 batch 트랙은 사전 합의 결정
+- **WizardShell SSOT cross-batch 공통화**: SSOT는 N+48 #83에서 기 신설 (`src/components/shared/WizardShell.tsx`). Hire/Job/PerfCycle/Restructure 4 위저드의 consumer-side wrap을 순차 진행 (N+49 HireWorker #85 = 첫 consumer, N+50 = Restructure)
 - **'split' ChangeType 추가의 production 실수요 검증**: 사용자 실 사용 패턴 (proto 6종 vs codebase 6종 중 'transfer_employee' vs 'split' 선호도) — 사용자 결정 필요
 
 ---

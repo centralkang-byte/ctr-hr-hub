@@ -10,6 +10,16 @@
 
 ---
 
+> **⚠️ 정정 (Session 235, 2026-05-29 — 6-agent workflow 코드 검증 + Codex Gate 1 HIGH 반영)**
+> 본 문서의 N+27/N+50 전제가 실제 코드와 불일치하여 정정합니다 (기존 결정 배경은 아래 본문에 보존):
+> - **`src/components/org/RestructureModal.tsx` 는 drawer가 아니라 이미 centered-overlay 3-step wizard** (Step 타입 `'edit'|'diff'|'confirm'`, custom StepIndicator, inline footer, `MODAL_STYLES.container`). "drawer → full-screen wizard 재작업" 전제는 코드상 무의미.
+> - **WizardShell SSOT는 N+48이 `src/components/shared/WizardShell.tsx` 에 신설·머지(#83 `90c88ac1`)** — N+27이 `src/components/wizards/` 에 자체 신설한다는 계획은 superseded.
+> - **N+27 charter = A (순수 형태 정합, 거의 no-op → N+50 WizardShell wrap에 흡수)**. 기능 항목(`split` changeType / `CHANGE_TYPE_LABELS` i18n 추출 / N+30 mapping layer)은 폐기가 아니라 **별도 feature 트랙으로 재분류**.
+> - 따라서 **N+50은 N+27 머지 의존 없이 순수 WizardShell wrap으로 진입 가능** (N+49 #85 모델). 실제 작업 = string-union step → numeric currentStep 매핑 + dual-action(저장 초안/즉시 적용) custom footer.
+> 근거: workflow 판정 insufficient-evidence → 코드 검증 (RestructureModal.tsx:365/367/631-672, modal.ts:3), Codex Gate 1 HIGH(수정 범위) 반영. 정정 트랙 = `docs/n27-n50-drift-fix`.
+
+---
+
 ## §0. 1분 요약
 
 1. **Phase B 4 RECORD** 확정 (audit §9.5 Phase B 단일 진실 정합): **N+24** (StatusChips + PageHeader 재사용) · **N+33** (OnboardingTemplate seed) · **N+43** (useArrowKeyNavigation hook) · **N+48** (WizardShell SSOT)
@@ -269,7 +279,7 @@ Phase B 각 SSOT가 후속 Phase 어디서 사용되는지 단언:
 | Phase | RECORD | consumer 측면 |
 |---|---|---|
 | Phase D | **N+49** (HireWorker migration) | inline wizard → WizardShell SSOT migration (~−75 LOC) |
-| Phase D | **N+50** (OrgRestructure migration) | drawer → full-screen WizardShell (~−70 LOC) |
+| Phase D | **N+50** (OrgRestructure migration) | `RestructureModal.tsx` 이미 centered-overlay 3-step wizard → WizardShell wrap (string-union step → numeric currentStep 매핑 + dual-action custom footer). N+27 선행 의존 없음 (drawer 회귀 불가). N+49 #85 모델 |
 | Phase D | **N+53** (BulkUpload migration) | inline → WizardShell (~−30 LOC) |
 | (proto) | N+21 DemoLimitBanner (PR #64) | WizardShell `banner` slot prop 통합 (cross-batch slot pattern) |
 

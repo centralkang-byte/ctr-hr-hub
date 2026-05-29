@@ -27,7 +27,7 @@
 | # | Surface | Route (코드베이스) | Proto 파일 | Lines | 비고 |
 |---|---|---|---|---|---|
 | 1 | 조직도 메인 | `/org` | `page-org.jsx` | 122 | 1 page + 3 view tab (proto는 tree만 구현, dir/card placeholder) |
-| 2 | 조직 개편 위저드 | RestructureModal (drawer) | `OrgRestructureWizard` (`wizards.jsx:622`) | ~205 | proto = WizardShell full-screen, 6 step. codebase = drawer 모달 |
+| 2 | 조직 개편 위저드 | RestructureModal (centered-overlay 3-step wizard) | `OrgRestructureWizard` (`wizards.jsx:622`) | ~205 | proto = WizardShell full-screen, 6 step. codebase = 이미 centered-overlay 3-step wizard (Step `'edit'\|'diff'\|'confirm'`, custom StepIndicator, inline footer, `MODAL_STYLES.container`) — drawer 아님 |
 | 3 | 부서 detail panel | RestructureDiffView + DetailPanel | (proto 부재) | — | codebase only |
 | 4 | DnD studio | `org-studio/DraggableOrgTree` + `ImpactAnalysisPanel` | (proto 부재) | — | codebase only, B8-2 era 카나리 |
 
@@ -38,7 +38,7 @@
 | `DeptFlowNode` | `src/components/org/DeptFlowNode.tsx` | ReactFlow 커스텀 노드 (B3I dotted-line) |
 | `DetailPanel` | `src/components/org/DetailPanel.tsx` | 우측 슬라이드 부서 상세 |
 | `DirectoryView` | `src/components/org/DirectoryView.tsx` | 디렉토리 모드 (DeptFlowNode와 별도) |
-| `RestructureModal` | `src/components/org/RestructureModal.tsx` | 조직 개편 모달 |
+| `RestructureModal` | `src/components/org/RestructureModal.tsx` | 조직 개편 centered-overlay 3-step wizard (drawer 아님) |
 | `RestructureDiffView` | `src/components/org/RestructureDiffView.tsx` | 변경 사항 diff 시각화 |
 | `EffectiveDatePicker` | `src/components/shared/EffectiveDatePicker.tsx` | 발효일 dropdown picker |
 | `DraggableOrgTree` | `src/components/org-studio/` | DnD 조직 트리 (B8-2) |
@@ -80,12 +80,11 @@ model OrgSnapshot         (line 4287)
 - **현상**: proto = `["tree", "dir", "card"]`, codebase = `["tree", "directory", "list", "grid"]`. 같은 의미 "카드 = grid" 인데 키 다름. codebase는 4 mode (proto 3 mode + list 추가). i18n `viewGrid: "카드"` 로 라벨은 정합
 - **권고**: codebase 4 mode SSOT 유지 (production = list 모드 실수요). proto의 3 mode → 4 mode로 갱신 권고. 키 명명 = codebase (Q1)
 
-### OG-002 [HIGH] OrgRestructureWizard 전체화면 vs RestructureModal 드로어 — 패턴 충돌
+### OG-002 [HIGH] OrgRestructureWizard 전체화면 vs RestructureModal — wizard 패턴 정합
 - **surface**: 조직 개편 진입
-- **현상**: proto `OrgRestructureWizard` (`wizards.jsx:622-826`) = WizardShell full-screen, 4 step (변경유형→내용→영향→결재선). codebase `RestructureModal` = 드로어 패턴 (Sheet)
-- **위반**: proto 위저드 4종 (Hire/Job/PerfCycle/Org) 모두 WizardShell full-screen 패턴. codebase Modal은 drawer 12종 패턴과 정합하지만 proto 위저드 4종과 비대칭
-- **권고**: Q2 게이트 — (A) proto full-screen 유지 / (B) codebase drawer 유지 (위저드 4종 vs drawer 12종 — 어느 패턴 우선?) / (C) hybrid (full-screen WizardShell 안에 drawer 단계?)
-- **batch 04 Q4 정합성 검증 패턴 재사용**: 위저드 4종 grep 결과 모두 `WizardShell`+full-screen. RestructureModal은 4종 패턴 위반 → **(A) proto full-screen 권고**
+- **현상**: proto `OrgRestructureWizard` (`wizards.jsx:622-826`) = WizardShell full-screen, 4 step (변경유형→내용→영향→결재선). codebase `RestructureModal` = **이미 centered-overlay 3-step wizard** (Step `'edit'\|'diff'\|'confirm'` L365, custom StepIndicator L367, inline footer 이전/다음/취소/즉시적용 L631-672, root = `MODAL_STYLES.container` fixed inset-0 flex items-center justify-center). **drawer 아님**
+- **정정**: "drawer vs full-screen 패턴 충돌" 전제는 코드상 무의미 — 코드가 이미 centered-overlay wizard. 남는 작업은 WizardShell SSOT(N+48, `src/components/shared/WizardShell.tsx`)로 wrap 정합뿐 (N+50)
+- **권고**: N+50 — RestructureModal을 WizardShell SSOT로 wrap (N+49 HireWorker #85 모델). drawer 회귀 불가, N+27 구조작업 불필요
 
 ### OG-003 [HIGH] Tree node 시각 SSOT — proto OrgNode 인라인 vs codebase DeptFlowNode (B3I)
 - **surface**: 트리 view
@@ -176,7 +175,7 @@ model OrgSnapshot         (line 4287)
 | ID | 항목 | 분기 위치 | 권고 |
 |---|---|---|---|
 | X1 | View mode 명명 | proto card / codebase grid | codebase 키 (`viewGrid`) SSOT |
-| X2 | 위저드 vs 모달 패턴 | proto WizardShell full-screen / codebase RestructureModal drawer | 위저드 4종 정합 = full-screen (Q2) |
+| X2 | 위저드 패턴 정합 | proto WizardShell full-screen / codebase RestructureModal = 이미 centered-overlay 3-step wizard (drawer 아님) | WizardShell SSOT(N+48)로 wrap (N+50) |
 | X3 | Tree node 시각 | proto OrgNode 인라인 / codebase DeptFlowNode | DeptFlowNode SSOT |
 | X4 | 부서 데이터 구조 | proto orgTree.{root, departments, hrTeam} flat / codebase recursive tree | codebase recursive SSOT |
 | X5 | i18n org namespace | 양쪽 정합 (orgChart/viewTree/viewDirectory/effectiveDate 등) | codebase 키 SSOT |
@@ -209,7 +208,7 @@ model OrgSnapshot         (line 4287)
 |---|---|---|---|
 | page-h + wd-status-chips 4건 | ✅ | ❌ | **OG-004 도입** |
 | OrgNode mine green 색상 | ✅ | ❌ (또는 미확인) | **OG-015 토큰화** |
-| OrgRestructureWizard full-screen | ✅ | ❌ (drawer modal) | **OG-002 패턴 정합 — Q2** |
+| OrgRestructureWizard full-screen | ✅ | ✅ (이미 centered-overlay 3-step wizard, drawer 아님) | **OG-002 — WizardShell SSOT wrap (N+50)** |
 | 4 step 위저드 + 6 changeType | ✅ | ? (검증 필요) | **OG-010 매핑** |
 
 ---
@@ -234,10 +233,10 @@ model OrgSnapshot         (line 4287)
 
 ## §6. 사용자 게이트 의제 (Q1-Q7)
 
-> **정합성 검증 결과 (2026-05-21 가디언 grep 검증)**
+> **정합성 검증 결과 (2026-05-21 가디언 grep 검증 — Session 235 정정)**
 > 위저드 4종 패턴 (Hire/JobPosting/PerfCycle/OrgRestructure) 모두 WizardShell full-screen 사용 확인.
-> `RestructureModal` (drawer) 은 codebase 단독 패턴, proto와 결렬.
-> **Q2 추천 = proto full-screen** (4종 정합).
+> ~~`RestructureModal` (drawer) 은 codebase 단독 패턴, proto와 결렬.~~ → **정정: `RestructureModal` 은 drawer가 아니라 이미 centered-overlay 3-step wizard.** WizardShell SSOT(N+48)로 wrap만 하면 4종 정합 (N+50).
+> **Q2 추천 = WizardShell SSOT wrap** (drawer 재작업 불요).
 
 > **Stage 3 게이트 통과 (2026-05-21)** — 사용자 가디언 추천안 **전체 채택 확정**.
 > **Paradigm**: batch 04 (proto leader) 와 정반대 — batch 05 = **codebase leader** (production 보존 default).
@@ -257,11 +256,12 @@ model OrgSnapshot         (line 4287)
 - **C** (4 mode 유지 + proto 키 매핑 layer)
 - **추천**: A (codebase 4 mode production 실수요, i18n 키 이미 정합)
 
-### Q2 — Restructure 위저드 vs 모달 패턴 정합 (OG-002 + X2) ⭐
-- **A** (proto WizardShell full-screen 채택, codebase RestructureModal 재작업)
-- **B** (codebase drawer modal 유지, proto 재정의)
-- **C** (hybrid — drawer 안에 multi-step)
-- **추천 (정합성 검증)**: **A** — 위저드 4종 모두 full-screen 패턴 (정합성 grep 결과). RestructureModal 단독 drawer는 비대칭. **batch 04 Q4와 같은 정합성 우선 결정**.
+### Q2 — Restructure 위저드 형태 정합 (OG-002 + X2) ⭐
+> **정정 (Session 235)**: 아래 선택지의 "drawer" 전제는 코드상 무의미 — RestructureModal은 이미 centered-overlay 3-step wizard. 실제 결정 = WizardShell SSOT(N+48)로 wrap (N+50, N+49 #85 모델). 아래 배경은 보존.
+- **A** (~~proto WizardShell full-screen 채택, codebase RestructureModal 재작업~~ → WizardShell SSOT wrap, 형태 재작업 불요)
+- **B** (~~codebase drawer modal 유지, proto 재정의~~ — 코드가 drawer 아님, 무효)
+- **C** (~~hybrid — drawer 안에 multi-step~~ — 무효)
+- **추천 (정합성 검증, 정정)**: **A** — 위저드 4종 모두 WizardShell SSOT 소비로 정합. RestructureModal은 이미 wizard라 drawer 회귀 불가, 순수 wrap. **batch 04 Q4와 같은 정합성 우선 결정**.
 
 ### Q3 — Tree node 시각 SSOT (OG-003 + X3 + OG-015)
 - **A** (codebase DeptFlowNode SSOT 유지 + proto 색상 토큰화 (mine green + root highlight))
@@ -348,22 +348,32 @@ model OrgSnapshot         (line 4287)
 
 ---
 
-### N+27 — Restructure 위저드 vs 모달 정합 (OG-002 + X2 + Q2=A) [HIGH]
+> **⚠️ 정정 (Session 235, 2026-05-29 — 6-agent workflow 코드 검증 + Codex Gate 1 HIGH 반영)**
+> 본 문서의 N+27/N+50 전제가 실제 코드와 불일치하여 정정합니다 (기존 결정 배경은 아래 본문에 보존):
+> - **`src/components/org/RestructureModal.tsx` 는 drawer가 아니라 이미 centered-overlay 3-step wizard** (Step 타입 `'edit'|'diff'|'confirm'`, custom StepIndicator, inline footer, `MODAL_STYLES.container`). "drawer → full-screen wizard 재작업" 전제는 코드상 무의미.
+> - **WizardShell SSOT는 N+48이 `src/components/shared/WizardShell.tsx` 에 신설·머지(#83 `90c88ac1`)** — N+27이 `src/components/wizards/` 에 자체 신설한다는 계획은 superseded.
+> - **N+27 charter = A (순수 형태 정합, 거의 no-op → N+50 WizardShell wrap에 흡수)**. 기능 항목(`split` changeType / `CHANGE_TYPE_LABELS` i18n 추출 / N+30 mapping layer)은 폐기가 아니라 **별도 feature 트랙으로 재분류**.
+> - 따라서 **N+50은 N+27 머지 의존 없이 순수 WizardShell wrap으로 진입 가능** (N+49 #85 모델). 실제 작업 = string-union step → numeric currentStep 매핑 + dual-action(저장 초안/즉시 적용) custom footer.
+> 근거: workflow 판정 insufficient-evidence → 코드 검증 (RestructureModal.tsx:365/367/631-672, modal.ts:3), Codex Gate 1 HIGH(수정 범위) 반영. 정정 트랙 = `docs/n27-n50-drift-fix`.
 
-- **결정**: proto WizardShell full-screen 채택, codebase RestructureModal drawer → full-screen wizard 재작업. **위저드 4종 패턴 SSOT 정합** (정합성 grep 우선 결정, batch 04 Q4 reversal 같은 패턴).
-- **영향**:
-  - `src/components/org/RestructureModal.tsx`: drawer (Sheet) → full-screen wizard 패턴
-  - 신규 컴포넌트 또는 기존 WizardShell 재사용 (사전 검증 필요)
-  - 4 step (변경유형 / 변경내용 / 영향분석 / 결재선) + 6 changeType (merge/split/new/move/close/rename) 정합
+### N+27 — Restructure 위저드 형태 정합 (OG-002 + X2 + Q2=A) [HIGH]
+
+> **정정 (Session 235)**: 아래 "drawer → full-screen 재작업" 전제는 코드상 무의미 (RestructureModal은 이미 centered-overlay 3-step wizard). N+27 charter = A (순수 형태 정합, 거의 no-op) → **N+50 WizardShell wrap에 흡수**. 기능 항목(`split` changeType / `CHANGE_TYPE_LABELS` i18n 추출 / N+30 mapping layer)은 **별도 feature 트랙으로 재분류**. 아래 결정 배경은 보존.
+
+- **결정 (정정 전 배경, 보존)**: proto WizardShell full-screen 채택, codebase RestructureModal drawer → full-screen wizard 재작업. **위저드 4종 패턴 SSOT 정합** (정합성 grep 우선 결정, batch 04 Q4 reversal 같은 패턴). → **실제로는 코드가 이미 wizard라 재작업 불요, N+50 wrap으로 흡수.**
+- **영향 (정정)**:
+  - `src/components/org/RestructureModal.tsx`: 이미 centered-overlay 3-step wizard — 형태 재작업 불요. N+50에서 WizardShell SSOT로 wrap만
+  - WizardShell SSOT = `src/components/shared/WizardShell.tsx` (N+48 신설·머지 #83). 자체 신설 불요
+  - 4 step (변경유형 / 변경내용 / 영향분석 / 결재선) + 6 changeType (merge/split/new/move/close/rename) 정합 → **별도 feature 트랙**
   - toast + onComplete + 데모 한계 배너 (N+21 SSOT) 정합
 - **수락 기준**:
-  - 위저드 4종 (Hire/Job/PerfCycle/Restructure) 동일 패턴 (full-screen + step indicator + nav buttons + toast)
-  - changeType 6종 모두 step 1에서 button grid 선택
+  - 위저드 4종 (Hire/Job/PerfCycle/Restructure) 동일 WizardShell SSOT 소비 (N+49 #85 모델)
+  - changeType 6종 모두 step 1에서 button grid 선택 → **별도 feature 트랙**
   - step 3 영향분석 = restructure-plans API preview 연동 (production)
   - step 4 결재선 = ApprovalFlow 정합 (codebase 기존 패턴)
 - **우선**: HIGH (정합성 우선)
 - **E2E**: 4 step 통과 + 6 changeType 각각 + toast + onComplete + API 연동 (e2e/flows/restructure-wizard.spec.ts)
-- **블로커**: PR-5A 머지 + N+30 (매핑 layer) 선행 권고
+- **블로커**: 없음 — 코드가 이미 wizard라 N+50 독립 진입 가능 (N+27 선행/N+30 선행 불요)
 
 ---
 
@@ -412,9 +422,9 @@ model OrgSnapshot         (line 4287)
   - 6 changeType 매핑 완전 (모든 case OrgRestructurePlan 표현 가능)
   - unit test (pure function) — `vitest src/lib/org/restructure-mapping.test.ts`
   - i18n 6 키 × 5 locale = 30 entries
-- **우선**: MEDIUM (N+27 dependency)
-- **E2E**: N+27 통합 시 (별도 E2E 0)
-- **블로커**: N+27 선행 권고 (단 매핑 layer 자체는 독립 진입 가능)
+- **우선**: MEDIUM (별도 feature 트랙으로 재분류 — N+27/N+50 형태 정합과 분리)
+- **E2E**: N+50 wizard 통합 시 (별도 E2E 0)
+- **블로커**: 없음 — 매핑 layer는 독립 진입 가능. N+50(WizardShell wrap)은 순수 형태 정합이라 N+30 매핑 선행 불요 (기능 항목은 별도 트랙)
 
 ---
 
@@ -448,9 +458,9 @@ model OrgSnapshot         (line 4287)
 3. **N+29** (zoom + opacity, proto only) — 작음
 4. **N+24** (page-h + chips, **production 첫 surface**) — 카나리 1번 (codebase)
 5. **N+26** (DeptFlowNode 토큰화, **codebase**) — B3I production surface 카나리
-6. **N+30** (위저드 매핑 layer, **codebase**) — N+27 선행 layer
-7. **N+27** (RestructureModal full-screen 재작업, **codebase 최대 변경**) — 정합성 우선 결정, 최후 진입
+6. **N+30** (위저드 매핑 layer, **codebase**) — 별도 feature 트랙 (N+50 형태 정합과 분리, 독립 진입)
+7. **N+50** (RestructureModal을 WizardShell SSOT로 wrap, **codebase**) — 순수 형태 정합 (N+49 #85 모델). N+27 머지/N+30 선행 의존 없이 독립 진입 가능 (코드가 이미 wizard라 drawer 재작업 불요)
 
-**Stage 4 pre-flight 권고 (별도 turn)**:
-- 코드베이스 트랙 4건 (N+24/N+26/N+27/N+30) — batch 04 패턴 정합 사전 audit
-- N+27 schema migration 여부 (OrgRestructurePlan.action enum 6 cases 정합 검증) — pre-flight 우선 항목
+**Stage 4 pre-flight 권고 (별도 turn) — Session 235 정정**:
+- 코드베이스 트랙: N+24/N+26 (visual) + N+50 (WizardShell wrap) + N+30 (매핑, 별도 feature 트랙)
+- ~~N+27 schema migration 여부~~ → N+50은 형태 정합(string-union step → numeric currentStep 매핑 + dual-action custom footer)이라 schema migration 무관. `split` changeType / `OrgRestructurePlan.action` enum 정합은 **별도 feature 트랙** 사전 검토 항목

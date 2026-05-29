@@ -7,6 +7,16 @@
 
 ---
 
+> **⚠️ 정정 (Session 235, 2026-05-29 — 6-agent workflow 코드 검증 + Codex Gate 1 HIGH 반영)**
+> 본 문서의 N+27/N+50 전제가 실제 코드와 불일치하여 정정합니다 (기존 결정 배경은 아래 본문에 보존):
+> - **`src/components/org/RestructureModal.tsx` 는 drawer가 아니라 이미 centered-overlay 3-step wizard** (Step 타입 `'edit'|'diff'|'confirm'`, custom StepIndicator, inline footer, `MODAL_STYLES.container`). "drawer → full-screen wizard 재작업" 전제는 코드상 무의미.
+> - **WizardShell SSOT는 N+48이 `src/components/shared/WizardShell.tsx` 에 신설·머지(#83 `90c88ac1`)** — N+27이 `src/components/wizards/` 에 자체 신설한다는 계획은 superseded.
+> - **N+27 charter = A (순수 형태 정합, 거의 no-op → N+50 WizardShell wrap에 흡수)**. 기능 항목(`split` changeType / `CHANGE_TYPE_LABELS` i18n 추출 / N+30 mapping layer)은 폐기가 아니라 **별도 feature 트랙으로 재분류**.
+> - 따라서 **N+50은 N+27 머지 의존 없이 순수 WizardShell wrap으로 진입 가능** (N+49 #85 모델). 실제 작업 = string-union step → numeric currentStep 매핑 + dual-action(저장 초안/즉시 적용) custom footer.
+> 근거: workflow 판정 insufficient-evidence → 코드 검증 (RestructureModal.tsx:365/367/631-672, modal.ts:3), Codex Gate 1 HIGH(수정 범위) 반영. 정정 트랙 = `docs/n27-n50-drift-fix`.
+
+---
+
 ## §0. 진입 조건 (Session 230 기준)
 
 - ✅ **PR-4 #62 MERGED** (`37b68e77`, 2026-05-22 01:56 UTC) — AT-005 카나리 main 도착
@@ -60,7 +70,7 @@
 
 ### Phase D — codebase 적용 (대 블라스트)
 
-대표 RECORD: N+27 (Restructure wizard full-screen 재작업) · N+44 (MyTasks/Leave migration 합본) · N+45/N+46 batch 08 합본 PR · N+49/N+50/N+53 batch 09 위저드 migration
+대표 RECORD: N+27 (Restructure 순수 형태 정합 — RestructureModal은 이미 centered-overlay 3-step wizard, charter=A, 거의 no-op → N+50 WizardShell wrap에 흡수) · N+44 (MyTasks/Leave migration 합본) · N+45/N+46 batch 08 합본 PR · N+49/N+50/N+53 batch 09 위저드 migration (N+50은 N+27 머지 의존 없이 WizardShell wrap 독립 진입 가능 — N+49 #85 모델)
 
 ### Phase E — 격상 batch 풀스택
 
