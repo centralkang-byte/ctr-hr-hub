@@ -136,14 +136,14 @@ Two review gates in every task that is **planned** to touch 3+ files (judge by p
 
 **Gate 1 — Plan Review** (after writing plan, before ExitPlanMode):
 - Write plan summary to `/tmp/codex-prompt.txt`
-- Run: `cat /tmp/codex-prompt.txt | /opt/homebrew/bin/codex exec -`
+- Run: `cat /tmp/codex-prompt.txt | codex exec -`
 - Incorporate HIGH findings into plan before approval
 
 **Gate 2 — Post-Implementation Review** (during `/verify`, after tsc+lint pass):
-- Run: `/opt/homebrew/bin/codex review --uncommitted`
+- Run: `codex review --uncommitted`
 - Fix all HIGH findings before commit
 
-**Codex CLI reference** (GPT-5.4, `/opt/homebrew/bin/codex`):
+**Codex CLI reference** (GPT-5.4, `codex`):
 ```bash
 # Gate 2: built-in review commands (no prompt needed)
 codex review --uncommitted          # review uncommitted changes
