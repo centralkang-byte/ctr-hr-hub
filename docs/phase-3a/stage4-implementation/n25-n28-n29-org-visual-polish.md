@@ -1,5 +1,8 @@
 # N+25/N+28/N+29 합본 Implementation — page-org.jsx visual polish (Phase A 6-8순위)
 
+> **⚠️ historical / superseded (Session 235, 2026-05-29)**
+> 본 문서의 N+27·N+50 관련 서술은 이후 정정되었습니다: `RestructureModal`은 이미 wizard(drawer 아님), WizardShell SSOT는 N+48이 `src/components/shared/`에 신설, **N+50은 N+27 의존 없이 순수 wrap 진입 가능**, N+27 charter = A(순수 형태, 기능은 별 트랙 재분류). 최신 SSOT = `09-wizardshell-ssot.md` + 정정 트랙 `docs/n27-n50-drift-fix`.
+
 > **base SHA**: `d868be4d` (main) — **main base 단독 PR** (PR #64-#69 충돌 0)
 > **선행 PR**: PR #64-#69 (모두 OPEN, 무관 — page-org.jsx 미터치)
 > **본 PR**: `feat/n25-n28-n29-org-visual-polish` — Phase A **마지막 합본 PR** (audit §6.3 정합)

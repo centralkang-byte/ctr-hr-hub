@@ -1,5 +1,8 @@
 # Phase 3a · Stage 4 · Phase A 진입 첫 PR 후보 사전 평가 audit
 
+> **⚠️ historical / superseded (Session 235, 2026-05-29)**
+> 본 문서의 N+27·N+50 관련 서술은 이후 정정되었습니다: `RestructureModal`은 이미 wizard(drawer 아님), WizardShell SSOT는 N+48이 `src/components/shared/`에 신설, **N+50은 N+27 의존 없이 순수 wrap 진입 가능**, N+27 charter = A(순수 형태, 기능은 별 트랙 재분류). 최신 SSOT = `09-wizardshell-ssot.md` + 정정 트랙 `docs/n27-n50-drift-fix`.
+
 > **base SHA**: `a147d919` (Stage 4 pre-flight 종결) · **작성일**: 2026-05-22 KST (Session 230)
 > **목적**: Phase A (proto only 카나리) 진입 첫 PR 후보 사전 평가 + cross-batch 의존성 단방향 verify + N+21 양쪽 등장 status 결론
 > **작업 종류**: read-only audit (src/ / prisma/ / messages/ 변경 0)

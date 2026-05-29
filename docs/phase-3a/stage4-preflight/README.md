@@ -16,11 +16,19 @@
 - **N+18**: ⚠️ **DB 무관 주장 부분 정정**. Prisma 에 career 데이터 모델 (Education/Certification/Activity) 0건. graceful empty 진입 가능하나 데이터 소스 별도 트랙 (batch 06) 격상 후보
 - **N+23**: ⚠️ **F14 합본 부적합 확정**. EmployeeDetailClient = Radix UI Tabs (a11y free). F14 N+9 임계치 미달. **코드베이스 작업 0**, proto만
 
+> **⚠️ 정정 (Session 235, 2026-05-29 — 6-agent workflow 코드 검증 + Codex Gate 1 HIGH 반영)**
+> 본 문서의 N+27/N+50 전제가 실제 코드와 불일치하여 정정합니다 (기존 결정 배경은 아래 본문에 보존):
+> - **`src/components/org/RestructureModal.tsx` 는 drawer가 아니라 이미 centered-overlay 3-step wizard** (Step 타입 `'edit'|'diff'|'confirm'`, custom StepIndicator, inline footer, `MODAL_STYLES.container`). "drawer → full-screen wizard 재작업" 전제는 코드상 무의미.
+> - **WizardShell SSOT는 N+48이 `src/components/shared/WizardShell.tsx` 에 신설·머지(#83 `90c88ac1`)** — N+27이 `src/components/wizards/` 에 자체 신설한다는 계획은 superseded.
+> - **N+27 charter = A (순수 형태 정합, 거의 no-op → N+50 WizardShell wrap에 흡수)**. 기능 항목(`split` changeType / `CHANGE_TYPE_LABELS` i18n 추출 / N+30 mapping layer)은 폐기가 아니라 **별도 feature 트랙으로 재분류**.
+> - 따라서 **N+50은 N+27 머지 의존 없이 순수 WizardShell wrap으로 진입 가능** (N+49 #85 모델). 실제 작업 = string-union step → numeric currentStep 매핑 + dual-action(저장 초안/즉시 적용) custom footer.
+> 근거: workflow 판정 insufficient-evidence → 코드 검증 (RestructureModal.tsx:365/367/631-672, modal.ts:3), Codex Gate 1 HIGH(수정 범위) 반영. 정정 트랙 = `docs/n27-n50-drift-fix`.
+
 ### Batch 05 (org) 트랙 — 4 RECORD 신규 추가
 
 - **N+24**: page-h + wd-status-chips. `PageHeader` SSOT 이미 10+ surface 사용 (재사용), **StatusChips SSOT 신규 신설 필요** (batch 03/04 공통화 권고)
 - **N+26**: DeptFlowNode AVATAR_PALETTE 10색 hardcoded inline 발견. **mine highlight 부재 → prop 추가 + 토큰화**. B3I dotted-line 미터치
-- **N+27** ⭐: ✅ **schema migration 불필요 확정**. `OrgRestructurePlan.changes` = `Json` free-form, ChangeType 확장은 TypeScript union만. **batch 04 N+18 같은 정정 발생 안 함**. WizardShell SSOT 신설 + 4 step + 6+ changeType 매핑
+- **N+27** ⭐: ✅ **schema migration 불필요 확정**. `OrgRestructurePlan.changes` = `Json` free-form, ChangeType 확장은 TypeScript union만. **batch 04 N+18 같은 정정 발생 안 함**. charter = A (순수 형태 정합, 거의 no-op → N+50 WizardShell wrap에 흡수). WizardShell SSOT는 N+48이 `src/components/shared/` 에 신설 완료(#83) — N+27 자체 신설 불필요. `split` changeType / `CHANGE_TYPE_LABELS` i18n 추출 / N+30 mapping layer는 별도 feature 트랙 재분류 (상단 정정 박스 참조)
 - **N+30**: pure functions 매핑 layer (proto 6 ↔ codebase 6 ChangeType + 'split' 추가 + 'transfer_employee' null). schema 무관, unit test 16+ cases
 
 ## §1. 파일 인벤토리
@@ -68,7 +76,7 @@
 |---|---|---|
 | N+48 ⭐ | [n48-wizardshell-ssot-shared.md](./n48-wizardshell-ssot-shared.md) | ✅ **`src/components/shared/` 정합** (PageHeader 패턴). Radix Dialog 기반 |
 | N+49 | [n49-hire-wizard-migration.md](./n49-hire-wizard-migration.md) | HireWorkerWizard 마이그레이션 (-75 net), batch 04 N+21 DemoLimitBanner cross-batch |
-| N+50 | [n50-orgrestructure-ssot-application.md](./n50-orgrestructure-ssot-application.md) | OrgRestructureWizard SSOT 적용 (-70 net), batch 05 N+27 분리 PR (batch 08 N+46 패턴) |
+| N+50 | [n50-orgrestructure-ssot-application.md](./n50-orgrestructure-ssot-application.md) | RestructureModal → WizardShell wrap (N+27 머지 의존 없이 독립 진입, N+49 #85 모델). string-union step → numeric currentStep 매핑 + dual-action custom footer |
 | N+51 ⚠️ | [n51-jobposting-migration.md](./n51-jobposting-migration.md) | **가디언 사전 가정 정정** — PostingFormClient = 단일 form (wizard 부재), 옵션 B (DEFERRED) |
 | N+52 ⚠️ | [n52-perfcycle-migration.md](./n52-perfcycle-migration.md) | **가디언 사전 가정 정정** — CreateCycleModal = 단일 modal form (wizard 부재), 옵션 B (DEFERRED) |
 | N+53 | [n53-bulkupload-migration.md](./n53-bulkupload-migration.md) | BulkUploadWizard 마이그레이션 (-30 net), Q6=A 포함 결정 정합 |
@@ -100,13 +108,13 @@
 | 10 | **N+17** | 04 | codebase | 중간 | /directory redirect + 토글 포팅 |
 | 11 | **N+26** | 05 | codebase | 중간 | DeptFlowNode mine highlight |
 | 12 | **N+18** | 04 | codebase | 중~큼 | graceful empty UI |
-| 13 | **N+30** | 05 | codebase | 중간 | mapping layer (N+27 선행 권고) |
-| 14 | **N+27** ⭐ | 05 | codebase | 최대 | RestructureModal full-screen 재작업 |
+| 13 | **N+30** | 05 | codebase | 중간 | mapping layer (별도 feature 트랙 재분류 — 상단 정정 박스) |
+| 14 | **N+27** ⭐ | 05 | codebase | 최소 | charter = A 순수 형태 정합, 거의 no-op → N+50 WizardShell wrap에 흡수 (RestructureModal 이미 centered-overlay 3-step wizard) |
 
 **진입 순서 권고 근거**:
 - proto only 8건 우선 (블라스트 작음, codebase 무영향)
-- codebase 트랙은 SSOT 신설/공통화 우선 (N+24 StatusChips → N+17 view toggle → N+26 토큰 → N+18 graceful empty → N+30 mapping → N+27 wizard)
-- N+27이 가장 큰 변경이므로 최후 진입 (mapping layer N+30 선행 후 즉시 활용)
+- codebase 트랙은 SSOT 신설/공통화 우선 (N+24 StatusChips → N+17 view toggle → N+26 토큰 → N+18 graceful empty → N+30 mapping → N+27 형태 정합)
+- N+27은 charter = A 순수 형태 정합(거의 no-op)이라 N+50 WizardShell wrap에 흡수 — 코드가 이미 wizard라 drawer 회귀 불가, N+27 구조작업 불필요·N+50 독립 진입 가능 (상단 정정 박스 참조)
 
 ## §3. 별도 트랙 후보 (cross-pre-flight)
 
@@ -118,7 +126,7 @@
 ### Batch 05 부산물 (신규)
 
 3. **StatusChips SSOT cross-batch 공통화** (N+24): batch 03 dashboard + batch 04 employees + batch 05 org + **batch 07 onboarding** 모두 chip 패턴. 합본 SSOT 신설 별도 PR 권고 (consumer = 4 batch)
-4. **WizardShell SSOT cross-batch 공통화** (N+27): Hire/Job/PerfCycle/Restructure 4 위저드 모두 proto 정합 → 공통 SSOT 신설 별도 batch 트랙 후보
+4. **WizardShell SSOT cross-batch 공통화** (N+27): Hire/Job/PerfCycle/Restructure 4 위저드 모두 proto 정합. ✅ 공통 SSOT는 N+48이 `src/components/shared/WizardShell.tsx` 에 신설·머지 완료(#83 `90c88ac1`) — N+27 자체 신설 불필요, Restructure는 N+50에서 wrap (상단 정정 박스 참조)
 5. **AVATAR_PALETTE wt 토큰 확장** (N+26): 8 토큰 vs 10색 cycling 정책 사전 결정 필요. 신규 토큰 `--org-node-mine-*` 또는 `--wt-9`/`--wt-10` 결정 게이트
 
 ### Batch 07 부산물 (신규)

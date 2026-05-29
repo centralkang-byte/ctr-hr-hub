@@ -1,5 +1,8 @@
 # N+34 / N+47 Phase 미할당 검증 + HANDOVER §3 그래프 정정 inventory
 
+> **⚠️ historical / superseded (Session 235, 2026-05-29)**
+> 본 문서의 N+27·N+50 관련 서술은 이후 정정되었습니다: `RestructureModal`은 이미 wizard(drawer 아님), WizardShell SSOT는 N+48이 `src/components/shared/`에 신설, **N+50은 N+27 의존 없이 순수 wrap 진입 가능**, N+27 charter = A(순수 형태, 기능은 별 트랙 재분류). 최신 SSOT = `09-wizardshell-ssot.md` + 정정 트랙 `docs/n27-n50-drift-fix`.
+
 > **base SHA**: `80a87ba2` (audit §9.5 단일 진실 commit)
 > **작성일**: 2026-05-22 KST (Session 230 HOLD 슬롯)
 > **트랙**: readonly inquiry + 결정 문서 신설 (audit 본문 정정 0)

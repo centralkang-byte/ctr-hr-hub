@@ -16,9 +16,17 @@
 - **Paradigm**: SSOT 신설 트랙 (batch 08 a11y SSOT 패턴 정합)
 - **Q1-Q6 결정**: SSOT proto 시그니처 채택 + 점진 마이그레이션 + N+27 분리 + BulkUpload 포함
 - **RECORD N+48~N+53** 사양화 (N+51/N+52 옵션 B = DEFERRED, actual **4 RECORD**)
-- **Cross-batch 의존성**: N+49 ← batch 04 N+21 (DemoLimitBanner), N+50 ← batch 05 N+27 (분리 PR)
+- **Cross-batch 의존성**: N+49 ← batch 04 N+21 (DemoLimitBanner). N+50 = Q5=B 분리 PR (⚠️ S235 정정: N+27 머지 의존 무효 — 코드가 이미 wizard라 독립 진입)
 
 ---
+
+> **⚠️ 정정 (Session 235, 2026-05-29 — 6-agent workflow 코드 검증 + Codex Gate 1 HIGH 반영)**
+> 본 문서의 N+27/N+50 전제가 실제 코드와 불일치하여 정정합니다 (기존 결정 배경은 아래 본문에 보존):
+> - **`src/components/org/RestructureModal.tsx` 는 drawer가 아니라 이미 centered-overlay 3-step wizard** (Step 타입 `'edit'|'diff'|'confirm'`, custom StepIndicator, inline footer, `MODAL_STYLES.container`). "drawer → full-screen wizard 재작업" 전제는 코드상 무의미.
+> - **WizardShell SSOT는 N+48이 `src/components/shared/WizardShell.tsx` 에 신설·머지(#83 `90c88ac1`)** — N+27이 `src/components/wizards/` 에 자체 신설한다는 계획은 superseded.
+> - **N+27 charter = A (순수 형태 정합, 거의 no-op → N+50 WizardShell wrap에 흡수)**. 기능 항목(`split` changeType / `CHANGE_TYPE_LABELS` i18n 추출 / N+30 mapping layer)은 폐기가 아니라 **별도 feature 트랙으로 재분류**.
+> - 따라서 **N+50은 N+27 머지 의존 없이 순수 WizardShell wrap으로 진입 가능** (N+49 #85 모델). 실제 작업 = string-union step → numeric currentStep 매핑 + dual-action(저장 초안/즉시 적용) custom footer.
+> 근거: workflow 판정 insufficient-evidence → 코드 검증 (RestructureModal.tsx:365/367/631-672, modal.ts:3), Codex Gate 1 HIGH(수정 범위) 반영. 정정 트랙 = `docs/n27-n50-drift-fix`.
 
 ## §1. Surface 인벤토리
 
@@ -29,7 +37,7 @@ Stage 1 §1 cross-ref (`09-wizardshell-ssot-stage1.md`). 압축 표:
 | 1 | HireWorkerWizard | `src/app/(dashboard)/employees/new/EmployeeNewClient.tsx` (701 lines) | 4-step inline (step state/validation/indicator L608/content L655) | N+49 |
 | 2 | JobPostingWizard | `src/app/(dashboard)/recruitment/new/PostingFormClient.tsx` | (Stage 4 정확 검증) | N+51 |
 | 3 | PerfCycleWizard | `src/app/(dashboard)/performance/PerformanceClient.tsx` (593) 또는 sub-page | (Stage 4 정확 검증) | N+52 |
-| 4 | OrgRestructureWizard → RestructureModal | `src/components/org/RestructureModal.tsx` (676 lines, drawer) | drawer 패턴 (batch 05 N+27 target) | N+50 (N+27 분리) |
+| 4 | OrgRestructureWizard → RestructureModal | `src/components/org/RestructureModal.tsx` (676 lines, 이미 centered-overlay 3-step wizard) | inline 3-step wizard (Step `'edit'|'diff'|'confirm'`, custom StepIndicator, inline footer) — drawer 회귀 불가 | N+50 (순수 WizardShell wrap, N+27 의존 없음) |
 | 5 | BulkUploadWizard (codebase only) | `src/components/employees/BulkUploadWizard.tsx` | Dialog + 4-step type union | N+53 |
 
 ### Proto WizardShell SSOT (참조)
@@ -52,7 +60,7 @@ Stage 1 §2 cross-ref. 핵심 HIGH 4건 발췌:
 |---|---|---|---|
 | **WS-001** | cross-cutting | HIGH | WizardShell codebase 0건 확정 — SSOT 신규 신설 필요 |
 | **WS-002** | HireWorkerWizard | HIGH | inline 4-step (EmployeeNewClient L181~L660), proto WizardShell prop 결렬 |
-| **WS-003** | OrgRestructureWizard | HIGH | drawer 패턴 (wizard 결렬) — batch 05 N+27 cross-batch |
+| **WS-003** | OrgRestructureWizard | HIGH | 이미 centered-overlay 3-step wizard (`'edit'|'diff'|'confirm'`) — N+50 순수 WizardShell wrap (N+27 구조작업 불필요) |
 | **WS-004** | BulkUploadWizard | HIGH | codebase only, SSOT 미적용 (Dialog + inline 4-step) |
 
 MED 7건 (WS-005~WS-011) + LOW 3건 (WS-012~WS-014) = Stage 1 audit 그대로 적용.
@@ -67,7 +75,7 @@ MED 7건 (WS-005~WS-011) + LOW 3건 (WS-012~WS-014) = Stage 1 audit 그대로 �
 | X2 | 5 위저드 inline 패턴 차이 (컨테이너/step/indicator/footer/progress/cancel) | N+48 SSOT API spec 정합 |
 | X3 | 4 위저드 proto SSOT, BulkUploadWizard 는 codebase only | Q6=A 결정 → 5 wizard 통합 SSOT |
 | X4 | batch 04 N+21 DemoLimitBanner cross-batch | N+48 footer 통합 (N+49 진입 시 정합) |
-| X5 | 컨테이너 패턴 3가지 (page / drawer / Dialog) | N+48 SSOT = Radix Dialog 기반 (HireWorker page 패턴은 별도 검토) |
+| X5 | 컨테이너 패턴 (page / centered-overlay `MODAL_STYLES.container` / Dialog) | N+48 SSOT = Radix Dialog 기반 (HireWorker page 패턴은 별도 검토). ⚠️ S235 정정: RestructureModal = drawer 아님, centered-overlay wizard |
 
 ---
 
@@ -114,7 +122,7 @@ MED 7건 (WS-005~WS-011) + LOW 3건 (WS-012~WS-014) = Stage 1 audit 그대로 �
 | Q2 step indicator | **A** | proto pattern 정합 (done/current/upcoming dot + 체크 아이콘) |
 | Q3 footer 정책 | **A** | proto pattern unify (이전/다음/취소/임시저장/완료, progress text "N/N 단계") |
 | Q4 마이그레이션 | **C** | 점진 (Hire → OrgRestructure → JobPosting → PerfCycle → BulkUpload 순) |
-| Q5 N+27 합본 | **B** | 분리 (N+50 = OrgRestructure 마이그레이션 단독 PR, N+27 머지 후) |
+| Q5 N+27 합본 | **B** | 분리 (N+50 = OrgRestructure 마이그레이션 단독 PR). ⚠️ 정정(S235): N+27 머지 선행 의존 무효 — 코드가 이미 wizard라 N+50 독립 진입 가능 |
 | Q6 BulkUpload | **A** ⭐ | 포함 (5번째 wizard SSOT 적용, batch 05 Q6 패턴 정합) |
 
 ---
@@ -133,7 +141,7 @@ MED 7건 (WS-005~WS-011) + LOW 3건 (WS-012~WS-014) = Stage 1 audit 그대로 �
 |---|---|---|---|---|
 | **N+48** | WS-001 + X1 + X2 + X5 (WizardShell SSOT 신설) + Q1/Q2/Q3 | HIGH | codebase (선행) | 0 |
 | **N+49** | WS-002 (HireWorkerWizard 마이그레이션) + X4 (DemoLimitBanner 정합) | HIGH | codebase | N+48 + batch 04 N+21 |
-| **N+50** | WS-003 + Q5 (OrgRestructure 마이그레이션, N+27 분리 PR) | HIGH | codebase + cross-batch | N+48 + batch 05 N+27 머지 |
+| **N+50** | WS-003 + Q5 (OrgRestructure 마이그레이션, 순수 WizardShell wrap) | HIGH | codebase | N+48 (N+27 의존 없음 — S235 정정) |
 | **N+51** | JobPostingWizard — ⚠️ wizard 패턴 부재 (옵션 B) | **DEFERRED** | **N/A** | **N/A** |
 | **N+52** | PerfCycleWizard — ⚠️ wizard 패턴 부재 (옵션 B) | **DEFERRED** | **N/A** | **N/A** |
 | **N+53** | WS-004 + Q6 (BulkUploadWizard 마이그레이션) | LOW | codebase | N+48 |
@@ -202,22 +210,22 @@ MED 7건 (WS-005~WS-011) + LOW 3건 (WS-012~WS-014) = Stage 1 audit 그대로 �
 
 ---
 
-### N+50 — OrgRestructureWizard 마이그레이션 (Q4 점진 2, Q5 분리) [HIGH, cross-batch]
+### N+50 — OrgRestructureWizard 마이그레이션 (Q4 점진 2, Q5 분리) [HIGH]
 
-- **트랙**: codebase + cross-batch (N+27 분리 PR)
+- **트랙**: codebase (순수 WizardShell wrap)
 - **우선**: HIGH
-- **의존성**: **N+48 선행** + **batch 05 N+27 머지 완료** 후 진입 (Q5=B 분리)
+- **의존성**: **N+48 선행만** (✅ main `90c88ac1` 도착). ⚠️ 정정(S235): N+27 머지 선행 의존 무효 — `RestructureModal.tsx` 가 이미 centered-overlay 3-step wizard라 drawer 회귀 불가, N+27 구조작업 불필요. N+49 #85 모델로 독립 진입 가능
 - **Stage 4 입력**:
-  - batch 05 N+27 implementation 결과: RestructureModal drawer → full-screen wizard 재작업 완료
-  - N+50 = N+27 결과물(WizardShell 자체 구현) → 본 batch 09 WizardShell SSOT consumer 로 마이그레이션 (분리 PR)
-  - 두 단계로 분리:
-    - 단계 1 (batch 05 N+27): drawer → wizard inline
-    - 단계 2 (batch 09 N+50): wizard inline → WizardShell SSOT
-  - 회귀 격리 명확 (각 단계 e2e 시나리오 별도)
+  - `src/components/org/RestructureModal.tsx` (676 lines) = 이미 centered-overlay 3-step wizard (Step 타입 `'edit'|'diff'|'confirm'` L365, custom StepIndicator L367, inline footer 이전/다음/취소/즉시적용 L631-672, root = `MODAL_STYLES.container` = `fixed inset-0 flex items-center justify-center` `src/lib/styles/modal.ts:3`)
+  - 실제 작업 = 기존 wizard 골격을 WizardShell SSOT consumer 로 wrap:
+    - string-union step (`'edit'|'diff'|'confirm'`) → numeric `currentStep` 매핑
+    - dual-action custom footer (`handleSaveDraft` 저장 초안 / `handleApplyNow` 즉시 적용) → `<WizardShell footer={...}>` slot
+    - custom StepIndicator → WizardShell 내장 step indicator
+  - N+27 기능 항목(`split` changeType / 하드코딩 `CHANGE_TYPE_LABELS` i18n 추출 / N+30 mapping layer)은 **별도 feature 트랙**으로 재분류 — N+50 wrap scope 외
 - **Stage 4 검증**:
-  - N+27 머지 + 1주 안정화 후 N+50 진입 (회귀 가드)
-  - WizardShell SSOT props 정합 (proto 6 changeType + 4 step)
-  - batch 05 N+27 RestructureModal 회귀 0
+  - WizardShell SSOT props 정합 (3 step + dual-action footer)
+  - 기존 RestructureModal 회귀 0 (edit/diff/confirm 단계 + 저장 초안/즉시 적용 동작 정합)
+  - e2e: 3-step 통과 시나리오
 
 ---
 
@@ -304,11 +312,11 @@ MED 7건 (WS-005~WS-011) + LOW 3건 (WS-012~WS-014) = Stage 1 audit 그대로 �
    - 5 위저드 consumer 마이그레이션 line delta 정확 추정 (JobPosting / PerfCycle 정확 검증)
    - N+50 cross-batch 머지 순서 게이트 (N+27 → N+50)
 2. **Stage 4 implementation** (PR-5A 머지 후) — 권고 순서:
-   - N+48 (SSOT 선행) → N+49 (Hire) → N+27 (batch 05 분리 PR) → N+50 (OrgRestructure SSOT 적용) → N+51 (JobPosting) → N+52 (PerfCycle) → N+53 (BulkUpload)
+   - N+48 (SSOT 선행) → N+49 (Hire) → N+50 (OrgRestructure 순수 WizardShell wrap, N+27 의존 없음 — S235 정정) → N+53 (BulkUpload). N+51/N+52 = DEFERRED(옵션 B)
 3. **cross-batch 의존성**:
    - **N+49 → N+55 별 PR** (옵션 β, Session 233): N+49 머지 후 codebase `<DemoLimitBanner />` SSOT 신설 + consumer wire (banner prop 부재, consumer-driven)
    - **N+49 → N+56 follow-up** (Session 234, D1 결재): mobile sticky-bottom variant — N+49 default footer 채택으로 StickyActionBar 제거 → Phase 4 mobile polish 트랙 또는 mobile complaint 발생 시 진입
-   - **N+50 ← batch 05 N+27**: drawer→wizard 머지 후 분리 PR (Q5=B)
+   - **N+50** (Q5=B 분리 PR): ⚠️ 정정(S235) — N+27 머지 의존 무효. `RestructureModal.tsx` 가 이미 centered-overlay 3-step wizard라 순수 WizardShell wrap으로 독립 진입. N+27 기능 항목은 별도 feature 트랙 재분류
 
 ---
 

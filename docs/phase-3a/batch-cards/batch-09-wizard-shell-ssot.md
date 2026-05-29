@@ -1,5 +1,8 @@
 # Phase 3a · Batch 09 — WizardShell SSOT (격상 트랙)
 
+> **⚠️ historical / superseded (Session 235, 2026-05-29)**
+> 본 문서의 N+27·N+50 관련 서술은 이후 정정되었습니다: `RestructureModal`은 이미 wizard(drawer 아님), WizardShell SSOT는 N+48이 `src/components/shared/`에 신설, **N+50은 N+27 의존 없이 순수 wrap 진입 가능**, N+27 charter = A(순수 형태, 기능은 별 트랙 재분류). 최신 SSOT = `09-wizardshell-ssot.md` + 정정 트랙 `docs/n27-n50-drift-fix`. superseded by 09-wizardshell-ssot.md.
+
 > **격상 일자**: 2026-05-21 KST (Session 228)
 > **격상 사유**: batch 05 N+27 pre-flight (`docs/phase-3a/stage4-preflight/n27-restructure-wizard-rework.md`) 부산물. 4 위저드 (Hire/Job/PerfCycle/Restructure) cross-batch SSOT 필요, N+27 scope 비대 회피
 > **base SHA**: phase3a-audit `7c62b878`

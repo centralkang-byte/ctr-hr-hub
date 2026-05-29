@@ -1,5 +1,9 @@
 # Phase 3a · Batch 09 — WizardShell SSOT Stage 1 P0 Audit
 
+> **⚠️ historical / superseded (Session 235, 2026-05-29)**
+> 본 문서의 N+27·N+50 관련 서술은 이후 정정되었습니다: `RestructureModal`은 이미 wizard(drawer 아님), WizardShell SSOT는 N+48이 `src/components/shared/`에 신설, **N+50은 N+27 의존 없이 순수 wrap 진입 가능**, N+27 charter = A(순수 형태, 기능은 별 트랙 재분류). 최신 SSOT = `09-wizardshell-ssot.md` + 정정 트랙 `docs/n27-n50-drift-fix`.
+> 추가 정정 (§N+48~N+53 surface 매핑, 본문 L240-241): N+49=Hire / N+50=OrgRestructure 로 최종 확정 (본문의 N+49=OrgRestructure / N+50=Hire 는 구형 — 실제 머지 #85 = N+49=Hire).
+
 > Stage 1 P0 audit
 > **base SHA**: `0f66d773`
 > **작성일**: 2026-05-21 KST (Session 228)
