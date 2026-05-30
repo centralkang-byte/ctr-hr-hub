@@ -38,6 +38,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
+import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
 import { formatDateLocale } from '@/lib/format/date'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
@@ -94,6 +95,9 @@ interface LeavePolicyLocal {
 
 const SINGLE_DAY_PRESETS = new Set(['AM', 'PM', 'QUARTER'])
 
+// statusFilter 세그먼트 컨트롤 값 순서 (방향키 내비게이션 인덱스 SSOT)
+const STATUS_FILTER_VALUES = ['ALL', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'] as const
+
 // ─── Component ──────────────────────────────────────────────
 
 export function LeaveClient({ user }: { user: SessionUser }) {
@@ -131,6 +135,13 @@ export function LeaveClient({ user }: { user: SessionUser }) {
   const [page, setPage] = useState(1)
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
   const [loading, setLoading] = useState(true)
+
+  // 방향키 내비게이션 + roving tabindex (statusFilter 세그먼트 컨트롤). 선택은 기존 onClick 유지.
+  const statusNav = useArrowKeyNavigation(
+    STATUS_FILTER_VALUES.length,
+    STATUS_FILTER_VALUES.findIndex((v) => v === statusFilter),
+    (i) => setStatusFilter(STATUS_FILTER_VALUES[i]),
+  )
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [startDateOpen, setStartDateOpen] = useState(false)
@@ -566,6 +577,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         <div
           role="tablist"
           aria-label={te('status')}
+          onKeyDown={statusNav.onKeyDown}
           className="inline-flex flex-wrap gap-1 rounded-lg bg-muted/50 p-1"
         >
           {[
@@ -574,13 +586,14 @@ export function LeaveClient({ user }: { user: SessionUser }) {
             { value: 'APPROVED', label: t('approved') },
             { value: 'REJECTED', label: t('rejected') },
             { value: 'CANCELLED', label: t('cancelled') },
-          ].map((f) => (
+          ].map((f, idx) => (
             <button
               key={f.value}
               type="button"
               role="tab"
               aria-selected={statusFilter === f.value}
               onClick={() => setStatusFilter(f.value)}
+              {...statusNav.itemProps(idx)}
               className={cn(
                 'rounded-md px-3 py-1.5 text-xs font-semibold motion-safe:transition-all',
                 statusFilter === f.value

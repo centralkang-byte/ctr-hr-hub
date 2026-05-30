@@ -41,6 +41,7 @@ import {
 import { PageHeader } from '@/components/shared/PageHeader'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { apiClient } from '@/lib/api'
+import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
 import type { SessionUser } from '@/types'
 import {
     UnifiedTaskType,
@@ -290,6 +291,18 @@ function MyTasksInner({ user }: { user: SessionUser }) {
         router.replace(`/my/tasks?${params.toString()}`, { scroll: false })
     }, [searchParams, router])
 
+    // 방향키 내비게이션 + roving tabindex (상단 뷰 탭). 선택은 기존 updateParams 유지.
+    const viewNav = useArrowKeyNavigation(
+        2,
+        viewTab === 'tasks' ? 0 : 1,
+        (i) =>
+            updateParams(
+                i === 0
+                    ? { tab: null, status: null, page: null, type: null }
+                    : { tab: 'approvals', status: null, page: null, type: null },
+            ),
+    )
+
     // ── Fetch tasks ─────────────────────────────────────────
 
     const fetchTasks = useCallback(async () => {
@@ -365,11 +378,12 @@ function MyTasksInner({ user }: { user: SessionUser }) {
 
             {/* ── Top-level View Tabs (내 할 일 | 승인 요청) ── */}
             {canSeeApprovals && (
-                <div className="flex items-center gap-1 rounded-lg bg-muted p-1 w-fit" role="tablist">
+                <div className="flex items-center gap-1 rounded-lg bg-muted p-1 w-fit" role="tablist" onKeyDown={viewNav.onKeyDown}>
                     <button
                         type="button"
                         role="tab"
                         aria-selected={viewTab === 'tasks'}
+                        {...viewNav.itemProps(0)}
                         onClick={() => updateParams({ tab: null, status: null, page: null, type: null })}
                         className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                             viewTab === 'tasks'
@@ -383,6 +397,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                         type="button"
                         role="tab"
                         aria-selected={viewTab === 'approvals'}
+                        {...viewNav.itemProps(1)}
                         onClick={() => updateParams({ tab: 'approvals', status: null, page: null, type: null })}
                         className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                             viewTab === 'approvals'
