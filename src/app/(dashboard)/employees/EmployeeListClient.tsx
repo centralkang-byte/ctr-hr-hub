@@ -30,7 +30,6 @@ import { EmployeeInspector } from '@/components/shared/EmployeeInspector'
 import { wtAvatarColor } from '@/lib/styles/wt-avatar'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { EmployeeFilterPanel, type FilterValues } from '@/components/employees/EmployeeFilterPanel'
-// BulkUploadWizard deprecated — 새 bulk-movements 페이지로 이동
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, PaginationInfo, SortDirection } from '@/types'

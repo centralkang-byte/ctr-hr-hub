@@ -1,5 +1,8 @@
 # N+53 Pre-flight — BulkUploadWizard 마이그레이션 (Q6 결정 — 포함, codebase-only)
 
+> ⚠️ **SUPERSEDED (2026-05-30) — N+53 = 죽은 코드 제거로 종결, 마이그레이션 아님.**
+> 본 pre-flight 전제가 무효화됨: `BulkUploadWizard.tsx`는 커밋 `e86e6318`("Track B Phase 3 v2") 이후 **deprecated·미마운트 죽은 코드**이며(import·렌더 0), 구 API `/api/v1/employees/bulk-upload`도 **410 Gone 묘비석**임. 실 기능은 `/hr/bulk-movements` **페이지형 3-step 위저드**(모달 아님, 자체 step indicator + `useTranslations('bulkMovement')`)로 이전됨 → Radix Dialog 모달 SSOT인 **WizardShell 이식 대상 아님**. CEO 결재(2026-05-30): **`BulkUploadWizard.tsx` 삭제로 N+53 종결**. N+27↔N+50에 이은 2번째 audit↔코드 drift (Phase 3a 사전 audit이 옛 base SHA 기준 → 후속 코드 이동 미반영). 아래 §1~§7 원문은 역사적 기록으로 보존.
+
 > **base SHA**: `4ff48de6` · **트랙**: codebase · **우선**: LOW
 > **결정 (Stage 3 Q6=A)**: BulkUploadWizard 포함 (5번째 wizard SSOT 적용, batch 05 Q6 패턴 정합)
 > **본 pre-flight 결과 (요약)**: ✅ BulkUploadWizard 4-step Dialog 패턴 정합. proto 부재 = visual SSOT 0 → WizardShell pattern 적용. 파일 업로드 step special handling 필요.
