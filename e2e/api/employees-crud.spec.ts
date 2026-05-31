@@ -172,7 +172,9 @@ test.describe('HR_ADMIN: Employee CRUD', () => {
   })
 
   test('GET /employees/[seedId]/snapshot returns current snapshot', async ({ request }) => {
-    const result = await getEmployeeSubResource(request, seedEmployeeId, 'snapshot')
+    // snapshot route requires ?date=YYYY-MM-DD (route.ts:21 badRequest) — Effective Dating
+    const today = new Date().toISOString().slice(0, 10)
+    const result = await getEmployeeSubResource(request, seedEmployeeId, 'snapshot', { date: today })
     expect([200, 404].includes(result.status)).toBe(true)
   })
 
