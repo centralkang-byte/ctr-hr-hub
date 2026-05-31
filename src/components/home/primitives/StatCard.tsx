@@ -47,7 +47,7 @@ const TONE_TEXT: Record<NonNullable<StatCardProps['tone']>, string> = {
   warning: 'text-ctr-warning',
   error: 'text-destructive',
   info: 'text-primary',
-  accent: 'text-[#7c3aed]',
+  accent: 'text-[#7457d1]',
 }
 
 const TREND_ICON = { up: TrendingUp, down: TrendingDown, flat: Minus } as const

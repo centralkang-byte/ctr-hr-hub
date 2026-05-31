@@ -284,13 +284,13 @@ export const STATUS_VARIANT = {
   /** 반려 / 오류 / 만료 / 결근 */
   error: 'bg-[#e11d48]/10 text-[#e11d48]',
   /** 진행중 / 온보딩 / 참고 */
-  info: 'bg-[#6366f1]/10 text-[#4f46e5]',
+  info: 'bg-primary/10 text-primary',
   /** 미시작 / 초안 / 취소 / 비활성 */
   neutral: 'bg-[#f1f5f9] text-[#64748b]',
   /** @deprecated info로 통합됨 */
-  primary: 'bg-[#6366f1]/10 text-[#4f46e5]',
+  primary: 'bg-primary/10 text-primary',
   /** 오퍼 / 휴직 / 출장 */
-  accent: 'bg-[#7c3aed]/10 text-[#7c3aed]',
+  accent: 'bg-wt-4/10 text-wt-4',
 } as const
 
 export type StatusVariant = keyof typeof STATUS_VARIANT

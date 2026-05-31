@@ -129,8 +129,8 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
       label: '1:1 미완료',
       value: summary?.incompleteOneOnOnes ?? 0,
       icon: MessageSquare,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-500/10',
+      color: 'text-wt-4',
+      bgColor: 'bg-wt-4/10',
       suffix: '건',
     },
   ]
@@ -194,8 +194,8 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
                 <Radar
                   name="팀"
                   dataKey="value"
-                  stroke="#5E81F4"
-                  fill="#5E81F4"
+                  stroke="#004964"
+                  fill="#004964"
                   fillOpacity={0.2}
                   strokeWidth={2}
                 />
@@ -301,7 +301,7 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
                   <Tooltip />
                   <Bar
                     dataKey="count"
-                    fill="#5E81F4"
+                    fill="#004964"
                     radius={[4, 4, 0, 0]}
                     name="인원"
                   />
@@ -336,11 +336,11 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
           <CardContent>
             <div className="space-y-3">
               {(summary?.incompleteOneOnOnes ?? 0) > 0 && (
-                <div className="rounded-lg border border-purple-200 bg-purple-500/10 p-3">
-                  <p className="text-sm font-medium text-purple-800">
+                <div className="rounded-lg border border-wt-4/20 bg-wt-4/10 p-3">
+                  <p className="text-sm font-medium text-wt-4">
                     1:1 미팅 진행 필요
                   </p>
-                  <p className="mt-1 text-xs text-purple-700">
+                  <p className="mt-1 text-xs text-wt-4">
                     이번 달 {summary?.incompleteOneOnOnes}건의 1:1 미팅이 미완료
                     상태입니다. 팀원과의 소통을 위해 일정을 확인하세요.
                   </p>

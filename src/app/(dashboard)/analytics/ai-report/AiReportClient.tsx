@@ -259,7 +259,7 @@ export default function AiReportClient({ user: _user }: { user: SessionUser }) {
           <button
             onClick={handleGenerate}
             disabled={generating}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#5E81F4] to-[#6B73E8] text-white text-sm font-medium hover:shadow-lg hover:shadow-[#5E81F4]/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary to-primary-dim text-white text-sm font-medium hover:shadow-lg hover:shadow-primary/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
           >
             {generating ? (
               <>
@@ -293,7 +293,7 @@ export default function AiReportClient({ user: _user }: { user: SessionUser }) {
           <p className="text-sm text-muted-foreground">{t('aiReport.estimatedTime')}</p>
           <div className="mt-6 w-48 mx-auto">
             <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-[#5E81F4] to-[#6B73E8] rounded-full animate-[progressBar_2s_ease-in-out_infinite]" style={{ width: '60%' }} />
+              <div className="h-full bg-gradient-to-r from-primary to-primary-dim rounded-full animate-[progressBar_2s_ease-in-out_infinite]" style={{ width: '60%' }} />
             </div>
           </div>
         </div>
@@ -303,7 +303,7 @@ export default function AiReportClient({ user: _user }: { user: SessionUser }) {
       {currentReport && !generating && (
         <div className="bg-card rounded-xl border border-border overflow-hidden">
           {/* Report Header */}
-          <div className="relative bg-gradient-to-br from-[#5E81F4]/5 to-[#6B73E8]/5 px-6 py-4 border-b border-border">
+          <div className="relative bg-gradient-to-br from-primary/5 to-primary-dim/5 px-6 py-4 border-b border-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-xl bg-primary/10">
@@ -353,7 +353,7 @@ export default function AiReportClient({ user: _user }: { user: SessionUser }) {
       {/* Empty state */}
       {!currentReport && !generating && reports.length === 0 && (
         <div className="bg-card rounded-xl border border-border p-12 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br from-[#5E81F4]/10 to-[#6B73E8]/10 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br from-primary/10 to-primary-dim/10 mb-4">
             <Sparkles className="h-8 w-8 text-primary" />
           </div>
           <h3 className="text-lg font-semibold text-foreground mb-2">{t('aiReport.emptyTitle')}</h3>

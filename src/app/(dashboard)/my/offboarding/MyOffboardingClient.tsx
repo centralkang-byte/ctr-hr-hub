@@ -90,7 +90,7 @@ function TaskRow({ task, isActive, onComplete, processing }: TaskRowProps) {
 
   let rowBg = 'bg-card border-border'
   if (isDone)    rowBg = 'bg-tertiary-container/10 border-emerald-100'
-  if (isActive)  rowBg = 'bg-primary/10 border-primary/20 border-l-4 border-l-[#5E81F4]'
+  if (isActive)  rowBg = 'bg-primary/10 border-primary/20 border-l-4 border-l-[#004964]'
   if (task.isOverdue && !isDone) rowBg = 'bg-destructive/5 border-destructive/20'
 
   return (

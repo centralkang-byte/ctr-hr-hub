@@ -55,10 +55,10 @@ const REASON_LABEL_KEYS: Record<string, string> = {
 
 const REASON_COLORS: Record<string, string> = {
     COMPENSATION: '#EF4444',
-    CAREER_GROWTH: '#5E81F4',
+    CAREER_GROWTH: '#004964',
     WORK_LIFE_BALANCE: '#22C55E',
     MANAGEMENT: '#F59E0B',
-    CULTURE: '#8B5CF6',
+    CULTURE: '#7457d1',
     RELOCATION: '#06B6D4',
     PERSONAL: '#8181A5',
     OTHER: '#D1D5DB',
