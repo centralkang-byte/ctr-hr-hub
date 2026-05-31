@@ -125,8 +125,10 @@ export async function getEmployeeSubResource(
   request: APIRequestContext,
   employeeId: string,
   subPath: string,
+  query?: Record<string, string>,
 ): Promise<ApiResult> {
-  const res = await request.get(`/api/v1/employees/${employeeId}/${subPath}`)
+  const qs = query ? `?${new URLSearchParams(query).toString()}` : ''
+  const res = await request.get(`/api/v1/employees/${employeeId}/${subPath}${qs}`)
   return parseApiResponse(res)
 }
 
