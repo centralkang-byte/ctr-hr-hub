@@ -30,7 +30,7 @@ interface AnomalyData {
 const SEVERITY_COLORS: Record<string, string> = {
   high: 'bg-destructive/10 text-destructive border-destructive/20',
   medium: 'bg-amber-500/15 text-amber-700 border-amber-300',
-  low: 'bg-indigo-500/15 text-primary/90 border-indigo-200',
+  low: 'bg-primary/15 text-primary/90 border-primary/20',
 }
 
 const SEVERITY_LABEL_KEYS: Record<string, string> = {
@@ -203,7 +203,7 @@ export default function PayrollAnomaliesClient({ user: _user }: { user: SessionU
               <div
                 key={anomaly.rule}
                 className={`bg-card rounded-xl border overflow-hidden ${
-                  anomaly.severity === 'high' ? 'border-destructive/20' : anomaly.severity === 'medium' ? 'border-amber-300' : 'border-indigo-200'
+                  anomaly.severity === 'high' ? 'border-destructive/20' : anomaly.severity === 'medium' ? 'border-amber-300' : 'border-primary/20'
                 }`}
               >
                 <div

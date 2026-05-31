@@ -444,7 +444,7 @@ export default function CalibrationClient({ user: _user }: { user: SessionUser }
                 <button
                   onClick={handleAiAnalysis}
                   disabled={aiLoading}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-indigo-500/15 text-primary/90 hover:bg-indigo-200 disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-primary/15 text-primary/90 hover:bg-primary/15 disabled:opacity-50"
                 >
                   <Sparkles className="w-4 h-4" />
                   {aiLoading ? t('aiAnalyzing') : t('calibration.aiAnalysis')}

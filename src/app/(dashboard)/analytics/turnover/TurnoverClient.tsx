@@ -201,7 +201,7 @@ export default function TurnoverClient({ user: _user }: { user: SessionUser }) {
                         <div className="flex justify-center">
                           <button
                             onClick={() => setExpandedRow(expandedRow === emp.employeeId ? null : emp.employeeId)}
-                            className="p-1.5 rounded hover:bg-indigo-500/15 text-muted-foreground transition-colors"
+                            className="p-1.5 rounded hover:bg-primary/15 text-muted-foreground transition-colors"
                           >
                             {expandedRow === emp.employeeId ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                           </button>

@@ -48,7 +48,7 @@ export default function AnomalyPanel({ runId }: AnomalyPanelProps) {
       <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-violet-500" />
+            <Sparkles className="h-5 w-5 text-primary" />
             <h3 className="text-sm font-semibold text-foreground">{t('anomaly.aiDetection')}</h3>
             <Badge variant="secondary" className="gap-1 text-xs">
               <Sparkles className="h-3 w-3" />
@@ -85,7 +85,7 @@ export default function AnomalyPanel({ runId }: AnomalyPanelProps) {
     <div className="bg-card rounded-xl shadow-sm border border-border p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-violet-500" />
+          <Sparkles className="h-5 w-5 text-primary" />
           <h3 className="text-sm font-semibold text-foreground">{t('anomaly.aiResult')}</h3>
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${RISK_COLORS[result.risk_level]}`}
@@ -139,9 +139,9 @@ export default function AnomalyPanel({ runId }: AnomalyPanelProps) {
       )}
 
       {/* Recommendation */}
-      <div className="bg-indigo-500/15 rounded-lg p-3">
+      <div className="bg-primary/15 rounded-lg p-3">
         <p className="text-xs font-medium text-primary mb-1">{t('anomaly.aiRecommendation')}</p>
-        <p className="text-sm text-indigo-800">{result.recommendation}</p>
+        <p className="text-sm text-primary">{result.recommendation}</p>
       </div>
     </div>
   )

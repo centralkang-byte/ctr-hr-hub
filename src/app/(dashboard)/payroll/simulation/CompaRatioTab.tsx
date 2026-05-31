@@ -195,12 +195,12 @@ export default function CompaRatioTab({ companies }: Props) {
                       <div className="relative h-4 bg-muted rounded-full overflow-hidden">
                         {/* Range bar */}
                         <div
-                          className="absolute h-full bg-indigo-600/20 rounded-full"
+                          className="absolute h-full bg-primary/20 rounded-full"
                           style={{ left: `${barLeft}%`, width: `${barWidth}%` }}
                         />
                         {/* Average marker */}
                         <div
-                          className="absolute top-0 w-0.5 h-full bg-indigo-600"
+                          className="absolute top-0 w-0.5 h-full bg-primary"
                           style={{ left: `${avgPos}%` }}
                         />
                         {/* 1.0 reference */}

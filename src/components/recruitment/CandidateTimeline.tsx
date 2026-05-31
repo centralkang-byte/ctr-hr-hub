@@ -51,14 +51,14 @@ const EVENT_ICONS: Record<string, React.ReactNode> = {
 
 const EVENT_COLORS: Record<string, string> = {
   APPLIED: 'bg-muted border-border text-muted-foreground',
-  SCREENING: 'bg-indigo-500/15 border-indigo-200 text-primary/90',
+  SCREENING: 'bg-primary/15 border-primary/20 text-primary/90',
   INTERVIEW_1: 'bg-primary/10 border-primary/20 text-primary',
   INTERVIEW_2: 'bg-primary/10 border-primary/20 text-primary',
   FINAL: 'bg-amber-500/15 border-amber-300 text-amber-700',
   OFFER: 'bg-primary/10 border-emerald-200 text-emerald-700',
   HIRED: 'bg-emerald-500/15 border-emerald-300 text-emerald-800',
   REJECTED: 'bg-destructive/10 border-destructive/20 text-destructive',
-  pool_entry: 'bg-indigo-500/15 border-indigo-200 text-primary/90',
+  pool_entry: 'bg-primary/15 border-primary/20 text-primary/90',
   default: 'bg-card border-border text-muted-foreground',
 }
 

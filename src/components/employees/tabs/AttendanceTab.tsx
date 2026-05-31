@@ -68,7 +68,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   LATE: { label: 'attendanceStatusLate', color: 'bg-amber-500/15 text-amber-700' },
   EARLY_OUT: { label: 'attendanceStatusEarlyOut', color: 'bg-orange-500/10 text-orange-700' },
   ABSENT: { label: 'attendanceStatusAbsent', color: 'bg-destructive/10 text-destructive' },
-  HOLIDAY: { label: 'attendanceStatusHoliday', color: 'bg-indigo-500/15 text-primary/90' },
+  HOLIDAY: { label: 'attendanceStatusHoliday', color: 'bg-primary/15 text-primary/90' },
 }
 
 // ─── Mini KPI ────────────────────────────────────────────

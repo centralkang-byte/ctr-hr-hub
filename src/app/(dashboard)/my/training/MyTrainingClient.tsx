@@ -333,7 +333,7 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <span className="font-semibold text-foreground text-sm">{course.title}</span>
-                      <Badge className="text-[10px] px-1.5 py-0 bg-indigo-500/15 text-primary/90 border-indigo-200">{t('badge.recommended')}</Badge>
+                      <Badge className="text-[10px] px-1.5 py-0 bg-primary/15 text-primary/90 border-primary/20">{t('badge.recommended')}</Badge>
                     </div>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                       <span>{CATEGORY_KEYS[course.category] ? t(CATEGORY_KEYS[course.category]) : course.category}</span>

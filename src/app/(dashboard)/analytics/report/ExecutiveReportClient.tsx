@@ -66,7 +66,7 @@ export default function ExecutiveReportClient({ user: _user }: { user: SessionUs
               <h2 className="text-lg font-semibold text-foreground">HR Analytics Report</h2>
             </div>
             <div className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-500/15 px-2.5 py-0.5 text-xs font-medium text-primary/90">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-primary/90">
                 <Sparkles className="h-3 w-3" />
                 AI Generated
               </span>

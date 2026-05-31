@@ -676,7 +676,7 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                             type="button"
                             onClick={() => handleIssueReceipt(s.id)}
                             disabled={issuingReceipt}
-                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-primary/90 bg-indigo-500/15 hover:bg-indigo-200 rounded-lg disabled:opacity-50"
+                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-primary/90 bg-primary/15 hover:bg-primary/15 rounded-lg disabled:opacity-50"
                           >
                             <Download className="h-3.5 w-3.5" />
                             {t('kr_kec9881ec')}
