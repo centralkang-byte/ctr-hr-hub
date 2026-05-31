@@ -355,7 +355,7 @@ export default function SelfEvalClient({
             <button
               onClick={handleAiSuggest}
               disabled={aiLoading}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-500/15 text-primary/90 hover:bg-indigo-200 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/15 text-primary/90 hover:bg-primary/15 transition-colors disabled:opacity-50"
             >
               <Sparkles className="w-3.5 h-3.5" />
               {aiLoading ? t('aiGenerating') : t('managerEval.aiSuggest')}

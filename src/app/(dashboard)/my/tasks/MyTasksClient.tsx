@@ -70,7 +70,7 @@ function getDdayStyle(dueDate?: string): string {
     )
     if (diff < 0) return 'bg-destructive/10 text-destructive border-destructive/20'
     if (diff <= 3) return 'bg-amber-500/15 text-amber-700 border-amber-300'
-    return 'bg-primary/10 text-primary border-indigo-200'
+    return 'bg-primary/10 text-primary border-primary/20'
 }
 
 // ─── Task Card ───────────────────────────────────────────
@@ -149,7 +149,7 @@ function UnifiedTaskCard({
                         {!!(task.metadata as Record<string, unknown>)?.delegated && (
                             <Badge
                                 variant="outline"
-                                className="h-5 rounded-md border-indigo-200 bg-primary/10 px-1.5 text-[10px] font-medium text-violet-500"
+                                className="h-5 rounded-md border-primary/20 bg-primary/10 px-1.5 text-[10px] font-medium text-primary"
                             >
                                 {t('delegated')}
                             </Badge>
@@ -555,7 +555,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
 
             {/* ── Completed Tab Notice ── */}
             {statusTab === 'COMPLETED' && !loading && (
-                <div className="flex items-start gap-3 rounded-xl border border-indigo-200 bg-primary/10 p-4">
+                <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/10 p-4">
                     <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                     <div className="text-xs text-primary">
                         <p className="font-medium">{t('completedNotice')}</p>

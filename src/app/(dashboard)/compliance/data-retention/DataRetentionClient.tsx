@@ -66,7 +66,7 @@ export default function DataRetentionClient({ user: _user }: { user: SessionUser
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-500/15 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-primary/15 rounded-xl flex items-center justify-center">
             <Database className="w-5 h-5 text-primary" />
           </div>
           <div>

@@ -110,7 +110,7 @@ export default function PulseRespondClient({ user: _user, id }: { user: SessionU
         </div>
       </div>
 
-      <div className="bg-indigo-500/15 rounded-xl border border-indigo-200 p-4 text-sm text-primary/90">
+      <div className="bg-primary/15 rounded-xl border border-primary/20 p-4 text-sm text-primary/90">
         {survey.anonymityLevel === 'FULL_ANONYMOUS'
           ? t('pulse.anonymityFullNotice')
           : t('pulse.anonymityDivisionNotice')}

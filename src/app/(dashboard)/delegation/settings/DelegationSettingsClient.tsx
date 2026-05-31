@@ -203,7 +203,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
       />
 
       {/* ── Info Banner ── */}
-      <div className="flex items-start gap-3 rounded-xl border border-indigo-200 bg-primary/10 p-4">
+      <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/10 p-4">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
         <div className="text-xs text-primary">
           <p className="font-medium">{t('info.title')}</p>
@@ -270,7 +270,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                               <ArrowRight className="h-3 w-3 text-muted-foreground" />
                               <Badge
                                 variant="outline"
-                                className="text-[10px] border-indigo-200 text-primary"
+                                className="text-[10px] border-primary/20 text-primary"
                               >
                                 {d.scope === 'ALL' ? t('scope.all') : t('scope.leaveOnly')}
                               </Badge>
@@ -281,7 +281,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                               {daysLeft > 0 && (
                                 <Badge
                                   variant="outline"
-                                  className={`text-[9px] px-1 ${daysLeft <= 3 ? 'border-destructive/20 text-red-500' : 'border-indigo-200 text-primary'}`}
+                                  className={`text-[9px] px-1 ${daysLeft <= 3 ? 'border-destructive/20 text-red-500' : 'border-primary/20 text-primary'}`}
                                 >
                                   D-{daysLeft}
                                 </Badge>

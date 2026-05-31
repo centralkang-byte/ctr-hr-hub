@@ -102,7 +102,7 @@ export default function ComplianceClient({ user: _user }: { user: SessionUser })
       description: t('gdpr.dpiaDesc'),
       href: '/compliance?tab=data-protection&section=dpia',
       icon: FileSearch,
-      color: 'bg-indigo-500/15 text-primary',
+      color: 'bg-primary/15 text-primary',
     },
   ]
 

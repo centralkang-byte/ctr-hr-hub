@@ -60,7 +60,7 @@ const BLOCK_LABELS: Record<number, { label: string; color: string }> = {
   4: { label: '1B', color: 'bg-amber-500/15 text-amber-700' },
   5: { label: '2B', color: 'bg-primary/10 text-primary/90' },
   6: { label: '3B', color: 'bg-emerald-500/15 text-emerald-700' },
-  7: { label: '1C', color: 'bg-indigo-500/15 text-primary/90' },
+  7: { label: '1C', color: 'bg-primary/15 text-primary/90' },
   8: { label: '2C', color: 'bg-emerald-500/15 text-emerald-700' },
   9: { label: '3C', color: 'bg-primary/10 text-primary/90' },
 }

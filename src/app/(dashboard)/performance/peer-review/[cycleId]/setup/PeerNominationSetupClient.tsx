@@ -186,7 +186,7 @@ export default function PeerNominationSetupClient({ user: _user, cycleId }: { us
 
           {/* AI Recommendations */}
           {selectedEmployeeId && candidates.length > 0 && (
-            <div className="bg-indigo-500/15 rounded-xl border border-indigo-200 p-5">
+            <div className="bg-primary/15 rounded-xl border border-primary/20 p-5">
               <div className="flex items-center gap-2 mb-3">
                 <Sparkles className="w-4 h-4 text-primary/90" />
                 <h3 className="text-sm font-semibold text-primary/90">{t('kr_ai_kecb694ec_ked8f89ea')}</h3>
@@ -199,7 +199,7 @@ export default function PeerNominationSetupClient({ user: _user, cycleId }: { us
                       <p className="text-xs text-muted-foreground">{c.department} · {t('peerNomination.collaborationScore', { score: c.totalScore })}</p>
                     </div>
                     <button onClick={() => handleNominate(c.employeeId, 'AI_RECOMMENDED', c.totalScore)}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-primary/90 text-white rounded-lg text-xs font-medium hover:bg-indigo-800">
+                      className="flex items-center gap-1 px-3 py-1.5 bg-primary/90 text-white rounded-lg text-xs font-medium hover:bg-primary-dim">
                       <Plus className="w-3 h-3" /> {t('kr_kecb694ec')}
                     </button>
                   </div>

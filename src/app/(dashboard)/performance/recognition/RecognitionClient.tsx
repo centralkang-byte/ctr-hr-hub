@@ -370,7 +370,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                       <span className="w-6 h-6 rounded-full bg-background text-xs text-muted-foreground font-medium flex items-center justify-center">{i + 1}</span>
                       <span className="text-sm text-foreground">{r.name}</span>
                     </div>
-                    <span className="text-sm font-medium text-violet-500">{t('recognition_countUnit', { count: r.count })}</span>
+                    <span className="text-sm font-medium text-primary">{t('recognition_countUnit', { count: r.count })}</span>
                   </div>
                 ))}
               </div>

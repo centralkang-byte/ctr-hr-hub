@@ -369,7 +369,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
         <Card className="bg-card">
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-violet-500" />
+              <Users className="h-4 w-4 text-primary" />
               <CardTitle className="text-sm font-bold text-foreground">{t('admin.remainingDist')}</CardTitle>
             </div>
           </CardHeader>

@@ -74,7 +74,7 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
         </div>
 
         {/* Disclaimer */}
-        <div className="mx-5 mt-4 p-3 bg-indigo-500/15 rounded-lg flex items-start gap-2">
+        <div className="mx-5 mt-4 p-3 bg-primary/15 rounded-lg flex items-start gap-2">
           <AlertTriangle className="w-4 h-4 text-primary/90 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-primary/90">
             {t('aiDraft.disclaimer')}
@@ -85,14 +85,14 @@ export default function AiDraftModal({ evaluationId, onClose, onApply }: Props) 
         <div className="p-5">
           {!generated ? (
             <div className="text-center py-8">
-              <Sparkles className="w-12 h-12 text-indigo-100 mx-auto mb-3" />
+              <Sparkles className="w-12 h-12 text-primary/30 mx-auto mb-3" />
               <p className="text-sm text-muted-foreground mb-6">
                 {t('aiDraft.description')}
               </p>
               <button
                 onClick={handleGenerate}
                 disabled={loading}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary/90 hover:bg-indigo-800 text-white rounded-lg text-sm font-medium disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary/90 hover:bg-primary-dim text-white rounded-lg text-sm font-medium disabled:opacity-50"
               >
                 {loading ? (
                   <>

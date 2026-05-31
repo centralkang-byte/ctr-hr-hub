@@ -66,11 +66,11 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
 
   const QUICK_LINKS = [
     { label: t('quickLink.myProfile'), href: '/my/profile', icon: User, color: 'bg-primary/10 text-primary/90' },
-    { label: t('quickLink.leaveRequest'), href: '/leave', icon: CalendarDays, color: 'bg-indigo-500/15 text-primary/90' },
+    { label: t('quickLink.leaveRequest'), href: '/leave', icon: CalendarDays, color: 'bg-primary/15 text-primary/90' },
     { label: t('quickLink.myPerformance'), href: '/performance', icon: Target, color: 'bg-amber-500/15 text-amber-700' },
     { label: t('quickLink.trainingApply'), href: '/my/training', icon: BookOpen, color: 'bg-destructive/10 text-destructive' },
     { label: t('quickLink.internalJob'), href: '/my/internal-jobs', icon: Briefcase, color: 'bg-tertiary-container/10 text-tertiary' },
-    { label: t('quickLink.yearEnd'), href: '/my/year-end', icon: FileText, color: 'bg-violet-500/10 text-violet-600' },
+    { label: t('quickLink.yearEnd'), href: '/my/year-end', icon: FileText, color: 'bg-wd-orange/10 text-wd-orange' },
   ]
 
   return (

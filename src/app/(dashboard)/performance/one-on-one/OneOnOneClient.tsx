@@ -304,7 +304,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
               {chartData.length > 0 && (
                 <div>
                   <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
-                    <Users className="w-5 h-5 text-violet-500" /> {t('kr_1_1_kebb988eb_keb8c80ec')}
+                    <Users className="w-5 h-5 text-primary" /> {t('kr_1_1_kebb988eb_keb8c80ec')}
                   </h2>
                   <div className={CARD_STYLES.padded}>
                     <div className="h-64">

@@ -27,7 +27,7 @@ const CARD_CONFIGS = [
     labelKey: 'kpi.totalNetPay',
     icon: Wallet,
     color: 'text-primary',
-    bg: 'bg-indigo-500/15',
+    bg: 'bg-primary/15',
   },
 ]
 

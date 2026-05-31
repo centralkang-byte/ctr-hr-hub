@@ -195,7 +195,7 @@ export default function AdminResultsClient({ user: _user }: { user: SessionUser 
                 <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{r.finalResult.performanceScore?.toFixed(1) ?? '-'}</td>
                 <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{r.finalResult.competencyScore?.toFixed(1) ?? '-'}</td>
                 <td className={cn(TABLE_STYLES.cell, "text-center")}>
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.finalResult.calibrated ? 'bg-indigo-500/15 text-primary/90' : 'bg-primary/10 text-primary/90'}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.finalResult.calibrated ? 'bg-primary/15 text-primary/90' : 'bg-primary/10 text-primary/90'}`}>
                     {r.finalResult.emsBlock ?? '-'}
                   </span>
                 </td>

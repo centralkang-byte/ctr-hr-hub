@@ -92,10 +92,10 @@ const CHANGE_TYPE_LABELS: Record<ChangeType, string> = {
 const CHANGE_TYPE_COLORS: Record<ChangeType, string> = {
   create: 'bg-emerald-500/15 text-emerald-700',
   move: 'bg-primary/10 text-primary',
-  merge: 'bg-indigo-500/15 text-primary/90',
+  merge: 'bg-primary/15 text-primary/90',
   rename: 'bg-amber-500/15 text-amber-700',
   close: 'bg-destructive/10 text-destructive',
-  transfer_employee: 'bg-purple-500/10 text-violet-600',
+  transfer_employee: 'bg-wd-orange/10 text-wd-orange',
 }
 
 function generateId() {

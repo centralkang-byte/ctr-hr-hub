@@ -80,7 +80,7 @@ export function AiInsightBanner() {
           </div>
           <ArrowRight className="h-4 w-4 text-muted-foreground/60 group-hover:text-primary group-hover:translate-x-0.5 transition-all flex-shrink-0" />
         </div>
-        <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-gradient-to-br from-blue-100/50 to-indigo-100/50" />
+        <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-gradient-to-br from-primary/5 to-primary/10" />
       </div>
     </Link>
   )

@@ -187,7 +187,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                     { label: t('kr_kecb49d_kec9db8ec'), value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-primary/90" /> },
                     { label: t('netPay'), value: fmt(Number(run.totalNet ?? 0)), icon: <DollarSign className="h-4 w-4 text-emerald-600" /> },
                     { label: t('persons_kec84b8ec_kebb09ced'), value: `${payslipStats.total}건`, icon: <FileText className="h-4 w-4 text-primary" /> },
-                    { label: t('kr_kec97b4eb'), value: `${payslipStats.viewed}명 (${payslipStats.viewRate}%)`, icon: <Eye className="h-4 w-4 text-violet-500" /> },
+                    { label: t('kr_kec97b4eb'), value: `${payslipStats.viewed}명 (${payslipStats.viewRate}%)`, icon: <Eye className="h-4 w-4 text-primary" /> },
                 ].map((kpi) => (
                     <div key={kpi.label} className={CARD_STYLES.padded}>
                         <div className="flex items-center justify-between mb-1">
@@ -243,7 +243,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                             label: t('kr_keab889ec'),
                             sub: 'Excel',
                             icon: <FileSpreadsheet className="h-5 w-5 text-primary/90" />,
-                            bg: 'bg-indigo-500/15',
+                            bg: 'bg-primary/15',
                             disabled: false,
                             url: `/api/v1/payroll/${runId}/export/ledger`,
                         },
@@ -258,7 +258,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                         {
                             label: t('kr_kec9db8ea_keca084ed'),
                             sub: 'Excel',
-                            icon: <FileText className="h-5 w-5 text-violet-500" />,
+                            icon: <FileText className="h-5 w-5 text-primary" />,
                             bg: 'bg-purple-500/10',
                             disabled: false,
                             url: `/api/v1/payroll/${runId}/export/journal`,

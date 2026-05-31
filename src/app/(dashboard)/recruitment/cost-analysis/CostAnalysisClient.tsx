@@ -96,7 +96,7 @@ const COST_TYPE_BADGE_STYLES: Record<string, string> = {
   ASSESSMENT_TOOL: 'bg-orange-500/10 text-orange-800',
   TRAVEL: 'bg-cyan-500/10 text-cyan-700',
   RELOCATION: 'bg-orange-500/10 text-orange-800',
-  SIGNING_BONUS: 'bg-indigo-500/10 text-indigo-800',
+  SIGNING_BONUS: 'bg-primary/10 text-primary',
   OTHER: 'bg-muted text-muted-foreground',
 }
 

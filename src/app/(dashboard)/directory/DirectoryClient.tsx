@@ -327,7 +327,7 @@ function EmployeeCard({ emp, onClick }: { emp: DirectoryEmployee; onClick: () =>
       {emp.skills.length > 0 && (
         <div className="flex gap-1 flex-wrap justify-center">
           {emp.skills.slice(0, 3).map((s) => (
-            <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-indigo-500/15 text-primary/90">{s}</span>
+            <span key={s} className="text-xs px-2 py-0.5 rounded-full bg-primary/15 text-primary/90">{s}</span>
           ))}
         </div>
       )}
@@ -385,7 +385,7 @@ function EmployeeDetailPanel({ emp, onViewProfile, t }: { emp: DirectoryEmployee
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{t('skills')}</p>
           <div className="flex flex-wrap gap-1.5">
             {emp.skills.map((s) => (
-              <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-indigo-500/15 text-primary/90">{s}</span>
+              <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-primary/15 text-primary/90">{s}</span>
             ))}
           </div>
         </div>
