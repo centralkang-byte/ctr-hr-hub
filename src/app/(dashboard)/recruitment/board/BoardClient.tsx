@@ -50,11 +50,11 @@ const STAGE_KEYS: Record<string, string> = {
 
 const STAGE_ACCENT: Record<string, string> = {
   APPLIED: '#8181A5',
-  SCREENING: '#5E81F4',
-  INTERVIEW_1: '#5E81F4',
-  INTERVIEW_2: '#5E81F4',
+  SCREENING: '#004964',
+  INTERVIEW_1: '#004964',
+  INTERVIEW_2: '#004964',
   FINAL: '#F4BE5E',
-  OFFER: '#5E81F4',
+  OFFER: '#004964',
   HIRED: '#059669',
 }
 

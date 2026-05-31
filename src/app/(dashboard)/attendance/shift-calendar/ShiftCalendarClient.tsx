@@ -105,7 +105,7 @@ interface ChangeRequest {
 const SLOT_COLORS: Record<number, string> = {
   0: 'bg-primary/10 text-primary/90 border-primary/20',
   1: 'bg-amber-500/15 text-amber-800 border-amber-300',
-  2: 'bg-purple-500/10 text-purple-800 border-purple-200',
+  2: 'bg-wt-4/10 text-wt-4 border-wt-4/20',
   3: 'bg-emerald-500/15 text-emerald-800 border-emerald-200',
 }
 

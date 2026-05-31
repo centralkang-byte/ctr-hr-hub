@@ -45,7 +45,7 @@ export default function PayBandChart({
   // Determine color based on salary position relative to band
   const getColor = (salary: number) => {
     if (salary < minSalary) return 'bg-destructive'
-    if (salary > maxSalary) return 'bg-purple-500'
+    if (salary > maxSalary) return 'bg-wt-4'
     if (salary < midSalary * 0.95) return 'bg-amber-500'
     if (salary > midSalary * 1.05) return 'bg-primary'
     return 'bg-emerald-500'

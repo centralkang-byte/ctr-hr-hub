@@ -48,7 +48,7 @@ interface GlobalData {
   hasExchangeRates: boolean
 }
 
-const CHART_COLORS = ['#5E81F4', '#059669', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4']
+const CHART_COLORS = [...CHART_THEME.colors]
 const FLAG: Record<string, string> = { 'CTR': '🇰🇷', 'CTR-CN': '🇨🇳', 'CTR-US': '🇺🇸', 'CTR-VN': '🇻🇳', 'CTR-EU': '🇵🇱', 'CTR-RU': '🇷🇺' }
 
 // fmt, fmtBillion은 컴포넌트 내부에서 t()를 사용하도록 이동

@@ -95,7 +95,7 @@ export default function ComplianceClient({ user: _user }: { user: SessionUser })
       description: t('gdpr.retentionDesc'),
       href: '/compliance?tab=data-protection&section=retention',
       icon: Database,
-      color: 'bg-purple-500/10 text-purple-600',
+      color: 'bg-wt-4/10 text-wt-4',
     },
     {
       title: t('gdpr.dpia'),

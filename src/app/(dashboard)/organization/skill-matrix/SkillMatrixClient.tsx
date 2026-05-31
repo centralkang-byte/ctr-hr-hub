@@ -93,7 +93,7 @@ function getCellStyle(status: MatrixScore['status']) {
     case 'below':     return 'bg-amber-500/15 text-amber-700'
     case 'meets':     return 'bg-emerald-500/15 text-emerald-700'
     case 'exceeds':   return 'bg-primary/10 text-primary'
-    case 'expert':    return 'bg-violet-100 text-violet-800'
+    case 'expert':    return 'bg-wt-4/10 text-wt-4'
     default:          return 'bg-muted text-muted-foreground'
   }
 }
@@ -111,7 +111,7 @@ function getDeptCellStyle(avgGap: number | null) {
   if (avgGap === null) return 'bg-muted text-muted-foreground'
   if (avgGap >= 2)  return 'bg-destructive/10 text-destructive'
   if (avgGap >= 1)  return 'bg-amber-500/15 text-amber-700'
-  if (avgGap <= -1) return 'bg-violet-100 text-violet-800'
+  if (avgGap <= -1) return 'bg-wt-4/10 text-wt-4'
   return 'bg-emerald-500/15 text-emerald-700'
 }
 
@@ -122,7 +122,7 @@ function GapLegend() {
     { color: 'bg-amber-500/15 border border-amber-300', labelKey: 'gap.below', text: 'text-amber-700' },
     { color: 'bg-emerald-500/15 border border-emerald-200', labelKey: 'gap.meets', text: 'text-emerald-700' },
     { color: 'bg-primary/10 border border-primary/20', labelKey: 'gap.exceeds', text: 'text-primary' },
-    { color: 'bg-violet-100 border border-violet-200', labelKey: 'gap.expert', text: 'text-violet-800' },
+    { color: 'bg-wt-4/10 border border-wt-4/20', labelKey: 'gap.expert', text: 'text-wt-4' },
     { color: 'bg-muted border border-border', labelKey: 'gap.unassessed', text: 'text-muted-foreground' },
   ]
   return (
@@ -578,10 +578,10 @@ export default function SkillMatrixClient({user: _user,
                       {gapReport.topGaps.slice(0, 3).map((g) => (
                         <div
                           key={g.competencyId}
-                          className="p-4 rounded-xl border border-indigo-100 bg-violet-500/10"
+                          className="p-4 rounded-xl border border-wt-4/20 bg-wt-4/10"
                         >
                           <p className="text-sm font-semibold text-primary/90 mb-1">{g.competencyName}</p>
-                          <p className="text-xs text-violet-500 mb-2">{t('report.avgGap')}: {g.avgGap?.toFixed(1)} / {t('report.targetCount')}: {g.assessed}</p>
+                          <p className="text-xs text-wt-4 mb-2">{t('report.avgGap')}: {g.avgGap?.toFixed(1)} / {t('report.targetCount')}: {g.assessed}</p>
                           <p className="text-xs text-muted-foreground">
                             {t('report.trainingNote', { category: g.category.name })}
                           </p>

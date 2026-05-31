@@ -36,7 +36,7 @@ interface MetricCardProps {
   accent?: string
 }
 
-function MetricCard({ icon, label, value, sub, accent = '#5E81F4' }: MetricCardProps) {
+function MetricCard({ icon, label, value, sub, accent = '#004964' }: MetricCardProps) {
   return (
     <div className="rounded-xl border border-border bg-muted p-4">
       <div className="mb-2 flex items-center gap-2">
@@ -82,7 +82,7 @@ export function ImpactAnalysisPanel({ diff, selectedNode, baseline = DEFAULT_BAS
               label="총 인원"
               value={`${currentHeadcount.toLocaleString()}명`}
               sub="전체 법인 합산"
-              accent="#5E81F4"
+              accent="#004964"
             />
             <MetricCard
               icon={<DollarSign size={15} />}

@@ -135,7 +135,7 @@ export async function generateWithholdingReceiptPdf(
       font-size: 13px;
       font-weight: 700;
       background: #F8FAFC;
-      border-left: 4px solid #5E81F4;
+      border-left: 4px solid #004964;
       padding: 6px 12px;
       margin-bottom: 8px;
     }

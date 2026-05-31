@@ -43,7 +43,7 @@ interface Props {
 
 const MODULE_CONFIG: Record<string, { labelKey: string; icon: React.ElementType; color: string }> = {
   [UnifiedTaskType.LEAVE_APPROVAL]: { labelKey: 'typeLeave', icon: CalendarDays, color: '#818CF8' },
-  [UnifiedTaskType.PERFORMANCE_REVIEW]: { labelKey: 'typePerformance', icon: Target, color: '#8B5CF6' },
+  [UnifiedTaskType.PERFORMANCE_REVIEW]: { labelKey: 'typePerformance', icon: Target, color: '#7457d1' },
   [UnifiedTaskType.PAYROLL_REVIEW]: { labelKey: 'typePayroll', icon: Banknote, color: '#F59E0B' },
 }
 
@@ -95,9 +95,9 @@ export function ApprovalItemCard({ task, isSelected, onToggle, onApprove, onReje
         {/* Icon */}
         <div
           className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-          style={{ backgroundColor: `${config?.color ?? '#5E81F4'}15` }}
+          style={{ backgroundColor: `${config?.color ?? '#004964'}15` }}
         >
-          <Icon className="h-4 w-4" style={{ color: config?.color ?? '#5E81F4' }} />
+          <Icon className="h-4 w-4" style={{ color: config?.color ?? '#004964' }} />
         </div>
 
         {/* Content */}
@@ -107,9 +107,9 @@ export function ApprovalItemCard({ task, isSelected, onToggle, onApprove, onReje
               variant="outline"
               className="h-5 shrink-0 rounded-md px-1.5 text-[10px] font-medium"
               style={{
-                borderColor: `${config?.color ?? '#5E81F4'}40`,
-                color: config?.color ?? '#5E81F4',
-                backgroundColor: `${config?.color ?? '#5E81F4'}08`,
+                borderColor: `${config?.color ?? '#004964'}40`,
+                color: config?.color ?? '#004964',
+                backgroundColor: `${config?.color ?? '#004964'}08`,
               }}
             >
               {config?.labelKey ? t(config.labelKey) : task.type}

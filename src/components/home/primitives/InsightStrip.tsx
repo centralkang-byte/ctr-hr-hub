@@ -32,7 +32,7 @@ const KIND_ICON: Record<InsightKind, LucideIcon> = {
 
 const KIND_STYLE: Record<InsightKind, string> = {
   'ai-suggestion': 'bg-primary/5 text-foreground',
-  announcement: 'bg-[#6366f1]/10 text-[#4f46e5]',
+  announcement: 'bg-primary/10 text-primary',
   system: 'bg-warning-bright/10 text-ctr-warning',
 }
 

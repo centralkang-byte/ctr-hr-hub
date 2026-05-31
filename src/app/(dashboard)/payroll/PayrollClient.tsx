@@ -175,7 +175,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
       {/* ── Header ─────────────────────────────────────────── */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#5E81F4] to-[#A855F7]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-dim">
             <Wallet className="h-5 w-5 text-white" />
           </div>
           <div>
@@ -263,7 +263,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
               value={t('dashboard.pendingCount', { pending: data.summary.pendingApprovals, alerts: data.summary.alertCount })}
               sub={t('dashboard.approvalAndDeadline')}
               icon={<Clock className="h-3.5 w-3.5 text-primary" />}
-              accent="bg-purple-500/10"
+              accent="bg-wt-4/10"
               onClick={data.summary.pendingApprovals > 0 ? () => router.push('/my/tasks?tab=approvals') : undefined}
             />
           </div>

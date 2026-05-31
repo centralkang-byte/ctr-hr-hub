@@ -230,7 +230,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                             <div className="relative h-28 w-28">
                                 <svg className="h-28 w-28 -rotate-90" viewBox="0 0 100 100">
                                     <circle cx="50" cy="50" r="42" fill="none" stroke="#F0F0F3" strokeWidth="8" />
-                                    <circle cx="50" cy="50" r="42" fill="none" stroke="#5E81F4" strokeWidth="8" strokeLinecap="round"
+                                    <circle cx="50" cy="50" r="42" fill="none" stroke="#004964" strokeWidth="8" strokeLinecap="round"
                                         strokeDasharray={`${data.progress.percentage * 2.64} 264`} />
                                 </svg>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -597,7 +597,7 @@ function EmotionCell({ label, value, emoji }: { label: string; value: string; em
 
 function MetricBar({ label, value }: { label: string; value: number }) {
     const height = Math.max(10, (value / 5) * 80)
-    const color = value >= 4 ? '#22C55E' : value >= 3 ? '#5E81F4' : value >= 2 ? '#F59E0B' : '#EF4444'
+    const color = value >= 4 ? '#22C55E' : value >= 3 ? '#004964' : value >= 2 ? '#F59E0B' : '#EF4444'
     return (
         <div className="flex flex-col items-center">
             <div className="w-3 rounded-t" style={{ height, backgroundColor: color }} />

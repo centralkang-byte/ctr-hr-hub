@@ -439,7 +439,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                   dataKey="actual"
                   stroke={CHART_THEME.colors[0]}
                   strokeWidth={2.5}
-                  dot={{ r: 4, fill: '#5E81F4' }}
+                  dot={{ r: 4, fill: '#004964' }}
                   name={t('admin.actualUsage')}
                   connectNulls={false}
                 />
