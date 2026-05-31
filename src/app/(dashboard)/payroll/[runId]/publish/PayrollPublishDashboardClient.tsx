@@ -75,7 +75,7 @@ function ViewProgressBar({ viewed, total }: { viewed: number; total: number }) {
             </div>
             <div className="h-3 w-full bg-border rounded-full overflow-hidden">
                 <div
-                    className="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-[#5E81F4] to-[#A855F7]"
+                    className="h-full rounded-full transition-all duration-700 bg-gradient-to-r from-primary to-primary-dim"
                     style={{ width: `${pct}%` }}
                 />
             </div>
@@ -259,7 +259,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                             label: t('kr_kec9db8ea_keca084ed'),
                             sub: 'Excel',
                             icon: <FileText className="h-5 w-5 text-primary" />,
-                            bg: 'bg-purple-500/10',
+                            bg: 'bg-wt-4/10',
                             disabled: false,
                             url: `/api/v1/payroll/${runId}/export/journal`,
                         },

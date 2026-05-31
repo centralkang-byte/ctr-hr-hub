@@ -367,7 +367,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
 
                 <div className={CARD_STYLES.padded}>
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-wt-4/10 text-wt-4">
                       <Clock className="h-4 w-4" />
                     </div>
                     <span className="text-xs text-muted-foreground">{t('atGlance.skills')}</span>

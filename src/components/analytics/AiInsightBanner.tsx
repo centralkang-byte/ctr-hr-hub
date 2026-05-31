@@ -54,7 +54,7 @@ export function AiInsightBanner() {
     <Link href="/analytics/ai-report" className="block">
       <div className="relative overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 via-primary/5 to-white p-4 mb-6 hover:shadow-md hover:border-primary/30 transition-all group cursor-pointer">
         <div className="flex items-center gap-3">
-          <div className="flex-shrink-0 rounded-lg bg-gradient-to-br from-[#5E81F4] to-[#8B5CF6] p-2">
+          <div className="flex-shrink-0 rounded-lg bg-gradient-to-br from-primary to-primary-dim p-2">
             <Sparkles className="h-4 w-4 text-white" />
           </div>
           <div className="flex-1 min-w-0">

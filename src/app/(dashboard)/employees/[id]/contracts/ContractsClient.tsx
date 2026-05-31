@@ -39,7 +39,7 @@ const CONTRACT_TYPE_COLORS: Record<string, string> = {
   PERMANENT: 'bg-primary/10 text-primary/90',
   FIXED_TERM: 'bg-yellow-500/15 text-yellow-800',
   DISPATCH: 'bg-muted text-foreground',
-  INTERN: 'bg-purple-500/10 text-purple-800',
+  INTERN: 'bg-wt-4/10 text-wt-4',
   PROBATION_ONLY: 'bg-orange-500/15 text-orange-800',
 }
 

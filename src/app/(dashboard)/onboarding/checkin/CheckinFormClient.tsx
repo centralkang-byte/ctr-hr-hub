@@ -208,7 +208,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
               step={1}
               value={energy}
               onChange={(e) => setEnergy(Number(e.target.value))}
-              className="w-full max-w-xs accent-[#5E81F4]"
+              className="w-full max-w-xs accent-[#004964]"
             />
             <div className="flex justify-between max-w-xs text-xs text-muted-foreground mt-1">
               {SLIDER_LABELS.map((l) => (
@@ -229,7 +229,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
               step={1}
               value={belonging}
               onChange={(e) => setBelonging(Number(e.target.value))}
-              className="w-full max-w-xs accent-[#5E81F4]"
+              className="w-full max-w-xs accent-[#004964]"
             />
             <div className="flex justify-between max-w-xs text-xs text-muted-foreground mt-1">
               {SLIDER_LABELS.map((l) => (

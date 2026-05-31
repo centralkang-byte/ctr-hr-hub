@@ -115,16 +115,16 @@ function UnifiedTaskCard({
                 <div className="mt-1.5 flex flex-col items-center gap-1">
                     <span
                         className="h-2.5 w-2.5 rounded-full"
-                        style={{ backgroundColor: prioInfo?.color ?? '#5E81F4' }}
+                        style={{ backgroundColor: prioInfo?.color ?? '#004964' }}
                     />
                 </div>
 
                 {/* Type Icon */}
                 <div
                     className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                    style={{ backgroundColor: `${typeInfo?.color ?? '#5E81F4'}15` }}
+                    style={{ backgroundColor: `${typeInfo?.color ?? '#004964'}15` }}
                 >
-                    <Icon className="h-4.5 w-4.5" style={{ color: typeInfo?.color ?? '#5E81F4' }} />
+                    <Icon className="h-4.5 w-4.5" style={{ color: typeInfo?.color ?? '#004964' }} />
                 </div>
 
                 {/* Content */}
@@ -134,9 +134,9 @@ function UnifiedTaskCard({
                             variant="outline"
                             className="h-5 shrink-0 rounded-md border px-1.5 text-[10px] font-medium"
                             style={{
-                                borderColor: `${typeInfo?.color ?? '#5E81F4'}40`,
-                                color: typeInfo?.color ?? '#5E81F4',
-                                backgroundColor: `${typeInfo?.color ?? '#5E81F4'}08`,
+                                borderColor: `${typeInfo?.color ?? '#004964'}40`,
+                                color: typeInfo?.color ?? '#004964',
+                                backgroundColor: `${typeInfo?.color ?? '#004964'}08`,
                             }}
                         >
                             {typeInfo?.label ?? task.type}
@@ -249,13 +249,13 @@ function MyTasksInner({ user }: { user: SessionUser }) {
         [UnifiedTaskType.PAYROLL_REVIEW]: { label: t('typePayroll'), color: '#F59E0B', icon: Clock },
         [UnifiedTaskType.ONBOARDING_TASK]: { label: t('typeOnboarding'), color: '#10B981', icon: ClipboardCheck },
         [UnifiedTaskType.OFFBOARDING_TASK]: { label: t('typeOffboarding'), color: '#EF4444', icon: DoorOpen },
-        [UnifiedTaskType.PERFORMANCE_REVIEW]: { label: t('typePerformance'), color: '#8B5CF6', icon: Target },
+        [UnifiedTaskType.PERFORMANCE_REVIEW]: { label: t('typePerformance'), color: '#7457d1', icon: Target },
     }
     const PRIORITY_CONFIG: Record<string, { color: string; bg: string; label: string }> = {
         [UnifiedTaskPriority.URGENT]: { color: '#EF4444', bg: '#FEF2F2', label: t('priorityUrgent') },
         [UnifiedTaskPriority.HIGH]: { color: '#F59E0B', bg: '#FFFBEB', label: t('priorityHigh') },
         [UnifiedTaskPriority.MEDIUM]: { color: '#10B981', bg: '#F0FDF4', label: t('priorityMedium') },
-        [UnifiedTaskPriority.LOW]: { color: '#5E81F4', bg: '#EDF1FE', label: t('priorityLow') },
+        [UnifiedTaskPriority.LOW]: { color: '#004964', bg: '#EDF1FE', label: t('priorityLow') },
     }
     const FILTER_TABS = [
         { key: 'all', label: t('filterAll'), type: null },

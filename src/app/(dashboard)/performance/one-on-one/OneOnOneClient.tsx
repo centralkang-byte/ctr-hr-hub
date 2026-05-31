@@ -145,7 +145,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
       })
     : []
 
-  const chartColors = ['#5E81F4', '#8B5CF6', '#F59E0B', '#EF4444', '#06B6D4', '#EC4899']
+  const chartColors = [...CHART_THEME.colors]
 
   return (
     <div className="p-6 space-y-6">

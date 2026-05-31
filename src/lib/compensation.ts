@@ -59,9 +59,9 @@ export const COMPA_RATIO_CONFIG: Record<
   },
   VERY_HIGH: {
     label: '과보상',
-    color: '#8B5CF6',
-    bgClass: 'bg-purple-500/10',
-    textClass: 'text-purple-700',
+    color: '#7457d1',
+    bgClass: 'bg-wt-4/10',
+    textClass: 'text-wt-4',
   },
 }
 

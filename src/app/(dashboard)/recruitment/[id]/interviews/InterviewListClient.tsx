@@ -128,8 +128,8 @@ const RECOMMENDATION_KEYS: Record<string, string> = {
 }
 
 const RECOMMENDATION_COLORS: Record<string, { bg: string; text: string }> = {
-  STRONG_YES: { bg: 'hsl(var(--primary) / 0.08)', text: '#5E81F4' },
-  YES: { bg: 'hsl(var(--primary) / 0.08)', text: '#5E81F4' },
+  STRONG_YES: { bg: 'hsl(var(--primary) / 0.08)', text: '#004964' },
+  YES: { bg: 'hsl(var(--primary) / 0.08)', text: '#004964' },
   NEUTRAL: { bg: '#FFF3E0', text: '#FF9800' },
   NO: { bg: '#FFEBEE', text: '#F44336' },
   STRONG_NO: { bg: '#FFEBEE', text: '#F44336' },
@@ -183,9 +183,9 @@ function ScoreSelect({
               width: 36,
               height: 36,
               borderRadius: 8,
-              border: n === value ? '2px solid #5E81F4' : '1px solid #E8E8E8',
+              border: n === value ? '2px solid #004964' : '1px solid #E8E8E8',
               background: n === value ? '#EDF1FE' : '#FFFFFF',
-              color: n === value ? '#5E81F4' : '#666',
+              color: n === value ? '#004964' : '#666',
               fontWeight: n === value ? 700 : 400,
               fontSize: 14,
               cursor: 'pointer',
@@ -408,7 +408,7 @@ function EvaluationModal({
             disabled={submitting}
             style={{
               borderRadius: 8,
-              backgroundColor: '#5E81F4',
+              backgroundColor: '#004964',
               color: '#FFFFFF',
             }}
           >
@@ -621,7 +621,7 @@ export function InterviewListClient({
                 borderRadius: 4,
                 border: 'none',
                 backgroundColor: evalCount > 0 ? '#EDF1FE' : '#E3F2FD',
-                color: evalCount > 0 ? '#5E81F4' : '#2196F3',
+                color: evalCount > 0 ? '#004964' : '#2196F3',
                 fontSize: 12,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -661,7 +661,7 @@ export function InterviewListClient({
               }
               style={{
                 borderRadius: 8,
-                backgroundColor: '#5E81F4',
+                backgroundColor: '#004964',
                 color: '#FFFFFF',
               }}
             >

@@ -50,7 +50,7 @@ export const DEFAULT_BLOCK_DEFINITIONS: BlockDefinition[] = [
   { row: 3, col: 'B', label: 'High Performer', color: '#059669' },
   { row: 1, col: 'C', label: 'Enigma', color: '#4B6DE0' },
   { row: 2, col: 'C', label: 'Solid Contributor', color: '#059669' },
-  { row: 3, col: 'C', label: 'Star', color: '#5E81F4' },
+  { row: 3, col: 'C', label: 'Star', color: '#004964' },
 ]
 
 /**

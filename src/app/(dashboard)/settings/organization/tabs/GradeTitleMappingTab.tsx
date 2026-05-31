@@ -42,7 +42,7 @@ const GRADE_TYPE_LABEL_KEYS: Record<string, string> = {
 
 const GRADE_TYPE_COLORS: Record<string, string> = {
   STAFF: 'bg-primary/10 text-primary',
-  SPECIALIST: 'bg-purple-500/15 text-purple-700',
+  SPECIALIST: 'bg-wt-4/15 text-wt-4',
   EXECUTIVE: 'bg-amber-500/15 text-amber-700',
 }
 

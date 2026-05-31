@@ -36,7 +36,7 @@ const MODE_LABEL_KEYS: Record<SaveableMode, string> = {
 
 const MODE_COLORS: Record<SaveableMode, string> = {
   SINGLE: 'bg-primary/5 text-primary',
-  BULK: 'bg-purple-500/10 text-purple-600',
+  BULK: 'bg-wt-4/10 text-wt-4',
   DIFFERENTIAL: 'bg-amber-500/10 text-amber-600',
   HIRING: 'bg-tertiary-container/10 text-tertiary',
   FX: 'bg-destructive/5 text-destructive',
