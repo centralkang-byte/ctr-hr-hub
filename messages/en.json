@@ -4840,7 +4840,15 @@
     },
     "leavePromotion": {
       "body": "{name}, you have {remainingDays} days of leave remaining. {daysUntilAnniversary} days until your anniversary. We recommend using your leave.",
-      "title": "Use Your Leave"
+      "title": "Use Your Leave",
+      "stage1": {
+        "title": "Annual Leave Promotion — 1st Notice (Designate Usage Dates)",
+        "body": "{name}, you have {remainingDays} days of unused annual leave. Under Labor Standards Act §61, please designate and notify your intended usage dates. ({pendingDays} days pending separately)"
+      },
+      "stage2": {
+        "title": "Annual Leave Promotion — 2nd Notice",
+        "body": "{name}, this is the 2nd notice regarding {remainingDays} days of unused annual leave with no designated dates. Please use it before the leave period ends. ({pendingDays} days pending separately)"
+      }
     },
     "leaveRejected": {
       "body": "Rejected: {reason}",

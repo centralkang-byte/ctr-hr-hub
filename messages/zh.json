@@ -4841,7 +4841,15 @@
     },
     "leavePromotion": {
       "body": "{name}，您还有{remainingDays}天年假未使用，距入职周年还有{daysUntilAnniversary}天，建议您安排休假。",
-      "title": "建议休假"
+      "title": "建议休假",
+      "stage1": {
+        "title": "年假使用促进 第一次通知（请指定使用时间）",
+        "body": "{name}，您有{remainingDays}天年假未使用。根据《劳动基准法》第61条，请指定并通知您的休假时间。（申请中{pendingDays}天另计）"
+      },
+      "stage2": {
+        "title": "年假使用促进 第二次通知",
+        "body": "{name}，关于未指定使用时间的{remainingDays}天未使用年假，此为第二次通知。建议在使用期限结束前休假。（申请中{pendingDays}天另计）"
+      }
     },
     "leaveRejected": {
       "body": "驳回原因：{reason}",
