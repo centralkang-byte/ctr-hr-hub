@@ -91,12 +91,12 @@ const COST_TYPE_LABEL_KEYS: Record<string, string> = {
 
 const COST_TYPE_BADGE_STYLES: Record<string, string> = {
   AD_FEE: 'bg-primary/5 text-blue-800',
-  AGENCY_FEE: 'bg-purple-500/10 text-purple-800',
+  AGENCY_FEE: 'bg-wt-4/10 text-wt-4',
   REFERRAL_BONUS: 'bg-primary/10 text-tertiary',
   ASSESSMENT_TOOL: 'bg-orange-500/10 text-orange-800',
   TRAVEL: 'bg-cyan-500/10 text-cyan-700',
   RELOCATION: 'bg-orange-500/10 text-orange-800',
-  SIGNING_BONUS: 'bg-indigo-500/10 text-indigo-800',
+  SIGNING_BONUS: 'bg-primary/10 text-primary',
   OTHER: 'bg-muted text-muted-foreground',
 }
 

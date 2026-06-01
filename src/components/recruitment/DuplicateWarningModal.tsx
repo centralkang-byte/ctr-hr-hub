@@ -34,7 +34,7 @@ const MATCH_TYPE_LABELS: Record<string, string> = {
 const MATCH_TYPE_COLORS: Record<string, string> = {
   email: 'bg-destructive/10 text-destructive',
   phone: 'bg-amber-500/15 text-amber-700',
-  name_dob: 'bg-indigo-500/15 text-primary/90',
+  name_dob: 'bg-primary/15 text-primary/90',
 }
 
 export default function DuplicateWarningModal({ matches, onProceed, onCancel }: Props) {

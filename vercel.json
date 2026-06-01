@@ -7,6 +7,7 @@
     { "path": "/api/v1/cron/nudge-batch", "schedule": "0 1 * * *" },
     { "path": "/api/v1/cron/loa-return-reminder", "schedule": "0 0 * * *" },
     { "path": "/api/v1/cron/apply-scheduled-comp", "schedule": "0 15 * * *" },
+    { "path": "/api/v1/cron/refresh-analytics-mv", "schedule": "0 18 * * *" },
     { "path": "/api/v1/cron/leave-promotion", "schedule": "0 2 * * *" }
   ]
 }

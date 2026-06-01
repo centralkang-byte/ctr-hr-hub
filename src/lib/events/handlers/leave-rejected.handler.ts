@@ -40,7 +40,7 @@ export const leaveRejectedHandler: DomainEventHandler<'LEAVE_REJECTED'> = {
         titleKey:    'notifications.leaveRejected.title',
         bodyKey:     'notifications.leaveRejected.body',
         bodyParams:  { reason: payload.rejectionReason },
-        link:        '/my/leave',
+        link:        '/leave',
         priority:    'normal',
       })
     }

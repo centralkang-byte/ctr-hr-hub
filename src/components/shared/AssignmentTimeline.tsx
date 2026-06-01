@@ -28,7 +28,7 @@ const EVENT_STYLES: Record<string, { color: string; bg: string; icon: string }> 
   PROMOTION:        { color: '#4B6DE0', bg: '#E0E7FF', icon: '⭐' },
   DEMOTION:         { color: '#B45309', bg: '#FEF3C7', icon: '⬇️' },
   TRANSFER:         { color: '#0891B2', bg: '#CFFAFE', icon: '🔄' },
-  COMPANY_TRANSFER: { color: '#7C3AED', bg: '#EDE9FE', icon: '🌐' },
+  COMPANY_TRANSFER: { color: '#7457d1', bg: '#EDE9FE', icon: '🌐' },
   CONTRACT_CHANGE:  { color: '#D97706', bg: '#FEF3C7', icon: '📋' },
   STATUS_CHANGE:    { color: '#6B7280', bg: '#F3F4F6', icon: '🔵' },
   REORGANIZATION:   { color: '#0284C7', bg: '#E0F2FE', icon: '🏢' },

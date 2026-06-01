@@ -215,7 +215,7 @@ export default function RuReportsTab() {
       <div className="bg-card rounded-xl shadow-sm border border-border p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-indigo-500/15 rounded-lg">
+            <div className="p-2 bg-primary/15 rounded-lg">
               <BarChart3 className="w-5 h-5 text-primary" />
             </div>
             <div>

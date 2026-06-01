@@ -92,6 +92,22 @@ export interface ManagerSummary extends BaseSummary {
   oneOnOneTrend?: TrendPoint[]
 }
 
+/**
+ * PR-5A: HR Admin dashboard — top pending approvals 카드 표현용.
+ * `/api/v1/approvals/inbox` 의 ApprovalItem과 별개 (홈 전용 SSOT).
+ */
+export interface ApprovalPreviewItem {
+  id: string
+  requesterName: string
+  team: string
+  type: 'LEAVE' | 'PAYROLL' | 'OTHER'
+  description: string
+  /** ISO timestamp (createdAt). caller가 표시 시점 포맷 적용. */
+  submittedAt: string
+  urgency: 'overdue' | 'today' | 'queued'
+  note: string | null
+}
+
 export interface HrAdminSummary extends BaseSummary {
   role: 'HR_ADMIN' | 'SUPER_ADMIN'
   newHires: number
@@ -109,6 +125,10 @@ export interface HrAdminSummary extends BaseSummary {
   pendingLeavesTrend?: TrendPoint[]
   /** R3: 지난 4주 신규 입사자 추이 (주별 버킷, hireDate 기준) */
   newHiresTrend?: TrendPoint[]
+  /** PR-5A: 오늘 근태 카운트 (HR/SuperAdmin only). EXECUTIVE 분기에서는 undefined. */
+  attendanceToday?: { present: number; late: number; absent: number }
+  /** PR-5A: 처리 대기 휴가 요청 top 4 (HR/SuperAdmin only). EXECUTIVE 분기에서는 undefined. */
+  topPendingApprovals?: ApprovalPreviewItem[]
 }
 
 export interface ExecSummary extends BaseSummary {

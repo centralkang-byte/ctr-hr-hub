@@ -148,7 +148,7 @@ const ASSIGNEE_COLORS: Record<string, string> = {
   EMPLOYEE: 'bg-muted text-foreground',
   MANAGER: 'bg-primary/10 text-primary',
   HR: 'bg-tertiary-container/20 text-tertiary',
-  IT: 'bg-purple-500/15 text-purple-700',
+  IT: 'bg-wt-4/15 text-wt-4',
   FINANCE: 'bg-orange-500/15 text-orange-700',
 }
 

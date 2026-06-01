@@ -137,7 +137,7 @@ const DOC_TYPE_KEYS: Record<string, string> = {
 
 const VISIBILITY_BADGE_COLORS: Record<string, string> = {
   public: 'bg-emerald-500/15 text-emerald-700',
-  team: 'bg-indigo-500/15 text-primary/90',
+  team: 'bg-primary/15 text-primary/90',
   manager: 'bg-amber-500/15 text-amber-700',
   private: 'bg-muted text-muted-foreground',
 }
@@ -367,7 +367,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
 
                 <div className={CARD_STYLES.padded}>
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/10 text-purple-600">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-wt-4/10 text-wt-4">
                       <Clock className="h-4 w-4" />
                     </div>
                     <span className="text-xs text-muted-foreground">{t('atGlance.skills')}</span>
@@ -528,7 +528,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
             {/* 공개 설정 위젯 */}
             <div className={`${CARD_STYLES.kpi} shadow-sm border border-border`}>
               <div className="flex items-center gap-1.5 border-b border-border pb-3 mb-3">
-                <Globe className="w-4 h-4 text-violet-500" />
+                <Globe className="w-4 h-4 text-primary" />
                 <h2 className="text-sm font-semibold text-foreground">{t('profile.visibilitySettings')}</h2>
               </div>
               <div className="space-y-3">

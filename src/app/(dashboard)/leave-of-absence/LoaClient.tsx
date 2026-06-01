@@ -692,7 +692,7 @@ export function LoaClient({ user }: Props) {
 const COLOR_MAP: Record<string, { border: string; icon: string }> = {
   yellow: { border: 'border-l-yellow-400', icon: 'text-yellow-500' },
   orange: { border: 'border-l-orange-400', icon: 'text-orange-500' },
-  purple: { border: 'border-l-purple-400', icon: 'text-purple-500' },
+  purple: { border: 'border-l-wt-4', icon: 'text-wt-4' },
   green: { border: 'border-l-green-400', icon: 'text-green-500' },
 }
 

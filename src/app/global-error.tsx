@@ -56,7 +56,7 @@ export default function GlobalError({
             onClick={reset}
             style={{
               padding: '8px 20px',
-              backgroundColor: '#6366f1',
+              backgroundColor: '#004964', // Phase 1: Workday navy (was #6366f1) — global-error는 CSS 변수 불가, hex 직접
               color: 'white',
               border: 'none',
               borderRadius: 8,

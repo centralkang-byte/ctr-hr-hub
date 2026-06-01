@@ -16,6 +16,17 @@ import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { Badge } from '@/components/ui/badge'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import { EmptyState } from '@/components/ui/EmptyState'
+import {
+  WdStatusHeatGrid,
+  type AttStatusKey,
+  type WdHeatCell,
+} from '@/components/shared/WdStatusHeatGrid'
+import {
+  WdMonthlyStatCard,
+  type WdMonthlyStatInput,
+} from '@/components/shared/WdMonthlyStatCard'
+import { aggregateMonthlyStats } from '@/lib/attendance/monthly-aggregate'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -52,7 +63,37 @@ interface WeeklySummary {
 
 type ClockState = 'NOT_CLOCKED_IN' | 'WORKING' | 'COMPLETED'
 
+interface MonthlyApiDay {
+  date: string
+  status: string | null
+  overtimeMinutes: number
+}
+
+// AT-005 — monthly 라우트 전체 응답 (AT-004 MonthlyApiDay 불변, clockIn/Out·summary 가산)
+interface MonthlyApiResponse {
+  days: (MonthlyApiDay & { clockIn: string | null; clockOut: string | null })[]
+  summary: { workedDays: number; totalOvertimeMinutes: number }
+}
+
 // ─── Constants ──────────────────────────────────────────────
+
+// 근태 status enum → AttStatusKey (AT-004 히트 그리드).
+// 우선순위 (F2 가디언 m0008): ABSENT > ON_LEAVE > LATE/EARLY_OUT >
+//   overtimeMinutes>0 > NORMAL > off.
+// - overtime 우선 매핑 제거 (LATE+overtime>0 → 'late' 지각 누락 방지)
+// - EARLY_OUT → 'late' (프로토 5상태 외, 타이밍 이상 동류)
+// - HOLIDAY/null → 'off' (프로토 6번째 neutral track, 주말·공휴일)
+const ATT_STATUS_FROM_RECORD = (
+  status: string | null,
+  overtimeMinutes: number,
+): AttStatusKey => {
+  if (status === 'ABSENT') return 'absent'
+  if (status === 'ON_LEAVE') return 'leave'
+  if (status === 'LATE' || status === 'EARLY_OUT') return 'late'
+  if ((overtimeMinutes ?? 0) > 0) return 'overtime'
+  if (status === 'NORMAL') return 'present'
+  return 'off' // HOLIDAY / null = 주말·공휴일 neutral track
+}
 
 const ATTENDANCE_VARIANT_OVERRIDES: Record<string, 'info'> = {
   ON_LEAVE: 'info',
@@ -132,6 +173,10 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
 
   const [today, setToday] = useState<AttendanceRecord | null>(null)
   const [weekly, setWeekly] = useState<WeeklySummary | null>(null)
+  const [monthlyCells, setMonthlyCells] = useState<WdHeatCell[]>([])
+  const [monthlyStats, setMonthlyStats] = useState<
+    { stats: WdMonthlyStatInput; year: number; month: number } | null
+  >(null)
   const [loading, setLoading] = useState(true)
   const [clockLoading, setClockLoading] = useState(false)
   const [elapsed, setElapsed] = useState(0)
@@ -156,11 +201,39 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
     }
   }, [])
 
+  // AT-004 — 최근 월 근태 히트 그리드 (기존 monthly 라우트, 백엔드 0 변경)
+  const fetchMonthly = useCallback(async () => {
+    try {
+      const now = new Date()
+      const year = now.getFullYear()
+      const month = now.getMonth() + 1
+      const res = await apiClient.get<MonthlyApiResponse>(
+        `/api/v1/attendance/monthly/${year}/${month}`,
+      )
+      setMonthlyCells(
+        (res.data?.days ?? []).map((d) => ({
+          date: d.date,
+          status: ATT_STATUS_FROM_RECORD(d.status, d.overtimeMinutes),
+        })),
+      )
+      // AT-005 — 월간 통계 카나리 (동일 monthly 라우트 재사용, 클라이언트 집계 helper)
+      const summary = res.data?.summary
+      setMonthlyStats(
+        summary
+          ? { stats: aggregateMonthlyStats(res.data.days ?? [], summary), year, month }
+          : null,
+      )
+    } catch {
+      setMonthlyCells([])
+      setMonthlyStats(null)
+    }
+  }, [])
+
   const fetchAll = useCallback(async () => {
     setLoading(true)
-    await Promise.all([fetchToday(), fetchWeekly()])
+    await Promise.all([fetchToday(), fetchWeekly(), fetchMonthly()])
     setLoading(false)
-  }, [fetchToday, fetchWeekly])
+  }, [fetchToday, fetchWeekly, fetchMonthly])
 
   useEffect(() => {
     void fetchAll()
@@ -388,6 +461,21 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
             </p>
           )}
       </div>
+
+      {/* ─── Section 2a: 월간 통계 (PR-4 AT-005 카나리 — WdGroupedStatCard SSOT) ─── */}
+      <WdMonthlyStatCard
+        data={monthlyStats?.stats ?? null}
+        year={monthlyStats?.year}
+        month={monthlyStats?.month}
+        loading={loading}
+      />
+
+      {/* ─── Section 2b: 최근 월 근태 히트 그리드 (PR-2 AT-004 카나리 — status.ts SSOT) ─── */}
+      <WdStatusHeatGrid
+        title={t('monthlyRecord')}
+        cells={monthlyCells}
+        emptyState={<EmptyState />}
+      />
 
       {/* ─── Section 3: Status Badges ─── */}
       {today && (

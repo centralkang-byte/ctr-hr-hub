@@ -145,7 +145,7 @@ export const PUT = withPermission(
       titleKey:    'notifications.leaveRejected.title',
       bodyKey:     'notifications.leaveRejected.body',
       bodyParams:  { reason: parsed.data.rejectionReason },
-      link:        '/my/leave',
+      link:        '/leave',
       priority:    'normal',
     })
 

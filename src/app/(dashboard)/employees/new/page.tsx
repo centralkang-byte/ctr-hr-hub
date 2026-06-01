@@ -38,7 +38,9 @@ export default async function EmployeeNewPage() {
     user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
 
   // Fetch reference data for the wizard
-  const [companies, departments, jobCategories, gradeTitleMappings, positions] = await Promise.all([
+  // 직급(JobGrade)을 직접 소스로 사용 — GradeTitleMapping은 호칭 자동완성 보조용만.
+  // jobCategory는 법인 스코프 select(법인당 4종, 폼이 선택 법인으로 필터) → 교차 12중복 방지.
+  const [companies, departments, jobGrades, jobCategories, gradeTitleMappings, positions] = await Promise.all([
     prisma.company.findMany({
       where: { deletedAt: null, ...companyFilter },
       select: { id: true, name: true },
@@ -49,12 +51,19 @@ export default async function EmployeeNewPage() {
       select: { id: true, name: true, companyId: true },
       orderBy: { name: 'asc' },
     }),
+    prisma.jobGrade.findMany({
+      where: { deletedAt: null, ...deptCompanyFilter },
+      select: { id: true, code: true, name: true, gradeType: true, rankOrder: true, companyId: true },
+      orderBy: { rankOrder: 'asc' },
+    }),
     prisma.jobCategory.findMany({
-      select: { id: true, name: true },
+      where: { deletedAt: null, ...deptCompanyFilter },
+      select: { id: true, name: true, companyId: true },
       orderBy: { name: 'asc' },
     }),
     prisma.gradeTitleMapping.findMany({
       where: {
+        ...deptCompanyFilter,
         jobGrade: { deletedAt: null },
         employeeTitle: { deletedAt: null },
       },
@@ -77,6 +86,7 @@ export default async function EmployeeNewPage() {
         user={user}
         companies={companies}
         departments={departments}
+        jobGrades={jobGrades}
         jobCategories={jobCategories}
         gradeTitleMappings={gradeTitleMappings}
         positions={positions}

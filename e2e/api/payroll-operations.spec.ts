@@ -328,14 +328,26 @@ test.describe('Payslips & Rates: HR_ADMIN', () => {
 
   test('GET /exchange-rates returns data', async ({ request }) => {
     const client = new ApiClient(request)
-    const result = await pf.getExchangeRates(client)
+    // route requires year+month (querySchema.parse) — omit → 400
+    const now = new Date()
+    const result = await pf.getExchangeRates(client, {
+      year: String(now.getFullYear()),
+      month: String(now.getMonth() + 1),
+    })
     // May return 200 with data or empty
     expect(result.ok).toBe(true)
   })
 
   test('GET /attendance-status returns status', async ({ request }) => {
     const client = new ApiClient(request)
-    const result = await pf.getAttendanceStatus(client)
+    // route requires companyId+year+month (schema.safeParse) — omit → 400
+    const { companyId } = await resolveSeedData(request)
+    const now = new Date()
+    const result = await pf.getAttendanceStatus(client, {
+      companyId,
+      year: String(now.getFullYear()),
+      month: String(now.getMonth() + 1),
+    })
     expect(result.ok).toBe(true)
   })
 })

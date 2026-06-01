@@ -18,7 +18,9 @@
     letter-spacing: -0.02em;
   }
 
-  /* Violet Palette — Light Mode */
+  /* Workday Navy Palette — Light Mode (Phase 1: HR Hub 토큰 이식)
+     원본 SSOT: _design-reference/styles.css [data-style="workday"] (oklch)
+     변환: OKLCH→sRGB→HSL (Björn Ottosson ref, culori 동일 알고리즘). 다크모드는 Phase 1 범위 외 — .dark 미변경. */
   :root {
     --background: 0 0% 96.5%;               /* #f6f6f6 surface */
     --foreground: 180 3.4% 18.2%;           /* #2d2f2f on-surface */
@@ -26,8 +28,8 @@
     --card-foreground: 180 3.4% 18.2%;      /* #2d2f2f on-surface */
     --popover: 0 0% 100%;                    /* #ffffff */
     --popover-foreground: 180 3.4% 18.2%;   /* #2d2f2f */
-    --primary: 239 84% 67%;                 /* #6366f1 violet */
-    --primary-foreground: 260 100% 97.3%;   /* #f4f1ff on-primary */
+    --primary: 196 100% 20%;                /* #004964 Workday accent — oklch(38% 0.08 230) */
+    --primary-foreground: 0 0% 100%;        /* #ffffff on deep navy */
     --secondary: 0 0% 94.5%;                /* #f0f1f1 surface-container-low */
     --secondary-foreground: 180 3.4% 18.2%; /* #2d2f2f */
     --muted: 0 0% 94.5%;                    /* #f0f1f1 surface-container-low */
@@ -38,27 +40,46 @@
     --destructive-foreground: 0 100% 93.7%; /* #ffefef on-error */
     --border: 180 1.5% 67.8%;              /* #acadad outline-variant (사용 시 /15 opacity) */
     --input: 180 1.5% 67.8%;               /* #acadad */
-    --ring: 239 84% 67%;                    /* #6366f1 violet */
+    --ring: 196 100% 20%;                   /* #004964 Workday accent — oklch(38% 0.08 230) */
 
     /* 확장 토큰 */
-    --primary-dim: 244 76% 59%;              /* #4f46e5 그라디언트 끝점 */
-    --primary-container: 226 94% 82%;        /* #a5b4fc primary 밝은 변형 */
+    --primary-dim: 199 100% 16%;             /* #003953 그라디언트 끝점 — accent-ink oklch(32% 0.08 230) */
+    --primary-container: 200 57% 84%;        /* #bedded primary 밝은 변형 — accent-soft-2 oklch(88% 0.04 230) */
     --tertiary: 142 76% 36%;                 /* #16a34a green 텍스트 */
     --tertiary-container: 142 77% 73%;       /* #86efac green 배경 */
     --on-tertiary-container: 143 64% 24%;    /* #166534 */
     --warning-bright: 38 92% 50%;            /* #f59e0b amber-500 — BG/icon/progress only (text는 #B45309 사용, Phase 4 Batch 7) */
     --alert-red: 0 84% 60%;                  /* #ef4444 red-500 — 동적 alert, urgent pill, border semantic only (정적 count는 destructive 사용, Phase 4 Batch 7) */
     --badge-accent: 263 70% 50%;             /* #7c3aed violet-600 — badge accent only (--accent은 neutral surface, Phase 4 Batch 10) */
+    /* Workday 시그니처 오렌지 (배지·태그용, Phase 1 신규 — 사용처는 Phase 2/3) */
+    --wd-orange: 24 77% 53%;                 /* #e4762c — oklch(68% 0.16 50) */
+    --wd-orange-soft: 31 100% 92%;           /* #ffecd8 — oklch(96% 0.04 60) */
+    --wd-orange-ink: 19 100% 32%;            /* #a23300 — oklch(48% 0.16 45) */
+    /* PR-5A: sky blue (HR Admin worklet ID 8 analytics) — light only, dark known-deferred (Phase 4) */
+    --info: 199 89% 48%;                     /* #0ea5e9 sky blue */
     --surface-container-low: 0 0% 94.5%;     /* #f0f1f1 */
     --surface-container-high: 180 1.5% 88.6%; /* #e1e3e3 */
     --surface-container: 0 0% 90.8%;         /* #e7e8e8 */
 
-    --chart-1: 239 84% 67%;                 /* #6366f1 primary */
-    --chart-2: 226 94% 82%;                 /* #a5b4fc primary-container */
+    --chart-1: 196 100% 20%;                /* #004964 primary navy — oklch(38% 0.08 230) wt-1 */
+    --chart-2: 209 54% 38%;                 /* #2c6194 steel blue — oklch(48% 0.10 250) wt-7 */
     --chart-3: 142 76% 36%;                 /* #16a34a tertiary */
     --chart-4: 215 16% 47%;                 /* #64748b slate */
     --chart-5: 347 77% 50%;                /* #e11d48 destructive */
     --chart-6: 180 1.7% 35.9%;             /* #5a5c5c on-surface-variant */
+
+    /* Workday worklet palette (wt) — 도메인색 SSOT. 출처:
+       _design-reference/styles.css L579-586 oklch → canvas readback HSL.
+       라이트만 (다크 wt 미정의 = known-deferred, 별도 다크 Phase). */
+    --wt-1: 196 100% 20%;                  /* #004964 navy   oklch(38% .08 230) */
+    --wt-2: 171 100% 24%;                  /* #007866 teal   oklch(50% .12 180) */
+    --wt-3: 12 56% 49%;                    /* #c25237 terracotta oklch(58% .15 35) */
+    --wt-4: 254 57% 58%;                   /* #7457d1 purple oklch(55% .18 290) */
+    --wt-5: 126 49% 35%;                   /* #2d8336 forest oklch(54% .14 145) */
+    --wt-6: 40 100% 38%;                   /* #c08000 gold   oklch(65% .14 75) */
+    --wt-7: 209 54% 38%;                   /* #2c6194 steel  oklch(48% .10 250) */
+    --wt-8: 353 39% 51%;                   /* #b3505b coral  oklch(56% .13 15) */
+
     --radius: 0.5rem;
   }
   /* Violet Palette — Dark Mode */

@@ -8,19 +8,10 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import {
-  Plus,
-  Upload,
-  User,
-  Building2,
-  Calendar,
-  ExternalLink,
-    Mail,
-  Phone,
-  MapPin,
-} from 'lucide-react'
+import { Plus, Upload, Calendar, ExternalLink, Mail, FileText } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -32,10 +23,13 @@ import {
 } from '@/components/ui/select'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { WdStatusChips } from '@/components/shared/WdStatusChips'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { DetailPanel } from '@/components/shared/DetailPanel'
+import { EmployeeInspector } from '@/components/shared/EmployeeInspector'
+import { wtAvatarColor } from '@/lib/styles/wt-avatar'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { EmployeeFilterPanel, type FilterValues } from '@/components/employees/EmployeeFilterPanel'
-// BulkUploadWizard deprecated — 새 bulk-movements 페이지로 이동
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, PaginationInfo, SortDirection } from '@/types'
@@ -118,148 +112,123 @@ function EmployeeQuickPanel({
     )
   }
 
-  const hireDate = employee.hireDate
+  const hireDateStr = employee.hireDate
     ? new Date(employee.hireDate).toLocaleDateString('ko-KR')
-    : '-'
+    : null
 
-  const subtitle = [employee.title?.name, employee.position?.titleKo].filter(Boolean).join(' · ')
-
-  const STATUS_RING: Record<string, string> = {
-    ACTIVE: 'ring-2 ring-green-500',
-    ON_LEAVE: 'ring-2 ring-orange-400',
-    RESIGNED: 'ring-2 ring-gray-400',
-    TERMINATED: '',
-  }
-  const ringClass = STATUS_RING[employee.status] ?? ''
-
-  function calcTenure(d: string): { years: number; months: number } {
-    const hire = new Date(d)
+  const tenureText = (() => {
+    if (!employee.hireDate) return null
+    const hire = new Date(employee.hireDate)
     const now = new Date()
-    const totalMonths = (now.getFullYear() - hire.getFullYear()) * 12 + (now.getMonth() - hire.getMonth())
-    return { years: Math.floor(totalMonths / 12), months: totalMonths % 12 }
-  }
+    const m =
+      (now.getFullYear() - hire.getFullYear()) * 12 +
+      (now.getMonth() - hire.getMonth())
+    const years = Math.floor(m / 12)
+    const months = m % 12
+    return years > 0
+      ? t('tenureYearsMonths', { years, months })
+      : months > 0
+      ? t('tenureMonthsOnly', { months })
+      : t('tenureZeroMonths')
+  })()
+
+  const statusText =
+    (
+      {
+        ACTIVE: t('statusActive'),
+        ON_LEAVE: t('statusOnLeave'),
+        RESIGNED: t('statusResigned'),
+        TERMINATED: t('statusTerminated'),
+      } as Record<string, string>
+    )[employee.status] ?? employee.status
+
+  const kv = ([
+    employee.employeeNo
+      ? { k: t('employeeNo'), v: <span className="font-mono">{employee.employeeNo}</span> }
+      : null,
+    employee.company?.name
+      ? { k: t('listQuickPanelCompany'), v: employee.company.name }
+      : null,
+    employee.department?.name
+      ? { k: t('listQuickPanelDepartment'), v: employee.department.name }
+      : null,
+    employee.workLocation?.name
+      ? { k: t('listQuickPanelWorkLocation'), v: employee.workLocation.name }
+      : null,
+    employee.employmentType
+      ? { k: t('employmentType'), v: employee.employmentType }
+      : null,
+    employee.hireDate
+      ? {
+          k: t('listQuickPanelHireDate'),
+          v: (
+            <>
+              {hireDateStr}
+              {tenureText && (
+                <span className="ml-1.5 text-muted-foreground">· {tenureText}</span>
+              )}
+            </>
+          ),
+        }
+      : null,
+    employee.phone ? { k: t('phone'), v: employee.phone } : null,
+    employee.email
+      ? { k: t('email'), v: <span className="block truncate">{employee.email}</span> }
+      : null,
+    {
+      k: t('listQuickPanelStatus'),
+      v: <StatusBadge status={employee.status}>{statusText}</StatusBadge>,
+    },
+  ] as ({ k: string; v: ReactNode } | null)[]).filter(
+    (r): r is { k: string; v: ReactNode } => r !== null,
+  )
+
+  const tags = [
+    employee.title?.name && (
+      <span
+        key="title"
+        className="rounded-full border border-border bg-card px-2 py-0.5 text-[10.5px] font-medium text-foreground"
+      >
+        {employee.title.name}
+      </span>
+    ),
+    employee.department?.name && (
+      <span
+        key="dept"
+        className="rounded-full border border-border bg-card px-2 py-0.5 text-[10.5px] font-medium text-muted-foreground"
+      >
+        {employee.department.name}
+      </span>
+    ),
+  ].filter(Boolean)
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Profile header */}
-      <div className="px-5 py-5 flex items-center gap-4 border-b border-border">
-        <div className={`w-14 h-14 rounded-full bg-border flex items-center justify-center overflow-hidden flex-shrink-0 ${ringClass} ring-offset-2`}>
-          {employee.photoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={employee.photoUrl}
-              alt={employee.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <User className="w-7 h-7 text-muted-foreground" />
-          )}
-        </div>
-        <div className="min-w-0">
-          <p className="text-[15px] font-semibold text-foreground truncate">{employee.name}</p>
-          {employee.nameEn && (
-            <p className="text-xs text-muted-foreground truncate">{employee.nameEn}</p>
-          )}
-          {subtitle && (
-            <p className="text-sm text-muted-foreground mt-0.5 truncate">{subtitle}</p>
-          )}
-          <span className="text-xs font-mono tabular-nums text-muted-foreground mt-1 block">{employee.employeeNo}</span>
-        </div>
-      </div>
-
-      {/* Detail fields */}
-      <div className="px-5 py-4 space-y-3 flex-1 overflow-y-auto">
-        {/* 조직 */}
-        {employee.company && (
-          <div className="flex items-center gap-3">
-            <Building2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-            <div>
-              <p className="text-[11px] text-muted-foreground">{t('listQuickPanelCompany')}</p>
-              <p className="text-sm text-foreground">{employee.company.name}</p>
-            </div>
-          </div>
-        )}
-
-        {employee.department && (
-          <div className="flex items-center gap-3">
-            <Building2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-            <div>
-              <p className="text-[11px] text-muted-foreground">{t('listQuickPanelDepartment')}</p>
-              <p className="text-sm text-foreground">{employee.department.name}</p>
-            </div>
-          </div>
-        )}
-
-        {employee.workLocation && (
-          <div className="flex items-center gap-3">
-            <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-            <div>
-              <p className="text-[11px] text-muted-foreground">{t('listQuickPanelWorkLocation')}</p>
-              <p className="text-sm text-foreground">{employee.workLocation.name}</p>
-            </div>
-          </div>
-        )}
-
-        {/* 구분선 */}
-        <div className="border-t border-border" />
-
-        {/* 연락처 */}
-        {employee.email && (
-          <div className="flex items-center gap-3">
-            <Mail className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-            <p className="text-sm text-foreground truncate">{employee.email}</p>
-          </div>
-        )}
-
-        {employee.phone && (
-          <div className="flex items-center gap-3">
-            <Phone className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-            <p className="text-sm text-foreground">{employee.phone}</p>
-          </div>
-        )}
-
-        {/* 구분선 */}
-        <div className="border-t border-border" />
-
-        {/* 입사일 + 근속 */}
-        <div className="flex items-center gap-3">
-          <Calendar className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-          <div>
-            <p className="text-[11px] text-muted-foreground">{t('listQuickPanelHireDate')}</p>
-            <p className="text-sm text-foreground">
-              {hireDate}
-              {employee.hireDate && (
-                <span className="text-xs text-muted-foreground ml-1.5">· {(() => { const tn = calcTenure(employee.hireDate); return tn.years > 0 ? t('tenureYearsMonths', tn) : tn.months > 0 ? t('tenureMonthsOnly', tn) : t('tenureZeroMonths') })()}</span>
-              )}
-            </p>
-          </div>
-        </div>
-
-        {/* 재직 상태 */}
-        <div className="pt-1">
-          <p className="text-[11px] text-muted-foreground mb-1.5">{t('listQuickPanelStatus')}</p>
-          <StatusBadge status={employee.status}>
-            {({
-              ACTIVE: t('statusActive'),
-              ON_LEAVE: t('statusOnLeave'),
-              RESIGNED: t('statusResigned'),
-              TERMINATED: t('statusTerminated'),
-            } as Record<string, string>)[employee.status] ?? employee.status}
-          </StatusBadge>
-        </div>
-      </div>
-
-      {/* Footer action */}
-      <div className="px-5 py-4 border-t border-border">
-        <Button
-          onClick={onViewFull}
-          className="w-full bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-lg"
-        >
-          <ExternalLink className="w-4 h-4 mr-2" />
-          {t('listViewFullProfile')}
-        </Button>
-      </div>
-    </div>
+    <EmployeeInspector
+      name={employee.name}
+      nameEn={employee.nameEn}
+      code={employee.employeeNo}
+      photoUrl={employee.photoUrl}
+      avatarColor={wtAvatarColor(employee.id)}
+      tags={tags.length > 0 ? tags : undefined}
+      // Message/Document/1:1 — 미구현(P3 라우팅·i18n P1-6c). disabled로
+      // 시각 충실도 유지 + dead-control 방지 (Codex P2).
+      quickActions={[
+        { ariaLabel: 'Message', icon: Mail, onClick: () => {}, disabled: true },
+        { ariaLabel: 'Document', icon: FileText, onClick: () => {}, disabled: true },
+        { ariaLabel: '1:1', icon: Calendar, onClick: () => {}, disabled: true },
+      ]}
+      // 섹션 헤더 임시 영문 — i18n P1-6c
+      sectionLabels={{ info: 'Basic Info', stats: 'Quick Stats', activity: 'Recent Activity' }}
+      kv={kv}
+      // 빠른통계·최근활동 실데이터 P3 이월 → EmptyState 플레이스홀더(Q5)
+      statsSlot={<EmptyState size="sm" />}
+      activitySlot={<EmptyState size="sm" />}
+      viewFull={{
+        label: t('listViewFullProfile'),
+        onClick: onViewFull,
+        icon: ExternalLink,
+      }}
+    />
   )
 }
 
@@ -510,6 +479,40 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
         }
       />
 
+      {!loading && pagination ? (() => {
+        // 쿼리에 실제 반영되는 effective 필터(빠른+고급 패널) 기준으로 칩 도출
+        const otherFilterActive =
+          !!departmentId ||
+          !!employmentType ||
+          Object.values(filters).some((v) => v != null && v !== '')
+        const anyFilter = !!status || !!debouncedSearch || otherFilterActive
+        const statusTone = (status === 'ACTIVE'
+          ? 'success'
+          : status === 'ON_LEAVE'
+            ? 'warn'
+            : status === 'RESIGNED' || status === 'TERMINATED'
+              ? 'danger'
+              : 'default') as 'success' | 'warn' | 'danger' | 'default'
+        return (
+          <WdStatusChips
+            aria-label={t('listDescription')}
+            items={[
+              { label: tc('total'), value: pagination.total, tone: 'accent' },
+              ...(status
+                ? [{ label: STATUS_LABELS[status] ?? status, tone: statusTone }]
+                : []),
+              ...(debouncedSearch
+                ? [{ label: debouncedSearch, tone: 'default' as const }]
+                : []),
+              ...(otherFilterActive
+                ? [{ label: tc('filter'), tone: 'default' as const }]
+                : []),
+              ...(!anyFilter ? [{ label: tc('filter'), muted: true }] : []),
+            ]}
+          />
+        )
+      })() : null}
+
       {/* ─── Advanced Filter Panel ─── */}
       <EmployeeFilterPanel
         filters={filters}
@@ -640,6 +643,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
         onClose={closePanel}
         title={selectedEmployee?.name ?? t('listQuickPanelTitle')}
         subtitle={selectedEmployee?.department?.name ?? undefined}
+        width="w-[min(480px,92vw)]"
       >
         {selectedId && (
           <EmployeeQuickPanel

@@ -90,4 +90,11 @@ export const env = {
 
   // App
   NODE_ENV: getOptional('NODE_ENV', 'development'),
+
+  // ─── Auth ─────────────────────────────────────────────────
+  // Opt-in flag for NextAuth Credentials provider (email-only test login).
+  // Production builds default-disable the provider to prevent backdoor
+  // logins (SsoIdentity email match alone authorizes — no password).
+  // Set to 'true' ONLY in non-production environments (dev/preview/staging).
+  ALLOW_CREDENTIALS_LOGIN: getOptional('ALLOW_CREDENTIALS_LOGIN', ''),
 } as const

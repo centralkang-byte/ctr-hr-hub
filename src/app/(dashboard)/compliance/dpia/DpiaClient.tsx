@@ -86,8 +86,8 @@ export default function DpiaClient({ user: _user }: { user: SessionUser }) {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center">
-            <FileSearch className="w-5 h-5 text-purple-600" />
+          <div className="w-10 h-10 bg-wt-4/10 rounded-xl flex items-center justify-center">
+            <FileSearch className="w-5 h-5 text-wt-4" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground mb-6">{t('gdpr.dpia')}</h1>

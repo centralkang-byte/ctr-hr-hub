@@ -329,7 +329,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
               <div className="flex items-center gap-4">
                 <button
                   onClick={addHire}
-                  className="flex items-center gap-1 text-sm text-primary hover:text-indigo-600 font-medium"
+                  className="flex items-center gap-1 text-sm text-primary hover:text-primary font-medium"
                 >
                   <Plus className="w-4 h-4" /> {t('simHiringAddRow')}
                 </button>
@@ -352,7 +352,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
               <button
                 onClick={runSimulation}
                 disabled={isLoading || hires.length === 0}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dim disabled:opacity-50"
               >
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calculator className="w-4 h-4" />}
                 {t('simRunButton')}

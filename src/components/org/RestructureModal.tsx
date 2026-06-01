@@ -7,11 +7,12 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { X, Plus, Trash2, ChevronRight, GitBranch, ArrowRight, AlertTriangle } from 'lucide-react'
+import { Plus, Trash2, ArrowRight, AlertTriangle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { Button } from '@/components/ui/button'
 import { EffectiveDatePicker } from '@/components/shared/EffectiveDatePicker'
 import { RestructureDiffView } from '@/components/org/RestructureDiffView'
-import { BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
+import { WizardShell, type WizardStep } from '@/components/shared/WizardShell'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -91,10 +92,10 @@ const CHANGE_TYPE_LABELS: Record<ChangeType, string> = {
 const CHANGE_TYPE_COLORS: Record<ChangeType, string> = {
   create: 'bg-emerald-500/15 text-emerald-700',
   move: 'bg-primary/10 text-primary',
-  merge: 'bg-indigo-500/15 text-primary/90',
+  merge: 'bg-primary/15 text-primary/90',
   rename: 'bg-amber-500/15 text-amber-700',
   close: 'bg-destructive/10 text-destructive',
-  transfer_employee: 'bg-purple-500/10 text-violet-600',
+  transfer_employee: 'bg-wd-orange/10 text-wd-orange',
 }
 
 function generateId() {
@@ -360,37 +361,17 @@ function ChangeEditor({ change, depts, employees, onChange, onRemove, idx }: Cha
   )
 }
 
-// ─── Step Indicator ─────────────────────────────────────────
+// ─── Step Config ────────────────────────────────────────────
 
 type Step = 'edit' | 'diff' | 'confirm'
 
-function StepIndicator({ step }: { step: Step }) {
-  const steps: { key: Step; label: string }[] = [
-    { key: 'edit', label: '1. 변경 사항 작성' },
-    { key: 'diff', label: '2. 영향도 검토' },
-    { key: 'confirm', label: '3. 확인 및 저장' },
-  ]
-  return (
-    <div className="flex items-center gap-1 px-6 py-3 border-b border-border bg-background">
-      {steps.map((s, i) => (
-        <div key={s.key} className="flex items-center gap-1">
-          {i > 0 && <ChevronRight size={14} className="text-muted-foreground" />}
-          <span
-            className={`text-xs font-medium px-2 py-0.5 rounded ${
-              s.key === step
-                ? 'bg-primary text-white'
-                : steps.findIndex((x) => x.key === step) > i
-                ? 'text-primary'
-                : 'text-muted-foreground'
-            }`}
-          >
-            {s.label}
-          </span>
-        </div>
-      ))}
-    </div>
-  )
-}
+const STEP_ORDER: Step[] = ['edit', 'diff', 'confirm']
+
+const WIZARD_STEPS: WizardStep[] = [
+  { key: 'edit', label: '변경 사항 작성' },
+  { key: 'diff', label: '영향도 검토' },
+  { key: 'confirm', label: '확인 및 저장' },
+]
 
 // ─── RestructureModal ───────────────────────────────────────
 
@@ -487,30 +468,62 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
     }
   }
 
+  const currentStep = STEP_ORDER.indexOf(step)
+
+  const goNext = () => {
+    if (step === 'edit') {
+      if (canProceedToDiff) setStep('diff')
+    } else if (step === 'diff') {
+      setStep('confirm')
+    }
+  }
+  const goPrev = () => {
+    if (step === 'diff') setStep('edit')
+    else if (step === 'confirm') setStep('diff')
+  }
+
+  const footer = (
+    <div className="flex items-center justify-between">
+      <Button type="button" variant="outline" onClick={step === 'edit' ? onClose : goPrev}>
+        {step === 'edit' ? '취소' : '이전'}
+      </Button>
+      <div className="flex items-center gap-2">
+        {step === 'confirm' && (
+          <Button type="button" variant="outline" onClick={handleSaveDraft} disabled={saving}>
+            초안 저장
+          </Button>
+        )}
+        <Button
+          type="button"
+          onClick={step === 'confirm' ? handleApplyNow : goNext}
+          disabled={!canProceedToDiff || saving}
+        >
+          {saving
+            ? '처리 중...'
+            : step === 'edit'
+              ? '다음: 영향도 검토'
+              : step === 'diff'
+                ? '다음: 확인'
+                : '즉시 적용'}
+        </Button>
+      </div>
+    </div>
+  )
+
   return (
-    <div className={MODAL_STYLES.container}>
-      <div className="bg-card rounded-xl shadow-lg w-full max-w-3xl max-h-[90vh] flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
-          <div className="flex items-center gap-2">
-            <GitBranch size={18} className="text-primary" />
-            <h2 className="text-base font-bold text-foreground">조직 개편 계획</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition-colors"
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* Step Indicator */}
-        <StepIndicator step={step} />
-
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto">
-          {step === 'edit' && (
-            <div className="p-6 space-y-5">
+    <WizardShell
+      open={true}
+      title="조직 개편 계획"
+      sub="부서 구조 변경을 단계별로 정의하고 저장하거나 즉시 적용해요."
+      steps={WIZARD_STEPS}
+      currentStep={currentStep}
+      onCancel={onClose}
+      footer={footer}
+      className="sm:max-w-3xl"
+    >
+      <div className="max-h-[60vh] overflow-y-auto -mx-1 px-1">
+      {step === 'edit' && (
+        <div className="space-y-5">
               {/* Plan metadata */}
               <div className="space-y-3">
                 <div>
@@ -600,7 +613,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
           )}
 
           {step === 'confirm' && (
-            <div className="p-6 space-y-4">
+            <div className="space-y-4">
               <div className="bg-tertiary-container/10 border border-tertiary/20 rounded-xl p-4 space-y-2">
                 <p className="text-sm font-semibold text-tertiary">계획 요약</p>
                 <p className="text-sm text-foreground">{plan.title}</p>
@@ -625,52 +638,7 @@ export function RestructureModal({ companyId, onClose, onApplied }: RestructureM
               )}
             </div>
           )}
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-background shrink-0">
-          <button
-            onClick={step === 'edit' ? onClose : () => setStep(step === 'diff' ? 'edit' : 'diff')}
-            className="px-4 py-2 text-sm border border-border rounded-lg bg-card hover:bg-muted text-foreground transition-colors"
-          >
-            {step === 'edit' ? '취소' : '이전'}
-          </button>
-
-          <div className="flex items-center gap-2">
-            {step === 'confirm' && (
-              <button
-                onClick={handleSaveDraft}
-                disabled={saving}
-                className="px-4 py-2 text-sm border border-border rounded-lg bg-card hover:bg-muted text-foreground transition-colors disabled:opacity-50"
-              >
-                초안 저장
-              </button>
-            )}
-
-            <button
-              onClick={() => {
-                if (step === 'edit') {
-                  if (canProceedToDiff) setStep('diff')
-                } else if (step === 'diff') {
-                  setStep('confirm')
-                } else {
-                  handleApplyNow()
-                }
-              }}
-              disabled={!canProceedToDiff || saving}
-              className={`px-4 py-2 text-sm ${BUTTON_VARIANTS.primary} rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
-            >
-              {saving
-                ? '처리 중...'
-                : step === 'edit'
-                ? '다음: 영향도 검토'
-                : step === 'diff'
-                ? '다음: 확인'
-                : '즉시 적용'}
-            </button>
-          </div>
-        </div>
       </div>
-    </div>
-  )
+      </WizardShell>
+    )
 }

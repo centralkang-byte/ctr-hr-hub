@@ -44,7 +44,7 @@ export const leaveApprovedHandler: DomainEventHandler<'LEAVE_APPROVED'> = {
         titleKey:    'notifications.leaveApproved.title',
         bodyKey:     'notifications.leaveApproved.body',
         bodyParams:  { startDate: payload.startDate.toISOString().slice(0, 10), endDate: payload.endDate.toISOString().slice(0, 10) },
-        link:        '/my/leave',
+        link:        '/leave',
         priority:    'normal',
       })
     }

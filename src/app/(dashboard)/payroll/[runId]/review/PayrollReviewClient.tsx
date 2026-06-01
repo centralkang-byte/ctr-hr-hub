@@ -615,7 +615,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
             <h1 className="text-2xl font-bold text-foreground tracking-[-0.02em]">{run.name}</h1>
             <div className="flex items-center gap-2 mt-0.5">
               <span className="text-sm text-muted-foreground">{run.yearMonth}</span>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/15 text-primary/90 border border-indigo-200">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/15 text-primary/90 border border-primary/20">
                 {t('anomalies_keca491')}
               </span>
             </div>
