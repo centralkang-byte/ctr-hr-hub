@@ -48,7 +48,7 @@ describe('getAvatarColor', () => {
   })
 
   it('should return one of the 8 predefined colors', () => {
-    const colors = ['#5E81F4', '#8B5CF6', '#F59E0B', '#10B981', '#EF4444', '#EC4899', '#06B6D4', '#84CC16']
+    const colors = ['#004964', '#7457d1', '#F59E0B', '#10B981', '#EF4444', '#EC4899', '#06B6D4', '#84CC16']
     expect(colors).toContain(getAvatarColor('Test User'))
   })
 
