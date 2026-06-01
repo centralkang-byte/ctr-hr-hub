@@ -60,7 +60,7 @@ const MODULE_ICON: Record<string, React.ElementType> = {
 
 const MODULE_COLOR: Record<string, string> = {
   LEAVE:       'text-primary',
-  PERFORMANCE: 'text-violet-500',
+  PERFORMANCE: 'text-wd-orange',
   PAYROLL:     'text-amber-500',
 }
 

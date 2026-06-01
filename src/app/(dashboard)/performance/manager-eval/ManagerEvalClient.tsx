@@ -477,7 +477,7 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
                   <button
                     onClick={handleAiSuggest}
                     disabled={aiLoading}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-500/15 text-primary/90 hover:bg-indigo-200 transition-colors disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/15 text-primary/90 hover:bg-primary/15 transition-colors disabled:opacity-50"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
                     {aiLoading ? t('aiGenerating') : t('managerEval.aiSuggest')}
@@ -498,7 +498,7 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
                   onClick={() => setShowAiDraft(true)}
                   disabled={!currentEvaluationId}
                   title={!currentEvaluationId ? t('managerEval.saveFirstForAi') : undefined}
-                  className="flex items-center gap-1.5 px-3 py-2 border border-indigo-200 bg-indigo-500/15 text-primary/90 rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-indigo-200 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-2 border border-primary/20 bg-primary/15 text-primary/90 rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary/15 transition-colors"
                 >
                   <Sparkles className="w-4 h-4" />
                   {t('kr_ai_draft_kec839dec')}

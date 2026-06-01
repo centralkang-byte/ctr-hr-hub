@@ -1,18 +1,29 @@
 // ═══════════════════════════════════════════════════════════
 // QA Accounts Seed Wrapper
 // ───────────────────────────────────────────────────────────
-// Workaround: prisma/seed.ts (master orchestrator, DO NOT TOUCH)
-// does not import or call seedQAAccounts from prisma/seeds/00-qa-accounts.ts,
-// so the credentials provider's required SsoIdentity rows for super@/hr@/
-// manager@/employee-* are never created by `npx tsx prisma/seed.ts`.
+// Lightweight wrapper that runs ONLY the QA accounts seed module
+// (prisma/seeds/00-qa-accounts.ts) — fully idempotent via upsert.
 //
-// CI workflows that run E2E or visual tests must call this wrapper AFTER
-// the main seed to inject the QA accounts (employees + EmployeeAuth +
-// SsoIdentity + EmployeeRole).
+// Use cases:
+//   - Vercel build hook: refresh QA accounts after each deploy without
+//     re-running the full master seed (which is heavy)
+//   - CI workflows (e2e, visual baseline) that need QA accounts but
+//     don't want the cost of the full master seed
+//   - Local recovery when QA accounts go missing from the shared dev DB
 //
-// TODO(seed): incorporate seedQAAccounts into prisma/seed.ts master
-// orchestrator (separate task — touches DO NOT TOUCH file).
+// Note: prisma/seed.ts (master orchestrator) ALSO calls seedQAAccounts
+// (see prisma/seed.ts:3568), so running the master seed is sufficient.
+// This wrapper exists for environments where the master seed is too heavy.
 // ═══════════════════════════════════════════════════════════
+
+import dotenv from 'dotenv'
+import path from 'path'
+
+// Load .env.local first (higher priority), then fallback to .env.
+// Mirrors prisma/seed.ts pattern. Vercel build env injects DATABASE_URL
+// directly, so these files may be absent — dotenv.config is no-op then.
+dotenv.config({ path: path.resolve(__dirname, '..', '.env.local') })
+dotenv.config({ path: path.resolve(__dirname, '..', '.env') })
 
 import { PrismaClient } from '../src/generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'

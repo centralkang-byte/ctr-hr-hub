@@ -175,7 +175,7 @@ export default function PayrollImportClient({ user, companies }: {
   const statusBadge = (status: string) => {
     const map: Record<string, string> = {
       uploaded: 'bg-amber-500/15 text-amber-700',
-      processing: 'bg-indigo-500/15 text-primary/90',
+      processing: 'bg-primary/15 text-primary/90',
       confirmed: 'bg-emerald-500/15 text-emerald-700',
       failed: 'bg-destructive/10 text-destructive',
     }

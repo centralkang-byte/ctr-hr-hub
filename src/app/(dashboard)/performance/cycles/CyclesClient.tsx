@@ -9,6 +9,7 @@ import { apiClient } from '@/lib/api'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import type { SessionUser } from '@/types'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { WdSummaryLead } from '@/components/shared/WdSummaryLead'
 import { toast } from '@/hooks/use-toast'
 
 // ─── Types ────────────────────────────────────────────────
@@ -82,7 +83,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                 <div className="mb-6 flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold text-foreground">{t('cyclesTitle')}</h1>
-                        <p className="mt-1 text-sm text-muted-foreground">{t('cyclesDesc')}</p>
+                        <WdSummaryLead className="mt-1">{t('cyclesDesc')}</WdSummaryLead>
                     </div>
                     <button onClick={() => setShowCreateForm(true)}
                         className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors">

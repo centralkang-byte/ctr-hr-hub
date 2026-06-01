@@ -77,7 +77,7 @@ export const POST = withPermission(
       const overlap = await prisma.employeeSchedule.findFirst({
         where: {
           employeeId: id,
-          effectiveFrom: { lte: parsed.data.effectiveTo ?? new Date('9999-12-31') },
+          effectiveFrom: { lte: parsed.data.effectiveTo ? new Date(parsed.data.effectiveTo) : new Date('9999-12-31') },
           OR: [
             { effectiveTo: null },
             { effectiveTo: { gte: new Date(parsed.data.effectiveFrom) } },

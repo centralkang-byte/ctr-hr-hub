@@ -129,6 +129,49 @@ async function loadEmployeePermissions(employeeId: string): Promise<{
 
 // ─── NextAuth Options ────────────────────────────────────
 
+// ─── Credentials provider gating ─────────────────────────
+// Email-only login authorizes without password — only safe in non-production
+// or when explicitly opted in via ALLOW_CREDENTIALS_LOGIN=true.
+// Production default = disabled (prevents SUPER_ADMIN backdoor via curl).
+const allowCredentialsLogin =
+  env.NODE_ENV !== 'production' || env.ALLOW_CREDENTIALS_LOGIN === 'true'
+
+const credentialsProvider = CredentialsProvider({
+  id: 'credentials',
+  name: 'Test Login',
+  credentials: { email: { label: 'Email', type: 'email' } },
+  async authorize(credentials) {
+    // Fix 4-6: Unified error message to prevent user enumeration
+    // Note: Rate limiting is handled in middleware (returns 429 before reaching here)
+    if (!credentials?.email) return null
+    const sso = await prisma.ssoIdentity.findFirst({
+      where: { email: credentials.email },
+      include: {
+        employee: {
+          include: {
+            assignments: {
+              // Session 209 (Codex Gate 2 P2): effectiveDate <= now 추가 — pre-hire
+              // (future-dated primary)는 loadEmployeePermissions에서 EMPLOYEE/[]로
+              // 강등되므로, 로그인 callback도 동일 정책으로 통일해 사용 불가 세션 차단.
+              where: { isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
+              take: 1,
+              select: { status: true },
+            },
+          },
+        },
+      },
+    })
+    // Return null for all failure cases (same generic message shown to user)
+    if (!sso?.employee) return null
+    const emp = sso.employee
+    // Session 209: active primary 부재(pre-hire 또는 종료자) 시 로그인 차단.
+    if (!emp.assignments?.[0]) return null
+    const empStatus = emp.assignments[0].status
+    if (empStatus === 'RESIGNED' || empStatus === 'TERMINATED') return null
+    return { id: emp.id, email: credentials.email, name: emp.name }
+  },
+})
+
 export const authOptions: NextAuthOptions = {
   providers: [
     AzureADProvider({
@@ -136,42 +179,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.AZURE_AD_CLIENT_SECRET,
       tenantId: env.AZURE_AD_TENANT_ID,
     }),
-    // ─── Test accounts: email-only login (checks DB; works only for seeded accounts) ───
-    CredentialsProvider({
-      id: 'credentials',
-      name: 'Test Login',
-      credentials: { email: { label: 'Email', type: 'email' } },
-      async authorize(credentials) {
-        // Fix 4-6: Unified error message to prevent user enumeration
-        // Note: Rate limiting is handled in middleware (returns 429 before reaching here)
-        if (!credentials?.email) return null
-        const sso = await prisma.ssoIdentity.findFirst({
-          where: { email: credentials.email },
-          include: {
-            employee: {
-              include: {
-                assignments: {
-                  // Session 209 (Codex Gate 2 P2): effectiveDate <= now 추가 — pre-hire
-                  // (future-dated primary)는 loadEmployeePermissions에서 EMPLOYEE/[]로
-                  // 강등되므로, 로그인 callback도 동일 정책으로 통일해 사용 불가 세션 차단.
-                  where: { isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
-                  take: 1,
-                  select: { status: true },
-                },
-              },
-            },
-          },
-        })
-        // Return null for all failure cases (same generic message shown to user)
-        if (!sso?.employee) return null
-        const emp = sso.employee
-        // Session 209: active primary 부재(pre-hire 또는 종료자) 시 로그인 차단.
-        if (!emp.assignments?.[0]) return null
-        const empStatus = emp.assignments[0].status
-        if (empStatus === 'RESIGNED' || empStatus === 'TERMINATED') return null
-        return { id: emp.id, email: credentials.email, name: emp.name }
-      },
-    }),
+    ...(allowCredentialsLogin ? [credentialsProvider] : []),
   ],
 
   session: {

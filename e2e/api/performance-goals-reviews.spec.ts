@@ -124,11 +124,36 @@ test.describe('Goals Workflow', () => {
     assertOk(result, 'approve goal 2')
   })
 
-  test('10. HR_ADMIN requests revision on goal 1', async () => {
-    const result = await pf.requestRevision(hrClient, goalId1, {
-      comment: 'E2E test: please revise the goal scope',
+  test('10. HR_ADMIN requests revision on PENDING_APPROVAL goal', async () => {
+    // Cat E8 H-7 v2: API contract submit/route.ts:48-50 requires weight 합계 100.
+    // v1 (goal3 weight=40 in same cycle) made total 60+40+40=140 → 400. Use an
+    // isolated cycle with a single weight-100 goal so the revision flow can be
+    // exercised without touching the goal1/goal2 lifecycle relied on by tests
+    // 4 (weight=60 assertion) and 11~14.
+    const isoCycleId = await createTestCycle(hrRequest, {
+      name: `E2E Goal Revision Isolated ${Date.now()}`,
+      half: 'H1',
     })
-    assertOk(result, 'request revision on goal 1')
+    try {
+      await initializeCycle(hrRequest, isoCycleId)
+
+      const isoGoal = await pf.createGoal(empClient, {
+        ...pf.buildGoal(isoCycleId, 1),
+        weight: 100,
+      })
+      assertOk(isoGoal, 'create isolated goal')
+      const isoGoalId = (isoGoal.data as Record<string, unknown>).id as string
+
+      const submitted = await pf.submitGoal(empClient, isoGoalId)
+      assertOk(submitted, 'submit isolated goal')
+
+      const result = await pf.requestRevision(hrClient, isoGoalId, {
+        comment: 'E2E test: please revise the goal scope',
+      })
+      assertOk(result, 'request revision on isolated goal')
+    } finally {
+      await cleanupTestCycle(hrRequest, isoCycleId).catch(() => {})
+    }
   })
 
   test('11. EMPLOYEE adds progress (60%) on approved goal 2', async () => {
@@ -224,8 +249,13 @@ test.describe('Peer Review Pipeline', () => {
     hrClient = new ApiClient(hrRequest)
     empClient = new ApiClient(empRequest)
 
-    // Resolve seed employee IDs for nomination
-    employeeAId = (await resolveSeedData(hrRequest)).employeeId
+    // Resolve seed employee IDs for nomination.
+    // Cat E7-B H-6-B: peer-review/candidates route line 50 requires the target
+    // employee to have a primary EmployeeAssignment (or it throws "직원의 소속
+    // 정보가 없습니다"). resolveSeedData's employeeId doesn't guarantee that
+    // assignment; '이민준' (employee-a@ctr.co.kr) carries the canonical CTR
+    // OFFICE primary assignment — see e2e/helpers/employee-fixtures.ts:47-50.
+    employeeAId = await resolveEmployeeId(hrRequest, '이민준')
 
     // Resolve 3 employees as potential peer reviewers
     const empB = await resolveEmployeeId(hrRequest, '정다은')

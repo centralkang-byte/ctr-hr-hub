@@ -10,9 +10,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Check, ChevronLeft, ChevronRight, User, Briefcase, Building2, ClipboardCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import StickyActionBar from '@/components/shared/StickyActionBar'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -22,7 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { PageHeader } from '@/components/shared/PageHeader'
+import { WizardShell, type WizardStep } from '@/components/shared/WizardShell'
+import { DemoLimitBanner } from '@/components/shared/DemoLimitBanner'
 import { apiClient } from '@/lib/api'
 import type { SessionUser, DeptOption, RefOption } from '@/types'
 
@@ -61,7 +60,24 @@ interface ManagerSearchResult {
   jobGrade: { name: string } | null
 }
 
-// Grade↔Title 매핑 (서버에서 전달)
+// 직급(JobGrade) — 드롭다운 1차 소스 (독립 축)
+interface JobGradeOption {
+  id: string
+  code: string
+  name: string
+  gradeType: string
+  rankOrder: number
+  companyId: string
+}
+
+// 직군(JobCategory) — 법인 스코프 옵션
+interface JobCategoryOption {
+  id: string
+  name: string
+  companyId: string
+}
+
+// Grade↔Title 매핑 (서버에서 전달) — 호칭 자동완성 보조용만
 interface GradeTitleMappingItem {
   id: string
   jobGrade: { id: string; code: string; name: string; gradeType: string; rankOrder: number; companyId: string }
@@ -79,7 +95,8 @@ interface EmployeeNewClientProps {
   user: SessionUser
   companies: RefOption[]
   departments: DeptOption[]
-  jobCategories: RefOption[]
+  jobGrades: JobGradeOption[]
+  jobCategories: JobCategoryOption[]
   gradeTitleMappings: GradeTitleMappingItem[]
   positions: PositionOption[]
 }
@@ -136,6 +153,7 @@ export function EmployeeNewClient({
   user,
   companies,
   departments,
+  jobGrades,
   jobCategories,
   gradeTitleMappings,
   positions,
@@ -152,11 +170,11 @@ export function EmployeeNewClient({
     INTERN: t('intern'),
   }
 
-  const STEPS = [
-    { label: t('basicInfo'), icon: User },
-    { label: t('employmentInfo'), icon: Briefcase },
-    { label: t('assignment'), icon: Building2 },
-    { label: tc('confirm'), icon: ClipboardCheck },
+  const STEPS: WizardStep[] = [
+    { key: 'basic', label: t('basicInfo') },
+    { key: 'employment', label: t('employmentInfo') },
+    { key: 'assignment', label: t('assignment') },
+    { key: 'confirm', label: tc('confirm') },
   ]
 
   const [step, setStep] = useState(0)
@@ -180,7 +198,15 @@ export function EmployeeNewClient({
   // Filtered positions by selected company
   const filteredPositions = positions.filter((p) => p.companyId === data.companyId)
 
-  // Grade↔Title 매핑: 선택된 법인의 매핑만 필터
+  // 직급: 선택 법인의 JobGrade만 (rankOrder 순). 1차 소스 — 매핑 미등록이어도 동작
+  const filteredJobGrades = jobGrades
+    .filter((g) => g.companyId === data.companyId)
+    .sort((a, b) => a.rankOrder - b.rankOrder)
+
+  // 직군: 선택 법인의 JobCategory만 (법인당 4종, 교차 중복 방지)
+  const filteredJobCategories = jobCategories.filter((c) => c.companyId === data.companyId)
+
+  // Grade↔Title 매핑: 선택 법인 한정 — 호칭(EmployeeTitle) 자동완성 보조용만
   const companyMappings = gradeTitleMappings.filter((m) => m.jobGrade.companyId === data.companyId)
   const mappedTitle = companyMappings.find((m) => m.jobGrade.id === data.jobGradeId) ?? null
 
@@ -380,8 +406,12 @@ export function EmployeeNewClient({
         <Select
           value={data.companyId || '__NONE__'}
           onValueChange={(v) => {
+            // 법인 변경 시 법인 종속 선택값 초기화 — 타 법인 id 제출 방지 (FK 정합)
             set('companyId', v === '__NONE__' ? '' : v)
             set('departmentId', '')
+            set('jobGradeId', '')
+            set('jobCategoryId', '')
+            set('positionId', '')
           }}
         >
           <SelectTrigger>
@@ -419,9 +449,9 @@ export function EmployeeNewClient({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-            {companyMappings.map((m) => (
-              <SelectItem key={m.jobGrade.id} value={m.jobGrade.id}>
-                {m.jobGrade.code} ({m.employeeTitle.name})
+            {filteredJobGrades.map((g) => (
+              <SelectItem key={g.id} value={g.id}>
+                {g.code} {g.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -434,7 +464,7 @@ export function EmployeeNewClient({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-            {jobCategories.map((c) => (
+            {filteredJobCategories.map((c) => (
               <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
             ))}
           </SelectContent>
@@ -528,7 +558,7 @@ export function EmployeeNewClient({
   const renderStep4 = () => {
     const company = companies.find((c) => c.id === data.companyId)
     const dept = departments.find((d) => d.id === data.departmentId)
-    const gradeMapping = companyMappings.find((m) => m.jobGrade.id === data.jobGradeId)
+    const grade = filteredJobGrades.find((g) => g.id === data.jobGradeId)
     const category = jobCategories.find((c) => c.id === data.jobCategoryId)
 
     const GENDER_LABELS: Record<string, string> = { M: t('male'), F: t('female') }
@@ -548,7 +578,7 @@ export function EmployeeNewClient({
       [t('hireDate'), data.hireDate],
       [t('companyEntity'), company?.name ?? '-'],
       [t('department'), dept?.name ?? '-'],
-      [t('jobGrade'), gradeMapping ? `${gradeMapping.jobGrade.code} (${gradeMapping.employeeTitle.name})` : '-'],
+      [t('jobGrade'), grade ? `${grade.code} ${grade.name}${mappedTitle ? ` (${mappedTitle.employeeTitle.name})` : ''}` : '-'],
       [t('jobCategory'), category?.name ?? '-'],
       [t('manager'), data.managerName || '-'],
     ]
@@ -568,103 +598,32 @@ export function EmployeeNewClient({
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 p-6">
-      <PageHeader
-        title={t('newEmployee')}
-        description={t('newEmployeeDescription')}
-      />
-
-      {/* ─── Step indicator ─── */}
-      <div className="flex items-center justify-between">
-        {STEPS.map((s, i) => {
-          const Icon = s.icon
-          const isCompleted = i < step
-          const isCurrent = i === step
-          return (
-            <div key={i} className="flex flex-1 items-center">
-              <div className="flex flex-col items-center gap-1">
-                <div
-                  className={[
-                    'flex h-9 w-9 items-center justify-center rounded-full border-2 transition-colors',
-                    isCompleted
-                      ? 'border-ctr-primary bg-ctr-primary text-white'
-                      : isCurrent
-                        ? 'border-ctr-primary text-ctr-primary'
-                        : 'border-muted-foreground/30 text-muted-foreground',
-                  ].join(' ')}
-                >
-                  {isCompleted ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    <Icon className="h-4 w-4" />
-                  )}
-                </div>
-                <span
-                  className={[
-                    'text-xs',
-                    isCurrent ? 'font-medium text-ctr-primary' : 'text-muted-foreground',
-                  ].join(' ')}
-                >
-                  {s.label}
-                </span>
-              </div>
-              {i < STEPS.length - 1 && (
-                <div
-                  className={[
-                    'mx-2 h-0.5 flex-1',
-                    i < step ? 'bg-ctr-primary' : 'bg-muted-foreground/30',
-                  ].join(' ')}
-                />
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {/* ─── Step content ─── */}
-      <div className="rounded-xl border border-border bg-card p-6">
-        <h2 className="mb-5 text-base font-bold text-foreground tracking-ctr">
-          {t('newStepLabel', { number: step + 1, label: STEPS[step]!.label })}
-        </h2>
-        {step === 0 && renderStep1()}
-        {step === 1 && renderStep2()}
-        {step === 2 && renderStep3()}
-        {step === 3 && renderStep4()}
-      </div>
-
-      {/* ─── Error ─── */}
+    <WizardShell
+      open={true}
+      title={t('newEmployee')}
+      sub={t('newEmployeeDescription')}
+      steps={STEPS}
+      currentStep={step}
+      onCancel={() => router.push('/employees')}
+      onPrev={goBack}
+      onNext={goNext}
+      onSubmit={handleSubmit}
+      canProceed={validateStep(step, data) === null && !submitting}
+    >
       {error && (
         <p className="rounded-md border border-destructive/50 bg-destructive/10 px-4 py-2 text-sm text-destructive">
           {error}
         </p>
       )}
-
-      {/* ─── Navigation buttons ─── */}
-      <StickyActionBar className="flex justify-between">
-        <Button
-          variant="outline"
-          onClick={step === 0 ? () => router.push('/employees') : goBack}
-        >
-          <ChevronLeft className="mr-1 h-4 w-4" />
-          {step === 0 ? tc('cancel') : tc('prev')}
-        </Button>
-
-        {step < STEPS.length - 1 ? (
-          <Button onClick={goNext} className="bg-ctr-primary hover:bg-ctr-primary-dark text-white">
-            {tc('next')}
-            <ChevronRight className="ml-1 h-4 w-4" />
-          </Button>
-        ) : (
-          <Button
-            onClick={handleSubmit}
-            disabled={submitting}
-            className="bg-ctr-primary hover:bg-ctr-primary-dark text-white"
-          >
-            {submitting ? t('creating') : t('newEmployee')}
-            <Check className="ml-1 h-4 w-4" />
-          </Button>
-        )}
-      </StickyActionBar>
-    </div>
+      {step === 0 && renderStep1()}
+      {step === 1 && renderStep2()}
+      {step === 2 && renderStep3()}
+      {step === 3 && (
+        <>
+          {renderStep4()}
+          <DemoLimitBanner />
+        </>
+      )}
+    </WizardShell>
   )
 }

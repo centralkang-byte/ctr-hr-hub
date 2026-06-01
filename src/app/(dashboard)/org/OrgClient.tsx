@@ -25,7 +25,10 @@ import { GitBranch, LayoutGrid, List, Network, Search, Users } from 'lucide-reac
 import { apiClient } from '@/lib/api'
 import type { SessionUser, RefOption } from '@/types'
 import { ROLE } from '@/lib/constants'
+import { formatToTz } from '@/lib/timezone'
 import { EffectiveDatePicker } from '@/components/shared/EffectiveDatePicker'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { WdStatusChips } from '@/components/shared/WdStatusChips'
 import { RestructureModal } from '@/components/org/RestructureModal'
 import { DetailPanel } from '@/components/org/DetailPanel'
 import { DirectoryView } from '@/components/org/DirectoryView'
@@ -63,7 +66,7 @@ const SENTINEL_ALL = '__ALL__'
 const GROUP_ROOT_ID = '__GROUP_ROOT__'
 
 function formatDateYMD(date: Date): string {
-  return date.toISOString().split('T')[0]
+  return formatToTz(date, 'Asia/Seoul', 'yyyy-MM-dd')
 }
 
 function isToday(date: Date): boolean {
@@ -546,12 +549,60 @@ export function OrgClient({ user, companies }: OrgClientProps) {
     }))
   }, [initNodes, filteredDepts, search])
 
+  const selectedCompanyName = useMemo(() => {
+    if (selectedCompanyId === SENTINEL_ALL) return t('allCompanies')
+    return companies.find((c) => c.id === selectedCompanyId)?.name ?? ''
+  }, [selectedCompanyId, companies, t])
+
+  const totalHeadcount = useMemo(
+    () => allDepts.reduce((sum, d) => sum + d.employeeCount, 0),
+    [allDepts],
+  )
+
   return (
     <div className="flex flex-col h-full">
+      {/* page-h: PageHeader + status chips */}
+      <div className="px-6 pt-3 space-y-2 shrink-0">
+        <PageHeader
+          title={t('orgChart')}
+          description={t('orgChartDesc')}
+          actions={
+            canRestructure ? (
+              <button
+                onClick={() => setShowRestructureModal(true)}
+                className={`inline-flex items-center gap-1.5 ${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary}`}
+              >
+                <GitBranch size={14} />
+                {t('restructure')}
+              </button>
+            ) : undefined
+          }
+        />
+        <WdStatusChips
+          aria-label={t('orgChart')}
+          items={[
+            {
+              label: selectedCompanyName,
+              value: t('headcountUnit', { count: totalHeadcount }),
+              tone: 'accent',
+            },
+            {
+              label: t('deptCountLabel'),
+              value: allDepts.length,
+              tone: 'default',
+            },
+            {
+              label: t('effectiveDate'),
+              value: formatDateYMD(effectiveDate),
+              tone: 'default',
+              muted: isSnapshot,
+            },
+          ]}
+        />
+      </div>
+
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3 px-6 py-3 bg-muted/30 shrink-0">
-        <h1 className="text-lg font-bold text-foreground tracking-ctr mr-2">{t('orgChart')}</h1>
-
         {/* View mode toggle */}
         <div className={TAB_STYLES.list} aria-label="View mode">
           <ViewModeButton
@@ -642,17 +693,6 @@ export function OrgClient({ user, companies }: OrgClientProps) {
                 </option>
               ))}
             </select>
-          )}
-
-          {/* Restructure button */}
-          {canRestructure && (
-            <button
-              onClick={() => setShowRestructureModal(true)}
-              className={`inline-flex items-center gap-1.5 ${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary}`}
-            >
-              <GitBranch size={14} />
-              {t('restructure')}
-            </button>
           )}
         </div>
       </div>

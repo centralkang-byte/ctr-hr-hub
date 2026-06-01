@@ -352,7 +352,7 @@ export default function PulseSurveyClient({ user: _user }: { user: SessionUser }
                         )}
                         {(s.status === 'PULSE_ACTIVE' || s.status === 'PULSE_CLOSED') && (
                           <button onClick={() => router.push(`/performance/pulse/${s.id}/results`)} title={t('pulse.viewResults')}
-                            className="p-1.5 text-primary/90 hover:bg-indigo-500/15 rounded-lg">
+                            className="p-1.5 text-primary/90 hover:bg-primary/15 rounded-lg">
                             <Eye className="w-4 h-4" />
                           </button>
                         )}

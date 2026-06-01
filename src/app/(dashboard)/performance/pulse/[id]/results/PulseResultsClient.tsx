@@ -93,7 +93,7 @@ export default function PulseResultsClient({ user: _user, id }: { user: SessionU
           </div>
         </div>
         <button onClick={handleAiAnalysis} disabled={aiLoading}
-          className="flex items-center gap-2 px-4 py-2 border border-indigo-200 text-primary/90 rounded-lg text-sm font-medium hover:bg-indigo-500/15 disabled:opacity-50">
+          className="flex items-center gap-2 px-4 py-2 border border-primary/20 text-primary/90 rounded-lg text-sm font-medium hover:bg-primary/15 disabled:opacity-50">
           <Sparkles className="w-4 h-4" />
           {aiLoading ? t('aiAnalyzing') : t('pulse.aiInsight')}
         </button>
@@ -101,7 +101,7 @@ export default function PulseResultsClient({ user: _user, id }: { user: SessionU
 
       {/* AI Analysis */}
       {aiAnalysis && (
-        <div className="bg-indigo-500/15 rounded-xl border border-indigo-200 p-5 space-y-3">
+        <div className="bg-primary/15 rounded-xl border border-primary/20 p-5 space-y-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-primary/90" />
             <span className="text-sm font-semibold text-primary/90">{t('kr_ai_analytics_keab2b0ea')}</span>
@@ -128,7 +128,7 @@ export default function PulseResultsClient({ user: _user, id }: { user: SessionU
             </div>
           </div>
           {aiAnalysis.department_comparison && (
-            <p className="text-xs text-muted-foreground border-t border-indigo-200 pt-2 mt-2">{aiAnalysis.department_comparison}</p>
+            <p className="text-xs text-muted-foreground border-t border-primary/20 pt-2 mt-2">{aiAnalysis.department_comparison}</p>
           )}
         </div>
       )}

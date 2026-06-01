@@ -60,7 +60,7 @@ const SOURCE_BADGE_STYLES: Record<string, string> = {
   REFERRAL: 'bg-primary/10 text-tertiary',
   AGENCY: 'bg-primary/5 text-blue-800',
   JOB_BOARD: 'bg-orange-500/10 text-orange-800',
-  INTERNAL: 'bg-purple-500/10 text-purple-800',
+  INTERNAL: 'bg-wt-4/10 text-wt-4',
 }
 
 const STAGES_ALL = [

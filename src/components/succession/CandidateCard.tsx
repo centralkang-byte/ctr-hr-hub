@@ -61,7 +61,7 @@ export default function CandidateCard({ candidate, onDelete }: CandidateCardProp
       {candidate.developmentAreas && Array.isArray(candidate.developmentAreas) && candidate.developmentAreas.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1">
           {candidate.developmentAreas.map((area, i) => (
-            <Badge key={i} variant="outline" className="text-xs bg-indigo-500/15 text-primary/90 border-indigo-200">
+            <Badge key={i} variant="outline" className="text-xs bg-primary/15 text-primary/90 border-primary/20">
               {area}
             </Badge>
           ))}

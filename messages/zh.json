@@ -2318,7 +2318,6 @@
     "newPhonePlaceholder": "010-0000-0000",
     "newPositionOptional": "职位（可选）",
     "newSelectPosition": "选择职位",
-    "newStepLabel": "第{number}步: {label}",
     "newValueLabel": "New Value",
     "newWorkPermit": "New Work Permit",
     "noChangeRequests": "No change requests",
@@ -2926,6 +2925,79 @@
         "pilotBanner": {
           "title": "HR Admin Pilot — Preview",
           "envLabel": "{role} · HOME_PREVIEW=true"
+        },
+        "workdayHero": {
+          "greetingAm": "Good morning, {name}",
+          "greetingPm": "Hello, {name}",
+          "subBefore": "You have ",
+          "subMiddle": " items to handle today. Of those, ",
+          "subAfter": " are past their start date — please review first.",
+          "ctaInbox": "Open inbox",
+          "ctaAlerts": "View alerts",
+          "kpi": {
+            "headcount": "Headcount",
+            "openRoles": "Open roles",
+            "turnoverRate": "Turnover (30d)"
+          }
+        },
+        "worklet": {
+          "heading": "Main menu",
+          "inline": {
+            "danger": "Critical",
+            "warn": "Warning",
+            "neutral": "Normal"
+          },
+          "employees": {
+            "title": "Employees",
+            "subtitle": "Total {total} · New {newHires}",
+            "inline1": "{count} new hires this month"
+          },
+          "recruitment": {
+            "title": "Recruitment",
+            "subtitle": "{open} open positions"
+          },
+          "attendance": {
+            "title": "Attendance",
+            "subtitle": "Today present {present} · late {late}",
+            "subtitleEmpty": "No attendance data today",
+            "inline1": "{absent} absent",
+            "inline2": "{late} late"
+          },
+          "leave": {
+            "title": "Leave",
+            "subtitle": "{pending} pending approvals",
+            "inline1": "{count} overdue · prioritize"
+          },
+          "performance": {
+            "title": "Performance",
+            "subtitle": "{rate}% complete ({completed}/{total})",
+            "subtitleEmpty": "Quarterly data pending"
+          },
+          "payroll": {
+            "title": "Payroll",
+            "subtitle": "Next payroll cycle processing"
+          },
+          "organization": {
+            "title": "Organization",
+            "subtitle": "Department / Position structure"
+          },
+          "analytics": {
+            "title": "Analytics",
+            "subtitle": "Turnover {rate}% · Insights"
+          }
+        },
+        "approvalPreview": {
+          "heading": "Pending",
+          "subHeading": "{count} items · sorted by urgency",
+          "viewAll": "Full inbox",
+          "urgency": {
+            "overdue": "Overdue",
+            "today": "Today",
+            "queued": "Queued"
+          },
+          "approveCta": "Review",
+          "submittedFmt": "Submitted {date}",
+          "empty": "No pending approvals"
         }
       }
     },
@@ -3327,6 +3399,7 @@
     "approve": "Approve",
     "approved": "Approved",
     "balance": "Leave Balance",
+    "monthlyUsagePattern": "每月使用模式",
     "balancePreview": {
       "currentRemaining": "当前剩余:",
       "insufficientWarning": "休假余额不足。",
@@ -5423,6 +5496,7 @@
     "deleteDepartment": "Delete Department",
     "department": "Department",
     "departmentHead": "Department Head",
+    "deptCountLabel": "部门",
     "deptInfo": "Department Info",
     "diffPreview": "Change Preview",
     "draftSaved": "草稿 saved successfully.",
@@ -5442,6 +5516,7 @@
     "noEmployees": "No employees",
     "orgChanges": "Org Changes",
     "orgChart": "Org Chart",
+    "orgChartDesc": "一览公司组织架构",
     "parentDepartment": "Parent Department",
     "planTitle": "Plan 标题",
     "positions": "Positions",
@@ -11305,5 +11380,15 @@
         "OTHER": "[TODO:zh] Other"
       }
     }
+  },
+  "wizard": {
+    "prev": "[TODO:zh] Previous",
+    "next": "[TODO:zh] Next",
+    "submit": "[TODO:zh] Submit",
+    "cancel": "[TODO:zh] Cancel",
+    "stepLabel": "[TODO:zh] step"
+  },
+  "demoLimitBanner": {
+    "defaultMessage": "[TODO:zh] This is a demo screen — refreshing will discard your input."
   }
 }

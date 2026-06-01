@@ -68,11 +68,14 @@ test.describe('Training Lifecycle: HR_ADMIN', () => {
     mandatoryConfigId = res.data?.id ?? ''
   })
 
-  test('PATCH /training/mandatory-config/[id] deactivate', async ({ request }) => {
+  test('PATCH /training/mandatory-config/[id] update frequency', async ({ request }) => {
     test.skip(!mandatoryConfigId, 'no config to update')
     const api = new ApiClient(request)
-    const res = await f.updateMandatoryConfig(api, mandatoryConfigId, { isActive: false })
-    assertOk(res, 'deactivate mandatory config')
+    // Prisma model has no `isActive` column — soft-delete uses `deletedAt`
+    // and the API schema doesn't expose `deletedAt` either. Test a real,
+    // schema-valid PATCH field to verify update path. (H-3-B housekeeping)
+    const res = await f.updateMandatoryConfig(api, mandatoryConfigId, { frequency: 'biennial' })
+    assertOk(res, 'update mandatory config frequency')
   })
 
   test('GET /training/dashboard', async ({ request }) => {

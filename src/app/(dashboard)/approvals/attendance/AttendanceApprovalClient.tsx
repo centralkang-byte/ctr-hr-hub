@@ -46,7 +46,7 @@ type RequestTypeFilter = 'all' | 'leave' | 'overtime' | 'attendance_correction' 
 const REQUEST_TYPE_LABELS: Record<string, { labelKey: string; icon: React.ReactNode; color: string }> = {
   leave: { labelKey: 'typeLeave', icon: <CalendarDays className="w-3.5 h-3.5" />, color: 'bg-primary/10 text-emerald-700' },
   overtime: { labelKey: 'typeOvertime', icon: <Clock className="w-3.5 h-3.5" />, color: 'bg-amber-500/15 text-amber-700' },
-  attendance_correction: { labelKey: 'typeAttendanceCorrection', icon: <ClipboardList className="w-3.5 h-3.5" />, color: 'bg-indigo-500/15 text-primary/90' },
+  attendance_correction: { labelKey: 'typeAttendanceCorrection', icon: <ClipboardList className="w-3.5 h-3.5" />, color: 'bg-primary/15 text-primary/90' },
   shift_change: { labelKey: 'typeShiftChange', icon: <ArrowRightLeft className="w-3.5 h-3.5" />, color: 'bg-orange-500/10 text-orange-700' },
 }
 

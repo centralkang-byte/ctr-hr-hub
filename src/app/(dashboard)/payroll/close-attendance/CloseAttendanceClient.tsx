@@ -272,7 +272,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                                 className="h-full rounded-full transition-[width] duration-600"
                                                 style={{
                                                     width: `${confirmedPct}%`,
-                                                    background: confirmedPct === 100 ? '#059669' : 'linear-gradient(90deg, #5E81F4, #00BFA5)',
+                                                    background: confirmedPct === 100 ? '#059669' : 'linear-gradient(90deg, #004964, #00BFA5)',
                                                 }}
                                             />
                                         </div>

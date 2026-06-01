@@ -19,7 +19,7 @@ import type { SessionUser } from '@/types'
 const REWARD_TYPE_BADGE_STYLES: Record<string, string> = {
   COMMENDATION: 'bg-primary/10 text-tertiary',
   BONUS_AWARD: 'bg-primary/5 text-blue-800',
-  CTR_VALUE_AWARD: 'bg-purple-500/10 text-purple-800',
+  CTR_VALUE_AWARD: 'bg-wt-4/10 text-wt-4',
   LONG_SERVICE: 'bg-orange-500/10 text-orange-800',
   INNOVATION: 'bg-primary/10 text-primary',
   SAFETY_AWARD: 'bg-primary/5 text-blue-500',
@@ -31,7 +31,7 @@ const CTR_VALUE_BADGE_STYLES: Record<string, string> = {
   CHALLENGE: 'bg-destructive/5 text-destructive',
   TRUST: 'bg-primary/5 text-blue-800',
   RESPONSIBILITY: 'bg-orange-500/10 text-orange-800',
-  RESPECT: 'bg-purple-500/10 text-purple-800',
+  RESPECT: 'bg-wt-4/10 text-wt-4',
 }
 
 // ─── Types ───────────────────────────────────────────────
@@ -177,9 +177,9 @@ export default function RewardDetailClient({ user, id }: Props) {
 
             {/* CTR Value */}
             {data.rewardType === 'CTR_VALUE_AWARD' && data.ctrValue && (
-              <div className="mt-4 p-4 bg-purple-500/10 rounded-lg">
+              <div className="mt-4 p-4 bg-wt-4/10 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-purple-800">{t('ctrCoreValue')}:</span>
+                  <span className="text-sm font-medium text-wt-4">{t('ctrCoreValue')}:</span>
                   <span className={`px-2 py-1 text-xs font-medium rounded ${CTR_VALUE_BADGE_STYLES[data.ctrValue] ?? ''}`}>
                     {tRewards(`ctrValueLabels.${data.ctrValue}`, { defaultValue: data.ctrValue })}
                   </span>

@@ -113,7 +113,7 @@ export default function PeerReviewResultsClient({ user: _user, cycleId }: { user
           </div>
         </div>
         <button onClick={handleAiSummary} disabled={aiLoading}
-          className="flex items-center gap-2 px-4 py-2 border border-indigo-200 text-primary/90 rounded-lg text-sm font-medium hover:bg-indigo-500/15 disabled:opacity-50">
+          className="flex items-center gap-2 px-4 py-2 border border-primary/20 text-primary/90 rounded-lg text-sm font-medium hover:bg-primary/15 disabled:opacity-50">
           <Sparkles className="w-4 h-4" />
           {aiLoading ? t('aiAnalyzing') : t('peerReviewResults.aiSummary')}
         </button>
@@ -158,7 +158,7 @@ export default function PeerReviewResultsClient({ user: _user, cycleId }: { user
 
       {/* AI Summary */}
       {aiSummary && (
-        <div className="bg-indigo-500/15 rounded-xl border border-indigo-200 p-5 space-y-3">
+        <div className="bg-primary/15 rounded-xl border border-primary/20 p-5 space-y-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-primary/90" />
             <span className="text-sm font-semibold text-primary/90">{t('kr_ai_keca285ed_analytics')}</span>
@@ -178,7 +178,7 @@ export default function PeerReviewResultsClient({ user: _user, cycleId }: { user
               ))}</ul>
             </div>
           </div>
-          <div className="border-t border-indigo-200 pt-2">
+          <div className="border-t border-primary/20 pt-2">
             <h4 className="text-xs font-medium text-primary/90 mb-1">{t('kr_kecbd94ec_keca09cec')}</h4>
             <p className="text-xs text-foreground">{aiSummary.coaching_suggestion}</p>
           </div>

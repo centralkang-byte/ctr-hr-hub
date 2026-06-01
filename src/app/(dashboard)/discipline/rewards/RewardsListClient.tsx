@@ -20,7 +20,7 @@ import { BUTTON_SIZES, BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 const REWARD_TYPE_BADGE_STYLES: Record<string, string> = {
   COMMENDATION: 'bg-primary/10 text-tertiary',
   BONUS_AWARD: 'bg-primary/5 text-blue-800',
-  CTR_VALUE_AWARD: 'bg-purple-500/10 text-purple-800',
+  CTR_VALUE_AWARD: 'bg-wt-4/10 text-wt-4',
   LONG_SERVICE: 'bg-orange-500/10 text-orange-800',
   INNOVATION: 'bg-primary/10 text-primary',
   SAFETY_AWARD: 'bg-primary/5 text-blue-500',
@@ -32,7 +32,7 @@ const CTR_VALUE_BADGE_STYLES: Record<string, string> = {
   CHALLENGE: 'bg-destructive/5 text-destructive',
   TRUST: 'bg-primary/5 text-blue-800',
   RESPONSIBILITY: 'bg-orange-500/10 text-orange-800',
-  RESPECT: 'bg-purple-500/10 text-purple-800',
+  RESPECT: 'bg-wt-4/10 text-wt-4',
 }
 
 // ─── Types ───────────────────────────────────────────────

@@ -163,7 +163,7 @@ function buildDiffLines(
 
 function DiffRow({ line }: { line: DiffLine }) {
   const typeConfig = {
-    add: { bg: 'bg-tertiary-container/10', border: 'border-l-[#5E81F4]', icon: <CheckCircle2 size={14} className="text-primary" />, badge: 'bg-emerald-500/15 text-emerald-700', badgeText: '추가' },
+    add: { bg: 'bg-tertiary-container/10', border: 'border-l-[#004964]', icon: <CheckCircle2 size={14} className="text-primary" />, badge: 'bg-emerald-500/15 text-emerald-700', badgeText: '추가' },
     remove: { bg: 'bg-destructive/5', border: 'border-l-[#EF4444]', icon: <AlertTriangle size={14} className="text-red-500" />, badge: 'bg-destructive/10 text-destructive', badgeText: '제거' },
     modify: { bg: 'bg-amber-500/10', border: 'border-l-[#F59E0B]', icon: <Building2 size={14} className="text-amber-500" />, badge: 'bg-amber-500/15 text-amber-700', badgeText: '변경' },
     move: { bg: 'bg-primary/5', border: 'border-l-[#3B82F6]', icon: <ArrowRight size={14} className="text-blue-500" />, badge: 'bg-primary/10 text-primary', badgeText: '이동' },

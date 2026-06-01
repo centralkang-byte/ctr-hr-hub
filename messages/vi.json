@@ -2318,7 +2318,6 @@
     "newPhonePlaceholder": "010-0000-0000",
     "newPositionOptional": "Vị trí (tùy chọn)",
     "newSelectPosition": "Chọn vị trí",
-    "newStepLabel": "Bước {number}: {label}",
     "newValueLabel": "New Value",
     "newWorkPermit": "New Work Permit",
     "noChangeRequests": "No change requests",
@@ -2926,6 +2925,79 @@
         "pilotBanner": {
           "title": "HR Admin Pilot — Preview",
           "envLabel": "{role} · HOME_PREVIEW=true"
+        },
+        "workdayHero": {
+          "greetingAm": "Good morning, {name}",
+          "greetingPm": "Hello, {name}",
+          "subBefore": "You have ",
+          "subMiddle": " items to handle today. Of those, ",
+          "subAfter": " are past their start date — please review first.",
+          "ctaInbox": "Open inbox",
+          "ctaAlerts": "View alerts",
+          "kpi": {
+            "headcount": "Headcount",
+            "openRoles": "Open roles",
+            "turnoverRate": "Turnover (30d)"
+          }
+        },
+        "worklet": {
+          "heading": "Main menu",
+          "inline": {
+            "danger": "Critical",
+            "warn": "Warning",
+            "neutral": "Normal"
+          },
+          "employees": {
+            "title": "Employees",
+            "subtitle": "Total {total} · New {newHires}",
+            "inline1": "{count} new hires this month"
+          },
+          "recruitment": {
+            "title": "Recruitment",
+            "subtitle": "{open} open positions"
+          },
+          "attendance": {
+            "title": "Attendance",
+            "subtitle": "Today present {present} · late {late}",
+            "subtitleEmpty": "No attendance data today",
+            "inline1": "{absent} absent",
+            "inline2": "{late} late"
+          },
+          "leave": {
+            "title": "Leave",
+            "subtitle": "{pending} pending approvals",
+            "inline1": "{count} overdue · prioritize"
+          },
+          "performance": {
+            "title": "Performance",
+            "subtitle": "{rate}% complete ({completed}/{total})",
+            "subtitleEmpty": "Quarterly data pending"
+          },
+          "payroll": {
+            "title": "Payroll",
+            "subtitle": "Next payroll cycle processing"
+          },
+          "organization": {
+            "title": "Organization",
+            "subtitle": "Department / Position structure"
+          },
+          "analytics": {
+            "title": "Analytics",
+            "subtitle": "Turnover {rate}% · Insights"
+          }
+        },
+        "approvalPreview": {
+          "heading": "Pending",
+          "subHeading": "{count} items · sorted by urgency",
+          "viewAll": "Full inbox",
+          "urgency": {
+            "overdue": "Overdue",
+            "today": "Today",
+            "queued": "Queued"
+          },
+          "approveCta": "Review",
+          "submittedFmt": "Submitted {date}",
+          "empty": "No pending approvals"
         }
       }
     },
@@ -3327,6 +3399,7 @@
     "approve": "Approve",
     "approved": "Approved",
     "balance": "Leave Balance",
+    "monthlyUsagePattern": "Mẫu sử dụng hàng tháng",
     "balancePreview": {
       "currentRemaining": "Còn lại hiện tại:",
       "insufficientWarning": "Số dư nghỉ phép không đủ.",
@@ -5422,6 +5495,7 @@
     "deleteDepartment": "Delete Department",
     "department": "Department",
     "departmentHead": "Department Head",
+    "deptCountLabel": "Phòng ban",
     "deptInfo": "Department Info",
     "diffPreview": "Change Preview",
     "draftSaved": "Bản nháp saved successfully.",
@@ -5441,6 +5515,7 @@
     "noEmployees": "No employees",
     "orgChanges": "Org Changes",
     "orgChart": "Org Chart",
+    "orgChartDesc": "Khám phá cấu trúc tổ chức toàn công ty",
     "parentDepartment": "Parent Department",
     "planTitle": "Plan Tiêu đề",
     "positions": "Positions",
@@ -11304,5 +11379,15 @@
         "OTHER": "[TODO:vi] Other"
       }
     }
+  },
+  "wizard": {
+    "prev": "[TODO:vi] Previous",
+    "next": "[TODO:vi] Next",
+    "submit": "[TODO:vi] Submit",
+    "cancel": "[TODO:vi] Cancel",
+    "stepLabel": "[TODO:vi] step"
+  },
+  "demoLimitBanner": {
+    "defaultMessage": "[TODO:vi] This is a demo screen — refreshing will discard your input."
   }
 }

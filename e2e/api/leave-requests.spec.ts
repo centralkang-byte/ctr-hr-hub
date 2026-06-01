@@ -152,13 +152,18 @@ test.describe('EMPLOYEE: Leave requests', () => {
   test('POST /leave/requests (for approval flow)', async ({ request }) => {
     if (!policyId) return test.skip()
     const futureDate = futureDateStr(120)
+    // PR #73 (H-7) made resolveLeaveTypeDefWithBalance prefer isSplittable=true,
+    // but CI seed often lacks splittable types with balance → falls back to a
+    // non-splittable type. Half-day requests then hit route.ts:175 contract
+    // (`!isSplittable && halfDayType` → 400). Use full day for approval flow
+    // test (intent = approval/reject workflow, not half-day semantics).
+    // (H-2 sub-PR-A housekeeping)
     const leaveReq = await createLeaveRequest(request, {
       policyId,
       leaveTypeDefId: leaveTypeDefId ?? undefined,
       startDate: futureDate,
       endDate: futureDate,
-      days: 0.5,
-      halfDayType: 'PM',
+      days: 1,
     })
     _requestForApproval = leaveReq.id
     expect(leaveReq.id).toBeTruthy()
