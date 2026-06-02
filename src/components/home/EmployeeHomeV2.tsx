@@ -43,7 +43,8 @@ type HeroFocusKind = 'offboarding' | 'onboarding' | 'review' | 'leaveForfeit' | 
 // ─── Helpers ────────────────────────────────────────────────
 
 function pickAnnualRemaining(balance: LeaveBalanceItem[]): number | null {
-  const annual = balance.find((b) => b.leaveType === 'ANNUAL')
+  // leaveType holds the LeaveTypeDef code (e.g. 'annual') — same identifier the /leave page uses
+  const annual = balance.find((b) => b.leaveType === 'annual')
   return annual ? annual.remaining : null
 }
 
