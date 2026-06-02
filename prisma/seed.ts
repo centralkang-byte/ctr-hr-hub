@@ -1064,28 +1064,41 @@ async function main() {
   // ----------------------------------------------------------
   // STEP 11: Seed Offboarding Checklist + Tasks (CTR-KR)
   // ----------------------------------------------------------
-  console.log('📌 Seeding offboarding checklist...')
-  const offChkId = deterministicUUID('offchk', 'CTR-KR:VOLUNTARY')
-  await prisma.offboardingChecklist.upsert({
-    where: { id: offChkId },
-    update: { name: '자발적 퇴직 체크리스트' },
-    create: {
-      id: offChkId,
-      companyId: ctrKrId,
-      name: '자발적 퇴직 체크리스트',
-      targetType: 'VOLUNTARY',
-    },
-  })
+  console.log('📌 Seeding offboarding checklists (4 reasons × dogfood companies)...')
+  // start route(employees/[id]/offboarding/start)는 companyId + targetType로 체크리스트를 찾는다.
+  // 4개 퇴직 사유 전부, dogfood 회사별로 체크리스트가 있어야 비자발/정년/계약만료 퇴사가 404 없이 시작됨.
+  const OFFBOARDING_REASONS = [
+    { type: 'VOLUNTARY',    name: '자발적 퇴직 체크리스트' },
+    { type: 'INVOLUNTARY',  name: '비자발적 퇴직 체크리스트' },
+    { type: 'RETIREMENT',   name: '정년퇴직 체크리스트' },
+    { type: 'CONTRACT_END', name: '계약만료 체크리스트' },
+  ] as const
+  const offboardingCompanies = [
+    { code: 'CTR-KR', id: ctrKrId },
+    { code: 'CTR-CN', id: companyMap['CTR-CN'] },
+  ].filter((c): c is { code: string; id: string } => Boolean(c.id))
 
-  for (const t of offboardingTasks) {
-    const tid = deterministicUUID('offtask', `CTR-KR:${t.title}`)
-    await prisma.offboardingTask.upsert({
-      where: { id: tid },
-      update: { title: t.title, description: t.description, assigneeType: t.assigneeType, dueDaysBefore: t.dueDaysBefore, sortOrder: t.sortOrder },
-      create: { id: tid, checklistId: offChkId, title: t.title, description: t.description, assigneeType: t.assigneeType, dueDaysBefore: t.dueDaysBefore, sortOrder: t.sortOrder, isRequired: true },
-    })
+  let offChkCount = 0
+  for (const co of offboardingCompanies) {
+    for (const reason of OFFBOARDING_REASONS) {
+      const chkId = deterministicUUID('offchk', `${co.code}:${reason.type}`)
+      await prisma.offboardingChecklist.upsert({
+        where: { id: chkId },
+        update: { name: reason.name },
+        create: { id: chkId, companyId: co.id, name: reason.name, targetType: reason.type },
+      })
+      for (const t of offboardingTasks) {
+        const tid = deterministicUUID('offtask', `${co.code}:${reason.type}:${t.title}`)
+        await prisma.offboardingTask.upsert({
+          where: { id: tid },
+          update: { title: t.title, description: t.description, assigneeType: t.assigneeType, dueDaysBefore: t.dueDaysBefore, sortOrder: t.sortOrder },
+          create: { id: tid, checklistId: chkId, title: t.title, description: t.description, assigneeType: t.assigneeType, dueDaysBefore: t.dueDaysBefore, sortOrder: t.sortOrder, isRequired: true },
+        })
+      }
+      offChkCount++
+    }
   }
-  console.log(`  ✅ 1 offboarding checklist + ${offboardingTasks.length} tasks`)
+  console.log(`  ✅ ${offChkCount} offboarding checklists (${offboardingCompanies.length} co × ${OFFBOARDING_REASONS.length} reasons) + tasks`)
 
   // ----------------------------------------------------------
   // STEP 12: Seed Salary Bands (CTR-KR, 6 grades, OFFICE)

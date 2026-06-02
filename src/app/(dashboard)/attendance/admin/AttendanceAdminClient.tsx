@@ -423,10 +423,10 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
                   <SelectValue placeholder={tc('selectPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="REGULAR">{t('regular')}</SelectItem>
-                  <SelectItem value="REMOTE">{t('remote')}</SelectItem>
-                  <SelectItem value="FIELD">{t('field')}</SelectItem>
-                  <SelectItem value="BUSINESS_TRIP">{t('businessTrip')}</SelectItem>
+                  <SelectItem value="NORMAL">{t('normal')}</SelectItem>
+                  <SelectItem value="OVERTIME">{t('overtime')}</SelectItem>
+                  <SelectItem value="NIGHT">{t('night')}</SelectItem>
+                  <SelectItem value="HOLIDAY">{t('holiday')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>

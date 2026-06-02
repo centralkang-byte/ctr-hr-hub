@@ -166,12 +166,22 @@ export const POST = withPermission(
         departmentId,
         jobGradeId,
         titleId,
+        positionId,
         jobCategoryId,
         employmentType,
         status,
         managerId: _managerId, // managerId removed from Employee; ignored here
         ...employeeFields
       } = parsed.data
+
+      // positionId(직위)가 해당 법인 소속인지 검증 (직접 API로 타 법인 position 연결 방지)
+      if (positionId) {
+        const pos = await prisma.position.findFirst({
+          where: { id: positionId, companyId: empCompanyId, deletedAt: null },
+          select: { id: true },
+        })
+        if (!pos) throw badRequest('positionId(직위)가 해당 법인에 속하지 않습니다.')
+      }
 
       const employee = await prisma.employee.create({
         data: {
@@ -191,6 +201,7 @@ export const POST = withPermission(
         departmentId,
         jobGradeId,
         titleId: titleId ?? undefined,
+        positionId: positionId ?? undefined,
         jobCategoryId,
         employmentType,
         status,
@@ -220,7 +231,7 @@ export const POST = withPermission(
         companyId:    empCompanyId,
         hireDate:     employee.hireDate,
         departmentId: departmentId ?? undefined,
-        positionId:   jobGradeId   ?? undefined,
+        positionId:   positionId   ?? undefined,
       })
 
       return apiSuccess(employee, 201)

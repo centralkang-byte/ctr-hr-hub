@@ -101,9 +101,9 @@ const ATTENDANCE_VARIANT_OVERRIDES: Record<string, 'info'> = {
 
 const WORK_TYPE_VARIANT: Record<string, 'info' | 'accent' | 'neutral'> = {
   NORMAL: 'neutral',
-  REMOTE: 'info',
-  FIELD: 'accent',
-  BUSINESS_TRIP: 'accent',
+  OVERTIME: 'info',
+  NIGHT: 'accent',
+  HOLIDAY: 'accent',
 }
 
 const STANDARD_WORK_HOURS = 8
@@ -165,10 +165,10 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
   }
 
   const WORK_TYPE_LABELS: Record<string, string> = {
-    NORMAL: t('regular'),
-    REMOTE: t('remote'),
-    FIELD: t('field'),
-    BUSINESS_TRIP: t('businessTrip'),
+    NORMAL: t('normal'),
+    OVERTIME: t('overtime'),
+    NIGHT: t('night'),
+    HOLIDAY: t('holiday'),
   }
 
   const [today, setToday] = useState<AttendanceRecord | null>(null)

@@ -96,6 +96,7 @@ interface Props {
 
 export default function PayrollPublishDashboardClient({user: _user, runId }: Props) {
   const t = useTranslations('payroll')
+  const tc = useTranslations('common')
   const locale = useLocale()
 
   const fmt = (n: number | string | null | undefined) => {
@@ -113,6 +114,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
     const [notifying, setNotifying] = useState(false)
     const [notifyResult, setNotifyResult] = useState<string | null>(null)
     const [showDownloads, setShowDownloads] = useState(false)
+    const [markingPaid, setMarkingPaid] = useState(false)
 
     const fetchData = useCallback(async () => {
         try {
@@ -141,6 +143,19 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
             toast({ title: t('publishPage.notifyFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
         } finally {
             setNotifying(false)
+        }
+    }
+
+    const handleMarkPaid = async () => {
+        setMarkingPaid(true)
+        try {
+            await apiClient.put(`/api/v1/payroll/runs/${runId}/paid`)
+            toast({ title: tc('completed') })
+            await fetchData()
+        } catch (err) {
+            toast({ title: tc('error'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
+        } finally {
+            setMarkingPaid(false)
         }
     }
 
@@ -179,6 +194,16 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                         )}
                     </div>
                 </div>
+                {run.status === 'APPROVED' && (
+                    <button
+                        onClick={handleMarkPaid}
+                        disabled={markingPaid}
+                        className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-dim disabled:opacity-40 min-h-[44px]"
+                    >
+                        {markingPaid ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+                        {t('kr_keca780ea_complete')}
+                    </button>
+                )}
             </div>
 
             {/* KPI Cards */}

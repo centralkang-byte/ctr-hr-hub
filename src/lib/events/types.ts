@@ -236,7 +236,7 @@ export interface EmployeeHiredPayload {
   companyId: string          // EmployeeAssignment.companyId (소속 법인)
   hireDate: Date
   departmentId?: string
-  positionId?: string        // jobGradeId (직급 식별자)
+  positionId?: string        // EmployeeAssignment.positionId (직위 식별자, optional)
 }
 
 /**

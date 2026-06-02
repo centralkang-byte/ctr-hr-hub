@@ -32,7 +32,7 @@ export const attendanceCorrectionSchema = z.object({
   workDate: z.string().date(),
   clockIn: z.string().datetime().optional(),
   clockOut: z.string().datetime().optional(),
-  workType: z.enum(['REGULAR', 'REMOTE', 'FIELD', 'BUSINESS_TRIP']).optional(),
+  workType: z.enum(['NORMAL', 'OVERTIME', 'NIGHT', 'HOLIDAY']).optional(),
   note: z.string().min(1, '사유를 입력해주세요').max(500),
 })
 

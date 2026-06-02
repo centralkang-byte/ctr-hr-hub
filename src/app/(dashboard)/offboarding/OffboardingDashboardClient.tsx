@@ -183,11 +183,20 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
 
   // ─── Task complete handler ───
   const handleTaskComplete = useCallback(
-    async (offboardingId: string, taskId: string) => {
+    async (offboardingId: string, taskId: string, currentStatus: string) => {
       setTaskLoading(taskId)
       try {
+        // HR task 완료: 정식 상태 route는 상태머신(PENDING→IN_PROGRESS→DONE)을 거침.
+        // 이미 IN_PROGRESS면(이전 시도 중단) 첫 단계 생략 → 재완료 가능. (레거시 /complete는 직원 셀프 전용 → HR 404)
+        if (currentStatus === 'PENDING') {
+          await apiClient.put(
+            `/api/v1/offboarding/instances/${offboardingId}/tasks/${taskId}/status`,
+            { status: 'IN_PROGRESS' },
+          )
+        }
         await apiClient.put(
-          `/api/v1/offboarding/${offboardingId}/tasks/${taskId}/complete`,
+          `/api/v1/offboarding/instances/${offboardingId}/tasks/${taskId}/status`,
+          { status: 'DONE' },
         )
         fetchData()
       } catch {
@@ -546,14 +555,14 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                                     </TableCell>
                                     {tab === 'IN_PROGRESS' && (
                                       <TableCell>
-                                        {tsk.status === 'PENDING' && (
+                                        {(tsk.status === 'PENDING' || tsk.status === 'IN_PROGRESS') && (
                                           <Button
                                             size="sm"
                                             variant="outline"
                                             className="text-xs"
                                             disabled={taskLoading === tsk.id}
                                             onClick={() =>
-                                              handleTaskComplete(row.id, tsk.id)
+                                              handleTaskComplete(row.id, tsk.id, tsk.status)
                                             }
                                           >
                                             {taskLoading === tsk.id

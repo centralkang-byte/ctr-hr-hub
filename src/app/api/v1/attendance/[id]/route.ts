@@ -19,8 +19,8 @@ import type { SessionUser } from '@/types'
 const correctionSchema = z.object({
   clockIn: z.string().datetime().optional(),
   clockOut: z.string().datetime().optional(),
-  workType: z.enum(['REGULAR', 'REMOTE', 'FIELD', 'BUSINESS_TRIP']).optional(),
-  status: z.enum(['NORMAL', 'LATE', 'EARLY_OUT', 'ABSENT', 'ON_LEAVE', 'HOLIDAY']).optional(),
+  workType: z.enum(['NORMAL', 'OVERTIME', 'NIGHT', 'HOLIDAY']).optional(),
+  status: z.enum(['NORMAL', 'LATE', 'EARLY_OUT', 'ABSENT']).optional(),
   note: z.string().min(1, '수정 사유를 입력해주세요').max(500),
 })
 
