@@ -134,3 +134,4 @@ Plan → **Codex Plan Review (Gate 1)** → Implement → `/verify` (tsc·lint·
 
 - **카나리 작업** (다중선택 바·일괄액션 등): `/canary-standard` — N1 기능충실도 7레이어 + N2 E2E 의무 + 검증 게이트. (카나리 시작 시 반드시 로드)
 - **Phase 3 페이지별 적용**: `/phase3-standard` — Q1 우선순위 + Q2 4단계 게이트 + Q3 운명카드. 실행 SSOT = `docs/plans/active/2026-05-18-phase3a-audit.md`
+- **대규모 감사·마이그레이션·병렬 리뷰**: `.claude/workflows/` (저장된 dynamic workflow + 언제/어떻게 발동 가이드 = README). 발동은 옵트인 — 요청에 "workflow" 또는 `/effort` ultracode.
