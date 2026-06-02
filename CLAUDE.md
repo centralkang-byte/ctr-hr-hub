@@ -20,15 +20,13 @@
 
 ## Session End Routine
 
-When the user says "STATUS.md 업데이트해줘" or ends a session:
-1. Update STATUS.md — move completed items, update in-progress, add remaining work
-2. Create `sessions/YYYY-MM-DD.md` — session summary with decisions and blockers
+"STATUS.md 업데이트" 또는 세션 종료 시 → `/session-end` (STATUS.md 갱신 + `sessions/YYYY-MM-DD-sessionNNN.md` 작성). 커밋·배포까지 묶으려면 `/wrap-up`.
 
 ## Design Review Flow
 
 For non-trivial features or architecture changes:
-1. Write design doc → `decisions/YYYY-MM-DD-<topic>.md`
-2. Request Gemini review for critique
+1. Write design doc → `~/Documents/Obsidian Vault/projects/hr-hub/decisions/YYYY-MM-DD-<topic>.md` (`/write-decision`)
+2. Run Codex plan review (see Codex Outside Voice Review below)
 3. Incorporate feedback → proceed with implementation
 
 ---
@@ -46,9 +44,9 @@ For non-trivial features or architecture changes:
 | Auth | NextAuth — Azure AD SSO + Credentials (dev) |
 | UI | Radix UI + Tailwind CSS + shadcn/ui (`cn()`) |
 | Forms | React Hook Form + Zod |
-| i18n | next-intl — 5 locales × 14+ namespaces |
+| i18n | next-intl — 5 locales × 69+ namespaces |
 | Cache | Redis (ioredis) + SWR |
-| AI | Anthropic SDK (Claude) + OpenAI embeddings |
+| AI | Anthropic SDK (Claude) + OpenAI embeddings (raw fetch, `openai` npm 패키지 없음 — `OPENAI_API_KEY` 필요) |
 
 ## Commands
 
@@ -73,8 +71,8 @@ npx tsx scripts/seed-qa-accounts.ts
 Detailed rules in `.claude/rules/` (auto-loaded when editing matching files).
 
 - **Timezone:** Always use `src/lib/timezone.ts` — never raw `new Date()` for display
-- **Roles:** `SUPER_ADMIN`, `HR_ADMIN`, `EXECUTIVE`, `MANAGER`, `EMPLOYEE`
-- **Manager lookup:** `Position.reportsToPositionId` (NOT direct managerId)
+- **Roles:** `SUPER_ADMIN`, `HR_ADMIN`, `EXECUTIVE`, `MANAGER`, `EMPLOYEE` (DB `Role.code` 문자열 — Prisma enum 아님; SSOT `src/lib/constants.ts`)
+- **Manager lookup:** 조직 위계 → `Position.reportsToPositionId`. CFR·평가(1:1·분기리뷰) → `OneOnOne.managerId` / `QuarterlyReview.managerId`. 둘을 혼동하지 말 것
 - **Active records:** `endDate: null` convention
 
 ---
@@ -84,6 +82,7 @@ Detailed rules in `.claude/rules/` (auto-loaded when editing matching files).
 | Email | Name | Role | Company |
 |-------|------|------|---------|
 | `super@ctr.co.kr` | 대조영 | SUPER_ADMIN | CTR-HOLD |
+| `executive@ctr.co.kr` | 강대표 | EXECUTIVE | CTR |
 | `hr@ctr.co.kr` | 한지영 | HR_ADMIN | CTR |
 | `hr@ctr-cn.com` | 陈美玲 | HR_ADMIN | CTR-CN |
 | `manager@ctr.co.kr` | 박준혁 | MANAGER | CTR |
@@ -99,70 +98,39 @@ Dev login: `NEXT_PUBLIC_SHOW_TEST_ACCOUNTS=true`
 
 ## DO NOT TOUCH
 
-```
-- src/components/layout/*       (Sidebar, MobileDrawer)
-- src/config/navigation.ts      (Sidebar IA)
-- messages/*.json                (i18n — adding new keys OK, editing/deleting existing keys FORBIDDEN)
-- prisma/seed.ts                 (Master seed orchestrator)
-- prisma/schema.prisma           (Requires migration plan)
-- src/middleware.ts              (Auth middleware)
-- src/lib/api/companyFilter.ts   (resolveCompanyId — security SSOT)
-- src/lib/prisma-rls.ts          (RLS wrapper)
-- src/lib/api/withRLS.ts         (withRLS transaction wrapper)
-```
+**파일 잠금 SSOT = 코드 내 `// PROTECTED` 헤더** (~43개 파일). 헤더가 있는 파일은 아키텍처 리뷰 없이 수정 금지. 아래는 헤더를 못 다는 대상(디렉터리·glob·데이터)만 명시:
+
+- 🔒 **동결** (IA — 사이드바 파괴 사고 가드): `src/components/layout/{Sidebar,MobileDrawer}.tsx`, `src/config/navigation.ts`
+- 🔒 **i18n 키**: `messages/*.json` — 키 추가 OK, 기존 키 편집/삭제 FORBIDDEN
+- 🚧 **게이트** (신중히, 고블라스트): `prisma/schema.prisma` (migration 동반 필수), `prisma/seed.ts` (마스터 오케스트레이터 — 자주 수정되나 영향 큼)
+- 🛡️ **보안 검토 필수**: `src/middleware.ts`, `src/lib/api/companyFilter.ts` (resolveCompanyId SSOT), `src/lib/prisma-rls.ts`, `src/lib/api/withRLS.ts`
 
 ## Design System
 
-See `DESIGN.md`. Token enforcement via `rules/design.md` (auto-loaded on UI file edits).
-In QA mode, flag any code that doesn't match DESIGN.md.
+- 색·토큰 SSOT: `DESIGN.md` (Workday Navy `#004964` — violet에서 수렴 완료). Enforcement: `rules/design.md` (UI 편집 시 자동 주입); 구현 SSOT = `src/lib/styles/{status,typography}.ts`·`ui/badge.tsx`
+- 시각·IA 타겟: `_design-reference/DESIGN_RULES.md` (페이지 전환 기준)
+- 마이그레이션 현황(Phase 3 페이지·Phase 4 다크 미완)은 **STATUS.md가 SSOT** — 여기엔 박지 않음
+- UI QA(`/gstack`·`/qa`)에서 DESIGN.md 불일치 코드 flag
 
 ## Gotchas
 
 - Sidebar destruction: Session A modified sidebar while adding seed data → lost entire section. Always respect DO NOT TOUCH.
-- Pure function extraction: Business logic coupled to Prisma must be extracted into pure functions for testability.
-- UI error states: Always handle loading/error/empty states in Client components.
+- Pure function extraction: 비즈니스 로직이 아직 대부분 Prisma에 결합돼 있고 단위테스트 인프라 없음 — 신규/리팩터 시 부수효과 없는 순수 헬퍼로 추출 (전방 목표).
+- UI 에러 상태(loading/error/empty) 3분법은 `rules/components.md`가 SSOT (UI 편집 시 자동 주입).
 
 ## Verification & Workflow
 
 ### Dev Flow
-Plan → **Codex Plan Review** → Implement → `/verify` (includes **Codex Post-Review**) → UI QA (if UI changed) → `/wrap-up`
+Plan → **Codex Plan Review (Gate 1)** → Implement → `/verify` (tsc·lint·migrate·patterns + **Codex Gate 2**) → UI QA (UI 변경 시) → `/wrap-up`
 
-### Codex Outside Voice Review (MANDATORY)
+### Codex Outside Voice Review (MANDATORY — 3+파일, 플랜 범위 기준)
+- **Gate 1 (플랜, ExitPlanMode 전)**: 플랜 요약 → `/tmp/codex-prompt.txt`, 실행 `cat /tmp/codex-prompt.txt | /opt/homebrew/bin/codex exec -` (파이프 필수, `$(cat)` 금지). HIGH/P0–P1 findings를 플랜에 반영 후 승인.
+- **Gate 2 (구현 후)**: `/verify`가 실행. 명령·타임아웃·우선순위 라벨 등 상세는 **`.claude/commands/verify.md`가 SSOT**.
 
-Two review gates in every task that is **planned** to touch 3+ files (judge by plan scope, not final diff):
+### /verify · UI QA · /wrap-up
+상세 절차는 커맨드 파일이 SSOT: `/verify` (tsc·lint·`prisma migrate status`·rules 패턴 + Gate 2 + UI QA), `/wrap-up` (commit→STATUS.md→Vercel deploy). UI QA 멀티롤 최소 = `super@ctr.co.kr` + `employee-a@ctr.co.kr`.
 
-**Gate 1 — Plan Review** (after writing plan, before ExitPlanMode):
-- Write plan summary to `/tmp/codex-prompt.txt`
-- Run: `cat /tmp/codex-prompt.txt | /opt/homebrew/bin/codex exec -`
-- Incorporate HIGH findings into plan before approval
+## 작업 모드 표준 (해당 작업 시작 시 스킬 로드)
 
-**Gate 2 — Post-Implementation Review** (during `/verify`, after tsc+lint pass):
-- Run: `/opt/homebrew/bin/codex review --uncommitted`
-- Fix all HIGH findings before commit
-
-**Codex CLI reference** (GPT-5.4, `/opt/homebrew/bin/codex`):
-```bash
-# Gate 2: built-in review commands (no prompt needed)
-codex review --uncommitted          # review uncommitted changes
-codex review --base staging         # review branch diff
-codex review --commit <SHA>         # review specific commit
-
-# Gate 1: custom prompt via stdin pipe (MUST use pipe, NOT $(cat))
-cat /tmp/prompt.txt | codex exec -  # ✅ stable
-codex exec "$(cat /tmp/prompt.txt)" # ❌ shows "Reading additional input from stdin..."
-```
-Timeout: 300s (codex exec scans full codebase).
-
-### /verify (code checks)
-1. **Code:** `npx tsc --noEmit` + `npm run lint` (pre-commit hook auto-runs)
-2. **DB:** `npx prisma migrate status` — must show "up to date"
-3. **Patterns:** Changed files checked against `rules/`
-
-### UI QA (when UI files changed)
-- **Quick check:** Claude Preview — `preview_inspect` for exact token measurement
-- **Systematic QA:** `/gstack` — multi-page, responsive, multi-role
-- **Complex interactions:** Computer Use — drag-and-drop, nested modals, real login flows
-- Multi-role: super@ctr.co.kr + employee-a@ctr.co.kr minimum
-
-### /wrap-up (session end)
-Bundles: commit → STATUS.md update → Vercel deploy. See `/wrap-up` for details.
+- **카나리 작업** (다중선택 바·일괄액션 등): `/canary-standard` — N1 기능충실도 7레이어 + N2 E2E 의무 + 검증 게이트. (카나리 시작 시 반드시 로드)
+- **Phase 3 페이지별 적용**: `/phase3-standard` — Q1 우선순위 + Q2 4단계 게이트 + Q3 운명카드. 실행 SSOT = `docs/plans/active/2026-05-18-phase3a-audit.md`
