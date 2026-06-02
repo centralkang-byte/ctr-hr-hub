@@ -164,9 +164,11 @@ function buildRolePermissions(): Record<string, PermKey[]> {
     'payroll_read', 'org_read',
   ]
 
-  // EXECUTIVE
+  // EXECUTIVE: 전사 읽기 중심 (read-only visibility)
   const executive: PermKey[] = [
     'employees_read', 'performance_read',
+    // P0 dogfood: 전사 근태/휴가/급여 조회
+    'attendance_read', 'leave_read', 'payroll_read',
     ...modules.map(m => `${m}_export` as PermKey),
   ]
 
