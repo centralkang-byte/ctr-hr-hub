@@ -3488,6 +3488,7 @@
     "quarterDay": "Quarter Day",
     "reason": "Reason",
     "reasonPlaceholder": "Enter leave reason",
+    "proofNotice": "This is an event-based leave (e.g., family events or sick leave). It does not deduct from a leave balance — request it when the event occurs, describe the reason in detail, and submit any supporting documents to your approver.",
     "reject": "Reject",
     "rejected": "Rejected",
     "rejectionReason": "Rejection Reason",

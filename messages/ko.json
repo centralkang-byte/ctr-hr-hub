@@ -1147,6 +1147,7 @@
     "daysToGrant": "부여할 일수",
     "requestDescription": "휴가를 신청합니다. 필수 항목을 모두 입력해주세요.",
     "reasonPlaceholder": "휴가 사유를 입력해주세요",
+    "proofNotice": "경조사·병가 등 이벤트성 휴가예요. 잔여일 차감 없이 사건이 생겼을 때 신청하며, 사유를 구체적으로 적어 주세요. 증빙 서류는 결재자에게 제출하면 돼요.",
     "selectLeaveType": "휴가 유형을 선택해주세요",
     "enterStartDate": "시작일을 입력해주세요",
     "enterEndDate": "종료일을 입력해주세요",
