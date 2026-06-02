@@ -3488,6 +3488,7 @@
     "quarterDay": "Quarter Day",
     "reason": "Reason",
     "reasonPlaceholder": "Enter leave reason",
+    "proofNotice": "这是事件性休假（如婚丧假、病假）。不扣除假期余额，发生时申请即可；请详细填写事由，并向审批人提交证明材料。",
     "reject": "Reject",
     "rejected": "Rejected",
     "rejectionReason": "Rejection Reason",

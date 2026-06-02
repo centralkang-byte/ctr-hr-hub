@@ -16,6 +16,7 @@ import { sendNotification } from '@/lib/notifications'
 import { checkDelegation } from '@/lib/delegation/resolve-delegatee'
 import { invalidateMultiple, CACHE_STRATEGY } from '@/lib/cache'
 import { resolveLeaveTypeDefId } from '@/lib/leave/resolveLeaveTypeDefId'
+import { leaveTypeUsesBalance } from '@/lib/leave/eventBasedLeave'
 import type { SessionUser } from '@/types'
 
 export const PUT = withPermission(
@@ -59,55 +60,81 @@ export const PUT = withPermission(
       throw badRequest('해당 휴가 유형 정의를 찾을 수 없습니다.')
     }
 
-    // 4. Atomic balance check + deduction (LeaveYearBalance)
+    // 4. 적립형(잔액 추적) vs 이벤트형 판별 — 이벤트형은 잔액 차감 없이 승인
+    const usesBalance = await leaveTypeUsesBalance(leaveTypeDefId)
     const days = Number(request.days)
     const startYear = new Date(request.startDate).getFullYear()
     const endYear   = new Date(request.endDate).getFullYear()
 
-    // Atomic UPDATE: WHERE 조건이 PostgreSQL row-level lock으로 동시 승인 직렬화
-    const deductResult = await prisma.$queryRaw<Array<{ id: string }>>`
-      UPDATE leave_year_balances
-      SET used = used + ${days},
-          pending = GREATEST(pending - ${days}, 0),
-          updated_at = NOW()
-      WHERE employee_id = ${request.employeeId}
-        AND leave_type_def_id = ${leaveTypeDefId}
-        AND year IN (${startYear}, ${endYear})
-        AND (used + ${days}) <= (entitled + carried_over + adjusted)
-      RETURNING id
-    `
+    let approved: Awaited<ReturnType<typeof prisma.leaveRequest.update>>
+    let updatedBalance: Awaited<ReturnType<typeof prisma.leaveYearBalance.findUnique>> = null
 
-    if (deductResult.length === 0) {
-      const balanceExists = await prisma.leaveYearBalance.findFirst({
-        where: {
-          employeeId: request.employeeId,
-          leaveTypeDefId,
-          year: { in: [startYear, endYear] },
+    if (usesBalance) {
+      // Atomic UPDATE: WHERE 조건이 PostgreSQL row-level lock으로 동시 승인 직렬화
+      const deductResult = await prisma.$queryRaw<Array<{ id: string }>>`
+        UPDATE leave_year_balances
+        SET used = used + ${days},
+            pending = GREATEST(pending - ${days}, 0),
+            updated_at = NOW()
+        WHERE employee_id = ${request.employeeId}
+          AND leave_type_def_id = ${leaveTypeDefId}
+          AND year IN (${startYear}, ${endYear})
+          AND (used + ${days}) <= (entitled + carried_over + adjusted)
+        RETURNING id
+      `
+
+      if (deductResult.length === 0) {
+        const balanceExists = await prisma.leaveYearBalance.findFirst({
+          where: {
+            employeeId: request.employeeId,
+            leaveTypeDefId,
+            year: { in: [startYear, endYear] },
+          },
+        })
+        if (!balanceExists) {
+          throw badRequest('해당 휴가 유형의 잔여일 정보를 찾을 수 없습니다.')
+        }
+        throw badRequest('잔여 휴가일이 부족하여 승인할 수 없습니다.')
+      }
+
+      const balanceId = deductResult[0].id
+
+      // Now approve the request (balance already deducted atomically)
+      approved = await prisma.leaveRequest.update({
+        where: { id },
+        data: {
+          status:      'APPROVED',
+          approvedById:  request.approvedById ?? user.employeeId,
+          approvedAt:  new Date(),
+          delegatedById: delegatedById,
         },
       })
-      if (!balanceExists) {
-        throw badRequest('해당 휴가 유형의 잔여일 정보를 찾을 수 없습니다.')
+
+      // 5. Fetch updated balance for response
+      updatedBalance = await prisma.leaveYearBalance.findUnique({
+        where: { id: balanceId },
+      })
+    } else {
+      // 이벤트형: 잔액 없음. status 조건부 전이(updateMany)로 이중 승인 직렬화
+      const res = await prisma.leaveRequest.updateMany({
+        where: { id, status: 'PENDING', companyId: user.companyId },
+        data: {
+          status:        'APPROVED',
+          approvedById:  request.approvedById ?? user.employeeId,
+          approvedAt:    new Date(),
+          delegatedById: delegatedById,
+        },
+      })
+      if (res.count === 0) {
+        throw badRequest('이미 처리된 휴가 신청입니다.')
       }
-      throw badRequest('잔여 휴가일이 부족하여 승인할 수 없습니다.')
+      const refreshed = await prisma.leaveRequest.findUnique({ where: { id } })
+      if (!refreshed) {
+        throw notFound('휴가 신청을 찾을 수 없습니다.')
+      }
+      approved = refreshed
     }
 
-    const balanceId = deductResult[0].id
-
-    // Now approve the request (balance already deducted atomically)
-    const approved = await prisma.leaveRequest.update({
-      where: { id },
-      data: {
-        status:      'APPROVED',
-        approvedById:  request.approvedById ?? user.employeeId,
-        approvedAt:  new Date(),
-        delegatedById: delegatedById,
-      },
-    })
-
-    // 5. Fetch updated balance for response
-    const updatedBalance = await prisma.leaveYearBalance.findUnique({
-      where: { id: balanceId },
-    })
     const remaining = updatedBalance
       ? updatedBalance.entitled +
         updatedBalance.carriedOver +
@@ -152,12 +179,15 @@ export const PUT = withPermission(
 
     return apiSuccess({
       request: approved,
-      balance: {
-        entitled:  updatedBalance?.entitled ?? 0,
-        used:      updatedBalance?.used ?? 0,
-        pending:   updatedBalance?.pending ?? 0,
-        remaining,
-      },
+      // 이벤트형은 잔액 미추적 → balance: null (영값으로 remaining 0 오해 방지)
+      balance: updatedBalance
+        ? {
+            entitled:  updatedBalance.entitled,
+            used:      updatedBalance.used,
+            pending:   updatedBalance.pending,
+            remaining,
+          }
+        : null,
     })
   },
   perm(MODULE.LEAVE, ACTION.UPDATE),

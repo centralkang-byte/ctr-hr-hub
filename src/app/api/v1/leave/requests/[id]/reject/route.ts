@@ -15,6 +15,7 @@ import { sendNotification } from '@/lib/notifications'
 import { checkDelegation } from '@/lib/delegation/resolve-delegatee'
 import { invalidateMultiple, CACHE_STRATEGY } from '@/lib/cache'
 import { resolveLeaveTypeDefId } from '@/lib/leave/resolveLeaveTypeDefId'
+import { leaveTypeUsesBalance } from '@/lib/leave/eventBasedLeave'
 import type { SessionUser } from '@/types'
 
 const rejectionSchema = z.object({
@@ -72,46 +73,74 @@ export const PUT = withPermission(
       throw badRequest('해당 휴가 유형 정의를 찾을 수 없습니다.')
     }
 
-    const balance = await prisma.leaveYearBalance.findFirst({
-      where: {
-        employeeId: request.employeeId,
-        leaveTypeDefId,
-        year: new Date(request.startDate).getFullYear(),
-      },
-    })
-
-    if (!balance) {
-      throw badRequest('해당 휴가 유형의 잔여일 정보를 찾을 수 없습니다.')
-    }
-
-    // 4. Transaction: reject request + restore pending (direct, not via event)
+    // 적립형(잔액 추적) vs 이벤트형 판별 — 이벤트형은 잔액 복구 없이 반려
+    const usesBalance = await leaveTypeUsesBalance(leaveTypeDefId)
     const days = Number(request.days)
 
-    const updated = await prisma.$transaction(async (tx) => {
-      const rejected = await tx.leaveRequest.update({
-        where: { id },
-        data: {
-          status:          'REJECTED',
-          rejectionReason: parsed.data.rejectionReason,
-          approvedById:      request.approvedById ?? user.employeeId,
-          approvedAt:      new Date(),
-          delegatedById:     delegatedById,
+    let updated: Awaited<ReturnType<typeof prisma.leaveRequest.update>>
+    let updatedBalance: Awaited<ReturnType<typeof prisma.leaveYearBalance.findUnique>> = null
+
+    if (usesBalance) {
+      const balance = await prisma.leaveYearBalance.findFirst({
+        where: {
+          employeeId: request.employeeId,
+          leaveTypeDefId,
+          year: new Date(request.startDate).getFullYear(),
         },
       })
 
-      // Restore pending (used unchanged for rejection)
-      await tx.leaveYearBalance.update({
-        where: { id: balance.id },
-        data: { pending: { decrement: days } },
+      if (!balance) {
+        throw badRequest('해당 휴가 유형의 잔여일 정보를 찾을 수 없습니다.')
+      }
+
+      // Transaction: reject request + restore pending (direct, not via event)
+      updated = await prisma.$transaction(async (tx) => {
+        const rejected = await tx.leaveRequest.update({
+          where: { id },
+          data: {
+            status:          'REJECTED',
+            rejectionReason: parsed.data.rejectionReason,
+            approvedById:      request.approvedById ?? user.employeeId,
+            approvedAt:      new Date(),
+            delegatedById:     delegatedById,
+          },
+        })
+
+        // Restore pending (used unchanged for rejection)
+        await tx.leaveYearBalance.update({
+          where: { id: balance.id },
+          data: { pending: { decrement: days } },
+        })
+
+        return rejected
       })
 
-      return rejected
-    })
+      // Fetch updated balance for response
+      updatedBalance = await prisma.leaveYearBalance.findUnique({
+        where: { id: balance.id },
+      })
+    } else {
+      // 이벤트형: 잔액 없음. status 조건부 전이(updateMany)로 이중 처리 방지
+      const res = await prisma.leaveRequest.updateMany({
+        where: { id, status: 'PENDING', companyId: user.companyId },
+        data: {
+          status:          'REJECTED',
+          rejectionReason: parsed.data.rejectionReason,
+          approvedById:    request.approvedById ?? user.employeeId,
+          approvedAt:      new Date(),
+          delegatedById:   delegatedById,
+        },
+      })
+      if (res.count === 0) {
+        throw badRequest('이미 처리된 휴가 신청입니다.')
+      }
+      const refreshed = await prisma.leaveRequest.findUnique({ where: { id } })
+      if (!refreshed) {
+        throw notFound('휴가 신청을 찾을 수 없습니다.')
+      }
+      updated = refreshed
+    }
 
-    // 5. Fetch updated balance for response
-    const updatedBalance = await prisma.leaveYearBalance.findUnique({
-      where: { id: balance.id },
-    })
     const remaining = updatedBalance
       ? updatedBalance.entitled +
         updatedBalance.carriedOver +
@@ -157,12 +186,15 @@ export const PUT = withPermission(
 
     return apiSuccess({
       request: updated,
-      balance: {
-        entitled:  updatedBalance?.entitled ?? 0,
-        used:      updatedBalance?.used ?? 0,
-        pending:   updatedBalance?.pending ?? 0,
-        remaining,
-      },
+      // 이벤트형은 잔액 미추적 → balance: null (영값으로 remaining 0 오해 방지)
+      balance: updatedBalance
+        ? {
+            entitled:  updatedBalance.entitled,
+            used:      updatedBalance.used,
+            pending:   updatedBalance.pending,
+            remaining,
+          }
+        : null,
     })
   },
   perm(MODULE.LEAVE, ACTION.UPDATE),

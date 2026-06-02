@@ -128,6 +128,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
   // ─── State ───
   const [balances, setBalances] = useState<LeaveBalanceLocal[]>([])
+  const [balancesLoaded, setBalancesLoaded] = useState(false)
   const [usageData, setUsageData] = useState<WdUsageBarDatum[]>([])
   const [requests, setRequests] = useState<LeaveRequestLocal[]>([])
   const [policies, setPolicies] = useState<LeavePolicyLocal[]>([])
@@ -273,6 +274,8 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       setBalances(res.data)
     } catch {
       setBalances([])
+    } finally {
+      setBalancesLoaded(true)
     }
   }, [])
 
@@ -290,11 +293,9 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         return acc
       }, [] as LeavePolicyLocal[])
 
-      // i18n: DB policy name matching — "특별휴가" is a DB value, not for translation
-      const filteredPolicies = uniquePolicies.filter(p => !p.name.includes("특별휴가"))
-
+      // 이벤트형 특별휴가도 신청 가능 — 잔액 우회 분기(API)로 제출 작동. 필터 제거.
       // i18n: DB policy name matching — sort annual-type policies to top
-      const sortedPolicies = filteredPolicies.sort((a, b) => {
+      const sortedPolicies = uniquePolicies.sort((a, b) => {
         const aIsAnnual = a.name.includes('연차')
         const bIsAnnual = b.name.includes('연차')
         if (aIsAnnual && !bIsAnnual) return -1
@@ -680,6 +681,11 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                   <p className="mt-1 text-xs text-red-500">{t('balancePreview.insufficientWarning')}</p>
                 )}
               </div>
+            )}
+
+            {/* ─── 이벤트형(경조사·병가 등) 안내: 잔액 미추적 유형 ─── */}
+            {balancesLoaded && selectedPolicy && selectedRemaining === null && (
+              <WdNote>{t('proofNotice')}</WdNote>
             )}
 
             {/* ─── Preset Toggle ─── */}
