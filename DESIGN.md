@@ -201,7 +201,7 @@ Hover: `hover:scale-[1.02]` (lg CTA), `active:scale-95`.
 - **Label**: 항상 top, 11px semibold
 - **Required**: red `*` 표시
 - **Error**: inline below input + red border + `XCircle` icon
-- **Input**: border 1px (Tailwind default), rounded-lg, focus Violet ring
+- **Input**: border 1px (Tailwind default), rounded-lg, focus Navy ring (`#004964`)
 - **Layout**: 2-column default, 짧은 폼은 1-column
 - **Buttons (right-aligned)**: cancel (ghost) → draft (outline) → submit (primary pill)
 - **Implementation**: shadcn/ui `FormField` wrapper 필수

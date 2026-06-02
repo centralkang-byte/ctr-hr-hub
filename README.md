@@ -1,6 +1,6 @@
 # CTR HR Hub
 
-> Enterprise HR SaaS platform for CTR Group — a multinational manufacturer operating 13 legal entities across 6 countries (Korea, China, Russia, Vietnam, Spain, Japan) with 1,200+ employees.
+> Enterprise HR SaaS platform for CTR Group — a multinational manufacturer operating 13 legal entities across 6 countries (Korea, USA, China, Russia, Vietnam, Poland) with 1,200+ employees.
 
 > **Last metrics refresh**: 2026-05-12 (Session 218). Re-generate via the commands in `docs/handover/01_시스템_오버뷰.md` §2.
 
@@ -10,12 +10,12 @@
 
 | Metric | Count |
 |--------|:-----:|
-| Prisma Models | 209 |
+| Prisma Models | 216 |
 | Prisma Enums | 142 |
-| API Routes | 600 |
+| API Routes | 601 |
 | Client Pages | 163 |
 | Prisma Migrations | 43 |
-| Seed Scripts | 49 |
+| Seed Scripts | 50 |
 | Cron Handlers (code) | 8 (registered 3 / unregistered 5 — see `docs/handover/02_운영런북/04_Cron_카탈로그.md`) |
 | Domain Event Handlers | 27 |
 | Nudge Rules | 11 |
@@ -50,7 +50,7 @@ All 16 modules are fully implemented (UI + API + DB):
 | **Compensation** | Salary bands, raise matrix, simulation, AI recommendations |
 | **People Directory** | Search + profile cards + skill filters |
 | **Self-Service** | Profile edit, attendance view, leave requests, payslips, year-end settlement |
-| **Notifications** | Bell icon + trigger settings + i18n (7 languages) + Microsoft Teams integration |
+| **Notifications** | Bell icon + trigger settings + i18n (5 languages) + Microsoft Teams integration |
 | **Compliance** | KR KEDO + CN Social Insurance + RU Labor Code + GDPR/PII/DPIA |
 
 ---
@@ -64,7 +64,7 @@ All 16 modules are fully implemented (UI + API + DB):
 | Database | Supabase PostgreSQL | — |
 | ORM | Prisma | 7.4 |
 | Auth | NextAuth.js + Microsoft Entra ID (Azure AD) | 4.24 |
-| Styling | TailwindCSS + Custom Design System | 4.x |
+| Styling | TailwindCSS + Custom Design System | 3.x |
 | Charts | Recharts | 3.7 |
 | Icons | Lucide React | 0.575 |
 | i18n | next-intl | 4.8 |
@@ -171,13 +171,13 @@ npm start
 ```
 ctr-hr-hub/
 ├── prisma/
-│   ├── schema.prisma          # 194 models, 131 enums
+│   ├── schema.prisma          # 216 models, 142 enums
 │   ├── seed.ts                # Master seed runner
-│   └── seeds/                 # 26 domain-specific seed scripts
+│   └── seeds/                 # 50 domain-specific seed scripts
 ├── src/
 │   ├── app/
-│   │   ├── api/v1/            # 523 API routes (RESTful)
-│   │   ├── (dashboard)/       # 146 Client pages (16 modules)
+│   │   ├── api/v1/            # 601 API routes (RESTful)
+│   │   ├── (dashboard)/       # 163 Client pages (16 modules)
 │   │   ├── login/             # Authentication page
 │   │   └── layout.tsx         # Root layout with providers
 │   ├── components/
@@ -200,16 +200,14 @@ ctr-hr-hub/
 │   │   ├── performance/       # 7-step pipeline state machine
 │   │   └── shared/            # Task state machine, common utilities
 │   └── types/                 # TypeScript type definitions
-├── messages/                  # i18n translations (7 locales)
+├── messages/                  # i18n translations (5 locales)
 │   ├── ko.json                # Korean (primary)
 │   ├── en.json                # English
 │   ├── zh.json                # Chinese
-│   ├── ru.json                # Russian
 │   ├── vi.json                # Vietnamese
-│   ├── es.json                # Spanish
-│   └── pt.json                # Portuguese
+│   └── es.json                # Spanish
 ├── docs/
-│   ├── RLS_POLICY_DESIGN.md   # Row-Level Security design (194 models classified)
+│   ├── RLS_POLICY_DESIGN.md   # Row-Level Security design (216 models classified)
 │   ├── E2E_VERIFICATION.md    # 5 E2E scenario verification results
 │   └── guides/
 │       └── UX_CHARTER.md      # 30-article UX design charter
