@@ -250,9 +250,11 @@ export const GET = withCache(withPermission(
           myOffboardingRaw,
           myTeamSize,
         ] = await Promise.all([
-          prisma.employeeLeaveBalance.findMany({
-            where: { employeeId: user.employeeId },
-            include: { policy: { select: { name: true, leaveType: true } } },
+          // LeaveYearBalance = live SSOT (same source as /leave page). Legacy EmployeeLeaveBalance
+          // is no longer written for new grants, so reading it showed "—" on the dashboard.
+          prisma.leaveYearBalance.findMany({
+            where: { employeeId: user.employeeId, year: now.getFullYear() },
+            include: { leaveTypeDef: { select: { name: true, code: true } } },
           }),
           prisma.attendance.count({
             where: {
@@ -335,11 +337,11 @@ export const GET = withCache(withPermission(
           role: 'EMPLOYEE',
           totalEmployees,
           leaveBalance: leaveBalance.map((lb) => ({
-            policy: lb.policy.name,
-            leaveType: lb.policy.leaveType,
-            remaining: Number(lb.grantedDays) - Number(lb.usedDays) - Number(lb.pendingDays),
-            used: Number(lb.usedDays),
-            total: Number(lb.grantedDays),
+            policy: lb.leaveTypeDef.name,
+            leaveType: lb.leaveTypeDef.code,
+            remaining: lb.entitled + lb.carriedOver + lb.adjusted - lb.used - lb.pending,
+            used: lb.used,
+            total: lb.entitled + lb.carriedOver + lb.adjusted,
           })),
           attendanceThisMonth: attendanceCount,
           quarterlyReview: qrReview
