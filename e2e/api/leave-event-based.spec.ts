@@ -28,6 +28,14 @@ function plusDays(base: string, n: number): string {
   return d.toISOString().slice(0, 10)
 }
 
+/** Next Saturday on/after daysAhead — a non-working day for business_day counting. */
+function nextSaturday(daysAhead: number): string {
+  const d = new Date()
+  d.setDate(d.getDate() + daysAhead)
+  d.setDate(d.getDate() + ((6 - d.getDay() + 7) % 7)) // advance to Saturday
+  return d.toISOString().slice(0, 10)
+}
+
 interface PolicyLite {
   id: string
   name: string
@@ -59,9 +67,11 @@ test.describe('EMPLOYEE: event-based special leave', () => {
   test.describe.configure({ mode: 'serial' })
 
   let special: PolicyLite | null = null
+  let sick: PolicyLite | null = null
 
   test.beforeAll(async ({ request }) => {
     special = await resolvePolicyByType(request, 'SPECIAL')
+    sick = await resolvePolicyByType(request, 'SICK')
   })
 
   test.afterAll(async ({ request }) => {
@@ -97,6 +107,32 @@ test.describe('EMPLOYEE: event-based special leave', () => {
         days: 16,
         reason: 'over-cap (E2E)',
       },
+    })
+    const result = await parseApiResponse(res)
+    expect(result.status).toBe(400)
+  })
+
+  // Same fix covers 병가 (sick) — also non-accruing, also used to 400.
+  test('POST sick leave creates PENDING (non-accruing)', async ({ request }) => {
+    if (!sick) return test.skip()
+    const day = futureWeekday(77)
+    const leaveReq = await createLeaveRequest(request, {
+      policyId: sick.id,
+      startDate: day,
+      endDate: day,
+      days: 1,
+      reason: '병가 (E2E)',
+    })
+    expect(leaveReq.id).toBeTruthy()
+    expect(leaveReq.status).toBe('PENDING')
+  })
+
+  // 0-day guard: a weekend-only request on a business_day type computes 0 days → 400.
+  test('POST special leave on a non-working day (0 days) → 400', async ({ request }) => {
+    if (!special) return test.skip()
+    const sat = nextSaturday(80)
+    const res = await request.post('/api/v1/leave/requests', {
+      data: { policyId: special.id, startDate: sat, endDate: sat, days: 1, reason: 'weekend (E2E)' },
     })
     const result = await parseApiResponse(res)
     expect(result.status).toBe(400)

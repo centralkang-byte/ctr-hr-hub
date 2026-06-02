@@ -128,6 +128,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
 
   // ─── State ───
   const [balances, setBalances] = useState<LeaveBalanceLocal[]>([])
+  const [balancesLoaded, setBalancesLoaded] = useState(false)
   const [usageData, setUsageData] = useState<WdUsageBarDatum[]>([])
   const [requests, setRequests] = useState<LeaveRequestLocal[]>([])
   const [policies, setPolicies] = useState<LeavePolicyLocal[]>([])
@@ -273,6 +274,8 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       setBalances(res.data)
     } catch {
       setBalances([])
+    } finally {
+      setBalancesLoaded(true)
     }
   }, [])
 
@@ -681,7 +684,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
             )}
 
             {/* ─── 이벤트형(경조사·병가 등) 안내: 잔액 미추적 유형 ─── */}
-            {selectedPolicy && selectedRemaining === null && (
+            {balancesLoaded && selectedPolicy && selectedRemaining === null && (
               <WdNote>{t('proofNotice')}</WdNote>
             )}
 

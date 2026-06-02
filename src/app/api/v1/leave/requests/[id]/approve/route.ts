@@ -179,12 +179,15 @@ export const PUT = withPermission(
 
     return apiSuccess({
       request: approved,
-      balance: {
-        entitled:  updatedBalance?.entitled ?? 0,
-        used:      updatedBalance?.used ?? 0,
-        pending:   updatedBalance?.pending ?? 0,
-        remaining,
-      },
+      // 이벤트형은 잔액 미추적 → balance: null (영값으로 remaining 0 오해 방지)
+      balance: updatedBalance
+        ? {
+            entitled:  updatedBalance.entitled,
+            used:      updatedBalance.used,
+            pending:   updatedBalance.pending,
+            remaining,
+          }
+        : null,
     })
   },
   perm(MODULE.LEAVE, ACTION.UPDATE),

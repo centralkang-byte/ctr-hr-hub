@@ -22,7 +22,7 @@ import { fetchPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import { calculateLeaveDays } from '@/lib/leave/calculateLeaveDays'
 import { fetchCompanyHolidays } from '@/lib/leave/fetchHolidays'
 import { resolveLeaveTypeDefId } from '@/lib/leave/resolveLeaveTypeDefId'
-import { leaveTypeUsesBalance, resolveEventLeaveDayCap } from '@/lib/leave/eventBasedLeave'
+import { leaveTypeUsesBalance, resolveEventLeaveDays } from '@/lib/leave/eventBasedLeave'
 import type { SessionUser } from '@/types'
 
 // ─── GET: My leave requests ──────────────────────────────
@@ -188,41 +188,25 @@ export const POST = withPermission(
     // 적립형은 parsed.data.days를 잔액으로 검증하므로 그대로 사용한다.
     let effectiveDays = parsed.data.days
     if (!usesBalance) {
-      const holidays = await fetchCompanyHolidays(primaryCompanyId, startDate, endDate)
-      const computedDays = calculateLeaveDays({
+      const { days, cap } = await resolveEventLeaveDays({
+        companyId: primaryCompanyId,
+        policyId: parsed.data.policyId,
         startDate,
         endDate,
         countingMethod,
         includesHolidays,
-        holidays,
+        maxConsecutiveDays: leaveTypeDef?.maxConsecutiveDays ?? null,
+        isSplittable: leaveTypeDef?.isSplittable ?? false,
+        halfDayType: parsed.data.halfDayType,
+        clientDays: parsed.data.days,
       })
-      // 분할 가능 유형의 반차는 클라이언트 0.5 유지, 그 외는 규정 산정값을 권위값으로
-      effectiveDays =
-        parsed.data.halfDayType && leaveTypeDef?.isSplittable
-          ? parsed.data.days
-          : computedDays
-
-      if (effectiveDays <= 0) {
+      if (days <= 0) {
         throw badRequest('신청 가능한 휴가일이 없습니다. 날짜를 확인해주세요.')
       }
-
-      // 정책 정의 일수 상한: maxConsecutiveDays ?? policy.defaultDays
-      let policyDefaultDays: number | null = null
-      if (leaveTypeDef?.maxConsecutiveDays == null) {
-        const policy = await prisma.leavePolicy.findUnique({
-          where: { id: parsed.data.policyId },
-          select: { defaultDays: true },
-        })
-        policyDefaultDays =
-          policy?.defaultDays != null ? Number(policy.defaultDays) : null
-      }
-      const cap = resolveEventLeaveDayCap({
-        maxConsecutiveDays: leaveTypeDef?.maxConsecutiveDays ?? null,
-        policyDefaultDays,
-      })
-      if (cap != null && effectiveDays > cap) {
+      if (cap != null && days > cap) {
         throw badRequest(`이 휴가 유형은 최대 ${cap}일까지 신청할 수 있습니다.`)
       }
+      effectiveDays = days
     }
 
     // ── F-3: Half-day duplicate warning (반차+반차=1일) ──

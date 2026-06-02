@@ -9,6 +9,8 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
+import { calculateLeaveDays, type CountingMethod } from '@/lib/leave/calculateLeaveDays'
+import { fetchCompanyHolidays } from '@/lib/leave/fetchHolidays'
 
 type TxPrisma = Parameters<Parameters<typeof prisma.$transaction>[0]>[0]
 
@@ -54,4 +56,49 @@ export async function leaveTypeUsesBalance(
     where: { leaveTypeDefId, deletedAt: null },
   })
   return isBalanceTracked(count)
+}
+
+/**
+ * 이벤트형 휴가의 권위 일수 + 정책 상한 산정.
+ * - 일수: countingMethod 기준 서버 재계산(클라이언트 days 불신). 단, 분할 가능
+ *   유형의 반차(halfDayType)는 클라이언트 0.5 유지.
+ * - 상한(cap): maxConsecutiveDays ?? policy.defaultDays (둘 다 없으면 null).
+ * 호출부는 반환 days/cap으로 0일·상한초과를 검증(throw)한다.
+ */
+export async function resolveEventLeaveDays(opts: {
+  companyId: string
+  policyId: string
+  startDate: Date
+  endDate: Date
+  countingMethod: CountingMethod
+  includesHolidays: boolean
+  maxConsecutiveDays: number | null
+  isSplittable: boolean
+  halfDayType?: 'AM' | 'PM' | null
+  clientDays: number
+}): Promise<{ days: number; cap: number | null }> {
+  const holidays = await fetchCompanyHolidays(opts.companyId, opts.startDate, opts.endDate)
+  const computed = calculateLeaveDays({
+    startDate: opts.startDate,
+    endDate: opts.endDate,
+    countingMethod: opts.countingMethod,
+    includesHolidays: opts.includesHolidays,
+    holidays,
+  })
+  const days = opts.halfDayType && opts.isSplittable ? opts.clientDays : computed
+
+  let policyDefaultDays: number | null = null
+  if (opts.maxConsecutiveDays == null) {
+    const policy = await prisma.leavePolicy.findUnique({
+      where: { id: opts.policyId },
+      select: { defaultDays: true },
+    })
+    policyDefaultDays = policy?.defaultDays != null ? Number(policy.defaultDays) : null
+  }
+
+  const cap = resolveEventLeaveDayCap({
+    maxConsecutiveDays: opts.maxConsecutiveDays,
+    policyDefaultDays,
+  })
+  return { days, cap }
 }
