@@ -21,6 +21,9 @@
 .DS_Store
 *.pem
 
+# backup files (e.g. scripts/i18n-batch.ts writes messages/*.json.bak)
+*.bak
+
 # debug
 npm-debug.log*
 yarn-debug.log*
