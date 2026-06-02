@@ -65,7 +65,7 @@ const CYCLE_STATUS_STYLES: Record<string, string> = {
   GOAL_SETTING: 'bg-primary/5 text-blue-800',
   IN_PROGRESS: 'bg-primary/10 text-tertiary',
   EVALUATION: 'bg-amber-500/10 text-amber-700',
-  CALIBRATION: 'bg-purple-500/10 text-purple-800',
+  CALIBRATION: 'bg-wt-4/10 text-wt-4',
   COMPLETED: 'bg-border text-muted-foreground',
 }
 
@@ -266,8 +266,8 @@ export default function PerformanceClient({
           {/* Card 3: 평균 달성률 */}
           <div className="rounded-xl border border-border bg-card p-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/10">
-                <TrendingUp className="h-5 w-5 text-purple-800" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-wt-4/10">
+                <TrendingUp className="h-5 w-5 text-wt-4" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">{t('avgAchievement')}</p>

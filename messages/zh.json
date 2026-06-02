@@ -2318,7 +2318,6 @@
     "newPhonePlaceholder": "010-0000-0000",
     "newPositionOptional": "职位（可选）",
     "newSelectPosition": "选择职位",
-    "newStepLabel": "第{number}步: {label}",
     "newValueLabel": "New Value",
     "newWorkPermit": "New Work Permit",
     "noChangeRequests": "No change requests",
@@ -2926,6 +2925,79 @@
         "pilotBanner": {
           "title": "HR Admin Pilot — Preview",
           "envLabel": "{role} · HOME_PREVIEW=true"
+        },
+        "workdayHero": {
+          "greetingAm": "Good morning, {name}",
+          "greetingPm": "Hello, {name}",
+          "subBefore": "You have ",
+          "subMiddle": " items to handle today. Of those, ",
+          "subAfter": " are past their start date — please review first.",
+          "ctaInbox": "Open inbox",
+          "ctaAlerts": "View alerts",
+          "kpi": {
+            "headcount": "Headcount",
+            "openRoles": "Open roles",
+            "turnoverRate": "Turnover (30d)"
+          }
+        },
+        "worklet": {
+          "heading": "Main menu",
+          "inline": {
+            "danger": "Critical",
+            "warn": "Warning",
+            "neutral": "Normal"
+          },
+          "employees": {
+            "title": "Employees",
+            "subtitle": "Total {total} · New {newHires}",
+            "inline1": "{count} new hires this month"
+          },
+          "recruitment": {
+            "title": "Recruitment",
+            "subtitle": "{open} open positions"
+          },
+          "attendance": {
+            "title": "Attendance",
+            "subtitle": "Today present {present} · late {late}",
+            "subtitleEmpty": "No attendance data today",
+            "inline1": "{absent} absent",
+            "inline2": "{late} late"
+          },
+          "leave": {
+            "title": "Leave",
+            "subtitle": "{pending} pending approvals",
+            "inline1": "{count} overdue · prioritize"
+          },
+          "performance": {
+            "title": "Performance",
+            "subtitle": "{rate}% complete ({completed}/{total})",
+            "subtitleEmpty": "Quarterly data pending"
+          },
+          "payroll": {
+            "title": "Payroll",
+            "subtitle": "Next payroll cycle processing"
+          },
+          "organization": {
+            "title": "Organization",
+            "subtitle": "Department / Position structure"
+          },
+          "analytics": {
+            "title": "Analytics",
+            "subtitle": "Turnover {rate}% · Insights"
+          }
+        },
+        "approvalPreview": {
+          "heading": "Pending",
+          "subHeading": "{count} items · sorted by urgency",
+          "viewAll": "Full inbox",
+          "urgency": {
+            "overdue": "Overdue",
+            "today": "Today",
+            "queued": "Queued"
+          },
+          "approveCta": "Review",
+          "submittedFmt": "Submitted {date}",
+          "empty": "No pending approvals"
         }
       }
     },
@@ -3327,6 +3399,7 @@
     "approve": "Approve",
     "approved": "Approved",
     "balance": "Leave Balance",
+    "monthlyUsagePattern": "每月使用模式",
     "balancePreview": {
       "currentRemaining": "当前剩余:",
       "insufficientWarning": "休假余额不足。",
@@ -3415,6 +3488,7 @@
     "quarterDay": "Quarter Day",
     "reason": "Reason",
     "reasonPlaceholder": "Enter leave reason",
+    "proofNotice": "这是事件性休假（如婚丧假、病假）。不扣除假期余额，发生时申请即可；请详细填写事由，并向审批人提交证明材料。",
     "reject": "Reject",
     "rejected": "Rejected",
     "rejectionReason": "Rejection Reason",
@@ -4768,7 +4842,15 @@
     },
     "leavePromotion": {
       "body": "{name}，您还有{remainingDays}天年假未使用，距入职周年还有{daysUntilAnniversary}天，建议您安排休假。",
-      "title": "建议休假"
+      "title": "建议休假",
+      "stage1": {
+        "title": "年假使用促进 第一次通知（请指定使用时间）",
+        "body": "{name}，您有{remainingDays}天年假未使用。根据《劳动基准法》第61条，请指定并通知您的休假时间。（申请中{pendingDays}天另计）"
+      },
+      "stage2": {
+        "title": "年假使用促进 第二次通知",
+        "body": "{name}，关于未指定使用时间的{remainingDays}天未使用年假，此为第二次通知。建议在使用期限结束前休假。（申请中{pendingDays}天另计）"
+      }
     },
     "leaveRejected": {
       "body": "驳回原因：{reason}",
@@ -5423,6 +5505,7 @@
     "deleteDepartment": "Delete Department",
     "department": "Department",
     "departmentHead": "Department Head",
+    "deptCountLabel": "部门",
     "deptInfo": "Department Info",
     "diffPreview": "Change Preview",
     "draftSaved": "草稿 saved successfully.",
@@ -5442,6 +5525,7 @@
     "noEmployees": "No employees",
     "orgChanges": "Org Changes",
     "orgChart": "Org Chart",
+    "orgChartDesc": "一览公司组织架构",
     "parentDepartment": "Parent Department",
     "planTitle": "Plan 标题",
     "positions": "Positions",
@@ -11305,5 +11389,15 @@
         "OTHER": "[TODO:zh] Other"
       }
     }
+  },
+  "wizard": {
+    "prev": "[TODO:zh] Previous",
+    "next": "[TODO:zh] Next",
+    "submit": "[TODO:zh] Submit",
+    "cancel": "[TODO:zh] Cancel",
+    "stepLabel": "[TODO:zh] step"
+  },
+  "demoLimitBanner": {
+    "defaultMessage": "[TODO:zh] This is a demo screen — refreshing will discard your input."
   }
 }

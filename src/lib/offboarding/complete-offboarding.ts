@@ -258,7 +258,7 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
                 amount: severance.isEligible ? severance.netSeverancePay : 0,
                 note: severance.isEligible
                     ? `퇴직금 ${severance.severancePay.toLocaleString()}원 (세후 ${severance.netSeverancePay.toLocaleString()}원, 재직 ${severance.tenureYears}년)`
-                    : `퇴직금 미대상 (재직 ${severance.tenureDays}일 < 365일)`,
+                    : `퇴직금 미대상 — ${severance.ineligibleReason ?? `재직 ${severance.tenureDays}일 < 365일`}`,
             })
         } catch {
             settlementItems.push({

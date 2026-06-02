@@ -63,7 +63,7 @@ const ASSIGNEE_BADGE_STYLES: Record<string, string> = {
   EMPLOYEE: 'bg-tertiary-container/20 text-tertiary',
   MANAGER: 'bg-primary/5 text-blue-500',
   HR: 'bg-destructive/5 text-red-500',
-  BUDDY: 'bg-purple-500/10 text-purple-700',
+  BUDDY: 'bg-wt-4/10 text-wt-4',
 }
 
 // ─── Helpers ──────────────────────────────────────────────────
@@ -232,7 +232,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
             </div>
             <div className="h-3 w-full rounded-full bg-muted">
               <div
-                className="h-3 rounded-full bg-gradient-to-r from-[#5E81F4] to-[#4A6DE0] transition-all duration-500"
+                className="h-3 rounded-full bg-gradient-to-r from-primary to-primary-dim transition-all duration-500"
                 style={{ width: `${progress.pct}%` }}
               />
             </div>
@@ -281,7 +281,7 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
                         checked={isDone || isSkipped}
                         disabled={isDone || isSkipped || isCompleting}
                         onChange={() => handleComplete(row.id)}
-                        className="h-5 w-5 rounded border-border text-primary accent-[#5E81F4] cursor-pointer disabled:cursor-default"
+                        className="h-5 w-5 rounded border-border text-primary accent-[#004964] cursor-pointer disabled:cursor-default"
                       />
 
                       {/* Task info */}

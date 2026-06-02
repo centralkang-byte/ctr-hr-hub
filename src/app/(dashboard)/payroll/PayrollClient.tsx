@@ -175,7 +175,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
       {/* ── Header ─────────────────────────────────────────── */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#5E81F4] to-[#A855F7]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-dim">
             <Wallet className="h-5 w-5 text-white" />
           </div>
           <div>
@@ -237,7 +237,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
                     ? <TrendingDown className="h-3.5 w-3.5 text-destructive" />
                     : <DollarSign className="h-3.5 w-3.5 text-primary" />
               }
-              accent="bg-indigo-500/15"
+              accent="bg-primary/15"
               onClick={() => router.push('/payroll/global')}
             />
 
@@ -262,8 +262,8 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
               label={t('dashboard.pendingApprovals')}
               value={t('dashboard.pendingCount', { pending: data.summary.pendingApprovals, alerts: data.summary.alertCount })}
               sub={t('dashboard.approvalAndDeadline')}
-              icon={<Clock className="h-3.5 w-3.5 text-violet-500" />}
-              accent="bg-purple-500/10"
+              icon={<Clock className="h-3.5 w-3.5 text-primary" />}
+              accent="bg-wt-4/10"
               onClick={data.summary.pendingApprovals > 0 ? () => router.push('/my/tasks?tab=approvals') : undefined}
             />
           </div>
@@ -306,7 +306,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
                 label={t('dashboard.closeAttendance')}
                 sub="STEP 1 → 2"
                 onClick={() => router.push('/payroll/close-attendance')}
-                accent="bg-indigo-500/15"
+                accent="bg-primary/15"
               />
               <QuickAction
                 icon={<AlertTriangle className="h-5 w-5 text-amber-500" />}
@@ -320,7 +320,7 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
                 label={t('dashboard.pendingApproval')}
                 sub="STEP 4"
                 onClick={() => router.push('/my/tasks?tab=approvals')}
-                accent="bg-indigo-500/15"
+                accent="bg-primary/15"
               />
               <QuickAction
                 icon={<Wallet className="h-5 w-5 text-emerald-600" />}

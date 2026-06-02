@@ -4355,8 +4355,8 @@ model TeamsCardAction {
 model LeavePromotionLog {
   id            String   @id @default(uuid())
   employeeId    String   @map("employee_id")
-  year          Int
-  step          Int // 1=60일전, 2=30일전, 3=10일전
+  year          Int // = 연차 사용기간 종료 연도 (통보 발송 시점 달력연도 아님)
+  step          Int // 61=§61 1차(종료 6개월 전 촉구), 62=§61 2차(종료 2개월 전 통보). 1/2/3=구 cron(60/30/10일, deprecated·비충돌)
   remainingDays Decimal  @map("remaining_days")
   sentAt        DateTime @default(now()) @map("sent_at")
 

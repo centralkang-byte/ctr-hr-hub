@@ -22,11 +22,11 @@ const badgeVariants = cva(
         error:
           "bg-destructive/10 text-destructive",
         info:
-          "bg-primary/10 text-primary-dim",
+          "bg-wt-7/10 text-wt-7 dark:bg-primary/10 dark:text-primary-dim",
         neutral:
           "bg-muted text-muted-foreground",
         accent:
-          "bg-badge-accent/10 text-badge-accent",
+          "bg-wt-4/10 text-wt-4 dark:bg-badge-accent/10 dark:text-badge-accent",
       },
     },
     defaultVariants: {

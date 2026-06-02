@@ -462,10 +462,15 @@ export async function seedNewEmployees(prisma: PrismaClient): Promise<void> {
   let cnCount = 0
   let cnRoleCount = 0
 
-  // CTR-CN 그레이드 (S3 = 기존 합성 급여 직원 사용 레벨)
-  // CTR-CN에는 KR 등급 없음 → 글로벌 기본 조회
-  const cnJobGrade = await prisma.jobGrade.findFirst({ where: { code: 'S3' } })
-  const cnGradeId  = cnJobGrade?.id ?? null
+  // CTR-CN 그레이드 — 해외 7단계 체계(E1/S1/L5~L1, 37-job-grades)를 companyId 스코프로 조회.
+  // 과거 'S3'(JobGrade 미존재, KR jobLevel 코드)를 글로벌 조회해 18명 전원 jobGradeId=null 이던 버그 수정.
+  const cnGrades = await prisma.jobGrade.findMany({ where: { companyId: ctrCnId } })
+  const cnGradeMap = new Map(cnGrades.map((g) => [g.code, g.id]))
+  const cnGradeIdFor = (posCode: string): string | null => {
+    if (posCode.endsWith('-HEAD')) return cnGradeMap.get('L4') ?? null // 부서장 → Manager
+    if (posCode.endsWith('-SR')) return cnGradeMap.get('L3') ?? null   // 시니어 → Assistant Manager
+    return cnGradeMap.get('L1') ?? null                                // 일반(STAFF/S1/S2) → Staff
+  }
 
   const cnOfficeCatId = deterministicUUID('jobcat', 'CTR-CN:OFFICE')
   const cnProdCatId   = deterministicUUID('jobcat', 'CTR-CN:PRODUCTION')
@@ -512,7 +517,7 @@ export async function seedNewEmployees(prisma: PrismaClient): Promise<void> {
         companyId:      ctrCnId,
         departmentId:   deptId,
         positionId:     posId,
-        jobGradeId:     cnGradeId,
+        jobGradeId:     cnGradeIdFor(bp.posCode),
         jobCategoryId:  catId,
         effectiveDate:  hd,
         changeType:     'HIRE',
@@ -528,6 +533,12 @@ export async function seedNewEmployees(prisma: PrismaClient): Promise<void> {
       if (!existingById) {
         await prisma.employeeAssignment.create({ data: assignData })
       }
+    } else if (existingA.jobGradeId === null) {
+      // 기존 시드 실행분(jobGradeId=null) backfill — 재시드 시 idempotent 복구 (codex P2)
+      await prisma.employeeAssignment.update({
+        where: { id: existingA.id },
+        data: { jobGradeId: cnGradeIdFor(bp.posCode) },
+      })
     }
 
     // EmployeeAuth (CN)

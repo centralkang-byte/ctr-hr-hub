@@ -305,7 +305,7 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
 
       {/* AI Summary + Coaching Tip */}
       {meeting.aiSummary && (
-        <div className="bg-indigo-500/15 rounded-xl border border-indigo-200 p-5">
+        <div className="bg-primary/15 rounded-xl border border-primary/20 p-5">
           <div className="flex items-center gap-2 mb-2">
             <Sparkles className="w-4 h-4 text-primary/90" />
             <span className="text-sm font-medium text-primary/90">{t('kr_ai_kecbd94ec_ked8c81')}</span>
@@ -319,7 +319,7 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
         <button
           onClick={handleAiNotes}
           disabled={aiLoading}
-          className="flex items-center gap-2 px-4 py-2 border border-indigo-200 text-primary/90 rounded-lg text-sm font-medium hover:bg-indigo-500/15 disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 border border-primary/20 text-primary/90 rounded-lg text-sm font-medium hover:bg-primary/15 disabled:opacity-50"
         >
           <Sparkles className="w-4 h-4" />
           {aiLoading ? t('aiGenerating') : t('oneOnOne_aiSummarize')}

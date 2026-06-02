@@ -35,7 +35,7 @@ interface TotalRewardsData {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const PIE_COLORS = ['#4a40e0', '#10B981', '#F59E0B', '#EC4899', '#8B5CF6']
+const PIE_COLORS = ['#4a40e0', '#10B981', '#F59E0B', '#EC4899', '#7457d1']
 
 // ─── Component ──────────────────────────────────────────────
 
@@ -91,7 +91,7 @@ export default function TotalRewardsClient({ user: _user }: { user: SessionUser 
     { label: t('bonuses'), value: data.bonuses, icon: Gift, color: 'text-emerald-600' },
     { label: t('allowances'), value: data.allowances, icon: Wallet, color: 'text-amber-600' },
     { label: t('benefits'), value: data.benefits, icon: Heart, color: 'text-pink-500' },
-    { label: t('rewards'), value: data.rewards, icon: Award, color: 'text-purple-500' },
+    { label: t('rewards'), value: data.rewards, icon: Award, color: 'text-wt-4' },
   ]
 
   return (

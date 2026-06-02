@@ -20,8 +20,9 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
+import { ToastAction } from '@/components/ui/toast'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
@@ -30,26 +31,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-  SheetFooter,
-} from '@/components/ui/sheet'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { WdDrawer, WdField, WdNote } from '@/components/shared/WdDrawer'
+import { WdLeaveBalanceCard } from '@/components/shared/WdLeaveBalanceCard'
+import { WdUsageBarChart, type WdUsageBarDatum } from '@/components/shared/WdUsageBarChart'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
+import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
 import { formatDateLocale } from '@/lib/format/date'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
@@ -100,16 +89,14 @@ interface LeavePolicyLocal {
   leaveType: string
 }
 
-// ─── Status badge styles ────────────────────────────────────
-
-const statusBadgeClass: Record<string, string> = {
-  PENDING: 'bg-orange-500/10 text-orange-500',
-  APPROVED: 'bg-primary/10 text-tertiary',
-  REJECTED: 'bg-destructive/5 text-red-500',
-  CANCELLED: 'bg-muted text-muted-foreground',
-}
+// ─── Constants ──────────────────────────────────────────────
+// WS-D(LV-005): raw statusBadgeClass 제거 → StatusBadge SSOT(status.ts
+// STATUS_MAP: PENDING→warning/APPROVED→success/REJECTED→error/CANCELLED→neutral).
 
 const SINGLE_DAY_PRESETS = new Set(['AM', 'PM', 'QUARTER'])
+
+// statusFilter 세그먼트 컨트롤 값 순서 (방향키 내비게이션 인덱스 SSOT)
+const STATUS_FILTER_VALUES = ['ALL', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'] as const
 
 // ─── Component ──────────────────────────────────────────────
 
@@ -139,16 +126,23 @@ export function LeaveClient({ user }: { user: SessionUser }) {
     CANCELLED: t('cancelled'),
   }
 
-  const isMobile = useIsMobile()
-
   // ─── State ───
   const [balances, setBalances] = useState<LeaveBalanceLocal[]>([])
+  const [balancesLoaded, setBalancesLoaded] = useState(false)
+  const [usageData, setUsageData] = useState<WdUsageBarDatum[]>([])
   const [requests, setRequests] = useState<LeaveRequestLocal[]>([])
   const [policies, setPolicies] = useState<LeavePolicyLocal[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | undefined>()
   const [page, setPage] = useState(1)
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
   const [loading, setLoading] = useState(true)
+
+  // 방향키 내비게이션 + roving tabindex (statusFilter 세그먼트 컨트롤). 선택은 기존 onClick 유지.
+  const statusNav = useArrowKeyNavigation(
+    STATUS_FILTER_VALUES.length,
+    STATUS_FILTER_VALUES.findIndex((v) => v === statusFilter),
+    (i) => setStatusFilter(STATUS_FILTER_VALUES[i]),
+  )
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [startDateOpen, setStartDateOpen] = useState(false)
@@ -280,6 +274,8 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       setBalances(res.data)
     } catch {
       setBalances([])
+    } finally {
+      setBalancesLoaded(true)
     }
   }, [])
 
@@ -297,11 +293,9 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         return acc
       }, [] as LeavePolicyLocal[])
 
-      // i18n: DB policy name matching — "특별휴가" is a DB value, not for translation
-      const filteredPolicies = uniquePolicies.filter(p => !p.name.includes("특별휴가"))
-
+      // 이벤트형 특별휴가도 신청 가능 — 잔액 우회 분기(API)로 제출 작동. 필터 제거.
       // i18n: DB policy name matching — sort annual-type policies to top
-      const sortedPolicies = filteredPolicies.sort((a, b) => {
+      const sortedPolicies = uniquePolicies.sort((a, b) => {
         const aIsAnnual = a.name.includes('연차')
         const bIsAnnual = b.name.includes('연차')
         if (aIsAnnual && !bIsAnnual) return -1
@@ -329,19 +323,61 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       const res = await apiClient.getList<LeaveRequestLocal>('/api/v1/leave/requests', params)
       setRequests(res.data)
       setPagination(res.pagination)
-    } catch {
+    } catch (err) {
+      // WS-D: 무음 catch 제거 → toast(에러 사유) + 재시도 CTA. 빈 상태 노출(stale 방지)
       setRequests([])
       setPagination(undefined)
+      toast({
+        title: tc('loadFailed'),
+        description: err instanceof Error ? err.message : t('submit.error'),
+        variant: 'destructive',
+        action: (
+          <ToastAction altText={tc('retry')} onClick={() => { void fetchRequests() }}>
+            {tc('retry')}
+          </ToastAction>
+        ),
+      })
     } finally {
       setLoading(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, statusFilter])
+
+  // ─── Fetch monthly usage (LV-002 — 전용 fetch, 페이지네이션 history 와 분리) ───
+  // N4: /leave/requests limit cap 100, date param 없음. 개인 휴가 100행
+  // (createdAt desc) ≫ 6개월 → 클라이언트 월별 집계. 백엔드 0 변경.
+  const fetchUsage = useCallback(async () => {
+    try {
+      const res = await apiClient.getList<LeaveRequestLocal>('/api/v1/leave/requests', {
+        limit: 100,
+      })
+      const now = new Date()
+      const months = Array.from({ length: 6 }, (_, idx) => {
+        const d = new Date(now.getFullYear(), now.getMonth() - (5 - idx), 1)
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+        return { key, label: `${d.getMonth() + 1}월` }
+      })
+      // F3 (가디언 m0008): 프로토 byMonth.n = 신청 "건수" (days 합산 아님,
+      // 1st principle 충실). REJECTED/CANCELLED 제외 = 승인/대기 = 사용한 휴가.
+      const counts: Record<string, number> = {}
+      for (const r of res.data) {
+        if (r.status === 'REJECTED' || r.status === 'CANCELLED') continue
+        const ym = (r.startDate ?? '').slice(0, 7) // 'YYYY-MM' (tz-safe)
+        if (!ym) continue
+        counts[ym] = (counts[ym] ?? 0) + 1
+      }
+      setUsageData(months.map((m) => ({ label: m.label, value: counts[m.key] ?? 0 })))
+    } catch {
+      setUsageData([])
+    }
+  }, [])
 
   // ─── Effects ───
   useEffect(() => {
     void fetchBalances()
     void fetchPolicies()
-  }, [fetchBalances, fetchPolicies])
+    void fetchUsage()
+  }, [fetchBalances, fetchPolicies, fetchUsage])
 
   // Handle Preset Reset on Policy Change
   useEffect(() => {
@@ -422,6 +458,13 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       await apiClient.put(`/api/v1/leave/requests/${id}/cancel`)
       void fetchBalances()
       void fetchRequests()
+    } catch (err) {
+      // WS-D: 취소 실패 무음 제거 → toast(에러 사유)
+      toast({
+        title: tc('error'),
+        description: err instanceof Error ? err.message : t('submit.error'),
+        variant: 'destructive',
+      })
     } finally {
       setCancellingId(null)
     }
@@ -433,31 +476,39 @@ export function LeaveClient({ user }: { user: SessionUser }) {
       key: 'leaveType',
       header: t('policy'),
       render: (row: LeaveRequestLocal) => (
-        <Badge variant="outline">{row.policy?.name ?? '-'}</Badge>
+        <Badge variant="accent">{row.policy?.name ?? '-'}</Badge>
       ),
     },
     {
       key: 'startDate',
       header: t('startDate'),
-      render: (row: LeaveRequestLocal) => formatDateLocale(row.startDate),
+      render: (row: LeaveRequestLocal) => (
+        <span className="tabular-nums">{formatDateLocale(row.startDate)}</span>
+      ),
     },
     {
       key: 'endDate',
       header: t('endDate'),
-      render: (row: LeaveRequestLocal) => formatDateLocale(row.endDate),
+      render: (row: LeaveRequestLocal) => (
+        <span className="tabular-nums">{formatDateLocale(row.endDate)}</span>
+      ),
     },
     {
       key: 'days',
       header: t('days'),
-      render: (row: LeaveRequestLocal) => `${parseFloat(Number(row.days).toFixed(2))}${t('dayUnit')}`,
+      render: (row: LeaveRequestLocal) => (
+        <span className="tabular-nums">
+          {parseFloat(Number(row.days).toFixed(2))}{t('dayUnit')}
+        </span>
+      ),
     },
     {
       key: 'status',
       header: te('status'),
       render: (row: LeaveRequestLocal) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${statusBadgeClass[row.status] ?? 'bg-muted text-muted-foreground'}`}>
+        <StatusBadge status={row.status}>
           {statusLabel[row.status] ?? row.status}
-        </span>
+        </StatusBadge>
       ),
     },
     {
@@ -494,8 +545,10 @@ export function LeaveClient({ user }: { user: SessionUser }) {
   // ─── Render ───
   return (
     <div className="space-y-6">
+      {/* A.2 page-h: 프로토 LeaveReqPage h1="휴가 신청"(F10(a) t('request') 재사용,
+          신규 키 0). F7 = 단일 휴가 신청 btn-primary (이력 다운로드 미포함) */}
       <PageHeader
-        title={t('title')}
+        title={t('request')}
         description={t('balance')}
         actions={
           <Button onClick={openRequestDialog}>
@@ -505,97 +558,58 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         }
       />
 
-      {/* ─── Section 1: Leave Balance Cards (카테고리 그룹핑) ─── */}
-      {!balances?.length && !loading && (
-        <p className="py-4 text-sm text-muted-foreground">{tc('noData')}</p>
-      )}
-      {balances?.length > 0 && (() => {
-        // 카테고리별 그룹핑
-        const CATEGORY_ORDER = ['annual', 'sick', 'maternity', 'paternity', 'bereavement', 'special', 'compensatory', 'other']
-        const CATEGORY_LABEL_KEYS: Record<string, string> = {
-          annual: 'category.annual', sick: 'category.health', maternity: 'category.maternity',
-          paternity: 'category.paternity', bereavement: 'category.familyEvent', special: 'category.special',
-          compensatory: 'category.compensatory', other: 'category.other',
-        }
-        const groups: Record<string, LeaveBalanceLocal[]> = {}
-        for (const b of balances) {
-          const cat = b.leaveTypeDef?.code ?? 'other'
-          if (!CATEGORY_LABEL_KEYS[cat]) {
-            if (!groups['other']) groups['other'] = []
-            groups['other'].push(b)
-          } else {
-            if (!groups[cat]) groups[cat] = []
-            groups[cat].push(b)
-          }
-        }
-        const orderedGroups = CATEGORY_ORDER.filter(c => groups[c]?.length)
+      {/* ─── F6: 잔여 카드 | 월별 패턴 grid-2 2열 병치 (컴포넌트 내부 불변) ─── */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {/* Section 1: PR-1 카나리 — WdGroupedStatCard SSOT */}
+        <WdLeaveBalanceCard balances={balances} loading={loading} />
+        {/* Section 1b: PR-2 LV-002 카나리 — chart.ts SSOT */}
+        <WdUsageBarChart
+          title={t('monthlyUsagePattern')}
+          data={usageData}
+          unit="건"
+          insight={null}
+          emptyState={<EmptyState />}
+        />
+      </div>
 
-        return (
-          <div className="space-y-4">
-            {orderedGroups.map(cat => (
-              <div key={cat}>
-                <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
-                  {CATEGORY_LABEL_KEYS[cat] ? t(CATEGORY_LABEL_KEYS[cat]) : cat}
-                </p>
-                <div className="flex gap-4 overflow-x-auto pb-1">
-                  {groups[cat].map((b) => {
-                    const remaining = getRemainingDays(b)
-                    const total = b.entitled + b.carriedOver + b.adjusted
-                    const usagePct = total > 0 ? Math.round(((total - remaining) / total) * 100) : 0
-                    return (
-                      <div
-                        key={b.id}
-                        className="min-w-[200px] flex-shrink-0 bg-card border border-border rounded-xl p-5"
-                      >
-                        <p className="text-xs text-muted-foreground font-medium mb-2">
-                          {b.leaveTypeDef?.name ?? b.policy?.name ?? '-'}
-                        </p>
-                        <div className="flex items-end gap-1">
-                          <p className={`text-2xl font-bold tracking-[-0.02em] ${remaining > 0 ? 'text-primary' : 'text-muted-foreground'}`}>
-                            {remaining}
-                          </p>
-                          <p className="text-sm text-muted-foreground mb-0.5">/ {total} {t('fullDay')}</p>
-                        </div>
-                        <div className="mt-2 h-1.5 rounded-full bg-border overflow-hidden">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-[#5E81F4] to-[#00BFA5]"
-                            style={{ width: `${Math.min(usagePct, 100)}%` }}
-                          />
-                        </div>
-                        <p className="mt-1.5 text-xs text-muted-foreground">
-                          {t('usedDays')} {b.used}{t('fullDay')} / {t('pendingDays')} {b.pending}{t('fullDay')}
-                        </p>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        )
-      })()}
-
-      {/* ─── Section 3: Status filter + Request History ─── */}
-      <div className="flex items-center gap-2">
-        {[
-          { value: 'ALL', label: tc('all') },
-          { value: 'PENDING', label: t('pending') },
-          { value: 'APPROVED', label: t('approved') },
-          { value: 'REJECTED', label: t('rejected') },
-          { value: 'CANCELLED', label: t('cancelled') },
-        ].map((f) => (
-          <button
-            key={f.value}
-            onClick={() => setStatusFilter(f.value)}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
-              statusFilter === f.value
-                ? 'bg-foreground text-white border-foreground'
-                : 'bg-card text-muted-foreground border-border hover:bg-muted'
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
+      {/* ─── Section 3: wd-result-toolbar (프로토 .pill-tabs + .count-display) ─── */}
+      {/* 세그먼트 컨트롤(design.md "Tabs=Segmented") + 우측 건수 */}
+      <div className="flex items-center justify-between gap-2">
+        <div
+          role="tablist"
+          aria-label={te('status')}
+          onKeyDown={statusNav.onKeyDown}
+          className="inline-flex flex-wrap gap-1 rounded-lg bg-muted/50 p-1"
+        >
+          {[
+            { value: 'ALL', label: tc('all') },
+            { value: 'PENDING', label: t('pending') },
+            { value: 'APPROVED', label: t('approved') },
+            { value: 'REJECTED', label: t('rejected') },
+            { value: 'CANCELLED', label: t('cancelled') },
+          ].map((f, idx) => (
+            <button
+              key={f.value}
+              type="button"
+              role="tab"
+              aria-selected={statusFilter === f.value}
+              onClick={() => setStatusFilter(f.value)}
+              {...statusNav.itemProps(idx)}
+              className={cn(
+                'rounded-md px-3 py-1.5 text-xs font-semibold motion-safe:transition-all',
+                statusFilter === f.value
+                  ? 'bg-card text-primary shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground',
+              )}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
+          {/* 단위 "건" = 카운터 리터럴 (PR-2 WdUsageBarChart unit="건" 선례, 신규 i18n 0) */}
+          <b className="text-foreground">{pagination?.total ?? requests.length}</b>건
+        </span>
       </div>
 
       <DataTable
@@ -609,14 +623,15 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         rowKey={(row) => (row as unknown as LeaveRequestLocal).id}
       />
 
-      {/* ─── Section 2: Leave Request Form ─── */}
+      {/* ─── Section 2: Leave Request Form (WdDrawer 카나리) ─── */}
       {(() => {
         const formContent = (
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-4">
+            <WdNote>{t('requestDescription')}</WdNote>
+
             {/* policyId */}
-            <div className="space-y-2">
-              <Label htmlFor="leave-policy">{t('policy')}</Label>
+            <WdField label={t('policy')}>
               <Controller
                 control={control}
                 name="policyId"
@@ -638,7 +653,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               {errors.policyId && (
                 <p className="text-sm text-destructive">{errors.policyId.message}</p>
               )}
-            </div>
+            </WdField>
 
             {/* ─── Balance preview ─── */}
             {selectedBalance && selectedRemaining !== null && (
@@ -668,11 +683,15 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               </div>
             )}
 
+            {/* ─── 이벤트형(경조사·병가 등) 안내: 잔액 미추적 유형 ─── */}
+            {balancesLoaded && selectedPolicy && selectedRemaining === null && (
+              <WdNote>{t('proofNotice')}</WdNote>
+            )}
+
             {/* ─── Preset Toggle ─── */}
             {/* i18n: DB policy name matching — preset toggle only for annual leave */}
             {policies.find(p => p.id === watchedPolicyId)?.name.includes('연차') && (
-              <div className="space-y-2">
-                <Label>{t('balancePreview.selectType')}</Label>
+              <WdField label={t('balancePreview.selectType')}>
                 <div className="flex flex-wrap gap-2">
                   {[
                     { id: 'FULL', label: t('preset.annual') },
@@ -698,12 +717,11 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                     </button>
                   ))}
                 </div>
-              </div>
+              </WdField>
             )}
 
             {/* startDate */}
-            <div className="space-y-2">
-              <Label htmlFor="leave-start">{presetType === 'CUSTOM' || presetType === 'FULL' ? t('startDate') : t('balancePreview.leaveDate')}</Label>
+            <WdField label={presetType === 'CUSTOM' || presetType === 'FULL' ? t('startDate') : t('balancePreview.leaveDate')}>
               <Controller
                 control={control}
                 name="startDate"
@@ -747,12 +765,11 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               {errors.startDate && (
                 <p className="text-sm text-destructive">{errors.startDate.message}</p>
               )}
-            </div>
+            </WdField>
 
             {/* endDate - show for CUSTOM and FULL (multi-day) */}
             {(presetType === 'CUSTOM' || presetType === 'FULL') && (
-              <div className="space-y-2">
-                <Label htmlFor="leave-end">{t('endDate')}</Label>
+              <WdField label={t('endDate')}>
                 <Controller
                   control={control}
                   name="endDate"
@@ -785,31 +802,29 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                 {errors.endDate && (
                   <p className="text-sm text-destructive">{errors.endDate.message}</p>
                 )}
-              </div>
+              </WdField>
             )}
 
             {/* days - show for CUSTOM (editable) and FULL (read-only, auto-calculated) */}
             {(presetType === 'CUSTOM' || presetType === 'FULL') && (
-              <div className="space-y-2">
-                <Label htmlFor="leave-days">{t('days')}</Label>
-              <Input
-                id="leave-days"
-                type="number"
-                step="0.25"
-                min="0.25"
-                readOnly={presetType === 'FULL'}
-                {...register('days')}
-              />
-              {errors.days && (
-                <p className="text-sm text-destructive">{errors.days.message}</p>
-              )}
-            </div>
+              <WdField label={t('days')}>
+                <Input
+                  id="leave-days"
+                  type="number"
+                  step="0.25"
+                  min="0.25"
+                  readOnly={presetType === 'FULL'}
+                  {...register('days')}
+                />
+                {errors.days && (
+                  <p className="text-sm text-destructive">{errors.days.message}</p>
+                )}
+              </WdField>
             )}
 
             {/* halfDayType — only show when Custom and days is 0.5. (Presets handle this implicitly via state) */}
             {presetType === 'CUSTOM' && watchedDays === 0.5 && (
-              <div className="space-y-2">
-                <Label htmlFor="leave-half">{t('halfDay')}</Label>
+              <WdField label={t('halfDay')}>
                 <Controller
                   control={control}
                   name="halfDayType"
@@ -828,12 +843,11 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                     </Select>
                   )}
                 />
-              </div>
+              </WdField>
             )}
 
             {/* reason */}
-            <div className="space-y-2">
-              <Label htmlFor="leave-reason">{t('reason')}</Label>
+            <WdField label={t('reason')}>
               <Textarea
                 id="leave-reason"
                 rows={3}
@@ -844,47 +858,26 @@ export function LeaveClient({ user }: { user: SessionUser }) {
               {errors.reason && (
                 <p className="text-sm text-destructive">{errors.reason.message}</p>
               )}
-            </div>
-
-            <div className="flex justify-end gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setDialogOpen(false)}
-              >
-                {tc('cancel')}
-              </Button>
-              <Button
-                type="submit"
-                disabled={saving || (projectedRemaining !== null && projectedRemaining < 0)}
-              >
-                {saving && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
-                {t('request')}
-              </Button>
-            </div>
+            </WdField>
           </form>
         )
 
-        return isMobile ? (
-          <Sheet open={dialogOpen} onOpenChange={setDialogOpen}>
-            <SheetContent side="bottom" className="h-[85vh] overflow-y-auto rounded-t-2xl">
-              <SheetHeader>
-                <SheetTitle>{t('request')}</SheetTitle>
-                <SheetDescription>{t('requestDescription')}</SheetDescription>
-              </SheetHeader>
-              {formContent}
-            </SheetContent>
-          </Sheet>
-        ) : (
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogContent className="sm:max-w-[520px]">
-              <DialogHeader>
-                <DialogTitle>{t('request')}</DialogTitle>
-                <DialogDescription>{t('requestDescription')}</DialogDescription>
-              </DialogHeader>
-              {formContent}
-            </DialogContent>
-          </Dialog>
+        return (
+          <WdDrawer
+            open={dialogOpen}
+            onClose={() => setDialogOpen(false)}
+            title={t('request')}
+            secondary={{ label: tc('cancel'), onClick: () => setDialogOpen(false) }}
+            primary={{
+              label: t('request'),
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              onClick: () => { void handleSubmit(onSubmit as any)() },
+              disabled: saving || (projectedRemaining !== null && projectedRemaining < 0),
+              icon: saving ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined,
+            }}
+          >
+            {formContent}
+          </WdDrawer>
         )
       })()}
     </div>

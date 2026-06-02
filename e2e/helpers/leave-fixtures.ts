@@ -90,10 +90,16 @@ export async function resolveLeaveTypeDefWithBalance(
   const balResult = await parseApiResponse<unknown>(balRes)
   if (!balResult.ok || !balResult.data) return null
   const balances = Array.isArray(balResult.data) ? balResult.data : []
-  const usable = balances.find((b) => {
-    const rec = b as { remaining?: number }
-    return Number(rec.remaining ?? 0) >= 1
-  }) as { leaveTypeDefId?: string; leaveTypeDef?: { code?: string } } | undefined
+  // Cat E8 H-7: prefer isSplittable=true so callers passing halfDayType pass API
+  // contract route.ts:175 (`!isSplittable && halfDayType` → 400). Fallback to any
+  // remaining-positive type so existing callers (days=1) keep resolving.
+  const hasRemaining = (b: unknown) => Number((b as { remaining?: number }).remaining ?? 0) >= 1
+  const isSplittable = (b: unknown) =>
+    (b as { leaveTypeDef?: { isSplittable?: boolean } }).leaveTypeDef?.isSplittable === true
+  const usable = (balances.find((b) => hasRemaining(b) && isSplittable(b)) ??
+    balances.find(hasRemaining)) as
+    | { leaveTypeDefId?: string; leaveTypeDef?: { code?: string } }
+    | undefined
   if (!usable?.leaveTypeDefId || !usable.leaveTypeDef?.code) return null
 
   // 2. Map typeDef.code → LeavePolicy.leaveType (inverse of resolveLeaveTypeDefId).

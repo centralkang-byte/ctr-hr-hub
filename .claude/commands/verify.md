@@ -56,14 +56,16 @@ Must show "Database schema is up to date". Report if drift detected.
 
 ## 4. Codex Outside Voice Review (MANDATORY for 3+ file changes)
 
-Run real Codex CLI (GPT-5.4) for independent post-implementation review:
+Run real Codex CLI (GPT-5.4) for independent post-implementation review.
+
+> **Path**: invoke `codex` from PATH (`which codex`) — codex는 nvm 경로(`~/.nvm/.../bin/codex`)에 설치되어 node 버전이 바뀌면 절대경로(`/opt/homebrew/bin/...`)가 "no such file"로 깨짐. 절대경로 하드코딩 금지.
 
 ```bash
 # Review uncommitted changes (before git add)
-/opt/homebrew/bin/codex review --uncommitted
+codex review --uncommitted
 
-# Review branch diff (after commit, before push)
-/opt/homebrew/bin/codex review --base staging
+# Review branch diff (after commit, before push) — base는 origin/main 기준 (stale 로컬 main/없는 staging 금지)
+codex review --base origin/main
 ```
 
 Output will include prioritized findings (P0-P3). Action rules:
@@ -78,7 +80,7 @@ cat > /tmp/codex-prompt.txt << 'EOF'
 Review these changes for: residual hardcoded Korean, unused imports,
 type mismatches, missing translations across 5 locales...
 EOF
-cat /tmp/codex-prompt.txt | /opt/homebrew/bin/codex exec -
+cat /tmp/codex-prompt.txt | codex exec -
 ```
 
 **Timeout**: 180s max. If codex hangs, kill and use `general-purpose` Agent fallback.

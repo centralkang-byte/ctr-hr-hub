@@ -63,18 +63,20 @@ export const GET = withPermission(
   async (req, _context, user) => {
     const { searchParams } = new URL(req.url)
     const companyId = resolveCompanyId(user, searchParams)
-    const pagination = buildPagination(searchParams)
+    const page = Number(searchParams.get('page') ?? 1)
+    const limit = Number(searchParams.get('limit') ?? 20)
 
     const [items, total] = await Promise.all([
       prisma.{model}.findMany({
         where: { companyId },
-        ...pagination,
+        skip: (page - 1) * limit,
+        take: limit,
         orderBy: { createdAt: 'desc' },
       }),
       prisma.{model}.count({ where: { companyId } }),
     ])
 
-    return apiPaginated(items, total, pagination)
+    return apiPaginated(items, buildPagination(page, limit, total))
   },
   perm(MODULE.{MODULE_CODE}, ACTION.VIEW)
 )

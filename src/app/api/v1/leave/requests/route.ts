@@ -22,6 +22,7 @@ import { fetchPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import { calculateLeaveDays } from '@/lib/leave/calculateLeaveDays'
 import { fetchCompanyHolidays } from '@/lib/leave/fetchHolidays'
 import { resolveLeaveTypeDefId } from '@/lib/leave/resolveLeaveTypeDefId'
+import { leaveTypeUsesBalance, resolveEventLeaveDays } from '@/lib/leave/eventBasedLeave'
 import type { SessionUser } from '@/types'
 
 // ─── GET: My leave requests ──────────────────────────────
@@ -118,6 +119,11 @@ export const POST = withPermission(
       })
     }
 
+    // 적립형(잔액 추적) vs 이벤트형(권리 기반) 판별 — accrualEngine 거울상(규칙 없음 ⇒ 잔액 없음)
+    const usesBalance = resolvedLeaveTypeDefId
+      ? await leaveTypeUsesBalance(resolvedLeaveTypeDefId)
+      : false
+
     if (leaveTypeDef) {
       countingMethod = (leaveTypeDef.countingMethod as 'business_day' | 'calendar_day') ?? 'business_day'
       includesHolidays = leaveTypeDef.includesHolidays ?? false
@@ -135,7 +141,8 @@ export const POST = withPermission(
       }
 
       // Rule 2: Maximum consecutive days (연속 상한) — countingMethod 반영
-      if (leaveTypeDef.maxConsecutiveDays && leaveTypeDef.maxConsecutiveDays > 0) {
+      // 적립형만 여기서 검증. 이벤트형은 아래 전용 블록에서 cap + 권위 일수 산정.
+      if (usesBalance && leaveTypeDef.maxConsecutiveDays && leaveTypeDef.maxConsecutiveDays > 0) {
         const holidays = await fetchCompanyHolidays(primaryCompanyId, startDate, endDate)
         const leaveDays = calculateLeaveDays({
           startDate,
@@ -177,6 +184,31 @@ export const POST = withPermission(
       }
     }
 
+    // ── 이벤트형(권리 기반) 휴가: 정책 정의 일수로 검증 + 권위 일수 산정 ──
+    // 적립형은 parsed.data.days를 잔액으로 검증하므로 그대로 사용한다.
+    let effectiveDays = parsed.data.days
+    if (!usesBalance) {
+      const { days, cap } = await resolveEventLeaveDays({
+        companyId: primaryCompanyId,
+        policyId: parsed.data.policyId,
+        startDate,
+        endDate,
+        countingMethod,
+        includesHolidays,
+        maxConsecutiveDays: leaveTypeDef?.maxConsecutiveDays ?? null,
+        isSplittable: leaveTypeDef?.isSplittable ?? false,
+        halfDayType: parsed.data.halfDayType,
+        clientDays: parsed.data.days,
+      })
+      if (days <= 0) {
+        throw badRequest('신청 가능한 휴가일이 없습니다. 날짜를 확인해주세요.')
+      }
+      if (cap != null && days > cap) {
+        throw badRequest(`이 휴가 유형은 최대 ${cap}일까지 신청할 수 있습니다.`)
+      }
+      effectiveDays = days
+    }
+
     // ── F-3: Half-day duplicate warning (반차+반차=1일) ──
 
     if (parsed.data.halfDayType) {
@@ -202,57 +234,61 @@ export const POST = withPermission(
     }
 
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Read balance INSIDE transaction (LeaveYearBalance)
-      const balance = resolvedLeaveTypeDefId
-        ? await tx.leaveYearBalance.findFirst({
-            where: {
-              employeeId: user.employeeId,
-              leaveTypeDefId: resolvedLeaveTypeDefId,
-              year: new Date().getFullYear(),
-            },
+      // 1. Read balance INSIDE transaction — 적립형만 (이벤트형은 잔액 row 없음)
+      const balance =
+        usesBalance && resolvedLeaveTypeDefId
+          ? await tx.leaveYearBalance.findFirst({
+              where: {
+                employeeId: user.employeeId,
+                leaveTypeDefId: resolvedLeaveTypeDefId,
+                year: new Date().getFullYear(),
+              },
+            })
+          : null
+
+      // 적립형: 잔액 검증 (이벤트형은 위에서 정책 정의 일수로 이미 검증)
+      if (usesBalance) {
+        if (!balance) {
+          throw badRequest('해당 휴가 유형의 잔여일이 없습니다.')
+        }
+
+        const totalAvailable =
+          balance.entitled +
+          balance.carriedOver +
+          balance.adjusted -
+          balance.used -
+          balance.pending
+
+        // 2. Check if request exceeds available
+        if (effectiveDays > totalAvailable) {
+          // 3. Check negative balance policy (B-3h: Primary 법인 기준)
+          const leaveSetting = await tx.leaveSetting.findFirst({
+            where: { companyId: primaryCompanyId },
           })
-        : null
 
-      if (!balance) {
-        throw badRequest('해당 휴가 유형의 잔여일이 없습니다.')
-      }
+          const allowNegative = leaveSetting?.allowNegativeBalance ?? false
+          const negativeLimit = leaveSetting?.negativeBalanceLimit ?? 0
 
-      const totalAvailable =
-        balance.entitled +
-        balance.carriedOver +
-        balance.adjusted -
-        balance.used -
-        balance.pending
+          if (!allowNegative) {
+            throw badRequest(
+              `잔여 휴가가 부족합니다. (잔여: ${totalAvailable}일, 신청: ${effectiveDays}일)`,
+            )
+          }
 
-      // 2. Check if request exceeds available
-      if (parsed.data.days > totalAvailable) {
-        // 3. Check negative balance policy (B-3h: Primary 법인 기준)
-        const leaveSetting = await tx.leaveSetting.findFirst({
-          where: { companyId: primaryCompanyId },
-        })
+          // 4. Check negative limit
+          const wouldBeRemaining = totalAvailable - effectiveDays // negative number
+          if (wouldBeRemaining < negativeLimit) {
+            throw badRequest(
+              `마이너스 연차 한도(${Math.abs(negativeLimit)}일)를 초과합니다. 현재 사용 가능: ${totalAvailable + Math.abs(negativeLimit)}일`,
+            )
+          }
 
-        const allowNegative = leaveSetting?.allowNegativeBalance ?? false
-        const negativeLimit = leaveSetting?.negativeBalanceLimit ?? 0
-
-        if (!allowNegative) {
-          throw badRequest(
-            `잔여 휴가가 부족합니다. (잔여: ${totalAvailable}일, 신청: ${parsed.data.days}일)`,
+          // 5. Add warning for negative usage
+          const negativeUsed = effectiveDays - totalAvailable
+          warnings.push(
+            `마이너스 연차 ${negativeUsed}일이 사용됩니다. 다음 연도 부여 시 자동 차감됩니다.`,
           )
         }
-
-        // 4. Check negative limit
-        const wouldBeRemaining = totalAvailable - parsed.data.days // negative number
-        if (wouldBeRemaining < negativeLimit) {
-          throw badRequest(
-            `마이너스 연차 한도(${Math.abs(negativeLimit)}일)를 초과합니다. 현재 사용 가능: ${totalAvailable + Math.abs(negativeLimit)}일`,
-          )
-        }
-
-        // 5. Add warning for negative usage
-        const negativeUsed = parsed.data.days - totalAvailable
-        warnings.push(
-          `마이너스 연차 ${negativeUsed}일이 사용됩니다. 다음 연도 부여 시 자동 차감됩니다.`,
-        )
       }
 
       // 6. Create request (B-3h: Primary 법인 기준으로 생성)
@@ -264,18 +300,20 @@ export const POST = withPermission(
           leaveTypeDefId: resolvedLeaveTypeDefId,
           startDate,
           endDate,
-          days: parsed.data.days,
+          days: effectiveDays,
           halfDayType: parsed.data.halfDayType ?? null,
           reason: parsed.data.reason,
           status: 'PENDING',
         },
       })
 
-      // 7. Atomic increment pending
-      await tx.leaveYearBalance.update({
-        where: { id: balance.id },
-        data: { pending: { increment: parsed.data.days } },
-      })
+      // 7. Atomic increment pending — 적립형만 (이벤트형은 잔액 미추적)
+      if (balance) {
+        await tx.leaveYearBalance.update({
+          where: { id: balance.id },
+          data: { pending: { increment: effectiveDays } },
+        })
+      }
 
       return request
     })
@@ -320,7 +358,7 @@ export const POST = withPermission(
         policyId: parsed.data.policyId,
         startDate: parsed.data.startDate,
         endDate: parsed.data.endDate,
-        days: parsed.data.days,
+        days: effectiveDays,
       },
       ...meta,
     })

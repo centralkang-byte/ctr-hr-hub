@@ -1,7 +1,7 @@
 # Cron 카탈로그
 
 > **자동 생성**: `npx tsx scripts/handover/extract-cron-catalog.ts`
-> **생성일**: 2026-05-12
+> **생성일**: 2026-05-15
 > **원본**: `vercel.json` crons 배열 + `src/app/api/v1/cron/` 핸들러 디렉토리
 > ⚠️ 본 문서는 수동 편집 금지. 코드·vercel.json 변경 시 스크립트 재실행.
 
@@ -11,8 +11,8 @@
 
 | 분류 | 개수 |
 |------|------|
-| 코드 존재 + vercel.json 등록 = **실제 동작** | 3 |
-| 코드 존재하나 **vercel.json 미등록** = **비동작** | 5 |
+| 코드 존재 + vercel.json 등록 = **실제 동작** | 4 |
+| 코드 존재하나 **vercel.json 미등록** = **비동작** | 4 |
 | vercel.json 등록되었으나 코드 없음 (orphan) | 0 |
 | **전체 cron 핸들러** | 8 |
 
@@ -25,7 +25,7 @@
 | `apply-scheduled-comp` | 🟢 등록·동작 | `0 15 * * *` (매일 15:00 UTC (한국 00:00)) | `/api/v1/cron/apply-scheduled-comp` | `src/app/api/v1/cron/apply-scheduled-comp/route.ts` |
 | `auto-acknowledge` | 🟡 코드 있음·미등록 | — | `/api/v1/cron/auto-acknowledge` | `src/app/api/v1/cron/auto-acknowledge/route.ts` |
 | `eval-reminder` | 🟡 코드 있음·미등록 | — | `/api/v1/cron/eval-reminder` | `src/app/api/v1/cron/eval-reminder/route.ts` |
-| `leave-promotion` | 🟡 코드 있음·미등록 | — | `/api/v1/cron/leave-promotion` | `src/app/api/v1/cron/leave-promotion/route.ts` |
+| `leave-promotion` | 🟢 등록·동작 | `0 2 * * *` | `/api/v1/cron/leave-promotion` | `src/app/api/v1/cron/leave-promotion/route.ts` |
 | `loa-return-reminder` | 🟢 등록·동작 | `0 0 * * *` (매일 00:00 UTC) | `/api/v1/cron/loa-return-reminder` | `src/app/api/v1/cron/loa-return-reminder/route.ts` |
 | `nudge-batch` | 🟢 등록·동작 | `0 1 * * *` (매일 01:00 UTC (한국 10:00)) | `/api/v1/cron/nudge-batch` | `src/app/api/v1/cron/nudge-batch/route.ts` |
 | `org-snapshot` | 🟡 코드 있음·미등록 | — | `/api/v1/cron/org-snapshot` | `src/app/api/v1/cron/org-snapshot/route.ts` |
@@ -39,7 +39,6 @@
 
 - **`auto-acknowledge`** (/api/v1/cron/auto-acknowledge) — CRON: secured by CRON_SECRET header, not user session
 - **`eval-reminder`** (/api/v1/cron/eval-reminder) — CRON: secured by CRON_SECRET header, not user session
-- **`leave-promotion`** (/api/v1/cron/leave-promotion) — CRON: secured by CRON_SECRET header, not user session
 - **`org-snapshot`** (/api/v1/cron/org-snapshot) — CRON: secured by CRON_SECRET header, not user session
 - **`overdue-check`** (/api/v1/cron/overdue-check) — CRON: secured by CRON_SECRET header, not user session
 

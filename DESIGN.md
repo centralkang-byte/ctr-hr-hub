@@ -1,7 +1,7 @@
 # CTR HR Hub — Design System
 
 > Enterprise HR SaaS. Data-heavy, CJK-first, 5 locales.
-> Clean white space + Violet/Green accents. No decoration unless intentional.
+> Clean white space + Workday Navy/Orange accents (HR Hub Phase 1). No decoration unless intentional.
 > Anti-patterns: 1px borders, uniform radius, purple AI-slop gradients, system emoji.
 
 > **SSOT 관계**
@@ -18,9 +18,10 @@
 
 | Token | Hex | Usage |
 |-------|-----|-------|
-| primary | #6366f1 | CTA, active state, links, focus ring |
-| primary-dim | #4f46e5 | Gradient endpoint, hover |
-| primary-container | #a5b4fc | Light variant, badge bg, highlight |
+| primary | #004964 | CTA, active state, links, focus ring (Workday navy, oklch(38% 0.08 230)) |
+| primary-dim | #003953 | Gradient endpoint, hover (oklch(32% 0.08 230)) |
+| primary-container | #bedded | Light variant, badge bg, highlight (oklch(88% 0.04 230)) |
+| wd-orange | #e4762c | Workday 시그니처 오렌지 — 배지·태그 (oklch(68% 0.16 50), 사용처 Phase 2/3) |
 | tertiary | #16a34a | Success, growth, positive signals |
 | tertiary-container | #86efac | Success badge bg |
 | destructive | #e11d48 | Error, rejection, delete, 정적 count, 퇴사 |
@@ -60,7 +61,7 @@ bg와 text는 다른 토큰을 사용한다. bg는 밝은(bright) 색상으로 �
 도메인 고유 색상(차트 팔레트, 파이프라인 단계, heatmap)은 범용 토큰 통합 금지 — `chart.ts`/`chart-colors.ts`에서 별도 관리.
 
 ### Chart Palette
-기본 6색: #6366f1, #a5b4fc, #16a34a, #f59e0b, #e11d48, #64748b
+기본 6색: #004964, #2c6194, #16a34a, #f59e0b, #e11d48, #64748b  (Phase 1: chart-1 navy, chart-2 steel blue)
 확장 4색: #7c3aed, #0ea5e9, #84cc16, #f97316
 
 ---
@@ -117,7 +118,7 @@ Base unit: 4px. Default density: comfortable.
 | Name | Tailwind | Usage |
 |------|----------|-------|
 | Pill | rounded-full | CTA lg buttons, badges, search bar |
-| Container | rounded-2xl | Cards, modals, panels |
+| Container | rounded-2xl | Cards, modals, panels (Phase 1: 12px — HR Hub .card, was 16px) |
 | Element | rounded-lg | Inputs, sm buttons |
 
 ### Shadow
@@ -127,7 +128,7 @@ Base unit: 4px. Default density: comfortable.
 | shadow-sm | Card |
 | shadow-md | Dropdown, popover |
 | shadow-lg | Modal, sheet |
-| primary-tinted | Hero card, emphasis panel |
+| primary-tinted | Hero card, emphasis panel (Phase 1: navy-tinted rgba(0,73,100), was violet) |
 
 ### Glassmorphism (2 locations ONLY)
 
@@ -200,7 +201,7 @@ Hover: `hover:scale-[1.02]` (lg CTA), `active:scale-95`.
 - **Label**: 항상 top, 11px semibold
 - **Required**: red `*` 표시
 - **Error**: inline below input + red border + `XCircle` icon
-- **Input**: border 1px (Tailwind default), rounded-lg, focus Violet ring
+- **Input**: border 1px (Tailwind default), rounded-lg, focus Navy ring (`#004964`)
 - **Layout**: 2-column default, 짧은 폼은 1-column
 - **Buttons (right-aligned)**: cancel (ghost) → draft (outline) → submit (primary pill)
 - **Implementation**: shadcn/ui `FormField` wrapper 필수

@@ -2318,7 +2318,6 @@
     "newPhonePlaceholder": "010-0000-0000",
     "newPositionOptional": "Position (Optional)",
     "newSelectPosition": "Select position",
-    "newStepLabel": "Step {number}: {label}",
     "newValueLabel": "New Value",
     "newWorkPermit": "New Work Permit",
     "noChangeRequests": "No change requests",
@@ -2926,6 +2925,79 @@
         "pilotBanner": {
           "title": "HR Admin Pilot — Preview",
           "envLabel": "{role} · HOME_PREVIEW=true"
+        },
+        "workdayHero": {
+          "greetingAm": "Good morning, {name}",
+          "greetingPm": "Hello, {name}",
+          "subBefore": "You have ",
+          "subMiddle": " items to handle today. Of those, ",
+          "subAfter": " are past their start date — please review first.",
+          "ctaInbox": "Open inbox",
+          "ctaAlerts": "View alerts",
+          "kpi": {
+            "headcount": "Headcount",
+            "openRoles": "Open roles",
+            "turnoverRate": "Turnover (30d)"
+          }
+        },
+        "worklet": {
+          "heading": "Main menu",
+          "inline": {
+            "danger": "Critical",
+            "warn": "Warning",
+            "neutral": "Normal"
+          },
+          "employees": {
+            "title": "Employees",
+            "subtitle": "Total {total} · New {newHires}",
+            "inline1": "{count} new hires this month"
+          },
+          "recruitment": {
+            "title": "Recruitment",
+            "subtitle": "{open} open positions"
+          },
+          "attendance": {
+            "title": "Attendance",
+            "subtitle": "Today present {present} · late {late}",
+            "subtitleEmpty": "No attendance data today",
+            "inline1": "{absent} absent",
+            "inline2": "{late} late"
+          },
+          "leave": {
+            "title": "Leave",
+            "subtitle": "{pending} pending approvals",
+            "inline1": "{count} overdue · prioritize"
+          },
+          "performance": {
+            "title": "Performance",
+            "subtitle": "{rate}% complete ({completed}/{total})",
+            "subtitleEmpty": "Quarterly data pending"
+          },
+          "payroll": {
+            "title": "Payroll",
+            "subtitle": "Next payroll cycle processing"
+          },
+          "organization": {
+            "title": "Organization",
+            "subtitle": "Department / Position structure"
+          },
+          "analytics": {
+            "title": "Analytics",
+            "subtitle": "Turnover {rate}% · Insights"
+          }
+        },
+        "approvalPreview": {
+          "heading": "Pending",
+          "subHeading": "{count} items · sorted by urgency",
+          "viewAll": "Full inbox",
+          "urgency": {
+            "overdue": "Overdue",
+            "today": "Today",
+            "queued": "Queued"
+          },
+          "approveCta": "Review",
+          "submittedFmt": "Submitted {date}",
+          "empty": "No pending approvals"
         }
       }
     },
@@ -3327,6 +3399,7 @@
     "approve": "Approve",
     "approved": "Approved",
     "balance": "Leave Balance",
+    "monthlyUsagePattern": "Monthly Usage Pattern",
     "balancePreview": {
       "currentRemaining": "Current remaining:",
       "insufficientWarning": "Insufficient leave balance.",
@@ -3415,6 +3488,7 @@
     "quarterDay": "Quarter Day",
     "reason": "Reason",
     "reasonPlaceholder": "Enter leave reason",
+    "proofNotice": "This is an event-based leave (e.g., family events or sick leave). It does not deduct from a leave balance — request it when the event occurs, describe the reason in detail, and submit any supporting documents to your approver.",
     "reject": "Reject",
     "rejected": "Rejected",
     "rejectionReason": "Rejection Reason",
@@ -4767,7 +4841,15 @@
     },
     "leavePromotion": {
       "body": "{name}, you have {remainingDays} days of leave remaining. {daysUntilAnniversary} days until your anniversary. We recommend using your leave.",
-      "title": "Use Your Leave"
+      "title": "Use Your Leave",
+      "stage1": {
+        "title": "Annual Leave Promotion — 1st Notice (Designate Usage Dates)",
+        "body": "{name}, you have {remainingDays} days of unused annual leave. Under Labor Standards Act §61, please designate and notify your intended usage dates. ({pendingDays} days pending separately)"
+      },
+      "stage2": {
+        "title": "Annual Leave Promotion — 2nd Notice",
+        "body": "{name}, this is the 2nd notice regarding {remainingDays} days of unused annual leave with no designated dates. Please use it before the leave period ends. ({pendingDays} days pending separately)"
+      }
     },
     "leaveRejected": {
       "body": "Rejected: {reason}",
@@ -5422,6 +5504,7 @@
     "deleteDepartment": "Delete Department",
     "department": "Department",
     "departmentHead": "Department Head",
+    "deptCountLabel": "Departments",
     "deptInfo": "Department Info",
     "diffPreview": "Change Preview",
     "draftSaved": "Draft saved successfully.",
@@ -5441,6 +5524,7 @@
     "noEmployees": "No employees",
     "orgChanges": "Org Changes",
     "orgChart": "Org Chart",
+    "orgChartDesc": "Explore your organization structure at a glance",
     "parentDepartment": "Parent Department",
     "planTitle": "Plan Title",
     "positions": "Positions",
@@ -11304,5 +11388,15 @@
         "OTHER": "Other"
       }
     }
+  },
+  "wizard": {
+    "prev": "Previous",
+    "next": "Next",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "stepLabel": "step"
+  },
+  "demoLimitBanner": {
+    "defaultMessage": "This is a demo screen — refreshing will discard your input."
   }
 }

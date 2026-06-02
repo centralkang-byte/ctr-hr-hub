@@ -1,31 +1,34 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — HR Admin Home V2 (R3 Dashboard Pilot)
-// R1 primitive 기반 재구성: QuickActions row + Hero + 4 StatCard + 2 ListCard (+ 조건부 Insight).
+// CTR HR Hub — HR Admin Home V2 (PR-5A Workday Reskin)
 // V1(HrAdminHome.tsx)과 공존 — /home-preview/hr-admin에서만 렌더 (env + role gated).
-// Codex Gate 1 HIGH: V1 3개 QuickAction(Register Employee/Run Payroll/Reports)은
-//   HeroCard.secondary가 max 2이므로 Hero 위에 별도 row로 배치 — focus-first 계약 유지.
+// PR-5A: HeroCard → WorkdayHero / QuickActions row 제거 (워클릿 대체) /
+//         WorkletGrid + ApprovalPreview 신규 / StatCard·ListCard·InsightStrip 유지
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect, useCallback } from 'react'
-import Link from 'next/link'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import {
   Pencil,
   FileText,
   UserPlus,
-  DollarSign,
+  Users,
+  Briefcase,
+  Clock,
+  CalendarDays,
+  Target as TargetIcon,
+  Wallet,
+  Building2,
   BarChart3,
   CheckCircle2,
   AlertCircle,
   Sparkles,
-  type LucideIcon,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { MOTION } from '@/lib/styles'
 import { DashboardHomeShell, HomeGrid, HomeSection, HomeStack } from './shell/DashboardHomeShell'
-import { HeroCard } from './primitives/HeroCard'
+import { WorkdayHero } from './primitives/WorkdayHero'
+import { WorkletGrid, type WorkletTile } from './primitives/WorkletGrid'
+import { ApprovalPreview } from './primitives/ApprovalPreview'
 import { StatCard } from './primitives/StatCard'
 import { ListCard } from './primitives/ListCard'
 import { EmptyState } from './primitives/EmptyState'
@@ -42,37 +45,7 @@ interface Props {
   user: SessionUser
 }
 
-type HeroFocusKind = 'urgent' | 'weekDeadline' | 'openPositions' | 'all-clear'
-
-interface QuickAction {
-  icon: LucideIcon
-  label: string
-  href: string
-}
-
 // ─── Helpers ────────────────────────────────────────────────
-
-/**
- * Codex Gate 1 pattern: normalized severity scoring (first-match 왜곡 방지).
- * urgent(연체) × 3, weekDeadline(이번 주 마감) × 2, openPositions × 1.
- */
-function pickHeroFocus(summary: HrAdminSummary | null): HeroFocusKind {
-  if (!summary) return 'all-clear'
-  const urgent = summary.urgentCount ?? 0
-  const weekDeadline = summary.weekDeadlineCount ?? 0
-  const openPositions = summary.openPositions ?? 0
-
-  const scores = {
-    urgent: urgent * 3,
-    weekDeadline: weekDeadline * 2,
-    openPositions: openPositions * 1,
-  }
-  const max = Math.max(scores.urgent, scores.weekDeadline, scores.openPositions)
-  if (max <= 0) return 'all-clear'
-  if (scores.urgent === max) return 'urgent'
-  if (scores.weekDeadline === max) return 'weekDeadline'
-  return 'openPositions'
-}
 
 function listItemStatusForOnboarding(progress: number): 'success' | 'warning' | 'error' {
   if (progress >= 70) return 'success'
@@ -102,6 +75,7 @@ function sparkTrendDirection(data: number[]): 'up' | 'down' | 'flat' {
 
 export function HrAdminHomeV2({ user }: Props) {
   const t = useTranslations('home.hrAdmin.v2')
+  const locale = useLocale()
   const timeOfDay = useTimeOfDay()
   const [summary, setSummary] = useState<HrAdminSummary | null>(null)
   const [loading, setLoading] = useState(true)
@@ -133,62 +107,158 @@ export function HrAdminHomeV2({ user }: Props) {
   const totalEmployees = summary?.totalEmployees ?? 0
   const pendingLeaves = summary?.pendingLeaves ?? 0
   const urgentCount = summary?.urgentCount ?? 0
-  const weekDeadlineCount = summary?.weekDeadlineCount ?? 0
   const openPositions = summary?.openPositions ?? 0
   const turnoverRate = summary?.turnoverRate ?? 0
   const newHires = summary?.newHires ?? 0
   const onboardingCount = summary?.onboardingCount ?? 0
 
-  const focusKind = pickHeroFocus(summary)
   const newHiresSpark = (summary?.newHiresTrend ?? []).map((p) => p.value)
   const pendingLeavesSpark = (summary?.pendingLeavesTrend ?? []).map((p) => p.value)
 
   const activeOnboarding: OnboardingItem[] = summary?.activeOnboarding ?? []
   const activeOffboarding: OnboardingItem[] = summary?.activeOffboarding ?? []
 
-  // ── Quick actions (V1 preserved, Codex Gate 1 HIGH fix) ──
-  const quickActions: QuickAction[] = [
-    { icon: UserPlus, label: t('quickActions.registerEmployee'), href: '/employees/new' },
-    { icon: DollarSign, label: t('quickActions.runPayroll'), href: '/payroll' },
-    { icon: BarChart3, label: t('quickActions.reports'), href: '/analytics' },
+  const attendanceToday = summary?.attendanceToday
+  const topPendingApprovals = summary?.topPendingApprovals ?? []
+
+  // ── WorkdayHero derived ────────────────────────────────
+  // SSR/초기 hydration 중에는 timeOfDay === null → AM 디폴트.
+  const greetingKey = timeOfDay === 'pm' ? 'workdayHero.greetingPm' : 'workdayHero.greetingAm'
+  const greeting = t(greetingKey, { name: user.name ?? '' })
+  // 날짜 SSOT: P2-2 정정 — Intl.DateTimeFormat locale 기반 (한국어 리터럴 의존 제거).
+  // timeZone: Asia/Seoul 유지 (회사 timezone 기본, Phase 6에서 user.companyId 기반 해소).
+  const dateStr = new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+    timeZone: 'Asia/Seoul',
+  }).format(new Date())
+
+  // 총 처리 건수 = pendingLeaves + delayed onboarding
+  const delayedOnboardingCount = activeOnboarding.filter(
+    (o) => listItemStatusForOnboarding(o.progress) === 'error',
+  ).length
+  const totalActions = pendingLeaves + delayedOnboardingCount
+
+  // ── Worklet tiles (proto SSOT 1-8) ─────────────────────
+  // subtitle / inline 데이터는 summary derive — payroll/organization 은 i18n 정적 (PR-5C 동적화 후보)
+  const workletTiles: WorkletTile[] = [
+    {
+      id: 'employees',
+      icon: Users,
+      tone: 'primary',
+      title: t('worklet.employees.title'),
+      subtitle: t('worklet.employees.subtitle', { total: totalEmployees, newHires }),
+      href: '/employees',
+      inline: [
+        {
+          tone: newHires > 0 ? 'neutral' : 'neutral',
+          toneLabel: t('worklet.inline.neutral'),
+          text: t('worklet.employees.inline1', { count: newHires }),
+        },
+      ],
+    },
+    {
+      id: 'recruitment',
+      icon: Briefcase,
+      tone: 'tertiary',
+      title: t('worklet.recruitment.title'),
+      subtitle: t('worklet.recruitment.subtitle', { open: openPositions }),
+      href: '/recruitment',
+      count: openPositions > 0 ? openPositions : undefined,
+    },
+    {
+      id: 'attendance',
+      icon: Clock,
+      tone: 'chart-2',
+      title: t('worklet.attendance.title'),
+      subtitle: attendanceToday
+        ? t('worklet.attendance.subtitle', {
+            present: attendanceToday.present,
+            late: attendanceToday.late,
+          })
+        : t('worklet.attendance.subtitleEmpty'),
+      href: '/attendance',
+      inline: attendanceToday
+        ? [
+            {
+              tone: attendanceToday.absent > 0 ? 'danger' : 'neutral',
+              toneLabel:
+                attendanceToday.absent > 0
+                  ? t('worklet.inline.danger')
+                  : t('worklet.inline.neutral'),
+              text: t('worklet.attendance.inline1', { absent: attendanceToday.absent }),
+            },
+            {
+              tone: attendanceToday.late > 0 ? 'warn' : 'neutral',
+              toneLabel:
+                attendanceToday.late > 0
+                  ? t('worklet.inline.warn')
+                  : t('worklet.inline.neutral'),
+              text: t('worklet.attendance.inline2', { late: attendanceToday.late }),
+            },
+          ]
+        : undefined,
+    },
+    {
+      id: 'leave',
+      icon: CalendarDays,
+      tone: 'wd-orange',
+      title: t('worklet.leave.title'),
+      subtitle: t('worklet.leave.subtitle', { pending: pendingLeaves }),
+      href: '/leave',
+      count: pendingLeaves > 0 ? pendingLeaves : undefined,
+      inline:
+        urgentCount > 0
+          ? [
+              {
+                tone: 'danger',
+                toneLabel: t('worklet.inline.danger'),
+                text: t('worklet.leave.inline1', { count: urgentCount }),
+              },
+            ]
+          : undefined,
+    },
+    {
+      id: 'performance',
+      icon: TargetIcon,
+      tone: 'badge-accent',
+      title: t('worklet.performance.title'),
+      subtitle: summary?.quarterlyReviewStats
+        ? t('worklet.performance.subtitle', {
+            rate: summary.quarterlyReviewStats.completionRate ?? 0,
+            completed: summary.quarterlyReviewStats.completed ?? 0,
+            total: summary.quarterlyReviewStats.total ?? 0,
+          })
+        : t('worklet.performance.subtitleEmpty'),
+      href: '/performance',
+    },
+    {
+      id: 'payroll',
+      icon: Wallet,
+      tone: 'warning-bright',
+      title: t('worklet.payroll.title'),
+      subtitle: t('worklet.payroll.subtitle'),
+      href: '/payroll',
+    },
+    {
+      id: 'organization',
+      icon: Building2,
+      tone: 'chart-4',
+      title: t('worklet.organization.title'),
+      subtitle: t('worklet.organization.subtitle'),
+      href: '/organization',
+    },
+    {
+      id: 'analytics',
+      icon: BarChart3,
+      tone: 'info',
+      title: t('worklet.analytics.title'),
+      subtitle: t('worklet.analytics.subtitle', { rate: turnoverRate }),
+      href: '/analytics',
+    },
   ]
-
-  // Hero focus resolution
-  const heroFocus = (() => {
-    switch (focusKind) {
-      case 'urgent':
-        return {
-          title: t('hero.focusUrgent', { count: urgentCount }),
-          description: t('hero.focusUrgentDesc'),
-          cta: { label: t('hero.cta.open'), href: '/approvals/inbox' },
-          illustration: 'focus' as const,
-        }
-      case 'weekDeadline':
-        return {
-          title: t('hero.focusWeekDeadline', { count: weekDeadlineCount }),
-          description: t('hero.focusWeekDeadlineDesc'),
-          cta: { label: t('hero.cta.open'), href: '/approvals/inbox' },
-          illustration: timeOfDay === 'pm' ? ('focus' as const) : ('sunrise' as const),
-        }
-      case 'openPositions':
-        return {
-          title: t('hero.focusOpenPositions', { count: openPositions }),
-          description: t('hero.focusOpenPositionsDesc'),
-          cta: { label: t('hero.cta.view'), href: '/recruitment' },
-          illustration: 'focus' as const,
-        }
-      default:
-        return {
-          title: t('hero.focusAllClear'),
-          description: t('hero.focusAllClearDesc'),
-          cta: { label: t('hero.cta.view'), href: '/analytics' },
-          illustration: 'celebration' as const,
-        }
-    }
-  })()
-
-  // SSR/초기 hydration 중에는 timeOfDay === null → AM 을 디폴트로 렌더.
-  const greetingKey = timeOfDay === 'pm' ? 'hero.greetingPm' : 'hero.greetingAm'
 
   // ── Error state ───────────────────────────────────────
   if (error && !summary) {
@@ -209,44 +279,38 @@ export function HrAdminHomeV2({ user }: Props) {
   // ── Render ────────────────────────────────────────────
   return (
     <DashboardHomeShell>
-      {/* Quick Actions row — V1 UX 보존 (Codex Gate 1 HIGH) */}
-      <HomeSection title={t('section.quickActions')} srOnly>
-        <div className="flex flex-wrap gap-2">
-          {quickActions.map((qa) => {
-            const Icon = qa.icon
-            return (
-              <Link
-                key={qa.href}
-                href={qa.href}
-                aria-label={qa.label}
-                className={cn(
-                  'inline-flex min-h-[44px] items-center gap-2 rounded-full border border-border/60 bg-card px-4 text-sm font-medium text-foreground',
-                  'hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-                  MOTION.microOut,
-                )}
-              >
-                <Icon className="h-4 w-4 stroke-[1.5]" aria-hidden="true" />
-                {qa.label}
-              </Link>
-            )
-          })}
-        </div>
-      </HomeSection>
-
-      {/* Hero */}
+      {/* WorkdayHero — navy 그라데이션 (PR-5A) */}
       <HomeSection title={t('section.hero')} srOnly>
-        <HeroCard
-          greeting={t(greetingKey, { name: user.name ?? '' })}
-          focus={{
-            title: heroFocus.title,
-            description: heroFocus.description,
-            cta: heroFocus.cta,
+        <WorkdayHero
+          greeting={greeting}
+          dateStr={dateStr}
+          totalActions={totalActions}
+          overdueCount={urgentCount}
+          copyTemplate={{
+            before: t('workdayHero.subBefore'),
+            middle: t('workdayHero.subMiddle'),
+            after: t('workdayHero.subAfter'),
           }}
-          illustration={heroFocus.illustration}
+          kpis={{
+            headcount: {
+              value: loading ? '—' : totalEmployees,
+              label: t('workdayHero.kpi.headcount'),
+            },
+            openRoles: {
+              value: loading ? '—' : openPositions,
+              label: t('workdayHero.kpi.openRoles'),
+            },
+            turnoverRate: {
+              value: loading ? '—' : `${turnoverRate}%`,
+              label: t('workdayHero.kpi.turnoverRate'),
+            },
+          }}
+          ctaPrimary={{ label: t('workdayHero.ctaInbox'), href: '/approvals/inbox' }}
+          ctaSecondary={{ label: t('workdayHero.ctaAlerts'), href: '/notifications' }}
         />
       </HomeSection>
 
-      {/* KPI StatCards */}
+      {/* KPI StatCards — 기존 유지 */}
       <HomeSection title={t('section.stat')} srOnly>
         <HomeGrid cols={4}>
           <StatCard
@@ -300,7 +364,42 @@ export function HrAdminHomeV2({ user }: Props) {
         </HomeGrid>
       </HomeSection>
 
-      {/* Lists */}
+      {/* WorkletGrid — 8 distinct colored 타일 (PR-5A) */}
+      <HomeSection title={t('worklet.heading')}>
+        <WorkletGrid tiles={workletTiles} />
+      </HomeSection>
+
+      {/* ApprovalPreview — top 4 pending (PR-5A) */}
+      <HomeSection title={t('approvalPreview.heading')} srOnly>
+        <ApprovalPreview
+          items={topPendingApprovals}
+          totalCount={pendingLeaves}
+          viewAllHref="/approvals/inbox"
+          headingLabel={t('approvalPreview.heading')}
+          subHeadingLabel={t('approvalPreview.subHeading', { count: pendingLeaves })}
+          viewAllLabel={t('approvalPreview.viewAll')}
+          urgencyLabels={{
+            overdue: t('approvalPreview.urgency.overdue'),
+            today: t('approvalPreview.urgency.today'),
+            queued: t('approvalPreview.urgency.queued'),
+          }}
+          approveLabel={t('approvalPreview.approveCta')}
+          submittedFormatter={(iso) =>
+            // P2-2 정정: locale-aware. Intl.DateTimeFormat이 localized 단·월 라벨 생성
+            t('approvalPreview.submittedFmt', {
+              date: new Intl.DateTimeFormat(locale, {
+                month: 'long',
+                day: 'numeric',
+                timeZone: 'Asia/Seoul',
+              }).format(new Date(iso)),
+            })
+          }
+          emptyLabel={t('approvalPreview.empty')}
+          loading={loading}
+        />
+      </HomeSection>
+
+      {/* Lists — 기존 유지 */}
       <HomeSection title={t('section.list')} srOnly>
         <HomeGrid cols={2}>
           <ListCard
@@ -363,7 +462,7 @@ export function HrAdminHomeV2({ user }: Props) {
         </HomeGrid>
       </HomeSection>
 
-      {/* Conditional insight */}
+      {/* Conditional insight — 기존 유지 */}
       {showUrgentInsight || showOrphanHiresInsight ? (
         <HomeSection title={t('section.insight')} srOnly>
           <HomeStack gap="sm">

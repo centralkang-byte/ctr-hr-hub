@@ -108,6 +108,9 @@ export interface SeveranceDetail {
   tenureDays: number
   tenureYears: number
   isEligible: boolean
+  avgWeeklyHours: number | null
+  ineligibleReason: string | null
+  eligibilityWarning: string | null
   recentThreeMonths: Array<{
     yearMonth: string
     baseSalary: number

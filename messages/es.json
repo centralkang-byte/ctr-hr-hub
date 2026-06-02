@@ -2318,7 +2318,6 @@
     "newPhonePlaceholder": "010-0000-0000",
     "newPositionOptional": "Cargo (opcional)",
     "newSelectPosition": "Seleccionar cargo",
-    "newStepLabel": "Paso {number}: {label}",
     "newValueLabel": "New Value",
     "newWorkPermit": "New Work Permit",
     "noChangeRequests": "No change requests",
@@ -2926,6 +2925,79 @@
         "pilotBanner": {
           "title": "HR Admin Pilot — Preview",
           "envLabel": "{role} · HOME_PREVIEW=true"
+        },
+        "workdayHero": {
+          "greetingAm": "Good morning, {name}",
+          "greetingPm": "Hello, {name}",
+          "subBefore": "You have ",
+          "subMiddle": " items to handle today. Of those, ",
+          "subAfter": " are past their start date — please review first.",
+          "ctaInbox": "Open inbox",
+          "ctaAlerts": "View alerts",
+          "kpi": {
+            "headcount": "Headcount",
+            "openRoles": "Open roles",
+            "turnoverRate": "Turnover (30d)"
+          }
+        },
+        "worklet": {
+          "heading": "Main menu",
+          "inline": {
+            "danger": "Critical",
+            "warn": "Warning",
+            "neutral": "Normal"
+          },
+          "employees": {
+            "title": "Employees",
+            "subtitle": "Total {total} · New {newHires}",
+            "inline1": "{count} new hires this month"
+          },
+          "recruitment": {
+            "title": "Recruitment",
+            "subtitle": "{open} open positions"
+          },
+          "attendance": {
+            "title": "Attendance",
+            "subtitle": "Today present {present} · late {late}",
+            "subtitleEmpty": "No attendance data today",
+            "inline1": "{absent} absent",
+            "inline2": "{late} late"
+          },
+          "leave": {
+            "title": "Leave",
+            "subtitle": "{pending} pending approvals",
+            "inline1": "{count} overdue · prioritize"
+          },
+          "performance": {
+            "title": "Performance",
+            "subtitle": "{rate}% complete ({completed}/{total})",
+            "subtitleEmpty": "Quarterly data pending"
+          },
+          "payroll": {
+            "title": "Payroll",
+            "subtitle": "Next payroll cycle processing"
+          },
+          "organization": {
+            "title": "Organization",
+            "subtitle": "Department / Position structure"
+          },
+          "analytics": {
+            "title": "Analytics",
+            "subtitle": "Turnover {rate}% · Insights"
+          }
+        },
+        "approvalPreview": {
+          "heading": "Pending",
+          "subHeading": "{count} items · sorted by urgency",
+          "viewAll": "Full inbox",
+          "urgency": {
+            "overdue": "Overdue",
+            "today": "Today",
+            "queued": "Queued"
+          },
+          "approveCta": "Review",
+          "submittedFmt": "Submitted {date}",
+          "empty": "No pending approvals"
         }
       }
     },
@@ -3327,6 +3399,7 @@
     "approve": "Approve",
     "approved": "Approved",
     "balance": "Leave Balance",
+    "monthlyUsagePattern": "Patrón de uso mensual",
     "balancePreview": {
       "currentRemaining": "Restante actual:",
       "insufficientWarning": "Saldo de permiso insuficiente.",
@@ -3415,6 +3488,7 @@
     "quarterDay": "Quarter Day",
     "reason": "Reason",
     "reasonPlaceholder": "Enter leave reason",
+    "proofNotice": "Este es un permiso por evento (p. ej., eventos familiares o baja por enfermedad). No descuenta del saldo: solicítalo cuando ocurra el evento, describe el motivo en detalle y entrega los documentos justificativos a quien lo aprueba.",
     "reject": "Reject",
     "rejected": "Rejected",
     "rejectionReason": "Rejection Reason",
@@ -4767,7 +4841,15 @@
     },
     "leavePromotion": {
       "body": "{name}, le quedan {remainingDays} días de vacaciones. Faltan {daysUntilAnniversary} días para su aniversario. Le recomendamos usar sus vacaciones.",
-      "title": "Recomendación de uso de vacaciones"
+      "title": "Recomendación de uso de vacaciones",
+      "stage1": {
+        "title": "Promoción de uso de vacaciones — 1.ª notificación (designar fechas de uso)",
+        "body": "{name}, tiene {remainingDays} días de vacaciones anuales sin usar. Conforme al art. §61 de la Ley de Normas Laborales, designe y notifique sus fechas de uso. ({pendingDays} días en trámite aparte)"
+      },
+      "stage2": {
+        "title": "Promoción de uso de vacaciones — 2.ª notificación",
+        "body": "{name}, esta es la 2.ª notificación sobre {remainingDays} días de vacaciones anuales sin usar y sin fechas designadas. Le recomendamos usarlas antes de que finalice el período. ({pendingDays} días en trámite aparte)"
+      }
     },
     "leaveRejected": {
       "body": "Rechazado: {reason}",
@@ -5422,6 +5504,7 @@
     "deleteDepartment": "Delete Department",
     "department": "Department",
     "departmentHead": "Department Head",
+    "deptCountLabel": "Departamentos",
     "deptInfo": "Department Info",
     "diffPreview": "Change Preview",
     "draftSaved": "Borrador saved successfully.",
@@ -5441,6 +5524,7 @@
     "noEmployees": "No employees",
     "orgChanges": "Org Changes",
     "orgChart": "Org Chart",
+    "orgChartDesc": "Explora la estructura organizacional de tu empresa",
     "parentDepartment": "Parent Department",
     "planTitle": "Plan Título",
     "positions": "Positions",
@@ -11304,5 +11388,15 @@
         "OTHER": "[TODO:es] Other"
       }
     }
+  },
+  "wizard": {
+    "prev": "[TODO:es] Previous",
+    "next": "[TODO:es] Next",
+    "submit": "[TODO:es] Submit",
+    "cancel": "[TODO:es] Cancel",
+    "stepLabel": "[TODO:es] step"
+  },
+  "demoLimitBanner": {
+    "defaultMessage": "[TODO:es] This is a demo screen — refreshing will discard your input."
   }
 }

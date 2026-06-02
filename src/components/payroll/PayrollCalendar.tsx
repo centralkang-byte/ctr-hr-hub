@@ -121,7 +121,7 @@ export default function PayrollCalendar({ entries, yearMonth }: Props) {
                                     </td>
                                     <td className="py-2 text-center">
                                         <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${isCompleted ? 'bg-emerald-500/15 text-emerald-700' :
-                                                entry.status === 'PENDING_APPROVAL' ? 'bg-indigo-500/15 text-primary/90' :
+                                                entry.status === 'PENDING_APPROVAL' ? 'bg-primary/15 text-primary/90' :
                                                     entry.status === 'REVIEW' ? 'bg-amber-500/15 text-amber-700' :
                                                         entry.status === 'NOT_STARTED' || entry.status === 'DRAFT' ? 'bg-muted text-muted-foreground/60' :
                                                             'bg-primary/10 text-primary'

@@ -164,9 +164,11 @@ function buildRolePermissions(): Record<string, PermKey[]> {
     'payroll_read', 'org_read',
   ]
 
-  // EXECUTIVE
+  // EXECUTIVE: 전사 읽기 중심 (read-only visibility)
   const executive: PermKey[] = [
     'employees_read', 'performance_read',
+    // P0 dogfood: 전사 근태/휴가/급여 조회
+    'attendance_read', 'leave_read', 'payroll_read',
     ...modules.map(m => `${m}_export` as PermKey),
   ]
 
@@ -209,7 +211,7 @@ const emsBlockDefinitions = [
 // ================================================================
 const testAccounts = [
   { email: 'admin@ctr.co.kr', name: '이시스템', nameEn: 'System Lee', employeeNo: 'CTR-HQ-0001', roleCode: 'SUPER_ADMIN', companyCode: 'CTR-HOLD' },
-  { email: 'hr@ctr.co.kr', name: '김인사', nameEn: 'HR Kim', employeeNo: 'CTR-KR-0001', roleCode: 'HR_ADMIN', companyCode: 'CTR' },
+  { email: 'hr@ctr.co.kr', name: '한지영', nameEn: 'Jiyoung Han', employeeNo: 'CTR-KR-0001', roleCode: 'HR_ADMIN', companyCode: 'CTR' },
   { email: 'manager@ctr.co.kr', name: '박매니저', nameEn: 'Manager Park', employeeNo: 'CTR-KR-0002', roleCode: 'MANAGER', companyCode: 'CTR' },
   { email: 'employee@ctr.co.kr', name: '최사원', nameEn: 'Employee Choi', employeeNo: 'CTR-KR-0003', roleCode: 'EMPLOYEE', companyCode: 'CTR' },
 ]

@@ -121,7 +121,7 @@ export default function ResultsClient({
             {final?.emsBlock ?? '-'}
           </p>
           {final?.calibrated && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-500/15 text-primary/90 mt-1">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/15 text-primary/90 mt-1">
               {t('calibration_kebb098ec')}
             </span>
           )}

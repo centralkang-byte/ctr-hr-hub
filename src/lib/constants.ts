@@ -178,8 +178,8 @@ export const CTR_VALUES = ['CHALLENGE', 'TRUST', 'RESPONSIBILITY', 'RESPECT'] as
 export type CtrValue = (typeof CTR_VALUES)[number]
 
 // ─── Domestic Company Codes (Gemini Patch #3: hardcoded for payroll safety) ──
-// DB codes: CTR-HQ(지주), CTR-KR(본사), CTR-MOB, CTR-ECO, CTR-ROB, CTR-ENG, FML
+// DB codes (신코드 = seed.ts 회사정의 SSOT): CTR-HOLD(지주), CTR(본사), CTR-MOB, CTR-ECO, CTR-ROB, CTR-ENR, CTR-FML(포메이션랩스)
 export const DOMESTIC_COMPANY_CODES = [
-  'CTR-HQ', 'CTR-KR', 'CTR-MOB', 'CTR-ECO', 'CTR-ROB', 'CTR-ENG', 'FML',
+  'CTR-HOLD', 'CTR', 'CTR-MOB', 'CTR-ECO', 'CTR-ROB', 'CTR-ENR', 'CTR-FML',
 ] as const
 export type DomesticCompanyCode = (typeof DOMESTIC_COMPANY_CODES)[number]

@@ -41,7 +41,7 @@ interface TalentPoolEntry {
 }
 
 const POOL_REASON_LABELS: Record<string, { labelKey: string; color: string }> = {
-  rejected_qualified: { labelKey: 'poolReasonRejectedQualified', color: 'bg-indigo-500/15 text-primary/90' },
+  rejected_qualified: { labelKey: 'poolReasonRejectedQualified', color: 'bg-primary/15 text-primary/90' },
   withdrawn: { labelKey: 'poolReasonWithdrawn', color: 'bg-amber-500/15 text-amber-700' },
   overqualified: { labelKey: 'poolReasonOverqualified', color: 'bg-sky-500/10 text-sky-700' },
   manual: { labelKey: 'poolReasonManual', color: 'bg-background text-muted-foreground' },

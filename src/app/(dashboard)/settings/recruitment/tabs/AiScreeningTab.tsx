@@ -78,8 +78,8 @@ export function AiScreeningTab({
 
       <div className="space-y-3">{settings.features.map((f, i) => (
         <div key={f.key} className="flex items-start gap-4 rounded-xl border border-border p-4 hover:bg-muted transition-colors">
-          <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/100/10">
-            <Bot className="h-4 w-4 text-violet-500" />
+          <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+            <Bot className="h-4 w-4 text-primary" />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">

@@ -63,6 +63,10 @@ jobs:
       NODE_ENV: test
       PLAYWRIGHT_BASE_URL: http://localhost:3002
       NEXT_PUBLIC_SHOW_TEST_ACCOUNTS: 'true'
+      # Required since auth.ts gates the credentials provider in production
+      # builds (next build forces NODE_ENV=production). E2E global-setup logs
+      # in via /api/auth/callback/credentials, so the provider must be enabled.
+      ALLOW_CREDENTIALS_LOGIN: 'true'
       # Dummy Azure AD env vars — required by src/lib/env.ts getRequired()
       # when NODE_ENV=production, which `next build` internally sets even
       # though NODE_ENV: test is declared above. E2E tests log in via the
@@ -94,11 +98,12 @@ jobs:
       - name: Seed test data
         run: npx tsx prisma/seed.ts
 
-      - name: Seed QA accounts (workaround — see scripts/seed-qa-accounts.ts)
-        # The master seed (prisma/seed.ts) does not call seedQAAccounts, so
-        # super@/hr@/manager@/employee-* SsoIdentity rows are missing and the
-        # credentials provider login in e2e/global-setup.ts fails. This wrapper
-        # injects them before Playwright runs.
+      - name: Seed QA accounts (idempotent — defensive re-run)
+        # Master seed (prisma/seed.ts:3568) already calls seedQAAccounts, so
+        # the previous "Seed test data" step injects the accounts. This step
+        # is a fail-safe re-run via wrapper (idempotent upsert, no-op on
+        # success) — kept to guarantee SsoIdentity rows exist before
+        # Playwright's e2e/global-setup.ts credentials provider login.
         run: npx tsx scripts/seed-qa-accounts.ts
 
       # NOTE: Analytics MVs (prisma/migrations/mv_analytics.sql) are NOT created
@@ -113,7 +118,7 @@ jobs:
       - name: Build application
         run: npm run build
         env:
-          NODE_OPTIONS: '--max-old-space-size=4096'
+          NODE_OPTIONS: '--max-old-space-size=8192'
 
       - name: Run E2E tests
         run: npx playwright test --project=api --project=browser

@@ -41,6 +41,7 @@ import {
 import { PageHeader } from '@/components/shared/PageHeader'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { apiClient } from '@/lib/api'
+import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
 import type { SessionUser } from '@/types'
 import {
     UnifiedTaskType,
@@ -69,7 +70,7 @@ function getDdayStyle(dueDate?: string): string {
     )
     if (diff < 0) return 'bg-destructive/10 text-destructive border-destructive/20'
     if (diff <= 3) return 'bg-amber-500/15 text-amber-700 border-amber-300'
-    return 'bg-primary/10 text-primary border-indigo-200'
+    return 'bg-primary/10 text-primary border-primary/20'
 }
 
 // ─── Task Card ───────────────────────────────────────────
@@ -114,16 +115,16 @@ function UnifiedTaskCard({
                 <div className="mt-1.5 flex flex-col items-center gap-1">
                     <span
                         className="h-2.5 w-2.5 rounded-full"
-                        style={{ backgroundColor: prioInfo?.color ?? '#5E81F4' }}
+                        style={{ backgroundColor: prioInfo?.color ?? '#004964' }}
                     />
                 </div>
 
                 {/* Type Icon */}
                 <div
                     className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                    style={{ backgroundColor: `${typeInfo?.color ?? '#5E81F4'}15` }}
+                    style={{ backgroundColor: `${typeInfo?.color ?? '#004964'}15` }}
                 >
-                    <Icon className="h-4.5 w-4.5" style={{ color: typeInfo?.color ?? '#5E81F4' }} />
+                    <Icon className="h-4.5 w-4.5" style={{ color: typeInfo?.color ?? '#004964' }} />
                 </div>
 
                 {/* Content */}
@@ -133,9 +134,9 @@ function UnifiedTaskCard({
                             variant="outline"
                             className="h-5 shrink-0 rounded-md border px-1.5 text-[10px] font-medium"
                             style={{
-                                borderColor: `${typeInfo?.color ?? '#5E81F4'}40`,
-                                color: typeInfo?.color ?? '#5E81F4',
-                                backgroundColor: `${typeInfo?.color ?? '#5E81F4'}08`,
+                                borderColor: `${typeInfo?.color ?? '#004964'}40`,
+                                color: typeInfo?.color ?? '#004964',
+                                backgroundColor: `${typeInfo?.color ?? '#004964'}08`,
                             }}
                         >
                             {typeInfo?.label ?? task.type}
@@ -148,7 +149,7 @@ function UnifiedTaskCard({
                         {!!(task.metadata as Record<string, unknown>)?.delegated && (
                             <Badge
                                 variant="outline"
-                                className="h-5 rounded-md border-indigo-200 bg-primary/10 px-1.5 text-[10px] font-medium text-violet-500"
+                                className="h-5 rounded-md border-primary/20 bg-primary/10 px-1.5 text-[10px] font-medium text-primary"
                             >
                                 {t('delegated')}
                             </Badge>
@@ -248,13 +249,13 @@ function MyTasksInner({ user }: { user: SessionUser }) {
         [UnifiedTaskType.PAYROLL_REVIEW]: { label: t('typePayroll'), color: '#F59E0B', icon: Clock },
         [UnifiedTaskType.ONBOARDING_TASK]: { label: t('typeOnboarding'), color: '#10B981', icon: ClipboardCheck },
         [UnifiedTaskType.OFFBOARDING_TASK]: { label: t('typeOffboarding'), color: '#EF4444', icon: DoorOpen },
-        [UnifiedTaskType.PERFORMANCE_REVIEW]: { label: t('typePerformance'), color: '#8B5CF6', icon: Target },
+        [UnifiedTaskType.PERFORMANCE_REVIEW]: { label: t('typePerformance'), color: '#7457d1', icon: Target },
     }
     const PRIORITY_CONFIG: Record<string, { color: string; bg: string; label: string }> = {
         [UnifiedTaskPriority.URGENT]: { color: '#EF4444', bg: '#FEF2F2', label: t('priorityUrgent') },
         [UnifiedTaskPriority.HIGH]: { color: '#F59E0B', bg: '#FFFBEB', label: t('priorityHigh') },
         [UnifiedTaskPriority.MEDIUM]: { color: '#10B981', bg: '#F0FDF4', label: t('priorityMedium') },
-        [UnifiedTaskPriority.LOW]: { color: '#5E81F4', bg: '#EDF1FE', label: t('priorityLow') },
+        [UnifiedTaskPriority.LOW]: { color: '#004964', bg: '#EDF1FE', label: t('priorityLow') },
     }
     const FILTER_TABS = [
         { key: 'all', label: t('filterAll'), type: null },
@@ -289,6 +290,18 @@ function MyTasksInner({ user }: { user: SessionUser }) {
         })
         router.replace(`/my/tasks?${params.toString()}`, { scroll: false })
     }, [searchParams, router])
+
+    // 방향키 내비게이션 + roving tabindex (상단 뷰 탭). 선택은 기존 updateParams 유지.
+    const viewNav = useArrowKeyNavigation(
+        2,
+        viewTab === 'tasks' ? 0 : 1,
+        (i) =>
+            updateParams(
+                i === 0
+                    ? { tab: null, status: null, page: null, type: null }
+                    : { tab: 'approvals', status: null, page: null, type: null },
+            ),
+    )
 
     // ── Fetch tasks ─────────────────────────────────────────
 
@@ -365,11 +378,12 @@ function MyTasksInner({ user }: { user: SessionUser }) {
 
             {/* ── Top-level View Tabs (내 할 일 | 승인 요청) ── */}
             {canSeeApprovals && (
-                <div className="flex items-center gap-1 rounded-lg bg-muted p-1 w-fit" role="tablist">
+                <div className="flex items-center gap-1 rounded-lg bg-muted p-1 w-fit" role="tablist" onKeyDown={viewNav.onKeyDown}>
                     <button
                         type="button"
                         role="tab"
                         aria-selected={viewTab === 'tasks'}
+                        {...viewNav.itemProps(0)}
                         onClick={() => updateParams({ tab: null, status: null, page: null, type: null })}
                         className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                             viewTab === 'tasks'
@@ -383,6 +397,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                         type="button"
                         role="tab"
                         aria-selected={viewTab === 'approvals'}
+                        {...viewNav.itemProps(1)}
                         onClick={() => updateParams({ tab: 'approvals', status: null, page: null, type: null })}
                         className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
                             viewTab === 'approvals'
@@ -540,7 +555,7 @@ function MyTasksInner({ user }: { user: SessionUser }) {
 
             {/* ── Completed Tab Notice ── */}
             {statusTab === 'COMPLETED' && !loading && (
-                <div className="flex items-start gap-3 rounded-xl border border-indigo-200 bg-primary/10 p-4">
+                <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/10 p-4">
                     <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                     <div className="text-xs text-primary">
                         <p className="font-medium">{t('completedNotice')}</p>
