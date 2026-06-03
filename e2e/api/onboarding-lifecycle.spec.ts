@@ -3,7 +3,7 @@
 // Template CRUD + Instance Ops + Checkins + Self-Service + RBAC
 // ═══════════════════════════════════════════════════════════
 
-import { test, expect } from '@playwright/test'
+import { test, expect, request as playwrightRequest } from '@playwright/test'
 import { ApiClient, assertOk, assertError } from '../helpers/api-client'
 import { authFile } from '../helpers/auth'
 import { resolveSeedData } from '../helpers/test-data'
@@ -437,5 +437,60 @@ test.describe('Onboarding RBAC: EMPLOYEE Boundaries', () => {
       '00000000-0000-4000-a000-000000000099',
     )
     assertError(result, 403, 'EMPLOYEE other checkins')
+  })
+})
+
+// ─── Multi-tenant: instances list company scope ────────
+// 회귀 가드: GET /instances 가 비-SUPER를 본인 법인으로 강제하는지 검증.
+// 핵심 보안 속성(①)은 멀티컴퍼니 시드 없이도 증명 가능:
+//   ① 비-SUPER가 companyId 쿼리 파라미터로 스코프를 바꿀 수 없음
+//      — 타 법인 id를 주입해도 본인 법인 결과와 동일. 픽스 전(파라미터 직접
+//        신뢰)이면 매칭 0건이라 본인 목록과 불일치 → 실패.
+//   ② (시드가 멀티컴퍼니일 때만) HR_ADMIN 은 SUPER 보다 적은 법인만 봄.
+test.describe('Onboarding Instances: company scope (multi-tenant)', () => {
+  test('non-SUPER cannot use companyId param to change scope', async () => {
+    const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3002'
+    const hrCtx = await playwrightRequest.newContext({ baseURL, storageState: authFile('HR_ADMIN') })
+    const saCtx = await playwrightRequest.newContext({ baseURL, storageState: authFile('SUPER_ADMIN') })
+    try {
+      const hrClient = new ApiClient(hrCtx)
+      const saClient = new ApiClient(saCtx)
+      const idsOf = (r: { data: unknown }) =>
+        (r.data as Array<{ id: string }>).map((i) => i.id).sort()
+      const companiesOf = (r: { data: unknown }) =>
+        [...new Set((r.data as Array<{ company?: string }>).map((i) => i.company).filter(Boolean))]
+
+      // HR_ADMIN 본인 법인 목록 (스코프 기준선)
+      const hr = await f.listOnboardingInstances(hrClient, { limit: '100' })
+      assertOk(hr, 'HR_ADMIN list instances')
+      const hrIds = idsOf(hr)
+      test.skip(hrIds.length < 1, 'No onboarding instances seeded for HR_ADMIN company')
+
+      // ① companyId 파라미터 무력화: 타 법인 id를 주입해도 본인 법인 결과와 동일.
+      //    (픽스 전이면 bogus id 매칭 0건 → hrIds 와 불일치하여 실패)
+      const injected = await f.listOnboardingInstances(hrClient, {
+        limit: '100',
+        companyId: '00000000-0000-4000-a000-0000000000ff',
+      })
+      assertOk(injected, 'HR_ADMIN list with injected companyId')
+      expect(idsOf(injected)).toEqual(hrIds)
+
+      // 스코프 일관성: 본인 법인 instance 는 SUPER 전체 목록의 부분집합
+      const sa = await f.listOnboardingInstances(saClient, { limit: '100' })
+      assertOk(sa, 'SUPER list instances')
+      const saIds = idsOf(sa)
+      hrIds.forEach((id) => expect(saIds).toContain(id))
+
+      // ② 멀티컴퍼니 시드가 있을 때만: HR_ADMIN 은 SUPER 보다 적은 법인만 봄
+      const saCompanies = companiesOf(sa)
+      if (saCompanies.length >= 2) {
+        const hrCompanies = companiesOf(hr)
+        expect(hrCompanies.length).toBeLessThan(saCompanies.length)
+        hrCompanies.forEach((c) => expect(saCompanies).toContain(c))
+      }
+    } finally {
+      await hrCtx.dispose()
+      await saCtx.dispose()
+    }
   })
 })
