@@ -7,7 +7,7 @@ import type { PayrollItemDetail } from './types'
 import { serverT } from '@/lib/server-i18n'
 import type { Locale } from '@/i18n/config'
 
-interface PayrollItemWithRelations {
+export interface PayrollItemWithRelations {
   id: string
   baseSalary: unknown
   grossPay: unknown
