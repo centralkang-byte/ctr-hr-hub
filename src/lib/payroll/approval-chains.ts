@@ -6,59 +6,11 @@
 // ═══════════════════════════════════════════════════════════
 
 import { getPayrollSetting } from '@/lib/settings/get-setting'
-import { resolveApprovalFlow } from '@/lib/approval/resolve-approval-flow'
-
-// ─── Default approval chains (fallback) ──────────────────
-// 규정 참조: CP-A-03-04 전결관리규정 Rev13 + 부표#1 업무전결권한기준표
-// Gap: 아래 역할명(HR_MANAGER, CFO 등)은 규정 직급(본부장, 대표)과 매핑 필요
-// → docs/regulation-audit/A1-gap-analysis.md 참조
-
-export const PAYROLL_APPROVAL_CHAINS: Record<string, string[]> = {
-    'CTR': ['HR_MANAGER', 'CFO'],
-    'CTR-CN': ['GENERAL_MANAGER'],
-    'CTR-US': ['CONTROLLER'],
-    'CTR-RU': ['COUNTRY_HEAD'],
-    'CTR-VN': ['COUNTRY_HEAD'],
-    'CTR-EU': ['COUNTRY_HEAD'],
-    'DEFAULT': ['HR_ADMIN'],
-}
-
-/**
- * Synchronous version (backward-compatible)
- */
-export function getApprovalChain(companyCode: string | null): string[] {
-    if (!companyCode) return PAYROLL_APPROVAL_CHAINS.DEFAULT
-    return PAYROLL_APPROVAL_CHAINS[companyCode] ?? PAYROLL_APPROVAL_CHAINS.DEFAULT
-}
-
-/**
- * ApprovalFlow 기반 체인 조회 (Settings > 결재 플로우에서 설정)
- * 우선순위: ApprovalFlow(법인) > ApprovalFlow(글로벌) > Settings 테이블 > 하드코딩
- */
-export async function getApprovalChainFromSettings(
-    companyCode: string | null,
-    companyId?: string | null,
-): Promise<string[]> {
-    // 1. ApprovalFlow에서 payroll 모듈 플로우 조회 (공용 resolver 사용)
-    const steps = await resolveApprovalFlow('payroll', companyId ?? null)
-    if (steps.length > 0) {
-        return steps.map(s => s.approverRole ?? 'HR_ADMIN')
-    }
-
-    // 2. Settings 테이블 fallback
-    const settings = await getPayrollSetting<Record<string, string[]>>(
-        'approval-chains',
-        companyId,
-    )
-
-    if (settings && companyCode && settings[companyCode]) {
-        return settings[companyCode]
-    }
-
-    // 3. 하드코딩 fallback
-    if (!companyCode) return PAYROLL_APPROVAL_CHAINS.DEFAULT
-    return PAYROLL_APPROVAL_CHAINS[companyCode] ?? PAYROLL_APPROVAL_CHAINS.DEFAULT
-}
+// 급여 승인 체인은 ApprovalFlow SSOT로 이전됨 — resolveApprovalFlow('payroll', companyId).
+// submit-for-approval이 단계 생성, approve가 검증(회사 단위 role 보유), approval-status가
+// 미리보기까지 모두 flow 기반. 레거시 PAYROLL_APPROVAL_CHAINS / getApprovalChain /
+// getApprovalChainFromSettings (전부 미사용)는 #10(전결 SoD) 마이그레이션에서 제거.
+// 규정 매핑 근거: docs/regulation-audit/A1-gap-analysis.md (G1).
 
 // ─── 은행 코드 (이체 파일용) ─────────────────────────────────
 

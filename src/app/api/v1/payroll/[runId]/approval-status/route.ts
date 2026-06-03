@@ -8,7 +8,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { notFound } from '@/lib/errors'
-import { getApprovalChain } from '@/lib/payroll/approval-chains'
+import { resolveApprovalFlow } from '@/lib/approval/resolve-approval-flow'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
@@ -45,8 +45,13 @@ export const GET = withPermission(
         })
         if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
 
-        // 승인 체인 (체인은 있지만 Approval 레코드가 없을 수 있음 — PENDING_APPROVAL 이전)
-        const chain = getApprovalChain(run.company?.code ?? null)
+        // 승인 체인 미리보기 (Approval 레코드 생성 전 = submit 이전). ApprovalFlow SSOT 사용
+        // → submit이 실제 생성할 단계와 일치. 미설정 시 hr_admin 단일 fallback.
+        const resolvedPreview = await resolveApprovalFlow('payroll', run.companyId)
+        const chain =
+            resolvedPreview.length > 0
+                ? resolvedPreview.map((s) => s.approverRole ?? 'hr_admin')
+                : ['hr_admin']
 
         const approval = run.payrollApproval
         if (!approval) {

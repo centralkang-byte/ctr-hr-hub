@@ -1,71 +1,12 @@
 import { describe, it, expect } from 'vitest'
 import {
-  PAYROLL_APPROVAL_CHAINS,
-  getApprovalChain,
   BANK_CODES,
   DEFAULT_PAY_DAY,
 } from '@/lib/payroll/approval-chains'
 
-// ─── PAYROLL_APPROVAL_CHAINS ────────────────────────────────
-
-describe('PAYROLL_APPROVAL_CHAINS', () => {
-  it('should have CTR chain as HR_MANAGER, CFO', () => {
-    expect(PAYROLL_APPROVAL_CHAINS['CTR']).toEqual(['HR_MANAGER', 'CFO'])
-  })
-
-  it('should have CTR-CN chain as GENERAL_MANAGER', () => {
-    expect(PAYROLL_APPROVAL_CHAINS['CTR-CN']).toEqual(['GENERAL_MANAGER'])
-  })
-
-  it('should have DEFAULT chain as HR_ADMIN', () => {
-    expect(PAYROLL_APPROVAL_CHAINS['DEFAULT']).toEqual(['HR_ADMIN'])
-  })
-
-  it('should have entries for all 7 expected keys', () => {
-    const keys = Object.keys(PAYROLL_APPROVAL_CHAINS)
-    expect(keys).toHaveLength(7)
-    expect(keys).toEqual(
-      expect.arrayContaining(['CTR', 'CTR-CN', 'CTR-US', 'CTR-RU', 'CTR-VN', 'CTR-EU', 'DEFAULT']),
-    )
-  })
-})
-
-// ─── getApprovalChain ───────────────────────────────────────
-
-describe('getApprovalChain', () => {
-  it('should return DEFAULT chain for null companyCode', () => {
-    expect(getApprovalChain(null)).toEqual(['HR_ADMIN'])
-  })
-
-  it('should return CTR chain for CTR', () => {
-    expect(getApprovalChain('CTR')).toEqual(['HR_MANAGER', 'CFO'])
-  })
-
-  it('should return DEFAULT chain for unknown company code', () => {
-    expect(getApprovalChain('CTR-XX')).toEqual(['HR_ADMIN'])
-  })
-
-  it('should return CONTROLLER chain for CTR-US', () => {
-    expect(getApprovalChain('CTR-US')).toEqual(['CONTROLLER'])
-  })
-
-  it('should return COUNTRY_HEAD chain for CTR-RU', () => {
-    expect(getApprovalChain('CTR-RU')).toEqual(['COUNTRY_HEAD'])
-  })
-
-  // Codex Gate 1 [HIGH]: domestic subsidiaries fall back to DEFAULT, not CTR
-  it('should return DEFAULT chain for domestic subsidiary CTR-MOB', () => {
-    expect(getApprovalChain('CTR-MOB')).toEqual(['HR_ADMIN'])
-  })
-
-  it('should return DEFAULT chain for domestic subsidiary CTR-ENR', () => {
-    expect(getApprovalChain('CTR-ENR')).toEqual(['HR_ADMIN'])
-  })
-
-  it('should return correct values for CTR-VN', () => {
-    expect(getApprovalChain('CTR-VN')).toEqual(['COUNTRY_HEAD'])
-  })
-})
+// 급여 승인 체인(PAYROLL_APPROVAL_CHAINS/getApprovalChain) 테스트는 #10(전결 SoD)
+// 마이그레이션으로 제거됨 — 체인은 ApprovalFlow SSOT(resolveApprovalFlow)로 이전.
+// 신 동작은 e2e SoD 테스트(payroll approval)에서 검증.
 
 // ─── BANK_CODES ─────────────────────────────────────────────
 

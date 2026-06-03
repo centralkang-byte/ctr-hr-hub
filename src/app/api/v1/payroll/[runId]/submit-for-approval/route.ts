@@ -9,11 +9,12 @@ import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound } from '@/lib/errors'
+import { badRequest, conflict, notFound } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { sendNotification } from '@/lib/notifications'
+import { resolveApprovalFlow } from '@/lib/approval/resolve-approval-flow'
 
 const schema = z.object({
     note: z.string().max(1000).optional(),
@@ -56,17 +57,57 @@ export const POST = withPermission(
             )
         }
 
-        // PENDING_APPROVAL로 전환
+        // 승인 플로우 해석 (ApprovalFlow SSOT). payroll run은 전사 단위이므로
+        // dept_head/direct_manager(대상 직원 1명 필요)는 부적합 — hr_admin/ceo/finance
+        // 등 회사 단위 role만 의미.
+        // Codex Gate 2 #1: 재무 통제 → fail-CLOSED. flow 미설정 시 1인 승인 fallback 금지(거부).
+        const resolvedSteps = await resolveApprovalFlow('payroll', run.companyId)
+        if (resolvedSteps.length === 0) {
+            throw badRequest(
+                '급여 결재 플로우가 설정되지 않았습니다. 설정 > 결재 플로우에서 payroll 단계를 구성한 뒤 다시 시도하세요.',
+            )
+        }
+        const chain: string[] = resolvedSteps.map((s) => s.approverRole ?? 'hr_admin')
+
+        // PENDING_APPROVAL 전환 + 승인 단계 결정적 (재)생성 (Codex Gate 1 D5 / Gate 2 #2).
+        // - payroll은 self-skip 미적용 — 전사 재무 통제라 모든 단계에 명시적 승인 기록 필요.
+        // - 반려 후 재요청(REVIEW 복귀)에 대비해 기존(stale/REJECTED) approval 제거 후 새 flow로
+        //   재생성 — 안 하면 approve가 step1 건너뛰고 잔존 PENDING부터 처리(SoD 구멍).
+        // - REVIEW→PENDING_APPROVAL 조건부 전이로 동시 submit race 방어(한 쪽만 통과).
         const updated = await prisma.$transaction(async (tx) => {
-            const payrollRun = await tx.payrollRun.update({
-                where: { id: runId },
+            const transition = await tx.payrollRun.updateMany({
+                where: { id: runId, status: 'REVIEW' },
+                data: { status: 'PENDING_APPROVAL', notes: note ?? null },
+            })
+            if (transition.count === 0) return null
+
+            const existing = await tx.payrollApproval.findUnique({
+                where: { payrollRunId: runId },
+                select: { id: true },
+            })
+            if (existing) {
+                await tx.payrollApprovalStep.deleteMany({ where: { approvalId: existing.id } })
+                await tx.payrollApproval.delete({ where: { id: existing.id } })
+            }
+            await tx.payrollApproval.create({
                 data: {
-                    status: 'PENDING_APPROVAL',
-                    notes: note ?? null,
+                    payrollRunId: runId,
+                    totalSteps: chain.length,
+                    status: 'IN_PROGRESS',
+                    requestedBy: user.employeeId,
+                    steps: {
+                        create: chain.map((role, idx) => ({
+                            stepNumber: idx + 1,
+                            roleRequired: role,
+                        })),
+                    },
                 },
             })
-            return payrollRun
+            return tx.payrollRun.findUniqueOrThrow({ where: { id: runId } })
         })
+        if (!updated) {
+            throw conflict('이미 승인 요청이 처리되었습니다.')
+        }
 
         // HR_ADMIN + SUPER_ADMIN에게 알림
         try {

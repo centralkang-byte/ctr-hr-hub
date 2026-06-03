@@ -8,8 +8,8 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
+import { callerHoldsPayrollStepRole } from '@/lib/payroll/approval-step-roles'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, conflict, notFound, forbidden } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
@@ -19,7 +19,9 @@ const schema = z.object({
     comment: z.string().min(1, '반려 사유를 입력해 주세요.').max(1000),
 })
 
-export const POST = withPermission(
+// 권한: withAuth(인증) + 인핸들러 SoD가 authz (approve와 동일). 미들웨어 rbac-spec이
+// payroll 모듈 coarse 게이트(HR_UP) 제공. 비-HR 승인자(EXECUTIVE) reachability는 별 PR.
+export const POST = withAuth(
     async (req: NextRequest, context, user) => {
         const { runId } = await context.params
         let body: unknown
@@ -59,20 +61,23 @@ export const POST = withPermission(
         const currentStep = approval.steps.find((s) => s.status === 'PENDING')
         if (!currentStep) throw badRequest('처리 가능한 단계가 없습니다.')
 
-        // 역할 확인
-        // Session 209: SUPER_ADMIN session bypass + 그 외 role은 companyId scope으로
-        // cross-company false-allow 차단.
-        if (user.role !== 'SUPER_ADMIN') {
-            const callerRoles = await prisma.employeeRole.findMany({
-                where: {
-                    employeeId: user.employeeId,
-                    endDate: null,
-                    companyId: run.companyId,
-                    role: { code: currentStep.roleRequired },
-                },
-                select: { id: true },
-            })
-            if (callerRoles.length === 0) {
+        // 직무분리(SoD) 검증 — approve와 동일 정책 (Codex Gate 1 D2/D4).
+        // D4: 이전 단계를 승인한 사람은 후속 단계를 반려할 수 없음 (단독 통제 방지).
+        const priorApproverIds = approval.steps
+            .filter((s) => s.status === 'APPROVED' && s.approverId)
+            .map((s) => s.approverId as string)
+        if (priorApproverIds.includes(user.employeeId)) {
+            throw forbidden('직무분리: 이전 단계를 승인한 사람은 다음 단계를 반려할 수 없습니다.')
+        }
+        // D2: 현 단계가 요구하는 추상 role(hr_admin/ceo/finance) 보유 확인. SUPER_ADMIN은 긴급 대행.
+        const viaSuperOverride = user.role === 'SUPER_ADMIN'
+        if (!viaSuperOverride) {
+            const allowed = await callerHoldsPayrollStepRole(
+                currentStep.roleRequired,
+                user.employeeId,
+                run.companyId,
+            )
+            if (!allowed) {
                 throw forbidden(`이 단계(${currentStep.roleRequired})를 반려할 권한이 없습니다.`)
             }
         }
@@ -119,7 +124,7 @@ export const POST = withPermission(
             resourceType: 'PayrollApprovalStep',
             resourceId: currentStep.id,
             companyId: run.companyId,
-            changes: { stepNumber: currentStep.stepNumber, roleRequired: currentStep.roleRequired, comment },
+            changes: { stepNumber: currentStep.stepNumber, roleRequired: currentStep.roleRequired, comment, viaSuperOverride },
             ip,
             userAgent,
         })
@@ -127,7 +132,6 @@ export const POST = withPermission(
         const updated = await prisma.payrollRun.findUniqueOrThrow({ where: { id: runId } })
         return apiSuccess({ payrollRun: updated, rejectedStep: currentStep.stepNumber }, 200)
     },
-    perm(MODULE.PAYROLL, ACTION.APPROVE),
 )
 
 async function notifyRequester(
