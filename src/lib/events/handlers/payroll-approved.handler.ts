@@ -50,7 +50,7 @@ export const payrollApprovedHandler: DomainEventHandler<'PAYROLL_APPROVED'> = {
           titleKey:    'notifications.payslipIssued.title',
           bodyKey:     'notifications.payslipIssued.body',
           bodyParams:  { year: String(payload.year), month: String(payload.month) },
-          link:        '/my/payroll/payslips',
+          link:        '/payroll/me',
           priority:    'normal' as const,
           metadata:    { year: payload.year, month: payload.month },
         })),
