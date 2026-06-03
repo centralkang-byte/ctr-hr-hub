@@ -5,7 +5,7 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
+import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
@@ -173,6 +173,12 @@ export const POST = withPermission(
         managerId: _managerId, // managerId removed from Employee; ignored here
         ...employeeFields
       } = parsed.data
+
+      // 멀티테넌트 가드: SUPER_ADMIN 외에는 본인 법인에만 직원 생성 가능
+      // (body.companyId로 타 법인 직원·발령·급여 레코드 cross-company write 차단)
+      if (user.role !== ROLE.SUPER_ADMIN && empCompanyId !== user.companyId) {
+        throw forbidden('다른 법인의 직원을 생성할 수 없습니다.')
+      }
 
       // positionId(직위)가 해당 법인 소속인지 검증 (직접 API로 타 법인 position 연결 방지)
       if (positionId) {
