@@ -121,6 +121,37 @@ test.describe('HR_ADMIN: Employee CRUD', () => {
     }
   })
 
+  test('POST /employees with another company → 403 (cross-company write guard)', async ({ request }) => {
+    // 다른 법인 id 확보: companies 목록에서 본인(CTR) 아닌 첫 법인
+    const companiesRes = await request.get('/api/v1/companies')
+    const companiesResult = await parseApiResponse<Array<Record<string, unknown>>>(companiesRes)
+    assertOk(companiesResult, 'list companies')
+    const foreign = (companiesResult.data as Array<Record<string, unknown>>).find(
+      (c) => (c.id as string) !== seedData.companyId,
+    )
+    if (!foreign) return test.skip() // 단일 법인 시드 환경이면 스킵
+
+    const ts = Date.now()
+    const res = await request.post('/api/v1/employees', {
+      data: {
+        employeeNo: `e2e-xco-${ts}`,
+        name: '타법인생성시도',
+        email: `e2e-xco-${ts}@e2e-test.local`,
+        companyId: foreign.id as string, // ← 호출자(CTR) 아닌 타 법인
+        departmentId: seedData.departmentId,
+        jobGradeId: seedData.jobGradeId,
+        jobCategoryId: seedData.jobCategoryId,
+        hireDate: '2026-01-01',
+        employmentType: 'FULL_TIME',
+        status: 'ACTIVE',
+        nameEn: 'Cross Company Attempt',
+      },
+    })
+    const result = await parseApiResponse(res)
+    // 가드는 DB 조회 전 empCompanyId !== user.companyId 에서 발화 → 403
+    assertError(result, 403, 'cross-company employee create blocked')
+  })
+
   // ─── Read / Update / Delete ─────────────────────────────
 
   test('GET /employees/[newId] returns created employee', async ({ request }) => {
