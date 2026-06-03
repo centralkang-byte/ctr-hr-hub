@@ -183,3 +183,10 @@ export const DOMESTIC_COMPANY_CODES = [
   'CTR-HOLD', 'CTR', 'CTR-MOB', 'CTR-ECO', 'CTR-ROB', 'CTR-ENR', 'CTR-FML',
 ] as const
 export type DomesticCompanyCode = (typeof DOMESTIC_COMPANY_CODES)[number]
+
+// 도메스틱 7법인 여부 — 해외 급여는 "현지 시스템 + 데이터 동기화만"(.claude/rules/assignments.md)
+// 이므로, HR Hub self-service 급여명세서(PDF·항목분해) 가드의 SSOT.
+// code 미지정/미일치 → false(해외로 간주) = fail-closed: 비정본 명세서 노출보다 차단 우선.
+export function isDomesticCompanyCode(code: string | null | undefined): boolean {
+  return !!code && (DOMESTIC_COMPANY_CODES as readonly string[]).includes(code)
+}

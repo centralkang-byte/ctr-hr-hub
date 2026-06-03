@@ -5617,7 +5617,9 @@
     "notFound": "Pay stub not found.",
     "payDate": "Pay Date",
     "payPeriod": "Pay Period",
-    "titleWithMonth": "{month} Pay Stub"
+    "titleWithMonth": "{month} Pay Stub",
+    "overseasNoticeTitle": "Issued by local system",
+    "overseasNotice": "Payslips for overseas entities are issued by the local payroll system. Please contact your local team for the detailed breakdown."
   },
   "payroll": {
     "add_ked95a9ea": "Additional Total",
@@ -6821,7 +6823,8 @@
     "newBadge": "NEW",
     "paid": "Paid",
     "title": "My Pay Stubs",
-    "unreadCount": "{count} unread pay stub(s)"
+    "unreadCount": "{count} unread pay stub(s)",
+    "overseasNotice": "Payslips for overseas entities are issued by the local payroll system. Only summary totals are shown here."
   },
   "payrollReview": {
     "allowances": "Allowances",

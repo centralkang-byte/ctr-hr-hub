@@ -5,10 +5,11 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withAuth } from '@/lib/permissions'
-import { AppError, notFound } from '@/lib/errors'
+import { AppError, notFound, forbidden } from '@/lib/errors'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import { generatePayStubPdf, type PayrollItemWithRelations } from '@/lib/payroll/pdf'
 import { normaliseDetail } from '@/lib/payroll/normalise-detail'
+import { isDomesticCompanyCode } from '@/lib/constants'
 import { getRequestLocale } from '@/lib/server-i18n'
 
 // Self-service: query is hard-scoped to user.employeeId/companyId below, so
@@ -19,6 +20,23 @@ export const GET = withAuth(
     // DD-3: Korean legal payslip must be in Korean
     const pdfLocale = 'ko' as const
     const { runId } = await context.params
+
+    // 해외 법인 가드: 정본 급여명세서는 현지 시스템에서 발급된다(assignments.md "현지 시스템 +
+    // 데이터 동기화만"). HR Hub는 해외 직원에게 PDF 명세서를 생성하지 않는다. UI가 버튼을
+    // 숨겨도 이 엔드포인트가 권위 경계 — 직접 호출도 차단. fail-closed.
+    const company = await prisma.company.findUnique({
+      where: { id: user.companyId },
+      select: { code: true },
+    })
+    if (!isDomesticCompanyCode(company?.code)) {
+      if (!company) {
+        console.warn('[payroll/me/pdf] company not found; blocking payslip PDF (treated as overseas)', {
+          companyId: user.companyId,
+          employeeId: user.employeeId,
+        })
+      }
+      throw forbidden('급여명세서는 현지 시스템에서 발급됩니다.')
+    }
 
     const item = await prisma.payrollItem.findFirst({
       where: {

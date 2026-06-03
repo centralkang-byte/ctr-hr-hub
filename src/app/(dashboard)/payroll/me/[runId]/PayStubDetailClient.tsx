@@ -5,7 +5,7 @@ import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { ArrowLeft, Download, FileText } from 'lucide-react'
+import { ArrowLeft, Download, FileText, Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import PayStubBreakdown from '@/components/payroll/PayStubBreakdown'
 import { apiClient } from '@/lib/api'
@@ -133,7 +133,8 @@ interface PayslipItem {
   grossPay: string | number
   netPay: string | number
   deductions: string | number
-  detail: unknown   // may be raw or already-normalised
+  detail: unknown   // may be raw or already-normalised; null for overseas (no itemization)
+  payslipAvailable?: boolean   // false = 해외 법인(정본은 현지 시스템 발급)
   run: {
     id: string
     name: string
@@ -199,6 +200,49 @@ export default function PayStubDetailClient({ user: _user, runId }: PayStubDetai
           {tCommon('back')}
         </Button>
         <div className="text-center py-16 text-muted-foreground">{t('notFound')}</div>
+      </div>
+    )
+  }
+
+  // 해외 법인: 정본 명세서는 현지 시스템 발급 → 항목분해 미제공, 안내만 표시.
+  // (서버가 payslipAvailable=false + detail=null 로 응답)
+  if (raw.payslipAvailable === false) {
+    return (
+      <div className="p-6 space-y-6 max-w-3xl mx-auto">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="sm" onClick={() => router.push('/payroll/me')}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div className="flex items-center gap-2">
+            <FileText className="h-5 w-5 text-primary" />
+            <h1 className="text-2xl font-bold text-foreground">
+              {t('titleWithMonth', { month: raw.run.yearMonth })}
+            </h1>
+          </div>
+        </div>
+        {/* Pay Period Info — 요약(기간/지급일)은 해외도 유지: 동기화된 메타데이터 */}
+        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+            <div>
+              <p className="text-muted-foreground">{t('payPeriod')}</p>
+              <p className="font-medium">
+                {raw.run.periodStart.split('T')[0]} ~ {raw.run.periodEnd.split('T')[0]}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">{t('payDate')}</p>
+              <p className="font-medium">
+                {raw.run.paidAt?.split('T')[0] ?? raw.run.payDate?.split('T')[0] ?? '-'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-card rounded-xl shadow-sm border border-border p-8 text-center">
+          <Info className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+          <h2 className="text-base font-semibold text-foreground mb-1">{t('overseasNoticeTitle')}</h2>
+          <p className="text-sm text-muted-foreground">{t('overseasNotice')}</p>
+        </div>
       </div>
     )
   }

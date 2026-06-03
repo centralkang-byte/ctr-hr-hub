@@ -468,6 +468,10 @@ test.describe('Payslips: EMPLOYEE self-service', () => {
     const res = await f.getMyPayslips(api)
     assertOk(res, 'my payslips')
     expect(Array.isArray(res.data)).toBe(true)
+    // Domestic (CTR) must NOT be guarded as overseas — itemization stays available.
+    for (const it of res.data as Array<{ payslipAvailable?: boolean }>) {
+      expect(it.payslipAvailable).not.toBe(false)
+    }
   })
 
   test('GET /payroll/me/[runId]/pdf returns 200 + HTML payslip for a PAID run', async ({ request }) => {
@@ -516,6 +520,36 @@ test.describe('Payslips: HR_ADMIN self-service', () => {
     expect(raw.status, `HR payslip pdf must succeed (got ${raw.status})`).toBe(200)
     expect(raw.headers['content-type']).toContain('text/html')
     expect(raw.buffer.length).toBeGreaterThan(0)
+  })
+})
+
+// ─── Payslips: Overseas (CTR-CN) self-service guarded ───
+// 해외 법인 급여는 "현지 시스템 + 데이터 동기화만"(assignments.md). HR Hub는
+// 정본 명세서(PDF·항목분해)를 발급하지 않는다 — overseas self-service 차단.
+test.describe('Payslips: Overseas (CTR-CN) blocked from payslip artifact', () => {
+  test.use({ storageState: authFile('HR_ADMIN_CN') })
+
+  test('GET /payroll/me/[runId]/pdf → 403 for overseas company', async ({ request }) => {
+    const api = new ApiClient(request)
+    // Guard fires on company code BEFORE the item lookup → any runId yields 403.
+    const raw = await f.getMyPayslipPdf(api, '00000000-0000-4000-a000-000000000099')
+    expect(raw.status, `overseas payslip PDF must be blocked (got ${raw.status})`).toBe(403)
+  })
+
+  test('GET /payroll/me withholds itemization for overseas (payslipAvailable=false, detail=null)', async ({ request }) => {
+    const api = new ApiClient(request)
+    const res = await f.getMyPayslips(api)
+    assertOk(res, 'overseas my payslips')
+    const items = res.data as Array<{ payslipAvailable?: boolean; detail: unknown }>
+    expect(Array.isArray(items)).toBe(true)
+    // CTR-CN QA account isn't in the payroll employee set, so the list may be empty.
+    // The data-independent guard is the 403 PDF test above; skip (visible) rather than
+    // pass vacuously when there's no overseas item to assert on.
+    if (items.length === 0) return test.skip()
+    for (const it of items) {
+      expect(it.payslipAvailable, 'overseas item flagged unavailable').toBe(false)
+      expect(it.detail, 'overseas item carries no itemized detail').toBeNull()
+    }
   })
 })
 

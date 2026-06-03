@@ -5618,7 +5618,9 @@
     "notFound": "Pay stub not found.",
     "payDate": "Pay Date",
     "payPeriod": "Pay Period",
-    "titleWithMonth": "{month} Pay Stub"
+    "titleWithMonth": "{month} Pay Stub",
+    "overseasNoticeTitle": "由当地系统发放",
+    "overseasNotice": "海外法人的工资单由当地薪资系统发放。如需明细，请联系当地相关部门。"
   },
   "payroll": {
     "add_ked95a9ea": "添加itional 合计",
@@ -6822,7 +6824,8 @@
     "newBadge": "NEW",
     "paid": "Paid",
     "title": "My Pay Stubs",
-    "unreadCount": "未阅读工资条 {count} 条"
+    "unreadCount": "未阅读工资条 {count} 条",
+    "overseasNotice": "海外法人的工资单由当地薪资系统发放。此处仅显示金额汇总。"
   },
   "payrollReview": {
     "allowances": "Allowances",
