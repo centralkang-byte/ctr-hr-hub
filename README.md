@@ -211,9 +211,7 @@ ctr-hr-hub/
 │   ├── E2E_VERIFICATION.md    # 5 E2E scenario verification results
 │   └── guides/
 │       └── UX_CHARTER.md      # 30-article UX design charter
-├── context/
-│   ├── SHARED.md              # Project state (single source of truth)
-│   └── CLAUDE.md              # Design tokens + coding patterns
+├── context/                   # Planning/reference docs (org structure, policy, Track B)
 ├── vercel.json                # Vercel deployment config
 ├── tailwind.config.ts         # Design system tokens
 └── package.json               # Dependencies (52 prod, 13 dev)
@@ -259,8 +257,7 @@ These are intentional design decisions. Do not change without architecture revie
 
 | Document | Location | Description |
 |----------|----------|-------------|
-| **Project State** | [context/SHARED.md](context/SHARED.md) | Single source of truth — module status, architecture decisions, QA history |
-| **Coding Patterns** | [context/CLAUDE.md](context/CLAUDE.md) | Design tokens, component patterns, API patterns, naming conventions |
+| **Coding Patterns** | [CLAUDE.md](CLAUDE.md) | Design tokens, component patterns, API patterns, naming conventions |
 | **Deployment Guide** | [DEPLOYMENT.md](DEPLOYMENT.md) | Vercel + Supabase setup, cron jobs, rollback procedures |
 | **Troubleshooting** | [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Common issues and solutions for build, DB, auth, UI |
 | **RLS Design** | [docs/RLS_POLICY_DESIGN.md](docs/RLS_POLICY_DESIGN.md) | Row-Level Security policy design for all 194 models |
