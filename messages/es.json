@@ -5863,7 +5863,9 @@
       "statusPendingApproval": "Pendiente de aprobación",
       "statusReview": "En revisión",
       "unconfirmedEmployees": "{count} empleados sin confirmar",
-      "year": "Año {year}"
+      "year": "Año {year}",
+      "calculate": "Calcular nómina",
+      "calculateSuccess": "Cálculo de nómina completado"
     },
     "closeAttendance": "Cerrar Attendance",
     "closeAttendanceDesc": "Cerrar monthly attendance to start payroll calculation.",

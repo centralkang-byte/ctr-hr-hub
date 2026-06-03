@@ -5863,7 +5863,9 @@
       "statusPendingApproval": "Pending Approval",
       "statusReview": "Under Review",
       "unconfirmedEmployees": "{count} unconfirmed employees",
-      "year": "Year {year}"
+      "year": "Year {year}",
+      "calculate": "Calculate Payroll",
+      "calculateSuccess": "Payroll calculation complete"
     },
     "closeAttendance": "Close Attendance",
     "closeAttendanceDesc": "Close monthly attendance to start payroll calculation.",

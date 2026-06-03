@@ -5085,7 +5085,9 @@
       "closingComplete": "마감 완료",
       "unconfirmedEmployees": "미확정 직원 {count}명",
       "closeExcluding": "미확정 직원 {count}명 제외하고 마감",
-      "confirmedRatio": "확정 비율"
+      "confirmedRatio": "확정 비율",
+      "calculate": "급여 계산",
+      "calculateSuccess": "급여 계산이 완료되었습니다"
     },
     "anomalyPage": {
       "pageTitle": "급여 이상 탐지",

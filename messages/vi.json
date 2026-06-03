@@ -5863,7 +5863,9 @@
       "statusPendingApproval": "Chờ phê duyệt",
       "statusReview": "Đang xem xét",
       "unconfirmedEmployees": "{count} nhân viên chưa xác nhận",
-      "year": "Năm {year}"
+      "year": "Năm {year}",
+      "calculate": "Tính lương",
+      "calculateSuccess": "Đã hoàn tất tính lương"
     },
     "closeAttendance": "Đóng Attendance",
     "closeAttendanceDesc": "Đóng monthly attendance to start payroll calculation.",

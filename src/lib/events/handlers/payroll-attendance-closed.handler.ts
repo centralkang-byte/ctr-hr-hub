@@ -61,7 +61,7 @@ export const payrollAttendanceClosedHandler: DomainEventHandler<'PAYROLL_ATTENDA
                     titleKey: 'notifications.payrollAttendanceClosed.title',
                     bodyKey: 'notifications.payrollAttendanceClosed.body',
                     bodyParams: { yearMonth: payload.yearMonth, confirmedCount: payload.confirmedCount, totalEmployees: payload.totalEmployees },
-                    link: `/payroll/calculate`,
+                    link: `/payroll/close-attendance`,
                     priority: 'normal',
                     metadata: { payrollRunId: payload.payrollRunId, yearMonth: payload.yearMonth },
                 })
