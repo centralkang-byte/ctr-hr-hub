@@ -13,11 +13,14 @@ import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const GET = withPermission(
-    async (req, _ctx, _user: SessionUser) => {
+    async (req, _ctx, user: SessionUser) => {
         const url = new URL(req.url)
         const page = parseInt(url.searchParams.get('page') ?? '1', 10)
         const limit = parseInt(url.searchParams.get('limit') ?? '20', 10)
-        const companyId = url.searchParams.get('companyId') ?? undefined
+        // 멀티테넌트 스코프: 비-SUPER는 본인 법인 강제, SUPER만 쿼리 파라미터로 타 법인/전체 조회
+        // (형제 GET /offboarding/instances 와 동일 의미론 — 쿼리 파라미터 직접 신뢰 금지)
+        const requestedCompanyId = url.searchParams.get('companyId') ?? undefined
+        const companyId = user.role === 'SUPER_ADMIN' ? requestedCompanyId : user.companyId
         const statusFilter = url.searchParams.get('status') ?? undefined
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
