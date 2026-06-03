@@ -59,13 +59,10 @@ export const GET = withPermission(
 
     // ── 2. Get all balances for this year ──────────────────
 
-    const balances = await prisma.employeeLeaveBalance.findMany({
+    const balances = await prisma.leaveYearBalance.findMany({
       where: {
         employeeId: { in: empIds },
         year,
-      },
-      include: {
-        policy: { select: { name: true, leaveType: true } },
       },
     })
 
@@ -92,8 +89,8 @@ export const GET = withPermission(
     }> = []
 
     for (const b of balances) {
-      const granted = Number(b.grantedDays) + Number(b.carryOverDays)
-      const used = Number(b.usedDays)
+      const granted = b.entitled + b.carriedOver + b.adjusted
+      const used = b.used
       const remaining = granted - used
 
       totalGranted += granted
@@ -152,8 +149,8 @@ export const GET = withPermission(
       const deptName = assignment?.department?.name ?? '미지정'
 
       const existing = deptUsageMap.get(deptId) ?? { name: deptName, granted: 0, used: 0, headcount: 0 }
-      existing.granted += Number(b.grantedDays) + Number(b.carryOverDays)
-      existing.used += Number(b.usedDays)
+      existing.granted += b.entitled + b.carriedOver + b.adjusted
+      existing.used += b.used
       deptUsageMap.set(deptId, existing)
     }
 

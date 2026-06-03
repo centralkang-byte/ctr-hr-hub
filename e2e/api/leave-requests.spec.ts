@@ -206,6 +206,14 @@ test.describe('HR_ADMIN: Leave admin', () => {
     const res = await request.get('/api/v1/leave/admin/stats')
     const result = await parseApiResponse(res)
     expect([200, 404].includes(result.status)).toBe(true)
+    if (result.status === 200) {
+      // KPI는 SSOT(LeaveYearBalance) 기반 — 시드가 legacy→SSOT mirror하므로 채워져 있어야 함.
+      // 빈 테이블/오독 회귀 가드 (구 employeeLeaveBalance 스왑 검증)
+      const kpi = (result.data as { kpi?: Record<string, number> }).kpi
+      expect(kpi).toBeTruthy()
+      expect(kpi!.employeeCount).toBeGreaterThan(0)
+      expect(kpi!.totalGranted).toBeGreaterThan(0)
+    }
   })
 
   test('PUT /leave/requests/[id]/approve approves pending request', async ({ request }) => {

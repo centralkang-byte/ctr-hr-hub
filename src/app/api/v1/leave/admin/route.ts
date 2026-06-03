@@ -87,8 +87,9 @@ export const GET = withPermission(
       if (deptId) empDeptMap.set(emp.id, deptId)
     }
 
-    // Get all leave balances for the year
-    const balances = await prisma.employeeLeaveBalance.findMany({
+    // Get all leave balances for the year (SSOT: LeaveYearBalance — 휴가 신청/승인/취소·accrual이
+    // 갱신하는 실데이터. 구 employeeLeaveBalance는 신청 플로우가 안 건드려 stale)
+    const balances = await prisma.leaveYearBalance.findMany({
       where: {
         employeeId: { in: employees.map((e) => e.id) },
         year,
@@ -106,8 +107,8 @@ export const GET = withPermission(
       if (!deptId) continue
 
       const existing = deptUsageMap.get(deptId) ?? { totalGranted: 0, totalUsed: 0 }
-      existing.totalGranted += Number(b.grantedDays) + Number(b.carryOverDays)
-      existing.totalUsed += Number(b.usedDays)
+      existing.totalGranted += b.entitled + b.carriedOver + b.adjusted
+      existing.totalUsed += b.used
       deptUsageMap.set(deptId, existing)
     }
 
