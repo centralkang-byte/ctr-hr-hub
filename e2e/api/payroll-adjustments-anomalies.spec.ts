@@ -470,20 +470,23 @@ test.describe('Payslips: EMPLOYEE self-service', () => {
     expect(Array.isArray(res.data)).toBe(true)
   })
 
-  test('GET /payroll/me/[runId]/pdf returns binary (getRaw)', async ({ request }) => {
+  test('GET /payroll/me/[runId]/pdf returns 200 + HTML payslip for a PAID run', async ({ request }) => {
     const api = new ApiClient(request)
-    // Need a valid runId — try to get from my payslips first
     const listRes = await f.getMyPayslips(api)
-    const items = listRes.data as Array<{ run: { id: string } }> | undefined
+    const items = listRes.data as Array<{ run: { id: string; paidAt: string | null } }> | undefined
     if (!items || items.length === 0) return test.skip()
 
-    const runId = items[0].run.id
-    const raw = await f.getMyPayslipPdf(api, runId)
-    // 200 with HTML/PDF content, or 404 if not PAID
-    expect([200, 404]).toContain(raw.status)
-    if (raw.ok) {
-      expect(raw.headers['content-type']).toBeDefined()
-    }
+    // /payroll/me lists APPROVED + PAID runs; the pdf endpoint only serves PAID.
+    // Pick an actually-PAID run (paidAt set) so generation is exercised — not
+    // the 404-for-non-PAID path. Regression guard for the previously-swallowed
+    // 500 (employee relations under assignments[] + raw engine-format detail).
+    const paid = items.find((i) => i.run.paidAt != null)
+    if (!paid) return test.skip()
+
+    const raw = await f.getMyPayslipPdf(api, paid.run.id)
+    expect(raw.status, `payslip pdf must succeed (got ${raw.status})`).toBe(200)
+    expect(raw.headers['content-type']).toContain('text/html')
+    expect(raw.buffer.length).toBeGreaterThan(0)
   })
 
   test('EMPLOYEE can only see own payslips, not others', async ({ request }) => {
@@ -492,6 +495,27 @@ test.describe('Payslips: EMPLOYEE self-service', () => {
     const res = await f.getPayslip(api, '00000000-0000-4000-a000-000000000099')
     // 404 (not found for this user) or 403
     expect([403, 404]).toContain(res.status)
+  })
+})
+
+// ─── Payslips: HR_ADMIN self-service (own payslip pdf) ──
+
+test.describe('Payslips: HR_ADMIN self-service', () => {
+  test.use({ storageState: authFile('HR_ADMIN') })
+
+  test('GET /payroll/me/[runId]/pdf returns 200 + HTML payslip for a PAID run', async ({ request }) => {
+    const api = new ApiClient(request)
+    const listRes = await f.getMyPayslips(api)
+    const items = listRes.data as Array<{ run: { id: string; paidAt: string | null } }> | undefined
+    if (!items || items.length === 0) return test.skip()
+
+    const paid = items.find((i) => i.run.paidAt != null)
+    if (!paid) return test.skip()
+
+    const raw = await f.getMyPayslipPdf(api, paid.run.id)
+    expect(raw.status, `HR payslip pdf must succeed (got ${raw.status})`).toBe(200)
+    expect(raw.headers['content-type']).toContain('text/html')
+    expect(raw.buffer.length).toBeGreaterThan(0)
   })
 })
 
