@@ -3,12 +3,13 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
 import { apiSuccess } from '@/lib/api'
 // fetchPrimaryAssignment unused — baseSalary from CompensationHistory
 
-export const GET = withPermission(
+// Self-service: hard-scoped to user.employeeId below, so withAuth is correct.
+// withPermission(payroll_read) wrongly 403'd MANAGER on their own total rewards.
+export const GET = withAuth(
   async (_req, _context, user) => {
     const employeeId = user.employeeId
     if (!employeeId) {
@@ -124,5 +125,4 @@ export const GET = withPermission(
       yearlyBreakdown,
     })
   },
-  perm(MODULE.PAYROLL, ACTION.VIEW),
 )
