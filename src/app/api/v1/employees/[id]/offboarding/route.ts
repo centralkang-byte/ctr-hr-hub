@@ -51,5 +51,5 @@ export const GET = withPermission(
 
     return apiSuccess(offboarding)
   },
-  perm(MODULE.ONBOARDING, ACTION.VIEW),
+  perm(MODULE.OFFBOARDING, ACTION.VIEW),
 )
