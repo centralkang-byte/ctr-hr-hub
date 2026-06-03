@@ -3,8 +3,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
 import { apiSuccess } from '@/lib/api'
 import type { PayrollItemDetail } from '@/lib/payroll/types'
 
@@ -119,7 +118,11 @@ function normaliseDetail(
   }
 }
 
-export const GET = withPermission(
+// Self-service: any authenticated user reads ONLY their own payslips.
+// Query is hard-scoped to user.employeeId/companyId below, so withAuth is
+// correct here — withPermission(payroll_read) wrongly blocked MANAGER, whom
+// rbac-spec + sidebar already treat as ALL_ROLES self-service.
+export const GET = withAuth(
   async (_req, _context, user) => {
     const items = await prisma.payrollItem.findMany({
       where: {
@@ -174,6 +177,5 @@ export const GET = withPermission(
 
     return apiSuccess(normalised)
   },
-  perm(MODULE.PAYROLL, ACTION.VIEW),
 )
 

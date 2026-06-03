@@ -4,14 +4,15 @@
 
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
 import { notFound } from '@/lib/errors'
 import { apiError } from '@/lib/api'
 import { generatePayStubPdf } from '@/lib/payroll/pdf'
 import { getRequestLocale } from '@/lib/server-i18n'
 
-export const GET = withPermission(
+// Self-service: query is hard-scoped to user.employeeId/companyId below, so
+// withAuth is correct — withPermission(payroll_read) wrongly blocked MANAGER.
+export const GET = withAuth(
   async (_req, context, user) => {
     await getRequestLocale()
     // DD-3: Korean legal payslip must be in Korean
@@ -72,5 +73,4 @@ export const GET = withPermission(
       return apiError(new Error('PDF 생성에 실패했습니다.'))
     }
   },
-  perm(MODULE.PAYROLL, ACTION.VIEW),
 )
