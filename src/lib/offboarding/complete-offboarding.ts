@@ -215,6 +215,15 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
             },
         })
 
+        // 5b. Close the primary assignment — endDate=lastWorkingDate
+        //     퇴사 완료 시 활성 assignment를 마감해야 active(endDate:null) 쿼리에서 제외됨.
+        //     start route는 status(RESIGNED/TERMINATED)만 set하고 endDate는 열어둠 → 완료 시 마감.
+        //     동일 where(isPrimary, endDate:null)로 start route와 정합.
+        await tx.employeeAssignment.updateMany({
+            where: { employeeId, isPrimary: true, endDate: null },
+            data: { endDate: lastWorkingDate },
+        })
+
         // 6. Mark all remaining PENDING/IN_PROGRESS tasks as SKIPPED (cleanup)
         await tx.employeeOffboardingTask.updateMany({
             where: {
