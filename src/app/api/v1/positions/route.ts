@@ -8,17 +8,18 @@ import { withPermission, perm } from '@/lib/permissions'
 import { apiSuccess } from '@/lib/api'
 import { prisma } from '@/lib/prisma'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { badRequest, handlePrismaError, isAppError } from '@/lib/errors'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
-  async (req: NextRequest) => {
+  async (req: NextRequest, _context, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
-    const companyId = searchParams.get('companyId')
+    // 멀티테넌트 스코프(SSOT): 비-SUPER는 자사 직위만 → 타 법인 직위 노출 방지.
+    const companyId = resolveCompanyId(user, searchParams.get('companyId'))
     const departmentId = searchParams.get('departmentId')
 
-    const where: Record<string, unknown> = { deletedAt: null }
-    if (companyId) where.companyId = companyId
+    const where: Record<string, unknown> = { deletedAt: null, companyId }
     if (departmentId) where.departmentId = departmentId
 
     const positions = await prisma.position.findMany({

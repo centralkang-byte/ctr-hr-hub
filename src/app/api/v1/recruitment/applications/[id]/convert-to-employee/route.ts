@@ -32,6 +32,7 @@ const convertSchema = z.object({
   companyId: z.string().uuid().optional(),
   departmentId: z.string().uuid().optional(),
   jobGradeId: z.string().uuid().optional(),
+  positionId: z.string().uuid().optional(),     // 직위 (optional — 미입력 시 발령에서 배정)
   jobCategoryId: z.string().uuid().optional(),  // 미입력 시 공고에서 자동 설정
   buddyId: z.string().uuid().optional(),        // E-3: 온보딩 버디 지정
   employmentType: z.enum(['FULL_TIME', 'CONTRACT', 'INTERN']).optional().default('FULL_TIME'),
@@ -95,7 +96,7 @@ export const POST = withPermission(
       throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
     }
 
-    const { employeeNo, startDate, companyId, departmentId, jobGradeId, jobCategoryId, buddyId: _buddyId, employmentType } = parsed.data
+    const { employeeNo, startDate, companyId, departmentId, jobGradeId, positionId, jobCategoryId, buddyId: _buddyId, employmentType } = parsed.data
 
     const targetCompanyId = companyId ?? postingCompanyId ?? user.companyId
 
@@ -122,6 +123,15 @@ export const POST = withPermission(
 
     // Track B B-1h: Map ATS posting employmentType (lowercase) to Prisma enum
     const resolvedEmploymentType = employmentType ?? mapRequisitionTypeToEmploymentType(application.posting?.employmentType)
+
+    // positionId(직위)가 대상 법인 소속인지 검증 (직접 API로 타 법인 position 연결 방지)
+    if (positionId) {
+      const pos = await prisma.position.findFirst({
+        where: { id: positionId, companyId: targetCompanyId, deletedAt: null },
+        select: { id: true },
+      })
+      if (!pos) throw badRequest('positionId(직위)가 해당 법인에 속하지 않습니다.')
+    }
 
     try {
       // B4: 모든 쓰기 작업을 단일 트랜잭션으로 묶어 원자성 보장
@@ -170,6 +180,7 @@ export const POST = withPermission(
             departmentId: resolvedDepartmentId,
             jobGradeId: resolvedJobGradeId,
             jobCategoryId: resolvedJobCategoryId,
+            positionId: positionId ?? null,
             employmentType: resolvedEmploymentType,
             status: 'ACTIVE',
             isPrimary: true,
@@ -200,7 +211,7 @@ export const POST = withPermission(
         companyId: targetCompanyId,
         hireDate: new Date(startDate),
         departmentId: resolvedDepartmentId,
-        positionId: resolvedJobGradeId,
+        positionId: positionId ?? undefined,
       })
 
       const { ip, userAgent } = extractRequestMeta(req.headers)

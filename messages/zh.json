@@ -871,6 +871,8 @@
     "bulkProcessFailed": "批量处理失败",
     "bulkReject": "批量驳回",
     "businessTrip": "Business Trip",
+    "overtime": "Overtime",
+    "night": "Night",
     "cautionCount": "注意: {count}",
     "clockIn": "Clock In",
     "clockInAction": "打卡上班",
@@ -5862,7 +5864,9 @@
       "statusPendingApproval": "待审批",
       "statusReview": "审核中",
       "unconfirmedEmployees": "{count}名未确认员工",
-      "year": "{year}年"
+      "year": "{year}年",
+      "calculate": "计算薪资",
+      "calculateSuccess": "薪资计算完成"
     },
     "closeAttendance": "关闭 Attendance",
     "closeAttendanceDesc": "关闭 monthly attendance to start payroll calculation.",
@@ -8330,6 +8334,7 @@
     "convertAutoGenerate": "自动生成",
     "convertBackButton": "返回",
     "convertButton": "转为员工",
+    "position": "职位",
     "convertConfirmButton": "转为员工",
     "convertEmployeeNo": "工号",
     "convertEmployeeNoHint": "留空则自动生成。",

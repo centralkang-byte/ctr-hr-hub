@@ -871,6 +871,8 @@
     "bulkProcessFailed": "Xử lý hàng loạt thất bại",
     "bulkReject": "Từ chối hàng loạt",
     "businessTrip": "Business Trip",
+    "overtime": "Overtime",
+    "night": "Night",
     "cautionCount": "Chú ý: {count}",
     "clockIn": "Clock In",
     "clockInAction": "Chấm vào",
@@ -5861,7 +5863,9 @@
       "statusPendingApproval": "Chờ phê duyệt",
       "statusReview": "Đang xem xét",
       "unconfirmedEmployees": "{count} nhân viên chưa xác nhận",
-      "year": "Năm {year}"
+      "year": "Năm {year}",
+      "calculate": "Tính lương",
+      "calculateSuccess": "Đã hoàn tất tính lương"
     },
     "closeAttendance": "Đóng Attendance",
     "closeAttendanceDesc": "Đóng monthly attendance to start payroll calculation.",
@@ -8329,6 +8333,7 @@
     "convertAutoGenerate": "Tự động tạo",
     "convertBackButton": "Quay lại",
     "convertButton": "Chuyển thành nhân viên",
+    "position": "Vị trí",
     "convertConfirmButton": "Chuyển thành nhân viên",
     "convertEmployeeNo": "Mã nhân viên",
     "convertEmployeeNoHint": "Tự động tạo nếu để trống.",

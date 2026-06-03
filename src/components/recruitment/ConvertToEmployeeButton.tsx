@@ -32,7 +32,7 @@ export default function ConvertToEmployeeButton({
   applicantEmail,
   postingDepartment,
   postingGrade,
-  postingCompanyId: _postingCompanyId,
+  postingCompanyId,
 }: Props) {
   const router = useRouter()
   const t = useTranslations('recruitment')
@@ -41,36 +41,45 @@ export default function ConvertToEmployeeButton({
   const [loading, setLoading] = useState(false)
   const [departments, setDepartments] = useState<RefOption[]>([])
   const [grades, setGrades] = useState<RefOption[]>([])
+  const [positions, setPositions] = useState<RefOption[]>([])
   const [form, setForm] = useState({
     employeeNo: '',
     startDate: '',
     departmentId: '',
     jobGradeId: '',
+    positionId: '',
   })
 
   const fetchRefs = useCallback(async () => {
     try {
-      const [deptRes, gradeRes] = await Promise.all([
+      const [deptRes, gradeRes, posRes] = await Promise.all([
         apiClient.getList<RefOption>('/api/v1/org/departments', { limit: 200 }),
         apiClient.getList<RefOption>('/api/v1/org/grades', { limit: 200 }),
+        // positions route는 배열(apiSuccess)을 반환 → get 사용. 대상 법인으로 스코프(타 법인 직위 노출 방지).
+        apiClient.get<RefOption[]>(
+          '/api/v1/positions',
+          postingCompanyId ? { companyId: postingCompanyId, limit: 200 } : { limit: 200 },
+        ),
       ])
       setDepartments(deptRes.data)
       setGrades(gradeRes.data)
+      setPositions(posRes.data)
     } catch {
       // 참조 데이터 로드 실패 — 수동 입력으로 대체
     }
-  }, [])
+  }, [postingCompanyId])
 
   useEffect(() => {
     if (open) {
       fetchRefs()
       setStep('form')
-      setForm({ employeeNo: '', startDate: '', departmentId: '', jobGradeId: '' })
+      setForm({ employeeNo: '', startDate: '', departmentId: '', jobGradeId: '', positionId: '' })
     }
   }, [open, fetchRefs])
 
   const selectedDept = departments.find((d) => d.id === form.departmentId)
   const selectedGrade = grades.find((g) => g.id === form.jobGradeId)
+  const selectedPosition = positions.find((p) => p.id === form.positionId)
 
   const handleConvert = async () => {
     setLoading(true)
@@ -82,6 +91,7 @@ export default function ConvertToEmployeeButton({
           startDate: form.startDate,
           departmentId: form.departmentId || undefined,
           jobGradeId: form.jobGradeId || undefined,
+          positionId: form.positionId || undefined,
         },
       )
       setOpen(false)
@@ -188,6 +198,19 @@ export default function ConvertToEmployeeButton({
                       </select>
                     </div>
                   )}
+                  {positions.length > 0 && (
+                    <div>
+                      <label className={labelClass}>{t('position')}</label>
+                      <select
+                        value={form.positionId}
+                        onChange={(e) => setForm((f) => ({ ...f, positionId: e.target.value }))}
+                        className={inputClass}
+                      >
+                        <option value="">{t('noSelect')}</option>
+                        {positions.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                      </select>
+                    </div>
+                  )}
 
                   <button
                     onClick={() => setStep('review')}
@@ -223,6 +246,10 @@ export default function ConvertToEmployeeButton({
                     <ReviewRow
                       label={t('jobGrade')}
                       value={selectedGrade?.name ?? postingGrade ?? t('convertFromPostingDefault')}
+                    />
+                    <ReviewRow
+                      label={t('position')}
+                      value={selectedPosition?.name ?? t('noSelect')}
                     />
                   </div>
 

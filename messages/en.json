@@ -871,6 +871,8 @@
     "bulkProcessFailed": "Bulk processing failed.",
     "bulkReject": "Bulk Reject",
     "businessTrip": "Business Trip",
+    "overtime": "Overtime",
+    "night": "Night",
     "cautionCount": "Caution: {count}",
     "clockIn": "Clock In",
     "clockInAction": "Clock In",
@@ -5861,7 +5863,9 @@
       "statusPendingApproval": "Pending Approval",
       "statusReview": "Under Review",
       "unconfirmedEmployees": "{count} unconfirmed employees",
-      "year": "Year {year}"
+      "year": "Year {year}",
+      "calculate": "Calculate Payroll",
+      "calculateSuccess": "Payroll calculation complete"
     },
     "closeAttendance": "Close Attendance",
     "closeAttendanceDesc": "Close monthly attendance to start payroll calculation.",
@@ -8329,6 +8333,7 @@
     "convertAutoGenerate": "Auto-generated",
     "convertBackButton": "Back",
     "convertButton": "Convert to Employee",
+    "position": "Position",
     "convertConfirmButton": "Convert to Employee",
     "convertEmployeeNo": "Employee No.",
     "convertEmployeeNoHint": "Auto-generated if left blank.",

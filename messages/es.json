@@ -871,6 +871,8 @@
     "bulkProcessFailed": "Error en procesamiento masivo",
     "bulkReject": "Rechazar en lote",
     "businessTrip": "Business Trip",
+    "overtime": "Overtime",
+    "night": "Night",
     "cautionCount": "Precaución: {count}",
     "clockIn": "Clock In",
     "clockInAction": "Registrar entrada",
@@ -5861,7 +5863,9 @@
       "statusPendingApproval": "Pendiente de aprobación",
       "statusReview": "En revisión",
       "unconfirmedEmployees": "{count} empleados sin confirmar",
-      "year": "Año {year}"
+      "year": "Año {year}",
+      "calculate": "Calcular nómina",
+      "calculateSuccess": "Cálculo de nómina completado"
     },
     "closeAttendance": "Cerrar Attendance",
     "closeAttendanceDesc": "Cerrar monthly attendance to start payroll calculation.",
@@ -8329,6 +8333,7 @@
     "convertAutoGenerate": "Auto-generado",
     "convertBackButton": "Atrás",
     "convertButton": "Convertir a empleado",
+    "position": "Posición",
     "convertConfirmButton": "Convertir a empleado",
     "convertEmployeeNo": "Nº de empleado",
     "convertEmployeeNoHint": "Se genera automáticamente si se deja en blanco.",

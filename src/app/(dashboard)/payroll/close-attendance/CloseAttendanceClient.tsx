@@ -3,8 +3,10 @@
 import { useTranslations, useLocale } from 'next-intl'
 
 import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import {
     Calendar,
+    Calculator,
     CheckCircle2,
     XCircle,
     AlertTriangle,
@@ -75,6 +77,7 @@ export default function CloseAttendanceClient({ user }: Props) {
     const tCommon = useTranslations('common')
     const t = useTranslations('payroll')
     const locale = useLocale()
+    const router = useRouter()
     const { confirm, dialogProps } = useConfirmDialog()
     const now = new Date()
     const [year, setYear] = useState(now.getFullYear())
@@ -85,6 +88,7 @@ export default function CloseAttendanceClient({ user }: Props) {
     const [expandedEmp, setExpandedEmp] = useState<Record<string, boolean>>({})
     const [closing, setClosing] = useState<string | null>(null)
     const [reopening, setReopening] = useState<string | null>(null)
+    const [calculating, setCalculating] = useState<string | null>(null)
     const [confirmModal, setConfirmModal] = useState<{
         companyId: string
         status: AttendanceStatus
@@ -156,6 +160,26 @@ export default function CloseAttendanceClient({ user }: Props) {
                 setReopening(null)
             }
         }})
+    }
+
+    // ATTENDANCE_CLOSED → 급여 계산 실행 (동기: 완료 시 REVIEW로 전이) → 리뷰 페이지로 이동
+    const handleCalculate = async (payrollRunId: string, companyId: string) => {
+        setCalculating(companyId)
+        try {
+            const res = await fetch(`/api/v1/payroll/runs/${payrollRunId}/calculate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            })
+            if (res.ok) {
+                toast({ title: t('closeAtt.calculateSuccess') })
+                router.push(`/payroll/${payrollRunId}/review`)
+            } else {
+                const err = await res.json()
+                toast({ title: err.error?.message ?? tCommon('saveFailed'), variant: 'destructive' })
+            }
+        } finally {
+            setCalculating(null)
+        }
     }
 
     const yearMonth = `${year}-${String(month).padStart(2, '0')}`
@@ -233,14 +257,28 @@ export default function CloseAttendanceClient({ user }: Props) {
                                 </div>
                                 <div className="flex items-center gap-2">
                                     {isClosed ? (
-                                        <button
-                                            onClick={() => status?.payrollRunId && handleReopen(status.payrollRunId, companyId)}
-                                            disabled={reopening === companyId}
-                                            className="flex items-center gap-1.5 px-3 py-1.5 border border-border hover:bg-muted text-muted-foreground rounded-lg text-sm transition-colors disabled:opacity-50"
-                                        >
-                                            <Unlock size={14} />
-                                            {tCommon('unlock')}
-                                        </button>
+                                        <>
+                                            <button
+                                                type="button"
+                                                onClick={() => status?.payrollRunId && handleCalculate(status.payrollRunId, companyId)}
+                                                disabled={calculating === companyId}
+                                                className={`flex items-center gap-1.5 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-semibold transition-colors disabled:opacity-50`}
+                                            >
+                                                {calculating === companyId
+                                                    ? <RefreshCw size={14} className="animate-spin" />
+                                                    : <Calculator size={14} />}
+                                                {t('closeAtt.calculate')}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => status?.payrollRunId && handleReopen(status.payrollRunId, companyId)}
+                                                disabled={reopening === companyId}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 border border-border hover:bg-muted text-muted-foreground rounded-lg text-sm transition-colors disabled:opacity-50"
+                                            >
+                                                <Unlock size={14} />
+                                                {tCommon('unlock')}
+                                            </button>
+                                        </>
                                     ) : !isAlreadyCalculating ? (
                                         <button
                                             onClick={() => status && setConfirmModal({ companyId, status, excludeUnconfirmed: false })}
