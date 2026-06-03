@@ -4,7 +4,9 @@
  *
  * 규정 참조: docs/regulation-audit/A1-delegation-authority-matrix.md
  * - 휴가: 팀장(직속상관) 전결
- * - 급여: 본부장(dept_head) → 대표(ceo) 2단계
+ * - 급여: 관리본부(hr_admin) → 대표(ceo) 2단계
+ *   ※ 급여 run은 전사 단위(단일 대상 직원 없음) → dept_head/direct_manager(대상자 기준 해석) 부적합.
+ *      회사 단위로 해석되는 role(hr_admin/ceo/finance)만 사용. 규정 본부장 전결 ≈ 관리본부(HR) 단계.
  * - 채용 (충원요청): 본부장(dept_head) 1단계 (현재 시스템 운영 흐름; 위임전결규정 Rev13의 "CEO 전결 + 본부장·HR 합의"와 불일치 — 시스템 fix 트랙)
  * - 징계: HR 기안 → 대표(ceo) 전결
  * - 증명서: 직속 팀장 전결
@@ -32,8 +34,10 @@ const DEFAULT_FLOWS: FlowDef[] = [
   {
     module: 'payroll',
     name: '급여 승인',
+    // 전사 run이라 회사 단위 role만 해석 가능 (dept_head/direct_manager 부적합).
+    // hr_admin(관리본부) → ceo(대표) 2단계 SoD.
     steps: [
-      { approverRole: 'dept_head' },
+      { approverRole: 'hr_admin' },
       { approverRole: 'ceo' },
     ],
   },

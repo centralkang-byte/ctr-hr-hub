@@ -11,21 +11,24 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, conflict, notFound, forbidden } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { sendNotification } from '@/lib/notifications'
-import { getApprovalChain } from '@/lib/payroll/approval-chains'
+import { callerHoldsPayrollStepRole } from '@/lib/payroll/approval-step-roles'
 
 const schema = z.object({
     comment: z.string().max(1000).optional(),
 })
 
-export const POST = withPermission(
+// 권한: withAuth(인증만) + 인핸들러 SoD가 authz (Codex Gate 1 D2/D3/D4).
+// withPermission(PAYROLL, ACTION.APPROVE)='manage' 게이트 제거 — ceo 단계 승인자
+// (EXECUTIVE)는 '승인'만 필요하고 'manage'(전체 급여 운영권)는 과권한이라.
+// 승인 자격(현 단계 role 보유) 검증이 곧 접근 통제. cross-company 가드는 핸들러 내 유지.
+export const POST = withAuth(
     async (req: NextRequest, context, user) => {
         const { runId } = await context.params
         const body = await req.json()
@@ -54,44 +57,12 @@ export const POST = withPermission(
             throw forbidden('다른 법인의 급여를 결재할 수 없습니다.')
         }
 
-        // 2. PayrollApproval 없으면 생성 (첫 번째 승인자 호출 시)
-        // Settings-connected: approval chain from getApprovalChain (sync fallback, async variant available)
-        const chain = getApprovalChain(run.company?.code ?? null)
-        let approval = run.payrollApproval
-
+        // 2. 승인 단계는 submit-for-approval에서 결정적 생성됨 (Codex Gate 1 D5).
+        // approve는 기존 단계를 소비만 — lazy 생성 제거(인증 전 PayrollApproval 생성·
+        // requestedBy 각인으로 상태 변조 가능하던 데이터정합 구멍 차단).
+        const approval = run.payrollApproval
         if (!approval) {
-            // 처음 접근 — Approval + Steps 일괄 생성. 동시 첫 결재 race 시 한 쪽은
-            // unique key violation(payrollRunId @unique) → P2002 catch 후 findUnique
-            // 재조회로 fallback (Codex Gate 1 HIGH 2). upsert 대신 try/catch 명시 처리
-            // 이유: nested `steps.create`를 noop update에 안전하게 결합하기 어려움.
-            try {
-                approval = await prisma.payrollApproval.create({
-                    data: {
-                        payrollRunId: runId,
-                        totalSteps: chain.length,
-                        status: 'IN_PROGRESS',
-                        requestedBy: user.employeeId,
-                        steps: {
-                            create: chain.map((role, idx) => ({
-                                stepNumber: idx + 1,
-                                roleRequired: role,
-                            })),
-                        },
-                    },
-                    include: { steps: { orderBy: { stepNumber: 'asc' } } },
-                })
-            } catch (e: unknown) {
-                const isUniqueViolation =
-                    typeof e === 'object' && e !== null && 'code' in e &&
-                    (e as { code?: string }).code === 'P2002'
-                if (!isUniqueViolation) throw e
-                const existing = await prisma.payrollApproval.findUnique({
-                    where: { payrollRunId: runId },
-                    include: { steps: { orderBy: { stepNumber: 'asc' } } },
-                })
-                if (!existing) throw e
-                approval = existing
-            }
+            throw badRequest('승인 단계가 없습니다. 먼저 승인 요청(submit-for-approval)을 진행해 주세요.')
         }
 
         // 3. 현재 단계 확인
@@ -100,26 +71,27 @@ export const POST = withPermission(
             throw badRequest('더 이상 처리할 승인 단계가 없습니다.')
         }
 
-        // 4. 호출자의 역할 확인
-        // HR_ADMIN / SUPER_ADMIN은 모든 승인 단계를 대행할 수 있음
-        // Session 209: SUPER_ADMIN은 JWT session.role pin 기준 bypass (EmployeeRole row는
-        // 보통 CTR-HOLD 소속이라 run.companyId scope 매칭 불가). HR_ADMIN/매처드 role은
-        // companyId scope으로 cross-company false-allow 차단.
-        if (user.role !== 'SUPER_ADMIN') {
-            const OVERRIDE_ROLES = ['HR_ADMIN']
-            const callerRoles = await prisma.employeeRole.findMany({
-                where: {
-                    employeeId: user.employeeId,
-                    endDate: null,
-                    companyId: run.companyId,
-                    role: { code: { in: [currentStep.roleRequired, ...OVERRIDE_ROLES] } },
-                },
-                select: { id: true, role: { select: { code: true } } },
-            })
-            if (callerRoles.length === 0) {
-                throw forbidden(
-                    `이 단계(${currentStep.roleRequired})를 승인할 권한이 없습니다.`,
-                )
+        // 4. 직무분리(SoD) 검증 — Codex Gate 1 D2/D3/D4
+        // D4: 이전 단계 승인자와 동일인 차단 (다중 role 보유자/SUPER 단독 양단계 도장 방지) — 전원 적용.
+        const priorApproverIds = approval.steps
+            .filter((s) => s.status === 'APPROVED' && s.approverId)
+            .map((s) => s.approverId as string)
+        if (priorApproverIds.includes(user.employeeId)) {
+            throw forbidden('직무분리: 이전 단계를 승인한 사람은 다음 단계를 승인할 수 없습니다.')
+        }
+
+        // D2/D3: 현 단계가 요구하는 추상 role(hr_admin/ceo/finance)을 호출자가 '보유'하는지 확인.
+        // 블랭킷 HR_ADMIN override 제거 — HR_ADMIN은 hr_admin 단계만, ceo 단계는 EXECUTIVE/SUPER만.
+        // SUPER_ADMIN은 긴급 대행(role 미보유 단계도 통과) 허용하되, D4(단독 양단계 불가)는 적용 + audit 기록.
+        const viaSuperOverride = user.role === 'SUPER_ADMIN'
+        if (!viaSuperOverride) {
+            const allowed = await callerHoldsPayrollStepRole(
+                currentStep.roleRequired,
+                user.employeeId,
+                run.companyId,
+            )
+            if (!allowed) {
+                throw forbidden(`이 단계(${currentStep.roleRequired})를 승인할 권한이 없습니다.`)
             }
         }
 
@@ -212,7 +184,7 @@ export const POST = withPermission(
             resourceType: 'PayrollApprovalStep',
             resourceId: currentStep.id,
             companyId: run.companyId,
-            changes: { stepNumber: currentStep.stepNumber, roleRequired: currentStep.roleRequired, isLastStep, comment },
+            changes: { stepNumber: currentStep.stepNumber, roleRequired: currentStep.roleRequired, isLastStep, comment, viaSuperOverride },
             ip,
             userAgent,
         })
@@ -234,7 +206,6 @@ export const POST = withPermission(
             isComplete: isLastStep,
         }, 200)
     },
-    perm(MODULE.PAYROLL, ACTION.APPROVE),
 )
 
 // ─── 다음 승인자 알림 헬퍼 ──────────────────────────────────
