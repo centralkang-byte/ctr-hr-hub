@@ -63,6 +63,7 @@ data/*.json
 
 # Claude Code local artifacts (machine-specific)
 .claude/scheduled_tasks.lock
+.claude/.protected-unlock
 
 # Codex / agent local config (machine-specific — codex-generated; .codex/hooks.json has worktree-absolute paths)
 .codex/

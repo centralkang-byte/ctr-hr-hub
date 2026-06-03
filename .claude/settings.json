@@ -1,5 +1,16 @@
 {
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/protected-guard.sh"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "matcher": "",
