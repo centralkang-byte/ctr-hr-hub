@@ -8,11 +8,13 @@ import path from 'path'
 import { type Page, expect } from '@playwright/test'
 
 // ─── Role types ──────────────────────────────────────────
-export type RoleType = 'SUPER_ADMIN' | 'HR_ADMIN' | 'EXECUTIVE' | 'MANAGER' | 'EMPLOYEE'
+// HR_ADMIN_CN = 해외 법인(CTR-CN) 계정 — 해외 급여 self-service 가드 e2e용.
+export type RoleType = 'SUPER_ADMIN' | 'HR_ADMIN' | 'HR_ADMIN_CN' | 'EXECUTIVE' | 'MANAGER' | 'EMPLOYEE'
 
 const TEST_EMAILS: Record<RoleType, string> = {
   SUPER_ADMIN: 'super@ctr.co.kr',
   HR_ADMIN:    'hr@ctr.co.kr',
+  HR_ADMIN_CN: 'hr@ctr-cn.com',
   EXECUTIVE:   'executive@ctr.co.kr',
   MANAGER:     'manager@ctr.co.kr',
   EMPLOYEE:    'employee-a@ctr.co.kr',

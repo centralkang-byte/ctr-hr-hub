@@ -5617,7 +5617,9 @@
     "notFound": "Pay stub not found.",
     "payDate": "Pay Date",
     "payPeriod": "Pay Period",
-    "titleWithMonth": "{month} Pay Stub"
+    "titleWithMonth": "{month} Pay Stub",
+    "overseasNoticeTitle": "Do hệ thống địa phương phát hành",
+    "overseasNotice": "Phiếu lương của pháp nhân nước ngoài do hệ thống tính lương địa phương phát hành. Vui lòng liên hệ bộ phận phụ trách tại địa phương để xem chi tiết."
   },
   "payroll": {
     "add_ked95a9ea": "Thêmitional Tổng cộng",
@@ -6821,7 +6823,8 @@
     "newBadge": "MỚI",
     "paid": "Paid",
     "title": "My Pay Stubs",
-    "unreadCount": "{count} phiếu lương chưa đọc"
+    "unreadCount": "{count} phiếu lương chưa đọc",
+    "overseasNotice": "Phiếu lương của pháp nhân nước ngoài do hệ thống địa phương phát hành. Tại đây chỉ hiển thị tổng số."
   },
   "payrollReview": {
     "allowances": "Allowances",

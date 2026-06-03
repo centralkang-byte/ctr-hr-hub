@@ -5617,7 +5617,9 @@
     "notFound": "Pay stub not found.",
     "payDate": "Pay Date",
     "payPeriod": "Pay Period",
-    "titleWithMonth": "{month} Pay Stub"
+    "titleWithMonth": "{month} Pay Stub",
+    "overseasNoticeTitle": "Emitido por el sistema local",
+    "overseasNotice": "Las nóminas de las entidades en el extranjero las emite el sistema de nóminas local. Comuníquese con su equipo local para ver el desglose detallado."
   },
   "payroll": {
     "add_ked95a9ea": "Agregaritional Total",
@@ -6821,7 +6823,8 @@
     "newBadge": "NUEVO",
     "paid": "Paid",
     "title": "My Pay Stubs",
-    "unreadCount": "{count} recibos de nómina sin leer"
+    "unreadCount": "{count} recibos de nómina sin leer",
+    "overseasNotice": "Las nóminas de las entidades en el extranjero las emite el sistema de nóminas local. Aquí solo se muestran los totales."
   },
   "payrollReview": {
     "allowances": "Allowances",

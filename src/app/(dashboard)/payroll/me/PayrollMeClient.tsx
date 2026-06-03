@@ -7,7 +7,7 @@ import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { FileText, Wallet, Sparkles, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { FileText, Wallet, Sparkles, TrendingUp, TrendingDown, Minus, Info } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { formatCurrency } from '@/lib/compensation'
 import type { SessionUser } from '@/types'
@@ -21,6 +21,7 @@ interface PayslipItem {
   grossPay: string | number
   deductions: string | number
   netPay: string | number
+  payslipAvailable?: boolean   // false = 해외 법인(정본은 현지 시스템 발급)
   run: {
     id: string
     name: string
@@ -83,6 +84,8 @@ export default function PayrollMeClient({
   if (loading) return <TableSkeleton rows={8} />
 
   const newCount = items.filter((i) => !i.isViewed).length
+  // 해외 법인: 정본 명세서는 현지 시스템 발급 → 목록 상단 안내 배너(요약 카드는 유지)
+  const overseasPayroll = items.some((i) => i.payslipAvailable === false)
 
   return (
     <div className="p-6 space-y-6">
@@ -98,6 +101,13 @@ export default function PayrollMeClient({
           )}
         </div>
       </div>
+
+      {overseasPayroll && (
+        <div className="flex items-start gap-2 rounded-lg border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
+          <Info className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
+          <span>{t('overseasNotice')}</span>
+        </div>
+      )}
 
       {items.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground">

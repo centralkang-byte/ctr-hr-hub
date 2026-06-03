@@ -14,6 +14,7 @@ const AUTH_DIR = path.join(__dirname, '.auth')
 const ROLES = {
   SUPER_ADMIN: 'super@ctr.co.kr',
   HR_ADMIN: 'hr@ctr.co.kr',
+  HR_ADMIN_CN: 'hr@ctr-cn.com',   // 해외 법인(CTR-CN) — 해외 급여 self-service 가드 e2e용
   EXECUTIVE: 'executive@ctr.co.kr',
   MANAGER: 'manager@ctr.co.kr',
   EMPLOYEE: 'employee-a@ctr.co.kr',
