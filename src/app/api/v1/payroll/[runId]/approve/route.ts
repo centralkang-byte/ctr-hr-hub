@@ -18,7 +18,7 @@ import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { sendNotification } from '@/lib/notifications'
-import { callerHoldsPayrollStepRole } from '@/lib/payroll/approval-step-roles'
+import { callerHoldsPayrollStepRole, resolvePayrollStepRoleCodes } from '@/lib/payroll/approval-step-roles'
 
 const schema = z.object({
     comment: z.string().max(1000).optional(),
@@ -46,15 +46,17 @@ export const POST = withAuth(
             },
         })
         if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
-        if (run.status !== 'PENDING_APPROVAL') {
-            throw badRequest(`PENDING_APPROVAL 상태에서만 승인 가능합니다. (현재: ${run.status})`)
-        }
-
         // Session 209 (Codex Gate 1 HIGH 2): cross-company 승인 차단.
         // withPermission은 company scope을 강제하지 않으므로 다른 법인 동일 role 보유자가
         // foreign runId를 알면 통과 가능. SUPER_ADMIN은 cross-company bypass 허용.
+        // NOTE: 이 가드는 반드시 status 체크 앞에 둔다 — 뒤로 가면 타 법인 run.status가
+        //       badRequest 메시지("현재: ...")로 새는 오라클이 생긴다 (pre-merge-review P1).
         if (user.role !== 'SUPER_ADMIN' && run.companyId !== user.companyId) {
             throw forbidden('다른 법인의 급여를 결재할 수 없습니다.')
+        }
+
+        if (run.status !== 'PENDING_APPROVAL') {
+            throw badRequest(`PENDING_APPROVAL 상태에서만 승인 가능합니다. (현재: ${run.status})`)
         }
 
         // 2. 승인 단계는 submit-for-approval에서 결정적 생성됨 (Codex Gate 1 D5).
@@ -217,11 +219,17 @@ async function notifyNextApprover(
     yearMonth: string,
 ): Promise<void> {
     try {
+        // 추상 step role('ceo' 등)을 실제 role.code(['SUPER_ADMIN','EXECUTIVE'])로 해석.
+        // (finance 단계는 권한 기반이라 미커버 — 기본 flow[hr_admin→ceo]엔 없음.)
+        const codes = resolvePayrollStepRoleCodes(roleCode)
         const nextApprovers = await prisma.employee.findMany({
             where: {
+                // role도 해당 법인 scope으로 한정 — callerHoldsPayrollStepRole과 일치시켜
+                // 타 법인에서만 해당 role을 가진 사람에게 알림(runId·yearMonth)이 새지 않게 (Codex G2 P1).
                 employeeRoles: {
                     some: {
-                        role: { code: roleCode },
+                        companyId,
+                        role: { code: { in: codes } },
                         endDate: null,
                     },
                 },

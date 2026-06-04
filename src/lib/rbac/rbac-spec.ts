@@ -20,6 +20,8 @@ export const ROLE_GROUPS = {
   MANAGER_ONLY: ['MANAGER', 'HR_ADMIN', 'SUPER_ADMIN'],
   /** HR 관리자 이상 */
   HR_UP: ['HR_ADMIN', 'SUPER_ADMIN'],
+  /** 급여 승인 surface 도달 허용 — 단계별 SoD는 핸들러가 강제 (middleware는 reach만) */
+  PAYROLL_APPROVERS: ['HR_ADMIN', 'EXECUTIVE', 'SUPER_ADMIN'],
 } as const satisfies Record<string, readonly RoleCode[]>
 
 // ─── Route ACL ───────────────────────────────────────────
@@ -135,4 +137,18 @@ export function findRouteRule(pathname: string): RouteRule | null {
     }
   }
   return null
+}
+
+// ─── Payroll approval carve-out ──────────────────────────
+// `findRouteRule`는 prefix-only라 동적경로 suffix(`…/{runId}/approve`)를 격리 못 함
+// (`/payroll/{id}/review`·`/publish` 같은 HR 전용 페이지와 prefix를 공유).
+// 승인 surface만 anchored 정규식으로 매칭 → middleware가 PAYROLL_APPROVERS로 reach 허용.
+// 단계별 SoD(어느 step을 승인하는지)는 approve/reject 핸들러가 강제 (#126).
+const PAYROLL_APPROVAL_PATTERNS: readonly RegExp[] = [
+  /^\/payroll\/[^/]+\/approve\/?$/,                                    // page (optional trailing slash)
+  /^\/api\/v1\/payroll\/[^/]+\/(approve|reject|approval-status)\/?$/,  // APIs (optional trailing slash)
+]
+
+export function isPayrollApprovalPath(pathname: string): boolean {
+  return PAYROLL_APPROVAL_PATTERNS.some((re) => re.test(pathname))
 }

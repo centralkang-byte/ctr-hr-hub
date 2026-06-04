@@ -62,8 +62,8 @@ describe('UnifiedTask actions field', () => {
       type: UnifiedTaskType.PAYROLL_REVIEW,
       sourceId: 'run-1',
       actions: {
-        approveUrl: '/api/v1/payroll/runs/run-1/approve',
-        rejectUrl: '/api/v1/payroll/runs/run-1/reject',
+        approveUrl: '/api/v1/payroll/run-1/approve',
+        rejectUrl: '/api/v1/payroll/run-1/reject',
         detailUrl: '/payroll/run-1/review',
       },
     })

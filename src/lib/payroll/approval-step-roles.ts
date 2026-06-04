@@ -19,6 +19,15 @@ const PAYROLL_STEP_ROLE_CODES: Record<string, string[]> = {
 }
 
 /**
+ * 추상 approverRole(hr_admin/ceo)을 시스템 role.code 집합으로 해석.
+ * 매핑 없으면 literal 그대로(하위호환). 'finance'는 권한 기반이라 여기 미포함 —
+ * caller(approve/reject)가 별도 분기. callerHoldsPayrollStepRole · notifyNextApprover 공용.
+ */
+export function resolvePayrollStepRoleCodes(roleRequired: string): string[] {
+    return PAYROLL_STEP_ROLE_CODES[roleRequired] ?? [roleRequired]
+}
+
+/**
  * 호출자(employeeId)가 현 단계가 요구하는 추상 role을 회사 scope에서 보유하는가.
  * - finance: payroll:manage 권한 보유자 (재무/급여 관리)
  * - hr_admin/ceo: 위 매핑 role.code 보유
@@ -44,7 +53,7 @@ export async function callerHoldsPayrollStepRole(
         })
         return count > 0
     }
-    const codes = PAYROLL_STEP_ROLE_CODES[roleRequired] ?? [roleRequired]
+    const codes = resolvePayrollStepRoleCodes(roleRequired)
     const count = await prisma.employeeRole.count({
         where: { employeeId, endDate: null, companyId, role: { code: { in: codes } } },
     })

@@ -10,7 +10,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
-import { findRouteRule } from '@/lib/rbac/rbac-spec'
+import { findRouteRule, isPayrollApprovalPath, ROLE_GROUPS } from '@/lib/rbac/rbac-spec'
 
 // ─── Security Headers ──────────────────────────────────────
 
@@ -208,11 +208,14 @@ export async function middleware(request: NextRequest) {
     return applySecurityHeaders(NextResponse.redirect(loginUrl), nonce)
   }
 
-  // 4. RBAC check — find matching route rule
-  const rule = findRouteRule(pathname)
-  if (rule) {
+  // 4. RBAC check — payroll approval carve-out wins over the broad /payroll(HR_UP) rule.
+  //    Middleware only grants *reach*; step-level SoD stays in the approve/reject handlers (#126).
+  const allowedRoles = isPayrollApprovalPath(pathname)
+    ? ROLE_GROUPS.PAYROLL_APPROVERS
+    : findRouteRule(pathname)?.allowedRoles
+  if (allowedRoles) {
     const userRole = (token.role as string) || 'EMPLOYEE'
-    if (!rule.allowedRoles.includes(userRole)) {
+    if (!allowedRoles.includes(userRole)) {
       // API routes → JSON 403; pages → redirect to home
       if (pathname.startsWith('/api/')) {
         return applySecurityHeaders(

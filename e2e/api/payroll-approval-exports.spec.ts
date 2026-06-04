@@ -165,6 +165,52 @@ test.describe('Approval RBAC: MANAGER Blocked', () => {
     const res = await f.approveRun(api, fakeRunId)
     assertError(res, 403, 'MANAGER blocked from approve')
   })
+
+  test('GET /[runId]/approval-status as MANAGER → 403 (not in PAYROLL_APPROVERS)', async ({ request }) => {
+    const api = new ApiClient(request)
+    const res = await f.getApprovalStatus(api, fakeRunId)
+    assertError(res, 403, 'MANAGER blocked from approval-status (carve-out excludes MANAGER)')
+  })
+})
+
+// ─── Approval carve-out: EXECUTIVE (法人 대표 step-2 approver) ──
+// PR fix/payroll-executive-approval: middleware carve-out opens the approval surface
+// (approve/reject/approval-status) to EXECUTIVE, while admin payroll routes stay HR_UP.
+// Step-level SoD (EXEC=ceo step only, HR=hr_admin step only) + the full happy path
+// (EXEC approves step 2 → 200, HR step-2 → 403, notification reaches EXEC) are verified
+// by the deterministic runtime smoke (dev server + real sessions); these e2e cases assert
+// the RBAC boundary deterministically via unknown runIds (no shared-state coupling).
+
+test.describe('Approval carve-out: EXECUTIVE reaches approval surface', () => {
+  test.use({ storageState: authFile('EXECUTIVE') })
+
+  const fakeRunId = '00000000-0000-4000-a000-000000000001'
+
+  test('POST /[runId]/approve as EXECUTIVE reaches handler → 404 (NOT 403 middleware)', async ({ request }) => {
+    const api = new ApiClient(request)
+    const res = await f.approveRun(api, fakeRunId)
+    // Pre-carve-out this was a 403 at middleware. Now EXECUTIVE passes reach → handler
+    // 404s on the unknown run. 404 (not 403) is the proof the carve-out opened reach.
+    expect(res.status, 'EXECUTIVE reaches approve handler via carve-out').toBe(404)
+  })
+
+  test('GET /[runId]/approval-status as EXECUTIVE reaches handler → 404 on unknown run', async ({ request }) => {
+    const api = new ApiClient(request)
+    const res = await f.getApprovalStatus(api, fakeRunId)
+    expect(res.status, 'EXECUTIVE reaches approval-status via carve-out').toBe(404)
+  })
+
+  test('GET /[runId]/comparison as EXECUTIVE → 403 (admin route NOT carved out)', async ({ request }) => {
+    const api = new ApiClient(request)
+    const res = await f.getComparison(api, fakeRunId)
+    assertError(res, 403, 'EXECUTIVE blocked from payroll comparison (carve-out is approval-only)')
+  })
+
+  test('POST /[runId]/notify-unread as EXECUTIVE → 403 (admin route NOT carved out)', async ({ request }) => {
+    const api = new ApiClient(request)
+    const res = await f.notifyUnread(api, fakeRunId)
+    assertError(res, 403, 'EXECUTIVE blocked from notify-unread (carve-out is approval-only)')
+  })
 })
 
 // ═══════════════════════════════════════════════════════════

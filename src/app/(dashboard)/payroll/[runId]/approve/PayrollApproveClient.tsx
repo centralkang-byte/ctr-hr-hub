@@ -46,7 +46,7 @@ interface ApprovalChainStep {
 }
 
 interface ApprovalStatus {
-    run: { id: string; status: string; yearMonth: string }
+    run: RunInfo
     approval: {
         id: string
         currentStep: number
@@ -141,18 +141,16 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
 
     const fetchData = useCallback(async () => {
         try {
-            const [runRes, approvalRes] = await Promise.all([
-                apiClient.get<RunInfo>(`/api/v1/payroll/runs/${runId}`),
-                apiClient.get<ApprovalStatus>(`/api/v1/payroll/${runId}/approval-status`),
-            ])
-            setRun(runRes.data)
+            // approval-status가 run 요약 + 결재 현황을 함께 반환 → EXECUTIVE가 payroll:view 없이 로드.
+            const approvalRes = await apiClient.get<ApprovalStatus>(`/api/v1/payroll/${runId}/approval-status`)
+            setRun(approvalRes.data.run)
             setApproval(approvalRes.data)
         } catch (err) {
             toast({ title: t('approvePage.loadFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
         } finally {
             setLoading(false)
         }
-    }, [runId])
+    }, [runId, t])
 
     useEffect(() => { void fetchData() }, [fetchData])
 
