@@ -1,7 +1,10 @@
 export const meta = {
   name: 'p0-readiness-audit',
-  description: 'Audit the 6 P0 HR workflows end-to-end (N1 7-layer) for dogfood-blocking gaps and bugs, role-aware',
-  phases: [{ title: 'Audit', detail: 'one 7-layer auditor per P0 workflow, role-aware, read-only' }],
+  description: 'Audit the 6 P0 HR workflows end-to-end (N1 7-layer) for dogfood-blocking gaps and bugs, role-aware — then adversarially verify each P0/P1 finding before reporting',
+  phases: [
+    { title: 'Audit', detail: 'one 7-layer auditor per P0 workflow, role-aware, read-only' },
+    { title: 'Verify', detail: 'skeptic re-checks each P0/P1 finding against code, refutes over-reports' },
+  ],
 }
 
 const AUDIT_SCHEMA = {
@@ -44,6 +47,33 @@ const AUDIT_SCHEMA = {
   },
 }
 
+// Adversarial-verify output: only findings that survive a skeptic re-check
+const CONFIRM_SCHEMA = {
+  type: 'object',
+  required: ['workflow', 'confirmed', 'refuted'],
+  properties: {
+    workflow: { type: 'string' },
+    dogfoodReadiness: { type: 'string', enum: ['ready', 'partial', 'blocked'] },
+    confirmed: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['title', 'severity', 'evidence', 'verdict', 'fix'],
+        properties: {
+          title: { type: 'string' },
+          severity: { type: 'string', enum: ['P0', 'P1', 'P2'] },
+          layer: { type: 'string' },
+          role: { type: 'string' },
+          evidence: { type: 'string', description: 'file:line' },
+          verdict: { type: 'string', description: 'concrete repro proving the bug is real' },
+          fix: { type: 'string' },
+        },
+      },
+    },
+    refuted: { type: 'number', description: 'P0/P1 findings refuted as over-reports' },
+  },
+}
+
 const WORKFLOWS = [
   { name: '입사 (Onboarding / Hire)', hints: "Hire wizard + employee creation + onboarding checklist. Search: src/app/api/v1/employees, src/app/api/v1/onboarding, hire/onboarding wizard components under src/components and src/app/(dashboard)/employees, src/lib onboarding. Terms: hire, onboarding, employee create, 입사, 온보딩. Trace the multi-step hire wizard end-to-end." },
   { name: '퇴사 (Offboarding)', hints: "Offboarding flow + final settlement. Search: src/app/api/v1/**/offboarding, src/lib/**/offboarding-complete.ts, offboarding pages. Terms: offboarding, 퇴사, resignation, termination, lastWorkingDay. Check status transitions and final-settlement triggers." },
@@ -54,10 +84,12 @@ const WORKFLOWS = [
 ]
 
 phase('Audit')
-log(`P0 readiness audit: ${WORKFLOWS.length} workflows, 7-layer trace, role-aware...`)
+log(`P0 readiness audit: ${WORKFLOWS.length} workflows, 7-layer trace → adversarial verify (over-report guard)...`)
 
-const results = await parallel(
-  WORKFLOWS.map((w) => () =>
+const results = await pipeline(
+  WORKFLOWS,
+  // Stage 1 — 7-layer audit (unchanged from v1)
+  (w) =>
     agent(
       `You are auditing ONE P0 HR workflow in the CTR HR Hub Next.js/Prisma codebase for dogfood-readiness, using the N1 7-layer fidelity standard. READ-ONLY — do NOT edit any files.\n\n` +
       `WORKFLOW: ${w.name}\n` +
@@ -70,9 +102,38 @@ const results = await parallel(
       `4. Be role-aware: a flow may work for HR_ADMIN but break for EMPLOYEE/MANAGER — flag role-specific gaps.\n` +
       `5. Judge overall dogfoodReadiness: ready / partial / blocked.\n\n` +
       `Prefer finding real bugs over declaring 'ready'. Evidence before assertion. Return the structured audit only.`,
-      { label: `p0:${w.name}`, phase: 'Audit', schema: AUDIT_SCHEMA, model: 'sonnet' }
+      { label: `audit:${w.name}`, phase: 'Audit', schema: AUDIT_SCHEMA, model: 'sonnet' }
+    ),
+  // Stage 2 — adversarially verify the P0/P1 findings (refute over-reports)
+  (audit, w) => {
+    const toCheck = (audit?.findings || []).filter((f) => f.severity === 'P0' || f.severity === 'P1')
+    if (toCheck.length === 0) {
+      return { workflow: w.name, dogfoodReadiness: audit?.dogfoodReadiness || 'partial', confirmed: [], refuted: 0 }
+    }
+    return agent(
+      `You are a SKEPTICAL reviewer verifying audit findings for the P0 workflow "${w.name}" in the CTR HR Hub. READ-ONLY.\n\n` +
+      `A prior auditor reported the P0/P1 findings below. Audits here have a KNOWN over-reporting failure mode ` +
+      `(see memory p0-audit-overreports-wiring / phase3a-audit-drift), so your job is to REFUTE the ones that aren't real.\n` +
+      `For EACH finding: re-read the cited file:line and the surrounding code (and prisma/seed.ts buildRolePermissions() ` +
+      `when it's a permission claim). Confirm ONLY if you can state a concrete repro: "role R at step S gets behavior B, ` +
+      `expected E." Default to REFUTED when the cited code does not actually exhibit the bug, when it's already handled ` +
+      `elsewhere (e.g. middleware), or when it's stale vs current code.\n\n` +
+      `FINDINGS:\n${JSON.stringify(toCheck, null, 2)}\n\n` +
+      `Return only CONFIRMED findings (with a concrete verdict + fix) and the count refuted.`,
+      { label: `verify:${w.name}`, phase: 'Verify', schema: CONFIRM_SCHEMA, model: 'sonnet' }
     )
-  )
+  }
 ).then((rs) => rs.filter(Boolean))
 
-return { audited: results.length, workflows: results }
+const confirmed = results.flatMap((r) => (r.confirmed || []).map((f) => ({ ...f, workflow: r.workflow })))
+const refutedTotal = results.reduce((n, r) => n + (r.refuted || 0), 0)
+const p0 = confirmed.filter((f) => f.severity === 'P0')
+log(`Confirmed: ${confirmed.length} (P0=${p0.length}), refuted as over-reports: ${refutedTotal}.`)
+
+return {
+  byWorkflow: results.map((r) => ({ workflow: r.workflow, dogfoodReadiness: r.dogfoodReadiness, confirmed: (r.confirmed || []).length })),
+  p0Count: p0.length,
+  confirmedCount: confirmed.length,
+  refuted: refutedTotal,
+  confirmed,
+}
