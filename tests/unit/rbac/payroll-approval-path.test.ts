@@ -8,6 +8,11 @@ describe('isPayrollApprovalPath', () => {
     expect(isPayrollApprovalPath('/api/v1/payroll/abc-123/reject')).toBe(true)
     expect(isPayrollApprovalPath('/api/v1/payroll/abc-123/approval-status')).toBe(true)
   })
+  it('tolerates a single trailing slash (Codex G2 P2 — fail-closed robustness)', () => {
+    expect(isPayrollApprovalPath('/payroll/abc-123/approve/')).toBe(true)
+    expect(isPayrollApprovalPath('/api/v1/payroll/abc-123/approve/')).toBe(true)
+    expect(isPayrollApprovalPath('/api/v1/payroll/abc-123/reject/')).toBe(true)
+  })
   it('does NOT match payroll-admin routes or self-service', () => {
     expect(isPayrollApprovalPath('/payroll')).toBe(false)
     expect(isPayrollApprovalPath('/payroll/me')).toBe(false)

@@ -145,8 +145,8 @@ export function findRouteRule(pathname: string): RouteRule | null {
 // 승인 surface만 anchored 정규식으로 매칭 → middleware가 PAYROLL_APPROVERS로 reach 허용.
 // 단계별 SoD(어느 step을 승인하는지)는 approve/reject 핸들러가 강제 (#126).
 const PAYROLL_APPROVAL_PATTERNS: readonly RegExp[] = [
-  /^\/payroll\/[^/]+\/approve$/,                                    // page
-  /^\/api\/v1\/payroll\/[^/]+\/(approve|reject|approval-status)$/,  // APIs
+  /^\/payroll\/[^/]+\/approve\/?$/,                                    // page (optional trailing slash)
+  /^\/api\/v1\/payroll\/[^/]+\/(approve|reject|approval-status)\/?$/,  // APIs (optional trailing slash)
 ]
 
 export function isPayrollApprovalPath(pathname: string): boolean {

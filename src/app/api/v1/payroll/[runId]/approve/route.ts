@@ -222,8 +222,11 @@ async function notifyNextApprover(
         const codes = resolvePayrollStepRoleCodes(roleCode)
         const nextApprovers = await prisma.employee.findMany({
             where: {
+                // role도 해당 법인 scope으로 한정 — callerHoldsPayrollStepRole과 일치시켜
+                // 타 법인에서만 해당 role을 가진 사람에게 알림(runId·yearMonth)이 새지 않게 (Codex G2 P1).
                 employeeRoles: {
                     some: {
+                        companyId,
                         role: { code: { in: codes } },
                         endDate: null,
                     },
