@@ -18,7 +18,7 @@ import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { sendNotification } from '@/lib/notifications'
-import { callerHoldsPayrollStepRole } from '@/lib/payroll/approval-step-roles'
+import { callerHoldsPayrollStepRole, resolvePayrollStepRoleCodes } from '@/lib/payroll/approval-step-roles'
 
 const schema = z.object({
     comment: z.string().max(1000).optional(),
@@ -217,11 +217,14 @@ async function notifyNextApprover(
     yearMonth: string,
 ): Promise<void> {
     try {
+        // 추상 step role('ceo' 등)을 실제 role.code(['SUPER_ADMIN','EXECUTIVE'])로 해석.
+        // (finance 단계는 권한 기반이라 미커버 — 기본 flow[hr_admin→ceo]엔 없음.)
+        const codes = resolvePayrollStepRoleCodes(roleCode)
         const nextApprovers = await prisma.employee.findMany({
             where: {
                 employeeRoles: {
                     some: {
-                        role: { code: roleCode },
+                        role: { code: { in: codes } },
                         endDate: null,
                     },
                 },
