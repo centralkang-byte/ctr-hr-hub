@@ -9,6 +9,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound, conflict } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
@@ -53,7 +54,7 @@ export const POST = withPermission(
       throw badRequest('code, name, rankOrder는 필수입니다.')
     }
 
-    const companyId = body.companyId ?? user.companyId
+    const companyId = resolveCompanyId(user, body.companyId)
 
     // @@unique 제약으로 중복 자동 차단되지만 명시적 에러 메시지 제공
     const existing = await prisma.employeeTitle.findUnique({

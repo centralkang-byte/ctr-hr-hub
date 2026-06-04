@@ -2,7 +2,7 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { withPermission, perm } from '@/lib/permissions'
 import { apiSuccess, apiError } from '@/lib/api'
-import { badRequest, notFound } from '@/lib/errors'
+import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { prisma } from '@/lib/prisma'
 import { MODULE, ACTION } from '@/lib/constants'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
@@ -38,17 +38,21 @@ const updateFlowSchema = z.object({
 // GET /api/v1/settings/approval-flows?module=&companyId=
 // 글로벌(companyId=null) + 법인 오버라이드 모두 반환
 export const GET = withPermission(
-  async (req: NextRequest) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
     const approvalModule = searchParams.get('module')
-    const companyId = searchParams.get('companyId')
+    const requestedCompanyId = searchParams.get('companyId')
 
     const where: Record<string, unknown> = {}
     if (approvalModule) where.module = approvalModule
-    if (companyId) {
-      // 법인 + 글로벌 모두
-      where.OR = [{ companyId }, { companyId: null }]
+    if (user.role !== 'SUPER_ADMIN') {
+      // 비-SUPER: 자기 법인 + 글로벌(null)만
+      where.OR = [{ companyId: user.companyId }, { companyId: null }]
+    } else if (requestedCompanyId) {
+      // SUPER + 특정 법인: 해당 법인 + 글로벌
+      where.OR = [{ companyId: requestedCompanyId }, { companyId: null }]
     }
+    // SUPER + 미지정 → 전체 (기존 동작 보존)
 
     const flows = await prisma.approvalFlow.findMany({
       where,
@@ -67,13 +71,15 @@ export const POST = withPermission(
     const body = await req.json()
     const parsed = createFlowSchema.safeParse(body)
     if (!parsed.success) return apiError(badRequest(parsed.error.issues.map(i => i.message).join(', ')))
-    const { name, description, companyId, module, steps } = parsed.data
+    const { name, description, companyId: reqCompanyId, module, steps } = parsed.data
+    // 비-SUPER는 자기 법인으로 강제 — 글로벌(null)·타법인 생성 불가 (Codex P0: 글로벌 오염 방지)
+    const companyId = user.role === 'SUPER_ADMIN' ? (reqCompanyId ?? null) : user.companyId
 
     const flow = await prisma.approvalFlow.create({
       data: {
         name,
         description,
-        companyId: companyId ?? null,
+        companyId: companyId,
         module,
         steps: {
           create: (steps ?? []).map((s, i: number) => ({
@@ -114,6 +120,10 @@ export const PUT = withPermission(
 
     const existing = await prisma.approvalFlow.findUnique({ where: { id } })
     if (!existing) return apiError(notFound('승인 플로우를 찾을 수 없습니다'))
+    // 글로벌(null)·타 법인 모두 non-SUPER 차단 (Codex P0: deleteMany 전에 가드)
+    if (user.role !== 'SUPER_ADMIN' && existing.companyId !== user.companyId) {
+      throw forbidden('본사(SUPER)만 글로벌/타 법인 승인 플로우를 수정할 수 있습니다.')
+    }
 
     // steps는 전체 교체 방식
     await prisma.approvalFlowStep.deleteMany({ where: { flowId: id } })
@@ -155,12 +165,18 @@ export const PUT = withPermission(
 
 // DELETE /api/v1/settings/approval-flows?id=
 export const DELETE = withPermission(
-  async (req: NextRequest) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
     if (!id) return apiError(badRequest('id 파라미터가 필요합니다'))
     const idParsed = z.string().uuid().safeParse(id)
     if (!idParsed.success) return apiError(badRequest('유효하지 않은 ID 형식입니다'))
+
+    const existing = await prisma.approvalFlow.findUnique({ where: { id } })
+    if (!existing) return apiError(notFound('승인 플로우를 찾을 수 없습니다'))
+    if (user.role !== 'SUPER_ADMIN' && existing.companyId !== user.companyId) {
+      throw forbidden('본사(SUPER)만 글로벌/타 법인 승인 플로우를 삭제할 수 있습니다.')
+    }
 
     await prisma.approvalFlow.delete({ where: { id } })
     return apiSuccess({ message: '승인 플로우가 삭제되었습니다' })

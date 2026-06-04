@@ -6,7 +6,7 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, handlePrismaError, isAppError } from '@/lib/errors'
+import { badRequest, notFound, forbidden, handlePrismaError, isAppError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
@@ -59,6 +59,10 @@ export const PUT = withPermission(
         },
       })
       if (!existing) throw notFound('알림 트리거를 찾을 수 없습니다.')
+      // 글로벌(null) 트리거는 SUPER만 수정 (타법인은 위 findFirst에서 이미 notFound)
+      if (user.role !== 'SUPER_ADMIN' && existing.companyId === null) {
+        throw forbidden('본사(SUPER)만 글로벌 알림 트리거를 수정할 수 있습니다.')
+      }
 
       const result = await prisma.notificationTrigger.update({
         where: { id },
@@ -110,6 +114,10 @@ export const DELETE = withPermission(
         },
       })
       if (!existing) throw notFound('알림 트리거를 찾을 수 없습니다.')
+      // 글로벌(null) 트리거는 SUPER만 삭제 (타법인은 위 findFirst에서 이미 notFound)
+      if (user.role !== 'SUPER_ADMIN' && existing.companyId === null) {
+        throw forbidden('본사(SUPER)만 글로벌 알림 트리거를 삭제할 수 있습니다.')
+      }
 
       await prisma.notificationTrigger.update({ where: { id }, data: { deletedAt: new Date() } })
 
