@@ -45,14 +45,15 @@ export const POST = withAuth(
             },
         })
         if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
-        if (run.status !== 'PENDING_APPROVAL') {
-            throw badRequest(`PENDING_APPROVAL 상태에서만 반려 가능합니다. (현재: ${run.status})`)
-        }
-
         // Session 209 (Codex Gate 1 HIGH 2): cross-company 반려 차단.
         // SUPER_ADMIN은 cross-company bypass 허용.
+        // NOTE: status 체크 앞에 둔다 — 뒤면 타 법인 run.status가 새는 오라클 (pre-merge-review P1).
         if (user.role !== 'SUPER_ADMIN' && run.companyId !== user.companyId) {
             throw forbidden('다른 법인의 급여를 결재할 수 없습니다.')
+        }
+
+        if (run.status !== 'PENDING_APPROVAL') {
+            throw badRequest(`PENDING_APPROVAL 상태에서만 반려 가능합니다. (현재: ${run.status})`)
         }
 
         const approval = run.payrollApproval

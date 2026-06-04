@@ -46,15 +46,17 @@ export const POST = withAuth(
             },
         })
         if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
-        if (run.status !== 'PENDING_APPROVAL') {
-            throw badRequest(`PENDING_APPROVAL 상태에서만 승인 가능합니다. (현재: ${run.status})`)
-        }
-
         // Session 209 (Codex Gate 1 HIGH 2): cross-company 승인 차단.
         // withPermission은 company scope을 강제하지 않으므로 다른 법인 동일 role 보유자가
         // foreign runId를 알면 통과 가능. SUPER_ADMIN은 cross-company bypass 허용.
+        // NOTE: 이 가드는 반드시 status 체크 앞에 둔다 — 뒤로 가면 타 법인 run.status가
+        //       badRequest 메시지("현재: ...")로 새는 오라클이 생긴다 (pre-merge-review P1).
         if (user.role !== 'SUPER_ADMIN' && run.companyId !== user.companyId) {
             throw forbidden('다른 법인의 급여를 결재할 수 없습니다.')
+        }
+
+        if (run.status !== 'PENDING_APPROVAL') {
+            throw badRequest(`PENDING_APPROVAL 상태에서만 승인 가능합니다. (현재: ${run.status})`)
         }
 
         // 2. 승인 단계는 submit-for-approval에서 결정적 생성됨 (Codex Gate 1 D5).

@@ -33,12 +33,18 @@ function runSummary(run: {
     }
 }
 
+// CONVENTION NOTE: withAuth(≠ withPermission)는 의도적 예외다 — EXECUTIVE(법인 대표)는
+// payroll:view 권한이 없지만 승인 UI를 위해 이 라우트에 도달해야 한다. 미들웨어가 reach를
+// PAYROLL_APPROVERS로 제한하고, 핸들러가 2중 인가(canViewPayroll || isApprovalParticipant)를
+// 강제한다. api.md §2(withAuth=self-service)의 문서화된 예외.
 export const GET = withAuth(
     async (_req: NextRequest, context, user) => {
         const { runId } = await context.params
 
+        // 비-SUPER는 companyId 하드 스코프 — 타 법인 run은 fetch 자체 불가(→ notFound, 오라클 없음).
+        // SUPER_ADMIN은 스코프 해제 → 전 법인 결재현황 열람(아래 hasPermission bypass와 정합).
         const run = await prisma.payrollRun.findUnique({
-            where: { id: runId, companyId: user.companyId },
+            where: { id: runId, ...(user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }) },
             include: {
                 company: { select: { code: true } },
                 payrollApproval: {
