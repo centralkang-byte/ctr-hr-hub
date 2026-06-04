@@ -4,14 +4,36 @@
 
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { withPermission, perm } from '@/lib/permissions'
+import { withAuth, hasPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
-import { notFound } from '@/lib/errors'
+import { notFound, forbidden } from '@/lib/errors'
 import { resolveApprovalFlow } from '@/lib/approval/resolve-approval-flow'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { callerHoldsPayrollStepRole } from '@/lib/payroll/approval-step-roles'
 
-export const GET = withPermission(
+// 승인 화면이 필요로 하는 run 요약 (RunInfo와 동형) — EXECUTIVE가 payroll:view 없이 로드.
+// Decimal은 JSON 직렬화 시 string → 클라이언트 fmt(Number()) 호환.
+function runSummary(run: {
+    id: string; name: string; yearMonth: string; status: string; headcount: number
+    totalNet: unknown; totalGross: unknown; adjustmentCount: number
+    allAnomaliesResolved: boolean; notes: string | null
+}) {
+    return {
+        id: run.id,
+        name: run.name,
+        yearMonth: run.yearMonth,
+        status: run.status,
+        headcount: run.headcount,
+        totalNet: run.totalNet as string | number | null,
+        totalGross: run.totalGross as string | number | null,
+        adjustmentCount: run.adjustmentCount,
+        allAnomaliesResolved: run.allAnomaliesResolved,
+        notes: run.notes,
+    }
+}
+
+export const GET = withAuth(
     async (_req: NextRequest, context, user) => {
         const { runId } = await context.params
 
@@ -45,6 +67,24 @@ export const GET = withPermission(
         })
         if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
 
+        // 인가: 미들웨어는 reach만 연다(PAYROLL_APPROVERS). 여기서 실제 열람 자격을 재검증 —
+        // payroll:view 보유자(HR; SUPER는 hasPermission이 bypass) 또는 이 run 승인의 실제 참여자
+        // (현 단계 role 보유자 / 이미 처리한 사람)만. 그 외 같은 법인 EXECUTIVE의 runId 추측 열람 차단.
+        const canViewPayroll = hasPermission(user, perm(MODULE.PAYROLL, ACTION.VIEW))
+        let isApprovalParticipant = false
+        if (run.payrollApproval) {
+            const steps = run.payrollApproval.steps
+            const actedBefore = steps.some((s) => s.approverId === user.employeeId)
+            const current = steps.find((s) => s.status === 'PENDING')
+            const holdsCurrentRole = current
+                ? await callerHoldsPayrollStepRole(current.roleRequired, user.employeeId, run.companyId)
+                : false
+            isApprovalParticipant = actedBefore || holdsCurrentRole
+        }
+        if (!canViewPayroll && !isApprovalParticipant) {
+            throw forbidden('이 급여 결재 현황을 조회할 권한이 없습니다.')
+        }
+
         // 승인 체인 미리보기 (Approval 레코드 생성 전 = submit 이전). ApprovalFlow SSOT 사용
         // → submit이 실제 생성할 단계와 일치. 미설정 시 hr_admin 단일 fallback.
         const resolvedPreview = await resolveApprovalFlow('payroll', run.companyId)
@@ -56,7 +96,7 @@ export const GET = withPermission(
         const approval = run.payrollApproval
         if (!approval) {
             return apiSuccess({
-                run: { id: run.id, status: run.status, yearMonth: run.yearMonth },
+                run: runSummary(run),
                 approval: null,
                 chain: chain.map((role, idx) => ({
                     stepNumber: idx + 1,
@@ -70,11 +110,7 @@ export const GET = withPermission(
         }
 
         return apiSuccess({
-            run: {
-                id: run.id,
-                status: run.status,
-                yearMonth: run.yearMonth,
-            },
+            run: runSummary(run),
             approval: {
                 id: approval.id,
                 currentStep: approval.currentStep,
@@ -95,5 +131,4 @@ export const GET = withPermission(
             })),
         }, 200)
     },
-    perm(MODULE.PAYROLL, ACTION.VIEW),
 )
