@@ -7,9 +7,9 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound } from '@/lib/errors'
+import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 
 const schema = z.object({
@@ -35,6 +35,10 @@ export const POST = withPermission(
 
         const run = await prisma.payrollRun.findUnique({ where: { id: runId } })
         if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
+        // 멀티테넌트 가드: SUPER_ADMIN 외에는 본인 법인 급여 실행에만 접근 가능
+        if (user.role !== ROLE.SUPER_ADMIN && run.companyId !== user.companyId) {
+            throw forbidden('다른 법인의 급여 실행에 접근할 수 없습니다.')
+        }
         if (run.status !== 'REVIEW') {
             throw badRequest('REVIEW 상태에서만 이상 항목을 해소할 수 있습니다.')
         }

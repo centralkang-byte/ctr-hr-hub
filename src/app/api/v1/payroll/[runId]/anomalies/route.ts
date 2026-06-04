@@ -6,7 +6,7 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { notFound } from '@/lib/errors'
 import { buildPagination } from '@/lib/api'
@@ -20,15 +20,16 @@ const querySchema = z.object({
 })
 
 export const GET = withPermission(
-    async (req: NextRequest, context, _user) => {
+    async (req: NextRequest, context, user) => {
         const { runId } = await context.params
         const url = new URL(req.url)
         const { status, severity, page, limit } = querySchema.parse(
             Object.fromEntries(url.searchParams),
         )
 
-        const run = await prisma.payrollRun.findUnique({
-            where: { id: runId },
+        // 멀티테넌트 스코프: 비-SUPER는 본인 법인 run만 (타 법인 runId는 notFound)
+        const run = await prisma.payrollRun.findFirst({
+            where: { id: runId, ...(user.role !== ROLE.SUPER_ADMIN ? { companyId: user.companyId } : {}) },
             select: { id: true, status: true, companyId: true },
         })
         if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')

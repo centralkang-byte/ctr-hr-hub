@@ -7,9 +7,9 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound } from '@/lib/errors'
+import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
@@ -25,11 +25,12 @@ const createSchema = z.object({
 
 // GET
 export const GET = withPermission(
-    async (_req: NextRequest, context, _user) => {
+    async (_req: NextRequest, context, user) => {
         const { runId } = await context.params
 
-        const run = await prisma.payrollRun.findUnique({
-            where: { id: runId },
+        // 멀티테넌트 스코프: 비-SUPER는 본인 법인 run만 (타 법인 runId는 notFound)
+        const run = await prisma.payrollRun.findFirst({
+            where: { id: runId, ...(user.role !== ROLE.SUPER_ADMIN ? { companyId: user.companyId } : {}) },
             select: { id: true, status: true, companyId: true },
         })
         if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
@@ -69,6 +70,10 @@ export const POST = withPermission(
 
         const run = await prisma.payrollRun.findUnique({ where: { id: runId } })
         if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
+        // 멀티테넌트 가드: SUPER_ADMIN 외에는 본인 법인 급여 실행에만 접근 가능
+        if (user.role !== ROLE.SUPER_ADMIN && run.companyId !== user.companyId) {
+            throw forbidden('다른 법인의 급여 실행에 접근할 수 없습니다.')
+        }
         if (run.status !== 'ADJUSTMENT') {
             throw badRequest(`ADJUSTMENT 상태에서만 조정을 추가할 수 있습니다. (현재: ${run.status})`)
         }

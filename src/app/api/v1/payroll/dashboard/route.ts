@@ -8,7 +8,7 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { getPayrollSetting, getSettingValue } from '@/lib/settings/get-setting'
 
@@ -48,7 +48,7 @@ function computeDDay(targetDate: Date, now: Date): number {
 // ─── Route ─────────────────────────────────────────────────
 
 export const GET = withPermission(
-    async (req: NextRequest, _context, _user) => {
+    async (req: NextRequest, _context, user) => {
         const { searchParams } = req.nextUrl
         const now = new Date()
         const year = parseInt(searchParams.get('year') ?? String(now.getFullYear()), 10)
@@ -57,8 +57,9 @@ export const GET = withPermission(
 
         // ── 1. Fetch all companies for this HR admin ─────────────
 
+        // 멀티테넌트 스코프: 비-SUPER는 본인 법인만 (SUPER는 전 법인 holding 뷰)
         const companies = await prisma.company.findMany({
-            where: { deletedAt: null },
+            where: { deletedAt: null, ...(user.role !== ROLE.SUPER_ADMIN ? { id: user.companyId } : {}) },
             select: {
                 id: true, code: true, name: true, countryCode: true,
                 payrollRuns: {
@@ -155,6 +156,7 @@ export const GET = withPermission(
                 where: {
                     yearMonth: prevYearMonth,
                     status: { in: ['APPROVED', 'PAID'] },
+                    ...(user.role !== ROLE.SUPER_ADMIN ? { companyId: user.companyId } : {}),
                 },
                 select: { totalNet: true },
             }),

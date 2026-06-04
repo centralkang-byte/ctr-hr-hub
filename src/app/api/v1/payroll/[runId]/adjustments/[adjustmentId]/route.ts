@@ -5,9 +5,9 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound } from '@/lib/errors'
+import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 
 export const DELETE = withPermission(
@@ -20,6 +20,10 @@ export const DELETE = withPermission(
         })
 
         if (!adjustment) throw notFound('조정 항목을 찾을 수 없습니다.')
+        // 멀티테넌트 가드: SUPER_ADMIN 외에는 본인 법인만 (존재 oracle 차단 위해 runId-match보다 앞)
+        if (user.role !== ROLE.SUPER_ADMIN && adjustment.payrollRun.companyId !== user.companyId) {
+            throw forbidden('다른 법인의 급여 데이터에 접근할 수 없습니다.')
+        }
         if (adjustment.payrollRunId !== runId) throw badRequest('잘못된 요청입니다.')
         if (adjustment.payrollRun.status !== 'ADJUSTMENT') {
             throw badRequest('ADJUSTMENT 상태에서만 조정을 삭제할 수 있습니다.')

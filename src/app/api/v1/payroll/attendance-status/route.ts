@@ -9,6 +9,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 
 const schema = z.object({
     companyId: z.string().min(1),
@@ -17,7 +18,7 @@ const schema = z.object({
 })
 
 export const GET = withPermission(
-    async (req: NextRequest, _context, _user) => {
+    async (req: NextRequest, _context, user) => {
         const url = new URL(req.url)
         const params = Object.fromEntries(url.searchParams)
 
@@ -25,7 +26,9 @@ export const GET = withPermission(
         if (!parsed.success) {
             throw badRequest('companyId, year, month 파라미터가 필요합니다.')
         }
-        const { companyId, year, month } = parsed.data
+        const { year, month } = parsed.data
+        // 멀티테넌트 스코프: 비-SUPER는 파라미터 무시하고 본인 법인 강제 (api.md SSOT)
+        const companyId = resolveCompanyId(user, parsed.data.companyId)
 
         const yearMonth = `${year}-${String(month).padStart(2, '0')}`
         const firstDay = new Date(year, month - 1, 1)

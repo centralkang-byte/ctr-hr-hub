@@ -2,16 +2,29 @@
 // POST /api/v1/payroll/severance/[employeeId] — 퇴직금 계산
 // ═══════════════════════════════════════════════════════════
 
+import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
+import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
 import { payrollSeveranceSchema } from '@/lib/schemas/payroll'
 import { calculateSeverance } from '@/lib/payroll/severance'
 
 export const POST = withPermission(
-  async (req, context, _user) => {
+  async (req, context, user) => {
     const { employeeId } = await context.params
+
+    // 멀티테넌트 가드: 비-SUPER는 본인 법인 직원만 (타 법인 직원 퇴직금 계산 차단)
+    const emp = await prisma.employee.findFirst({
+      where: {
+        id: employeeId,
+        ...(user.role !== ROLE.SUPER_ADMIN
+          ? { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
+          : {}),
+      },
+      select: { id: true },
+    })
+    if (!emp) throw notFound('직원을 찾을 수 없습니다.')
 
     let body: unknown
     try {
