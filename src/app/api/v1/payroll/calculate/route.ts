@@ -7,7 +7,7 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION, DOMESTIC_COMPANY_CODES } from '@/lib/constants'
+import { MODULE, ACTION, ROLE, DOMESTIC_COMPANY_CODES } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
@@ -43,6 +43,11 @@ export const POST = withPermission(
 
         const run = await prisma.payrollRun.findUnique({ where: { id: payrollRunId } })
         if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
+
+        // 멀티테넌트 가드: SUPER_ADMIN 외에는 본인 법인 급여 실행에만 접근 가능 (해외법인 체크보다 우선)
+        if (user.role !== ROLE.SUPER_ADMIN && run.companyId !== user.companyId) {
+            throw forbidden('다른 법인의 급여 실행에 접근할 수 없습니다.')
+        }
 
         // GP#3 파이프라인: ATTENDANCE_CLOSED 상태에서만 계산 시작 가능
         if (run.status !== 'ATTENDANCE_CLOSED') {

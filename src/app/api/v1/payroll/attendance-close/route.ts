@@ -13,6 +13,7 @@ import { badRequest, conflict } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 
 const schema = z.object({
     companyId: z.string().min(1),
@@ -24,7 +25,9 @@ const schema = z.object({
 export const POST = withPermission(
     async (req: NextRequest, _context, user) => {
         const body = await req.json()
-        const { companyId, year, month, excludeEmployeeIds } = schema.parse(body)
+        const { companyId: requestedCompanyId, year, month, excludeEmployeeIds } = schema.parse(body)
+        // 멀티테넌트: SUPER_ADMIN만 타 법인 지정 가능, 그 외는 본인 법인 강제
+        const companyId = resolveCompanyId(user, requestedCompanyId)
 
         const company = await prisma.company.findUnique({ where: { id: companyId } })
         if (!company) throw badRequest('존재하지 않는 법인입니다.')
