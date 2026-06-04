@@ -7,9 +7,9 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound } from '@/lib/errors'
+import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 
 const schema = z.object({
@@ -28,6 +28,10 @@ export const PUT = withPermission(
             include: { payrollRun: { select: { id: true, status: true, companyId: true } } },
         })
         if (!anomaly) throw notFound('이상 항목을 찾을 수 없습니다.')
+        // 멀티테넌트 가드: SUPER_ADMIN 외에는 본인 법인만 (존재 oracle 차단 위해 runId-match보다 앞)
+        if (user.role !== ROLE.SUPER_ADMIN && anomaly.payrollRun.companyId !== user.companyId) {
+            throw forbidden('다른 법인의 급여 데이터에 접근할 수 없습니다.')
+        }
         if (anomaly.payrollRunId !== runId) throw badRequest('잘못된 요청입니다.')
         if (anomaly.payrollRun.status !== 'REVIEW') {
             throw badRequest('REVIEW 상태에서만 이상 항목을 해소할 수 있습니다.')

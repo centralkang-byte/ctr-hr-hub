@@ -6,8 +6,9 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withPermission } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
+import { forbidden } from '@/lib/errors'
 import { z } from 'zod'
 
 const querySchema = z.object({
@@ -18,7 +19,11 @@ const querySchema = z.object({
 const COMPANY_ORDER = ['CTR', 'CTR-CN', 'CTR-US', 'CTR-VN', 'CTR-EU', 'CTR-RU']
 
 export const GET = withPermission(
-  async (req: NextRequest) => {
+  async (req: NextRequest, _context, user) => {
+    // 멀티테넌트 가드: 전 법인 통합 뷰는 SUPER_ADMIN(holding)만 — 단일 법인 HR의 전사 노출 차단
+    if (user.role !== ROLE.SUPER_ADMIN) {
+      throw forbidden('전사 급여 통합 현황은 최고 관리자만 조회할 수 있습니다.')
+    }
     const params = Object.fromEntries(new URL(req.url).searchParams)
     const { year, month } = querySchema.parse(params)
 

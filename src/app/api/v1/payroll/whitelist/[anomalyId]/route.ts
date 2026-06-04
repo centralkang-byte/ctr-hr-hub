@@ -6,9 +6,9 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound } from '@/lib/errors'
+import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 
 export const DELETE = withPermission(
@@ -20,6 +20,10 @@ export const DELETE = withPermission(
             include: { payrollRun: { select: { companyId: true } } },
         })
         if (!anomaly) throw notFound('이상 항목을 찾을 수 없습니다.')
+        // 멀티테넌트 가드: SUPER_ADMIN 외에는 본인 법인 급여 데이터에만 접근 가능
+        if (user.role !== ROLE.SUPER_ADMIN && anomaly.payrollRun.companyId !== user.companyId) {
+            throw forbidden('다른 법인의 급여 데이터에 접근할 수 없습니다.')
+        }
         if (!anomaly.whitelisted) throw badRequest('화이트리스트 등록된 항목이 아닙니다.')
 
         await prisma.payrollAnomaly.update({

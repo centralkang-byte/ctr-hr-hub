@@ -6,9 +6,10 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withPermission } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { apiSuccess, apiError } from '@/lib/api'
-import { badRequest } from '@/lib/errors'
+import { badRequest, forbidden } from '@/lib/errors'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { z } from 'zod'
 
 const createSchema = z.object({
@@ -22,8 +23,8 @@ const createSchema = z.object({
 })
 
 export const GET = withPermission(
-  async (req: NextRequest) => {
-    const companyId = new URL(req.url).searchParams.get('companyId')
+  async (req: NextRequest, _context, user) => {
+    const companyId = resolveCompanyId(user, new URL(req.url).searchParams.get('companyId'))
     if (!companyId) return apiError(badRequest('companyId required'))
 
     const mappings = await prisma.payrollImportMapping.findMany({
@@ -36,9 +37,13 @@ export const GET = withPermission(
 )
 
 export const POST = withPermission(
-  async (req: NextRequest) => {
+  async (req: NextRequest, _context, user) => {
     const body = await req.json()
     const data = createSchema.parse(body)
+    // 멀티테넌트 가드: SUPER_ADMIN 외에는 본인 법인 매핑만 생성 가능
+    if (user.role !== ROLE.SUPER_ADMIN && data.companyId !== user.companyId) {
+      throw forbidden('다른 법인의 매핑을 생성할 수 없습니다.')
+    }
 
     if (data.isDefault) {
       await prisma.payrollImportMapping.updateMany({

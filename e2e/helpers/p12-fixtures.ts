@@ -491,3 +491,60 @@ export function getWhitelist(c: ApiClient, params: Record<string, string>): Prom
 export function deleteWhitelistItem(c: ApiClient, anomalyId: string): Promise<ApiResult<any>> {
   return c.del(`${PAYROLL_WHITELIST}/${anomalyId}`)
 }
+
+// ═══════════════════════════════════════════════════════════
+// WRAPPERS — Dashboard / Import Mappings / Import Logs (batch 2 멀티테넌트)
+// ═══════════════════════════════════════════════════════════
+
+const PAYROLL_DASHBOARD = '/api/v1/payroll/dashboard'
+const PAYROLL_IMPORT_MAPPINGS = '/api/v1/payroll/import-mappings'
+const PAYROLL_IMPORT_LOGS = '/api/v1/payroll/import-logs'
+
+export function buildImportMapping(companyId: string) {
+  const t = ts()
+  return {
+    companyId,
+    name: `E2E Mapping ${t}`,
+    fileType: 'xlsx' as const,
+    headerRow: 1,
+    mappings: { 사번: 'employeeNo', 기본급: 'baseSalary' },
+    currency: 'KRW',
+    isDefault: false,
+  }
+}
+
+export function buildImportLog(companyId: string, mappingId: string) {
+  const now = new Date()
+  return {
+    companyId,
+    mappingId,
+    year: now.getFullYear(),
+    month: now.getMonth() + 1,
+    fileName: `e2e-${ts()}.xlsx`,
+    employeeCount: 1,
+    totalGross: 1000000,
+    totalNet: 900000,
+    currency: 'KRW',
+    uploadedById: 'spoof-attempt-id',
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getPayrollDashboard(c: ApiClient, params: Record<string, string>): Promise<ApiResult<any>> {
+  return c.get(PAYROLL_DASHBOARD, params)
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getImportMappings(c: ApiClient, params: Record<string, string>): Promise<ApiResult<any>> {
+  return c.get(PAYROLL_IMPORT_MAPPINGS, params)
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function createImportMapping(c: ApiClient, data: Record<string, unknown>): Promise<ApiResult<any>> {
+  return c.post(PAYROLL_IMPORT_MAPPINGS, data)
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function createImportLog(c: ApiClient, data: Record<string, unknown>): Promise<ApiResult<any>> {
+  return c.post(PAYROLL_IMPORT_LOGS, data)
+}
