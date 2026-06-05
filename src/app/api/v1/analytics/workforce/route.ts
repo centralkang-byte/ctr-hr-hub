@@ -15,13 +15,16 @@ import {
   getHeadcountByGrade,
 } from '@/lib/analytics/queries'
 import type { WorkforceData } from '@/lib/analytics/types'
+import type { SessionUser } from '@/types'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
 export const GET = withCache(withPermission(
-  async (req: NextRequest) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
-    const { company_id: companyId } = analyticsQuerySchema.parse({
+    const { company_id: requestedCompanyId } = analyticsQuerySchema.parse({
       company_id: searchParams.get('company_id') ?? undefined,
     })
+    const { companyId } = resolveCompanyFilter(user, requestedCompanyId)
 
     const [byDept, byType, byGrade] = await Promise.all([
       getHeadcountByDepartment(companyId),

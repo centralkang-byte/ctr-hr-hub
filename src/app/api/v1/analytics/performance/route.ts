@@ -14,14 +14,17 @@ import {
   getPerformanceByDepartment,
 } from '@/lib/analytics/queries'
 import type { PerformanceData } from '@/lib/analytics/types'
+import type { SessionUser } from '@/types'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
 export const GET = withCache(withPermission(
-  async (req: NextRequest) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
-    const { company_id: companyId, cycle_id: cycleId } = performanceQuerySchema.parse({
+    const { company_id: requestedCompanyId, cycle_id: cycleId } = performanceQuerySchema.parse({
       company_id: searchParams.get('company_id') ?? undefined,
       cycle_id: searchParams.get('cycle_id') ?? undefined,
     })
+    const { companyId } = resolveCompanyFilter(user, requestedCompanyId)
 
     const [emsRows, deptRows] = await Promise.all([
       getEmsBlockDistribution(cycleId, companyId),
