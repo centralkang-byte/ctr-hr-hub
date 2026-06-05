@@ -21,4 +21,7 @@ describe('resolveCompanyFilter', () => {
   it('SUPER: requested 빈문자열도 전체({})', () => {
     expect(resolveCompanyFilter(mk('SUPER_ADMIN'), '')).toEqual({})
   })
+  it('비-SUPER: companyId가 비어도 {}(전체) 반환 금지 — fail-closed', () => {
+    expect(resolveCompanyFilter(mk('HR_ADMIN', ''), null)).toEqual({ companyId: '' })
+  })
 })

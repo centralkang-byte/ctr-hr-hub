@@ -10,15 +10,15 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { parseAnalyticsParams } from '@/lib/analytics/parse-params'
 import type { SessionUser } from '@/types'
-import { resolveCompanyId } from '@/lib/api/companyFilter'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
 export const GET = withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
     const params = parseAnalyticsParams(new URL(req.url).searchParams)
-    const companyId = resolveCompanyId(user, params.companyId)
+    const companyFilter = resolveCompanyFilter(user, params.companyId)
 
     const departments = await prisma.department.findMany({
-      where: { companyId },
+      where: { ...companyFilter },
       select: {
         id: true,
         name: true,

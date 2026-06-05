@@ -31,7 +31,10 @@ export function resolveCompanyFilter(
   user: SessionUser,
   requestedCompanyId?: string | null,
 ): { companyId?: string } {
-  const effective =
-    user.role === 'SUPER_ADMIN' ? (requestedCompanyId || undefined) : user.companyId
-  return effective ? { companyId: effective } : {}
+  // SUPER_ADMIN: 지정 시 해당 법인, 미지정 시 전체({}) — 통합 집계뷰
+  if (user.role === 'SUPER_ADMIN') {
+    return requestedCompanyId ? { companyId: requestedCompanyId } : {}
+  }
+  // 비-SUPER: 항상 자기 법인 강제 — companyId가 비어도 {}(전체) 반환 금지(fail-closed)
+  return { companyId: user.companyId }
 }
