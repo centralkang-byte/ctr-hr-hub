@@ -13,12 +13,13 @@ import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { MODULE, ACTION } from '@/lib/constants'
 import { calculateTurnoverRisk } from '@/lib/analytics/turnover-prediction'
 import type { SessionUser } from '@/types'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
 export const GET = withCache(withPermission(
-  async (req: NextRequest, _ctx, _user: SessionUser) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
     try {
       const searchParams = new URL(req.url).searchParams
-      const companyId = searchParams.get('companyId') || undefined
+      const companyFilter = resolveCompanyFilter(user, searchParams.get('companyId'))
       const departmentId = searchParams.get('departmentId') || undefined
       const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100)
       const now = new Date()
@@ -32,7 +33,7 @@ export const GET = withCache(withPermission(
           status: 'ACTIVE',
           isPrimary: true,
           endDate: null,
-          ...(companyId ? { companyId } : {}),
+          ...companyFilter,
           ...(departmentId ? { departmentId } : {}),
         },
         include: {

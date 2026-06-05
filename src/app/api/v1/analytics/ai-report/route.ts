@@ -9,17 +9,18 @@ import { apiSuccess, apiError } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
 export const GET = withPermission(
-  async (req: NextRequest, _ctx, _user: SessionUser) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
     try {
       const searchParams = new URL(req.url).searchParams
-      const companyId = searchParams.get('companyId') || undefined
+      const companyFilter = resolveCompanyFilter(user, searchParams.get('companyId'))
       const limit = parseInt(searchParams.get('limit') || '12', 10)
 
       const reports = await prisma.aiReport.findMany({
         where: {
-          ...(companyId ? { companyId } : {}),
+          ...companyFilter,
           status: 'GENERATED',
         },
         orderBy: { period: 'desc' },
