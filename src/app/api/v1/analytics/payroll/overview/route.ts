@@ -14,12 +14,13 @@ import { parseAnalyticsParams, generateMonthRange } from '@/lib/analytics/parse-
 import { convertToKRW, formatCurrency } from '@/lib/analytics/currency'
 import type { PayrollResponse } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
 export const GET = withCache(withPermission(
-  async (req: NextRequest, _ctx, _user: SessionUser) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
     const params = parseAnalyticsParams(new URL(req.url).searchParams)
-    const companyFilter = params.companyId ? { companyId: params.companyId } : {}
-    const isCrossCompany = !params.companyId
+    const companyFilter = resolveCompanyFilter(user, params.companyId)
+    const isCrossCompany = !companyFilter.companyId
 
     const [payrollRuns, anomalyCount, companies] = await Promise.all([
       prisma.payrollRun.findMany({
@@ -36,7 +37,7 @@ export const GET = withCache(withPermission(
       prisma.payrollAnomaly.count({
         where: {
           status: 'OPEN',
-          ...(params.companyId ? { payrollRun: { companyId: params.companyId } } : {}),
+          ...(companyFilter.companyId ? { payrollRun: { companyId: companyFilter.companyId } } : {}),
         },
       }),
       prisma.company.findMany({
@@ -85,7 +86,7 @@ export const GET = withCache(withPermission(
     const perCapita = latestData && latestData.headcount > 0
       ? Math.round(latestTotal / latestData.headcount) : 0
 
-    const displayCurrency = isCrossCompany ? 'KRW' : (companies.find((c) => c.id === params.companyId)?.currency || 'KRW')
+    const displayCurrency = isCrossCompany ? 'KRW' : (companies.find((c) => c.id === companyFilter.companyId)?.currency || 'KRW')
 
     // Company comparison
     const companyTotals = new Map<string, { gross: number; currency: string }>()
