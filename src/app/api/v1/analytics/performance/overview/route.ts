@@ -11,15 +11,16 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { parseAnalyticsParams } from '@/lib/analytics/parse-params'
 import type { PerformanceResponse } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const GRADE_GUIDELINES: Record<string, number> = { O: 10, E: 30, M: 50, S: 10 }
 const GRADE_LABELS: Record<string, string> = { O: '탁월(O)', E: '우수(E)', M: '보통(M)', S: '미흡(S)' }
 
 export const GET = withPermission(
-  async (req: NextRequest, _ctx, _user: SessionUser) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
     const params = parseAnalyticsParams(new URL(req.url).searchParams)
-    const companyFilter = params.companyId ? { companyId: params.companyId } : {}
+    const companyFilter = resolveCompanyFilter(user, params.companyId)
 
     const [latestCycle, reviews, goals, calibrations] = await Promise.all([
       // Latest performance cycle
