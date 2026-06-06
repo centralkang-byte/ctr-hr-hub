@@ -68,21 +68,21 @@ export const POST = withPermission(
 
     const { courseId, employeeIds } = parsed.data
 
-    // 멀티테넌트: course가 본인 법인/글로벌인지 + employeeIds가 본인 법인 소속인지 검증
-    const course = await prisma.trainingCourse.findFirst({
-      where: { id: courseId, OR: [{ companyId: user.companyId }, { companyId: null }], deletedAt: null },
-      select: { id: true },
-    })
-    if (!course) throw badRequest('유효하지 않은 과정입니다.')
+    // 멀티테넌트: 비-SUPER는 course가 본인 법인/글로벌이고 employeeIds가 본인 법인 재직자인지 검증 (SUPER는 cross-company 허용)
     if (user.role !== 'SUPER_ADMIN') {
+      const course = await prisma.trainingCourse.findFirst({
+        where: { id: courseId, OR: [{ companyId: user.companyId }, { companyId: null }], deletedAt: null },
+        select: { id: true },
+      })
+      if (!course) throw badRequest('유효하지 않은 과정입니다.')
       const uniqueIds = [...new Set(employeeIds)]
       const owned = await prisma.employeeAssignment.findMany({
-        where: { employeeId: { in: uniqueIds }, companyId: user.companyId, isPrimary: true },
+        where: { employeeId: { in: uniqueIds }, companyId: user.companyId, isPrimary: true, endDate: null },
         select: { employeeId: true },
         distinct: ['employeeId'],
       })
       if (owned.length !== uniqueIds.length) {
-        throw badRequest('본인 법인 소속이 아닌 직원이 포함되어 있습니다.')
+        throw badRequest('본인 법인 재직 직원이 아닌 대상이 포함되어 있습니다.')
       }
     }
 

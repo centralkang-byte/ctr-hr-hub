@@ -43,12 +43,12 @@ export const POST = withPermission(
     if (user.role !== 'SUPER_ADMIN') {
       const uniqueIds = [...new Set(parsed.data.employeeIds)]
       const owned = await prisma.employeeAssignment.findMany({
-        where: { employeeId: { in: uniqueIds }, companyId: user.companyId, isPrimary: true },
+        where: { employeeId: { in: uniqueIds }, companyId: user.companyId, isPrimary: true, endDate: null },
         select: { employeeId: true },
         distinct: ['employeeId'],
       })
       if (owned.length !== uniqueIds.length) {
-        throw badRequest('본인 법인 소속이 아닌 직원이 포함되어 있습니다.')
+        throw badRequest('본인 법인 재직 직원이 아닌 대상이 포함되어 있습니다.')
       }
     }
 

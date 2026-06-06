@@ -25,10 +25,9 @@ const configCreateSchema = z.object({
 export const GET = withPermission(
   async (_req: NextRequest, _context, user: SessionUser) => {
     const configs = await prisma.mandatoryTrainingConfig.findMany({
-      where: {
-        OR: [{ companyId: user.companyId }, { companyId: null }],
-        deletedAt: null,
-      },
+      where: user.role === ROLE.SUPER_ADMIN
+        ? { deletedAt: null }
+        : { OR: [{ companyId: user.companyId }, { companyId: null }], deletedAt: null },
       include: {
         course: {
           select: {

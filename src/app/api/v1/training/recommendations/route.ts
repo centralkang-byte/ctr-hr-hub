@@ -26,7 +26,7 @@ export const GET = withAuth(
       if (!privileged) throw forbidden('본인의 추천만 조회할 수 있습니다.')
       if (user.role !== ROLE.SUPER_ADMIN) {
         const sameCompany = await prisma.employeeAssignment.findFirst({
-          where: { employeeId, companyId: user.companyId, isPrimary: true },
+          where: { employeeId, companyId: user.companyId, isPrimary: true, endDate: null },
           select: { employeeId: true },
         })
         if (!sameCompany) throw forbidden('해당 직원 정보를 조회할 권한이 없습니다.')

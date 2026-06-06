@@ -50,16 +50,18 @@ export const POST = withPermission(
       if (!employee) throw notFound('직원을 찾을 수 없습니다.')
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const empCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as any)?.companyId ?? user.companyId
+      const empPrimaryCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as any)?.companyId ?? null
 
-      // 멀티테넌트: 비-SUPER는 본인 법인 직원에게만 온보딩 생성 (타 법인 직원 차단)
-      if (user.role !== 'SUPER_ADMIN' && empCompanyId !== user.companyId) {
+      // 멀티테넌트: 비-SUPER는 본인 법인 재직 직원에게만 온보딩 생성
+      // (활성 primary 발령 없으면 empPrimaryCompanyId=null → 거부; 퇴직자·타법인 임의 ID 차단)
+      if (user.role !== 'SUPER_ADMIN' && empPrimaryCompanyId !== user.companyId) {
         throw forbidden('본인 법인 소속 직원에게만 온보딩을 생성할 수 있습니다.')
       }
-      // buddyId 동일 법인 검증
+      const empCompanyId: string = empPrimaryCompanyId ?? user.companyId
+      // buddyId 동일 법인 재직 검증
       if (buddyId) {
         const buddyOk = await prisma.employeeAssignment.findFirst({
-          where: { employeeId: buddyId, companyId: empCompanyId, isPrimary: true },
+          where: { employeeId: buddyId, companyId: empCompanyId, isPrimary: true, endDate: null },
           select: { employeeId: true },
         })
         if (!buddyOk) throw badRequest('버디는 동일 법인 소속이어야 합니다.')
