@@ -42,8 +42,8 @@ export const POST = withPermission(
           name: true,
           assignments: {
             where: { isPrimary: true, endDate: null },
-            take: 1,
-            select: { companyId: true },
+            orderBy: { effectiveDate: 'desc' },
+            select: { companyId: true, effectiveDate: true },
           },
         },
       })
@@ -61,7 +61,7 @@ export const POST = withPermission(
       // buddyId 동일 법인 재직 검증
       if (buddyId) {
         const buddyOk = await prisma.employeeAssignment.findFirst({
-          where: { employeeId: buddyId, companyId: empCompanyId, isPrimary: true, endDate: null },
+          where: { employeeId: buddyId, companyId: empCompanyId, isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
           select: { employeeId: true },
         })
         if (!buddyOk) throw badRequest('버디는 동일 법인 소속이어야 합니다.')

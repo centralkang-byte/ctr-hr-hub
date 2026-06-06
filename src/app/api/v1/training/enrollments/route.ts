@@ -77,7 +77,7 @@ export const POST = withPermission(
       if (!course) throw badRequest('유효하지 않은 과정입니다.')
       const uniqueIds = [...new Set(employeeIds)]
       const owned = await prisma.employeeAssignment.findMany({
-        where: { employeeId: { in: uniqueIds }, companyId: user.companyId, isPrimary: true, endDate: null },
+        where: { employeeId: { in: uniqueIds }, companyId: user.companyId, isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
         select: { employeeId: true },
         distinct: ['employeeId'],
       })

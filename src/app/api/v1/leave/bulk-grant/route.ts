@@ -43,7 +43,7 @@ export const POST = withPermission(
     if (user.role !== 'SUPER_ADMIN') {
       const uniqueIds = [...new Set(parsed.data.employeeIds)]
       const owned = await prisma.employeeAssignment.findMany({
-        where: { employeeId: { in: uniqueIds }, companyId: user.companyId, isPrimary: true, endDate: null },
+        where: { employeeId: { in: uniqueIds }, companyId: user.companyId, isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
         select: { employeeId: true },
         distinct: ['employeeId'],
       })
