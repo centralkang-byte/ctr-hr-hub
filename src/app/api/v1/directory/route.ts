@@ -4,6 +4,7 @@ import { buildPagination } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
 import { prisma } from '@/lib/prisma'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
 import { z } from 'zod'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
@@ -29,12 +30,9 @@ export const GET = withPermission(
     const skip = (page - 1) * limit
 
     const assignmentFilter: Record<string, unknown> = { isPrimary: true, endDate: null, status: { in: ['ACTIVE', 'ON_LEAVE'] } }
-    // 회사 필터: 명시적 companyId > SA 전체 조회 > 자기 회사만
-    if (companyId) {
-      assignmentFilter.companyId = companyId
-    } else if (user.role !== 'SUPER_ADMIN') {
-      assignmentFilter.companyId = user.companyId
-    }
+    // 회사 필터: 비-SUPER는 본인 법인 강제(param 무시), SUPER는 param 또는 전체뷰
+    const companyFilter = resolveCompanyFilter(user, companyId)
+    if (companyFilter.companyId) assignmentFilter.companyId = companyFilter.companyId
     // 부서 필터: departmentIds(복수) > departmentId(단수)
     if (departmentIds) {
       assignmentFilter.departmentId = { in: departmentIds.split(',').filter(Boolean) }

@@ -9,10 +9,11 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
+import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { verifyCrossCompanyAccess } from '@/lib/api/cross-company-access'
 import type { SessionUser } from '@/types'
 
 const querySchema = z.object({
@@ -23,7 +24,7 @@ const querySchema = z.object({
 // ─── GET /api/v1/performance/peer-review/candidates ──────
 
 export const GET = withPermission(
-    async (req: NextRequest, _context, _user: SessionUser) => {
+    async (req: NextRequest, _context, user: SessionUser) => {
         const params = Object.fromEntries(req.nextUrl.searchParams.entries())
         const parsed = querySchema.safeParse(params)
         if (!parsed.success) {
@@ -48,6 +49,15 @@ export const GET = withPermission(
             })
 
             if (!employeeAssignment) throw badRequest('직원의 소속 정보가 없습니다.')
+
+            // 비-SUPER는 본인 법인 또는 cross-company dotted-line 관계 대상만 (dotted-line 평가 보존)
+            if (user.role !== ROLE.SUPER_ADMIN && employeeAssignment.companyId !== user.companyId) {
+                const { allowed } = await verifyCrossCompanyAccess(
+                    { callerEmployeeId: user.employeeId, callerRole: user.role, callerCompanyId: user.companyId },
+                    employeeId,
+                )
+                if (!allowed) throw notFound('직원 발령 정보를 찾을 수 없습니다.')
+            }
 
             // B-3f: Include dotted line manager as automatic peer review candidate
             let dottedLineManagerId: string | null = null

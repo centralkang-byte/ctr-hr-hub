@@ -8,14 +8,15 @@ import { withPermission, perm } from '@/lib/permissions'
 import { apiSuccess } from '@/lib/api'
 import { prisma } from '@/lib/prisma'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
+import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
-  async (req: NextRequest) => {
+  async (req: NextRequest, _context, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
-    const companyId = searchParams.get('companyId')
 
-    const where: Record<string, unknown> = { deletedAt: null }
-    if (companyId) where.companyId = companyId
+    // 비-SUPER는 본인 법인 강제(param 무시), SUPER는 param 또는 전체뷰
+    const where: Record<string, unknown> = { deletedAt: null, ...resolveCompanyFilter(user, searchParams.get('companyId')) }
 
     const departments = await prisma.department.findMany({
       where,

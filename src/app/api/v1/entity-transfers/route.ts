@@ -5,9 +5,9 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
-import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
+import { badRequest, notFound, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import {
   entityTransferListSchema,
   entityTransferCreateSchema,
@@ -117,6 +117,11 @@ export const POST = withPermission(
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const employeeCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as any)?.companyId as string | undefined
+
+    // source 소유 가드 — 비-SUPER는 본인 법인 직원만 전환 요청(타 법인 직원으로 transfer 생성 차단)
+    if (user.role !== ROLE.SUPER_ADMIN && employeeCompanyId !== user.companyId) {
+      throw forbidden('본인 법인 소속 직원만 전환을 요청할 수 있습니다.')
+    }
 
     if (employeeCompanyId === toCompanyId) {
       throw badRequest('이전 대상 법인이 현재 법인과 동일합니다.')

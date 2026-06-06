@@ -8,7 +8,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
@@ -45,10 +45,21 @@ export const PUT = withPermission(
       throw notFound('전환 요청을 찾을 수 없습니다.')
     }
 
+    // 출발 법인 소유 가드 — 비-SUPER는 출발 법인 HR만 실행(status 체크 앞 = 오라클 차단)
+    if (user.role !== ROLE.SUPER_ADMIN && transfer.fromCompanyId !== user.companyId) {
+      throw notFound('전환 요청을 찾을 수 없습니다.')
+    }
+
     if (transfer.status !== 'EXEC_APPROVED') {
       throw badRequest(
         `현재 상태(${transfer.status})에서는 전환을 실행할 수 없습니다. 경영진 승인(EXEC_APPROVED) 상태여야 합니다.`,
       )
+    }
+
+    // stale 가드 — 직원의 현재 소속이 출발 법인과 일치해야(이미 이동된 직원 재실행 차단)
+    const currentCompanyId = transfer.employee.assignments[0]?.companyId
+    if (currentCompanyId && currentCompanyId !== transfer.fromCompanyId) {
+      throw badRequest('직원의 현재 소속이 전환 출발 법인과 일치하지 않습니다.')
     }
 
     try {

@@ -8,7 +8,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { notFound, badRequest } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { uploadBuffer, buildS3Key } from '@/lib/s3'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { sendNotification } from '@/lib/notifications'
@@ -26,9 +26,10 @@ export const POST = withPermission(
     const locale = await getRequestLocale()
     const { id, requestId } = await context.params
 
-    // 증명서 요청 조회
+    // 증명서 요청 조회 (비-SUPER는 본인 법인 스코프 — 타 법인 증명서 발급 차단)
+    const scope = user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
     const certRequest = await prisma.certificateRequest.findFirst({
-      where: { id: requestId, employeeId: id },
+      where: { id: requestId, employeeId: id, ...scope },
     })
     if (!certRequest) throw notFound('증명서 요청을 찾을 수 없습니다.')
     if (certRequest.status !== 'REQUESTED') {
