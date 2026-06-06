@@ -13,12 +13,13 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { collectReportData } from '@/lib/analytics/ai-report/data-collector'
 import { generateAiReport } from '@/lib/analytics/ai-report/generator'
 import type { SessionUser } from '@/types'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 
 export const POST = withRateLimit(withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
     try {
       const body = await req.json()
-      const companyId = body.companyId || null
+      const companyId = resolveCompanyId(user, body.companyId)
       const period = body.period as string
 
       if (!period || !/^\d{4}-\d{2}$/.test(period)) {

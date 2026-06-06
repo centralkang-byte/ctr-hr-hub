@@ -12,6 +12,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { parseAnalyticsParams, generateMonthRange, toYearMonth } from '@/lib/analytics/parse-params'
 import type { TurnoverResponse } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const BENCHMARK_RATE = 4.5 // Settings-connected: industry average benchmark rate (SYSTEM/benchmark-rates)
@@ -28,9 +29,9 @@ const EXIT_REASON_LABELS: Record<string, string> = {
 }
 
 export const GET = withPermission(
-  async (req: NextRequest, _ctx, _user: SessionUser) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
     const params = parseAnalyticsParams(new URL(req.url).searchParams)
-    const companyFilter = params.companyId ? { companyId: params.companyId } : {}
+    const companyFilter = resolveCompanyFilter(user, params.companyId)
     const now = new Date()
     const currentYear = now.getFullYear()
 

@@ -15,11 +15,12 @@ import { convertToKRW, formatCurrency } from '@/lib/analytics/currency'
 import { TURNOVER_BENCHMARKS, TENURE_BENCHMARKS } from '@/lib/analytics/benchmarks'
 import type { KpiDrilldownData, KpiDrilldownType } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
 const VALID_TYPES: KpiDrilldownType[] = ['headcount', 'turnover', 'tenure', 'laborCost', 'recruitment', 'onboarding']
 
 export const GET = withPermission(
-  async (req: NextRequest, _ctx, _user: SessionUser) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
     const url = new URL(req.url)
     const type = url.searchParams.get('type') as KpiDrilldownType | null
     if (!type || !VALID_TYPES.includes(type)) {
@@ -27,7 +28,7 @@ export const GET = withPermission(
     }
 
     const params = parseAnalyticsParams(url.searchParams)
-    const companyFilter = params.companyId ? { companyId: params.companyId } : {}
+    const companyFilter = resolveCompanyFilter(user, params.companyId)
     const now = new Date()
     const months = generateMonthRange(params.startDate, params.endDate)
 

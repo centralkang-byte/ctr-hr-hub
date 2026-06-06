@@ -17,14 +17,17 @@ import {
   getHeadcountSummary,
 } from '@/lib/analytics/queries'
 import type { TurnoverData } from '@/lib/analytics/types'
+import type { SessionUser } from '@/types'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
 export const GET = withCache(withPermission(
-  async (req: NextRequest) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
-    const { company_id: companyId, months } = turnoverQuerySchema.parse({
+    const { company_id: requestedCompanyId, months } = turnoverQuerySchema.parse({
       company_id: searchParams.get('company_id') ?? undefined,
       months: searchParams.get('months') ?? undefined,
     })
+    const { companyId } = resolveCompanyFilter(user, requestedCompanyId)
 
     const [monthlyRows, reasonRows, deptRows, typeRows, hcRows] = await Promise.all([
       getMonthlyResignations(companyId, months),

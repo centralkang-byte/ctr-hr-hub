@@ -14,11 +14,12 @@ import { parseAnalyticsParams, resolveDepartmentFilter, generateMonthRange, toYe
 import { convertToKRW, formatCurrency } from '@/lib/analytics/currency'
 import type { ExecutiveSummaryResponse, HeatmapDataPoint, RecruitmentFunnelStage } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
 export const GET = withCache(withPermission(
-  async (req: NextRequest, _ctx, _user: SessionUser) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
     const params = parseAnalyticsParams(new URL(req.url).searchParams)
-    const companyFilter = params.companyId ? { companyId: params.companyId } : {}
+    const companyFilter = resolveCompanyFilter(user, params.companyId)
 
     // 부서 필터 — 본부 선택 시 하위 팀 포함
     const departmentIds = await resolveDepartmentFilter(params.departmentId)

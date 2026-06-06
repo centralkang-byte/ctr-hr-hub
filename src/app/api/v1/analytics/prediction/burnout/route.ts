@@ -12,12 +12,13 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { detectBurnout } from '@/lib/analytics/burnout-detection'
 import type { SessionUser } from '@/types'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
 export const GET = withPermission(
-  async (req: NextRequest, _ctx, _user: SessionUser) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
     try {
       const searchParams = new URL(req.url).searchParams
-      const companyId = searchParams.get('companyId') || undefined
+      const companyFilter = resolveCompanyFilter(user, searchParams.get('companyId'))
       const departmentId = searchParams.get('departmentId') || undefined
       const now = new Date()
       const currentYear = now.getFullYear()
@@ -29,7 +30,7 @@ export const GET = withPermission(
           status: 'ACTIVE',
           isPrimary: true,
           endDate: null,
-          ...(companyId ? { companyId } : {}),
+          ...companyFilter,
           ...(departmentId ? { departmentId } : {}),
         },
         select: {
