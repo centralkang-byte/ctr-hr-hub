@@ -7,9 +7,9 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest } from '@/lib/errors'
+import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { z } from 'zod'
 import type { SessionUser } from '@/types'
 
@@ -32,9 +32,20 @@ const upsertSchema = z.object({
   carryOverExpiryMonths: z.number().int().nullable().optional(),
 })
 
+// accrual rule은 companyId가 없으므로 부모 leaveTypeDef 소유권으로 멀티테넌트 가드
+function parentFilter(user: SessionUser, write: boolean) {
+  if (user.role === ROLE.SUPER_ADMIN) return {}
+  return write ? { companyId: user.companyId } : { OR: [{ companyId: user.companyId }, { companyId: null }] }
+}
+
 export const GET = withPermission(
-  async (_req: NextRequest, context, _user: SessionUser) => {
+  async (_req: NextRequest, context, user: SessionUser) => {
     const { id: leaveTypeDefId } = await context.params
+    const parent = await prisma.leaveTypeDef.findFirst({
+      where: { id: leaveTypeDefId, ...parentFilter(user, false) },
+    })
+    if (!parent) throw notFound('휴가 유형을 찾을 수 없습니다.')
+
     const rules = await prisma.leaveAccrualRule.findMany({
       where: { leaveTypeDefId, deletedAt: null },
     })
@@ -44,12 +55,17 @@ export const GET = withPermission(
 )
 
 export const PUT = withPermission(
-  async (req: NextRequest, context, _user: SessionUser) => {
+  async (req: NextRequest, context, user: SessionUser) => {
     const { id: leaveTypeDefId } = await context.params
     const body = await req.json()
     const parsed = upsertSchema.safeParse(body)
     if (!parsed.success) throw badRequest(parsed.error.message)
     const data = parsed.data
+
+    const parent = await prisma.leaveTypeDef.findFirst({
+      where: { id: leaveTypeDefId, ...parentFilter(user, true) },
+    })
+    if (!parent) throw notFound('휴가 유형을 찾을 수 없습니다.')
 
     // soft-delete 기존 규칙 → 신규 생성
     const result = await prisma.$transaction(async (tx) => {

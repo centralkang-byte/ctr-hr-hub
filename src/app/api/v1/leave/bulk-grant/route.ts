@@ -39,6 +39,19 @@ export const POST = withPermission(
       throw badRequest('해당 휴가 유형 정의를 찾을 수 없습니다.')
     }
 
+    // 멀티테넌트: 비-SUPER는 본인 법인 소속 직원에게만 부여 (employeeIds 법인 검증)
+    if (user.role !== 'SUPER_ADMIN') {
+      const uniqueIds = [...new Set(parsed.data.employeeIds)]
+      const owned = await prisma.employeeAssignment.findMany({
+        where: { employeeId: { in: uniqueIds }, companyId: user.companyId, isPrimary: true },
+        select: { employeeId: true },
+        distinct: ['employeeId'],
+      })
+      if (owned.length !== uniqueIds.length) {
+        throw badRequest('본인 법인 소속이 아닌 직원이 포함되어 있습니다.')
+      }
+    }
+
     try {
       const result = await prisma.$transaction(async (tx) => {
         const results = []

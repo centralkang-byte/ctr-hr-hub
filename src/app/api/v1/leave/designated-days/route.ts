@@ -12,6 +12,7 @@ import { badRequest, forbidden, handlePrismaError, isAppError } from '@/lib/erro
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
 
 const searchSchema = z.object({
@@ -36,7 +37,8 @@ export const GET = withPermission(
     }
 
     const year = parsed.data.year ?? new Date().getFullYear()
-    const companyId = parsed.data.companyId ?? user.companyId
+    // 멀티테넌트: 비-SUPER는 자기 법인 강제 (임의 companyId 파라미터 무시)
+    const companyId = resolveCompanyId(user, parsed.data.companyId ?? null)
 
     const days = await prisma.designatedLeaveDay.findMany({
       where: { companyId, year },
