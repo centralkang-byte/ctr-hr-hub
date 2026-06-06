@@ -80,6 +80,20 @@ export const POST = withPermission(
     const primaryAssignment = await fetchPrimaryAssignment(user.employeeId)
     const primaryCompanyId = primaryAssignment?.companyId ?? user.companyId
 
+    // 멀티테넌트 FK 검증: policy는 본인 법인 소속(LeavePolicy.companyId는 non-null=법인전용), typeDef는 본인 법인 또는 글로벌(null)
+    const policyOwned = await prisma.leavePolicy.findFirst({
+      where: { id: parsed.data.policyId, companyId: primaryCompanyId, deletedAt: null },
+      select: { id: true },
+    })
+    if (!policyOwned) throw badRequest('유효하지 않은 휴가 정책입니다.')
+    if (parsed.data.leaveTypeDefId) {
+      const typeDefOwned = await prisma.leaveTypeDef.findFirst({
+        where: { id: parsed.data.leaveTypeDefId, OR: [{ companyId: primaryCompanyId }, { companyId: null }] },
+        select: { id: true },
+      })
+      if (!typeDefOwned) throw badRequest('유효하지 않은 휴가 유형입니다.')
+    }
+
     // ── F-3: LeaveTypeDef validation (minAdvanceDays, maxConsecutiveDays) ───
 
     // ── Phase 5: LeaveTypeDef 조회 (직접 ID 또는 policy 경유) ──

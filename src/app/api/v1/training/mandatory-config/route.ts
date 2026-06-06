@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { z } from 'zod'
 import type { SessionUser } from '@/types'
 
@@ -25,10 +25,9 @@ const configCreateSchema = z.object({
 export const GET = withPermission(
   async (_req: NextRequest, _context, user: SessionUser) => {
     const configs = await prisma.mandatoryTrainingConfig.findMany({
-      where: {
-        OR: [{ companyId: user.companyId }, { companyId: null }],
-        deletedAt: null,
-      },
+      where: user.role === ROLE.SUPER_ADMIN
+        ? { deletedAt: null }
+        : { OR: [{ companyId: user.companyId }, { companyId: null }], deletedAt: null },
       include: {
         course: {
           select: {
@@ -67,10 +66,16 @@ export const POST = withPermission(
       throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
     }
 
-    // HR_ADMIN은 자신의 법인만 설정 가능
-    const companyId = parsed.data.companyId !== undefined
-      ? parsed.data.companyId
-      : user.companyId
+    // 멀티테넌트: 비-SUPER는 자기 법인 강제. SUPER만 글로벌(null)/타 법인 지정.
+    const companyId = user.role === ROLE.SUPER_ADMIN ? (parsed.data.companyId ?? null) : user.companyId
+
+    // courseId FK: 글로벌 config는 글로벌 course만, 법인 config는 자기 법인 또는 글로벌 course (글로벌 통한 타 법인 노출 차단)
+    const courseFilter = companyId === null ? { companyId: null } : { OR: [{ companyId }, { companyId: null }] }
+    const course = await prisma.trainingCourse.findFirst({
+      where: { id: parsed.data.courseId, ...courseFilter, deletedAt: null },
+      select: { id: true },
+    })
+    if (!course) throw badRequest('유효하지 않은 과정입니다.')
 
     try {
       const config = await prisma.mandatoryTrainingConfig.create({

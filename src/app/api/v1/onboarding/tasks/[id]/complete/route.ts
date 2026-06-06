@@ -9,6 +9,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { withAuth } from '@/lib/permissions'
 import { ROLE } from '@/lib/constants'
+import { resolveOnboardingCompanyId } from '@/lib/onboarding/tenant-guard'
 import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
 
 export const PUT = withAuth(async (_req: NextRequest, ctx, user) => {
@@ -25,11 +26,15 @@ export const PUT = withAuth(async (_req: NextRequest, ctx, user) => {
   })
   if (!task) throw notFound('태스크를 찾을 수 없습니다.')
 
-  // Codex F3: ownership check — 본인 온보딩 또는 HR_ADMIN만 완료 가능
+  // Codex F3 + 멀티테넌트: 본인 온보딩 또는 동일 법인 HR만 완료 가능 (HR 타법인 차단)
   const onboarding = task.employeeOnboarding
   const isOwner = onboarding.employeeId === user.employeeId
   const isHr = [ROLE.HR_ADMIN, ROLE.SUPER_ADMIN].includes(user.role as never)
-  if (!isOwner && !isHr) throw forbidden('본인의 온보딩 태스크만 완료할 수 있습니다.')
+  const onboardingCompanyId = await resolveOnboardingCompanyId({ companyId: onboarding.companyId, employeeId: onboarding.employeeId })
+  const sameCompany = onboardingCompanyId != null && onboardingCompanyId === user.companyId
+  if (user.role !== ROLE.SUPER_ADMIN && (!sameCompany || (!isOwner && !isHr))) {
+    throw forbidden('본인의 온보딩 태스크만 완료할 수 있습니다.')
+  }
 
   // ── State transition validation ──
   const ALLOWED_TRANSITIONS: Record<string, string[]> = {

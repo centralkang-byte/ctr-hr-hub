@@ -13,6 +13,7 @@ import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { checkSignOffEligibility, executeSignOff } from '@/lib/onboarding/sign-off'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { resolveOnboardingCompanyId } from '@/lib/onboarding/tenant-guard'
 
 const signOffSchema = z.object({
     note: z.string().optional(),
@@ -63,7 +64,10 @@ export const POST = withPermission(
         const managerId = (mgrPrimary as any)?.employeeId
         const isManager = user.employeeId === managerId
         const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
-        if (!isManager && !isHrAdmin) throw forbidden('Only the direct manager or HR Admin can sign off')
+        // 멀티테넌트: 비-SUPER는 동일 법인만 (HR/매니저 경로 법인 결합)
+        const onboardingCompanyId = await resolveOnboardingCompanyId({ companyId: onboarding.companyId, employeeId: onboarding.employeeId })
+        const sameCompany = onboardingCompanyId != null && onboardingCompanyId === user.companyId
+        if (user.role !== ROLE.SUPER_ADMIN && (!sameCompany || (!isManager && !isHrAdmin))) throw forbidden('Only the direct manager or HR Admin can sign off')
 
         const eligibility = await checkSignOffEligibility(onboardingId)
         if (!eligibility.eligible) {

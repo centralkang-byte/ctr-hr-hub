@@ -7,13 +7,15 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const url = req.nextUrl
     const year = Number(url.searchParams.get('year') ?? new Date().getFullYear())
-    const companyId = url.searchParams.get('companyId') ?? user.companyId
+    // 멀티테넌트: 비-SUPER는 자기 법인 강제 (임의 companyId 파라미터 무시)
+    const companyId = resolveCompanyId(user, url.searchParams.get('companyId'))
 
     // 법정 의무교육 과정 목록 (mandatory_training_configs 기반)
     const configs = await prisma.mandatoryTrainingConfig.findMany({

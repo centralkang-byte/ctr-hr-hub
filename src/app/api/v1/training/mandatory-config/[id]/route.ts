@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { z } from 'zod'
 import type { SessionUser } from '@/types'
 
@@ -18,10 +18,15 @@ const configUpdateSchema = z.object({
   isActive: z.boolean().optional(),
 })
 
+// 멀티테넌트: 비-SUPER는 자기 법인 config만 수정/삭제 (글로벌(null)·타 법인 변조 차단)
+function writeFilter(user: SessionUser) {
+  return user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
+}
+
 // ─── PATCH /api/v1/training/mandatory-config/[id] ────────
 
 export const PATCH = withPermission(
-  async (req: NextRequest, context: { params: Promise<Record<string, string>> }, _user: SessionUser) => {
+  async (req: NextRequest, context: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const { id } = await context.params
     const body: unknown = await req.json()
     const parsed = configUpdateSchema.safeParse(body)
@@ -29,7 +34,7 @@ export const PATCH = withPermission(
       throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
     }
 
-    const existing = await prisma.mandatoryTrainingConfig.findUnique({ where: { id } })
+    const existing = await prisma.mandatoryTrainingConfig.findFirst({ where: { id, ...writeFilter(user) } })
     if (!existing) throw notFound('의무교육 설정을 찾을 수 없습니다.')
 
     try {
@@ -48,10 +53,10 @@ export const PATCH = withPermission(
 // ─── DELETE /api/v1/training/mandatory-config/[id] ───────
 
 export const DELETE = withPermission(
-  async (_req: NextRequest, context: { params: Promise<Record<string, string>> }, _user: SessionUser) => {
+  async (_req: NextRequest, context: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const { id } = await context.params
 
-    const existing = await prisma.mandatoryTrainingConfig.findUnique({ where: { id } })
+    const existing = await prisma.mandatoryTrainingConfig.findFirst({ where: { id, ...writeFilter(user) } })
     if (!existing) throw notFound('의무교육 설정을 찾을 수 없습니다.')
 
     try {

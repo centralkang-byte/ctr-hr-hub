@@ -9,6 +9,7 @@ import { badRequest } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { processAnnualAccrual } from '@/lib/leave/accrualEngine'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { z } from 'zod'
 import type { SessionUser } from '@/types'
 
@@ -18,12 +19,14 @@ const accrualSchema = z.object({
 })
 
 export const POST = withPermission(
-  async (req: NextRequest, _context, _user: SessionUser) => {
+  async (req: NextRequest, _context, user: SessionUser) => {
     const body = await req.json()
     const parsed = accrualSchema.safeParse(body)
     if (!parsed.success) throw badRequest(parsed.error.message)
 
-    const { companyId, year } = parsed.data
+    // 멀티테넌트: 비-SUPER는 자기 법인 강제 (body companyId 무시)
+    const { year } = parsed.data
+    const companyId = resolveCompanyId(user, parsed.data.companyId)
     const result = await processAnnualAccrual(companyId, year)
 
     return apiSuccess({

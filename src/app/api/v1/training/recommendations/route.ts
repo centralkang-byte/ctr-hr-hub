@@ -9,7 +9,9 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
+import { forbidden } from '@/lib/errors'
 import { withAuth } from '@/lib/permissions'
+import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
@@ -17,6 +19,19 @@ export const GET = withAuth(
   async (req: NextRequest, _context, user: SessionUser) => {
     const url = req.nextUrl
     const employeeId = url.searchParams.get('employeeId') ?? user.employeeId
+
+    // 멀티테넌트/IDOR: 본인 외 직원 추천은 HR/MANAGER+ 이고 동일 법인 직원만 (임의 직원 역량 조회 차단)
+    if (employeeId !== user.employeeId) {
+      const privileged = ([ROLE.HR_ADMIN, ROLE.EXECUTIVE, ROLE.MANAGER, ROLE.SUPER_ADMIN] as string[]).includes(user.role)
+      if (!privileged) throw forbidden('본인의 추천만 조회할 수 있습니다.')
+      if (user.role !== ROLE.SUPER_ADMIN) {
+        const sameCompany = await prisma.employeeAssignment.findFirst({
+          where: { employeeId, companyId: user.companyId, isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
+          select: { employeeId: true },
+        })
+        if (!sameCompany) throw forbidden('해당 직원 정보를 조회할 권한이 없습니다.')
+      }
+    }
 
     // 1. 직원의 현재 역량 평가 조회 (B9-1: EmployeeSkillAssessment)
     const assessments = await prisma.employeeSkillAssessment.findMany({

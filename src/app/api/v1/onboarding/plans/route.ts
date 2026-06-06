@@ -7,7 +7,7 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, conflict, handlePrismaError, isAppError } from '@/lib/errors'
+import { badRequest, notFound, conflict, forbidden, handlePrismaError, isAppError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
@@ -42,15 +42,30 @@ export const POST = withPermission(
           name: true,
           assignments: {
             where: { isPrimary: true, endDate: null },
-            take: 1,
-            select: { companyId: true },
+            orderBy: { effectiveDate: 'desc' },
+            select: { companyId: true, effectiveDate: true },
           },
         },
       })
       if (!employee) throw notFound('직원을 찾을 수 없습니다.')
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const empCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as any)?.companyId ?? user.companyId
+      const empPrimaryCompanyId = (extractPrimaryAssignment(employee.assignments ?? []) as any)?.companyId ?? null
+
+      // 멀티테넌트: 비-SUPER는 본인 법인 재직 직원에게만 온보딩 생성
+      // (활성 primary 발령 없으면 empPrimaryCompanyId=null → 거부; 퇴직자·타법인 임의 ID 차단)
+      if (user.role !== 'SUPER_ADMIN' && empPrimaryCompanyId !== user.companyId) {
+        throw forbidden('본인 법인 소속 직원에게만 온보딩을 생성할 수 있습니다.')
+      }
+      const empCompanyId: string = empPrimaryCompanyId ?? user.companyId
+      // buddyId 동일 법인 재직 검증
+      if (buddyId) {
+        const buddyOk = await prisma.employeeAssignment.findFirst({
+          where: { employeeId: buddyId, companyId: empCompanyId, isPrimary: true, endDate: null, effectiveDate: { lte: new Date() } },
+          select: { employeeId: true },
+        })
+        if (!buddyOk) throw badRequest('버디는 동일 법인 소속이어야 합니다.')
+      }
 
       // 2. 이미 진행 중인 온보딩 확인
       const existing = await prisma.employeeOnboarding.findFirst({
@@ -66,8 +81,8 @@ export const POST = withPermission(
 
       // 3. 템플릿 조회 (미지정 시 해당 법인 기본 템플릿)
       const template = templateId
-        ? await prisma.onboardingTemplate.findUnique({
-            where: { id: templateId },
+        ? await prisma.onboardingTemplate.findFirst({
+            where: { id: templateId, OR: [{ companyId: empCompanyId }, { companyId: null }] },
             include: { onboardingTasks: { orderBy: { sortOrder: 'asc' } } },
           })
         : await prisma.onboardingTemplate.findFirst({

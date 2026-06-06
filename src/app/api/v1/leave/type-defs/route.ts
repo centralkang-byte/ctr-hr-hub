@@ -39,13 +39,14 @@ const createSchema = z.object({
 // ─── GET ─────────────────────────────────────────────────
 
 export const GET = withPermission(
-  async (req: NextRequest, _context, _user: SessionUser) => {
+  async (req: NextRequest, _context, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
-    const companyId = searchParams.get('companyId')
+    const requested = searchParams.get('companyId')
 
-    const where = companyId
-      ? { OR: [{ companyId }, { companyId: null }] }
-      : {}
+    // 멀티테넌트: 비-SUPER는 자기 법인 + 글로벌(null)만. SUPER는 지정 시 해당 법인, 미지정 시 전체.
+    const where = user.role === 'SUPER_ADMIN'
+      ? (requested ? { OR: [{ companyId: requested }, { companyId: null }] } : {})
+      : { OR: [{ companyId: user.companyId }, { companyId: null }] }
 
     const typeDefs = await prisma.leaveTypeDef.findMany({
       where: { ...where, deletedAt: null },
@@ -75,15 +76,18 @@ export const POST = withPermission(
     if (!parsed.success) throw badRequest(parsed.error.message)
     const data = parsed.data
 
+    // 멀티테넌트: 비-SUPER는 자기 법인 강제. SUPER만 글로벌(null)/타 법인 지정 가능.
+    const companyId = user.role === 'SUPER_ADMIN' ? (data.companyId ?? null) : user.companyId
+
     // 중복 코드 체크 (법인+코드 유니크)
     const existing = await prisma.leaveTypeDef.findFirst({
-      where: { companyId: data.companyId ?? null, code: data.code },
+      where: { companyId, code: data.code },
     })
     if (existing) throw badRequest(`코드 '${data.code}'가 이미 존재합니다.`)
 
     const typeDef = await prisma.leaveTypeDef.create({
       data: {
-        companyId: data.companyId ?? null,
+        companyId,
         code: data.code,
         name: data.name,
         nameEn: data.nameEn,

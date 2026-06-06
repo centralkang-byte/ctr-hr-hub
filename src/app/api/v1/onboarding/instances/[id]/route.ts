@@ -16,6 +16,7 @@ import { groupTasksByMilestone, calculateProgress, getCurrentMilestone } from '@
 import { checkSignOffEligibility } from '@/lib/onboarding/sign-off'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { resolveOnboardingCompanyId } from '@/lib/onboarding/tenant-guard'
 
 export const GET = withPermission(
     async (_req, ctx, user: SessionUser) => {
@@ -96,7 +97,10 @@ export const GET = withPermission(
         const isManager = user.employeeId === managerId
         const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
 
-        if (!isEmployee && !isManager && !isHrAdmin) {
+        // 멀티테넌트: 비-SUPER는 동일 법인만 (관계 경로도 법인 결합). 온보딩 인스턴스 법인 기준.
+        const onboardingCompanyId = await resolveOnboardingCompanyId({ companyId: onboarding.companyId, employeeId: onboarding.employeeId })
+        const sameCompany = onboardingCompanyId != null && onboardingCompanyId === user.companyId
+        if (user.role !== ROLE.SUPER_ADMIN && (!sameCompany || (!isEmployee && !isManager && !isHrAdmin))) {
             throw forbidden('You do not have permission to view this onboarding instance')
         }
 

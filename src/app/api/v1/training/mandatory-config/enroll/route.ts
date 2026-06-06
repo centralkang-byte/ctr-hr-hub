@@ -12,6 +12,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { z } from 'zod'
 import type { SessionUser } from '@/types'
 
@@ -80,7 +81,8 @@ export const POST = withPermission(
     }
 
     const { year } = parsed.data
-    const targetCompanyId = parsed.data.companyId ?? user.companyId
+    // 멀티테넌트: 비-SUPER는 자기 법인 강제 (body companyId 무시)
+    const targetCompanyId = resolveCompanyId(user, parsed.data.companyId ?? null)
 
     const configs = await prisma.mandatoryTrainingConfig.findMany({
       where: {

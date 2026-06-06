@@ -45,6 +45,11 @@ export const PUT = withPermission(
       throw notFound('휴가 신청을 찾을 수 없습니다.')
     }
 
+    // 멀티테넌트: 비-SUPER는 자기 법인 신청만 취소 가능 (HR/EXECUTIVE 타 법인 취소 차단)
+    if (user.role !== 'SUPER_ADMIN' && request.companyId !== user.companyId) {
+      throw notFound('휴가 신청을 찾을 수 없습니다.')
+    }
+
     // 2. Already terminal status
     if (request.status === 'CANCELLED' || request.status === 'REJECTED') {
       throw badRequest('이미 취소되었거나 반려된 신청은 취소할 수 없습니다.')
