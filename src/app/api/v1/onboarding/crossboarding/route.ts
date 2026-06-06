@@ -7,9 +7,9 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, conflict, handlePrismaError } from '@/lib/errors'
+import { badRequest, conflict, forbidden, handlePrismaError } from '@/lib/errors'
 import { triggerCrossboarding } from '@/lib/crossboarding'
 import type { SessionUser } from '@/types'
 
@@ -22,7 +22,13 @@ const schema = z.object({
 })
 
 export const POST = withPermission(
-  async (req: NextRequest, _ctx, _user: SessionUser) => {
+  async (req: NextRequest, _ctx, user: SessionUser) => {
+    // 임시 멀티테넌트 가드: 크로스보딩은 본질이 법인 간 이동(양쪽 법인에 온보딩 생성)이라
+    // 완전한 HQ 계층 권한 확정(stage2) 전까지 SUPER_ADMIN만 허용 (비-SUPER 전면 차단).
+    if (user.role !== ROLE.SUPER_ADMIN) {
+      throw forbidden('크로스보딩은 현재 SUPER_ADMIN만 실행할 수 있습니다. (법인 간 이동 권한은 준비 중)')
+    }
+
     let body: unknown
     try {
       body = await req.json()

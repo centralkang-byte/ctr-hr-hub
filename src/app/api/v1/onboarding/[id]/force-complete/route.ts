@@ -10,7 +10,7 @@ import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
-import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { resolveOnboardingCompanyId } from '@/lib/onboarding/tenant-guard'
 
 const forceCompleteSchema = z.object({ reason: z.string().min(1) })
 
@@ -23,26 +23,13 @@ export const PUT = withPermission(
 
     const onboarding = await prisma.employeeOnboarding.findUnique({
       where: { id },
-      include: {
-        tasks: true,
-        employee: {
-          select: {
-            assignments: {
-              where: { isPrimary: true, endDate: null },
-              take: 1,
-              select: { companyId: true },
-            },
-          },
-        },
-      },
+      include: { tasks: true },
     })
     if (!onboarding) throw notFound('온보딩 기록을 찾을 수 없습니다.')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const empCompanyId = (extractPrimaryAssignment(onboarding.employee.assignments ?? []) as any)?.companyId
-    if (
-      user.role !== 'SUPER_ADMIN' &&
-      empCompanyId !== user.companyId
-    ) {
+
+    // 멀티테넌트: 온보딩 인스턴스 소속 법인 기준(현재 직원 발령이 아님 — 이동 후 과거법인 오변경 차단)
+    const onboardingCompanyId = await resolveOnboardingCompanyId({ companyId: onboarding.companyId, employeeId: onboarding.employeeId })
+    if (user.role !== 'SUPER_ADMIN' && (onboardingCompanyId == null || onboardingCompanyId !== user.companyId)) {
       throw forbidden('권한이 없습니다.')
     }
 

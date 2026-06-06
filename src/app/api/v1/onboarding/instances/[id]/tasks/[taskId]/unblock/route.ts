@@ -11,6 +11,7 @@ import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { validateTaskTransition } from '@/lib/shared/task-state-machine'
+import { resolveOnboardingCompanyId } from '@/lib/onboarding/tenant-guard'
 import type { SessionUser } from '@/types'
 
 const unblockSchema = z.object({
@@ -26,13 +27,16 @@ export const POST = withPermission(
 
         const task = await prisma.employeeOnboardingTask.findFirst({
             where: { id: taskId, employeeOnboardingId: onboardingId },
-            include: { task: true },
+            include: { task: true, employeeOnboarding: { select: { companyId: true, employeeId: true } } },
         })
         if (!task) throw notFound('Onboarding task not found')
 
         const isAssignee = task.assigneeId === user.employeeId
         const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
-        if (!isAssignee && !isHrAdmin) throw forbidden('Only the task assignee or HR Admin can unblock a task')
+        // 멀티테넌트: 비-SUPER는 동일 법인만 (assignee/HR 경로 법인 결합)
+        const onboardingCompanyId = await resolveOnboardingCompanyId({ companyId: task.employeeOnboarding.companyId, employeeId: task.employeeOnboarding.employeeId })
+        const sameCompany = onboardingCompanyId != null && onboardingCompanyId === user.companyId
+        if (user.role !== ROLE.SUPER_ADMIN && (!sameCompany || (!isAssignee && !isHrAdmin))) throw forbidden('Only the task assignee or HR Admin can unblock a task')
 
         if (task.status !== 'BLOCKED') throw badRequest('Task is not currently blocked')
 
