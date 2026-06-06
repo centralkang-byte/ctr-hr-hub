@@ -8,7 +8,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
-import { notFound, conflict, isAppError, handlePrismaError } from '@/lib/errors'
+import { notFound, conflict, forbidden, isAppError, handlePrismaError } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import type { SessionUser } from '@/types'
 
@@ -25,6 +25,10 @@ export const POST = withPermission(
         },
       })
       if (!existing) throw notFound('삭제된 알림 트리거를 찾을 수 없습니다.')
+      // 글로벌(null) 트리거는 SUPER만 복구 (타법인은 위 findFirst에서 이미 notFound)
+      if (user.role !== 'SUPER_ADMIN' && existing.companyId === null) {
+        throw forbidden('본사(SUPER)만 글로벌 알림 트리거를 복구할 수 있습니다.')
+      }
 
       // unique constraint: eventType @unique
       const duplicate = await prisma.notificationTrigger.findFirst({

@@ -9,6 +9,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound, conflict } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
@@ -17,10 +18,11 @@ export const GET = withPermission(
     const gradeType = searchParams.get('gradeType') // STAFF | SPECIALIST | EXECUTIVE
 
     const requestedCompanyId = searchParams.get('companyId')
+    // RC-D 수정: 비-SUPER는 자기 법인 강제 (SUPER만 cross-tenant; SUPER+미지정 → 전체)
     const companyFilter =
-      requestedCompanyId ? { companyId: requestedCompanyId }
-      : user.role === 'SUPER_ADMIN' ? {}
-      : { companyId: user.companyId }
+      user.role === 'SUPER_ADMIN' && !requestedCompanyId
+        ? {}
+        : { companyId: resolveCompanyId(user, requestedCompanyId) }
 
     const jobGrades = await prisma.jobGrade.findMany({
       where: {
@@ -62,7 +64,7 @@ export const POST = withPermission(
       throw badRequest('code, name, rankOrder는 필수입니다.')
     }
 
-    const companyId = body.companyId ?? user.companyId
+    const companyId = resolveCompanyId(user, body.companyId)
 
     // 중복 코드 검사
     const existing = await prisma.jobGrade.findFirst({
