@@ -14,6 +14,7 @@ import { clockOutSchema } from '@/lib/schemas/attendance'
 import type { SessionUser } from '@/types'
 import type { ClockMethod } from '@/generated/prisma/enums'
 import { checkWorkHourAlert } from '@/lib/attendance/workHourAlert'
+import { computeOvertimeMinutes } from '@/lib/attendance/overtime'
 
 // ─── Zod method → Prisma ClockMethod 매핑 ─────────────────
 
@@ -23,11 +24,6 @@ const CLOCK_METHOD_MAP: Record<string, ClockMethod> = {
   TERMINAL: 'CARD_READER',
   MANUAL: 'WEB',
 }
-
-// ─── 기본 근무 설정 (분 단위) ─────────────────────────────────
-
-const STANDARD_MINUTES = 480 // 8시간
-const BREAK_MINUTES = 60    // 1시간 휴식
 
 // ─── POST — 퇴근 ─────────────────────────────────────────────
 
@@ -75,8 +71,8 @@ export const POST = withPermission(
       const clockInTime = existing.clockIn?.getTime() ?? now.getTime()
       const totalMinutes = Math.round((now.getTime() - clockInTime) / 60000)
 
-      // 초과근무 시간: (총 근무 - 휴식 - 표준근무) 이 양수이면 초과근무
-      const overtimeMinutes = Math.max(0, totalMinutes - BREAK_MINUTES - STANDARD_MINUTES)
+      // 초과근무 시간 (분) — 공유 SSOT 헬퍼 (기본 휴식 60분 차감)
+      const overtimeMinutes = computeOvertimeMinutes(totalMinutes)
 
       const prismaMethod = CLOCK_METHOD_MAP[parsed.data.method] ?? 'WEB'
 
