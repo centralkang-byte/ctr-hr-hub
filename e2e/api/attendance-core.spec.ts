@@ -214,6 +214,25 @@ test.describe('Attendance Core API', () => {
       assertOk(res, 'attendance correction')
     })
 
+    test('PUT /attendance/[id] clock-time correction recomputes overtimeMinutes', async ({ request }) => {
+      if (!seedAttendanceId) {
+        test.skip(true, 'No attendance record to correct')
+        return
+      }
+      const api = new ApiClient(request)
+      // 12h 경과(720분) → 초과근무 = 720 − 60(휴식) − 480(표준) = 180분.
+      // 보정이 totalMinutes만 갱신하고 overtimeMinutes는 stale로 두던 Bucket D #9 회귀 가드.
+      const res = await correctAttendance(api, seedAttendanceId, {
+        note: 'E2E overtime recompute',
+        clockIn: '2026-04-01T00:00:00.000Z',
+        clockOut: '2026-04-01T12:00:00.000Z',
+      })
+      assertOk(res, 'overtime recompute correction')
+      const updated = res.data as Record<string, unknown>
+      expect(updated.totalMinutes).toBe(720)
+      expect(updated.overtimeMinutes).toBe(180)
+    })
+
     test('PUT /attendance/[id] correction missing note returns 400', async ({ request }) => {
       if (!seedAttendanceId) {
         test.skip(true, 'No attendance record to correct')

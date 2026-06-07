@@ -4,6 +4,7 @@ import { verifyTerminal, updateTerminalHeartbeat } from '@/lib/terminal'
 import { terminalClockSchema } from '@/lib/schemas/terminal'
 import { isAppError, badRequest, notFound, AppError } from '@/lib/errors'
 import { apiSuccess, apiError } from '@/lib/api'
+import { computeOvertimeMinutes, graduatedBreakMinutes } from '@/lib/attendance/overtime'
 
 // ─── POST /api/v1/terminals/clock ───────────────────────
 // Terminal clock event (CLOCK_IN / CLOCK_OUT)
@@ -55,6 +56,8 @@ export async function POST(req: NextRequest) {
 
       if (existing) {
         // Auto-close previous day's record at 23:59
+        // NOTE: overtimeMinutes를 여기서 재계산하지 않음 — 이 경로의 totalMinutes는
+        // 23:59 강제마감(미래시각 가능)이라 신뢰불가. 별도 버그로 추적(자동마감 시각·쿼리 의미).
         const autoClockOut = new Date(existing.workDate)
         autoClockOut.setHours(23, 59, 0, 0)
         await prisma.attendance.update({
@@ -105,12 +108,10 @@ export async function POST(req: NextRequest) {
       const totalMinutes = existing.clockIn
         ? Math.round((eventTime.getTime() - existing.clockIn.getTime()) / 60000)
         : 0
-      const breakMinutes =
-        totalMinutes >= 480 ? 60 : totalMinutes >= 240 ? 30 : 0
-      const standardMinutes = 480
-      const overtimeMinutes = Math.max(
-        0,
-        totalMinutes - breakMinutes - standardMinutes,
+      // 단말기 누진 휴식(8h↑60·4h↑30) 차감 후 초과근무 — 공유 SSOT 헬퍼
+      const overtimeMinutes = computeOvertimeMinutes(
+        totalMinutes,
+        graduatedBreakMinutes(totalMinutes),
       )
 
       const attendance = await prisma.attendance.update({

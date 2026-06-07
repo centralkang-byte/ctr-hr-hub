@@ -12,6 +12,7 @@ import { badRequest, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { computeOvertimeMinutes } from '@/lib/attendance/overtime'
 import type { SessionUser } from '@/types'
 
 // ─── Correction Schema ──────────────────────────────────
@@ -118,7 +119,11 @@ export const PUT = withPermission(
 
     if (effectiveClockIn && effectiveClockOut) {
       const diffMs = effectiveClockOut.getTime() - effectiveClockIn.getTime()
-      updateData.totalMinutes = Math.max(0, Math.round(diffMs / 60000))
+      const totalMinutes = Math.max(0, Math.round(diffMs / 60000))
+      updateData.totalMinutes = totalMinutes
+      // 근무시간이 바뀌면 초과근무도 재계산 (clock-out 경로와 동일 식).
+      // 누락 시 stale overtimeMinutes가 급여 초과수당으로 흘러감 (Bucket D #9).
+      updateData.overtimeMinutes = computeOvertimeMinutes(totalMinutes)
     }
 
     // 6. Update the record
