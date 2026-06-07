@@ -8,7 +8,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound, isAppError, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { z } from 'zod'
 import type { SessionUser } from '@/types'
 
@@ -31,7 +31,11 @@ export const PATCH = withPermission(
         throw badRequest('입력값이 올바르지 않습니다.', { issues: parsed.error.issues })
       }
 
-      const alert = await prisma.workHourAlert.findUnique({ where: { id } })
+      // 비-SUPER는 본인 법인 직원의 경고만 — 관계 스코프 → notFound(오라클 차단)
+      const scope = user.role === ROLE.SUPER_ADMIN
+        ? {}
+        : { employee: { assignments: { some: { isPrimary: true, endDate: null, companyId: user.companyId } } } }
+      const alert = await prisma.workHourAlert.findFirst({ where: { id, ...scope } })
       if (!alert) throw notFound('경고 기록을 찾을 수 없습니다.')
       if (alert.isResolved) throw badRequest('이미 해제된 경고입니다.')
 

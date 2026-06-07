@@ -43,7 +43,8 @@ export const GET = withPermission(
     if (!employeeCheck) throw notFound('직원을 찾을 수 없습니다.')
 
     const documents = await prisma.employeeDocument.findMany({
-      where: { employeeId: id, deletedAt: null },
+      // 비-SUPER는 본인 법인 문서만 — download 가드와 일치(전출자 타법인 doc 숨김)
+      where: { employeeId: id, deletedAt: null, ...(user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }) },
       include: {
         uploader: { select: { id: true, name: true } },
       },

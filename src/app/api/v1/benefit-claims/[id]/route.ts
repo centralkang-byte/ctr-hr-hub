@@ -22,13 +22,17 @@ export const GET = withPermission(
       where: { id },
       include: {
         benefitPlan: true,
-        employee: { select: { id: true, name: true, employeeNo: true } },
+        employee: { select: { id: true, name: true, employeeNo: true, assignments: { where: { isPrimary: true, endDate: null }, take: 1, select: { companyId: true } } } },
         approver: { select: { id: true, name: true } },
       },
     })
     if (!claim) throw notFound('신청 내역을 찾을 수 없습니다.')
+    // 소유 법인 = benefitPlan.companyId(글로벌 플랜이면 직원 현재 법인). self는 본인 조회 허용.
+    const isSelf = claim.employeeId === user.employeeId
     const isHR = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
-    if (!isHR && claim.employeeId !== user.employeeId) throw forbidden()
+    const ownerCompany = claim.benefitPlan.companyId ?? claim.employee.assignments[0]?.companyId
+    const sameCompany = user.role === ROLE.SUPER_ADMIN || ownerCompany === user.companyId
+    if (!isSelf && (!isHR || !sameCompany)) throw forbidden()
     return apiSuccess(claim)
   },
   perm(MODULE.BENEFITS, ACTION.VIEW),
@@ -42,9 +46,11 @@ export const PATCH = withPermission(
 
     const claim = await prisma.benefitClaim.findUnique({
       where: { id },
-      include: { benefitPlan: true },
+      include: { benefitPlan: true, employee: { select: { assignments: { where: { isPrimary: true, endDate: null }, take: 1, select: { companyId: true } } } } },
     })
     if (!claim) throw notFound('신청 내역을 찾을 수 없습니다.')
+    // 소유 법인 = benefitPlan.companyId(글로벌 플랜이면 직원 현재 법인)
+    const ownerCompany = claim.benefitPlan.companyId ?? claim.employee.assignments[0]?.companyId
 
     const parsed = actionSchema.safeParse(body)
     if (!parsed.success) throw badRequest(parsed.error.message)
@@ -61,6 +67,7 @@ export const PATCH = withPermission(
     }
 
     if (!isHR) throw forbidden('HR 권한이 필요합니다.')
+    if (user.role !== ROLE.SUPER_ADMIN && ownerCompany !== user.companyId) throw forbidden('다른 법인의 신청은 처리할 수 없습니다.')
     if (claim.status !== 'pending') throw badRequest('이미 처리된 신청입니다.')
     if (action === 'reject' && !rejectedReason) throw badRequest('반려 사유를 입력해 주세요.')
 
@@ -83,7 +90,7 @@ export const PATCH = withPermission(
         const finalAmount = approvedAmount ?? claim.claimAmount
         await tx.benefitBudget.updateMany({
           where: {
-            companyId: user.companyId,
+            companyId: ownerCompany ?? user.companyId,
             year,
             category: claim.benefitPlan.category,
           },

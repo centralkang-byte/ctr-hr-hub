@@ -33,7 +33,8 @@ export const GET = withPermission(
     if (!employeeCheck) throw notFound('직원을 찾을 수 없습니다.')
 
     const requests = await prisma.certificateRequest.findMany({
-      where: { employeeId: id },
+      // 비-SUPER는 본인 법인 요청만 — approve 가드와 일치(전출자 타법인 요청 숨김)
+      where: { employeeId: id, ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}) },
       include: {
         employee: { select: { id: true, name: true, employeeNo: true } },
         approver: { select: { id: true, name: true } },

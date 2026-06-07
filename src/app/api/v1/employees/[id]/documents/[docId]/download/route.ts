@@ -9,7 +9,7 @@ import { notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { getPresignedDownloadUrl } from '@/lib/s3'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/employees/[id]/documents/[docId]/download ─
@@ -22,8 +22,10 @@ export const GET = withPermission(
   ) => {
     const { id, docId } = await context.params
 
+    // 비-SUPER는 본인 법인 문서만 — scoped-find → notFound(오라클 차단)
+    const scope = user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
     const doc = await prisma.employeeDocument.findFirst({
-      where: { id: docId, employeeId: id, deletedAt: null },
+      where: { id: docId, employeeId: id, deletedAt: null, ...scope },
     })
 
     if (!doc) {
