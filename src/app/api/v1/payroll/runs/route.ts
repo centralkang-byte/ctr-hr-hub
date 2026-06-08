@@ -8,7 +8,7 @@ import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
-import { badRequest } from '@/lib/errors'
+import { badRequest, conflict, handlePrismaError } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { payrollRunListSchema, payrollRunCreateSchema } from '@/lib/schemas/payroll'
 import { injectLoaAdjustmentsForNewRun } from '@/lib/loa/payroll-adjustment'
@@ -64,19 +64,35 @@ export const POST = withPermission(
     }
     const data = parsed.data
 
-    const run = await prisma.payrollRun.create({
-      data: {
-        companyId: user.companyId,
-        name: data.name,
-        runType: data.runType,
-        yearMonth: data.yearMonth,
-        periodStart: new Date(data.periodStart),
-        periodEnd: new Date(data.periodEnd),
-        payDate: data.payDate ? new Date(data.payDate) : null,
-        currency: data.currency,
-        status: 'DRAFT',
-      },
+    // 중복 방지: 같은 회사·월·유형 급여 실행은 하나만 (재실행은 기존 실행 사용/마감 해제)
+    // status 무관(CANCELLED 포함)하게 차단 — DB @@unique([companyId, yearMonth, runType])와 정책 일치
+    const existing = await prisma.payrollRun.findFirst({
+      where: { companyId: user.companyId, yearMonth: data.yearMonth, runType: data.runType },
+      select: { id: true },
     })
+    if (existing) {
+      throw conflict(`이미 ${data.yearMonth} 급여 실행이 존재합니다. 기존 실행을 사용하세요.`)
+    }
+
+    let run
+    try {
+      run = await prisma.payrollRun.create({
+        data: {
+          companyId: user.companyId,
+          name: data.name,
+          runType: data.runType,
+          yearMonth: data.yearMonth,
+          periodStart: new Date(data.periodStart),
+          periodEnd: new Date(data.periodEnd),
+          payDate: data.payDate ? new Date(data.payDate) : null,
+          currency: data.currency,
+          status: 'DRAFT',
+        },
+      })
+    } catch (e) {
+      // DB @@unique race 백업: 동시 요청으로 findFirst를 통과해도 P2002 → conflict
+      throw handlePrismaError(e)
+    }
 
     // LOA Phase 3: PayrollRun 생성 시 ACTIVE LOA adjustment 자동 주입 (fire-and-forget)
     injectLoaAdjustmentsForNewRun(run.id, user.companyId, data.yearMonth).catch((err) => {

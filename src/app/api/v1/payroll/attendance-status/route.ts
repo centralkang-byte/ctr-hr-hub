@@ -90,14 +90,21 @@ export const GET = withPermission(
             },
         })
 
-        // 현재 PayrollRun 상태
+        // 현재 PayrollRun 상태 — 근태는 월급(MONTHLY) run 기준 (동월 BONUS/특별 공존 가능)
         const payrollRun = await prisma.payrollRun.findFirst({
-            where: { companyId, yearMonth },
+            where: { companyId, yearMonth, runType: 'MONTHLY' },
             select: { id: true, status: true, attendanceClosedAt: true },
+        })
+
+        // 회사명 (FE 카드/모달 표시용 — companyId(UUID) 직접 노출 방지)
+        const company = await prisma.company.findUnique({
+            where: { id: companyId },
+            select: { name: true },
         })
 
         return apiSuccess({
             yearMonth,
+            companyName: company?.name ?? null,
             totalEmployees,
             confirmedCount,
             unconfirmedCount: totalEmployees - confirmedCount,

@@ -26,6 +26,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge'
 
 interface AttendanceStatus {
     yearMonth: string
+    companyName: string | null
     totalEmployees: number
     confirmedCount: number
     unconfirmedCount: number
@@ -41,15 +42,6 @@ interface AttendanceStatus {
 interface Props {
     user: SessionUser
 }
-
-const COMPANY_LIST = [
-    { id: 'CTR', nameKey: 'closeAtt.companyCTR' },
-    { id: 'CTR-CN', nameKey: 'closeAtt.companyCTRCN' },
-    { id: 'CTR-US', nameKey: 'closeAtt.companyCTRUS' },
-    { id: 'CTR-VN', nameKey: 'closeAtt.companyCTRVN' },
-    { id: 'CTR-EU', nameKey: 'closeAtt.companyCTREU' },
-    { id: 'CTR-RU', nameKey: 'closeAtt.companyCTRRU' },
-]
 
 const STATUS_LABEL_KEYS: Record<string, string> = {
     DRAFT: 'closeAtt.statusDraft',
@@ -233,8 +225,8 @@ export default function CloseAttendanceClient({ user }: Props) {
             <div className="space-y-4">
                 {[user.companyId].filter(Boolean).map((companyId) => {
                     const status = statuses[companyId]
-                    const companyEntry = COMPANY_LIST.find((c) => c.id === companyId)
-                    const label = companyEntry ? t(companyEntry.nameKey) : companyId
+                    // 회사명은 API(attendance-status)가 내려준 companyName 사용 — companyId(UUID) 직접 노출 방지
+                    const label = status?.companyName ?? companyId
                     const isClosed = status?.payrollRunStatus === 'ATTENDANCE_CLOSED'
                     const isAlreadyCalculating = status?.payrollRunStatus && !['DRAFT', 'ATTENDANCE_CLOSED', null].includes(status.payrollRunStatus)
                     const confirmedPct = status ? Math.round((status.confirmedCount / Math.max(status.totalEmployees, 1)) * 100) : 0
@@ -419,7 +411,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted-foreground">{t('kr_keb8c80ec_company')}</span>
                                     <span className="font-semibold text-foreground">
-                                        {(() => { const ce = COMPANY_LIST.find((c) => c.id === confirmModal.companyId); return ce ? t(ce.nameKey) : confirmModal.companyId })()}
+                                        {confirmModal.status?.companyName ?? confirmModal.companyId}
                                     </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
