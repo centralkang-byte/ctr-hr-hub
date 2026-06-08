@@ -8,6 +8,7 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withPermission } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 import { apiSuccess, apiError } from '@/lib/api'
 import { notFound, forbidden } from '@/lib/errors'
 
@@ -16,11 +17,12 @@ type RouteContext = { params: Promise<Record<string, string>> }
 // ─── GET: 단건 상세 (results 포함) ──────────────────────
 
 export const GET = withPermission(
-  async (_req: NextRequest, context: RouteContext) => {
+  async (_req: NextRequest, context: RouteContext, user) => {
     try {
       const { id } = await context.params
-      const scenario = await prisma.simulationScenario.findUnique({
-        where: { id },
+      // 멀티테넌트 격리: 비-SUPER는 자기 법인 시나리오만 (타 법인 parameters/results 차단).
+      const scenario = await prisma.simulationScenario.findFirst({
+        where: { id, ...resolveCompanyFilter(user, null) },
       })
       if (!scenario) throw notFound('시나리오를 찾을 수 없습니다.')
       return apiSuccess(scenario)
@@ -37,8 +39,9 @@ export const DELETE = withPermission(
   async (_req: NextRequest, context: RouteContext, user) => {
     try {
       const { id } = await context.params
-      const scenario = await prisma.simulationScenario.findUnique({
-        where: { id },
+      // 멀티테넌트 격리: 비-SUPER는 자기 법인 시나리오만 조회/삭제 (타 법인 HR의 isAdmin 우회 차단).
+      const scenario = await prisma.simulationScenario.findFirst({
+        where: { id, ...resolveCompanyFilter(user, null) },
         select: { id: true, createdById: true },
       })
       if (!scenario) throw notFound('시나리오를 찾을 수 없습니다.')

@@ -187,10 +187,13 @@ export const GET = withPermission(
     const requestedCompanyId = searchParams.get('companyId')
     const isGlobalRole =
       user.role === ROLE.SUPER_ADMIN || (user.role === ROLE.HR_ADMIN && !user.companyId)
-    const companyId: string | null =
-      requestedCompanyId === 'all' || (!requestedCompanyId && isGlobalRole)
+    // 멀티테넌트 격리: 비-global(자기 법인 보유)은 항상 자기 법인 강제 —
+    // 타 법인 companyId·'all' 파라미터 무력화. global(SUPER/본사 HR)만 null=전체 3-state.
+    const companyId: string | null = !isGlobalRole
+      ? user.companyId ?? null
+      : requestedCompanyId === 'all' || !requestedCompanyId
         ? null
-        : requestedCompanyId ?? user.companyId ?? null
+        : requestedCompanyId
 
     const [headcount, turnover, openPositions, riskCount, leaveUsage, trainingRate] =
       await Promise.allSettled([

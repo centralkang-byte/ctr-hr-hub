@@ -9,6 +9,7 @@ import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
 import { badRequest, handlePrismaError, isAppError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/leave-of-absence ────────────────────────
@@ -21,7 +22,8 @@ export const GET = withPermission(
     const employeeId = sp.get('employeeId')
     const status = sp.get('status')
     const typeId = sp.get('typeId')
-    const companyId = sp.get('companyId') ?? user.companyId
+    // 멀티테넌트 격리: 비-SUPER는 자기 법인 강제 (타 법인 휴직 기록·직원 PII 차단).
+    const companyId = resolveCompanyId(user, sp.get('companyId'))
 
     const where: Record<string, unknown> = {
       companyId,

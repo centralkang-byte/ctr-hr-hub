@@ -10,5 +10,19 @@
         "caughtErrorsIgnorePattern": "^_"
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/app/api/**/*.ts"],
+      "rules": {
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "LogicalExpression[operator='??'][left.callee.property.name='get'][left.arguments.0.value='companyId'][right.object.name='user'][right.property.name='companyId']",
+            "message": "멀티테넌트 누출 위험: `searchParams.get('companyId') ?? user.companyId` 패턴 금지 — ??는 파라미터가 없을 때만 발화하므로 비-SUPER가 타 법인 id를 보내면 그대로 통과합니다. resolveCompanyId(user, ...) 또는 resolveCompanyFilter(user, ...) (SSOT: src/lib/api/companyFilter.ts) 사용. SUPER 전용 분기 등 의도된 예외면 // eslint-disable-line no-restricted-syntax -- <사유> 로 명시하세요."
+          }
+        ]
+      }
+    }
+  ]
 }

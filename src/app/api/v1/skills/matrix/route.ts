@@ -9,6 +9,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
@@ -17,7 +18,7 @@ export const GET = withPermission(
     const { searchParams } = new URL(req.url)
     const period = searchParams.get('period') ?? 'latest'
     const departmentId = searchParams.get('departmentId')
-    const companyId = searchParams.get('companyId') ?? user.companyId
+    const companyId = resolveCompanyId(user, searchParams.get('companyId'))
     const categoryId = searchParams.get('categoryId') // 역량 카테고리 필터
 
     // 직원 목록 (부서 필터)
