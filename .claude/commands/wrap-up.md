@@ -27,5 +27,5 @@ Execute `/session-end` routine:
 
 ## Optional Steps
 
-- Need PR: use `/ship` skill
+- Need PR: use `gh pr create` (or `mcp__github__create_pull_request` in remote sessions)
 - Skip deploy: say "skip deploy" to skip Step 3
