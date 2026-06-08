@@ -66,7 +66,8 @@ export const POST = withPermission(
     if (!titleKo?.trim()) throw badRequest('직위명(한국어)은 필수입니다.')
     if (!code?.trim()) throw badRequest('코드는 필수입니다.')
 
-    const targetCompanyId = companyId ?? user.companyId
+    // 멀티테넌트 격리: 비-SUPER는 자기 법인 강제 (타 법인 직위 생성 차단).
+    const targetCompanyId = resolveCompanyId(user, companyId)
 
     try {
       const position = await prisma.position.create({

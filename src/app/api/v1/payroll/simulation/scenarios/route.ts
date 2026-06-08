@@ -8,6 +8,7 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withPermission } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyFilter, resolveCompanyId } from '@/lib/api/companyFilter'
 import { apiSuccess, apiError } from '@/lib/api'
 import { badRequest } from '@/lib/errors'
 import { z } from 'zod'
@@ -59,16 +60,18 @@ function truncateResults(mode: string, raw: Record<string, unknown>): Record<str
 // ─── GET: 목록 조회 / 비교용 다건 조회 ──────────────────
 
 export const GET = withPermission(
-  async (req: NextRequest) => {
+  async (req: NextRequest, _context, user) => {
     try {
       const { searchParams } = new URL(req.url)
       const ids = searchParams.get('ids')
+      // 멀티테넌트 격리: 비-SUPER는 자기 법인 강제, SUPER만 전체/지정(전체비교 보존).
+      const companyFilter = resolveCompanyFilter(user, searchParams.get('companyId'))
 
       // 비교 모드: ?ids=id1,id2
       if (ids) {
         const idList = ids.split(',').slice(0, 2)
         const scenarios = await prisma.simulationScenario.findMany({
-          where: { id: { in: idList } },
+          where: { id: { in: idList }, ...companyFilter },
           select: {
             id: true, mode: true, title: true, description: true,
             companyId: true, createdById: true, createdAt: true,
@@ -80,13 +83,11 @@ export const GET = withPermission(
 
       // 일반 목록: ?mode=&companyId=
       const mode = searchParams.get('mode')
-      const companyId = searchParams.get('companyId')
 
-      const where: Record<string, unknown> = {}
+      const where: Record<string, unknown> = { ...companyFilter }
       if (mode && SAVEABLE_MODES.includes(mode as typeof SAVEABLE_MODES[number])) {
         where.mode = mode
       }
-      if (companyId) where.companyId = companyId
 
       const scenarios = await prisma.simulationScenario.findMany({
         where,
@@ -124,7 +125,8 @@ export const POST = withPermission(
           mode: parsed.mode,
           title: parsed.title,
           description: parsed.description ?? null,
-          companyId: parsed.companyId ?? null,
+          // 멀티테넌트 격리: 비-SUPER는 자기 법인 강제 (타 법인 시나리오 생성 차단).
+          companyId: resolveCompanyId(user, parsed.companyId ?? null),
           parameters: parsed.parameters as object,
           results: truncated as object,
         },

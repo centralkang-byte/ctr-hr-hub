@@ -16,7 +16,7 @@ export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
     const gradeType = searchParams.get('gradeType')
-    const companyId = searchParams.get('companyId') ?? user.companyId
+    const companyId = searchParams.get('companyId') ?? user.companyId // eslint-disable-line no-restricted-syntax -- 안전: 아래 L22-24 수동 가드(badRequest)가 비-SUPER 타 법인 차단; PR #131 의도적 유지
 
     // 법인 범위 검사
     if (user.role !== 'SUPER_ADMIN' && companyId !== user.companyId) {

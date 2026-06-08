@@ -9,13 +9,15 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, handlePrismaError, isAppError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/leave-of-absence/types ──────────────────
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
-    const companyId = req.nextUrl.searchParams.get('companyId') ?? user.companyId
+    // 멀티테넌트 격리: 비-SUPER는 자기 법인 강제 (타 법인 휴직유형 노출 차단).
+    const companyId = resolveCompanyId(user, req.nextUrl.searchParams.get('companyId'))
 
     const types = await prisma.leaveOfAbsenceType.findMany({
       where: {

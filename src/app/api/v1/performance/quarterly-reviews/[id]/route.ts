@@ -96,7 +96,7 @@ export const GET = withPermission(
     const url = new URL(req.url)
     const companyId =
       user.role === ROLE.SUPER_ADMIN
-        ? url.searchParams.get('companyId') ?? user.companyId
+        ? url.searchParams.get('companyId') ?? user.companyId // eslint-disable-line no-restricted-syntax -- 안전: SUPER 전용 분기(비-SUPER는 user.companyId 강제)
         : user.companyId
 
     const review = await prisma.quarterlyReview.findFirst({

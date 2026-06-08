@@ -12,6 +12,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
@@ -26,7 +27,7 @@ export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
     const period = searchParams.get('period') ?? 'latest'
-    const companyId = searchParams.get('companyId') ?? user.companyId
+    const companyId = resolveCompanyId(user, searchParams.get('companyId'))
 
     // 법인의 모든 직원 + 역량 평가
     const employees = await prisma.employee.findMany({
@@ -175,7 +176,8 @@ export const POST = withPermission(
     try {
       const report = await prisma.skillGapReport.create({
         data: {
-          companyId: parsed.data.companyId ?? user.companyId,
+          // 멀티테넌트 격리: 비-SUPER는 자기 법인 강제 (타 법인 리포트 생성 차단).
+          companyId: resolveCompanyId(user, parsed.data.companyId),
           departmentId: parsed.data.departmentId,
           assessmentPeriod: parsed.data.assessmentPeriod,
           reportData: parsed.data.reportData as never,
