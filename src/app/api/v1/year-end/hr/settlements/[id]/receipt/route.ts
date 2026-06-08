@@ -45,7 +45,8 @@ export const POST = withPermission(
       // Company scope check
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const employeeCompanyId = (extractPrimaryAssignment(settlement.employee.assignments ?? []) as any)?.companyId as string | undefined
-      if (user.role !== ROLE.SUPER_ADMIN && employeeCompanyId && employeeCompanyId !== user.companyId) {
+      // fail-closed: 회사 미해결(활성 발령 없음) 시에도 비-SUPER는 차단 (타 법인 영수증 발행 우회 방지)
+      if (user.role !== ROLE.SUPER_ADMIN && employeeCompanyId !== user.companyId) {
         throw new AppError(403, 'FORBIDDEN', '해당 직원의 영수증을 발행할 권한이 없습니다.')
       }
 
