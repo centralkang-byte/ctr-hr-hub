@@ -162,8 +162,10 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
         //     SSOT = LeaveYearBalance. 레거시 EmployeeLeaveBalance는 런타임에 더 이상 기록되지 않으므로
         //     (웹 신청·승인은 LeaveYearBalance만 갱신) 정산이 stale 잔액을 읽지 않도록 신 테이블 사용.
         const currentYear = lastWorkingDate.getFullYear()
+        // 정산 대상 = 연차(annual)만. 병가 등 비연차 유급휴가는 퇴사 미정산 (CEO 정책 2026-06-09).
+        // (S271은 표시를 annual로 필터했으나 정산은 전타입 합산으로 남아 병가까지 과지급되던 버그 수정.)
         const leaveBalances = await tx.leaveYearBalance.findMany({
-            where: { employeeId, year: currentYear },
+            where: { employeeId, year: currentYear, leaveTypeDef: { code: 'annual' } },
         })
 
         // Daily wage from latest compensation (tx 내부 조회)
