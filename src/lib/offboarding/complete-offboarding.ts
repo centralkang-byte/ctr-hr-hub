@@ -159,8 +159,10 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
         const companyIdForSettlement = (extractPrimaryAssignment(offboarding.employee!.assignments ?? []) as any)?.companyId ?? ''
 
         // 4a. Leave balance settlement (unused leave pay / negative leave deduction)
+        //     SSOT = LeaveYearBalance. 레거시 EmployeeLeaveBalance는 런타임에 더 이상 기록되지 않으므로
+        //     (웹 신청·승인은 LeaveYearBalance만 갱신) 정산이 stale 잔액을 읽지 않도록 신 테이블 사용.
         const currentYear = lastWorkingDate.getFullYear()
-        const leaveBalances = await tx.employeeLeaveBalance.findMany({
+        const leaveBalances = await tx.leaveYearBalance.findMany({
             where: { employeeId, year: currentYear },
         })
 
@@ -175,9 +177,10 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
         let unusedLeaveDays = 0
         let negativeLeaveDays = 0
         for (const bal of leaveBalances) {
-            const granted = Number(bal.grantedDays) + Number(bal.carryOverDays)
-            const used = Number(bal.usedDays)
-            const remaining = granted - used
+            // 정산 잔여 = entitled + carriedOver + adjusted - used (pending 제외: 기존 정산 동작 보존 —
+            // 미승인 PENDING 신청을 미사용 연차로 과소지급하지 않음).
+            const remaining =
+                Number(bal.entitled) + Number(bal.carriedOver) + Number(bal.adjusted) - Number(bal.used)
             if (remaining > 0) {
                 unusedLeaveDays += remaining
             } else if (remaining < 0) {
