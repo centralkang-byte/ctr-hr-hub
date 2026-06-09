@@ -162,7 +162,10 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             // Check if fully approved
             const newApproval = await apiClient.get<ApprovalStatus>(`/api/v1/payroll/${runId}/approval-status`)
             if (newApproval.data.approval?.status === 'APPROVED') {
-                router.push('/payroll')
+                // 승인 완료 후 결재함으로 복귀 — reject·뒤로가기와 일관.
+                // /payroll(급여 목록)은 ceo 단계 승인자(EXECUTIVE)가 payroll:view 없어
+                // 미들웨어가 /home으로 튕기므로 부적합 (S270 dogfood 발견).
+                router.push('/my/tasks?tab=approvals')
             }
         } catch (err) {
             toast({ title: t('approvePage.approveFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })

@@ -29,6 +29,12 @@ const QA_ACCOUNT_GROUPS: QAGroup[] = [
     ],
   },
   {
+    group: '경영진',
+    accounts: [
+      { email: 'executive@ctr.co.kr', name: '강대표 (경영리더)', roleBadge: 'EXE', color: 'bg-wt-4/15 text-wt-4' },
+    ],
+  },
+  {
     group: '인사팀',
     accounts: [
       { email: 'hr@ctr.co.kr', name: '한지영 (인사팀·KR)', roleBadge: 'HR', color: 'bg-primary/10 text-primary' },

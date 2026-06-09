@@ -97,6 +97,7 @@ export const POST = withPermission(
                 where: {
                     companyId: run.companyId,
                     yearMonth: prevYearMonth,
+                    runType: run.runType, // 동종 유형 전월 비교 (동월 복수 runType 공존 가능 — @@unique runType 차원)
                     status: { not: 'CANCELLED' },
                 },
                 orderBy: { createdAt: 'desc' },

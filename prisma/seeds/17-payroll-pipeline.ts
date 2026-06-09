@@ -373,7 +373,8 @@ export async function seedPayrollPipeline(prisma: PrismaClient): Promise<void> {
         const isDraft = r.status === 'DRAFT'
         const res = await createRun({
             code: 'CTR', ym: r.ym, status: r.status, actor: actorKR,
-            name: `CTR-KR ${r.ym} 월급`, currency: 'KRW',
+            // 회사코드(CTR)와 일치 — 옛 'CTR-KR'은 S250 통합으로 소멸한 stale 코드 (S270 dogfood 발견).
+            name: `CTR ${r.ym} 월급`, currency: 'KRW',
             emps: isDraft ? [] : krEmps, calcFn: krCalc,
             paidAt: r.status === 'PAID' ? new Date(`${r.ym}-25T00:00:00Z`) : undefined,
             adjCount: r.ym === '2026-01' ? 2 : r.ym === '2025-12' ? 2 : r.ym === '2025-10' ? 3 : 0,

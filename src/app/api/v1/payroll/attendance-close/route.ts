@@ -36,8 +36,9 @@ export const POST = withPermission(
         const firstDay = new Date(year, month - 1, 1)
         const lastDay = new Date(year, month, 0)
 
-        // 기존 PayrollRun 조회
-        const existing = await prisma.payrollRun.findFirst({ where: { companyId, yearMonth } })
+        // 기존 PayrollRun 조회 — 근태 마감 대상은 월급(MONTHLY)만
+        // (@@unique([companyId,yearMonth,runType])로 동월 BONUS/특별 공존 가능 → 오마감 방지)
+        const existing = await prisma.payrollRun.findFirst({ where: { companyId, yearMonth, runType: 'MONTHLY' } })
         if (existing && !['DRAFT'].includes(existing.status)) {
             throw conflict(`${yearMonth} 급여 실행이 이미 ${existing.status} 상태입니다. 마감 불가.`)
         }
@@ -81,6 +82,7 @@ export const POST = withPermission(
                 yearMonth,
                 year,
                 month,
+                runType: 'MONTHLY' as const,
                 name: `${yearMonth} 월급 (${company.name})`,
                 status: 'ATTENDANCE_CLOSED' as const,
                 attendanceClosedAt: new Date(),

@@ -3340,7 +3340,7 @@ model PayrollRun {
   anomalies       PayrollAnomaly[]
   payrollApproval PayrollApproval?    @relation("PayrollApproval")
 
-  @@index([companyId, yearMonth])
+  @@unique([companyId, yearMonth, runType])
   @@index([companyId, status])
   @@map("payroll_runs")
 }

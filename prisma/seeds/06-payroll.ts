@@ -144,7 +144,7 @@ export async function seedPayroll(prisma: PrismaClient): Promise<void> {
   // Company IDs
   const krCo = await prisma.company.findFirst({ where: { code: 'CTR' } })
   const cnCo = await prisma.company.findFirst({ where: { code: 'CTR-CN' } })
-  if (!krCo) { console.error('  ❌ CTR-KR not found'); return }
+  if (!krCo) { console.error('  ❌ CTR not found'); return }
   const krId = krCo.id
   const cnId = cnCo?.id
 
@@ -264,7 +264,8 @@ export async function seedPayroll(prisma: PrismaClient): Promise<void> {
         data: {
           id:              runId,
           companyId:       krId,
-          name:            `CTR-KR ${mo.yearMonth} 급여`,
+          // 'CTR-KR'은 S250 통합으로 소멸한 stale 코드 → 회사코드 CTR로 정정 (S270 dogfood)
+          name:            `CTR ${mo.yearMonth} 급여`,
           runType:         'MONTHLY',
           yearMonth:       mo.yearMonth,
           frequency:       'MONTHLY',
