@@ -2,7 +2,7 @@
 
 > Created 2026-06-10 (S276). Source = S275 handover "Explicitly OUT of scope (CEO policy gates)" in
 > `2026-06-10-attendance-orgchange-dogfood-fixes.md`, resolved via CEO decision gate (4 answers below).
-> Status: **REVISED after Codex Gate 1 r1 NO-GO (P1×7, P2×4) + r2 NO-GO (P1×4, P2×2) — ALL incorporated** — pending round 3.
+> Status: **REVISED — r1 NO-GO(P1×7,P2×4) + r2 NO-GO(P1×4,P2×2) + r3 NO-GO(doc-consistency P1×2, terminal P2×1) ALL incorporated** — pending round 4.
 > Branch: `feat/s276-attendance-policy-gates` stacked on `fix/s275-attendance-orgchange-dogfood` (PR #143 open;
 > this work touches the same files #143 rewrote — execute route, attendance/[id], admin client — so stacking avoids conflicts).
 
@@ -33,16 +33,15 @@ transfer (**no demotion**); executor does NOT write EmployeeHistory.
 6. **(P1) ShiftSchedule exact-date lookup unreliable** → shift write paths (`attendance/shifts` manual save,
    `shift-schedules/generate`) unify to `parseDateOnly()` UTC date-only storage; resolver looks up by the same
    convention. Backfill not needed (table measured empty).
-7. **(P1) bulk execute audit not durable** → route replaces fire-and-forget `logAudit` with **`await
-   logAuditSync`** carrying movement type, effective dates, target employee IDs (from validatedRows), row count;
-   failure surfaces (no swallow).
+7. **(P1) bulk execute audit not durable** → ~~`await logAuditSync`~~ **superseded by r2-2: audit row created
+   INSIDE the executor transaction** (`tx.auditLog.create()`).
 8. **(P2) transfer route not fully covered by bulk** → delete stands (CEO; pre-launch, no external API consumers,
    page/FE callers 0). PR body gets a feature-mapping table: transfer/promotion → bulk templates; DEMOTION → no
    template yet (future demotion path = grade-change template extension, separate track); EmployeeHistory write
    not replicated (assignments = SSOT).
-9. **(P2) weak HH:mm / timezone validation** → zod `^([01]\d|2[0-3]):[0-5]\d$` + IANA check via
-   `Intl.supportedValuesOf('timeZone')`; unit test for America/Chicago DST transition days (fromZonedTime
-   handles nonexistent/ambiguous times deterministically).
+9. **(P2) weak HH:mm / timezone validation** → zod `^([01]\d|2[0-3]):[0-5]\d$` + tz check ~~via
+   `Intl.supportedValuesOf`~~ **superseded by r2-5: `try { new Intl.DateTimeFormat(...,{timeZone}) } catch`**;
+   unit test for America/Chicago DST transition days.
 10. **(P2) clock-in real path untested** → e2e drives the REAL POST: set company `workStartTime` to (now − 5min)
     via settings PUT → clock-in → expect LATE; reset after. Night-shift e2e: seed yesterday 22:00–06:00 shift +
     un-clocked record → clock-out today succeeds (no "출근 기록이 없습니다").
@@ -128,10 +127,17 @@ anomaly list filters `LATE/EARLY_OUT/ABSENT` → pipeline never fires in live op
 - **Shift write-path normalization** (finding 6): `attendance/shifts` manual save + `shift-schedules/generate`
   store `workDate` via `parseDateOnly()` (UTC date-only); resolver reads the same convention. No backfill
   (table measured empty).
+- **Terminal clock route** (`terminals/clock/route.ts`, r2-1): same `resolveDayContext` (tz/workDate from
+  `terminal.companyId`) + judgment + one-record-per-day 400 + P2002 fallback; legacy auto-close-at-23:59-then-
+  recreate block removed. Uses **`eventTime` consistently (never server now)**; CLOCK_OUT enforces
+  `0 <= eventTime − clockIn <= 24h` (reversed/stale device events rejected — no negative work minutes) and all
+  lookups carry `companyId: terminal.companyId` (r3-3).
 - **Settings API + UI**: `settings/attendance/route.ts` zod adds the two fields with strict HH:mm range regex +
-  IANA tz validation via `Intl.supportedValuesOf('timeZone')` (finding 9); `AttendanceSettingsV2Client.tsx`
-  work-hours section gains two `type="time"` inputs **and the Save button gets wired** (it is currently a mockup
-  with no onClick — found during S276 recon; PUT sends only API-supported fields).
+  tz validation via `try { new Intl.DateTimeFormat('en-US', {timeZone}) } catch` (r2-5 — `supportedValuesOf`
+  rejects valid aliases like UTC). **Company scope (r2-3)**: GET `?companyId=` / PUT body `companyId` resolved via
+  `resolveCompanyId()` (companyFilter SSOT, #131 pattern) — SUPER editing company A must write A, not own session
+  company. `AttendanceSettingsV2Client.tsx` work-hours section gains two `type="time"` inputs **and the Save
+  button gets wired passing the selected companyId** (currently a no-onClick mockup — S276 recon).
 - **Out of scope**: ABSENT batch judgment (no-clock-in detection cron), retroactive re-judgment of existing rows,
   flex-work core-time UI, grace-minutes setting, half-day-leave interaction with EARLY_OUT (policy refinement).
 
@@ -143,8 +149,11 @@ page → effective SUPER-only deadlock. Executor-must-be-approver conflates exec
 
 - Remove the flow-derived role block. Keep: `withPermission perm(MODULE.EMPLOYEES, ACTION.APPROVE)` (HR_UP),
   `superAdminOnly` template gate, validation-token + server re-validation.
-- **Durable audit (finding 7)**: replace fire-and-forget `logAudit` with `await logAuditSync` carrying movement
-  type, effective dates, target employee IDs (from validatedRows), row count; failures surface, never swallowed.
+- **Atomic audit (r2-2, supersedes r1-7's logAuditSync)**: `executeMovements()` gains an audit-context param
+  (`{actorEmployeeId, ip, userAgent}`) and writes the audit row via **`tx.auditLog.create()` INSIDE its existing
+  transaction** — movement type, effective dates, target employee IDs (from validatedRows), row count, fileName.
+  Route drops its separate fire-and-forget call. Side benefit: executor's currently-unused `executedBy`/`fileName`
+  params (3 standing eslint warnings) become used.
 - Code comment + plan note: real submission→approval flow for personnel orders = separate track (payroll-style SoD).
 
 ## Item 3 — tr-01: delete dead transfer route
@@ -167,12 +176,20 @@ jobCategoryId, employmentType, status, managerId) but returns 200 → edit dialo
 
 ## Verification plan
 
-- `tsc` 0 · `lint` 0 · unit: `judgeStatus` (normal/late/early/both→LATE/night cross-midnight/null rules/ABSENT
-  sticky), resolver contract (attendance.companyId not user.companyId), settings zod (HH:mm bounds, bad tz),
-  America/Chicago DST transition days (finding 9).
-- e2e (REAL paths, finding 10): ① clock-in POST — set `workStartTime` = now−5min via settings PUT → clock-in →
-  LATE; reset. ② night shift — seed yesterday 22:00–06:00 shift + un-clocked record → clock-out today succeeds.
-  ③ duplicate clock-in same day → 400. ④ bulk-movements execute as HR fixture → 200 + audit row exists.
+- `tsc` 0 · `lint` 0 · unit (**boundary correctness lives HERE — pure fn with injected dates, fully
+  deterministic**): `judgeStatus` (normal/late/early/both→LATE/night cross-midnight/null rules/ABSENT sticky/
+  exact-boundary clockIn == start), resolver contract (attendance.companyId not user.companyId), settings zod
+  (HH:mm bounds, bad tz, UTC alias accepted), America/Chicago DST transition days, overnight attribution rule,
+  terminal `0 <= eventTime − clockIn <= 24h` rule.
+- e2e (REAL paths, r2-4 deterministic design — dedicated fixture employee; explicit DB cleanup of that employee's
+  today-record before/after; `try/finally` restores settings/attendance/shifts; **expectations derived from one
+  local-time reading at test start, with an explicit branch/skip guard for the 00:00–00:01 and 23:59 edge windows**
+  — boundary semantics are NOT asserted in e2e, only wiring):
+  ① clock-in POST with `workStartTime='00:01'` → LATE (guarded); `'23:59'` → NORMAL (guarded).
+  ② night shift — seed yesterday 22:00–06:00 shift + un-clocked record → clock-out today succeeds and attaches.
+  ③ duplicate clock-in same day → 400. ④ bulk-movements execute as HR fixture → 200 + audit row in same commit.
+  ⑤ settings SUPER saves company A → only A changes, B unchanged. ⑥ terminal reversed event (eventTime < clockIn)
+  → rejected.
 - Live dev dogfood: ① employee-a@ clock-in after 08:30 → admin anomaly row LATE + name/사번 visible.
   ② hr@ completes bulk-movements 3-step wizard end-to-end (execute 200, no 403) + audit_logs row with target IDs.
   ③ settings/attendance shows & saves 08:30/17:30 (Save button now actually persists). ④ employee detail edit:
