@@ -8,7 +8,7 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound } from '@/lib/errors'
+import { badRequest, forbidden, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
@@ -18,8 +18,9 @@ import type { SessionUser } from '@/types'
 // ─── Correction Schema ──────────────────────────────────
 
 const correctionSchema = z.object({
-  clockIn: z.string().datetime().optional(),
-  clockOut: z.string().datetime().optional(),
+  // null = 시각 삭제(미기록으로 되돌림), undefined = 변경 없음
+  clockIn: z.string().datetime().nullable().optional(),
+  clockOut: z.string().datetime().nullable().optional(),
   workType: z.enum(['NORMAL', 'OVERTIME', 'NIGHT', 'HOLIDAY']).optional(),
   status: z.enum(['NORMAL', 'LATE', 'EARLY_OUT', 'ABSENT']).optional(),
   note: z.string().min(1, '수정 사유를 입력해주세요').max(500),
@@ -60,6 +61,11 @@ export const PUT = withPermission(
   async (req: NextRequest, context: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const { id } = await context.params
 
+    // 0. 수동보정은 HR 전용 — MANAGER의 attendance_manage가 전사 쓰기로 새지 않게 차단 (att-05)
+    if (user.role !== ROLE.HR_ADMIN && user.role !== ROLE.SUPER_ADMIN) {
+      throw forbidden('근태 보정 권한이 없습니다.')
+    }
+
     // 1. Parse & validate body
     const body = await req.json()
     const parsed = correctionSchema.safeParse(body)
@@ -97,10 +103,10 @@ export const PUT = withPermission(
     }
 
     if (parsed.data.clockIn !== undefined) {
-      updateData.clockIn = new Date(parsed.data.clockIn)
+      updateData.clockIn = parsed.data.clockIn ? new Date(parsed.data.clockIn) : null
     }
     if (parsed.data.clockOut !== undefined) {
-      updateData.clockOut = new Date(parsed.data.clockOut)
+      updateData.clockOut = parsed.data.clockOut ? new Date(parsed.data.clockOut) : null
     }
     if (parsed.data.workType !== undefined) {
       updateData.workType = parsed.data.workType
@@ -110,12 +116,16 @@ export const PUT = withPermission(
     }
 
     // 5. Recalculate totalMinutes if clockIn or clockOut changed
-    const effectiveClockIn = parsed.data.clockIn
-      ? new Date(parsed.data.clockIn)
-      : attendance.clockIn
-    const effectiveClockOut = parsed.data.clockOut
-      ? new Date(parsed.data.clockOut)
-      : attendance.clockOut
+    const effectiveClockIn = parsed.data.clockIn === undefined
+      ? attendance.clockIn
+      : parsed.data.clockIn
+        ? new Date(parsed.data.clockIn)
+        : null
+    const effectiveClockOut = parsed.data.clockOut === undefined
+      ? attendance.clockOut
+      : parsed.data.clockOut
+        ? new Date(parsed.data.clockOut)
+        : null
 
     if (effectiveClockIn && effectiveClockOut) {
       const diffMs = effectiveClockOut.getTime() - effectiveClockIn.getTime()
@@ -124,6 +134,10 @@ export const PUT = withPermission(
       // 근무시간이 바뀌면 초과근무도 재계산 (clock-out 경로와 동일 식).
       // 누락 시 stale overtimeMinutes가 급여 초과수당으로 흘러감 (Bucket D #9).
       updateData.overtimeMinutes = computeOvertimeMinutes(totalMinutes)
+    } else {
+      // 시각이 삭제되면 파생 분(分)도 함께 초기화 — stale 값이 급여로 흘러가지 않게
+      updateData.totalMinutes = null
+      updateData.overtimeMinutes = null
     }
 
     // 6. Update the record

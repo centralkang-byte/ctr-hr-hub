@@ -47,6 +47,11 @@ export interface ValidateResponse {
   validationToken: string | null
 }
 
+// 서버 전용 검증 결과 — validatedRows(내부 UUID·canonical 필드)는 FE 응답에 포함하지 않는다
+export interface ValidateResult extends ValidateResponse {
+  validatedRows: ValidatedRow[]
+}
+
 export interface ExecuteResponse {
   success: boolean
   applied: number

@@ -70,11 +70,12 @@ export function ExecutionConfirm({
 
       if (!res.ok) {
         const body = await res.json().catch(() => null)
-        throw new Error(body?.error ?? t('execution.failed', { status: res.status }))
+        throw new Error(body?.error?.message ?? t('execution.failed', { status: res.status }))
       }
 
-      const data: ExecuteResponse = await res.json()
-      setExecResult(data)
+      // apiSuccess 봉투({ data }) 해제
+      const json = (await res.json()) as { data: ExecuteResponse }
+      setExecResult(json.data)
     } catch (err) {
       setError(err instanceof Error ? err.message : t('execution.error'))
     } finally {

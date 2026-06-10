@@ -67,8 +67,13 @@ export const POST = withPermission(
     // HR_ADMIN: 자기 법인만
     const userCompanyId = user.role === ROLE.SUPER_ADMIN ? '' : user.companyId
 
-    // 행 검증
-    const result = await validateRows(rows, template, userCompanyId, buffer)
+    // 행 검증 — validatedRows(서버 전용: 내부 UUID·canonical 필드)는 응답에서 제외
+    const { validatedRows: _validatedRows, ...result } = await validateRows(
+      rows,
+      template,
+      userCompanyId,
+      buffer,
+    )
 
     return apiSuccess(result)
   },

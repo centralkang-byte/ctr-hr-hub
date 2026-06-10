@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
 import { Badge } from '@/components/ui/badge'
 import { StatusBadge } from '@/components/ui/StatusBadge'
@@ -276,13 +277,19 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
     )
     try {
       await apiClient.post('/api/v1/attendance/clock-in', { method: 'WEB' })
-      await fetchToday() // 서버 데이터로 동기화
-    } catch {
+      // 서버 데이터로 동기화 — 월간 히트그리드/통계도 함께 (att-12)
+      await Promise.all([fetchToday(), fetchMonthly()])
+    } catch (err) {
       setToday(prevToday) // 롤백
+      toast({
+        title: '출근 실패',
+        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        variant: 'destructive',
+      })
     } finally {
       setClockLoading(false)
     }
-  }, [fetchToday, today])
+  }, [fetchToday, fetchMonthly, today])
 
   const handleClockOut = useCallback(async () => {
     setClockLoading(true)
@@ -293,14 +300,20 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
     setToday(prev => prev ? { ...prev, clockOut: now, clockOutMethod: 'WEB' } : prev)
     try {
       await apiClient.post('/api/v1/attendance/clock-out', { method: 'WEB' })
-      await Promise.all([fetchToday(), fetchWeekly()])
-    } catch {
+      // 월간 히트그리드/통계도 함께 갱신 (att-12)
+      await Promise.all([fetchToday(), fetchWeekly(), fetchMonthly()])
+    } catch (err) {
       setToday(prevToday) // 롤백
       setWeekly(prevWeekly)
+      toast({
+        title: '퇴근 실패',
+        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        variant: 'destructive',
+      })
     } finally {
       setClockLoading(false)
     }
-  }, [fetchToday, fetchWeekly, today, weekly])
+  }, [fetchToday, fetchWeekly, fetchMonthly, today, weekly])
 
   // ─── Derived state ───
   const clockState = getClockState(today)
