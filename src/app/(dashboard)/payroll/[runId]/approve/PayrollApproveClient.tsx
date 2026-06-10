@@ -1,24 +1,32 @@
 'use client'
 
-import { useTranslations, useLocale } from 'next-intl'
-import { toast } from '@/hooks/use-toast'
-
 // ═══════════════════════════════════════════════════════════
 // GP#3-C: 급여 결재 페이지 — /payroll/[runId]/approve
 // 결재선 진행 현황 + 승인/반려 액션
+// Wave 1: 프로토 .wd-stepper 정합 + 패턴 B 상태 칩 + D17 시맨틱 토큰
 // ═══════════════════════════════════════════════════════════
 
-import { useState, useEffect, useCallback } from 'react'
+import { Fragment, useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations, useLocale } from 'next-intl'
 import {
-    ArrowLeft, CheckCircle2, XCircle, Clock, CheckCheck,
-    Users, DollarSign, AlertTriangle, ChevronRight,
-    Loader2, X,
+    ArrowLeft, Check, CheckCheck, CheckCircle2, ChevronRight, Clock,
+    Loader2, X, XCircle,
 } from 'lucide-react'
-import { apiClient } from '@/lib/api'
-import type { SessionUser } from '@/types'
-import { CARD_STYLES, MODAL_STYLES } from '@/lib/styles'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Skeleton } from '@/components/ui/skeleton'
+import { StatusBadge } from '@/components/ui/StatusBadge'
+import {
+    Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import { WdStatusChips } from '@/components/shared/WdStatusChips'
+import { apiClient } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
+import { cn } from '@/lib/utils'
+import { CARD_STYLES, TYPOGRAPHY } from '@/lib/styles'
+import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -59,48 +67,82 @@ interface ApprovalStatus {
     chain: ApprovalChainStep[]
 }
 
+// ─── Constants ──────────────────────────────────────────
+
+// D17 분리: bg는 soft 틴트, 아이콘/텍스트는 AA ink (rules/design.md)
 const STEP_STATUS_CONFIG = {
-    APPROVED: { icon: <CheckCircle2 className="h-5 w-5 text-emerald-600" />, bg: 'bg-emerald-500/15', labelKey: 'approvePage.approved' as const },
-    REJECTED: { icon: <XCircle className="h-5 w-5 text-destructive" />, bg: 'bg-destructive/10', labelKey: 'approvePage.rejected' as const },
-    PENDING: { icon: <Clock className="h-5 w-5 text-amber-500" />, bg: 'bg-amber-500/15', labelKey: 'approvePage.pending' as const },
+    APPROVED: { labelKey: 'approvePage.approved', iconWrap: 'bg-tertiary/10', iconText: 'text-[#006b39]' },
+    REJECTED: { labelKey: 'approvePage.rejected', iconWrap: 'bg-destructive/10', iconText: 'text-destructive' },
+    PENDING: { labelKey: 'approvePage.pending', iconWrap: 'bg-warning-bright/15', iconText: 'text-ctr-warning' },
+} as const
+
+// ─── Helpers ────────────────────────────────────────────
+
+function formatDecidedAt(d: string | null | undefined, locale: string): string {
+    if (!d) return '—'
+    return new Date(d).toLocaleString(locale, { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
-// fmt, fmtDate은 컴포넌트 내부에서 t()와 locale을 사용하도록 이동
+// ─── Approval Stepper (proto .wd-stepper-track, styles.css:2646-2705) ───
 
-// ─── Approval Progress Bar ───────────────────────────────
-
-function ApprovalProgressBar({ chain, currentStep }: { chain: ApprovalChainStep[]; currentStep: number }) {
+function ApprovalStepper({ chain, currentStep }: { chain: ApprovalChainStep[]; currentStep: number }) {
     const t = useTranslations('payroll')
     const locale = useLocale()
-    const fmtDate = (d: string | null | undefined) => {
-        if (!d) return '—'
-        return new Date(d).toLocaleString(locale, { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-    }
     return (
         <div className={CARD_STYLES.padded}>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">{t('approvePage.progressTitle')}</p>
-            <div className="flex items-center gap-0">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-5">{t('approvePage.progressTitle')}</p>
+            <div className="flex items-start" role="list" aria-label={t('approvePage.progressTitle')}>
                 {chain.map((step, idx) => {
-                    const cfg = STEP_STATUS_CONFIG[step.status]
-                    const isActive = step.status === 'PENDING' && step.stepNumber === currentStep
+                    const isDone = step.status === 'APPROVED'
+                    const isRejectedStep = step.status === 'REJECTED'
+                    const isCurrent = step.status === 'PENDING' && step.stepNumber === currentStep
                     return (
-                        <div key={step.stepNumber} className="flex items-center flex-1 min-w-0">
-                            <div className="flex flex-col items-center flex-1 min-w-0">
-                                <div className={`flex h-10 w-10 items-center justify-center rounded-full ${cfg.bg} ${isActive ? 'ring-2 ring-offset-1 ring-amber-500' : ''}`}>
-                                    {cfg.icon}
+                        <Fragment key={step.stepNumber}>
+                            {idx > 0 && (
+                                // 커넥터 2px — 직전 단계 완료 시 success (proto .connector.done)
+                                <div
+                                    className={cn(
+                                        'mt-[22px] h-0.5 flex-1',
+                                        chain[idx - 1].status === 'APPROVED' ? 'bg-tertiary' : 'bg-border',
+                                    )}
+                                    aria-hidden="true"
+                                />
+                            )}
+                            <div role="listitem" className="flex flex-1 min-w-0 flex-col items-center gap-2 px-1">
+                                {/* 44px dot — done=solid success, current=solid navy+soft 헤일로, future=sunk+2px border */}
+                                <div
+                                    className={cn(
+                                        'grid h-11 w-11 shrink-0 place-items-center rounded-full font-mono text-[15px] font-bold tabular-nums',
+                                        isDone && 'bg-tertiary text-white',
+                                        isRejectedStep && 'bg-destructive text-white',
+                                        isCurrent && 'bg-primary text-white shadow-[0_0_0_6px_hsl(var(--accent))]',
+                                        !isDone && !isRejectedStep && !isCurrent && 'border-2 border-border bg-muted text-muted-foreground',
+                                    )}
+                                >
+                                    {isDone ? (
+                                        <Check className="h-5 w-5" aria-hidden="true" />
+                                    ) : isRejectedStep ? (
+                                        <X className="h-5 w-5" aria-hidden="true" />
+                                    ) : (
+                                        step.stepNumber
+                                    )}
                                 </div>
-                                <p className="mt-1.5 text-[11px] font-medium text-foreground text-center truncate max-w-20">
+                                <p
+                                    className={cn(
+                                        'w-full truncate text-center text-[12.5px] font-semibold',
+                                        isDone || isCurrent || isRejectedStep ? 'text-foreground' : 'text-muted-foreground',
+                                    )}
+                                >
                                     {step.approverName ?? step.roleRequired}
                                 </p>
-                                <p className="text-[10px] text-muted-foreground text-center">{t(cfg.labelKey)}</p>
+                                <span className="sr-only">{t(STEP_STATUS_CONFIG[step.status].labelKey)}</span>
                                 {step.decidedAt && (
-                                    <p className="text-[10px] text-muted-foreground">{fmtDate(step.decidedAt)}</p>
+                                    <p className="font-mono text-[10.5px] tabular-nums text-muted-foreground">
+                                        {formatDecidedAt(step.decidedAt, locale)}
+                                    </p>
                                 )}
                             </div>
-                            {idx < chain.length - 1 && (
-                                <ChevronRight className="h-4 w-4 text-border flex-shrink-0 mx-1" />
-                            )}
-                        </div>
+                        </Fragment>
                     )
                 })}
             </div>
@@ -125,10 +167,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
       if (n == null) return '—'
       return t('fmt.amountWon', { n: Number(n).toLocaleString() })
   }
-  const fmtDate = (d: string | null | undefined) => {
-      if (!d) return '—'
-      return new Date(d).toLocaleString(locale, { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-  }
+  const fmtDate = (d: string | null | undefined) => formatDecidedAt(d, locale)
 
     const router = useRouter()
     const [run, setRun] = useState<RunInfo | null>(null)
@@ -199,9 +238,24 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
     }
 
     if (loading || !run || !approval) {
+        // 페이지 골격 스켈레톤 (rules/components.md 3-상태)
         return (
-            <div className="p-4 flex items-center justify-center min-h-[400px]">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="p-4 max-w-3xl mx-auto space-y-4">
+                <Skeleton className="h-8 w-44" />
+                <div className="flex gap-2">
+                    <Skeleton className="h-6 w-24 rounded-full" />
+                    <Skeleton className="h-6 w-28 rounded-full" />
+                    <Skeleton className="h-6 w-24 rounded-full" />
+                </div>
+                <div className={cn(CARD_STYLES.padded, 'space-y-5')}>
+                    <Skeleton className="h-4 w-28" />
+                    <div className="flex items-center gap-4">
+                        <Skeleton className="h-11 w-11 rounded-full" />
+                        <Skeleton className="h-0.5 flex-1" />
+                        <Skeleton className="h-11 w-11 rounded-full" />
+                    </div>
+                </div>
+                <Skeleton className="h-36 w-full rounded-2xl" />
             </div>
         )
     }
@@ -216,57 +270,60 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
         <div className="p-4 max-w-3xl mx-auto space-y-4">
             {/* Header */}
             <div className="flex items-center gap-3">
-                <button onClick={() => router.push('/my/tasks?tab=approvals')} className="text-muted-foreground hover:text-foreground">
-                    <ArrowLeft className="h-5 w-5" />
+                <button
+                    type="button"
+                    onClick={() => router.push('/my/tasks?tab=approvals')}
+                    aria-label={tCommon('back')}
+                    className="text-muted-foreground hover:text-foreground"
+                >
+                    <ArrowLeft className="h-5 w-5" aria-hidden="true" />
                 </button>
                 <div>
-                    <h1 className="text-2xl font-bold text-foreground tracking-[-0.02em]">{t('kr_keab889ec_keab2b0ec')}</h1>
+                    <h1 className={TYPOGRAPHY.pageTitle}>{t('approvePage.title')}</h1>
                     <p className="text-sm text-muted-foreground mt-0.5">{run.name} · {run.yearMonth}</p>
                 </div>
                 <div className="ml-auto">
                     {isComplete && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-700 text-sm font-semibold">
-                            <CheckCheck className="h-4 w-4" /> {t('approve_complete')}
-                        </span>
+                        <StatusBadge status="APPROVED">
+                            <CheckCheck className="mr-1 h-3 w-3" aria-hidden="true" />
+                            {t('approvePage.statusApproved')}
+                        </StatusBadge>
                     )}
                     {isRejected && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-destructive/10 text-destructive text-sm font-semibold">
-                            <XCircle className="h-4 w-4" /> {t('reject_keb90a8')}
-                        </span>
+                        <StatusBadge status="REJECTED">
+                            <XCircle className="mr-1 h-3 w-3" aria-hidden="true" />
+                            {t('approvePage.statusRejected')}
+                        </StatusBadge>
                     )}
                     {isPending && !isComplete && !isRejected && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-500/15 text-amber-700 text-sm font-semibold">
-                            <Clock className="h-4 w-4" /> {t('kr_keab2b0ec_keb8c80ea')}
-                        </span>
+                        <StatusBadge status="PENDING_APPROVAL">
+                            <Clock className="mr-1 h-3 w-3" aria-hidden="true" />
+                            {t('approvePage.statusPending')}
+                        </StatusBadge>
                     )}
                 </div>
             </div>
 
-            {/* Approval Progress */}
-            <ApprovalProgressBar chain={chain} currentStep={currentStep} />
+            {/* Run Summary — 패턴 B 상태 칩 (Codex G1 #2: 3실수치 + 이상해결 상태) */}
+            <WdStatusChips
+                aria-label={t('approvePage.runSummaryAria')}
+                items={[
+                    { label: t('approvePage.headcount'), value: t('approvePage.countPeople', { count: run.headcount ?? 0 }) },
+                    { label: t('netPay'), value: fmt(Number(run.totalNet ?? 0)) },
+                    { label: t('adjustments'), value: t('approvePage.countCases', { count: run.adjustmentCount ?? 0 }), muted: (run.adjustmentCount ?? 0) === 0 },
+                    run.allAnomaliesResolved
+                        ? { label: t('approvePage.anomaliesResolved'), tone: 'success' }
+                        : { label: t('approvePage.anomaliesUnresolved'), tone: 'warn' },
+                ]}
+            />
 
-            {/* Run Summary */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[
-                    { label: t('kr_keb8c80ec_kec9db8ec'), value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-primary/90" /> },
-                    { label: t('netPay'), value: fmt(Number(run.totalNet ?? 0)), icon: <DollarSign className="h-4 w-4 text-emerald-600" /> },
-                    { label: t('kr_kec9db4ec_ked95adeb'), value: run.allAnomaliesResolved ? t('approvePage.unresolvedNo') : t('approvePage.unresolvedYes'), icon: <AlertTriangle className="h-4 w-4 text-amber-500" /> },
-                    { label: t('adjustments'), value: `${run.adjustmentCount ?? 0}건`, icon: <CheckCircle2 className="h-4 w-4 text-muted-foreground" /> },
-                ].map((kpi) => (
-                    <div key={kpi.label} className={CARD_STYLES.padded}>
-                        <div className="flex items-center justify-between mb-1">
-                            <p className="text-xs text-muted-foreground">{kpi.label}</p>
-                            {kpi.icon}
-                        </div>
-                        <p className="text-sm font-bold text-foreground leading-tight">{kpi.value}</p>
-                    </div>
-                ))}
-            </div>
+            {/* Approval Progress */}
+            <ApprovalStepper chain={chain} currentStep={currentStep} />
 
             {/* HR Notes */}
             {run.notes && (
-                <div className="bg-background rounded-xl border border-border p-4">
-                    <p className="text-xs font-semibold text-muted-foreground mb-1">{t('kr_hr_keba994eb')}</p>
+                <div className={CARD_STYLES.padded}>
+                    <p className="text-xs font-semibold text-muted-foreground mb-1">{t('approvePage.hrNotes')}</p>
                     <p className="text-sm text-muted-foreground">{run.notes}</p>
                 </div>
             )}
@@ -274,23 +331,23 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             {/* Step History */}
             {chain.filter((s) => s.status !== 'PENDING').length > 0 && (
                 <div className={CARD_STYLES.padded}>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">{t('kr_keab2b0ec_kec9db4eb')}</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">{t('approvePage.historyTitle')}</p>
                     <div className="space-y-3">
                         {chain.filter((s) => s.status !== 'PENDING').map((step) => (
                             <div key={step.stepNumber} className="flex items-start gap-3">
-                                <div className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full ${STEP_STATUS_CONFIG[step.status].bg}`}>
+                                <div className={cn('flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full', STEP_STATUS_CONFIG[step.status].iconWrap)}>
                                     {step.status === 'APPROVED' ? (
-                                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                                        <CheckCircle2 className={cn('h-3.5 w-3.5', STEP_STATUS_CONFIG[step.status].iconText)} aria-hidden="true" />
                                     ) : (
-                                        <XCircle className="h-3.5 w-3.5 text-destructive" />
+                                        <XCircle className={cn('h-3.5 w-3.5', STEP_STATUS_CONFIG[step.status].iconText)} aria-hidden="true" />
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
                                         <p className="text-sm font-medium text-foreground">{step.approverName ?? step.roleRequired}</p>
-                                        <span className={`text-xs px-1.5 py-0.5 rounded-full ${step.status === 'APPROVED' ? 'bg-emerald-500/15 text-emerald-700' : 'bg-destructive/10 text-destructive'}`}>
+                                        <StatusBadge status={step.status}>
                                             {t(STEP_STATUS_CONFIG[step.status].labelKey)}
-                                        </span>
+                                        </StatusBadge>
                                         <span className="text-xs text-muted-foreground">{fmtDate(step.decidedAt)}</span>
                                     </div>
                                     {step.comment && (
@@ -305,31 +362,30 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
 
             {/* Action Area (pending only) */}
             {isPending && !isComplete && !isRejected && (
-                <div className={`${CARD_STYLES.kpi} space-y-4`}>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('kr_keb82b4_keab2b0ec_kec9d98ea')}</p>
-                    <textarea
+                <div className={cn(CARD_STYLES.padded, 'space-y-4')}>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('approvePage.myDecisionTitle')}</p>
+                    <Textarea
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
                         placeholder={tCommon('placeholderApprovalComment')}
                         rows={3}
-                        className="w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
+                        className="resize-none"
                     />
                     <div className="flex items-center gap-3">
-                        <button
-                            onClick={handleApprove}
-                            disabled={submitting}
-                            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm disabled:opacity-50"
-                        >
+                        <Button onClick={handleApprove} disabled={submitting} className="flex-1">
                             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                             {t('approvePage.approveButton')}
-                        </button>
-                        <button
+                        </Button>
+                        {/* 프로토 .btn-danger = ghost형 (danger 텍스트 + soft hover, fill/red 보더 아님) */}
+                        <Button
+                            type="button"
+                            variant="outline"
                             onClick={() => setShowReject(true)}
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-red-600 text-destructive font-semibold text-sm hover:bg-destructive/5"
+                            className="text-destructive hover:bg-destructive/5 hover:text-destructive"
                         >
                             <XCircle className="h-4 w-4" />
                             {t('reject')}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             )}
@@ -337,51 +393,39 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
             {/* View details link */}
             <div className="text-center">
                 <button
+                    type="button"
                     onClick={() => router.push(`/payroll/${runId}/review`)}
-                    className="text-sm text-primary hover:underline"
+                    className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
                 >
-                    {t('kr_kec8381ec_keab280ed_keb82b4ec_')}
+                    {t('approvePage.viewDetails')}
+                    <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
             </div>
 
-            {/* Reject Modal */}
-            {showReject && (
-                <div className={MODAL_STYLES.container}>
-                    <div className="bg-card rounded-xl shadow-lg w-full max-w-md">
-                        <div className="p-5 border-b border-border flex items-center justify-between">
-                            <h3 className="font-bold text-lg text-foreground">{t('reject_kec82acec_kec9e85eb')}</h3>
-                            <button onClick={() => setShowReject(false)} className="text-muted-foreground hover:text-foreground">
-                                <X className="h-5 w-5" />
-                            </button>
-                        </div>
-                        <div className="p-5 space-y-3">
-                            <p className="text-sm text-muted-foreground">{t('reject_kec8b9c_keab889ec_keb8bb4eb_kec82acec_keca084eb_kec9e90ec_kec9e85eb_keca3bcec')}</p>
-                            <textarea
-                                value={rejectComment}
-                                onChange={(e) => setRejectComment(e.target.value)}
-                                placeholder={tCommon('placeholderRejectReasonRequiredAlt')}
-                                rows={4}
-                                className="w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:border-red-600 focus:ring-2 focus:ring-red-600/10 resize-none"
-                            />
-                        </div>
-                        <div className="p-5 border-t border-border flex justify-end gap-2">
-                            <button
-                                onClick={() => setShowReject(false)}
-                                className="px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:bg-muted"
-                            >
-                                {t('cancel')}
-                            </button>
-                            <button
-                                onClick={handleReject}
-                                disabled={!rejectComment.trim() || submitting}
-                                className="px-5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold disabled:opacity-50"
-                            >
-                                {submitting ? t('approvePage.processing') : t('approvePage.rejectConfirm')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* Reject Dialog — confirm류는 중앙 Dialog 유지 (DESIGN.md §5.4) */}
+            <Dialog open={showReject} onOpenChange={(open) => { if (!open && !submitting) setShowReject(false) }}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>{t('approvePage.rejectTitle')}</DialogTitle>
+                        <DialogDescription>{t('approvePage.rejectDesc')}</DialogDescription>
+                    </DialogHeader>
+                    <Textarea
+                        value={rejectComment}
+                        onChange={(e) => setRejectComment(e.target.value)}
+                        placeholder={tCommon('placeholderRejectReasonRequiredAlt')}
+                        rows={4}
+                        className="resize-none focus-visible:border-destructive focus-visible:ring-destructive/20"
+                    />
+                    <DialogFooter>
+                        <Button type="button" variant="outline" onClick={() => setShowReject(false)} disabled={submitting}>
+                            {t('cancel')}
+                        </Button>
+                        <Button type="button" variant="destructive" onClick={handleReject} disabled={!rejectComment.trim() || submitting}>
+                            {submitting ? t('approvePage.processing') : t('approvePage.rejectConfirm')}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
             <ConfirmDialog {...dialogProps} />
         </div>
     )

@@ -43,7 +43,7 @@
 16. `employees/ProfileChangeRequestDialog.tsx`
 17. `employees/dialogs/AddConcurrentDialog.tsx`
 18. `employees/dialogs/EndConcurrentDialog.tsx`
-19. `payroll/PayrollAdjustDialog.tsx`
+19. ~~`payroll/PayrollAdjustDialog.tsx`~~ (dead code — Wave 1 run-pages PR에서 삭제됨, 소비처 0 grep 확인)
 20. `payroll/PayrollCreateDialog.tsx`
 21. `performance/quarterly-review/BulkCreateDialog.tsx`
 

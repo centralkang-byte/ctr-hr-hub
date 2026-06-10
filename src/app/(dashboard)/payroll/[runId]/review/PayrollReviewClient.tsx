@@ -1,27 +1,37 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-import { EmptyState } from '@/components/ui/EmptyState'
-import { toast } from '@/hooks/use-toast'
-
 // ═══════════════════════════════════════════════════════════
-// GP#3-B: Payroll Anomaly Review UI — 3-탭 이상검토 페이지
-// src/app/(dashboard)/payroll/[runId]/review/PayrollReviewClient.tsx
+// CTR HR Hub — Payroll Anomaly Review Client (GP#3-B · Wave 1 프로토 정합)
+// 3-탭 이상검토 페이지: 이상항목 / 전체직원 비교 / 예외목록
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import {
   AlertTriangle, CheckCircle2, ShieldX, ShieldCheck,
-  X, Download, ChevronDown, ChevronUp, ArrowLeft,
-  TrendingUp, TrendingDown, Minus, Search,
-  Users, DollarSign, AlertCircle, Clock,
+  Download, ChevronDown, ChevronUp, ArrowLeft,
+  Search, Users, DollarSign, AlertCircle, Clock, Loader2,
+  type LucideIcon,
 } from 'lucide-react'
+import { Badge, type BadgeVariant } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
+} from '@/components/ui/dialog'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { DetailPanel } from '@/components/shared/DetailPanel'
+import { KpiCardsSkeleton, TableSkeleton } from '@/components/shared/PageSkeleton'
+import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
+import { WdStatStrip } from '@/components/shared/WdStatStrip'
+import { WdStatusChips } from '@/components/shared/WdStatusChips'
 import { apiClient } from '@/lib/api'
-import type { SessionUser } from '@/types'
-import { CARD_STYLES, TABLE_STYLES, MODAL_STYLES } from '@/lib/styles'
+import { TABLE_STYLES, TYPOGRAPHY, BUTTON_VARIANTS } from '@/lib/styles'
 import { cn } from '@/lib/utils'
+import { toast } from '@/hooks/use-toast'
 import { extractPrimaryAssignment } from '@/lib/employee/extract-primary-assignment'
+import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -107,37 +117,40 @@ interface WhitelistEntry {
   payrollRun: { yearMonth: string }
 }
 
-// ─── Utilities ──────────────────────────────────────────
+type TabKey = 'anomalies' | 'comparison' | 'whitelist'
 
-// fmt 함수는 컴포넌트 내부에서 t()를 사용하도록 이동 — fmtWithT 참조
+// ─── Constants ──────────────────────────────────────────
+
+// 심각도 = 아이콘 틴트 + Badge variant (좌측 색 보더 카드는 금지 패턴 — rules/design.md)
+const SEVERITY_CONFIG: Record<
+  Anomaly['severity'],
+  { icon: LucideIcon; iconClass: string; badge: BadgeVariant; labelKey: 'reviewPage.severityError' | 'reviewPage.severityWarning' | 'reviewPage.severityInfo' }
+> = {
+  CRITICAL: {
+    icon: AlertTriangle,
+    iconClass: 'text-destructive',
+    badge: 'error',
+    labelKey: 'reviewPage.severityError',
+  },
+  WARNING: {
+    icon: AlertTriangle,
+    iconClass: 'text-wd-orange',
+    badge: 'warning',
+    labelKey: 'reviewPage.severityWarning',
+  },
+  INFO: {
+    icon: AlertCircle,
+    iconClass: 'text-info',
+    badge: 'info',
+    labelKey: 'reviewPage.severityInfo',
+  },
+}
+
+// ─── Helpers ────────────────────────────────────────────
 
 const fmtPct = (n: number) => {
   const sign = n > 0 ? '+' : ''
   return `${sign}${n.toFixed(1)}%`
-}
-
-const SEVERITY_CONFIG = {
-  CRITICAL: {
-    border: 'border-l-4 border-red-500',
-    bg: 'bg-destructive/5',
-    badge: 'bg-destructive/10 text-destructive border-destructive/20',
-    icon: <AlertTriangle className="h-4 w-4 text-red-500" />,
-    labelKey: 'reviewPage.severityError' as const,
-  },
-  WARNING: {
-    border: 'border-l-4 border-amber-500',
-    bg: 'bg-amber-500/10',
-    badge: 'bg-amber-500/15 text-amber-700 border-amber-300',
-    icon: <AlertTriangle className="h-4 w-4 text-amber-500" />,
-    labelKey: 'reviewPage.severityWarning' as const,
-  },
-  INFO: {
-    border: 'border-l-4 border-blue-400',
-    bg: 'bg-primary/5',
-    badge: 'bg-primary/10 text-primary border-primary/20',
-    icon: <AlertCircle className="h-4 w-4 text-blue-400" />,
-    labelKey: 'reviewPage.severityInfo' as const,
-  },
 }
 
 // ─── Anomaly Card ────────────────────────────────────────
@@ -152,21 +165,40 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
   const t = useTranslations('payroll')
   const tCommon = useTranslations('common')
   const cfg = SEVERITY_CONFIG[anomaly.severity]
+  const SeverityIcon = cfg.icon
   const [loading, setLoading] = useState(false)
-  const [showWhitelistModal, setShowWhitelistModal] = useState(false)
+  const [showWhitelistDrawer, setShowWhitelistDrawer] = useState(false)
   const [whitelistNote, setWhitelistNote] = useState('')
   const router = useRouter()
 
-  const resolve = async (resolution: 'CONFIRMED_NORMAL' | 'CORRECTED' | 'WHITELISTED', note?: string) => {
+  // 드로어 열릴 때 폼 리셋 (WdDrawer 보존 레시피 ④)
+  useEffect(() => {
+    if (showWhitelistDrawer) setWhitelistNote('')
+  }, [showWhitelistDrawer])
+
+  // 성공 여부 반환 — 실패 시 드로어/입력을 유지하기 위함 (Codex G1 #4). API 시그니처 무변경.
+  const resolve = async (
+    resolution: 'CONFIRMED_NORMAL' | 'CORRECTED' | 'WHITELISTED',
+    note?: string,
+  ): Promise<boolean> => {
+    if (loading) return false
     setLoading(true)
     try {
       await apiClient.put(`/api/v1/payroll/${runId}/anomalies/${anomaly.id}/resolve`, { resolution, note })
       onResolved()
+      return true
     } catch (err) {
       toast({ title: t('reviewPage.anomalyFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
+      return false
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleWhitelistSubmit = async () => {
+    if (loading) return
+    const ok = await resolve('WHITELISTED', whitelistNote)
+    if (ok) setShowWhitelistDrawer(false) // 성공 시에만 닫기 — 실패 시 입력 보존
   }
 
   const primary = extractPrimaryAssignment(anomaly.employee.assignments ?? [])
@@ -179,19 +211,17 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
 
   return (
     <>
-      <div className={`bg-card rounded-xl border border-border ${cfg.border} p-5 space-y-3`}>
+      <div className="bg-card rounded-2xl border border-border p-5 space-y-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            {cfg.icon}
+            <SeverityIcon className={cn('h-4 w-4 mt-0.5 shrink-0', cfg.iconClass)} strokeWidth={1.5} aria-hidden="true" />
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-semibold text-foreground text-sm">
                   {anomaly.employee.name}
                 </span>
                 <span className="text-xs text-muted-foreground">{dept}{pos ? ` / ${pos}` : ''}</span>
-                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold border ${cfg.badge}`}>
-                  {t(cfg.labelKey)}
-                </span>
+                <Badge variant={cfg.badge}>{t(cfg.labelKey)}</Badge>
               </div>
               <p className="text-sm text-muted-foreground mt-1">{anomaly.description}</p>
             </div>
@@ -199,228 +229,80 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
         </div>
 
         {(anomaly.currentValue || anomaly.previousValue) && (
-          <div className="flex items-center gap-6 text-xs text-muted-foreground bg-background rounded-lg p-3">
+          <div className="flex items-center gap-6 text-xs text-muted-foreground bg-muted rounded-lg p-3">
             {anomaly.currentValue != null && (
-              <span>{t('reviewPage.thisMonth')} <strong className="text-foreground">{Number(anomaly.currentValue).toLocaleString()}</strong></span>
+              <span>{t('reviewPage.thisMonth')} <strong className="text-foreground tabular-nums">{Number(anomaly.currentValue).toLocaleString()}</strong></span>
             )}
             {anomaly.previousValue != null && (
-              <span>{t('reviewPage.prevMonth')} <strong className="text-foreground">{Number(anomaly.previousValue).toLocaleString()}</strong></span>
+              <span>{t('reviewPage.prevMonth')} <strong className="text-foreground tabular-nums">{Number(anomaly.previousValue).toLocaleString()}</strong></span>
             )}
             {anomaly.threshold && (
-              <span>{t('reviewPage.threshold')} <strong className="text-amber-500">{anomaly.threshold}</strong></span>
+              <span>{t('reviewPage.threshold')} <strong className="text-ctr-warning">{anomaly.threshold}</strong></span>
             )}
           </div>
         )}
 
         <div className="flex items-center gap-2 pt-1 flex-wrap">
-          <button
-            onClick={() => resolve('CONFIRMED_NORMAL')}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => void resolve('CONFIRMED_NORMAL')}
             disabled={loading}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-700 text-xs font-semibold hover:bg-emerald-200 transition-colors disabled:opacity-50"
+            className="bg-tertiary/10 text-[#006b39] hover:bg-tertiary/20 hover:text-[#006b39]"
           >
-            <CheckCircle2 className="h-3.5 w-3.5" />
+            <CheckCircle2 aria-hidden="true" />
             {t('reviewPage.confirmNormal')}
-          </button>
-          <button
-            onClick={() => router.push(`/payroll/adjustments`)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-muted-foreground text-xs font-medium hover:bg-muted transition-colors"
-          >
+          </Button>
+          <Button type="button" variant="outline" size="sm" onClick={() => router.push(`/payroll/adjustments`)}>
             {t('reviewPage.editLink')}
-          </button>
-          <button
-            onClick={() => setShowWhitelistModal(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-muted-foreground text-xs font-medium hover:bg-muted transition-colors"
-          >
-            <ShieldX className="h-3.5 w-3.5" />
+          </Button>
+          <Button type="button" variant="outline" size="sm" onClick={() => setShowWhitelistDrawer(true)}>
+            <ShieldX aria-hidden="true" />
             {t('reviewPage.addException')}
-          </button>
+          </Button>
         </div>
       </div>
 
-      {showWhitelistModal && (
-        <div className={MODAL_STYLES.container}>
-          <div className="bg-card rounded-xl shadow-lg w-full max-w-md">
-            <div className="p-5 border-b border-border flex items-center justify-between">
-              <h3 className="font-semibold text-foreground">{t('reviewPage.exceptionTitle')}</h3>
-              <button onClick={() => setShowWhitelistModal(false)} className="text-muted-foreground hover:text-foreground">
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="p-5 space-y-3">
-              <p className="text-sm text-muted-foreground">
-                {t('reviewPage.exceptionDesc', { name: anomaly.employee.name, rule: anomaly.ruleCode })}
-              </p>
-              <textarea
-                value={whitelistNote}
-                onChange={(e) => setWhitelistNote(e.target.value)}
-                placeholder={'placeholderExceptionReason'}
-                rows={3}
-                className="w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
-              />
-            </div>
-            <div className="p-5 border-t border-border flex justify-end gap-2">
-              <button
-                onClick={() => setShowWhitelistModal(false)}
-                className="px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:bg-muted"
-              >
-                {tCommon('cancel')}
-              </button>
-              <button
-                onClick={async () => {
-                  await resolve('WHITELISTED', whitelistNote)
-                  setShowWhitelistModal(false)
-                }}
-                disabled={loading}
-                className="px-4 py-2 rounded-lg bg-warm text-white text-sm font-semibold hover:brightness-95 disabled:opacity-50"
-              >
-                <ShieldCheck className="h-4 w-4 inline mr-1" />
-                {t('reviewPage.addException')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* 예외(화이트리스트) 등록 — 단일 단계 입력 폼 = WdDrawer (DESIGN.md §5.4) */}
+      <WdDrawer
+        open={showWhitelistDrawer}
+        onClose={() => setShowWhitelistDrawer(false)}
+        closeDisabled={loading}
+        eyebrow={t('dashboard.title')}
+        title={t('reviewPage.exceptionTitle')}
+        secondary={{ label: tCommon('cancel'), onClick: () => setShowWhitelistDrawer(false), disabled: loading }}
+        primary={{
+          label: t('reviewPage.addException'),
+          onClick: () => { void handleWhitelistSubmit() },
+          disabled: loading,
+          icon: loading
+            ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            : <ShieldCheck className="h-4 w-4" aria-hidden="true" />,
+        }}
+      >
+        <p className="text-[12.5px] text-muted-foreground">
+          {t('reviewPage.exceptionDesc', { name: anomaly.employee.name, rule: anomaly.ruleCode })}
+        </p>
+        {/* Enter 제출 보존 — foot 버튼이 form 밖이라 hidden submit 필요 */}
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={(e) => { e.preventDefault(); void handleWhitelistSubmit() }}
+        >
+          <WdField label={t('reviewPage.exceptionReasonLabel')} htmlFor="payroll-review-whitelist-note">
+            <textarea
+              id="payroll-review-whitelist-note"
+              value={whitelistNote}
+              onChange={(e) => setWhitelistNote(e.target.value)}
+              placeholder={tCommon('placeholderExceptionReason')}
+              rows={3}
+              className="w-full px-3 py-2.5 border border-border-strong rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
+            />
+          </WdField>
+          <button type="submit" className="hidden" aria-hidden="true" tabIndex={-1} />
+        </form>
+      </WdDrawer>
     </>
-  )
-}
-
-// ─── Employee Side Panel ─────────────────────────────────
-
-interface PayrollDetail {
-  baseSalary: number
-  overtimePay: number
-  bonus: number
-  allowances: number
-  grossPay: number
-  deductions: number
-  netPay: number
-  isManuallyAdjusted: boolean
-  adjustmentReason: string | null
-}
-
-interface SidePanelProps {
-  row: ComparisonRow
-  detail?: PayrollDetail | null
-  onClose: () => void
-}
-
-function EmployeeSidePanel({ row, detail, onClose }: SidePanelProps) {
-  const t = useTranslations('payroll')
-  return (
-    <div className="fixed inset-0 z-40 flex">
-      <div className="flex-1 bg-black/20" onClick={onClose} />
-      <div className="w-80 bg-card shadow-lg flex flex-col h-full overflow-y-auto">
-        <div className="sticky top-0 bg-card p-4 border-b border-border flex items-center justify-between">
-          <div>
-            <p className="font-bold text-foreground">{row.employeeName}</p>
-            <p className="text-xs text-muted-foreground">{row.department}</p>
-          </div>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        {detail ? (
-          <div className="p-4 space-y-4">
-            {/* 지급 */}
-            <div>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{t('reviewPage.earnings')}</p>
-              <div className="space-y-1.5">
-                {[
-                  [t('basePay'), detail.baseSalary],
-                  [t('overtimePay'), detail.overtimePay],
-                  [t('bonusPay'), detail.bonus],
-                  [t('allowances'), detail.allowances],
-                ].map(([label, value]) => (
-                  Number(value) > 0 && (
-                    <div key={label as string} className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">{label as string}</span>
-                      <span className="text-foreground">{Number(value).toLocaleString()}</span>
-                    </div>
-                  )
-                ))}
-                <div className="border-t border-border pt-1.5 flex justify-between text-sm font-semibold">
-                  <span className="text-emerald-600">{t('reviewPage.earningsTotal')}</span>
-                  <span className="text-emerald-600">{detail.grossPay.toLocaleString()}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 공제 */}
-            <div>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{t('reviewPage.deductionsTotal')}</p>
-              <div className="border-t border-border pt-1.5 flex justify-between text-sm font-semibold">
-                <span className="text-destructive">{t('reviewPage.deductionsTotal')}</span>
-                <span className="text-destructive">-{detail.deductions.toLocaleString()}</span>
-              </div>
-            </div>
-
-            {/* 실수령액 */}
-            <div className="bg-tertiary-container/10 rounded-xl p-4">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-foreground">{t('reviewPage.netPayLabel')}</span>
-                <span className="text-xl font-bold text-emerald-600">{t('reviewPage.netPayAmount', { amount: detail.netPay.toLocaleString() })}</span>
-              </div>
-            </div>
-
-            {detail.isManuallyAdjusted && (
-              <div className="bg-amber-500/15 rounded-lg p-3 text-xs text-amber-700">
-                ✏️ {t('reviewPage.adjustmentNote', { reason: detail.adjustmentReason ?? '' })}
-              </div>
-            )}
-
-            {/* 전월 비교 */}
-            {row.previousNet != null && (
-              <div className="border-t border-border pt-3">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{t('reviewPage.prevComparison')}</p>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">{t('reviewPage.prevNetPay')}</span>
-                    <span>{t('fmt.amountWon', { n: row.previousNet!.toLocaleString() })}</span>
-                  </div>
-                  <div className="flex justify-between font-semibold">
-                    <span className="text-muted-foreground">{t('reviewPage.changeRate')}</span>
-                    <span className={row.diffNet > 0 ? 'text-emerald-600' : row.diffNet < 0 ? 'text-destructive' : 'text-muted-foreground'}>
-                      {t('reviewPage.changeAmount', { amount: `${row.diffNet > 0 ? '+' : ''}${row.diffNet.toLocaleString()}`, pct: fmtPct(row.diffPercent) })}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="p-4">
-            <div className="space-y-3">
-              {[
-                [t('reviewPage.currentNetPay'), row.currentNet],
-                [t('basePay'), row.currentBaseSalary],
-                [t('reviewPage.prevNetPay'), row.previousNet ?? '—'],
-              ].map(([label, value]) => (
-                <div key={label as string} className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">{label as string}</span>
-                  <span className="font-medium text-foreground">
-                    {typeof value === 'number' ? t('fmt.amountWon', { n: value.toLocaleString() }) : String(value)}
-                  </span>
-                </div>
-              ))}
-              {row.diffNet !== 0 && (
-                <div className="flex justify-between text-sm font-semibold">
-                  <span className="text-muted-foreground">{t('reviewPage.changeRate')}</span>
-                  <span className={row.diffNet > 0 ? 'text-emerald-600' : 'text-destructive'}>
-                    {t('reviewPage.changeAmount', { amount: `${row.diffNet > 0 ? '+' : ''}${row.diffNet.toLocaleString()}`, pct: fmtPct(row.diffPercent) })}
-                  </span>
-                </div>
-              )}
-              {row.changeReason && (
-                <div className="text-xs text-muted-foreground bg-background rounded-lg p-2 mt-2">
-                  {t('reviewPage.reason', { reason: row.changeReason ?? '' })}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
   )
 }
 
@@ -445,7 +327,7 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
   const [comparisonRows, setComparisonRows] = useState<ComparisonRow[]>([])
   const [comparisonSummary, setComparisonSummary] = useState<Record<string, number | string> | null>(null)
   const [whitelistEntries, setWhitelistEntries] = useState<WhitelistEntry[]>([])
-  const [activeTab, setActiveTab] = useState<'anomalies' | 'comparison' | 'whitelist'>('anomalies')
+  const [activeTab, setActiveTab] = useState<TabKey>('anomalies')
   const [loading, setLoading] = useState(true)
   const [selectedRow, setSelectedRow] = useState<ComparisonRow | null>(null)
   const [anomalyOnly, setAnomalyOnly] = useState(false)
@@ -594,11 +476,13 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
   const openAnomalies = anomalies.filter((a) => a.status === 'OPEN')
   const infoCount = openAnomalies.filter((a) => a.severity === 'INFO').length
   const allResolved = anomalySummary?.allResolved ?? run?.allAnomaliesResolved ?? false
+  const openCount = anomalySummary?.open ?? 0
 
   if (loading || !run) {
     return (
-      <div className="p-4 flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+      <div className="p-4 space-y-4">
+        <KpiCardsSkeleton />
+        <TableSkeleton rows={6} />
       </div>
     )
   }
@@ -606,65 +490,74 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
   return (
     <div className="p-4 space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-3">
-          <button onClick={() => router.push('/payroll')} className="text-muted-foreground hover:text-foreground">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label={tCommon('back')}
+            onClick={() => router.push('/payroll')}
+          >
             <ArrowLeft className="h-5 w-5" />
-          </button>
+          </Button>
           <div>
-            <h1 className="text-2xl font-bold text-foreground tracking-[-0.02em]">{run.name}</h1>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-sm text-muted-foreground">{run.yearMonth}</span>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary/15 text-primary/90 border border-primary/20">
-                {t('anomalies_keca491')}
-              </span>
+            <h1 className={TYPOGRAPHY.pageTitle}>{run.name}</h1>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-[13px] text-muted-foreground">{run.yearMonth}</span>
+              <Badge variant="info">{t('reviewPage.statusReviewing')}</Badge>
             </div>
           </div>
         </div>
 
-        {/* Submit Button */}
-        <button
-          onClick={() => setShowSubmitModal(true)}
-          disabled={!allResolved}
-          title={!allResolved ? t('reviewPage.submitTooltip', { count: anomalySummary?.open ?? 0 }) : t('reviewPage.approvalRequest')}
-          className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors ${allResolved
-              ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-              : 'bg-border text-muted-foreground cursor-not-allowed'
-            }`}
-        >
-          <CheckCircle2 className="h-4 w-4" />
-          {t('reviewPage.approvalRequest')}
-          {!allResolved && anomalySummary && (
-            <span className="bg-white/20 rounded-full px-1.5 text-xs">{anomalySummary.open}</span>
-          )}
-        </button>
+        {/* Submit Button — disabled 시에도 사유 툴팁 노출(래퍼 span title) */}
+        <span title={!allResolved ? t('reviewPage.submitTooltip', { count: openCount }) : t('reviewPage.approvalRequest')}>
+          <Button type="button" onClick={() => setShowSubmitModal(true)} disabled={!allResolved}>
+            <CheckCircle2 aria-hidden="true" />
+            {t('reviewPage.approvalRequest')}
+            {!allResolved && anomalySummary && (
+              <span className="bg-white/20 rounded-full px-1.5 text-xs tabular-nums">{anomalySummary.open}</span>
+            )}
+          </Button>
+        </span>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: t('kr_kecb49d_keab889ec'), value: fmt(Number(run.totalGross ?? 0)), icon: <DollarSign className="h-4 w-4 text-emerald-600" /> },
-          { label: t('kr_kec9db8ec'), value: `${run.headcount ?? 0}명`, icon: <Users className="h-4 w-4 text-primary/90" /> },
-          { label: t('kr_kec9db4ec_ked95adeb'), value: `${anomalySummary?.open ?? 0}건`, icon: <AlertTriangle className="h-4 w-4 text-amber-500" />, highlight: (anomalySummary?.open ?? 0) > 0 },
-          { label: t('adjustments'), value: `${run.adjustmentCount ?? 0}건`, icon: <Clock className="h-4 w-4 text-muted-foreground" /> },
-        ].map((kpi) => (
-          <div key={kpi.label} className={`bg-card rounded-xl border p-5 ${kpi.highlight ? 'border-amber-500' : 'border-border'}`}>
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-xs text-muted-foreground">{kpi.label}</p>
-              {kpi.icon}
-            </div>
-            <p className={`text-2xl font-bold leading-tight ${kpi.highlight ? 'text-amber-500' : 'text-foreground'}`}>
-              {kpi.value}
-            </p>
-          </div>
-        ))}
-      </div>
+      {/* KPI Strip (DESIGN_RULES §3 패턴 A) */}
+      <WdStatStrip
+        items={[
+          {
+            label: t('reviewPage.totalGross'),
+            value: fmt(Number(run.totalGross ?? 0)),
+            icon: DollarSign,
+            tone: 'success',
+          },
+          {
+            label: t('reviewPage.headcount'),
+            value: t('reviewPage.summaryHeadcount', { count: run.headcount ?? 0 }),
+            icon: Users,
+            tone: 'info',
+          },
+          {
+            label: t('reviewPage.anomalyItems'),
+            value: t('reviewPage.summaryAdjustments', { count: openCount }),
+            icon: AlertTriangle,
+            tone: openCount > 0 ? 'warning' : 'default',
+            foot: openCount > 0 ? t('reviewPage.anomalyFoot') : undefined,
+            onClick: openCount > 0 ? () => setActiveTab('anomalies') : undefined,
+          },
+          {
+            label: t('adjustments'),
+            value: t('reviewPage.summaryAdjustments', { count: run.adjustmentCount ?? 0 }),
+            icon: Clock,
+          },
+        ]}
+      />
 
-      {/* Alert Banner */}
+      {/* Alert Banner (D17 bg/text 분리) */}
       {!allResolved && anomalySummary && anomalySummary.open > 0 && (
-        <div className="bg-amber-500/15 border border-amber-300 rounded-xl p-4 flex items-center gap-3">
-          <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0" />
-          <p className="text-sm text-amber-700 font-medium">
+        <div className="bg-warning-bright/15 rounded-xl p-4 flex items-center gap-3">
+          <AlertTriangle className="h-5 w-5 text-wd-orange flex-shrink-0" aria-hidden="true" />
+          <p className="text-sm text-ctr-warning font-medium">
             {t('reviewPage.alertBanner', { count: anomalySummary.open })}
             {anomalySummary.bySeverity.CRITICAL > 0 && (
               <span className="ml-2 text-destructive">{t('reviewPage.alertCritical', { count: anomalySummary.bySeverity.CRITICAL })}</span>
@@ -674,238 +567,282 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
       )}
 
       {allResolved && (
-        <div className="bg-emerald-500/15 border border-emerald-200 rounded-xl p-4 flex items-center gap-3">
-          <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />
-          <p className="text-sm text-emerald-700 font-medium">{t('kr_kebaaa8eb_kec9db4ec_ked95adeb_')}</p>
+        <div className="bg-tertiary/10 rounded-xl p-4 flex items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 text-tertiary flex-shrink-0" aria-hidden="true" />
+          <p className="text-sm text-[#006b39] font-medium">{t('reviewPage.allResolvedBanner')}</p>
         </div>
       )}
 
-      {/* Tabs */}
-      <div className="border-b border-border flex gap-6">
-        {([
-          ['anomalies', t('reviewPage.anomaliesTab', { count: anomalySummary?.open ?? 0 })],
-          ['comparison', t('reviewPage.comparisonTab', { count: run.headcount ?? 0 })],
-          ['whitelist', t('reviewPage.whitelistTab', { count: whitelistEntries.length })],
-        ] as ['anomalies' | 'comparison' | 'whitelist', string][]).map(([tab, label]) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`pb-2.5 text-sm font-${activeTab === tab ? 'bold border-b-2 border-foreground text-foreground' : 'medium text-muted-foreground hover:text-foreground'} transition-colors`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      {/* Tabs — Radix Segmented Control (lazy fetch는 activeTab useEffect가 담당) */}
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabKey)}>
+        <TabsList aria-label={t('reviewPage.tabsAria')}>
+          <TabsTrigger value="anomalies">{t('reviewPage.anomaliesTab', { count: openCount })}</TabsTrigger>
+          <TabsTrigger value="comparison">{t('reviewPage.comparisonTab', { count: run.headcount ?? 0 })}</TabsTrigger>
+          <TabsTrigger value="whitelist">{t('reviewPage.whitelistTab', { count: whitelistEntries.length })}</TabsTrigger>
+        </TabsList>
 
-      {/* ── Tab: 이상항목 ───────────────────────────────────────── */}
-      {activeTab === 'anomalies' && (
-        <div className="space-y-4">
-          {anomalySummary && anomalySummary.total > 0 && (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3 text-xs">
-                {anomalySummary.bySeverity.CRITICAL > 0 && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-destructive/10 text-destructive border border-destructive/20">
-                    <AlertTriangle className="h-3 w-3" /> {t('reviewPage.critical', { count: anomalySummary.bySeverity.CRITICAL })}
-                  </span>
-                )}
-                {anomalySummary.bySeverity.WARNING > 0 && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-700 border border-amber-300">
-                    <AlertTriangle className="h-3 w-3" /> {t('reviewPage.warning', { count: anomalySummary.bySeverity.WARNING })}
-                  </span>
-                )}
-                {anomalySummary.bySeverity.INFO > 0 && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
-                    <AlertCircle className="h-3 w-3" /> {t('reviewPage.info', { count: anomalySummary.bySeverity.INFO })}
-                  </span>
+        {/* ── Tab: 이상항목 ───────────────────────────────────── */}
+        <TabsContent value="anomalies" className="mt-4">
+          <div className="space-y-4">
+            {anomalySummary && anomalySummary.total > 0 && (
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {anomalySummary.bySeverity.CRITICAL > 0 && (
+                    <Badge variant="error" className="gap-1">
+                      <AlertTriangle className="h-3 w-3" aria-hidden="true" /> {t('reviewPage.critical', { count: anomalySummary.bySeverity.CRITICAL })}
+                    </Badge>
+                  )}
+                  {anomalySummary.bySeverity.WARNING > 0 && (
+                    <Badge variant="warning" className="gap-1">
+                      <AlertTriangle className="h-3 w-3" aria-hidden="true" /> {t('reviewPage.warning', { count: anomalySummary.bySeverity.WARNING })}
+                    </Badge>
+                  )}
+                  {anomalySummary.bySeverity.INFO > 0 && (
+                    <Badge variant="info" className="gap-1">
+                      <AlertCircle className="h-3 w-3" aria-hidden="true" /> {t('reviewPage.info', { count: anomalySummary.bySeverity.INFO })}
+                    </Badge>
+                  )}
+                </div>
+                {infoCount > 0 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => void handleBulkResolveInfo()}
+                    disabled={bulkResolving}
+                  >
+                    {t('reviewPage.bulkConfirmInfo', { count: infoCount })}
+                  </Button>
                 )}
               </div>
-              {infoCount > 0 && (
-                <button
-                  onClick={handleBulkResolveInfo}
-                  disabled={bulkResolving}
-                  className="text-xs px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:bg-muted disabled:opacity-50"
-                >
-                  {t('reviewPage.bulkConfirmInfo', { count: infoCount })}
-                </button>
-              )}
-            </div>
-          )}
+            )}
 
-          {openAnomalies.length === 0 ? (
-            <div className="bg-card rounded-xl border border-border p-12 text-center">
-              <CheckCircle2 className="h-12 w-12 text-emerald-600 mx-auto mb-3" />
-              <EmptyState />
-            </div>
-          ) : (
-            openAnomalies
-              .sort((a, b) => {
-                const order = { CRITICAL: 0, WARNING: 1, INFO: 2 }
-                return order[a.severity] - order[b.severity]
-              })
-              .map((anomaly) => (
-                <AnomalyCard
-                  key={anomaly.id}
-                  anomaly={anomaly}
-                  runId={runId}
-                  onResolved={async () => { await fetchAnomalies(); await fetchRun() }}
+            {openAnomalies.length === 0 ? (
+              <EmptyState icon={CheckCircle2} title={t('reviewPage.emptyAnomalies')} size="lg" standalone />
+            ) : (
+              openAnomalies
+                .sort((a, b) => {
+                  const order = { CRITICAL: 0, WARNING: 1, INFO: 2 }
+                  return order[a.severity] - order[b.severity]
+                })
+                .map((anomaly) => (
+                  <AnomalyCard
+                    key={anomaly.id}
+                    anomaly={anomaly}
+                    runId={runId}
+                    onResolved={async () => { await fetchAnomalies(); await fetchRun() }}
+                  />
+                ))
+            )}
+          </div>
+        </TabsContent>
+
+        {/* ── Tab: 전체직원 (비교표) ──────────────────────────── */}
+        <TabsContent value="comparison" className="mt-4">
+          <div className="space-y-4">
+            {/* Comparison summary chips (DESIGN_RULES §3 패턴 B) */}
+            {comparisonSummary && (
+              <WdStatusChips
+                aria-label={t('reviewPage.comparisonChipsAria')}
+                items={[
+                  {
+                    label: t('reviewPage.increased'),
+                    value: t('reviewPage.summaryHeadcount', { count: Number(comparisonSummary.employeesIncreased ?? 0) }),
+                    tone: 'success',
+                    muted: Number(comparisonSummary.employeesIncreased ?? 0) === 0,
+                  },
+                  {
+                    label: t('reviewPage.decreased'),
+                    value: t('reviewPage.summaryHeadcount', { count: Number(comparisonSummary.employeesDecreased ?? 0) }),
+                    tone: 'danger',
+                    muted: Number(comparisonSummary.employeesDecreased ?? 0) === 0,
+                  },
+                  {
+                    label: t('reviewPage.unchanged'),
+                    value: t('reviewPage.summaryHeadcount', { count: Number(comparisonSummary.employeesUnchanged ?? 0) }),
+                    tone: 'default',
+                  },
+                ]}
+              />
+            )}
+
+            {/* Filters */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="relative flex-1 min-w-48">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                <input
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  placeholder={tCommon('searchPlaceholder')}
+                  className="w-full pl-9 pr-3 py-2 border border-border-strong rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
-              ))
-          )}
-        </div>
-      )}
-
-      {/* ── Tab: 전체직원 (비교표) ──────────────────────────────── */}
-      {activeTab === 'comparison' && (
-        <div className="space-y-4">
-          {/* Comparison KPIs */}
-          {comparisonSummary && (
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { label: t('kr_keca69dea'), value: comparisonSummary.employeesIncreased, color: 'text-emerald-600', icon: <TrendingUp className="h-4 w-4 text-emerald-600" /> },
-                { label: t('kr_keab090ec'), value: comparisonSummary.employeesDecreased, color: 'text-destructive', icon: <TrendingDown className="h-4 w-4 text-destructive" /> },
-                { label: t('kr_keb8f99ec'), value: comparisonSummary.employeesUnchanged, color: 'text-muted-foreground', icon: <Minus className="h-4 w-4 text-muted-foreground" /> },
-              ].map((item) => (
-                <div key={item.label} className={`${CARD_STYLES.kpi} flex items-center gap-3`}>
-                  {item.icon}
-                  <div>
-                    <p className="text-xs text-muted-foreground">{item.label}</p>
-                    <p className={`text-xl font-bold ${item.color}`}>{String(item.value)}명</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Filters */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="relative flex-1 min-w-48">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                placeholder={tCommon('searchPlaceholder')}
-                className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10"
-              />
-            </div>
-            <select
-              value={deptFilter}
-              onChange={(e) => setDeptFilter(e.target.value)}
-              className="px-3 py-2 border border-border rounded-lg text-sm text-muted-foreground bg-card"
-            >
-              <option value="">{t('all_department')}</option>
-              {depts.map((d) => <option key={d} value={d}>{d}</option>)}
-            </select>
-            <label className="inline-flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
-              <input
-                type="checkbox"
-                checked={anomalyOnly}
-                onChange={(e) => setAnomalyOnly(e.target.checked)}
-                className="w-4 h-4 rounded border-border text-primary"
-              />
-              {t('kr_kec9db4ec')}
-            </label>
-
-            {/* Download dropdown */}
-            <div className="relative" ref={downloadRef}>
-              <button
-                onClick={() => setShowDownloadMenu(!showDownloadMenu)}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:bg-muted"
+              </div>
+              <select
+                value={deptFilter}
+                onChange={(e) => setDeptFilter(e.target.value)}
+                className="px-3 py-2 border border-border-strong rounded-lg text-sm text-muted-foreground bg-card"
               >
-                <Download className="h-4 w-4" />
-                {t('kr_kec9791ec')}
-                <ChevronDown className="h-3.5 w-3.5" />
-              </button>
-              {showDownloadMenu && (
-                <div className="absolute right-0 top-full mt-1 bg-card rounded-xl shadow-lg border border-border py-1 w-44 z-10">
-                  {[
-                    { label: t('kr_keca084ec_keb8c80eb_kebb984ea'), href: `/api/v1/payroll/${runId}/export/comparison` },
-                    { label: t('kr_keab889ec'), href: `/api/v1/payroll/${runId}/export/ledger` },
-                    { label: t('kr_kec9db8ea_keca084ed'), href: `/api/v1/payroll/${runId}/export/journal` },
-                  ].map((item) => (
-                    <button
-                      key={item.label}
-                      onClick={() => triggerDownload(item.href)}
-                      className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted"
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              )}
+                <option value="">{t('all_department')}</option>
+                {depts.map((d) => <option key={d} value={d}>{d}</option>)}
+              </select>
+              <label className="inline-flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={anomalyOnly}
+                  onChange={(e) => setAnomalyOnly(e.target.checked)}
+                  className="w-4 h-4 rounded border-border text-primary"
+                />
+                {t('reviewPage.anomalyOnly')}
+              </label>
+
+              {/* Download dropdown */}
+              <div className="relative" ref={downloadRef}>
+                <Button type="button" variant="outline" onClick={() => setShowDownloadMenu(!showDownloadMenu)}>
+                  <Download aria-hidden="true" />
+                  {t('reviewPage.excel')}
+                  <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
+                </Button>
+                {showDownloadMenu && (
+                  <div className="absolute right-0 top-full mt-1 bg-card rounded-xl shadow-md border border-border py-1 w-44 z-10">
+                    {[
+                      { label: t('reviewPage.exportComparison'), href: `/api/v1/payroll/${runId}/export/comparison` },
+                      { label: t('reviewPage.exportLedger'), href: `/api/v1/payroll/${runId}/export/ledger` },
+                      { label: t('reviewPage.exportJournal'), href: `/api/v1/payroll/${runId}/export/journal` },
+                    ].map((item) => (
+                      <button
+                        key={item.label}
+                        type="button"
+                        onClick={() => triggerDownload(item.href)}
+                        className={cn(BUTTON_VARIANTS.ghost, 'w-full text-left px-4 py-2 text-sm')}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Comparison Table */}
+            <div className={TABLE_STYLES.wrapper}>
+              <table className={TABLE_STYLES.table}>
+                <thead>
+                  <tr className={TABLE_STYLES.header}>
+                    {[
+                      { label: t('name'), key: 'name', align: 'left' },
+                      { label: t('department'), key: null, align: 'left' },
+                      { label: t('reviewPage.netPayLabel'), key: 'currentNet', align: 'right' },
+                      { label: t('reviewPage.colPrevMonth'), key: null, align: 'right' },
+                      { label: t('reviewPage.changeRate'), key: 'diffPercent', align: 'right' },
+                      { label: t('reviewPage.colReason'), key: null, align: 'left' },
+                    ].map(({ label, key, align }) => (
+                      <th
+                        key={label}
+                        onClick={key ? () => {
+                          if (sortBy === key) setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+                          else { setSortBy(key as typeof sortBy); setSortOrder('asc') }
+                        } : undefined}
+                        className={cn(
+                          align === 'right' ? TABLE_STYLES.headerCellRight : TABLE_STYLES.headerCell,
+                          key ? 'cursor-pointer hover:text-foreground' : '',
+                          align === 'right' && 'justify-end'
+                        )}
+                      >
+                        <span className={cn("inline-flex items-center gap-1", align === 'right' && "justify-end w-full")}>
+                          {label}
+                          {key && sortBy === key && (sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
+                        </span>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredRows.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-10 text-center text-sm text-muted-foreground">{t('reviewPage.noSearchResults')}</td>
+                    </tr>
+                  ) : (
+                    filteredRows.map((row) => (
+                      <tr
+                        key={row.employeeId}
+                        onClick={() => setSelectedRow(row)}
+                        className={cn(TABLE_STYLES.rowClickable, row.hasAnomaly ? 'bg-destructive/5 hover:bg-destructive/5' : '')}
+                      >
+                        <td className={TABLE_STYLES.cell}>
+                          <div className="flex items-center gap-2">
+                            {row.hasAnomaly && <AlertTriangle className="h-3.5 w-3.5 text-wd-orange flex-shrink-0" aria-hidden="true" />}
+                            <p className="font-medium">{row.employeeName}</p>
+                          </div>
+                          <p className="text-xs text-muted-foreground">{row.employeeNo}</p>
+                        </td>
+                        <td className={TABLE_STYLES.cellMuted}>{row.department}</td>
+                        <td className={cn(TABLE_STYLES.cellRight, "font-semibold tabular-nums")}>
+                          {row.currentNet.toLocaleString()}
+                        </td>
+                        <td className={cn(TABLE_STYLES.cellRight, "text-muted-foreground tabular-nums")}>
+                          {row.previousNet != null ? row.previousNet.toLocaleString() : t('reviewPage.newEmployee')}
+                        </td>
+                        <td className={TABLE_STYLES.cellRight}>
+                          {row.previousNet != null ? (
+                            <span className={cn("font-medium tabular-nums", row.diffNet > 0 ? 'text-[#006b39]' : row.diffNet < 0 ? 'text-destructive' : 'text-muted-foreground')}>
+                              {row.diffNet > 0 && '+'}
+                              {row.diffNet.toLocaleString()} ({fmtPct(row.diffPercent)})
+                            </span>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
+                        </td>
+                        <td className={cn(TABLE_STYLES.cellMuted, "text-xs max-w-32 truncate")}>
+                          {row.changeReason ?? '—'}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
+        </TabsContent>
 
-          {/* Comparison Table */}
+        {/* ── Tab: 예외목록 ────────────────────────────────────── */}
+        <TabsContent value="whitelist" className="mt-4">
           <div className={TABLE_STYLES.wrapper}>
             <table className={TABLE_STYLES.table}>
               <thead>
                 <tr className={TABLE_STYLES.header}>
-                  {[
-                    { label: t('name'), key: 'name', align: 'left' },
-                    { label: t('department'), key: null, align: 'left' },
-                    { label: t('kr_kec8ba4ec'), key: 'currentNet', align: 'right' },
-                    { label: t('kr_keca084ec'), key: null, align: 'right' },
-                    { label: t('kr_kebb380eb'), key: 'diffPercent', align: 'right' },
-                    { label: t('kr_kec82acec'), key: null, align: 'left' },
-                  ].map(({ label, key, align }) => (
-                    <th
-                      key={label}
-                      onClick={key ? () => {
-                        if (sortBy === key) setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
-                        else { setSortBy(key as typeof sortBy); setSortOrder('asc') }
-                      } : undefined}
-                      className={cn(
-                        align === 'right' ? TABLE_STYLES.headerCellRight : TABLE_STYLES.headerCell,
-                        key ? 'cursor-pointer hover:text-foreground' : '',
-                        align === 'right' && 'justify-end'
-                      )}
-                    >
-                      <span className={cn("inline-flex items-center gap-1", align === 'right' && "justify-end w-full")}>
-                        {label}
-                        {key && sortBy === key && (sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
-                      </span>
-                    </th>
-                  ))}
+                  <th className={TABLE_STYLES.headerCell}>{t('reviewPage.colEmployee')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('reviewPage.colRule')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('reviewPage.colWhitelistReason')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('reviewPage.colRegisteredMonth')}</th>
+                  <th className={TABLE_STYLES.headerCell} />
                 </tr>
               </thead>
               <tbody>
-                {filteredRows.length === 0 ? (
+                {whitelistEntries.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-10 text-center text-sm text-muted-foreground">{t('search_keab2b0ea_kec9786ec')}</td>
+                    <td colSpan={5}>
+                      <EmptyState icon={ShieldCheck} title={t('reviewPage.emptyWhitelist')} />
+                    </td>
                   </tr>
                 ) : (
-                  filteredRows.map((row) => (
-                    <tr
-                      key={row.employeeId}
-                      onClick={() => setSelectedRow(row)}
-                      className={cn(TABLE_STYLES.rowClickable, row.hasAnomaly ? 'bg-destructive/5 hover:bg-destructive/5' : '')}
-                    >
+                  whitelistEntries.map((entry) => (
+                    <tr key={entry.id} className={TABLE_STYLES.row}>
+                      <td className={cn(TABLE_STYLES.cell, "font-medium")}>{entry.employee.name}</td>
                       <td className={TABLE_STYLES.cell}>
-                        <div className="flex items-center gap-2">
-                          {row.hasAnomaly && <AlertTriangle className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />}
-                          <p className="font-medium">{row.employeeName}</p>
-                        </div>
-                        <p className="text-xs text-muted-foreground">{row.employeeNo}</p>
+                        <span className="px-2 py-1 bg-muted rounded text-xs font-mono tabular-nums text-muted-foreground">{entry.ruleCode}</span>
                       </td>
-                      <td className={TABLE_STYLES.cellMuted}>{row.department}</td>
-                      <td className={cn(TABLE_STYLES.cellRight, "font-semibold")}>
-                        {row.currentNet.toLocaleString()}
-                      </td>
-                      <td className={cn(TABLE_STYLES.cellRight, "text-muted-foreground")}>
-                        {row.previousNet != null ? row.previousNet.toLocaleString() : t('reviewPage.newEmployee')}
-                      </td>
-                      <td className={TABLE_STYLES.cellRight}>
-                        {row.previousNet != null ? (
-                          <span className={cn("font-medium", row.diffNet > 0 ? 'text-emerald-600' : row.diffNet < 0 ? 'text-destructive' : 'text-muted-foreground')}>
-                            {row.diffNet > 0 && '+'}
-                            {row.diffNet.toLocaleString()} ({fmtPct(row.diffPercent)})
-                          </span>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">—</span>
-                        )}
-                      </td>
-                      <td className={cn(TABLE_STYLES.cellMuted, "text-xs max-w-32 truncate")}>
-                        {row.changeReason ?? '—'}
+                      <td className={TABLE_STYLES.cellMuted}>{entry.whitelistReason ?? '—'}</td>
+                      <td className={cn(TABLE_STYLES.cellMuted, "text-xs")}>{entry.payrollRun?.yearMonth}</td>
+                      <td className={cn(TABLE_STYLES.cellRight, "w-20")}>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => void handleRemoveWhitelist(entry.id)}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/5"
+                        >
+                          {t('reviewPage.removeWhitelist')}
+                        </Button>
                       </td>
                     </tr>
                   ))
@@ -913,117 +850,92 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        </TabsContent>
+      </Tabs>
 
-      {/* ── Tab: 예외목록 ────────────────────────────────────────── */}
-      {activeTab === 'whitelist' && (
-        <div className={TABLE_STYLES.wrapper}>
-          <table className={TABLE_STYLES.table}>
-            <thead>
-              <tr className={TABLE_STYLES.header}>
-                <th className={TABLE_STYLES.headerCell}>{t('kr_keca781ec')}</th>
-                <th className={TABLE_STYLES.headerCell}>{t('kr_keab79cec')}</th>
-                <th className={TABLE_STYLES.headerCell}>{t('register_kec82acec')}</th>
-                <th className={TABLE_STYLES.headerCell}>{t('register_month')}</th>
-                <th className={TABLE_STYLES.headerCell} />
-              </tr>
-            </thead>
-            <tbody>
-              {whitelistEntries.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-16 text-center">
-                    <ShieldCheck className="h-10 w-10 text-border mx-auto mb-3" />
-                    <EmptyState />
-                  </td>
-                </tr>
-              ) : (
-                whitelistEntries.map((entry) => (
-                  <tr key={entry.id} className={TABLE_STYLES.row}>
-                    <td className={cn(TABLE_STYLES.cell, "font-medium")}>{entry.employee.name}</td>
-                    <td className={TABLE_STYLES.cell}>
-                      <span className="px-2 py-1 bg-muted rounded text-xs font-mono tabular-nums text-muted-foreground">{entry.ruleCode}</span>
-                    </td>
-                    <td className={TABLE_STYLES.cellMuted}>{entry.whitelistReason ?? '—'}</td>
-                    <td className={cn(TABLE_STYLES.cellMuted, "text-xs")}>{entry.payrollRun?.yearMonth}</td>
-                    <td className={cn(TABLE_STYLES.cellRight, "w-20")}>
-                      <button
-                        onClick={() => handleRemoveWhitelist(entry.id)}
-                        className="text-xs text-destructive hover:underline"
-                      >
-                        {t('kr_ked95b4ec')}
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* ── Employee Side Panel ────────────────────────────────── */}
-      {selectedRow && (
-        <EmployeeSidePanel
-          row={selectedRow}
-          detail={null}
-          onClose={() => setSelectedRow(null)}
-        />
-      )}
-
-      {/* ── Submit for Approval Modal ──────────────────────────── */}
-      {showSubmitModal && (
-        <div className={MODAL_STYLES.container}>
-          <div className={MODAL_STYLES.content.md}>
-            <div className="p-5 border-b border-border flex items-center justify-between">
-              <h3 className="font-bold text-lg text-foreground">{t('approve_kec9a94ec')}</h3>
-              <button onClick={() => setShowSubmitModal(false)} className="text-muted-foreground hover:text-foreground">
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="p-5 space-y-4">
-              <div className="bg-background rounded-xl p-4 space-y-2 text-sm">
-                {[
-                  [t('reviewPage.summaryMonth'), run.yearMonth],
-                  [t('kr_kec9db8ec'), t('reviewPage.summaryHeadcount', { count: run.headcount ?? 0 })],
-                  [t('netPay'), fmt(Number(run.totalNet ?? 0))],
-                  [t('adjustments'), t('reviewPage.summaryAdjustments', { count: run.adjustmentCount ?? 0 })],
-                ].map(([label, value]) => (
-                  <div key={label as string} className="flex justify-between">
-                    <span className="text-muted-foreground">{label as string}</span>
-                    <span className="font-semibold text-foreground">{value as string}</span>
-                  </div>
-                ))}
+      {/* ── Employee Detail Panel (조회 전용 — DESIGN.md §5.4 Inspector) ── */}
+      <DetailPanel
+        open={selectedRow != null}
+        onClose={() => setSelectedRow(null)}
+        title={selectedRow?.employeeName ?? ''}
+        subtitle={selectedRow?.department}
+      >
+        {selectedRow && (
+          <div className="p-4 space-y-3">
+            {([
+              [t('reviewPage.currentNetPay'), selectedRow.currentNet],
+              [t('basePay'), selectedRow.currentBaseSalary],
+              [t('reviewPage.prevNetPay'), selectedRow.previousNet ?? '—'],
+            ] as [string, number | string][]).map(([label, value]) => (
+              <div key={label} className="flex justify-between text-sm">
+                <span className="text-muted-foreground">{label}</span>
+                <span className="font-medium text-foreground tabular-nums">
+                  {typeof value === 'number' ? t('fmt.amountWon', { n: value.toLocaleString() }) : String(value)}
+                </span>
               </div>
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">{t('kr_keba994eb_kec84a0ed')}</label>
-                <textarea
-                  value={submitNote}
-                  onChange={(e) => setSubmitNote(e.target.value)}
-                  placeholder={tCommon('placeholderApprovalMemo')}
-                  rows={3}
-                  className="w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
-                />
+            ))}
+            {selectedRow.diffNet !== 0 && (
+              <div className="flex justify-between text-sm font-semibold">
+                <span className="text-muted-foreground">{t('reviewPage.changeRate')}</span>
+                <span className={cn('tabular-nums', selectedRow.diffNet > 0 ? 'text-[#006b39]' : 'text-destructive')}>
+                  {t('reviewPage.changeAmount', { amount: `${selectedRow.diffNet > 0 ? '+' : ''}${selectedRow.diffNet.toLocaleString()}`, pct: fmtPct(selectedRow.diffPercent) })}
+                </span>
               </div>
+            )}
+            {selectedRow.changeReason && (
+              <div className="text-xs text-muted-foreground bg-muted rounded-lg p-2 mt-2">
+                {t('reviewPage.reason', { reason: selectedRow.changeReason })}
+              </div>
+            )}
+          </div>
+        )}
+      </DetailPanel>
+
+      {/* ── Submit for Approval Dialog (confirm류 — 중앙 Dialog 유지) ── */}
+      <Dialog open={showSubmitModal} onOpenChange={(o) => { if (!o && !submitting) setShowSubmitModal(false) }}>
+        <DialogContent className="max-w-lg" aria-describedby={undefined}>
+          <DialogHeader>
+            <DialogTitle>{t('reviewPage.approvalConfirmTitle')}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-muted rounded-xl p-4 space-y-2 text-sm">
+              {([
+                [t('reviewPage.summaryMonth'), run.yearMonth],
+                [t('reviewPage.headcount'), t('reviewPage.summaryHeadcount', { count: run.headcount ?? 0 })],
+                [t('netPay'), fmt(Number(run.totalNet ?? 0))],
+                [t('adjustments'), t('reviewPage.summaryAdjustments', { count: run.adjustmentCount ?? 0 })],
+              ] as [string, string][]).map(([label, value]) => (
+                <div key={label} className="flex justify-between">
+                  <span className="text-muted-foreground">{label}</span>
+                  <span className="font-semibold text-foreground tabular-nums">{value}</span>
+                </div>
+              ))}
             </div>
-            <div className="p-5 border-t border-border flex justify-end gap-2">
-              <button
-                onClick={() => setShowSubmitModal(false)}
-                className="px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:bg-muted"
-              >
-                {t('cancel')}
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold disabled:opacity-50"
-              >
-                {submitting ? t('reviewPage.requesting') : t('reviewPage.approvalRequestSend')}
-              </button>
+            <div>
+              <label htmlFor="payroll-review-submit-note" className="text-sm font-medium text-foreground mb-1 block">
+                {t('reviewPage.memoOptional')}
+              </label>
+              <textarea
+                id="payroll-review-submit-note"
+                value={submitNote}
+                onChange={(e) => setSubmitNote(e.target.value)}
+                placeholder={tCommon('placeholderApprovalMemo')}
+                rows={3}
+                className="w-full px-3 py-2.5 border border-border-strong rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none"
+              />
             </div>
           </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setShowSubmitModal(false)} disabled={submitting}>
+              {tCommon('cancel')}
+            </Button>
+            <Button type="button" onClick={() => void handleSubmit()} disabled={submitting}>
+              {submitting && <Loader2 className="animate-spin" aria-hidden="true" />}
+              {submitting ? t('reviewPage.requesting') : t('reviewPage.approvalRequestSend')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
