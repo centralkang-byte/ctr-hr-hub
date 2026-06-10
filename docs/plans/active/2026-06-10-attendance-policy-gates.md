@@ -42,9 +42,9 @@ transfer (**no demotion**); executor does NOT write EmployeeHistory.
 9. **(P2) weak HH:mm / timezone validation** → zod `^([01]\d|2[0-3]):[0-5]\d$` + tz check ~~via
    `Intl.supportedValuesOf`~~ **superseded by r2-5: `try { new Intl.DateTimeFormat(...,{timeZone}) } catch`**;
    unit test for America/Chicago DST transition days.
-10. **(P2) clock-in real path untested** → e2e drives the REAL POST: set company `workStartTime` to (now − 5min)
-    via settings PUT → clock-in → expect LATE; reset after. Night-shift e2e: seed yesterday 22:00–06:00 shift +
-    un-clocked record → clock-out today succeeds (no "출근 기록이 없습니다").
+10. **(P2) clock-in real path untested** → e2e drives the REAL POST. ~~set `workStartTime` = now − 5min~~
+    **superseded by r2-4: fixed midnight-safe thresholds + edge-window guard** (see Verification plan).
+    Night-shift e2e: seed yesterday 22:00–06:00 shift + un-clocked record → clock-out today succeeds.
 11. **(P2) db push vs migrate status** → exact procedure documented: migration file = record-only, apply =
     `prisma db push` to shared DB ([[hrhub-migrations-no-zero-apply]], same as S269 #139 precedent); `prisma
     migrate status` will list it pending — known/accepted, stated in PR body.
