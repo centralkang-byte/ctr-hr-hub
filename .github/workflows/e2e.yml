@@ -27,7 +27,10 @@ concurrency:
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # 45 not 30: S243 (2026-06-02) measured a single healthy run hitting the
+    # 30-min cap mid-tests (run 14:45:06→15:15:23). The suite is borderline;
+    # give it headroom so the gate emits real pass/fail instead of cancelled.
+    timeout-minutes: 45
 
     services:
       postgres:
@@ -83,7 +86,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           # See file header comment for the Node 24 / npm 11 rationale.
-          node-version: 24
+          # Node 24.16.0 (runner rollout ~2026-05-28) hangs `npx playwright install`
+          # right after the chromium zip hits 100% — every run since then died at
+          # the 30-min job cap before tests started (empirical A/B: 24.15.0 ran,
+          # 24.16.0 hung; repo/lockfile unchanged). Unpin after upstream fix.
+          node-version: 24.15.0
           cache: npm
 
       - name: Install dependencies
