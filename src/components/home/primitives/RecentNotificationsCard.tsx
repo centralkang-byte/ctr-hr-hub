@@ -138,7 +138,8 @@ export function RecentNotificationsCard({
       ) : rows.length === 0 ? (
         <p className="px-5 pb-6 pt-2 text-center text-xs text-muted-foreground">{emptyLabel}</p>
       ) : (
-        <div role="list" className="flex flex-col">
+        // data-mask: 알림 제목·읽음상태·날짜는 DB 상태 의존 — visual test 마스킹 대상 (Codex G2 P2)
+        <div role="list" className="flex flex-col" data-mask="dynamic">
           {rows.map((row) => (
             <div
               key={row.id}
