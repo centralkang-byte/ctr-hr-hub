@@ -2,9 +2,53 @@
 
 > Created 2026-06-10 (S276). Source = S275 handover "Explicitly OUT of scope (CEO policy gates)" in
 > `2026-06-10-attendance-orgchange-dogfood-fixes.md`, resolved via CEO decision gate (4 answers below).
-> Status: **PLANNED — pending Codex Gate 1**.
+> Status: **REVISED after Codex Gate 1 round 1 NO-GO (P1×7, P2×4 — ALL incorporated below)** — pending round 2.
 > Branch: `feat/s276-attendance-policy-gates` stacked on `fix/s275-attendance-orgchange-dogfood` (PR #143 open;
 > this work touches the same files #143 rewrote — execute route, attendance/[id], admin client — so stacking avoids conflicts).
+
+## Codex Gate 1 round 1 findings → resolutions
+
+Measured facts (shared DB, 2026-06-10): `attendances` has **0 duplicate (employee_id, work_date) pairs** →
+unique constraint safe; `shift_schedules` has **0 rows** → no legacy date-drift data, **no backfill needed**;
+`logAuditSync` already exists (audit.ts:99); bulk templates = compensation/entity-transfer/promotion/termination/
+transfer (**no demotion**); executor does NOT write EmployeeHistory.
+
+1. **(P1) tz/date SSOT conflict** → clock-in/clock-out drop the hardcoded KST math. New resolver computes ONE
+   company-local day context (tz from `AttendanceSetting.timezone` ?? Asia/Seoul) used for: existing-record check,
+   `workDate`, shift lookup, judgment. `workDate` convention stays **UTC-midnight of the company-local calendar
+   date** (current code already produces exactly this for KST — verified: `todayStart + kstOffset` = UTC midnight
+   of the KST calendar date — so KR/CN rows are unchanged; US rows become correct).
+2. **(P1) night shift can't clock out next day** → clock-out stops using a today-only window; finds the most
+   recent un-clocked-out record with bounded lookback (`workDate >= localToday - 1 day`), judges against THAT
+   record's workDate + its shift (shift end +1d when end <= start).
+3. **(P1) same-day duplicate clock-in** → policy = one attendance record per work day. App guard: ANY existing
+   record for the workDate rejects re-clock-in (clear message), + `@@unique([employeeId, workDate])` migration
+   (dup count measured 0 → safe) with P2002 → badRequest fallback.
+4. **(P1) correction recompute contract** → FE keeps the record's initial status and includes `status` in the
+   payload ONLY when the user actually changed it. Server auto-recompute rules (explicit status always wins):
+   `clockIn=null` → never auto-LATE; `clockOut=null` → never auto-EARLY_OUT; previous **manual ABSENT is sticky**
+   (time edits alone never clear it); recompute only runs when times changed and status absent from payload.
+5. **(P1) SUPER_ADMIN correction uses wrong company settings** → resolver contract fixed to
+   **attendance.companyId + attendance.employeeId** (never `user.companyId`); unit test pins this.
+6. **(P1) ShiftSchedule exact-date lookup unreliable** → shift write paths (`attendance/shifts` manual save,
+   `shift-schedules/generate`) unify to `parseDateOnly()` UTC date-only storage; resolver looks up by the same
+   convention. Backfill not needed (table measured empty).
+7. **(P1) bulk execute audit not durable** → route replaces fire-and-forget `logAudit` with **`await
+   logAuditSync`** carrying movement type, effective dates, target employee IDs (from validatedRows), row count;
+   failure surfaces (no swallow).
+8. **(P2) transfer route not fully covered by bulk** → delete stands (CEO; pre-launch, no external API consumers,
+   page/FE callers 0). PR body gets a feature-mapping table: transfer/promotion → bulk templates; DEMOTION → no
+   template yet (future demotion path = grade-change template extension, separate track); EmployeeHistory write
+   not replicated (assignments = SSOT).
+9. **(P2) weak HH:mm / timezone validation** → zod `^([01]\d|2[0-3]):[0-5]\d$` + IANA check via
+   `Intl.supportedValuesOf('timeZone')`; unit test for America/Chicago DST transition days (fromZonedTime
+   handles nonexistent/ambiguous times deterministically).
+10. **(P2) clock-in real path untested** → e2e drives the REAL POST: set company `workStartTime` to (now − 5min)
+    via settings PUT → clock-in → expect LATE; reset after. Night-shift e2e: seed yesterday 22:00–06:00 shift +
+    un-clocked record → clock-out today succeeds (no "출근 기록이 없습니다").
+11. **(P2) db push vs migrate status** → exact procedure documented: migration file = record-only, apply =
+    `prisma db push` to shared DB ([[hrhub-migrations-no-zero-apply]], same as S269 #139 precedent); `prisma
+    migrate status` will list it pending — known/accepted, stated in PR body.
 
 ## CEO decisions (2026-06-10 question gate)
 
@@ -23,29 +67,43 @@ Current state: `clock-in/route.ts:79` hardcodes `status:'NORMAL'`; `workTypeEngi
 anomaly list filters `LATE/EARLY_OUT/ABSENT` → pipeline never fires in live ops.
 
 - **Schema (gated, migration required)**: `AttendanceSetting` (schema.prisma:5518) gains
-  `workStartTime String @default("08:30")`, `workEndTime String @default("17:30")` (HH:mm). Non-breaking
-  (defaults). Apply = migration file (record) + `db push` to shared DB per [[hrhub-migrations-no-zero-apply]].
-- **New pure helper** `src/lib/attendance/judgeStatus.ts` (pure, unit-testable — per CLAUDE.md pure-function goal):
-  `judgeAttendanceStatus({clockIn, clockOut, workDate, startHHmm, endHHmm, timezone}) → 'NORMAL'|'LATE'|'EARLY_OUT'`.
-  - Scheduled start = workDate@startHHmm in company tz (absolute Date); scheduled end = workDate@endHHmm,
-    **+1 day if endHHmm <= startHHmm** (night shift cross-midnight).
-  - LATE if clockIn > scheduled start (no grace minutes for now — CEO chose minimal start).
-  - EARLY_OUT if clockOut < scheduled end. Precedence when both: **LATE wins** (single enum column; note in code).
-  - Timezone from `AttendanceSetting.timezone` (default Asia/Seoul) — partially pre-solves att-07.
-- **Effective schedule resolution** (small helper in same file or sibling): `ShiftSchedule` row for
-  (employeeId, workDate KST) → use slot `startTime/endTime`; else company `AttendanceSetting.workStartTime/EndTime`;
-  else code defaults 08:30/17:30 (no AttendanceSetting row needed — avoids gated seed.ts).
-- **clock-in route**: judge LATE at creation (status = LATE | NORMAL). `workType` stays `'NORMAL'`
-  (Prisma WorkType = pay-category axis NORMAL/OVERTIME/NIGHT/HOLIDAY — NOT the engine's FIXED/FLEXIBLE/SHIFT/REMOTE;
-  untouched in this PR).
-- **clock-out route**: if record status is NORMAL and clockOut < scheduled end → EARLY_OUT (never downgrades LATE).
-- **Manual correction PUT** (`attendance/[id]/route.ts`): when clockIn/clockOut changed and `status` NOT explicitly
-  provided → recompute via the same helper (keeps HR corrections consistent). Explicit `status` wins.
-  FE check: correction dialog must send `status` only when the user actually changed it.
-- **Settings API + UI**: `settings/attendance/route.ts` zod + GET/PUT add the two fields;
-  `AttendanceSettingsV2Client.tsx` basic work-hours section gains two `type="time"` inputs.
+  `workStartTime String @default("08:30")`, `workEndTime String @default("17:30")` (HH:mm), and `Attendance` gains
+  `@@unique([employeeId, workDate])` (finding 3; measured dup count 0). Non-breaking defaults. Apply procedure
+  (finding 11): migration file = record-only + `prisma db push` to shared DB ([[hrhub-migrations-no-zero-apply]]).
+- **New module** `src/lib/attendance/judgeStatus.ts`:
+  - `resolveDayContext({companyId, at})` (server helper): loads `AttendanceSetting` →
+    `tz = setting?.timezone ?? 'Asia/Seoul'`, base HH:mm = setting ?? code defaults 08:30/17:30 (no seed change);
+    returns `{tz, localDateStr, workDate}` where **workDate = UTC-midnight of the company-local calendar date**
+    (`parseDateOnly(formatToTz(at, tz, 'yyyy-MM-dd'))`) — the single date SSOT for existing-record check, row
+    creation, shift lookup, judgment (finding 1). KR rows keep identical values (current KST math already produces
+    this instant — verified).
+  - `resolveEffectiveSchedule({companyId, employeeId, workDate})`: `ShiftSchedule` findUnique
+    (employeeId+workDate, company-verified) → slot `startTime/endTime`; else company base hours. Contract pinned to
+    the **attendance row's** companyId/employeeId, never the caller's (finding 5).
+  - `judgeAttendanceStatus(...)` (pure, unit-tested): scheduled start = workDate@startHHmm in tz via
+    `fromZonedTime`; scheduled end same, **+1 day when endHHmm <= startHHmm** (night cross-midnight).
+    LATE if clockIn > start; EARLY_OUT if clockOut < end; **LATE wins when both** (single enum; code comment).
+    Null rules (finding 4): `clockIn=null` → never auto-LATE; `clockOut=null` → never auto-EARLY_OUT;
+    manual ABSENT sticky.
+- **clock-in route**: replace KST block with `resolveDayContext`; reject when ANY record exists for the workDate
+  (one-record-per-day policy, finding 3; P2002 → badRequest fallback); judge LATE at create. `workType` stays
+  `'NORMAL'` (pay-category axis — NOT the engine's FIXED/FLEXIBLE/SHIFT/REMOTE; untouched).
+- **clock-out route**: find most recent un-clocked-out record with bounded lookback
+  (`workDate >= localToday − 1d`, finding 2 — night shift clocks out next morning); judge EARLY_OUT against that
+  record's workDate schedule; never downgrades LATE.
+- **Manual correction PUT** (`attendance/[id]/route.ts`): recompute when times changed AND `status` absent from
+  payload, using **attendance.companyId/employeeId** for the resolver (finding 5) + null/sticky rules (finding 4).
+  Explicit `status` wins. FE (`AttendanceAdminClient`): keep initial status, include `status` only when user
+  changed it (finding 4 — today it always sends, which would dead-code the recompute path).
+- **Shift write-path normalization** (finding 6): `attendance/shifts` manual save + `shift-schedules/generate`
+  store `workDate` via `parseDateOnly()` (UTC date-only); resolver reads the same convention. No backfill
+  (table measured empty).
+- **Settings API + UI**: `settings/attendance/route.ts` zod adds the two fields with strict HH:mm range regex +
+  IANA tz validation via `Intl.supportedValuesOf('timeZone')` (finding 9); `AttendanceSettingsV2Client.tsx`
+  work-hours section gains two `type="time"` inputs **and the Save button gets wired** (it is currently a mockup
+  with no onClick — found during S276 recon; PUT sends only API-supported fields).
 - **Out of scope**: ABSENT batch judgment (no-clock-in detection cron), retroactive re-judgment of existing rows,
-  flex-work core-time UI, per-company tz beyond the existing `timezone` column, grace-minutes setting.
+  flex-work core-time UI, grace-minutes setting, half-day-leave interaction with EARLY_OUT (policy refinement).
 
 ## Item 2 — O3: allow HR to execute bulk movements
 
@@ -54,13 +112,19 @@ anomaly list filters `LATE/EARLY_OUT/ABSENT` → pipeline never fires in live op
 page → effective SUPER-only deadlock. Executor-must-be-approver conflates execution with approval.
 
 - Remove the flow-derived role block. Keep: `withPermission perm(MODULE.EMPLOYEES, ACTION.APPROVE)` (HR_UP),
-  `superAdminOnly` template gate, validation-token + server re-validation, audit log.
+  `superAdminOnly` template gate, validation-token + server re-validation.
+- **Durable audit (finding 7)**: replace fire-and-forget `logAudit` with `await logAuditSync` carrying movement
+  type, effective dates, target employee IDs (from validatedRows), row count; failures surface, never swallowed.
 - Code comment + plan note: real submission→approval flow for personnel orders = separate track (payroll-style SoD).
 
 ## Item 3 — tr-01: delete dead transfer route
 
 - Delete `src/app/api/v1/employees/[id]/transfer/route.ts` (148 lines). Verified zero references:
   no FE callers, no middleware/route-rule refs, no e2e refs (grep clean; `templates/transfer` hits are bulk-movements).
+- **Coverage mapping (finding 8)**: transfer/promotion → bulk templates exist; DEMOTION → no bulk template
+  (future grade-change extension, separate track); `EmployeeHistory` write not replicated by executor
+  (append-only assignments = SSOT). Pre-launch internal product, API not public → no deprecation window needed
+  (CEO decision); mapping table goes in the PR body.
 
 ## Item 4 — ed-01: remove silent no-op fields from employee detail edit
 
@@ -73,13 +137,17 @@ jobCategoryId, employmentType, status, managerId) but returns 200 → edit dialo
 
 ## Verification plan
 
-- `tsc` 0 · `lint` 0 · unit: new tests for `judgeStatus` pure helper (normal/late/early/both/night-shift-cross-midnight/tz).
-- Live dev dogfood: ① employee-a@ clock-in after 08:30 → admin anomaly row LATE + name/사번 visible;
-  clock-out before 17:30 → EARLY_OUT (separate day or corrected row). ② hr@ completes bulk-movements 3-step
-  wizard end-to-end (execute 200, no 403). ③ settings/attendance shows & saves 08:30/17:30. ④ employee detail
-  edit: dept/status fields gone, guidance shown, remaining fields still save. ⑤ `/employees/[id]/transfer` → 404.
-- e2e: targeted spec for clock-in LATE judgment (fixed-time injection not available → judge via corrected times
-  on PUT recompute path), bulk-movements execute as HR fixture.
+- `tsc` 0 · `lint` 0 · unit: `judgeStatus` (normal/late/early/both→LATE/night cross-midnight/null rules/ABSENT
+  sticky), resolver contract (attendance.companyId not user.companyId), settings zod (HH:mm bounds, bad tz),
+  America/Chicago DST transition days (finding 9).
+- e2e (REAL paths, finding 10): ① clock-in POST — set `workStartTime` = now−5min via settings PUT → clock-in →
+  LATE; reset. ② night shift — seed yesterday 22:00–06:00 shift + un-clocked record → clock-out today succeeds.
+  ③ duplicate clock-in same day → 400. ④ bulk-movements execute as HR fixture → 200 + audit row exists.
+- Live dev dogfood: ① employee-a@ clock-in after 08:30 → admin anomaly row LATE + name/사번 visible.
+  ② hr@ completes bulk-movements 3-step wizard end-to-end (execute 200, no 403) + audit_logs row with target IDs.
+  ③ settings/attendance shows & saves 08:30/17:30 (Save button now actually persists). ④ employee detail edit:
+  dept/status fields gone, guidance shown, remaining fields still save. ⑤ `/employees/[id]/transfer` → 404.
+  ⑥ correction dialog: time-only edit → status auto-recomputed; explicit status change → respected.
 
 ## Out of scope (carried separately)
 
