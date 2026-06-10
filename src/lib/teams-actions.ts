@@ -6,6 +6,8 @@
 import { prisma } from '@/lib/prisma'
 import { serverT } from '@/lib/server-i18n'
 import type { Locale } from '@/i18n/config'
+import { resolveLeaveTypeDefId } from '@/lib/leave/resolveLeaveTypeDefId'
+import { leaveTypeUsesBalance } from '@/lib/leave/eventBasedLeave'
 
 interface CardActionInput {
   cardType: string
@@ -76,6 +78,24 @@ async function handleLeaveApproval(
 
   const newStatus = action === 'approve' ? 'APPROVED' : 'REJECTED'
 
+  // 잔여일 갱신 — SSOT = LeaveYearBalance (레거시 EmployeeLeaveBalance 미사용; 웹 approve route와 정합).
+  // 적립형만. 승인은 상태 변경 전에 차감 — 잔액 행이 없으면(0행) 승인 거부(웹 approve와 일관).
+  // 웹 신청이 pending을 올려두므로 승인=used+days·pending-days, 반려=pending-days(복구).
+  const leaveTypeDefId = request.leaveTypeDefId ?? (await resolveLeaveTypeDefId(request.policyId))
+  const usesBalance = !!leaveTypeDefId && (await leaveTypeUsesBalance(leaveTypeDefId))
+  const days = Number(request.days)
+  const year = new Date(request.startDate).getFullYear()
+
+  if (newStatus === 'APPROVED' && usesBalance) {
+    const affected = await prisma.$executeRaw`
+      UPDATE leave_year_balances
+      SET used = used + ${days}, pending = GREATEST(pending - ${days}, 0), updated_at = NOW()
+      WHERE employee_id = ${request.employeeId} AND leave_type_def_id = ${leaveTypeDefId} AND year = ${year}`
+    if (affected === 0) {
+      return { success: false, message: await t('teams.actions.leaveNotFound') }
+    }
+  }
+
   await prisma.leaveRequest.update({
     where: { id: requestId },
     data: {
@@ -85,17 +105,11 @@ async function handleLeaveApproval(
     },
   })
 
-  // 승인 시 잔여일 차감
-  if (newStatus === 'APPROVED') {
-    await prisma.employeeLeaveBalance.updateMany({
-      where: {
-        employeeId: request.employeeId,
-        policyId: request.policyId,
-      },
-      data: {
-        usedDays: { increment: Number(request.days) },
-      },
-    })
+  if (newStatus === 'REJECTED' && usesBalance) {
+    await prisma.$executeRaw`
+      UPDATE leave_year_balances
+      SET pending = GREATEST(pending - ${days}, 0), updated_at = NOW()
+      WHERE employee_id = ${request.employeeId} AND leave_type_def_id = ${leaveTypeDefId} AND year = ${year}`
   }
 
   return {

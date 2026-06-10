@@ -93,8 +93,8 @@ interface OffboardingDetail {
   startedAt: string
   completedAt: string | null
   daysRemaining: number
-  employee: { id: string; name: string; companyId: string }
-  checklist: { id: string; name: string }
+  employeeName: string
+  checklistName: string
   handoverTo: { id: string; name: string } | null
   tasks: OffboardingTaskRow[]
   progress: {
@@ -408,8 +408,8 @@ export function OffboardingDetailClient({
           {t('backToListShort')}
         </Button>
         <PageHeader
-          title={`${detail.employee.name} — ${t('offboardingProcess')}`}
-          description={`${RESIGN_TYPE_LABELS[detail.resignType] ?? detail.resignType} | ${t('lastWorkingDateLabel')}: ${new Date(detail.lastWorkingDate).toLocaleDateString('ko-KR')} | ${t('checklist')}: ${detail.checklist.name}`}
+          title={`${detail.employeeName} — ${t('offboardingProcess')}`}
+          description={`${RESIGN_TYPE_LABELS[detail.resignType] ?? detail.resignType} | ${t('lastWorkingDateLabel')}: ${new Date(detail.lastWorkingDate).toLocaleDateString('ko-KR')} | ${t('checklist')}: ${detail.checklistName}`}
         />
       </div>
 

@@ -70,18 +70,17 @@ export const GET = withAuth(async (_req: NextRequest, _context, user) => {
     }
   })
 
-  // Fetch leave balance for reference section
+  // Fetch leave balance for reference section — SSOT = LeaveYearBalance
+  // (레거시 EmployeeLeaveBalance는 런타임 미기록 → 잔여연차 "—"/stale 방지)
   const currentYear = now.getFullYear()
-  const leaveBalances = await prisma.employeeLeaveBalance.findMany({
+  const leaveBalances = await prisma.leaveYearBalance.findMany({
     where: {
       employeeId: user.employeeId,
       year: currentYear,
     },
-    include: { policy: { select: { name: true } } },
+    include: { leaveTypeDef: { select: { code: true, name: true } } },
   })
-  const annualLeave = leaveBalances.find(
-    (lb) => lb.policy.name.includes('연차') || lb.policy.name.includes('Annual'),
-  )
+  const annualLeave = leaveBalances.find((lb) => lb.leaveTypeDef.code === 'annual')
 
   return apiSuccess({
     offboardingId:   offboarding.id,
@@ -95,7 +94,7 @@ export const GET = withAuth(async (_req: NextRequest, _context, user) => {
     tasks,
     reference: {
       annualLeaveRemaining: annualLeave
-      ? Number(annualLeave.grantedDays) + Number(annualLeave.carryOverDays) - Number(annualLeave.usedDays) - Number(annualLeave.pendingDays)
+      ? Number(annualLeave.entitled) + Number(annualLeave.carriedOver) + Number(annualLeave.adjusted) - Number(annualLeave.used) - Number(annualLeave.pending)
       : null,
     },
   })

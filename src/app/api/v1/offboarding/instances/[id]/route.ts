@@ -120,6 +120,7 @@ export const GET = withPermission(
             daysRemaining,
             status: offboarding.status,
             handoverTo: offboarding.handoverTo,
+            handoverToId: offboarding.handoverToId,
             checklistName: offboarding.checklist?.name,
             progress: {
                 done: doneTasks,
@@ -152,6 +153,8 @@ export const GET = withPermission(
             isExitInterviewCompleted: offboarding.isExitInterviewCompleted,
             isSeveranceCalculated: offboarding.isSeveranceCalculated,
             isItAccountDeactivated: offboarding.isItAccountDeactivated,
+            isDoNotRehire: offboarding.isDoNotRehire,
+            doNotRehireReason: offboarding.doNotRehireReason,
             startedAt: offboarding.startedAt,
             completedAt: offboarding.completedAt,
         })
