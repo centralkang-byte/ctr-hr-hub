@@ -157,7 +157,7 @@ export default function NotificationsClient({user }: {
                     <div className="flex items-center gap-3">
                         {isHrAdmin && pending > 0 && (
                             <button onClick={handleBulkNotify} disabled={bulkNotifying}
-                                className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40">
+                                className="inline-flex items-center gap-2 rounded-lg bg-warm px-4 py-2 text-sm font-medium text-white hover:brightness-95 disabled:opacity-40">
                                 <Send className="h-4 w-4" /> {bulkNotifying ? t('notification.notifying') : t('notification.bulkNotify')}
                             </button>
                         )}
@@ -227,7 +227,7 @@ export default function NotificationsClient({user }: {
                                             <td className={cn(TABLE_STYLES.cell, "text-center")}>
                                                 {!item.notifiedAt && (
                                                     <button onClick={() => handleNotify(item.reviewId)} disabled={notifying === item.reviewId}
-                                                        className="rounded-lg bg-primary px-3 py-1 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-40">
+                                                        className="rounded-lg bg-warm px-3 py-1 text-xs font-medium text-white hover:brightness-95 disabled:opacity-40">
                                                         {notifying === item.reviewId ? '...' : t('notification.notify')}
                                                     </button>
                                                 )}

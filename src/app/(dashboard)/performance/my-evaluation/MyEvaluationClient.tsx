@@ -402,7 +402,7 @@ export default function MyEvaluationClient({user: _user }: {
                                 </div>
                             </div>
                             <button onClick={handleAiDraft} disabled={aiLoading}
-                                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40 transition-colors">
+                                className="inline-flex items-center gap-1.5 rounded-xl bg-warm px-4 py-2 text-sm font-medium text-white hover:brightness-95 disabled:opacity-40 transition-colors">
                                 {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                                 {aiLoading ? t('aiGenerating') : t('aiGenerate')}
                             </button>
@@ -516,7 +516,7 @@ export default function MyEvaluationClient({user: _user }: {
                                     <Save className="h-4 w-4" /> {t('kr_kec9e84ec')}
                                 </button>
                                 <button onClick={() => handleSave('SUBMITTED')} disabled={submitting || hasOverlengthComment}
-                                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40 transition-colors">
+                                    className="inline-flex items-center gap-2 rounded-lg bg-warm px-4 py-2 text-sm font-medium text-white hover:brightness-95 disabled:opacity-40 transition-colors">
                                     <Send className="h-4 w-4" /> {submitting ? tCommon('loading') : tCommon('submit')}
                                 </button>
                             </div>

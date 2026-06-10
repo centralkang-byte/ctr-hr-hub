@@ -465,7 +465,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
                     <button
                       onClick={() => handleAction('approve')}
                       disabled={approving}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-medium disabled:opacity-60 transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-warm hover:brightness-95 text-white rounded-lg text-sm font-medium disabled:opacity-60 transition-colors"
                     >
                       {approving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                       {tc('approve')}
@@ -496,7 +496,7 @@ export function AttendanceApprovalClient({ user }: { user: SessionUser }) {
           <button
             onClick={() => handleBulkAction('APPROVE')}
             disabled={bulkProcessing}
-            className="flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm font-semibold disabled:opacity-60 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 bg-warm hover:brightness-95 text-white rounded-lg text-sm font-semibold disabled:opacity-60 transition-colors"
           >
             {bulkProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
             {t('bulkApprove')}

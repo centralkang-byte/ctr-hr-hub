@@ -364,7 +364,7 @@ export default function PayrollImportClient({ user, companies }: {
             </h3>
             <button
               onClick={startNewMapping}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-lg text-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-warm text-white rounded-lg text-sm"
             >
               <Plus className="w-4 h-4" /> {t('import.addNewMapping')}
             </button>
@@ -488,7 +488,7 @@ export default function PayrollImportClient({ user, companies }: {
                   <button
                     onClick={saveMapping}
                     disabled={savingMapping || !editingMapping.name}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-lg text-sm disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-warm text-white rounded-lg text-sm disabled:opacity-50"
                   >
                     <Save className="w-4 h-4" />
                     {savingMapping ? tCommon('loading') : tCommon('save')}

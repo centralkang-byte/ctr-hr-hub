@@ -251,7 +251,7 @@ export default function MandatoryTrainingForm({
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-white bg-warm hover:brightness-95 rounded-lg disabled:opacity-50 transition-colors"
             >
               {submitting ? '등록 중...' : '교육 추가'}
             </button>

@@ -77,7 +77,7 @@ function GoalModal({ initial, onSave, onClose, saving, t }: {
                 <div className="mt-6 flex justify-end gap-3">
                     <button onClick={onClose} className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground">{t('myGoals.cancel')}</button>
                     <button onClick={() => onSave(form)} disabled={!form.title || !form.description || !form.targetDate || saving}
-                        className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
+                        className="rounded-lg bg-warm px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
                         {saving ? t('myGoals.loading') : t('myGoals.save')}
                     </button>
                 </div>
@@ -227,7 +227,7 @@ export default function MyGoalsClient({user: _user }: {
                     <div className="flex gap-2">
                         {!isViewOnly && (
                             <button onClick={() => setModal({ mode: 'add' })}
-                                className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors">
+                                className="inline-flex items-center gap-2 rounded-lg bg-warm px-4 py-2 text-sm font-medium text-white hover:brightness-95 transition-colors">
                                 <Plus className="h-4 w-4" /> {t('goals_add')}
                             </button>
                         )}
@@ -340,7 +340,7 @@ export default function MyGoalsClient({user: _user }: {
                 {goals.length > 0 && !isViewOnly && (
                     <div className="mt-6 flex items-center justify-end rounded-xl border border-border bg-card p-4">
                         <button onClick={handleSubmitAll} disabled={!canSubmit || saving}
-                            className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white disabled:opacity-40 hover:bg-primary/90 transition-colors">
+                            className="rounded-lg bg-warm px-6 py-2 text-sm font-medium text-white disabled:opacity-40 hover:brightness-95 transition-colors">
                             {saving ? t('myGoals.submitting') : t('myGoals.submitAll')}
                         </button>
                     </div>

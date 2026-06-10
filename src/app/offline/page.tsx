@@ -23,7 +23,7 @@ export default function OfflinePage() {
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="px-6 py-2.5 bg-primary text-white rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors"
+          className="px-6 py-2.5 bg-warm text-white rounded-lg font-medium text-sm hover:brightness-95 transition-colors"
         >
           다시 시도
         </button>

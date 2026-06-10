@@ -437,7 +437,7 @@ export default function OffCycleNewClient({ user: _user }: Props) {
         </Button>
         <Button
           onClick={() => handleSave(true)}
-          className="rounded-full bg-gradient-to-r from-primary to-primary-dim shadow-lg shadow-primary/20"
+          className="rounded-full bg-warm shadow-lg shadow-primary/20"
           size="lg"
           disabled={submitting}
         >

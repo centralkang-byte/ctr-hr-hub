@@ -271,7 +271,7 @@ function AnomalyCard({ anomaly, runId, onResolved }: AnomalyCardProps) {
                   setShowWhitelistModal(false)
                 }}
                 disabled={loading}
-                className="px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 disabled:opacity-50"
+                className="px-4 py-2 rounded-lg bg-warm text-white text-sm font-semibold hover:brightness-95 disabled:opacity-50"
               >
                 <ShieldCheck className="h-4 w-4 inline mr-1" />
                 {t('reviewPage.addException')}

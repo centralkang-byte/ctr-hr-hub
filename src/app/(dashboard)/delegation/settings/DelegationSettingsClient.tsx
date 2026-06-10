@@ -231,7 +231,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
               </div>
               <Button
                 size="sm"
-                className="gap-1.5 bg-primary text-white hover:bg-primary/80"
+                className="gap-1.5 bg-warm text-white hover:brightness-95"
                 onClick={() => { resetForm(); setView('create') }}
               >
                 <Plus className="h-3.5 w-3.5" />
@@ -562,7 +562,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                 {t('button.cancel')}
               </Button>
               <Button
-                className="gap-1.5 bg-primary text-white hover:bg-primary/80"
+                className="gap-1.5 bg-warm text-white hover:brightness-95"
                 onClick={handleCreate}
                 disabled={processing || !selectedDelegatee || !startDate || !endDate}
               >

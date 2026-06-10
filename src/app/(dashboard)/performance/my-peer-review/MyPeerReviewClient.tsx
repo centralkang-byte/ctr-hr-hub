@@ -249,7 +249,7 @@ export default function MyPeerReviewClient({user: _user }: {
                                         )}
                                         {!isCompleted && (
                                             <button onClick={() => openReview(item)}
-                                                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors">
+                                                className="rounded-lg bg-warm px-4 py-2 text-sm font-medium text-white hover:brightness-95 transition-colors">
                                                 {item.status === 'DRAFT' ? t('myPeerReview.continueWrite') : t('myPeerReview.startEval')}
                                             </button>
                                         )}
@@ -313,7 +313,7 @@ export default function MyPeerReviewClient({user: _user }: {
                                     <Save className="h-4 w-4" /> {t('kr_kec9e84ec')}
                                 </button>
                                 <button onClick={() => handleSubmit('SUBMITTED')} disabled={saving}
-                                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40">
+                                    className="inline-flex items-center gap-2 rounded-lg bg-warm px-4 py-2 text-sm font-medium text-white hover:brightness-95 disabled:opacity-40">
                                     <Send className="h-4 w-4" /> {saving ? tCommon('loading') : tCommon('submit')}
                                 </button>
                             </div>
