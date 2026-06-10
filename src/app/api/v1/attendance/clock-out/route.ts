@@ -58,7 +58,8 @@ export const POST = withPermission(
       const existing = await prisma.attendance.findFirst({
         where: {
           employeeId: user.employeeId,
-          workDate: { gte: lookbackStart },
+          // 상한 필수 — 보정·단말기 이벤트로 생긴 미래 날짜 기록에 붙는 것 방지
+          workDate: { gte: lookbackStart, lte: ctx.workDate },
           clockOut: null,
         },
         orderBy: [{ workDate: 'desc' }, { clockIn: 'desc' }],
@@ -66,6 +67,13 @@ export const POST = withPermission(
 
       if (!existing) {
         throw badRequest('출근 기록이 없습니다.')
+      }
+
+      // 출근 시각이 미래면 음수 근무시간이 기록되므로 거부 (단말기 경로와 동일 계약)
+      if (existing.clockIn && now.getTime() < existing.clockIn.getTime()) {
+        throw badRequest(
+          '출근 시각이 현재 시각 이후인 기록입니다. HR에 보정을 요청해 주세요.',
+        )
       }
 
       // attach 가드 — 전일 출근이 24h를 넘겼으면 자동 연결하지 않음 (HR 보정 대상).

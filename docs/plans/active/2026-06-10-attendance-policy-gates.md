@@ -15,6 +15,13 @@
 > 테스트=CTR-CN/HOLD).
 > Branch: `feat/s276-attendance-policy-gates` stacked on `fix/s275-attendance-orgchange-dogfood` (PR #143 open;
 > this work touches the same files #143 rewrote — execute route, attendance/[id], admin client — so stacking avoids conflicts).
+> **Gate 2 (post-impl, post-rebase onto main)**: Codex r1 P1×2+P2×1 → fixed: ① readers(today/team/admin)
+> KST 하드코딩 → 쓰기 경로와 동일한 법인 타임존 컨벤션(resolveDayContext)으로 정렬 — 해외 법인 "오늘"
+> 기록 소실 회귀 차단 ② migration SQL 멱등화(IF NOT EXISTS — 공유 DB는 db push 선적용이라 migrate
+> deploy 충돌) ③ clock-out lookback 상한(lte ctx.workDate) + 미래 clockIn 거부(음수 근무시간 차단).
+> Codex r2 P2×1 → today가 전일 귀속 야간 기록의 "오늘 퇴근 완료" 케이스도 표시(clockOut >= 오늘 0시
+> instant). r2 잔여 P2(AGENTS.md drift)·P3(`* 2.*` 복사본)는 worktree 오염 — 브랜치 무관, 별도 정리.
+> 재검증: tsc 0 · lint 0 · unit 813 · e2e attendance 36 pass.
 
 ## Codex Gate 1 round 1 findings → resolutions
 

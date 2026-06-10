@@ -9,7 +9,8 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
-import { formatToTz, parseDateOnly } from '@/lib/timezone'
+import { parseDateOnly } from '@/lib/timezone'
+import { resolveDayContext } from '@/lib/attendance/judgeStatus'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
@@ -29,13 +30,14 @@ export const GET = withPermission(
         : user.companyId
     const companyFilter = { companyId }
 
-    // 2. Determine target date — workDate는 "KST 날짜의 UTC 자정"으로 저장되므로(clock-in 참조)
-    //    서버 로컬 자정이 아닌 KST 달력 날짜로 윈도우·라벨을 만든다 (att-06; 법인별 TZ는 att-07 별 트랙)
+    // 2. Determine target date — 쓰기 경로(clock-in)와 동일하게 대상 법인 타임존의
+    //    달력 날짜로 윈도우·라벨을 만든다 (date 미지정 시 그 법인의 "오늘")
     const dateParam = searchParams.get('date')
     if (dateParam && !/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
       throw badRequest('date는 YYYY-MM-DD 형식이어야 합니다.')
     }
-    const dateStr = dateParam ?? formatToTz(new Date(), 'Asia/Seoul', 'yyyy-MM-dd')
+    const dateStr =
+      dateParam ?? (await resolveDayContext(companyId, new Date())).localDateStr
     const targetDate = parseDateOnly(dateStr)
     const nextDay = new Date(targetDate.getTime() + 24 * 60 * 60 * 1000)
 
