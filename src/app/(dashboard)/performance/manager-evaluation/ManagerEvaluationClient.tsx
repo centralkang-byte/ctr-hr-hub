@@ -204,7 +204,7 @@ export default function ManagerEvaluationClient({user: _user }: {
                                                 {t('kr_keb8f99eb')}
                                             </button>
                                             <button onClick={() => setActiveEval(member)}
-                                                className="rounded-lg bg-primary px-4 py-1.5 text-xs font-medium text-white hover:bg-primary/90">
+                                                className="rounded-lg bg-warm px-4 py-1.5 text-xs font-medium text-white hover:brightness-95">
                                                 {isCompleted ? t('managerEvaluation.edit') : t('managerEvaluation.evaluate')} →
                                             </button>
                                         </div>
@@ -420,7 +420,7 @@ function EvalSlideOver({ member, cycleId, onClose, onSaved }: {
                             <Save className="h-4 w-4" /> {t('kr_kec9e84ec')}
                         </button>
                         <button onClick={() => handleSave('SUBMITTED')} disabled={saving || hasOverlengthComment}
-                            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40">
+                            className="inline-flex items-center gap-2 rounded-lg bg-warm px-4 py-2 text-sm font-medium text-white hover:brightness-95 disabled:opacity-40">
                             <Send className="h-4 w-4" /> {saving ? t('managerEvaluation.confirming') : t('managerEvaluation.confirmEval')}
                         </button>
                     </div>
@@ -508,7 +508,7 @@ function NominationModal({ member, cycleId, onClose, onSaved }: {
                 <div className="mt-6 flex justify-end gap-3">
                     <button onClick={onClose} className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground">{tCommon('cancel')}</button>
                     <button onClick={handleNominate} disabled={saving || selected.size < 2}
-                        className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
+                        className="rounded-lg bg-warm px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
                         {saving ? t('managerEvaluation.nominating') : t('managerEvaluation.confirmNominateBtn')}
                     </button>
                 </div>

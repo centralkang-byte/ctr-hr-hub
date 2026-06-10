@@ -187,8 +187,8 @@ export function ApprovalPreview({
                   <Link
                     href={`${viewAllHref}?focus=${encodeURIComponent(item.id)}`}
                     className={cn(
-                      'inline-flex min-h-[36px] items-center rounded-full bg-primary px-3 text-xs font-semibold text-primary-foreground',
-                      'hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                      'inline-flex min-h-[36px] items-center rounded-full bg-warm px-3 text-xs font-semibold text-primary-foreground',
+                      'hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                       MOTION.microOut,
                     )}
                   >

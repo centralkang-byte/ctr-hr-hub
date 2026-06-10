@@ -613,7 +613,7 @@ export default function PayrollSimulationClient({ user: _user, companies, depart
           {error && <div className="text-sm text-destructive bg-destructive/10 px-4 py-3 rounded-lg">{error}</div>}
 
           <button onClick={handleCalculate} disabled={!isValid || isLoading}
-            className="w-full px-4 py-3 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+            className="w-full px-4 py-3 bg-warm text-white rounded-lg text-sm font-medium hover:brightness-95 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
             {isLoading ? <><Loader2 className="w-4 h-4 animate-spin" />{tCommon('loading')}</> : t('calculate')}
           </button>
         </div>

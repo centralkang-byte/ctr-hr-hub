@@ -236,7 +236,7 @@ export default function MyCheckinsClient({user: _user }: {
                                                     </div>
                                                     <button onClick={() => handleSaveProgress(goal.id)}
                                                         disabled={saving === goal.id}
-                                                        className="rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40 hover:bg-primary/90 transition-colors">
+                                                        className="rounded-lg bg-warm px-4 py-1.5 text-sm font-medium text-white disabled:opacity-40 hover:brightness-95 transition-colors">
                                                         {saving === goal.id ? tCommon('loading') : tCommon('save')}
                                                     </button>
                                                 </div>

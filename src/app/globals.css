@@ -71,6 +71,8 @@
     --wd-orange: 24 77% 53%;                 /* #e4762c — oklch(68% 0.16 50) */
     --wd-orange-soft: 31 100% 92%;           /* #ffecd8 — oklch(96% 0.04 60) */
     --wd-orange-ink: 19 100% 32%;            /* #a23300 — oklch(48% 0.16 45) */
+    /* 주 액션 버튼 fill 전용 warm — proto friendly tone --warm (CEO 2026-06-11). 장식 재사용 금지, wd-orange(hue 50)와 별개 색 */
+    --warm: 16 78% 59%;                      /* #e87045 — oklch(68% 0.16 40) */
     /* Wave 0: proto --info oklch(60% .14 220) (was sky #0ea5e9) — light only, dark known-deferred (Phase 4) */
     --info: 193 100% 36.3%;                  /* #0091b9 */
     --surface-container-low: 210 31.3% 93.7%; /* #eaeff4 bg-sunk */
@@ -108,6 +110,7 @@
     --popover-foreground: 0 0% 96.5%;      /* #f6f6f6 */
     --primary: 234 89% 74%;               /* #818cf8 indigo-400 */
     --primary-foreground: 0 0% 100%;
+    --warm: 16 91% 69%;                   /* #f88d67 — proto dark --warm oklch(75% 0.14 40); 라벨 페어링은 Phase 4에서 결정 */
     --secondary: 180 3.4% 18.2%;           /* #2d2f2f */
     --secondary-foreground: 0 0% 96.5%;
     --muted: 180 3.4% 18.2%;              /* #2d2f2f */

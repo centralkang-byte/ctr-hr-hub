@@ -276,7 +276,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                 ))}
               </SelectContent>
             </Select>
-            <Button onClick={openBulkDialog} className="bg-primary hover:bg-primary/90 text-white">
+            <Button onClick={openBulkDialog} className="bg-warm hover:brightness-95 text-white">
               {t('admin.bulkGrant')}
             </Button>
           </div>
@@ -558,7 +558,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
             <Button
               onClick={handleBulkGrant}
               disabled={bulkLoading || !bulkForm.policyId || !bulkForm.departmentId || !bulkForm.days}
-              className="bg-primary hover:bg-primary/90 text-white"
+              className="bg-warm hover:brightness-95 text-white"
             >
               {bulkLoading ? t('admin.bulk.processing') : t('admin.bulkGrant')}
             </Button>

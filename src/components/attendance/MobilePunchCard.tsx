@@ -102,7 +102,7 @@ export function MobilePunchCard({ isClockedIn = false, onPunch }: MobilePunchCar
           transition-all duration-200 active:scale-95
           disabled:opacity-70 disabled:cursor-not-allowed
           ${isClockingIn
-            ? 'bg-primary hover:bg-primary/90'
+            ? 'bg-warm hover:brightness-95'
             : 'bg-red-400 hover:bg-red-400'
           }
         `}

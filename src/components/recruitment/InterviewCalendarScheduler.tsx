@@ -158,7 +158,7 @@ export function InterviewCalendarScheduler({
           e.stopPropagation()
           handleOpen()
         }}
-        className={cn('gap-1 text-xs', !hasEvent && 'bg-primary text-primary-foreground')}
+        className={cn('gap-1 text-xs', !hasEvent && 'bg-warm text-primary-foreground')}
       >
         <Calendar size={14} />
         {hasEvent ? '일정 관리' : '일정 예약'}

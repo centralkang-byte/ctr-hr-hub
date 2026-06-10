@@ -412,7 +412,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
             <Button
               onClick={() => handleAction('submit')}
               disabled={actionLoading}
-              className="rounded-full bg-gradient-to-r from-primary to-primary-dim shadow-lg shadow-primary/20"
+              className="rounded-full bg-warm shadow-lg shadow-primary/20"
               size="lg"
             >
               <Send className="mr-1.5 h-4 w-4" />
@@ -436,7 +436,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
             <Button
               onClick={() => handleAction('approve')}
               disabled={actionLoading}
-              className="rounded-full bg-gradient-to-r from-primary to-primary-dim shadow-lg shadow-primary/20"
+              className="rounded-full bg-warm shadow-lg shadow-primary/20"
               size="lg"
             >
               <CheckCircle2 className="mr-1.5 h-4 w-4" />
@@ -460,7 +460,7 @@ export default function OffCycleDetailClient({ user, requestId }: Props) {
             <Button
               onClick={() => handleAction('revise')}
               disabled={actionLoading}
-              className="rounded-full bg-gradient-to-r from-primary to-primary-dim shadow-lg shadow-primary/20"
+              className="rounded-full bg-warm shadow-lg shadow-primary/20"
               size="lg"
             >
               <RotateCcw className="mr-1.5 h-4 w-4" />

@@ -198,7 +198,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                     <button
                         onClick={handleMarkPaid}
                         disabled={markingPaid}
-                        className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-dim disabled:opacity-40 min-h-[44px]"
+                        className="ml-auto inline-flex items-center gap-1.5 rounded-full bg-warm px-4 py-2 text-sm font-semibold text-white hover:brightness-95 disabled:opacity-40 min-h-[44px]"
                     >
                         {markingPaid ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
                         {t('kr_keca780ea_complete')}

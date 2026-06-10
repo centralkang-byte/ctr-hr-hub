@@ -257,7 +257,7 @@ export function CheckinFormClient({ user }: CheckinFormClientProps) {
             <button
               onClick={handleSubmit}
               disabled={!mood || submitting}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-primary hover:bg-primary/90 text-white disabled:opacity-50 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-warm hover:brightness-95 text-white disabled:opacity-50 transition-colors"
             >
               <Send className="h-4 w-4" />
               {submitting ? t('submitting') : t('submitCheckin')}

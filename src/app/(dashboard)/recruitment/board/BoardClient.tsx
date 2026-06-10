@@ -654,7 +654,7 @@ export default function BoardClient({ user }: Props) {
                   !offerModal.form.expectedStartDate ||
                   modalSubmitting
                 }
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-warm hover:brightness-95 text-white rounded-lg transition-colors disabled:opacity-50"
               >
                 {modalSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 {modalSubmitting ? tCommon('loading') : t('confirmOffer')}

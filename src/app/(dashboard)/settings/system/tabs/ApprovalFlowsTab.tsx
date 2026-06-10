@@ -237,7 +237,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                               <button
                                 onClick={() => handleSave(editingFlow)}
                                 disabled={saving || !editingFlow.name || editingFlow.steps.length === 0}
-                                className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-50"
+                                className="flex items-center gap-1.5 rounded-lg bg-warm px-4 py-2 text-xs font-medium text-white hover:brightness-95 disabled:opacity-50"
                               >
                                 {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
                                 {t('common.save')}
@@ -257,7 +257,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                             <div className="flex items-center gap-2 pt-2">
                               <button
                                 onClick={() => setEditingFlow({ ...flow })}
-                                className="rounded-lg bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary/90"
+                                className="rounded-lg bg-warm px-4 py-2 text-xs font-medium text-white hover:brightness-95"
                               >
                                 {t('common.edit')}
                               </button>
@@ -304,7 +304,7 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                           <button
                             onClick={() => handleSave(editingFlow)}
                             disabled={saving || !editingFlow.name || editingFlow.steps.length === 0}
-                            className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-50"
+                            className="flex items-center gap-1.5 rounded-lg bg-warm px-4 py-2 text-xs font-medium text-white hover:brightness-95 disabled:opacity-50"
                           >
                             {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
                             {t('common.create')}

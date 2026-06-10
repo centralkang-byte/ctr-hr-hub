@@ -325,7 +325,7 @@ export default function PostingEditClient({
         <div className="bg-card border border-border rounded-xl p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-bold text-foreground tracking-[-0.02em]">{t('postingContent')}</h2>
-            <button type="button" onClick={handleAiGenerate} disabled={aiLoading || !watch('title')} className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-primary hover:bg-primary-dim text-white rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+            <button type="button" onClick={handleAiGenerate} disabled={aiLoading || !watch('title')} className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-warm hover:brightness-95 text-white rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
               {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
               {t('aiDraftGenerate')}
             </button>

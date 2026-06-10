@@ -186,7 +186,7 @@ export default function CalibrationBatchSaveDialog({
             disabled={!isValid || isSaving}
             className={cn(
               'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors',
-              'bg-primary text-white hover:bg-primary/90 disabled:opacity-50',
+              'bg-warm text-white hover:brightness-95 disabled:opacity-50',
             )}
           >
             {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}

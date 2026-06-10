@@ -91,6 +91,8 @@ const config: Config = {
 					soft: 'hsl(var(--wd-orange-soft))',
 					ink: 'hsl(var(--wd-orange-ink))',
 				},
+				// 주 액션 버튼 fill 전용 (proto friendly --warm, CEO 2026-06-11) — 장식 재사용 금지
+				warm: 'hsl(var(--warm) / <alpha-value>)',
 				// PR-5A: sky blue (HR Admin worklet ID 8 analytics) — light only, dark known-deferred
 				info: 'hsl(var(--info))',
 				'surface-container-low': 'hsl(var(--surface-container-low))',

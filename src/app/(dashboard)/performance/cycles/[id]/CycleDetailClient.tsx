@@ -188,7 +188,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                 <p className="text-xs text-muted-foreground">{t('cycleDetail.next')}: {PIPELINE_STATES[currentIdx + 1]?.label}</p>
                             </div>
                             <button onClick={handleAdvance} disabled={advancing}
-                                className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40 transition-colors">
+                                className="inline-flex items-center gap-2 rounded-lg bg-warm px-5 py-2 text-sm font-medium text-white hover:brightness-95 disabled:opacity-40 transition-colors">
                                 {advancing ? t('cycleDetail.advancing') : <><span>{t('next_keb8ba8ea_keca784ed')}</span><ChevronRight className="h-4 w-4" /></>}
                             </button>
                         </div>

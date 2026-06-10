@@ -18,6 +18,7 @@ paths: ["src/app/**/*.tsx", "src/components/**/*.tsx", "src/lib/styles/**"]
 
 - 순수 검정 `#000`/`#000000` 사용 금지 → `foreground` (#182029)
 - Primary: #004964 / Primary-dim: #003953 / Primary-container: #bedded (Workday Navy)
+- **주 액션 버튼 fill = `bg-warm`** (#e87045, proto friendly `--warm` — CEO 2026-06-11) + white 라벨 + `hover:brightness-95`. navy `bg-primary`를 버튼 fill로 신규 사용 금지. `warm`은 버튼 전용 — 배지·장식 재사용 금지(그쪽은 `wd-orange`)
 - Semantic: success #008b4e / danger #d73337 / warning #d0901e(BG·아이콘) / info #0091b9 (proto :root 패밀리)
 - 하드코딩 hex 금지 (CSS 변수/Tailwind 토큰 사용). 예외 3가지:
   1. **WCAG AA text**: `text-[#006b39]` (badge success ink), `text-[#b71824]` (error ink)
@@ -111,6 +112,7 @@ bg와 text에 같은 토큰 사용 금지. bg는 밝은 색, text는 WCAG AA 만
 - `backdrop-blur` TopBar/Dialog 외 사용
 - 고스트 보더 `border-border/15` (Wave 0: 가시 1px solid `border-border`가 표준)
 - **버튼 그라데이션·glow** (프로토 CLAUDE.md 금지 — flat fill만)
+- **주 액션 버튼 fill을 navy `bg-primary`로 신규 작성** (주 액션 = `bg-warm`; DESIGN.md §5.1·AX-1)
 - **좌측 색 보더 강조 카드** (`border-l-4` urgency 카드 — 프로토가 명시 금지한 AI slop; urgency는 아이콘 틴트로)
 - 통일된 border-radius (3-tier 시스템 필수)
 - Purple AI-slop gradients

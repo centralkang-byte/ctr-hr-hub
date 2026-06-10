@@ -229,7 +229,7 @@ export default function RuReportsTab() {
             <button
               onClick={fetch57T}
               disabled={loading57t}
-              className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
+              className="bg-warm hover:brightness-95 text-white px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
             >
               {loading57t ? '생성 중...' : `${year}년 연간 생성`}
             </button>
