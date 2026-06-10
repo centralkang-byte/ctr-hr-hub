@@ -8,6 +8,9 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { fromZonedTime } from 'date-fns-tz'
+import { resolveDayContext, addDaysToDateStr } from '@/lib/attendance/judgeStatus'
+import { parseDateOnly } from '@/lib/timezone'
 import type { SessionUser } from '@/types'
 
 // ─── GET — 오늘의 출퇴근 기록 ────────────────────────────────
@@ -18,26 +21,29 @@ export const GET = withPermission(
     _context: { params: Promise<Record<string, string>> },
     user: SessionUser,
   ) => {
-    // KST(UTC+9) 기준 오늘 날짜 범위 계산
+    // 법인 타임존 기준 오늘 — 쓰기 경로(clock-in)와 동일한 workDate 컨벤션
     const now = new Date()
-    const kstOffset = 9 * 60 * 60 * 1000
-    const kstNow = new Date(now.getTime() + kstOffset)
-    const todayStart = new Date(
-      Date.UTC(kstNow.getUTCFullYear(), kstNow.getUTCMonth(), kstNow.getUTCDate()),
+    const ctx = await resolveDayContext(user.companyId, now)
+    const prevWorkDate = parseDateOnly(addDaysToDateStr(ctx.localDateStr, -1))
+    // 법인 로컬 오늘 0시의 절대 instant — 전일 귀속 야간 기록의 "오늘 퇴근" 판별 기준
+    const todayStartInstant = fromZonedTime(
+      `${ctx.localDateStr}T00:00:00.000`,
+      ctx.timezone,
     )
-    todayStart.setTime(todayStart.getTime() - kstOffset) // Convert KST midnight back to UTC
-
-    const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000)
 
     const attendance = await prisma.attendance.findFirst({
       where: {
         employeeId: user.employeeId,
-        workDate: {
-          gte: todayStart,
-          lt: todayEnd,
-        },
+        OR: [
+          { workDate: ctx.workDate },
+          // 야간 교대 전일 귀속 — 진행 중이거나 오늘 자정 이후 퇴근 완료한 기록도 표시
+          {
+            workDate: prevWorkDate,
+            OR: [{ clockOut: null }, { clockOut: { gte: todayStartInstant } }],
+          },
+        ],
       },
-      orderBy: { clockIn: 'desc' },
+      orderBy: { workDate: 'desc' },
     })
 
     return apiSuccess(attendance)

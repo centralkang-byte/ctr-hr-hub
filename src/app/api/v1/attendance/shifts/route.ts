@@ -11,7 +11,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, isAppError, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
-import { format, parseISO, startOfDay } from 'date-fns'
+import { parseDateOnly } from '@/lib/timezone'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
@@ -43,8 +43,9 @@ export const GET = withPermission(
         throw badRequest('날짜 형식은 YYYY-MM-DD 이어야 합니다.')
       }
 
-      const start = startOfDay(parseISO(startDate))
-      const end = startOfDay(parseISO(endDate))
+      // 날짜는 UTC date-only 컨벤션으로 통일 — 서버 로컬 타임존 의존 금지 (S276)
+      const start = parseDateOnly(startDate)
+      const end = parseDateOnly(endDate)
 
       const companyId =
         user.role === ROLE.SUPER_ADMIN ? null : user.companyId
@@ -166,7 +167,7 @@ export const GET = withPermission(
       const formattedSchedules = schedules.map((s) => ({
         id: s.id,
         employeeId: s.employeeId,
-        workDate: format(s.workDate, 'yyyy-MM-dd'),
+        workDate: s.workDate.toISOString().slice(0, 10),
         slotName: s.slotName ?? null,
         startTime: s.startTime,
         endTime: s.endTime,
@@ -227,7 +228,7 @@ export const POST = withPermission(
         throw badRequest('다른 법인 직원의 근무를 수정할 수 없습니다.')
       }
 
-      const workDateObj = startOfDay(parseISO(workDate))
+      const workDateObj = parseDateOnly(workDate)
 
       // 'off' → delete any existing schedule
       if (slotName === 'off') {

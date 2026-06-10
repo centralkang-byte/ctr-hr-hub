@@ -11,6 +11,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { shiftScheduleGenerateSchema } from '@/lib/schemas/shift'
 import { startOfMonth, endOfMonth, eachDayOfInterval, format } from 'date-fns'
+import { parseDateOnly } from '@/lib/timezone'
 import type { SessionUser } from '@/types'
 
 interface ShiftSlot {
@@ -102,7 +103,8 @@ export const POST = withPermission(
 
           const slotIndex = cyclePosition % slots.length
           const slot = slots[slotIndex]
-          const workDate = new Date(format(day, 'yyyy-MM-dd'))
+          // UTC date-only 컨벤션 — 서버 로컬 타임존 의존 금지 (S276)
+          const workDate = parseDateOnly(format(day, 'yyyy-MM-dd'))
 
           for (const employeeId of memberEmployeeIds) {
             scheduleRecords.push({

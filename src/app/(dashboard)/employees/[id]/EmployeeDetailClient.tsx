@@ -5,7 +5,7 @@
 // 직원 프로필 5탭: 프로필/발령이력/급여정보/근태현황/평가결과
 // ═══════════════════════════════════════════════════════════
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
@@ -14,6 +14,7 @@ import {
   Building2,
   Check,
   Clock,
+  Info,
   Pencil,
   TrendingUp,
   User,
@@ -48,7 +49,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
-import type { SessionUser, DeptOption, RefOption } from '@/types'
+import type { SessionUser, RefOption } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -89,38 +90,10 @@ type EmployeeDetail = {
 }
 
 
-// 직급(JobGrade) — 드롭다운 1차 소스 (독립 축)
-interface JobGradeOption {
-  id: string
-  code: string
-  name: string
-  gradeType: string
-  rankOrder: number
-  companyId: string
-}
-
-// 직군(JobCategory) — 법인 스코프 옵션
-interface JobCategoryOption {
-  id: string
-  name: string
-  companyId: string
-}
-
-// Grade↔Title 매핑 (서버에서 전달) — 호칭 자동완성 보조용만
-interface GradeTitleMappingItem {
-  id: string
-  jobGrade: { id: string; code: string; name: string; gradeType: string; rankOrder: number; companyId: string }
-  employeeTitle: { id: string; name: string }
-}
-
 interface EmployeeDetailClientProps {
   user: SessionUser
   employee: EmployeeDetail
   companies: RefOption[]
-  departments: DeptOption[]
-  jobGrades: JobGradeOption[]
-  jobCategories: JobCategoryOption[]
-  gradeTitleMappings: GradeTitleMappingItem[]
   division: string | null
   canViewGrade: boolean
   canViewSensitive: boolean
@@ -181,10 +154,6 @@ export function EmployeeDetailClient({
   user,
   employee: initialEmployee,
   companies: _companies,
-  departments,
-  jobGrades,
-  jobCategories,
-  gradeTitleMappings,
   division,
   canViewGrade,
   canViewSensitive,
@@ -223,11 +192,6 @@ export function EmployeeDetailClient({
     nationality: initialEmployee.nationality ?? '',
     emergencyContact: initialEmployee.emergencyContact ?? '',
     emergencyContactPhone: initialEmployee.emergencyContactPhone ?? '',
-    departmentId: initialEmployee.department?.id ?? '',
-    jobGradeId: initialEmployee.jobGrade?.id ?? '',
-    jobCategoryId: initialEmployee.jobCategory?.id ?? '',
-    employmentType: initialEmployee.employmentType,
-    status: initialEmployee.status,
   })
   const [saving, setSaving] = useState(false)
   const [editError, setEditError] = useState<string | null>(null)
@@ -318,9 +282,8 @@ export function EmployeeDetailClient({
     setSaving(true)
     setEditError(null)
     try {
-      const resolvedMapping = gradeTitleMappings
-        .filter((m) => m.jobGrade.companyId === employee.companyId)
-        .find((m) => m.jobGrade.id === editData.jobGradeId) ?? null
+      // 부서/직급/직무군/고용형태/상태는 발령(조직변경)으로만 변경 — PUT이 silent-strip
+      // 하던 가짜 성공 제거 (S276 ed-01). 본인 신상 정보만 전송한다.
       const payload: Record<string, string | null> = {
         name: editData.name,
         nameEn: editData.nameEn || null,
@@ -331,12 +294,6 @@ export function EmployeeDetailClient({
         nationality: editData.nationality || null,
         emergencyContact: editData.emergencyContact || null,
         emergencyContactPhone: editData.emergencyContactPhone || null,
-        departmentId: editData.departmentId,
-        jobGradeId: editData.jobGradeId,
-        titleId: resolvedMapping?.employeeTitle.id ?? null,
-        jobCategoryId: editData.jobCategoryId,
-        employmentType: editData.employmentType,
-        status: editData.status,
       }
       const res = await apiClient.put<EmployeeDetail>(`/api/v1/employees/${employee.id}`, payload)
       setEmployee((prev) => ({ ...prev, ...res.data }))
@@ -346,38 +303,7 @@ export function EmployeeDetailClient({
     } finally {
       setSaving(false)
     }
-  }, [editData, employee.id, employee.companyId, t, gradeTitleMappings])
-
-  // ─── Filtered depts by company ───
-  const filteredDepts = useMemo(
-    () => departments.filter((d) => d.companyId === employee.companyId),
-    [departments, employee.companyId],
-  )
-
-  // 직급: 해당 법인 JobGrade만 (rankOrder 순) — 1차 소스, 매핑 미등록이어도 동작
-  const filteredJobGrades = useMemo(
-    () =>
-      jobGrades
-        .filter((g) => g.companyId === employee.companyId)
-        .sort((a, b) => a.rankOrder - b.rankOrder),
-    [jobGrades, employee.companyId],
-  )
-
-  // 직군: 해당 법인 JobCategory만 (법인당 4종, 교차 중복 방지)
-  const filteredJobCategories = useMemo(
-    () => jobCategories.filter((c) => c.companyId === employee.companyId),
-    [jobCategories, employee.companyId],
-  )
-
-  // Grade↔Title 매핑: 해당 법인만 — 호칭 자동완성 보조용만
-  const companyMappings = useMemo(
-    () => gradeTitleMappings.filter((m) => m.jobGrade.companyId === employee.companyId),
-    [gradeTitleMappings, employee.companyId],
-  )
-  const mappedTitle = useMemo(
-    () => companyMappings.find((m) => m.jobGrade.id === editData.jobGradeId) ?? null,
-    [companyMappings, editData.jobGradeId],
-  )
+  }, [editData, employee.id, t])
 
   // ─── Tab 1: 기본정보 ────────────────────────────────────────
 
@@ -448,69 +374,22 @@ export function EmployeeDetailClient({
             </div>
           </div>
 
-          {/* Section 3: Employment Information */}
+          {/* Section 3: Employment Information — 읽기 전용.
+              부서/직급/직무군/고용형태/상태는 발령 이력(append-only)이 SSOT라
+              여기서 편집하면 서버가 조용히 무시했음 (S276 ed-01: 가짜 성공 제거) */}
           <div className="rounded-2xl shadow-sm bg-card p-6 space-y-5">
             <h3 className="text-base font-bold text-foreground tracking-ctr">{t('employmentInfo')}</h3>
-            <div className="grid grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label>{t('department')}</Label>
-                <Select value={editData.departmentId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, departmentId: v === '__NONE__' ? '' : v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-                    {filteredDepts.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>{t('jobGrade')}</Label>
-                <Select value={editData.jobGradeId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, jobGradeId: v === '__NONE__' ? '' : v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-                    {filteredJobGrades.map((g) => (
-                      <SelectItem key={g.id} value={g.id}>
-                        {g.code} {g.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              {mappedTitle && (
-                <div className="space-y-1.5">
-                  <Label>{t('employeeTitle')}</Label>
-                  <Input value={mappedTitle.employeeTitle.name} readOnly className="bg-muted" />
-                </div>
-              )}
-              <div className="space-y-1.5">
-                <Label>{t('jobCategory')}</Label>
-                <Select value={editData.jobCategoryId || '__NONE__'} onValueChange={(v) => setEditData((p) => ({ ...p, jobCategoryId: v === '__NONE__' ? '' : v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__NONE__">{tc('selectPlaceholder')}</SelectItem>
-                    {filteredJobCategories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>{t('employmentType')}</Label>
-                <Select value={editData.employmentType} onValueChange={(v) => setEditData((p) => ({ ...p, employmentType: v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(EMPLOYMENT_TYPE_LABELS).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <Label>{tc('status')}</Label>
-                <Select value={editData.status} onValueChange={(v) => setEditData((p) => ({ ...p, status: v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(STATUS_LABELS).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Info className="h-4 w-4 shrink-0" aria-hidden="true" />
+              {t('employmentEditViaOrgChange')}
+            </p>
+            <dl className="grid grid-cols-1 gap-x-8 gap-y-0 md:grid-cols-2">
+              <InfoRow label={t('department')} value={employee.department?.name} />
+              <InfoRow label={t('jobGrade')} value={employee.jobGrade?.name} />
+              <InfoRow label={t('jobCategory')} value={employee.jobCategory?.name} />
+              <InfoRow label={t('employmentType')} value={EMPLOYMENT_TYPE_LABELS[employee.employmentType] ?? employee.employmentType} />
+              <InfoRow label={tc('status')} value={STATUS_LABELS[employee.status] ?? employee.status} />
+            </dl>
           </div>
           <div className="flex gap-2 pt-2">
             <Button onClick={handleSave} disabled={saving} className="bg-ctr-primary hover:bg-ctr-primary-dark text-white">

@@ -9,7 +9,7 @@ import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { forbidden } from '@/lib/errors'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
-import { formatToTz, parseDateOnly } from '@/lib/timezone'
+import { resolveDayContext } from '@/lib/attendance/judgeStatus'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
@@ -32,9 +32,10 @@ export const GET = withPermission(
       },
     })
 
-    // 오늘 날짜 — workDate는 "KST 날짜의 UTC 자정"으로 저장되므로 KST 달력 날짜 기준 (att-06)
-    const dateStr = formatToTz(new Date(), 'Asia/Seoul', 'yyyy-MM-dd')
-    const today = parseDateOnly(dateStr)
+    // 오늘 날짜 — 쓰기 경로(clock-in)와 동일하게 법인 타임존 달력 날짜 기준
+    const ctx = await resolveDayContext(user.companyId, new Date())
+    const dateStr = ctx.localDateStr
+    const today = ctx.workDate
     const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000)
 
     const managerPrimary = extractPrimaryAssignment(manager?.assignments ?? [])

@@ -7,6 +7,12 @@ import { test, expect } from '@playwright/test'
 import { ApiClient, assertOk, assertError, parseApiResponse } from '../helpers/api-client'
 import { authFile } from '../helpers/auth'
 import { resolveSeedData } from '../helpers/test-data'
+import { deleteAttendanceOn, closeDb } from '../helpers/db'
+
+// KST 오늘 달력 날짜 (CTR = Asia/Seoul)
+function kstTodayStr(): string {
+  return new Date(Date.now() + 9 * 3600_000).toISOString().slice(0, 10)
+}
 import {
   clockIn,
   clockOut,
@@ -28,13 +34,15 @@ test.describe('Attendance Core API', () => {
     test.describe.configure({ mode: 'serial' })
     test.use({ storageState: authFile('EMPLOYEE') })
 
-    test.beforeAll(async ({ request }) => {
-      // Ensure no open clock-in exists (idempotent cleanup)
-      const api = new ApiClient(request)
-      const today = await getTodayAttendance(api)
-      if (today.ok && today.data && !(today.data as Record<string, unknown>).clockOut) {
-        await clockOut(api)
-      }
+    test.beforeAll(async () => {
+      // 1일 1레코드 정책(S276): 완료된 기록도 재출근을 막으므로 API 정리(clock-out)만으로는
+      // 반복 실행이 불가 → 당일 레코드를 DB에서 직접 삭제 (Codex r2-4)
+      await deleteAttendanceOn('employee-a@ctr.co.kr', kstTodayStr())
+    })
+
+    test.afterAll(async () => {
+      await deleteAttendanceOn('employee-a@ctr.co.kr', kstTodayStr())
+      await closeDb()
     })
 
     test('POST /attendance/clock-in (WEB) creates record', async ({ request }) => {
@@ -113,13 +121,12 @@ test.describe('Attendance Core API', () => {
       expect(res.body).toHaveProperty('data')
     })
 
-    test('Clock-in after clock-out creates second record (same day)', async ({ request }) => {
+    test('Clock-in after clock-out is rejected (one record per day, S276)', async ({ request }) => {
       const api = new ApiClient(request)
-      // Attempt second clock-in (after previous describe's clock-out)
+      // 같은 근무일 재출근은 1일 1레코드 정책으로 400.
+      // (이 describe가 self-service flow보다 먼저 돌면 기록이 없어 201일 수 있음 — 정리)
       const res = await clockIn(api)
-      // Either 201 (creates second record) or 400 (already has open record)
       expect([200, 201, 400]).toContain(res.status)
-      // Clean up: if we created a new record, clock out
       if (res.ok) {
         await clockOut(api)
       }
@@ -273,10 +280,10 @@ test.describe('Attendance Core API', () => {
       assertOk(res, 'team attendance')
     })
 
-    test('GET /attendance/admin returns 200 (has attendance_manage)', async ({ request }) => {
+    test('GET /attendance/admin → 403 (S275 deny-by-default: HR/SUPER 전용, MANAGER는 team)', async ({ request }) => {
       const api = new ApiClient(request)
       const res = await getAdminAttendance(api)
-      assertOk(res, 'manager admin access')
+      assertError(res, 403, 'manager admin access denied')
     })
   })
 

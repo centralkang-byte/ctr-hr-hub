@@ -319,12 +319,20 @@ async function executeCompensation(tx: TxClient, row: ValidatedRow) {
 }
 
 // ── 메인 실행기 ─────────────────────────────────────────────
+
+/** 실행 감사로그 컨텍스트 — 발령과 같은 트랜잭션에서 기록 (원자성, S276) */
+export interface ExecuteAuditContext {
+  actorEmployeeId: string
+  companyId: string
+  ip?: string
+  userAgent?: string
+}
+
 export async function executeMovements(
   type: MovementType,
   rows: ValidatedRow[],
-  executedBy: string,
-  userCompanyId: string,
   fileName: string,
+  audit: ExecuteAuditContext,
 ) {
   const executionId = crypto.randomUUID()
   let applied = 0
@@ -363,12 +371,35 @@ export async function executeMovements(
 
         applied++
       }
+
+      // 감사 로그를 발령과 같은 트랜잭션에서 기록 — audit 실패 시 발령도 롤백 (원자성).
+      // 라우트 사후 fire-and-forget은 audit 유실 시 실행 이력이 사라짐 (S276 Codex r2-2)
+      await tx.auditLog.create({
+        data: {
+          actorId: audit.actorEmployeeId,
+          action: 'bulk_movement.execute',
+          resourceType: 'bulk_movement',
+          resourceId: executionId,
+          companyId: audit.companyId,
+          changes: {
+            movementType: type,
+            fileName,
+            totalRows: rows.length,
+            applied,
+            targets: rows.map((r) => ({
+              employeeId: r.employeeId,
+              employeeNo: r.employeeNo,
+              effectiveDate: (r.data.effectiveDate as string | undefined) ?? null,
+            })),
+          },
+          ipAddress: audit.ip ?? null,
+          userAgent: audit.userAgent ?? null,
+          sensitivityLevel: 'HIGH',
+        },
+      })
     },
     { timeout: 60_000 },
   )
 
-  // 감사 로그는 호출 라우트에서 logAudit으로 기록 — 과거 raw INSERT 대상 테이블
-  // (bulk_movement_executions)은 schema.prisma에 없어 db push DB에서 42P01로
-  // 커밋 후 실패하며 성공한 실행을 오류로 둔갑시켰음 (S275 dogfood)
   return { success: true, applied, executionId }
 }
