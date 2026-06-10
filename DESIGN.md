@@ -198,13 +198,27 @@ Hover: `hover:scale-[1.02]` (lg CTA), `active:scale-95`.
 
 ### 5.4 Form Standard
 
+**컨테이너 결정 (프로토 SSOT: `_design-reference/HANDOVER.md` — WdDrawer = 우측 슬라이드 입력 폼 표준)**
+
+| 폼 종류 | 컨테이너 |
+|---------|----------|
+| 단일 단계 생성·수정 입력 폼 (default) | **`WdDrawer`** (우측 슬라이드, `src/components/shared/WdDrawer.tsx`) + `WdField`(+`htmlFor`)/`WdRow`/`WdSectionH`/`WdNote` |
+| 다단계·대형 입력 (채용·조직개편 등) | `WizardShell` (풀페이지 위저드, `src/components/shared/WizardShell.tsx`) |
+| 확인·경고·삭제 확인 (confirm류, 단일 확인 입력 포함) | `Dialog` (중앙) |
+| 조회 전용 빠른 상세 | Inspector (`EmployeeInspector` 등) |
+
+- **신규 입력 폼을 중앙 `Dialog`로 작성 FORBIDDEN.** 기존 Dialog 입력 폼 21곳은 Wave 전환 대상 (`docs/plans/active/2026-06-10-modal-to-drawer-migration.md`)
+- §7 Mobile "Dialog→Sheet(bottom)" Tier 1 규칙과 별개 축 — WdDrawer는 좁은 화면 자동 풀폭(width:100%)이라 충돌 없음. 다크 모드 = known-deferred
+
+**필드 규칙**
+
 - **Label**: 항상 top, 11px semibold
 - **Required**: red `*` 표시
 - **Error**: inline below input + red border + `XCircle` icon
 - **Input**: border 1px (Tailwind default), rounded-lg, focus Navy ring (`#004964`)
 - **Layout**: 2-column default, 짧은 폼은 1-column
-- **Buttons (right-aligned)**: cancel (ghost) → draft (outline) → submit (primary pill)
-- **Implementation**: shadcn/ui `FormField` wrapper 필수
+- **Buttons (right-aligned)**: cancel (ghost) → draft (outline) → submit (primary pill). WdDrawer에서는 `secondary`/`primary` prop이 담당
+- **Implementation**: RHF 폼 = shadcn/ui `FormField` wrapper, WdDrawer 단순 제어 폼 = `WdField`(+`htmlFor`) — 어느 쪽이든 label-컨트롤 연결 필수
 
 ### 5.5 Segmented Control (Tabs)
 
