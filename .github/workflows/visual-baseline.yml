@@ -76,7 +76,11 @@ jobs:
           # package and fails `npm ci` with "Missing @swc/helpers@0.5.21".
           # This mismatch is a pre-existing repo issue and also breaks e2e.yml
           # on main; bumping the runner Node here is the surgical unblock.
-          node-version: 24
+          # Node 24.16.0 (runner rollout ~2026-05-28) hangs `npx playwright install`
+          # right after the chromium zip hits 100% — every run since then died at
+          # the 30-min job cap before tests started (empirical A/B: 24.15.0 ran,
+          # 24.16.0 hung; repo/lockfile unchanged). Unpin after upstream fix.
+          node-version: 24.15.0
           cache: npm
 
       - name: Install dependencies

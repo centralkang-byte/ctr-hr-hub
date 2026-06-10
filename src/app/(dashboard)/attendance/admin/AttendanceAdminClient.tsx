@@ -10,7 +10,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
-import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Loader2, XCircle } from 'lucide-react'
 import { TYPOGRAPHY } from '@/lib/styles/typography'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { apiClient } from '@/lib/api'
@@ -18,15 +18,8 @@ import { toast } from '@/hooks/use-toast'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
+import { WdDrawer, WdField, WdRow } from '@/components/shared/WdDrawer'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
@@ -35,7 +28,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
 import type { SessionUser } from '@/types'
 import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
@@ -402,99 +394,85 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
         emptyMessage={tc('noData')}
       />
 
-      {/* Correction dialog */}
-      <Dialog open={selectedAnomaly !== null} onOpenChange={(open) => { if (!open) handleCloseDialog() }}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {t('correction')} — {selectedAnomaly?.employeeName ?? ''}
-            </DialogTitle>
-          </DialogHeader>
+      {/* Correction drawer (WdDrawer 카나리 — 입력 폼 표준 컨테이너) */}
+      <WdDrawer
+        open={selectedAnomaly !== null}
+        onClose={handleCloseDialog}
+        closeDisabled={submitting}
+        eyebrow={t('adminAttendance')}
+        title={`${t('correction')} — ${selectedAnomaly?.employeeName ?? ''}`}
+        secondary={{ label: tc('cancel'), onClick: handleCloseDialog, disabled: submitting }}
+        primary={{
+          label: tc('save'),
+          onClick: guardedSubmit,
+          disabled: submitting || !correction.note.trim(),
+          icon: submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined,
+        }}
+      >
+        <WdRow>
+          <WdField label={t('clockIn')} htmlFor="correction-clockIn">
+            <Input
+              id="correction-clockIn"
+              type="datetime-local"
+              value={correction.clockIn}
+              onChange={(e) => setCorrection((prev) => ({ ...prev, clockIn: e.target.value }))}
+            />
+          </WdField>
+          <WdField label={t('clockOut')} htmlFor="correction-clockOut">
+            <Input
+              id="correction-clockOut"
+              type="datetime-local"
+              value={correction.clockOut}
+              onChange={(e) => setCorrection((prev) => ({ ...prev, clockOut: e.target.value }))}
+            />
+          </WdField>
+        </WdRow>
 
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="correction-clockIn">{t('clockIn')}</Label>
-              <Input
-                id="correction-clockIn"
-                type="datetime-local"
-                value={correction.clockIn}
-                onChange={(e) => setCorrection((prev) => ({ ...prev, clockIn: e.target.value }))}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="correction-clockOut">{t('clockOut')}</Label>
-              <Input
-                id="correction-clockOut"
-                type="datetime-local"
-                value={correction.clockOut}
-                onChange={(e) => setCorrection((prev) => ({ ...prev, clockOut: e.target.value }))}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('status')}</Label>
-              <Select
-                value={correction.status}
-                onValueChange={(v) => setCorrection((prev) => ({ ...prev, status: v }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={tc('selectPlaceholder')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="NORMAL">{t('normal')}</SelectItem>
-                  <SelectItem value="LATE">{t('late')}</SelectItem>
-                  <SelectItem value="EARLY_OUT">{t('earlyOut')}</SelectItem>
-                  <SelectItem value="ABSENT">{t('absent')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('workType')}</Label>
-              <Select
-                value={correction.workType}
-                onValueChange={(v) => setCorrection((prev) => ({ ...prev, workType: v }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={tc('selectPlaceholder')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="NORMAL">{t('normal')}</SelectItem>
-                  <SelectItem value="OVERTIME">{t('overtime')}</SelectItem>
-                  <SelectItem value="NIGHT">{t('night')}</SelectItem>
-                  <SelectItem value="HOLIDAY">{t('holiday')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="correction-note">
-                {t('correctionReason')} <span className="text-red-500">*</span>
-              </Label>
-              <Textarea
-                id="correction-note"
-                value={correction.note}
-                onChange={(e) => setCorrection((prev) => ({ ...prev, note: e.target.value }))}
-                placeholder={t('correctionReason')}
-                rows={3}
-              />
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={handleCloseDialog} disabled={submitting}>
-              {tc('cancel')}
-            </Button>
-            <Button
-              onClick={guardedSubmit}
-              disabled={submitting || !correction.note.trim()}
+        <WdRow>
+          <WdField label={t('status')} htmlFor="correction-status">
+            <Select
+              value={correction.status}
+              onValueChange={(v) => setCorrection((prev) => ({ ...prev, status: v }))}
             >
-              {submitting ? tc('loading') : tc('save')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              <SelectTrigger id="correction-status">
+                <SelectValue placeholder={tc('selectPlaceholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="NORMAL">{t('normal')}</SelectItem>
+                <SelectItem value="LATE">{t('late')}</SelectItem>
+                <SelectItem value="EARLY_OUT">{t('earlyOut')}</SelectItem>
+                <SelectItem value="ABSENT">{t('absent')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </WdField>
+          <WdField label={t('workType')} htmlFor="correction-workType">
+            <Select
+              value={correction.workType}
+              onValueChange={(v) => setCorrection((prev) => ({ ...prev, workType: v }))}
+            >
+              <SelectTrigger id="correction-workType">
+                <SelectValue placeholder={tc('selectPlaceholder')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="NORMAL">{t('normal')}</SelectItem>
+                <SelectItem value="OVERTIME">{t('overtime')}</SelectItem>
+                <SelectItem value="NIGHT">{t('night')}</SelectItem>
+                <SelectItem value="HOLIDAY">{t('holiday')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </WdField>
+        </WdRow>
+
+        <WdField label={t('correctionReason')} required htmlFor="correction-note">
+          <Textarea
+            id="correction-note"
+            value={correction.note}
+            onChange={(e) => setCorrection((prev) => ({ ...prev, note: e.target.value }))}
+            placeholder={t('correctionReason')}
+            rows={3}
+          />
+        </WdField>
+      </WdDrawer>
     </div>
   )
 }

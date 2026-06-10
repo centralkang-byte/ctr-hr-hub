@@ -395,7 +395,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                   { label: t('profile.field.companyEmail'), value: employee.email },
                   { label: t('profile.field.personalPhone'), value: employee.phone ?? '-', fieldKey: 'phone' as const },
                 ] as { label: string; value: string; fieldKey?: 'phone' | 'emergencyContact' | 'emergencyContactPhone' | 'name' }[]).map(({ label, value, fieldKey }) => (
-                  <div key={label} className="border-b border-border/30 pb-2 last:border-0 last:pb-0">
+                  <div key={label} className="border-b border-border pb-2 last:border-0 last:pb-0">
                     <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
@@ -520,7 +520,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
 
             {/* 수정 요청 내역 */}
             {changeRequests.length > 0 && (
-              <div className={`${CARD_STYLES.kpi} shadow-sm border border-border/30`}>
+              <div className={`${CARD_STYLES.kpi} shadow-sm border border-border`}>
                 <ChangeRequestHistory requests={changeRequests} />
               </div>
             )}

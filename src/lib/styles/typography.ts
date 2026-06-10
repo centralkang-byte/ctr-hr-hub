@@ -1,12 +1,13 @@
-/** Art.22 — Typography scale (DESIGN.md §1 aligned) */
+/** Art.22 — Typography scale (DESIGN.md §1 aligned)
+ *  Wave 0: 헤딩 스케일을 프로토 [data-style="workday"] 실측값으로 정렬 (styles.css:1130-1150) */
 export const TYPOGRAPHY = {
   // === Display & Headings ===
-  /** 30px / 700 / 1.2 — 페이지 제목 */
-  pageTitle: 'text-[30px] font-bold leading-[1.2] tracking-tight text-foreground',
-  /** 24px / 700 / 1.3 — 섹션 제목 */
-  sectionTitle: 'text-2xl font-bold leading-[1.3] tracking-tight text-foreground',
-  /** 20px / 600 / 1.4 — 카드 제목 */
-  cardTitle: 'text-xl font-semibold leading-[1.4] tracking-tight text-foreground',
+  /** 26px / 600 / 1.2 — 페이지 제목 (proto .page-h h1 26px/600/-0.015em) */
+  pageTitle: 'text-[26px] font-semibold leading-[1.2] tracking-[-0.015em] text-foreground',
+  /** 17px / 600 / 1.3 — 섹션 제목 (proto .sec-h h2 17px/600/-0.01em) */
+  sectionTitle: 'text-[17px] font-semibold leading-[1.3] tracking-[-0.01em] text-foreground',
+  /** 14.5px / 600 / 1.4 — 카드 제목 (proto .card-head .title 14.5px/600/-0.005em) */
+  cardTitle: 'text-[14.5px] font-semibold leading-[1.4] tracking-[-0.005em] text-foreground',
   /** 18px / 600 / 1.5 — 소제목 */
   subtitle: 'text-lg font-semibold leading-[1.5] tracking-tight text-foreground',
 
@@ -21,16 +22,16 @@ export const TYPOGRAPHY = {
   // === Utility ===
   /** 12px / 500 / 1.5 — 캡션, 페이지네이션 */
   caption: 'text-xs font-medium leading-[1.5] text-muted-foreground/70',
-  /** 11px / 600 / 1.4 — 테이블 헤더 (uppercase + wide tracking) */
-  tableHeader: 'text-2xs font-semibold leading-[1.4] uppercase tracking-wider text-muted-foreground',
+  /** 11px / 600 / 1.4 — 테이블 헤더 (proto workday .tbl th: uppercase + 0.04em, styles.css:1228) */
+  tableHeader: 'text-2xs font-semibold leading-[1.4] uppercase tracking-[0.04em] text-muted-foreground',
   /** 12px / 500 — 라벨 */
   label: 'text-xs font-medium text-muted-foreground',
 
   // === Display (Dashboard Hero / Card KPI) ===
   /** 56px / 900 / Inter — 대시보드 Hero metric */
   displayLg: 'text-4xl md:text-5xl xl:text-display-lg font-black font-display tracking-tighter',
-  /** 32px / 800 — 카드 내 핵심 수치 */
-  displaySm: 'text-display-sm font-extrabold tracking-tighter',
+  /** 32px / 500 — 카드 내 핵심 수치 (Wave 0: proto .ss-val 32px/500/-0.025em — Pretendard, mono 아님) */
+  displaySm: 'text-display-sm font-medium tracking-[-0.025em]',
 
   // === Numbers (Geist Mono + tabular-nums) ===
   /** 30px 숫자 — KPI 대형 stat */
@@ -43,8 +44,8 @@ export const TYPOGRAPHY = {
   // === R1 Home Redesign (Linear/Attio primitives) ===
   /** 20px / 600 / 1.3 — HeroCard greeting */
   heroGreeting: 'text-xl md:text-2xl font-semibold leading-[1.3] tracking-tight text-foreground',
-  /** 12px / 500 / uppercase — StatCard label (above number) */
-  statLabel: 'text-xs font-medium uppercase tracking-wide text-muted-foreground',
+  /** 12px / 500 — StatCard/KPI label (Wave 0: proto .ss-h·.kpi .label 12px/500, uppercase 없음) */
+  statLabel: 'text-xs font-medium text-muted-foreground',
   /** 14px / 500 / 1.5 — ListCard row primary text */
   listPrimary: 'text-sm font-medium leading-[1.5] text-foreground',
   /** 12px / 400 / 1.4 — ListCard row secondary text */

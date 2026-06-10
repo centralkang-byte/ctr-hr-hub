@@ -331,7 +331,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 {visibleColumns.map((col) => (
                   <th
                     key={col.key}
-                    className={cn("px-4 py-3 text-left text-[13px] font-bold text-muted-foreground", col.hideBelow && HIDE_BELOW_CLASS[col.hideBelow])}
+                    className={cn("px-4 py-3 text-left align-middle text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground", col.hideBelow && HIDE_BELOW_CLASS[col.hideBelow])}
                   >
                     {col.sortable && onSort ? (
                       <button
@@ -376,7 +376,7 @@ export function DataTable<T extends Record<string, unknown>>({
                       {visibleColumns.map((col) => (
                         <td
                           key={col.key}
-                          className={cn("px-4 py-3 text-sm text-foreground", col.hideBelow && HIDE_BELOW_CLASS[col.hideBelow])}
+                          className={cn("px-4 py-[13px] text-[13px] text-foreground", col.hideBelow && HIDE_BELOW_CLASS[col.hideBelow])}
                         >
                           {col.render
                             ? col.render(row, virtualRow.index)

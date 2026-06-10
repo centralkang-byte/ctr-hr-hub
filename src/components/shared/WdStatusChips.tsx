@@ -39,7 +39,7 @@ const TONE_CHIP: Record<WdChipTone, string> = {
   accent: 'bg-primary-container/40 text-primary',
   warn: 'bg-wd-orange-soft text-wd-orange-ink',
   danger: 'bg-alert-red/10 text-destructive',
-  success: 'bg-tertiary/10 text-[#15803d]',
+  success: 'bg-tertiary/10 text-[#006b39]',
 }
 
 const TONE_DOT: Record<WdChipTone, string> = {

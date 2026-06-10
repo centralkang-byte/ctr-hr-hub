@@ -50,7 +50,7 @@ const TONE_VALUE: Record<WdStatTone, string> = {
 const TONE_ICON: Record<WdStatTone, string> = {
   default: 'text-muted-foreground',
   info: 'text-primary',
-  success: 'text-[#15803d]',
+  success: 'text-[#006b39]',
   warning: 'text-wd-orange',
   danger: 'text-destructive',
 }
@@ -79,8 +79,8 @@ export function WdStatStrip({ items, className }: WdStatStripProps) {
             key={labelId}
             aria-labelledby={labelId}
             className={cn(
-              'flex flex-col gap-2.5 rounded-2xl border border-border/15 bg-card p-5',
-              'hover:border-border/40 hover:shadow-sm',
+              'flex flex-col gap-2.5 rounded-2xl border border-border bg-card p-5',
+              'hover:border-border-strong hover:shadow-sm',
               MOTION.microOut,
             )}
           >
@@ -97,7 +97,8 @@ export function WdStatStrip({ items, className }: WdStatStripProps) {
               </h3>
             </div>
 
-            <p className={cn(TYPOGRAPHY.displaySm, 'flex items-baseline gap-1 font-mono tabular-nums', TONE_VALUE[tone])}>
+            {/* Wave 0: proto .ss-val = Pretendard 500 + tnum (mono 아님) */}
+            <p className={cn(TYPOGRAPHY.displaySm, 'flex items-baseline gap-1 tabular-nums', TONE_VALUE[tone])}>
               {it.value}
               {it.unit ? (
                 <span className="text-sm font-medium text-muted-foreground">{it.unit}</span>

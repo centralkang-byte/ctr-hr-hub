@@ -57,7 +57,7 @@ export function EmptyState({
       className={cn(
         'flex flex-col items-center justify-center gap-2 text-center',
         SIZE_PAD[size],
-        standalone && 'rounded-2xl border border-border/15 bg-card',
+        standalone && 'rounded-2xl border border-border bg-card',
         className,
       )}
     >

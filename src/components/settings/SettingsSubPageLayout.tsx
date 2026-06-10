@@ -102,7 +102,7 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
         {/* Main Area: Side Tabs + Content */}
         <div className="flex gap-0 rounded-2xl bg-card shadow-sm">
           {/* Side Tabs — Desktop */}
-          <nav className="hidden w-[220px] shrink-0 border-r border-border/30 lg:block">
+          <nav className="hidden w-[220px] shrink-0 border-r border-border lg:block">
             <div className="p-2">
               {config.tabs.map((tab) => (
                 <button
@@ -126,7 +126,7 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
           </nav>
 
           {/* Side Tabs — Mobile */}
-          <div className="block border-b border-border/30 p-3 lg:hidden">
+          <div className="block border-b border-border p-3 lg:hidden">
             <select
               value={activeTab}
               onChange={(e) => handleTabChange(e.target.value)}

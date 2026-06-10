@@ -4,19 +4,13 @@
 
 import type { Metadata, Viewport } from 'next'
 import localFont from 'next/font/local'
-import { Outfit } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Providers } from '@/app/providers'
 import './globals.css'
 
-const outfit = Outfit({
-  subsets: ['latin'],
-  variable: '--font-outfit',
-  display: 'swap',
-})
-
+// Wave 0: Outfit 제거 — 프로토(_design-reference)는 Pretendard + Geist Mono만 사용
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
   variable: '--font-geist-sans',
@@ -63,7 +57,7 @@ export default async function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className={`${outfit.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased tracking-ctr`}
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased tracking-ctr`}
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>{children}</Providers>
