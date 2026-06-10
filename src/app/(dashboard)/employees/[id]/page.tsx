@@ -9,7 +9,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { ROLE } from '@/lib/constants'
-import type { SessionUser, DeptOption } from '@/types'
+import type { SessionUser } from '@/types'
 import { EmployeeDetailClient } from './EmployeeDetailClient'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import { getManagerIdByPosition } from '@/lib/employee/direct-reports'
@@ -27,9 +27,6 @@ export default async function EmployeeDetailPage({
 
   const user = session.user as SessionUser
 
-  const deptFilter =
-    user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }
-
   const companyFilter =
     user.role === ROLE.SUPER_ADMIN ? {} : { id: user.companyId }
 
@@ -38,7 +35,8 @@ export default async function EmployeeDetailPage({
       ? {}
       : { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
 
-  const [rawEmployee, companies, departments, jobGrades, jobCategories, gradeTitleMappings] = await Promise.all([
+  // 부서/직급/직무군/매핑 fetch 제거 — 편집 폼에서 발령 필드 제외로 미사용 (S276 ed-01)
+  const [rawEmployee, companies] = await Promise.all([
     prisma.employee.findFirst({
       where: { id, deletedAt: null, ...assignmentFilter },
       include: {
@@ -71,33 +69,6 @@ export default async function EmployeeDetailPage({
       where: { deletedAt: null, ...companyFilter },
       select: { id: true, name: true },
       orderBy: { name: 'asc' },
-    }),
-    prisma.department.findMany({
-      where: { deletedAt: null, ...deptFilter },
-      select: { id: true, name: true, companyId: true },
-      orderBy: { name: 'asc' },
-    }),
-    prisma.jobGrade.findMany({
-      where: { deletedAt: null, ...deptFilter },
-      select: { id: true, code: true, name: true, gradeType: true, rankOrder: true, companyId: true },
-      orderBy: { rankOrder: 'asc' },
-    }),
-    prisma.jobCategory.findMany({
-      where: { deletedAt: null, ...deptFilter },
-      select: { id: true, name: true, companyId: true },
-      orderBy: { name: 'asc' },
-    }),
-    prisma.gradeTitleMapping.findMany({
-      where: {
-        ...deptFilter,
-        jobGrade: { deletedAt: null },
-        employeeTitle: { deletedAt: null },
-      },
-      include: {
-        jobGrade: { select: { id: true, code: true, name: true, gradeType: true, rankOrder: true, companyId: true } },
-        employeeTitle: { select: { id: true, name: true } },
-      },
-      orderBy: { jobGrade: { rankOrder: 'asc' } },
     }),
   ])
 
@@ -166,10 +137,6 @@ export default async function EmployeeDetailPage({
         user={user}
         employee={employee as Parameters<typeof EmployeeDetailClient>[0]['employee']}
         companies={companies}
-        departments={departments as DeptOption[]}
-        jobGrades={jobGrades}
-        jobCategories={jobCategories}
-        gradeTitleMappings={gradeTitleMappings}
         division={division}
         canViewGrade={canViewGradeFlag}
         canViewSensitive={canViewGradeFlag}

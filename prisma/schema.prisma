@@ -2182,6 +2182,8 @@ model Attendance {
   company   Company  @relation(fields: [companyId], references: [id])
   companyId String   @map("company_id")
 
+  // 1일 1레코드 정책 (S276 — 중복 출근 차단, 실측 기존 중복 0건)
+  @@unique([employeeId, workDate])
   @@index([employeeId, workDate])
   @@map("attendances")
 }
@@ -5536,6 +5538,10 @@ model AttendanceSetting {
 
   // 차단 기능 (true=KR, false=기타 법인)
   enableBlocking Boolean @default(false) @map("enable_blocking")
+
+  // 기준 출퇴근 시간 (HH:mm) — 지각/조퇴 판정 기준 (S276)
+  workStartTime String @default("08:30") @map("work_start_time")
+  workEndTime   String @default("17:30") @map("work_end_time")
 
   // 법인 타임존
   timezone String @default("Asia/Seoul")

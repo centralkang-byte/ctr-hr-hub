@@ -63,6 +63,10 @@ const PUBLIC_PATHS = [
   '/login',
   '/api/auth',
   '/api/health',
+  // 근태 단말기 디바이스 엔드포인트 — 세션이 아닌 자체 인증(X-Terminal-ID/Secret,
+  // DB attendance_terminals.apiSecret 검증)을 라우트에서 수행. 세션 강제 시 모든
+  // 단말기 트래픽이 401로 차단돼 기능 자체가 불통 (S276 e2e가 노출, #128 carve-out 선례)
+  '/api/v1/terminals/clock',
 ]
 
 function isPublicPath(pathname: string): boolean {

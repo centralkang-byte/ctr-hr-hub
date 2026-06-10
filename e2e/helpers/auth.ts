@@ -9,7 +9,9 @@ import { type Page, expect } from '@playwright/test'
 
 // ─── Role types ──────────────────────────────────────────
 // HR_ADMIN_CN = 해외 법인(CTR-CN) 계정 — 해외 급여 self-service 가드 e2e용.
-export type RoleType = 'SUPER_ADMIN' | 'HR_ADMIN' | 'HR_ADMIN_CN' | 'EXECUTIVE' | 'MANAGER' | 'EMPLOYEE'
+// EMPLOYEE_C  = 근태 판정 e2e 전용(송현우) — fullyParallel에서 employee-a를 쓰는
+//               attendance-core와 DB 픽스처 충돌 회피 (S276).
+export type RoleType = 'SUPER_ADMIN' | 'HR_ADMIN' | 'HR_ADMIN_CN' | 'EXECUTIVE' | 'MANAGER' | 'EMPLOYEE' | 'EMPLOYEE_C'
 
 const TEST_EMAILS: Record<RoleType, string> = {
   SUPER_ADMIN: 'super@ctr.co.kr',
@@ -18,6 +20,7 @@ const TEST_EMAILS: Record<RoleType, string> = {
   EXECUTIVE:   'executive@ctr.co.kr',
   MANAGER:     'manager@ctr.co.kr',
   EMPLOYEE:    'employee-a@ctr.co.kr',
+  EMPLOYEE_C:  'employee-c@ctr.co.kr',
 }
 
 // ─── storageState path helper ────────────────────────────

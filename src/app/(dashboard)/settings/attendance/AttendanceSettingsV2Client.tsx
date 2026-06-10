@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import { Loader2, Save } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
 import { getCategoryConfig, type AttendanceTabSlug } from '@/components/settings/settings-config'
 import { SettingsSubPageLayout } from '@/components/settings/SettingsSubPageLayout'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
@@ -36,9 +37,12 @@ function WorkSchedulesTab({ companyId }: { companyId: string | null }) {
   const t = useTranslations('settings')
   const tc = useTranslations('common')
   const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [settings, setSettings] = useState({
     standardHoursPerDay: 8,
     standardDaysPerWeek: 5,
+    workStartTime: '08:30',
+    workEndTime: '17:30',
     lunchStartTime: '12:00',
     lunchEndTime: '13:00',
     flexEnabled: false,
@@ -46,13 +50,17 @@ function WorkSchedulesTab({ companyId }: { companyId: string | null }) {
 
   useEffect(() => {
     setLoading(true)
-    apiClient.get('/api/v1/settings/attendance').then((res) => {
+    // SUPER_ADMIN 법인 선택 시 해당 법인 설정 조회 (API가 resolveCompanyId로 검증)
+    const query = companyId ? `?companyId=${companyId}` : ''
+    apiClient.get(`/api/v1/settings/attendance${query}`).then((res) => {
       if (res.data) {
         const d = res.data as Record<string, unknown>
         setSettings((prev) => ({
           ...prev,
           standardHoursPerDay: (d.standardHoursPerDay as number) ?? 8,
           standardDaysPerWeek: (d.standardDaysPerWeek as number) ?? 5,
+          workStartTime: (d.workStartTime as string) ?? '08:30',
+          workEndTime: (d.workEndTime as string) ?? '17:30',
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           flexEnabled: (d.flexWork as any)?.flexEnabled as boolean ?? false,
         }))
@@ -60,6 +68,29 @@ function WorkSchedulesTab({ companyId }: { companyId: string | null }) {
       setLoading(false)
     }).catch(() => setLoading(false))
   }, [companyId])
+
+  const handleSave = async () => {
+    try {
+      setSaving(true)
+      await apiClient.put('/api/v1/settings/attendance', {
+        standardHoursPerDay: settings.standardHoursPerDay,
+        standardDaysPerWeek: settings.standardDaysPerWeek,
+        workStartTime: settings.workStartTime,
+        workEndTime: settings.workEndTime,
+        // 선택 법인이 저장 대상 법인 (미전달 시 본인 법인) — r2-3
+        ...(companyId ? { companyId } : {}),
+      })
+      toast({ title: '저장되었습니다' })
+    } catch (err) {
+      toast({
+        title: '저장 실패',
+        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        variant: 'destructive',
+      })
+    } finally {
+      setSaving(false)
+    }
+  }
 
   if (loading) return <div className="flex items-center justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>
 
@@ -94,6 +125,25 @@ function WorkSchedulesTab({ companyId }: { companyId: string | null }) {
         </div>
       </SettingFieldWithOverride>
 
+      <SettingFieldWithOverride label={t('workBaseHours')} status={companyId ? 'custom' : 'global'} companySelected={!!companyId}>
+        <div className="flex items-center gap-2">
+          <Input
+            type="time"
+            value={settings.workStartTime}
+            onChange={(e) => setSettings((p) => ({ ...p, workStartTime: e.target.value }))}
+            className="w-32"
+            aria-label={t('workBaseHours')}
+          />
+          <span className="text-sm text-muted-foreground">~</span>
+          <Input
+            type="time"
+            value={settings.workEndTime}
+            onChange={(e) => setSettings((p) => ({ ...p, workEndTime: e.target.value }))}
+            className="w-32"
+          />
+        </div>
+      </SettingFieldWithOverride>
+
       <SettingFieldWithOverride label={t('lunchTime')} status="global" companySelected={!!companyId}>
         <div className="flex items-center gap-2">
           <Input
@@ -125,8 +175,8 @@ function WorkSchedulesTab({ companyId }: { companyId: string | null }) {
       </SettingFieldWithOverride>
 
       <div className="flex justify-end pt-4">
-        <Button className={BUTTON_VARIANTS.primary}>
-          <Save className="mr-2 h-4 w-4" />
+        <Button className={BUTTON_VARIANTS.primary} onClick={handleSave} disabled={saving}>
+          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           {tc('save')}
         </Button>
       </div>

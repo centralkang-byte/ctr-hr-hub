@@ -13,6 +13,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { computeOvertimeMinutes } from '@/lib/attendance/overtime'
+import { judgeStatusForAttendance } from '@/lib/attendance/judgeStatus'
 import type { SessionUser } from '@/types'
 
 // ─── Correction Schema ──────────────────────────────────
@@ -138,6 +139,23 @@ export const PUT = withPermission(
       // 시각이 삭제되면 파생 분(分)도 함께 초기화 — stale 값이 급여로 흘러가지 않게
       updateData.totalMinutes = null
       updateData.overtimeMinutes = null
+    }
+
+    // 시각이 바뀌었는데 status를 명시하지 않았으면 자동 재판정 (S276 att-09).
+    // 규칙: 명시 status 항상 우선 · clockIn 없음→지각판정 안 함 · clockOut 없음→조퇴판정 안 함 ·
+    //       수동 ABSENT는 시각 수정만으로 해제 안 됨(sticky).
+    // 판정 기준은 보정 "대상 행"의 법인/직원 (SUPER_ADMIN 보정 시 user.companyId 사용 금지)
+    const timesChanged =
+      parsed.data.clockIn !== undefined || parsed.data.clockOut !== undefined
+    if (timesChanged && parsed.data.status === undefined) {
+      updateData.status = await judgeStatusForAttendance({
+        companyId: attendance.companyId,
+        employeeId: attendance.employeeId,
+        workDate: attendance.workDate,
+        clockIn: effectiveClockIn,
+        clockOut: effectiveClockOut,
+        previousStatus: attendance.status,
+      })
     }
 
     // 6. Update the record

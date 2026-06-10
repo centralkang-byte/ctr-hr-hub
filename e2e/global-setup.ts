@@ -18,6 +18,7 @@ const ROLES = {
   EXECUTIVE: 'executive@ctr.co.kr',
   MANAGER: 'manager@ctr.co.kr',
   EMPLOYEE: 'employee-a@ctr.co.kr',
+  EMPLOYEE_C: 'employee-c@ctr.co.kr', // 근태 판정 e2e 전용 — employee-a 픽스처 충돌 회피 (S276)
 } as const
 
 async function globalSetup(config: FullConfig) {

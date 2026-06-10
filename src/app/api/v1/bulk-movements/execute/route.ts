@@ -14,8 +14,7 @@ import { getTemplate } from '@/lib/bulk-movement/templates'
 import { parseCSV } from '@/lib/bulk-movement/parser'
 import { validateRows, verifyValidationToken } from '@/lib/bulk-movement/validator'
 import { executeMovements } from '@/lib/bulk-movement/executor'
-import { resolveApprovalFlow } from '@/lib/approval/resolve-approval-flow'
-import { logAudit, extractRequestMeta } from '@/lib/audit'
+import { extractRequestMeta } from '@/lib/audit'
 import type { SessionUser } from '@/types'
 
 export const POST = withPermission(
@@ -40,23 +39,10 @@ export const POST = withPermission(
       throw forbidden('이 발령 유형은 최고관리자만 사용할 수 있습니다')
     }
 
-    // ApprovalFlow 검증: personnel_order 모듈 (규정: CEO 승인)
-    // 배치 발령이므로 step의 role과 현재 사용자 역할을 비교
-    const steps = await resolveApprovalFlow('personnel_order', user.companyId)
-    if (steps.length > 0) {
-      const requiredRoles = steps.map(s => s.approverRole).filter(Boolean)
-      const roleMap: Record<string, string[]> = {
-        ceo: [ROLE.SUPER_ADMIN, ROLE.EXECUTIVE],
-        hr_admin: [ROLE.HR_ADMIN, ROLE.SUPER_ADMIN],
-        dept_head: [ROLE.MANAGER, ROLE.HR_ADMIN, ROLE.SUPER_ADMIN],
-        direct_manager: [ROLE.MANAGER, ROLE.HR_ADMIN, ROLE.SUPER_ADMIN],
-        finance: [ROLE.HR_ADMIN, ROLE.SUPER_ADMIN],
-      }
-      const allowedSystemRoles = requiredRoles.flatMap(r => roleMap[r!] ?? [])
-      if (!allowedSystemRoles.includes(user.role)) {
-        throw forbidden('인사발령 실행 권한이 없습니다. (결재 플로우 기준)')
-      }
-    }
+    // 실행(실무)은 HR_UP에 허용 — withPermission(EMPLOYEES.APPROVE)가 게이트.
+    // 과거 결재 플로우(personnel_order=[ceo]) 기반 role 검사는 실행자=승인자를 혼용해
+    // HR-only 페이지에서 HR이 실행 불가한 데드락을 만들었음 (S276 CEO 결정: 실행≠승인).
+    // 상신→CEO 승인 정식 플로우는 별도 트랙 (급여 #126/#128 방식).
 
     // 파일 파싱
     const buffer = await file.arrayBuffer()
@@ -83,31 +69,19 @@ export const POST = withPermission(
     }
 
     try {
+      // 감사 로그는 executor 트랜잭션 내부에서 기록 (발령과 원자적 — S276)
+      const meta = extractRequestMeta(req.headers)
       const result = await executeMovements(
         type as MovementType,
         validation.validatedRows,
-        user.id,
-        userCompanyId,
         file.name,
-      )
-
-      // 감사 로그 (fire-and-forget) — executor의 비존재 테이블 raw INSERT 대체 (S275)
-      const meta = extractRequestMeta(req.headers)
-      logAudit({
-        actorId: user.employeeId,
-        action: 'bulk_movement.execute',
-        resourceType: 'bulk_movement',
-        resourceId: result.executionId,
-        companyId: user.companyId,
-        changes: {
-          movementType: type,
-          fileName: file.name,
-          totalRows: rows.length,
-          applied: result.applied,
+        {
+          actorEmployeeId: user.employeeId,
+          companyId: user.companyId,
+          ip: meta.ip,
+          userAgent: meta.userAgent,
         },
-        ip: meta.ip,
-        userAgent: meta.userAgent,
-      })
+      )
 
       return apiSuccess(result)
     } catch (error) {

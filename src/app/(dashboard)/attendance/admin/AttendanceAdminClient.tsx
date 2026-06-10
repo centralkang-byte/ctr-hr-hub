@@ -221,7 +221,9 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
         // datetime-local → ISO; 빈 입력은 null(시각 삭제) — API zod가 ISO/null만 수용
         clockIn: correction.clockIn ? new Date(correction.clockIn).toISOString() : null,
         clockOut: correction.clockOut ? new Date(correction.clockOut).toISOString() : null,
-        status: correction.status,
+        // status는 사용자가 실제로 바꿨을 때만 전송 — 미전송 시 서버가 시각 기준으로
+        // 자동 재판정 (항상 보내면 재판정 경로가 죽음, S276 att-09)
+        ...(correction.status !== selectedAnomaly.status ? { status: correction.status } : {}),
         workType: correction.workType,
         note: correction.note,
       })
