@@ -10,9 +10,32 @@ import { badRequest, notFound, handlePrismaError, isAppError } from '@/lib/error
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { invalidateMultiple, CACHE_STRATEGY } from '@/lib/cache'
 import type { SessionUser } from '@/types'
 
 type RouteContext = { params: Promise<Record<string, string>> }
+
+// Prisma interactive transaction client 타입 (executor.ts 선례)
+type TxClient = Omit<
+  typeof prisma,
+  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+>
+
+// changes JSON은 클라이언트 입력 — 참조 부서가 plan 법인 소속인지 강제 (cross-tenant 차단)
+async function requireDeptInCompany(
+  tx: TxClient,
+  deptId: string,
+  companyId: string,
+  label: string,
+): Promise<void> {
+  const dept = await tx.department.findFirst({
+    where: { id: deptId, companyId, deletedAt: null },
+    select: { id: true },
+  })
+  if (!dept) {
+    throw badRequest(`${label} 부서가 개편 대상 법인에 속하지 않습니다.`)
+  }
+}
 
 // ─── Change type definitions (mirrors RestructureModal) ─────
 
@@ -71,6 +94,7 @@ export const POST = withPermission(
               // Determine level from parent
               let level = 0
               if (change.newDeptParentId) {
+                await requireDeptInCompany(tx, change.newDeptParentId, plan.companyId, '신설 상위')
                 const parent = await tx.department.findUnique({
                   where: { id: change.newDeptParentId },
                   select: { level: true },
@@ -99,6 +123,7 @@ export const POST = withPermission(
               // Determine new level
               let newLevel = 0
               if (change.targetParentId) {
+                await requireDeptInCompany(tx, change.targetParentId, plan.companyId, '이동 상위')
                 const parent = await tx.department.findUnique({
                   where: { id: change.targetParentId },
                   select: { level: true },
@@ -117,10 +142,14 @@ export const POST = withPermission(
             case 'merge': {
               if (!change.sourceDeptId || !change.targetDeptId) break
 
+              await requireDeptInCompany(tx, change.sourceDeptId, plan.companyId, '통합 원천')
+              await requireDeptInCompany(tx, change.targetDeptId, plan.companyId, '통합 대상')
+
               // Move all active employees from source to target — updateMany + createMany로 N+1 제거
               const sourceEmployees = await tx.employeeAssignment.findMany({
                 where: {
                   departmentId: change.sourceDeptId,
+                  companyId: plan.companyId,
                   endDate: null,
                   isPrimary: true,
                 },
@@ -176,6 +205,8 @@ export const POST = withPermission(
             case 'close': {
               if (!change.closeDeptId) break
 
+              await requireDeptInCompany(tx, change.closeDeptId, plan.companyId, '폐지')
+
               // Find parent dept for reassignment
               const closingDept = await tx.department.findUnique({
                 where: { id: change.closeDeptId },
@@ -186,6 +217,7 @@ export const POST = withPermission(
               const closingEmployees = await tx.employeeAssignment.findMany({
                 where: {
                   departmentId: change.closeDeptId,
+                  companyId: plan.companyId,
                   endDate: null,
                   isPrimary: true,
                 },
@@ -226,9 +258,13 @@ export const POST = withPermission(
             case 'transfer_employee': {
               if (!change.employeeId || !change.toDeptId) break
 
+              await requireDeptInCompany(tx, change.toDeptId, plan.companyId, '인원 이동 대상')
+
+              // plan 법인 소속 활성 발령만 — 타 법인 직원의 발령 close/생성 차단 (rs-01)
               const currentAssignment = await tx.employeeAssignment.findFirst({
                 where: {
                   employeeId: change.employeeId,
+                  companyId: plan.companyId,
                   endDate: null,
                   isPrimary: true,
                 },
@@ -288,6 +324,12 @@ export const POST = withPermission(
           },
         })
       })
+
+      // 조직 구조 변경 → 관련 캐시 무효화 (rules/performance.md; Redis 실패는 silent)
+      await invalidateMultiple(
+        [CACHE_STRATEGY.ORG_TREE, CACHE_STRATEGY.SIDEBAR, CACHE_STRATEGY.DASHBOARD_KPI],
+        plan.companyId,
+      )
 
       const { ip, userAgent } = extractRequestMeta(req.headers)
       logAudit({

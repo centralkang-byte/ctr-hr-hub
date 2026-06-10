@@ -7,12 +7,19 @@ import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { forbidden } from '@/lib/errors'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { formatToTz, parseDateOnly } from '@/lib/timezone'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
+    // 팀 근태는 매니저 이상 — EMPLOYEE의 부서원 출퇴근 시각 열람 차단 (att-04)
+    if (user.role === ROLE.EMPLOYEE) {
+      throw forbidden('팀 근태 조회 권한이 없습니다.')
+    }
+
     // 1. Get manager's department
     const manager = await prisma.employee.findUnique({
       where: { id: user.employeeId },
@@ -25,17 +32,16 @@ export const GET = withPermission(
       },
     })
 
+    // 오늘 날짜 — workDate는 "KST 날짜의 UTC 자정"으로 저장되므로 KST 달력 날짜 기준 (att-06)
+    const dateStr = formatToTz(new Date(), 'Asia/Seoul', 'yyyy-MM-dd')
+    const today = parseDateOnly(dateStr)
+    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000)
+
     const managerPrimary = extractPrimaryAssignment(manager?.assignments ?? [])
     const managerDepartmentId = managerPrimary?.departmentId
     if (!managerDepartmentId) {
-      return apiSuccess({ date: new Date().toISOString().slice(0, 10), members: [] })
+      return apiSuccess({ date: dateStr, members: [] })
     }
-
-    // 2. Today's date range
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
 
     // 3. Get all team members in the same department
     const teamMembers = await prisma.employee.findMany({
@@ -64,7 +70,7 @@ export const GET = withPermission(
     })
 
     if (teamMembers.length === 0) {
-      return apiSuccess({ date: today.toISOString().slice(0, 10), members: [] })
+      return apiSuccess({ date: dateStr, members: [] })
     }
 
     // 4. Get today's attendance for all team members
@@ -105,7 +111,7 @@ export const GET = withPermission(
     })
 
     return apiSuccess({
-      date: today.toISOString().slice(0, 10),
+      date: dateStr,
       members,
     })
   },

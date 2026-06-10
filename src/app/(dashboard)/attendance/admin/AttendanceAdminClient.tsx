@@ -14,6 +14,7 @@ import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
 import { TYPOGRAPHY } from '@/lib/styles/typography'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { apiClient } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
@@ -51,12 +52,14 @@ interface AttendanceKpi {
 interface AnomalyRecord {
   id: string
   employeeId: string
+  employeeName: string
+  employeeNo: string
   clockIn: string | null
   clockOut: string | null
   status: string
   workType: string
   totalMinutes: number
-  employee?: { name: string; employeeNo: string }
+  note?: string | null
 }
 
 interface AdminAttendanceData {
@@ -96,6 +99,16 @@ function formatMinutes(m: number): string {
   return `${Math.floor(m / 60)}h ${m % 60}m`
 }
 
+// ISO(Z) → datetime-local 입력값. 로컬 시각 성분 조합 — toISOString().slice는 UTC라 금지
+// (보정 기준 TZ = 운영자 브라우저; 법인 TZ 일원화는 att-07 별 트랙)
+function toDatetimeLocal(iso: string | null | undefined): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
 const INITIAL_CORRECTION: CorrectionForm = {
   clockIn: '',
   clockOut: '',
@@ -121,6 +134,13 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
     ABSENT: t('absent'),
   }
 
+  const WORKTYPE_LABELS: Record<string, string> = {
+    NORMAL: t('normal'),
+    OVERTIME: t('overtime'),
+    NIGHT: t('night'),
+    HOLIDAY: t('holiday'),
+  }
+
   const [data, setData] = useState<AdminAttendanceData | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -142,8 +162,12 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
       ])
       setData(adminRes.data)
       setAlerts(alertRes.data ?? [])
-    } catch {
-      // TODO: error toast
+    } catch (err) {
+      toast({
+        title: '로드 실패',
+        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        variant: 'destructive',
+      })
     } finally {
       setLoading(false)
     }
@@ -154,8 +178,12 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
     try {
       await apiClient.patch(`/api/v1/attendance/work-hour-alerts/${alertId}`, {})
       setAlerts((prev) => prev.filter((a) => a.id !== alertId))
-    } catch {
-      // TODO: error toast
+    } catch (err) {
+      toast({
+        title: '해제 실패',
+        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        variant: 'destructive',
+      })
     } finally {
       setResolvingId(null)
     }
@@ -170,8 +198,8 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
   const handleRowClick = useCallback((row: AnomalyRecord) => {
     setSelectedAnomaly(row)
     setCorrection({
-      clockIn: row.clockIn ?? '',
-      clockOut: row.clockOut ?? '',
+      clockIn: toDatetimeLocal(row.clockIn),
+      clockOut: toDatetimeLocal(row.clockOut),
       status: row.status,
       workType: row.workType,
       note: '',
@@ -190,16 +218,22 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
     setSubmitting(true)
     try {
       await apiClient.put(`/api/v1/attendance/${selectedAnomaly.id}`, {
-        clockIn: correction.clockIn || null,
-        clockOut: correction.clockOut || null,
+        // datetime-local → ISO; 빈 입력은 null(시각 삭제) — API zod가 ISO/null만 수용
+        clockIn: correction.clockIn ? new Date(correction.clockIn).toISOString() : null,
+        clockOut: correction.clockOut ? new Date(correction.clockOut).toISOString() : null,
         status: correction.status,
         workType: correction.workType,
         note: correction.note,
       })
+      toast({ title: '저장되었습니다' })
       handleCloseDialog()
       void fetchData()
-    } catch {
-      // TODO: error toast
+    } catch (err) {
+      toast({
+        title: '저장 실패',
+        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        variant: 'destructive',
+      })
     } finally {
       setSubmitting(false)
     }
@@ -221,12 +255,12 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
     {
       key: 'employeeName',
       header: te('name'),
-      render: (row) => row.employee?.name ?? '—',
+      render: (row) => row.employeeName || '—',
     },
     {
       key: 'employeeNo',
       header: te('employeeCode'),
-      render: (row) => row.employee?.employeeNo ?? '—',
+      render: (row) => row.employeeNo || '—',
     },
     {
       key: 'clockIn',
@@ -250,6 +284,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
     {
       key: 'workType',
       header: t('workType'),
+      render: (row) => WORKTYPE_LABELS[row.workType] ?? row.workType,
     },
   ]
 
@@ -370,7 +405,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {t('correction')} — {selectedAnomaly?.employee?.name ?? ''}
+              {t('correction')} — {selectedAnomaly?.employeeName ?? ''}
             </DialogTitle>
           </DialogHeader>
 

@@ -12,9 +12,10 @@ import { isValidMovementType } from '@/lib/bulk-movement/types'
 import type { MovementType } from '@/lib/bulk-movement/types'
 import { getTemplate } from '@/lib/bulk-movement/templates'
 import { parseCSV } from '@/lib/bulk-movement/parser'
-import { verifyValidationToken } from '@/lib/bulk-movement/validator'
+import { validateRows, verifyValidationToken } from '@/lib/bulk-movement/validator'
 import { executeMovements } from '@/lib/bulk-movement/executor'
 import { resolveApprovalFlow } from '@/lib/approval/resolve-approval-flow'
+import { logAudit, extractRequestMeta } from '@/lib/audit'
 import type { SessionUser } from '@/types'
 
 export const POST = withPermission(
@@ -66,26 +67,47 @@ export const POST = withPermission(
       throw badRequest(tokenResult.reason ?? '검증 토큰이 유효하지 않습니다.')
     }
 
-    // CSV 파싱 → ValidatedRow로 변환
+    // CSV 파싱
     const rows = parseCSV(buffer)
 
     // 회사 범위 결정
     const userCompanyId = user.role === ROLE.SUPER_ADMIN ? '' : user.companyId
 
+    // 서버측 재검증 (SSOT) — 토큰은 파일 무결성만 보장하므로 데이터 신선도는
+    // validateRows로 재확인하고, executor 입력(내부 UUID·canonical 필드)도 여기서 얻는다
+    const validation = await validateRows(rows, template, userCompanyId, buffer)
+    if (!validation.valid || validation.validatedRows.length === 0) {
+      throw badRequest('CSV 재검증에 실패했습니다. 파일을 다시 검증해 주세요.', {
+        errors: validation.errors,
+      })
+    }
+
     try {
       const result = await executeMovements(
         type as MovementType,
-        rows.map((r) => ({
-          rowNum: r.rowNum,
-          employeeId: '', // executor에서 re-validation으로 조회
-          employeeNo: (r.raw['사번'] ?? '').trim(),
-          employeeName: '',
-          data: r.raw,
-        })),
+        validation.validatedRows,
         user.id,
         userCompanyId,
         file.name,
       )
+
+      // 감사 로그 (fire-and-forget) — executor의 비존재 테이블 raw INSERT 대체 (S275)
+      const meta = extractRequestMeta(req.headers)
+      logAudit({
+        actorId: user.employeeId,
+        action: 'bulk_movement.execute',
+        resourceType: 'bulk_movement',
+        resourceId: result.executionId,
+        companyId: user.companyId,
+        changes: {
+          movementType: type,
+          fileName: file.name,
+          totalRows: rows.length,
+          applied: result.applied,
+        },
+        ip: meta.ip,
+        userAgent: meta.userAgent,
+      })
 
       return apiSuccess(result)
     } catch (error) {

@@ -6,7 +6,8 @@ import type {
   ParsedRow,
   ValidationError,
   ValidationRow,
-  ValidateResponse,
+  ValidateResult,
+  ValidatedRow,
 } from './types'
 
 // Prisma include 결과 타입 (findFirst + include)
@@ -38,9 +39,11 @@ export async function validateRows(
   template: MovementTemplate,
   userCompanyId: string,
   fileBuffer: ArrayBuffer,
-): Promise<ValidateResponse> {
+): Promise<ValidateResult> {
   const errors: ValidationError[] = []
   const preview: ValidationRow[] = []
+  // 서버 전용 — executor 입력 계약(영문 canonical 필드 + 해석된 FK id)
+  const validatedRows: ValidatedRow[] = []
 
   // ── 파일 내 중복 사번 검출 ──
   const empNoCounts = new Map<string, number[]>()
@@ -198,6 +201,16 @@ export async function validateRows(
       newValue: typeResult.newValue,
       status: typeResult.hasError ? 'error' : typeResult.hasWarning ? 'warning' : 'valid',
     })
+
+    if (!typeResult.hasError && typeResult.data) {
+      validatedRows.push({
+        rowNum: row.rowNum,
+        employeeId: employee.id,
+        employeeNo: empNo,
+        employeeName: employee.name,
+        data: typeResult.data,
+      })
+    }
   }
 
   const hasErrors = errors.some((e) => e.severity === 'error')
@@ -218,6 +231,7 @@ export async function validateRows(
     errors,
     preview,
     validationToken,
+    validatedRows,
   }
 }
 
@@ -228,6 +242,49 @@ interface TypeValidationResult {
   newValue: string
   hasError: boolean
   hasWarning: boolean
+  // executor 입력 계약 — 코드가 해석된 canonical 필드 (hasError 시 미생성)
+  data?: Record<string, string>
+}
+
+// 선택 코드 컬럼 해석 — 빈 값이면 null(미지정), 코드가 법인 내에 없으면 RESOLVE_FAILED
+const RESOLVE_FAILED = Symbol('resolve-failed')
+
+async function resolveCodeOrError(
+  kind: 'position' | 'workLocation',
+  rawCode: string | undefined,
+  companyId: string,
+  rowNum: number,
+  column: string,
+  errors: ValidationError[],
+): Promise<string | null | typeof RESOLVE_FAILED> {
+  const code = (rawCode ?? '').trim()
+  if (!code) return null
+  const found = kind === 'position'
+    ? await prisma.position.findFirst({
+        where: { code, companyId, deletedAt: null },
+        select: { id: true },
+      })
+    : await prisma.workLocation.findFirst({
+        where: { code, companyId, deletedAt: null },
+        select: { id: true },
+      })
+  if (!found) {
+    errors.push({
+      row: rowNum,
+      column,
+      message: `${column} '${code}'를 소속 법인에서 찾을 수 없습니다`,
+      severity: 'error',
+    })
+    return RESOLVE_FAILED
+  }
+  return found.id
+}
+
+// undefined 값 제거 (executor는 `?? current` 폴백을 쓰므로 빈 필드는 키 자체를 빼야 함)
+function compact(obj: Record<string, string | undefined>): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== undefined && v !== ''),
+  ) as Record<string, string>
 }
 
 async function validateByType(
@@ -241,56 +298,84 @@ async function validateByType(
   let newValue = ''
   let hasError = false
   let hasWarning = false
+  let data: Record<string, string> | undefined
 
   switch (type) {
     case 'transfer': {
+      // 참조 데이터는 직원의 현 소속 법인 범위에서만 해석 (타 법인 코드 차단)
+      const scopeCompanyId = currentAssignment.companyId
       const deptCode = (row.raw['부서코드'] ?? '').trim()
       const dept = await prisma.department.findFirst({
-        where: { code: deptCode, deletedAt: null },
+        where: { code: deptCode, companyId: scopeCompanyId, deletedAt: null },
         select: { id: true, name: true, companyId: true },
       })
       if (!dept) {
         errors.push({
           row: row.rowNum,
           column: '부서코드',
-          message: `부서코드 '${deptCode}'를 찾을 수 없습니다`,
+          message: `부서코드 '${deptCode}'를 소속 법인에서 찾을 수 없습니다`,
           severity: 'error',
         })
         hasError = true
       }
       // 직급코드 검증 (선택)
       const gradeCode = (row.raw['직급코드'] ?? '').trim()
+      let jobGradeId: string | undefined
       if (gradeCode) {
         const grade = await prisma.jobGrade.findFirst({
-          where: { code: gradeCode, deletedAt: null },
+          where: { code: gradeCode, companyId: scopeCompanyId, deletedAt: null },
           select: { id: true },
         })
         if (!grade) {
           errors.push({
             row: row.rowNum,
             column: '직급코드',
-            message: `직급코드 '${gradeCode}'를 찾을 수 없습니다`,
+            message: `직급코드 '${gradeCode}'를 소속 법인에서 찾을 수 없습니다`,
             severity: 'error',
           })
           hasError = true
+        } else {
+          jobGradeId = grade.id
         }
       }
+      const posResolved = await resolveCodeOrError(
+        'position', row.raw['직위코드'], scopeCompanyId, row.rowNum, '직위코드', errors,
+      )
+      if (posResolved === RESOLVE_FAILED) hasError = true
+      const positionId = posResolved === RESOLVE_FAILED ? undefined : posResolved ?? undefined
+      const locResolved = await resolveCodeOrError(
+        'workLocation', row.raw['근무지코드'], scopeCompanyId, row.rowNum, '근무지코드', errors,
+      )
+      if (locResolved === RESOLVE_FAILED) hasError = true
+      const workLocationId = locResolved === RESOLVE_FAILED ? undefined : locResolved ?? undefined
+
       currentValue = currentAssignment.department?.name ?? '(미지정)'
       newValue = dept?.name ?? deptCode
+      if (!hasError && dept) {
+        data = compact({
+          effectiveDate: (row.raw['발효일'] ?? '').trim(),
+          departmentId: dept.id,
+          jobGradeId,
+          positionId,
+          workLocationId,
+          reason: (row.raw['사유'] ?? '').trim() || undefined,
+        })
+      }
       break
     }
 
     case 'promotion': {
+      const scopeCompanyId = currentAssignment.companyId
       const gradeCode = (row.raw['새직급코드'] ?? '').trim()
       const grade = await prisma.jobGrade.findFirst({
-        where: { code: gradeCode, deletedAt: null },
+        where: { code: gradeCode, companyId: scopeCompanyId, deletedAt: null },
         select: { id: true, name: true, rankOrder: true },
       })
       if (!grade) {
         errors.push({
           row: row.rowNum,
           column: '새직급코드',
-          message: `직급코드 '${gradeCode}'를 찾을 수 없습니다`,
+          message: `직급코드 '${gradeCode}'를 소속 법인에서 찾을 수 없습니다`,
           severity: 'error',
         })
         hasError = true
@@ -310,8 +395,22 @@ async function validateByType(
           hasWarning = true
         }
       }
+      const posResolved = await resolveCodeOrError(
+        'position', row.raw['직위코드'], scopeCompanyId, row.rowNum, '직위코드', errors,
+      )
+      if (posResolved === RESOLVE_FAILED) hasError = true
+      const positionId = posResolved === RESOLVE_FAILED ? undefined : posResolved ?? undefined
+
       currentValue = currentAssignment.jobGrade?.name ?? '(미지정)'
       newValue = grade?.name ?? gradeCode
+      if (!hasError && grade) {
+        data = compact({
+          effectiveDate: (row.raw['발효일'] ?? '').trim(),
+          jobGradeId: grade.id,
+          positionId,
+          reason: (row.raw['사유'] ?? '').trim() || undefined,
+        })
+      }
       break
     }
 
@@ -365,8 +464,64 @@ async function validateByType(
         })
         hasWarning = true
       }
+      // 선택 코드(직급/직위/고용형태)는 전환 대상 법인 범위에서 해석
+      let jobGradeId: string | undefined
+      let positionId: string | undefined
+      let employmentType: string | undefined
+      if (company) {
+        const gradeCode = (row.raw['직급코드'] ?? '').trim()
+        if (gradeCode) {
+          const grade = await prisma.jobGrade.findFirst({
+            where: { code: gradeCode, companyId: company.id, deletedAt: null },
+            select: { id: true },
+          })
+          if (!grade) {
+            errors.push({
+              row: row.rowNum,
+              column: '직급코드',
+              message: `직급코드 '${gradeCode}'를 전환 법인에서 찾을 수 없습니다`,
+              severity: 'error',
+            })
+            hasError = true
+          } else {
+            jobGradeId = grade.id
+          }
+        }
+        const posResolved = await resolveCodeOrError(
+          'position', row.raw['직위코드'], company.id, row.rowNum, '직위코드', errors,
+        )
+        if (posResolved === RESOLVE_FAILED) hasError = true
+        else positionId = posResolved ?? undefined
+
+        const empType = (row.raw['고용형태'] ?? '').trim()
+        if (empType) {
+          if (!['FULL_TIME', 'CONTRACT', 'DISPATCH', 'INTERN'].includes(empType)) {
+            errors.push({
+              row: row.rowNum,
+              column: '고용형태',
+              message: `고용형태 '${empType}'는 FULL_TIME/CONTRACT/DISPATCH/INTERN 중 하나여야 합니다`,
+              severity: 'error',
+            })
+            hasError = true
+          } else {
+            employmentType = empType
+          }
+        }
+      }
+
       currentValue = currentAssignment.company.name
       newValue = company?.name ?? companyCode
+      if (!hasError && company && dept) {
+        data = compact({
+          effectiveDate: (row.raw['발효일'] ?? '').trim(),
+          companyId: company.id,
+          departmentId: dept.id,
+          jobGradeId,
+          positionId,
+          employmentType,
+          reason: (row.raw['사유'] ?? '').trim() || undefined,
+        })
+      }
       break
     }
 
@@ -386,6 +541,14 @@ async function validateByType(
       newValue = ['VOLUNTARY', 'RETIREMENT'].includes(resignType)
         ? 'RESIGNED'
         : 'TERMINATED'
+      if (!hasError) {
+        data = compact({
+          lastWorkingDate: (row.raw['마지막근무일'] ?? '').trim(),
+          resignType,
+          resignReasonCode: (row.raw['퇴직사유코드'] ?? '').trim() || undefined,
+          reason: (row.raw['퇴직사유상세'] ?? '').trim() || undefined,
+        })
+      }
       break
     }
 
@@ -419,11 +582,20 @@ async function validateByType(
       }
       currentValue = '(현재 급여)'
       newValue = `${newSalary.toLocaleString()}`
+      if (!hasError) {
+        data = compact({
+          effectiveDate: (row.raw['발효일'] ?? '').trim(),
+          newBaseSalary: (row.raw['새기본급'] ?? '').trim(),
+          changeType: (row.raw['변경유형'] ?? '').trim(),
+          currency: (row.raw['통화'] ?? '').trim() || undefined,
+          reason: (row.raw['사유'] ?? '').trim() || undefined,
+        })
+      }
       break
     }
   }
 
-  return { currentValue, newValue, hasError, hasWarning }
+  return { currentValue, newValue, hasError, hasWarning, data }
 }
 
 /**

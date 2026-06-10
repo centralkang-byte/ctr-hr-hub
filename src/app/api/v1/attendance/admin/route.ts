@@ -6,12 +6,19 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
+import { badRequest, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { formatToTz, parseDateOnly } from '@/lib/timezone'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
+    // 전사 근태 대시보드는 HR 전용 — 페이지(/attendance/admin = HR_UP)와 정합 (att-05)
+    if (user.role !== ROLE.HR_ADMIN && user.role !== ROLE.SUPER_ADMIN) {
+      throw forbidden('전체 근태 조회 권한이 없습니다.')
+    }
+
     const { searchParams } = new URL(req.url)
 
     // 1. Determine target company
@@ -22,14 +29,15 @@ export const GET = withPermission(
         : user.companyId
     const companyFilter = { companyId }
 
-    // 2. Determine target date
+    // 2. Determine target date — workDate는 "KST 날짜의 UTC 자정"으로 저장되므로(clock-in 참조)
+    //    서버 로컬 자정이 아닌 KST 달력 날짜로 윈도우·라벨을 만든다 (att-06; 법인별 TZ는 att-07 별 트랙)
     const dateParam = searchParams.get('date')
-    const targetDate = dateParam ? new Date(dateParam) : new Date()
-    targetDate.setHours(0, 0, 0, 0)
-    const nextDay = new Date(targetDate)
-    nextDay.setDate(nextDay.getDate() + 1)
-
-    const dateStr = targetDate.toISOString().slice(0, 10)
+    if (dateParam && !/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+      throw badRequest('date는 YYYY-MM-DD 형식이어야 합니다.')
+    }
+    const dateStr = dateParam ?? formatToTz(new Date(), 'Asia/Seoul', 'yyyy-MM-dd')
+    const targetDate = parseDateOnly(dateStr)
+    const nextDay = new Date(targetDate.getTime() + 24 * 60 * 60 * 1000)
 
     // 3. Total employees count
     const totalEmployees = await prisma.employee.count({

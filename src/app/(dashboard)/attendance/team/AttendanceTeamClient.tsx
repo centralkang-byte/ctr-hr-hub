@@ -56,6 +56,13 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
   void user
 
   const t = useTranslations('attendance')
+
+  const WORKTYPE_LABELS: Record<string, string> = {
+    NORMAL: t('normal'),
+    OVERTIME: t('overtime'),
+    NIGHT: t('night'),
+    HOLIDAY: t('holiday'),
+  }
   const tc = useTranslations('common')
   const te = useTranslations('employee')
   const locale = useLocale()
@@ -129,7 +136,10 @@ export function AttendanceTeamClient({ user }: { user: SessionUser }) {
     {
       key: 'workType',
       header: t('workType'),
-      render: (row) => row.attendance?.workType ?? '—',
+      render: (row) => {
+        const wt = row.attendance?.workType
+        return wt ? (WORKTYPE_LABELS[wt] ?? wt) : '—'
+      },
     },
   ]
 

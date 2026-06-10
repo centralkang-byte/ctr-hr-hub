@@ -55,11 +55,12 @@ export function FileUploader({ type, onValidateComplete }: FileUploaderProps) {
 
         if (!res.ok) {
           const body = await res.json().catch(() => null)
-          throw new Error(body?.error ?? t('upload.serverError', { status: res.status }))
+          throw new Error(body?.error?.message ?? t('upload.serverError', { status: res.status }))
         }
 
-        const result: ValidateResponse = await res.json()
-        onValidateComplete(result, file)
+        // apiSuccess 봉투({ data }) 해제
+        const json = (await res.json()) as { data: ValidateResponse }
+        onValidateComplete(json.data, file)
       } catch (err) {
         setError(err instanceof Error ? err.message : t('upload.validationError'))
       } finally {

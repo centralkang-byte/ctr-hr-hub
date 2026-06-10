@@ -167,8 +167,10 @@ async function executeEntityTransfer(tx: TxClient, row: ValidatedRow) {
       changeType: 'COMPANY_TRANSFER',
       companyId: data.companyId,
       departmentId: data.departmentId,
-      jobGradeId: data.jobGradeId ?? current.jobGradeId,
-      jobCategoryId: data.jobCategoryId ?? current.jobCategoryId,
+      // 법인 스코프 FK(직급/직무군/직위/근무지)는 구법인 값을 승계하지 않는다 —
+      // 타법인 참조가 새 발령에 박히는 것 차단 (Codex G1 r2). 새 법인 값은 CSV 코드로만.
+      jobGradeId: data.jobGradeId ?? null,
+      jobCategoryId: null,
       positionId: data.positionId ?? null,
       employmentType: data.employmentType ?? current.employmentType,
       workLocationId: data.workLocationId ?? null,
@@ -365,18 +367,8 @@ export async function executeMovements(
     { timeout: 60_000 },
   )
 
-  // Audit log: 트랜잭션 외부에서 기록 (project convention)
-  await prisma.$executeRawUnsafe(
-    `INSERT INTO bulk_movement_executions (id, company_id, movement_type, file_name, total_rows, applied_rows, status, executed_by, executed_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
-    executionId,
-    userCompanyId,
-    type,
-    fileName,
-    rows.length,
-    applied,
-    'COMPLETED',
-    executedBy,
-  )
-
+  // 감사 로그는 호출 라우트에서 logAudit으로 기록 — 과거 raw INSERT 대상 테이블
+  // (bulk_movement_executions)은 schema.prisma에 없어 db push DB에서 42P01로
+  // 커밋 후 실패하며 성공한 실행을 오류로 둔갑시켰음 (S275 dogfood)
   return { success: true, applied, executionId }
 }
