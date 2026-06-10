@@ -10,30 +10,16 @@ import { notFound, badRequest } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
-import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const PUT = withPermission(
   async (_req, ctx, user: SessionUser) => {
     const { id } = await ctx.params
 
+    // 테넌트 스코핑 = EmployeeOffboarding.companyId 직접 (소유 법인 — 전출자도 원 법인 HR이 취소 가능)
     const offboarding = await prisma.employeeOffboarding.findFirst({
       where: {
         id,
-        ...(user.role !== 'SUPER_ADMIN'
-          ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
-          : {}),
-      },
-      include: {
-        employee: {
-          select: {
-            id: true,
-            assignments: {
-              where: { isPrimary: true, endDate: null },
-              take: 1,
-              select: { companyId: true },
-            },
-          },
-        },
+        ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}),
       },
     })
     if (!offboarding) throw notFound('퇴직 처리를 찾을 수 없습니다.')
@@ -84,8 +70,7 @@ export const PUT = withPermission(
           effectiveDate: new Date(),
           reason: '퇴직 처리 취소',
           approvedById: user.employeeId,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          toCompanyId: (extractPrimaryAssignment(offboarding.employee.assignments ?? []) as any)?.companyId ?? undefined,
+          toCompanyId: offboarding.companyId ?? undefined,
         },
       })
     })

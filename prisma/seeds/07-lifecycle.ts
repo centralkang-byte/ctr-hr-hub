@@ -304,6 +304,7 @@ export async function seedLifecycle(prisma: PrismaClient): Promise<void> {
           id:                   offProcId1,
           employeeId:           p10Row.id,
           checklistId:          offChkId,
+          companyId:            krId, // 소유 법인 = 시작 시점 직원 법인
           resignType:           'VOLUNTARY',
           resignReasonCode:     'CAREER_GROWTH',
           resignReasonDetail:   '새로운 도전을 위한 자발적 퇴직',
@@ -352,6 +353,7 @@ export async function seedLifecycle(prisma: PrismaClient): Promise<void> {
         id:                         offProcId2,
         employeeId:                 actualDepId,
         checklistId:                offChkId,
+        companyId:                  krId, // 소유 법인 = 시작 시점 직원 법인 (COMPLETED 가시성 검증용)
         resignType:                 'VOLUNTARY',
         resignReasonCode:           'COMPENSATION',
         resignReasonDetail:         '보상 패키지 조정 불가로 인한 자발적 퇴직',

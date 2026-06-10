@@ -23,7 +23,7 @@ export const GET = withPermission(
             where: {
                 id,
                 ...(user.role !== ROLE.SUPER_ADMIN
-                    ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
+                    ? { companyId: user.companyId }
                     : {}),
             },
             select: { id: true },
@@ -63,7 +63,7 @@ export const POST = withPermission(
             where: {
                 id,
                 ...(user.role !== ROLE.SUPER_ADMIN
-                    ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
+                    ? { companyId: user.companyId }
                     : {}),
             },
             select: { id: true, status: true },

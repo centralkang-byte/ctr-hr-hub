@@ -261,17 +261,10 @@ SELECT
   DATE_TRUNC('month', eo.last_working_date) AS month,
   eo.resign_type::text AS resign_type,
   COALESCE(ei.primary_reason::text, '__none__') AS primary_reason,
-  COALESCE(ea.company_id, '__none__') AS company_id,
+  -- 소유 법인 = employee_offboarding.company_id 직접 (구 최신-assignment LATERAL은 전출 시 오귀속)
+  COALESCE(eo.company_id, '__none__') AS company_id,
   COUNT(*) AS count
 FROM employee_offboarding eo
-JOIN employees e ON e.id = eo.employee_id
-LEFT JOIN LATERAL (
-  SELECT la.company_id
-  FROM employee_assignments la
-  WHERE la.employee_id = e.id AND la.is_primary = true
-  ORDER BY la.effective_date DESC
-  LIMIT 1
-) ea ON true
 LEFT JOIN exit_interviews ei ON ei.employee_offboarding_id = eo.id
 WHERE eo.status = 'COMPLETED'
 GROUP BY 1, 2, 3, 4;

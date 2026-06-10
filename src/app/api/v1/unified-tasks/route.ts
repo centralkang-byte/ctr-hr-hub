@@ -489,15 +489,8 @@ export const GET = withPermission(
                 : isManager && teamScope
                   ? { employeeId: { in: teamScope } }
                   : {
-                    employee: {
-                      assignments: {
-                        some: {
-                          ...companyFilter,
-                          isPrimary: true,
-                          ...(isSuperAdmin ? {} : { endDate: null }),
-                        },
-                      },
-                    },
+                    // HR 분기: EmployeeOffboarding.companyId 직접 (assignment 조인은 완료/전출 시 탈락)
+                    ...companyFilter,
                     ...(assigneeId ? { employeeId: assigneeId } : {}),
                   }),
             },

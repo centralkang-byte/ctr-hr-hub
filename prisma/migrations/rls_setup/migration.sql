@@ -190,16 +190,17 @@ ALTER TABLE "employee_offboarding" FORCE ROW LEVEL SECURITY;
 CREATE POLICY "rls_super_admin_offboarding" ON "employee_offboarding"
   FOR ALL USING (current_user_role() = 'SUPER_ADMIN');
 
+-- 소유 법인 = employee_offboarding.company_id 직접 (구 active-assignment 서브쿼리는
+-- 완료 시 end_date 마감으로 탈락 → 완료 퇴사 영구 차단 버그. 2026-06-10 컬럼 추가로 교체.)
+-- ⚠️ 이 정책 세트는 아직 공유 DB 미적용 (RLS 재적용 = post-launch 트랙) — 재적용 시 올바르도록 선반영.
 CREATE POLICY "rls_hr_offboarding" ON "employee_offboarding"
   FOR ALL USING (
     current_user_role() IN ('HR_ADMIN', 'MANAGER')
-    AND EXISTS (
-      SELECT 1 FROM employees e
-      JOIN employee_assignments ea ON ea.employee_id = e.id
-        AND ea.is_primary = true AND ea.end_date IS NULL
-      WHERE e.id = employee_offboarding.employee_id
-        AND ea.company_id = current_company_id()
-    )
+    AND company_id = current_company_id()
+  )
+  WITH CHECK (
+    current_user_role() IN ('HR_ADMIN', 'MANAGER')
+    AND company_id = current_company_id()
   );
 
 CREATE POLICY "rls_employee_own_offboarding" ON "employee_offboarding"

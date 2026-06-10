@@ -18,12 +18,11 @@ export const POST = withPermission(
         const { id } = await ctx.params
 
         // Verify offboarding exists and is IN_PROGRESS
+        // 테넌트 스코핑 = EmployeeOffboarding.companyId 직접 (active-assignment 조인은 완료/전출 시 탈락 — 구 404 버그)
         const offboarding = await prisma.employeeOffboarding.findFirst({
             where: {
                 id,
-                ...(user.role !== ROLE.SUPER_ADMIN
-                    ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
-                    : {}),
+                ...(user.role !== ROLE.SUPER_ADMIN ? { companyId: user.companyId } : {}),
             },
             select: { id: true, status: true, employeeId: true },
         })

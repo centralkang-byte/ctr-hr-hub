@@ -425,16 +425,12 @@ export const GET = withCache(withPermission(
               tasks: { select: { status: true } },
             },
           }),
-          // offboarding 회사 식별 한계: EmployeeOffboarding.companyId 컬럼 부재.
-          // 가장 정확한 근사 — 가장 최근 primary assignment(endDate: null)가 본 회사인 경우.
-          // Phase 6에서 EmployeeOffboarding.companyId 컬럼 추가 후 정확한 필터 가능.
+          // offboarding 회사 필터 = EmployeeOffboarding.companyId 직접 (Phase 6 컬럼 추가 완료)
           prisma.employeeOffboarding.findMany({
             where: {
               employeeId: { in: reportIds },
               status: 'IN_PROGRESS',
-              employee: {
-                assignments: { some: { companyId, isPrimary: true, endDate: null } },
-              },
+              companyId,
             },
             include: {
               employee: { select: { id: true, name: true } },
@@ -617,18 +613,12 @@ export const GET = withCache(withPermission(
                 tasks: { select: { status: true } },
               },
             }),
-        // offboarding 회사 필터: EmployeeOffboarding.companyId 부재 → primary assignment 근사.
-        // 가장 최근(endDate: null) primary assignment가 본 회사인 경우만.
-        // Phase 6에서 EmployeeOffboarding.companyId 컬럼 추가 후 정확화.
+        // offboarding 회사 필터 = EmployeeOffboarding.companyId 직접 (Phase 6 컬럼 추가 완료).
         // Codex Gate 2 P2 fix: EXECUTIVE도 활성 offboarding list를 본다 — R3 ExecutiveHomeV2의 핵심 위젯.
         prisma.employeeOffboarding.findMany({
           where: {
             status: 'IN_PROGRESS',
-            employee: {
-              assignments: {
-                some: { companyId, isPrimary: true, endDate: null },
-              },
-            },
+            companyId,
           },
           include: {
             employee: { select: { id: true, name: true } },

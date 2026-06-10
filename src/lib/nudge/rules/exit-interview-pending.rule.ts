@@ -104,15 +104,8 @@ export const exitInterviewPendingRule: NudgeRule = {
         lastWorkingDate: { lte: sevenDaysFromNow },
         // ExitInterview가 없는 경우
         exitInterviews:  { none: {} },
-        employee: {
-          assignments: {
-            some: {
-              companyId,
-              isPrimary: true,
-              endDate:   null,
-            },
-          },
-        },
+        // 회사 필터 = EmployeeOffboarding.companyId 직접 (assignment 조인은 전출 시 탈락)
+        companyId,
       },
       select: {
         id:              true,

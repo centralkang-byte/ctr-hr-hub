@@ -19,12 +19,11 @@ export const GET = withPermission(
     async (_req: NextRequest, ctx, user: SessionUser) => {
         const { id } = await ctx.params
 
+        // 테넌트 스코핑 = EmployeeOffboarding.companyId 직접 (active-assignment 조인은 완료 시 탈락 → 상세 404 버그)
         const offboarding = await prisma.employeeOffboarding.findFirst({
             where: {
                 id,
-                ...(user.role !== ROLE.SUPER_ADMIN
-                    ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
-                    : {}),
+                ...(user.role !== ROLE.SUPER_ADMIN ? { companyId: user.companyId } : {}),
             },
             include: {
                 employee: {
@@ -32,8 +31,10 @@ export const GET = withPermission(
                         id: true,
                         name: true,
                         hireDate: true,
+                        // 표시용 = 최신 primary assignment (endDate 무관 — 완료 퇴사도 회사·부서 렌더)
                         assignments: {
-                            where: { isPrimary: true, endDate: null },
+                            where: { isPrimary: true },
+                            orderBy: { effectiveDate: 'desc' },
                             take: 1,
                             include: {
                                 department: { select: { id: true, name: true } },
@@ -185,9 +186,7 @@ export const PATCH = withPermission(
         const existing = await prisma.employeeOffboarding.findFirst({
             where: {
                 id,
-                ...(user.role !== ROLE.SUPER_ADMIN
-                    ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
-                    : {}),
+                ...(user.role !== ROLE.SUPER_ADMIN ? { companyId: user.companyId } : {}),
             },
             select: { id: true, status: true, employeeId: true },
         })

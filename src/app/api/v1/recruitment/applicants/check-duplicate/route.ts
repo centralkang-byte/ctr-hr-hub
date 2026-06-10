@@ -181,19 +181,14 @@ export const POST = withAuth(
 
     // ── Do-Not-Rehire 체크 ─────────────────────────────────
     // 이메일로 기존 퇴직 직원 중 재고용 방지 플래그 확인
-    // Company scope: 직원이 user 회사에 배속된 이력이 있어야 함 (cross-company leak 방지)
-    const doNotRehireEmployeeFilter =
-      user.role === ROLE.SUPER_ADMIN
-        ? { email }
-        : {
-            email,
-            assignments: { some: { companyId: user.companyId } },
-          }
+    // Company scope: 오프보딩 소유 법인(EmployeeOffboarding.companyId) 직접 — 구 historical-assignment
+    // 조인은 전출 이력만 있어도 타법인 퇴직 플래그·사유까지 노출됐음.
     const doNotRehire = await prisma.employeeOffboarding.findFirst({
       where: {
         isDoNotRehire: true,
         status: 'COMPLETED',
-        employee: doNotRehireEmployeeFilter,
+        ...(user.role !== ROLE.SUPER_ADMIN ? { companyId: user.companyId } : {}),
+        employee: { email },
       },
       select: {
         doNotRehireReason: true,

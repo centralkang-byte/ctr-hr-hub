@@ -7,12 +7,11 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { notFound, badRequest, forbidden } from '@/lib/errors'
+import { notFound, badRequest } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { validateTaskTransition } from '@/lib/shared/task-state-machine'
 import type { SessionUser } from '@/types'
-import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const statusSchema = z.object({
     status: z.enum(['PENDING', 'IN_PROGRESS', 'DONE', 'BLOCKED', 'SKIPPED']),
@@ -33,36 +32,23 @@ export const PUT = withPermission(
         const { status: targetStatus, blockedReason, note } = parsed.data
 
         // Fetch task with offboarding and template task info
+        // 테넌트 스코핑 = 부모 EmployeeOffboarding.companyId 직접 (scoped find → cross-tenant는 notFound).
+        // 구 active-assignment 사후체크는 fail-open이었음(완료/전출자 = 활성발령 없음 → 가드 스킵) — 삭제.
         const task = await prisma.employeeOffboardingTask.findFirst({
-            where: { id: taskId, employeeOffboardingId: offboardingId },
+            where: {
+                id: taskId,
+                employeeOffboardingId: offboardingId,
+                ...(user.role !== ROLE.SUPER_ADMIN
+                    ? { employeeOffboarding: { companyId: user.companyId } }
+                    : {}),
+            },
             include: {
                 task: { select: { isRequired: true, title: true } },
-                employeeOffboarding: {
-                    select: {
-                        status: true,
-                        employeeId: true,
-                        employee: {
-                            select: {
-                                assignments: {
-                                    where: { isPrimary: true, endDate: null },
-                                    select: { companyId: true },
-                                    take: 1,
-                                },
-                            },
-                        },
-                    },
-                },
+                employeeOffboarding: { select: { status: true, employeeId: true } },
             },
         })
 
         if (!task) throw notFound('태스크를 찾을 수 없습니다.')
-
-        // Company scoping
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const taskCompanyId = (extractPrimaryAssignment(task.employeeOffboarding.employee?.assignments ?? []) as any)?.companyId
-        if (user.role !== ROLE.SUPER_ADMIN && taskCompanyId && taskCompanyId !== user.companyId) {
-            throw forbidden('다른 법인의 태스크에 접근할 수 없습니다.')
-        }
 
         // Validate offboarding is still active
         if (task.employeeOffboarding.status !== 'IN_PROGRESS') {
