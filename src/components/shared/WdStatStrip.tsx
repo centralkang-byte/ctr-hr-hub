@@ -28,6 +28,8 @@ interface WdStatItem {
   foot?: ReactNode
   /** semantic 톤 — 값/아이콘 색. 동적 톤은 호출부에서 결정 */
   tone?: WdStatTone
+  /** 클릭 내비 — 지정 시 카드가 button으로 렌더 (키보드·focus ring 포함) */
+  onClick?: () => void
 }
 
 interface WdStatStripProps {
@@ -74,16 +76,15 @@ export function WdStatStrip({ items, className }: WdStatStripProps) {
         const tone = it.tone ?? 'default'
         const Icon = it.icon
         const labelId = `wdstat-${i}-${it.label.replace(/\s+/g, '-')}`
-        return (
-          <section
-            key={labelId}
-            aria-labelledby={labelId}
-            className={cn(
-              'flex flex-col gap-2.5 rounded-2xl border border-border bg-card p-5',
-              'hover:border-border-strong hover:shadow-sm',
-              MOTION.microOut,
-            )}
-          >
+        const cardClass = cn(
+          'flex flex-col gap-2.5 rounded-2xl border border-border bg-card p-5',
+          'hover:border-border-strong hover:shadow-sm',
+          it.onClick &&
+            'cursor-pointer text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+          MOTION.microOut,
+        )
+        const inner = (
+          <>
             <div className="flex items-center gap-2">
               {Icon ? (
                 <Icon
@@ -108,6 +109,22 @@ export function WdStatStrip({ items, className }: WdStatStripProps) {
             {it.foot ? (
               <p className="text-xs text-muted-foreground">{it.foot}</p>
             ) : null}
+          </>
+        )
+        // 클릭 카드 = 진짜 button (div onClick 금지 — a11y)
+        return it.onClick ? (
+          <button
+            key={labelId}
+            type="button"
+            onClick={it.onClick}
+            aria-labelledby={labelId}
+            className={cardClass}
+          >
+            {inner}
+          </button>
+        ) : (
+          <section key={labelId} aria-labelledby={labelId} className={cardClass}>
+            {inner}
           </section>
         )
       })}

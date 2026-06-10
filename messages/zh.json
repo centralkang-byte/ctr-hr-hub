@@ -5869,7 +5869,9 @@
       "overdue": "超过{days}天",
       "payDate": "发薪日",
       "remainingDays": "剩余天数",
-      "title": "{year}年{month}月 工资日历"
+      "title": "{year}年{month}月 工资日历",
+      "subtitle": "各法人截止/发薪日",
+      "status": "状态"
     },
     "cancel": "取消",
     "close": "关闭",
@@ -5927,7 +5929,8 @@
       "runType": "类型",
       "severance": "离职补偿",
       "special": "特别",
-      "title": "创建工资计算"
+      "title": "创建工资计算",
+      "createFailed": "创建失败"
     },
     "current": "Current",
     "currentVsBand": "区间对比当前薪资",
@@ -5957,7 +5960,14 @@
       "reviewNeeded": "需审核",
       "subtitle": "全法人流程状态",
       "title": "薪资管理",
-      "totalNetPay": "实发工资总额"
+      "totalNetPay": "实发工资总额",
+      "newCycle": "新周期",
+      "bankTransfer": "银行转账",
+      "publishPayslips": "发放工资单",
+      "publishNone": "没有可发放的工资批次",
+      "publishMultiple": "请在流水线中按法人选择",
+      "prevMonth": "上个月",
+      "nextMonth": "下个月"
     },
     "days": "day(s)",
     "deductions": "Deductions",
@@ -6330,7 +6340,9 @@
       "step4": "第4步",
       "step4Sub": "审批",
       "step5": "第5步",
-      "step5Sub": "发放工资条"
+      "step5Sub": "发放工资条",
+      "legendWarning": "注意",
+      "legendAlert": "异常"
     },
     "pipeline_status": "Pipeline 状态",
     "position": "职位",

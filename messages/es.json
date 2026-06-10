@@ -5868,7 +5868,9 @@
       "overdue": "{days} días vencido",
       "payDate": "Fecha de pago",
       "remainingDays": "Días restantes",
-      "title": "Calendario de nómina {month}/{year}"
+      "title": "Calendario de nómina {month}/{year}",
+      "subtitle": "Fechas de cierre y pago por empresa",
+      "status": "Estado"
     },
     "cancel": "Cancelar",
     "close": "Cerrar",
@@ -5926,7 +5928,8 @@
       "runType": "Tipo",
       "severance": "Indemnización",
       "special": "Especial",
-      "title": "Crear ejecución de nómina"
+      "title": "Crear ejecución de nómina",
+      "createFailed": "Error al crear"
     },
     "current": "Current",
     "currentVsBand": "Salario actual vs banda",
@@ -5956,7 +5959,14 @@
       "reviewNeeded": "Requiere revisión",
       "subtitle": "Estado del proceso de todas las entidades",
       "title": "Gestión de nómina",
-      "totalNetPay": "Salario neto total"
+      "totalNetPay": "Salario neto total",
+      "newCycle": "Nuevo ciclo",
+      "bankTransfer": "Transferencia bancaria",
+      "publishPayslips": "Publicar nóminas",
+      "publishNone": "No hay ejecuciones listas para publicar",
+      "publishMultiple": "Elija por empresa en el pipeline",
+      "prevMonth": "Mes anterior",
+      "nextMonth": "Mes siguiente"
     },
     "days": "day(s)",
     "deductions": "Deductions",
@@ -6329,7 +6339,9 @@
       "step4": "Paso 4",
       "step4Sub": "Aprobación",
       "step5": "Paso 5",
-      "step5Sub": "Publicar recibos"
+      "step5Sub": "Publicar recibos",
+      "legendWarning": "Atención",
+      "legendAlert": "Anomalía"
     },
     "pipeline_status": "Pipeline Estado",
     "position": "Cargo",
