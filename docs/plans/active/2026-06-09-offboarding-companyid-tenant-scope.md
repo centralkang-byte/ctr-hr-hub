@@ -78,12 +78,12 @@ Then FK + `SET NOT NULL` (after readers switched).
 - `home/summary/route.ts` — **both** :431 and :624 (EXECUTIVE widget) queries → `companyId` ("Phase 6" comments already anticipate this).
 - `unified-tasks/route.ts:482` — swap only the HR assignment-join branch; keep EMPLOYEE self / MANAGER team branches.
 - nudge rules `offboarding-overdue.rule.ts` + `exit-interview-pending.rule.ts`.
-- `prisma/migrations/mv_analytics.sql:266` — LATERAL latest-assignment → `eo.company_id` (MV re-apply = separate track; SQL corrected now).
+- `scripts/db/sql/mv_analytics.sql:266` (relocated 2026-06-10, was `prisma/migrations/mv_analytics.sql`) — LATERAL latest-assignment → `eo.company_id` (MV re-apply = separate track; SQL corrected now).
 - `recruitment/applicants/check-duplicate/route.ts:185-203` — already guarded via historical `assignments.some({companyId})` (Codex r3 P0 claim = false positive on verification), but tighten to direct `EmployeeOffboarding.companyId` (P2 hygiene; removes transferred-employee flag bleed).
 - `lib/offboarding-complete.ts` `deactivateItAccount()` — verify at impl; employeeId-scope likely correct for IT accounts (cross-company identity), confirm and document.
 
 ### H. RLS policy SQL (Codex r4 accepted: fix now, applied post-launch)
-`rls_setup/migration.sql:193` `rls_hr_offboarding`: active-assignment subquery → `employee_offboarding.company_id = current_company_id()`, USING + WITH CHECK; re-check super/self policies. Currently unapplied + no offboarding route uses withRLS → zero live impact; prevents wrong re-apply later.
+`scripts/db/sql/rls_setup.sql:193` (relocated 2026-06-10, was `prisma/migrations/rls_setup/migration.sql`) `rls_hr_offboarding`: active-assignment subquery → `employee_offboarding.company_id = current_company_id()`, USING + WITH CHECK; re-check super/self policies. Currently unapplied + no offboarding route uses withRLS → zero live impact; prevents wrong re-apply later.
 
 ### I. NOT changed (verified safe)
 `offboarding/[id]/tasks/[taskId]/complete` + `offboarding/me` (employeeId-scoped self-service); `offboarding/checklists/*` (already companyId-scoped); `payroll/severance/[employeeId]` route (active employees; #130-scoped).
