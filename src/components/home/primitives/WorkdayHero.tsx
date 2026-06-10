@@ -173,7 +173,7 @@ export function WorkdayHero({
         <dl className="hidden gap-6 md:flex md:flex-row md:items-end">
           {[kpis.headcount, kpis.openRoles, kpis.turnoverRate].map((k, i) => (
             <div key={i} className="flex flex-col items-end">
-              <dd className={cn(TYPOGRAPHY.displaySm, 'font-mono tabular-nums text-white')}>
+              <dd className={cn(TYPOGRAPHY.displaySm, 'tabular-nums text-white')}>
                 {k.value}
               </dd>
               <dt className="text-xs text-white/70">{k.label}</dt>

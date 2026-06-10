@@ -242,7 +242,7 @@ export default function OffCycleNewClient({ user: _user }: Props) {
 
           {/* Search dropdown */}
           {showResults && (
-            <div className="absolute z-10 mt-1 w-full rounded-2xl bg-surface-container-lowest shadow-md border border-border/15 overflow-hidden">
+            <div className="absolute z-10 mt-1 w-full rounded-2xl bg-surface-container-lowest shadow-md border border-border overflow-hidden">
               {searching ? (
                 <div className="px-4 py-3 text-sm text-muted-foreground">
                   {t('offCycle.form.searching')}

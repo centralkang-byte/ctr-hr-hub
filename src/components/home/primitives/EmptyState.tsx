@@ -38,7 +38,7 @@ export function EmptyState({
 }: EmptyStateProps) {
   const iconRingClass =
     tone === 'success'
-      ? 'bg-tertiary/10 text-[#15803d]'
+      ? 'bg-tertiary/10 text-[#006b39]'
       : 'bg-muted text-muted-foreground'
 
   return (

@@ -50,6 +50,7 @@ const config: Config = {
 					foreground: 'hsl(var(--destructive-foreground))'
 				},
 				border: 'hsl(var(--border))',
+				'border-strong': 'hsl(var(--border-strong))', // Wave 0: proto --border-strong (btn/input 보더)
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
 				chart: {
@@ -97,36 +98,35 @@ const config: Config = {
 				'surface-container': 'hsl(var(--surface-container))',
 
 				// CTR 호환 토큰 (직접 hex — 레거시 페이지 호환용)
-				// Phase 1 (HR Hub Workday navy): CSS var 자동 전파 안 됨 → 직접 교체.
-				// 원본 oklch: accent=oklch(38% 0.08 230), accent-ink=oklch(32% 0.08 230), accent-soft-2=oklch(88% 0.04 230)
+				// Wave 0: 중립·시맨틱을 프로토 cool-gray/시맨틱 패밀리로 정렬 (CSS var 자동 전파 안 됨 → 직접 교체)
 				'ctr-primary': '#004964',
 				'ctr-primary-dark': '#003953',
 				'ctr-primary-light': '#bedded',
 				'ctr-secondary': '#64748b',
-				// Semantic
-				'ctr-success': '#16a34a',
-				'ctr-warning': '#B45309',
-				'ctr-error': '#e11d48',
-				'ctr-info': '#004964',
-				// Semantic backgrounds
-				'ctr-success-bg': '#86efac',
+				// Semantic — proto :root 패밀리 (success oklch(56% .14 155) 등)
+				'ctr-success': '#008b4e',
+				'ctr-warning': '#B45309',  // 유지 — proto #d0901e는 텍스트 AA 미달 (D17 bg/text 분리)
+				'ctr-error': '#d73337',
+				'ctr-info': '#0091b9',
+				// Semantic backgrounds — proto -soft (warning-bg는 AA 4.51:1 위해 house 유지)
+				'ctr-success-bg': '#d8f8e2',
 				'ctr-warning-bg': '#FEF3C7',
-				'ctr-error-bg': '#fb7185',
-				'ctr-info-bg': '#bedded',  // Phase 1: Workday accent-soft-2 (was #a5b4fc violet) — oklch(88% 0.04 230)
-				// Surface scale (Stitch Tonal Layering)
+				'ctr-error-bg': '#ffe6e1',
+				'ctr-info-bg': '#bedded',  // Workday accent-soft-2 — oklch(88% 0.04 230)
+				// Surface scale — Wave 0: proto cool-gray (hue 245)
 				'ctr-surface': {
-					DEFAULT: '#f6f6f6',
-					low: '#f0f1f1',
-					high: '#e1e3e3',
-					container: '#e7e8e8',
-					dim: '#d2d5d5',
+					DEFAULT: '#f1f4f7',
+					low: '#eaeff4',
+					high: '#dbe2e9',
+					container: '#e3e9ee',
+					dim: '#cdd6de',
 					lowest: '#ffffff',
 				},
-				// Text colors
-				'ctr-on-surface': '#2d2f2f',
-				'ctr-on-surface-variant': '#5a5c5c',
-				'ctr-outline': '#757777',
-				'ctr-outline-variant': '#acadad',
+				// Text colors — proto fg 계열
+				'ctr-on-surface': '#182029',
+				'ctr-on-surface-variant': '#515962',
+				'ctr-outline': '#80878f',
+				'ctr-outline-variant': '#d8dfe6',
 			},
 			fontFamily: {
 				sans: [
@@ -137,8 +137,8 @@ const config: Config = {
 					'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
 					'sans-serif',
 				],
+				// Wave 0: Outfit 제거 — 프로토는 Pretendard + Geist Mono만 로드
 				display: [
-					'var(--font-outfit)', 'Outfit',
 					'Pretendard Variable', 'Pretendard',
 					'-apple-system', 'BlinkMacSystemFont', 'system-ui',
 					'sans-serif',
@@ -147,22 +147,23 @@ const config: Config = {
 			fontSize: {
 				'2xs': ['0.6875rem', { lineHeight: '1.4' }],  // 11px — table headers
 				'display-lg': ['3.5rem', { lineHeight: '1.1', fontWeight: '900' }],  // 56px — Hero KPI
-				'display-sm': ['2rem', { lineHeight: '1.2', fontWeight: '800' }],    // 32px — Card KPI
+				'display-sm': ['2rem', { lineHeight: '1.2', fontWeight: '500' }],    // 32px — Card KPI (Wave 0: proto .ss-val 32px/500, was 800)
 			},
 			letterSpacing: {
-				'ctr': '-0.02em',
+				'ctr': '-0.005em',  // Wave 0: proto body -0.005em (was -0.02em)
 			},
 			borderRadius: {
-				'2xl': '0.75rem',        // Container (카드, 모달) — Phase 1: HR Hub .card 12px (was 1rem/16px)
+				'2xl': '0.875rem',       // Container (카드, 모달) — Wave 0: proto workday .card 14px (styles.css:1139)
 				xl: '0.75rem',
 				lg: 'var(--radius)',      // 0.5rem (8px) Element — HR Hub radius-sm 8px와 일치
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)',
 			},
 			boxShadow: {
-				'sm': '0 1px 2px rgba(15,23,42,0.06)',
-				'md': '0 4px 12px rgba(15,23,42,0.08)',
-				'lg': '0 12px 32px rgba(15,23,42,0.12)',
+				// Wave 0: proto shadow-card/pop — navy-tinted #1e2f41 (oklch 30% .04 250), 크기 등급은 기존과 동급
+				'sm': '0 1px 2px rgba(30,47,65,0.04), 0 1px 0 rgba(30,47,65,0.02)',
+				'md': '0 4px 12px rgba(30,47,65,0.08)',
+				'lg': '0 4px 12px rgba(30,47,65,0.08), 0 20px 48px rgba(30,47,65,0.12)',
 				// Phase 1 — Workday navy-tinted (was violet rgba(99,102,241) = #6366f1; now #004964)
 				'primary-tinted': '0 20px 40px -5px rgba(0,73,100,0.06)',
 				'primary-glow': '0 8px 24px rgba(0,73,100,0.20)',

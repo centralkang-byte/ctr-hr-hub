@@ -420,7 +420,7 @@ function PersonalTrackerCard({
         </Link>
         {progress >= 100 ? (
           <span
-            className="inline-flex items-center gap-1 text-xs text-[#15803d]"
+            className="inline-flex items-center gap-1 text-xs text-[#006b39]"
             aria-label="완료됨"
           >
             <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />

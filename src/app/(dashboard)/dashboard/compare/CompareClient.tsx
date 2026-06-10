@@ -362,7 +362,7 @@ export function CompareClient() {
                 </thead>
                 <tbody>
                   {results.map((r, ri) => (
-                    <tr key={r.companyId} className={cn('border-b border-border/50', ri % 2 === 0 && 'bg-muted/30')}>
+                    <tr key={r.companyId} className={cn('border-b border-border', ri % 2 === 0 && 'bg-muted/30')}>
                       <td className="py-2.5 px-3">
                         <span className="font-medium">{r.company}</span>
                         <span className="text-muted-foreground text-xs ml-1.5">{r.name}</span>

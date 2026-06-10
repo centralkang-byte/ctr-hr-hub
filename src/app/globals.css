@@ -15,58 +15,65 @@
     font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
       Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR',
       'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.005em; /* Wave 0: proto body -0.005em (was -0.02em — 4배 과조밀) */
   }
 
-  /* Workday Navy Palette — Light Mode (Phase 1: HR Hub 토큰 이식)
+  body {
+    font-size: 14px; /* Wave 0: proto body 14px — rules/design.md "base 14px" 실집행 */
+  }
+
+  /* Workday Palette — Light Mode (Wave 0: 중립 기반까지 프로토 완전 전환)
      원본 SSOT: _design-reference/styles.css [data-style="workday"] (oklch)
-     변환: OKLCH→sRGB→HSL (Björn Ottosson ref, culori 동일 알고리즘). 다크모드는 Phase 1 범위 외 — .dark 미변경. */
+     변환: OKLCH→sRGB→HSL (Björn Ottosson ref, culori 동일 알고리즘).
+     Phase 1은 브랜드 액센트만 이식하고 중립은 구 Stitch green-gray 잔존 → Wave 0에서 cool-gray(hue 245-250) 정렬.
+     다크모드는 Phase 4b — .dark는 border 2종 외 불변. */
   :root {
-    --background: 0 0% 96.5%;               /* #f6f6f6 surface */
-    --foreground: 180 3.4% 18.2%;           /* #2d2f2f on-surface */
-    --card: 0 0% 100%;                       /* #ffffff surface-container-lowest */
-    --card-foreground: 180 3.4% 18.2%;      /* #2d2f2f on-surface */
+    --background: 210 27.3% 95.7%;          /* #f1f4f7 proto --bg oklch(96.5% .005 245) */
+    --foreground: 211.8 26.2% 12.7%;        /* #182029 proto --fg oklch(24% .02 250) */
+    --card: 0 0% 100%;                       /* #ffffff proto --bg-elev */
+    --card-foreground: 211.8 26.2% 12.7%;   /* #182029 */
     --popover: 0 0% 100%;                    /* #ffffff */
-    --popover-foreground: 180 3.4% 18.2%;   /* #2d2f2f */
+    --popover-foreground: 211.8 26.2% 12.7%; /* #182029 */
     --primary: 196 100% 20%;                /* #004964 Workday accent — oklch(38% 0.08 230) */
     --primary-foreground: 0 0% 100%;        /* #ffffff on deep navy */
-    --secondary: 0 0% 94.5%;                /* #f0f1f1 surface-container-low */
-    --secondary-foreground: 180 3.4% 18.2%; /* #2d2f2f */
-    --muted: 0 0% 94.5%;                    /* #f0f1f1 surface-container-low */
-    --muted-foreground: 180 1.7% 35.9%;     /* #5a5c5c on-surface-variant */
-    --accent: 0 0% 94.5%;                   /* #f0f1f1 */
-    --accent-foreground: 180 3.4% 18.2%;    /* #2d2f2f */
-    --destructive: 347 77% 50%;             /* #e11d48 rose */
-    --destructive-foreground: 0 100% 93.7%; /* #ffefef on-error */
-    --border: 180 1.5% 67.8%;              /* #acadad outline-variant (사용 시 /15 opacity) */
-    --input: 180 1.5% 67.8%;               /* #acadad */
+    --secondary: 210 31.3% 93.7%;           /* #eaeff4 proto --bg-sunk oklch(95% .008 245) */
+    --secondary-foreground: 211.8 26.2% 12.7%; /* #182029 */
+    --muted: 210 31.3% 93.7%;               /* #eaeff4 proto --bg-sunk */
+    --muted-foreground: 211.8 9.5% 35.1%;   /* #515962 proto --fg-muted oklch(46% .018 250) */
+    --accent: 200 71.4% 91.8%;              /* #dbeff9 proto --accent-soft oklch(94% .025 230) — hover/selected 네이비 틴트 (Gate1 분리) */
+    --accent-foreground: 211.8 26.2% 12.7%; /* #182029 */
+    --destructive: 358.5 67.2% 52.2%;       /* #d73337 proto --danger oklch(58% .20 25) (was rose #e11d48) */
+    --destructive-foreground: 0 0% 100%;    /* #ffffff — 4.75:1 AA (Gate1: #ffefef는 4.27:1 미달) */
+    --border: 210 21.9% 87.5%;             /* #d8dfe6 proto --border oklch(90% .012 245) — full opacity 가시 보더 (No-Line Rule 폐기) */
+    --border-strong: 207 17.2% 77.3%;      /* #bbc6cf proto --border-strong oklch(82% .018 245) — btn/input */
+    --input: 210 21.9% 87.5%;              /* #d8dfe6 */
     --ring: 196 100% 20%;                   /* #004964 Workday accent — oklch(38% 0.08 230) */
 
     /* 확장 토큰 */
     --primary-dim: 199 100% 16%;             /* #003953 그라디언트 끝점 — accent-ink oklch(32% 0.08 230) */
     --primary-container: 200 57% 84%;        /* #bedded primary 밝은 변형 — accent-soft-2 oklch(88% 0.04 230) */
-    --tertiary: 142 76% 36%;                 /* #16a34a green 텍스트 */
-    --tertiary-container: 142 77% 73%;       /* #86efac green 배경 */
-    --on-tertiary-container: 143 64% 24%;    /* #166534 */
-    --warning-bright: 38 92% 50%;            /* #f59e0b amber-500 — BG/icon/progress only (text는 #B45309 사용, Phase 4 Batch 7) */
-    --alert-red: 0 84% 60%;                  /* #ef4444 red-500 — 동적 alert, urgent pill, border semantic only (정적 count는 destructive 사용, Phase 4 Batch 7) */
+    --tertiary: 153.7 100% 27.3%;            /* #008b4e proto --success oklch(56% .14 155) (was #16a34a) — 차트/아이콘용, 텍스트는 #006b39 */
+    --tertiary-container: 138.8 69.6% 91%;   /* #d8f8e2 proto --success-soft oklch(95% .045 155) */
+    --on-tertiary-container: 152 100% 21%;   /* #006b39 success-ink — oklch(46% .12 155) 파생, 6.64:1 AA */
+    --warning-bright: 38.4 74.8% 46.7%;      /* #d0901e proto --warning oklch(70% .14 75) — BG/icon/progress only (text는 #B45309 유지, D17) */
+    --alert-red: 358.5 67.2% 52.2%;          /* #d73337 proto --danger 계열 — 동적 alert, urgent pill, border semantic only */
     --badge-accent: 263 70% 50%;             /* #7c3aed violet-600 — badge accent only (--accent은 neutral surface, Phase 4 Batch 10) */
     /* Workday 시그니처 오렌지 (배지·태그용, Phase 1 신규 — 사용처는 Phase 2/3) */
     --wd-orange: 24 77% 53%;                 /* #e4762c — oklch(68% 0.16 50) */
     --wd-orange-soft: 31 100% 92%;           /* #ffecd8 — oklch(96% 0.04 60) */
     --wd-orange-ink: 19 100% 32%;            /* #a23300 — oklch(48% 0.16 45) */
-    /* PR-5A: sky blue (HR Admin worklet ID 8 analytics) — light only, dark known-deferred (Phase 4) */
-    --info: 199 89% 48%;                     /* #0ea5e9 sky blue */
-    --surface-container-low: 0 0% 94.5%;     /* #f0f1f1 */
-    --surface-container-high: 180 1.5% 88.6%; /* #e1e3e3 */
-    --surface-container: 0 0% 90.8%;         /* #e7e8e8 */
+    /* Wave 0: proto --info oklch(60% .14 220) (was sky #0ea5e9) — light only, dark known-deferred (Phase 4) */
+    --info: 193 100% 36.3%;                  /* #0091b9 */
+    --surface-container-low: 210 31.3% 93.7%; /* #eaeff4 bg-sunk */
+    --surface-container-high: 210 24.1% 88.6%; /* #dbe2e9 — oklch(91% .012 245) 파생 */
+    --surface-container: 207.3 24.4% 91.2%; /* #e3e9ee — oklch(93% .01 245) 파생 */
 
     --chart-1: 196 100% 20%;                /* #004964 primary navy — oklch(38% 0.08 230) wt-1 */
     --chart-2: 209 54% 38%;                 /* #2c6194 steel blue — oklch(48% 0.10 250) wt-7 */
-    --chart-3: 142 76% 36%;                 /* #16a34a tertiary */
+    --chart-3: 153.7 100% 27.3%;            /* #008b4e tertiary (proto success) */
     --chart-4: 215 16% 47%;                 /* #64748b slate */
-    --chart-5: 347 77% 50%;                /* #e11d48 destructive */
-    --chart-6: 180 1.7% 35.9%;             /* #5a5c5c on-surface-variant */
+    --chart-5: 358.5 67.2% 52.2%;          /* #d73337 destructive (proto danger) */
+    --chart-6: 211.8 9.5% 35.1%;           /* #515962 fg-muted */
 
     /* Workday worklet palette (wt) — 도메인색 SSOT. 출처:
        _design-reference/styles.css L579-586 oklch → canvas readback HSL.
@@ -100,8 +107,12 @@
     --accent-foreground: 0 0% 96.5%;
     --destructive: 351 95% 72%;            /* #fb7185 rose-400 */
     --destructive-foreground: 0 0% 98%;
-    --border: 180 1.5% 67.8%;             /* #acadad */
-    --input: 180 1.5% 67.8%;
+    /* Wave 0 Gate1+Gate2: 보더 full-opacity 전환에 따른 다크 파손 방지.
+       proto dark border(#222a31)는 proto dark surface(oklch 15-19%) 전제라 현 Violet 다크 카드(#2d2f2f) 위에서 비가시(1.08:1)
+       → 현 다크 surface 기준으로 밝게 파생한 stopgap. 나머지 .dark 토큰과 함께 Phase 4b에서 일괄 재설계. */
+    --border: 210 12% 31%;                /* ≈#46535f — #2d2f2f 카드 위 가시 */
+    --border-strong: 210 12% 40%;         /* ≈#5a6b7a */
+    --input: 210 12% 31%;
     --ring: 234 89% 74%;                   /* #818cf8 indigo-400 */
 
     --primary-dim: 239 84% 67%;            /* #6366f1 */

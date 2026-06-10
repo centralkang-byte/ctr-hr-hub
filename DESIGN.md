@@ -1,8 +1,10 @@
 # CTR HR Hub — Design System
 
 > Enterprise HR SaaS. Data-heavy, CJK-first, 5 locales.
-> Clean white space + Workday Navy/Orange accents (HR Hub Phase 1). No decoration unless intentional.
-> Anti-patterns: 1px borders, uniform radius, purple AI-slop gradients, system emoji.
+> Clean white space + Workday Navy/Orange accents. No decoration unless intentional.
+> **Wave 0 (2026-06-10, CEO 결정): `_design-reference` `[data-style="workday"]` = 픽셀 SSOT** — 중립 회색·보더·타이포까지
+> 프로토 완전 정렬 (Phase 1은 액센트만 이식했었음). 페이지 디자인 작업 시 Pixel Gate 필수 (`.claude/rules/design.md`).
+> Anti-patterns: 고스트 보더, 버튼 그라데이션, 좌측 색 보더 카드, uniform radius, purple AI-slop, system emoji.
 
 > **SSOT 관계**
 > - 본 문서 = 전체 디자인 시스템 정의 (마스터)
@@ -22,31 +24,34 @@
 | primary-dim | #003953 | Gradient endpoint, hover (oklch(32% 0.08 230)) |
 | primary-container | #bedded | Light variant, badge bg, highlight (oklch(88% 0.04 230)) |
 | wd-orange | #e4762c | Workday 시그니처 오렌지 — 배지·태그 (oklch(68% 0.16 50), 사용처 Phase 2/3) |
-| tertiary | #16a34a | Success, growth, positive signals |
-| tertiary-container | #86efac | Success badge bg |
-| destructive | #e11d48 | Error, rejection, delete, 정적 count, 퇴사 |
-| alert-red | #ef4444 | 동적 alert, urgent pill, AI 인사이트 semantic bg only (정적 count는 destructive) |
-| warning | #B45309 | Pending, probation — **text only** (WCAG AA) |
-| warning-bright | #f59e0b | BG/icon/progress bar only (text는 warning #B45309) |
+| tertiary | #008b4e | Success, growth, positive signals (proto --success oklch(56% .14 155); 차트/아이콘 — 텍스트는 #006b39) |
+| tertiary-container | #d8f8e2 | Success badge bg (proto --success-soft) |
+| destructive | #d73337 | Error, rejection, delete, 정적 count, 퇴사 (proto --danger oklch(58% .20 25)) |
+| alert-red | #d73337 | 동적 alert, urgent pill, AI 인사이트 semantic bg only (정적 count는 destructive) |
+| warning | #B45309 | Pending, probation — **text only** (WCAG AA; proto #d0901e는 텍스트 미달) |
+| warning-bright | #d0901e | BG/icon/progress bar only (proto --warning, text는 warning #B45309) |
+| info | #0091b9 | Info, in-progress (proto --info oklch(60% .14 220)) |
 | secondary | #64748b | Muted accent, metadata |
-| badge-accent | #7c3aed | Offer, LOA, business trip (badge 전용, `--accent`은 neutral surface) |
+| badge-accent | #7c3aed | Offer, LOA, business trip (badge 전용, `--accent`은 hover 네이비 틴트 #dbeff9) |
 
-### Surface Hierarchy (Tonal Layering)
+### Surface Hierarchy (Wave 0: proto cool-gray hue 245)
 
 | Layer | Token | Hex |
 |-------|-------|-----|
-| Base | background | #f6f6f6 |
-| Canvas | surface-container-low | #f0f1f1 |
-| Card | surface-container-lowest | #ffffff |
-| Elevated | surface-container-high | #e1e3e3 |
+| Base | background | #f1f4f7 (proto --bg) |
+| Sunk | surface-container-low / muted | #eaeff4 (proto --bg-sunk) |
+| Card | surface-container-lowest | #ffffff (proto --bg-elev) |
+| Elevated | surface-container-high | #dbe2e9 |
+| Hover tint | accent | #dbeff9 (proto --accent-soft) |
 
-### Text
+### Text & Border
 
 | Token | Hex | Usage |
 |-------|-----|-------|
-| on-surface | #2d2f2f | Primary text (pure #000 forbidden) |
-| on-surface-variant | #5a5c5c | Secondary text, labels |
-| outline-variant | #acadad | Ghost border (15% opacity ONLY) |
+| foreground | #182029 | Primary text (proto --fg; pure #000 forbidden) |
+| muted-foreground | #515962 | Secondary text, labels (proto --fg-muted) |
+| border | #d8dfe6 | **가시 1px solid 보더** — 카드·테이블·구분선 (proto --border, full opacity) |
+| border-strong | #bbc6cf | 버튼 outline·input·select (proto --border-strong) |
 
 ### D17 Color Principle (bg/text 분리)
 
@@ -54,15 +59,15 @@ bg와 text는 다른 토큰을 사용한다. bg는 밝은(bright) 색상으로 �
 
 | 용도 | bg 토큰 | text 토큰 | 이유 |
 |------|---------|-----------|------|
-| Warning | `bg-warning-bright/15` (#f59e0b) | `text-ctr-warning` (#B45309) | #f59e0b는 흰 배경에서 text AA 미달 |
-| Alert | `bg-alert-red/10` (#ef4444) | `text-destructive` (#e11d48) | 동적/정적 분리 |
-| Success | `bg-tertiary/10` (#16a34a) | `text-[#15803d]` | #16a34a는 10px badge text에서 AA 미달 |
+| Warning | `bg-warning-bright/15` (#d0901e) | `text-ctr-warning` (#B45309) | #d0901e는 흰 배경에서 text AA 미달 |
+| Alert | `bg-alert-red/10` (#d73337) | `text-destructive` (#d73337) | 동적/정적 분리 |
+| Success | `bg-tertiary/10` (#008b4e) | `text-[#006b39]` | #008b4e는 4.37:1로 text AA 미달 (ink는 6.64:1) |
 
 도메인 고유 색상(차트 팔레트, 파이프라인 단계, heatmap)은 범용 토큰 통합 금지 — `chart.ts`/`chart-colors.ts`에서 별도 관리.
 
 ### Chart Palette
-기본 6색: #004964, #2c6194, #16a34a, #f59e0b, #e11d48, #64748b  (Phase 1: chart-1 navy, chart-2 steel blue)
-확장 4색: #7c3aed, #0ea5e9, #84cc16, #f97316
+기본 6색: #004964, #2c6194, #008b4e, #d0901e, #d73337, #64748b  (Wave 0: 시맨틱 슬롯 proto 패밀리)
+확장 4색: wt 교차순 (`chart.ts` wtSlotColor)
 
 ---
 
@@ -71,29 +76,29 @@ bg와 text는 다른 토큰을 사용한다. bg는 밝은(bright) 색상으로 �
 | Utility | Font | Usage | Rule |
 |---------|------|-------|------|
 | `font-sans` | Pretendard Variable | Body, CJK-first | Default everywhere |
-| `font-display` | Outfit | Hero KPI, large titles | text-4xl+ only, English/numbers only |
-| `font-mono` | Geist Mono | Numbers, codes, dates | MUST pair with `tabular-nums` |
+| `font-display` | Pretendard (별칭) | — | **Wave 0: Outfit 폐기** (프로토 미사용 폰트) |
+| `font-mono` | Geist Mono | 테이블 내 금액/코드 | MUST pair with `tabular-nums`. KPI 대형 수치는 mono 아님 |
 
-- CJK: `letter-spacing: -0.02em`, `line-height: 1.6+`, base 14px
-- font-display on mixed KR/EN text: **FORBIDDEN**
+- CJK: `letter-spacing: -0.005em` (proto body — Wave 0에서 -0.02em 폐기), `line-height: 1.5+`, **base 14px (body 실집행)**
 - font-mono without tabular-nums: **FORBIDDEN**
 
-### Scale (구현 SSOT: `src/lib/styles/typography.ts`)
+### Scale (구현 SSOT: `src/lib/styles/typography.ts` — Wave 0: proto workday 실측 정렬)
 
 | Key | Size | Weight | Usage |
 |-----|------|--------|-------|
-| `displayLg` | 56px | 900 | Dashboard hero metric (font-display) |
-| `displaySm` | 32px | 800 | Card KPI (font-display) |
-| `pageTitle` | 30px | 700 | Page title |
-| `sectionTitle` | 24px | 700 | Section title |
-| `cardTitle` | 20px | 600 | Card title |
+| `displayLg` | 56px | 900 | Dashboard hero metric |
+| `displaySm` | 32px | 500 | Card KPI (proto .ss-val — Pretendard + tnum, mono 아님) |
+| `pageTitle` | 26px | 600 | Page title (proto .page-h h1) |
+| `sectionTitle` | 17px | 600 | Section title (proto .sec-h h2) |
+| `cardTitle` | 14.5px | 600 | Card title (proto .card-head .title) |
 | `subtitle` | 18px | 600 | Subsection |
 | `bodyLg` | 16px | 500 | Emphasized body |
 | `body` | 14px | 400 | Default body |
 | `bodySm` | 13px | 400 | Secondary text |
 | `caption` | 12px | 500 | Caption, pagination |
 | `label` | 12px | 500 | Form label |
-| `tableHeader` | 11px | 600 | Table header (uppercase + tracking) |
+| `statLabel` | 12px | 500 | KPI label (uppercase 없음 — proto .ss-h) |
+| `tableHeader` | 11px | 600 | Table header (uppercase + 0.04em — proto workday .tbl th) |
 
 컴포넌트에서 `import { TYPOGRAPHY } from '@/lib/styles'` — inline font-size/weight 클래스 사용 금지.
 
@@ -117,18 +122,18 @@ Base unit: 4px. Default density: comfortable.
 
 | Name | Tailwind | Usage |
 |------|----------|-------|
-| Pill | rounded-full | CTA lg buttons, badges, search bar |
-| Container | rounded-2xl | Cards, modals, panels (Phase 1: 12px — HR Hub .card, was 16px) |
-| Element | rounded-lg | Inputs, sm buttons |
+| Pill | rounded-full | Badges, search bar (Wave 0: CTA 버튼 pill 폐기 — 전 버튼 8px flat) |
+| Container | rounded-2xl = 14px | Cards, modals, panels (Wave 0: proto workday .card 14px) |
+| Element | rounded-lg = 8px / rounded-md = 6px | Inputs, buttons / sm buttons |
 
-### Shadow
+### Shadow (Wave 0: proto navy-tinted #1e2f41)
 
 | Token | Usage |
 |-------|-------|
-| shadow-sm | Card |
+| shadow-sm | Card (proto shadow-card 2-layer) |
 | shadow-md | Dropdown, popover |
-| shadow-lg | Modal, sheet |
-| primary-tinted | Hero card, emphasis panel (Phase 1: navy-tinted rgba(0,73,100), was violet) |
+| shadow-lg | Modal, sheet (proto shadow-pop 2-layer) |
+| primary-tinted | Hero card, emphasis panel (navy-tinted rgba(0,73,100)) |
 
 ### Glassmorphism (2 locations ONLY)
 
@@ -136,24 +141,25 @@ Base unit: 4px. Default density: comfortable.
 - Dialog/Sheet overlay: `bg-white/70 backdrop-blur-[20px]`
 - Everywhere else: **FORBIDDEN**
 
-### No-Line Rule
+### Border Rule (Wave 0: No-Line Rule 폐기 — CEO 프로토 충실 결정)
 
-No 1px solid borders for section separation. Use Tonal Layering (background color difference).
-Ghost border: outline-variant at 15% opacity ONLY when absolutely needed.
+카드·테이블·패널·card-head 구분선 = **1px solid `border`** (#d8dfe6, full opacity — proto `.card`).
+버튼 outline·폼 컨트롤 = `border-strong` (#bbc6cf). 고스트 보더(`/15`) 신규 작성 금지.
+섹션 *배경* 구분은 여전히 Tonal Layering 병용 (bg-sunk #eaeff4).
 
 ---
 
 ## 5. Components
 
-### 5.1 Button
+### 5.1 Button (Wave 0: proto .btn — flat fill, 그라데이션 금지)
 
 | Size | Radius | Style |
 |------|--------|-------|
-| lg | rounded-full | gradient (from-primary to-primary-dim) + shadow-lg |
-| default | rounded-xl | bg-primary |
-| sm | rounded-lg | bg-primary (density protection) |
+| lg | rounded-lg (8px) | bg-primary flat, 14px |
+| default | rounded-lg (8px) | bg-primary flat, 13px/500 |
+| sm | rounded-md (6px) | 12px (density protection) |
 
-Hover: `hover:scale-[1.02]` (lg CTA), `active:scale-95`.
+Hover: `hover:brightness-95` (primary), outline = `border-strong` + `bg-card` + `hover:bg-muted`. `active:scale-[0.98]`.
 
 ### 5.2 Icons (Lucide only)
 

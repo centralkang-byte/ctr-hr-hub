@@ -131,7 +131,7 @@ export function ListCard<T>({
                 key={row.id}
                 role="listitem"
                 className={cn(
-                  'group relative flex items-start gap-3 border-t border-border/40 px-5 py-3 first:border-t-0',
+                  'group relative flex items-start gap-3 border-t border-border px-5 py-3 first:border-t-0',
                   rowHeight,
                   row.href && 'hover:bg-muted/40',
                   MOTION.microOut,

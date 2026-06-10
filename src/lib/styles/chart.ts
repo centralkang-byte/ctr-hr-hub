@@ -13,9 +13,10 @@ import { wtSlotColor } from './wt-avatar'
 // "의미색 유지" 원칙. Codex Gate2 P2 반영, 2026-05-18). 나머지 idx 는
 // 순수 카테고리라 wt 교차순 슬롯으로 통합.
 const SEMANTIC_SLOTS: Record<number, string> = {
-  2: '#16a34a', // success green (RISK_COLORS.low / STATUS success 정합)
-  3: '#f59e0b', // warning amber (RISK_COLORS.medium 정합)
-  4: '#e11d48', // danger red   (RISK_COLORS.critical / STATUS error 정합)
+  // Wave 0: proto 시맨틱 패밀리 (success oklch(56% .14 155) / warning oklch(70% .14 75) / danger oklch(58% .20 25))
+  2: '#008b4e', // success green (RISK_COLORS.low / STATUS success 정합)
+  3: '#d0901e', // warning amber (RISK_COLORS.medium 정합)
+  4: '#d73337', // danger red   (RISK_COLORS.critical / STATUS error 정합)
 }
 
 /** 시리즈 10색 — 카테고리 idx = wt 교차순, 의미 idx(2/3/4) = 시맨틱 hex 보존 */
@@ -62,9 +63,9 @@ export const CHART_COLORS = {
   grid: '#F1F5F9',
   text: '#64748b',
   background: '#F8FAFC',
-  danger: '#e11d48',
-  warning: '#f59e0b',
-  success: '#16a34a',
+  danger: '#d73337',
+  warning: '#d0901e',
+  success: '#008b4e',
   neutral: '#64748b',
 }
 
@@ -72,19 +73,19 @@ export const CHART_COLORS = {
  *  Severity 순: low(green) → medium(amber) → high(orange) → critical(red)
  *  의미색(심각도 인코딩) → wt 미적용·보존 (P2b 결정, 2026-05-18). */
 export const RISK_COLORS = {
-  low: '#16a34a',
-  medium: '#f59e0b',
-  high: '#f97316',
-  critical: '#e11d48',
+  low: '#008b4e',
+  medium: '#d0901e',
+  high: '#e4762c',   // wd-orange — proto 오렌지 패밀리
+  critical: '#d73337',
 } as const
 
 /** Heatmap 시맨틱 스펙트럼: Green(낮음/좋음) → Amber(중간) → Red(높음/나쁨)
  *  의미색(심각도 인코딩) → wt 미적용·보존 (P2b 결정, 2026-05-18). */
 export const HEATMAP_COLORS = {
   scale: [
-    'rgba(22,163,74,0.1)', 'rgba(22,163,74,0.2)', 'rgba(22,163,74,0.3)',
-    'rgba(245,158,11,0.2)', 'rgba(245,158,11,0.4)',
-    'rgba(225,29,72,0.2)', 'rgba(225,29,72,0.4)',
+    'rgba(0,139,78,0.1)', 'rgba(0,139,78,0.2)', 'rgba(0,139,78,0.3)',
+    'rgba(208,144,30,0.2)', 'rgba(208,144,30,0.4)',
+    'rgba(215,51,55,0.2)', 'rgba(215,51,55,0.4)',
   ] as const,
-  text: { low: '#16a34a', mid: '#b45309', high: '#e11d48' },
+  text: { low: '#008b4e', mid: '#b45309', high: '#d73337' },
 } as const

@@ -62,8 +62,8 @@ const TONE_BAR: Record<WdStatTone, string> = {
 }
 
 const TONE_VALUE_TEXT: Record<WdStatTone, string> = {
-  // badge.tsx success SSOT 정합: AA-safe #15803d (design.md hex 예외#1) + dark 페어
-  success: 'text-[#15803d] dark:text-tertiary',
+  // badge.tsx success SSOT 정합: AA-safe #006b39 (design.md hex 예외#1) + dark 페어
+  success: 'text-[#006b39] dark:text-tertiary',
   accent: 'text-wt-4',
   warning: 'text-ctr-warning',
   neutral: 'text-foreground',
@@ -89,7 +89,7 @@ function MiniCard({ item }: { item: WdGroupedStatItem }) {
   return (
     <article
       role="listitem"
-      className="min-w-[200px] flex-shrink-0 rounded-2xl border border-border/15 bg-card p-5"
+      className="min-w-[200px] flex-shrink-0 rounded-2xl border border-border bg-card p-5"
     >
       <p className="mb-2 text-xs font-medium text-muted-foreground">{item.label}</p>
       <div className="flex items-end gap-1">
@@ -127,7 +127,7 @@ function StatRow({ item }: { item: WdGroupedStatItem }) {
   return (
     <div
       role="listitem"
-      className="flex items-baseline justify-between border-b border-border/15 py-2 last:border-b-0"
+      className="flex items-baseline justify-between border-b border-border py-2 last:border-b-0"
     >
       <span className="text-sm text-muted-foreground">{item.label}</span>
       <span className="flex items-baseline gap-1">
@@ -157,7 +157,7 @@ export function WdGroupedStatCard({
   return (
     <section
       aria-labelledby={headingId}
-      className={cn('rounded-2xl border border-border/15 bg-card p-6', className)}
+      className={cn('rounded-2xl border border-border bg-card p-6', className)}
     >
       <div className="mb-4 flex items-baseline justify-between gap-2">
         <h3 id={headingId} className="text-base font-bold tracking-[-0.02em] text-foreground">
