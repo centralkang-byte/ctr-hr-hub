@@ -9,6 +9,7 @@ import { test, expect } from '@playwright/test'
 import { ApiClient, assertOk, assertError } from '../helpers/api-client'
 import { authFile } from '../helpers/auth'
 import { resolveSeedData } from '../helpers/test-data'
+import { createTestEmployee } from '../helpers/employee-fixtures'
 import * as f from '../helpers/loa-discipline-misc-fixtures'
 
 // ═══════════════════════════════════════════════════════════
@@ -103,9 +104,13 @@ test.describe('LOA Records: HR_ADMIN State Machine', () => {
     assertOk(typeRes, 'create LOA type for state machine')
     loaTypeId = (typeRes.data as Record<string, unknown>).id as string
 
-    // Resolve employee with active primary assignment
-    const seed = await resolveSeedData(request)
-    employeeId = seed.employeeId
+    // 전용 일회용 직원으로 격리 (S280): activate→complete 상태머신이 대상 직원의
+    // primary assignment를 fence(휴직 STATUS_CHANGE — end_date 설정 + 복직 row는
+    // 익일 발효)하므로, 공유 시드 직원(이민준)을 쓰면 이후 실행되는 모든 스펙의
+    // active-primary-assignment 검증(훈련 수강등록·추천·peer 후보·my-result 페이지)이
+    // 연쇄 실패한다. CI run 27262733060 의 4개 스펙 연쇄 실패 근원.
+    const emp = await createTestEmployee(request)
+    employeeId = emp.id
   })
 
   test('POST /leave-of-absence creates REQUESTED record', async ({ request }) => {

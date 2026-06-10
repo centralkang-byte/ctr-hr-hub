@@ -58,9 +58,10 @@ test.describe('Hire Wizard: HR_ADMIN', () => {
 
     // canProceed = validateStep(step, data) === null && !submitting
     // Initial data has empty name/email → validateStep returns error → canProceed false → button disabled.
-    // The primary button (next/submit role) is the last button in the footer.
+    // .last()는 DialogContent가 children 뒤에 붙이는 X-close 버튼을 잡으므로 (Radix DOM 순서)
+    // 접근성 이름('다음' = WizardShell t('next'))으로 푸터 primary를 직접 지정한다.
     const dialog = page.getByRole('dialog')
-    const primary = dialog.getByRole('button').last()
+    const primary = dialog.getByRole('button', { name: '다음' })
     await expect(primary).toBeDisabled({ timeout: 10000 })
   })
 

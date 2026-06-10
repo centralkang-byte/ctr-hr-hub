@@ -18,6 +18,8 @@ const GrowthJourneyChart = dynamic(() => import('@/components/performance/Growth
 
 interface CycleOption { id: string; name: string; status: string; half: string }
 
+// API 응답(`/performance/reviews/my-result`)은 { review, mboGoals } 중첩 형태.
+// fetchResult에서 이 평탄 형태로 매핑한다 (필드 contract = route.ts).
 interface ReviewResult {
     reviewId: string
     finalGradeEnum: string | null
@@ -30,11 +32,31 @@ interface ReviewResult {
     notifiedAt: string | null
     acknowledgedAt: string | null
     acknowledgeDeadline: string | null
+    // MBO 목표는 단일 달성 점수(achievementScore)만 노출 — self/manager 분리 점수는
+    // 이 엔드포인트가 제공하지 않음 (PerformanceEvaluation.performanceDetail 영역).
     goals: Array<{
         id: string; title: string; weight: number
-        selfScore: number | null; managerScore: number | null
-        managerComment: string | null
+        score: number | null; status: string
     }>
+}
+
+// ─── API 응답 원형 (중첩) ─────────────────────────────────
+
+interface MyResultApiResponse {
+    review: {
+        id: string
+        finalGrade: string | null
+        finalGradeLabel: string | null
+        mboScore: number | null
+        beiScore: number | null
+        totalScore: number | null
+        mboWeight: number
+        beiWeight: number
+        notifiedAt: string | null
+        acknowledgedAt: string | null
+        acknowledgeDeadline: string | null
+    }
+    mboGoals: Array<{ id: string; title: string; weight: number; score: number | null; status: string }>
 }
 
 interface PeerResult {
@@ -95,12 +117,30 @@ export default function MyResultClient({user }: {
     const fetchResult = useCallback(async () => {
         if (!selectedCycleId) { setLoading(false); return }
         setLoading(true); setError('')
+        // 사이클 전환 시 직전 결과 잔존 방지 (404면 빈 상태로)
+        setResult(null); setPeerResult(null)
         try {
             const [resultRes, peerRes] = await Promise.all([
-                apiClient.get<ReviewResult>('/api/v1/performance/reviews/my-result', { cycleId: selectedCycleId }).catch(() => null),
+                apiClient.get<MyResultApiResponse>('/api/v1/performance/reviews/my-result', { cycleId: selectedCycleId }).catch(() => null),
                 apiClient.get<PeerResult>(`/api/v1/performance/peer-review/results/${user.employeeId}`, { cycleId: selectedCycleId }).catch(() => null),
             ])
-            if (resultRes) setResult(resultRes.data)
+            if (resultRes) {
+                const { review, mboGoals } = resultRes.data
+                setResult({
+                    reviewId: review.id,
+                    finalGradeEnum: review.finalGrade,
+                    finalGradeLabel: review.finalGradeLabel,
+                    performanceScore: review.mboScore,
+                    competencyScore: review.beiScore,
+                    totalScore: review.totalScore,
+                    mboWeight: review.mboWeight,
+                    beiWeight: review.beiWeight,
+                    notifiedAt: review.notifiedAt,
+                    acknowledgedAt: review.acknowledgedAt,
+                    acknowledgeDeadline: review.acknowledgeDeadline,
+                    goals: mboGoals ?? [],
+                })
+            }
             if (peerRes) setPeerResult(peerRes.data)
         } catch { setError(t('myResult.loadFailed')) }
         finally { setLoading(false) }
@@ -240,19 +280,15 @@ export default function MyResultClient({user }: {
                                 <div className="divide-y divide-border">
                                     {result.goals.map((goal) => (
                                         <div key={goal.id} className="px-5 py-4">
-                                            <div className="mb-2 flex items-center justify-between">
+                                            <div className="flex items-center justify-between">
                                                 <div>
                                                     <h3 className="text-sm font-medium text-foreground">{goal.title}</h3>
                                                     <span className="text-xs text-muted-foreground">{t('weight')}: {goal.weight}%</span>
                                                 </div>
                                                 <div className="text-right text-sm">
-                                                    <span className="text-muted-foreground">{t('kr_kec9e90ea')} </span><span className="font-medium text-foreground">{goal.selfScore ?? '-'}</span>
-                                                    <span className="ml-3 text-muted-foreground">{t('kr_keba7a4eb')} </span><span className="font-medium text-foreground">{goal.managerScore ?? '-'}</span>
+                                                    <span className="text-muted-foreground">{t('achievement')} </span><span className="font-medium text-foreground">{goal.score?.toFixed(1) ?? '-'}</span>
                                                 </div>
                                             </div>
-                                            {goal.managerComment && (
-                                                <p className="mt-1 text-xs text-muted-foreground">{t('myResult.managerComment')}: &quot;{goal.managerComment}&quot;</p>
-                                            )}
                                         </div>
                                     ))}
                                 </div>

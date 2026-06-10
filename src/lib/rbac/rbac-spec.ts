@@ -85,6 +85,9 @@ export const ROUTE_ACL: readonly RouteRule[] = [
   { prefix: '/analytics', allowedRoles: ROLE_GROUPS.MANAGER_UP },
 
   // ── API routes mirroring page ACL ────────────────────
+  // 팀 휴가 캘린더: 페이지 룰(/leave/team = MANAGER_UP)과 미러. API 룰 부재 시
+  // EMPLOYEE의 self-service `leave_read`로 핸들러를 통과해 부서원 휴가를 노출(fail-open).
+  { prefix: '/api/v1/leave/team', allowedRoles: ROLE_GROUPS.MANAGER_UP },
   { prefix: '/api/v1/settings', allowedRoles: ROLE_GROUPS.HR_UP },
   { prefix: '/api/v1/payroll/me', allowedRoles: ROLE_GROUPS.ALL_ROLES },
   { prefix: '/api/v1/payroll', allowedRoles: ROLE_GROUPS.HR_UP },

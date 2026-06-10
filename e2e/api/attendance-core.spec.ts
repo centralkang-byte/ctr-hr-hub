@@ -94,6 +94,15 @@ test.describe('Attendance Core API', () => {
       }
     })
 
+    // serial 플로우 내 위치 필수 (S280): Edge cases describe에 있을 땐 fullyParallel
+    // 워커가 self-service 플로우와 동시에 employee-a를 clock-in해 409 flake 유발.
+    // 퇴근 완료 직후로 옮겨 1일 1레코드(S276) 거부를 결정적으로 검증한다.
+    test('Clock-in after clock-out is rejected (one record per day, S276)', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await clockIn(api)
+      assertError(res, 400, 'clock-in after completed record')
+    })
+
     test('GET /attendance/weekly-summary returns 200', async ({ request }) => {
       const api = new ApiClient(request)
       const res = await getWeeklySummary(api)
@@ -119,17 +128,6 @@ test.describe('Attendance Core API', () => {
       expect(res.status).toBe(200)
       // data can be null or an attendance object — both are valid
       expect(res.body).toHaveProperty('data')
-    })
-
-    test('Clock-in after clock-out is rejected (one record per day, S276)', async ({ request }) => {
-      const api = new ApiClient(request)
-      // 같은 근무일 재출근은 1일 1레코드 정책으로 400.
-      // (이 describe가 self-service flow보다 먼저 돌면 기록이 없어 201일 수 있음 — 정리)
-      const res = await clockIn(api)
-      expect([200, 201, 400]).toContain(res.status)
-      if (res.ok) {
-        await clockOut(api)
-      }
     })
 
     test('POST /attendance/clock-in missing method returns 400', async ({ request }) => {

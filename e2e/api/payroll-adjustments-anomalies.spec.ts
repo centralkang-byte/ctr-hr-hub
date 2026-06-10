@@ -620,32 +620,19 @@ test.describe('Severance RBAC: EMPLOYEE Blocked', () => {
 // Section G: Global Dashboard — HR_ADMIN
 // ═══════════════════════════════════════════════════════════
 
-test.describe('Global Dashboard: HR_ADMIN', () => {
+// 전사 통합 뷰는 SUPER_ADMIN 전용 (route.ts:24 멀티테넌트 가드, 2026-06-04) —
+// 단일 법인 HR_ADMIN은 403. 200 shape 검증은 아래 SUPER_ADMIN describe가 담당.
+test.describe('Global Dashboard RBAC: HR_ADMIN Blocked', () => {
   test.use({ storageState: authFile('HR_ADMIN') })
 
-  test('GET /payroll/global returns company stats', async ({ request }) => {
+  test('GET /payroll/global as HR_ADMIN → 403 (SUPER only)', async ({ request }) => {
     const api = new ApiClient(request)
     const now = new Date()
     const res = await f.getGlobalDashboard(api, {
       year: String(now.getFullYear()),
       month: String(now.getMonth() + 1),
     })
-    assertOk(res, 'global dashboard')
-    const data = res.data as { companies: unknown[]; totalKRW: number }
-    expect(Array.isArray(data.companies)).toBe(true)
-    expect(typeof data.totalKRW).toBe('number')
-  })
-
-  test('GET /payroll/global shape includes trend', async ({ request }) => {
-    const api = new ApiClient(request)
-    const now = new Date()
-    const res = await f.getGlobalDashboard(api, {
-      year: String(now.getFullYear()),
-      month: String(now.getMonth() + 1),
-    })
-    assertOk(res, 'global dashboard shape')
-    const data = res.data as { trend: unknown[] }
-    expect(Array.isArray(data.trend)).toBe(true)
+    assertError(res, 403, 'HR_ADMIN blocked from global dashboard')
   })
 })
 
@@ -674,6 +661,10 @@ test.describe('Global Dashboard: SUPER_ADMIN', () => {
       month: String(now.getMonth() + 1),
     })
     assertOk(res, 'SUPER_ADMIN global dashboard')
+    const data = res.data as { companies: unknown[]; totalKRW: number; trend: unknown[] }
+    expect(Array.isArray(data.companies)).toBe(true)
+    expect(typeof data.totalKRW).toBe('number')
+    expect(Array.isArray(data.trend)).toBe(true)
   })
 })
 
