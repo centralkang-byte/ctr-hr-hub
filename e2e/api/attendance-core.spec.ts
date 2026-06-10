@@ -13,6 +13,11 @@ import { deleteAttendanceOn, closeDb } from '../helpers/db'
 function kstTodayStr(): string {
   return new Date(Date.now() + 9 * 3600_000).toISOString().slice(0, 10)
 }
+
+// UTC ISO 타임스탬프 → KST 달력 날짜 (YYYY-MM-DD)
+function kstDateOf(iso: string): string {
+  return new Date(new Date(iso).getTime() + 9 * 3600_000).toISOString().slice(0, 10)
+}
 import {
   clockIn,
   clockOut,
@@ -198,7 +203,12 @@ test.describe('Attendance Core API', () => {
         test.skip(true, 'No seed attendance records available')
         return
       }
-      seedAttendanceId = records[0].id as string
+      // 공유 시드 직원(employee-a)은 self-service describe가 KST-오늘 기록을
+      // 생성/삭제한다. workDate desc라 records[0]가 그 오늘 기록일 수 있는데, 다른
+      // 워커의 afterAll 삭제와 겹치면 보정 PUT이 404가 된다. self-service는 오늘만
+      // 건드리므로 KST-오늘이 아닌 과거 시드 기록을 골라 경합을 차단한다 (S281).
+      const past = records.find((r) => kstDateOf(String(r.workDate)) !== kstTodayStr())
+      seedAttendanceId = (past ?? records[0]).id as string
 
       const res = await getAttendanceDetail(api, seedAttendanceId)
       assertOk(res, 'attendance detail')
