@@ -166,7 +166,7 @@ export function ProposeRevisionDialog({ open, onOpenChange, goals, quarterlyRevi
                       value={rev.newTitle ?? ''}
                       onChange={(e) => updateRevision(goal.id, 'newTitle', e.target.value)}
                       className={`w-full rounded-lg border px-3 py-1.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 ${
-                        rev.newTitle !== goal.title ? 'bg-primary-container/20 font-semibold border-primary/30' : 'border-border/15'
+                        rev.newTitle !== goal.title ? 'bg-primary-container/20 font-semibold border-primary/30' : 'border-border'
                       }`}
                     />
                   </div>
@@ -183,7 +183,7 @@ export function ProposeRevisionDialog({ open, onOpenChange, goals, quarterlyRevi
                       value={rev.newWeight ?? 0}
                       onChange={(e) => updateRevision(goal.id, 'newWeight', Number(e.target.value))}
                       className={`w-24 rounded-lg border px-3 py-1.5 text-sm font-mono tabular-nums focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 ${
-                        rev.newWeight !== goal.weight ? 'bg-primary-container/20 font-semibold border-primary/30' : 'border-border/15'
+                        rev.newWeight !== goal.weight ? 'bg-primary-container/20 font-semibold border-primary/30' : 'border-border'
                       }`}
                     />
                     <span className="text-sm text-muted-foreground">%</span>
@@ -199,7 +199,7 @@ export function ProposeRevisionDialog({ open, onOpenChange, goals, quarterlyRevi
                       value={rev.newTargetMetric ?? ''}
                       onChange={(e) => updateRevision(goal.id, 'newTargetMetric', e.target.value)}
                       className={`w-full rounded-lg border px-3 py-1.5 text-sm focus:border-primary focus:outline-none ${
-                        (rev.newTargetMetric ?? '') !== (goal.targetMetric ?? '') ? 'bg-primary-container/20 border-primary/30' : 'border-border/15'
+                        (rev.newTargetMetric ?? '') !== (goal.targetMetric ?? '') ? 'bg-primary-container/20 border-primary/30' : 'border-border'
                       }`}
                     />
                   </div>
@@ -210,7 +210,7 @@ export function ProposeRevisionDialog({ open, onOpenChange, goals, quarterlyRevi
                       value={rev.newTargetValue ?? ''}
                       onChange={(e) => updateRevision(goal.id, 'newTargetValue', e.target.value)}
                       className={`w-full rounded-lg border px-3 py-1.5 text-sm focus:border-primary focus:outline-none ${
-                        (rev.newTargetValue ?? '') !== (goal.targetValue ?? '') ? 'bg-primary-container/20 border-primary/30' : 'border-border/15'
+                        (rev.newTargetValue ?? '') !== (goal.targetValue ?? '') ? 'bg-primary-container/20 border-primary/30' : 'border-border'
                       }`}
                     />
                   </div>
@@ -234,7 +234,7 @@ export function ProposeRevisionDialog({ open, onOpenChange, goals, quarterlyRevi
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder={t('revisionReason')}
-              className="w-full rounded-lg border border-border/15 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
           </div>
 

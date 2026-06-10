@@ -100,7 +100,7 @@ export default function ConfirmTab({ cycleId, adjustments, onConfirmDone }: Conf
           <p className="text-xs text-muted-foreground mb-1">{t('effectiveDate')}</p>
           <input
             type="date"
-            className="w-full px-2 py-1 border border-border/30 rounded-lg text-sm mt-1 focus:ring-2 focus:ring-primary/20"
+            className="w-full px-2 py-1 border border-border rounded-lg text-sm mt-1 focus:ring-2 focus:ring-primary/20"
             value={effectiveDate}
             onChange={(e) => setEffectiveDate(e.target.value)}
           />

@@ -50,7 +50,7 @@ export default function CalibrationBatchToolbar({
 
   return (
     <div className="sticky bottom-4 z-10 mx-auto max-w-2xl">
-      <div className="flex items-center gap-3 rounded-full bg-card shadow-lg px-4 py-2.5 border border-border/50">
+      <div className="flex items-center gap-3 rounded-full bg-card shadow-lg px-4 py-2.5 border border-border">
         {/* 선택 카운트 */}
         {selectedCount > 0 && (
           <>

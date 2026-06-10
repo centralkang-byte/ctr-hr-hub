@@ -7,11 +7,12 @@ export type StatusCategory = 'success' | 'warning' | 'error' | 'info' | 'neutral
 
 // ─── Badge FG (WCAG AA 4.5:1+ on white) ────────────────────
 
-/** 뱃지 텍스트 전경색 — WCAG AA 대비비 충족을 위해 차트/BG 색상보다 약간 진한 값 */
+/** 뱃지 텍스트 전경색 — WCAG AA 대비비 충족을 위해 차트/BG 색상보다 약간 진한 값
+ *  Wave 0: proto 시맨틱 패밀리 ink 파생 — success oklch(46% .12 155) 6.64:1, error oklch(50% .19 25) 5.57:1 */
 export const STATUS_BADGE_FG: Record<StatusCategory, string> = {
-  success: '#15803d',
-  warning: '#b45309',
-  error: '#e11d48',
+  success: '#006b39',
+  warning: '#b45309', // 유지 — proto #d0901e는 텍스트 AA 미달 (D17 bg/text 분리, Gate1)
+  error: '#b71824',
   info: 'hsl(var(--wt-7))',   // P2a-status: Workday steel-blue SSOT
   neutral: '#64748b',
   accent: 'hsl(var(--wt-4))', // P2a-status: Workday purple SSOT
@@ -19,21 +20,22 @@ export const STATUS_BADGE_FG: Record<StatusCategory, string> = {
 
 // ─── Chart / Inline FG & BG ────────────────────────────────
 
-/** 시맨틱 foreground 색상 (차트, 인라인 텍스트용) */
+/** 시맨틱 foreground 색상 (차트·아이콘용 — 텍스트는 STATUS_BADGE_FG 사용)
+ *  Wave 0: proto --success/--danger (styles.css :root oklch) */
 export const STATUS_FG: Record<StatusCategory, string> = {
-  success: '#16a34a',
+  success: '#008b4e',
   warning: '#b45309',
-  error: '#e11d48',
+  error: '#d73337',
   info: 'hsl(var(--wt-7))',   // P2a-status: Workday steel-blue SSOT
   neutral: '#64748b',
   accent: 'hsl(var(--wt-4))', // P2a-status: Workday purple SSOT
 } as const
 
-/** 시맨틱 background 색상 (차트 fill, 배경색용) */
+/** 시맨틱 background 색상 (차트 fill, 배경색용) — Wave 0: proto -soft (warning은 AA 4.51:1 위해 house 유지) */
 export const STATUS_BG: Record<StatusCategory, string> = {
-  success: '#dcfce7',
+  success: '#d8f8e2',
   warning: '#fef3c7',
-  error: '#fce7f3',
+  error: '#ffe6e1',
   info: 'hsl(var(--wt-7) / 0.14)',   // P2a-status: steel-blue soft tint SSOT
   neutral: '#f1f5f9',
   accent: 'hsl(var(--wt-4) / 0.14)', // P2a-status: purple soft tint SSOT
@@ -278,11 +280,11 @@ export function resolveStatusCategory(status: string): StatusCategory {
 /** @deprecated badge.tsx CVA로 대체됨. 마이그레이션 완료 후 삭제. */
 export const STATUS_VARIANT = {
   /** 승인 / 정상 / 완료 / 활성 */
-  success: 'bg-[#16a34a]/10 text-[#15803d]',
+  success: 'bg-[#008b4e]/10 text-[#006b39]',
   /** 대기 / 수습 / 검토중 */
   warning: 'bg-[#b45309]/10 text-[#b45309]',
   /** 반려 / 오류 / 만료 / 결근 */
-  error: 'bg-[#e11d48]/10 text-[#e11d48]',
+  error: 'bg-[#d73337]/10 text-[#b71824]',
   /** 진행중 / 온보딩 / 참고 */
   info: 'bg-primary/10 text-primary',
   /** 미시작 / 초안 / 취소 / 비활성 */

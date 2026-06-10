@@ -297,7 +297,7 @@ export default function GoalsClient({
                         {!goal.isLocked && (
                           <button
                             onClick={() => setRevisionDialogGoals([goal])}
-                            className="inline-flex items-center gap-1 rounded-lg border border-border/15 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
+                            className="inline-flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted transition-colors"
                           >
                             <FileEdit className="h-3 w-3" />
                             {t('goalRevision.proposeRevision')}

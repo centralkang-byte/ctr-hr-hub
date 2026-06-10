@@ -65,7 +65,7 @@ export function PreviewToolbar({ title, subtitle, children }: PreviewToolbarProp
   return (
     <div className="flex flex-col gap-4">
       {/* Toolbar header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border/40 bg-card px-4 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card px-4 py-3">
         <div className="flex flex-col gap-0.5 text-sm">
           <div className="flex items-center gap-2">
             <span className="font-semibold">{title}</span>

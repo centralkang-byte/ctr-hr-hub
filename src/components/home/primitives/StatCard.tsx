@@ -43,7 +43,7 @@ interface StatCardProps {
 
 const TONE_TEXT: Record<NonNullable<StatCardProps['tone']>, string> = {
   default: 'text-foreground',
-  success: 'text-[#15803d]',
+  success: 'text-[#006b39]',
   warning: 'text-ctr-warning',
   error: 'text-destructive',
   info: 'text-primary',
@@ -53,7 +53,7 @@ const TONE_TEXT: Record<NonNullable<StatCardProps['tone']>, string> = {
 const TREND_ICON = { up: TrendingUp, down: TrendingDown, flat: Minus } as const
 
 const TREND_COLOR = {
-  up: 'text-[#15803d]',
+  up: 'text-[#006b39]',
   down: 'text-destructive',
   flat: 'text-muted-foreground',
 } as const
@@ -116,7 +116,7 @@ export function StatCard({
 
       {/* Value + Sparkline row */}
       <div className="mt-2 flex items-end justify-between gap-3">
-        <p className={cn(TYPOGRAPHY.displaySm, 'font-mono tabular-nums', TONE_TEXT[tone])}>
+        <p className={cn(TYPOGRAPHY.displaySm, 'tabular-nums', TONE_TEXT[tone])}>
           {value}
         </p>
         {sparkline && sparkline.length > 0 ? (

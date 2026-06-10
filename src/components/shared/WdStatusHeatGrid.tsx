@@ -92,7 +92,7 @@ export function WdStatusHeatGrid({
   return (
     <section
       aria-labelledby={headingId}
-      className={cn('rounded-2xl border border-border/15 bg-card p-6', className)}
+      className={cn('rounded-2xl border border-border bg-card p-6', className)}
     >
       <div className="mb-4 flex items-baseline justify-between gap-2">
         <h3 id={headingId} className="text-base font-bold tracking-[-0.02em] text-foreground">
