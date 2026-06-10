@@ -5868,7 +5868,9 @@
       "overdue": "Quá hạn {days} ngày",
       "payDate": "Ngày trả lương",
       "remainingDays": "Ngày còn lại",
-      "title": "Lịch lương {month}/{year}"
+      "title": "Lịch lương {month}/{year}",
+      "subtitle": "Ngày chốt & ngày trả lương theo công ty",
+      "status": "Trạng thái"
     },
     "cancel": "Hủy",
     "close": "Đóng",
@@ -5926,7 +5928,8 @@
       "runType": "Loại",
       "severance": "Trợ cấp thôi việc",
       "special": "Đặc biệt",
-      "title": "Tạo đợt tính lương"
+      "title": "Tạo đợt tính lương",
+      "createFailed": "Tạo thất bại"
     },
     "current": "Current",
     "currentVsBand": "Lương hiện tại so với dải",
@@ -5956,7 +5959,14 @@
       "reviewNeeded": "Cần xem xét",
       "subtitle": "Trạng thái quy trình toàn pháp nhân",
       "title": "Quản lý lương",
-      "totalNetPay": "Tổng lương thực nhận"
+      "totalNetPay": "Tổng lương thực nhận",
+      "newCycle": "Chu kỳ mới",
+      "bankTransfer": "Chuyển khoản ngân hàng",
+      "publishPayslips": "Phát hành phiếu lương",
+      "publishNone": "Không có đợt lương sẵn sàng phát hành",
+      "publishMultiple": "Chọn theo công ty trong pipeline",
+      "prevMonth": "Tháng trước",
+      "nextMonth": "Tháng sau"
     },
     "days": "day(s)",
     "deductions": "Deductions",
@@ -6329,7 +6339,9 @@
       "step4": "Bước 4",
       "step4Sub": "Phê duyệt",
       "step5": "Bước 5",
-      "step5Sub": "Phát hành phiếu lương"
+      "step5Sub": "Phát hành phiếu lương",
+      "legendWarning": "Chú ý",
+      "legendAlert": "Bất thường"
     },
     "pipeline_status": "Pipeline Trạng thái",
     "position": "Chức vụ",

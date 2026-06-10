@@ -1,41 +1,31 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-import { useLocale } from 'next-intl'
-import { toast } from '@/hooks/use-toast'
-
 // ═══════════════════════════════════════════════════════════
-// GP#3-D: 급여 통합 대시보드 — /payroll
-// Pipeline 시각화 + 캘린더 + 요약 KPIs + 빠른 실행
+// CTR HR Hub — 급여 통합 대시보드 (/payroll)
+// Wave 1: 프로토 PayrollMgmtPage 정합 — page-h 골격 + wd-stat-strip
+// + 파이프라인 셀 그리드 + 빠른 실행 6종 + 일정 테이블.
 // ═══════════════════════════════════════════════════════════
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations, useLocale } from 'next-intl'
 import {
   Wallet, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle2,
-  Clock, DollarSign, Loader2, Calendar, Play, LayoutGrid,
-  TrendingUp, TrendingDown, Users, RefreshCw, Plus,
+  Clock, Loader2, Calendar, LayoutGrid, Inbox, Sparkles, FileText,
+  RefreshCw, Plus, Users, ArrowRight,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
+import { cn } from '@/lib/utils'
 import PayrollPipeline, { type PipelineEntry } from '@/components/payroll/PayrollPipeline'
 import PayrollCalendar from '@/components/payroll/PayrollCalendar'
-import PayrollCreateDialog from '@/components/payroll/PayrollCreateDialog'
+import PayrollCreateDrawer from '@/components/payroll/PayrollCreateDrawer'
+import { WdStatStrip } from '@/components/shared/WdStatStrip'
 import type { SessionUser } from '@/types'
-import { CARD_STYLES } from '@/lib/styles'
+import { TYPOGRAPHY, BUTTON_VARIANTS, BUTTON_SIZES } from '@/lib/styles'
 
 // ─── Types ──────────────────────────────────────────────────
-
-interface CalendarEntry {
-  companyCode: string | null
-  companyName: string
-  closingDeadline: string | null
-  payDay: string | null
-  dDayClosing: number | null
-  dDayPay: number | null
-  alertLevel: 'red' | 'amber' | 'normal'
-  currentStep: number
-  status: string
-}
 
 interface DashboardData {
   pipelines: PipelineEntry[]
@@ -54,56 +44,38 @@ interface DashboardData {
   }
 }
 
-// fmt 함수는 컴포넌트 내부에서 t()를 사용하도록 이동
+// ─── Quick Action Row (proto: 가로형 행 버튼 — 아이콘 사각 + 라벨 + mono sub + 화살표) ───
 
-// ─── KPI Card ───────────────────────────────────────────────
-
-interface KpiCardProps {
+interface QuickActionRowProps {
+  icon: LucideIcon
   label: string
-  value: string
-  sub?: string
-  icon: React.ReactNode
-  accent: string
-  onClick?: () => void
+  sub: string
+  iconClass: string
+  onClick: () => void
+  disabled?: boolean
 }
 
-function KpiCard({ label, value, sub, icon, accent, onClick }: KpiCardProps) {
+function QuickActionRow({ icon: Icon, label, sub, iconClass, onClick, disabled }: QuickActionRowProps) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      disabled={!onClick}
-      className={`${CARD_STYLES.kpi} text-left w-full ${onClick ? 'hover:shadow-md hover:border-border transition-all cursor-pointer' : 'cursor-default'}`}
+      disabled={disabled}
+      className={cn(
+        'flex w-full items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3.5 text-left',
+        'transition-all hover:border-border-strong hover:shadow-sm',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        disabled && 'cursor-not-allowed opacity-60 hover:border-border hover:shadow-none',
+      )}
     >
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <div className={`flex h-7 w-7 items-center justify-center rounded-full ${accent}`}>
-          {icon}
-        </div>
-      </div>
-      <p className="text-lg font-bold text-foreground leading-tight">{value}</p>
-      {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
-    </button>
-  )
-}
-
-// ─── Quick Action Button ─────────────────────────────────────
-
-function QuickAction({ icon, label, sub, onClick, accent }: {
-  icon: React.ReactNode; label: string; sub: string
-  onClick: () => void; accent: string
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex flex-col items-center gap-2 p-4 rounded-xl border border-border bg-card hover:shadow-md hover:border-border transition-all w-full"
-    >
-      <div className={`flex h-10 w-10 items-center justify-center rounded-full ${accent}`}>
-        {icon}
-      </div>
-      <div className="text-center">
-        <p className="text-sm font-semibold text-foreground">{label}</p>
-        <p className="text-[11px] text-muted-foreground">{sub}</p>
-      </div>
+      <span className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]', iconClass)}>
+        <Icon className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[13.5px] font-semibold text-foreground">{label}</span>
+        <span className="block truncate font-mono text-[11px] tabular-nums text-muted-foreground">{sub}</span>
+      </span>
+      <ArrowRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" aria-hidden="true" />
     </button>
   )
 }
@@ -116,6 +88,7 @@ interface Props {
 
 export default function PayrollDashboardClient({ user: _user }: Props) {
   const t = useTranslations('payroll')
+  const tc = useTranslations('common')
   const locale = useLocale()
   const router = useRouter()
   const now = new Date()
@@ -156,58 +129,68 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
     else setMonth(m => m + 1)
   }
 
-  // Calendar entries shaped from pipelines
-  const calendarEntries: CalendarEntry[] = (data?.pipelines ?? []).map((p) => ({
-    companyCode: p.companyCode,
-    companyName: p.companyName,
-    closingDeadline: (p as unknown as Record<string, unknown>).closingDeadline as string | null,
-    payDay: (p as unknown as Record<string, unknown>).payDay as string | null,
-    dDayClosing: (p as unknown as Record<string, unknown>).dDayClosing as number | null,
-    dDayPay: (p as unknown as Record<string, unknown>).dDayPay as number | null,
-    alertLevel: p.alertLevel,
-    currentStep: p.currentStep,
-    status: p.status,
-  }))
+  const selectedYearMonth = `${year}-${String(month).padStart(2, '0')}`
+
+  // 명세서 배포 타깃 — 선택 월의 배포 가능 run이 정확히 1개일 때만 직접 이동
+  const publishables = useMemo(
+    () => (data?.pipelines ?? []).filter(
+      (p) => p.payrollRunId && (p.status === 'APPROVED' || p.status === 'PAID'),
+    ),
+    [data],
+  )
+  const publishTargetRunId = publishables.length === 1 ? publishables[0].payrollRunId : null
 
   return (
-    <div className="p-4 max-w-7xl mx-auto space-y-4">
+    <div className="mx-auto max-w-7xl space-y-4 p-4">
 
-      {/* ── Header ─────────────────────────────────────────── */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-dim">
-            <Wallet className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground tracking-[-0.02em]">{t('dashboard.title')}</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{t('dashboard.subtitle')}</p>
-          </div>
+      {/* ── Header (proto .page-h) ───────────────────────────── */}
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className={TYPOGRAPHY.pageTitle}>{t('dashboard.title')}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{t('dashboard.subtitle')}</p>
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* Month navigator */}
-          <div className="flex items-center gap-1 bg-card border border-border rounded-xl px-2 py-1">
-            <button onClick={prevMonth} className="p-1 rounded-lg hover:bg-muted text-muted-foreground motion-safe:transition-all">
-              <ChevronLeft className="h-4 w-4" />
+        <div className="flex items-center gap-2">
+          {/* Month navigator (proto .seg) */}
+          <div className="inline-flex items-stretch overflow-hidden rounded-lg border border-border-strong bg-card">
+            <button
+              type="button"
+              onClick={prevMonth}
+              aria-label={t('dashboard.prevMonth')}
+              className="px-2 py-1.5 text-muted-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
-            <span className="text-sm font-semibold text-foreground px-2 min-w-24 text-center">
+            <span className="flex min-w-[110px] items-center justify-center border-x border-border-strong px-3 text-sm font-semibold tabular-nums text-foreground">
               {new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long' }).format(new Date(year, month - 1))}
             </span>
-            <button onClick={nextMonth} className="p-1 rounded-lg hover:bg-muted text-muted-foreground motion-safe:transition-all">
-              <ChevronRight className="h-4 w-4" />
+            <button
+              type="button"
+              onClick={nextMonth}
+              aria-label={t('dashboard.nextMonth')}
+              className="px-2 py-1.5 text-muted-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+            >
+              <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
           </div>
 
-          <button onClick={fetchDashboard} className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground motion-safe:transition-all">
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          <button
+            type="button"
+            onClick={() => void fetchDashboard()}
+            aria-label={tc('refresh')}
+            className={cn(BUTTON_VARIANTS.ghost, 'rounded-lg p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring')}
+          >
+            <RefreshCw className={cn('h-4 w-4', loading && 'animate-spin')} aria-hidden="true" />
           </button>
 
+          {/* 주 액션 — 마지막 배치 (proto) */}
           <button
+            type="button"
             onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary hover:bg-primary/85 text-white text-sm font-semibold motion-safe:transition-all"
+            className={cn(BUTTON_VARIANTS.primary, BUTTON_SIZES.md, 'inline-flex items-center gap-1.5 font-semibold')}
           >
-            <Plus className="h-4 w-4" />
-            {t('dashboard.createRun')}
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            {t('dashboard.newCycle')}
           </button>
         </div>
       </div>
@@ -221,64 +204,59 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
 
       {!loading && data && (
         <>
-          {/* ── KPI Summary Cards ──────────────────────────── */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <KpiCard
-              label={t('dashboard.totalNetPay')}
-              value={fmt(data.summary.totalNetPay)}
-              sub={data.summary.prevTotalNet > 0
-                ? t('dashboard.momChange', { pct: `${data.summary.momChangePercent > 0 ? '+' : ''}${data.summary.momChangePercent}` })
-                : t('dashboard.noPrevData')
-              }
-              icon={
-                data.summary.momChangePercent > 0
-                  ? <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
-                  : data.summary.momChangePercent < 0
-                    ? <TrendingDown className="h-3.5 w-3.5 text-destructive" />
-                    : <DollarSign className="h-3.5 w-3.5 text-primary" />
-              }
-              accent="bg-primary/15"
-              onClick={() => router.push('/payroll/global')}
-            />
+          {/* ── KPI (proto .wd-stat-strip) ───────────────────── */}
+          <WdStatStrip
+            items={[
+              {
+                label: t('dashboard.totalNetPay'),
+                value: fmt(data.summary.totalNetPay),
+                icon: Wallet,
+                foot: data.summary.prevTotalNet > 0
+                  ? (
+                    <span className={data.summary.momChangePercent >= 0 ? 'font-semibold text-[#006b39]' : 'font-semibold text-destructive'}>
+                      {t('dashboard.momChange', { pct: `${data.summary.momChangePercent > 0 ? '+' : ''}${data.summary.momChangePercent}` })}
+                    </span>
+                  )
+                  : t('dashboard.noPrevData'),
+                onClick: () => router.push('/payroll/global'),
+              },
+              {
+                label: t('dashboard.completedCompanies'),
+                value: t('dashboard.completedCount', { completed: data.summary.completedCompanies, total: data.summary.totalCompanies }),
+                icon: CheckCircle2,
+                tone: 'success',
+                foot: t('dashboard.approvedOrPaid'),
+              },
+              {
+                label: t('dashboard.openAnomalies'),
+                value: t('dashboard.anomalyCount', { count: data.summary.openAnomalies }),
+                icon: AlertTriangle,
+                tone: data.summary.openAnomalies > 0 ? 'danger' : 'default',
+                foot: data.summary.openAnomalies > 0 ? t('dashboard.reviewNeeded') : t('dashboard.allResolved'),
+                onClick: data.summary.openAnomalies > 0 ? () => router.push('/payroll/anomalies') : undefined,
+              },
+              {
+                label: t('dashboard.pendingApprovals'),
+                value: t('dashboard.pendingCount', { pending: data.summary.pendingApprovals, alerts: data.summary.alertCount }),
+                icon: Clock,
+                tone: data.summary.pendingApprovals > 0 || data.summary.alertCount > 0 ? 'warning' : 'default',
+                foot: t('dashboard.approvalAndDeadline'),
+                onClick: data.summary.pendingApprovals > 0 ? () => router.push('/my/tasks?tab=approvals') : undefined,
+              },
+            ]}
+          />
 
-            <KpiCard
-              label={t('dashboard.completedCompanies')}
-              value={t('dashboard.completedCount', { completed: data.summary.completedCompanies, total: data.summary.totalCompanies })}
-              sub={t('dashboard.approvedOrPaid')}
-              icon={<CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />}
-              accent="bg-emerald-500/15"
-            />
-
-            <KpiCard
-              label={t('dashboard.openAnomalies')}
-              value={t('dashboard.anomalyCount', { count: data.summary.openAnomalies })}
-              sub={data.summary.openAnomalies > 0 ? t('dashboard.reviewNeeded') : t('dashboard.allResolved')}
-              icon={<AlertTriangle className="h-3.5 w-3.5 text-amber-500" />}
-              accent="bg-amber-500/15"
-              onClick={data.summary.openAnomalies > 0 ? () => router.push('/payroll/anomalies') : undefined}
-            />
-
-            <KpiCard
-              label={t('dashboard.pendingApprovals')}
-              value={t('dashboard.pendingCount', { pending: data.summary.pendingApprovals, alerts: data.summary.alertCount })}
-              sub={t('dashboard.approvalAndDeadline')}
-              icon={<Clock className="h-3.5 w-3.5 text-primary" />}
-              accent="bg-wt-4/10"
-              onClick={data.summary.pendingApprovals > 0 ? () => router.push('/my/tasks?tab=approvals') : undefined}
-            />
-          </div>
-
-          {/* ── Pipeline Visualization ──────────────────────── */}
-          <div className="bg-card rounded-xl border border-border p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <LayoutGrid className="h-4 w-4 text-primary" />
-              <h2 className="font-semibold text-foreground">{t('dashboard.pipelineStatus')}</h2>
-              <span className="ml-1 text-xs text-muted-foreground">{t('dashboard.pipelineTip')}</span>
+          {/* ── Pipeline (proto 셀 그리드 카드) ───────────────── */}
+          <div className="rounded-2xl border border-border bg-card p-5">
+            <div className="mb-4 flex flex-wrap items-baseline gap-2">
+              <LayoutGrid className="h-4 w-4 self-center text-primary" aria-hidden="true" />
+              <h2 className={TYPOGRAPHY.cardTitle}>{t('dashboard.pipelineStatus')}</h2>
+              <span className="text-xs text-muted-foreground">{t('dashboard.pipelineTip')}</span>
             </div>
 
             {data.pipelines.length === 0 ? (
-              <div className="py-8 text-center text-muted-foreground text-sm">
-                <Users className="h-8 w-8 mx-auto mb-2 text-border" />
+              <div className="py-8 text-center text-sm text-muted-foreground">
+                <Users className="mx-auto mb-2 h-8 w-8 text-border" aria-hidden="true" />
                 {t('dashboard.emptyPayroll')}
               </div>
             ) : (
@@ -286,58 +264,73 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
             )}
           </div>
 
-          {/* ── Payroll Calendar ────────────────────────────── */}
-          <div className="bg-card rounded-xl border border-border p-5">
-            <PayrollCalendar
-              entries={calendarEntries}
-              yearMonth={`${year}-${String(month).padStart(2, '0')}`}
-            />
-          </div>
-
-          {/* ── Quick Actions ───────────────────────────────── */}
+          {/* ── Quick Actions (proto .wd-section-h + grid-3) ──── */}
           <div>
-            <h2 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-              <Play className="h-4 w-4 text-primary" />
-              {t('dashboard.quickActions')}
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <QuickAction
-                icon={<Calendar className="h-5 w-5 text-primary/90" />}
+            <h2 className={cn(TYPOGRAPHY.sectionTitle, 'mb-3')}>{t('dashboard.quickActions')}</h2>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <QuickActionRow
+                icon={Calendar}
                 label={t('dashboard.closeAttendance')}
                 sub="STEP 1 → 2"
+                iconClass="bg-primary/10 text-primary"
                 onClick={() => router.push('/payroll/close-attendance')}
-                accent="bg-primary/15"
               />
-              <QuickAction
-                icon={<AlertTriangle className="h-5 w-5 text-amber-500" />}
+              <QuickActionRow
+                icon={AlertTriangle}
                 label={t('dashboard.anomalyReview')}
                 sub="STEP 3"
+                iconClass="bg-destructive/10 text-destructive"
                 onClick={() => router.push('/payroll/anomalies')}
-                accent="bg-amber-500/15"
               />
-              <QuickAction
-                icon={<CheckCircle2 className="h-5 w-5 text-primary" />}
+              <QuickActionRow
+                icon={Inbox}
                 label={t('dashboard.pendingApproval')}
                 sub="STEP 4"
+                iconClass="bg-wd-orange-soft text-wd-orange-ink"
                 onClick={() => router.push('/my/tasks?tab=approvals')}
-                accent="bg-primary/15"
               />
-              <QuickAction
-                icon={<Wallet className="h-5 w-5 text-emerald-600" />}
+              <QuickActionRow
+                icon={Sparkles}
                 label={t('dashboard.manualAdjust')}
                 sub="STEP 2.5"
+                iconClass="bg-tertiary/10 text-[#006b39]"
                 onClick={() => router.push('/payroll/adjustments')}
-                accent="bg-emerald-500/15"
+              />
+              <QuickActionRow
+                icon={Wallet}
+                label={t('dashboard.bankTransfer')}
+                sub="STEP 5"
+                iconClass="bg-wt-4/10 text-wt-4"
+                onClick={() => router.push('/payroll/bank-transfers')}
+              />
+              <QuickActionRow
+                icon={FileText}
+                label={t('dashboard.publishPayslips')}
+                sub={publishTargetRunId
+                  ? 'STEP 5'
+                  : publishables.length === 0 ? t('dashboard.publishNone') : t('dashboard.publishMultiple')}
+                iconClass="bg-info/10 text-info"
+                disabled={!publishTargetRunId}
+                onClick={() => publishTargetRunId && router.push(`/payroll/${publishTargetRunId}/publish`)}
               />
             </div>
+          </div>
+
+          {/* ── 일정 테이블 (proto Card) ─────────────────────── */}
+          <div className="rounded-2xl border border-border bg-card p-5">
+            <PayrollCalendar
+              entries={data.pipelines}
+              yearMonth={selectedYearMonth}
+            />
           </div>
         </>
       )}
 
-      {/* ── Create Dialog ───────────────────────────────────── */}
-      <PayrollCreateDialog
+      {/* ── Create Drawer ───────────────────────────────────── */}
+      <PayrollCreateDrawer
         open={showCreate}
-        onOpenChange={setShowCreate}
+        onClose={() => setShowCreate(false)}
+        defaultYearMonth={selectedYearMonth}
         onCreated={() => { setShowCreate(false); void fetchDashboard() }}
       />
     </div>

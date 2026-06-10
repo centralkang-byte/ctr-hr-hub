@@ -26,6 +26,22 @@ test.describe('Payroll: HR_ADMIN', () => {
     await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 15000 })
   })
 
+  // Wave 1: 새 사이클 생성 폼 = WdDrawer (입력 폼 표준). 제출 없이 open→cancel만
+  // 검증 — 공유 시드에 run을 만들지 않는다 (@@unique 충돌·시드 오염 방지).
+  test('create run drawer opens and cancels without submit', async ({ page }) => {
+    await assertPageLoads(page, '/payroll')
+    await waitForLoading(page)
+
+    await page.getByRole('button', { name: /새 사이클|New cycle/ }).click()
+    const drawer = page.getByRole('dialog')
+    await expect(drawer.getByText(/급여 실행 생성|Create Payroll Run/).first()).toBeVisible()
+    await expect(drawer.locator('#payroll-create-yearMonth')).toBeVisible()
+    await expect(drawer.locator('#payroll-create-payDate')).toBeVisible()
+
+    await drawer.getByRole('button', { name: /취소|Cancel/ }).click()
+    await expect(drawer).toBeHidden()
+  })
+
   test('close attendance page loads', async ({ page }) => {
     await assertPageLoads(page, '/payroll/close-attendance')
     await waitForPageReady(page)

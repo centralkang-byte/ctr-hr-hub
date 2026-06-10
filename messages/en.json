@@ -5868,7 +5868,9 @@
       "overdue": "{days} days overdue",
       "payDate": "Pay Date",
       "remainingDays": "Days Left",
-      "title": "{year} {month} Payroll Calendar"
+      "title": "{year} {month} Payroll Calendar",
+      "subtitle": "Closing & pay dates by company",
+      "status": "Status"
     },
     "cancel": "Cancel",
     "close": "Close",
@@ -5926,7 +5928,8 @@
       "runType": "Type",
       "severance": "Severance",
       "special": "Special",
-      "title": "Create Payroll Run"
+      "title": "Create Payroll Run",
+      "createFailed": "Failed to create"
     },
     "current": "Current",
     "currentVsBand": "Current vs Band",
@@ -5956,7 +5959,14 @@
       "reviewNeeded": "Review needed",
       "subtitle": "All-company pipeline status",
       "title": "Payroll Management",
-      "totalNetPay": "Total Net Pay"
+      "totalNetPay": "Total Net Pay",
+      "newCycle": "New cycle",
+      "bankTransfer": "Bank transfer",
+      "publishPayslips": "Publish payslips",
+      "publishNone": "No run ready to publish",
+      "publishMultiple": "Choose per company in the pipeline",
+      "prevMonth": "Previous month",
+      "nextMonth": "Next month"
     },
     "days": "day(s)",
     "deductions": "Deductions",
@@ -6329,7 +6339,9 @@
       "step4": "Step 4",
       "step4Sub": "Approval",
       "step5": "Step 5",
-      "step5Sub": "Publish Stubs"
+      "step5Sub": "Publish Stubs",
+      "legendWarning": "Attention",
+      "legendAlert": "Alert"
     },
     "pipeline_status": "Pipeline Status",
     "position": "Position",
