@@ -2,7 +2,7 @@
 
 > Created 2026-06-10 (S276). Source = S275 handover "Explicitly OUT of scope (CEO policy gates)" in
 > `2026-06-10-attendance-orgchange-dogfood-fixes.md`, resolved via CEO decision gate (4 answers below).
-> Status: **REVISED after Codex Gate 1 round 1 NO-GO (P1×7, P2×4 — ALL incorporated below)** — pending round 2.
+> Status: **REVISED after Codex Gate 1 r1 NO-GO (P1×7, P2×4) + r2 NO-GO (P1×4, P2×2) — ALL incorporated** — pending round 3.
 > Branch: `feat/s276-attendance-policy-gates` stacked on `fix/s275-attendance-orgchange-dogfood` (PR #143 open;
 > this work touches the same files #143 rewrote — execute route, attendance/[id], admin client — so stacking avoids conflicts).
 
@@ -60,6 +60,36 @@ transfer (**no demotion**); executor does NOT write EmployeeHistory.
    `updateMany` violates append-only assignments; bulk-movements covers transfers).
 4. **ed-01 employee-detail silent no-op edit**: **remove the silently-stripped fields from the edit form**
    (dept/grade/status etc. change via 발령 only; add guidance note).
+
+## Codex Gate 1 round 2 findings → resolutions (P1×4, P2×2 — ALL incorporated)
+
+1. **(P1) terminal clock path bypasses everything** — `terminals/clock/route.ts` is a THIRD attendance
+   create/update path (server-local midnight, `NORMAL` hardcode, auto-close-then-recreate that would P2002 under
+   the new unique). Fix: terminal CLOCK_IN/OUT use the SAME `resolveDayContext` (tz/workDate from
+   `terminal.companyId`) + judgment + one-record-per-day (existing record for workDate → 400, P2002 fallback);
+   CLOCK_OUT uses the same bounded-lookback attach rule. The legacy "auto-close today's open record at 23:59 then
+   recreate" block is REMOVED (replaced by the 400; stale open records = HR correction, status quo for web).
+   Terminal e2e added.
+2. **(P1) audit must be atomic with execution** — `await logAuditSync` after commit is not atomic (audit failure
+   → 400 "rolled back" lie while movements applied; retry = duplicate risk). Fix: `executeMovements()` gains an
+   audit context param and writes the audit row via `tx.auditLog.create()` INSIDE its existing transaction
+   (movement type, effective dates, target employee IDs, row count, actor/ip/UA). Route drops its separate call.
+3. **(P1) settings UI company ≠ API company** — V2 client's `companyId` selector is display-only; API always
+   writes `user.companyId` (SUPER saving while viewing company A would silently edit own company). Fix: GET
+   `?companyId=` / PUT body `companyId`, resolved via `resolveCompanyId()` (companyFilter SSOT, #131 pattern);
+   e2e: SUPER saves A → only A changes, B unchanged.
+4. **(P1) e2e reset vs one-record-per-day** — existing specs only clock out open records; under the new policy
+   re-clock-in 400s on repeat runs, and `now−5min` start-time flips dates near midnight. Fix: dedicated fixture
+   employee + explicit DB cleanup of that employee's today-record before/after (try/finally restores settings,
+   attendance, shifts); midnight-safe fixed thresholds (`workStartTime='00:01'` → deterministic LATE;
+   `'23:59'` → deterministic NORMAL) instead of now-relative values.
+5. **(P2) `Intl.supportedValuesOf` rejects valid aliases (UTC, Etc/UTC)** — validate tz via
+   `try { new Intl.DateTimeFormat('en-US', {timeZone}) } catch` instead.
+6. **(P2) overnight worker clocking IN after midnight** (00:30 punch for a 22:00 shift) — clock-in also checks
+   the PREVIOUS day's shift: if it is overnight (end <= start) and `now` < that shift's end instant, the record
+   is attributed to the previous workDate (judged LATE against its start). Clock-out lookback attach rule
+   hardened: attach to an open previous-day record only when `now − clockIn <= 24h` (a forgotten 09:00 punch from
+   yesterday does NOT swallow tonight's clock-out — returns "출근 기록이 없습니다" for HR correction instead).
 
 ## Item 1 — att-09: wire lateness/early-leave judgment (largest)
 
