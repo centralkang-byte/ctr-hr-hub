@@ -6478,6 +6478,15 @@
     "reviewTitle": "Payroll Review",
     "risk": "Risk",
     "runDetail": "Run Detail",
+    "runLoad": {
+      "notFoundTitle": "Payroll run not found",
+      "notFoundSub": "This payroll run may have been deleted or you may not have access to it.",
+      "errorTitle": "Failed to load payroll run",
+      "errorSub": "This may be a temporary error. Please try again.",
+      "backToHub": "Back to payroll hub",
+      "backToApprovals": "Back to approvals",
+      "ownCompanyOnly": "Only available for your own company's payroll runs"
+    },
     "runList": "Payroll Runs",
     "runsTitle": "Payroll Runs",
     "salaryBandPosition": "Pay Band Position",

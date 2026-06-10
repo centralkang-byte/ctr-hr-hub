@@ -9,13 +9,15 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { notFound } from '@/lib/errors'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
 export const GET = withPermission(
     async (_req: NextRequest, context, user) => {
         const { runId } = await context.params
 
-        const run = await prisma.payrollRun.findUnique({
-            where: { id: runId, companyId: user.companyId },
+        // 멀티테넌트 스코프: SUPER는 전체뷰, 비-SUPER는 본인 법인만 (anomalies 라우트와 동일 정책)
+        const run = await prisma.payrollRun.findFirst({
+            where: { id: runId, ...resolveCompanyFilter(user, null) },
             include: {
                 payrollApproval: {
                     include: {
@@ -78,6 +80,8 @@ export const GET = withPermission(
         return apiSuccess({
             run: {
                 id: run.id,
+                // 클라이언트의 cross-company 액션 게이트용 (SUPER 타 법인 뷰에서 paid/notify/transfer 비활성화)
+                companyId: run.companyId,
                 yearMonth: run.yearMonth,
                 status: run.status,
                 headcount: run.headcount,

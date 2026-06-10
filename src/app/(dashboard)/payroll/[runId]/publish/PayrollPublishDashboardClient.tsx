@@ -10,8 +10,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import {
-    ArrowLeft, CheckCircle2, Eye, EyeOff, Download,
-    Bell, FileSpreadsheet, FileText, CreditCard,
+    AlertCircle, ArrowLeft, CheckCircle2, Eye, EyeOff, Download,
+    Bell, FileQuestion, FileSpreadsheet, FileText, CreditCard,
     Users, DollarSign, Loader2, ChevronDown,
     Clock, XCircle,
 } from 'lucide-react'
@@ -21,7 +21,9 @@ import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { KpiCardsSkeleton, ChartSkeleton } from '@/components/shared/PageSkeleton'
 import { WdStatStrip } from '@/components/shared/WdStatStrip'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { apiClient } from '@/lib/api'
+import { AppError } from '@/lib/errors'
 import { CARD_STYLES, TYPOGRAPHY } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
@@ -32,6 +34,7 @@ import type { SessionUser } from '@/types'
 interface PublishStatus {
     run: {
         id: string
+        companyId: string
         yearMonth: string
         status: string
         headcount: number | null
@@ -109,7 +112,7 @@ interface Props {
     runId: string
 }
 
-export default function PayrollPublishDashboardClient({user: _user, runId }: Props) {
+export default function PayrollPublishDashboardClient({ user, runId }: Props) {
   const t = useTranslations('payroll')
   const tc = useTranslations('common')
   const locale = useLocale()
@@ -144,13 +147,22 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
     const [showDownloads, setShowDownloads] = useState(false)
     const [markingPaid, setMarkingPaid] = useState(false)
 
+    // 로드 실패 구분: 404(notFound/접근불가) vs 그 외(일시 오류 → 재시도)
+    const [loadError, setLoadError] = useState<'notFound' | 'error' | null>(null)
+
     // publish-status는 1회 조회 + 액션 후 수동 재조회 (폴링 아님 — Codex G1 #1)
     const fetchData = useCallback(async () => {
         try {
             const res = await apiClient.get<PublishStatus>(`/api/v1/payroll/${runId}/publish-status`)
             setData(res.data)
+            setLoadError(null)
         } catch (err) {
-            toast({ title: t('publishPage.loadFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
+            if (err instanceof AppError && err.statusCode === 404) {
+                setLoadError('notFound')
+            } else {
+                setLoadError('error')
+                toast({ title: t('publishPage.loadFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
+            }
         } finally {
             setLoading(false)
         }
@@ -194,7 +206,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
         a.click()
     }
 
-    if (loading || !data) {
+    if (loading) {
         return (
             <div className="p-6 max-w-4xl mx-auto space-y-5">
                 <Skeleton className="h-8 w-48" />
@@ -204,8 +216,30 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
         )
     }
 
+    // 명시적 not-found/오류 상태 — 무한 스켈레톤 금지 (rules/components.md 3-상태)
+    if (!data) {
+        const isNotFound = loadError === 'notFound'
+        return (
+            <div className="p-6 max-w-4xl mx-auto">
+                <EmptyState
+                    icon={isNotFound ? FileQuestion : AlertCircle}
+                    title={isNotFound ? t('runLoad.notFoundTitle') : t('runLoad.errorTitle')}
+                    sub={isNotFound ? t('runLoad.notFoundSub') : t('runLoad.errorSub')}
+                    action={isNotFound
+                        ? { label: t('runLoad.backToHub'), onClick: () => router.push('/payroll') }
+                        : { label: tc('retry'), onClick: () => { setLoading(true); void fetchData() } }}
+                    size="lg"
+                    standalone
+                />
+            </div>
+        )
+    }
+
     const { run, payslipStats, transferBatches, approvalHistory } = data
     const isApproved = ['APPROVED', 'PAID'].includes(run.status)
+    // SUPER 타 법인 뷰: 조회는 전체뷰 정책이나, 쓰기성 액션(지급처리·재통보·이체파일 생성)은
+    // 본인 법인 스코프 유지 — 가드 약화 금지 (해당 API들은 user.companyId 하드 스코프)
+    const isCrossCompany = run.companyId !== user.companyId
 
     return (
         <div className="p-6 max-w-4xl mx-auto space-y-5">
@@ -233,15 +267,16 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                     </div>
                 </div>
                 {run.status === 'APPROVED' && (
-                    <Button
-                        type="button"
-                        onClick={handleMarkPaid}
-                        disabled={markingPaid}
-                        className="ml-auto"
-                    >
-                        {markingPaid ? <Loader2 className="animate-spin" aria-hidden="true" /> : <CreditCard aria-hidden="true" />}
-                        {t('kr_keca780ea_complete')}
-                    </Button>
+                    <span className="ml-auto" title={isCrossCompany ? t('runLoad.ownCompanyOnly') : undefined}>
+                        <Button
+                            type="button"
+                            onClick={handleMarkPaid}
+                            disabled={markingPaid || isCrossCompany}
+                        >
+                            {markingPaid ? <Loader2 className="animate-spin" aria-hidden="true" /> : <CreditCard aria-hidden="true" />}
+                            {t('kr_keca780ea_complete')}
+                        </Button>
+                    </span>
                 )}
             </div>
 
@@ -283,15 +318,17 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
             <section className={`${CARD_STYLES.kpi} space-y-4`} aria-labelledby="publish-view-rate-title">
                 <div className="flex items-center justify-between">
                     <h2 id="publish-view-rate-title" className={TYPOGRAPHY.cardTitle}>{t('payStub_kec97b4eb_status')}</h2>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={handleNotifyUnread}
-                        disabled={notifying || payslipStats.unviewed === 0}
-                    >
-                        {notifying ? <Loader2 className="animate-spin" aria-hidden="true" /> : <Bell aria-hidden="true" />}
-                        {t('publishPage.resendReminder', { count: payslipStats.unviewed })}
-                    </Button>
+                    <span title={isCrossCompany ? t('runLoad.ownCompanyOnly') : undefined}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleNotifyUnread}
+                            disabled={notifying || payslipStats.unviewed === 0 || isCrossCompany}
+                        >
+                            {notifying ? <Loader2 className="animate-spin" aria-hidden="true" /> : <Bell aria-hidden="true" />}
+                            {t('publishPage.resendReminder', { count: payslipStats.unviewed })}
+                        </Button>
+                    </span>
                 </div>
                 <ViewProgressBar viewed={payslipStats.viewed} total={payslipStats.total} />
                 {notifyResult && (
@@ -321,7 +358,9 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                             sub: 'CSV',
                             icon: <CreditCard className="h-5 w-5 text-[#006b39]" aria-hidden="true" />,
                             bg: 'bg-tertiary/10',
-                            disabled: !isApproved,
+                            // 이체파일 생성은 BankTransferBatch를 쓰는 write — 타 법인 뷰에서 차단
+                            disabled: !isApproved || isCrossCompany,
+                            title: isCrossCompany ? t('runLoad.ownCompanyOnly') : undefined,
                             url: `/api/v1/payroll/${runId}/export/transfer`,
                         },
                         {
@@ -331,6 +370,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                             icon: <FileSpreadsheet className="h-5 w-5 text-primary/90" aria-hidden="true" />,
                             bg: 'bg-primary/15',
                             disabled: false,
+                            title: undefined,
                             url: `/api/v1/payroll/${runId}/export/ledger`,
                         },
                         {
@@ -339,6 +379,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                             icon: <FileSpreadsheet className="h-5 w-5 text-wd-orange" aria-hidden="true" />,
                             bg: 'bg-warning-bright/15',
                             disabled: false,
+                            title: undefined,
                             url: `/api/v1/payroll/${runId}/export/comparison`,
                         },
                         {
@@ -347,6 +388,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                             icon: <FileText className="h-5 w-5 text-primary" aria-hidden="true" />,
                             bg: 'bg-wt-4/10',
                             disabled: false,
+                            title: undefined,
                             url: `/api/v1/payroll/${runId}/export/journal`,
                         },
                     ].map((item) => (
@@ -355,6 +397,7 @@ export default function PayrollPublishDashboardClient({user: _user, runId }: Pro
                             type="button"
                             onClick={() => !item.disabled && triggerDownload(item.url)}
                             disabled={item.disabled}
+                            title={item.title}
                             className={`flex flex-col items-center gap-2 p-4 rounded-xl border border-border transition-colors ${item.disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-background cursor-pointer'}`}
                         >
                             <div className={`flex h-10 w-10 items-center justify-center rounded-full ${item.bg}`}>
