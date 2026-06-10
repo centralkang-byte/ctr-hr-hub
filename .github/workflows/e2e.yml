@@ -83,7 +83,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           # See file header comment for the Node 24 / npm 11 rationale.
-          node-version: 24
+          # Node 24.16.0 (runner rollout ~2026-05-28) hangs `npx playwright install`
+          # right after the chromium zip hits 100% — every run since then died at
+          # the 30-min job cap before tests started (empirical A/B: 24.15.0 ran,
+          # 24.16.0 hung; repo/lockfile unchanged). Unpin after upstream fix.
+          node-version: 24.15.0
           cache: npm
 
       - name: Install dependencies
