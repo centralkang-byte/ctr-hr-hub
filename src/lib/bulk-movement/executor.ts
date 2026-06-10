@@ -242,6 +242,8 @@ async function executeTermination(tx: TxClient, row: ValidatedRow) {
       data: {
         employeeId: row.employeeId,
         checklistId: checklist.id,
+        // 소유 법인 = 시작 시점 primary assignment 법인 (테넌트 스코핑 SSOT)
+        companyId: current.companyId,
         resignType: resignType as 'VOLUNTARY' | 'INVOLUNTARY' | 'RETIREMENT' | 'CONTRACT_END' | 'MUTUAL_AGREEMENT',
         lastWorkingDate,
         resignReasonCode: data.resignReasonCode ?? null,

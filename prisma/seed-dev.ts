@@ -1245,6 +1245,7 @@ async function seedOnOffboarding(
             id: offId,
             employeeId: empId,
             checklistId: offboardingChecklist.id,
+            companyId: krId, // 소유 법인 = 시작 시점 직원 법인 (checklist와 동일)
             resignType: resignTypes[i] as any,
             lastWorkingDate: daysLater(30 - i * 15),
             status: 'IN_PROGRESS',

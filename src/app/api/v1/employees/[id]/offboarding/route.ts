@@ -18,11 +18,8 @@ export const GET = withPermission(
     const offboarding = await prisma.employeeOffboarding.findFirst({
       where: {
         employeeId,
-        employee: {
-          ...(user.role !== 'SUPER_ADMIN'
-            ? { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
-            : {}),
-        },
+        // 테넌트 스코핑 = EmployeeOffboarding.companyId 직접 (완료 퇴사도 직원 상세에서 조회 가능)
+        ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}),
       },
       orderBy: { createdAt: 'desc' },
       include: {

@@ -146,16 +146,9 @@ export const offboardingOverdueRule: NudgeRule = {
       where: {
         status: 'PENDING',
         employeeOffboarding: {
-          status:   'IN_PROGRESS',
-          employee: {
-            assignments: {
-              some: {
-                companyId,
-                isPrimary: true,
-                endDate:   null,
-              },
-            },
-          },
+          status:    'IN_PROGRESS',
+          // 회사 필터 = EmployeeOffboarding.companyId 직접 (assignment 조인은 전출 시 탈락)
+          companyId,
         },
       },
       select: {

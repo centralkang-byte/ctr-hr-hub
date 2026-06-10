@@ -12,7 +12,6 @@ import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { z } from 'zod'
 import { isDirectManager } from '@/lib/auth/manager-check'
-import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 // ─── GET: Fetch exit interview for an offboarding record ────
 
@@ -23,9 +22,8 @@ export const GET = withPermission(
     const offboarding = await prisma.employeeOffboarding.findFirst({
       where: {
         id,
-        ...(user.role !== 'SUPER_ADMIN'
-          ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
-          : {}),
+        // 테넌트 스코핑 = EmployeeOffboarding.companyId 직접 (완료 후에도 면담 조회 가능)
+        ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}),
       },
     })
     if (!offboarding) throw notFound('퇴직 기록을 찾을 수 없습니다.')
@@ -96,21 +94,7 @@ export const POST = withPermission(
     const offboarding = await prisma.employeeOffboarding.findFirst({
       where: {
         id,
-        ...(user.role !== 'SUPER_ADMIN'
-          ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
-          : {}),
-      },
-      include: {
-        employee: {
-          select: {
-            id: true,
-            assignments: {
-              where: { isPrimary: true, endDate: null },
-              take: 1,
-              select: { companyId: true },
-            },
-          },
-        },
+        ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}),
       },
     })
     if (!offboarding) throw notFound('퇴직 기록을 찾을 수 없습니다.')
@@ -150,8 +134,8 @@ export const POST = withPermission(
           feedbackText: data.feedbackText,
           suggestions: data.suggestions ?? null,
           isConfidential: data.isConfidential ?? true,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          companyId: ((extractPrimaryAssignment(offboarding.employee.assignments ?? []) as any)?.companyId as string | undefined) ?? user.companyId,
+          // 면담 소유 법인 = 오프보딩 소유 법인 (active-assignment 파생은 완료/전출 시 user.companyId로 오염)
+          companyId: offboarding.companyId ?? user.companyId,
         },
         include: { interviewer: { select: { id: true, name: true } } },
       })

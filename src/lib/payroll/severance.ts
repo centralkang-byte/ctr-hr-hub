@@ -16,6 +16,10 @@ import type { SeveranceDetail } from './types'
 export async function calculateSeverance(
   employeeId: string,
   terminationDate: Date,
+  // 정산 법인 (옵션) — 퇴사 완료 흐름은 assignment 마감 후 호출되므로 active-assignment
+  // 조회가 빈 결과('')가 됨. 호출측(complete-offboarding)이 tx 내부에서 확정한 법인을 전달.
+  // 미전달 시 기존 동작(재직자 active assignment) 유지 — payroll 견적 라우트 무영향.
+  settlementCompanyId?: string,
 ): Promise<SeveranceDetail> {
   // 4주 윈도 사전 필터 하한: helper 와 동일한 UTC day-start 기준으로 정규화
   // (비자정 terminationDate 에서 윈도 첫날 스케줄 누락 방지 — loose pre-filter)
@@ -55,7 +59,7 @@ export async function calculateSeverance(
       },
     },
   })
-  const companyId = extractPrimaryAssignment(employee.assignments)?.companyId ?? ''
+  const companyId = settlementCompanyId ?? (extractPrimaryAssignment(employee.assignments)?.companyId ?? '')
 
   const tenureDays = differenceInDays(terminationDate, employee.hireDate)
   const tenureYears = tenureDays / 365

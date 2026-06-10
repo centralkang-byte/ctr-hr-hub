@@ -41,7 +41,7 @@ export const PUT = withPermission(
             where: {
                 id,
                 ...(user.role !== ROLE.SUPER_ADMIN
-                    ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
+                    ? { companyId: user.companyId }
                     : {}),
             },
         })

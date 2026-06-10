@@ -10,6 +10,7 @@ import { Prisma } from '@/generated/prisma/client'
 import { buildPagination } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
@@ -18,8 +19,8 @@ export const GET = withPermission(
     const page = Number(p.page ?? 1)
     const limit = Number(p.limit ?? 20)
     const status = p.status as 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | undefined
-    const companyId =
-      user.role === 'SUPER_ADMIN' ? (p.companyId ?? undefined) : user.companyId
+    // 테넌트 스코핑 = EmployeeOffboarding.companyId 직접 (active-assignment 조인은 완료 시 탈락 — "완료" 탭 0건 버그)
+    const companyFilter = resolveCompanyFilter(user, p.companyId ?? null)
 
     const where: Prisma.EmployeeOffboardingWhereInput = {
       ...(status
@@ -29,13 +30,7 @@ export const GET = withPermission(
             in: ['IN_PROGRESS', 'COMPLETED'],
           },
         }),
-      ...(companyId
-        ? {
-          employee: {
-            assignments: { some: { companyId, isPrimary: true, endDate: null } },
-          },
-        }
-        : {}),
+      ...companyFilter,
     }
 
     const include = {
@@ -96,10 +91,8 @@ export const GET = withPermission(
     })
 
     // ── Analytics: 퇴직 원인 분석 + 트렌드 ────────────────
-
-    const companyWhere = companyId
-      ? { employee: { assignments: { some: { companyId, isPrimary: true } } } }
-      : {}
+    // ExitInterview·EmployeeOffboarding 모두 companyId 직접 보유 — historical-assignment 조인 제거
+    const companyWhere = companyFilter
 
     // 이직 원인 분석 (ExitInterview.primaryReason groupBy)
     const exitReasonGroups = await prisma.exitInterview.groupBy({

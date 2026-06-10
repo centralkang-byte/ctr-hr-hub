@@ -106,6 +106,7 @@ export const GET = withPermission(
                 where: {
                     status: { in: ['IN_PROGRESS', 'COMPLETED'] },
                     lastWorkingDate: { gte: firstDay, lte: lastDay },
+                    companyId: run.companyId, // run 법인 소유 오프보딩만 (타법인 Set 오염 방지)
                 },
                 select: { employeeId: true },
             })).map((o) => o.employeeId)

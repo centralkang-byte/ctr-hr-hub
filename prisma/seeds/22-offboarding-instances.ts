@@ -92,6 +92,8 @@ export async function seedOffboardingInstances(prisma: PrismaClient) {
         where: {
             id: { notIn: Array.from(existingIds) },
             deletedAt: null,
+            // 체크리스트(CTR)와 같은 법인 직원만 — 소유 법인 ≠ checklist 법인 불일치 방지
+            assignments: { some: { isPrimary: true, endDate: null, status: 'ACTIVE', companyId: ctrKr.id } },
         },
         include: {
             assignments: {
@@ -122,6 +124,7 @@ export async function seedOffboardingInstances(prisma: PrismaClient) {
             id: ob1Id,
             employeeId: emp1.id,
             checklistId: volChecklist.id,
+            companyId: emp1CompanyId, // 소유 법인 = 시작 시점 직원 법인
             resignType: 'VOLUNTARY',
             lastWorkingDate: lwd1,
             resignReasonCode: 'CAREER_GROWTH',
@@ -160,6 +163,7 @@ export async function seedOffboardingInstances(prisma: PrismaClient) {
             id: ob2Id,
             employeeId: emp2.id,
             checklistId: volChecklist.id,
+            companyId: emp2CompanyId, // 소유 법인 = 시작 시점 직원 법인
             resignType: 'VOLUNTARY',
             lastWorkingDate: lwd2,
             resignReasonCode: 'COMPENSATION',
@@ -202,6 +206,7 @@ export async function seedOffboardingInstances(prisma: PrismaClient) {
 
     // ── Instance 3: D-Day, INVOLUNTARY ────────────────────
     const emp3 = candidates[2]
+    const emp3CompanyId = emp3.assignments[0]?.companyId ?? ctrKr.id
     const lwd3 = new Date(now.getTime() - 1 * 86_400_000) // yesterday
     const ob3Id = randomUUID()
 
@@ -212,6 +217,7 @@ export async function seedOffboardingInstances(prisma: PrismaClient) {
             id: ob3Id,
             employeeId: emp3.id,
             checklistId: invChecklist.id,
+            companyId: emp3CompanyId, // 소유 법인 = 시작 시점 직원 법인
             resignType: 'INVOLUNTARY',
             lastWorkingDate: lwd3,
             resignReasonCode: 'PERFORMANCE',

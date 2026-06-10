@@ -854,6 +854,7 @@ model Company {
   employeeDocuments      EmployeeDocument[]
   orgChangeHistories     OrgChangeHistory[]
   offboardingChecklists  OffboardingChecklist[]
+  employeeOffboardings   EmployeeOffboarding[]
   disciplinaryActions    DisciplinaryAction[]
   rewardRecords          RewardRecord[]
   onboardingTemplates    OnboardingTemplate[]
@@ -1799,6 +1800,9 @@ model EmployeeOffboarding {
   id                       String            @id @default(uuid())
   employeeId               String            @map("employee_id")
   checklistId              String            @map("checklist_id")
+  // 오프보딩 시작 시점 소유 법인 (시작 시 primary assignment 기준 — 전출과 무관하게 안정).
+  // nullable = 배포 시퀀스 중간 단계(backfill 완료·신코드 배포 후 SET NOT NULL — 마이그 SQL Phase 2).
+  companyId                String?           @map("company_id")
   resignType               ResignType        @map("resign_type")
   lastWorkingDate          DateTime          @map("last_working_date")
   resignReasonCode         String?           @map("resign_reason_code")
@@ -1817,6 +1821,7 @@ model EmployeeOffboarding {
 
   employee         Employee                  @relation(fields: [employeeId], references: [id])
   checklist        OffboardingChecklist      @relation(fields: [checklistId], references: [id])
+  company          Company?                  @relation(fields: [companyId], references: [id])
   handoverTo       Employee?                 @relation("OffboardingHandover", fields: [handoverToId], references: [id])
   offboardingTasks EmployeeOffboardingTask[]
   exitInterviews   ExitInterview[]
@@ -1824,6 +1829,7 @@ model EmployeeOffboarding {
 
   documents OffboardingDocument[]
 
+  @@index([companyId])
   @@map("employee_offboarding")
 }
 

@@ -197,6 +197,8 @@ export const POST = withPermission(
         data: {
           employeeId,
           checklistId: checklist.id,
+          // 소유 법인 = 시작 시점 primary assignment 법인 (전출과 무관하게 고정 — 테넌트 스코핑 SSOT)
+          companyId: employeeCompanyId,
           resignType,
           lastWorkingDate: new Date(lastWorkingDate),
           resignReasonCode: resignReasonCode ?? null,

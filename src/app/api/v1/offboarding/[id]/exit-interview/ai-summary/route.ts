@@ -12,19 +12,17 @@ import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { exitInterviewSummary } from '@/lib/claude'
 import type { SessionUser } from '@/types'
-import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 export const POST = withRateLimit(withPermission(
   async (_req: NextRequest, ctx, user: SessionUser) => {
     const { id } = await ctx.params
 
     // Fetch offboarding with employee info and exit interview
+    // 테넌트 스코핑 = EmployeeOffboarding.companyId 직접 (완료 후에도 AI 요약 가능)
     const offboarding = await prisma.employeeOffboarding.findFirst({
       where: {
         id,
-        ...(user.role !== 'SUPER_ADMIN'
-          ? { employee: { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } } }
-          : {}),
+        ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}),
       },
       include: {
         employee: {
@@ -32,11 +30,6 @@ export const POST = withRateLimit(withPermission(
             id: true,
             name: true,
             hireDate: true,
-            assignments: {
-              where: { isPrimary: true, endDate: null },
-              take: 1,
-              select: { companyId: true },
-            },
           },
         },
       },
@@ -65,8 +58,7 @@ export const POST = withRateLimit(withPermission(
       interview.primaryReason,
       interview.satisfactionScore,
       interview.feedbackText,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ((extractPrimaryAssignment(offboarding.employee.assignments ?? []) as any)?.companyId as string | undefined) ?? user.companyId,
+      offboarding.companyId ?? user.companyId,
       offboarding.employee.id,
     )
 

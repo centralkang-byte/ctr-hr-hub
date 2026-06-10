@@ -9,6 +9,7 @@ import { Prisma } from '@/generated/prisma/client'
 import { apiPaginated, buildPagination } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
@@ -19,15 +20,12 @@ export const GET = withPermission(
         const limit = Math.min(50, Math.max(1, Number(p.limit ?? 20)))
         const statusFilter = p.status as 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | undefined
         const resignTypeFilter = p.resignType as string | undefined
-        const companyId =
-            user.role === 'SUPER_ADMIN' ? (p.companyId ?? undefined) : user.companyId
 
         const where: Prisma.EmployeeOffboardingWhereInput = {
             ...(statusFilter ? { status: statusFilter } : { status: { in: ['IN_PROGRESS', 'COMPLETED'] } }),
             ...(resignTypeFilter ? { resignType: resignTypeFilter as 'VOLUNTARY' | 'INVOLUNTARY' | 'RETIREMENT' | 'CONTRACT_END' } : {}),
-            ...(companyId
-                ? { employee: { assignments: { some: { companyId, isPrimary: true, endDate: null } } } }
-                : {}),
+            // 테넌트 스코핑 = EmployeeOffboarding.companyId 직접 (active-assignment 조인은 완료 시 탈락 — "완료" 탭 0건 버그)
+            ...resolveCompanyFilter(user, p.companyId ?? null),
         }
 
         const [total, offboardings] = await Promise.all([
@@ -39,8 +37,10 @@ export const GET = withPermission(
                         select: {
                             id: true,
                             name: true,
+                            // 표시용 = 최신 primary assignment (endDate 무관 — 완료 퇴사도 회사·부서 렌더)
                             assignments: {
-                                where: { isPrimary: true, endDate: null },
+                                where: { isPrimary: true },
+                                orderBy: { effectiveDate: 'desc' },
                                 take: 1,
                                 include: {
                                     department: { select: { name: true } },
