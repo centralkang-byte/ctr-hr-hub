@@ -55,12 +55,20 @@ const TYPE_ICON: Record<ApprovalPreviewItem['type'], LucideIcon> = {
   OTHER: Inbox,
 }
 
-// ─── Urgency → border/bg classes ────────────────────────────
+// ─── Urgency → icon/chip tints ──────────────────────────────
+// Wave 1: proto .wd-action-card (styles.css:895-944) — 좌측보더 금지(AI slop),
+// urgency는 아이콘 사각형 + chip 틴트로 전달 (overdue=red-soft·today=orange-soft)
 
-const URGENCY_BORDER: Record<ApprovalPreviewItem['urgency'], string> = {
-  overdue: 'border-l-destructive bg-destructive/5',
-  today: 'border-l-warning-bright bg-warning-bright/5',
-  queued: 'border-l-border',
+const URGENCY_ICO: Record<ApprovalPreviewItem['urgency'], string> = {
+  overdue: 'bg-destructive/10 text-destructive',
+  today: 'bg-wd-orange-soft text-wd-orange-ink',
+  queued: 'bg-muted text-muted-foreground',
+}
+
+const URGENCY_CHIP: Record<ApprovalPreviewItem['urgency'], string> = {
+  overdue: 'bg-destructive/10 text-destructive',
+  today: 'bg-wd-orange-soft text-wd-orange-ink',
+  queued: 'bg-muted text-muted-foreground',
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -130,21 +138,26 @@ export function ApprovalPreview({
               <li
                 key={item.id}
                 className={cn(
-                  'flex items-center gap-3 rounded-xl border-l-4 bg-card p-4',
+                  // Wave 1: proto .wd-action-card — 1px 가시 보더 + flex-wrap 모바일 2행 (Codex G1 P1-7)
+                  'flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-4',
+                  'hover:border-border-strong hover:shadow-sm',
+                  MOTION.microOut,
                   ELEVATION.xs,
-                  URGENCY_BORDER[item.urgency],
                 )}
               >
-                {/* 좌측 type icon — sm+ 표시 */}
+                {/* 좌측 type icon — urgency 틴트 사각형 (proto .wd-action-card .ico), sm+ 표시 */}
                 <div
-                  className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground sm:flex"
+                  className={cn(
+                    'hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg sm:flex',
+                    URGENCY_ICO[item.urgency],
+                  )}
                   aria-hidden="true"
                 >
                   <Icon className="h-5 w-5" strokeWidth={1.6} />
                 </div>
 
-                {/* 중앙 — title + meta */}
-                <div className="min-w-0 flex-1">
+                {/* 중앙 — title + meta. basis 강제로 좁은 화면에서 액션 행 분리 */}
+                <div className="min-w-0 flex-1 basis-[14rem]">
                   <p className="truncate text-sm font-medium text-foreground">
                     <span className="font-semibold">{item.requesterName}</span>
                     {' · '}
@@ -160,14 +173,12 @@ export function ApprovalPreview({
                   </p>
                 </div>
 
-                {/* 우측 — urgency chip + 승인 Link (mutation 0, focus 이동만) */}
-                <div className="flex shrink-0 items-center gap-2">
+                {/* 우측 — urgency chip + 승인 Link (mutation 0, focus 이동만). 모바일에선 둘째 행 우측 정렬 */}
+                <div className="ml-auto flex shrink-0 items-center gap-2">
                   <span
                     className={cn(
                       'inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium',
-                      item.urgency === 'overdue' && 'bg-destructive/10 text-destructive',
-                      item.urgency === 'today' && 'bg-warning-bright/10 text-ctr-warning',
-                      item.urgency === 'queued' && 'bg-muted text-muted-foreground',
+                      URGENCY_CHIP[item.urgency],
                     )}
                   >
                     {urgencyLabel}

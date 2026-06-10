@@ -116,7 +116,8 @@ export function WorkdayHero({
     <section
       aria-labelledby={labelId}
       className={cn(
-        'relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary to-primary-dim text-white',
+        // Wave 1: proto .wd-hero 3-layer bg (블루/오렌지 radial glow + navy 135deg) — globals.css .wd-hero-bg
+        'wd-hero-bg relative overflow-hidden rounded-2xl text-white',
         'p-6 md:p-8',
         ELEVATION.sm,
         className,
@@ -169,11 +170,16 @@ export function WorkdayHero({
           </div>
         </div>
 
-        {/* Right 3-KPI — md+ only */}
-        <dl className="hidden gap-6 md:flex md:flex-row md:items-end">
+        {/* Right 3-KPI — Wave 1 (Codex G1 P1-2): 모바일에서도 컴팩트 행 노출 (StatCard 행 제거 보상) */}
+        <dl className="flex flex-row gap-6 md:items-end">
           {[kpis.headcount, kpis.openRoles, kpis.turnoverRate].map((k, i) => (
-            <div key={i} className="flex flex-col items-end">
-              <dd className={cn(TYPOGRAPHY.displaySm, 'tabular-nums text-white')}>
+            <div key={i} className="flex flex-col items-start md:items-end">
+              <dd
+                className={cn(
+                  TYPOGRAPHY.displaySm,
+                  'text-2xl tabular-nums text-white md:text-display-sm',
+                )}
+              >
                 {k.value}
               </dd>
               <dt className="text-xs text-white/70">{k.label}</dt>

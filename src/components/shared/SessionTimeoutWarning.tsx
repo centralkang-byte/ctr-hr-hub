@@ -23,6 +23,11 @@ import {
 // 만료 3분 전 경고
 const WARNING_BEFORE_MS = 3 * 60 * 1000
 
+// setTimeout delay 상한 — 2^31-1ms(~24.8일) 초과 delay는 브라우저가 0으로 오버플로해
+// 즉시 발화함. 클라이언트 시계가 만료보다 한참 과거이면(시계 skew, 테스트 clock freeze)
+// 경고가 무조건 떠버리는 버그의 근본 원인. 상한으로 클램프하면 그 시점에 재평가될 뿐.
+const MAX_TIMEOUT_MS = 2 ** 31 - 1
+
 export function SessionTimeoutWarning() {
   const { data: session, update } = useSession()
   const [showWarning, setShowWarning] = useState(false)
@@ -53,6 +58,9 @@ export function SessionTimeoutWarning() {
       }
       return
     }
+
+    // 만료까지 24.8일 이상 남으면 경고 자체가 불필요 — 오버플로 즉시발화 방지 겸 스킵
+    if (timeUntilWarning >= MAX_TIMEOUT_MS) return
 
     timerRef.current = setTimeout(() => {
       setRemainingSeconds(180)
