@@ -72,14 +72,19 @@ Spec already asserts 401/403 — turns green with no spec change.
 with a review row in a result-phase cycle hits a dead page** — latent since the page
 was built, exposed once blind-window specs started leaving qualifying cycles/reviews.
 S272's flat↔nested class.
-**Fix (code, minimal)**:
+**Fix (code)**:
 - Route: expose `cycle.mboWeight/beiWeight` (fields exist on PerformanceCycle) and
   `id` in the mboGoals select (client uses it as React key).
-- Client `fetchResult`: map `{review, mboGoals}` → existing `ReviewResult`
+- Client `fetchResult`: map `{review, mboGoals}` → flat `ReviewResult`
   (`performanceScore←mboScore`, `competencyScore←beiScore`,
-  `finalGradeEnum←finalGrade`, `reviewId←review.id`,
-  `goals←mboGoals` with `managerScore←score`, `selfScore←null`), defensive `?? []`.
-  No i18n/markup changes (minimum diff).
+  `finalGradeEnum←finalGrade`, `reviewId←review.id`, `goals←mboGoals`).
+- Codex Gate-1 P1: the API exposes only a single `score` (achievementScore) per goal,
+  NOT separate self/manager scores. The goal row markup is corrected to show one
+  "달성도" score (existing i18n key `achievement`) instead of mislabeling it as
+  self/manager. The old self/manager/comment columns rendered undefined data.
+- Codex Gate-1 P1 / Gate-2 P1: reset `result`/`peerResult` on cycle change AND guard
+  against out-of-order responses with a `fetchSeqRef` sequence token (stale response
+  from a previous cycle no longer overwrites the current view or leaks a prior reviewId).
 
 ### Flaky (observed, cheap hardening only)
 `attendance-core.spec.ts:48/:79/:124` — S276 1-day-1-record vs cleanup ordering;

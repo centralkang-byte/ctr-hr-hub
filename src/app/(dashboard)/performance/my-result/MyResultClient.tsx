@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Award, Target, TrendingUp, CheckCircle2, Clock, Info, ArrowLeft, Shield } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { getAllowedStatuses } from '@/lib/performance/pipeline'
@@ -98,6 +98,8 @@ export default function MyResultClient({user }: {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
     const [acknowledging, setAcknowledging] = useState(false)
+    // 사이클 전환 시 늦게 도착한 이전 요청이 새 결과를 덮어쓰는 경합 방지 (최신 요청만 반영)
+    const fetchSeqRef = useRef(0)
 
     useEffect(() => {
         async function load() {
@@ -116,6 +118,7 @@ export default function MyResultClient({user }: {
 
     const fetchResult = useCallback(async () => {
         if (!selectedCycleId) { setLoading(false); return }
+        const seq = ++fetchSeqRef.current
         setLoading(true); setError('')
         // 사이클 전환 시 직전 결과 잔존 방지 (404면 빈 상태로)
         setResult(null); setPeerResult(null)
@@ -124,6 +127,8 @@ export default function MyResultClient({user }: {
                 apiClient.get<MyResultApiResponse>('/api/v1/performance/reviews/my-result', { cycleId: selectedCycleId }).catch(() => null),
                 apiClient.get<PeerResult>(`/api/v1/performance/peer-review/results/${user.employeeId}`, { cycleId: selectedCycleId }).catch(() => null),
             ])
+            // 더 새로운 요청이 시작됐으면 이 응답은 stale — 상태 갱신 안 함
+            if (seq !== fetchSeqRef.current) return
             if (resultRes) {
                 const { review, mboGoals } = resultRes.data
                 setResult({
@@ -142,8 +147,12 @@ export default function MyResultClient({user }: {
                 })
             }
             if (peerRes) setPeerResult(peerRes.data)
-        } catch { setError(t('myResult.loadFailed')) }
-        finally { setLoading(false) }
+        } catch {
+            if (seq === fetchSeqRef.current) setError(t('myResult.loadFailed'))
+        }
+        finally {
+            if (seq === fetchSeqRef.current) setLoading(false)
+        }
     }, [selectedCycleId, user.employeeId])
 
     useEffect(() => { fetchResult() }, [fetchResult])
