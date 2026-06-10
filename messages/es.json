@@ -3001,6 +3001,33 @@
           "approveCta": "Review",
           "submittedFmt": "Submitted {date}",
           "empty": "No pending approvals"
+        },
+        "quick": {
+          "employeeNew": "Add Employee",
+          "payroll": "Payroll",
+          "analytics": "Analytics Report",
+          "jobNew": "Post a Job",
+          "onboarding": "Onboarding"
+        },
+        "suggest": {
+          "heading": "Suggested This Week",
+          "urgentTitle": "{count, plural, one {# overdue approval} other {# overdue approvals}}",
+          "urgentDesc": "Requests past their start date are piling up. Please review them first.",
+          "urgentCta": "Open inbox",
+          "orphanTitle": "{count, plural, one {# new hire without onboarding} other {# new hires without onboarding}}",
+          "orphanDesc": "This month's new hires have no onboarding plan yet. Start their checklists.",
+          "orphanCta": "View onboarding",
+          "mboTitle": "{count, plural, one {# quarterly review pending} other {# quarterly reviews pending}}",
+          "mboDesc": "{rate}% complete ({completed}/{total}). Check the pending reviews.",
+          "mboCta": "View performance"
+        },
+        "notif": {
+          "heading": "Recent Notifications",
+          "viewAll": "View all",
+          "empty": "No new notifications",
+          "error": "Failed to load notifications",
+          "retry": "Retry",
+          "unread": "Unread"
         }
       }
     },

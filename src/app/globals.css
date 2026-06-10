@@ -6,6 +6,15 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Wave 1 — proto .wd-hero 3-layer bg (_design-reference/styles.css:669-673):
+     좌상 블루 glow + 우하 오렌지 glow over navy 135deg (오렌지 복원 CEO 결정) */
+  .wd-hero-bg {
+    background:
+      radial-gradient(ellipse at 0% 0%, oklch(85% 0.1 230 / 0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 100% 100%, oklch(85% 0.1 50 / 0.25) 0%, transparent 60%),
+      linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-dim)) 100%);
+  }
 }
 
 

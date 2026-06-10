@@ -9588,6 +9588,33 @@
           "approveCta": "검토",
           "submittedFmt": "{date} 제출",
           "empty": "처리 대기 중인 결재가 없습니다"
+        },
+        "quick": {
+          "employeeNew": "직원 등록",
+          "payroll": "급여 관리",
+          "analytics": "분석 리포트",
+          "jobNew": "채용 공고 작성",
+          "onboarding": "온보딩 관리"
+        },
+        "suggest": {
+          "heading": "이번 주 권장 작업",
+          "urgentTitle": "{count, plural, other {연체 결재 #건}}",
+          "urgentDesc": "시작일이 지난 요청이 쌓여 있어요. 먼저 처리해 주세요.",
+          "urgentCta": "결재함 보기",
+          "orphanTitle": "{count, plural, other {신규 입사자 #명 온보딩 미시작}}",
+          "orphanDesc": "이번 달 입사자의 온보딩 계획이 비어 있어요. 체크리스트를 시작해 주세요.",
+          "orphanCta": "온보딩 보기",
+          "mboTitle": "{count, plural, other {분기 리뷰 미완료 #건}}",
+          "mboDesc": "현재 {rate}% 완료 ({completed}/{total}건). 미완료 리뷰 확인을 권장해요.",
+          "mboCta": "성과 관리 보기"
+        },
+        "notif": {
+          "heading": "최근 알림",
+          "viewAll": "전체 보기",
+          "empty": "새 알림이 없어요",
+          "error": "알림을 불러오지 못했어요",
+          "retry": "다시 시도",
+          "unread": "읽지 않음"
         }
       }
     },
