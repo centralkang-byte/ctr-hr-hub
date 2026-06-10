@@ -13,6 +13,11 @@ import { deleteAttendanceOn, closeDb } from '../helpers/db'
 function kstTodayStr(): string {
   return new Date(Date.now() + 9 * 3600_000).toISOString().slice(0, 10)
 }
+
+// UTC ISO 타임스탬프 → KST 달력 날짜 (YYYY-MM-DD)
+function kstDateOf(iso: string): string {
+  return new Date(new Date(iso).getTime() + 9 * 3600_000).toISOString().slice(0, 10)
+}
 import {
   clockIn,
   clockOut,
@@ -94,6 +99,15 @@ test.describe('Attendance Core API', () => {
       }
     })
 
+    // serial 플로우 내 위치 필수 (S280): Edge cases describe에 있을 땐 fullyParallel
+    // 워커가 self-service 플로우와 동시에 employee-a를 clock-in해 409 flake 유발.
+    // 퇴근 완료 직후로 옮겨 1일 1레코드(S276) 거부를 결정적으로 검증한다.
+    test('Clock-in after clock-out is rejected (one record per day, S276)', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await clockIn(api)
+      assertError(res, 400, 'clock-in after completed record')
+    })
+
     test('GET /attendance/weekly-summary returns 200', async ({ request }) => {
       const api = new ApiClient(request)
       const res = await getWeeklySummary(api)
@@ -119,17 +133,6 @@ test.describe('Attendance Core API', () => {
       expect(res.status).toBe(200)
       // data can be null or an attendance object — both are valid
       expect(res.body).toHaveProperty('data')
-    })
-
-    test('Clock-in after clock-out is rejected (one record per day, S276)', async ({ request }) => {
-      const api = new ApiClient(request)
-      // 같은 근무일 재출근은 1일 1레코드 정책으로 400.
-      // (이 describe가 self-service flow보다 먼저 돌면 기록이 없어 201일 수 있음 — 정리)
-      const res = await clockIn(api)
-      expect([200, 201, 400]).toContain(res.status)
-      if (res.ok) {
-        await clockOut(api)
-      }
     })
 
     test('POST /attendance/clock-in missing method returns 400', async ({ request }) => {
@@ -200,7 +203,12 @@ test.describe('Attendance Core API', () => {
         test.skip(true, 'No seed attendance records available')
         return
       }
-      seedAttendanceId = records[0].id as string
+      // 공유 시드 직원(employee-a)은 self-service describe가 KST-오늘 기록을
+      // 생성/삭제한다. workDate desc라 records[0]가 그 오늘 기록일 수 있는데, 다른
+      // 워커의 afterAll 삭제와 겹치면 보정 PUT이 404가 된다. self-service는 오늘만
+      // 건드리므로 KST-오늘이 아닌 과거 시드 기록을 골라 경합을 차단한다 (S281).
+      const past = records.find((r) => kstDateOf(String(r.workDate)) !== kstTodayStr())
+      seedAttendanceId = (past ?? records[0]).id as string
 
       const res = await getAttendanceDetail(api, seedAttendanceId)
       assertOk(res, 'attendance detail')

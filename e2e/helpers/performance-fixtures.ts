@@ -150,8 +150,10 @@ export function getMyAssignments(client: ApiClient): Promise<ApiResult> {
 export function getPeerResults(
   client: ApiClient,
   employeeId: string,
+  cycleId?: string,
 ): Promise<ApiResult> {
-  return client.get(`${PERF}/peer-review/results/${employeeId}`)
+  // route querySchema가 cycleId(uuid)를 요구한다 — 미전달 시 400
+  return client.get(`${PERF}/peer-review/results/${employeeId}`, cycleId ? { cycleId } : undefined)
 }
 
 export function skipNomination(

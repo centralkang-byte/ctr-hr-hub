@@ -195,11 +195,11 @@ test.describe('residual cross-tenant isolation (batch7)', () => {
   test('#9 comp ai-recommend: CTR-CN HR → CTR employee → 404', async () => {
     test.skip(!ctrEmployeeId, 'no CTR employee fixture')
     const { ctx, api } = await clientFor('HR_ADMIN_CN')
+    // budgetConstraint=0은 zod positive() 위반 → 테넌트 체크 전에 400이라
+    // 격리 검증이 무력화됨. 선택 필드는 생략해 employee lookup 404 경로를 태운다.
     const res = await api.post('/api/v1/compensation/simulation/ai-recommend', {
       cycleId: BOGUS_UUID,
       employeeId: ctrEmployeeId, // CTR 직원 PII 조회 시도
-      budgetConstraint: 0,
-      companyAvgRaise: 0,
     })
     assertError(res, 404, 'CTR-CN HR blocked from CTR employee comp recommendation')
     await ctx.dispose()

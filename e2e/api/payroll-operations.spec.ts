@@ -23,7 +23,7 @@ test.describe('Payroll Runs: HR_ADMIN CRUD', () => {
 
   test('POST /runs creates DRAFT payroll run', async ({ request }) => {
     const client = new ApiClient(request)
-    const data = pf.buildPayrollRun('CRUD')
+    const data = pf.buildPayrollRun('CRUD', '2099-03')
     const result = await pf.createPayrollRun(client, data)
     assertOk(result, 'create payroll run')
     const run = result.data as Record<string, unknown>
@@ -281,7 +281,7 @@ test.describe('Payroll Dashboard & Anomalies: HR_ADMIN', () => {
   test('submit-for-approval on DRAFT run returns state error', async ({ request }) => {
     const client = new ApiClient(request)
     // Create a DRAFT run — cannot submit without going through REVIEW first
-    const run = pf.buildPayrollRun('SUBMIT')
+    const run = pf.buildPayrollRun('SUBMIT', '2099-04')
     const createResult = await pf.createPayrollRun(client, run)
     assertOk(createResult, 'create run for submit test')
     const runId = (createResult.data as Record<string, unknown>).id as string

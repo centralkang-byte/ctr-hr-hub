@@ -273,25 +273,53 @@ test.describe('Onboarding Force Complete & Crossboarding: HR_ADMIN', () => {
     assertError(result, 400, 'force-complete without reason')
   })
 
-  test('POST /crossboarding with same company returns 400', async ({ request }) => {
+  // 크로스보딩은 HQ 계층 권한 확정 전까지 SUPER_ADMIN 전용 (route.ts:28 임시 가드).
+  // HR_ADMIN 컨텍스트는 403 문서화, 검증 경로(400/404)는 SUPER 컨텍스트로 검증.
+  test('POST /crossboarding as HR_ADMIN → 403 (SUPER-only guard)', async ({ request }) => {
     const client = new ApiClient(request)
     const seedData = await resolveSeedData(request)
     const result = await f.triggerCrossboarding(client, {
       employeeId: seedData.employeeId,
       fromCompanyId: seedData.companyId,
-      toCompanyId: seedData.companyId, // same company
+      toCompanyId: seedData.companyId,
+      transferDate: '2099-01-15',
     })
-    expect([400, 404]).toContain(result.status)
+    assertError(result, 403, 'crossboarding non-SUPER blocked')
   })
 
-  test('POST /crossboarding with bad employeeId returns 400/404', async ({ request }) => {
-    const client = new ApiClient(request)
-    const result = await f.triggerCrossboarding(client, {
-      employeeId: '00000000-0000-4000-a000-000000000000',
-      fromCompanyId: '00000000-0000-4000-a000-000000000001',
-      toCompanyId: '00000000-0000-4000-a000-000000000002',
-    })
-    expect([400, 404]).toContain(result.status)
+  test('POST /crossboarding with same company returns 400', async ({ request }) => {
+    const seedData = await resolveSeedData(request)
+    const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3002'
+    const saCtx = await playwrightRequest.newContext({ baseURL, storageState: authFile('SUPER_ADMIN') })
+    try {
+      const client = new ApiClient(saCtx)
+      const result = await f.triggerCrossboarding(client, {
+        employeeId: seedData.employeeId,
+        fromCompanyId: seedData.companyId,
+        toCompanyId: seedData.companyId, // same company
+        transferDate: '2099-01-15',
+      })
+      expect([400, 404]).toContain(result.status)
+    } finally {
+      await saCtx.dispose()
+    }
+  })
+
+  test('POST /crossboarding with bad employeeId returns 400/404', async () => {
+    const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3002'
+    const saCtx = await playwrightRequest.newContext({ baseURL, storageState: authFile('SUPER_ADMIN') })
+    try {
+      const client = new ApiClient(saCtx)
+      const result = await f.triggerCrossboarding(client, {
+        employeeId: '00000000-0000-4000-a000-000000000000',
+        fromCompanyId: '00000000-0000-4000-a000-000000000001',
+        toCompanyId: '00000000-0000-4000-a000-000000000002',
+        transferDate: '2099-01-15',
+      })
+      expect([400, 404]).toContain(result.status)
+    } finally {
+      await saCtx.dispose()
+    }
   })
 })
 

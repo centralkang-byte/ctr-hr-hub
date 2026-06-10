@@ -13,12 +13,13 @@ export type CycleStatus =
   | 'CALIBRATION' | 'FINALIZED' | 'CLOSED'
   | 'COMP_REVIEW' | 'COMP_COMPLETED'
 
-// 9-state pipeline (from src/lib/performance/pipeline.ts)
-const TRANSITION_ORDER: CycleStatus[] = [
-  'DRAFT', 'ACTIVE', 'CHECK_IN', 'EVAL_OPEN',
-  'CALIBRATION', 'FINALIZED', 'CLOSED',
-  'COMP_REVIEW', 'COMP_COMPLETED',
-]
+// 서버 파이프라인은 half-aware (src/lib/performance/pipeline.ts 평가 파이프라인 재설계 Phase A):
+//   H1: DRAFT → ACTIVE → EVAL_OPEN → CLOSED                       (CHECK_IN 없음)
+//   H2: DRAFT → ACTIVE → EVAL_OPEN → CLOSED → CALIBRATION → COMP_REVIEW → COMP_COMPLETED
+// 고정 상태표 인덱스 산술로 advance 횟수를 미리 계산하면 파이프라인이 바뀔 때마다
+// 목표를 지나친다 (실제 사고: 구 9-state 표 기준 3 스텝 = 신 H1에선 EVAL_OPEN을 지나
+// CLOSED 도달 → nominate "EVAL_OPEN 단계에서만" 400). advanceTo는 서버가 돌려주는
+// 상태를 보고 멈추는 피드백 루프로 동작한다 — 여기에 상태표를 다시 만들지 말 것.
 
 interface CreateCycleParams {
   name?: string
@@ -135,20 +136,24 @@ export async function advanceTo(
   const { data } = await parseApiResponse(getRes)
   let currentStatus = ((data as { status: string })?.status ?? 'DRAFT') as CycleStatus
 
-  const currentIdx = TRANSITION_ORDER.indexOf(currentStatus)
-  const targetIdx = TRANSITION_ORDER.indexOf(targetStatus)
-
-  if (currentIdx >= targetIdx) return // Already at or past target
-
-  for (let i = currentIdx; i < targetIdx; i++) {
-    if (TRANSITION_ORDER[i] === 'DRAFT') {
+  // 피드백 루프: 서버가 보고하는 상태가 목표와 같아지면 즉시 멈춘다 (위 파이프라인 주석).
+  // H2 최장 체인이 7단계라 guard 10이면 충분 — 목표 미도달이면 명시적으로 throw.
+  for (let guard = 0; guard < 10 && currentStatus !== targetStatus; guard++) {
+    if (currentStatus === 'DRAFT') {
       // DRAFT → ACTIVE requires initialize, not advance
       await initializeCycle(request, cycleId)
       currentStatus = 'ACTIVE'
-    } else {
-      const newStatus = await advanceCycle(request, cycleId)
-      currentStatus = newStatus as CycleStatus
+      continue
     }
+    const newStatus = await advanceCycle(request, cycleId)
+    if (newStatus === 'unknown' || newStatus === currentStatus) {
+      throw new Error(`advanceTo: stuck at ${currentStatus} while targeting ${targetStatus} (cycle ${cycleId})`)
+    }
+    currentStatus = newStatus as CycleStatus
+  }
+
+  if (currentStatus !== targetStatus) {
+    throw new Error(`advanceTo: did not reach ${targetStatus} — ended at ${currentStatus} (cycle ${cycleId}; target가 해당 half 파이프라인에 없거나 이미 지나침)`)
   }
 }
 

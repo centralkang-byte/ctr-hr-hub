@@ -8,6 +8,7 @@ import { test, expect } from '@playwright/test'
 import { ApiClient, assertOk, assertError } from '../helpers/api-client'
 import { authFile } from '../helpers/auth'
 import { resolveSeedData } from '../helpers/test-data'
+import { createTestCycle, advanceTo } from '../helpers/eval-fixtures'
 import * as f from '../helpers/p10-fixtures'
 
 // ═══════════════════════════════════════════════════════════
@@ -276,9 +277,12 @@ test.describe('Peer Review Nominations: HR_ADMIN', () => {
     const seed = await resolveSeedData(request)
     employeeId = seed.employeeId
 
-    const cId = await f.resolveCycleId(request)
-    expect(cId, 'cycleId must exist').toBeTruthy()
-    cycleId = cId!
+    // 전용 사이클 격리 (S280): resolveCycleId(목록 첫 사이클)는 perf-goals 파이프라인 등
+    // 다른 스펙이 같은 (cycle, employee, nominee) 쌍을 먼저 만들면 unique 409 경합.
+    // serial 그룹 retry도 매번 새 사이클이라 자기 잔여물과도 충돌하지 않는다.
+    cycleId = await createTestCycle(request, { name: `E2E PeerNom ${Date.now()}`, year: 2097, half: 'H1' })
+    await advanceTo(request, cycleId, 'EVAL_OPEN')
+    expect(cycleId, 'cycleId must exist').toBeTruthy()
 
     const nId = await f.resolveSecondEmployeeId(request)
     expect(nId, 'second employeeId must exist').toBeTruthy()
@@ -398,9 +402,11 @@ test.describe('Peer Review: EMPLOYEE Submit Flow', () => {
       const seed = await resolveSeedData(request)
       employeeId = seed.employeeId
 
-      const cId = await f.resolveCycleId(request)
-      expect(cId).toBeTruthy()
-      cycleId = cId!
+      // 전용 사이클 (S280): Section E의 2nd nomination이 같은 (정다은→이민준) 쌍을
+      // 공유 사이클에 만들면 둘 중 늦게 실행되는 쪽이 unique 409 — 사이클 분리로 해소.
+      cycleId = await createTestCycle(request, { name: `E2E PeerSubmit ${Date.now()}`, year: 2097, half: 'H2' })
+      await advanceTo(request, cycleId, 'EVAL_OPEN')
+      expect(cycleId).toBeTruthy()
 
       const nId = await f.resolveSecondEmployeeId(request)
       expect(nId).toBeTruthy()

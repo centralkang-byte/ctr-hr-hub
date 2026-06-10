@@ -29,7 +29,9 @@ test.describe('Onboarding: HR_ADMIN', () => {
     // Page renders with tabs (In Progress / Completed) or empty state
     const tabs = page.getByRole('tab').first()
     const emptyState = page.getByText(/데이터가 없|No offboarding data|퇴직처리/)
-    await expect(tabs.or(emptyState)).toBeVisible({ timeout: 10000 })
+    // .first(): h1('퇴직처리 현황')과 탭이 동시에 매칭되면 strict mode 위반 —
+    // 둘 중 하나만 보이면 충분 (or() 다중 매칭 허용 패턴)
+    await expect(tabs.or(emptyState).first()).toBeVisible({ timeout: 10000 })
   })
 
   test('onboarding dashboard shows 5 plan-type tabs', async ({ page }) => {

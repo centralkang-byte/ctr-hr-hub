@@ -53,13 +53,17 @@ export function getRunAdjustments(
   return client.get(`${PAY}/${runId}/adjustments`, params)
 }
 
-export function buildPayrollRun(prefix: string) {
+// (companyId, yearMonth, runType) 중복은 409 — fullyParallel 워커가 같은 월을
+// 동시에 만들면 경합한다. 생성 호출처마다 전용 yearMonth를 넘겨 격리할 것.
+export function buildPayrollRun(prefix: string, yearMonth = '2099-01') {
+  const [y, m] = yearMonth.split('-').map(Number)
+  const lastDay = new Date(Date.UTC(y, m, 0)).getUTCDate()
   return {
     name: `E2E ${prefix} Run ${Date.now()}`,
     runType: 'MONTHLY' as const,
-    yearMonth: '2099-01',
-    periodStart: '2099-01-01T00:00:00.000Z',
-    periodEnd: '2099-01-31T23:59:59.000Z',
+    yearMonth,
+    periodStart: `${yearMonth}-01T00:00:00.000Z`,
+    periodEnd: `${yearMonth}-${String(lastDay).padStart(2, '0')}T23:59:59.000Z`,
     currency: 'KRW',
   }
 }

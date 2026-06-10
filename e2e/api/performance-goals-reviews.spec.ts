@@ -313,13 +313,19 @@ test.describe('Peer Review Pipeline', () => {
     const result = await pf.getMyAssignments(empClient)
     assertOk(result, 'get my peer review assignments')
 
-    const data = result.data
-    expect(Array.isArray(data)).toBe(true)
+    // 응답 = { total, completed, pending, assignments: [{ nominationId, ... }] }
+    // (구 bare-array 계약은 advanceTo 오버슈트로 test 3가 늘 죽어 이 테스트가
+    // 한 번도 실행 안 된 채 잠복 — S281 advanceTo 픽스가 노출)
+    const data = result.data as {
+      total: number
+      assignments: Array<{ nominationId: string; isCompleted: boolean }>
+    }
+    expect(Array.isArray(data.assignments)).toBe(true)
+    expect(typeof data.total).toBe('number')
 
     // If assignments exist, capture first nomination ID for later tests
-    const assignments = data as Array<{ id: string; status?: string }>
-    if (assignments.length > 0) {
-      nominationId = assignments[0].id
+    if (data.assignments.length > 0) {
+      nominationId = data.assignments[0].nominationId
     }
   })
 
@@ -352,18 +358,20 @@ test.describe('Peer Review Pipeline', () => {
   })
 
   test('8. HR views peer review results for employee', async () => {
-    const result = await pf.getPeerResults(hrClient, employeeAId)
+    const result = await pf.getPeerResults(hrClient, employeeAId, cycleId)
     assertOk(result, 'get peer review results')
   })
 
   test('9. HR skips a nomination', async () => {
-    // Find a nomination that can be skipped (PENDING status)
+    // my-assignments 응답 = { assignments: [{ nominationId, isCompleted }] } (test 5 참조)
     const assignResult = await pf.getMyAssignments(empClient)
-    const assignments = (assignResult.data ?? []) as Array<{ id: string; status?: string }>
-    const pendingNom = assignments.find((a) => a.status === 'PENDING')
+    const assignments =
+      (assignResult.data as { assignments?: Array<{ nominationId: string; isCompleted: boolean }> })
+        ?.assignments ?? []
+    const pendingNom = assignments.find((a) => !a.isCompleted)
 
     if (pendingNom) {
-      const result = await pf.skipNomination(hrClient, pendingNom.id)
+      const result = await pf.skipNomination(hrClient, pendingNom.nominationId)
       assertOk(result, 'skip nomination')
     } else {
       // No pending nomination available — skip test gracefully

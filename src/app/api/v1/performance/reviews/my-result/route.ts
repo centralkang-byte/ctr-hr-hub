@@ -49,7 +49,7 @@ export const GET = withPermission(
                     isAutoAcknowledged: true,
                     status: true,
                     cycle: {
-                        select: { name: true, year: true, half: true },
+                        select: { name: true, year: true, half: true, mboWeight: true, beiWeight: true },
                     },
                     // originalGrade: NOT selected (Data Masking)
                     // overdueFlags: NOT selected
@@ -76,6 +76,7 @@ export const GET = withPermission(
             const mboGoals = await prisma.mboGoal.findMany({
                 where: { cycleId, employeeId: user.employeeId },
                 select: {
+                    id: true,
                     title: true,
                     weight: true,
                     achievementScore: true,
@@ -91,6 +92,8 @@ export const GET = withPermission(
                     cycleName: review.cycle.name,
                     year: review.cycle.year,
                     half: review.cycle.half,
+                    mboWeight: review.cycle.mboWeight,
+                    beiWeight: review.cycle.beiWeight,
                     finalGrade: review.finalGrade,
                     finalGradeLabel: getGradeLabel(review.finalGrade, 'ko'),
                     mboScore: review.mboScore ? Number(review.mboScore) : null,
@@ -104,6 +107,7 @@ export const GET = withPermission(
                     status: review.status,
                 },
                 mboGoals: mboGoals.map((g) => ({
+                    id: g.id,
                     title: g.title,
                     weight: Number(g.weight),
                     score: g.achievementScore ? Number(g.achievementScore) : null,
