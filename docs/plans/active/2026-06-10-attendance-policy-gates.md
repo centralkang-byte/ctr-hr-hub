@@ -2,7 +2,17 @@
 
 > Created 2026-06-10 (S276). Source = S275 handover "Explicitly OUT of scope (CEO policy gates)" in
 > `2026-06-10-attendance-orgchange-dogfood-fixes.md`, resolved via CEO decision gate (4 answers below).
-> Status: **REVISED — r1 NO-GO(P1×7,P2×4) + r2 NO-GO(P1×4,P2×2) + r3 NO-GO(doc-consistency P1×2, terminal P2×1) ALL incorporated** — pending round 4.
+> Status: **✅ IMPLEMENTED (S276, bd51ae78)** — Codex Gate 1 **5라운드**(r1 P1×7+P2×4 → r2 P1×4+P2×2 →
+> r3 doc P1×2+P2×1 → r4 P1×1 → **r5 GO**) 전부 반영. 검증: tsc 0 · lint 0 · unit 813/813(신규 19) ·
+> e2e 36 pass(0 fail; attendance-core 갱신 + 신규 attendance-policy-judgment.spec 10) · 라이브 dogfood:
+> 정다은 15:00 출근→LATE+admin 표시, 시간만 보정→자동 재판정 NORMAL, 설정 저장 toast, 상세 편집
+> 읽기전용+안내문, HR execute 200+동일 tx audit row.
+> **구현 중 발견**: ① 미들웨어가 모든 /api/*에 세션 강제 → 단말기 디바이스 트래픽 전면 401(기능 자체
+> 불통, 기존 결함) → `/api/v1/terminals/clock` PUBLIC_PATHS carve-out(라우트 자체 DB 시크릿 인증, #128
+> 선례) ② attendance-core.spec의 MANAGER admin 200 기대는 #143 deny-by-default 반영 누락 stale → 403로
+> 갱신 ③ e2e 픽스처: EMPLOYEE_C(송현우) auth 신설 + e2e/helpers/db.ts(직접 pg 정리 — 1일1레코드로 API
+> 정리 불가) ④ fullyParallel 경합 격리(judgment=employee-c·terminal=employee-b·bulk=employee-a·설정
+> 테스트=CTR-CN/HOLD).
 > Branch: `feat/s276-attendance-policy-gates` stacked on `fix/s275-attendance-orgchange-dogfood` (PR #143 open;
 > this work touches the same files #143 rewrote — execute route, attendance/[id], admin client — so stacking avoids conflicts).
 
