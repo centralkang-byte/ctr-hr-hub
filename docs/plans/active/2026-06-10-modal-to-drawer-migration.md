@@ -1,7 +1,12 @@
 # Modal → WdDrawer (우측 슬라이드) 전환 — 결정 확인 + 인벤토리
 
 > Created 2026-06-10 (S275 말미, CEO 지적: 근태 보정 다이얼로그가 팝업으로 뜸).
-> Status: **PLANNED — CEO 방향 결정 대기** (아래 "진행 옵션"). 컨텍스트 한계로 다음 세션 인계.
+> Status: **옵션 ② 실행 완료 (2026-06-10, S276)** — CEO가 "명문화 + 근태보정 카나리" 선택.
+> - 명문화: `DESIGN.md` §5.4 컨테이너 결정표(WdDrawer/WizardShell/Dialog/Inspector) + `rules/design.md` Form 섹션·Forbidden Patterns
+> - 카나리: `AttendanceAdminClient.tsx` 보정 폼 Dialog→WdDrawer 전환 (eyebrow+title, WdRow 2열, note 게이트)
+> - WdDrawer 확장(additive): `closeDisabled`(제출 중 ESC/overlay/X 차단) · `WdField.htmlFor`(label-컨트롤 a11y) · `secondary.disabled` · WdRow 모바일 1열 reflow
+> - 검증: tsc 0 · lint 0 · e2e 7/7(신규 드로어 플로우 가드 포함, setup fail-fast+원복) · Pixel Gate(프로토 OneOnOneDrawer side-by-side) · 멀티롤(EMPLOYEE 차단·375px 풀폭) · Codex G1 P1 4건/G2 P1 1·P2 2건 반영
+> - 잔여: 아래 인벤토리 **20곳**(1번 완료) → 옵션 ③ Wave 1+ 페이지별 전환 시 처리.
 
 ## 결정 근거 (확인 완료)
 

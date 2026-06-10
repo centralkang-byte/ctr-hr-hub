@@ -84,13 +84,17 @@ bg와 text에 같은 토큰 사용 금지. bg는 밝은 색, text는 WCAG AA 만
 - `comfortable` (p-6, DEFAULT): 직원 목록, 휴가, 채용
 - `spacious` (p-8): dashboard KPI, profile, onboarding
 
-## Form (shadcn FormField 래퍼 필수)
+## Form
+
+**컨테이너**: 단일 단계 생성·수정 입력 폼 = **`WdDrawer`** (우측 슬라이드, `@/components/shared/WdDrawer`) — 중앙 Dialog 금지.
+예외: 다단계 위저드 = `WizardShell` / confirm·경고·삭제 확인 = `Dialog` / 조회 전용 상세 = Inspector. (DESIGN.md §5.4)
 
 - Label: 항상 top, 11px semibold
 - Required: red `*`
 - Error: inline + red border + `XCircle` icon
 - Input: border 1px (Tailwind 기본), `rounded-lg`, focus Navy ring (--ring #004964)
-- Buttons (right-align): cancel(ghost) → draft(outline) → submit(primary pill)
+- Buttons (right-align): cancel(ghost) → draft(outline) → submit(primary pill) — WdDrawer는 `secondary`/`primary` prop
+- 필드 래퍼: RHF 폼 = shadcn `FormField`, WdDrawer 단순 제어 폼 = `WdField`(+`htmlFor` 연결 필수)
 
 ## Tabs = Segmented Control
 
@@ -103,6 +107,7 @@ bg와 text에 같은 토큰 사용 금지. bg는 밝은 색, text는 WCAG AA 만
 
 ## Forbidden Patterns
 
+- **신규 입력 폼을 중앙 `Dialog`로 작성** (단일 단계 입력 폼 = `WdDrawer`; 예외는 위 Form 섹션)
 - `backdrop-blur` TopBar/Dialog 외 사용
 - 고스트 보더 `border-border/15` (Wave 0: 가시 1px solid `border-border`가 표준)
 - **버튼 그라데이션·glow** (프로토 CLAUDE.md 금지 — flat fill만)
