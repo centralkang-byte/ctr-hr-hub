@@ -192,7 +192,7 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
                 <button onClick={handleCompare} disabled={!canCompare || comparing}
                   className={cn(
                     'flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-lg',
-                    'bg-primary text-white hover:bg-primary/90 disabled:opacity-50',
+                    'bg-warm text-white hover:brightness-95 disabled:opacity-50',
                   )}>
                   {comparing ? <Loader2 className="w-3 h-3 animate-spin" /> : <GitCompareArrows className="w-3 h-3" />}
                   {t('simScenarioCompareBtn')}

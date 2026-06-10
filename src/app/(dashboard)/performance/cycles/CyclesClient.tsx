@@ -86,7 +86,7 @@ export default function CyclesClient({ user }: { user: SessionUser }) {
                         <WdSummaryLead className="mt-1">{t('cyclesDesc')}</WdSummaryLead>
                     </div>
                     <button onClick={() => setShowCreateForm(true)}
-                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors">
+                        className="inline-flex items-center gap-2 rounded-lg bg-warm px-4 py-2 text-sm font-medium text-white hover:brightness-95 transition-colors">
                         <Plus className="h-4 w-4" /> {t('newCycle')}
                     </button>
                 </div>
@@ -259,7 +259,7 @@ function CreateCycleModal({ onClose, onCreated }: { onClose: () => void; onCreat
                 <div className="mt-6 flex justify-end gap-3">
                     <button onClick={onClose} className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground">{tCommon('cancel')}</button>
                     <button onClick={handleSubmit} disabled={saving}
-                        className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white disabled:opacity-40">{saving ? tCommon('loading') : tCommon('create')}</button>
+                        className="rounded-lg bg-warm px-4 py-2 text-sm font-medium text-white disabled:opacity-40">{saving ? tCommon('loading') : tCommon('create')}</button>
                 </div>
             </div>
         </div>

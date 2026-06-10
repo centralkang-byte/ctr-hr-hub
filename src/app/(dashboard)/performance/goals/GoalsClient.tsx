@@ -165,7 +165,7 @@ export default function GoalsClient({
           <h1 className="text-2xl font-bold text-foreground">{t('mboGoalManagement')}</h1>
           <button
             onClick={() => router.push('/performance/goals/new')}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-warm px-4 py-2 text-sm font-medium text-white hover:brightness-95 transition-colors"
           >
             <Plus className="h-4 w-4" />
             {t('addGoal')}
@@ -362,7 +362,7 @@ export default function GoalsClient({
                         <button
                           onClick={handleProgressSubmit}
                           disabled={submitting}
-                          className="rounded-md bg-primary px-4 py-1.5 text-xs font-medium text-white hover:bg-primary/90 disabled:opacity-50 transition-colors"
+                          className="rounded-md bg-warm px-4 py-1.5 text-xs font-medium text-white hover:brightness-95 disabled:opacity-50 transition-colors"
                         >
                           {submitting ? t('saving') : tc('save')}
                         </button>

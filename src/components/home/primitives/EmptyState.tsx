@@ -71,7 +71,7 @@ export function EmptyState({
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
             action.variant === 'ghost'
               ? 'text-primary hover:bg-primary/5'
-              : 'bg-primary text-primary-foreground hover:bg-primary/90',
+              : 'bg-warm text-primary-foreground hover:brightness-95',
             MOTION.microOut,
           )}
         >

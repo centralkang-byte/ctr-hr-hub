@@ -110,7 +110,7 @@ export default function CalibrationBatchToolbar({
 
             <button
               onClick={onOpenSaveDialog}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-warm text-white text-sm font-medium hover:brightness-95 transition-colors"
             >
               <Save className="w-3.5 h-3.5" />
               {t('calibrationBatch.reviewAndSave')}

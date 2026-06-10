@@ -153,13 +153,18 @@ Base unit: 4px. Default density: comfortable.
 
 ### 5.1 Button (Wave 0: proto .btn — flat fill, 그라데이션 금지)
 
+**주 액션 버튼 fill = `bg-warm`(#e87045, warm 테라코타) + white 라벨** — proto 기본 톤 `data-tone="friendly"`가 모든 `.btn-primary`를 `--warm`으로 렌더 (CEO 결정 2026-06-11, 픽셀 SSOT). navy `bg-primary`를 버튼 fill로 신규 사용 금지. `--warm`은 **버튼 액션 전용** — 배지·아이콘·장식 재사용 금지(그쪽은 `wd-orange` 패밀리, hue가 다름).
+
 | Size | Radius | Style |
 |------|--------|-------|
-| lg | rounded-lg (8px) | bg-primary flat, 14px |
-| default | rounded-lg (8px) | bg-primary flat, 13px/500 |
+| lg | rounded-lg (8px) | bg-warm flat, 14px |
+| default | rounded-lg (8px) | bg-warm flat, 13px/500 |
 | sm | rounded-md (6px) | 12px (density protection) |
 
-Hover: `hover:brightness-95` (primary), outline = `border-strong` + `bg-card` + `hover:bg-muted`. `active:scale-[0.98]`.
+Hover: `hover:brightness-95` (primary — proto `filter: brightness(.95)`), outline = `border-strong` + `bg-card` + `hover:bg-muted`. `active:scale-[0.98]`.
+컨텍스트 오버라이드 유지: 히어로 위 CTA = white fill(proto `.wd-hero .btn-primary`), BulkActionBar 내부 버튼.
+
+**Accessibility Exception (AX-1)** — scope: 주 액션 버튼 fill+white 라벨. white-on-#e87045 = **3.07:1** (AA 4.5:1 미달, 대형 텍스트 3:1 통과). 근거: 렌더된 프로토 = 픽셀 SSOT (CEO 지시 2026-06-11, proto `.btn-primary { color: white }`). owner: CEO. 재검토: 런칭 후 a11y 하드닝 트랙 — dark ink 라벨 대안(5.35:1 통과)은 토큰 1줄 전환. 다크모드 페어링(white-on-#f88d67 더 낮음)은 Phase 4에서 결정.
 
 ### 5.2 Icons (Lucide only)
 

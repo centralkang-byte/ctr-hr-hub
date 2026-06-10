@@ -358,7 +358,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                                             {saving ? t('compReview.saving') : t('compReview.saveChanges')}
                                         </button>
                                         <button onClick={handleApprove} disabled={approving}
-                                            className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40">
+                                            className="inline-flex items-center gap-2 rounded-lg bg-warm px-5 py-2 text-sm font-medium text-white hover:brightness-95 disabled:opacity-40">
                                             <CheckCircle2 className="h-4 w-4" /> {approving ? t('compReview.approving') : t('compReview.requestApproval')}
                                         </button>
                                     </div>

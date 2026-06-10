@@ -121,7 +121,7 @@ export function WdDrawer({
                 type="button"
                 onClick={primary.onClick}
                 disabled={primary.disabled}
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-warm px-4 text-sm font-semibold text-primary-foreground transition-colors hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {primary.icon}
                 {primary.label}

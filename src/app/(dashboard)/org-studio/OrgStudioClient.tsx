@@ -197,7 +197,7 @@ export function OrgStudioClient({ user }: OrgStudioClientProps) {
             className={[
               'inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-colors',
               hasMoves && saveState !== 'saving'
-                ? 'bg-primary text-white hover:bg-primary/90'
+                ? 'bg-warm text-white hover:brightness-95'
                 : 'cursor-not-allowed bg-border text-muted-foreground',
             ].join(' ')}
           >

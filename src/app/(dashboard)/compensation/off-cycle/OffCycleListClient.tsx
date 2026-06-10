@@ -153,7 +153,7 @@ export default function OffCycleListClient({ user }: Props) {
         {canCreate && (
           <Button
             onClick={() => router.push('/compensation/off-cycle/new')}
-            className="rounded-full bg-gradient-to-r from-primary to-primary-dim shadow-lg shadow-primary/20"
+            className="rounded-full bg-warm shadow-lg shadow-primary/20"
             size="lg"
           >
             <Plus className="mr-1.5 h-4 w-4" />

@@ -247,7 +247,7 @@ export function AnalyticsFilterBar({ companies = [], showDepartment = true }: An
           <button
             onClick={handleApplyCustom}
             disabled={!customStart || !customEnd}
-            className="px-4 py-1.5 text-sm font-medium rounded-lg bg-primary text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-1.5 text-sm font-medium rounded-lg bg-warm text-white hover:brightness-95 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             적용
           </button>

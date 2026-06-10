@@ -91,8 +91,8 @@ export function HeroCard({
         <Link
           href={focus.cta.href}
           className={cn(
-            'inline-flex min-h-[44px] items-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground',
-            'hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+            'inline-flex min-h-[44px] items-center gap-2 rounded-full bg-warm px-5 text-sm font-semibold text-primary-foreground',
+            'hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
             MOTION.microOut,
           )}
         >

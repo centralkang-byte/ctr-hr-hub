@@ -372,7 +372,7 @@ export default function MyResultClient({user }: {
                                         </div>
                                     )}
                                     <button onClick={handleAcknowledge} disabled={acknowledging}
-                                        className="w-full rounded-lg bg-primary py-3 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40 transition-colors">
+                                        className="w-full rounded-lg bg-warm py-3 text-sm font-medium text-white hover:brightness-95 disabled:opacity-40 transition-colors">
                                         {acknowledging ? t('processing') : t('myResult.acknowledgeButton')}
                                     </button>
                                     <div className="mt-3 flex items-start gap-1.5 text-xs text-muted-foreground">

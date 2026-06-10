@@ -34,7 +34,7 @@ function DefaultErrorFallback({ onReset }: { onReset: () => void }) {
           </Button>
           <Button
             size="sm"
-            className="bg-primary text-white hover:bg-primary/90"
+            className="bg-warm text-white hover:brightness-95"
             onClick={() => { window.location.href = '/' }}
           >
             홈으로 이동

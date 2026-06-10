@@ -224,7 +224,7 @@ export default function NewGoalClient({
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50 transition-colors"
+              className="rounded-lg bg-warm px-6 py-2 text-sm font-medium text-white hover:brightness-95 disabled:opacity-50 transition-colors"
             >
               {submitting ? t('registering') : t('registerGoal')}
             </button>

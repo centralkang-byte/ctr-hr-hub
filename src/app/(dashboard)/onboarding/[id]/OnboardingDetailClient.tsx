@@ -276,7 +276,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                     <p className="mb-3 text-xs text-tertiary">✅ {t('detail.allRequiredDone')}</p>
                                     {canSignOff && (
                                         <button onClick={() => setSignOffDialog(true)} disabled={actionLoading === 'sign-off'}
-                                            className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50">
+                                            className="w-full rounded-lg bg-warm px-4 py-2.5 text-sm font-semibold text-white hover:brightness-95 disabled:opacity-50">
                                             {actionLoading === 'sign-off' ? tCommon('processing') : t('approveOnboarding')}
                                         </button>
                                     )}
@@ -476,7 +476,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                         {tCommon('cancel')}
                         </button>
                         <button onClick={handleSignOff} disabled={actionLoading === 'sign-off'}
-                            className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50">
+                            className="rounded-lg bg-warm px-4 py-2 text-sm font-semibold text-white hover:brightness-95 disabled:opacity-50">
                             {actionLoading === 'sign-off' ? tCommon('processing') : t('approve')}
                         </button>
                     </DialogFooter>

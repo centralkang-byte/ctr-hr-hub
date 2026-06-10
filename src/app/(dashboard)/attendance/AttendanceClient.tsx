@@ -356,7 +356,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
               </div>
               <Button
                 size="lg"
-                className="h-16 w-48 bg-primary hover:bg-primary/90 text-lg font-semibold text-white"
+                className="h-16 w-48 bg-warm hover:brightness-95 text-lg font-semibold text-white"
                 onClick={handleClockIn}
                 disabled={clockLoading}
               >

@@ -324,7 +324,7 @@ export default function PostingFormClient({
               type="button"
               onClick={handleAiGenerate}
               disabled={aiLoading || !watch('title')}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-primary hover:bg-primary-dim text-white rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-warm hover:brightness-95 text-white rounded-lg transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {aiLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

@@ -98,7 +98,7 @@ export default function SaveScenarioDialog({ open, onOpenChange, onSave, isLoadi
             disabled={!title.trim() || isLoading}
             className={cn(
               'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg',
-              'bg-primary text-white hover:bg-primary/90 disabled:opacity-50',
+              'bg-warm text-white hover:brightness-95 disabled:opacity-50',
             )}
           >
             {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
