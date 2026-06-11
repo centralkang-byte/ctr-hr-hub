@@ -10,6 +10,7 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { notFound, forbidden } from '@/lib/errors'
 import { withRLS, buildRLSContext } from '@/lib/api/withRLS'
+import { logAudit, extractRequestMeta } from '@/lib/audit'
 import type { PayrollItemDetail } from '@/lib/payroll/types'
 
 export const GET = withPermission(
@@ -72,12 +73,13 @@ export const GET = withPermission(
 )
 
 export const PATCH = withPermission(
-  async (_req, context, user) => {
+  async (req, context, user) => {
     const { id } = await context.params
 
     const payslip = await prisma.payslip.findUnique({ where: { id } })
     if (!payslip) throw notFound('급여명세서를 찾을 수 없습니다.')
-    if (payslip.companyId !== user.companyId) throw forbidden()
+    // GET과 동일하게 SUPER_ADMIN은 전 법인 접근 허용 (carve-out 일관)
+    if (payslip.companyId !== user.companyId && user.role !== 'SUPER_ADMIN') throw forbidden()
 
     // 본인 명세서만 열람 처리 (HR은 모두 가능)
     const isOwnPayslip = payslip.employeeId === user.employeeId
@@ -91,6 +93,21 @@ export const PATCH = withPermission(
         viewedAt: payslip.viewedAt ?? new Date(),
       },
     })
+
+    // 타인 명세서 대리 열람처리(HR/SUPER, SUPER는 cross-company 가능)는 감사 기록 — 본인 열람은 제외
+    if (!isOwnPayslip) {
+      const { ip, userAgent } = extractRequestMeta(req.headers)
+      logAudit({
+        actorId: user.employeeId,
+        action: 'PAYSLIP_MARK_VIEWED',
+        resourceType: 'Payslip',
+        resourceId: id,
+        companyId: payslip.companyId,
+        changes: { employeeId: payslip.employeeId },
+        ip,
+        userAgent,
+      })
+    }
 
     return apiSuccess(updated)
   },

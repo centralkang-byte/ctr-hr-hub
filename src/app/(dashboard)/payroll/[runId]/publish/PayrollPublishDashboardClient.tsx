@@ -72,6 +72,20 @@ interface PublishStatus {
 
 // fmt, fmtDate은 컴포넌트 내부에서 t()와 locale을 사용하도록 이동
 
+// ─── Helpers ─────────────────────────────────────────────
+
+// Content-Disposition 헤더에서 파일명 추출 (RFC 5987 `filename*=UTF-8''` 우선, plain filename fallback)
+function filenameFromDisposition(disposition: string | null): string {
+    const fallback = '급여이체파일.csv'
+    if (!disposition) return fallback
+    const star = disposition.match(/filename\*=UTF-8''([^;]+)/i)
+    if (star?.[1]) {
+        try { return decodeURIComponent(star[1]) } catch { return fallback }
+    }
+    const plain = disposition.match(/filename="?([^";]+)"?/i)
+    return plain?.[1]?.trim() ?? fallback
+}
+
 // ─── Progress Bar ────────────────────────────────────────
 
 function ViewProgressBar({ viewed, total }: { viewed: number; total: number }) {
@@ -112,7 +126,7 @@ interface Props {
     runId: string
 }
 
-export default function PayrollPublishDashboardClient({ user, runId }: Props) {
+export default function PayrollPublishDashboardClient({ user: _user, runId }: Props) {
   const t = useTranslations('payroll')
   const tc = useTranslations('common')
   const locale = useLocale()
@@ -146,6 +160,7 @@ export default function PayrollPublishDashboardClient({ user, runId }: Props) {
     const [notifyResult, setNotifyResult] = useState<string | null>(null)
     const [showDownloads, setShowDownloads] = useState(false)
     const [markingPaid, setMarkingPaid] = useState(false)
+    const [downloadingTransfer, setDownloadingTransfer] = useState(false)
 
     // 로드 실패 구분: 404(notFound/접근불가) vs 그 외(일시 오류 → 재시도)
     const [loadError, setLoadError] = useState<'notFound' | 'error' | null>(null)
@@ -200,10 +215,38 @@ export default function PayrollPublishDashboardClient({ user, runId }: Props) {
         }
     }
 
+    // GET export (저널·대장·비교) — 부수효과 없는 읽기라 단순 앵커 다운로드.
     const triggerDownload = (url: string) => {
         const a = document.createElement('a')
         a.href = url
         a.click()
+    }
+
+    // 이체파일 생성은 매 호출마다 BankTransferBatch를 만드는 쓰기 작업 → POST.
+    // (앵커 href = GET 이면 prefetch·재시도·CSRF로 무단 배치가 생김.)
+    // apiClient는 JSON 파싱이라 바이너리 CSV에 부적합 → raw fetch + blob 다운로드.
+    // 파일명은 서버 Content-Disposition을 보존한다.
+    const triggerTransferDownload = async (url: string) => {
+        setDownloadingTransfer(true)
+        try {
+            const res = await fetch(url, { method: 'POST' })
+            if (!res.ok) {
+                const body = (await res.json().catch(() => null)) as { error?: { message?: string } | string } | null
+                const msg = typeof body?.error === 'string' ? body.error : body?.error?.message
+                throw new Error(msg || `${res.status}`)
+            }
+            const blob = await res.blob()
+            const objectUrl = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = objectUrl
+            a.download = filenameFromDisposition(res.headers.get('Content-Disposition'))
+            a.click()
+            window.URL.revokeObjectURL(objectUrl)
+        } catch (err) {
+            toast({ title: tc('error'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
+        } finally {
+            setDownloadingTransfer(false)
+        }
     }
 
     if (loading) {
@@ -237,9 +280,8 @@ export default function PayrollPublishDashboardClient({ user, runId }: Props) {
 
     const { run, payslipStats, transferBatches, approvalHistory } = data
     const isApproved = ['APPROVED', 'PAID'].includes(run.status)
-    // SUPER 타 법인 뷰: 조회는 전체뷰 정책이나, 쓰기성 액션(지급처리·재통보·이체파일 생성)은
-    // 본인 법인 스코프 유지 — 가드 약화 금지 (해당 API들은 user.companyId 하드 스코프)
-    const isCrossCompany = run.companyId !== user.companyId
+    // SUPER_ADMIN = 전 법인 급여 운영자(CEO 결정 S285) — 쓰기성 액션 cross-company 게이트 제거.
+    // 본인 법인 강제는 API 가드(소유권 우선 403)가 담당; 비-SUPER는 read 라우트(#154)에서 이미 차단.
 
     return (
         <div className="p-6 max-w-4xl mx-auto space-y-5">
@@ -267,11 +309,11 @@ export default function PayrollPublishDashboardClient({ user, runId }: Props) {
                     </div>
                 </div>
                 {run.status === 'APPROVED' && (
-                    <span className="ml-auto" title={isCrossCompany ? t('runLoad.ownCompanyOnly') : undefined}>
+                    <span className="ml-auto">
                         <Button
                             type="button"
                             onClick={handleMarkPaid}
-                            disabled={markingPaid || isCrossCompany}
+                            disabled={markingPaid}
                         >
                             {markingPaid ? <Loader2 className="animate-spin" aria-hidden="true" /> : <CreditCard aria-hidden="true" />}
                             {t('kr_keca780ea_complete')}
@@ -318,17 +360,15 @@ export default function PayrollPublishDashboardClient({ user, runId }: Props) {
             <section className={`${CARD_STYLES.kpi} space-y-4`} aria-labelledby="publish-view-rate-title">
                 <div className="flex items-center justify-between">
                     <h2 id="publish-view-rate-title" className={TYPOGRAPHY.cardTitle}>{t('payStub_kec97b4eb_status')}</h2>
-                    <span title={isCrossCompany ? t('runLoad.ownCompanyOnly') : undefined}>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={handleNotifyUnread}
-                            disabled={notifying || payslipStats.unviewed === 0 || isCrossCompany}
-                        >
-                            {notifying ? <Loader2 className="animate-spin" aria-hidden="true" /> : <Bell aria-hidden="true" />}
-                            {t('publishPage.resendReminder', { count: payslipStats.unviewed })}
-                        </Button>
-                    </span>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleNotifyUnread}
+                        disabled={notifying || payslipStats.unviewed === 0}
+                    >
+                        {notifying ? <Loader2 className="animate-spin" aria-hidden="true" /> : <Bell aria-hidden="true" />}
+                        {t('publishPage.resendReminder', { count: payslipStats.unviewed })}
+                    </Button>
                 </div>
                 <ViewProgressBar viewed={payslipStats.viewed} total={payslipStats.total} />
                 {notifyResult && (
@@ -358,10 +398,10 @@ export default function PayrollPublishDashboardClient({ user, runId }: Props) {
                             sub: 'CSV',
                             icon: <CreditCard className="h-5 w-5 text-[#006b39]" aria-hidden="true" />,
                             bg: 'bg-tertiary/10',
-                            // 이체파일 생성은 BankTransferBatch를 쓰는 write — 타 법인 뷰에서 차단
-                            disabled: !isApproved || isCrossCompany,
-                            title: isCrossCompany ? t('runLoad.ownCompanyOnly') : undefined,
+                            disabled: !isApproved,
+                            title: undefined,
                             url: `/api/v1/payroll/${runId}/export/transfer`,
+                            method: 'POST' as const,  // 이체 배치 생성(쓰기) — POST + blob 다운로드
                         },
                         {
                             // 기존 '급여월' 키 오용 교정 — 급여대장 export 라벨 (플랜 §1.7 보너스 수정과 동일 결함)
@@ -372,6 +412,7 @@ export default function PayrollPublishDashboardClient({ user, runId }: Props) {
                             disabled: false,
                             title: undefined,
                             url: `/api/v1/payroll/${runId}/export/ledger`,
+                            method: 'GET' as const,
                         },
                         {
                             label: t('kr_keca084ec_keb8c80eb_kebb984ea'),
@@ -381,6 +422,7 @@ export default function PayrollPublishDashboardClient({ user, runId }: Props) {
                             disabled: false,
                             title: undefined,
                             url: `/api/v1/payroll/${runId}/export/comparison`,
+                            method: 'GET' as const,
                         },
                         {
                             label: t('kr_kec9db8ea_keca084ed'),
@@ -390,13 +432,18 @@ export default function PayrollPublishDashboardClient({ user, runId }: Props) {
                             disabled: false,
                             title: undefined,
                             url: `/api/v1/payroll/${runId}/export/journal`,
+                            method: 'GET' as const,
                         },
                     ].map((item) => (
                         <button
                             key={item.label}
                             type="button"
-                            onClick={() => !item.disabled && triggerDownload(item.url)}
-                            disabled={item.disabled}
+                            onClick={() => {
+                                if (item.disabled) return
+                                if (item.method === 'POST') void triggerTransferDownload(item.url)
+                                else triggerDownload(item.url)
+                            }}
+                            disabled={item.disabled || (item.method === 'POST' && downloadingTransfer)}
                             title={item.title}
                             className={`flex flex-col items-center gap-2 p-4 rounded-xl border border-border transition-colors ${item.disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-background cursor-pointer'}`}
                         >

@@ -149,4 +149,10 @@ export class ApiClient {
     const res = await this.request.get(url)
     return parseRawResponse(res)
   }
+
+  /** POST returning a raw/binary response (for write-then-download exports like transfer CSV). */
+  async postRaw(path: string, data?: unknown): Promise<RawResult> {
+    const res = await this.request.post(path, data !== undefined ? { data } : undefined)
+    return parseRawResponse(res)
+  }
 }

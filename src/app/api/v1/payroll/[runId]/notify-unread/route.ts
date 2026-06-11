@@ -6,19 +6,22 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound } from '@/lib/errors'
+import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { sendNotifications } from '@/lib/notifications'
+import { logAudit, extractRequestMeta } from '@/lib/audit'
 
 export const POST = withPermission(
-    async (_req: NextRequest, context, user) => {
+    async (req: NextRequest, context, user) => {
         const { runId } = await context.params
 
-        const run = await prisma.payrollRun.findUnique({
-            where: { id: runId, companyId: user.companyId },
-        })
+        const run = await prisma.payrollRun.findUnique({ where: { id: runId } })
         if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
+        // 멀티테넌트 가드: SUPER_ADMIN 외에는 본인 법인만 (소유권 우선 — status 체크 앞)
+        if (user.role !== ROLE.SUPER_ADMIN && run.companyId !== user.companyId) {
+            throw forbidden('다른 법인의 급여 실행에 접근할 수 없습니다.')
+        }
         if (!['APPROVED', 'PAID'].includes(run.status)) {
             throw badRequest('APPROVED 또는 PAID 상태에서만 재알림이 가능합니다.')
         }
@@ -55,6 +58,19 @@ export const POST = withPermission(
                 metadata: { payrollRunId: runId, yearMonth: run.yearMonth },
             })),
         )
+
+        // cross-company 쓰기(SUPER 대행 포함) 감사 — 외부 알림 발송이므로 actor·법인·건수 기록
+        const { ip, userAgent } = extractRequestMeta(req.headers)
+        logAudit({
+            actorId: user.employeeId,
+            action: 'PAYROLL_NOTIFY_UNREAD',
+            resourceType: 'PayrollRun',
+            resourceId: runId,
+            companyId: run.companyId,
+            changes: { yearMonth: run.yearMonth, notifiedCount: unreadPayslips.length },
+            ip,
+            userAgent,
+        })
 
         return apiSuccess({
             notifiedCount: unreadPayslips.length,
