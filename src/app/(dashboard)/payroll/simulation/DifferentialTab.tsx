@@ -227,7 +227,7 @@ export default function DifferentialTab({ companies, onSaveScenario }: Props) {
                 </p>
               ))}
               {violations.employees.length > 5 && (
-                <p className="text-xs text-red-500">... {t('simDiffMoreViolations', { count: violations.employees.length - 5 })}</p>
+                <p className="text-xs text-destructive">... {t('simDiffMoreViolations', { count: violations.employees.length - 5 })}</p>
               )}
             </div>
           </div>

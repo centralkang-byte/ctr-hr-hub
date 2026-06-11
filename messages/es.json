@@ -5647,7 +5647,13 @@
     "payPeriod": "Pay Period",
     "titleWithMonth": "{month} Pay Stub",
     "overseasNoticeTitle": "Emitido por el sistema local",
-    "overseasNotice": "Las nóminas de las entidades en el extranjero las emite el sistema de nóminas local. Comuníquese con su equipo local para ver el desglose detallado."
+    "overseasNotice": "Las nóminas de las entidades en el extranjero las emite el sistema de nóminas local. Comuníquese con su equipo local para ver el desglose detallado.",
+    "backToList": "Volver a la lista",
+    "loadError": "Error al cargar la nómina",
+    "loadErrorSub": "Inténtalo de nuevo más tarde.",
+    "notFoundSub": "El enlace puede ser incorrecto o la nómina puede haber sido eliminada.",
+    "downloadError": "Error de descarga",
+    "downloadErrorDesc": "Inténtalo de nuevo más tarde."
   },
   "payroll": {
     "add_ked95a9ea": "Agregaritional Total",
@@ -6916,7 +6922,13 @@
         "incomeTax": "[TODO:es] Income Tax",
         "localIncomeTax": "[TODO:es] Local Income Tax"
       }
-    }
+    },
+    "simResultTitle": "Resultados de la simulación",
+    "simResultTargets": "{count} empleados",
+    "simBulkChartTitle": "Costo laboral mensual — actual vs simulado",
+    "simModeTabsLabel": "Modos de simulación",
+    "simScenarioModeFilterLabel": "Filtro de modo",
+    "simExportFail": "Error de descarga"
   },
   "payrollMe": {
     "deductions": "Deductions",
@@ -6930,7 +6942,19 @@
     "paid": "Paid",
     "title": "My Pay Stubs",
     "unreadCount": "{count} recibos de nómina sin leer",
-    "overseasNotice": "Las nóminas de las entidades en el extranjero las emite el sistema de nóminas local. Aquí solo se muestran los totales."
+    "overseasNotice": "Las nóminas de las entidades en el extranjero las emite el sistema de nóminas local. Aquí solo se muestran los totales.",
+    "subtitle": "Consulta todas tus nóminas en un solo lugar.",
+    "latestPayslip": "Nómina más reciente",
+    "pdfButton": "PDF",
+    "pdfError": "Error al descargar el PDF",
+    "pdfErrorDesc": "Inténtalo de nuevo más tarde.",
+    "trendTitle": "Tendencia de 12 meses",
+    "trendAria": "Tendencia del salario neto de los últimos {count} meses",
+    "allPayslips": "Todas las nóminas",
+    "countUnit": "{count} recibo(s)",
+    "allYears": "Todos los años",
+    "yearOption": "{year}",
+    "yearFilterAria": "Filtrar por año"
   },
   "payrollReview": {
     "allowances": "Allowances",

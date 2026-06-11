@@ -62,6 +62,37 @@ test.describe('Payroll: HR_ADMIN', () => {
     await waitForPageReady(page)
   })
 
+  // Wave 1: 모드 탭바 = Radix Tabs 세그먼트 (6모드 + TabsContent 패널 연결) 가드.
+  // 탭 클릭 시 aria-selected 이동 + 패널 콘텐츠가 실제로 분기되는지 검증 —
+  // 커스텀 토글 회귀(전환 불능)나 패널 미연결을 잡는다.
+  test('simulation mode tabs switch panels', async ({ page }) => {
+    await assertPageLoads(page, '/payroll/simulation')
+    await waitForLoading(page)
+
+    const tabs = page.getByRole('tab')
+    await expect(tabs).toHaveCount(6, { timeout: 15000 })
+
+    // 기본 SINGLE: 대상 직원 검색 패널
+    await expect(page.getByRole('tabpanel')).toContainText(/대상 직원|Target employee/, { timeout: 10000 })
+
+    // BULK 전환: aria-selected 이동 + 대상 선택(법인/부서/직원) 패널로 분기.
+    // SSR 마크업이 하이드레이션 전에 보여 첫 클릭이 무시될 수 있음 → toPass로 재클릭
+    const bulkTab = page.getByRole('tab', { name: /일괄|Bulk/ })
+    await expect(async () => {
+      await bulkTab.click()
+      await expect(bulkTab).toHaveAttribute('aria-selected', 'true', { timeout: 2000 })
+    }).toPass({ timeout: 15000 })
+    await expect(page.getByRole('tabpanel')).toContainText(/대상 선택|Target selection/, { timeout: 10000 })
+
+    // 환율 전환: 전용 탭 컴포넌트 렌더
+    const fxTab = page.getByRole('tab', { name: /환율|FX/ })
+    await expect(async () => {
+      await fxTab.click()
+      await expect(fxTab).toHaveAttribute('aria-selected', 'true', { timeout: 2000 })
+    }).toPass({ timeout: 15000 })
+    await expect(page.getByRole('tabpanel')).toContainText(/환율 조정|Exchange rate/, { timeout: 10000 })
+  })
+
   test('bank transfers page loads', async ({ page }) => {
     await assertPageLoads(page, '/payroll/bank-transfers')
     await waitForPageReady(page)
@@ -168,5 +199,24 @@ test.describe('Payroll: EMPLOYEE', () => {
     await expect(main).toBeVisible()
     // h1 appears after API fetch completes (loading → content or empty state)
     await expect(page.getByRole('heading').first()).toBeVisible({ timeout: 15000 })
+  })
+
+  // Wave 1: hero(최근 명세서)·12개월 추이·전체 명세서 섹션 가드.
+  // 시드에 지급 명세서가 없으면 EmptyState 분기를 검증한다 (공유/CI 시드 모두 안전).
+  test('my payslip Wave 1 layout renders hero or empty state', async ({ page }) => {
+    await assertPageLoads(page, '/payroll/me')
+    await waitForLoading(page)
+
+    await expect(page.locator('main h1').first()).toBeVisible({ timeout: 15000 })
+
+    const hero = page.getByRole('heading', { name: /최근 명세서|Latest Payslip/ })
+    const empty = page.getByText(/급여명세서가 없어요|No pay stubs/)
+    await expect(hero.or(empty).first()).toBeVisible({ timeout: 15000 })
+
+    // hero가 있으면 추이·전체 명세서 섹션도 함께 렌더되어야 한다
+    if (await hero.isVisible().catch(() => false)) {
+      await expect(page.getByRole('heading', { name: /12개월 추이|12-Month Trend/ })).toBeVisible()
+      await expect(page.getByRole('heading', { name: /전체 명세서|All Payslips/ })).toBeVisible()
+    }
   })
 })

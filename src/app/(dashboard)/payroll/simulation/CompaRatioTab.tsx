@@ -31,12 +31,20 @@ interface Props {
 const BUCKET_COLORS: Record<string, string> = {
   '< 0.7': CHART_THEME.colors[4],   // red — 심각 저보상
   '0.7–0.8': CHART_THEME.colors[3], // amber — 저보상
-  '0.8–0.9': CHART_THEME.colors[0], // violet — 약간 낮음
+  '0.8–0.9': CHART_THEME.colors[0], // wt 카테고리(navy) — 약간 낮음
   '0.9–1.0': CHART_THEME.colors[2], // green — 적정
   '1.0–1.1': CHART_THEME.colors[2], // green — 적정
-  '1.1–1.2': CHART_THEME.colors[0], // violet — 약간 높음
+  '1.1–1.2': CHART_THEME.colors[0], // wt 카테고리(navy) — 약간 높음
   '> 1.2': CHART_THEME.colors[4],   // red — 고보상 이탈
 }
+
+// 범례 스와치 — 차트 막대(BUCKET_COLORS)와 단일 소스 공유 (X-2: 범례-막대 색 일치)
+const LEGEND_SWATCHES = [
+  { labelKey: 'simCompaRiskZone', color: BUCKET_COLORS['< 0.7'] },
+  { labelKey: 'simCompaCautionZone', color: BUCKET_COLORS['0.7–0.8'] },
+  { labelKey: 'simCompaProperZone', color: BUCKET_COLORS['0.9–1.0'] },
+  { labelKey: 'simCompaManageZone', color: BUCKET_COLORS['0.8–0.9'] },
+] as const
 
 // ─── Component ──────────────────────────────────────────────
 
@@ -127,7 +135,7 @@ export default function CompaRatioTab({ companies }: Props) {
         </div>
         <div className={CARD_STYLES.padded}>
           <p className="text-xs text-muted-foreground">{t('simCompaKpiHigh')}</p>
-          <p className="text-xl font-bold text-amber-600">
+          <p className="text-xl font-bold text-ctr-warning">
             <TrendingUp className="w-4 h-4 inline mr-1" />{t('simPersonUnit', { count: summary.aboveBand })}
           </p>
         </div>
@@ -151,11 +159,12 @@ export default function CompaRatioTab({ companies }: Props) {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-        <div className="flex items-center justify-center gap-4 mt-3 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-destructive/50" /> {t('simCompaRiskZone')}</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-500/100" /> {t('simCompaCautionZone')}</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-600" /> {t('simCompaProperZone')}</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-primary/50" /> {t('simCompaManageZone')}</span>
+        <div className="flex flex-wrap items-center justify-center gap-4 mt-3 text-xs text-muted-foreground">
+          {LEGEND_SWATCHES.map(({ labelKey, color }) => (
+            <span key={labelKey} className="flex items-center gap-1">
+              <span className="w-3 h-3 rounded" style={{ background: color }} aria-hidden="true" /> {t(labelKey)}
+            </span>
+          ))}
         </div>
       </div>
 
@@ -185,7 +194,7 @@ export default function CompaRatioTab({ companies }: Props) {
                     <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums')}>{t('simPersonUnit', { count: g.employees })}</td>
                     <td className={cn(
                       TABLE_STYLES.cell, 'text-right tabular-nums font-mono font-medium',
-                      g.avgCompaRatio < 0.8 ? 'text-destructive' : g.avgCompaRatio > 1.2 ? 'text-amber-600' : 'text-foreground'
+                      g.avgCompaRatio < 0.8 ? 'text-destructive' : g.avgCompaRatio > 1.2 ? 'text-ctr-warning' : 'text-foreground'
                     )}>
                       {g.avgCompaRatio.toFixed(3)}
                     </td>
@@ -205,7 +214,7 @@ export default function CompaRatioTab({ companies }: Props) {
                         />
                         {/* 1.0 reference */}
                         <div
-                          className="absolute top-0 w-px h-full bg-red-600/30"
+                          className="absolute top-0 w-px h-full bg-destructive/30"
                           style={{ left: '50%' }}
                         />
                       </div>
@@ -222,7 +231,7 @@ export default function CompaRatioTab({ companies }: Props) {
       {outliers.length > 0 && (
         <div className={CARD_STYLES.padded}>
           <div className="flex items-center gap-2 mb-3">
-            <AlertCircle className="w-4 h-4 text-red-500" />
+            <AlertCircle className="w-4 h-4 text-destructive" />
             <h3 className="text-sm font-semibold text-foreground">{t('simCompaOutlierTitle', { count: outliers.length })}</h3>
           </div>
           <div className={TABLE_STYLES.wrapper}>
@@ -246,7 +255,7 @@ export default function CompaRatioTab({ companies }: Props) {
                     <td className={TABLE_STYLES.cell}>{o.department}</td>
                     <td className={cn(
                       TABLE_STYLES.cell, 'text-right tabular-nums font-mono font-bold',
-                      o.compaRatio < 0.8 ? 'text-destructive' : 'text-amber-600'
+                      o.compaRatio < 0.8 ? 'text-destructive' : 'text-ctr-warning'
                     )}>
                       {o.compaRatio.toFixed(3)}
                     </td>

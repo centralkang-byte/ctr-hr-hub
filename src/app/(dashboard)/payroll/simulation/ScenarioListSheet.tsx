@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
+import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
 import { cn } from '@/lib/utils'
 import type { ScenarioListItem, ScenarioDetail, SaveableMode } from './types'
 
@@ -37,10 +38,13 @@ const MODE_LABEL_KEYS: Record<SaveableMode, string> = {
 const MODE_COLORS: Record<SaveableMode, string> = {
   SINGLE: 'bg-primary/5 text-primary',
   BULK: 'bg-wt-4/10 text-wt-4',
-  DIFFERENTIAL: 'bg-amber-500/10 text-amber-600',
+  DIFFERENTIAL: 'bg-warning-bright/15 text-ctr-warning',
   HIRING: 'bg-tertiary-container/10 text-tertiary',
   FX: 'bg-destructive/5 text-destructive',
 }
+
+// 모드 필터 옵션 (단일선택 radiogroup)
+const MODE_FILTERS = ['ALL', 'SINGLE', 'BULK', 'DIFFERENTIAL', 'HIRING', 'FX'] as const
 
 // ─── Component ──────────────────────────────────────────────
 
@@ -154,6 +158,14 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
     month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
   })
 
+  // 모드 필터 키보드 내비 (SIM-14/X-5: radiogroup + roving tabindex — SSOT 훅)
+  const activeFilterIndex = MODE_FILTERS.indexOf(modeFilter)
+  const filterNav = useArrowKeyNavigation(
+    MODE_FILTERS.length,
+    activeFilterIndex,
+    (i) => setModeFilter(MODE_FILTERS[i]),
+  )
+
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
@@ -162,10 +174,13 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
             <SheetTitle className="text-foreground">{t('simScenarioSavedList')}</SheetTitle>
           </SheetHeader>
 
-          {/* ─── 모드 필터 ───── */}
-          <div className="px-6 py-3 border-b border-border flex gap-1.5 flex-wrap">
-            {(['ALL', 'SINGLE', 'BULK', 'DIFFERENTIAL', 'HIRING', 'FX'] as const).map(m => (
-              <button key={m} onClick={() => setModeFilter(m)}
+          {/* ─── 모드 필터 (패널 없는 단일선택 = radiogroup, navy fill = 프로토 .pill-tabs 충실) ───── */}
+          <div role="radiogroup" aria-label={t('simScenarioModeFilterLabel')} onKeyDown={filterNav.onKeyDown}
+            className="px-6 py-3 border-b border-border flex gap-1.5 flex-wrap">
+            {MODE_FILTERS.map((m, i) => (
+              <button key={m} type="button" role="radio" aria-checked={modeFilter === m}
+                {...filterNav.itemProps(i)}
+                onClick={() => setModeFilter(m)}
                 className={cn(
                   'px-2.5 py-1 text-xs rounded-full transition-colors',
                   modeFilter === m
@@ -183,7 +198,7 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
               <span className="text-xs text-muted-foreground">
                 {t('simScenarioCompareCount', { count: compareIds.length })}
                 {compareIds.length === 2 && !canCompare && (
-                  <span className="text-red-500 ml-1">({t('simScenarioCompareSameMode')})</span>
+                  <span className="text-destructive ml-1">({t('simScenarioCompareSameMode')})</span>
                 )}
               </span>
               <div className="flex gap-2">
@@ -248,8 +263,8 @@ export default function ScenarioListSheet({ open, onOpenChange, onLoad, onCompar
                         className="flex items-center gap-1 px-2 py-1 text-xs bg-muted text-muted-foreground hover:text-foreground rounded">
                         <Upload className="w-3 h-3" /> {t('simScenarioLoadBtn')}
                       </button>
-                      <button onClick={() => setDeleteTarget(s)}
-                        className="flex items-center gap-1 px-2 py-1 text-xs bg-muted text-red-400 hover:text-destructive rounded ml-auto">
+                      <button type="button" onClick={() => setDeleteTarget(s)} aria-label={tCommon('delete')}
+                        className="flex items-center gap-1 px-2 py-1 text-xs bg-muted text-destructive/70 hover:text-destructive rounded ml-auto">
                         <Trash2 className="w-3 h-3" />
                       </button>
                     </div>
