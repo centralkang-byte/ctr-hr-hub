@@ -5,10 +5,18 @@
 //   - payroll engine: { earnings, insurance, tax }
 //   - legacy seed:    { components, deductions }
 // Pure + dependency-free (type-only import) → server- AND client-safe.
-// Consumers: GET /payroll/me (list), GET /payroll/me/[runId]/pdf.
+// Consumers: GET /payroll/me (list), GET /payroll/me/[runId]/pdf,
+//            PayStubDetailClient (Wave 1 X-1: 로컬 사본 흡수).
 // ═══════════════════════════════════════════════════════════
 
 import type { PayrollItemDetail } from './types'
+
+// malformed(NaN·Infinity·비숫자) 금액 방어 — Number(x)만으로는 NaN이 그대로
+// 전파되어 화면에 'NaN' 노출. Number.isFinite 기반 가드로 통일 (Codex G1 P2)
+function toFiniteNumber(v: unknown): number {
+  const n = Number(v)
+  return Number.isFinite(n) ? n : 0
+}
 
 // ─── Raw detail shape stored in DB by seed script ──────────
 interface RawDetail {
@@ -31,6 +39,7 @@ interface RawDetail {
     employmentInsurance?: number
     incomeTax?: number
     localIncomeTax?: number
+    otherDeductions?: number
   }
 }
 
@@ -71,9 +80,9 @@ export function normaliseDetail(
         weekdayOTHours: 0, weekendHours: 0,
         holidayHours: 0, nightHours: 0,
       },
-      grossPay: Number(grossPay),
+      grossPay: toFiniteNumber(grossPay),
       totalDeductions,
-      netPay: Number(netPay),
+      netPay: toFiniteNumber(netPay),
       customAllowances: d.customAllowances as PayrollItemDetail['customAllowances'],
       customDeductions: d.customDeductions as PayrollItemDetail['customDeductions'],
       previousMonth: d.previousMonth as PayrollItemDetail['previousMonth'],
@@ -103,7 +112,8 @@ export function normaliseDetail(
     employmentInsurance: ded.employmentInsurance ?? 0,
     incomeTax: ded.incomeTax ?? 0,
     localIncomeTax: ded.localIncomeTax ?? 0,
-    otherDeductions: 0,
+    // Wave 1 X-1: 로컬 사본 슈퍼셋 흡수 — legacy detail에 저장된 otherDeductions 보존 (기존 0 고정은 유실)
+    otherDeductions: ded.otherDeductions ?? 0,
   }
   const totalDeductions = Object.values(deductions).reduce((s, v) => s + v, 0)
 
@@ -115,8 +125,8 @@ export function normaliseDetail(
       weekdayOTHours: 0, weekendHours: 0,
       holidayHours: 0, nightHours: 0,
     },
-    grossPay: Number(grossPay),
+    grossPay: toFiniteNumber(grossPay),
     totalDeductions,
-    netPay: Number(netPay),
+    netPay: toFiniteNumber(netPay),
   }
 }
