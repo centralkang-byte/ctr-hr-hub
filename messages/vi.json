@@ -5647,7 +5647,13 @@
     "payPeriod": "Pay Period",
     "titleWithMonth": "{month} Pay Stub",
     "overseasNoticeTitle": "Do hệ thống địa phương phát hành",
-    "overseasNotice": "Phiếu lương của pháp nhân nước ngoài do hệ thống tính lương địa phương phát hành. Vui lòng liên hệ bộ phận phụ trách tại địa phương để xem chi tiết."
+    "overseasNotice": "Phiếu lương của pháp nhân nước ngoài do hệ thống tính lương địa phương phát hành. Vui lòng liên hệ bộ phận phụ trách tại địa phương để xem chi tiết.",
+    "backToList": "Quay lại danh sách",
+    "loadError": "Tải phiếu lương thất bại",
+    "loadErrorSub": "Vui lòng thử lại sau.",
+    "notFoundSub": "Liên kết có thể sai hoặc phiếu lương đã bị xóa.",
+    "downloadError": "Tải xuống thất bại",
+    "downloadErrorDesc": "Vui lòng thử lại sau."
   },
   "payroll": {
     "add_ked95a9ea": "Thêmitional Tổng cộng",
@@ -6916,7 +6922,13 @@
         "incomeTax": "[TODO:vi] Income Tax",
         "localIncomeTax": "[TODO:vi] Local Income Tax"
       }
-    }
+    },
+    "simResultTitle": "Kết quả mô phỏng",
+    "simResultTargets": "{count} nhân viên",
+    "simBulkChartTitle": "So sánh chi phí nhân sự hàng tháng — hiện tại vs mô phỏng",
+    "simModeTabsLabel": "Chế độ mô phỏng",
+    "simScenarioModeFilterLabel": "Bộ lọc chế độ",
+    "simExportFail": "Tải xuống thất bại"
   },
   "payrollMe": {
     "deductions": "Deductions",
@@ -6930,7 +6942,19 @@
     "paid": "Paid",
     "title": "My Pay Stubs",
     "unreadCount": "{count} phiếu lương chưa đọc",
-    "overseasNotice": "Phiếu lương của pháp nhân nước ngoài do hệ thống địa phương phát hành. Tại đây chỉ hiển thị tổng số."
+    "overseasNotice": "Phiếu lương của pháp nhân nước ngoài do hệ thống địa phương phát hành. Tại đây chỉ hiển thị tổng số.",
+    "subtitle": "Xem tất cả phiếu lương của bạn tại một nơi.",
+    "latestPayslip": "Phiếu lương mới nhất",
+    "pdfButton": "PDF",
+    "pdfError": "Tải PDF thất bại",
+    "pdfErrorDesc": "Vui lòng thử lại sau.",
+    "trendTitle": "Xu hướng 12 tháng",
+    "trendAria": "Xu hướng lương thực nhận {count} tháng gần nhất",
+    "allPayslips": "Tất cả phiếu lương",
+    "countUnit": "{count} phiếu",
+    "allYears": "Tất cả các năm",
+    "yearOption": "Năm {year}",
+    "yearFilterAria": "Lọc theo năm"
   },
   "payrollReview": {
     "allowances": "Allowances",

@@ -315,7 +315,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                         {bandHint(bandMap[h.gradeCode], t('simHiringBandNotRegistered'), locale)}
                       </td>
                       <td className={TABLE_STYLES.cell}>
-                        <button onClick={() => removeHire(h.key)} className="text-muted-foreground hover:text-red-500">
+                        <button type="button" onClick={() => removeHire(h.key)} aria-label={tCommon('delete')} className="text-muted-foreground hover:text-destructive">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </td>
@@ -442,7 +442,7 @@ export default function HiringTab({ companies, onSaveScenario }: Props) {
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums')}>{t('simPersonUnit', { count: g.headcount })}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-center text-xs text-muted-foreground')}>{g.salaryAnchor}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(g.grossPerPerson, locale)}</td>
-                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-red-500')}>{fmtKRW(g.deductionsPerPerson, locale)}</td>
+                      <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-destructive')}>{fmtKRW(g.deductionsPerPerson, locale)}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono')}>{fmtKRW(g.netPerPerson, locale)}</td>
                       <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono font-semibold')}>{fmtKRW(g.totalMonthlyGross, locale)}</td>
                     </tr>

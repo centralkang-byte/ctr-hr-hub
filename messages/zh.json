@@ -5648,7 +5648,13 @@
     "payPeriod": "Pay Period",
     "titleWithMonth": "{month} Pay Stub",
     "overseasNoticeTitle": "由当地系统发放",
-    "overseasNotice": "海外法人的工资单由当地薪资系统发放。如需明细，请联系当地相关部门。"
+    "overseasNotice": "海外法人的工资单由当地薪资系统发放。如需明细，请联系当地相关部门。",
+    "backToList": "返回列表",
+    "loadError": "工资单加载失败",
+    "loadErrorSub": "请稍后再试。",
+    "notFoundSub": "链接可能有误，或工资单已被删除。",
+    "downloadError": "下载失败",
+    "downloadErrorDesc": "请稍后再试。"
   },
   "payroll": {
     "add_ked95a9ea": "添加itional 合计",
@@ -6917,7 +6923,13 @@
         "incomeTax": "[TODO:zh] Income Tax",
         "localIncomeTax": "[TODO:zh] Local Income Tax"
       }
-    }
+    },
+    "simResultTitle": "模拟结果",
+    "simResultTargets": "共 {count} 人",
+    "simBulkChartTitle": "月人力成本对比 — 当前 vs 模拟",
+    "simModeTabsLabel": "模拟模式",
+    "simScenarioModeFilterLabel": "模式筛选",
+    "simExportFail": "下载失败"
   },
   "payrollMe": {
     "deductions": "Deductions",
@@ -6931,7 +6943,19 @@
     "paid": "Paid",
     "title": "My Pay Stubs",
     "unreadCount": "未阅读工资条 {count} 条",
-    "overseasNotice": "海外法人的工资单由当地薪资系统发放。此处仅显示金额汇总。"
+    "overseasNotice": "海外法人的工资单由当地薪资系统发放。此处仅显示金额汇总。",
+    "subtitle": "在这里查看我的所有工资单。",
+    "latestPayslip": "最新工资单",
+    "pdfButton": "PDF",
+    "pdfError": "PDF 下载失败",
+    "pdfErrorDesc": "请稍后再试。",
+    "trendTitle": "12个月趋势",
+    "trendAria": "最近 {count} 个月实发工资趋势",
+    "allPayslips": "全部工资单",
+    "countUnit": "{count} 条",
+    "allYears": "全部年度",
+    "yearOption": "{year}年",
+    "yearFilterAria": "按年份筛选"
   },
   "payrollReview": {
     "allowances": "Allowances",

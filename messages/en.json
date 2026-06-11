@@ -5647,7 +5647,13 @@
     "payPeriod": "Pay Period",
     "titleWithMonth": "{month} Pay Stub",
     "overseasNoticeTitle": "Issued by local system",
-    "overseasNotice": "Payslips for overseas entities are issued by the local payroll system. Please contact your local team for the detailed breakdown."
+    "overseasNotice": "Payslips for overseas entities are issued by the local payroll system. Please contact your local team for the detailed breakdown.",
+    "backToList": "Back to list",
+    "loadError": "Failed to load pay stub",
+    "loadErrorSub": "Please try again later.",
+    "notFoundSub": "The link may be incorrect or the pay stub may have been removed.",
+    "downloadError": "Download failed",
+    "downloadErrorDesc": "Please try again later."
   },
   "payroll": {
     "add_ked95a9ea": "Additional Total",
@@ -6916,7 +6922,13 @@
         "incomeTax": "Income Tax",
         "localIncomeTax": "Local Income Tax"
       }
-    }
+    },
+    "simResultTitle": "Simulation results",
+    "simResultTargets": "{count} employees",
+    "simBulkChartTitle": "Monthly labor cost — current vs simulated",
+    "simModeTabsLabel": "Simulation modes",
+    "simScenarioModeFilterLabel": "Mode filter",
+    "simExportFail": "Download failed"
   },
   "payrollMe": {
     "deductions": "Deductions",
@@ -6930,7 +6942,19 @@
     "paid": "Paid",
     "title": "My Pay Stubs",
     "unreadCount": "{count} unread pay stub(s)",
-    "overseasNotice": "Payslips for overseas entities are issued by the local payroll system. Only summary totals are shown here."
+    "overseasNotice": "Payslips for overseas entities are issued by the local payroll system. Only summary totals are shown here.",
+    "subtitle": "View all your payslips in one place.",
+    "latestPayslip": "Latest Payslip",
+    "pdfButton": "PDF",
+    "pdfError": "Failed to download PDF",
+    "pdfErrorDesc": "Please try again later.",
+    "trendTitle": "12-Month Trend",
+    "trendAria": "Net pay trend for the last {count} months",
+    "allPayslips": "All Payslips",
+    "countUnit": "{count} payslip(s)",
+    "allYears": "All years",
+    "yearOption": "{year}",
+    "yearFilterAria": "Filter by year"
   },
   "payrollReview": {
     "allowances": "Allowances",

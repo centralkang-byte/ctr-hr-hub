@@ -29,14 +29,7 @@ interface Props {
   onSaveScenario?: (payload: SaveScenarioPayload) => void
 }
 
-import { fmtN, fmtKRW, signedKRW, pctChange } from './formatters'
-
-// ─── Currency symbols ───────────────────────────────────────
-
-const CURRENCY_LABELS: Record<string, string> = {
-  USD: '🇺🇸 USD', CNY: '🇨🇳 CNY', EUR: '🇪🇺 EUR',
-  VND: '🇻🇳 VND', RUB: '🇷🇺 RUB', MXN: '🇲🇽 MXN',
-}
+import { fmtN, fmtKRW, fmtCompactKRW, signedKRW, pctChange } from './formatters'
 
 // ─── KPI Card ───────────────────────────────────────────────
 
@@ -200,8 +193,9 @@ export default function FxTab({ companies, onSaveScenario }: Props) {
                 const changed = r.adjustedRate !== r.currentRate
                 return (
                   <tr key={r.currency} className={TABLE_STYLES.row}>
-                    <td className={cn(TABLE_STYLES.cell, 'font-medium')}>
-                      {CURRENCY_LABELS[r.currency] ?? r.currency}
+                    {/* SIM-3: 국기 시스템 이모지 제거 — 통화코드 font-mono 텍스트만 */}
+                    <td className={cn(TABLE_STYLES.cell, 'font-mono tabular-nums font-medium')}>
+                      {r.currency}
                     </td>
                     <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-muted-foreground')}>
                       {r.currentRate.toLocaleString()}
@@ -265,11 +259,11 @@ export default function FxTab({ companies, onSaveScenario }: Props) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <KPICard
               label={t('simFxKpiOverseasCurrent')}
-              value={`₩${fmtN(Math.round(summary.overseasCurrentKRW / 10000), locale)}만`}
+              value={fmtCompactKRW(summary.overseasCurrentKRW, locale)}
             />
             <KPICard
               label={t('simFxKpiOverseasSim')}
-              value={`₩${fmtN(Math.round(summary.overseasSimulatedKRW / 10000), locale)}만`}
+              value={fmtCompactKRW(summary.overseasSimulatedKRW, locale)}
               diff={signedKRW(summary.differenceKRW, locale)}
               variant={summary.differenceKRW > 0 ? 'cost' : 'neutral'}
             />
@@ -281,8 +275,8 @@ export default function FxTab({ companies, onSaveScenario }: Props) {
             />
             <KPICard
               label={t('simFxKpiGlobalTotal')}
-              value={`₩${fmtN(Math.round(summary.totalSimulatedKRW / 10000), locale)}만`}
-              diff={t('simFxKpiDomestic', { amount: `₩${fmtN(Math.round(summary.domesticMonthlyKRW / 10000), locale)}만` })}
+              value={fmtCompactKRW(summary.totalSimulatedKRW, locale)}
+              diff={t('simFxKpiDomestic', { amount: fmtCompactKRW(summary.domesticMonthlyKRW, locale) })}
             />
           </div>
 
@@ -363,8 +357,8 @@ export default function FxTab({ companies, onSaveScenario }: Props) {
                   <tbody>
                     {sensitivity.map((row: FxSensitivityRow) => (
                       <tr key={row.currency} className={TABLE_STYLES.row}>
-                        <td className={cn(TABLE_STYLES.cell, 'font-medium')}>
-                          {CURRENCY_LABELS[row.currency] ?? row.currency}
+                        <td className={cn(TABLE_STYLES.cell, 'font-mono tabular-nums font-medium')}>
+                          {row.currency}
                         </td>
                         <td className={cn(TABLE_STYLES.cell, 'text-right tabular-nums font-mono text-muted-foreground')}>
                           {row.baseRate.toLocaleString()}
@@ -375,7 +369,7 @@ export default function FxTab({ companies, onSaveScenario }: Props) {
                             s.differenceKRW > 0 ? 'text-destructive' :
                               s.differenceKRW < 0 ? 'text-tertiary' : 'text-muted-foreground'
                           )}>
-                            <div>{`₩${fmtN(Math.round(s.totalKRW / 10000), locale)}만`}</div>
+                            <div>{fmtCompactKRW(s.totalKRW, locale)}</div>
                             {s.differenceKRW !== 0 && (
                               <div className="text-[10px]">{signedKRW(s.differenceKRW, locale)}</div>
                             )}

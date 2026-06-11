@@ -7,7 +7,8 @@
 
 import { X, GitCompareArrows } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
-import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
+import { Badge } from '@/components/ui/badge'
+import { CARD_STYLES, TABLE_STYLES, TYPOGRAPHY } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import type { ScenarioDetail, SaveableMode } from './types'
 
@@ -190,13 +191,11 @@ export default function ScenarioCompareView({ left, right, onClose }: Props) {
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <GitCompareArrows className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-bold text-foreground">{t('simCompareTitle')}</h2>
-          <span className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">
-            {t(MODE_LABEL_KEYS[mode])}
-          </span>
+          <GitCompareArrows className="w-5 h-5 text-primary" aria-hidden="true" />
+          <h2 className={TYPOGRAPHY.sectionTitle}>{t('simCompareTitle')}</h2>
+          <Badge variant="accent">{t(MODE_LABEL_KEYS[mode])}</Badge>
         </div>
-        <button onClick={onClose}
+        <button type="button" onClick={onClose}
           className="flex items-center gap-1 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground border border-border rounded-lg">
           <X className="w-4 h-4" /> {tCommon('close')}
         </button>

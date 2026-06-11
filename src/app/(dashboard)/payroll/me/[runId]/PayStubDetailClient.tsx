@@ -1,130 +1,28 @@
 'use client'
 
-import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { ArrowLeft, Download, FileText, Info } from 'lucide-react'
+import { AlertCircle, ArrowLeft, Download, FileQuestion, Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import PayStubBreakdown from '@/components/payroll/PayStubBreakdown'
 import { apiClient } from '@/lib/api'
+import { formatCurrency } from '@/lib/compensation'
+import { TYPOGRAPHY } from '@/lib/styles'
+import { formatToTz } from '@/lib/timezone'
+import { toast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
 import type { PayrollItemDetail } from '@/lib/payroll/types'
+// Wave 1 X-1: 로컬 normaliseDetail 사본 제거 — SSOT(normalise-detail.ts)가 슈퍼셋
+// (legacy otherDeductions 보존 + Number.isFinite 가드)을 흡수
+import { normaliseDetail } from '@/lib/payroll/normalise-detail'
 
-// ─── Raw DB detail shape (from seed script) ──────────────────
-interface RawDetail {
-  grade?: string
-  persona?: string
-  components?: {
-    base?: number
-    meal?: number
-    transport?: number
-    overtime?: number
-    positionAllowance?: number
-    nightShift?: number
-    holiday?: number
-    bonus?: number
-  }
-  deductions?: {
-    nationalPension?: number
-    healthInsurance?: number
-    longTermCare?: number
-    employmentInsurance?: number
-    incomeTax?: number
-    localIncomeTax?: number
-    otherDeductions?: number
-  }
-}
-
-// ─── Normalise any detail format → PayrollItemDetail ─────────
-function normaliseDetail(
-  raw: unknown,
-  grossPay: number,
-  netPay: number,
-): PayrollItemDetail | null {
-  if (!raw || typeof raw !== 'object') return null
-  const d = raw as Record<string, unknown>
-
-  // Payroll engine format: { earnings, insurance, tax } → merge insurance+tax into deductions
-  if (d.earnings && typeof d.earnings === 'object') {
-    const ins = (d.insurance as Record<string, number>) ?? {}
-    const tax = (d.tax as Record<string, number>) ?? {}
-    const existingDed = d.deductions as Record<string, number> | undefined
-
-    const deductions: PayrollItemDetail['deductions'] = existingDed && Object.keys(existingDed).length > 0
-      ? existingDed as unknown as PayrollItemDetail['deductions']
-      : {
-          nationalPension: ins.nationalPension ?? 0,
-          healthInsurance: ins.healthInsurance ?? 0,
-          longTermCare: ins.longTermCare ?? 0,
-          employmentInsurance: ins.employmentInsurance ?? 0,
-          incomeTax: tax.incomeTax ?? 0,
-          localIncomeTax: tax.localIncomeTax ?? 0,
-          otherDeductions: 0,
-        }
-
-    const totalDeductions = Object.values(deductions).reduce((s, v) => s + v, 0)
-
-    return {
-      earnings: d.earnings as PayrollItemDetail['earnings'],
-      deductions,
-      overtime: (d.overtime as PayrollItemDetail['overtime']) ?? {
-        hourlyWage: 0, totalOvertimeHours: 0,
-        weekdayOTHours: 0, weekendHours: 0,
-        holidayHours: 0, nightHours: 0,
-      },
-      grossPay: Number(grossPay) || 0,
-      totalDeductions,
-      netPay: Number(netPay) || 0,
-      customAllowances: d.customAllowances as PayrollItemDetail['customAllowances'],
-      customDeductions: d.customDeductions as PayrollItemDetail['customDeductions'],
-      previousMonth: d.previousMonth as PayrollItemDetail['previousMonth'],
-    }
-  }
-
-  // Raw seed format: { components, deductions }
-  const rd = raw as RawDetail
-  const c = rd.components ?? {}
-  const ded = rd.deductions ?? {}
-
-  const earnings = {
-    baseSalary:             c.base ?? 0,
-    fixedOvertimeAllowance: 0,
-    mealAllowance:          c.meal ?? 0,
-    transportAllowance:     c.transport ?? 0,
-    overtimePay:            c.overtime ?? 0,
-    nightShiftPay:          c.nightShift ?? 0,
-    holidayPay:             c.holiday ?? 0,
-    bonuses:                c.bonus ?? 0,
-    otherEarnings:          c.positionAllowance ?? 0,
-  }
-  const deductions = {
-    nationalPension:     ded.nationalPension ?? 0,
-    healthInsurance:     ded.healthInsurance ?? 0,
-    longTermCare:        ded.longTermCare ?? 0,
-    employmentInsurance: ded.employmentInsurance ?? 0,
-    incomeTax:           ded.incomeTax ?? 0,
-    localIncomeTax:      ded.localIncomeTax ?? 0,
-    otherDeductions:     ded.otherDeductions ?? 0,
-  }
-  const totalDeductions = Object.values(deductions).reduce((s, v) => s + v, 0)
-
-  return {
-    earnings,
-    deductions,
-    overtime: {
-      hourlyWage: 0,
-      totalOvertimeHours: 0,
-      weekdayOTHours: 0,
-      weekendHours: 0,
-      holidayHours: 0,
-      nightHours: 0,
-    },
-    grossPay: Number(grossPay) || 0,
-    totalDeductions,
-    netPay: Number(netPay) || 0,
-  }
+// ─── Display helpers ──────────────────────────────────────────
+// 급여 기간은 date-only(UTC 자정) 값 — KST 고정 표기 (raw ISO split 금지, OrgClient 컨벤션 미러)
+function fmtDate(iso: string | null | undefined): string {
+  return iso ? formatToTz(iso, 'Asia/Seoul', 'yyyy.MM.dd') : '-'
 }
 
 // ─── API response shape ───────────────────────────────────────
@@ -155,28 +53,40 @@ export default function PayStubDetailClient({ user: _user, runId }: PayStubDetai
   const router = useRouter()
   const t = useTranslations('payStubDetail')
   const tCommon = useTranslations('common')
+  const tPayroll = useTranslations('payroll')
   const [items, setItems] = useState<PayslipItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await apiClient.get<PayslipItem[]>('/api/v1/payroll/me')
-        const data = (res.data ?? []) as PayslipItem[]
-        setItems(data.filter((i) => i.run.id === runId))
-      } catch {
-        // error handled
-      } finally {
-        setLoading(false)
-      }
+  // 3-상태 분리: error를 빈 결과(notFound)로 위장하지 않음 (rules/components.md)
+  const fetchItems = useCallback(async () => {
+    try {
+      setLoading(true)
+      setLoadError(false)
+      const res = await apiClient.get<PayslipItem[]>('/api/v1/payroll/me')
+      const data = (res.data ?? []) as PayslipItem[]
+      setItems(data.filter((i) => i.run.id === runId))
+    } catch (err) {
+      setLoadError(true)
+      toast({
+        title: t('loadError'),
+        description: err instanceof Error ? err.message : undefined,
+        variant: 'destructive',
+      })
+    } finally {
+      setLoading(false)
     }
-    load()
-  }, [runId])
+  }, [runId, t])
+
+  useEffect(() => { fetchItems() }, [fetchItems])
 
   const handleDownloadPdf = async () => {
     try {
       const res = await window.fetch(`/api/v1/payroll/me/${runId}/pdf`)
-      if (!res.ok) return
+      if (!res.ok) {
+        toast({ title: t('downloadError'), description: t('downloadErrorDesc'), variant: 'destructive' })
+        return
+      }
       const blob = await res.blob()
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -184,22 +94,50 @@ export default function PayStubDetailClient({ user: _user, runId }: PayStubDetai
       a.download = `payslip_${item?.run.yearMonth ?? 'unknown'}.html`
       a.click()
       URL.revokeObjectURL(url)
-    } catch {
-      // error handled
+    } catch (err) {
+      toast({
+        title: t('downloadError'),
+        description: err instanceof Error ? err.message : t('downloadErrorDesc'),
+        variant: 'destructive',
+      })
     }
   }
 
-  if (loading) return <TableSkeleton rows={8} />
+  if (loading) {
+    return (
+      <div className="p-4 max-w-3xl mx-auto">
+        <TableSkeleton rows={8} />
+      </div>
+    )
+  }
+
+  if (loadError) {
+    return (
+      <div className="p-4 max-w-3xl mx-auto">
+        <EmptyState
+          icon={AlertCircle}
+          title={t('loadError')}
+          sub={t('loadErrorSub')}
+          action={{ label: tCommon('retry'), onClick: () => void fetchItems() }}
+          size="lg"
+          standalone
+        />
+      </div>
+    )
+  }
 
   const raw = items[0]
   if (!raw) {
     return (
-      <div className="p-6">
-        <Button variant="ghost" onClick={() => router.push('/payroll/me')}>
-          <ArrowLeft className="h-4 w-4 mr-1" />
-          {tCommon('back')}
-        </Button>
-        <div className="text-center py-16 text-muted-foreground">{t('notFound')}</div>
+      <div className="p-4 max-w-3xl mx-auto">
+        <EmptyState
+          icon={FileQuestion}
+          title={t('notFound')}
+          sub={t('notFoundSub')}
+          action={{ label: t('backToList'), onClick: () => router.push('/payroll/me') }}
+          size="lg"
+          standalone
+        />
       </div>
     )
   }
@@ -208,41 +146,44 @@ export default function PayStubDetailClient({ user: _user, runId }: PayStubDetai
   // (서버가 payslipAvailable=false + detail=null 로 응답)
   if (raw.payslipAvailable === false) {
     return (
-      <div className="p-6 space-y-6 max-w-3xl mx-auto">
+      <div className="p-4 space-y-4 max-w-3xl mx-auto">
+        {/* Header — #153 [runId] 3페이지 컨벤션 미러 */}
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => router.push('/payroll/me')}>
-            <ArrowLeft className="h-4 w-4" />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label={tCommon('back')}
+            onClick={() => router.push('/payroll/me')}
+          >
+            <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">
+          <div>
+            <h1 className={TYPOGRAPHY.pageTitle}>
               {t('titleWithMonth', { month: raw.run.yearMonth })}
             </h1>
+            <p className="text-[13px] text-muted-foreground mt-1">{raw.run.name}</p>
           </div>
         </div>
         {/* Pay Period Info — 요약(기간/지급일)은 해외도 유지: 동기화된 메타데이터 */}
-        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+        <div className="bg-card rounded-2xl shadow-sm border border-border p-4">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
             <div>
               <p className="text-muted-foreground">{t('payPeriod')}</p>
-              <p className="font-medium">
-                {raw.run.periodStart.split('T')[0]} ~ {raw.run.periodEnd.split('T')[0]}
+              <p className="font-medium font-mono tabular-nums">
+                {fmtDate(raw.run.periodStart)} ~ {fmtDate(raw.run.periodEnd)}
               </p>
             </div>
             <div>
               <p className="text-muted-foreground">{t('payDate')}</p>
-              <p className="font-medium">
-                {raw.run.paidAt?.split('T')[0] ?? raw.run.payDate?.split('T')[0] ?? '-'}
+              <p className="font-medium font-mono tabular-nums">
+                {fmtDate(raw.run.paidAt ?? raw.run.payDate)}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-card rounded-xl shadow-sm border border-border p-8 text-center">
-          <Info className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-          <h2 className="text-base font-semibold text-foreground mb-1">{t('overseasNoticeTitle')}</h2>
-          <p className="text-sm text-muted-foreground">{t('overseasNotice')}</p>
-        </div>
+        <EmptyState icon={Info} title={t('overseasNoticeTitle')} sub={t('overseasNotice')} standalone />
       </div>
     )
   }
@@ -259,60 +200,93 @@ export default function PayStubDetailClient({ user: _user, runId }: PayStubDetai
 
   if (!detail) {
     return (
-      <div className="p-6">
-        <Button variant="ghost" onClick={() => router.push('/payroll/me')}>
-          <ArrowLeft className="h-4 w-4 mr-1" />
-          {tCommon('back')}
-        </Button>
-        <div className="text-center py-16 text-muted-foreground">{t('notFound')}</div>
+      <div className="p-4 max-w-3xl mx-auto">
+        <EmptyState
+          icon={FileQuestion}
+          title={t('notFound')}
+          sub={t('notFoundSub')}
+          action={{ label: t('backToList'), onClick: () => router.push('/payroll/me') }}
+          size="lg"
+          standalone
+        />
       </div>
     )
   }
 
   return (
-    <div className="p-6 space-y-6 max-w-3xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="p-4 space-y-4 max-w-3xl mx-auto">
+      {/* Header — #153 [runId] 3페이지 컨벤션 미러 */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => router.push('/payroll/me')}>
-            <ArrowLeft className="h-4 w-4" />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label={tCommon('back')}
+            onClick={() => router.push('/payroll/me')}
+          >
+            <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary" />
-              <h1 className="text-2xl font-bold text-foreground">
-                {t('titleWithMonth', { month: item.run.yearMonth })}
-              </h1>
-            </div>
-            <p className="text-sm text-muted-foreground mt-0.5">{item.run.name}</p>
+            <h1 className={TYPOGRAPHY.pageTitle}>
+              {t('titleWithMonth', { month: item.run.yearMonth })}
+            </h1>
+            <p className="text-[13px] text-muted-foreground mt-1">{item.run.name}</p>
           </div>
         </div>
-        <Button onClick={handleDownloadPdf} variant="outline" className="gap-1">
+        <Button type="button" onClick={handleDownloadPdf} variant="outline" className="gap-1">
           <Download className="h-4 w-4" />
           {t('downloadPdf')}
         </Button>
       </div>
 
-      {/* Pay Period Info */}
-      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+      {/* 3-스탯 요약 + 기간 정보 (프로토 page-my-space 명세서 카드 시그니처) */}
+      <div className="bg-card rounded-2xl shadow-sm border border-border p-4">
+        {/* Codex G2: 375px에서 고정 3-col이면 컬럼당 ~104px라 22px 금액이 넘침 → 모바일 1열 스택 */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-0 pb-4 border-b border-border">
+          <div aria-label={`${tPayroll('grossPay')} ${formatCurrency(Number(item.grossPay))}`}>
+            <p aria-hidden="true" className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground mb-1">
+              {tPayroll('grossPay')}
+            </p>
+            <p aria-hidden="true" className="text-[22px] font-semibold font-mono tabular-nums tracking-[-0.02em] text-foreground">
+              {formatCurrency(Number(item.grossPay))}
+            </p>
+          </div>
+          <div aria-label={`${tPayroll('deductions')} -${formatCurrency(detail.totalDeductions)}`}>
+            <p aria-hidden="true" className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground mb-1">
+              {tPayroll('deductions')}
+            </p>
+            <p aria-hidden="true" className="text-[22px] font-semibold font-mono tabular-nums tracking-[-0.02em] text-destructive">
+              -{formatCurrency(detail.totalDeductions)}
+            </p>
+          </div>
+          <div aria-label={`${tPayroll('netPay')} ${formatCurrency(Number(item.netPay))}`}>
+            <p aria-hidden="true" className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground mb-1">
+              {tPayroll('netPay')}
+            </p>
+            <p aria-hidden="true" className="text-[22px] font-semibold font-mono tabular-nums tracking-[-0.02em] text-primary">
+              {formatCurrency(Number(item.netPay))}
+            </p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm pt-4">
           <div>
             <p className="text-muted-foreground">{t('payPeriod')}</p>
-            <p className="font-medium">
-              {item.run.periodStart.split('T')[0]} ~ {item.run.periodEnd.split('T')[0]}
+            <p className="font-medium font-mono tabular-nums">
+              {fmtDate(item.run.periodStart)} ~ {fmtDate(item.run.periodEnd)}
             </p>
           </div>
           <div>
             <p className="text-muted-foreground">{t('payDate')}</p>
-            <p className="font-medium">
-              {item.run.paidAt?.split('T')[0] ?? item.run.payDate?.split('T')[0] ?? '-'}
+            <p className="font-medium font-mono tabular-nums">
+              {fmtDate(item.run.paidAt ?? item.run.payDate)}
             </p>
           </div>
         </div>
       </div>
 
       {/* Breakdown */}
-      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+      <div className="bg-card rounded-2xl shadow-sm border border-border p-4">
         <PayStubBreakdown detail={detail} />
       </div>
     </div>

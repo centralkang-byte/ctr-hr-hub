@@ -1,9 +1,12 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { formatCurrency } from '@/lib/compensation'
-import type { PayrollItemDetail } from '@/lib/payroll/types'
 import { ArrowDown, ArrowUp, Minus } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { formatCurrency } from '@/lib/compensation'
+import { TYPOGRAPHY } from '@/lib/styles'
+import { cn } from '@/lib/utils'
+import type { PayrollItemDetail } from '@/lib/payroll/types'
 
 interface PayStubBreakdownProps {
   detail: PayrollItemDetail
@@ -40,14 +43,14 @@ function ChangeIndicator({ current, previous }: { current: number; previous?: nu
   const pct = ((diff / previous) * 100).toFixed(1)
   if (diff > 0) {
     return (
-      <span className="inline-flex items-center gap-0.5 text-[10px] text-emerald-600 font-medium ml-1">
+      <span className="inline-flex items-center gap-0.5 text-[11px] text-[#006b39] font-medium ml-1 tabular-nums">
         <ArrowUp className="h-3 w-3" />
         {pct}%
       </span>
     )
   }
   return (
-    <span className="inline-flex items-center gap-0.5 text-[10px] text-red-500 font-medium ml-1">
+    <span className="inline-flex items-center gap-0.5 text-[11px] text-destructive font-medium ml-1 tabular-nums">
       <ArrowDown className="h-3 w-3" />
       {Math.abs(Number(pct))}%
     </span>
@@ -98,16 +101,16 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
             style={{ width: `${netRatio}%` }}
           />
           <div
-            className="bg-muted-foreground transition-all"
+            className="bg-border-strong transition-all"
             style={{ width: `${deductionRatio}%` }}
           />
         </div>
       </div>
 
-      {/* 실수령액 + 전월비교 */}
+      {/* 실수령액 + 전월비교 — KPI 대형 수치: Pretendard 500 + tabular-nums (mono 아님, rules/design.md) */}
       <div className="text-center py-4 bg-primary/10 rounded-xl">
         <p className="text-xs text-primary mb-1">{t('netPay')}</p>
-        <p className="text-3xl font-bold text-primary/90">
+        <p className="text-3xl font-medium tabular-nums tracking-[-0.02em] text-primary">
           {formatCurrency(netPay)}
           <ChangeIndicator current={netPay} previous={previousMonth?.netPay} />
         </p>
@@ -121,14 +124,14 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* 지급항목 */}
         <div>
-          <h4 className="text-sm font-semibold text-foreground mb-3 pb-2 border-b border-border">
+          <h4 className={cn(TYPOGRAPHY.cardTitle, 'mb-3 pb-2 border-b border-border')}>
             {t('stub.earnings')}
           </h4>
           <div className="space-y-2">
             {earningItems.map((item) => (
               <div key={item.labelKey} className="flex justify-between text-sm">
                 <span className="text-muted-foreground">{t(item.labelKey)}</span>
-                <span className="font-medium text-foreground">
+                <span className="font-medium font-mono tabular-nums text-foreground">
                   {formatCurrency(item.value)}
                   <ChangeIndicator current={item.value} previous={item.prev} />
                 </span>
@@ -146,12 +149,10 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
                     <span className="text-muted-foreground flex items-center gap-1">
                       {item.name}
                       {item.isTaxExempt && (
-                        <span className="inline-flex items-center px-1 py-0 rounded text-[10px] bg-emerald-500/15 text-emerald-600 border border-emerald-200">
-                          {t('stub.taxExempt')}
-                        </span>
+                        <Badge variant="success">{t('stub.taxExempt')}</Badge>
                       )}
                     </span>
-                    <span className="font-medium text-foreground">
+                    <span className="font-medium font-mono tabular-nums text-foreground">
                       {formatCurrency(item.amount)}
                     </span>
                   </div>
@@ -161,7 +162,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
 
             <div className="flex justify-between text-sm font-semibold pt-2 border-t border-border">
               <span className="text-foreground">{t('grossPay')}</span>
-              <span className="text-emerald-600">
+              <span className="font-mono tabular-nums text-[#006b39]">
                 {formatCurrency(grossPay)}
                 <ChangeIndicator current={grossPay} previous={previousMonth?.grossPay} />
               </span>
@@ -171,14 +172,14 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
 
         {/* 공제항목 */}
         <div>
-          <h4 className="text-sm font-semibold text-foreground mb-3 pb-2 border-b border-border">
+          <h4 className={cn(TYPOGRAPHY.cardTitle, 'mb-3 pb-2 border-b border-border')}>
             {t('stub.deductions')}
           </h4>
           <div className="space-y-2">
             {deductionItems.map((item) => (
               <div key={item.labelKey} className="flex justify-between text-sm">
                 <span className="text-muted-foreground">{t(item.labelKey)}</span>
-                <span className="font-medium text-destructive">
+                <span className="font-medium font-mono tabular-nums text-destructive">
                   -{formatCurrency(item.value)}
                 </span>
               </div>
@@ -194,11 +195,11 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
                   <div key={item.code} className="flex justify-between text-sm">
                     <span className="text-muted-foreground">
                       {item.name}
-                      <span className="text-[10px] text-muted-foreground ml-1">
+                      <span className="text-[11px] text-muted-foreground ml-1">
                         ({item.category === 'STATUTORY' ? t('stub.statutory') : t('stub.voluntary')})
                       </span>
                     </span>
-                    <span className="font-medium text-destructive">
+                    <span className="font-medium font-mono tabular-nums text-destructive">
                       -{formatCurrency(item.amount)}
                     </span>
                   </div>
@@ -208,7 +209,7 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
 
             <div className="flex justify-between text-sm font-semibold pt-2 border-t border-border">
               <span className="text-foreground">{t('deductions')}</span>
-              <span className="text-destructive">
+              <span className="font-mono tabular-nums text-destructive">
                 -{formatCurrency(totalDeductions)}
                 <ChangeIndicator current={totalDeductions} previous={previousMonth?.totalDeductions} />
               </span>
@@ -220,13 +221,13 @@ export default function PayStubBreakdown({ detail }: PayStubBreakdownProps) {
       {/* 초과근무 상세 */}
       {overtime.totalOvertimeHours > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-foreground mb-3 pb-2 border-b border-border">
+          <h4 className={cn(TYPOGRAPHY.cardTitle, 'mb-3 pb-2 border-b border-border')}>
             {t('stub.overtimeDetail')}
           </h4>
           <div className="bg-background rounded-lg p-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">{t('stub.hourlyWage')}</span>
-              <span className="font-medium">{formatCurrency(overtime.hourlyWage)}</span>
+              <span className="font-medium font-mono tabular-nums">{formatCurrency(overtime.hourlyWage)}</span>
             </div>
             {overtime.weekdayOTHours > 0 && (
               <div className="flex justify-between text-sm">

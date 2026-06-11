@@ -56,7 +56,7 @@ export default function SaveScenarioDialog({ open, onOpenChange, onSave, isLoadi
         <div className="space-y-4 py-2">
           <div>
             <label className="block text-xs font-medium text-muted-foreground mb-1">
-              {t('simScenarioName')} <span className="text-red-500">*</span>
+              {t('simScenarioName')} <span className="text-destructive">*</span>
             </label>
             <input
               value={title}
