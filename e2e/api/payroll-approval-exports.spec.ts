@@ -306,7 +306,7 @@ test.describe('Exports: HR_ADMIN', () => {
     runId = rId!
   })
 
-  test('GET export/transfer returns CSV with correct content-type', async ({ request }) => {
+  test('POST export/transfer returns CSV with correct content-type', async ({ request }) => {
     const api = new ApiClient(request)
     const raw = await f.exportTransfer(api, runId)
     // 200 for APPROVED/PAID, 400 otherwise
@@ -317,7 +317,7 @@ test.describe('Exports: HR_ADMIN', () => {
     }
   })
 
-  test('GET export/transfer CSV has BOM for Korean Excel', async ({ request }) => {
+  test('POST export/transfer CSV has BOM for Korean Excel', async ({ request }) => {
     const api = new ApiClient(request)
     const raw = await f.exportTransfer(api, runId)
     if (raw.ok && raw.buffer.length >= 3) {
@@ -328,7 +328,7 @@ test.describe('Exports: HR_ADMIN', () => {
     }
   })
 
-  test('GET export/transfer has content-disposition header', async ({ request }) => {
+  test('POST export/transfer has content-disposition header', async ({ request }) => {
     const api = new ApiClient(request)
     const raw = await f.exportTransfer(api, runId)
     if (raw.ok) {
@@ -368,7 +368,7 @@ test.describe('Exports: HR_ADMIN', () => {
     }
   })
 
-  test('GET export on non-existent run → error', async ({ request }) => {
+  test('POST export/transfer on non-existent run → error', async ({ request }) => {
     const api = new ApiClient(request)
     const raw = await f.exportTransfer(api, '00000000-0000-4000-a000-000000000099')
     expect(raw.ok).toBe(false)
@@ -408,7 +408,7 @@ test.describe('Exports: SUPER_ADMIN', () => {
 test.describe('Exports RBAC: EMPLOYEE Blocked', () => {
   test.use({ storageState: authFile('EMPLOYEE') })
 
-  test('GET export/transfer as EMPLOYEE → 403', async ({ request }) => {
+  test('POST export/transfer as EMPLOYEE → 403', async ({ request }) => {
     const api = new ApiClient(request)
     const raw = await f.exportTransfer(api, '00000000-0000-4000-a000-000000000001')
     expect(raw.status).toBe(403)

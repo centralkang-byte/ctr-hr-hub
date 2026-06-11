@@ -364,8 +364,9 @@ export function getPublishStatus(c: ApiClient, runId: string): Promise<ApiResult
 // WRAPPERS — Exports (MODULE.PAYROLL) — use getRaw for binary
 // ═══════════════════════════════════════════════════════════
 
+// transfer는 POST (호출마다 BankTransferBatch 생성 = 쓰기 → CSRF 가드). postRaw로 바이너리 수신.
 export function exportTransfer(c: ApiClient, runId: string) {
-  return c.getRaw(runSub(runId, 'export/transfer'))
+  return c.postRaw(runSub(runId, 'export/transfer'))
 }
 
 export function exportJournal(c: ApiClient, runId: string) {
@@ -406,6 +407,37 @@ export function postAttendanceReopen(c: ApiClient, data: ReturnType<typeof build
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function postCalculate(c: ApiClient, data: ReturnType<typeof buildCalculatePayload>): Promise<ApiResult<any>> {
   return c.post(PAYROLL_CALCULATE, data)
+}
+
+// ═══════════════════════════════════════════════════════════
+// WRAPPERS — Runs list/create (GET/POST /payroll/runs)
+// ═══════════════════════════════════════════════════════════
+
+// GET /payroll/runs — 목록. SUPER는 ?companyId로 법인 스코프(미지정=전체), 비-SUPER는 본인 법인 강제.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function listRuns(c: ApiClient, params?: Record<string, string>): Promise<ApiResult<any>> {
+  return c.get(PAYROLL_RUNS, params)
+}
+
+// ═══════════════════════════════════════════════════════════
+// WRAPPERS — runs/[id]/* run-level mutations (NOTE: '/runs/' prefix,
+// distinct from runSub's '/[runId]/' family). Used for cross-tenant guard probes.
+// ═══════════════════════════════════════════════════════════
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function perRunCalculate(c: ApiClient, runId: string): Promise<ApiResult<any>> {
+  return c.post(`/api/v1/payroll/runs/${runId}/calculate`, {})
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function markPaid(c: ApiClient, runId: string): Promise<ApiResult<any>> {
+  return c.put(`/api/v1/payroll/runs/${runId}/paid`)
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function adjustItem(c: ApiClient, runId: string, itemId: string, data?: Record<string, unknown>): Promise<ApiResult<any>> {
+  // ownership guard fires before item/body parse, so any itemId/body exercises the 403 path
+  return c.put(`/api/v1/payroll/runs/${runId}/items/${itemId}`, data ?? { adjustmentReason: 'E2E cross-tenant guard probe' })
 }
 
 // ═══════════════════════════════════════════════════════════

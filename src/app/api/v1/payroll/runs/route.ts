@@ -12,6 +12,7 @@ import { badRequest, conflict, handlePrismaError } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { payrollRunListSchema, payrollRunCreateSchema } from '@/lib/schemas/payroll'
 import { injectLoaAdjustmentsForNewRun } from '@/lib/loa/payroll-adjustment'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 import type { Prisma } from '@/generated/prisma/client'
 
 export const GET = withPermission(
@@ -24,8 +25,12 @@ export const GET = withPermission(
     }
     const { page, limit, status, runType, yearMonth } = parsedQuery.data
 
+    // 멀티테넌트 스코프 (CEO S285 결정): SUPER = 전 법인 운영자 → 목록도 전 법인.
+    // resolveCompanyFilter — SUPER는 ?companyId 지정 시 해당 법인, 미지정 시 전체({}).
+    // 비-SUPER는 항상 본인 법인 강제(요청 파라미터 무시, fail-closed). companyId는
+    // payrollRunListSchema에 없어(strip됨) searchParams에서 직접 읽는다.
     const where: Prisma.PayrollRunWhereInput = {
-      companyId: user.companyId,
+      ...resolveCompanyFilter(user, url.searchParams.get('companyId')),
       ...(status && { status }),
       ...(runType && { runType }),
       ...(yearMonth && { yearMonth }),
@@ -64,6 +69,9 @@ export const POST = withPermission(
     }
     const data = parsed.data
 
+    // 멀티테넌트 스코프 (CEO S285 결정): 목록/상세 read·기존 run write는 SUPER 전 법인이나,
+    // run '생성'은 SUPER도 본인 법인 한정(타 법인 생성은 미개방 — 잘못된 법인 run 생성 위험 +
+    // 생성 UI에 법인 선택기 없음). 비-SUPER는 당연히 본인 법인. 따라서 user.companyId 고정 유지.
     // 중복 방지: 같은 회사·월·유형 급여 실행은 하나만 (재실행은 기존 실행 사용/마감 해제)
     // status 무관(CANCELLED 포함)하게 차단 — DB @@unique([companyId, yearMonth, runType])와 정책 일치
     const existing = await prisma.payrollRun.findFirst({

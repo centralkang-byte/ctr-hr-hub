@@ -1,7 +1,11 @@
 // ═══════════════════════════════════════════════════════════
-// GET /api/v1/payroll/[runId]/export/transfer
+// POST /api/v1/payroll/[runId]/export/transfer
 // 은행 이체 파일 CSV 생성 (feat. BOM for Korean Excel)
 // ═══════════════════════════════════════════════════════════
+//
+// ⚠️ POST (GET 아님): 호출마다 BankTransferBatch(+items)를 생성하는 쓰기 작업이다.
+// GET이면 링크/브라우저 prefetch·재시도·CSRF로 무단 이체 배치가 조용히 생성될 수 있어
+// POST + write 권한(ACTION.UPDATE)으로 가드한다. 멀티테넌트 소유권·status 가드는 핸들러 내.
 //
 // BankTransferBatch + BankTransferItem 모델을 활용.
 // Employee에 bankCode/accountNumber 가 없는 경우 → 기본값 사용
@@ -15,24 +19,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { apiError } from '@/lib/api'
-import { badRequest, notFound } from '@/lib/errors'
+import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 
 // Settings-connected: transfer note format (default: YYYY-MM 급여)
 const TRANSFER_NOTE_FORMAT = (yearMonth: string) => `${yearMonth} 급여`
 
-export const GET = withRateLimit(withPermission(
+export const POST = withRateLimit(withPermission(
     async (req: NextRequest, context, user) => {
         try {
             const { runId } = await context.params
 
-            const run = await prisma.payrollRun.findUnique({
-                where: { id: runId, companyId: user.companyId },
-            })
+            const run = await prisma.payrollRun.findUnique({ where: { id: runId } })
             if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
+            // 멀티테넌트 가드: SUPER_ADMIN 외에는 본인 법인만 (소유권 우선 — status 체크 앞)
+            if (user.role !== ROLE.SUPER_ADMIN && run.companyId !== user.companyId) {
+                throw forbidden('다른 법인의 급여 실행에 접근할 수 없습니다.')
+            }
             if (!['APPROVED', 'PAID'].includes(run.status)) {
                 throw badRequest('APPROVED 또는 PAID 상태에서만 이체 파일을 생성할 수 있습니다.')
             }
@@ -72,7 +78,7 @@ export const GET = withRateLimit(withPermission(
             const totalNet = items.reduce((s, i) => s + Number(i.netPay), 0)
             const batch = await prisma.bankTransferBatch.create({
                 data: {
-                    companyId: user.companyId,
+                    companyId: run.companyId,
                     payrollRunId: runId,
                     bankCode: 'MULTI',  // 다중 은행
                     bankName: '급여이체',
@@ -148,5 +154,5 @@ export const GET = withRateLimit(withPermission(
             return apiError(err)
         }
     },
-    perm(MODULE.PAYROLL, ACTION.VIEW),
+    perm(MODULE.PAYROLL, ACTION.UPDATE),
 ), RATE_LIMITS.EXPORT)
