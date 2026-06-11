@@ -6478,6 +6478,15 @@
     "reviewTitle": "Payroll Review",
     "risk": "Riesgo",
     "runDetail": "Run Detail",
+    "runLoad": {
+      "notFoundTitle": "No se encontró la ejecución de nómina",
+      "notFoundSub": "Es posible que esta ejecución se haya eliminado o que no tengas acceso.",
+      "errorTitle": "No se pudo cargar la ejecución de nómina",
+      "errorSub": "Puede ser un error temporal. Inténtalo de nuevo.",
+      "backToHub": "Volver al centro de nómina",
+      "backToApprovals": "Volver a aprobaciones",
+      "ownCompanyOnly": "Solo disponible para las ejecuciones de nómina de tu propia empresa"
+    },
     "runList": "Payroll Runs",
     "runsTitle": "Payroll Runs",
     "salaryBandPosition": "Posición en banda salarial",

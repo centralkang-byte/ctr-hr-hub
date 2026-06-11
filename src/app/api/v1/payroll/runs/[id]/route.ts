@@ -7,13 +7,15 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { notFound } from '@/lib/errors'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
 export const GET = withPermission(
   async (_req, context, user) => {
     const { id } = await context.params
 
+    // 멀티테넌트 스코프: SUPER는 전체뷰, 비-SUPER는 본인 법인만 (타 법인 runId는 notFound)
     const run = await prisma.payrollRun.findFirst({
-      where: { id, companyId: user.companyId },
+      where: { id, ...resolveCompanyFilter(user, null) },
       include: {
         approver: { select: { id: true, name: true } },
         payrollItems: {

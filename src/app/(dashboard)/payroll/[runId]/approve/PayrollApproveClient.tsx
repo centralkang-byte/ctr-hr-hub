@@ -10,8 +10,8 @@ import { Fragment, useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import {
-    ArrowLeft, Check, CheckCheck, CheckCircle2, ChevronRight, Clock,
-    Loader2, X, XCircle,
+    AlertCircle, ArrowLeft, Check, CheckCheck, CheckCircle2, ChevronRight, Clock,
+    FileQuestion, Loader2, X, XCircle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -22,7 +22,9 @@ import {
 } from '@/components/ui/dialog'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { WdStatusChips } from '@/components/shared/WdStatusChips'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { apiClient } from '@/lib/api'
+import { AppError } from '@/lib/errors'
 import { toast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 import { CARD_STYLES, TYPOGRAPHY } from '@/lib/styles'
@@ -178,14 +180,23 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
     const [submitting, setSubmitting] = useState(false)
     const [comment, setComment] = useState('')
 
+    // 로드 실패 구분: 404(notFound/접근불가) vs 그 외(일시 오류 → 재시도)
+    const [loadError, setLoadError] = useState<'notFound' | 'error' | null>(null)
+
     const fetchData = useCallback(async () => {
         try {
             // approval-status가 run 요약 + 결재 현황을 함께 반환 → EXECUTIVE가 payroll:view 없이 로드.
             const approvalRes = await apiClient.get<ApprovalStatus>(`/api/v1/payroll/${runId}/approval-status`)
             setRun(approvalRes.data.run)
             setApproval(approvalRes.data)
+            setLoadError(null)
         } catch (err) {
-            toast({ title: t('approvePage.loadFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
+            if (err instanceof AppError && err.statusCode === 404) {
+                setLoadError('notFound')
+            } else {
+                setLoadError('error')
+                toast({ title: t('approvePage.loadFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
+            }
         } finally {
             setLoading(false)
         }
@@ -237,7 +248,7 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
         }
     }
 
-    if (loading || !run || !approval) {
+    if (loading) {
         // 페이지 골격 스켈레톤 (rules/components.md 3-상태)
         return (
             <div className="p-4 max-w-3xl mx-auto space-y-4">
@@ -256,6 +267,25 @@ export default function PayrollApproveClient({ user: _user, runId }: Props) {
                     </div>
                 </div>
                 <Skeleton className="h-36 w-full rounded-2xl" />
+            </div>
+        )
+    }
+
+    // 명시적 not-found/오류 상태 — 무한 스켈레톤 금지 (rules/components.md 3-상태)
+    if (!run || !approval) {
+        const isNotFound = loadError === 'notFound'
+        return (
+            <div className="p-4 max-w-3xl mx-auto">
+                <EmptyState
+                    icon={isNotFound ? FileQuestion : AlertCircle}
+                    title={isNotFound ? t('runLoad.notFoundTitle') : t('runLoad.errorTitle')}
+                    sub={isNotFound ? t('runLoad.notFoundSub') : t('runLoad.errorSub')}
+                    action={isNotFound
+                        ? { label: t('runLoad.backToApprovals'), onClick: () => router.push('/my/tasks?tab=approvals') }
+                        : { label: tCommon('retry'), onClick: () => { setLoading(true); void fetchData() } }}
+                    size="lg"
+                    standalone
+                />
             </div>
         )
     }

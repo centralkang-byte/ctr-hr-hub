@@ -6478,6 +6478,15 @@
     "reviewTitle": "Payroll Review",
     "risk": "Rủi ro",
     "runDetail": "Run Detail",
+    "runLoad": {
+      "notFoundTitle": "Không tìm thấy kỳ tính lương",
+      "notFoundSub": "Kỳ tính lương có thể đã bị xóa hoặc bạn không có quyền truy cập.",
+      "errorTitle": "Không thể tải kỳ tính lương",
+      "errorSub": "Đây có thể là lỗi tạm thời. Vui lòng thử lại.",
+      "backToHub": "Quay lại trung tâm lương",
+      "backToApprovals": "Quay lại hộp phê duyệt",
+      "ownCompanyOnly": "Chỉ khả dụng với kỳ tính lương của công ty bạn"
+    },
     "runList": "Payroll Runs",
     "runsTitle": "Payroll Runs",
     "salaryBandPosition": "Vị trí dải lương",

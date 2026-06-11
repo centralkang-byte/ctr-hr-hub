@@ -9,6 +9,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { notFound } from '@/lib/errors'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
 const querySchema = z.object({
@@ -50,8 +51,9 @@ export const GET = withPermission(
             Object.fromEntries(url.searchParams),
         )
 
+        // 멀티테넌트 스코프: SUPER는 전체뷰, 비-SUPER는 본인 법인만 (anomalies 라우트와 동일 정책)
         const run = await prisma.payrollRun.findFirst({
-            where: { id: runId, companyId: user.companyId },
+            where: { id: runId, ...resolveCompanyFilter(user, null) },
         })
         if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
 

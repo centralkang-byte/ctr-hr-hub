@@ -6479,6 +6479,15 @@
     "reviewTitle": "Payroll Review",
     "risk": "风险",
     "runDetail": "Run Detail",
+    "runLoad": {
+      "notFoundTitle": "未找到该薪资批次",
+      "notFoundSub": "该薪资批次可能已被删除，或您没有访问权限。",
+      "errorTitle": "薪资批次加载失败",
+      "errorSub": "可能是临时错误，请重试。",
+      "backToHub": "返回薪资中心",
+      "backToApprovals": "返回审批箱",
+      "ownCompanyOnly": "仅可对本公司的薪资批次执行此操作"
+    },
     "runList": "Payroll Runs",
     "runsTitle": "Payroll Runs",
     "salaryBandPosition": "薪资区间位置",

@@ -8,6 +8,7 @@ import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { notFound } from '@/lib/errors'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 import { apiError } from '@/lib/api'
 import {
     generateComparisonExcel,
@@ -25,7 +26,7 @@ export const GET = withRateLimit(withPermission(
             const { runId } = await context.params
 
             const run = await prisma.payrollRun.findFirst({
-                where: { id: runId, companyId: user.companyId },
+                where: { id: runId, ...resolveCompanyFilter(user, null) },
             })
             if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
 

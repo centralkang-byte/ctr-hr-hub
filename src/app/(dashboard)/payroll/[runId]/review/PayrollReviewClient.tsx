@@ -12,6 +12,7 @@ import {
   AlertTriangle, CheckCircle2, ShieldX, ShieldCheck,
   Download, ChevronDown, ChevronUp, ArrowLeft,
   Search, Users, DollarSign, AlertCircle, Clock, Loader2,
+  FileQuestion,
   type LucideIcon,
 } from 'lucide-react'
 import { Badge, type BadgeVariant } from '@/components/ui/badge'
@@ -27,6 +28,7 @@ import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
 import { WdStatStrip } from '@/components/shared/WdStatStrip'
 import { WdStatusChips } from '@/components/shared/WdStatusChips'
 import { apiClient } from '@/lib/api'
+import { AppError } from '@/lib/errors'
 import { TABLE_STYLES, TYPOGRAPHY, BUTTON_VARIANTS } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
@@ -95,6 +97,7 @@ interface ComparisonRow {
 
 interface PayrollRunInfo {
   id: string
+  companyId: string
   name: string
   yearMonth: string
   status: string
@@ -353,12 +356,21 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
+  // run 로드 실패 구분: 404(notFound/접근불가 — no-oracle 동일 응답) vs 그 외(일시 오류 → 재시도)
+  const [runLoadError, setRunLoadError] = useState<'notFound' | 'error' | null>(null)
+
   const fetchRun = useCallback(async () => {
     try {
       const res = await apiClient.get<PayrollRunInfo>(`/api/v1/payroll/runs/${runId}`)
       setRun(res.data)
+      setRunLoadError(null)
     } catch (err) {
-      toast({ title: t('reviewPage.loadRunFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
+      if (err instanceof AppError && err.statusCode === 404) {
+        setRunLoadError('notFound')
+      } else {
+        setRunLoadError('error')
+        toast({ title: t('reviewPage.loadRunFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
+      }
     }
   }, [runId])
 
@@ -390,27 +402,28 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
   }, [runId, sortBy, sortOrder, deptFilter, anomalyOnly])
 
   const fetchWhitelist = useCallback(async () => {
-
-    if (!run?.id) return
+    // whitelist 라우트는 companyId 파라미터를 받음 — run.id(runId) 오전달 시 SUPER 뷰에서 항상 빈 목록
+    if (!run?.companyId) return
     try {
       const res = await apiClient.get<{ items: WhitelistEntry[] }>(
-        `/api/v1/payroll/whitelist`, { companyId: run.id }
+        `/api/v1/payroll/whitelist`, { companyId: run.companyId }
       )
       setWhitelistEntries(res.data.items ?? [])
     } catch (err) {
       toast({ title: t('reviewPage.loadWhitelistFailed'), description: err instanceof Error ? err.message : '', variant: 'destructive' })
     }
-  }, [run?.id])
+  }, [run?.companyId])
+
+  const loadInitial = useCallback(async () => {
+    setLoading(true)
+    await fetchRun()
+    await fetchAnomalies()
+    setLoading(false)
+  }, [fetchRun, fetchAnomalies])
 
   useEffect(() => {
-    const load = async () => {
-      setLoading(true)
-      await fetchRun()
-      await fetchAnomalies()
-      setLoading(false)
-    }
-    load()
-  }, [fetchRun, fetchAnomalies])
+    void loadInitial()
+  }, [loadInitial])
 
   useEffect(() => {
     if (activeTab === 'comparison') fetchComparison()
@@ -478,11 +491,30 @@ export default function PayrollReviewClient({user: _user, runId }: Props) {
   const allResolved = anomalySummary?.allResolved ?? run?.allAnomaliesResolved ?? false
   const openCount = anomalySummary?.open ?? 0
 
-  if (loading || !run) {
+  if (loading) {
     return (
       <div className="p-4 space-y-4">
         <KpiCardsSkeleton />
         <TableSkeleton rows={6} />
+      </div>
+    )
+  }
+
+  // 명시적 not-found/오류 상태 — 무한 스켈레톤 금지 (rules/components.md 3-상태)
+  if (!run) {
+    const isNotFound = runLoadError === 'notFound'
+    return (
+      <div className="p-4">
+        <EmptyState
+          icon={isNotFound ? FileQuestion : AlertCircle}
+          title={isNotFound ? t('runLoad.notFoundTitle') : t('runLoad.errorTitle')}
+          sub={isNotFound ? t('runLoad.notFoundSub') : t('runLoad.errorSub')}
+          action={isNotFound
+            ? { label: t('runLoad.backToHub'), onClick: () => router.push('/payroll') }
+            : { label: tCommon('retry'), onClick: () => void loadInitial() }}
+          size="lg"
+          standalone
+        />
       </div>
     )
   }
