@@ -7,17 +7,13 @@ import {
   Globe, ChevronLeft, ChevronRight, AlertTriangle, RefreshCw, Settings, Upload,
   Wallet, Users, TrendingUp, Building2,
 } from 'lucide-react'
-import {
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from 'recharts'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { WdStatStrip } from '@/components/shared/WdStatStrip'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-import { TABLE_STYLES, CHART_THEME, TYPOGRAPHY, BUTTON_VARIANTS, BUTTON_SIZES } from '@/lib/styles'
+import { TYPOGRAPHY, BUTTON_VARIANTS, BUTTON_SIZES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 
 interface CompanyStat {
@@ -52,8 +48,8 @@ interface GlobalData {
   hasExchangeRates: boolean
 }
 
-const CHART_COLORS = [...CHART_THEME.colors]
-// GL-1: 국기 이모지 맵 제거 — 법인 코드 font-mono 텍스트로 표기 (S287 SIM-3 패턴)
+// GL-IA: 차트 4종(recharts)·CHART_COLORS 제거 — 법인별 카드 그리드로 완전 전환 (프로토 :312-365)
+// GL-1: 국기 이모지 맵 제거 — 통화코드 font-mono 칩으로 표기 (S287 SIM-3 패턴)
 
 // fmt, fmtBillion은 컴포넌트 내부에서 t()를 사용하도록 이동
 
@@ -95,32 +91,12 @@ export default function GlobalPayrollClient({ user: _user }: { user: SessionUser
   const prevMonth = () => month === 1 ? (setYear(y => y - 1), setMonth(12)) : setMonth(m => m - 1)
   const nextMonth = () => month === 12 ? (setYear(y => y + 1), setMonth(1)) : setMonth(m => m + 1)
 
-  // Chart data
-  const barData = data?.companies.filter(c => c.hasData).map((c, i) => ({
-    name: c.companyCode.replace('CTR-', ''),
-    gross: Math.round(c.totalGrossKRW / 10000),
-    net: Math.round(c.totalNetKRW / 10000),
-    color: CHART_COLORS[i % CHART_COLORS.length],
-  })) ?? []
-
-  const pieData = data?.companies.filter(c => c.totalGrossKRW > 0).map((c, i) => ({
-    name: c.companyCode.replace('CTR-', ''),
-    value: Math.round(c.totalGrossKRW / 10000),
-    color: CHART_COLORS[i % CHART_COLORS.length],
-  })) ?? []
-
-  const trendData = data?.trend.map(tp => ({
-    label: new Intl.DateTimeFormat(locale, { month: 'short' }).format(new Date(tp.year, tp.month - 1)),
-    totalKRW: Math.round(tp.totalKRW / 10000),
-    headcount: tp.headcount,
-  })) ?? []
-
-  const headcountData = data?.companies.filter(c => c.headcount > 0).map((c, i) => ({
-    name: c.companyCode.replace('CTR-', ''),
-    headcount: c.headcount,
-    avg: Math.round(c.avgPerHeadKRW / 10000),
-    color: CHART_COLORS[i % CHART_COLORS.length],
-  })) ?? []
+  // GL-IA: 차트 파생 배열(barData/pieData/trendData/headcountData) 제거 — trend 필드는 소비만 중단 (백엔드 무수정)
+  // 현지 통화 금액 — 프로토 규칙 그대로 VND만 M 축약, 그 외 toLocaleString (G1 MED 금액 계약)
+  const fmtLocal = (amount: number, currency: string) =>
+    currency === 'VND' ? `${(amount / 1_000_000).toFixed(0)}M` : fmt(Math.round(amount))
+  // card-head sub용 월 라벨 (월 네비와 동일 포맷)
+  const monthLabel = new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long' }).format(new Date(year, month - 1))
 
   return (
     <div className="mx-auto max-w-7xl space-y-4 p-4">
@@ -231,177 +207,83 @@ export default function GlobalPayrollClient({ user: _user }: { user: SessionUser
             ]}
           />
 
-          {/* Charts Row 1 */}
-          <div className="grid grid-cols-2 gap-4">
-            {/* Bar: 법인별 총지급 */}
-            <div className="bg-card rounded-xl shadow-sm border border-border p-4">
-              <h3 className="text-sm font-semibold text-foreground mb-4">{t('globalPage.companyPayrollTotal')}</h3>
-              {barData.length === 0 ? (
-                <div className="h-52 flex items-center justify-center">
-                  <EmptyState size="sm" title={t('globalPage.noData')} sub="" />
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height={210}>
-                  <BarChart data={barData} margin={{ top: 0, right: 16, bottom: 0, left: 0 }}>
-                    <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
-                    <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                    <YAxis tick={{ fontSize: 11 }} tickFormatter={v => `${v.toLocaleString()}`} />
-                    <Tooltip formatter={(v) => [`${(Number(v) || 0).toLocaleString()} ${t('globalPage.manWonUnit')}`, ''] as [string, string]} />
-                    <Legend />
-                    <Bar dataKey="gross" name={t('globalPage.grossTotal')} fill={CHART_THEME.colors[3]} radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="net" name={t('globalPage.netTotal')} fill="#059669" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+          {/* GL-IA: 법인별 카드 그리드 (프로토 :312-365 1:1) — 차트 4종·상세 테이블 대체 */}
+          <section aria-labelledby="company-cards-title" className="bg-card rounded-2xl shadow-sm border border-border">
+            {/* card-head: title + sub(YYYY년 M월) */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+              <h3 id="company-cards-title" className={TYPOGRAPHY.cardTitle}>{t('globalPage.companyCards')}</h3>
+              <span className="text-xs text-muted-foreground">{monthLabel}</span>
+            </div>
+            <div className="p-5">
+              {/* G1 MED: 무데이터 월 — 안내 1줄 + 전 법인 미시작 카드 유지 (EmptyState 대체 금지) */}
+              {!data.companies.some(c => c.hasData) && (
+                <p className="mb-3 text-xs text-muted-foreground">{t('globalPage.noMonthData')}</p>
               )}
-            </div>
+              <div role="list" className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                {data.companies.map(co => (
+                  // 프로토 onClick=toast는 mock — 카드 비클릭 (dead cursor-pointer 금지)
+                  <div
+                    key={co.companyId}
+                    role="listitem"
+                    className={cn(
+                      'rounded-xl border border-border bg-card px-[18px] py-4',
+                      !co.hasData && 'opacity-60', // hasData=false → 카드 dim
+                    )}
+                  >
+                    {/* 헤더 행: 통화코드 칩(SIM-3 — 프로토 국기 대체 편차) + 법인명 + 상태 칩 */}
+                    <div className="flex items-center gap-2.5 mb-3">
+                      <span className="shrink-0 rounded-md bg-muted px-1.5 py-1 font-mono tabular-nums text-[11px] font-semibold text-muted-foreground">
+                        {co.currency}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-foreground truncate">{co.companyName}</div>
+                        <div className="font-mono tabular-nums text-[11px] text-muted-foreground">{co.companyCode}</div>
+                      </div>
+                      {/* 프로토 지급완료/결재진행/이상검토 status는 API 미반환 → hasData 2값 편차 */}
+                      {co.hasData ? (
+                        <Badge variant="success">{t('globalPage.aggregated')}</Badge>
+                      ) : (
+                        <Badge variant="neutral">{t('status.notStarted')}</Badge>
+                      )}
+                    </div>
 
-            {/* Pie: 법인 비중 */}
-            <div className="bg-card rounded-xl shadow-sm border border-border p-4">
-              <h3 className="text-sm font-semibold text-foreground mb-4">{t('globalPage.companyPayrollShare')}</h3>
-              {pieData.length === 0 ? (
-                <div className="h-52 flex items-center justify-center">
-                  <EmptyState size="sm" title={t('globalPage.noData')} sub="" />
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height={210}>
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      dataKey="value"
-                      label={({ name, percent }: { name?: string; percent?: number }) => `${name ?? ''} ${((percent ?? 0) * 100).toFixed(0)}%`}
-                      labelLine={false}
-                    >
-                      {pieData.map((d, i) => (
-                        <Cell key={i} fill={d.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(v) => [`${(Number(v) || 0).toLocaleString()} ${t('globalPage.manWonUnit')}`, ''] as [string, string]} />
-                  </PieChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-          </div>
+                    {/* 현지 통화 블록 (상하 1px 보더) */}
+                    <div className="py-3 border-t border-b border-border mb-2.5">
+                      <div className="flex justify-between text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground mb-1">
+                        <span>{t('globalPage.localCurrency')}</span>
+                        <span>{co.currency}</span>
+                      </div>
+                      <div className="text-lg font-semibold font-mono tabular-nums tracking-[-0.02em] text-foreground">
+                        {co.hasData ? fmtLocal(co.totalGrossLocal, co.currency) : '—'}
+                      </div>
+                    </div>
 
-          {/* Charts Row 2 */}
-          <div className="grid grid-cols-2 gap-4">
-            {/* Line: 월별 트렌드 */}
-            <div className="bg-card rounded-xl shadow-sm border border-border p-4">
-              <h3 className="text-sm font-semibold text-foreground mb-4">{t('globalPage.trendTitle')}</h3>
-              <ResponsiveContainer width="100%" height={210}>
-                <LineChart data={trendData} margin={{ top: 0, right: 16, bottom: 0, left: 0 }}>
-                  <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
-                  <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} tickFormatter={v => `${v.toLocaleString()}`} />
-                  <Tooltip formatter={(v) => [`${(Number(v) || 0).toLocaleString()} ${t('globalPage.manWonUnit')}`, ''] as [string, string]} />
-                  <Legend />
-                  <Line type="monotone" dataKey="totalKRW" name={t('globalPage.totalPayroll')} stroke={CHART_THEME.colors[3]} strokeWidth={2} dot={{ r: 4 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Bar: 인당 평균 */}
-            <div className="bg-card rounded-xl shadow-sm border border-border p-4">
-              <h3 className="text-sm font-semibold text-foreground mb-4">{t('globalPage.avgPayPerPersonChart')}</h3>
-              {headcountData.length === 0 ? (
-                <div className="h-52 flex items-center justify-center">
-                  <EmptyState size="sm" title={t('globalPage.noData')} sub="" />
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height={210}>
-                  <BarChart data={headcountData} layout="vertical" margin={{ top: 0, right: 16, bottom: 0, left: 24 }}>
-                    <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 11 }} tickFormatter={v => `${v}`} />
-                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={40} />
-                    <Tooltip formatter={(v) => [`${(Number(v) || 0).toLocaleString()} ${t('globalPage.manWonUnit')}`, t('globalPage.avgPerPerson')] as [string, string]} />
-                    <Bar dataKey="avg" name={t('globalPage.avgPerPerson')} radius={[0, 4, 4, 0]}>
-                      {headcountData.map((d, i) => (
-                        <Cell key={i} fill={d.color} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-          </div>
-
-          {/* Company Detail Table */}
-          <div className={TABLE_STYLES.wrapper}>
-            <div className="px-5 py-4 border-b border-border">
-              <h3 className="text-sm font-semibold text-foreground">{t('globalPage.companyDetailTitle')}</h3>
-            </div>
-            <div className="overflow-x-auto">
-              <table className={TABLE_STYLES.table}>
-                <thead>
-                  <tr className={TABLE_STYLES.header}>
-                    <th className={TABLE_STYLES.headerCell}>{t('globalPage.colCompany')}</th>
-                    <th className={TABLE_STYLES.headerCell}>{t('globalPage.colCurrency')}</th>
-                    <th className={TABLE_STYLES.headerCellRight}>{t('globalPage.colExchangeRate')}</th>
-                    <th className={TABLE_STYLES.headerCellRight}>{t('globalPage.colGrossLocal')}</th>
-                    <th className={TABLE_STYLES.headerCellRight}>{t('globalPage.colGrossKRW')}</th>
-                    <th className={TABLE_STYLES.headerCellRight}>{t('globalPage.colHeadcount')}</th>
-                    <th className={TABLE_STYLES.headerCellRight}>{t('globalPage.colAvgPerHead')}</th>
-                    <th className={cn(TABLE_STYLES.headerCell, "text-center")}>{t('globalPage.colData')}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {data.companies.map(co => (
-                    <tr key={co.companyId} className={TABLE_STYLES.row}>
-                      <td className={TABLE_STYLES.cell}>
-                        {/* GL-1: 국기 이모지 → 법인 코드 font-mono 텍스트 */}
-                        <div>
-                          <div className="font-mono tabular-nums font-medium text-foreground">{co.companyCode}</div>
-                          <div className="text-xs text-muted-foreground">{co.companyName}</div>
-                        </div>
-                      </td>
-                      <td className={cn(TABLE_STYLES.cell, "font-mono tabular-nums text-muted-foreground")}>{co.currency}</td>
-                      <td className={cn(TABLE_STYLES.cellRight, "font-mono tabular-nums text-muted-foreground")}>
-                        {co.currency === 'KRW' ? '—' : `${Number(co.exchangeRate).toLocaleString(locale, { maximumFractionDigits: 4 })}`}
-                      </td>
-                      <td className={cn(TABLE_STYLES.cellRight, "font-mono tabular-nums text-muted-foreground")}>
-                        {co.hasData ? `${fmt(Math.round(co.totalGrossLocal))} ${co.currency}` : '—'}
-                      </td>
-                      <td className={cn(TABLE_STYLES.cellRight, "font-mono tabular-nums font-semibold text-foreground")}>
+                    {/* KRW 환산 블록 — 우측 FX delta%는 전월 환율 API 미반환 → 생략 (데이터 부재 편차) */}
+                    <div>
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.04em] text-muted-foreground mb-1">
+                        {t('globalPage.krwConverted')}
+                      </div>
+                      <div className="text-base font-semibold font-mono tabular-nums text-primary-dim">
                         {co.hasData ? `₩${fmtBillion(co.totalGrossKRW)}` : '—'}
-                      </td>
-                      <td className={cn(TABLE_STYLES.cellRight, "text-muted-foreground")}>
-                        {co.headcount > 0 ? t('globalPage.headcountSuffix', { count: co.headcount }) : '—'}
-                      </td>
-                      <td className={cn(TABLE_STYLES.cellRight, "font-mono tabular-nums text-muted-foreground")}>
-                        {co.avgPerHeadKRW > 0 ? `₩${fmtBillion(co.avgPerHeadKRW)}` : '—'}
-                      </td>
-                      <td className={cn(TABLE_STYLES.cell, "text-center")}>
-                        {/* GL-2: raw emerald → Badge 시맨틱 토큰 */}
-                        {co.hasData ? (
-                          <Badge variant="success">{t('globalPage.aggregated')}</Badge>
-                        ) : (
-                          <Badge variant="neutral">{t('globalPage.notStarted')}</Badge>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className={TABLE_STYLES.header}>
-                    <td colSpan={4} className="px-4 py-3 font-semibold text-sm text-foreground">{tCommon('total')}</td>
-                    <td className="px-4 py-3 text-right font-mono tabular-nums font-bold text-foreground">₩{fmtBillion(data.totalKRW)}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-foreground">{t('globalPage.headcountSuffix', { count: data.totalHeadcount })}</td>
-                    <td className="px-4 py-3 text-right font-mono tabular-nums font-semibold text-foreground">
-                      {data.totalHeadcount > 0 ? `₩${fmtBillion(data.totalKRW / data.totalHeadcount)}` : '—'}
-                    </td>
-                    <td />
-                  </tr>
-                </tfoot>
-              </table>
+                      </div>
+                    </div>
+
+                    {/* 풋터: 인원 + 환율 — G1 HIGH 정직성: non-KRW 폴백 1 = "1 CCY = ₩1" 거짓 표기 금지 */}
+                    <div className="mt-3 flex items-center justify-between rounded-md bg-muted px-2.5 py-1.5 text-[11px] text-muted-foreground">
+                      <span>{co.headcount > 0 ? t('globalPage.headcountSuffix', { count: co.headcount }) : '—'}</span>
+                      {co.currency !== 'KRW' && Number(co.exchangeRate) === 1 ? (
+                        <span className="opacity-70">{t('globalPage.fxNotSet')}</span>
+                      ) : (
+                        <span className="font-mono tabular-nums">
+                          1 {co.currency} = ₩{Number(co.exchangeRate).toLocaleString(locale, { maximumSignificantDigits: 4 })}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="px-5 py-3 bg-background border-t border-border">
-              <p className="text-xs text-muted-foreground">
-                {t('globalPage.exchangeNote', { year, month })}
-              </p>
-            </div>
-          </div>
+          </section>
         </>
       )}
     </div>

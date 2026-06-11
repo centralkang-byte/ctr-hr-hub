@@ -10,12 +10,10 @@ import {
   ChevronRight,
   X,
   AlertCircle,
-  Users,
-  Clock,
-  Send,
   Eye,
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { cumulativeReached, YEAR_END_STAGES } from '@/lib/payroll/year-end-stepper'
 import type { SessionUser } from '@/types'
 import { BUTTON_SIZES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES, TYPOGRAPHY } from '@/lib/styles'
 import { StatusBadge } from '@/components/ui/StatusBadge'
@@ -75,6 +73,15 @@ const STATUS_LABEL_KEYS: Record<string, string> = {
   submitted: 'yearEndHR.statusSubmitted',
   hr_review: 'yearEndHR.statusHrReview',
   confirmed: 'yearEndHR.statusConfirmed',
+}
+
+// 스텝퍼 단계 sub 라벨 (YE-IA — 프로토 :117 s.sub 자리, 우리 status 의미로 작성)
+const STAGE_SUB_KEYS: Record<string, string> = {
+  not_started: 'yearEndHR.stepperSubNotStarted',
+  in_progress: 'yearEndHR.stepperSubInProgress',
+  submitted: 'yearEndHR.stepperSubSubmitted',
+  hr_review: 'yearEndHR.stepperSubHrReview',
+  confirmed: 'yearEndHR.stepperSubConfirmed',
 }
 
 
@@ -431,6 +438,9 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
 
   const completionPct = total > 0 ? Math.round((summary.confirmed / total) * 100) : 0
 
+  // 단계별 도달 누계 (YE-IA — 순수 헬퍼: sum(count where statusIndex >= stageIndex))
+  const reached = cumulativeReached(summary)
+
   const confirmableCount = settlements.filter(
     (s) => s.status === 'submitted' || s.status === 'hr_review',
   ).length
@@ -504,46 +514,71 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
         </div>
       )}
 
-      {/* Progress Overview Cards — 6카드 유지 (ALL-5: WdStatStrip 미적용), 토큰 정합만 (YE-3) */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {[
-          // 시맨틱 tone = STATUS_MAP 정합 (in_progress·submitted=info, hr_review=warning, confirmed=success)
-          { key: 'not_started', label: t('kr_kebafb8ec'), icon: Users, color: 'text-muted-foreground' },
-          { key: 'in_progress', label: t('inProgress'), icon: Clock, color: 'text-primary' },
-          { key: 'submitted', label: t('submitted'), icon: Send, color: 'text-primary' },
-          { key: 'hr_review', label: t('hrReviewing'), icon: Eye, color: 'text-ctr-warning' },
-          { key: 'confirmed', label: t('confirmed'), icon: CheckCircle2, color: 'text-[#006b39]' },
-        ].map(({ key, label, icon: Icon, color }) => (
-          <div key={key} className="bg-card rounded-2xl shadow-sm border border-border p-4">
-            <div className={cn('flex items-center gap-1.5 text-xs font-medium mb-1', color)}>
-              <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-              <span>{label}</span>
-            </div>
-            <p className={TYPOGRAPHY.stat}>
-              {summary[key as keyof StatusSummary]}
-            </p>
-          </div>
-        ))}
-
-        {/* Progress bar card */}
-        <div className="bg-card rounded-2xl shadow-sm border border-border p-4">
-          <p className={cn(TYPOGRAPHY.label, 'mb-1')}>{t('all_kec9984eb')}</p>
-          <p className={cn(TYPOGRAPHY.stat, 'text-primary')}>{completionPct}%</p>
-          <div
-            role="progressbar"
-            aria-valuenow={completionPct}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={t('all_kec9984eb')}
-            className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden"
-          >
-            <div
-              className="h-full bg-primary rounded-full transition-all duration-500"
-              style={{ width: `${completionPct}%` }}
-            />
+      {/* ── 5단계 진행 스텝퍼 (YE-IA: 프로토 round2 :93-130 시각 1:1 — 6스탯 그리드 대체, 완료율은 sub로 흡수) ── */}
+      <section
+        aria-labelledby="ye-stepper-title"
+        className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
+      >
+        {/* proto .card-head: 14.5/600 title + 12px sub (GL 그리드 헤드와 동일 트리트먼트) */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border px-5 py-4">
+          <h2 id="ye-stepper-title" className={TYPOGRAPHY.cardTitle}>
+            {t('yearEndHR.stepperTitle')}
+          </h2>
+          <span className="text-xs text-muted-foreground">
+            {t('yearEndHR.stepperSub', { total, pct: completionPct })}
+          </span>
+        </div>
+        {/* proto .card-pad + 5열 그리드 (모바일 2열 reflow — G1 LOW) */}
+        <div className="p-5">
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
+            {YEAR_END_STAGES.map((status, i) => {
+              const count = summary[status]
+              const isLast = i === YEAR_END_STAGES.length - 1
+              return (
+                <div
+                  key={status}
+                  // 마지막(확정) 단계 = tertiary 틴트 (프로토 green 틴트), 그 외 = bg-muted (proto --bg-sunk)
+                  className={cn('rounded-[10px] px-4 py-3.5', isLast ? 'bg-tertiary/10' : 'bg-muted')}
+                >
+                  <div className="mb-2 flex items-center gap-2">
+                    {/* 번호 원 24px: count>0 = 현재 단계 점유 → accent fill/white (프로토 원 의미 그대로) */}
+                    <div
+                      className={cn(
+                        'grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 text-[11px] font-bold',
+                        TYPOGRAPHY.mono,
+                        count > 0
+                          ? 'border-primary bg-primary text-white'
+                          : 'border-border bg-card text-muted-foreground',
+                      )}
+                    >
+                      {i + 1}
+                    </div>
+                    <span className="text-xs font-semibold text-foreground">
+                      {t(STATUS_LABEL_KEYS[status])}
+                    </span>
+                  </div>
+                  {/* 24px mono count + "명 진행" (raw count 명시 — 도달 누계와 혼동 차단, G1 MED 5) */}
+                  <p
+                    className={cn(
+                      'text-2xl font-semibold leading-none tracking-[-0.02em] text-foreground',
+                      TYPOGRAPHY.mono,
+                    )}
+                  >
+                    {count}
+                    <span className="ml-1 text-[11px] font-medium text-muted-foreground/70">
+                      {t('yearEndHR.stageCountUnit')}
+                    </span>
+                  </p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{t(STAGE_SUB_KEYS[status])}</p>
+                  <p className={cn('mt-1.5 text-[11px] text-muted-foreground/70', TYPOGRAPHY.mono)}>
+                    {t('yearEndHR.reachedCount', { count: reached[i] })}
+                  </p>
+                </div>
+              )
+            })}
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Status filter tabs — 필터형 (YE-1): Radix Tabs + TAB_STYLES, 테이블 단일 렌더 (패널 복제 없음).
           statusFilter는 fetchSettlements 재조회 의존성 — setter 외 흐름 무변경 */}

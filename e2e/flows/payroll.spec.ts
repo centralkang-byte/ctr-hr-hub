@@ -153,6 +153,48 @@ test.describe('Payroll: HR_ADMIN', () => {
   })
 })
 
+// ─── SUPER_ADMIN tests (Wave 1 GL-IA) ───────────────────
+// /payroll/global 풀뷰 = SUPER 전용. 차트 4종 제거 후 본문 SSOT는 법인별
+// 카드 그리드 — 그리드 렌더 + 월 네비 → /api/v1/payroll/global 재조회 가드.
+// (storageState가 NEXT_LOCALE=ko를 고정하므로 한국어 문자열 단언이 결정적)
+
+test.describe('Payroll global: SUPER_ADMIN', () => {
+  test.use({ storageState: authFile('SUPER_ADMIN') })
+
+  test('global page renders company card grid', async ({ page }) => {
+    await assertPageLoads(page, '/payroll/global')
+    await waitForLoading(page)
+
+    // 카드 그리드 섹션 헤딩 (프로토 :312 card-head "법인별 급여 현황")
+    await expect(page.getByText(/법인별 급여 현황/).first()).toBeVisible({ timeout: 20000 })
+
+    // 법인 카드 최소 1장 — 상태 칩 = hasData ? 집계됨(success) : 미시작(neutral).
+    // 미작성 = 기존 globalPage.notStarted 키 재사용 분기 허용 (i18n은 메인 루프 소유)
+    await expect(
+      page.getByText(/집계됨|미시작|미작성|Aggregated|Not Started/).first(),
+    ).toBeVisible({ timeout: 10000 })
+  })
+
+  test('month nav refetches global aggregation API', async ({ page }) => {
+    await assertPageLoads(page, '/payroll/global')
+    await waitForLoading(page)
+
+    const prevBtn = page.getByRole('button', { name: /이전 달|Previous month/ })
+    await expect(prevBtn).toBeVisible({ timeout: 15000 })
+
+    // 월 이동 → /api/v1/payroll/global 재조회 발화 가드.
+    // SSR 마크업이 하이드레이션 전에 보여 첫 클릭이 무시될 수 있음 → toPass로 재클릭.
+    // waitForRequest는 .catch(null)로 감싸 미발화 시 unhandled rejection 없이 재시도.
+    await expect(async () => {
+      const refetch = page
+        .waitForRequest(req => req.url().includes('/api/v1/payroll/global'), { timeout: 5000 })
+        .catch(() => null)
+      await prevBtn.click()
+      expect(await refetch).not.toBeNull()
+    }).toPass({ timeout: 20000 })
+  })
+})
+
 // ─── Run detail pages (Wave 1) ──────────────────────────
 // [runId] 상세 3페이지(review/approve/publish) 읽기 전용 가드.
 // 공유 시드의 기존 run을 API로 조회해 사용 — 쓰기/제출 없음 (시드 오염 방지).
