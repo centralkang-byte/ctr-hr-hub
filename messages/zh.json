@@ -6104,6 +6104,7 @@
       "tabHistory": "上传历史",
       "tabMapping": "列映射设置",
       "tabUpload": "文件上传",
+      "tabsLabel": "海外工资上传标签页",
       "uploadComplete": "上传完成",
       "uploadFailed": "上传失败",
       "uploadStart": "开始上传",
@@ -6779,6 +6780,7 @@
     "yearEndHR": {
       "additionalPayment": "补缴金额",
       "bulkConfirm": "批量确认",
+      "pageSubtitle": "查看并确认员工年终结算提交情况",
       "bulkConfirmTitle": "确认批量操作",
       "calculatedTax": "⑦ 计算税额",
       "colDepartment": "部门",

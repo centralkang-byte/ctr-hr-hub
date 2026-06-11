@@ -6103,6 +6103,7 @@
       "tabHistory": "Lịch sử tải lên",
       "tabMapping": "Cài đặt ánh xạ cột",
       "tabUpload": "Tải lên tệp",
+      "tabsLabel": "Tab tải lên bảng lương nước ngoài",
       "uploadComplete": "Tải lên hoàn tất",
       "uploadFailed": "Tải lên thất bại",
       "uploadStart": "Bắt đầu tải lên",
@@ -6778,6 +6779,7 @@
     "yearEndHR": {
       "additionalPayment": "Số tiền nộp thêm",
       "bulkConfirm": "Xác nhận hàng loạt",
+      "pageSubtitle": "Xem xét và xác nhận quyết toán thuế cuối năm của nhân viên",
       "bulkConfirmTitle": "Xác nhận thao tác hàng loạt",
       "calculatedTax": "⑦ Thuế tính toán",
       "colDepartment": "Phòng ban",

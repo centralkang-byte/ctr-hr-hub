@@ -5110,6 +5110,7 @@
     "yearEndHR": {
       "title": "{year}년 연말정산",
       "pageTitle": "연말정산",
+      "pageSubtitle": "직원별 연말정산 제출 현황을 검토하고 확정해요",
       "yearLabel": "{year}년",
       "statusNotStarted": "미시작",
       "statusInProgress": "진행중",
@@ -5236,6 +5237,7 @@
       "viewFile": "파일 보기"
     },
     "import": {
+      "tabsLabel": "해외 급여 업로드 탭",
       "tabUpload": "파일 업로드",
       "tabMapping": "컬럼 매핑 설정",
       "tabHistory": "업로드 이력",

@@ -16,11 +16,3 @@ export const localeNames: Record<Locale, string> = {
   vi: 'Tiếng Việt',
   es: 'Español',
 }
-
-export const localeFlags: Record<Locale, string> = {
-  ko: '🇰🇷',
-  en: '🇺🇸',
-  zh: '🇨🇳',
-  vi: '🇻🇳',
-  es: '🇲🇽',
-}

@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { localeNames, localeFlags, type Locale } from '@/i18n/config'
+import { localeNames, type Locale } from '@/i18n/config'
 import { getAvailableLocales } from '@/lib/i18n/locale-config'
 
 interface LanguageSwitcherProps {
@@ -60,7 +60,7 @@ export function LanguageSwitcher({ countryCode }: LanguageSwitcherProps) {
         className="gap-1.5 text-xs"
       >
         <Globe className="h-3.5 w-3.5" strokeWidth={1.5} />
-        <span>{localeFlags[otherLocale]} {localeNames[otherLocale]}</span>
+        <span>{localeNames[otherLocale]}</span>
       </Button>
     )
   }
@@ -71,7 +71,7 @@ export function LanguageSwitcher({ countryCode }: LanguageSwitcherProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" disabled={isPending} className="gap-1.5 text-xs">
           <Globe className="h-3.5 w-3.5" strokeWidth={1.5} />
-          <span>{localeFlags[locale]} {localeNames[locale]}</span>
+          <span>{localeNames[locale]}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[140px]">
@@ -81,7 +81,6 @@ export function LanguageSwitcher({ countryCode }: LanguageSwitcherProps) {
             onClick={() => handleLocaleChange(l)}
             className={l === locale ? 'bg-accent' : ''}
           >
-            <span className="mr-2">{localeFlags[l]}</span>
             {localeNames[l]}
           </DropdownMenuItem>
         ))}

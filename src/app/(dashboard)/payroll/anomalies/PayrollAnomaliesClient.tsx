@@ -5,11 +5,16 @@ import { useTranslations, useLocale } from 'next-intl'
 import { useState, useEffect, useCallback } from 'react'
 import {
   AlertTriangle, ChevronLeft, ChevronRight, RefreshCw,
-  ChevronDown, ChevronUp, CheckCircle2
+  ChevronDown, ChevronUp, CheckCircle2,
+  BarChart3, TrendingUp, Globe, Zap,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { Badge, type BadgeVariant } from '@/components/ui/badge'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { apiClient } from '@/lib/api'
+import { cn } from '@/lib/utils'
 import type { SessionUser } from '@/types'
-import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
+import { CARD_STYLES, TABLE_STYLES, TYPOGRAPHY, BUTTON_VARIANTS } from '@/lib/styles'
 
 interface Anomaly {
   rule: string
@@ -27,10 +32,23 @@ interface AnomalyData {
   scannedCount: number
 }
 
-const SEVERITY_COLORS: Record<string, string> = {
-  high: 'bg-destructive/10 text-destructive border-destructive/20',
-  medium: 'bg-amber-500/15 text-amber-700 border-amber-300',
-  low: 'bg-primary/15 text-primary/90 border-primary/20',
+// AN-3·AN-6: raw 팔레트 → 시맨틱 토큰 (badge = Badge variant, 카드 보더/아이콘 틴트 = ALL-4)
+const SEVERITY_BADGE: Record<string, BadgeVariant> = {
+  high: 'error',
+  medium: 'warning',
+  low: 'info',
+}
+
+const SEVERITY_CARD_BORDER: Record<string, string> = {
+  high: 'border-destructive/20',
+  medium: 'border-warning-bright/40',
+  low: 'border-primary/20',
+}
+
+const SEVERITY_ICON_TINT: Record<string, string> = {
+  high: 'text-destructive',
+  medium: 'text-ctr-warning',
+  low: 'text-primary',
 }
 
 const SEVERITY_LABEL_KEYS: Record<string, string> = {
@@ -39,11 +57,12 @@ const SEVERITY_LABEL_KEYS: Record<string, string> = {
   low: 'anomalyPage.severityLow',
 }
 
-const RULE_ICONS: Record<string, string> = {
-  'BAND_EXCEEDED': '📊',
-  'HIGH_INTERNAL_VARIANCE': '📈',
-  'CROSS_ENTITY_GAP': '🌍',
-  'MOM_CHANGE_30PCT': '⚡',
+// AN-2: 이모지 → Lucide (미정의 룰은 AlertTriangle 폴백)
+const RULE_ICONS: Record<string, LucideIcon> = {
+  'BAND_EXCEEDED': BarChart3,
+  'HIGH_INTERNAL_VARIANCE': TrendingUp,
+  'CROSS_ENTITY_GAP': Globe,
+  'MOM_CHANGE_30PCT': Zap,
 }
 
 const RULE_LABEL_KEYS: Record<string, string> = {
@@ -54,6 +73,18 @@ const RULE_LABEL_KEYS: Record<string, string> = {
 }
 
 const ALL_RULES = ['BAND_EXCEEDED', 'HIGH_INTERNAL_VARIANCE', 'CROSS_ENTITY_GAP', 'MOM_CHANGE_30PCT'] as const
+
+// AN-2: 룰 아이콘 렌더 (severity 틴트 — urgency는 아이콘 틴트로, rules/design.md)
+function RuleIcon({ rule, severity }: { rule: string; severity: string }) {
+  const Icon = RULE_ICONS[rule] ?? AlertTriangle
+  return (
+    <Icon
+      className={cn('h-6 w-6 shrink-0', SEVERITY_ICON_TINT[severity] ?? 'text-muted-foreground')}
+      strokeWidth={1.5}
+      aria-hidden="true"
+    />
+  )
+}
 
 export default function PayrollAnomaliesClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('payroll')
@@ -125,33 +156,39 @@ export default function PayrollAnomaliesClient({ user: _user }: { user: SessionU
   }
 
   return (
-    <div className="p-4">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+    <div className="mx-auto max-w-7xl space-y-4 p-4">
+      {/* ── Header (AN-1: proto .page-h — 56px 아이콘 타일 + pageTitle + 13px sub) ── */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-destructive/10 rounded-lg flex items-center justify-center">
-            <AlertTriangle className="w-5 h-5 text-destructive" />
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[14px] bg-accent text-primary">
+            <AlertTriangle className="h-[26px] w-[26px]" aria-hidden="true" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{t('anomalyPage.pageTitle')}</h1>
-            <p className="text-sm text-muted-foreground">{t('anomalyPage.pageDesc')}</p>
+            <h1 className={TYPOGRAPHY.pageTitle}>{t('anomalyPage.pageTitle')}</h1>
+            <p className="mt-1 text-[13px] text-muted-foreground">{t('anomalyPage.pageDesc')}</p>
           </div>
         </div>
-        <button onClick={fetchData} className="p-2 hover:bg-muted rounded-lg" disabled={loading}>
-          <RefreshCw className={`w-4 h-4 text-muted-foreground ${loading ? 'animate-spin' : ''}`} />
+        <button
+          type="button"
+          onClick={fetchData}
+          disabled={loading}
+          aria-label={tCommon('refresh')}
+          className={cn(BUTTON_VARIANTS.ghost, 'rounded-lg p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring')}
+        >
+          <RefreshCw className={cn('h-4 w-4', loading && 'animate-spin')} aria-hidden="true" />
         </button>
       </div>
 
       {/* Month Nav */}
-      <div className="flex items-center gap-4 mb-6">
-        <button onClick={prevMonth} className="p-2 hover:bg-muted rounded-lg">
-          <ChevronLeft className="w-5 h-5 text-muted-foreground" />
+      <div className="flex items-center gap-4">
+        <button type="button" onClick={prevMonth} aria-label={t('dashboard.prevMonth')} className="p-2 hover:bg-muted rounded-lg">
+          <ChevronLeft className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
         </button>
         <div className="text-lg font-semibold text-foreground min-w-[120px] text-center">
           {t('anomalyPage.yearMonth', { year, month })}
         </div>
-        <button onClick={nextMonth} className="p-2 hover:bg-muted rounded-lg">
-          <ChevronRight className="w-5 h-5 text-muted-foreground" />
+        <button type="button" onClick={nextMonth} aria-label={t('dashboard.nextMonth')} className="p-2 hover:bg-muted rounded-lg">
+          <ChevronRight className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
         </button>
       </div>
 
@@ -163,38 +200,38 @@ export default function PayrollAnomaliesClient({ user: _user }: { user: SessionU
 
       {!loading && data && (
         <>
-          {/* Summary KPI */}
-          <div className="grid grid-cols-4 gap-4 mb-6">
-            <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-muted-foreground mb-1">{t('anomalyPage.totalAnomalies')}</p>
-              <p className={`text-3xl font-bold ${data.totalAnomalies > 0 ? 'text-destructive' : 'text-emerald-600'}`}>
+          {/* Summary KPI — AN-4: WdStatStrip 미적용(실수치 4개 아님, ALL-5) — 카드 유지 + 토큰 정합 */}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
+            <div className={cn(CARD_STYLES.padded, 'border border-border')}>
+              <p className={cn(TYPOGRAPHY.label, 'mb-1')}>{t('anomalyPage.totalAnomalies')}</p>
+              <p className={cn(TYPOGRAPHY.stat, data.totalAnomalies > 0 ? 'text-destructive' : 'text-tertiary')}>
                 {data.totalAnomalies}
               </p>
             </div>
-            <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-muted-foreground mb-1">{t('anomalyPage.highOrAbove')}</p>
-              <p className="text-3xl font-bold text-destructive">
+            <div className={cn(CARD_STYLES.padded, 'border border-border')}>
+              <p className={cn(TYPOGRAPHY.label, 'mb-1')}>{t('anomalyPage.highOrAbove')}</p>
+              <p className={cn(TYPOGRAPHY.stat, 'text-destructive')}>
                 {data.anomalies.filter(a => a.severity === 'high').reduce((s, a) => s + a.affectedCount, 0)}
               </p>
             </div>
-            <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-muted-foreground mb-1">{t('anomalyPage.ruleCount')}</p>
-              <p className="text-3xl font-bold text-foreground">4</p>
+            <div className={cn(CARD_STYLES.padded, 'border border-border')}>
+              <p className={cn(TYPOGRAPHY.label, 'mb-1')}>{t('anomalyPage.ruleCount')}</p>
+              <p className={TYPOGRAPHY.stat}>4</p>
             </div>
-            <div className={CARD_STYLES.padded}>
-              <p className="text-xs text-muted-foreground mb-1">{t('anomalyPage.scannedCount')}</p>
-              <p className="text-3xl font-bold text-foreground">{data.scannedCount}</p>
+            <div className={cn(CARD_STYLES.padded, 'border border-border')}>
+              <p className={cn(TYPOGRAPHY.label, 'mb-1')}>{t('anomalyPage.scannedCount')}</p>
+              <p className={TYPOGRAPHY.stat}>{data.scannedCount}</p>
             </div>
           </div>
 
+          {/* AN-5: 수동 빈 상태 배너 → EmptyState (standalone) */}
           {data.totalAnomalies === 0 && (
-            <div className="flex items-center gap-3 p-6 bg-emerald-500/15 rounded-xl text-emerald-700">
-              <CheckCircle2 className="w-6 h-6 shrink-0" />
-              <div>
-                <p className="font-semibold">{t('anomalyPage.noAnomalies')}</p>
-                <p className="text-sm mt-0.5">{t('anomalyPage.noAnomaliesDesc', { year, month })}</p>
-              </div>
-            </div>
+            <EmptyState
+              icon={CheckCircle2}
+              title={t('anomalyPage.noAnomalies')}
+              sub={t('anomalyPage.noAnomaliesDesc', { year, month })}
+              standalone
+            />
           )}
 
           {/* Anomaly Cards */}
@@ -202,22 +239,20 @@ export default function PayrollAnomaliesClient({ user: _user }: { user: SessionU
             {data.anomalies.map(anomaly => (
               <div
                 key={anomaly.rule}
-                className={`bg-card rounded-xl border overflow-hidden ${
-                  anomaly.severity === 'high' ? 'border-destructive/20' : anomaly.severity === 'medium' ? 'border-amber-300' : 'border-primary/20'
-                }`}
+                className={cn('bg-card rounded-2xl border overflow-hidden', SEVERITY_CARD_BORDER[anomaly.severity] ?? 'border-border')}
               >
                 <div
                   className="flex items-center justify-between p-5 cursor-pointer hover:bg-background"
                   onClick={() => toggle(anomaly.rule)}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">{RULE_ICONS[anomaly.rule] ?? '⚠️'}</span>
+                    <RuleIcon rule={anomaly.rule} severity={anomaly.severity} />
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-foreground">{t(RULE_LABEL_KEYS[anomaly.rule] ?? anomaly.rule)}</h3>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${SEVERITY_COLORS[anomaly.severity]}`}>
+                        <h3 className={TYPOGRAPHY.cardTitle}>{t(RULE_LABEL_KEYS[anomaly.rule] ?? anomaly.rule)}</h3>
+                        <Badge variant={SEVERITY_BADGE[anomaly.severity] ?? 'neutral'}>
                           {t('anomalyPage.riskLevel', { level: t(SEVERITY_LABEL_KEYS[anomaly.severity]) })}
-                        </span>
+                        </Badge>
                         <span className="text-sm font-bold text-destructive">{t('anomalyPage.itemCount', { count: anomaly.affectedCount })}</span>
                       </div>
                       <p className="text-sm text-muted-foreground mt-0.5">{anomaly.description}</p>
@@ -237,17 +272,18 @@ export default function PayrollAnomaliesClient({ user: _user }: { user: SessionU
               </div>
             ))}
 
-            {/* Placeholder cards for rules with no anomalies */}
+            {/* Placeholder cards for rules with no anomalies — AN-5: EmptyState (sm) */}
             {ALL_RULES
               .filter(rule => !data.anomalies.find(a => a.rule === rule))
               .map(rule => (
-                <div key={rule} className={`${CARD_STYLES.kpi} flex items-center gap-3 opacity-60`}>
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                  <div>
-                    <h3 className="font-medium text-muted-foreground">{t(RULE_LABEL_KEYS[rule] ?? rule)}</h3>
-                    <p className="text-sm text-muted-foreground">{t('anomalyPage.noAnomalies')}</p>
-                  </div>
-                </div>
+                <EmptyState
+                  key={rule}
+                  icon={CheckCircle2}
+                  title={t(RULE_LABEL_KEYS[rule] ?? rule)}
+                  sub={t('anomalyPage.noAnomalies')}
+                  size="sm"
+                  standalone
+                />
               ))}
           </div>
         </>

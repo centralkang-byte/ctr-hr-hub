@@ -44,13 +44,13 @@ const DEFAULT_SETTINGS: OvertimeSettings = {
 
 // Country reference rates (from laborConfig, read-only)
 const COUNTRY_RATES = [
-  { flag: '🇰🇷', code: 'CTR', weekday: 1.5, night: 0.5, holiday: 1.5 },
-  { flag: '🇨🇳', code: 'CTR-CN', weekday: 1.5, night: 0, holiday: 3.0 },
-  { flag: '🇺🇸', code: 'CTR-US', weekday: 1.5, night: 0, holiday: 1.5 },
-  { flag: '🇻🇳', code: 'CTR-VN', weekday: 2.0, night: 0.3, holiday: 3.0 },
-  { flag: '🇷🇺', code: 'CTR-RU', weekday: 1.5, night: 0.2, holiday: 2.0 },
+  { code: 'CTR', weekday: 1.5, night: 0.5, holiday: 1.5 },
+  { code: 'CTR-CN', weekday: 1.5, night: 0, holiday: 3.0 },
+  { code: 'CTR-US', weekday: 1.5, night: 0, holiday: 1.5 },
+  { code: 'CTR-VN', weekday: 2.0, night: 0.3, holiday: 3.0 },
+  { code: 'CTR-RU', weekday: 1.5, night: 0.2, holiday: 2.0 },
   // CTR-MX removed (→ CTR-US Location)
-  { flag: '🇪🇺', code: 'CTR-EU', weekday: 1.5, night: 0, holiday: 2.0 },
+  { code: 'CTR-EU', weekday: 1.5, night: 0, holiday: 2.0 },
 ] as const
 
 export function OvertimeTab({ companyId }: OvertimeTabProps) {
@@ -222,7 +222,9 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
             <tbody className="divide-y divide-border">
               {COUNTRY_RATES.map((cr) => (
                 <tr key={cr.code} className={TABLE_STYLES.row}>
-                  <td className={TABLE_STYLES.cell}>{cr.flag} {cr.code}</td>
+                  <td className={TABLE_STYLES.cell}>
+                    <span className="font-mono tabular-nums">{cr.code}</span>
+                  </td>
                   <td className={TABLE_STYLES.cell}>{cr.weekday}x</td>
                   <td className={cr.night > 0 ? TABLE_STYLES.cell : 'px-4 py-2 text-center text-muted-foreground'}>
                     {cr.night > 0 ? `+${cr.night}x` : '—'}
