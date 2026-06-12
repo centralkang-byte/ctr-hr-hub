@@ -7,6 +7,7 @@
 
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import { useTranslations } from 'next-intl'
 import { getCategoryConfig, type PayrollTabSlug } from '@/components/settings/settings-config'
 import { SettingsSubPageLayout } from '@/components/settings/SettingsSubPageLayout'
 
@@ -57,8 +58,9 @@ function PayrollSettingsContent() {
 }
 
 export function PayrollSettingsClient() {
+  const t = useTranslations('common')
   return (
-    <Suspense fallback={<div className="flex items-center justify-center p-16 text-muted-foreground">{'Loading...'}</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center p-16 text-muted-foreground">{t('loading')}</div>}>
       <PayrollSettingsContent />
     </Suspense>
   )

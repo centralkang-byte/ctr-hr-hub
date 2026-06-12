@@ -1,7 +1,7 @@
 'use client'
 
 import { Save, RotateCcw, Loader2 } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { OverrideBadge } from '@/components/settings/OverrideBadge'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { InterviewFormSetting, InterviewFormCategoryEntry } from '@/types/process-settings'
@@ -43,7 +43,7 @@ export function InterviewFormTab({
           <p className="text-sm text-muted-foreground">{t('interview_ked8f89ea_keab8b0eb_ked95adeb_management')}</p>
         </div>
         {isOverridden && (
-          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
+          <OverrideBadge>{t('company_kec98a4eb')}</OverrideBadge>
         )}
       </div>
       {settings.categories.map((cat) => (

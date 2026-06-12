@@ -4,8 +4,8 @@ import { useEffect, useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { Save, RotateCcw, Loader2 } from 'lucide-react'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
+import { OverrideBadge } from '@/components/settings/OverrideBadge'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
@@ -107,7 +107,7 @@ export function BonusRulesTab({
           <p className="text-sm text-muted-foreground">{t('bonusRules.subtitle')}</p>
         </div>
         {isOverridden && (
-          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
+          <OverrideBadge>{t('company_kec98a4eb')}</OverrideBadge>
         )}
       </div>
 

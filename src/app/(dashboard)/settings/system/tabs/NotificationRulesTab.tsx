@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2, Plus, Bell } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
@@ -49,7 +50,7 @@ export function NotificationRulesTab({
                 <td className={TABLE_STYLES.cell}><div className="flex gap-1">{(trig.channels ?? []).map((ch) => (
                   <span key={ch} className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">{ch}</span>
                 ))}</div></td>
-                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!trig.deletedAt ? 'bg-tertiary-container/10 text-tertiary' : 'bg-muted/50 text-muted-foreground/60'}`}>{!trig.deletedAt ? t('common.active') : t('common.inactive')}</span></td>
+                <td className={`${TABLE_STYLES.cell} text-center`}><Badge variant={!trig.deletedAt ? 'success' : 'neutral'}>{!trig.deletedAt ? t('common.active') : t('common.inactive')}</Badge></td>
               </tr>
             ))}</tbody>
           </table>

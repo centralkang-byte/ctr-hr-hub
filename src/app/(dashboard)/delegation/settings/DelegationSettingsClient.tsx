@@ -23,6 +23,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Input } from '@/components/ui/input'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { EmptyState } from '@/components/shared/EmptyState'
@@ -281,7 +282,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                               {daysLeft > 0 && (
                                 <Badge
                                   variant="outline"
-                                  className={`text-[9px] px-1 ${daysLeft <= 3 ? 'border-destructive/20 text-red-500' : 'border-primary/20 text-primary'}`}
+                                  className={`text-[9px] px-1 ${daysLeft <= 3 ? 'border-destructive/20 text-destructive' : 'border-primary/20 text-primary'}`}
                                 >
                                   D-{daysLeft}
                                 </Badge>
@@ -293,13 +294,15 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                           </div>
                         </div>
                         <Button
+                          type="button"
                           size="sm"
                           variant="outline"
-                          className="gap-1 text-[11px] text-red-500 border-destructive/20 hover:bg-destructive/10"
+                          aria-label={`${d.delegatee?.name ?? t('unknown')} ${t('button.revoke')}`}
+                          className="gap-1 text-[11px] text-destructive border-destructive/20 hover:bg-destructive/10"
                           disabled={processing}
                           onClick={() => handleRevoke(d.id)}
                         >
-                          <XCircle className="h-3.5 w-3.5" />
+                          <XCircle className="h-3.5 w-3.5" aria-hidden="true" />
                           {t('button.revoke')}
                         </Button>
                       </div>
@@ -315,11 +318,11 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
             <Card className="border-border">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                  <CheckCircle2 className="h-5 w-5 text-tertiary" />
                   <CardTitle className="text-base font-bold text-foreground">
                     {t('section.receivedDelegations')}
                   </CardTitle>
-                  <Badge className="bg-emerald-500/100 text-white text-[10px] px-1.5 rounded-full">
+                  <Badge variant="success" className="text-[10px] px-1.5 rounded-full">
                     {activeReceived.length}
                   </Badge>
                 </div>
@@ -329,10 +332,10 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                   {activeReceived.map((d) => (
                     <div
                       key={d.id}
-                      className="flex items-center gap-4 rounded-xl border border-emerald-100 bg-tertiary-container/10 p-4"
+                      className="flex items-center gap-4 rounded-xl border border-tertiary/20 bg-tertiary-container/10 p-4"
                     >
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/100/10">
-                        <User className="h-5 w-5 text-emerald-500" />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-tertiary/10">
+                        <User className="h-5 w-5 text-tertiary" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
@@ -344,7 +347,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                         <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
                           <CalendarDays className="h-3 w-3" />
                           <span>{formatDateLocale(d.startDate)} ~ {formatDateLocale(d.endDate)}</span>
-                          <Badge variant="outline" className="text-[9px] border-emerald-100 text-emerald-500">
+                          <Badge variant="success" className="text-[9px]">
                             {d.scope === 'ALL' ? t('scope.all') : t('scope.leaveOnly')}
                           </Badge>
                         </div>
@@ -392,12 +395,9 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
                           </span>
                         </div>
                       </div>
-                      <Badge
-                        variant="outline"
-                        className={`text-[10px] ${d.status === 'EXPIRED' ? 'border-amber-300 text-amber-700' : 'border-destructive/20 text-red-500'}`}
-                      >
+                      <StatusBadge status={d.status} className="text-[10px]">
                         {d.status === 'EXPIRED' ? t('status.expired') : t('status.revoked')}
-                      </Badge>
+                      </StatusBadge>
                     </div>
                   ))}
                 </div>
@@ -426,7 +426,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
           <CardContent className="space-y-5">
             {/* Error */}
             {error && (
-              <div className="flex items-start gap-2 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-xs text-red-500">
+              <div className="flex items-start gap-2 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-xs text-destructive">
                 <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
                 {error}
               </div>
@@ -435,7 +435,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
             {/* Step 1: Select Delegatee */}
             <div className="space-y-2">
               <label className="text-xs font-semibold text-foreground">
-                {t('create.delegatee')} <span className="text-red-500">*</span>
+                {t('create.delegatee')} <span className="text-destructive">*</span>
               </label>
               {selectedDelegatee ? (
                 <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-background p-3">
@@ -517,7 +517,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-foreground">
-                  {t('create.startDate')} <span className="text-red-500">*</span>
+                  {t('create.startDate')} <span className="text-destructive">*</span>
                 </label>
                 <Input
                   type="date"
@@ -529,7 +529,7 @@ export function DelegationSettingsClient({ user: _user }: { user: SessionUser })
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-foreground">
-                  {t('create.endDate')} <span className="text-red-500">*</span>
+                  {t('create.endDate')} <span className="text-destructive">*</span>
                 </label>
                 <Input
                   type="date"

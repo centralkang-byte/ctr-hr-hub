@@ -43,7 +43,7 @@ const GRADE_TYPE_LABEL_KEYS: Record<string, string> = {
 const GRADE_TYPE_COLORS: Record<string, string> = {
   STAFF: 'bg-primary/10 text-primary',
   SPECIALIST: 'bg-wt-4/15 text-wt-4',
-  EXECUTIVE: 'bg-amber-500/15 text-amber-700',
+  EXECUTIVE: 'bg-[#b45309]/10 text-ctr-warning',
 }
 
 const GRADE_TYPE_PREFIX: Record<string, string> = {
@@ -248,8 +248,8 @@ export function GradeTitleMappingTab({ companyId }: Props) {
                     </div>
                   ) : (
                     <div className="flex gap-1">
-                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => startEdit(m)}><Pencil className="h-3.5 w-3.5" /></Button>
-                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500" onClick={() => handleDelete(m.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                      <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => startEdit(m)} aria-label={`${m.employeeTitle.name} 수정`}><Pencil className="h-3.5 w-3.5" /></Button>
+                      <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0 text-destructive" onClick={() => handleDelete(m.id)} aria-label={`${m.employeeTitle.name} 삭제`}><Trash2 className="h-3.5 w-3.5" /></Button>
                     </div>
                   )}
                 </td>

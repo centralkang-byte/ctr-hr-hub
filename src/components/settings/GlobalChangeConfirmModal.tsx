@@ -5,7 +5,7 @@
 // Shows affected companies when changing a global value
 // ═══════════════════════════════════════════════════════════
 
-import { AlertTriangle, X } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, MinusCircle, X } from 'lucide-react'
 import { MODAL_STYLES } from '@/lib/styles'
 
 interface Company {
@@ -54,8 +54,8 @@ export function GlobalChangeConfirmModal({
         </button>
 
         {/* Icon */}
-        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/10">
-          <AlertTriangle className="h-5 w-5 text-amber-600" />
+        <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-warning-bright/15">
+          <AlertTriangle className="h-5 w-5 text-ctr-warning" />
         </div>
 
         {/* Title */}
@@ -69,8 +69,9 @@ export function GlobalChangeConfirmModal({
         {/* Affected */}
         {affected.length > 0 && (
           <div className="mb-3">
-            <p className="mb-1.5 text-xs font-medium text-foreground">
-              ✅ 즉시 적용 (글로벌 기본값 사용 중)
+            <p className="mb-1.5 flex items-center gap-1 text-xs font-medium text-foreground">
+              <CheckCircle2 className="h-3.5 w-3.5 text-[#006b39]" aria-hidden="true" />
+              즉시 적용 (글로벌 기본값 사용 중)
             </p>
             <div className="flex flex-wrap gap-1.5">
               {affected.map((c) => (
@@ -85,8 +86,9 @@ export function GlobalChangeConfirmModal({
         {/* Unaffected */}
         {unaffected.length > 0 && (
           <div className="mb-4">
-            <p className="mb-1.5 text-xs font-medium text-muted-foreground">
-              ⬜ 영향 없음 (법인 커스텀 설정 사용 중)
+            <p className="mb-1.5 flex items-center gap-1 text-xs font-medium text-muted-foreground">
+              <MinusCircle className="h-3.5 w-3.5" aria-hidden="true" />
+              영향 없음 (법인 커스텀 설정 사용 중)
             </p>
             <div className="flex flex-wrap gap-1.5">
               {unaffected.map((c) => (

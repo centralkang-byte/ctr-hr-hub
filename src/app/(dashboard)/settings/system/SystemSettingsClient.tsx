@@ -1,10 +1,10 @@
 'use client'
 
-// import { useTranslations } from 'next-intl'
 // import { EmptyState } from '@/components/ui/EmptyState'
 // import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 // import { toast } from '@/hooks/use-toast'
 
+import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 import { getCategoryConfig, type SystemTabSlug } from '@/components/settings/settings-config'
@@ -57,8 +57,9 @@ function SystemSettingsContent() {
 }
 
 export function SystemSettingsClient() {
+  const tc = useTranslations('common')
   return (
-    <Suspense fallback={<div className="flex items-center justify-center p-16 text-muted-foreground">{'Loading...'}</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center p-16 text-muted-foreground">{tc('loading')}</div>}>
       <SystemSettingsContent />
     </Suspense>
   )

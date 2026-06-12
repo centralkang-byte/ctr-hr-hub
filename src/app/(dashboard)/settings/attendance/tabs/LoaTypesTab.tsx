@@ -381,16 +381,16 @@ export function LoaTypesTab({ companyId }: Props) {
                   </td>
                   <td className={TABLE_STYLES.cell}>
                     {lt.requiresProof ? (
-                      <FileText className="h-4 w-4 text-blue-500" />
+                      <FileText className="h-4 w-4 text-wt-7" aria-label={t('loaTypes.requiresProof')} />
                     ) : (
-                      <span className="text-muted-foreground">—</span>
+                      <><span className="text-muted-foreground" aria-hidden="true">—</span><span className="sr-only">증빙 불필요</span></>
                     )}
                   </td>
                   <td className={TABLE_STYLES.cell}>
                     {lt.reinstatementGuaranteed ? (
-                      <Shield className="h-4 w-4 text-green-500" />
+                      <Shield className="h-4 w-4 text-[#006b39]" aria-label={t('loaTypes.reinstatementGuaranteed')} />
                     ) : (
-                      <span className="text-muted-foreground">—</span>
+                      <><span className="text-muted-foreground" aria-hidden="true">—</span><span className="sr-only">복직 미보장</span></>
                     )}
                   </td>
                   <td className={cn(TABLE_STYLES.cell, 'text-right')}>
@@ -401,11 +401,11 @@ export function LoaTypesTab({ companyId }: Props) {
                       </div>
                     ) : (
                       <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => startEdit(lt)}>
-                          <Pencil className="h-3.5 w-3.5" />
+                        <Button type="button" variant="ghost" size="sm" className="h-7 w-7 p-0" aria-label={`${lt.name} ${t('common.edit')}`} onClick={() => startEdit(lt)}>
+                          <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-red-500 hover:text-destructive" onClick={() => handleDelete(lt.id)}>
-                          <Trash2 className="h-3.5 w-3.5" />
+                        <Button type="button" variant="ghost" size="sm" className="h-7 w-7 p-0 text-destructive hover:text-destructive/80" aria-label={`${lt.name} ${t('common.delete')}`} onClick={() => handleDelete(lt.id)}>
+                          <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                         </Button>
                       </div>
                     )}

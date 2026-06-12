@@ -4,8 +4,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus, GitBranch, ChevronDown, ChevronUp, Check, X, Loader2 } from 'lucide-react'
 import { ApprovalFlowEditor } from '@/components/settings/ApprovalFlowEditor'
+import { Badge } from '@/components/ui/badge'
 import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
+import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
 import type { ApprovalFlowData, ApprovalModule, ApproverRole } from '@/types/settings'
 
 interface Props { companyId: string | null }
@@ -74,6 +76,14 @@ export function ApprovalFlowsTab({ companyId }: Props) {
   const filteredFlows = moduleFilter === 'all'
     ? flows
     : flows.filter(f => f.module === moduleFilter)
+
+  // 모듈 필터 = 패널 없는 단일선택 그룹 → radiogroup roving tabindex
+  const moduleFilterIndex = MODULE_OPTIONS.findIndex(o => o.value === moduleFilter)
+  const moduleNav = useArrowKeyNavigation(
+    MODULE_OPTIONS.length,
+    moduleFilterIndex < 0 ? 0 : moduleFilterIndex,
+    (i) => setModuleFilter(MODULE_OPTIONS[i].value),
+  )
 
   const handleSave = async (flow: ApprovalFlowData) => {
     setSaving(true)
@@ -146,15 +156,24 @@ export function ApprovalFlowsTab({ companyId }: Props) {
       </div>
 
       {/* 모듈 필터 */}
-      <div className="flex flex-wrap gap-1.5">
-        {MODULE_OPTIONS.map(opt => (
+      <div
+        role="radiogroup"
+        aria-label={t('approvalFlows.title')}
+        onKeyDown={moduleNav.onKeyDown}
+        className="flex flex-wrap gap-1.5"
+      >
+        {MODULE_OPTIONS.map((opt, i) => (
           <button
             key={opt.value}
+            type="button"
+            role="radio"
+            aria-checked={moduleFilter === opt.value}
+            {...moduleNav.itemProps(i)}
             onClick={() => setModuleFilter(opt.value)}
             className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               moduleFilter === opt.value
                 ? 'bg-primary text-white'
-                : 'bg-muted text-muted-foreground hover:bg-muted'
+                : 'bg-muted text-muted-foreground hover:bg-muted/70'
             }`}
           >
             {t(opt.labelKey)}
@@ -197,13 +216,9 @@ export function ApprovalFlowsTab({ companyId }: Props) {
                           <span className="text-sm font-semibold text-foreground">
                             {t(MODULE_LABEL_KEYS[flow.module] ?? flow.module)}
                           </span>
-                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                            !flow.deletedAt
-                              ? 'bg-emerald-500/10 text-emerald-600'
-                              : 'bg-muted text-muted-foreground/60'
-                          }`}>
+                          <Badge variant={!flow.deletedAt ? 'success' : 'neutral'}>
                             {!flow.deletedAt ? t('common.active') : t('common.inactive')}
-                          </span>
+                          </Badge>
                           {!flow.companyId && (
                             <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">{t('common.global')}</span>
                           )}

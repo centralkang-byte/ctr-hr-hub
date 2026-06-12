@@ -220,8 +220,8 @@ function LeaveTypeDetailPanel({
       <div className="relative w-full max-w-md bg-card p-6 shadow-lg animate-in slide-in-from-right duration-200">
         <div className="mb-6 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-foreground">{t('leaveTypes.detailTitle')}</h3>
-          <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground">
-            <X className="h-5 w-5" />
+          <button type="button" onClick={onClose} aria-label={tc('close')} className="text-muted-foreground hover:text-foreground">
+            <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
 

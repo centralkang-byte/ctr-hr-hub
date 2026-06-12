@@ -3,6 +3,7 @@
 
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import { useTranslations } from 'next-intl'
 import { getCategoryConfig, type OrganizationTabSlug } from '@/components/settings/settings-config'
 import { SettingsSubPageLayout } from '@/components/settings/SettingsSubPageLayout'
 
@@ -60,8 +61,9 @@ function OrganizationSettingsContent() {
 }
 
 export function OrganizationSettingsClient() {
+  const t = useTranslations('common')
   return (
-    <Suspense fallback={<div className="flex items-center justify-center p-16 text-muted-foreground">{'Loading...'}</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center p-16 text-muted-foreground">{t('loading')}</div>}>
       <OrganizationSettingsContent />
     </Suspense>
   )

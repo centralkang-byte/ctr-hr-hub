@@ -60,7 +60,7 @@ export function GlobalOverrideBadge({ isOverride, companyId, endpoint, onChanged
 
   return (
     <div className="flex items-center gap-3">
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-500/15 px-3 py-1 text-xs font-medium text-emerald-700">
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-wd-orange/30 bg-wd-orange-soft px-3 py-1 text-xs font-medium text-wd-orange-ink">
         <Pencil className="h-3.5 w-3.5" />
         커스텀 설정 적용 중
       </span>
@@ -72,7 +72,7 @@ export function GlobalOverrideBadge({ isOverride, companyId, endpoint, onChanged
             type="button"
             onClick={handleRevertToGlobal}
             disabled={loading}
-            className="rounded-lg border border-red-300 px-2.5 py-1 text-xs text-destructive hover:bg-destructive/10 disabled:opacity-50"
+            className="rounded-lg border border-destructive/30 px-2.5 py-1 text-xs text-destructive hover:bg-destructive/10 disabled:opacity-50"
           >
             {loading ? '처리중...' : '확인'}
           </button>
