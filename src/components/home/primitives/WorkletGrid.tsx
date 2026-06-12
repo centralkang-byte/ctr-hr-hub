@@ -25,16 +25,6 @@ export type WorkletTone =
   | 'wt-7' // organization (steel)
   | 'wt-8' // analytics (coral)
 
-export type WorkletInlineTone = 'danger' | 'warn' | 'neutral'
-
-export interface WorkletInlineRow {
-  tone: WorkletInlineTone
-  /** dot 라벨 a11y용 짧은 텍스트 (예: "위험") */
-  toneLabel?: string
-  /** 표시 텍스트 (JSX 허용 — bold 강조 등) */
-  text: React.ReactNode
-}
-
 export interface WorkletTile {
   id: string
   icon: LucideIcon
@@ -44,8 +34,6 @@ export interface WorkletTile {
   href: string
   /** 우상단 배지 (옵셔널) — 미정의 시 미표시 */
   count?: number
-  /** 인라인 dot 2줄 (옵셔널) */
-  inline?: WorkletInlineRow[]
 }
 
 interface WorkletGridProps {
@@ -66,25 +54,19 @@ const TILE_BG: Record<WorkletTone, string> = {
   'wt-8': 'bg-wt-8',
 }
 
-const DOT_BG: Record<WorkletInlineTone, string> = {
-  danger: 'bg-destructive',
-  warn: 'bg-warning-bright',
-  neutral: 'bg-muted-foreground',
-}
-
 // ─── Component ──────────────────────────────────────────────
 
 /**
  * 8 distinct colored worklet 타일 그리드.
  * - Mobile: 2 cols / sm: 3 cols / lg: 4 cols.
- * - 각 타일: Link wrapping article — title aria-labelledby + subtitle 보조.
- * - inline dot: 최대 2 rows, aria-label = toneLabel.
+ * - 각 타일: Link wrapping article — 아이콘 + 제목·부제 2줄 가로 헤더 (컴팩트).
  */
 export function WorkletGrid({ tiles, className }: WorkletGridProps) {
   return (
     <ul
       className={cn(
-        'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4',
+        // auto-rows-fr: 모든 행 등높이 (부제 줄바꿈 길이차로 카드 높이 어긋남 방지; 카드는 h-full로 채움)
+        'grid auto-rows-fr grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4',
         className,
       )}
       role="list"
@@ -117,46 +99,28 @@ export function WorkletGrid({ tiles, className }: WorkletGridProps) {
                 </span>
               ) : null}
 
-              {/* Icon tile 56×56 — proto .wd-tile (styles.css:816-833): wt 토큰 + 135deg 다크닝 그라데이션 */}
-              <div
-                className={cn(
-                  'flex h-14 w-14 items-center justify-center rounded-xl text-white',
-                  'bg-gradient-to-br from-transparent to-black/15',
-                  TILE_BG[tile.tone],
-                )}
-                aria-hidden="true"
-              >
-                <Icon className="h-[26px] w-[26px]" strokeWidth={1.6} />
-              </div>
-
-              {/* Title + Subtitle */}
-              <div>
-                <h3 id={titleId} className={cn(TYPOGRAPHY.statLabel, 'text-sm font-semibold text-foreground')}>
-                  {tile.title}
-                </h3>
-                <p className="mt-0.5 text-xs text-muted-foreground">{tile.subtitle}</p>
-              </div>
-
-              {/* Inline rows — proto .wd-w-inline: 상단 1px 구분선 (styles.css:845-852) */}
-              {tile.inline && tile.inline.length > 0 ? (
-                <div className="mt-2 flex flex-col gap-1 border-t border-border pt-2">
-                  {tile.inline.slice(0, 2).map((row, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-1.5 text-[11px] text-muted-foreground"
-                    >
-                      <span
-                        className={cn('h-1.5 w-1.5 shrink-0 rounded-full', DOT_BG[row.tone])}
-                        aria-hidden="true"
-                      />
-                      {row.toneLabel ? (
-                        <span className="sr-only">{row.toneLabel}</span>
-                      ) : null}
-                      <span className="truncate">{row.text}</span>
-                    </div>
-                  ))}
+              {/* Header: 아이콘 + 2줄 텍스트(제목·부제) 가로 배치 — 세로 공간 절약 (CEO 컴팩트 요청, proto 세로 스택 대비 의도적 편차) */}
+              <div className="flex items-center gap-3">
+                {/* Icon tile 56×56 — proto .wd-tile (styles.css:816-833): wt 토큰 + 135deg 다크닝 그라데이션 */}
+                <div
+                  className={cn(
+                    'flex h-14 w-14 shrink-0 items-center justify-center rounded-xl text-white',
+                    'bg-gradient-to-br from-transparent to-black/15',
+                    TILE_BG[tile.tone],
+                  )}
+                  aria-hidden="true"
+                >
+                  <Icon className="h-[26px] w-[26px]" strokeWidth={1.6} />
                 </div>
-              ) : null}
+
+                {/* Title + Subtitle */}
+                <div className="min-w-0">
+                  <h3 id={titleId} className={cn(TYPOGRAPHY.statLabel, 'text-sm font-semibold text-foreground')}>
+                    {tile.title}
+                  </h3>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{tile.subtitle}</p>
+                </div>
+              </div>
             </Link>
           </li>
         )
