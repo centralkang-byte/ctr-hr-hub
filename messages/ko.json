@@ -937,6 +937,11 @@
     "listQuickPanelStatus": "재직 상태",
     "listViewFullProfile": "전체 프로필 보기",
     "listBulkMovement": "일괄 발령",
+    "bulkSelectedCount": "{count}명 선택됨",
+    "bulkExportSelected": "선택 내보내기",
+    "bulkClearSelection": "선택 해제",
+    "bulkSelectAll": "전체 선택",
+    "bulkSelectRow": "{name} 선택",
     "listQuickPanelTitle": "직원 정보",
     "cancel": "취소"
   },

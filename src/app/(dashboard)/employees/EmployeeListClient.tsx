@@ -11,7 +11,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Plus, Upload, Calendar, ExternalLink, Mail, FileText } from 'lucide-react'
+import { Plus, Upload, Calendar, ExternalLink, Mail, FileText, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -27,6 +27,7 @@ import { WdStatusChips } from '@/components/shared/WdStatusChips'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { DetailPanel } from '@/components/shared/DetailPanel'
 import { EmployeeInspector } from '@/components/shared/EmployeeInspector'
+import { BulkActionBar } from '@/components/shared/BulkActionBar'
 import { wtAvatarColor } from '@/lib/styles/wt-avatar'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { EmployeeFilterPanel, type FilterValues } from '@/components/employees/EmployeeFilterPanel'
@@ -289,6 +290,10 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
   const [sortBy, setSortBy] = useState('name')
   const [sortDir, setSortDir] = useState<SortDirection>('asc')
 
+  // ─── Row selection (canary BulkActionBar) ───
+  // 쿼리(페이지·필터·정렬·검색)가 바뀌면 fetch effect에서 초기화 → 선택은 항상 현재 페이지 행만.
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+
   // ─── Data state ───
   const [employees, setEmployees] = useState<EmployeeRow[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)
@@ -318,6 +323,8 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
   // ─── Load employees ───
   useEffect(() => {
     setLoading(true)
+    // 쿼리 변경 시 선택 초기화 — 화면에 없는 행이 선택 상태로 남지 않도록 (Codex G1 MED5)
+    setSelected(new Set())
     apiClient
       .getList<EmployeeRow>('/api/v1/employees', {
         page,
@@ -375,6 +382,38 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
     document.body.removeChild(a)
     setTimeout(() => setExportLoading(false), 1000)
   }, [filters, debouncedSearch, departmentId, employmentType, status])
+
+  // ─── Selection handlers (BulkActionBar) ───
+  const toggleRow = useCallback((key: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }, [])
+
+  const toggleAllVisible = useCallback(
+    (nextAll: boolean) => {
+      // 선택은 현재 페이지 행만 — nextAll이면 현재 페이지 전체, 아니면 해제
+      setSelected(nextAll ? new Set(employees.map((e) => e.id)) : new Set())
+    },
+    [employees],
+  )
+
+  const clearSelection = useCallback(() => setSelected(new Set()), [])
+
+  // 선택 직원만 엑셀 — /export?ids= (서버에서 회사 스코프와 AND, 멀티테넌트 안전)
+  const handleExportSelected = useCallback(() => {
+    if (selected.size === 0) return
+    const params = new URLSearchParams({ ids: [...selected].join(',') })
+    const a = document.createElement('a')
+    a.href = `/api/v1/employees/export?${params.toString()}`
+    a.download = 'employees.xlsx'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+  }, [selected])
 
   // ─── Row click → URL deep link ───
   const handleRowClick = useCallback(
@@ -635,6 +674,13 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
             : undefined
         }
         rowKey={(row) => row.id}
+        // 행 선택 — /employees는 HR_UP 전용 라우트라 isHrAdmin == 전 뷰어(export 권한 보유)
+        selectable={isHrAdmin}
+        selectedKeys={selected}
+        onToggleRow={toggleRow}
+        onToggleAllVisible={toggleAllVisible}
+        selectAllLabel={t('bulkSelectAll')}
+        rowSelectLabel={(row) => t('bulkSelectRow', { name: row.name })}
       />
 
       {/* ─── P01 Master-Detail: URL Deep Link Panel ─── */}
@@ -655,6 +701,25 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
           />
         )}
       </DetailPanel>
+
+      {/* ─── Bulk Action Bar (선택 직원 일괄 작업) ─── */}
+      {/* 메시지 보내기·일괄 발령(선택주입)은 백엔드 부재 → 후속 피처로 actions 배열에 additive 추가 */}
+      {isHrAdmin && (
+        <BulkActionBar
+          count={selected.size}
+          onClear={clearSelection}
+          label={t('bulkSelectedCount', { count: selected.size })}
+          clearAriaLabel={t('bulkClearSelection')}
+          actions={[
+            {
+              label: t('bulkExportSelected'),
+              icon: Download,
+              onClick: handleExportSelected,
+              primary: true,
+            },
+          ]}
+        />
+      )}
 
       {/* Bulk Upload Wizard → /hr/bulk-movements 로 이동됨 */}
     </div>

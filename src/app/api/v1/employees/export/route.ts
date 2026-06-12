@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { badRequest } from '@/lib/errors'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
-import { employeeSearchSchema } from '@/lib/schemas/employee'
+import { employeeExportSchema } from '@/lib/schemas/employee'
 import { maskPhone } from '@/lib/masking'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
@@ -19,14 +19,17 @@ export const GET = withRateLimit(withPermission(
     const params = Object.fromEntries(req.nextUrl.searchParams.entries())
     // omit page and limit for full export
     const { page: _page, limit: _limit, ...exportParams } = params
-    const parsed = employeeSearchSchema.safeParse({ ...exportParams, page: 1, limit: 1 })
+    const parsed = employeeExportSchema.safeParse({ ...exportParams, page: 1, limit: 1 })
     if (!parsed.success) throw badRequest('잘못된 파라미터입니다.')
 
-    const { companyId, departmentId, jobGradeId, status, employmentType, contractType, hireDateFrom, hireDateTo, search } = parsed.data
+    const { companyId, departmentId, jobGradeId, status, employmentType, contractType, hireDateFrom, hireDateTo, search, ids } = parsed.data
 
     const assignmentFilter: Record<string, unknown> = {}
     if (user.role !== 'SUPER_ADMIN') assignmentFilter.companyId = user.companyId
     else if (companyId) assignmentFilter.companyId = companyId
+    // 표시용 발령 include 회사 스코프 (super-admin 법인 미지정 시 undefined = cross-company)
+    const scopeCompanyId =
+      user.role !== 'SUPER_ADMIN' ? user.companyId : companyId ?? undefined
     if (departmentId) assignmentFilter.departmentId = departmentId
     if (jobGradeId) assignmentFilter.jobGradeId = jobGradeId
     if (status) assignmentFilter.status = status
@@ -41,6 +44,9 @@ export const GET = withRateLimit(withPermission(
 
     const where = {
       deletedAt: null,
+      // 선택 내보내기: id IN ids 는 회사 스코프(assignments.some.companyId)와 AND로 결합 —
+      // 타 법인 id를 넘겨도 회사 필터에 막혀 0건 (멀티테넌트 누출 방지)
+      ...(ids && ids.length > 0 ? { id: { in: ids } } : {}),
       ...(Object.keys(hireDateRange).length > 0 ? { hireDate: hireDateRange } : {}),
       ...(hasAssignmentFilter ? {
         assignments: { some: { ...assignmentFilter, isPrimary: true, endDate: null } }
@@ -56,7 +62,13 @@ export const GET = withRateLimit(withPermission(
       where,
       include: {
         assignments: {
-          where: { isPrimary: true, endDate: null },
+          // 표시용 발령도 회사 스코프에 묶음 — 다회사 직원의 타 법인 조직정보 노출 방지(HIGH2).
+          // super-admin(법인 미지정)만 무스코프 = 의도된 cross-company 뷰.
+          where: {
+            isPrimary: true,
+            endDate: null,
+            ...(scopeCompanyId ? { companyId: scopeCompanyId } : {}),
+          },
           take: 1,
           include: {
             company: { select: { name: true } },
