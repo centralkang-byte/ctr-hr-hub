@@ -6,6 +6,7 @@
 // axis/grid/tooltip + RISK/HEATMAP 의미색은 비카테고리 → wt 미적용·보존.
 
 import { wtSlotColor } from './wt-avatar'
+import { STATUS_BG, STATUS_BADGE_FG } from './status'
 
 // 시리즈 슬롯 계약: idx 2/3/4 는 다수 소비처(CompaRatioTab·Succession·
 // Attrition·predictive 등)가 success-green / warning-amber / danger-red
@@ -44,6 +45,7 @@ export const CHART_THEME = {
       fontSize: '13px',
     },
     labelStyle: { fontWeight: 600, marginBottom: '4px' },
+    cursor: { fill: '#F8FAFC' },
   },
   legend: { wrapperStyle: { paddingTop: '16px', fontSize: '13px' } },
   responsive: { width: '100%', height: 320 },
@@ -89,3 +91,37 @@ export const HEATMAP_COLORS = {
   ] as const,
   text: { low: '#008b4e', mid: '#b45309', high: '#d73337' },
 } as const
+
+// ─── Recruitment 도메인 색 SSOT (Wave 1 recruitment) ─────────
+// 채용 파이프라인 단계색 — Board/dashboard/pipeline/CandidateTimeline 3중복제
+// + 값 불일치(#FF9800 vs #F4BE5E 등)를 시맨틱 SSOT로 정규화. Material(#2196F3
+// 등) 폐기, 브랜드 navy + status 패밀리로 통일. (도메인 고유색 = rules 예외#3)
+
+/** 채용 단계 union — satisfies로 누락 컴파일타임 검출 */
+export type RecruitmentStage =
+  | 'APPLIED' | 'SCREENING' | 'INTERVIEW_1' | 'INTERVIEW_2'
+  | 'FINAL' | 'OFFER' | 'OFFER_ACCEPTED' | 'OFFER_DECLINED' | 'HIRED' | 'REJECTED'
+
+/** 파이프라인 단계 차트 fill색 (funnel·stage 헤더·진행 셀) */
+export const RECRUITMENT_STAGE_COLORS = {
+  APPLIED: '#64748b',        // neutral (지원 — 미분류)
+  SCREENING: '#004964',      // navy (진행)
+  INTERVIEW_1: '#004964',
+  INTERVIEW_2: '#004964',
+  OFFER: '#004964',
+  FINAL: '#d0901e',          // warning amber (최종 — 주의 환기)
+  OFFER_ACCEPTED: '#008b4e', // success
+  HIRED: '#008b4e',
+  OFFER_DECLINED: '#d73337', // error
+  REJECTED: '#d73337',
+} satisfies Record<RecruitmentStage, string>
+
+/** 면접 추천 등급색 (bg/text 분리 — D17). STATUS_BG·STATUS_BADGE_FG 재사용.
+ *  recommendation 문자열로 인덱싱(+fallback)되므로 Record<string,…> 명시 타입. */
+export const RECOMMENDATION_COLORS: Record<string, { bg: string; text: string }> = {
+  STRONG_YES: { bg: STATUS_BG.success, text: STATUS_BADGE_FG.success },
+  YES: { bg: STATUS_BG.success, text: STATUS_BADGE_FG.success },
+  NEUTRAL: { bg: STATUS_BG.warning, text: STATUS_BADGE_FG.warning },
+  NO: { bg: STATUS_BG.error, text: STATUS_BADGE_FG.error },
+  STRONG_NO: { bg: STATUS_BG.error, text: STATUS_BADGE_FG.error },
+}

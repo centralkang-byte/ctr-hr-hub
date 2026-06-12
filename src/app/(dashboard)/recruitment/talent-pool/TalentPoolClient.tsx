@@ -42,14 +42,14 @@ interface TalentPoolEntry {
 
 const POOL_REASON_LABELS: Record<string, { labelKey: string; color: string }> = {
   rejected_qualified: { labelKey: 'poolReasonRejectedQualified', color: 'bg-primary/15 text-primary/90' },
-  withdrawn: { labelKey: 'poolReasonWithdrawn', color: 'bg-amber-500/15 text-amber-700' },
-  overqualified: { labelKey: 'poolReasonOverqualified', color: 'bg-sky-500/10 text-sky-700' },
+  withdrawn: { labelKey: 'poolReasonWithdrawn', color: 'bg-warning-bright/15 text-ctr-warning' },
+  overqualified: { labelKey: 'poolReasonOverqualified', color: 'bg-wt-7/10 text-wt-7' },
   manual: { labelKey: 'poolReasonManual', color: 'bg-background text-muted-foreground' },
 }
 
 const STATUS_LABELS: Record<string, { labelKey: string; color: string }> = {
-  active: { labelKey: 'poolStatusActive', color: 'bg-emerald-500/15 text-emerald-700' },
-  contacted: { labelKey: 'poolStatusContacted', color: 'bg-amber-500/15 text-amber-700' },
+  active: { labelKey: 'poolStatusActive', color: 'bg-tertiary/10 text-[#006b39]' },
+  contacted: { labelKey: 'poolStatusContacted', color: 'bg-warning-bright/15 text-ctr-warning' },
   expired: { labelKey: 'poolStatusExpired', color: 'bg-background text-muted-foreground' },
   hired: { labelKey: 'poolStatusHired', color: 'bg-primary/10 text-primary/90' },
 }
@@ -129,8 +129,8 @@ export default function TalentPoolClient({user: _user }: {
       <div className="grid grid-cols-4 gap-4">
         {[
           { label: t('all_kec9db8ec'), value: stats.total, icon: <Users size={18} />, color: 'text-primary/90' },
-          { label: t('active'), value: stats.active, icon: <CheckCircle2 size={18} />, color: 'text-emerald-700' },
-          { label: t('kr_keca091ec_keca491'), value: stats.contacted, icon: <Mail size={18} />, color: 'text-amber-700' },
+          { label: t('active'), value: stats.active, icon: <CheckCircle2 size={18} />, color: 'text-[#006b39]' },
+          { label: t('kr_keca091ec_keca491'), value: stats.contacted, icon: <Mail size={18} />, color: 'text-ctr-warning' },
           { label: t('kr_30kec9dbc_keb82b4_keba78ceb'), value: stats.expiringSoon, icon: <Clock size={18} />, color: 'text-destructive' },
         ].map((kpi) => (
           <div key={kpi.label} className="bg-card rounded-xl shadow-sm border border-border p-6">
@@ -200,7 +200,7 @@ export default function TalentPoolClient({user: _user }: {
                         </span>
                       )}
                       {isExpiringSoon && (
-                        <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700">
+                        <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-warning-bright/15 text-ctr-warning">
                           <Clock size={10} />
                           {t('expiresInDays', { days: daysLeft })}
                         </span>

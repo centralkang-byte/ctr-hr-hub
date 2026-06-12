@@ -232,7 +232,7 @@ export default function PostingEditClient({
 
   const inputClass = 'w-full px-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors'
   const labelClass = 'block text-sm font-medium text-foreground mb-1'
-  const errorClass = 'text-xs text-red-500 mt-1'
+  const errorClass = 'text-xs text-destructive mt-1'
 
   if (dataLoading) {
     return (
@@ -253,7 +253,7 @@ export default function PostingEditClient({
         </button>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">
-            <Briefcase className="w-5 h-5 text-blue-500" />
+            <Briefcase className="w-5 h-5 text-primary" />
           </div>
           <h1 className="text-xl font-bold text-foreground tracking-[-0.02em]">{t('editPostingTitle')}</h1>
         </div>

@@ -309,7 +309,7 @@ export function InterviewFormClient({
                     flex: 1,
                     fontSize: 14,
                     color: 'hsl(var(--foreground))',
-                    backgroundColor: '#FAFAFA',
+                    backgroundColor: 'hsl(var(--muted))',
                   }}
                 >
                   {selectedEmployeeName}
@@ -405,11 +405,11 @@ export function InterviewFormClient({
                             cursor: 'pointer',
                             fontSize: 14,
                             color: 'hsl(var(--foreground))',
-                            borderBottom: '1px solid #F5F5F5',
+                            borderBottom: '1px solid hsl(var(--muted))',
                             transition: 'background 0.15s ease',
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#FAFAFA'
+                            e.currentTarget.style.backgroundColor = 'hsl(var(--muted))'
                           }}
                           onMouseLeave={(e) => {
                             e.currentTarget.style.backgroundColor = 'transparent'
@@ -536,7 +536,7 @@ export function InterviewFormClient({
               justifyContent: 'flex-end',
               gap: 8,
               paddingTop: 12,
-              borderTop: '1px solid #E8E8E8',
+              borderTop: '1px solid hsl(var(--border))',
             }}
           >
             <Button
@@ -553,8 +553,8 @@ export function InterviewFormClient({
               disabled={!isValid || submitting}
               style={{
                 borderRadius: 8,
-                backgroundColor: isValid ? '#004964' : '#E8E8E8',
-                color: isValid ? '#FFFFFF' : '#999',
+                backgroundColor: isValid ? 'hsl(var(--primary))' : 'hsl(var(--border))',
+                color: isValid ? '#FFFFFF' : 'hsl(var(--muted-foreground))',
               }}
             >
               {submitting && (

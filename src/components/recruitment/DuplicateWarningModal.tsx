@@ -33,7 +33,7 @@ const MATCH_TYPE_LABELS: Record<string, string> = {
 
 const MATCH_TYPE_COLORS: Record<string, string> = {
   email: 'bg-destructive/10 text-destructive',
-  phone: 'bg-amber-500/15 text-amber-700',
+  phone: 'bg-warning-bright/15 text-ctr-warning',
   name_dob: 'bg-primary/15 text-primary/90',
 }
 
@@ -44,8 +44,8 @@ export default function DuplicateWarningModal({ matches, onProceed, onCancel }: 
         {/* 헤더 */}
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-amber-500/15 flex items-center justify-center">
-              <AlertTriangle size={20} className="text-amber-700" />
+            <div className="w-10 h-10 rounded-full bg-warning-bright/15 flex items-center justify-center">
+              <AlertTriangle size={20} className="text-ctr-warning" />
             </div>
             <div>
               <h2 className="text-lg font-semibold text-foreground">중복 후보자 감지</h2>
@@ -96,8 +96,8 @@ export default function DuplicateWarningModal({ matches, onProceed, onCancel }: 
         </div>
 
         {/* 안내 */}
-        <div className="mx-6 mb-4 p-3 bg-amber-500/15 rounded-lg">
-          <p className="text-xs text-amber-700">
+        <div className="mx-6 mb-4 p-3 bg-warning-bright/15 rounded-lg">
+          <p className="text-xs text-ctr-warning">
             중복 후보자를 등록하면 시스템 내 데이터가 분산될 수 있습니다.
             기존 후보자를 확인하거나, 새 후보자로 계속 진행하세요.
           </p>
@@ -113,7 +113,7 @@ export default function DuplicateWarningModal({ matches, onProceed, onCancel }: 
           </button>
           <button
             onClick={onProceed}
-            className="flex items-center gap-1.5 px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white rounded-lg text-sm font-medium"
+            className="flex items-center gap-1.5 px-4 py-2 bg-warm hover:brightness-95 text-white rounded-lg text-sm font-medium"
           >
             <ArrowRight size={14} />
             그래도 신규 등록

@@ -119,7 +119,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">
-              {t('company')} <span className="text-red-500">*</span>
+              {t('company')} <span className="text-destructive">*</span>
             </label>
             <select
               value={form.companyId}
@@ -135,7 +135,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
           </div>
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">
-              {t('department')} <span className="text-red-500">*</span>
+              {t('department')} <span className="text-destructive">*</span>
             </label>
             <select
               value={form.departmentId}
@@ -153,7 +153,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
         {/* 직무명 */}
         <div>
           <label className="block text-sm font-medium text-foreground mb-1.5">
-            {t('kr_kecb184ec_keca781eb')} <span className="text-red-500">*</span>
+            {t('kr_kecb184ec_keca781eb')} <span className="text-destructive">*</span>
           </label>
           <input
             value={form.title}
@@ -253,7 +253,7 @@ export default function RequisitionFormClient({ user }: { user: SessionUser }) {
         {/* 채용 사유 */}
         <div>
           <label className="block text-sm font-medium text-foreground mb-1.5">
-            {t('kr_kecb184ec_kec82acec')} <span className="text-red-500">*</span>
+            {t('kr_kecb184ec_kec82acec')} <span className="text-destructive">*</span>
           </label>
           <textarea
             rows={4}

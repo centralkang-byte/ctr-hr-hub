@@ -105,7 +105,7 @@ export default function RecruitmentListClient({ user }: Props) {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">
-            <Briefcase className="w-5 h-5 text-blue-500" />
+            <Briefcase className="w-5 h-5 text-primary" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-foreground tracking-[-0.02em]">
@@ -206,7 +206,7 @@ export default function RecruitmentListClient({ user }: Props) {
                   <td className="px-4 py-3 text-sm text-foreground text-center">
                     {row.headcount}
                   </td>
-                  <td className="px-4 py-3 text-sm text-blue-500 font-medium text-center">
+                  <td className="px-4 py-3 text-sm text-primary font-medium text-center">
                     {row._count.applications}
                   </td>
                   <td className="px-4 py-3">

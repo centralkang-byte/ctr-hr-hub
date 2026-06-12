@@ -34,6 +34,7 @@ import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
+import { RECRUITMENT_STAGE_COLORS } from '@/lib/styles/chart'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -91,19 +92,6 @@ const STAGE_LABEL_KEYS: Record<string, string> = {
   OFFER_DECLINED: 'stageShortOFFER_DECLINED',
   HIRED: 'stageShortHIRED',
   REJECTED: 'stageShortREJECTED',
-}
-
-const STAGE_COLORS: Record<string, string> = {
-  APPLIED: '#999999',
-  SCREENING: '#2196F3',
-  INTERVIEW_1: '#2196F3',
-  INTERVIEW_2: '#2196F3',
-  FINAL: '#FF9800',
-  OFFER: '#004964',
-  OFFER_ACCEPTED: '#059669',
-  OFFER_DECLINED: '#D97706',
-  HIRED: '#004964',
-  REJECTED: '#F44336',
 }
 
 // ─── KPI Card Component ─────────────────────────────────────
@@ -281,7 +269,7 @@ export function RecruitmentDashboardClient(_props: {
     {
       label: t('kpiActivePostings'),
       icon: UserPlus,
-      color: '#2196F3',
+      color: CHART_THEME.colors[0],
       format: (k) => String(k.activePostings),
     },
     {
@@ -293,7 +281,7 @@ export function RecruitmentDashboardClient(_props: {
     {
       label: t('kpiAvgTimeToHire'),
       icon: Clock,
-      color: '#FF9800',
+      color: 'hsl(var(--wd-orange))',
       format: (k) => (k.avgTimeToHire != null ? t('avgTimeToHireDays', { days: k.avgTimeToHire }) : '-'),
     },
     {
@@ -309,7 +297,7 @@ export function RecruitmentDashboardClient(_props: {
     stage: item.stage,
     stageName: STAGE_LABEL_KEYS[item.stage] ? t(STAGE_LABEL_KEYS[item.stage]) : item.stage,
     count: item.count,
-    fill: STAGE_COLORS[item.stage] ?? '#999',
+    fill: RECRUITMENT_STAGE_COLORS[item.stage as keyof typeof RECRUITMENT_STAGE_COLORS] ?? CHART_THEME.axis.tick.fill,
   }))
 
   return (
@@ -369,16 +357,16 @@ export function RecruitmentDashboardClient(_props: {
                 stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray}
                 horizontal={false}
               />
-              <XAxis type="number" tick={{ fontSize: 12, fill: '#999' }} />
+              <XAxis type="number" tick={{ fontSize: 12, fill: CHART_THEME.axis.tick.fill }} />
               <YAxis
                 type="category"
                 dataKey="stageName"
                 width={80}
-                tick={{ fontSize: 13, fill: '#1A1A1A' }}
+                tick={{ fontSize: 13, fill: CHART_THEME.axis.label.fill }}
               />
               <Tooltip
                 content={<CustomTooltip t={t} />}
-                cursor={{ fill: '#FAFAFA' }}
+                cursor={{ fill: CHART_THEME.tooltip.cursor.fill }}
               />
               <Bar
                 dataKey="count"
@@ -386,7 +374,7 @@ export function RecruitmentDashboardClient(_props: {
                 barSize={28}
                 label={{
                   position: 'right',
-                  fill: '#666',
+                  fill: CHART_THEME.axis.tick.fill,
                   fontSize: 13,
                   fontWeight: 600,
                 }}
@@ -471,7 +459,7 @@ export function RecruitmentDashboardClient(_props: {
                       <td className="px-4 py-3 text-sm font-medium text-foreground">{row.companyName}</td>
                       <td className="px-4 py-3 text-sm text-foreground text-right">{row.total}</td>
                       <td className="px-4 py-3 text-sm text-primary/90 text-right">{row.withActivePosting}</td>
-                      <td className="px-4 py-3 text-sm text-amber-700 text-right">{row.withoutPosting}</td>
+                      <td className="px-4 py-3 text-sm text-ctr-warning text-right">{row.withoutPosting}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -538,8 +526,8 @@ export function RecruitmentDashboardClient(_props: {
                           borderRadius: 4,
                           fontSize: 12,
                           fontWeight: 600,
-                          backgroundColor: '#E3F2FD',
-                          color: '#2196F3',
+                          backgroundColor: 'hsl(var(--primary) / 0.08)',
+                          color: 'hsl(var(--primary))',
                         }}
                       >
                         {t('countPeople', { count: posting.applicantCount })}

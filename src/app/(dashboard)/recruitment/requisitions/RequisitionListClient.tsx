@@ -12,7 +12,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Plus, Search, Filter, ChevronRight, Clock, CheckCircle2,
-  XCircle, FileText, Building2,
+  XCircle, FileText, Building2, Circle,
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
@@ -44,14 +44,14 @@ interface Requisition {
 
 const URGENCY_LABELS: Record<string, { labelKey: string; color: string }> = {
   urgent: { labelKey: 'urgencyUrgent', color: 'bg-destructive/10 text-destructive' },
-  normal: { labelKey: 'urgencyNormal', color: 'bg-amber-500/15 text-amber-700' },
-  low: { labelKey: 'urgencyLow', color: 'bg-sky-500/10 text-sky-700' },
+  normal: { labelKey: 'urgencyNormal', color: 'bg-warning-bright/15 text-ctr-warning' },
+  low: { labelKey: 'urgencyLow', color: 'bg-wt-7/10 text-wt-7' },
 }
 
 const STATUS_LABELS: Record<string, { labelKey: string; color: string; icon: React.ReactNode }> = {
   draft: { labelKey: 'statusDraft', color: 'bg-background text-muted-foreground', icon: <FileText size={12} /> },
-  pending: { labelKey: 'statusPending', color: 'bg-amber-500/15 text-amber-700', icon: <Clock size={12} /> },
-  approved: { labelKey: 'statusApproved', color: 'bg-emerald-500/15 text-emerald-700', icon: <CheckCircle2 size={12} /> },
+  pending: { labelKey: 'statusPending', color: 'bg-warning-bright/15 text-ctr-warning', icon: <Clock size={12} /> },
+  approved: { labelKey: 'statusApproved', color: 'bg-tertiary/10 text-[#006b39]', icon: <CheckCircle2 size={12} /> },
   rejected: { labelKey: 'statusRejected', color: 'bg-destructive/10 text-destructive', icon: <XCircle size={12} /> },
   cancelled: { labelKey: 'statusCancelled', color: 'bg-background text-muted-foreground', icon: <XCircle size={12} /> },
   filled: { labelKey: 'statusFilled', color: 'bg-primary/10 text-primary/90', icon: <CheckCircle2 size={12} /> },
@@ -234,11 +234,11 @@ export default function RequisitionListClient({ user, canViewAll, canCreate }: P
                             <div key={record.id} className="flex items-center gap-1">
                               <div className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${
                                 isRejected ? 'bg-destructive/10 text-destructive' :
-                                isDone ? 'bg-emerald-500/15 text-emerald-700' :
-                                isActive ? 'bg-amber-500/15 text-amber-700' :
+                                isDone ? 'bg-tertiary/10 text-[#006b39]' :
+                                isActive ? 'bg-warning-bright/15 text-ctr-warning' :
                                 'bg-muted text-muted-foreground'
                               }`}>
-                                {isDone ? '✅' : isRejected ? '❌' : isActive ? '⏳' : '⬜'}
+                                {isDone ? <CheckCircle2 size={12} aria-hidden /> : isRejected ? <XCircle size={12} aria-hidden /> : isActive ? <Clock size={12} aria-hidden /> : <Circle size={12} aria-hidden />}
                                 {t(STEP_ROLE_LABELS[record.approverRole] ?? record.approverRole)}
                               </div>
                               {idx < item.approvalRecords.length - 1 && (
@@ -255,7 +255,7 @@ export default function RequisitionListClient({ user, canViewAll, canCreate }: P
                     {canApprove && (
                       <button
                         onClick={() => setApproveTarget(item)}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 text-white text-xs font-medium rounded-lg hover:bg-emerald-700 motion-safe:transition-all"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-tertiary text-white text-xs font-medium rounded-lg hover:brightness-95 motion-safe:transition-all"
                       >
                         <CheckCircle2 size={13} />
                         {t('approve')}

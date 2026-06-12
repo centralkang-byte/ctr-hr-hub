@@ -65,8 +65,8 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
               <span className="text-xs font-mono tabular-nums text-muted-foreground">{requisition.reqNumber}</span>
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                 requisition.urgency === 'urgent' ? 'bg-destructive/10 text-destructive' :
-                requisition.urgency === 'normal' ? 'bg-amber-500/15 text-amber-700' :
-                'bg-sky-500/10 text-sky-700'
+                requisition.urgency === 'normal' ? 'bg-warning-bright/15 text-ctr-warning' :
+                'bg-wt-7/10 text-wt-7'
               }`}>
                 {requisition.urgency === 'urgent' ? '긴급' : requisition.urgency === 'normal' ? '보통' : '낮음'}
               </span>
@@ -108,7 +108,7 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
           <button
             onClick={() => handleDecision('reject')}
             disabled={loading}
-            className="flex items-center gap-1.5 px-4 py-2 border border-red-300 text-destructive rounded-lg text-sm hover:bg-destructive/10 disabled:opacity-50"
+            className="flex items-center gap-1.5 px-4 py-2 border border-destructive/40 text-destructive rounded-lg text-sm hover:bg-destructive/10 disabled:opacity-50"
           >
             <XCircle size={15} />
             {'반려'}
@@ -116,7 +116,7 @@ export default function RequisitionApproveModal({ requisition, onClose, onSucces
           <button
             onClick={() => handleDecision('approve')}
             disabled={loading}
-            className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium disabled:opacity-50"
+            className="flex items-center gap-1.5 px-4 py-2 bg-tertiary hover:brightness-95 text-white rounded-lg text-sm font-medium disabled:opacity-50"
           >
             <CheckCircle2 size={15} />
             {'승인'}

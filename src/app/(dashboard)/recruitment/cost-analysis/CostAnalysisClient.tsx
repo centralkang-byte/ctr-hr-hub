@@ -90,12 +90,12 @@ const COST_TYPE_LABEL_KEYS: Record<string, string> = {
 }
 
 const COST_TYPE_BADGE_STYLES: Record<string, string> = {
-  AD_FEE: 'bg-primary/5 text-blue-800',
+  AD_FEE: 'bg-primary/5 text-primary',
   AGENCY_FEE: 'bg-wt-4/10 text-wt-4',
   REFERRAL_BONUS: 'bg-primary/10 text-tertiary',
-  ASSESSMENT_TOOL: 'bg-orange-500/10 text-orange-800',
-  TRAVEL: 'bg-cyan-500/10 text-cyan-700',
-  RELOCATION: 'bg-orange-500/10 text-orange-800',
+  ASSESSMENT_TOOL: 'bg-warning-bright/10 text-ctr-warning',
+  TRAVEL: 'bg-wt-7/10 text-wt-7',
+  RELOCATION: 'bg-warning-bright/10 text-ctr-warning',
   SIGNING_BONUS: 'bg-primary/10 text-primary',
   OTHER: 'bg-muted text-muted-foreground',
 }
@@ -470,7 +470,7 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
                             </button>
                             <button
                               onClick={() => handleDelete(c.id)}
-                              className="p-1.5 rounded-lg hover:bg-destructive/5 text-red-500 transition-colors duration-150"
+                              className="p-1.5 rounded-lg hover:bg-destructive/5 text-destructive transition-colors duration-150"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>

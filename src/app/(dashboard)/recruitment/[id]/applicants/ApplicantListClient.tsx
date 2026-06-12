@@ -38,12 +38,12 @@ const STAGE_KEYS: Record<string, string> = {
 
 const STAGE_BADGE_STYLES: Record<string, string> = {
   APPLIED: 'bg-muted text-muted-foreground',
-  SCREENING: 'bg-primary/5 text-blue-800',
-  INTERVIEW_1: 'bg-primary/5 text-blue-800',
-  INTERVIEW_2: 'bg-primary/5 text-blue-800',
-  FINAL: 'bg-orange-500/10 text-orange-800',
+  SCREENING: 'bg-primary/5 text-primary',
+  INTERVIEW_1: 'bg-primary/5 text-primary',
+  INTERVIEW_2: 'bg-primary/5 text-primary',
+  FINAL: 'bg-warning-bright/10 text-ctr-warning',
   OFFER: 'bg-primary/10 text-tertiary',
-  HIRED: 'bg-primary/10 text-green-900 font-bold',
+  HIRED: 'bg-tertiary/10 text-[#006b39] font-bold',
   REJECTED: 'bg-destructive/5 text-destructive',
 }
 
@@ -58,8 +58,8 @@ const SOURCE_KEYS: Record<string, string> = {
 const SOURCE_BADGE_STYLES: Record<string, string> = {
   DIRECT: 'bg-muted text-muted-foreground',
   REFERRAL: 'bg-primary/10 text-tertiary',
-  AGENCY: 'bg-primary/5 text-blue-800',
-  JOB_BOARD: 'bg-orange-500/10 text-orange-800',
+  AGENCY: 'bg-primary/5 text-primary',
+  JOB_BOARD: 'bg-warning-bright/10 text-ctr-warning',
   INTERNAL: 'bg-wt-4/10 text-wt-4',
 }
 
@@ -164,9 +164,9 @@ export default function ApplicantListClient({
     if (score === null || score === undefined) {
       return <span className="text-sm text-muted-foreground">-</span>
     }
-    let colorClass = 'text-red-500'
+    let colorClass = 'text-destructive'
     if (score >= 80) colorClass = 'text-primary'
-    else if (score >= 50) colorClass = 'text-orange-500'
+    else if (score >= 50) colorClass = 'text-ctr-warning'
     return <span className={`text-sm font-medium ${colorClass}`}>{t('scorePoints', { score })}</span>
   }
 
@@ -183,7 +183,7 @@ export default function ApplicantListClient({
           </button>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">
-              <Users className="w-5 h-5 text-blue-500" />
+              <Users className="w-5 h-5 text-primary" aria-hidden />
             </div>
             <div>
               <h1
