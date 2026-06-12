@@ -11,7 +11,6 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import {
   Award,
-  Building2,
   Heart,
   MessageCircle,
   MessageSquare,
@@ -86,12 +85,6 @@ type LoadState = 'loading' | 'loaded' | 'error'
 
 interface PerformanceTabProps {
   employeeId: string
-  /** 대상 직원의 주 소속 법인 — 크로스컴퍼니 판정용 */
-  employeeCompanyId: string
-  /** 조회자 본인 법인 */
-  viewerCompanyId: string
-  /** SUPER_ADMIN 여부 — 타 법인 직원 상세 진입 가능 */
-  isSuperAdmin: boolean
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -107,20 +100,11 @@ function avgAchievement(goals: InsightGoal[]): number | null {
 
 // ─── Component ──────────────────────────────────────────────
 
-export function PerformanceTab({
-  employeeId,
-  employeeCompanyId,
-  viewerCompanyId,
-  isSuperAdmin,
-}: PerformanceTabProps) {
+export function PerformanceTab({ employeeId }: PerformanceTabProps) {
   const t = useTranslations('performance')
   const locale = useLocale()
 
-  // 크로스컴퍼니: SUPER가 타 법인 직원을 열면 /insights·/recognitions가 user.companyId
-  // 스코프라 404. "데이터 없음"으로 위장하지 않고 명시 안내(Codex G1 HIGH1).
-  const crossCompany =
-    isSuperAdmin && !!employeeCompanyId && employeeCompanyId !== viewerCompanyId
-
+  // 회사 스코프는 서버가 결정(SUPER=전사조회·그 외=자기 법인). 클라이언트는 항상 fetch.
   const [insights, setInsights] = useState<InsightData | null>(null)
   const [insightsState, setInsightsState] = useState<LoadState>('loading')
   const [recognition, setRecognition] = useState<RecognitionData | null>(null)
@@ -147,26 +131,8 @@ export function PerformanceTab({
   }, [employeeId])
 
   useEffect(() => {
-    if (crossCompany) {
-      setInsightsState('loaded')
-      setRecognitionState('loaded')
-      return
-    }
     fetchAll()
-  }, [crossCompany, fetchAll])
-
-  // ─── 크로스컴퍼니 안내 ───
-  if (crossCompany) {
-    return (
-      <div className="rounded-2xl border border-border bg-card p-6">
-        <EmptyState
-          icon={<Building2 className="h-12 w-12" />}
-          title={t('profileTab.crossCompanyTitle')}
-          description={t('profileTab.crossCompanyDesc')}
-        />
-      </div>
-    )
-  }
+  }, [fetchAll])
 
   // ─── 로딩 (insights 기준 — KPI/주 섹션) ───
   if (insightsState === 'loading') {

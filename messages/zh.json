@@ -8417,8 +8417,6 @@
     "yearUnit": "{year}",
     "years": "year",
     "profileTab": {
-      "crossCompanyTitle": "其他法人员工",
-      "crossCompanyDesc": "无法在此页面显示其他法人员工的绩效和表彰信息。",
       "loadError": "无法加载绩效信息。",
       "recognitionLoadError": "无法加载收到的表彰。",
       "retry": "重试",

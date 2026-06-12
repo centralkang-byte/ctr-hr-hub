@@ -8,6 +8,7 @@ import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
 // ─── GET /api/v1/cfr/recognitions/employee/[id] ──────────
 
@@ -15,14 +16,17 @@ export const GET = withPermission(
   async (_req: NextRequest, context, user: SessionUser) => {
     const { id: employeeId } = await context.params
 
+    // SUPER_ADMIN 전사조회: 회사 스코프 없이 / 그 외 자기 법인 강제(fail-closed)
+    const companyScope = resolveCompanyFilter(user)
+
     const [received, sent] = await Promise.all([
       prisma.recognition.groupBy({
         by: ['coreValue'],
-        where: { receiverId: employeeId, companyId: user.companyId },
+        where: { receiverId: employeeId, ...companyScope },
         _count: { id: true },
       }),
       prisma.recognition.count({
-        where: { senderId: employeeId, companyId: user.companyId },
+        where: { senderId: employeeId, ...companyScope },
       }),
     ])
 
@@ -34,7 +38,7 @@ export const GET = withPermission(
 
     // Recent recognitions (last 5)
     const recentRecognitions = await prisma.recognition.findMany({
-      where: { receiverId: employeeId, companyId: user.companyId },
+      where: { receiverId: employeeId, ...companyScope },
       orderBy: { createdAt: 'desc' },
       take: 5,
       include: {

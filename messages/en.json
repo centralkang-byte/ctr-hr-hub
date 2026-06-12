@@ -8416,8 +8416,6 @@
     "yearUnit": "{year}",
     "years": "year",
     "profileTab": {
-      "crossCompanyTitle": "Different company",
-      "crossCompanyDesc": "Performance and recognition data for employees of other companies can't be shown here.",
       "loadError": "Couldn't load performance data.",
       "recognitionLoadError": "Couldn't load recognitions.",
       "retry": "Retry",
