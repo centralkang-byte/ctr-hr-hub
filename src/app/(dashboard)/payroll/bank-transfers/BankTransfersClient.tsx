@@ -22,6 +22,7 @@ import {
   Clock,
   AlertTriangle,
   Eye,
+  Wallet,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -32,7 +33,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
 import {
   Select,
@@ -41,9 +41,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
+import { WdStatStrip } from '@/components/shared/WdStatStrip'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS, TABLE_STYLES, TYPOGRAPHY } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -256,15 +258,17 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
   }
 
   return (
-    <div className="space-y-6 p-6">
-      {/* ─── Header ─── */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <Building2 className="h-6 w-6 text-primary" />
-            {t('bankTransferPage.title')}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">{t('bankTransferPage.subtitle')}</p>
+    <div className="mx-auto max-w-7xl space-y-4 p-4">
+      {/* ─── Header (ALL-1: proto .page-h — 56px 아이콘 타일 + pageTitle) ─── */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[14px] bg-accent text-primary">
+            <Building2 className="h-[26px] w-[26px]" aria-hidden="true" />
+          </div>
+          <div>
+            <h1 className={TYPOGRAPHY.pageTitle}>{t('bankTransferPage.title')}</h1>
+            <p className="mt-1 text-[13px] text-muted-foreground">{t('bankTransferPage.subtitle')}</p>
+          </div>
         </div>
         <Button
           onClick={() => setCreateOpen(true)}
@@ -275,33 +279,15 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
         </Button>
       </div>
 
-      {/* ─── KPI Cards ─── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-5">
-            <p className="text-xs text-muted-foreground mb-1">{t('bankTransferPage.totalBatches')}</p>
-            <p className="text-3xl font-bold text-foreground">{totalBatches}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-5">
-            <p className="text-xs text-muted-foreground mb-1">{t('bankTransferPage.pendingBatches')}</p>
-            <p className="text-3xl font-bold text-amber-600">{pendingBatches}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-5">
-            <p className="text-xs text-muted-foreground mb-1">{t('bankTransferPage.completed')}</p>
-            <p className="text-3xl font-bold text-emerald-600">{completedBatches}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-5">
-            <p className="text-xs text-muted-foreground mb-1">{t('bankTransferPage.totalAmount')}</p>
-            <p className="text-2xl font-bold text-primary">{formatAmount(totalAmount)}</p>
-          </CardContent>
-        </Card>
-      </div>
+      {/* ─── KPI (BANK-5: proto .wd-stat-strip, 정확히 4개 실수치 — 의미별 tone) ─── */}
+      <WdStatStrip
+        items={[
+          { label: t('bankTransferPage.totalBatches'), value: totalBatches, icon: FileSpreadsheet },
+          { label: t('bankTransferPage.pendingBatches'), value: pendingBatches, icon: Clock, tone: pendingBatches > 0 ? 'warning' : 'default' },
+          { label: t('bankTransferPage.completed'), value: completedBatches, icon: CheckCircle2, tone: 'success' },
+          { label: t('bankTransferPage.totalAmount'), value: formatAmount(totalAmount), icon: Wallet, tone: 'info' },
+        ]}
+      />
 
       {/* ─── Filter ─── */}
       <div className="flex items-center gap-3">
@@ -320,12 +306,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
 
       {/* ─── Batch List ─── */}
       {batches.length === 0 ? (
-        <Card>
-          <CardContent className="py-16 text-center text-muted-foreground">
-            <FileSpreadsheet className="h-12 w-12 mx-auto mb-3 text-border" />
-            <EmptyState />
-          </CardContent>
-        </Card>
+        <EmptyState icon={FileSpreadsheet} sub="" standalone />
       ) : (
         <div className="space-y-3">
           {batches.map(batch => {
@@ -354,10 +335,10 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                         <p className="text-xs text-muted-foreground">
                           {t('bankTransferPage.itemCount', { count: batch.totalCount })}
                           {batch.successCount > 0 && (
-                            <span className="text-emerald-600 ml-1">({t('bankTransferPage.successCount', { count: batch.successCount })})</span>
+                            <span className="text-[#006b39] ml-1">({t('bankTransferPage.successCount', { count: batch.successCount })})</span>
                           )}
                           {batch.failCount > 0 && (
-                            <span className="text-red-500 ml-1">({t('bankTransferPage.failCount', { count: batch.failCount })})</span>
+                            <span className="text-[#b71824] ml-1">({t('bankTransferPage.failCount', { count: batch.failCount })})</span>
                           )}
                         </p>
                       </div>
@@ -402,7 +383,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                               size="sm"
                               onClick={() => handleMockResult(batch.id)}
                               disabled={isProcessing}
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                              className={BUTTON_VARIANTS.primary}
                             >
                               {isProcessing ? (
                                 <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
@@ -423,7 +404,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                       <div className="h-1.5 rounded-full bg-border overflow-hidden flex">
                         {batch.successCount > 0 && (
                           <div
-                            className="bg-emerald-600 transition-all"
+                            className="bg-[#008b4e] transition-all"
                             style={{ width: `${(batch.successCount / batch.totalCount) * 100}%` }}
                           />
                         )}
@@ -448,76 +429,69 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
         </div>
       )}
 
-      {/* ─── Create Modal ─── */}
-      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t('bankTransferPage.createTitle')}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{t('bankTransferPage.selectBank')}</label>
-              <Select
-                value={newBatch.bankCode}
-                onValueChange={v => {
-                  const bank = BANKS.find(b => b.code === v)
-                  setNewBatch(prev => ({
-                    ...prev,
-                    bankCode: v,
-                    bankName: bank ? t(bank.labelKey) : v,
-                  }))
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {BANKS.map(bank => (
-                    <SelectItem key={bank.code} value={bank.code}>{t(bank.labelKey)}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+      {/* ─── Create Drawer (BANK-6: 중앙 Dialog → WdDrawer §5.4. state·handleCreate 부모 유지) ─── */}
+      <WdDrawer
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        closeDisabled={creating}
+        eyebrow={t('bankTransferPage.title')}
+        title={t('bankTransferPage.createTitle')}
+        secondary={{ label: tCommon('cancel'), onClick: () => setCreateOpen(false), disabled: creating }}
+        primary={{
+          label: t('bankTransferPage.create'),
+          onClick: handleCreate,
+          disabled: creating,
+          icon: creating ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined,
+        }}
+      >
+        <WdField label={t('bankTransferPage.selectBank')} htmlFor="bt-bank">
+          <Select
+            value={newBatch.bankCode}
+            onValueChange={v => {
+              const bank = BANKS.find(b => b.code === v)
+              setNewBatch(prev => ({
+                ...prev,
+                bankCode: v,
+                bankName: bank ? t(bank.labelKey) : v,
+              }))
+            }}
+          >
+            <SelectTrigger id="bt-bank">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {BANKS.map(bank => (
+                <SelectItem key={bank.code} value={bank.code}>{t(bank.labelKey)}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </WdField>
 
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{t('bankTransferPage.fileFormat')}</label>
-              <Select
-                value={newBatch.format}
-                onValueChange={v => setNewBatch(prev => ({ ...prev, format: v as 'CSV' | 'XML' | 'EBCDIC' }))}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="CSV">CSV</SelectItem>
-                  <SelectItem value="XML">XML</SelectItem>
-                  <SelectItem value="EBCDIC">EBCDIC</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+        <WdField label={t('bankTransferPage.fileFormat')} htmlFor="bt-format">
+          <Select
+            value={newBatch.format}
+            onValueChange={v => setNewBatch(prev => ({ ...prev, format: v as 'CSV' | 'XML' | 'EBCDIC' }))}
+          >
+            <SelectTrigger id="bt-format">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="CSV">CSV</SelectItem>
+              <SelectItem value="XML">XML</SelectItem>
+              <SelectItem value="EBCDIC">EBCDIC</SelectItem>
+            </SelectContent>
+          </Select>
+        </WdField>
 
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{t('bankTransferPage.note')}</label>
-              <Input
-                value={newBatch.note}
-                onChange={e => setNewBatch(prev => ({ ...prev, note: e.target.value }))}
-                placeholder={t('bankTransferPage.notePlaceholder')}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateOpen(false)}>{tCommon('cancel')}</Button>
-            <Button
-              onClick={handleCreate}
-              disabled={creating}
-              className={BUTTON_VARIANTS.primary}
-            >
-              {creating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
-              {t('bankTransferPage.create')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        <WdField label={t('bankTransferPage.note')} htmlFor="bt-note">
+          <Input
+            id="bt-note"
+            value={newBatch.note}
+            onChange={e => setNewBatch(prev => ({ ...prev, note: e.target.value }))}
+            placeholder={t('bankTransferPage.notePlaceholder')}
+          />
+        </WdField>
+      </WdDrawer>
 
       {/* ─── Detail Modal ─── */}
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
@@ -542,13 +516,13 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                     <p className="text-xs text-muted-foreground">{t('bankTransferPage.totalPayroll')}</p>
                     <p className="text-lg font-bold">{selectedBatch.totalCount}</p>
                   </div>
-                  <div className="bg-emerald-500/15 rounded-lg p-3 text-center">
-                    <p className="text-xs text-emerald-600">{t('bankTransferPage.success')}</p>
-                    <p className="text-lg font-bold text-emerald-700">{selectedBatch.successCount}</p>
+                  <div className="bg-[#008b4e]/10 rounded-lg p-3 text-center">
+                    <p className="text-xs text-[#006b39]">{t('bankTransferPage.success')}</p>
+                    <p className="text-lg font-bold tabular-nums text-[#006b39]">{selectedBatch.successCount}</p>
                   </div>
                   <div className="bg-destructive/10 rounded-lg p-3 text-center">
-                    <p className="text-xs text-red-500">{t('bankTransferPage.failed')}</p>
-                    <p className="text-lg font-bold text-destructive">{selectedBatch.failCount}</p>
+                    <p className="text-xs text-[#b71824]">{t('bankTransferPage.failed')}</p>
+                    <p className="text-lg font-bold tabular-nums text-destructive">{selectedBatch.failCount}</p>
                   </div>
                   <div className="bg-primary/10 rounded-lg p-3 text-center">
                     <p className="text-xs text-primary">{t('bankTransferPage.totalPay')}</p>
@@ -591,7 +565,7 @@ export function BankTransfersClient({ user }: { user: SessionUser }) {
                             <td className={cn(TABLE_STYLES.cell, "text-center")}>
                               <StatusBadge status={item.status}>{t(ist.labelKey)}</StatusBadge>
                             </td>
-                            <td className={cn(TABLE_STYLES.cell, "text-red-500")}>{item.errorMessage ?? ''}</td>
+                            <td className={cn(TABLE_STYLES.cell, "text-[#b71824]")}>{item.errorMessage ?? ''}</td>
                           </tr>
                         )
                       })
