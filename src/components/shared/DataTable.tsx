@@ -18,6 +18,7 @@ import {
   TableCell,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/shared/EmptyState'
 import {
@@ -92,6 +93,21 @@ interface DataTableProps<T> {
   skeletonRows?: number
   /** 열 커스터마이징 활성화 (localStorage 키로 사용) */
   tableId?: string
+  // ─── opt-in 행 선택 (normal/paginated 모드 전용; virtualScroll과 병용 불가) ───
+  /** 행 선택 체크박스 컬럼 활성화. 미지정 시 동작 무변경 */
+  selectable?: boolean
+  /** 선택된 키 집합 (caller 소유). selectable일 때 필수 */
+  selectedKeys?: Set<string>
+  /** 단일 행 토글 핸들러 */
+  onToggleRow?: (key: string, row: T) => void
+  /** 현재 화면(렌더된) 행 전체 토글. nextAllSelected=true면 전부 선택 */
+  onToggleAllVisible?: (nextAllSelected: boolean) => void
+  /** 선택 키 추출자. 미지정 시 rowKey 사용 */
+  getSelectionKey?: (row: T) => string
+  /** 헤더 전체선택 체크박스 aria-label */
+  selectAllLabel?: string
+  /** 행 체크박스 aria-label 생성자 */
+  rowSelectLabel?: (row: T) => string
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -115,8 +131,28 @@ export function DataTable<T extends Record<string, unknown>>({
   estimatedRowHeight = 52,
   skeletonRows = 5,
   tableId,
+  selectable = false,
+  selectedKeys,
+  onToggleRow,
+  onToggleAllVisible,
+  getSelectionKey,
+  selectAllLabel = '전체 선택',
+  rowSelectLabel,
 }: DataTableProps<T>) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+
+  // ─── Row selection (opt-in, normal mode only) ───
+  // virtualScroll과 병용 시 선택 UI는 렌더되지 않음 — 조용한 무시 방지 위해 dev 경고
+  if (process.env.NODE_ENV !== 'production' && selectable && virtualScroll) {
+    // eslint-disable-next-line no-console
+    console.error('[DataTable] `selectable`은 `virtualScroll`과 병용 불가 — 선택 컬럼이 렌더되지 않습니다.')
+  }
+  const hasSelectionCol = selectable && !virtualScroll
+  const selKey = useCallback(
+    (row: T, index: number): string =>
+      getSelectionKey ? getSelectionKey(row) : rowKey ? rowKey(row, index) : String(index),
+    [getSelectionKey, rowKey],
+  )
 
   const handleSort = useCallback(
     (key: string) => {
@@ -182,6 +218,30 @@ export function DataTable<T extends Record<string, unknown>>({
     ? columns.filter((c) => !hiddenColumns.has(c.key))
     : columns
 
+  // ─── 선택 헤더 상태 (현재 화면 행 기준; render 중 파생 — effect 불필요) ───
+  const visibleSelKeys = hasSelectionCol ? data.map((r, i) => selKey(r, i)) : []
+  const selectedVisible = selectedKeys
+    ? visibleSelKeys.filter((k) => selectedKeys.has(k)).length
+    : 0
+  const allVisibleSelected =
+    visibleSelKeys.length > 0 && selectedVisible === visibleSelKeys.length
+  const headerChecked: boolean | 'indeterminate' = allVisibleSelected
+    ? true
+    : selectedVisible > 0
+      ? 'indeterminate'
+      : false
+
+  // 헤더 전체선택 체크박스 (normal 모드)
+  const selectionHead = hasSelectionCol ? (
+    <TableHead className="w-10">
+      <Checkbox
+        checked={headerChecked}
+        onCheckedChange={() => onToggleAllVisible?.(!allVisibleSelected)}
+        aria-label={selectAllLabel}
+      />
+    </TableHead>
+  ) : null
+
   // ─── Virtual rows (only active when virtualScroll=true) ───
   const virtualizer = useVirtualizer({
     count: virtualScroll ? data.length : 0,
@@ -233,6 +293,7 @@ export function DataTable<T extends Record<string, unknown>>({
           <Table>
             <TableHeader>
               <TableRow>
+                {hasSelectionCol && <TableHead className="w-10" />}
                 {visibleColumns.map((col) => (
                   <TableHead key={col.key} className={col.hideBelow ? HIDE_BELOW_CLASS[col.hideBelow] : undefined}>{col.header}</TableHead>
                 ))}
@@ -241,6 +302,9 @@ export function DataTable<T extends Record<string, unknown>>({
             <TableBody>
               {Array.from({ length: skeletonRows }).map((_, i) => (
                 <TableRow key={`skeleton-${i}`}>
+                  {hasSelectionCol && (
+                    <TableCell className="w-10"><Skeleton className="h-4 w-4" /></TableCell>
+                  )}
                   {visibleColumns.map((col) => (
                     <TableCell key={`skeleton-${i}-${col.key}`} className={col.hideBelow ? HIDE_BELOW_CLASS[col.hideBelow] : undefined}>
                       <Skeleton className="h-5 w-full" />
@@ -264,6 +328,7 @@ export function DataTable<T extends Record<string, unknown>>({
           <Table>
             <TableHeader>
               <TableRow>
+                {hasSelectionCol && <TableHead className="w-10" />}
                 {visibleColumns.map((col) => (
                   <TableHead key={col.key} className={col.hideBelow ? HIDE_BELOW_CLASS[col.hideBelow] : undefined}>{col.header}</TableHead>
                 ))}
@@ -280,6 +345,7 @@ export function DataTable<T extends Record<string, unknown>>({
   const headerRow = (
     <TableHeader>
       <TableRow>
+        {selectionHead}
         {visibleColumns.map((col) => (
           <TableHead key={col.key} className={col.hideBelow ? HIDE_BELOW_CLASS[col.hideBelow] : undefined}>
             {col.sortable && onSort ? (
@@ -301,19 +367,35 @@ export function DataTable<T extends Record<string, unknown>>({
   )
 
   // ─── Row renderer ───
-  const renderRow = (row: T, index: number) => (
-    <TableRow
-      key={rowKey ? rowKey(row, index) : index}
-      onClick={onRowClick ? () => onRowClick(row, index) : undefined}
-      className={onRowClick ? 'cursor-pointer hover:bg-muted' : ''}
-    >
-      {visibleColumns.map((col) => (
-        <TableCell key={col.key} className={col.hideBelow ? HIDE_BELOW_CLASS[col.hideBelow] : undefined}>
-          {col.render ? col.render(row, index) : String(row[col.key] ?? '')}
-        </TableCell>
-      ))}
-    </TableRow>
-  )
+  const renderRow = (row: T, index: number) => {
+    const key = selKey(row, index)
+    const isSelected = hasSelectionCol && (selectedKeys?.has(key) ?? false)
+    return (
+      <TableRow
+        key={rowKey ? rowKey(row, index) : index}
+        onClick={onRowClick ? () => onRowClick(row, index) : undefined}
+        className={cn(
+          onRowClick && 'cursor-pointer hover:bg-muted',
+          isSelected && 'bg-primary/5',
+        )}
+      >
+        {hasSelectionCol && (
+          <TableCell className="w-10" onClick={(e) => e.stopPropagation()}>
+            <Checkbox
+              checked={selectedKeys?.has(key) ?? false}
+              onCheckedChange={() => onToggleRow?.(key, row)}
+              aria-label={rowSelectLabel ? rowSelectLabel(row) : '행 선택'}
+            />
+          </TableCell>
+        )}
+        {visibleColumns.map((col) => (
+          <TableCell key={col.key} className={col.hideBelow ? HIDE_BELOW_CLASS[col.hideBelow] : undefined}>
+            {col.render ? col.render(row, index) : String(row[col.key] ?? '')}
+          </TableCell>
+        ))}
+      </TableRow>
+    )
+  }
 
   return (
     <div className="space-y-4">
