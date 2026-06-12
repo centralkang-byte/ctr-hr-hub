@@ -1,6 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 
@@ -54,10 +55,11 @@ const WORK_MODE_KEYS: Record<string, string> = {
   HYBRID: 'workMode.hybrid',
 }
 
+// D17 토큰 (bg-bright + AA-safe ink) — Badge variant 색과 정합
 const URGENCY_COLORS: Record<string, string> = {
   urgent: 'bg-destructive/10 text-destructive',
-  normal: 'bg-amber-500/15 text-amber-700',
-  low: 'bg-sky-500/10 text-sky-700',
+  normal: 'bg-warning-bright/15 text-ctr-warning',
+  low: 'bg-wt-7/10 text-wt-7',
 }
 
 const STAGE_KEYS: Record<string, string> = {
@@ -153,10 +155,7 @@ export default function InternalJobsClient({ user: _user }: { user: SessionUser 
       {loading ? (
         <div className="flex items-center justify-center h-48 text-muted-foreground text-sm">{tCommon('loading')}</div>
       ) : items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-48 text-muted-foreground">
-          <BriefcaseBusiness size={40} className="mb-3 text-border" />
-          <EmptyState />
-        </div>
+        <EmptyState icon={BriefcaseBusiness} />
       ) : (
         <div className="space-y-3">
           {items.map((job) => {
@@ -238,10 +237,10 @@ export default function InternalJobsClient({ user: _user }: { user: SessionUser 
                     {/* 지원 버튼 / 상태 */}
                     <div className="flex-shrink-0 flex flex-col items-end gap-2">
                       {job.alreadyApplied ? (
-                        <div className="flex items-center gap-1 px-3 py-1.5 bg-emerald-500/15 text-emerald-700 rounded-lg text-sm font-medium">
+                        <Badge variant="success" className="gap-1 px-3 py-1.5 text-sm">
                           <CheckCircle2 size={14} />
                           {STAGE_KEYS[job.myStage ?? ''] ? t(STAGE_KEYS[job.myStage ?? '']) : t('stage.applied')}
-                        </div>
+                        </Badge>
                       ) : (
                         <button
                           onClick={() => handleApply(job.id)}

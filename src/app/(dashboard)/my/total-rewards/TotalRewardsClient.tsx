@@ -9,7 +9,7 @@ import { toast } from '@/hooks/use-toast'
 
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
-import { Wallet, Gift, Briefcase, Heart, Award, TrendingUp } from 'lucide-react'
+import { Wallet, Gift, Heart, Award, TrendingUp } from 'lucide-react'
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend,
   LineChart, Line, XAxis, YAxis, CartesianGrid,
@@ -17,6 +17,8 @@ import {
 import { apiClient } from '@/lib/api'
 import { formatCurrency } from '@/lib/compensation'
 import { CHART_THEME } from '@/lib/styles'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { WdStatStrip } from '@/components/shared/WdStatStrip'
 import { HomeSkeleton } from '@/components/shared/PageSkeleton'
 import type { SessionUser } from '@/types'
 
@@ -32,10 +34,6 @@ interface TotalRewardsData {
   currency: string
   yearlyBreakdown: Array<{ year: number; totalPaid: number }>
 }
-
-// ─── Constants ──────────────────────────────────────────────
-
-const PIE_COLORS = ['#4a40e0', '#10B981', '#F59E0B', '#EC4899', '#7457d1']
 
 // ─── Component ──────────────────────────────────────────────
 
@@ -70,28 +68,25 @@ export default function TotalRewardsClient({ user: _user }: { user: SessionUser 
     return (
       <div className="p-6">
         <h1 className="text-2xl font-bold text-foreground mb-6">{t('title')}</h1>
-        <div className="bg-card rounded-2xl shadow-sm p-12 text-center">
-          <Wallet className="mx-auto h-12 w-12 text-muted-foreground/30 mb-4" />
-          <p className="text-muted-foreground text-sm">{t('empty')}</p>
-        </div>
+        <EmptyState icon={Wallet} title={t('empty')} standalone />
       </div>
     )
   }
 
+  // 5개 보상 구성요소에 IDENTITY 기준 고정색 부여(필터 전) → 0 제외돼도 색 불변
   const pieData = [
-    { name: t('baseSalary'), value: data.baseSalary },
-    { name: t('bonuses'), value: data.bonuses },
-    { name: t('allowances'), value: data.allowances },
-    { name: t('benefits'), value: data.benefits },
-    { name: t('rewards'), value: data.rewards },
+    { name: t('baseSalary'), value: data.baseSalary, color: CHART_THEME.colors[0] },
+    { name: t('bonuses'), value: data.bonuses, color: CHART_THEME.colors[1] },
+    { name: t('allowances'), value: data.allowances, color: CHART_THEME.colors[2] },
+    { name: t('benefits'), value: data.benefits, color: CHART_THEME.colors[3] },
+    { name: t('rewards'), value: data.rewards, color: CHART_THEME.colors[4] },
   ].filter((d) => d.value > 0)
 
-  const kpiCards = [
-    { label: t('baseSalary'), value: data.baseSalary, icon: Briefcase, color: 'text-primary' },
-    { label: t('bonuses'), value: data.bonuses, icon: Gift, color: 'text-emerald-600' },
-    { label: t('allowances'), value: data.allowances, icon: Wallet, color: 'text-amber-600' },
-    { label: t('benefits'), value: data.benefits, icon: Heart, color: 'text-pink-500' },
-    { label: t('rewards'), value: data.rewards, icon: Award, color: 'text-wt-4' },
+  const statItems = [
+    { label: t('bonuses'), value: formatCurrency(data.bonuses), icon: Gift },
+    { label: t('allowances'), value: formatCurrency(data.allowances), icon: Wallet },
+    { label: t('benefits'), value: formatCurrency(data.benefits), icon: Heart },
+    { label: t('rewards'), value: formatCurrency(data.rewards), icon: Award },
   ]
 
   return (
@@ -102,28 +97,22 @@ export default function TotalRewardsClient({ user: _user }: { user: SessionUser 
         <p className="text-sm text-muted-foreground mt-1">{t('description')}</p>
       </div>
 
-      {/* Total */}
+      {/* Hero — 총보상(주) + 기본급(보조) */}
       <div className="bg-card rounded-2xl shadow-sm p-6">
         <p className="text-xs text-muted-foreground mb-1">{t('annualTotal')}</p>
         <p className="text-4xl font-bold text-primary font-mono tabular-nums">
           {formatCurrency(data.total)}
         </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {t('baseSalary')}{' '}
+          <span className="font-medium text-foreground tabular-nums">
+            {formatCurrency(data.baseSalary)}
+          </span>
+        </p>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        {kpiCards.map((kpi) => (
-          <div key={kpi.label} className="bg-card rounded-2xl shadow-sm p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <kpi.icon className={`h-4 w-4 ${kpi.color}`} />
-              <p className="text-xs text-muted-foreground">{kpi.label}</p>
-            </div>
-            <p className="text-xl font-bold text-foreground font-mono tabular-nums">
-              {formatCurrency(kpi.value)}
-            </p>
-          </div>
-        ))}
-      </div>
+      {/* KPI 스트립 — 상여·수당·복리후생·포상 */}
+      <WdStatStrip items={statItems} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Pie Chart */}
@@ -141,8 +130,8 @@ export default function TotalRewardsClient({ user: _user }: { user: SessionUser 
                 outerRadius={100}
                 label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
               >
-                {pieData.map((_, i) => (
-                  <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                {pieData.map((entry) => (
+                  <Cell key={entry.name} fill={entry.color} />
                 ))}
               </Pie>
               <Tooltip
@@ -180,7 +169,7 @@ export default function TotalRewardsClient({ user: _user }: { user: SessionUser 
                 <Line
                   type="monotone"
                   dataKey="totalPaid"
-                  stroke="#4a40e0"
+                  stroke={CHART_THEME.colors[0]}
                   strokeWidth={2}
                   dot={{ r: 4 }}
                   name={t('totalPaid')}

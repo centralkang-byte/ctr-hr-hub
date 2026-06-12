@@ -4429,6 +4429,20 @@
     "viewAll": "View All"
   },
   "myTraining": {
+    "category": {
+      "compliance": "Compliance",
+      "technical": "Technical",
+      "leadership": "Leadership",
+      "safety": "Safety",
+      "onboarding": "Onboarding",
+      "other": "Other"
+    },
+    "format": {
+      "online": "Online",
+      "offline": "Offline",
+      "blended": "Blended",
+      "selfPaced": "Self-paced"
+    },
     "action": {
       "completeCourse": "[TODO:en] 이수 완료",
       "enroll": "[TODO:en] 수강 신청",
@@ -4839,6 +4853,8 @@
     "toggleOn": "[TODO:en] 켜기"
   },
   "notifications": {
+    "typeFilterLabel": "Notification type filter",
+    "readFilterLabel": "Read status filter",
     "benefitApproved": {
       "body": "{planName} benefit claim has been approved.",
       "title": "Benefit Claim Approved"

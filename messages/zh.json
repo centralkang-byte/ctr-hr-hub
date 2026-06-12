@@ -4429,6 +4429,20 @@
     "viewAll": "View All"
   },
   "myTraining": {
+    "category": {
+      "compliance": "合规",
+      "technical": "技术",
+      "leadership": "领导力",
+      "safety": "安全",
+      "onboarding": "入职培训",
+      "other": "其他"
+    },
+    "format": {
+      "online": "在线",
+      "offline": "线下",
+      "blended": "混合",
+      "selfPaced": "自主学习"
+    },
     "action": {
       "completeCourse": "[TODO:zh] 이수 완료",
       "enroll": "[TODO:zh] 수강 신청",
@@ -4840,6 +4854,8 @@
     "toggleOn": "[TODO:zh] 켜기"
   },
   "notifications": {
+    "typeFilterLabel": "通知类型筛选",
+    "readFilterLabel": "已读状态筛选",
     "benefitApproved": {
       "body": "{planName}福利申请已获批准。",
       "title": "福利申请已批准"

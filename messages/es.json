@@ -4429,6 +4429,20 @@
     "viewAll": "View All"
   },
   "myTraining": {
+    "category": {
+      "compliance": "Cumplimiento",
+      "technical": "Técnicas",
+      "leadership": "Liderazgo",
+      "safety": "Seguridad",
+      "onboarding": "Incorporación",
+      "other": "Otros"
+    },
+    "format": {
+      "online": "En línea",
+      "offline": "Presencial",
+      "blended": "Mixto",
+      "selfPaced": "A tu ritmo"
+    },
     "action": {
       "completeCourse": "[TODO:es] 이수 완료",
       "enroll": "[TODO:es] 수강 신청",
@@ -4839,6 +4853,8 @@
     "toggleOn": "[TODO:es] 켜기"
   },
   "notifications": {
+    "typeFilterLabel": "Filtro por tipo de notificación",
+    "readFilterLabel": "Filtro por estado de lectura",
     "benefitApproved": {
       "body": "La solicitud de beneficio {planName} ha sido aprobada.",
       "title": "Beneficio aprobado"

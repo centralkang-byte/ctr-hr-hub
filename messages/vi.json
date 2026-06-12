@@ -4429,6 +4429,20 @@
     "viewAll": "View All"
   },
   "myTraining": {
+    "category": {
+      "compliance": "Tuân thủ",
+      "technical": "Kỹ thuật",
+      "leadership": "Lãnh đạo",
+      "safety": "An toàn",
+      "onboarding": "Hội nhập",
+      "other": "Khác"
+    },
+    "format": {
+      "online": "Trực tuyến",
+      "offline": "Trực tiếp",
+      "blended": "Kết hợp",
+      "selfPaced": "Tự học"
+    },
     "action": {
       "completeCourse": "[TODO:vi] 이수 완료",
       "enroll": "[TODO:vi] 수강 신청",
@@ -4839,6 +4853,8 @@
     "toggleOn": "[TODO:vi] 켜기"
   },
   "notifications": {
+    "typeFilterLabel": "Bộ lọc loại thông báo",
+    "readFilterLabel": "Bộ lọc trạng thái đọc",
     "benefitApproved": {
       "body": "Yêu cầu phúc lợi {planName} đã được phê duyệt.",
       "title": "Phúc lợi đã duyệt"

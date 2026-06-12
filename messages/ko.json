@@ -10210,6 +10210,8 @@
     "viewFullProfile": "전체 프로필 보기"
   },
   "notifications": {
+    "typeFilterLabel": "알림 유형 필터",
+    "readFilterLabel": "읽음 상태 필터",
     "pageTitle": "알림",
     "emptyTitle": "새로운 알림이 없습니다",
     "emptyDesc": "알림이 발생하면 여기에 표시됩니다.",
@@ -10839,6 +10841,20 @@
     }
   },
   "myTraining": {
+    "category": {
+      "compliance": "법정",
+      "technical": "기술",
+      "leadership": "리더십",
+      "safety": "안전",
+      "onboarding": "입사교육",
+      "other": "기타"
+    },
+    "format": {
+      "online": "온라인",
+      "offline": "오프라인",
+      "blended": "혼합",
+      "selfPaced": "자기주도"
+    },
     "pageTitle": "교육 이수 현황",
     "pageDescription": "필수 교육 및 자기개발 과정을 관리하세요",
     "tabs": {

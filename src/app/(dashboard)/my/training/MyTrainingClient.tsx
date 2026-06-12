@@ -4,9 +4,10 @@ import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 
 import { useState, useEffect, useCallback } from 'react'
-import { BookOpen, CheckCircle2, Clock, AlertTriangle, Sparkles } from 'lucide-react'
+import { BookOpen, CheckCircle2, AlertTriangle, Sparkles } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { WdStatStrip } from '@/components/shared/WdStatStrip'
 import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
@@ -89,9 +90,9 @@ const FORMAT_KEYS: Record<string, string> = {
   self_paced: 'format.selfPaced',
 }
 
-const STATUS_CONFIG: Record<string, { labelKey: string; className: string }> = {
-  ENROLLED: { labelKey: 'status.enrolled', className: 'bg-amber-500/15 text-amber-700 border-amber-300' },
-  IN_PROGRESS: { labelKey: 'status.inProgress', className: 'bg-emerald-500/15 text-emerald-700 border-emerald-200' },
+const STATUS_CONFIG: Record<string, { labelKey: string; variant: 'warning' | 'success' }> = {
+  ENROLLED: { labelKey: 'status.enrolled', variant: 'warning' },
+  IN_PROGRESS: { labelKey: 'status.inProgress', variant: 'success' },
 }
 
 function daysUntil(dateStr?: string | null): number | null {
@@ -214,35 +215,25 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
       )}
 
       {/* ─── KPI 요약 ─── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className={`${CARD_STYLES.kpi} text-center`}>
-          <p className="text-xs text-muted-foreground mb-1">{t('kpi.requiredPending')}</p>
-          <p className="text-3xl font-bold text-red-500">{requiredPending.length}</p>
-        </div>
-        <div className={`${CARD_STYLES.kpi} text-center`}>
-          <p className="text-xs text-muted-foreground mb-1">{t('kpi.enrollmentNeeded')}</p>
-          <p className="text-3xl font-bold text-amber-700">{jobRequired.length}</p>
-        </div>
-        <div className={`${CARD_STYLES.kpi} text-center`}>
-          <p className="text-xs text-muted-foreground mb-1">{t('kpi.recommended')}</p>
-          <p className="text-3xl font-bold text-primary/90">{recommended.length}</p>
-        </div>
-        <div className={`${CARD_STYLES.kpi} text-center`}>
-          <p className="text-xs text-muted-foreground mb-1">{t('kpi.completed')}</p>
-          <p className="text-3xl font-bold text-emerald-700">{history.length}</p>
-        </div>
-      </div>
+      <WdStatStrip
+        items={[
+          { label: t('kpi.requiredPending'), value: requiredPending.length, icon: AlertTriangle, tone: 'danger' },
+          { label: t('kpi.enrollmentNeeded'), value: jobRequired.length, icon: BookOpen, tone: 'warning' },
+          { label: t('kpi.recommended'), value: recommended.length, icon: Sparkles, tone: 'info' },
+          { label: t('kpi.completed'), value: history.length, icon: CheckCircle2, tone: 'success' },
+        ]}
+      />
 
       {/* ─── 진행 중인 필수 교육 ─── */}
       {requiredPending.length > 0 && (
         <section>
           <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-red-500" />
+            <AlertTriangle className="h-5 w-5 text-destructive" />
             {t('section.requiredPending')}
           </h2>
           <div className="space-y-3">
             {requiredPending.map((item) => {
-              const statusCfg = STATUS_CONFIG[item.status] ?? { labelKey: '', className: 'bg-background text-muted-foreground border-border' }
+              const statusCfg = STATUS_CONFIG[item.status] ?? { labelKey: '', variant: 'neutral' as const }
               const statusLabel = statusCfg.labelKey ? t(statusCfg.labelKey) : item.status
               return (
                 <div key={item.enrollmentId} className={CARD_STYLES.padded}>
@@ -250,7 +241,7 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
                         <span className="font-semibold text-foreground text-sm">{item.course.title}</span>
-                        <Badge className={`text-[10px] px-1.5 py-0 ${statusCfg.className}`}>{statusLabel}</Badge>
+                        <Badge variant={statusCfg.variant} className="text-[10px] px-1.5 py-0">{statusLabel}</Badge>
                         <Badge variant="outline" className="text-[10px] px-1.5 py-0">{t('badge.required')}</Badge>
                       </div>
                       <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
@@ -258,7 +249,7 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
                         {item.course.durationHours && <span>{item.course.durationHours}h</span>}
                         {item.course.format && <span>{FORMAT_KEYS[item.course.format] ? t(FORMAT_KEYS[item.course.format]) : item.course.format}</span>}
                         {item.expiresAt && (
-                          <span className="text-red-500">{t('deadlineLabel', { date: formatDate(item.expiresAt) })}</span>
+                          <span className="text-destructive">{t('deadlineLabel', { date: formatDate(item.expiresAt) })}</span>
                         )}
                       </div>
                     </div>
@@ -269,7 +260,7 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
                         </Button>
                       )}
                       {item.status === 'IN_PROGRESS' && (
-                        <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => handleComplete(item.enrollmentId)}>
+                        <Button size="sm" className="bg-warm text-white hover:brightness-95" onClick={() => handleComplete(item.enrollmentId)}>
                           {t('action.completeCourse')}
                         </Button>
                       )}
@@ -286,7 +277,7 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
       {jobRequired.length > 0 && (
         <section>
           <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-amber-700" />
+            <BookOpen className="h-5 w-5 text-ctr-warning" />
             {t('section.enrollmentNeeded')}
           </h2>
           <div className="space-y-3">
@@ -296,7 +287,7 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <span className="font-semibold text-foreground text-sm">{course.title}</span>
-                      <Badge className="text-[10px] px-1.5 py-0 bg-destructive/10 text-destructive border-destructive/20">{t('badge.required')}</Badge>
+                      <Badge variant="error" className="text-[10px] px-1.5 py-0">{t('badge.required')}</Badge>
                     </div>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                       <span>{CATEGORY_KEYS[course.category] ? t(CATEGORY_KEYS[course.category]) : course.category}</span>
@@ -333,7 +324,7 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <span className="font-semibold text-foreground text-sm">{course.title}</span>
-                      <Badge className="text-[10px] px-1.5 py-0 bg-primary/15 text-primary/90 border-primary/20">{t('badge.recommended')}</Badge>
+                      <Badge variant="default" className="text-[10px] px-1.5 py-0">{t('badge.recommended')}</Badge>
                     </div>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                       <span>{CATEGORY_KEYS[course.category] ? t(CATEGORY_KEYS[course.category]) : course.category}</span>
@@ -360,7 +351,7 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
       {/* ─── 이수 이력 ─── */}
       <section>
         <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
-          <CheckCircle2 className="h-5 w-5 text-emerald-700" />
+          <CheckCircle2 className="h-5 w-5 text-[#006b39]" />
           {t('section.history')}
           <span className="text-sm font-normal text-muted-foreground">{t('section.historyRecent')}</span>
         </h2>
@@ -387,7 +378,7 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-foreground">{item.course.title}</span>
                         {item.course.isMandatory && (
-                          <Badge className="text-[10px] px-1.5 py-0 bg-destructive/10 text-destructive border-destructive/20">{t('badge.mandatory')}</Badge>
+                          <Badge variant="error" className="text-[10px] px-1.5 py-0">{t('badge.mandatory')}</Badge>
                         )}
                       </div>
                     </td>
@@ -409,10 +400,7 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
 
       {/* ─── 빈 상태 ─── */}
       {requiredPending.length === 0 && jobRequired.length === 0 && recommended.length === 0 && history.length === 0 && (
-        <div className="bg-card rounded-xl border border-border p-12 text-center">
-          <Clock className="h-10 w-10 text-border mx-auto mb-3" />
-          <EmptyState />
-        </div>
+        <EmptyState size="lg" standalone />
       )}
     </div>
   )

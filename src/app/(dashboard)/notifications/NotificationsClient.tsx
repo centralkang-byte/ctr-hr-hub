@@ -16,6 +16,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
+import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -33,6 +34,7 @@ interface NotificationItem {
 
 export function NotificationsClient({ user: _user }: { user: SessionUser }) {
   const tc = useTranslations('common')
+  const t = useTranslations('notifications')
 
   // ─── Filter tabs ────────────────────────────────────────────
   const TRIGGER_TABS = [
@@ -57,6 +59,19 @@ export function NotificationsClient({ user: _user }: { user: SessionUser }) {
   const [selectedTab, setSelectedTab] = useState('')
   const [readFilter, setReadFilter] = useState('')
   const [markingAll, setMarkingAll] = useState(false)
+
+  // ─── Keyboard nav (roving tabindex) for the two single-select filter groups ───
+  // 선택 동작은 기존 onClick(setSelectedTab/setReadFilter) 유지 — 훅은 키보드 내비만 추가.
+  const triggerNav = useArrowKeyNavigation(
+    TRIGGER_TABS.length,
+    Math.max(0, TRIGGER_TABS.findIndex((tab) => tab.value === selectedTab)),
+    (i) => setSelectedTab(TRIGGER_TABS[i].value),
+  )
+  const readNav = useArrowKeyNavigation(
+    READ_FILTERS.length,
+    Math.max(0, READ_FILTERS.findIndex((f) => f.value === readFilter)),
+    (i) => setReadFilter(READ_FILTERS[i].value),
+  )
 
   // ─── Fetch ───
   const fetchNotifications = useCallback(async () => {
@@ -123,8 +138,7 @@ export function NotificationsClient({ user: _user }: { user: SessionUser }) {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={'제목'}
-        description={'설명'}
+        title={t('pageTitle')}
         actions={
           <Button
             variant="outline"
@@ -143,18 +157,26 @@ export function NotificationsClient({ user: _user }: { user: SessionUser }) {
         }
       />
 
-      {/* ─── Filter Tabs ─── */}
+      {/* ─── Filter groups (panel-less single-select) ─── */}
       <div className="flex flex-wrap items-center gap-4">
-        {/* Trigger type tabs */}
-        <div className="flex border-b border-border">
-          {TRIGGER_TABS.map((tab) => (
+        {/* Trigger type filter — segmented control */}
+        <div
+          role="radiogroup"
+          aria-label={t('typeFilterLabel')}
+          onKeyDown={triggerNav.onKeyDown}
+          className="flex flex-wrap items-center gap-1 rounded-lg bg-muted/50 p-1"
+        >
+          {TRIGGER_TABS.map((tab, i) => (
             <button
               key={tab.value}
               type="button"
-              className={`px-4 py-2.5 text-sm font-medium transition-colors ${
+              role="radio"
+              aria-checked={selectedTab === tab.value}
+              {...triggerNav.itemProps(i)}
+              className={`rounded-md px-4 py-1.5 text-sm transition-colors ${
                 selectedTab === tab.value
-                  ? 'border-b-2 border-primary text-primary'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-card text-primary font-semibold shadow-sm'
+                  : 'font-medium text-muted-foreground hover:text-foreground'
               }`}
               onClick={() => setSelectedTab(tab.value)}
             >
@@ -163,16 +185,24 @@ export function NotificationsClient({ user: _user }: { user: SessionUser }) {
           ))}
         </div>
 
-        {/* Read status filter */}
-        <div className="flex items-center gap-1 rounded-lg border border-border p-0.5">
-          {READ_FILTERS.map((f) => (
+        {/* Read status filter — segmented control */}
+        <div
+          role="radiogroup"
+          aria-label={t('readFilterLabel')}
+          onKeyDown={readNav.onKeyDown}
+          className="flex items-center gap-1 rounded-lg bg-muted/50 p-1"
+        >
+          {READ_FILTERS.map((f, i) => (
             <button
               key={f.value}
               type="button"
-              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+              role="radio"
+              aria-checked={readFilter === f.value}
+              {...readNav.itemProps(i)}
+              className={`rounded-md px-3 py-1.5 text-xs transition-colors ${
                 readFilter === f.value
-                  ? 'bg-primary text-white'
-                  : 'text-muted-foreground hover:bg-muted'
+                  ? 'bg-card text-primary font-semibold shadow-sm'
+                  : 'font-medium text-muted-foreground hover:text-foreground'
               }`}
               onClick={() => setReadFilter(f.value)}
             >
@@ -191,8 +221,8 @@ export function NotificationsClient({ user: _user }: { user: SessionUser }) {
         ) : notifications.length === 0 ? (
           <EmptyState
             icon={Bell}
-            title={'알림이 없습니다.'}
-            description={'알림이 발생하면 여기에 표시됩니다.'}
+            title={t('emptyTitle')}
+            description={t('emptyDesc')}
           />
         ) : (
           <div className="divide-y divide-border">
@@ -230,9 +260,6 @@ export function NotificationsClient({ user: _user }: { user: SessionUser }) {
                     </span>
                   </div>
                   <div className="mt-2 flex items-center gap-2">
-                    <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                      {item.triggerType}
-                    </span>
                     {!item.isRead && (
                       <button
                         type="button"
