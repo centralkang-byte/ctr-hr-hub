@@ -20,8 +20,8 @@ import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 interface FeedItem {
   id: string
-  sender: { id: string; name: string; department?: { name: string } }
-  receiver: { id: string; name: string; department?: { name: string } }
+  sender: { id: string; name: string; department?: string | null }
+  receiver: { id: string; name: string; department?: string | null }
   coreValue: string
   message: string
   createdAt: string
@@ -222,7 +222,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>
                         {formatTimeAgo(item.createdAt)}
-                        {item.sender.department && ` · ${item.sender.department.name}`}
+                        {item.sender.department && ` · ${item.sender.department}`}
                       </span>
                       <button
                         onClick={() => handleLike(item.id)}
