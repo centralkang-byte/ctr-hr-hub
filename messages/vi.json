@@ -2520,7 +2520,12 @@
     "workPermit": "Work Permit",
     "workPermitRegistration": "Work Permit Registration",
     "workPermits": "Work Permits",
-    "workPermitsTitle": "Work Permits & Visas"
+    "workPermitsTitle": "Work Permits & Visas",
+    "detailBackToList": "Nhân viên",
+    "detailDivision": "Bộ phận",
+    "detailWorkLocation": "Nơi làm việc",
+    "detailTenureLabel": "Thâm niên",
+    "detailPayBand": "Dải lương"
   },
   "employees": {
     "emptyDesc": "Register a new employee.",
@@ -8566,6 +8571,24 @@
         "ddayToday": "Hạn hôm nay",
         "ariaLabel": "Tóm tắt đánh giá và phát triển"
       }
+    },
+    "profileTab": {
+      "crossCompanyTitle": "Công ty khác",
+      "crossCompanyDesc": "Không thể hiển thị dữ liệu hiệu suất và ghi nhận của nhân viên thuộc công ty khác ở đây.",
+      "loadError": "Không tải được dữ liệu hiệu suất.",
+      "recognitionLoadError": "Không tải được lời ghi nhận.",
+      "retry": "Thử lại",
+      "empty": "Chưa có dữ liệu hiệu suất.",
+      "recentGrade": "Xếp loại gần nhất",
+      "mboAverage": "Đạt MBO trung bình",
+      "noScoredGoals": "Không có dữ liệu",
+      "goalsCount": "{count} mục tiêu",
+      "receivedRecognition": "Lời ghi nhận đã nhận",
+      "recognitionPeriod": "Tổng cộng",
+      "unitCount": "",
+      "recentEval": "Đánh giá gần nhất",
+      "noRecognition": "Chưa có lời ghi nhận.",
+      "recognitionFrom": "{name} đã ghi nhận"
     }
   },
   "preHire": {

@@ -943,7 +943,12 @@
     "bulkSelectAll": "전체 선택",
     "bulkSelectRow": "{name} 선택",
     "listQuickPanelTitle": "직원 정보",
-    "cancel": "취소"
+    "cancel": "취소",
+    "detailBackToList": "직원 관리",
+    "detailDivision": "본부",
+    "detailWorkLocation": "근무지",
+    "detailTenureLabel": "근속",
+    "detailPayBand": "급여 밴드"
   },
   "attendance": {
     "title": "근태 관리",
@@ -2874,6 +2879,24 @@
         "ddayToday": "오늘 마감",
         "ariaLabel": "평가/성장 요약"
       }
+    },
+    "profileTab": {
+      "crossCompanyTitle": "다른 법인 직원",
+      "crossCompanyDesc": "다른 법인 직원의 성과·인정 정보는 이 화면에서 표시할 수 없어요.",
+      "loadError": "성과 정보를 불러오지 못했어요.",
+      "recognitionLoadError": "받은 칭찬을 불러오지 못했어요.",
+      "retry": "다시 시도",
+      "empty": "표시할 성과 정보가 아직 없어요.",
+      "recentGrade": "최근 등급",
+      "mboAverage": "MBO 평균 달성",
+      "noScoredGoals": "데이터 없음",
+      "goalsCount": "목표 {count}개",
+      "receivedRecognition": "받은 칭찬",
+      "recognitionPeriod": "누적",
+      "unitCount": "건",
+      "recentEval": "최근 평가",
+      "noRecognition": "받은 칭찬이 아직 없어요.",
+      "recognitionFrom": "{name}님이 칭찬했어요"
     }
   },
   "recruitment": {

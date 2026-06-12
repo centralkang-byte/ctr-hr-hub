@@ -7,7 +7,6 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import {
   ArrowUpDown,
@@ -15,7 +14,6 @@ import {
   Check,
   Clock,
   Info,
-  Pencil,
   TrendingUp,
   User,
   X,
@@ -38,7 +36,10 @@ import {
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
-import { ProfileSidebar } from '@/components/employees/ProfileSidebar'
+import { EmployeeCell } from '@/components/common/EmployeeCell'
+import PayBandChart from '@/components/compensation/PayBandChart'
+import { EmployeeWorkerBanner } from '@/components/employees/EmployeeWorkerBanner'
+import { PerformanceTab } from '@/components/employees/tabs/PerformanceTab'
 import {
   Dialog,
   DialogContent,
@@ -116,25 +117,6 @@ function calcTenure(hireDate: Date | string | null): { years: number; months: nu
   const total = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth())
   if (total <= 0) return { years: 0, months: 0 }
   return { years: Math.floor(total / 12), months: total % 12 }
-}
-
-function getInitials(name: string): string {
-  return name.slice(0, 2)
-}
-
-
-// ─── Avatar ─────────────────────────────────────────────────
-
-function Avatar({ name, photoUrl, size = 'md' }: { name: string; photoUrl?: string | null; size?: 'sm' | 'md' | 'lg' }) {
-  const sizeClass = size === 'lg' ? 'h-20 w-20 text-2xl' : size === 'sm' ? 'h-8 w-8 text-xs' : 'h-12 w-12 text-base'
-  if (photoUrl) {
-    return <Image src={photoUrl} alt={name} width={80} height={80} unoptimized className={`${sizeClass} rounded-full object-cover`} />
-  }
-  return (
-    <div className={`${sizeClass} flex items-center justify-center rounded-full bg-ctr-primary-light font-semibold text-ctr-primary`}>
-      {getInitials(name)}
-    </div>
-  )
 }
 
 // ─── Field row for info display ──────────────────────────────
@@ -308,6 +290,14 @@ export function EmployeeDetailClient({
   // ─── Tab 1: 기본정보 ────────────────────────────────────────
 
   const renderBasicInfo = () => {
+    const tenure = calcTenure(employee.hireDate)
+    const tenureText = tenure
+      ? tenure.years > 0
+        ? t('tenureYearsMonths', tenure)
+        : tenure.months > 0
+          ? t('tenureMonthsOnly', tenure)
+          : t('tenureZeroMonths')
+      : '-'
     if (editing) {
       return (
         <div className="space-y-6">
@@ -427,14 +417,24 @@ export function EmployeeDetailClient({
           <dl className="grid grid-cols-1 gap-x-8 gap-y-0 md:grid-cols-2">
             <InfoRow label={t('employeeCode')} value={<span className="font-mono tabular-nums">{employee.employeeNo}</span>} />
             <InfoRow label={t('companyEntity')} value={employee.company?.name} />
+            {division && <InfoRow label={t('detailDivision')} value={division} />}
             <InfoRow label={t('department')} value={employee.department?.name} />
             {employee.title && <InfoRow label={t('employeeTitle')} value={employee.title.name} />}
             {employee.position && <InfoRow label={t('detailPositionLabel')} value={employee.position.titleKo} />}
             {canViewGrade && <InfoRow label={t('jobGrade')} value={employee.jobGrade?.name} />}
             <InfoRow label={t('jobCategory')} value={employee.jobCategory?.name} />
+            {employee.workLocation && (
+              <InfoRow
+                label={t('detailWorkLocation')}
+                value={[employee.workLocation.country, employee.workLocation.city]
+                  .filter(Boolean)
+                  .join(', ')}
+              />
+            )}
             {canViewSensitive && <InfoRow label={t('employmentType')} value={EMPLOYMENT_TYPE_LABELS[employee.employmentType] ?? employee.employmentType} />}
             <InfoRow label={tc('status')} value={<StatusBadge status={employee.status}>{STATUS_LABELS[employee.status] ?? employee.status}</StatusBadge>} />
             <InfoRow label={t('hireDate')} value={formatDate(employee.hireDate)} />
+            <InfoRow label={t('detailTenureLabel')} value={tenureText} />
             <InfoRow label={t('resignDate')} value={formatDate(employee.resignDate)} />
           </dl>
         </div>
@@ -444,181 +444,185 @@ export function EmployeeDetailClient({
 
   // ─── Render ─────────────────────────────────────────────────
 
-  const tenure = calcTenure(employee.hireDate)
-  const tenureText = tenure
-    ? tenure.years > 0
-      ? t('tenureYearsMonths', tenure)
-      : tenure.months > 0
-        ? t('tenureMonthsOnly', tenure)
-        : t('tenureZeroMonths')
-    : '-'
-
   return (
-    <div className="flex h-full">
-      {/* ─── Left: Profile Sidebar (P04) ─── */}
-      <ProfileSidebar
+    <div className="mx-auto max-w-[1440px] space-y-6 p-5 md:p-6">
+      {/* ─── Worker Banner (페이지 헤더 — DESIGN_RULES §5 시그니처) ─── */}
+      <EmployeeWorkerBanner
         name={employee.name}
         nameEn={employee.nameEn}
+        employeeNo={employee.employeeNo}
         photoUrl={employee.photoUrl}
-        title={employee.title?.name ?? null}
-        position={employee.position?.titleKo ?? null}
+        title={employee.title?.name ?? employee.position?.titleKo ?? null}
+        department={employee.department?.name ?? null}
         company={employee.company?.name ?? null}
-        division={division}
-        team={employee.department?.name ?? null}
-        locationName={
-          employee.workLocation
-            ? [employee.workLocation.country, employee.workLocation.city].filter(Boolean).join(', ')
-            : null
-        }
-        email={employee.email}
-        phone={employee.phone}
-        birthDate={employee.birthDate}
-        hireDate={employee.hireDate}
-        tenureText={tenureText}
         status={employee.status}
         statusLabel={STATUS_LABELS[employee.status] ?? employee.status}
-        canViewGrade={canViewGrade}
-        grade={employee.jobGrade?.name ?? null}
-        canViewSensitive={canViewSensitive}
-        emergencyContact={employee.emergencyContact}
-        emergencyContactPhone={employee.emergencyContactPhone}
-        manager={employee.manager ?? null}
-        compensationData={compensationData}
-        compensationLoading={compensationLoading}
-        onManagerClick={(id) => router.push(`/employees/${id}`)}
+        canEdit={isHrAdmin}
+        backLabel={t('detailBackToList')}
+        editLabel={t('detailEdit')}
+        onBack={() => router.push('/employees')}
+        onEdit={() => setEditing(true)}
       />
 
-      {/* ─── Right: Main Content ─── */}
-      <div className="flex-1 min-w-0 overflow-auto">
-        {/* Mobile profile header (shown on small screens) */}
-        <div className="lg:hidden p-8 pb-0">
-          <div className="flex items-center gap-4">
-            <Avatar name={employee.name} photoUrl={employee.photoUrl} size="lg" />
-            <div>
-              <h1 className="text-2xl font-bold text-foreground tracking-ctr">{employee.name}</h1>
-              <p className="text-sm text-muted-foreground">
-                {employee.department?.name ?? '-'}{employee.jobGrade ? ` · ${employee.jobGrade.name}` : ''}
-              </p>
-              <StatusBadge status={employee.status} className="mt-1">
-                {STATUS_LABELS[employee.status] ?? employee.status}
-              </StatusBadge>
-            </div>
-          </div>
-        </div>
+      <Tabs defaultValue="profile">
+        <TabsList className="mb-4 w-full justify-start overflow-x-auto">
+          <TabsTrigger value="profile">
+            <User className="mr-1.5 h-4 w-4" />
+            {t('detailTabProfile')}
+          </TabsTrigger>
+          <TabsTrigger value="assignment-history">
+            <ArrowUpDown className="mr-1.5 h-4 w-4" />
+            {t('detailTabAssignment')}
+          </TabsTrigger>
+          {isHrAdmin && (
+            <TabsTrigger value="compensation-info">
+              <Building2 className="mr-1.5 h-4 w-4" />
+              {t('detailTabCompensation')}
+            </TabsTrigger>
+          )}
+          <TabsTrigger value="attendance">
+            <Clock className="mr-1.5 h-4 w-4" />
+            {t('detailTabAttendance')}
+          </TabsTrigger>
+          <TabsTrigger value="loa">
+            <Shield className="mr-1.5 h-4 w-4" />
+            {t('detailTabLoa')}
+          </TabsTrigger>
+          <TabsTrigger value="performance">
+            <TrendingUp className="mr-1.5 h-4 w-4" />
+            {t('detailTabPerformance')}
+          </TabsTrigger>
+        </TabsList>
 
-        <div className="p-8">
-        <div className="flex-1 min-w-0">
-          <Tabs defaultValue="profile">
-            <TabsList className="mb-4">
-              <TabsTrigger value="profile">
-                <User className="mr-1.5 h-4 w-4" />
-                {t('detailTabProfile')}
-              </TabsTrigger>
-              <TabsTrigger value="assignment-history">
-                <ArrowUpDown className="mr-1.5 h-4 w-4" />
-                {t('detailTabAssignment')}
-              </TabsTrigger>
-              {isHrAdmin && (
-                <TabsTrigger value="compensation-info">
-                  <Building2 className="mr-1.5 h-4 w-4" />
-                  {t('detailTabCompensation')}
-                </TabsTrigger>
-              )}
-              <TabsTrigger value="attendance">
-                <Clock className="mr-1.5 h-4 w-4" />
-                {t('detailTabAttendance')}
-              </TabsTrigger>
-              <TabsTrigger value="loa">
-                <Shield className="mr-1.5 h-4 w-4" />
-                {t('detailTabLoa')}
-              </TabsTrigger>
-              <TabsTrigger value="performance">
-                <TrendingUp className="mr-1.5 h-4 w-4" />
-                {t('detailTabPerformance')}
-              </TabsTrigger>
-            </TabsList>
-
-            {/* Tab 1: 프로필 */}
-            <TabsContent value="profile">
+        {/* Tab 1: 프로필 */}
+        <TabsContent value="profile">
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2">
               <div className="rounded-xl border border-border bg-card p-6">
-                {isHrAdmin && !editing && (
-                  <div className="mb-4 flex justify-end">
-                    <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
-                      <Pencil className="mr-1 h-4 w-4" />
-                      {t('detailEdit')}
-                    </Button>
-                  </div>
-                )}
                 {editing && (
-                  <div className="mb-4 rounded-lg bg-amber-500/15 border border-amber-300 px-4 py-3">
-                    <p className="text-xs text-amber-700">
-                      ⚠️ {t('detailAssignmentWarning')}
+                  <div className="mb-4 rounded-lg border border-warning-bright/30 bg-warning-bright/15 px-4 py-3">
+                    <p className="flex items-center gap-1.5 text-xs text-ctr-warning">
+                      <Info className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                      {t('detailAssignmentWarning')}
                     </p>
                   </div>
                 )}
                 {renderBasicInfo()}
               </div>
-            </TabsContent>
+            </div>
 
-            {/* Tab 2: 발령이력 */}
-            <TabsContent value="assignment-history">
-              <AssignmentHistoryTab
-                employeeId={employee.id}
-                hireDate={employee.hireDate}
-                user={user}
-              />
-            </TabsContent>
+            {/* 우측 레일: 직속 상사 + 급여 밴드 (ProfileSidebar에서 이전) */}
+            <div className="space-y-4">
+              {employee.manager && (
+                <section
+                  aria-labelledby="profile-manager-title"
+                  className="rounded-2xl border border-border bg-card p-5"
+                >
+                  <h3
+                    id="profile-manager-title"
+                    className="mb-3 text-sm font-semibold text-foreground"
+                  >
+                    {t('manager')}
+                  </h3>
+                  <EmployeeCell
+                    name={employee.manager.name}
+                    photoUrl={employee.manager.photoUrl}
+                    department={employee.manager.department}
+                    jobTitle={employee.manager.title}
+                    size="sm"
+                    onClick={() =>
+                      employee.manager && router.push(`/employees/${employee.manager.id}`)
+                    }
+                  />
+                </section>
+              )}
 
-            {/* Tab 3: 급여정보 (HR Admin only) */}
-            {isHrAdmin && (
-              <TabsContent value="compensation-info">
-                <div className="rounded-xl border border-border bg-card p-6">
-                  <CompensationTab employeeId={employee.id} />
-                </div>
-              </TabsContent>
-            )}
-
-            {/* Tab 4: 근태현황 (B6-1) */}
-            <TabsContent value="attendance">
-              <AttendanceTab employeeId={employee.id} />
-            </TabsContent>
-
-            {/* Tab 5: 휴직 이력 */}
-            <TabsContent value="loa">
-              <LoaTab employeeId={employee.id} />
-            </TabsContent>
-
-            {/* Tab 6: 평가결과 (comingSoon - B3) */}
-            <TabsContent value="performance">
-              <div className="rounded-xl border border-border bg-card p-6">
-                <div className="flex flex-col items-center py-12 text-muted-foreground">
-                  <TrendingUp className="h-10 w-10 mb-3 text-border" />
-                  <p className="text-sm font-medium text-muted-foreground">{t('detailTabPerformance')}</p>
-                  <p className="text-xs mt-1">{t('detailPerformanceComingSoon')}</p>
-                </div>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-
-        {/* ─── Offboarding action (HR_ADMIN + ACTIVE) ─── */}
-        {isHrAdmin && employee.status === 'ACTIVE' && (
-          <div className="mt-6 pt-6 border-t border-border">
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => {
-                resetOffboarding()
-                setOffboardingOpen(true)
-              }}
-            >
-              {t('offboarding')}
-            </Button>
+              {canViewGrade && employee.jobGrade?.name && (
+                <section
+                  aria-labelledby="profile-payband-title"
+                  className="rounded-2xl border border-border bg-card p-5"
+                >
+                  <h3
+                    id="profile-payband-title"
+                    className="mb-3 text-sm font-semibold text-foreground"
+                  >
+                    {t('detailPayBand')}
+                  </h3>
+                  <p className="mb-3 text-sm text-muted-foreground">
+                    {t('jobGrade')}:{' '}
+                    <span className="font-medium text-foreground">{employee.jobGrade.name}</span>
+                  </p>
+                  {compensationLoading ? (
+                    <div className="h-2 animate-pulse rounded-full bg-muted" />
+                  ) : compensationData ? (
+                    <PayBandChart
+                      compact
+                      currentSalary={compensationData.currentSalary}
+                      minSalary={compensationData.bandMin}
+                      midSalary={compensationData.bandMid}
+                      maxSalary={compensationData.bandMax}
+                    />
+                  ) : null}
+                </section>
+              )}
+            </div>
           </div>
+        </TabsContent>
+
+        {/* Tab 2: 발령이력 */}
+        <TabsContent value="assignment-history">
+          <AssignmentHistoryTab
+            employeeId={employee.id}
+            hireDate={employee.hireDate}
+            user={user}
+          />
+        </TabsContent>
+
+        {/* Tab 3: 급여정보 (HR Admin only) */}
+        {isHrAdmin && (
+          <TabsContent value="compensation-info">
+            <div className="rounded-xl border border-border bg-card p-6">
+              <CompensationTab employeeId={employee.id} />
+            </div>
+          </TabsContent>
         )}
 
-        </div>{/* end p-6 */}
-        </div>{/* end flex-1 overflow */}
+        {/* Tab 4: 근태현황 (B6-1) */}
+        <TabsContent value="attendance">
+          <AttendanceTab employeeId={employee.id} />
+        </TabsContent>
+
+        {/* Tab 5: 휴직 이력 */}
+        <TabsContent value="loa">
+          <LoaTab employeeId={employee.id} />
+        </TabsContent>
+
+        {/* Tab 6: 평가결과 (성과평가 재배치 — /insights + 받은 칭찬) */}
+        <TabsContent value="performance">
+          <PerformanceTab
+            employeeId={employee.id}
+            employeeCompanyId={employee.companyId}
+            viewerCompanyId={user.companyId}
+            isSuperAdmin={user.role === ROLE.SUPER_ADMIN}
+          />
+        </TabsContent>
+      </Tabs>
+
+      {/* ─── Offboarding action (HR_ADMIN + ACTIVE) ─── */}
+      {isHrAdmin && employee.status === 'ACTIVE' && (
+        <div className="border-t border-border pt-6">
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => {
+              resetOffboarding()
+              setOffboardingOpen(true)
+            }}
+          >
+            {t('offboarding')}
+          </Button>
+        </div>
+      )}
 
           {/* Offboarding wizard dialog */}
           <Dialog open={offboardingOpen} onOpenChange={(open) => { setOffboardingOpen(open); if (!open) resetOffboarding() }}>

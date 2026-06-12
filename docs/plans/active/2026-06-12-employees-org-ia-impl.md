@@ -78,3 +78,28 @@ Strictly additive; absent props → zero behavior change (matches existing `tabl
 
 ## Gates
 tsc 0 · lint 0 · **N2 E2E pass (role-split)** · **Pixel Gate** (proto bar vs live, employees page) · multi-role dogfood (`super@` + `employee-a@`) · Codex G1 (this plan) + G2 (post-impl via /verify). DataTable is a high-blast shared component → assert no regression on existing consumers (additive-only).
+
+---
+
+## PR-2 — 상세 페이지 풀 프로토 전환 (구현 완료, 별도 PR)
+
+> Branch `design/wave1-ia-employees-detail` off `design/wave1-ia-employees` (스택, base=#174). CEO 결정 = **풀 프로토 전환**(하이브리드/탭만 아님).
+
+**변경 (6파일, +1036/−441)**:
+- **NEW `EmployeeWorkerBanner.tsx`** — 프로토 `.wd-worker-banner`. `bg-gradient-to-br from-primary to-primary-dim` + warm radial(`bg-wd-orange/25`) + 흰 점패턴 + 뒤로(`직원 관리`) + 아바타 + 이름·영문·사번 + 메타(직위·부서·법인·상태점=`STATUS_FG` SSOT). 액션 = **정보 편집(HR)만**, 흰 pill+`text-primary-dim`(프로토 navy·AA). 메시지/발령서 = no-mock 드롭.
+- **NEW `tabs/PerformanceTab.tsx`** — 인라인 성과평가. `/insights`+`/cfr/recognitions/employee/[id]` **독립 fetch**(한쪽 실패가 탭 안 비움). 3-KPI(`WdStatStrip md:grid-cols-3`: 최근등급·MBO평균·받은칭찬) + 섹션(목표 progressbar·**최근 평가 단건**·최근 원온원·승계준비도·받은 칭찬). `READINESS_CONFIG`·`MOOD_SCALE` SSOT만 재사용(InsightPanel 무수정).
+- **EDIT `EmployeeDetailClient.tsx`** — `flex h-full` 사이드바 → 배너 + 풀폭 Radix Tabs. ProfileSidebar·모바일헤더 제거. 사이드바 고유(직속상사 링크·급여밴드)=프로필 탭 우측 레일로 이전, division/근무지/근속=고용정보 그리드 InfoRow 추가. 편집·오프보딩 무변경. 편집 경고 amber raw→`warning-bright`/`ctr-warning`+Info(이모지 제거).
+- **DELETE `ProfileSidebar.tsx`** — 소비처 1곳뿐, 동일트랙 죽은코드.
+- **i18n** — `performance.profileTab.*`(16) + `employee.detail*`(5) ×5로케일 add-only.
+- **E2E** `e2e/flows/employee-detail-profile.spec.ts` — HR_ADMIN 배너·perf탭·프로필 dl 보존 / SUPER 크로스컴퍼니 안내 / EMPLOYEE 차단.
+
+**Codex G1 HIGH 3 반영**: ① **크로스컴퍼니**(SUPER가 타 법인 직원 열면 `/insights` 404·`/recognitions` 200-empty) → `crossCompany = isSuperAdmin && employeeCompanyId !== viewerCompanyId`로 **fetch 전 명시 안내**("다른 법인…표시할 수 없어요", 빈상태 위장 금지). ② **Tier-2 동등성**(grade/payband=`canViewGrade`, 비상연락처=`canViewSensitive` 게이트 보존, 매니저 클릭 보존). ③ **2-소스 독립 상태**.
+
+**의도된 프로토 편차 (defect 아님 — 리뷰 워크플로 confirmed-but-intentional)**:
+- 최근 평가 = **단건**(`/insights`가 latestEval 1건 반환; 가짜 다행 이력 금지).
+- 목표 = **goal progressbar**(proto 사이클 MBO 테이블 대신; API가 cycle 집계 미반환·goal-level이 더 actionable).
+- **최근 원온원·승계준비도** = InsightPanel 재배치(proto+ — live 백엔드 존재, re-home 원칙).
+- **메시지·발령서·경력이력** = 백엔드 부재 → no-mock 드롭/이연.
+- KPI 라벨 케이싱·readiness/mood 폴백 = `WdStatStrip`/`InsightPanel` SSOT 일관(단일 surface 발산 회피).
+
+**검증**: tsc 0 · lint 0 · 멀티롤 도그푸드(hr@ 실데이터 배너+perf 0에러 / super@ 크로스컴퍼니 안내 0에러) · 적대 리뷰 워크플로(20에이전트·6차원·confirmed 10→실수정 2[배너 navy·MOOD 가드]·나머지 intentional). G2=/verify.
