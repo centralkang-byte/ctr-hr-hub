@@ -2465,7 +2465,12 @@
     "workPermit": "Work Permit",
     "workPermitRegistration": "Work Permit Registration",
     "workPermits": "Work Permits",
-    "workPermitsTitle": "Work Permits & Visas"
+    "workPermitsTitle": "Work Permits & Visas",
+    "detailBackToList": "员工管理",
+    "detailDivision": "本部",
+    "detailWorkLocation": "工作地点",
+    "detailTenureLabel": "在职年限",
+    "detailPayBand": "薪资区间"
   },
   "employees": {
     "emptyDesc": "Register a new employee.",
@@ -8410,7 +8415,25 @@
     "yearColumn": "Year",
     "yearLabel": "Year",
     "yearUnit": "{year}",
-    "years": "year"
+    "years": "year",
+    "profileTab": {
+      "crossCompanyTitle": "其他法人员工",
+      "crossCompanyDesc": "无法在此页面显示其他法人员工的绩效和表彰信息。",
+      "loadError": "无法加载绩效信息。",
+      "recognitionLoadError": "无法加载收到的表彰。",
+      "retry": "重试",
+      "empty": "暂无绩效信息。",
+      "recentGrade": "最近等级",
+      "mboAverage": "MBO平均达成",
+      "noScoredGoals": "无数据",
+      "goalsCount": "{count}个目标",
+      "receivedRecognition": "收到的表彰",
+      "recognitionPeriod": "累计",
+      "unitCount": "次",
+      "recentEval": "最近评价",
+      "noRecognition": "暂无收到的表彰。",
+      "recognitionFrom": "{name} 给予了表彰"
+    }
   },
   "preHire": {
     "affiliation": "所属:",
