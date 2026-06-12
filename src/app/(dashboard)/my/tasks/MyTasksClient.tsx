@@ -40,6 +40,7 @@ import {
 } from '@/components/ui/select'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { EmptyState } from '@/components/shared/EmptyState'
+import { WdStatusChips } from '@/components/shared/WdStatusChips'
 import { apiClient } from '@/lib/api'
 import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
 import type { SessionUser } from '@/types'
@@ -69,7 +70,7 @@ function getDdayStyle(dueDate?: string): string {
         (new Date(dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
     )
     if (diff < 0) return 'bg-destructive/10 text-destructive border-destructive/20'
-    if (diff <= 3) return 'bg-amber-500/15 text-amber-700 border-amber-300'
+    if (diff <= 3) return 'bg-warning-bright/15 text-ctr-warning border-warning-bright/30'
     return 'bg-primary/10 text-primary border-primary/20'
 }
 
@@ -102,13 +103,11 @@ function UnifiedTaskCard({
     const isBusy = processing === task.id
     const isBlocked = !!(task.metadata as Record<string, unknown>)?.isBlocked
 
-    let borderStyle = 'border border-border'
-    if (task.priority === UnifiedTaskPriority.URGENT) borderStyle = 'border border-destructive/20 border-l-4 border-l-[#EF4444]'
-    else if (task.priority === UnifiedTaskPriority.HIGH) borderStyle = 'border border-amber-300 border-l-4 border-l-[#F59E0B]'
-
+    // SLOP-1: urgency는 좌측 우선순위 dot(:prioInfo) + 타입 아이콘 틴트로 전달.
+    // border-l-4 색 보더(AI slop)·raw hex 제거 — 카드는 단일 1px border-border.
     return (
         <div
-            className={`group rounded-xl bg-card p-4 transition-all duration-150 hover:shadow-md ${borderStyle}`}
+            className="group rounded-2xl border border-border bg-card p-4 transition-all duration-150 hover:shadow-md"
         >
             <div className="flex items-start gap-3">
                 {/* Priority dot */}
@@ -197,7 +196,7 @@ function UnifiedTaskCard({
                                 <Button
                                     size="sm"
                                     variant="ghost"
-                                    className="h-7 gap-1 px-2 text-[11px] text-red-500 hover:bg-destructive/10"
+                                    className="h-7 gap-1 px-2 text-[11px] text-destructive hover:bg-destructive/10"
                                     disabled={isBusy}
                                     onClick={(e) => { e.stopPropagation(); onAction(task.id, 'reject', task.sourceId) }}
                                 >
@@ -367,6 +366,22 @@ function MyTasksInner({ user }: { user: SessionUser }) {
         return Object.values(countByType).reduce((sum, n) => sum + (n ?? 0), 0)
     }, [countByType])
 
+    // ── D-day 카운트 (CHIP-1) — 현재 로드된 페이지 기준 ──────────
+    // overdue(마감 경과) / dueSoon(7일 내). pending 탭에서만 의미.
+    const ddayCounts = useMemo(() => {
+        let overdue = 0
+        let dueSoon = 0
+        for (const task of tasks) {
+            if (!task.dueDate) continue
+            const diff = Math.ceil(
+                (new Date(task.dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+            )
+            if (diff < 0) overdue += 1
+            else if (diff <= 7) dueSoon += 1
+        }
+        return { overdue, dueSoon }
+    }, [tasks])
+
     // ── Render ──────────────────────────────────────────────
 
     return (
@@ -375,6 +390,28 @@ function MyTasksInner({ user }: { user: SessionUser }) {
                 title={t('title')}
                 description={t('description')}
             />
+
+            {/* ── Status Chips (CHIP-1, Pattern-B) — pending 워크로드 요약 ── */}
+            {viewTab !== 'approvals' && statusTab === 'PENDING' && !loading && totalAllTypes > 0 && (
+                <WdStatusChips
+                    aria-label={t('chipSummaryLabel')}
+                    items={[
+                        { label: t('chipPending'), value: totalAllTypes, tone: 'accent' },
+                        {
+                            label: t('chipOverdue'),
+                            value: ddayCounts.overdue,
+                            tone: 'danger',
+                            muted: ddayCounts.overdue === 0,
+                        },
+                        {
+                            label: t('chipDueSoon'),
+                            value: ddayCounts.dueSoon,
+                            tone: 'warn',
+                            muted: ddayCounts.dueSoon === 0,
+                        },
+                    ]}
+                />
+            )}
 
             {/* ── Top-level View Tabs (내 할 일 | 승인 요청) ── */}
             {canSeeApprovals && (

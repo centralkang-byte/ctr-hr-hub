@@ -8,18 +8,10 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { CheckCircle2 } from 'lucide-react'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
+import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 
@@ -105,55 +97,56 @@ export function ProfileChangeRequestDialog({ open, onOpenChange, fieldKey, curre
   }, [fieldKey, newValue, reason, onOpenChange, onSuccess, te])
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{te('profileChangeTitle')}</DialogTitle>
-        </DialogHeader>
+    <WdDrawer
+      open={open}
+      onClose={() => onOpenChange(false)}
+      eyebrow={te('selfService')}
+      title={te('profileChangeTitle')}
+      closeDisabled={submitting}
+      primary={{
+        label: submitting ? te('profileChangeSubmitting') : te('profileChangeSubmitButton'),
+        onClick: handleSubmit,
+        disabled: submitting || !newValue.trim(),
+        icon: <CheckCircle2 className="h-4 w-4" />,
+      }}
+      secondary={{ label: te('cancel'), onClick: () => onOpenChange(false), disabled: submitting }}
+    >
+      <form onSubmit={(e) => { e.preventDefault(); if (!submitting && newValue.trim()) void handleSubmit() }} className="flex flex-col gap-4">
+      <div className="rounded-xl bg-muted/50 p-3">
+        <p className="text-xs text-muted-foreground mb-1">{t('currentValue')}</p>
+        <p className="text-sm font-medium">{currentValue || '-'}</p>
+      </div>
 
-        <div className="space-y-4">
-          <div className="rounded-xl bg-muted/50 p-3">
-            <p className="text-xs text-muted-foreground mb-1">{t('currentValue')}</p>
-            <p className="text-sm font-medium">{currentValue || '-'}</p>
-          </div>
+      <WdField label={`${te(FIELD_LABELS[fieldKey])}${te('profileChangeNewValue')}`} htmlFor="pcr-new-value">
+        <Input
+          id="pcr-new-value"
+          value={newValue}
+          onChange={(e) => setNewValue(e.target.value)}
+          placeholder={te('profileChangeEnterValue')}
+        />
+      </WdField>
 
-          <div className="space-y-2">
-            <Label>{te(FIELD_LABELS[fieldKey])}{te('profileChangeNewValue')}</Label>
-            <Input
-              value={newValue}
-              onChange={(e) => setNewValue(e.target.value)}
-              placeholder={te('profileChangeEnterValue')}
-            />
-          </div>
+      <WdField
+        label={te('profileChangeReasonLabel')}
+        htmlFor="pcr-reason"
+        help={<span className="block text-right">{reason.length}/500</span>}
+      >
+        <Textarea
+          id="pcr-reason"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          maxLength={500}
+          rows={3}
+          placeholder={te('profileChangeReasonPlaceholder')}
+        />
+      </WdField>
 
-          <div className="space-y-2">
-            <Label>{te('profileChangeReasonLabel')}</Label>
-            <Textarea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              maxLength={500}
-              rows={3}
-              placeholder={te('profileChangeReasonPlaceholder')}
-            />
-            <p className="text-xs text-muted-foreground text-right">{reason.length}/500</p>
-          </div>
-
-          <p className="text-xs text-muted-foreground">
-            {te('profileChangeHrNotice')}
-          </p>
-        </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {te('cancel')}
-          </Button>
-          <Button onClick={handleSubmit} disabled={submitting || !newValue.trim()}>
-            <CheckCircle2 className="w-4 h-4 mr-1.5" />
-            {submitting ? te('profileChangeSubmitting') : te('profileChangeSubmitButton')}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      <p className="text-xs text-muted-foreground">
+        {te('profileChangeHrNotice')}
+      </p>
+        <button type="submit" className="hidden" aria-hidden tabIndex={-1} />
+      </form>
+    </WdDrawer>
   )
 }
 

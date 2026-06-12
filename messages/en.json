@@ -3994,14 +3994,36 @@
       "certificates": "Certificates",
       "contracts": "Contracts",
       "other": "Other",
-      "payslips": "Payslips"
+      "payslips": "Payslips",
+      "documents": "Documents"
     },
     "toast": {
       "requestSuccess": "[TODO:en] 증명서 신청 완료",
       "requestSuccessDesc": "[TODO:en] HR 담당자 승인 후 발급됩니다."
     },
     "upload": "Upload Document",
-    "uploadDate": "Upload Date"
+    "uploadDate": "Upload Date",
+    "selfService": "Self-service",
+    "pageSubtitle": "Request certificates and track their issuance history",
+    "certStatus": {
+      "REQUESTED": "Requested",
+      "APPROVED": "Approved",
+      "ISSUED": "Issued",
+      "REJECTED": "Rejected"
+    },
+    "certType": {
+      "EMPLOYMENT_CERT": "Certificate of Employment",
+      "CAREER_CERT": "Certificate of Career",
+      "INCOME_CERT": "Certificate of Income"
+    },
+    "docType": {
+      "CONTRACT": "Employment Contract",
+      "ID_CARD": "ID Card",
+      "CERTIFICATE": "Certificate",
+      "RESUME": "Resume",
+      "HANDOVER": "Handover Document",
+      "OTHER": "Other"
+    }
   },
   "myOffboarding": {
     "assignedTo": "[TODO:en] 담당",
@@ -4320,7 +4342,9 @@
         "phone": "Phone",
         "skills": "[TODO:en] 보유 스킬"
       },
-      "visibilitySettings": "Visibility Settings"
+      "visibilitySettings": "Visibility Settings",
+      "selfService": "Self-service",
+      "tabsLabel": "Profile sections"
     },
     "profileDesc": "View and edit your personal information.",
     "profileTitle": "My Profile",
@@ -4426,7 +4450,11 @@
     "typeOnboarding": "Onboarding",
     "typePayroll": "Payroll",
     "typePerformance": "Performance",
-    "viewAll": "View All"
+    "viewAll": "View All",
+    "chipSummaryLabel": "Task summary",
+    "chipPending": "In progress",
+    "chipOverdue": "Overdue",
+    "chipDueSoon": "Due soon"
   },
   "myTraining": {
     "action": {

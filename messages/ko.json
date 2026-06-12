@@ -9126,7 +9126,11 @@
     "rejectConfirm": "반려 확인",
     "clearSelection": "선택 해제",
     "loading": "불러오는 중...",
-    "noHistory": "최근 30일 이내 처리된 내역이 없습니다"
+    "noHistory": "최근 30일 이내 처리된 내역이 없습니다",
+    "chipSummaryLabel": "할 일 요약",
+    "chipPending": "진행 중",
+    "chipOverdue": "기한 지남",
+    "chipDueSoon": "마감 임박"
   },
   "employees": {
     "pageTitle": "직원 관리",
@@ -10150,7 +10154,9 @@
       },
       "setPrimary": "주요 연락처로 설정",
       "avatarComingSoonTitle": "준비 중",
-      "avatarComingSoonDesc": "아바타 업로드는 곧 지원됩니다."
+      "avatarComingSoonDesc": "아바타 업로드는 곧 지원됩니다.",
+      "selfService": "셀프 서비스",
+      "tabsLabel": "프로필 탭"
     },
     "leave": {
       "title": "휴가 관리",
@@ -10664,7 +10670,8 @@
       "contracts": "계약서",
       "certificates": "증명서",
       "payslips": "급여명세서",
-      "other": "기타"
+      "other": "기타",
+      "documents": "보관 문서"
     },
     "upload": "문서 업로드",
     "download": "다운로드",
@@ -10723,6 +10730,27 @@
     "toast": {
       "requestSuccess": "증명서 신청 완료",
       "requestSuccessDesc": "HR 담당자 승인 후 발급됩니다."
+    },
+    "selfService": "셀프 서비스",
+    "pageSubtitle": "증명서를 신청하고 발급 이력을 확인하세요",
+    "certStatus": {
+      "REQUESTED": "신청됨",
+      "APPROVED": "승인됨",
+      "ISSUED": "발급 완료",
+      "REJECTED": "반려됨"
+    },
+    "certType": {
+      "EMPLOYMENT_CERT": "재직증명서",
+      "CAREER_CERT": "경력증명서",
+      "INCOME_CERT": "소득증명서"
+    },
+    "docType": {
+      "CONTRACT": "근로계약서",
+      "ID_CARD": "신분증",
+      "CERTIFICATE": "증명서",
+      "RESUME": "이력서",
+      "HANDOVER": "인수인계서",
+      "OTHER": "기타"
     }
   },
   "internalJobs": {
