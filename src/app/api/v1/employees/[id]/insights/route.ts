@@ -9,7 +9,7 @@ import { notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
-import { resolveCompanyId } from '@/lib/api/companyFilter'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
 export const GET = withPermission(
   async (
@@ -24,12 +24,13 @@ export const GET = withPermission(
       throw notFound('직원을 찾을 수 없습니다.')
     }
 
-    const companyId = resolveCompanyId(user)
+    // SUPER_ADMIN 전사조회: 회사 스코프 없이 조회 / 그 외 자기 법인 강제(fail-closed)
+    const companyScope = resolveCompanyFilter(user)
 
     const employee = await prisma.employee.findFirst({
       where: {
         id,
-        assignments: { some: { companyId, isPrimary: true, endDate: null } },
+        assignments: { some: { ...companyScope, isPrimary: true, endDate: null } },
       },
       select: { id: true, name: true },
     })

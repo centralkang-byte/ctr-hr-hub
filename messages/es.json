@@ -2465,7 +2465,12 @@
     "workPermit": "Work Permit",
     "workPermitRegistration": "Work Permit Registration",
     "workPermits": "Work Permits",
-    "workPermitsTitle": "Work Permits & Visas"
+    "workPermitsTitle": "Work Permits & Visas",
+    "detailBackToList": "Empleados",
+    "detailDivision": "División",
+    "detailWorkLocation": "Lugar de trabajo",
+    "detailTenureLabel": "Antigüedad",
+    "detailPayBand": "Banda salarial"
   },
   "employees": {
     "emptyDesc": "Register a new employee.",
@@ -8409,7 +8414,23 @@
     "yearColumn": "Year",
     "yearLabel": "Year",
     "yearUnit": "{year}",
-    "years": "year"
+    "years": "year",
+    "profileTab": {
+      "loadError": "No se pudieron cargar los datos de desempeño.",
+      "recognitionLoadError": "No se pudieron cargar los reconocimientos.",
+      "retry": "Reintentar",
+      "empty": "Aún no hay datos de desempeño.",
+      "recentGrade": "Última calificación",
+      "mboAverage": "Logro medio de MBO",
+      "noScoredGoals": "Sin datos",
+      "goalsCount": "{count} objetivos",
+      "receivedRecognition": "Reconocimientos recibidos",
+      "recognitionPeriod": "Total",
+      "unitCount": "",
+      "recentEval": "Última evaluación",
+      "noRecognition": "Aún no hay reconocimientos.",
+      "recognitionFrom": "{name} dio un reconocimiento"
+    }
   },
   "preHire": {
     "affiliation": "Afiliación:",
