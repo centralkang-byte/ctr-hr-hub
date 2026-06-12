@@ -181,10 +181,12 @@ export function DesignatedLeaveTab({ companyId }: DesignatedLeaveTabProps) {
                         <span className="text-xs text-muted-foreground">{formatDateCompactWithDay(d.date)}</span>
                       </div>
                       <button
+                        type="button"
                         onClick={() => handleDelete(d.id)}
+                        aria-label={`${d.name} ${t('common.delete')}`}
                         className="opacity-0 group-hover:opacity-100 p-1 hover:bg-destructive/10 rounded transition-opacity"
                       >
-                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                        <Trash2 className="h-3.5 w-3.5 text-destructive" aria-hidden="true" />
                       </button>
                     </div>
                   ))}

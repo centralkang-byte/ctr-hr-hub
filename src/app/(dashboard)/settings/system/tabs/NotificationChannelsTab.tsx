@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { Save, RotateCcw, Loader2, Bell, Mail, MessageSquare, Smartphone, type LucideIcon } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { OverrideBadge } from '@/components/settings/OverrideBadge'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { NotificationChannelsSetting, NotificationChannelEntry } from '@/types/process-settings'
@@ -51,7 +51,7 @@ export function NotificationChannelsTab({
           <p className="text-sm text-muted-foreground">{t('notificationChannels.subtitle')}</p>
         </div>
         {isOverridden && (
-          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
+          <OverrideBadge>{t('company_kec98a4eb')}</OverrideBadge>
         )}
       </div>
       <div className="space-y-3">{settings.channels.map((ch, i) => {
@@ -60,7 +60,14 @@ export function NotificationChannelsTab({
           <div key={ch.key} className="flex items-center gap-4 rounded-xl border border-border p-4 hover:bg-muted transition-colors">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10"><Icon className="h-5 w-5 text-primary" /></div>
             <div className="flex-1"><span className="text-sm font-medium text-foreground">{ch.label}</span></div>
-            <button onClick={() => toggle(i)} className={`relative h-6 w-11 rounded-full transition-colors ${ch.enabled ? 'bg-primary' : 'bg-border'}`}>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={ch.enabled}
+              aria-label={ch.label}
+              onClick={() => toggle(i)}
+              className={`relative h-6 w-11 rounded-full transition-colors ${ch.enabled ? 'bg-primary' : 'bg-border'}`}
+            >
               <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-card shadow transition-transform ${ch.enabled ? 'left-[22px]' : 'left-0.5'}`} />
             </button>
           </div>

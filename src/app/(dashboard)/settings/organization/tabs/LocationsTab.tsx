@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Loader2, MapPin, Plus, Pencil, X } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { badgeVariants } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 import { TABLE_STYLES, BUTTON_VARIANTS, BUTTON_SIZES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
 import { toast } from '@/hooks/use-toast'
@@ -279,21 +281,21 @@ export function LocationsTab({ companyId }: Props) {
                   </td>
                   <td className={TABLE_STYLES.cell}>
                     <button
+                      type="button"
                       onClick={() => handleDeactivate(loc)}
-                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        !loc.deletedAt
-                          ? 'bg-tertiary-container/10 text-tertiary'
-                          : 'bg-muted text-muted-foreground'
-                      }`}
+                      aria-label={`${loc.name} ${!loc.deletedAt ? t('active') : t('inactive')}`}
+                      className={cn(badgeVariants({ variant: !loc.deletedAt ? 'success' : 'neutral' }), 'cursor-pointer')}
                     >
                       {!loc.deletedAt ? t('active') : t('inactive')}
                     </button>
                   </td>
                   <td className={TABLE_STYLES.cell}>
                     <button
+                      type="button"
                       onClick={() => openEdit(loc)}
                       className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-primary"
                       title={t('edit')}
+                      aria-label={`${loc.name} ${t('edit')}`}
                     >
                       <Pencil className="h-4 w-4" />
                     </button>
@@ -319,7 +321,7 @@ export function LocationsTab({ companyId }: Props) {
               <h3 className="text-lg font-semibold text-foreground">
                 {editingId ? ts('locations.editTitle') : ts('locations.createTitle')}
               </h3>
-              <button onClick={() => setShowModal(false)} className="text-muted-foreground hover:text-foreground">
+              <button type="button" onClick={() => setShowModal(false)} className="text-muted-foreground hover:text-foreground" aria-label={t('close')}>
                 <X className="h-5 w-5" />
               </button>
             </div>

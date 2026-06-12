@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Loader2, Save, Info, RotateCcw } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
+import { OverrideBadge } from '@/components/settings/OverrideBadge'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/hooks/use-toast'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
@@ -20,7 +20,7 @@ interface NontaxableLimit {
 const STATIC_DEFAULTS: NontaxableLimit[] = [
   { code: 'MEAL', label: '식대', limit: 200_000, note: '소득세법 제12조' },
   { code: 'TRANSPORT', label: '교통비 (자가운전보조금)', limit: 200_000, note: '소득세법 시행령 제12조' },
-  { code: 'CHILDCARE', label: '✅ 자동확인', limit: 100_000, note: '6세 이하 자녀' },
+  { code: 'CHILDCARE', label: '자동확인', limit: 100_000, note: '6세 이하 자녀' },
   { code: 'RESEARCH', label: '연구활동비', limit: 200_000, note: '기업부설연구소' },
   { code: 'OVERTIME_EXEMPT', label: '생산직 야간근로수당', limit: 2_400_000, note: '연 240만원 한도' },
 ]
@@ -110,7 +110,7 @@ export function TaxFreeTab({
           <p className="text-sm text-muted-foreground">{t('taxFree.subtitle')}</p>
         </div>
         {isOverridden && (
-          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
+          <OverrideBadge>{t('company_kec98a4eb')}</OverrideBadge>
         )}
       </div>
       <div className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4">

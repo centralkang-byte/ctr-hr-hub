@@ -114,11 +114,11 @@ export function OvertimeTab({ companyId }: OvertimeTabProps) {
       </div>
 
       {/* Info banner */}
-      <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-500/10 p-4">
-        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+      <div className="flex items-start gap-3 rounded-lg border border-warning-bright/30 bg-warning-bright/15 p-4">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-ctr-warning" aria-hidden="true" />
         <div>
-          <p className="text-xs font-medium text-amber-800">{t('overtime.infoBannerTitle')}</p>
-          <p className="mt-0.5 text-xs text-amber-700">
+          <p className="text-xs font-medium text-ctr-warning">{t('overtime.infoBannerTitle')}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
             {t('overtime.infoBannerDesc')}
           </p>
         </div>

@@ -134,7 +134,7 @@ export function SettingsSubPageLayout({ config, activeTab, children }: SettingsS
             >
               {config.tabs.map((tab) => (
                 <option key={tab.slug} value={tab.slug}>
-                  {t(`tabs.${tab.slug}`)} {tab.isGlobalOnly ? '🔒' : ''}
+                  {t(`tabs.${tab.slug}`)}{tab.isGlobalOnly ? ' (고정)' : ''}
                 </option>
               ))}
             </select>

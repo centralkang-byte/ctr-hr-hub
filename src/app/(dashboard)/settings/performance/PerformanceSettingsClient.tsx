@@ -7,6 +7,7 @@
 
 import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import { useTranslations } from 'next-intl'
 import { getCategoryConfig, type PerformanceTabSlug } from '@/components/settings/settings-config'
 import { SettingsSubPageLayout } from '@/components/settings/SettingsSubPageLayout'
 
@@ -54,8 +55,9 @@ function PerformanceSettingsContent() {
 }
 
 export function PerformanceSettingsClient() {
+  const t = useTranslations('settings')
   return (
-    <Suspense fallback={<div className="flex items-center justify-center p-16 text-muted-foreground">{'Loading...'}</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center p-16 text-muted-foreground">{t('common.loading')}</div>}>
       <PerformanceSettingsContent />
     </Suspense>
   )

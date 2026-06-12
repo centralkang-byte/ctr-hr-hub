@@ -2,7 +2,7 @@
 
 // ═══════════════════════════════════════════════════════════
 // Settings — Field With Override Indicator (H-1)
-// Shows 🔵 global / 🟠 custom / 🔒 locked for each field
+// Shows global (Globe) / custom (Pencil, wd-orange) / locked (Lock) indicator per field
 // ═══════════════════════════════════════════════════════════
 
 import { Globe, Pencil, Lock, RotateCcw } from 'lucide-react'
@@ -52,7 +52,7 @@ export function SettingFieldWithOverride({
             )}
             {status === 'custom' && (
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/10 px-2.5 py-1 text-xs font-medium text-orange-600">
+                <span className="inline-flex items-center gap-1 rounded-full bg-wd-orange-soft px-2.5 py-1 text-xs font-medium text-wd-orange-ink">
                   <Pencil className="h-3 w-3" />
                   {t('overrideCustom')}
                 </span>
@@ -63,7 +63,7 @@ export function SettingFieldWithOverride({
                   <button
                     type="button"
                     onClick={onRevert}
-                    className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs text-muted-foreground transition-colors hover:border-orange-200 hover:text-orange-600"
+                    className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-xs text-muted-foreground transition-colors hover:border-wd-orange/40 hover:text-wd-orange-ink"
                   >
                     <RotateCcw className="h-3 w-3" />
                     {t('revertToDefault')}

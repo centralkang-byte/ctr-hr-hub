@@ -10,6 +10,7 @@ import { Loader2, Plus, Calendar } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { formatDateWithDay } from '@/lib/format/date'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { BUTTON_VARIANTS } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
 
@@ -116,9 +117,7 @@ export function HolidaysTab({
                           <div className="text-xs text-muted-foreground">{formatDateWithDay(holiday.date)}</div>
                         </div>
                         {holiday.isSubstitute && (
-                          <span className="rounded-full bg-orange-500/10 px-2 py-0.5 text-xs font-medium text-orange-600">
-                            {t('kr_keb8c80ec')}
-                          </span>
+                          <Badge variant="warning">{t('kr_keb8c80ec')}</Badge>
                         )}
                       </div>
                     ))}

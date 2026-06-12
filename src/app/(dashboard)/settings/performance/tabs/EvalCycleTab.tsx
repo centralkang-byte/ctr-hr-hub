@@ -10,15 +10,18 @@ import { StatusBadge } from '@/components/ui/StatusBadge'
 interface Cycle { id: string; name: string; type: string; status: string; startDate: string; endDate: string }
 interface Props { companyId: string | null }
 
-const STATUS_MAP: Record<string, { label: string }> = {
-  DRAFT: { label: '임시저장' },
-  GOAL_SETTING: { label: '목표 설정' },
-  IN_PROGRESS: { label: '진행 중' },
-  SELF_REVIEW: { label: '자기평가' },
-  MANAGER_REVIEW: { label: '상세' },
-  CALIBRATION: { label: '캘리브레이션' },
-  COMPLETED: { label: '완료' },
-  CLOSED: { label: '마감' },
+// CycleStatus enum (prisma schema, 9-state) 라벨 — exhaustive. 색은 StatusBadge(status.ts SSOT)가 담당.
+// 미지 상태는 raw enum 노출 대신 '기타'(neutral)로 폴백.
+const STATUS_LABELS: Record<string, string> = {
+  DRAFT: '개시',
+  ACTIVE: '목표 설정',
+  EVAL_OPEN: '평가 실시',
+  CALIBRATION: '캘리브레이션',
+  CLOSED: '종료',
+  CHECK_IN: '중간 체크인',
+  FINALIZED: '결과 통보 대기',
+  COMP_REVIEW: '보상 기획',
+  COMP_COMPLETED: '보상 완료',
 }
 
 export function EvalCycleTab({
@@ -52,12 +55,12 @@ export function EvalCycleTab({
             <th className={TABLE_STYLES.headerCell}>{t('evalCycle.colStatus')}</th>
             <th className={TABLE_STYLES.headerCell}>{t('evalCycle.colPeriod')}</th>
           </tr></thead><tbody className="divide-y divide-border">{cycles.map((c) => {
-            const s = STATUS_MAP[c.status] ?? { label: c.status }
+            const statusLabel = STATUS_LABELS[c.status] ?? '기타'
             return (
               <tr key={c.id} className={TABLE_STYLES.row}>
                 <td className={TABLE_STYLES.cell}>{c.name}</td>
                 <td className={TABLE_STYLES.cellMuted}>{c.type}</td>
-                <td className="px-4 py-3 text-center"><StatusBadge status={c.status}>{s.label}</StatusBadge></td>
+                <td className="px-4 py-3 text-center"><StatusBadge status={c.status}>{statusLabel}</StatusBadge></td>
                 <td className={TABLE_STYLES.cellMuted}>{c.startDate?.slice(0,10)} ~ {c.endDate?.slice(0,10)}</td>
               </tr>
             )

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Loader2, Plus, MinusCircle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
 
@@ -48,8 +49,8 @@ export function DeductionsTab({
                 <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{item.code}</td>
                 <td className={TABLE_STYLES.cell}>{item.name}</td>
                 <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>{item.category}</td>
-                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${item.isStatutory ? 'bg-primary/5 text-primary' : 'bg-muted/50 text-muted-foreground'}`}>{item.isStatutory ? t('deductions.statutory') : t('deductions.nonStatutory')}</span></td>
-                <td className={`${TABLE_STYLES.cell} text-center`}><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!item.deletedAt ? 'bg-tertiary-container/10 text-tertiary' : 'bg-muted/50 text-muted-foreground/60'}`}>{!item.deletedAt ? t('common.active') : t('common.inactive')}</span></td>
+                <td className={`${TABLE_STYLES.cell} text-center`}>{item.isStatutory ? <Badge variant="info">{t('deductions.statutory')}</Badge> : <Badge variant="neutral">{t('deductions.nonStatutory')}</Badge>}</td>
+                <td className={`${TABLE_STYLES.cell} text-center`}>{!item.deletedAt ? <Badge variant="success">{t('common.active')}</Badge> : <Badge variant="neutral">{t('common.inactive')}</Badge>}</td>
               </tr>
             ))}</tbody>
           </table>

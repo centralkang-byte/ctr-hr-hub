@@ -2,6 +2,7 @@
 
 import { Save, RotateCcw, Loader2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { OverrideBadge } from '@/components/settings/OverrideBadge'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -45,7 +46,7 @@ export function ProbationEvalTab({
           <p className="text-sm text-muted-foreground">{t('probation_keca491_evaluation_kec8b9cec_kebb08f_keab8b0ec_settings')}</p>
         </div>
         {isOverridden && (
-          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
+          <OverrideBadge>{t('company_kec98a4eb')}</OverrideBadge>
         )}
       </div>
 

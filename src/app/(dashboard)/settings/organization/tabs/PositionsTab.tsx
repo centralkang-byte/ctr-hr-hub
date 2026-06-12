@@ -279,8 +279,8 @@ export function PositionsTab({ companyId }: Props) {
                     </div>
                   ) : (
                     <div className="flex gap-1">
-                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => startEdit(p)}><Pencil className="h-3.5 w-3.5" /></Button>
-                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500" onClick={() => handleDelete(p.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                      <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => startEdit(p)} aria-label={`${p.name} 수정`}><Pencil className="h-3.5 w-3.5" /></Button>
+                      <Button type="button" size="sm" variant="ghost" className="h-7 w-7 p-0 text-destructive" onClick={() => handleDelete(p.id)} aria-label={`${p.name} 삭제`}><Trash2 className="h-3.5 w-3.5" /></Button>
                     </div>
                   )}
                 </td>

@@ -2,7 +2,9 @@
 
 import { useTranslations } from 'next-intl'
 import { Save, RotateCcw, Loader2, Lock, Bot } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { Badge, badgeVariants } from '@/components/ui/badge'
+import { OverrideBadge } from '@/components/settings/OverrideBadge'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
@@ -59,7 +61,7 @@ export function AiScreeningTab({
           <p className="text-sm text-muted-foreground">{t('aiScreening.description')}</p>
         </div>
         {isOverridden && (
-          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
+          <OverrideBadge>{t('company_kec98a4eb')}</OverrideBadge>
         )}
       </div>
 
@@ -85,8 +87,12 @@ export function AiScreeningTab({
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-foreground">{f.label}</span>
               <button
+                type="button"
+                role="switch"
+                aria-checked={f.enabled}
+                aria-label={f.label}
                 onClick={() => toggleFeature(i)}
-                className={`rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${f.enabled ? 'bg-tertiary-container/10 text-tertiary hover:bg-tertiary-container/20' : 'bg-muted/50 text-muted-foreground/60 hover:bg-muted'}`}
+                className={cn(badgeVariants({ variant: f.enabled ? 'success' : 'neutral' }), 'cursor-pointer')}
               >
                 {f.enabled ? t('aiScreening.enabled') : t('aiScreening.disabled')}
               </button>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2, Plus, Settings2 } from 'lucide-react'
+import { Loader2, Plus, Settings2, Check } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
@@ -52,8 +52,20 @@ export function CustomFieldsTab({
                   <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{f.fieldKey}</td>
                   <td className={TABLE_STYLES.cell}>{f.fieldLabel}</td>
                   <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>{f.fieldType}</td>
-                  <td className={`${TABLE_STYLES.cell} text-center`}>{f.isRequired ? '✓' : '—'}</td>
-                  <td className={`${TABLE_STYLES.cell} text-center`}>{f.isSearchable ? '✓' : '—'}</td>
+                  <td className={`${TABLE_STYLES.cell} text-center`}>
+                    {f.isRequired ? (
+                      <Check className="mx-auto h-4 w-4 text-[#006b39]" aria-label={t('required')} />
+                    ) : (
+                      <><span aria-hidden="true">—</span><span className="sr-only">필수 아님</span></>
+                    )}
+                  </td>
+                  <td className={`${TABLE_STYLES.cell} text-center`}>
+                    {f.isSearchable ? (
+                      <Check className="mx-auto h-4 w-4 text-[#006b39]" aria-label={t('search')} />
+                    ) : (
+                      <><span aria-hidden="true">—</span><span className="sr-only">검색 불가</span></>
+                    )}
+                  </td>
                 </tr>
               ))}</tbody>
             </table>

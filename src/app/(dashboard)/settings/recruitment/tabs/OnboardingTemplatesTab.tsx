@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2, Plus, ClipboardList } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
@@ -48,7 +49,7 @@ export function OnboardingTemplatesTab({
               <td className={TABLE_STYLES.cell}>{tmpl.name}</td>
               <td className={TABLE_STYLES.cellMuted}>{typeLabels[tmpl.targetType] ?? tmpl.targetType}</td>
               <td className="px-4 py-3 text-center text-sm text-muted-foreground">{tmpl._count?.onboardingTasks ?? 0}</td>
-              <td className="px-4 py-3 text-center"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!tmpl.deletedAt ? 'bg-tertiary-container/10 text-tertiary' : 'bg-muted/50 text-muted-foreground/60'}`}>{!tmpl.deletedAt ? t('common.active') : t('common.inactive')}</span></td>
+              <td className="px-4 py-3 text-center"><Badge variant={!tmpl.deletedAt ? 'success' : 'neutral'}>{!tmpl.deletedAt ? t('common.active') : t('common.inactive')}</Badge></td>
             </tr>
           ))}</tbody></table>
         </div>

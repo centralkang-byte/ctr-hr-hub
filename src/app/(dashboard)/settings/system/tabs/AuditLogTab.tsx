@@ -8,6 +8,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Loader2, FileSearch, RefreshCw } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { Badge, type BadgeVariant } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { TABLE_STYLES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
@@ -37,10 +38,10 @@ interface Props {
   companyId: string | null
 }
 
-const ACTION_LABEL_KEYS: Record<string, { labelKey: string; color: string }> = {
-  SETTINGS_CREATE: { labelKey: 'auditLog.actionCreate', color: 'text-emerald-600 bg-emerald-500/10' },
-  SETTINGS_UPDATE: { labelKey: 'auditLog.actionUpdate', color: 'text-primary bg-primary/5' },
-  SETTINGS_REVERT: { labelKey: 'auditLog.actionRevert', color: 'text-amber-600 bg-amber-500/10' },
+const ACTION_LABEL_KEYS: Record<string, { labelKey: string; variant: BadgeVariant }> = {
+  SETTINGS_CREATE: { labelKey: 'auditLog.actionCreate', variant: 'success' },
+  SETTINGS_UPDATE: { labelKey: 'auditLog.actionUpdate', variant: 'info' },
+  SETTINGS_REVERT: { labelKey: 'auditLog.actionRevert', variant: 'warning' },
 }
 
 const CATEGORY_LABEL_KEYS: Record<string, string> = {
@@ -123,7 +124,7 @@ export function AuditLogTab({
               <tbody>
                 {logs.map((log) => {
                   const changes = log.changes as AuditLogChanges | null
-                  const actionInfo = ACTION_LABEL_KEYS[log.action] ?? { labelKey: log.action, color: 'text-muted-foreground bg-muted' }
+                  const actionInfo = ACTION_LABEL_KEYS[log.action] ?? { labelKey: log.action, variant: 'neutral' as BadgeVariant }
                   const categoryKey = CATEGORY_LABEL_KEYS[changes?.category ?? '']
 
                   return (
@@ -147,9 +148,9 @@ export function AuditLogTab({
                           (changes?.companyId === 'global' || !changes?.companyId ? tc('global') : changes.companyId)}
                       </td>
                       <td className={TABLE_STYLES.cell}>
-                        <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${actionInfo.color}`}>
+                        <Badge variant={actionInfo.variant}>
                           {t(actionInfo.labelKey)}
-                        </span>
+                        </Badge>
                       </td>
                       <td className={`${TABLE_STYLES.cell} text-muted-foreground max-w-[280px] truncate`} title={changes?.description ?? ''}>
                         {changes?.description ?? '—'}

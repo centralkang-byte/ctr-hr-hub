@@ -2,6 +2,7 @@
 
 import { Save, RotateCcw, Loader2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { OverrideBadge } from '@/components/settings/OverrideBadge'
 import { SettingFieldWithOverride } from '@/components/settings/SettingFieldWithOverride'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
@@ -45,7 +46,7 @@ export function LocaleTab({
           <p className="text-sm text-muted-foreground">{t('company_kebb384_keab8b0eb_kec96b8ec_kebb08f_ked8380ec_settings')}</p>
         </div>
         {isOverridden && (
-          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
+          <OverrideBadge>{t('company_kec98a4eb')}</OverrideBadge>
         )}
       </div>
 

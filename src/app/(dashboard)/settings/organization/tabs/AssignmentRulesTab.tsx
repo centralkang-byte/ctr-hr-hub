@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { Save, RotateCcw, Loader2 } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
+import { OverrideBadge } from '@/components/settings/OverrideBadge'
 import { Button } from '@/components/ui/button'
 import { useProcessSetting } from '@/hooks/useProcessSetting'
 import type { AssignmentRulesSetting } from '@/types/process-settings'
@@ -53,7 +53,7 @@ export function AssignmentRulesTab({
           <p className="text-sm text-muted-foreground">{t('assignmentRules.subtitle')}</p>
         </div>
         {isOverridden && (
-          <Badge variant="warning">{t('company_kec98a4eb')}</Badge>
+          <OverrideBadge>{t('company_kec98a4eb')}</OverrideBadge>
         )}
       </div>
 

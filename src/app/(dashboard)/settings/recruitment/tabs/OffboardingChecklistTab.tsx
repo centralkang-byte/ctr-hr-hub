@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2, Plus, ClipboardCheck } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { useTranslations } from 'next-intl'
@@ -48,7 +49,7 @@ export function OffboardingChecklistTab({
               <td className={TABLE_STYLES.cell}>{c.name}</td>
               <td className={TABLE_STYLES.cellMuted}>{typeLabels[c.targetType] ?? c.targetType}</td>
               <td className="px-4 py-3 text-center text-sm text-muted-foreground">{c._count?.offboardingTasks ?? 0}</td>
-              <td className="px-4 py-3 text-center"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${!c.deletedAt ? 'bg-tertiary-container/10 text-tertiary' : 'bg-muted/50 text-muted-foreground/60'}`}>{!c.deletedAt ? t('common.active') : t('common.inactive')}</span></td>
+              <td className="px-4 py-3 text-center"><Badge variant={!c.deletedAt ? 'success' : 'neutral'}>{!c.deletedAt ? t('common.active') : t('common.inactive')}</Badge></td>
             </tr>
           ))}</tbody></table>
         </div>

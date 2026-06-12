@@ -50,7 +50,7 @@ export function CodeManagementTab({
                 <tr key={o.id} className={TABLE_STYLES.row}>
                   <td className={`${TABLE_STYLES.cell} font-medium text-primary`}>{o.optionKey}</td>
                   <td className={TABLE_STYLES.cell}>{o.label}</td>
-                  <td className={`${TABLE_STYLES.cell} text-center`}>{o.color ? <span className="inline-block h-4 w-4 rounded-full" style={{ backgroundColor: o.color }} /> : '—'}</td>
+                  <td className={`${TABLE_STYLES.cell} text-center`}>{o.color ? <span className="inline-block h-4 w-4 rounded-full" style={{ backgroundColor: o.color }} title={o.color} aria-label={o.color} role="img" /> : <span aria-hidden="true">—</span>}</td>
                   <td className={`${TABLE_STYLES.cell} text-center text-muted-foreground`}>{o.sortOrder}</td>
                 </tr>
               ))}</tbody>
