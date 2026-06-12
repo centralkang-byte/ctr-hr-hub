@@ -135,6 +135,115 @@ test.describe('Benefits RBAC: EMPLOYEE Blocked', () => {
 })
 
 // ═══════════════════════════════════════════════════════════
+// BENEFITS SELF-SERVICE: EMPLOYEE read access (/my/benefits)
+// Regression guard — benefit-plans + benefit-claims/summary used to
+// 403 for EMPLOYEE (withPermission(BENEFITS:VIEW)). Now withAuth, scoped
+// to user.companyId / user.employeeId. See src/app/api/v1/benefit-plans/route.ts.
+// ═══════════════════════════════════════════════════════════
+
+test.describe('Benefits Self-Service: EMPLOYEE read access', () => {
+  test.use({ storageState: authFile('EMPLOYEE') })
+
+  const year = new Date().getFullYear()
+
+  test('GET /benefit-plans → 200 (was 403)', async ({ request }) => {
+    const api = new ApiClient(request)
+    const res = await api.get('/api/v1/benefit-plans')
+    assertOk(res, 'EMPLOYEE benefit-plans')
+    expect(Array.isArray(res.data)).toBe(true)
+  })
+
+  test('GET /benefit-claims/summary → 200 with {year, summary[]}', async ({ request }) => {
+    const api = new ApiClient(request)
+    const res = await api.get('/api/v1/benefit-claims/summary', { year: String(year) })
+    assertOk(res, 'EMPLOYEE benefit summary')
+    const d = res.data as { year: number; summary: unknown[] }
+    expect(d.year).toBe(year)
+    expect(Array.isArray(d.summary)).toBe(true)
+  })
+
+  test('GET /benefit-claims?view=mine → 200 (self-scoped)', async ({ request }) => {
+    const api = new ApiClient(request)
+    const res = await api.get('/api/v1/benefit-claims', { view: 'mine', limit: '20' })
+    assertOk(res, 'EMPLOYEE own claims')
+  })
+
+  test('benefit-plans are single-company (no cross-tenant bleed)', async ({ request }) => {
+    const api = new ApiClient(request)
+    const res = await api.get('/api/v1/benefit-plans')
+    assertOk(res, 'EMPLOYEE benefit-plans scope')
+    const items = (res.data ?? []) as Array<{ id: string; companyId: string }>
+    expect(items.length).toBeGreaterThan(0) // seed guarantees CTR plans exist
+    expect(new Set(items.map((p) => p.companyId)).size).toBe(1) // exactly one tenant
+  })
+})
+
+// ═══════════════════════════════════════════════════════════
+// BENEFITS SELF-SERVICE: cross-tenant isolation (EMPLOYEE vs CTR-CN)
+// ═══════════════════════════════════════════════════════════
+
+test.describe('Benefits Self-Service: cross-tenant isolation', () => {
+  let ctrCnId = ''
+
+  test.beforeAll(async ({ browser }) => {
+    const ctx = await browser.newContext({ storageState: authFile('SUPER_ADMIN') })
+    const api = new ApiClient(ctx.request)
+    const companies = await f.resolveCompanyIds(api)
+    ctrCnId = companies.ctrCnId
+    await ctx.close()
+  })
+
+  test('EMPLOYEE plans exclude CTR-CN; companyId param is ignored', async ({ browser }) => {
+    const ctx = await browser.newContext({ storageState: authFile('EMPLOYEE') })
+    const api = new ApiClient(ctx.request)
+
+    const own = await api.get('/api/v1/benefit-plans')
+    assertOk(own, 'EMPLOYEE own plans')
+    const ownItems = (own.data ?? []) as Array<{ id: string; companyId: string }>
+    expect(ownItems.length).toBeGreaterThan(0)
+    expect(ownItems.every((p) => p.companyId !== ctrCnId)).toBe(true)
+
+    // companyId query param must NOT cross tenants — handler hardcodes user.companyId
+    const spoof = await api.get('/api/v1/benefit-plans', { companyId: ctrCnId })
+    assertOk(spoof, 'EMPLOYEE spoofed companyId')
+    const spoofItems = (spoof.data ?? []) as Array<{ id: string }>
+    expect(spoofItems.map((p) => p.id).sort()).toEqual(ownItems.map((p) => p.id).sort())
+    await ctx.close()
+  })
+
+  test('EMPLOYEE summary planIds are a subset of own plans', async ({ browser }) => {
+    const ctx = await browser.newContext({ storageState: authFile('EMPLOYEE') })
+    const api = new ApiClient(ctx.request)
+    const year = new Date().getFullYear()
+
+    const plansRes = await api.get('/api/v1/benefit-plans')
+    assertOk(plansRes, 'EMPLOYEE plans for subset check')
+    const ownPlanIds = new Set(((plansRes.data ?? []) as Array<{ id: string }>).map((p) => p.id))
+
+    const sumRes = await api.get('/api/v1/benefit-claims/summary', { year: String(year) })
+    assertOk(sumRes, 'EMPLOYEE summary subset')
+    const summary = (sumRes.data as { summary?: Array<{ planId: string }> })?.summary ?? []
+    expect(summary.length).toBeGreaterThan(0)
+    expect(summary.every((s) => ownPlanIds.has(s.planId))).toBe(true)
+    await ctx.close()
+  })
+})
+
+// ═══════════════════════════════════════════════════════════
+// BENEFITS SELF-SERVICE: unauthenticated → 401 (still requires a session)
+// ═══════════════════════════════════════════════════════════
+
+test.describe('Benefits Self-Service: unauthenticated blocked', () => {
+  test('GET /benefit-plans without session → 401', async ({ browser }) => {
+    const ctx = await browser.newContext() // no storageState — anonymous
+    const api = new ApiClient(ctx.request)
+    const res = await api.get('/api/v1/benefit-plans')
+    assertError(res, 401, 'anonymous benefit-plans')
+    await ctx.close()
+  })
+})
+
+// ═══════════════════════════════════════════════════════════
 // ENTITY TRANSFERS: SUPER_ADMIN Approval + Execute Guard
 // ═══════════════════════════════════════════════════════════
 

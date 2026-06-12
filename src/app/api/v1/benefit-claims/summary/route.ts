@@ -2,11 +2,13 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { withAuth } from '@/lib/permissions'
 import type { SessionUser } from '@/types'
 
-export const GET = withPermission(
+// 직원 self-service (/my/benefits): 본인 회사 활성 복리후생에 대한 본인(user.employeeId)
+// 사용 현황 요약. withPermission(BENEFITS:VIEW)은 EMPLOYEE 403 → withAuth 로 정합.
+// plans는 user.companyId, claims는 user.employeeId 로 스코프돼 테넌트/본인 격리 유지.
+export const GET = withAuth(
   async (req: NextRequest, _ctx: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
     const year = Number(searchParams.get('year') ?? new Date().getFullYear())
@@ -16,10 +18,12 @@ export const GET = withPermission(
     const plans = await prisma.benefitPlan.findMany({
       where: {
         companyId: user.companyId,
+        isActive: true,
         deletedAt: null,
         frequency: { in: ['annual', 'monthly'] },
       },
       orderBy: [{ category: 'asc' }, { displayOrder: 'asc' }],
+      select: { id: true, name: true, category: true, maxAmount: true, currency: true },
     })
 
     const claims = await prisma.benefitClaim.findMany({
@@ -50,5 +54,4 @@ export const GET = withPermission(
 
     return apiSuccess({ year, summary })
   },
-  perm(MODULE.BENEFITS, ACTION.VIEW),
 )
