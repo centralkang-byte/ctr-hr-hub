@@ -232,18 +232,16 @@ export function CostAnalysisClient({ user: _user }: { user: SessionUser }) {
         </div>
       </div>
 
-      {/* Tabs (segmented control — DESIGN §5.5) */}
-      <div className="inline-flex items-center gap-1 bg-muted/50 rounded-lg p-1">
+      {/* Tabs */}
+      <div className="flex border-b border-border">
         {(['analysis', 'costs'] as const).map((tabKey) => (
           <button
             key={tabKey}
-            type="button"
             onClick={() => setTab(tabKey)}
-            aria-pressed={tab === tabKey}
-            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors duration-150 ${
+            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors duration-150 ${
               tab === tabKey
-                ? 'bg-card shadow-sm text-primary font-semibold'
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             {tabKey === 'analysis' ? t('tabAnalysis') : t('tabCosts')}

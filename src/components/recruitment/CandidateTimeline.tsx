@@ -55,7 +55,7 @@ const EVENT_COLORS: Record<string, string> = {
   INTERVIEW_1: 'bg-primary/10 border-primary/20 text-primary',
   INTERVIEW_2: 'bg-primary/10 border-primary/20 text-primary',
   FINAL: 'bg-warning-bright/15 border-warning-bright/30 text-ctr-warning',
-  OFFER: 'bg-tertiary/10 border-tertiary/30 text-[#006b39]',
+  OFFER: 'bg-wt-4/10 border-wt-4/30 text-wt-4',
   HIRED: 'bg-tertiary/10 border-tertiary/30 text-[#006b39]',
   REJECTED: 'bg-destructive/10 border-destructive/20 text-destructive',
   pool_entry: 'bg-primary/15 border-primary/20 text-primary/90',
