@@ -5,6 +5,19 @@
 > current `design/wave1-onoffboarding` PR. **Option 3** (this doc) — adopting the prototype's
 > unified on/offboarding admin dashboard — is deferred to a dedicated feature project.
 > **Date**: 2026-06-12 (S29x, Wave 1 design campaign).
+>
+> **CEO ratification (2026-06-12, re-reviewed with ground-truth)**: **KEEP DEFERRED.**
+> Re-verified the two pivotal claims against code (not the doc): (a) the Analytics view's
+> 4 metrics have **zero** matching aggregation endpoints — all proto numbers are hardcoded
+> mock → honest build needs new backend → confirmed hard blocker; (b) the field-availability
+> question (was "unverified") is now **RESOLVED** — `onboarding/dashboard` DOES return
+> `buddy`, `template`, `progress{total,completed}`, `isDelayed`, `emotionPulse`, so the
+> Grid/Table/Journey views ARE buildable from real data today; only `hue` is cosmetic
+> (deterministic hash, non-blocking). Net: 3 of 4 views are feasible now, but the whole is a
+> **feature-scale IA rebuild** (regression risk on live admin P0 workflows), not Wave 1 design
+> cleanup. Per S288, IA transitions go through `/write-decision` → Codex → a dedicated feature
+> PR — **outside** the design campaign. Wave 1 proceeds to its remaining design pages without
+> this item.
 
 ---
 
@@ -50,9 +63,13 @@ redundant and need a fate decision (redirect vs keep).
    "journey" is a read-only stepper — folding detail into the dashboard loses workflow.
 3. **`/offboarding` route + 1152-line detail orphaning.** Mounting unified at `/onboarding`
    leaves `/offboarding` dashboard (651L) + detail (1152L) needing a fate decision.
-4. **Proto mock fields ≠ real data.** Hire cards assume `buddy`/`hue`/`progress`/`dDay`;
-   dashboard API may not return `buddy`/`hue` (unverified). Pixel-perfect match impossible
-   where data is absent → Pixel Gate weakened.
+4. **Proto mock fields — RESOLVED (2026-06-12).** Hire cards assume
+   `buddy`/`hue`/`progress`/`dDay`. Verified against `onboarding/dashboard/route.ts`: it
+   returns `buddy{id,name}`, `template{id,name,planType}`, `progress{total,completed}`,
+   `isDelayed`, `emotionPulse`; `dDay` derives from `hireDate`. Only `hue` is missing and it
+   is **purely cosmetic** (per-person card color → deterministic id hash). So Grid/Table/Journey
+   are buildable from real data; this is **no longer a blocker**. The blocker is strictly the
+   Analytics view (#1).
 5. **Verification cost balloons.** New routes + interactive views ⇒ new e2e guards, visual
    baseline regen, multi-role QA over a much larger surface.
 6. **S288 precedent.** Global-payroll & year-end IA divergences were deferred to CEO
