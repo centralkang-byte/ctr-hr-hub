@@ -44,7 +44,7 @@ For non-trivial features or architecture changes:
 | Auth | NextAuth — Azure AD SSO + Credentials (dev) |
 | UI | Radix UI + Tailwind CSS + shadcn/ui (`cn()`) |
 | Forms | React Hook Form + Zod |
-| i18n | next-intl — 5 locales × 69+ namespaces |
+| i18n | next-intl — 5 locales × 69 namespaces |
 | Cache | Redis (ioredis) + SWR |
 | AI | Anthropic SDK (Claude) + OpenAI embeddings (raw fetch, `openai` npm 패키지 없음 — `OPENAI_API_KEY` 필요) |
 
