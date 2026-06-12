@@ -2,7 +2,7 @@
 // CTR HR Hub — Employee Detail proto-fidelity E2E (Wave 1 IA, PR-2)
 // wd-worker-banner 헤더 + 성과평가 탭 재배치(/insights + 받은 칭찬).
 //  - HR_ADMIN: 배너 렌더(이름·뒤로·편집) + 6탭 + 성과평가 탭 로드(크래시 0).
-//  - SUPER_ADMIN: 타 법인 직원 성과평가 = 크로스컴퍼니 안내(빈상태 위장 금지, Codex HIGH1).
+//  - SUPER_ADMIN: 전사조회 — 타 법인 직원 성과평가도 정상 렌더(크로스컴퍼니 차단 없음).
 //  - EMPLOYEE: /employees(HR_UP 전용) 접근 차단.
 // gstack 라이브(시각·Pixel Gate) ≠ E2E(자동화) — 본 파일은 자동화 검증.
 // ═══════════════════════════════════════════════════════════
@@ -68,25 +68,24 @@ test.describe('Employee Detail — HR_ADMIN 배너·성과평가 탭', () => {
   })
 })
 
-// ─── SUPER_ADMIN: 타 법인 직원 성과평가 = 크로스컴퍼니 안내 ───
-test.describe('Employee Detail — SUPER 크로스컴퍼니 안내(Codex HIGH1)', () => {
+// ─── SUPER_ADMIN: 전사조회 — 타 법인 직원 성과평가도 정상 렌더 ───
+test.describe('Employee Detail — SUPER 전사조회 성과평가', () => {
   test.use({ storageState: authFile('SUPER_ADMIN') })
 
-  test('타 법인 직원 성과평가 → "데이터 없음" 위장 아닌 명시 안내', async ({ page }) => {
+  test('타 법인 직원 성과평가 탭 = 차단 안내 없이 렌더(전사조회)', async ({ page }) => {
+    const errors = collectConsoleErrors(page)
     const reached = await openFirstDetail(page)
     test.skip(!reached, '직원 행 없음 — skip')
     await openPerfTab(page)
     const panel = page.getByRole('tabpanel').first()
     await expect(panel).toBeVisible({ timeout: 10000 })
+    await expect(panel).not.toBeEmpty()
 
-    // SUPER(CTR-HOLD)가 타 법인 직원을 열면 크로스컴퍼니 안내가 떠야 함.
-    // 같은 법인 직원이면 일반 콘텐츠 → 그 경우엔 안내 검증을 skip(데이터 의존).
-    const notice = panel.getByText(/다른 법인|different company|otra empresa/i).first()
-    const isCross = await notice.isVisible({ timeout: 5000 }).catch(() => false)
-    test.skip(!isCross, '첫 행이 SUPER와 동일 법인 — 크로스컴퍼니 케이스 아님')
-    await expect(notice).toBeVisible()
-    // "데이터 없음" 같은 빈상태 문구로 위장하지 않았는지(안내가 우선)
-    await expect(notice).toContainText(/표시할 수 없|cannot be shown|no se pueden/i)
+    // SUPER(CTR-HOLD)가 타 법인 직원을 열어도 "다른 법인…표시할 수 없어요" 차단 안내는 더 이상 없어야 함.
+    await expect(panel.getByText(/표시할 수 없어요|cannot be shown here/i)).toHaveCount(0)
+
+    const fatal = errors.filter((e) => !/favicon|ResizeObserver/i.test(e))
+    expect(fatal, `console errors: ${fatal.join(' | ')}`).toHaveLength(0)
   })
 })
 

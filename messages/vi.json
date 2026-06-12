@@ -8573,8 +8573,6 @@
       }
     },
     "profileTab": {
-      "crossCompanyTitle": "Công ty khác",
-      "crossCompanyDesc": "Không thể hiển thị dữ liệu hiệu suất và ghi nhận của nhân viên thuộc công ty khác ở đây.",
       "loadError": "Không tải được dữ liệu hiệu suất.",
       "recognitionLoadError": "Không tải được lời ghi nhận.",
       "retry": "Thử lại",

@@ -8573,8 +8573,6 @@
       }
     },
     "profileTab": {
-      "crossCompanyTitle": "Otra empresa",
-      "crossCompanyDesc": "Aquí no se pueden mostrar los datos de desempeño y reconocimiento de empleados de otras empresas.",
       "loadError": "No se pudieron cargar los datos de desempeño.",
       "recognitionLoadError": "No se pudieron cargar los reconocimientos.",
       "retry": "Reintentar",

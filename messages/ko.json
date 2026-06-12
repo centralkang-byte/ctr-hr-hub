@@ -2881,8 +2881,6 @@
       }
     },
     "profileTab": {
-      "crossCompanyTitle": "다른 법인 직원",
-      "crossCompanyDesc": "다른 법인 직원의 성과·인정 정보는 이 화면에서 표시할 수 없어요.",
       "loadError": "성과 정보를 불러오지 못했어요.",
       "recognitionLoadError": "받은 칭찬을 불러오지 못했어요.",
       "retry": "다시 시도",

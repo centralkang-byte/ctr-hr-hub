@@ -599,12 +599,7 @@ export function EmployeeDetailClient({
 
         {/* Tab 6: 평가결과 (성과평가 재배치 — /insights + 받은 칭찬) */}
         <TabsContent value="performance">
-          <PerformanceTab
-            employeeId={employee.id}
-            employeeCompanyId={employee.companyId}
-            viewerCompanyId={user.companyId}
-            isSuperAdmin={user.role === ROLE.SUPER_ADMIN}
-          />
+          <PerformanceTab employeeId={employee.id} />
         </TabsContent>
       </Tabs>
 

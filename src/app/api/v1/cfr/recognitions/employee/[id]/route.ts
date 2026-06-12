@@ -9,6 +9,7 @@ import { forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
 // ─── GET /api/v1/cfr/recognitions/employee/[id] ──────────
 
@@ -24,21 +25,24 @@ export const GET = withPermission(
   async (_req: NextRequest, context, user: SessionUser) => {
     const { id: employeeId } = await context.params
 
-    // ─── Self-scope 가드 (IDOR) ────────────────────────────
+    // ─── Self-scope 가드 (IDOR, #189) ────────────────────────────
     // 이 위젯은 본인 인정 요약용. 일반 직원이 사내 타인의 인정 내역·받은 메시지 본문을
     // 임의 ID로 조회하지 못하도록 차단. 권한 역할(HR·경영진·매니저)은 회사 범위 내 조회 허용.
     if (employeeId !== user.employeeId && !PRIVILEGED_VIEW_ROLES.includes(user.role)) {
       throw forbidden('본인 인정 내역만 조회할 수 있습니다.')
     }
 
+    // SUPER_ADMIN 전사조회: 회사 스코프 없이 / 그 외 자기 법인 강제(fail-closed, #175)
+    const companyScope = resolveCompanyFilter(user)
+
     const [received, sent] = await Promise.all([
       prisma.recognition.groupBy({
         by: ['coreValue'],
-        where: { receiverId: employeeId, companyId: user.companyId },
+        where: { receiverId: employeeId, ...companyScope },
         _count: { id: true },
       }),
       prisma.recognition.count({
-        where: { senderId: employeeId, companyId: user.companyId },
+        where: { senderId: employeeId, ...companyScope },
       }),
     ])
 
@@ -50,7 +54,7 @@ export const GET = withPermission(
 
     // Recent recognitions (last 6 — profile feed "최근 6건")
     const recentRecognitions = await prisma.recognition.findMany({
-      where: { receiverId: employeeId, companyId: user.companyId },
+      where: { receiverId: employeeId, ...companyScope },
       orderBy: { createdAt: 'desc' },
       take: 6,
       include: {
