@@ -244,7 +244,7 @@ export default function ApplicantFormClient({
             {/* 이름 */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">
-                {t('nameLabel')} <span className="text-red-500">*</span>
+                {t('nameLabel')} <span className="text-destructive">*</span>
               </label>
               <input
                 type="text"
@@ -259,7 +259,7 @@ export default function ApplicantFormClient({
             {/* 이메일 */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">
-                {t('emailLabel')} <span className="text-red-500">*</span>
+                {t('emailLabel')} <span className="text-destructive">*</span>
               </label>
               <input
                 type="email"
@@ -271,7 +271,7 @@ export default function ApplicantFormClient({
                 className="w-full px-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
               />
               {emailWarning && (
-                <p className="flex items-center gap-1.5 text-amber-700 bg-amber-400/10 px-2 py-1.5 rounded-md mt-1.5 text-sm font-medium">
+                <p className="flex items-center gap-1.5 text-ctr-warning bg-warning-bright/15 px-2 py-1.5 rounded-md mt-1.5 text-sm font-medium">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
                   {emailWarning}
                 </p>
@@ -293,7 +293,7 @@ export default function ApplicantFormClient({
                 className="w-full px-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors duration-150"
               />
               {phoneWarning && (
-                <p className="flex items-center gap-1.5 text-amber-700 bg-amber-400/10 px-2 py-1.5 rounded-md mt-1.5 text-sm font-medium">
+                <p className="flex items-center gap-1.5 text-ctr-warning bg-warning-bright/15 px-2 py-1.5 rounded-md mt-1.5 text-sm font-medium">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
                   {phoneWarning}
                 </p>
@@ -303,7 +303,7 @@ export default function ApplicantFormClient({
             {/* 지원경로 */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-1">
-                {t('sourceLabel')} <span className="text-red-500">*</span>
+                {t('sourceLabel')} <span className="text-destructive">*</span>
               </label>
               <select
                 name="source"

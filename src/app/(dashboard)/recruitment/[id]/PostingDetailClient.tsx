@@ -171,7 +171,7 @@ export default function PostingDetailClient({
           </button>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">
-              <Briefcase className="w-5 h-5 text-blue-500" />
+              <Briefcase className="w-5 h-5 text-primary" />
             </div>
             <div>
               <h1 className="text-xl font-bold text-foreground tracking-[-0.02em]">
@@ -208,7 +208,7 @@ export default function PostingDetailClient({
               <button
                 onClick={() => setCloseConfirmOpen(true)}
                 disabled={actionLoading}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-orange-500/100 hover:bg-orange-600 text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-warm hover:brightness-95 text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
               >
                 <Lock className="w-4 h-4" />
                 {t('closePostingButton')}
@@ -263,9 +263,9 @@ export default function PostingDetailClient({
             </h2>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 px-4 py-3 bg-primary/5 rounded-lg">
-                <Users className="w-5 h-5 text-blue-500" />
+                <Users className="w-5 h-5 text-primary" />
                 <div>
-                  <p className="text-2xl font-bold text-blue-500">{data._count.applications}</p>
+                  <p className="text-2xl font-bold text-primary">{data._count.applications}</p>
                   <p className="text-xs text-muted-foreground">{t('totalApplicantLabel')}</p>
                 </div>
               </div>
@@ -361,7 +361,7 @@ export default function PostingDetailClient({
                 {data.requiredCompetencies.map((comp, idx) => (
                   <span
                     key={idx}
-                    className="px-3 py-1 text-xs font-medium bg-primary/5 text-blue-800 rounded"
+                    className="px-3 py-1 text-xs font-medium bg-primary/5 text-primary rounded"
                   >
                     {comp}
                   </span>

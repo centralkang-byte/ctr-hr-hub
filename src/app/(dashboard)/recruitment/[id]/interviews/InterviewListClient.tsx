@@ -19,6 +19,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { RECOMMENDATION_COLORS } from '@/lib/styles/chart'
 import { InterviewCalendarScheduler } from '@/components/recruitment/InterviewCalendarScheduler'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { DataTable } from '@/components/shared/DataTable'
@@ -127,14 +128,6 @@ const RECOMMENDATION_KEYS: Record<string, string> = {
   STRONG_NO: 'recSTRONG_NO',
 }
 
-const RECOMMENDATION_COLORS: Record<string, { bg: string; text: string }> = {
-  STRONG_YES: { bg: 'hsl(var(--primary) / 0.08)', text: '#004964' },
-  YES: { bg: 'hsl(var(--primary) / 0.08)', text: '#004964' },
-  NEUTRAL: { bg: '#FFF3E0', text: '#FF9800' },
-  NO: { bg: '#FFEBEE', text: '#F44336' },
-  STRONG_NO: { bg: '#FFEBEE', text: '#F44336' },
-}
-
 // ─── Evaluation Modal ───────────────────────────────────────
 
 interface EvalFormState {
@@ -183,9 +176,9 @@ function ScoreSelect({
               width: 36,
               height: 36,
               borderRadius: 8,
-              border: n === value ? '2px solid #004964' : '1px solid #E8E8E8',
-              background: n === value ? '#EDF1FE' : '#FFFFFF',
-              color: n === value ? '#004964' : '#666',
+              border: n === value ? '2px solid hsl(var(--primary))' : '1px solid hsl(var(--border))',
+              background: n === value ? 'hsl(var(--primary) / 0.08)' : '#FFFFFF',
+              color: n === value ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
               fontWeight: n === value ? 700 : 400,
               fontSize: 14,
               cursor: 'pointer',
@@ -289,7 +282,7 @@ function EvaluationModal({
 
           <div
             style={{
-              borderTop: '1px solid #E8E8E8',
+              borderTop: '1px solid hsl(var(--border))',
               paddingTop: 16,
             }}
           >
@@ -354,7 +347,7 @@ function EvaluationModal({
               ).map(([key, tKey]) => {
                 const colors = RECOMMENDATION_COLORS[key] ?? {
                   bg: 'hsl(var(--muted))',
-                  text: '#999',
+                  text: 'hsl(var(--muted-foreground))',
                 }
                 const isActive = form.recommendation === key
                 return (
@@ -367,9 +360,9 @@ function EvaluationModal({
                       borderRadius: 4,
                       border: isActive
                         ? `2px solid ${colors.text}`
-                        : '1px solid #E8E8E8',
+                        : '1px solid hsl(var(--border))',
                       background: isActive ? colors.bg : '#FFFFFF',
-                      color: isActive ? colors.text : '#666',
+                      color: isActive ? colors.text : 'hsl(var(--muted-foreground))',
                       fontSize: 13,
                       fontWeight: isActive ? 600 : 400,
                       cursor: 'pointer',
@@ -395,7 +388,7 @@ function EvaluationModal({
           </div>
         </div>
 
-        <DialogFooter style={{ padding: '16px 24px', borderTop: '1px solid #E8E8E8' }}>
+        <DialogFooter style={{ padding: '16px 24px', borderTop: '1px solid hsl(var(--border))' }}>
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
@@ -408,7 +401,7 @@ function EvaluationModal({
             disabled={submitting}
             style={{
               borderRadius: 8,
-              backgroundColor: '#004964',
+              backgroundColor: 'hsl(var(--primary))',
               color: '#FFFFFF',
             }}
           >
@@ -620,8 +613,8 @@ export function InterviewListClient({
                 padding: '4px 10px',
                 borderRadius: 4,
                 border: 'none',
-                backgroundColor: evalCount > 0 ? '#EDF1FE' : '#E3F2FD',
-                color: evalCount > 0 ? '#004964' : '#2196F3',
+                backgroundColor: evalCount > 0 ? 'hsl(var(--primary) / 0.08)' : 'hsl(var(--muted))',
+                color: evalCount > 0 ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
                 fontSize: 12,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -661,7 +654,7 @@ export function InterviewListClient({
               }
               style={{
                 borderRadius: 8,
-                backgroundColor: '#004964',
+                backgroundColor: 'hsl(var(--primary))',
                 color: '#FFFFFF',
               }}
             >
@@ -775,8 +768,8 @@ export function InterviewListClient({
                         borderRadius: 4,
                         fontSize: 12,
                         fontWeight: 600,
-                        backgroundColor: RECOMMENDATION_COLORS[ev.recommendation]?.bg ?? '#F5F5F5',
-                        color: RECOMMENDATION_COLORS[ev.recommendation]?.text ?? '#666',
+                        backgroundColor: RECOMMENDATION_COLORS[ev.recommendation]?.bg ?? 'hsl(var(--muted))',
+                        color: RECOMMENDATION_COLORS[ev.recommendation]?.text ?? 'hsl(var(--muted-foreground))',
                       }}
                     >
                       {RECOMMENDATION_KEYS[ev.recommendation] ? t(RECOMMENDATION_KEYS[ev.recommendation]) : ev.recommendation}

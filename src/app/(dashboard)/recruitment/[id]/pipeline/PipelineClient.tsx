@@ -21,6 +21,7 @@ import { toast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { BUTTON_SIZES, BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
+import { RECRUITMENT_STAGE_COLORS } from '@/lib/styles/chart'
 import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 // ─── Constants ──────────────────────────────────────────
@@ -53,28 +54,15 @@ const STAGE_KEYS: Record<string, string> = {
   REJECTED: 'stageREJECTED',
 }
 
-const STAGE_BORDER_COLORS: Record<string, string> = {
-  APPLIED: '#999',
-  SCREENING: '#2196F3',
-  INTERVIEW_1: '#2196F3',
-  INTERVIEW_2: '#2196F3',
-  FINAL: '#FF9800',
-  OFFER: '#004964',
-  OFFER_ACCEPTED: '#059669',
-  OFFER_DECLINED: '#D97706',
-  HIRED: '#004964',
-  REJECTED: '#F44336',
-}
-
 const STAGE_HEADER_BG: Record<string, string> = {
   APPLIED: 'bg-muted',
   SCREENING: 'bg-primary/5',
   INTERVIEW_1: 'bg-primary/5',
   INTERVIEW_2: 'bg-primary/5',
-  FINAL: 'bg-orange-500/10',
+  FINAL: 'bg-warning-bright/10',
   OFFER: 'bg-primary/10',
-  OFFER_ACCEPTED: 'bg-emerald-500/10',
-  OFFER_DECLINED: 'bg-amber-500/10',
+  OFFER_ACCEPTED: 'bg-tertiary/10',
+  OFFER_DECLINED: 'bg-warning-bright/10',
   HIRED: 'bg-primary/10',
   REJECTED: 'bg-destructive/5',
 }
@@ -380,8 +368,8 @@ export default function PipelineClient({ user, postingId }: Props) {
       )
     }
     let bgClass = 'bg-destructive/5 text-destructive'
-    if (score >= 80) bgClass = 'bg-primary/10 text-green-900'
-    else if (score >= 50) bgClass = 'bg-orange-500/10 text-orange-800'
+    if (score >= 80) bgClass = 'bg-primary/10 text-[#006b39]'
+    else if (score >= 50) bgClass = 'bg-warning-bright/10 text-ctr-warning'
     return (
       <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded ${bgClass}`}>
         AI {score}
@@ -414,7 +402,7 @@ export default function PipelineClient({ user, postingId }: Props) {
         </button>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-primary/5 rounded-lg flex items-center justify-center">
-            <GitBranch className="w-5 h-5 text-blue-500" />
+            <GitBranch className="w-5 h-5 text-primary" />
           </div>
           <div>
             <h1
@@ -435,7 +423,7 @@ export default function PipelineClient({ user, postingId }: Props) {
         <div className="flex gap-4" style={{ minWidth: STAGES.length * 220 }}>
           {STAGES.map((stage) => {
             const items = grouped[stage]
-            const borderColor = STAGE_BORDER_COLORS[stage]
+            const borderColor = RECRUITMENT_STAGE_COLORS[stage]
             const isOver = dragOverStage === stage
 
             return (
@@ -445,7 +433,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, stage)}
                 className={`flex-1 min-w-[200px] bg-background border border-border rounded-xl flex flex-col transition-all duration-150 ${
-                  isOver ? 'ring-2 ring-blue-500 bg-primary/5' : ''
+                  isOver ? 'ring-2 ring-primary bg-primary/5' : ''
                 }`}
                 style={{ borderTopWidth: 3, borderTopColor: borderColor }}
               >
@@ -495,7 +483,7 @@ export default function PipelineClient({ user, postingId }: Props) {
       {rejectionModal.open && (
         <div className={MODAL_STYLES.container}>
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/40"
             onClick={() =>
               setRejectionModal({ open: false, applicationId: '', reason: '' })
             }
@@ -524,7 +512,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               }
               placeholder={t('rejectionReasonPlaceholder')}
               rows={4}
-              className="w-full px-4 py-3 text-sm border border-border rounded-lg resize-none focus:outline-none focus:border-red-500 transition-colors duration-150"
+              className="w-full px-4 py-3 text-sm border border-border rounded-lg resize-none focus:outline-none focus:border-destructive transition-colors duration-150"
             />
             <div className="flex items-center justify-end gap-2 mt-4">
               <button
@@ -538,7 +526,7 @@ export default function PipelineClient({ user, postingId }: Props) {
               <button
                 onClick={guardedRejectionSubmit}
                 disabled={!rejectionModal.reason.trim() || modalSubmitting}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-destructive/50 hover:bg-red-700 text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-destructive hover:brightness-95 text-white rounded-lg transition-colors duration-150 disabled:opacity-50"
               >
                 {modalSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 {t('confirmButton')}
@@ -552,7 +540,7 @@ export default function PipelineClient({ user, postingId }: Props) {
       {offerResponseModal.open && (
         <div className={MODAL_STYLES.container}>
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/40"
             onClick={() =>
               setOfferResponseModal({ open: false, applicationId: '', response: null, declineReason: '' })
             }
@@ -576,14 +564,14 @@ export default function PipelineClient({ user, postingId }: Props) {
             </div>
 
             {offerResponseModal.response === 'ACCEPT' ? (
-              <div className="flex items-center gap-3 p-4 bg-emerald-500/10 rounded-lg mb-4">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+              <div className="flex items-center gap-3 p-4 bg-tertiary/10 rounded-lg mb-4">
+                <CheckCircle2 className="w-5 h-5 text-[#006b39] shrink-0" />
                 <p className="text-sm text-foreground">{t('offerAcceptConfirmMessage')}</p>
               </div>
             ) : (
               <>
-                <div className="flex items-center gap-3 p-4 bg-amber-500/10 rounded-lg mb-4">
-                  <XCircle className="w-5 h-5 text-amber-600 shrink-0" />
+                <div className="flex items-center gap-3 p-4 bg-warning-bright/10 rounded-lg mb-4">
+                  <XCircle className="w-5 h-5 text-ctr-warning shrink-0" />
                   <p className="text-sm text-foreground">{t('offerDeclineConfirmMessage')}</p>
                 </div>
                 <textarea
@@ -614,7 +602,7 @@ export default function PipelineClient({ user, postingId }: Props) {
                   (offerResponseModal.response === 'DECLINE' && !offerResponseModal.declineReason.trim())
                 }
                 className={`inline-flex items-center gap-2 ${BUTTON_SIZES.md} ${
-                  offerResponseModal.response === 'ACCEPT' ? 'bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl' : 'bg-amber-600 hover:bg-amber-700 text-white rounded-xl'
+                  offerResponseModal.response === 'ACCEPT' ? 'bg-tertiary hover:brightness-95 text-white rounded-xl' : 'bg-warm hover:brightness-95 text-white rounded-xl'
                 } disabled:opacity-50`}
               >
                 {modalSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -629,7 +617,7 @@ export default function PipelineClient({ user, postingId }: Props) {
       {offerModal.open && (
         <div className={MODAL_STYLES.container}>
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/40"
             onClick={() =>
               setOfferModal({
                 open: false,

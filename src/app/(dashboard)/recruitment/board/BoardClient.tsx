@@ -22,6 +22,7 @@ import { format } from 'date-fns'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { MODAL_STYLES } from '@/lib/styles'
+import { RECRUITMENT_STAGE_COLORS } from '@/lib/styles/chart'
 import { EmptyState } from '@/components/ui/EmptyState'
 
 // ─── Constants ──────────────────────────────────────────
@@ -46,16 +47,6 @@ const STAGE_KEYS: Record<string, string> = {
   FINAL: 'stageFINAL',
   OFFER: 'stageOFFER',
   HIRED: 'stageHIRED',
-}
-
-const STAGE_ACCENT: Record<string, string> = {
-  APPLIED: '#8181A5',
-  SCREENING: '#004964',
-  INTERVIEW_1: '#004964',
-  INTERVIEW_2: '#004964',
-  FINAL: '#F4BE5E',
-  OFFER: '#004964',
-  HIRED: '#059669',
 }
 
 // ─── Types ──────────────────────────────────────────────
@@ -170,8 +161,8 @@ export default function BoardClient({ user }: Props) {
   const getAiScoreBadge = (score: number | null) => {
     if (score === null) return null
     let style = 'bg-destructive/10 text-destructive'
-    if (score >= 80) style = 'bg-emerald-500/15 text-emerald-800'
-    else if (score >= 50) style = 'bg-amber-500/15 text-amber-700'
+    if (score >= 80) style = 'bg-tertiary/10 text-[#006b39]'
+    else if (score >= 50) style = 'bg-warning-bright/15 text-ctr-warning'
     return (
       <span className={`inline-block px-1.5 py-0.5 text-[10px] font-semibold rounded ${style}`}>
         AI {score}
@@ -409,7 +400,7 @@ export default function BoardClient({ user }: Props) {
             >
               <span
                 className="w-2 h-2 rounded-full shrink-0"
-                style={{ backgroundColor: STAGE_ACCENT[stage] }}
+                style={{ backgroundColor: RECRUITMENT_STAGE_COLORS[stage] }}
               />
               <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                 {t(STAGE_KEYS[stage])}
@@ -485,7 +476,7 @@ export default function BoardClient({ user }: Props) {
                       <div className="flex items-center justify-between px-2.5 pt-2 pb-1">
                         <span
                           className="text-[10px] font-semibold uppercase tracking-wider"
-                          style={{ color: STAGE_ACCENT[stage] }}
+                          style={{ color: RECRUITMENT_STAGE_COLORS[stage] }}
                         >
                           {t(STAGE_KEYS[stage])}
                         </span>
@@ -552,7 +543,7 @@ export default function BoardClient({ user }: Props) {
       {offerModal.open && (
         <div className={MODAL_STYLES.container}>
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/40"
             onClick={() =>
               setOfferModal({
                 open: false,
@@ -668,7 +659,7 @@ export default function BoardClient({ user }: Props) {
       {rejectionModal.open && (
         <div className={MODAL_STYLES.container}>
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/40"
             onClick={() =>
               setRejectionModal({ open: false, applicationId: '', postingId: '', reason: '' })
             }
@@ -694,7 +685,7 @@ export default function BoardClient({ user }: Props) {
               }
               placeholder={t('rejectionReasonPlaceholder')}
               rows={4}
-              className="w-full px-3 py-2 text-sm border border-border rounded-lg resize-none focus:outline-none focus:border-red-400 transition-colors placeholder:text-muted-foreground"
+              className="w-full px-3 py-2 text-sm border border-border rounded-lg resize-none focus:outline-none focus:border-destructive transition-colors placeholder:text-muted-foreground"
             />
             <div className="flex items-center justify-end gap-2 mt-4">
               <button
@@ -719,7 +710,7 @@ export default function BoardClient({ user }: Props) {
                   setRejectionModal({ open: false, applicationId: '', postingId: '', reason: '' })
                 }}
                 disabled={!rejectionModal.reason.trim() || modalSubmitting}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-red-400 hover:bg-rose-600 text-white rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-destructive hover:brightness-95 text-white rounded-lg transition-colors disabled:opacity-50"
               >
                 {modalSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 {modalSubmitting ? tCommon('loading') : t('confirmRejection')}
