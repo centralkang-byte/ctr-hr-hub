@@ -12,15 +12,15 @@ import {
     ChevronDown,
     ArrowRight,
     CheckCircle2,
-    XCircle,
         Upload,
     Search,
     Filter,
     Layers,
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
-import { BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS, BUTTON_SIZES, TABLE_STYLES, TYPOGRAPHY } from '@/lib/styles'
 import { cn } from '@/lib/utils'
+import { WdDrawer, WdField, WdRow } from '@/components/shared/WdDrawer'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 interface Employee {
@@ -264,12 +264,16 @@ export default function AdjustmentsClient({user }: Props) {
         })
 
     return (
-        <div className="p-6 bg-background min-h-screen">
-            {/* Header */}
-            <div className="mb-6">
-                <nav className="text-xs text-muted-foreground mb-1">{t('adj.breadcrumb')}</nav>
-                <h1 className="text-2xl font-bold text-foreground tracking-tight">{t('adjustmentsTitle')}</h1>
-                <p className="text-sm text-muted-foreground mt-0.5">{t('adj.subtitle')}</p>
+        <div className="mx-auto max-w-7xl space-y-4 p-4">
+            {/* Header (ALL-1: proto .page-h — 56px 아이콘 타일 + pageTitle + 13px 부제) */}
+            <div className="flex items-center gap-3">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[14px] bg-accent text-primary">
+                    <Layers className="h-[26px] w-[26px]" aria-hidden="true" />
+                </div>
+                <div>
+                    <h1 className={TYPOGRAPHY.pageTitle}>{t('adjustmentsTitle')}</h1>
+                    <p className="mt-1 text-[13px] text-muted-foreground">{t('adj.subtitle')}</p>
+                </div>
             </div>
 
             <div className="flex gap-5">
@@ -281,10 +285,7 @@ export default function AdjustmentsClient({user }: Props) {
                         </div>
                         <div className="divide-y divide-border">
                             {runs.length === 0 ? (
-                                <div className="px-4 py-8 text-center">
-                                    <Layers size={24} className="text-border mx-auto mb-2" />
-                                    <EmptyState />
-                                </div>
+                                <EmptyState icon={Layers} sub="" size="sm" />
                             ) : (
                                 runs.map((run) => (
                                     <button
@@ -317,20 +318,20 @@ export default function AdjustmentsClient({user }: Props) {
                             {summary && (
                                 <div className="grid grid-cols-3 gap-4 mb-4">
                                     <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-                                        <p className="text-xs text-muted-foreground mb-1">{t('adj.totalAdd')}</p>
-                                        <p className="text-xl font-bold text-emerald-600">
+                                        <p className={cn(TYPOGRAPHY.statLabel, "mb-1")}>{t('adj.totalAdd')}</p>
+                                        <p className="text-xl font-bold tabular-nums text-[#006b39]">
                                             +{summary.totalAdd.toLocaleString(locale)}{t('adj.currencyUnit')}
                                         </p>
                                     </div>
                                     <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-                                        <p className="text-xs text-muted-foreground mb-1">{t('adj.totalDeduct')}</p>
-                                        <p className="text-xl font-bold text-red-500">
+                                        <p className={cn(TYPOGRAPHY.statLabel, "mb-1")}>{t('adj.totalDeduct')}</p>
+                                        <p className="text-xl font-bold tabular-nums text-[#b71824]">
                                             −{summary.totalDeduct.toLocaleString(locale)}{t('adj.currencyUnit')}
                                         </p>
                                     </div>
                                     <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-                                        <p className="text-xs text-muted-foreground mb-1">{t('adj.netAdjustment')}</p>
-                                        <p className={`text-xl font-bold ${summary.netAdjustment >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                                        <p className={cn(TYPOGRAPHY.statLabel, "mb-1")}>{t('adj.netAdjustment')}</p>
+                                        <p className={cn("text-xl font-bold tabular-nums", summary.netAdjustment >= 0 ? 'text-[#006b39]' : 'text-[#b71824]')}>
                                             {formatKRW(summary.netAdjustment)}
                                         </p>
                                     </div>
@@ -376,9 +377,10 @@ export default function AdjustmentsClient({user }: Props) {
                                         {t('adj.addAdjustment')}
                                     </button>
                                     <button
+                                        type="button"
                                         onClick={handleComplete}
                                         disabled={completing}
-                                        className="flex items-center gap-1.5 px-4 py-2 border border-border hover:bg-muted text-foreground rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                                        className={cn(BUTTON_VARIANTS.secondary, BUTTON_SIZES.md, "inline-flex items-center gap-1.5 disabled:opacity-50")}
                                     >
                                         <ArrowRight size={15} />
                                         {completing ? t('processing') : t('adj.switchToReview')}
@@ -391,10 +393,7 @@ export default function AdjustmentsClient({user }: Props) {
                                 {loading ? (
                                     <div className="flex items-center justify-center h-40 text-muted-foreground">{tCommon('loading')}</div>
                                 ) : filteredAdj.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center h-40">
-                                        <FileText size={28} className="text-border mb-2" />
-                                        <EmptyState />
-                                    </div>
+                                    <EmptyState icon={FileText} sub="" />
                                 ) : (
                                     <div className={TABLE_STYLES.wrapper}>
                                         <table className={TABLE_STYLES.table}>
@@ -454,7 +453,9 @@ export default function AdjustmentsClient({user }: Props) {
                                                         </td>
                                                         <td className={cn(TABLE_STYLES.cell, "text-right")}>
                                                             <button
+                                                                type="button"
                                                                 onClick={() => handleDelete(adj.id)}
+                                                                aria-label={tCommon('delete')}
                                                                 className="p-1.5 hover:bg-destructive/10 hover:text-destructive text-border rounded-lg transition-colors opacity-0 group-hover:opacity-100"
                                                             >
                                                                 <Trash2 size={14} />
@@ -473,138 +474,110 @@ export default function AdjustmentsClient({user }: Props) {
                 </div>
             </div>
 
-            {/* Add Adjustment Modal */}
-            {showForm && (
-                <div className={MODAL_STYLES.container}>
-                    <div className="bg-card rounded-xl shadow-lg max-w-lg w-full mx-4 overflow-hidden">
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-                            <h2 className="text-lg font-bold text-foreground">{t('adj.addAdjustment')}</h2>
-                            <button onClick={() => setShowForm(false)} className="p-1 hover:bg-muted rounded-lg">
-                                <XCircle size={20} className="text-muted-foreground" />
-                            </button>
+            {/* Add Adjustment Drawer (ADJ-4: 중앙 Dialog → WdDrawer §5.4. state·handleCreate는 부모 유지) */}
+            <WdDrawer
+                open={showForm}
+                onClose={() => setShowForm(false)}
+                closeDisabled={submitting}
+                eyebrow={t('adjustmentsTitle')}
+                title={t('adj.addAdjustment')}
+                secondary={{ label: t('cancel'), onClick: () => setShowForm(false), disabled: submitting }}
+                primary={{
+                    label: submitting ? tCommon('saving') : t('save'),
+                    onClick: () => formRef.current?.requestSubmit(),
+                    disabled: submitting,
+                    icon: submitting ? undefined : <CheckCircle2 size={14} />,
+                }}
+            >
+                {/* foot 버튼이 form 밖 → requestSubmit + hidden submit으로 required 검증·Enter 제출 보존 */}
+                <form ref={formRef} onSubmit={handleCreate} className="flex flex-col gap-4">
+                    <WdField label={t('adj.targetEmployee')} required htmlFor="adj-employee">
+                        <div className="relative">
+                            <select
+                                id="adj-employee"
+                                value={form.employeeId}
+                                onChange={(e) => setForm((f) => ({ ...f, employeeId: e.target.value }))}
+                                required
+                                className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 appearance-none"
+                            >
+                                <option value="">{t('adj.selectEmployee')}</option>
+                                {employees.map((e) => (
+                                    <option key={e.id} value={e.id}>{e.name} ({e.email})</option>
+                                ))}
+                            </select>
+                            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                         </div>
-                        <form ref={formRef} onSubmit={handleCreate} className="px-6 py-5 space-y-4">
-                            {/* Employee */}
-                            <div>
-                                <label className="block text-xs font-semibold text-foreground mb-1.5">{t('adj.targetEmployee')}</label>
-                                <div className="relative">
-                                    <select
-                                        value={form.employeeId}
-                                        onChange={(e) => setForm((f) => ({ ...f, employeeId: e.target.value }))}
-                                        required
-                                        className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary focus:ring-2 focus:ring-primary/10 appearance-none"
-                                    >
-                                        <option value="">{t('adj.selectEmployee')}</option>
-                                        {employees.map((e) => (
-                                            <option key={e.id} value={e.id}>{e.name} ({e.email})</option>
-                                        ))}
-                                    </select>
-                                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                                </div>
-                            </div>
+                    </WdField>
 
-                            {/* Type + Category row */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-semibold text-foreground mb-1.5">{t('adj.typeLabel')}</label>
-                                    <div className="relative">
-                                        <select
-                                            value={form.type}
-                                            onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as Adjustment['type'] }))}
-                                            className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary appearance-none"
-                                        >
-                                            {Object.entries(ADJUSTMENT_TYPE_LABEL_KEYS).map(([k, labelKey]) => (
-                                                <option key={k} value={k}>{t(labelKey)}</option>
-                                            ))}
-                                        </select>
-                                        <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-foreground mb-1.5">{t('adj.categoryLabel')}</label>
-                                    <div className="relative">
-                                        <select
-                                            value={form.category}
-                                            onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary appearance-none"
-                                        >
-                                            {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{t(c.labelKey)}</option>)}
-                                        </select>
-                                        <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Amount */}
-                            <div>
-                                <label className="block text-xs font-semibold text-foreground mb-1.5">
-                                    {t('amount_krw')}
-                                    <span className="font-normal text-muted-foreground ml-1">{t('adj.amountHint')}</span>
-                                </label>
-                                <input
-                                    type="number"
-                                    value={form.amount}
-                                    onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
-                                    required
-                                    placeholder={t('adj.exampleAmount')}
-                                    className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10"
-                                />
-                            </div>
-
-                            {/* Description */}
-                            <div>
-                                <label className="block text-xs font-semibold text-foreground mb-1.5">{t('adj.reasonLabel')}</label>
-                                <textarea
-                                    value={form.description}
-                                    onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                                    required
-                                    rows={2}
-                                    placeholder={tCommon('placeholderAdjustmentReason')}
-                                    className="w-full px-3 py-2 border border-border rounded-lg text-sm resize-none focus:border-primary focus:ring-2 focus:ring-primary/10"
-                                />
-                            </div>
-
-                            {/* Evidence URL */}
-                            <div>
-                                <label className="block text-xs font-semibold text-foreground mb-1.5">
-                                    {t('adj.evidenceUrlLabel')}
-                                    <span className="font-normal text-muted-foreground ml-1">{t('adj.optional')}</span>
-                                </label>
-                                <input
-                                    type="url"
-                                    value={form.evidenceUrl}
-                                    onChange={(e) => setForm((f) => ({ ...f, evidenceUrl: e.target.value }))}
-                                    placeholder="https://..."
-                                    className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10"
-                                />
-                            </div>
-
-                            {/* Form actions */}
-                            <div className="flex items-center justify-end gap-2 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowForm(false)}
-                                    className="px-4 py-2 border border-border hover:bg-muted text-foreground rounded-lg text-sm"
+                    <WdRow>
+                        <WdField label={t('adj.typeLabel')} htmlFor="adj-type">
+                            <div className="relative">
+                                <select
+                                    id="adj-type"
+                                    value={form.type}
+                                    onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as Adjustment['type'] }))}
+                                    className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary appearance-none"
                                 >
-                                    {t('cancel')}
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={submitting}
-                                    className={`flex items-center gap-1.5 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-semibold disabled:opacity-50`}
-                                >
-                                    {submitting ? tCommon('saving') : (
-                                        <>
-                                            <CheckCircle2 size={14} />
-                                            {t('save')}
-                                          </>
-                                    )}
-                                </button>
+                                    {Object.entries(ADJUSTMENT_TYPE_LABEL_KEYS).map(([k, labelKey]) => (
+                                        <option key={k} value={k}>{t(labelKey)}</option>
+                                    ))}
+                                </select>
+                                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                             </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+                        </WdField>
+                        <WdField label={t('adj.categoryLabel')} htmlFor="adj-category">
+                            <div className="relative">
+                                <select
+                                    id="adj-category"
+                                    value={form.category}
+                                    onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-card focus:border-primary appearance-none"
+                                >
+                                    {CATEGORIES.map((c) => <option key={c.value} value={c.value}>{t(c.labelKey)}</option>)}
+                                </select>
+                                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                            </div>
+                        </WdField>
+                    </WdRow>
+
+                    <WdField label={t('amount_krw')} hint={t('adj.amountHint')} required htmlFor="adj-amount">
+                        <input
+                            id="adj-amount"
+                            type="number"
+                            value={form.amount}
+                            onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
+                            required
+                            placeholder={t('adj.exampleAmount')}
+                            className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        />
+                    </WdField>
+
+                    <WdField label={t('adj.reasonLabel')} required htmlFor="adj-desc">
+                        <textarea
+                            id="adj-desc"
+                            value={form.description}
+                            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                            required
+                            rows={2}
+                            placeholder={tCommon('placeholderAdjustmentReason')}
+                            className="w-full px-3 py-2 border border-border rounded-lg text-sm resize-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        />
+                    </WdField>
+
+                    <WdField label={t('adj.evidenceUrlLabel')} hint={t('adj.optional')} htmlFor="adj-evidence">
+                        <input
+                            id="adj-evidence"
+                            type="url"
+                            value={form.evidenceUrl}
+                            onChange={(e) => setForm((f) => ({ ...f, evidenceUrl: e.target.value }))}
+                            placeholder="https://..."
+                            className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/10"
+                        />
+                    </WdField>
+
+                    <button type="submit" className="hidden" aria-hidden="true" tabIndex={-1} />
+                </form>
+            </WdDrawer>
       <ConfirmDialog {...dialogProps} />
         </div>
     )

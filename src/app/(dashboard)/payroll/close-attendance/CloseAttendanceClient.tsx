@@ -19,9 +19,11 @@ import {
     RefreshCw,
 } from 'lucide-react'
 import type { SessionUser } from '@/types'
-import { BUTTON_VARIANTS,  MODAL_STYLES } from '@/lib/styles'
+import { BUTTON_VARIANTS, BUTTON_SIZES, STATUS_FG, TYPOGRAPHY } from '@/lib/styles'
 import { toast } from '@/hooks/use-toast'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { EmptyState } from '@/components/ui/EmptyState'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 
 interface AttendanceStatus {
@@ -177,15 +179,19 @@ export default function CloseAttendanceClient({ user }: Props) {
     const yearMonth = `${year}-${String(month).padStart(2, '0')}`
 
     return (
-        <div className="p-6 bg-background min-h-screen">
-            {/* Page Header */}
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <nav className="text-xs text-muted-foreground mb-1">{t('kr_keab889ec_keab7bced_closed')}</nav>
-                    <h1 className="text-2xl font-bold text-foreground tracking-tight">{t('closeAttendance')}</h1>
-                    <p className="text-sm text-muted-foreground mt-0.5">
-                        {t('closeAttendanceDesc')}
-                    </p>
+        <div className="mx-auto max-w-7xl space-y-4 p-4">
+            {/* Page Header (ALL-1: proto .page-h — 56px 아이콘 타일 + pageTitle. 월/연 select·refresh 우측 보존) */}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[14px] bg-accent text-primary">
+                        <Calendar className="h-[26px] w-[26px]" aria-hidden="true" />
+                    </div>
+                    <div>
+                        <h1 className={TYPOGRAPHY.pageTitle}>{t('closeAttendance')}</h1>
+                        <p className="mt-1 text-[13px] text-muted-foreground">
+                            {t('closeAttendanceDesc')}
+                        </p>
+                    </div>
                 </div>
                 <div className="flex items-center gap-2">
                     {/* Month Selector */}
@@ -208,12 +214,14 @@ export default function CloseAttendanceClient({ user }: Props) {
                         ))}
                     </select>
                     <button
+                        type="button"
                         onClick={() => {
                             setLoading(true)
                             Promise.all(
                                 [user.companyId].filter(Boolean).map(fetchStatus)
                             ).finally(() => setLoading(false))
                         }}
+                        aria-label={tCommon('refresh')}
                         className="p-2 border border-border rounded-lg hover:bg-muted transition-colors"
                     >
                         <RefreshCw size={16} className={`text-muted-foreground ${loading ? 'animate-spin' : ''}`} />
@@ -265,7 +273,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                                 type="button"
                                                 onClick={() => status?.payrollRunId && handleReopen(status.payrollRunId, companyId)}
                                                 disabled={reopening === companyId}
-                                                className="flex items-center gap-1.5 px-3 py-1.5 border border-border hover:bg-muted text-muted-foreground rounded-lg text-sm transition-colors disabled:opacity-50"
+                                                className={`${BUTTON_VARIANTS.secondary} ${BUTTON_SIZES.md} inline-flex items-center gap-1.5 disabled:opacity-50`}
                                             >
                                                 <Unlock size={14} />
                                                 {tCommon('unlock')}
@@ -297,13 +305,17 @@ export default function CloseAttendanceClient({ user }: Props) {
                                                 {t('closeAtt.confirmedRatio', { confirmed: status.confirmedCount, total: status.totalEmployees, pct: confirmedPct })}
                                             </span>
                                         </div>
-                                        <div className="h-2 rounded-full bg-border overflow-hidden">
+                                        <div
+                                            role="progressbar"
+                                            aria-valuenow={confirmedPct}
+                                            aria-valuemin={0}
+                                            aria-valuemax={100}
+                                            aria-label={t('closeAtt.confirmedRatio', { confirmed: status.confirmedCount, total: status.totalEmployees, pct: confirmedPct })}
+                                            className="h-2 rounded-full bg-border overflow-hidden"
+                                        >
                                             <div
-                                                className="h-full rounded-full transition-[width] duration-600"
-                                                style={{
-                                                    width: `${confirmedPct}%`,
-                                                    background: confirmedPct === 100 ? '#059669' : 'linear-gradient(90deg, #004964, #00BFA5)',
-                                                }}
+                                                className={`h-full rounded-full transition-[width] duration-500 ${confirmedPct === 100 ? 'bg-[#008b4e]' : 'bg-primary'}`}
+                                                style={{ width: `${confirmedPct}%` }}
                                             />
                                         </div>
                                     </div>
@@ -312,48 +324,50 @@ export default function CloseAttendanceClient({ user }: Props) {
                                     <div className="grid grid-cols-3 gap-3 mb-4">
                                         <div className="bg-background rounded-lg p-3">
                                             <div className="flex items-center gap-1.5 mb-1">
-                                                <CheckCircle2 size={13} className="text-emerald-600" />
+                                                <CheckCircle2 size={13} style={{ color: STATUS_FG.success }} aria-hidden="true" />
                                                 <p className="text-xs text-muted-foreground">{t('confirmed')}</p>
                                             </div>
-                                            <p className="text-xl font-bold text-foreground">{t('closeAtt.personCount', { count: status.confirmedCount })}</p>
+                                            <p className="text-xl font-bold tabular-nums text-foreground">{t('closeAtt.personCount', { count: status.confirmedCount })}</p>
                                         </div>
                                         <div className="bg-background rounded-lg p-3">
                                             <div className="flex items-center gap-1.5 mb-1">
-                                                <Clock size={13} className="text-amber-500" />
+                                                <Clock size={13} className="text-muted-foreground" aria-hidden="true" />
                                                 <p className="text-xs text-muted-foreground">{t('kr_kecb49dea')}</p>
                                             </div>
-                                            <p className="text-xl font-bold text-foreground">{status.totalWorkHours}h</p>
+                                            <p className="text-xl font-bold tabular-nums text-foreground">{status.totalWorkHours}h</p>
                                         </div>
                                         <div className="bg-background rounded-lg p-3">
                                             <div className="flex items-center gap-1.5 mb-1">
-                                                <AlertTriangle size={13} className="text-red-500" />
+                                                <AlertTriangle size={13} style={{ color: STATUS_FG.error }} aria-hidden="true" />
                                                 <p className="text-xs text-muted-foreground">{t('kr_kebafb8ed')}</p>
                                             </div>
-                                            <p className="text-xl font-bold text-foreground">{t('closeAtt.personCount', { count: status.unconfirmedCount })}</p>
+                                            <p className="text-xl font-bold tabular-nums text-foreground">{t('closeAtt.personCount', { count: status.unconfirmedCount })}</p>
                                         </div>
                                     </div>
 
                                     {/* Unconfirmed employees expandable */}
                                     {status.unconfirmedEmployees.length > 0 && (
-                                        <div className="border border-amber-100 rounded-lg overflow-hidden">
+                                        <div className="border border-warning-bright/30 rounded-lg overflow-hidden">
                                             <button
+                                                type="button"
                                                 onClick={() => setExpandedEmp((prev) => ({ ...prev, [companyId]: !prev[companyId] }))}
-                                                className="flex items-center justify-between w-full px-4 py-2.5 bg-amber-500/10 hover:bg-amber-500/15 transition-colors text-left"
+                                                aria-expanded={!!expandedEmp[companyId]}
+                                                className="flex items-center justify-between w-full px-4 py-2.5 bg-warning-bright/10 hover:bg-warning-bright/20 transition-colors text-left"
                                             >
                                                 <div className="flex items-center gap-2">
-                                                    <AlertTriangle size={14} className="text-amber-500" />
-                                                    <span className="text-sm font-semibold text-amber-700">
+                                                    <AlertTriangle size={14} className="text-ctr-warning" aria-hidden="true" />
+                                                    <span className="text-sm font-semibold text-ctr-warning">
                                                         {t('closeAtt.unconfirmedEmployees', { count: status.unconfirmedEmployees.length })}
                                                     </span>
                                                 </div>
                                                 {expandedEmp[companyId] ? (
-                                                    <ChevronDown size={14} className="text-amber-700" />
+                                                    <ChevronDown size={14} className="text-ctr-warning" aria-hidden="true" />
                                                 ) : (
-                                                    <ChevronRight size={14} className="text-amber-700" />
+                                                    <ChevronRight size={14} className="text-ctr-warning" aria-hidden="true" />
                                                 )}
                                             </button>
                                             {expandedEmp[companyId] && (
-                                                <div className="divide-y divide-amber-200">
+                                                <div className="divide-y divide-border">
                                                     {status.unconfirmedEmployees.map((emp) => (
                                                         <div key={emp.id} className="flex items-center gap-3 px-4 py-2.5 bg-card">
                                                             <div className="w-7 h-7 rounded-full bg-border flex items-center justify-center flex-shrink-0">
@@ -363,7 +377,7 @@ export default function CloseAttendanceClient({ user }: Props) {
                                                                 <p className="text-sm font-medium text-foreground">{emp.name}</p>
                                                                 <p className="text-xs text-muted-foreground">{emp.email}</p>
                                                             </div>
-                                                            <XCircle size={14} className="text-red-500 ml-auto" />
+                                                            <XCircle size={14} className="text-destructive ml-auto" aria-hidden="true" />
                                                         </div>
                                                     ))}
                                                 </div>
@@ -373,8 +387,8 @@ export default function CloseAttendanceClient({ user }: Props) {
 
                                     {/* Closed at info */}
                                     {isClosed && status.attendanceClosedAt && (
-                                        <div className="mt-3 flex items-center gap-2 text-xs text-emerald-600">
-                                            <Lock size={12} />
+                                        <div className="mt-3 flex items-center gap-2 text-xs text-[#006b39]">
+                                            <Lock size={12} aria-hidden="true" />
                                             <span>
                                                 {new Date(status.attendanceClosedAt).toLocaleString(locale)} {t('closeAtt.closingComplete')}
                                             </span>
@@ -384,30 +398,28 @@ export default function CloseAttendanceClient({ user }: Props) {
                             )}
 
                             {!status && (
-                                <div className="p-5 flex items-center justify-center text-muted-foreground text-sm">
-                                    {loading ? tCommon('loading') : tCommon('noData')}
-                                </div>
+                                loading ? (
+                                    <div className="p-5 flex items-center justify-center text-muted-foreground">
+                                        <RefreshCw size={18} className="animate-spin" aria-hidden="true" />
+                                    </div>
+                                ) : (
+                                    <EmptyState icon={Calendar} sub="" size="sm" />
+                                )
                             )}
                         </div>
                     )
                 })}
             </div>
 
-            {/* Confirm Modal */}
-            {confirmModal && (
-                <div className={MODAL_STYLES.container}>
-                    <div className={`${MODAL_STYLES.content.sm} mx-4 overflow-hidden`}>
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-                            <h2 className="text-lg font-bold text-foreground">{t('closeAttendance_confirm')}</h2>
-                            <button
-                                onClick={() => setConfirmModal(null)}
-                                className="p-1 hover:bg-muted rounded-lg transition-colors"
-                            >
-                                <XCircle size={20} className="text-muted-foreground" />
-                            </button>
-                        </div>
-                        <div className="px-6 py-5">
-                            <div className="bg-muted rounded-xl p-4 mb-4 space-y-2">
+            {/* Confirm Dialog (CLOSE-8: 수제 div → shadcn Dialog 프리미티브 — focus-trap·ESC·aria-modal. checkbox 포함이라 ConfirmDialog 불가) */}
+            <Dialog open={!!confirmModal} onOpenChange={(o) => { if (!o) setConfirmModal(null) }}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>{t('closeAttendance_confirm')}</DialogTitle>
+                    </DialogHeader>
+                    {confirmModal && (
+                        <>
+                            <div className="bg-muted rounded-xl p-4 space-y-2">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted-foreground">{t('kr_keb8c80ec_company')}</span>
                                     <span className="font-semibold text-foreground">
@@ -420,19 +432,19 @@ export default function CloseAttendanceClient({ user }: Props) {
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted-foreground">{t('all_keca781ec')}</span>
-                                    <span className="font-semibold">{t('closeAtt.personCount', { count: confirmModal.status.totalEmployees })}</span>
+                                    <span className="font-semibold tabular-nums">{t('closeAtt.personCount', { count: confirmModal.status.totalEmployees })}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted-foreground">{t('confirmed_keca781ec')}</span>
-                                    <span className="font-semibold text-emerald-600">{t('closeAtt.personCount', { count: confirmModal.status.confirmedCount })}</span>
+                                    <span className="font-semibold tabular-nums text-[#006b39]">{t('closeAtt.personCount', { count: confirmModal.status.confirmedCount })}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted-foreground">{t('kr_kebafb8ed_keca781ec')}</span>
-                                    <span className="font-semibold text-red-500">{t('closeAtt.personCount', { count: confirmModal.status.unconfirmedCount })}</span>
+                                    <span className="font-semibold tabular-nums text-[#b71824]">{t('closeAtt.personCount', { count: confirmModal.status.unconfirmedCount })}</span>
                                 </div>
                             </div>
                             {confirmModal.status.unconfirmedCount > 0 && (
-                                <label className="flex items-center gap-2.5 mb-4 cursor-pointer">
+                                <label className="flex items-center gap-2.5 cursor-pointer">
                                     <input
                                         type="checkbox"
                                         id="exclude-unconfirmed"
@@ -447,36 +459,38 @@ export default function CloseAttendanceClient({ user }: Props) {
                                     </span>
                                 </label>
                             )}
-                            <p className="text-xs text-muted-foreground mb-5">
+                            <p className="text-xs text-muted-foreground">
                                 {t('closed_ked9b84ec_ked95b4eb_kec9b94ec_keab7bced_kec8898ec_kebb688ea_closed_ked95b4ec_keab384ec_kec8b9cec_keca084ea_keab080eb')}
                             </p>
-                        </div>
-                        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-border">
-                            <button
-                                onClick={() => setConfirmModal(null)}
-                                className="px-4 py-2 border border-border hover:bg-muted text-foreground rounded-lg text-sm font-medium transition-colors"
-                            >
-                                {tCommon('cancel')}
-                            </button>
-                            <button
-                                onClick={() =>
-                                    handleClose(
-                                        confirmModal.companyId,
-                                        confirmModal.excludeUnconfirmed
-                                            ? confirmModal.status.unconfirmedEmployees.map((e) => e.id)
-                                            : [],
-                                    )
-                                }
-                                disabled={closing === confirmModal.companyId}
-                                className={`flex items-center gap-1.5 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-semibold transition-colors disabled:opacity-50`}
-                            >
-                                <Lock size={14} />
-                                {closing === confirmModal.companyId ? tCommon('processing') : t('close')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+                            <DialogFooter>
+                                <button
+                                    type="button"
+                                    onClick={() => setConfirmModal(null)}
+                                    className={`${BUTTON_VARIANTS.secondary} ${BUTTON_SIZES.md} inline-flex items-center`}
+                                >
+                                    {tCommon('cancel')}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        handleClose(
+                                            confirmModal.companyId,
+                                            confirmModal.excludeUnconfirmed
+                                                ? confirmModal.status.unconfirmedEmployees.map((e) => e.id)
+                                                : [],
+                                        )
+                                    }
+                                    disabled={closing === confirmModal.companyId}
+                                    className={`flex items-center gap-1.5 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-semibold transition-colors disabled:opacity-50`}
+                                >
+                                    <Lock size={14} />
+                                    {closing === confirmModal.companyId ? tCommon('processing') : t('close')}
+                                </button>
+                            </DialogFooter>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
         <ConfirmDialog {...dialogProps} />
         </div>
     )
