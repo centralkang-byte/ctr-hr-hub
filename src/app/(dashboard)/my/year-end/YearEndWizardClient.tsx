@@ -1,6 +1,7 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 연말정산 위자드 클라이언트 (4-step wizard)
@@ -185,16 +186,16 @@ function StepIndicator({ current }: { current: number }) {
             <div className="flex flex-col items-center gap-1 min-w-0">
               <div
                 className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 transition-colors
-                  ${isActive ? 'bg-primary text-white' : isDone ? 'bg-emerald-600 text-white' : 'bg-muted text-muted-foreground'}`}
+                  ${isActive ? 'bg-primary text-white' : isDone ? 'bg-[#006b39] text-white' : 'bg-muted text-muted-foreground'}`}
               >
                 {isDone ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-4 h-4" />}
               </div>
-              <span className={`text-xs font-medium whitespace-nowrap ${isActive ? 'text-primary' : isDone ? 'text-emerald-600' : 'text-muted-foreground'}`}>
+              <span className={`text-xs font-medium whitespace-nowrap ${isActive ? 'text-primary' : isDone ? 'text-[#006b39]' : 'text-muted-foreground'}`}>
                 {t(step.labelKey)}
               </span>
             </div>
             {i < STEPS.length - 1 && (
-              <div className={`flex-1 h-0.5 mx-2 mt-[-14px] ${isDone ? 'bg-emerald-600' : 'bg-border'}`} />
+              <div className={`flex-1 h-0.5 mx-2 mt-[-14px] ${isDone ? 'bg-[#006b39]' : 'bg-border'}`} />
             )}
           </div>
         )
@@ -334,15 +335,11 @@ function Step1Dependents({ dependents, onChange }: Step1Props) {
                 </button>
               )}
             </div>
-
-            {dep.relationship === '본인' && (
-              <EmptyState />
-            )}
           </div>
         ))}
       </div>
 
-      <div className="bg-primary/10 rounded-xl p-4 text-sm text-emerald-700">
+      <div className="bg-primary/10 rounded-xl p-4 text-sm text-[#006b39]">
         <p className="font-medium mb-1">{t('step1.deductionGuideTitle')}</p>
         <p>{t('step1.deductionGuideBody')}</p>
       </div>
@@ -395,25 +392,13 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-border">
-        <button
-          onClick={() => setActiveTab('upload')}
-          className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors
-            ${activeTab === 'upload' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-        >
-          {t('step2.tabUpload')}
-        </button>
-        <button
-          onClick={() => setActiveTab('manual')}
-          className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors
-            ${activeTab === 'manual' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-        >
-          {t('step2.tabManual')}
-        </button>
-      </div>
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'upload' | 'manual')}>
+        <TabsList aria-label={t('step2.title')}>
+          <TabsTrigger value="upload">{t('step2.tabUpload')}</TabsTrigger>
+          <TabsTrigger value="manual">{t('step2.tabManual')}</TabsTrigger>
+        </TabsList>
 
-      {activeTab === 'upload' && (
-        <div className="space-y-4">
+        <TabsContent value="upload" className="space-y-4">
           <div className="border-2 border-dashed border-border rounded-xl p-8 text-center hover:border-primary transition-colors">
             <Upload className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
             <p className="text-sm font-medium text-foreground mb-1">{t('step2.uploadTitle')}</p>
@@ -438,15 +423,16 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
             </div>
           )}
 
-          <div className="bg-amber-500/15 rounded-xl p-4 text-sm text-amber-700">
-            <p className="font-medium mb-1">{t('step2.parsingNotReady')}</p>
-            <p>{t('step2.parsingNotReadyDesc')}</p>
+          <div className="flex items-start gap-2 bg-warning-bright/15 text-ctr-warning rounded-xl p-4 text-sm">
+            <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium mb-1">{t('step2.parsingNotReady')}</p>
+              <p>{t('step2.parsingNotReadyDesc')}</p>
+            </div>
           </div>
-        </div>
-      )}
+        </TabsContent>
 
-      {activeTab === 'manual' && (
-        <div className="space-y-6">
+        <TabsContent value="manual" className="space-y-6">
           {/* Income deductions */}
           <div className="bg-card rounded-xl border border-border">
             <div className="px-5 py-3.5 border-b border-border">
@@ -496,8 +482,8 @@ function Step2Deductions({ amounts, onChange, settlementId, onDocumentUploaded }
               ))}
             </div>
           </div>
-        </div>
-      )}
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
@@ -542,7 +528,7 @@ function Step3Additional({ amounts, onChange }: Step3Props) {
         </div>
       </div>
 
-      <div className="bg-primary/10 rounded-xl p-4 text-sm text-emerald-700">
+      <div className="bg-primary/10 rounded-xl p-4 text-sm text-[#006b39]">
         <p className="font-medium mb-1">{t('step3.housingGuideTitle')}</p>
         <p>{t('step3.housingGuideBody')}</p>
       </div>
@@ -609,7 +595,7 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
           <ResultRow label={t('result.prepaidTax')} value={data.prepaidTax} indent />
           <div className="px-5 py-4 flex items-center justify-between bg-muted">
             <span className="text-sm font-semibold text-foreground">{t('result.finalSettlement')}</span>
-            <span className={`text-lg font-bold ${isRefund ? 'text-emerald-600' : isAdditional ? 'text-destructive' : 'text-foreground'}`}>
+            <span className={`text-lg font-bold ${isRefund ? 'text-[#006b39]' : isAdditional ? 'text-destructive' : 'text-foreground'}`}>
               {isRefund ? t('result.refund') + ' ' : isAdditional ? t('result.additionalPayment') + ' ' : ''}
               {formatKRW(Math.abs(finalNum))}
             </span>
@@ -625,7 +611,7 @@ function Step4Result({ settlement, onCalculate, onSubmit, calculating, submittin
 
       {/* Status badges */}
       {isSubmitted && (
-        <div className="flex items-center gap-2 bg-emerald-500/15 text-emerald-700 border border-emerald-200 rounded-xl px-5 py-4">
+        <div className="flex items-center gap-2 bg-tertiary/10 text-[#006b39] border border-border rounded-xl px-5 py-4">
           <CheckCircle2 className="w-5 h-5" />
           <div>
             <p className="text-sm font-semibold">{t('step4.submittedTitle')}</p>
@@ -861,10 +847,10 @@ export function YearEndWizardClient({ user: _user, year }: { user: SessionUser; 
           <p className="text-sm text-muted-foreground mt-0.5">{t('pageDescription')}</p>
         </div>
         {isSubmitted && (
-          <span className="ml-auto inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-700 border border-emerald-200">
+          <Badge variant="success" className="ml-auto gap-1">
             <CheckCircle2 className="w-3.5 h-3.5" />
             {t('status.submitted')}
-          </span>
+          </Badge>
         )}
       </div>
 

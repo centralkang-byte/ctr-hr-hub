@@ -50,17 +50,17 @@ const PERIODS = ['2025-H1', '2025-H2', '2026-H1', 'latest']
 
 function getGapColor(gap: number | null) {
   if (gap === null) return 'text-muted-foreground'
-  if (gap >= 2) return 'text-red-500'
-  if (gap === 1) return 'text-amber-500'
-  if (gap === 0) return 'text-emerald-600'
-  return 'text-blue-500' // 초과
+  if (gap >= 2) return 'text-destructive'
+  if (gap === 1) return 'text-ctr-warning'
+  if (gap === 0) return 'text-[#006b39]'
+  return 'text-primary' // 초과
 }
 
 function getGapBg(gap: number | null) {
   if (gap === null) return 'bg-background'
   if (gap >= 2) return 'bg-destructive/10'
-  if (gap === 1) return 'bg-amber-500/15'
-  if (gap === 0) return 'bg-emerald-500/15'
+  if (gap === 1) return 'bg-warning-bright/15'
+  if (gap === 0) return 'bg-tertiary/10'
   return 'bg-primary/10'
 }
 
@@ -242,25 +242,25 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-muted-foreground mb-1">{t('kpi.belowExpected')}</p>
-          <p className="text-3xl font-bold text-red-500">
+          <p className="text-3xl font-bold text-destructive">
             {competencies.filter((c) => {
               const a = assessments[c.id]
               const req = requirementMap[c.id]
               return a && req && a.selfLevel < req
             }).length}
           </p>
-          <p className="text-xs text-red-500 mt-1">{t('kpi.belowExpectedDesc')}</p>
+          <p className="text-xs text-muted-foreground mt-1">{t('kpi.belowExpectedDesc')}</p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-muted-foreground mb-1">{t('kpi.strength')}</p>
-          <p className="text-3xl font-bold text-emerald-600">
+          <p className="text-3xl font-bold text-[#006b39]">
             {competencies.filter((c) => {
               const a = assessments[c.id]
               const req = requirementMap[c.id]
               return a && req && a.selfLevel >= req
             }).length}
           </p>
-          <p className="text-xs text-emerald-600 mt-1">{t('kpi.meetsExpected')}</p>
+          <p className="text-xs text-muted-foreground mt-1">{t('kpi.meetsExpected')}</p>
         </div>
       </div>
 
@@ -341,7 +341,7 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
                               <div className="flex items-center gap-2">
                                 <span className="font-medium text-sm text-foreground">{c.name}</span>
                                 {a && (
-                                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                                  <CheckCircle2 className="w-4 h-4 text-[#006b39]" />
                                 )}
                               </div>
                               {expectedLevel != null && (
