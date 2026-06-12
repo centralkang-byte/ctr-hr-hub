@@ -23,6 +23,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { apiClient } from '@/lib/api'
+import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser, PaginationInfo } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
@@ -72,10 +73,10 @@ interface OnboardingDashboardClientProps {
 
 
 const MOOD_CONFIG: Record<string, { icon: typeof Smile; color: string; labelKey: string }> = {
-  GREAT: { icon: Smile, color: 'text-green-500', labelKey: 'dashboard.moodGreat' },
+  GREAT: { icon: Smile, color: 'text-tertiary', labelKey: 'dashboard.moodGreat' },
   GOOD: { icon: Smile, color: 'text-tertiary', labelKey: 'dashboard.moodGood' },
-  NEUTRAL: { icon: Meh, color: 'text-amber-500', labelKey: 'dashboard.moodNeutral' },
-  STRUGGLING: { icon: Frown, color: 'text-red-500', labelKey: 'dashboard.moodStruggling' },
+  NEUTRAL: { icon: Meh, color: 'text-ctr-warning', labelKey: 'dashboard.moodNeutral' },
+  STRUGGLING: { icon: Frown, color: 'text-destructive', labelKey: 'dashboard.moodStruggling' },
   BAD: { icon: Frown, color: 'text-destructive', labelKey: 'dashboard.moodBad' },
 }
 
@@ -114,6 +115,18 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
 
   const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
   const isSuperAdmin = user.role === ROLE.SUPER_ADMIN
+
+  // ─── Plan type select (resets pagination) ───
+  const selectPlanType = (v: string) => {
+    setPlanType(v)
+    setPage(1)
+  }
+
+  const planNav = useArrowKeyNavigation(
+    PLAN_TYPE_TABS.length,
+    PLAN_TYPE_TABS.findIndex((tab) => tab.value === planType),
+    (i) => selectPlanType(PLAN_TYPE_TABS[i].value),
+  )
 
   const STATUS_LABELS: Record<string, string> = {
     IN_PROGRESS: t('inProgress'),
@@ -201,7 +214,14 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
         const pct = total > 0 ? (completed / total) * 100 : 0
         return (
           <div className="flex items-center gap-2">
-            <div className="flex-1 bg-border rounded-full h-2">
+            <div
+              role="progressbar"
+              aria-valuenow={completed}
+              aria-valuemin={0}
+              aria-valuemax={total}
+              aria-label={`${completed}/${total}`}
+              className="flex-1 bg-border rounded-full h-2"
+            >
               <div
                 className="bg-primary h-2 rounded-full transition-all"
                 style={{ width: `${pct}%` }}
@@ -224,16 +244,22 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
       />
 
       {/* ─── Plan Type Tabs ─── */}
-      <div className="flex border-b border-border">
-        {PLAN_TYPE_TABS.map((tab) => (
+      <div
+        role="radiogroup"
+        aria-label={t('planTypeFilter')}
+        onKeyDown={planNav.onKeyDown}
+        className="inline-flex gap-1 rounded-lg bg-muted/50 p-1"
+      >
+        {PLAN_TYPE_TABS.map((tab, idx) => (
           <button
             key={tab.value}
-            onClick={() => {
-              setPlanType(tab.value)
-              setPage(1)
-            }}
+            type="button"
+            role="radio"
+            aria-checked={planType === tab.value}
+            {...planNav.itemProps(idx)}
+            onClick={() => selectPlanType(tab.value)}
             className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors ${planType === tab.value
-                ? 'border-b-2 border-primary text-primary'
+                ? 'bg-card text-primary font-semibold shadow-sm rounded-md'
                 : 'text-muted-foreground hover:text-foreground'
               }`}
           >
@@ -351,7 +377,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                 {data.map((row) => (
                   <tr
                     key={row.id}
-                    className={`${TABLE_STYLES.rowClickable} ${row.isDelayed ? 'bg-destructive/5/30' : ''}`}
+                    className={`${TABLE_STYLES.rowClickable} ${row.isDelayed ? 'bg-destructive/5' : ''}`}
                     onClick={() => router.push(`/onboarding/${row.id}`)}
                   >
                     <td className={TABLE_STYLES.cell}>
@@ -385,12 +411,12 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
                     </td>
                     <td className={TABLE_STYLES.cell}>
                       {row.isDelayed ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-destructive/5 text-red-500">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-destructive/10 text-destructive">
                           <AlertTriangle className="mr-1 h-3 w-3" />
                           {t('delayed')}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-tertiary-container/20 text-tertiary">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-tertiary-container/20 text-[#006b39]">
                           {t('normal')}
                         </span>
                       )}
@@ -509,7 +535,7 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
             <button
               onClick={handleForceComplete}
               disabled={!forceReason.trim() || forceLoading}
-              className="px-4 py-2 text-sm font-semibold rounded-lg bg-destructive/50 hover:bg-red-600 text-white disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-destructive hover:brightness-95 text-white disabled:opacity-50 transition-colors"
             >
               {forceLoading ? t('processing') : t('forceCompleteConfirm')}
             </button>

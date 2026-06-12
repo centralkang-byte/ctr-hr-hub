@@ -8,7 +8,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
-import { CheckCircle2, Clock, User } from 'lucide-react'
+import { CheckCircle2, Clock, FileText, GraduationCap, Hand, Laptop, Pin, User } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { apiClient } from '@/lib/api'
@@ -51,18 +52,18 @@ interface OnboardingMeClientProps {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const CATEGORY_ICONS: Record<string, string> = {
-  DOCUMENT: '📄',
-  TRAINING: '🎓',
-  SETUP: '💻',
-  INTRODUCTION: '👋',
-  OTHER: '📌',
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  DOCUMENT: FileText,
+  TRAINING: GraduationCap,
+  SETUP: Laptop,
+  INTRODUCTION: Hand,
+  OTHER: Pin,
 }
 
 const ASSIGNEE_BADGE_STYLES: Record<string, string> = {
   EMPLOYEE: 'bg-tertiary-container/20 text-tertiary',
-  MANAGER: 'bg-primary/5 text-blue-500',
-  HR: 'bg-destructive/5 text-red-500',
+  MANAGER: 'bg-info/10 text-info',
+  HR: 'bg-destructive/10 text-destructive',
   BUDDY: 'bg-wt-4/10 text-wt-4',
 }
 
@@ -230,9 +231,16 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
               </span>
               <span className="font-semibold text-primary">{progress.pct}%</span>
             </div>
-            <div className="h-3 w-full rounded-full bg-muted">
+            <div
+              role="progressbar"
+              aria-valuenow={progress.pct}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={t('progressAria', { completed: progress.completed, total: progress.total })}
+              className="h-3 w-full rounded-full bg-muted"
+            >
               <div
-                className="h-3 rounded-full bg-gradient-to-r from-primary to-primary-dim transition-all duration-500"
+                className="h-3 rounded-full bg-primary transition-all duration-500"
                 style={{ width: `${progress.pct}%` }}
               />
             </div>
@@ -253,7 +261,10 @@ export function OnboardingMeClient({ user }: OnboardingMeClientProps) {
           .map((cat) => (
             <div key={cat} className="bg-card rounded-xl shadow-sm border border-border p-6">
               <div className="flex items-center gap-2 mb-4">
-                <span>{CATEGORY_ICONS[cat]}</span>
+                {(() => {
+                  const Icon = CATEGORY_ICONS[cat] ?? Pin
+                  return <Icon className="h-4 w-4 text-muted-foreground" aria-hidden />
+                })()}
                 <h3 className="text-base font-bold text-foreground tracking-[-0.02em]">
                   {CATEGORY_LABELS[cat]}
                 </h3>

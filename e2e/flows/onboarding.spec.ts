@@ -16,9 +16,10 @@ test.describe('Onboarding: HR_ADMIN', () => {
     await assertPageLoads(page, '/onboarding')
     await waitForPageReady(page)
 
-    await expect(page.getByRole('button', { name: '전체' }).first()).toBeVisible({ timeout: 10000 })
-    await expect(page.getByRole('button', { name: '온보딩' }).first()).toBeVisible({ timeout: 5000 })
-    await expect(page.getByRole('button', { name: '오프보딩' }).first()).toBeVisible({ timeout: 5000 })
+    // 플랜타입 필터는 segmented radiogroup (role="radio") — getByRole('button')은 명시적 role="radio"를 매칭 안 함
+    await expect(page.getByRole('radio', { name: '전체' }).first()).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('radio', { name: '온보딩' }).first()).toBeVisible({ timeout: 5000 })
+    await expect(page.getByRole('radio', { name: '오프보딩' }).first()).toBeVisible({ timeout: 5000 })
   })
 
   test('can view offboarding cases', async ({ page }) => {
@@ -40,11 +41,11 @@ test.describe('Onboarding: HR_ADMIN', () => {
 
     const expectedLabels = ['전체', '온보딩', '오프보딩', '전출', '전입']
     for (const label of expectedLabels) {
-      await expect(page.getByRole('button', { name: label }).first()).toBeVisible({ timeout: 10000 })
+      await expect(page.getByRole('radio', { name: label }).first()).toBeVisible({ timeout: 10000 })
     }
 
     // Tab click works
-    await page.getByRole('button', { name: '온보딩' }).first().click()
+    await page.getByRole('radio', { name: '온보딩' }).first().click()
     await waitForLoading(page)
   })
 })
