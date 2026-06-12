@@ -75,7 +75,7 @@ export default function PerformanceClient({ user: _user }: { user: SessionUser }
       <ChartCard
         title={t('performance.charts.gradeDistribution')}
         badge={hasBias ? t('performance.charts.biasDetected') : undefined}
-        badgeColor="bg-amber-500/10 text-amber-700 border-amber-200"
+        badgeColor="bg-warning-bright/15 text-ctr-warning border-warning-bright/30"
       >
         {charts.gradeDistribution.length === 0 ? <EmptyChart /> : (
           <ResponsiveContainer width="100%" height={300}>
@@ -124,7 +124,7 @@ export default function PerformanceClient({ user: _user }: { user: SessionUser }
                       <span className="text-muted-foreground">{stage.completed}/{stage.total} ({pct}%)</span>
                     </div>
                     <div className="h-3 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full rounded-full bg-gradient-to-r from-primary to-primary-dim transition-all duration-500" style={{ width: `${pct}%` }} />
+                      <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${pct}%` }} />
                     </div>
                   </div>
                 )

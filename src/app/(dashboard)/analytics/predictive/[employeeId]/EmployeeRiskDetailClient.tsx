@@ -18,6 +18,13 @@ import {
   TrendingDown,
   Activity,
   Info,
+  MessageSquare,
+  Coins,
+  TrendingUp,
+  Palmtree,
+  Timer,
+  CheckCircle2,
+  type LucideIcon,
 } from 'lucide-react'
 import {
   RadarChart,
@@ -77,11 +84,11 @@ interface EmployeeRiskData {
 // ─── 상수 ────────────────────────────────────────────────
 
 const RISK_CONFIG: Record<string, { labelKey: string; bg: string; text: string; border: string; color: string }> = {
-  low:      { labelKey: 'predictive.riskLevels.low',     bg: 'bg-emerald-500/15', text: 'text-emerald-700', border: 'border-emerald-200', color: RISK_COLORS.low },
-  medium:   { labelKey: 'predictive.riskLevels.medium',     bg: 'bg-amber-500/15', text: 'text-amber-700', border: 'border-amber-300', color: RISK_COLORS.medium },
+  low:      { labelKey: 'predictive.riskLevels.low',     bg: 'bg-tertiary/10', text: 'text-[#006b39]', border: 'border-tertiary/20', color: RISK_COLORS.low },
+  medium:   { labelKey: 'predictive.riskLevels.medium',     bg: 'bg-warning-bright/15', text: 'text-ctr-warning', border: 'border-warning-bright/30', color: RISK_COLORS.medium },
   high:     { labelKey: 'predictive.riskLevels.high',     bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20', color: RISK_COLORS.high },
-  critical: { labelKey: 'predictive.riskLevels.critical',     bg: 'bg-orange-500/10', text: 'text-orange-700', border: 'border-orange-200', color: RISK_COLORS.critical },
-  insufficient_data: { labelKey: 'predictive.riskLevels.insufficientData', bg: 'bg-background', text: 'text-muted-foreground', border: 'border-border', color: '#999' },
+  critical: { labelKey: 'predictive.riskLevels.critical',     bg: 'bg-wd-orange/10', text: 'text-wd-orange-ink', border: 'border-wd-orange/30', color: RISK_COLORS.critical },
+  insufficient_data: { labelKey: 'predictive.riskLevels.insufficientData', bg: 'bg-background', text: 'text-muted-foreground', border: 'border-border', color: CHART_THEME.axis.tick.fill },
 }
 
 const SIGNAL_LABELS: Record<string, string> = {
@@ -110,6 +117,7 @@ function RiskBadge({ level }: { level: string }) {
 }
 
 function ScoreGauge({ score, riskLevel }: { score: number; riskLevel: string }) {
+  const t = useTranslations('analytics')
   const cfg = RISK_CONFIG[riskLevel] ?? RISK_CONFIG.low!
   return (
     <div className="relative flex items-center justify-center">
@@ -129,8 +137,8 @@ function ScoreGauge({ score, riskLevel }: { score: number; riskLevel: string }) 
         <text x="60" y="58" textAnchor="middle" className="text-2xl font-bold" style={{ fill: CHART_THEME.axis.label.fill, fontSize: '22px', fontWeight: 700 }}>
           {score}
         </text>
-        <text x="60" y="75" textAnchor="middle" style={{ fill: '#999', fontSize: '11px' }}>
-          {'risk_score'}
+        <text x="60" y="75" textAnchor="middle" style={{ fill: CHART_THEME.axis.tick.fill, fontSize: '11px' }}>
+          {t('risk_score')}
         </text>
       </svg>
     </div>
@@ -144,42 +152,45 @@ function RecommendedActions({ turnover, burnout }: {
   burnout: EmployeeRiskData['burnout']
 }) {
   const t = useTranslations('analytics')
-  const actions: { icon: string; textKey: string; priority: 'high' | 'medium' }[] = []
+  const actions: { icon: LucideIcon; textKey: string; priority: 'high' | 'medium' }[] = []
 
   if (turnover && ['high', 'critical'].includes(turnover.riskLevel)) {
-    actions.push({ icon: '💬', textKey: 'predictive.actions.oneOnOne', priority: 'high' })
-    actions.push({ icon: '💰', textKey: 'predictive.actions.compensationReview', priority: 'high' })
+    actions.push({ icon: MessageSquare, textKey: 'predictive.actions.oneOnOne', priority: 'high' })
+    actions.push({ icon: Coins, textKey: 'predictive.actions.compensationReview', priority: 'high' })
     if (turnover.topFactors.includes('승진 정체')) { // i18n: intentional DB value match
-      actions.push({ icon: '📈', textKey: 'predictive.actions.careerPathReview', priority: 'medium' })
+      actions.push({ icon: TrendingUp, textKey: 'predictive.actions.careerPathReview', priority: 'medium' })
     }
   }
 
   if (burnout && ['high', 'critical'].includes(burnout.riskLevel)) {
-    actions.push({ icon: '🏖️', textKey: 'predictive.actions.leaveRecommendation', priority: 'high' })
-    actions.push({ icon: '⏱️', textKey: 'predictive.actions.overtimeReduction', priority: 'high' })
+    actions.push({ icon: Palmtree, textKey: 'predictive.actions.leaveRecommendation', priority: 'high' })
+    actions.push({ icon: Timer, textKey: 'predictive.actions.overtimeReduction', priority: 'high' })
   }
 
   if (actions.length === 0) {
-    actions.push({ icon: '✅', textKey: 'predictive.actions.currentlyStable', priority: 'medium' })
+    actions.push({ icon: CheckCircle2, textKey: 'predictive.actions.currentlyStable', priority: 'medium' })
   }
 
   return (
     <div className="bg-card rounded-xl shadow-sm border border-border p-6">
       <h3 className="text-base font-semibold text-foreground mb-4">{t('predictive.recommendedActions')}</h3>
       <div className="space-y-3">
-        {actions.map((action, i) => (
-          <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${
-            action.priority === 'high' ? 'bg-orange-500/10 border border-orange-200' : 'bg-background'
-          }`}>
-            <span className="text-lg">{action.icon}</span>
-            <div>
-              <p className="text-sm text-foreground">{t(action.textKey)}</p>
-              {action.priority === 'high' && (
-                <span className="text-xs text-orange-700 font-medium">{t('predictive.actions.immediateAction')}</span>
-              )}
+        {actions.map((action, i) => {
+          const Icon = action.icon
+          return (
+            <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${
+              action.priority === 'high' ? 'bg-warning-bright/15 border border-warning-bright/30' : 'bg-background'
+            }`}>
+              <Icon className={cn('h-5 w-5 flex-shrink-0', action.priority === 'high' ? 'text-ctr-warning' : 'text-muted-foreground')} aria-hidden="true" />
+              <div>
+                <p className="text-sm text-foreground">{t(action.textKey)}</p>
+                {action.priority === 'high' && (
+                  <span className="text-xs text-ctr-warning font-medium">{t('predictive.actions.immediateAction')}</span>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
@@ -275,7 +286,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
         {/* 이직 위험 */}
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <div className="flex items-center gap-2 mb-4">
-            <TrendingDown className="w-5 h-5 text-red-500" />
+            <TrendingDown className="w-5 h-5 text-destructive" />
             <h3 className="text-base font-semibold text-foreground">{t('predictive.detail.turnoverRisk')}</h3>
             {data.turnover && <RiskBadge level={data.turnover.riskLevel} />}
           </div>
@@ -287,7 +298,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
                 <div className="space-y-1">
                   {data.turnover.topFactors.slice(0, 4).map((f) => (
                     <div key={f} className="flex items-center gap-2">
-                      <AlertTriangle className="w-3 h-3 text-amber-500" />
+                      <AlertTriangle className="w-3 h-3 text-ctr-warning" />
                       <span className="text-xs text-muted-foreground">{f}</span>
                     </div>
                   ))}
@@ -307,7 +318,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
         {/* 번아웃 */}
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Activity className="w-5 h-5 text-amber-500" />
+            <Activity className="w-5 h-5 text-ctr-warning" />
             <h3 className="text-base font-semibold text-foreground">{t('predictive.detail.burnoutRisk')}</h3>
             {data.burnout && <RiskBadge level={data.burnout.riskLevel} />}
           </div>
@@ -418,7 +429,7 @@ export default function EmployeeRiskDetailClient({ employeeId }: { employeeId: s
                     <td className={TABLE_STYLES.cell}>
                       <span className={`text-xs px-2 py-0.5 rounded-full ${
                         signal.available
-                          ? 'bg-emerald-500/15 text-emerald-700'
+                          ? 'bg-tertiary/10 text-[#006b39]'
                           : 'bg-background text-muted-foreground'
                       }`}>
                         {signal.available ? t('predictive.detail.calculated') : t('predictive.detail.noData')}

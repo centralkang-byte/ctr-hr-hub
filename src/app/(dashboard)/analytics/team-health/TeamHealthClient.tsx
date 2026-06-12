@@ -4,29 +4,42 @@ import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 
 import React, { useEffect, useState, useCallback } from 'react'
-import { Heart, Clock, CalendarDays, Target, AlertTriangle, Flame } from 'lucide-react'
+import { Heart, Clock, CalendarDays, Target, AlertTriangle, Flame, CheckCircle2, AlertCircle } from 'lucide-react'
 import { ChartCard } from '@/components/analytics/ChartCard'
 import type { TeamHealthResponse } from '@/lib/analytics/types'
 import { TABLE_STYLES } from '@/lib/styles'
-import { STATUS_FG } from '@/lib/styles/status'
+import { RISK_COLORS, CHART_THEME } from '@/lib/styles/chart'
 import { cn } from '@/lib/utils'
 import type { SessionUser } from '@/types'
 
+// 점수 레벨 색상 — RISK_COLORS SSOT (low/medium/high/critical = severity 순)
 const SCORE_COLORS: Record<string, string> = {
-  HEALTHY: STATUS_FG.success, CAUTION: STATUS_FG.warning, WARNING: '#F97316', CRITICAL: STATUS_FG.error,
+  HEALTHY: RISK_COLORS.low, CAUTION: RISK_COLORS.medium, WARNING: RISK_COLORS.high, CRITICAL: RISK_COLORS.critical,
 }
+const SUB_COLORS: Record<string, string> = {
+  GOOD: RISK_COLORS.low, CAUTION: RISK_COLORS.medium, WARNING: RISK_COLORS.high, CRITICAL: RISK_COLORS.critical,
+}
+// i18n: scoreLabels/subScores 키는 teamHealth 네임스페이스에 부재 → 완비된 기존 키 재사용
+// (teamHealthPage.scoreLabels = 5로케일 완비, table.* + burnoutRiskCount 동일). 신규 키 0.
 const SCORE_LABEL_KEYS: Record<string, string> = {
-  HEALTHY: 'teamHealth.scoreLabels.healthy', CAUTION: 'teamHealth.scoreLabels.caution', WARNING: 'teamHealth.scoreLabels.warning', CRITICAL: 'teamHealth.scoreLabels.critical',
+  HEALTHY: 'teamHealthPage.scoreLabels.healthy', CAUTION: 'teamHealthPage.scoreLabels.caution', WARNING: 'teamHealthPage.scoreLabels.warning', CRITICAL: 'teamHealthPage.scoreLabels.critical',
 }
 const SUB_ICONS = [
-  { key: 'overtime', labelKey: 'teamHealth.subScores.overtime', icon: Clock },
-  { key: 'leaveUsage', labelKey: 'teamHealth.subScores.leaveUsage', icon: CalendarDays },
-  { key: 'performanceDist', labelKey: 'teamHealth.subScores.performanceDist', icon: Target },
-  { key: 'turnoverRisk', labelKey: 'teamHealth.subScores.turnoverRisk', icon: AlertTriangle },
-  { key: 'burnoutRisk', labelKey: 'teamHealth.subScores.burnoutRisk', icon: Flame },
+  { key: 'overtime', labelKey: 'teamHealth.table.overtime', icon: Clock },
+  { key: 'leaveUsage', labelKey: 'teamHealth.table.leaveUsageRate', icon: CalendarDays },
+  { key: 'performanceDist', labelKey: 'teamHealth.table.performanceGrade', icon: Target },
+  { key: 'turnoverRisk', labelKey: 'teamHealth.table.turnoverRisk', icon: AlertTriangle },
+  { key: 'burnoutRisk', labelKey: 'burnoutRiskCount', icon: Flame },
 ]
-const STATUS_LABELS = { GREEN: '🟢', YELLOW: '🟡', RED: '🔴' }
-const RISK_COLORS = { HIGH: 'text-destructive bg-destructive/5', MEDIUM: 'text-amber-600 bg-amber-500/10', LOW: 'text-emerald-600 bg-emerald-500/10' }
+// overallStatus 표시 — 색상만 의존 금지(색맹 대응): shape+color 아이콘 + sr-only 텍스트
+const STATUS_ICONS: Record<string, { icon: typeof CheckCircle2; color: string; labelKey: string }> = {
+  GREEN: { icon: CheckCircle2, color: RISK_COLORS.low, labelKey: 'teamHealthPage.scoreLabels.healthy' },
+  YELLOW: { icon: AlertTriangle, color: RISK_COLORS.medium, labelKey: 'teamHealthPage.scoreLabels.caution' },
+  RED: { icon: AlertCircle, color: RISK_COLORS.critical, labelKey: 'teamHealthPage.scoreLabels.critical' },
+}
+const RISK_BADGE_CLASSES: Record<string, string> = {
+  HIGH: 'text-destructive bg-alert-red/10', MEDIUM: 'text-ctr-warning bg-warning-bright/15', LOW: 'text-[#006b39] bg-tertiary/10',
+}
 
 export default function TeamHealthClient({ user: _user }: { user: SessionUser }) {
   const t = useTranslations('analytics')
@@ -77,7 +90,7 @@ export default function TeamHealthClient({ user: _user }: { user: SessionUser })
     )
   }
 
-  const scoreColor = SCORE_COLORS[data.scoreLevel] || '#94A3B8'
+  const scoreColor = SCORE_COLORS[data.scoreLevel] || CHART_THEME.axis.tick.fill
 
   return (
     <div className="space-y-6">
@@ -87,7 +100,7 @@ export default function TeamHealthClient({ user: _user }: { user: SessionUser })
           <div className="relative w-48 h-28 mb-4">
             <svg viewBox="0 0 120 70" className="w-48 h-28">
               {/* Background arc */}
-              <path d="M10 65 A50 50 0 0 1 110 65" fill="none" stroke="#E5E7EB" strokeWidth="8" strokeLinecap="round" />
+              <path d="M10 65 A50 50 0 0 1 110 65" fill="none" stroke={CHART_THEME.grid.stroke} strokeWidth="8" strokeLinecap="round" />
               {/* Score arc */}
               <path d="M10 65 A50 50 0 0 1 110 65" fill="none" stroke={scoreColor} strokeWidth="8" strokeLinecap="round"
                 strokeDasharray={`${(data.score / 100) * 157} 157`} className="transition-all duration-1000" />
@@ -105,7 +118,7 @@ export default function TeamHealthClient({ user: _user }: { user: SessionUser })
         <div className="grid grid-cols-5 gap-3 mt-4">
           {SUB_ICONS.map(({ key, labelKey, icon: Icon }) => {
             const sub = data.subScores[key as keyof typeof data.subScores]
-            const subColor = sub.level === 'GOOD' ? '#10B981' : sub.level === 'CAUTION' ? '#F59E0B' : sub.level === 'WARNING' ? '#F97316' : '#EF4444'
+            const subColor = SUB_COLORS[sub.level] ?? RISK_COLORS.critical
             return (
               <div key={key} className="text-center p-3 bg-muted/50 rounded-xl">
                 <Icon className="h-4 w-4 mx-auto mb-1" style={{ color: subColor }} />
@@ -136,18 +149,30 @@ export default function TeamHealthClient({ user: _user }: { user: SessionUser })
                 <tr key={m.employeeId} className={TABLE_STYLES.row}>
                   <td className={TABLE_STYLES.cell}>{m.name}</td>
                   <td className={cn(TABLE_STYLES.cellRight, m.weeklyOvertime > 10 && 'text-destructive font-medium')}>{m.weeklyOvertime}h</td>
-                  <td className={cn(TABLE_STYLES.cellRight, m.leaveUsageRate < 30 && 'text-amber-600 font-medium')}>{m.leaveUsageRate}%</td>
+                  <td className={cn(TABLE_STYLES.cellRight, m.leaveUsageRate < 30 && 'text-ctr-warning font-medium')}>{m.leaveUsageRate}%</td>
                   <td className={cn(TABLE_STYLES.cell, 'text-center')}>
-                    <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${m.lastGrade === 'B' ? 'bg-destructive/5 text-destructive' : 'bg-border text-foreground'}`}>
+                    <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${m.lastGrade === 'B' ? 'bg-alert-red/10 text-destructive' : 'bg-muted text-foreground'}`}>
                       {m.lastGrade}
                     </span>
                   </td>
                   <td className={cn(TABLE_STYLES.cell, 'text-center')}>
-                    <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${RISK_COLORS[m.turnoverRisk]}`}>
+                    <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${RISK_BADGE_CLASSES[m.turnoverRisk]}`}>
                       {m.turnoverRisk}
                     </span>
                   </td>
-                  <td className={cn(TABLE_STYLES.cell, 'text-center')}>{STATUS_LABELS[m.overallStatus]}</td>
+                  <td className={cn(TABLE_STYLES.cell, 'text-center')}>
+                    {(() => {
+                      const s = STATUS_ICONS[m.overallStatus]
+                      if (!s) return null
+                      const Icon = s.icon
+                      return (
+                        <span className="inline-flex items-center justify-center">
+                          <Icon className="h-4 w-4" style={{ color: s.color }} aria-hidden="true" />
+                          <span className="sr-only">{t(s.labelKey)}</span>
+                        </span>
+                      )
+                    })()}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -158,24 +183,30 @@ export default function TeamHealthClient({ user: _user }: { user: SessionUser })
       {/* Recommendations */}
       <ChartCard title={t('teamHealth.recommendedActions')}>
         <div className="space-y-3">
-          {data.recommendations.map((rec, i) => (
-            <div key={i} className={`flex items-start gap-3 p-3 rounded-lg border-l-4 ${
-              rec.severity === 'RED' ? 'border-l-red-500 bg-destructive/5/30' : 'border-l-amber-500 bg-amber-500/10/30'
-            }`}>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">
-                  {rec.employeeName}
-                  {rec.factors.length > 0 && ` — ${rec.factors.join(', ')}`}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">{rec.actionText}</p>
+          {data.recommendations.map((rec, i) => {
+            const isRed = rec.severity === 'RED'
+            const SevIcon = isRed ? AlertCircle : AlertTriangle
+            return (
+              <div key={i} className={cn(
+                'flex items-start gap-3 p-3 rounded-lg',
+                isRed ? 'bg-alert-red/10' : 'bg-warning-bright/15',
+              )}>
+                <SevIcon className={cn('h-4 w-4 flex-shrink-0 mt-0.5', isRed ? 'text-destructive' : 'text-ctr-warning')} aria-hidden="true" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-foreground">
+                    {rec.employeeName}
+                    {rec.factors.length > 0 && ` — ${rec.factors.join(', ')}`}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">{rec.actionText}</p>
+                </div>
+                {rec.actionLink && (
+                  <a href={rec.actionLink} className="text-xs text-primary hover:underline whitespace-nowrap">
+                    {t('teamHealth.viewProfile')}
+                  </a>
+                )}
               </div>
-              {rec.actionLink && (
-                <a href={rec.actionLink} className="text-xs text-primary hover:underline whitespace-nowrap">
-                  {t('teamHealth.viewProfile')}
-                </a>
-              )}
-            </div>
-          ))}
+            )
+          })}
         </div>
       </ChartCard>
     </div>
