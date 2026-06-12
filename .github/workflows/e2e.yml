@@ -113,7 +113,7 @@ jobs:
         # Playwright's e2e/global-setup.ts credentials provider login.
         run: npx tsx scripts/seed-qa-accounts.ts
 
-      # NOTE: Analytics MVs (prisma/migrations/mv_analytics.sql) are NOT created
+      # NOTE: Analytics MVs (scripts/db/sql/mv_analytics.sql) are NOT created
       # in CI. The SQL references columns (e.g. employees.company_id) that don't
       # exist — Employee→Company is via EmployeeAssignment, not a direct FK.
       # Analytics API routes use safeMvQuery() which returns empty arrays when

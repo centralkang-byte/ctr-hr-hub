@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════
 // Analytics Materialized View 적용 — idempotent
 // ───────────────────────────────────────────────────────────
-// `prisma/migrations/mv_analytics.sql`은 loose 파일이라 `prisma migrate
-// deploy`/`db push` 어느 흐름에도 실행되지 않는다 → MV 8개가 어느 환경에도
-// 생성된 적 없음 → analytics 대시보드가 safeMvQuery로 빈값(0) 표시.
+// `scripts/db/sql/mv_analytics.sql`은 prisma migrate 흐름 밖의 수동 SQL이라
+// `prisma migrate deploy`/`db push` 어느 흐름에도 실행되지 않는다 → MV 8개가
+// 어느 환경에도 생성된 적 없음 → analytics 대시보드가 safeMvQuery로 빈값(0) 표시.
 // 이 스크립트가 해당 SQL을 대상 DB에 1회 적용한다.
 //
 // 안전성:
@@ -45,7 +45,7 @@ async function main() {
   const DATABASE_URL = process.env.DATABASE_URL
   if (!DATABASE_URL) throw new Error('DATABASE_URL 필요')
 
-  const sqlPath = join(process.cwd(), 'prisma/migrations/mv_analytics.sql')
+  const sqlPath = join(process.cwd(), 'scripts/db/sql/mv_analytics.sql')
   const sql = readFileSync(sqlPath, 'utf8')
 
   console.log('─'.repeat(60))
