@@ -706,9 +706,7 @@ Generated: 2026-03-18 00:32
 - `/performance/goals/new`
 - `/performance/goals`
 - `/performance/manager-eval`
-- `/performance/manager-evaluation`
 - `/performance/my-checkins`
-- `/performance/my-evaluation`
 - `/performance/my-goals`
 - `/performance/my-peer-review`
 - `/performance/my-result`

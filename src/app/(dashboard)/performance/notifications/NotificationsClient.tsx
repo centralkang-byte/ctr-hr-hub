@@ -1,12 +1,11 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import { toast } from '@/hooks/use-toast'
 
 import { useCallback, useEffect, useState } from 'react'
-import { Bell, Send, ArrowLeft } from 'lucide-react'
+import { Bell, Send, ArrowLeft, CheckCircle2, Clock, MinusCircle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import { getGradeLabel } from '@/lib/performance/data-masking'
@@ -14,6 +13,8 @@ import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import { Badge } from '@/components/ui/badge'
+import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -44,6 +45,14 @@ export default function NotificationsClient({user }: {
     const [notifying, setNotifying] = useState<string | null>(null)
     const [bulkNotifying, setBulkNotifying] = useState(false)
     const { confirm, dialogProps } = useConfirmDialog()
+
+    const FILTER_VALUES: FilterType[] = ['all', 'pending', 'waiting', 'done']
+    // 방향키 내비게이션 + roving tabindex (filter 세그먼트 컨트롤). 선택은 기존 onClick 유지.
+    const filterNav = useArrowKeyNavigation(
+        FILTER_VALUES.length,
+        FILTER_VALUES.indexOf(filter),
+        (i) => setFilter(FILTER_VALUES[i]),
+    )
 
     useEffect(() => {
         async function load() {
@@ -121,14 +130,14 @@ export default function NotificationsClient({user }: {
         return Math.ceil((deadline - Date.now()) / (1000 * 60 * 60 * 24))
     }
 
-    function getStatus(item: NotifyItem): { label: string; cls: string } {
+    function getStatus(item: NotifyItem): { label: string; variant: 'success' | 'warning' | 'neutral'; icon: typeof CheckCircle2 | null } {
         if (item.acknowledgedAt) {
             return item.isAutoAcknowledged
-                ? { label: t('kr_kec9e90eb'), cls: 'text-muted-foreground' }
-                : { label: t('kr_confirm'), cls: 'text-emerald-700' }
+                ? { label: t('kr_kec9e90eb'), variant: 'neutral', icon: MinusCircle }
+                : { label: t('kr_confirm'), variant: 'success', icon: CheckCircle2 }
         }
-        if (item.notifiedAt) return { label: t('kr_keb8c80ea'), cls: 'text-amber-800' }
-        return { label: t('kr_kebafb8ed'), cls: 'text-muted-foreground' }
+        if (item.notifiedAt) return { label: t('kr_keb8c80ea'), variant: 'warning', icon: Clock }
+        return { label: t('kr_kebafb8ed'), variant: 'neutral', icon: null }
     }
 
     const filtered = items.filter((item) => {
@@ -163,16 +172,16 @@ export default function NotificationsClient({user }: {
                         )}
                         <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
                             className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
-                            {!cycles?.length && <EmptyState />}
-              {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                            {!cycles?.length && <option value="" disabled>{tCommon('noData')}</option>}
+                            {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                     </div>
                 </div>
 
-                {/* Filter tabs */}
-                <div className="mb-4 flex gap-2">
-                    {([['all', t('notification.filterAll')], ['pending', t('notification.filterPending')], ['waiting', t('notification.filterWaiting')], ['done', t('notification.filterDone')]] as const).map(([key, label]) => (
-                        <button key={key} onClick={() => setFilter(key)}
+                {/* Filter */}
+                <div role="radiogroup" aria-label={t('status')} className="mb-4 flex gap-2" onKeyDown={filterNav.onKeyDown}>
+                    {([['all', t('notification.filterAll')], ['pending', t('notification.filterPending')], ['waiting', t('notification.filterWaiting')], ['done', t('notification.filterDone')]] as const).map(([key, label], i) => (
+                        <button key={key} type="button" role="radio" aria-checked={filter === key} {...filterNav.itemProps(i)} onClick={() => setFilter(key)}
                             className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${filter === key ? 'bg-primary text-white' : 'bg-card border border-border text-muted-foreground hover:bg-muted'}`}>
                             {label}
                         </button>
@@ -180,7 +189,7 @@ export default function NotificationsClient({user }: {
                 </div>
 
                 {error && (
-                    <div className="mb-4 rounded-lg border border-destructive/15 bg-destructive/5 p-3 text-sm text-destructive">
+                    <div className="mb-4 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
                         {error} <button onClick={fetchItems} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
@@ -220,10 +229,15 @@ export default function NotificationsClient({user }: {
                                             </td>
                                             <td className={cn(TABLE_STYLES.cell, "text-center")}>
                                                 {dDay !== null && !item.acknowledgedAt ? (
-                                                    <span className={`text-xs font-medium ${dDay <= 2 ? 'text-red-500' : 'text-amber-500'}`}>D-{Math.max(dDay, 0)}</span>
+                                                    <span className={`text-xs font-medium tabular-nums ${dDay <= 2 ? 'text-destructive' : 'text-ctr-warning'}`}>D-{Math.max(dDay, 0)}</span>
                                                 ) : '-'}
                                             </td>
-                                            <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-xs", status.cls)}>{status.label}</td>
+                                            <td className={cn(TABLE_STYLES.cell, "text-center")}>
+                                                <Badge variant={status.variant} className="gap-1">
+                                                    {status.icon && <status.icon className="h-3 w-3" aria-hidden="true" />}
+                                                    {status.label}
+                                                </Badge>
+                                            </td>
                                             <td className={cn(TABLE_STYLES.cell, "text-center")}>
                                                 {!item.notifiedAt && (
                                                     <button onClick={() => handleNotify(item.reviewId)} disabled={notifying === item.reviewId}

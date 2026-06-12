@@ -6,11 +6,12 @@ import { toast } from '@/hooks/use-toast'
 
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ChevronRight, AlertTriangle, CheckCircle2, Clock, Users, ShieldAlert } from 'lucide-react'
+import { ArrowLeft, ChevronRight, AlertTriangle, Check, CheckCircle2, Clock, Users, ShieldAlert } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 import { getNextStatus, getPipelineSteps, CYCLE_STATUS_LABELS } from '@/lib/performance/pipeline'
@@ -164,16 +165,16 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                 <div key={state.key} className="flex items-center">
                                     <div className="flex flex-col items-center">
                                         <div className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-colors ${isCurrent ? 'bg-primary text-white ring-4 ring-primary/20' :
-                                                isPast ? 'bg-tertiary-container/100 text-white' : 'bg-border text-muted-foreground'
+                                                isPast ? 'bg-tertiary-container text-white' : 'bg-border text-muted-foreground'
                                             }`}>
-                                            {isPast ? '✓' : idx + 1}
+                                            {isPast ? <Check className="h-3 w-3" /> : idx + 1}
                                         </div>
-                                        <span className={`mt-1.5 text-[10px] whitespace-nowrap ${isCurrent ? 'font-bold text-primary' : isPast ? 'text-green-500' : 'text-muted-foreground'}`}>
+                                        <span className={`mt-1.5 text-[10px] whitespace-nowrap ${isCurrent ? 'font-bold text-primary' : isPast ? 'text-[#006b39]' : 'text-muted-foreground'}`}>
                                             {state.label}
                                         </span>
                                     </div>
                                     {idx < PIPELINE_STATES.length - 1 && (
-                                        <div className={`mx-1 h-0.5 w-6 ${idx < currentIdx ? 'bg-tertiary-container/100' : 'bg-border'}`} />
+                                        <div className={`mx-1 h-0.5 w-6 ${idx < currentIdx ? 'bg-tertiary-container' : 'bg-border'}`} />
                                     )}
                                 </div>
                             )
@@ -197,12 +198,12 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
 
                 {/* Overdue Warning */}
                 {overdueParticipants.length > 0 && (
-                    <div className="mb-6 rounded-xl border border-amber-200 bg-amber-500/15 p-4">
+                    <div className="mb-6 rounded-xl border border-warning-bright/30 bg-warning-bright/15 p-4">
                         <div className="flex items-center gap-2">
-                            <AlertTriangle className="h-5 w-5 text-amber-600" />
-                            <span className="text-sm font-medium text-amber-800">⚠️ {t('cycleDetail.overdueStatus', { count: overdueParticipants.length })}</span>
+                            <AlertTriangle className="h-5 w-5 text-ctr-warning" />
+                            <span className="text-sm font-medium text-ctr-warning">{t('cycleDetail.overdueStatus', { count: overdueParticipants.length })}</span>
                         </div>
-                        <ul className="mt-2 space-y-1 text-xs text-amber-800">
+                        <ul className="mt-2 space-y-1 text-xs text-ctr-warning">
                             {overdueParticipants.slice(0, 5).map((p) => (
                                 <li key={p.employee.id}>• {p.employee.name} ({p.employee.department?.name ?? '-'}): {(p.overdueFlags ?? []).join(', ')}</li>
                             ))}
@@ -212,18 +213,13 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                 )}
 
                 {/* Tabs */}
-                <div className="mb-4 flex border-b border-border">
-                    <button onClick={() => setTab('pipeline')}
-                        className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === 'pipeline' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground'}`}>
-                        {t('cycle_keca095eb')}
-                    </button>
-                    <button onClick={() => setTab('participants')}
-                        className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === 'participants' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground'}`}>
-                        {t('cycleDetail.participantCount', { count: participants.length })}
-                    </button>
-                </div>
+                <Tabs value={tab} onValueChange={(v) => setTab(v as 'pipeline' | 'participants')}>
+                    <TabsList aria-label={t('pipeline_keca784ed_status')} className="mb-4">
+                        <TabsTrigger value="pipeline">{t('cycle_keca095eb')}</TabsTrigger>
+                        <TabsTrigger value="participants">{t('cycleDetail.participantCount', { count: participants.length })}</TabsTrigger>
+                    </TabsList>
 
-                {tab === 'pipeline' ? (
+                    <TabsContent value="pipeline">
                     <div className="rounded-xl border border-border bg-card p-5 space-y-3">
                         <div className="grid grid-cols-2 gap-4 text-sm">
                             <div><span className="text-muted-foreground">{t('kr_kecb2b4ed_kebaaa8eb')}</span> <span className="font-medium text-foreground">{cycle.checkInMode === 'MANDATORY' ? t('cycleDetail.mandatory') : t('cycleDetail.recommended')}</span></div>
@@ -231,8 +227,10 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                             <div><span className="text-muted-foreground">{t('kr_kecb0b8ec_kec8898')}</span> <span className="font-medium text-foreground">{t('cycleDetail.personCount', { count: participants.length })}</span></div>
                         </div>
                     </div>
-                ) : (
-                    /* Participants Table */
+                    </TabsContent>
+
+                    {/* Participants Table */}
+                    <TabsContent value="participants">
                     <div className={TABLE_STYLES.wrapper}>
                         {/* Department filter */}
                         <div className="border-b border-border px-5 py-3 flex items-center gap-3">
@@ -259,7 +257,7 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                     {filteredParticipants.map((p) => {
                                         const hasOverdue = p.overdueFlags && p.overdueFlags.length > 0
                                         return (
-                                            <tr key={p.employee.id} className={cn(TABLE_STYLES.row, hasOverdue && 'bg-amber-500/15/30 hover:bg-amber-500/15/50')}>
+                                            <tr key={p.employee.id} className={cn(TABLE_STYLES.row, hasOverdue && 'bg-warning-bright/15 hover:bg-warning-bright/25')}>
                                                 <td className={TABLE_STYLES.cell}>
                                                   <EmployeeCell
                                                     size="sm"
@@ -270,17 +268,17 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                                                     }}
                                                   />
                                                 </td>
-                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>{p.goalsStatus === 'DONE' ? <CheckCircle2 className="mx-auto h-4 w-4 text-green-500" /> : <Clock className="mx-auto h-4 w-4 text-amber-500" />}</td>
-                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>{p.checkinStatus === 'DONE' ? <CheckCircle2 className="mx-auto h-4 w-4 text-green-500" /> : <Clock className="mx-auto h-4 w-4 text-amber-500" />}</td>
-                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>{p.selfEvalStatus === 'SUBMITTED' ? <CheckCircle2 className="mx-auto h-4 w-4 text-green-500" /> : <Clock className="mx-auto h-4 w-4 text-amber-500" />}</td>
+                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>{p.goalsStatus === 'DONE' ? <CheckCircle2 className="mx-auto h-4 w-4 text-[#006b39]" /> : <Clock className="mx-auto h-4 w-4 text-ctr-warning" />}</td>
+                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>{p.checkinStatus === 'DONE' ? <CheckCircle2 className="mx-auto h-4 w-4 text-[#006b39]" /> : <Clock className="mx-auto h-4 w-4 text-ctr-warning" />}</td>
+                                                <td className={cn(TABLE_STYLES.cell, "text-center")}>{p.selfEvalStatus === 'SUBMITTED' ? <CheckCircle2 className="mx-auto h-4 w-4 text-[#006b39]" /> : <Clock className="mx-auto h-4 w-4 text-ctr-warning" />}</td>
                                                 <td className={cn(TABLE_STYLES.cell, "text-center text-muted-foreground")}>{p.peerReviewProgress ?? '-'}</td>
                                                 <td className={cn(TABLE_STYLES.cell, "text-center")}>
                                                     {hasOverdue ? (
-                                                        <span className="inline-flex items-center gap-1 rounded-full bg-destructive/5 px-2 py-0.5 text-xs font-medium text-destructive">
+                                                        <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive">
                                                             <AlertTriangle className="h-3 w-3" /> {t('kr_keca780ec')}
                                                         </span>
                                                     ) : (
-                                                        <span className="inline-flex rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-medium text-emerald-700">{t('kr_keca095ec')}</span>
+                                                        <span className="inline-flex rounded-full bg-tertiary/10 px-2 py-0.5 text-xs font-medium text-[#006b39]">{t('kr_keca095ec')}</span>
                                                     )}
                                                 </td>
                                             </tr>
@@ -294,7 +292,8 @@ export default function CycleDetailClient({user, cycleId }: { user: SessionUser;
                             {t('cycleDetail.participantSummary', { total: filteredParticipants.length, normal: filteredParticipants.filter((p) => !p.overdueFlags || p.overdueFlags.length === 0).length, delayed: filteredParticipants.filter((p) => p.overdueFlags && p.overdueFlags.length > 0).length })}
                         </div>
             </div>
-        )}
+                    </TabsContent>
+                </Tabs>
             </div>
         <ConfirmDialog {...dialogProps} />
         </>

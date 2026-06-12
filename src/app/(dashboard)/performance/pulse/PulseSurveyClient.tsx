@@ -11,6 +11,8 @@ import { apiClient } from '@/lib/api'
 import { CARD_STYLES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
 import type { SessionUser } from '@/types'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -48,6 +50,8 @@ const SCOPE_MAP: Record<string, string> = {
   DEPARTMENT: 'pulse.scopeDepartment',
   TEAM: 'pulse.scopeTeam',
 }
+
+const STATUS_FILTER_VALUES = ['', 'PULSE_DRAFT', 'PULSE_ACTIVE', 'PULSE_CLOSED'] as const
 
 // ─── Create Modal ────────────────────────────────────────
 
@@ -118,7 +122,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
 
   return (
     <div className={MODAL_STYLES.container}>
-      <div className="bg-card rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-card rounded-2xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-border">
           <h2 className="text-lg font-semibold text-foreground">{t('pulse.newSurvey')}</h2>
         </div>
@@ -170,7 +174,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
           <div className="border-t border-border pt-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-foreground">{t('pulse.questionConfig')}</h3>
-              <button onClick={addQuestion} className="flex items-center gap-1 text-sm text-primary hover:text-primary/90 font-medium">
+              <button onClick={addQuestion} className="flex items-center gap-1 text-sm text-primary hover:text-primary font-medium">
                 <Plus className="w-4 h-4" /> {t('pulse.addQuestion')}
               </button>
             </div>
@@ -189,7 +193,7 @@ function CreateSurveyModal({ onClose, onCreated }: CreateModalProps) {
                       <option value="CHOICE">{t('pulse.typeChoice')}</option>
                     </select>
                     {questions.length > 1 && (
-                      <button onClick={() => removeQuestion(i)} className="p-1 text-muted-foreground hover:text-red-500">
+                      <button onClick={() => removeQuestion(i)} className="p-1 text-muted-foreground hover:text-destructive">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     )}
@@ -234,6 +238,13 @@ export default function PulseSurveyClient({ user: _user }: { user: SessionUser }
   const [tab, setTab] = useState<'manage' | 'respond'>('manage')
   const [showCreate, setShowCreate] = useState(false)
   const [statusFilter, setStatusFilter] = useState<string>('')
+
+  // 방향키 내비게이션 + roving tabindex (statusFilter 세그먼트 컨트롤). 선택은 기존 onClick 유지.
+  const statusNav = useArrowKeyNavigation(
+    STATUS_FILTER_VALUES.length,
+    STATUS_FILTER_VALUES.findIndex((v) => v === statusFilter),
+    (i) => setStatusFilter(STATUS_FILTER_VALUES[i]),
+  )
 
   const fetchAll = useCallback(async () => {
     setLoading(true)
@@ -284,23 +295,22 @@ export default function PulseSurveyClient({ user: _user }: { user: SessionUser }
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-border">
-        {TABS.map((t) => (
-          <button key={t.key} onClick={() => setTab(t.key)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 ${tab === t.key ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <Tabs value={tab} onValueChange={(v) => setTab(v as 'manage' | 'respond')}>
+        <TabsList aria-label={t('pulseSurveyTitle')}>
+          {TABS.map((tb) => (
+            <TabsTrigger key={tb.key} value={tb.key}>{tb.label}</TabsTrigger>
+          ))}
+        </TabsList>
 
-      {loading ? (
-        <div className="text-center text-muted-foreground py-10">{tCommon('loading')}</div>
-      ) : tab === 'manage' ? (
-        <>
+        <TabsContent value="manage" className="space-y-6">
+          {loading ? (
+            <div className="text-center text-muted-foreground py-10">{tCommon('loading')}</div>
+          ) : (
+            <>
           {/* Status Filter */}
-          <div className="flex gap-2">
-            {[{ key: '', label: t('all') }, { key: 'PULSE_DRAFT', label: t('draft') }, { key: 'PULSE_ACTIVE', label: t('inProgress') }, { key: 'PULSE_CLOSED', label: t('ended') }].map((f) => (
-              <button key={f.key} onClick={() => setStatusFilter(f.key)}
+          <div role="radiogroup" aria-label={t('status')} className="flex gap-2" onKeyDown={statusNav.onKeyDown}>
+            {[{ key: '', label: t('all') }, { key: 'PULSE_DRAFT', label: t('draft') }, { key: 'PULSE_ACTIVE', label: t('inProgress') }, { key: 'PULSE_CLOSED', label: t('ended') }].map((f, i) => (
+              <button key={f.key} type="button" role="radio" aria-checked={statusFilter === f.key} {...statusNav.itemProps(i)} onClick={() => setStatusFilter(f.key)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium border ${statusFilter === f.key ? 'bg-primary text-white border-primary' : 'bg-card text-muted-foreground border-border hover:bg-background'}`}>
                 {f.label}
               </button>
@@ -346,19 +356,19 @@ export default function PulseSurveyClient({ user: _user }: { user: SessionUser }
                         )}
                         {s.status === 'PULSE_ACTIVE' && (
                           <button onClick={() => handleStatusChange(s.id, 'PULSE_CLOSED')} title={t('ended')}
-                            className="p-1.5 text-amber-700 hover:bg-amber-500/15 rounded-lg">
+                            className="p-1.5 text-ctr-warning hover:bg-warning-bright/15 rounded-lg">
                             <Square className="w-4 h-4" />
                           </button>
                         )}
                         {(s.status === 'PULSE_ACTIVE' || s.status === 'PULSE_CLOSED') && (
                           <button onClick={() => router.push(`/performance/pulse/${s.id}/results`)} title={t('pulse.viewResults')}
-                            className="p-1.5 text-primary/90 hover:bg-primary/15 rounded-lg">
+                            className="p-1.5 text-primary hover:bg-primary/10 rounded-lg">
                             <Eye className="w-4 h-4" />
                           </button>
                         )}
                         {s.status === 'PULSE_DRAFT' && (
                           <button onClick={() => handleDelete(s.id)} title={t('pulse.delete')}
-                            className="p-1.5 text-muted-foreground hover:text-red-500 hover:bg-destructive/10 rounded-lg">
+                            className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         )}
@@ -372,8 +382,14 @@ export default function PulseSurveyClient({ user: _user }: { user: SessionUser }
               </tbody>
             </table>
           </div>
-        </>
-      ) : (
+            </>
+          )}
+        </TabsContent>
+
+        <TabsContent value="respond">
+          {loading ? (
+            <div className="text-center text-muted-foreground py-10">{tCommon('loading')}</div>
+          ) : (
         /* Pending Surveys */
         <div className="space-y-4">
           {pending.length === 0 ? (
@@ -399,7 +415,9 @@ export default function PulseSurveyClient({ user: _user }: { user: SessionUser }
             ))
           )}
         </div>
-      )}
+          )}
+        </TabsContent>
+      </Tabs>
 
       {showCreate && <CreateSurveyModal onClose={() => setShowCreate(false)} onCreated={() => { setShowCreate(false); fetchAll() }} />}
     </div>

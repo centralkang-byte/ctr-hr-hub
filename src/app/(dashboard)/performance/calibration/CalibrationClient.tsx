@@ -299,6 +299,7 @@ export default function CalibrationClient({ user: _user }: { user: SessionUser }
           <select
             value={selectedCycleId}
             onChange={(e) => { setSelectedCycleId(e.target.value); setSelectedSession(null) }}
+            aria-label={t('calibration.title')}
             className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
           >
             {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -444,7 +445,7 @@ export default function CalibrationClient({ user: _user }: { user: SessionUser }
                 <button
                   onClick={handleAiAnalysis}
                   disabled={aiLoading}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-primary/15 text-primary/90 hover:bg-primary/15 disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-primary/10 text-primary hover:bg-primary/15 disabled:opacity-50"
                 >
                   <Sparkles className="w-4 h-4" />
                   {aiLoading ? t('aiAnalyzing') : t('calibration.aiAnalysis')}
@@ -456,7 +457,7 @@ export default function CalibrationClient({ user: _user }: { user: SessionUser }
                 <div className="rounded-xl border border-border bg-card p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-base font-semibold text-foreground">
-                      <AlertTriangle className="w-4 h-4 inline mr-1 text-amber-700" />
+                      <AlertTriangle className="w-4 h-4 inline mr-1 text-ctr-warning" />
                       {t('calibration.scoreAdjust', { name: adjEmployee.employee.name })}
                     </h3>
                     <button onClick={() => setAdjEmployee(null)} className="text-sm text-muted-foreground hover:text-muted-foreground">{t('close')}</button>
@@ -549,7 +550,7 @@ export default function CalibrationClient({ user: _user }: { user: SessionUser }
                         } catch { toast({ title: t('complete_kecb298eb_kec8ba4ed'), variant: 'destructive' }) }
                       }})
                     }}
-                    className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium"
+                    className="flex items-center gap-2 px-4 py-2 bg-warm hover:brightness-95 text-white rounded-lg text-sm font-medium"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     {t('calibration_complete')}

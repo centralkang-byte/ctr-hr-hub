@@ -68,7 +68,8 @@ export default function CalibrationBatchToolbar({
                   e.target.value = ''
                 }}
                 defaultValue=""
-                className="text-sm bg-transparent border-none focus:ring-0 text-primary cursor-pointer pr-6"
+                aria-label={t('calibrationBatch.moveToBlock')}
+                className="text-sm bg-transparent border-none text-primary cursor-pointer pr-6"
               >
                 <option value="" disabled>{t('calibrationBatch.moveToBlock')}</option>
                 {BLOCK_OPTIONS.map((opt) => (

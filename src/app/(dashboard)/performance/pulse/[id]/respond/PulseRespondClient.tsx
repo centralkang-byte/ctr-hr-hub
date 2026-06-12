@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Send, CheckCircle2 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
 import type { SessionUser } from '@/types'
 
 // ─── Types ───────────────────────────────────────────────
@@ -30,6 +31,86 @@ interface SurveyDetail {
 }
 
 const LIKERT_LABEL_KEYS = ['pulse.likertVeryNegative', 'pulse.likertNegative', 'pulse.likertNeutral', 'pulse.likertPositive', 'pulse.likertVeryPositive']
+const LIKERT_VALUES = [1, 2, 3, 4, 5]
+
+// ─── Question Card ───────────────────────────────────────
+
+interface QuestionCardProps {
+  question: Question
+  index: number
+  value: string | undefined
+  onAnswer: (questionId: string, value: string) => void
+}
+
+function QuestionCard({ question: q, index: i, value, onAnswer }: QuestionCardProps) {
+  const tCommon = useTranslations('common')
+  const t = useTranslations('performance')
+
+  // LIKERT 1-5 radiogroup 방향키 내비게이션 + roving tabindex (5단계 보존). 선택은 기존 onClick 유지.
+  // 미응답(findIndex=-1)이면 WAI-ARIA radiogroup 규칙대로 첫 항목을 tab anchor로 — aria-checked는 실선택만 반영.
+  const likertNav = useArrowKeyNavigation(
+    LIKERT_VALUES.length,
+    Math.max(0, LIKERT_VALUES.findIndex((v) => String(v) === value)),
+    (idx) => onAnswer(q.id, String(LIKERT_VALUES[idx])),
+  )
+
+  return (
+    <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
+      <div className="flex items-start gap-2 mb-3">
+        <span className="text-xs font-medium text-muted-foreground">Q{i + 1}</span>
+        <div>
+          <p className="text-sm font-medium text-foreground">
+            {q.questionText}
+            {q.isRequired && <span className="text-destructive ml-1">*</span>}
+          </p>
+        </div>
+      </div>
+
+      {q.questionType === 'LIKERT' && (
+        <div role="radiogroup" aria-label={q.questionText} className="flex gap-2 mt-3" onKeyDown={likertNav.onKeyDown}>
+          {LIKERT_VALUES.map((v, idx) => (
+            <button key={v} type="button" role="radio" aria-checked={value === String(v)}
+              {...likertNav.itemProps(idx)}
+              onClick={() => onAnswer(q.id, String(v))}
+              className={`flex-1 py-3 rounded-lg border text-sm font-medium transition-colors ${
+                value === String(v)
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-card text-muted-foreground border-border hover:bg-background'
+              }`}>
+              <div className="text-lg">{v}</div>
+              <div className="text-xs mt-1 opacity-80">{t(LIKERT_LABEL_KEYS[v - 1])}</div>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {q.questionType === 'TEXT' && (
+        <textarea
+          value={value ?? ''}
+          onChange={(e) => onAnswer(q.id, e.target.value)}
+          placeholder={tCommon('enterContent')}
+          rows={3}
+          className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
+        />
+      )}
+
+      {q.questionType === 'CHOICE' && q.options && (
+        <div className="space-y-2 mt-3">
+          {(q.options as string[]).map((opt) => (
+            <button key={opt} type="button" onClick={() => onAnswer(q.id, opt)}
+              className={`w-full text-left px-4 py-2.5 rounded-lg border text-sm transition-colors ${
+                value === opt
+                  ? 'bg-primary/10 text-primary border-primary'
+                  : 'bg-card text-muted-foreground border-border hover:bg-background'
+              }`}>
+              {opt}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 // ─── Component ───────────────────────────────────────────
 
@@ -110,7 +191,7 @@ export default function PulseRespondClient({ user: _user, id }: { user: SessionU
         </div>
       </div>
 
-      <div className="bg-primary/15 rounded-xl border border-primary/20 p-4 text-sm text-primary/90">
+      <div className="bg-primary/10 rounded-2xl border border-primary/20 p-4 text-sm text-primary">
         {survey.anonymityLevel === 'FULL_ANONYMOUS'
           ? t('pulse.anonymityFullNotice')
           : t('pulse.anonymityDivisionNotice')}
@@ -120,58 +201,7 @@ export default function PulseRespondClient({ user: _user, id }: { user: SessionU
       {/* Questions */}
       <div className="space-y-6">
         {survey.questions.map((q, i) => (
-          <div key={q.id} className="bg-card rounded-xl shadow-sm border border-border p-6">
-            <div className="flex items-start gap-2 mb-3">
-              <span className="text-xs font-medium text-muted-foreground">Q{i + 1}</span>
-              <div>
-                <p className="text-sm font-medium text-foreground">
-                  {q.questionText}
-                  {q.isRequired && <span className="text-red-500 ml-1">*</span>}
-                </p>
-              </div>
-            </div>
-
-            {q.questionType === 'LIKERT' && (
-              <div className="flex gap-2 mt-3">
-                {[1, 2, 3, 4, 5].map((v) => (
-                  <button key={v} onClick={() => setAnswer(q.id, String(v))}
-                    className={`flex-1 py-3 rounded-lg border text-sm font-medium transition-colors ${
-                      answers[q.id] === String(v)
-                        ? 'bg-primary text-white border-primary'
-                        : 'bg-card text-muted-foreground border-border hover:bg-background'
-                    }`}>
-                    <div className="text-lg">{v}</div>
-                    <div className="text-xs mt-1 opacity-80">{t(LIKERT_LABEL_KEYS[v - 1])}</div>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {q.questionType === 'TEXT' && (
-              <textarea
-                value={answers[q.id] ?? ''}
-                onChange={(e) => setAnswer(q.id, e.target.value)}
-                placeholder={tCommon('enterContent')}
-                rows={3}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
-              />
-            )}
-
-            {q.questionType === 'CHOICE' && q.options && (
-              <div className="space-y-2 mt-3">
-                {(q.options as string[]).map((opt) => (
-                  <button key={opt} onClick={() => setAnswer(q.id, opt)}
-                    className={`w-full text-left px-4 py-2.5 rounded-lg border text-sm transition-colors ${
-                      answers[q.id] === opt
-                        ? 'bg-primary/10 text-primary/90 border-primary'
-                        : 'bg-card text-muted-foreground border-border hover:bg-background'
-                    }`}>
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <QuestionCard key={q.id} question={q} index={i} value={answers[q.id]} onAnswer={setAnswer} />
         ))}
       </div>
 

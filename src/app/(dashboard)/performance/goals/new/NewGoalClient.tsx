@@ -113,29 +113,30 @@ export default function NewGoalClient({
           {/* 사이클 */}
           <div>
             <label className="mb-1 block text-sm font-medium text-muted-foreground">
-              {t('cycleLabel')} <span className="text-red-500">*</span>
+              {t('cycleLabel')} <span className="text-destructive">*</span>
             </label>
             <select
               {...register('cycleId')}
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+              disabled={!cycles?.length}
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 disabled:opacity-50"
             >
               <option value="">{t('selectCycle')}</option>
-              {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
               ))}
             </select>
+            {!cycles?.length && <EmptyState size="sm" />}
             {errors.cycleId && (
-              <p className="mt-1 text-xs text-red-500">{errors.cycleId.message}</p>
+              <p className="mt-1 text-xs text-destructive">{errors.cycleId.message}</p>
             )}
           </div>
 
           {/* 제목 */}
           <div>
             <label className="mb-1 block text-sm font-medium text-muted-foreground">
-              {t('titleLabel')} <span className="text-red-500">*</span>
+              {t('titleLabel')} <span className="text-destructive">*</span>
             </label>
             <input
               type="text"
@@ -144,7 +145,7 @@ export default function NewGoalClient({
               className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
             {errors.title && (
-              <p className="mt-1 text-xs text-red-500">{errors.title.message}</p>
+              <p className="mt-1 text-xs text-destructive">{errors.title.message}</p>
             )}
           </div>
 
@@ -160,7 +161,7 @@ export default function NewGoalClient({
               className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
             {errors.description && (
-              <p className="mt-1 text-xs text-red-500">
+              <p className="mt-1 text-xs text-destructive">
                 {errors.description.message}
               </p>
             )}
@@ -169,7 +170,7 @@ export default function NewGoalClient({
           {/* 가중치 */}
           <div>
             <label className="mb-1 block text-sm font-medium text-muted-foreground">
-              {t('weightPercent')} <span className="text-red-500">*</span>
+              {t('weightPercent')} <span className="text-destructive">*</span>
             </label>
             <input
               type="number"
@@ -179,7 +180,7 @@ export default function NewGoalClient({
               className="w-32 rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
             {errors.weight && (
-              <p className="mt-1 text-xs text-red-500">{errors.weight.message}</p>
+              <p className="mt-1 text-xs text-destructive">{errors.weight.message}</p>
             )}
           </div>
 
@@ -195,7 +196,7 @@ export default function NewGoalClient({
               className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
             {errors.targetMetric && (
-              <p className="mt-1 text-xs text-red-500">
+              <p className="mt-1 text-xs text-destructive">
                 {errors.targetMetric.message}
               </p>
             )}
@@ -213,7 +214,7 @@ export default function NewGoalClient({
               className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
             {errors.targetValue && (
-              <p className="mt-1 text-xs text-red-500">
+              <p className="mt-1 text-xs text-destructive">
                 {errors.targetValue.message}
               </p>
             )}

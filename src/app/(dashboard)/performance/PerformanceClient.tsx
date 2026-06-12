@@ -1,6 +1,7 @@
 'use client'
 
 import { EmptyState } from '@/components/ui/EmptyState'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { toast } from '@/hooks/use-toast'
 
 import { useCallback, useEffect, useState } from 'react'
@@ -56,17 +57,6 @@ interface TeamMemberGoals {
   goals: GoalItem[]
   totalWeight: number
   avgProgress: number
-}
-
-// ─── Status config ────────────────────────────────────────
-
-const CYCLE_STATUS_STYLES: Record<string, string> = {
-  PLANNING: 'bg-muted text-muted-foreground',
-  GOAL_SETTING: 'bg-primary/5 text-blue-800',
-  IN_PROGRESS: 'bg-primary/10 text-tertiary',
-  EVALUATION: 'bg-amber-500/10 text-amber-700',
-  CALIBRATION: 'bg-wt-4/10 text-wt-4',
-  COMPLETED: 'bg-border text-muted-foreground',
 }
 
 // ─── Helpers ──────────────────────────────────────────────
@@ -203,13 +193,9 @@ export default function PerformanceClient({
             {activeCycle && (
               <div className="mt-2 flex items-center gap-3">
                 <span className="text-sm text-muted-foreground">{activeCycle.name}</span>
-                <span
-                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                    CYCLE_STATUS_STYLES[activeCycle.status] ?? 'bg-muted text-muted-foreground'
-                  }`}
-                >
+                <StatusBadge status={activeCycle.status}>
                   {t(`cycleStatusLabels.${activeCycle.status}` as Parameters<typeof t>[0])}
-                </span>
+                </StatusBadge>
               </div>
             )}
           </div>
@@ -281,8 +267,8 @@ export default function PerformanceClient({
           {/* Card 4: 다음 마감일 */}
           <div className="rounded-xl border border-border bg-card p-5">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500/10">
-                <ClipboardList className="h-5 w-5 text-orange-800" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-wd-orange/10">
+                <ClipboardList className="h-5 w-5 text-wd-orange" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">{t('nextDeadline')}</p>
@@ -330,19 +316,9 @@ export default function PerformanceClient({
                               <span className="font-medium text-foreground">
                                 {goal.title}
                               </span>
-                              <span
-                                className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                                  goal.status === 'APPROVED'
-                                    ? 'bg-primary/10 text-tertiary'
-                                    : goal.status === 'PENDING_APPROVAL'
-                                      ? 'bg-amber-500/10 text-amber-700'
-                                      : goal.status === 'REJECTED'
-                                        ? 'bg-destructive/5 text-destructive'
-                                        : 'bg-muted text-muted-foreground'
-                                }`}
-                              >
+                              <StatusBadge status={goal.status}>
                                 {t(`goalStatusLabels.${goal.status}` as Parameters<typeof t>[0])}
-                              </span>
+                              </StatusBadge>
                             </div>
                             <span className="text-sm text-muted-foreground">
                               {t('weightLabel', { weight: goal.weight })}
@@ -503,13 +479,9 @@ export default function PerformanceClient({
                             <span className="font-medium text-foreground">
                               {cycle.name}
                             </span>
-                            <span
-                              className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                                CYCLE_STATUS_STYLES[cycle.status] ?? 'bg-muted text-muted-foreground'
-                              }`}
-                            >
+                            <StatusBadge status={cycle.status}>
                               {t(`cycleStatusLabels.${cycle.status}` as Parameters<typeof t>[0])}
-                            </span>
+                            </StatusBadge>
                           </div>
                           <p className="text-xs text-muted-foreground">
                             {formatDateLong(cycle.startDate)} ~ {formatDateLong(cycle.endDate)}

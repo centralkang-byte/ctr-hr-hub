@@ -20,17 +20,9 @@ import {
   Loader2,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-
-// ─── Status config ────────────────────────────────────────
-
-const STATUS_STYLES: Record<string, string> = {
-  DRAFT: 'bg-muted text-muted-foreground',
-  PENDING_APPROVAL: 'bg-amber-500/10 text-amber-700',
-  APPROVED: 'bg-primary/10 text-tertiary',
-  REJECTED: 'bg-destructive/5 text-destructive',
-}
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -103,8 +95,8 @@ export default function TeamGoalsClient({
   }
 
   function getMemberStatusStyle(label: string): string {
-    if (label === t('allApproved')) return 'text-tertiary'
-    if (label === t('hasPendingApproval')) return 'text-amber-700'
+    if (label === t('allApproved')) return 'text-[#006b39]'
+    if (label === t('hasPendingApproval')) return 'text-ctr-warning'
     if (label === t('hasRejected')) return 'text-destructive'
     return 'text-muted-foreground'
   }
@@ -306,8 +298,8 @@ export default function TeamGoalsClient({
                     <div
                       className={`font-medium ${
                         member.totalWeight === 100
-                          ? 'text-tertiary'
-                          : 'text-orange-500'
+                          ? 'text-[#006b39]'
+                          : 'text-ctr-warning'
                       }`}
                     >
                       {member.totalWeight}%
@@ -363,13 +355,9 @@ export default function TeamGoalsClient({
                                   <h4 className="font-medium text-foreground">
                                     {goal.title}
                                   </h4>
-                                  <span
-                                    className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                                      STATUS_STYLES[goal.status] ?? 'bg-muted text-muted-foreground'
-                                    }`}
-                                  >
+                                  <StatusBadge status={goal.status}>
                                     {t(`goalStatusLabels.${goal.status}` as Parameters<typeof t>[0])}
-                                  </span>
+                                  </StatusBadge>
                                 </div>
                                 {goal.description && (
                                   <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
@@ -402,7 +390,7 @@ export default function TeamGoalsClient({
                                     type="button"
                                     onClick={() => handleApprove(goal.id)}
                                     disabled={isThisLoading}
-                                    className="inline-flex items-center gap-1 rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-green-700 disabled:opacity-50"
+                                    className="inline-flex items-center gap-1 rounded-lg bg-warm px-3 py-1.5 text-xs font-medium text-white transition-colors hover:brightness-95 disabled:opacity-50"
                                   >
                                     {isThisLoading ? (
                                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -423,7 +411,7 @@ export default function TeamGoalsClient({
                                       }
                                     }}
                                     disabled={isThisLoading}
-                                    className="inline-flex items-center gap-1 rounded-lg bg-orange-500/100 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
+                                    className="inline-flex items-center gap-1 rounded-lg border border-border-strong px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-50"
                                   >
                                     <MessageSquareWarning className="h-3.5 w-3.5" />
                                     {t('requestRevisionButton')}
@@ -440,7 +428,7 @@ export default function TeamGoalsClient({
                                   onChange={(e) => setRevisionComment(e.target.value)}
                                   placeholder={t('revisionPlaceholder')}
                                   rows={3}
-                                  className="w-full rounded-lg border border-border px-3 py-2 text-sm placeholder-[#999] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                                  className="w-full rounded-lg border border-border px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
                                 />
                                 <div className="mt-2 flex justify-end gap-2">
                                   <button
@@ -457,7 +445,7 @@ export default function TeamGoalsClient({
                                     type="button"
                                     onClick={() => handleRequestRevision(goal.id)}
                                     disabled={isThisLoading || !revisionComment.trim()}
-                                    className="inline-flex items-center gap-1 rounded-lg bg-orange-500/100 px-3 py-1.5 text-xs font-medium text-white hover:bg-orange-600 disabled:opacity-50"
+                                    className="inline-flex items-center gap-1 rounded-lg border border-border-strong px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-50"
                                   >
                                     {isThisLoading && (
                                       <Loader2 className="h-3.5 w-3.5 animate-spin" />

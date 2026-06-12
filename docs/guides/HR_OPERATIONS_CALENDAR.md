@@ -79,7 +79,7 @@ D-0    발행 + 이체 (PAID)
 |-------|----------|--------|------------|-------|
 | 목표 설정 | 2~3주 | DRAFT → ACTIVE | `/performance/cycles/[id]`, `/performance/goals` | goal-overdue (D-7: 3d×2, D-3: 1d×3) |
 | 중간 체크인 | 2~4주 | ACTIVE → CHECK_IN | `/performance/my-checkins`, `/performance/one-on-one` | — |
-| 자기평가 | 1~2주 | CHECK_IN → EVAL_OPEN | `/performance/self-eval`, `/performance/my-evaluation` | eval-overdue (D-5: 2d×2) |
+| 자기평가 | 1~2주 | CHECK_IN → EVAL_OPEN | `/performance/self-eval` | eval-overdue (D-5: 2d×2) |
 | 매니저 평가 | 1~2주 | EVAL_OPEN | `/performance/manager-eval` | eval-overdue |
 | 동료 평가 | 1~2주 (병행) | EVAL_OPEN | `/performance/peer-review/*` | — |
 | 캘리브레이션 | 1~2주 | EVAL_OPEN → CALIBRATION | `/performance/calibration` | calibration-pending (3d+ → 2d마다) |

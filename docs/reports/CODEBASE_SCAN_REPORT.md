@@ -280,7 +280,7 @@
 | Module | Pages | Key Pages |
 |--------|-------|-----------|
 | Analytics | **9** | executive, workforce, payroll, performance, attendance, turnover, team-health, ai-report, attrition |
-| Performance | **19** | admin, goals, cycles, calibration, peer-review, my-evaluation, self-eval, results, one-on-one, pulse, recognition, comp-review |
+| Performance | **17** | admin, goals, cycles, calibration, peer-review, self-eval, manager-eval, results, one-on-one, pulse, recognition, comp-review |
 | Payroll | **12** | admin, adjustments, anomalies, close-attendance, review, approve, publish, simulation, me, bank-transfers, import, global |
 | Recruitment | **15** | postings, applicants, interviews, pipeline, board, requisitions, talent-pool, cost-analysis, dashboard, internal-jobs |
 | Settings | **39** | (see Section 8-3) |

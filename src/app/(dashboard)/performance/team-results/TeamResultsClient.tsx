@@ -5,10 +5,12 @@ import { toast } from '@/hooks/use-toast'
 
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Users, Target, TrendingUp } from 'lucide-react'
+import { Users, Target, TrendingUp, Check } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { StatusBadge } from '@/components/ui/StatusBadge'
+import { NINE_BOX_CONFIG } from '@/lib/styles/performance'
 import { cn } from '@/lib/utils'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 
@@ -26,6 +28,13 @@ interface TeamResult {
   managerEval: { status: string; performanceScore: number | null; competencyScore: number | null; emsBlock: string | null } | null
   finalResult: { performanceScore: number | null; competencyScore: number | null; emsBlock: string | null; calibrated: boolean } | null
 }
+
+// ─── Constants ────────────────────────────────────────────
+
+// EMS 코드("3C" 등) → 9-box SSOT className 역인덱스 (SSOT가 단일 소스, 색 중복 정의 없음)
+const NINE_BOX_CLASS_BY_CODE: Record<string, string> = Object.fromEntries(
+  Object.values(NINE_BOX_CONFIG).map((b) => [b.label, b.className]),
+)
 
 // ─── Component ────────────────────────────────────────────
 
@@ -83,6 +92,7 @@ export default function TeamResultsClient({
         <select
           value={selectedCycleId}
           onChange={(e) => setSelectedCycleId(e.target.value)}
+          aria-label={t('teamResults')}
           className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
         >
           {!cycles?.length && <EmptyState />}
@@ -140,16 +150,16 @@ export default function TeamResultsClient({
                 <td className={cn(TABLE_STYLES.cellMuted)}>{r.employee.department?.name ?? '-'}</td>
                 <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>
                   {r.selfEval ? (
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.selfEval.status === 'SUBMITTED' ? 'bg-emerald-500/15 text-emerald-700' : 'bg-muted text-muted-foreground'}`}>
+                    <StatusBadge status={r.selfEval.status}>
                       {r.selfEval.performanceScore?.toFixed(1) ?? '-'}
-                    </span>
+                    </StatusBadge>
                   ) : <span className="text-muted-foreground">-</span>}
                 </td>
                 <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>
                   {r.managerEval ? (
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${r.managerEval.status === 'SUBMITTED' ? 'bg-emerald-500/15 text-emerald-700' : 'bg-muted text-muted-foreground'}`}>
+                    <StatusBadge status={r.managerEval.status}>
                       {r.managerEval.performanceScore?.toFixed(1) ?? '-'}
-                    </span>
+                    </StatusBadge>
                   ) : <span className="text-muted-foreground">-</span>}
                 </td>
                 <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>
@@ -160,9 +170,12 @@ export default function TeamResultsClient({
                 </td>
                 <td className={cn(TABLE_STYLES.cell, "text-center")}>
                   {r.finalResult?.emsBlock ? (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary/90">
+                    <span className={cn(
+                      'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold',
+                      NINE_BOX_CLASS_BY_CODE[r.finalResult.emsBlock] ?? 'bg-primary/10 text-primary',
+                    )}>
                       {r.finalResult.emsBlock}
-                      {r.finalResult.calibrated && ' ✓'}
+                      {r.finalResult.calibrated && <Check className="h-3 w-3" />}
                     </span>
                   ) : <span className="text-muted-foreground">-</span>}
                 </td>

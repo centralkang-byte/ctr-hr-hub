@@ -9,6 +9,10 @@ import { useRouter } from 'next/navigation'
 import { MessageSquare, ArrowLeft, Plus, Trash2, Sparkles, Calendar, CheckCircle2, Save } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { BUTTON_VARIANTS } from '@/lib/styles'
+import { MOOD_SCALE, type MoodKey } from '@/lib/styles/performance'
+import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 import type { SessionUser } from '@/types'
 
 
@@ -52,6 +56,14 @@ const MEETING_TYPE_LABELS: Record<string, string> = {
   DEVELOPMENT: 'oneOnOne_typeDevelopment',
 }
 
+// sentimentTag enum → MOOD_SCALE 키 (positive→concerned 4단계 보존)
+const MOOD_OPTIONS: { value: MoodKey; labelKey: string }[] = [
+  { value: 'positive', labelKey: 'kr_keab88dec' },
+  { value: 'neutral', labelKey: 'average' },
+  { value: 'negative', labelKey: 'kr_kebb680ec' },
+  { value: 'concerned', labelKey: 'kr_kec9ab0eb' },
+]
+
 // ─── Component ───────────────────────────────────────────
 
 export default function OneOnOneDetailClient({ user: _user, id }: { user: SessionUser; id: string }) {
@@ -70,6 +82,14 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
   const [sentimentTag, setSentimentTag] = useState<string | null>(null)
   const [actionItems, setActionItems] = useState<ActionItem[]>([])
   const [prevActions, setPrevActions] = useState<ActionItem[]>([])
+
+  // 분위기 picker 방향키 내비게이션 + roving tabindex. 선택(토글)은 기존 onClick 유지.
+  // 미선택/토글해제(findIndex=-1)면 WAI-ARIA radiogroup 규칙대로 첫 항목을 tab anchor로 — aria-checked는 실선택만 반영.
+  const moodNav = useArrowKeyNavigation(
+    MOOD_OPTIONS.length,
+    Math.max(0, MOOD_OPTIONS.findIndex((o) => o.value === sentimentTag)),
+    (i) => setSentimentTag(MOOD_OPTIONS[i].value),
+  )
 
   const fetchMeeting = useCallback(async () => {
     setLoading(true)
@@ -181,12 +201,15 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
 
       {/* Previous Action Items */}
       {prevActions.length > 0 && (
-        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+        <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
           <h2 className="text-base font-semibold text-foreground mb-3">{t('prev_kec95a1ec_kec9584ec_kecb694ec')}</h2>
           <div className="space-y-2">
             {prevActions.map((a, i) => (
               <div key={i} className="flex items-center gap-3">
                 <button
+                  type="button"
+                  aria-pressed={a.completed}
+                  aria-label={`${a.item} — ${a.completed ? t('complete') : t('inProgress')}`}
                   onClick={() => togglePrevAction(i)}
                   className={`w-5 h-5 rounded border flex items-center justify-center ${
                     a.completed
@@ -202,13 +225,9 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
                 {a.dueDate && (
                   <span className="text-xs text-muted-foreground ml-auto">({t('oneOnOne_dueDate')}: {a.dueDate})</span>
                 )}
-                <span className={`text-xs px-2 py-0.5 rounded-full ${
-                  a.completed
-                    ? 'bg-emerald-500/15 text-emerald-700'
-                    : 'bg-amber-500/15 text-amber-700'
-                }`}>
+                <Badge variant={a.completed ? 'success' : 'warning'}>
                   {a.completed ? t('complete') : t('inProgress')}
-                </span>
+                </Badge>
               </div>
             ))}
           </div>
@@ -216,7 +235,7 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
       )}
 
       {/* Notes */}
-      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+      <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
         <h2 className="text-base font-semibold text-foreground mb-3">{t('kr_keb85bcec_keb82b4ec_summary')}</h2>
         <textarea
           value={notes}
@@ -228,39 +247,42 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
       </div>
 
       {/* 미팅 분위기 */}
-      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+      <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
         <h2 className="text-base font-semibold text-foreground mb-3">{t('kr_kebafb8ed_kebb684ec')}</h2>
-        <div className="flex gap-2">
-          {[
-            { value: 'positive', label: t('kr_keab88dec'), emoji: '😊' },
-            { value: 'neutral', label: t('average'), emoji: '😐' },
-            { value: 'negative', label: t('kr_kebb680ec'), emoji: '😞' },
-            { value: 'concerned', label: t('kr_kec9ab0eb'), emoji: '😟' },
-          ].map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => setSentimentTag(sentimentTag === opt.value ? null : opt.value)}
-              className={`flex flex-col items-center px-3 py-2 rounded-lg border text-xs transition-colors ${
-                sentimentTag === opt.value
-                  ? 'border-primary bg-primary/10 text-primary/90'
-                  : 'border-border hover:border-border text-muted-foreground'
-              }`}
-            >
-              <span className="text-base mb-0.5">{opt.emoji}</span>
-              {opt.label}
-            </button>
-          ))}
+        <div role="radiogroup" aria-label={t('kr_kebafb8ed_kebb684ec')} className="flex gap-2" onKeyDown={moodNav.onKeyDown}>
+          {MOOD_OPTIONS.map((opt, i) => {
+            const M = MOOD_SCALE[opt.value]
+            const Icon = M.icon
+            const selected = sentimentTag === opt.value
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                {...moodNav.itemProps(i)}
+                onClick={() => setSentimentTag(selected ? null : opt.value)}
+                className={`flex flex-col items-center px-3 py-2 rounded-lg border text-xs transition-colors ${
+                  selected
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border hover:border-border text-muted-foreground'
+                }`}
+              >
+                <Icon className={cn('h-6 w-6 mb-0.5', M.className)} />
+                {t(opt.labelKey)}
+              </button>
+            )
+          })}
         </div>
       </div>
 
       {/* New Action Items */}
-      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+      <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-base font-semibold text-foreground">{t('kr_kec8388_kec95a1ec_kec9584ec')}</h2>
           <button
             onClick={addActionItem}
-            className="flex items-center gap-1 text-sm text-primary hover:text-primary/90 font-medium"
+            className="flex items-center gap-1 text-sm text-primary hover:text-primary font-medium"
           >
             <Plus className="w-4 h-4" /> {t('kr_ked95adeb_add')}
           </button>
@@ -291,7 +313,7 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
               />
               <button
                 onClick={() => removeActionItem(i)}
-                className="p-2 text-muted-foreground hover:text-red-500 rounded-lg hover:bg-destructive/10"
+                className="p-2 text-muted-foreground hover:text-destructive rounded-lg hover:bg-destructive/10"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -305,10 +327,10 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
 
       {/* AI Summary + Coaching Tip */}
       {meeting.aiSummary && (
-        <div className="bg-primary/15 rounded-xl border border-primary/20 p-5">
+        <div className="bg-primary/10 rounded-2xl border border-primary/20 p-5">
           <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-4 h-4 text-primary/90" />
-            <span className="text-sm font-medium text-primary/90">{t('kr_ai_kecbd94ec_ked8c81')}</span>
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-primary">{t('kr_ai_kecbd94ec_ked8c81')}</span>
           </div>
           <p className="text-sm text-foreground">{meeting.aiSummary}</p>
         </div>
@@ -319,7 +341,7 @@ export default function OneOnOneDetailClient({ user: _user, id }: { user: Sessio
         <button
           onClick={handleAiNotes}
           disabled={aiLoading}
-          className="flex items-center gap-2 px-4 py-2 border border-primary/20 text-primary/90 rounded-lg text-sm font-medium hover:bg-primary/15 disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 border border-primary/20 text-primary rounded-lg text-sm font-medium hover:bg-primary/10 disabled:opacity-50"
         >
           <Sparkles className="w-4 h-4" />
           {aiLoading ? t('aiGenerating') : t('oneOnOne_aiSummarize')}

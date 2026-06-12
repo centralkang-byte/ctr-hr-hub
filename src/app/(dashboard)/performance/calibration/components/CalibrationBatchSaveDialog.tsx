@@ -126,7 +126,7 @@ export default function CalibrationBatchSaveDialog({
             value={sharedReason}
             onChange={(e) => setSharedReason(e.target.value)}
             placeholder={t('calibrationBatch.reasonPlaceholder')}
-            className="w-full px-3 py-2 rounded-xl text-sm bg-background focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground resize-none"
+            className="w-full px-3 py-2 rounded-xl text-sm bg-background border border-border-strong focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground resize-none"
           />
           <div className="flex items-center justify-between">
             <span className={cn(
@@ -167,7 +167,7 @@ export default function CalibrationBatchSaveDialog({
                     // TODO: 개별 사유 편집은 pendingChanges 업데이트 필요 시 훅 확장
                   }}
                   disabled
-                  className="flex-1 px-2 py-1 text-xs rounded-lg bg-background text-muted-foreground"
+                  className="flex-1 px-2 py-1 text-xs rounded-lg bg-background border border-border-strong text-muted-foreground"
                 />
               </div>
             ))}

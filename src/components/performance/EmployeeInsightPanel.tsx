@@ -2,8 +2,10 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
-import { X, Target, MessageSquare, Award, Star, ChevronRight } from 'lucide-react'
+import { X, Target, MessageSquare, Award, Star, ChevronRight, MessageCircle } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { cn } from '@/lib/utils'
+import { READINESS_CONFIG, MOOD_SCALE, type MoodKey } from '@/lib/styles/performance'
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -48,21 +50,6 @@ interface InsightData {
   oneOnOnes: InsightOneOnOne[]
   latestEval: InsightEval | null
   successionEntry: InsightSuccession | null
-}
-
-// ─── Constants ────────────────────────────────────────────
-
-const READINESS_BADGE: Record<string, { labelKey: string; color: string; icon: string }> = {
-  READY_NOW: { labelKey: 'insight.readinessReadyNow', color: 'bg-emerald-500/15 text-emerald-700', icon: '🟢' },
-  READY_1_2_YEARS: { labelKey: 'insight.readiness1to2Years', color: 'bg-amber-500/15 text-amber-700', icon: '🟡' },
-  READY_3_PLUS_YEARS: { labelKey: 'insight.readinessDevelopment', color: 'bg-destructive/10 text-destructive', icon: '🔴' },
-}
-
-const SENTIMENT_ICON: Record<string, string> = {
-  positive: '😊',
-  neutral: '😐',
-  negative: '😞',
-  concerned: '😟',
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -176,7 +163,7 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
             {/* 2. 최근 원온원 */}
             <section>
               <div className="flex items-center gap-2 mb-2">
-                <MessageSquare className="w-4 h-4 text-primary/90" />
+                <MessageSquare className="w-4 h-4 text-primary" />
                 <span className="text-sm font-semibold text-foreground">
                   {t('insight.recentOneOnOnes', { count: data.oneOnOnes.length })}
                 </span>
@@ -185,11 +172,12 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
                 <p className="text-xs text-muted-foreground">{t('insight.noRecentOneOnOnes')}</p>
               ) : (
                 <div className="space-y-1.5">
-                  {data.oneOnOnes.map((o) => (
+                  {data.oneOnOnes.map((o) => {
+                    const mood = MOOD_SCALE[(o.sentimentTag ?? '') as MoodKey]
+                    const MoodIcon = mood?.icon ?? MessageCircle
+                    return (
                     <div key={o.id} className="bg-background rounded-lg p-2.5 flex items-start gap-2">
-                      <span className="text-base flex-shrink-0">
-                          {SENTIMENT_ICON[o.sentimentTag ?? ''] ?? '💬'}
-                        </span>
+                      <MoodIcon className={cn('h-4 w-4 flex-shrink-0', mood?.className ?? 'text-muted-foreground')} />
                       <div className="min-w-0">
                         <p className="text-xs text-muted-foreground">
                           {new Date(o.scheduledAt).toLocaleDateString(locale, {
@@ -201,7 +189,8 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
                         </p>
                       </div>
                     </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </section>
@@ -210,7 +199,7 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
             {data.latestEval && (
               <section>
                 <div className="flex items-center gap-2 mb-2">
-                  <Award className="w-4 h-4 text-amber-700" />
+                  <Award className="w-4 h-4 text-ctr-warning" />
                   <span className="text-sm font-semibold text-foreground">{t('insight.latestEval')}</span>
                   <span className="text-xs text-muted-foreground">({data.latestEval.cycle.name})</span>
                 </div>
@@ -240,16 +229,25 @@ export default function EmployeeInsightPanel({ employeeId, employeeName, onClose
             {/* 4. Readiness */}
             <section>
               <div className="flex items-center gap-2 mb-2">
-                <Star className="w-4 h-4 text-amber-500" />
+                <Star className="w-4 h-4 text-ctr-warning" />
                 <span className="text-sm font-semibold text-foreground">{t('insight.successionReadiness')}</span>
               </div>
               {data.successionEntry ? (
                 <div className="bg-background rounded-lg p-2.5">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${READINESS_BADGE[data.successionEntry.readiness]?.color ?? 'bg-muted text-muted-foreground'}`}>
-                      {READINESS_BADGE[data.successionEntry.readiness]?.icon}{' '}
-                      {READINESS_BADGE[data.successionEntry.readiness]?.labelKey ? t(READINESS_BADGE[data.successionEntry.readiness].labelKey) : data.successionEntry.readiness}
-                    </span>
+                    {(() => {
+                      const readinessCfg = READINESS_CONFIG[data.successionEntry.readiness]
+                      const ReadinessIcon = readinessCfg?.icon
+                      return (
+                        <span className={cn(
+                          'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium',
+                          readinessCfg?.className ?? 'bg-muted text-muted-foreground',
+                        )}>
+                          {ReadinessIcon && <ReadinessIcon className="h-3.5 w-3.5" />}
+                          {readinessCfg?.labelKey ? t(readinessCfg.labelKey) : data.successionEntry.readiness}
+                        </span>
+                      )
+                    })()}
                     <span className="text-xs text-muted-foreground">
                       {data.successionEntry.plan?.positionTitle}
                     </span>

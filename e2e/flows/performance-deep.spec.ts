@@ -17,11 +17,6 @@ test.describe('Performance Deep: EMPLOYEE', () => {
     await waitForPageReady(page)
   })
 
-  test('my evaluation page loads', async ({ page }) => {
-    await assertPageLoads(page, '/performance/my-evaluation')
-    await waitForPageReady(page)
-  })
-
   test('my quarterly review loads', async ({ page }) => {
     await assertPageLoads(page, '/performance/my-quarterly-review')
     await waitForPageReady(page)

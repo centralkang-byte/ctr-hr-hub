@@ -47,12 +47,12 @@ function GoalModal({ initial, onSave, onClose, saving, t }: {
                 </div>
                 <div className="space-y-4">
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.titleLabel')} <span className="text-red-500">*</span></label>
+                        <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.titleLabel')} <span className="text-destructive">*</span></label>
                         <input value={form.title} onChange={(e) => set('title', e.target.value)} maxLength={100}
                             className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" placeholder={t('myGoals.titlePlaceholder')} />
                     </div>
                     <div>
-                        <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.descLabel')} <span className="text-red-500">*</span></label>
+                        <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.descLabel')} <span className="text-destructive">*</span></label>
                         <textarea value={form.description} onChange={(e) => set('description', e.target.value)} rows={3} maxLength={500}
                             className="w-full resize-none rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" placeholder={t('myGoals.descPlaceholder')} />
                     </div>
@@ -63,12 +63,12 @@ function GoalModal({ initial, onSave, onClose, saving, t }: {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.weightLabel')} <span className="text-red-500">*</span></label>
+                            <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.weightLabel')} <span className="text-destructive">*</span></label>
                             <input type="number" min={5} max={100} step={5} value={form.weight} onChange={(e) => set('weight', Math.max(5, Math.min(100, Number(e.target.value))))}
                                 className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" />
                         </div>
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.deadlineLabel')} <span className="text-red-500">*</span></label>
+                            <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.deadlineLabel')} <span className="text-destructive">*</span></label>
                             <input type="date" value={form.targetDate} onChange={(e) => set('targetDate', e.target.value)}
                                 className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" />
                         </div>
@@ -215,11 +215,11 @@ export default function MyGoalsClient({user: _user }: {
                 <div className="mb-6 flex items-center justify-between rounded-xl border border-border bg-card p-4">
                     <div className="flex items-center gap-3">
                         <span className="text-sm text-muted-foreground">{t('kr_keab080ec_ked95a9ea')}</span>
-                        <span className={`text-lg font-bold ${totalWeight === 100 ? 'text-tertiary' : 'text-destructive'}`}>
+                        <span className={`text-lg font-bold ${totalWeight === 100 ? 'text-[#006b39]' : 'text-destructive'}`}>
                             {totalWeight}/100%
                         </span>
                         {totalWeight !== 100 && (
-                            <span className="flex items-center gap-1 text-xs text-amber-700">
+                            <span className="flex items-center gap-1 text-xs text-ctr-warning">
                                 <AlertTriangle className="h-3.5 w-3.5" /> {t('kr_100_keab080_keb9098ec_submit_k')}
                             </span>
                         )}
