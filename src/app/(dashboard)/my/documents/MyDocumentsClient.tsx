@@ -12,16 +12,14 @@ import {
   FileText,
   Download,
   Plus,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  Loader2,
   FilePlus,
 } from 'lucide-react'
-import { apiClient } from '@/lib/api'
-import { toast } from '@/hooks/use-toast'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
+import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
+import { apiClient } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
 import { BUTTON_VARIANTS } from '@/lib/styles'
 import type { SessionUser } from '@/types'
 import { cn } from '@/lib/utils'
@@ -66,11 +64,12 @@ const CERT_TYPE_KEYS: Record<string, string> = {
   INCOME_CERT: 'certType.INCOME_CERT',
 }
 
-const CERT_STATUS_CONFIG: Record<string, { labelKey: string; color: string; icon: typeof Clock }> = {
-  REQUESTED: { labelKey: 'certStatus.REQUESTED', color: 'bg-primary/10 text-primary', icon: Clock },
-  APPROVED: { labelKey: 'certStatus.APPROVED', color: 'bg-yellow-500/15 text-yellow-700', icon: CheckCircle2 },
-  ISSUED: { labelKey: 'certStatus.ISSUED', color: 'bg-tertiary-container/20 text-tertiary', icon: CheckCircle2 },
-  REJECTED: { labelKey: 'certStatus.REJECTED', color: 'bg-destructive/10 text-destructive', icon: XCircle },
+// 상태별 라벨 키만 보유 — 색/카테고리는 StatusBadge가 status.ts STATUS_MAP에서 해석
+const CERT_STATUS_LABEL_KEYS: Record<string, string> = {
+  REQUESTED: 'certStatus.REQUESTED',
+  APPROVED: 'certStatus.APPROVED',
+  ISSUED: 'certStatus.ISSUED',
+  REJECTED: 'certStatus.REJECTED',
 }
 
 const TABS = [
@@ -161,24 +160,32 @@ export function MyDocumentsClient({ user: _user }: { user: SessionUser }) {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">{t('pageTitle')}</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{t('pageSubtitle')}</p>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 mb-6 border-b border-border">
+      {/* Tabs (segmented control) */}
+      <div
+        className="inline-flex bg-muted/50 rounded-lg p-1 mb-6"
+        role="tablist"
+        aria-label={t('pageTitle')}
+      >
         {TABS.map((tab) => {
           const Icon = tab.icon
           const isActive = activeTab === tab.key
           return (
             <button
               key={tab.key}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
               onClick={() => setActiveTab(tab.key)}
               className={cn(
-                'flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors',
+                'flex items-center gap-2 rounded-md px-3 py-1.5 text-sm motion-safe:transition-all',
                 isActive
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-muted-foreground',
+                  ? 'bg-card shadow-sm text-primary font-semibold'
+                  : 'text-muted-foreground hover:text-foreground',
               )}
             >
               <Icon className="w-4 h-4" />
@@ -304,56 +311,44 @@ function CertificatesTab({
         </button>
       </div>
 
-      {/* Request Dialog */}
-      {showDialog && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <div className="bg-card rounded-xl shadow-xl w-full max-w-md p-6">
-            <h2 className="text-lg font-bold text-foreground mb-4">{t('dialog.title')}</h2>
+      {/* Request Drawer */}
+      <WdDrawer
+        open={showDialog}
+        onClose={onCloseDialog}
+        eyebrow={t('selfService')}
+        title={t('dialog.title')}
+        closeDisabled={submitting}
+        primary={{
+          label: submitting ? t('action.submitting') : t('action.submit'),
+          onClick: onSubmit,
+          disabled: submitting,
+        }}
+        secondary={{ label: t('action.cancel'), onClick: onCloseDialog, disabled: submitting }}
+      >
+        <WdField label={t('dialog.certTypeLabel')} required htmlFor="cert-type">
+          <select
+            id="cert-type"
+            value={requestType}
+            onChange={(e) => onTypeChange(e.target.value)}
+            className="w-full px-3 py-2 border border-border-strong rounded-lg bg-card text-foreground"
+          >
+            {Object.entries(CERT_TYPE_KEYS).map(([key, labelKey]) => (
+              <option key={key} value={key}>{t(labelKey)}</option>
+            ))}
+          </select>
+        </WdField>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">{t('dialog.certTypeLabel')}</label>
-                <select
-                  value={requestType}
-                  onChange={(e) => onTypeChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground"
-                >
-                  {Object.entries(CERT_TYPE_KEYS).map(([key, labelKey]) => (
-                    <option key={key} value={key}>{t(labelKey)}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1">{t('dialog.purposeLabel')}</label>
-                <textarea
-                  value={requestPurpose}
-                  onChange={(e) => onPurposeChange(e.target.value)}
-                  placeholder={t('dialog.purposePlaceholder')}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground resize-none"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 mt-6">
-              <button onClick={onCloseDialog} className={BUTTON_VARIANTS.secondary} disabled={submitting}>
-                {t('action.cancel')}
-              </button>
-              <button onClick={onSubmit} className={BUTTON_VARIANTS.primary} disabled={submitting}>
-                {submitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                    {t('action.submitting')}
-                  </>
-                ) : (
-                  t('action.submit')
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+        <WdField label={t('dialog.purposeLabel')} htmlFor="cert-purpose">
+          <textarea
+            id="cert-purpose"
+            value={requestPurpose}
+            onChange={(e) => onPurposeChange(e.target.value)}
+            placeholder={t('dialog.purposePlaceholder')}
+            rows={3}
+            className="w-full px-3 py-2 border border-border-strong rounded-lg bg-card text-foreground resize-none"
+          />
+        </WdField>
+      </WdDrawer>
 
       {/* Request List */}
       {requests.length === 0 ? (
@@ -361,8 +356,7 @@ function CertificatesTab({
       ) : (
         <div className="space-y-3">
           {requests.map((req) => {
-            const statusConfig = CERT_STATUS_CONFIG[req.status] ?? CERT_STATUS_CONFIG.REQUESTED
-            const StatusIcon = statusConfig.icon
+            const labelKey = CERT_STATUS_LABEL_KEYS[req.status] ?? CERT_STATUS_LABEL_KEYS.REQUESTED
             return (
               <div
                 key={req.id}
@@ -383,14 +377,12 @@ function CertificatesTab({
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={cn('flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium', statusConfig.color)}>
-                    <StatusIcon className="w-3 h-3" />
-                    {t(statusConfig.labelKey)}
-                  </span>
+                  <StatusBadge status={req.status}>{t(labelKey)}</StatusBadge>
                   {req.status === 'ISSUED' && req.issuedFileKey && (
                     <button
                       onClick={() => onDownload(req.id)}
                       className="p-2 rounded-lg hover:bg-muted transition-colors"
+                      aria-label={t('action.download')}
                       title={t('action.download')}
                     >
                       <Download className="w-5 h-5 text-primary" />

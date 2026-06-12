@@ -3994,14 +3994,36 @@
       "certificates": "Chứng nhận",
       "contracts": "Hợp đồng",
       "other": "Khác",
-      "payslips": "Phiếu lương"
+      "payslips": "Phiếu lương",
+      "documents": "Tài liệu"
     },
     "toast": {
       "requestSuccess": "[TODO:vi] 증명서 신청 완료",
       "requestSuccessDesc": "[TODO:vi] HR 담당자 승인 후 발급됩니다."
     },
     "upload": "Tải lên tài liệu",
-    "uploadDate": "Ngày tải lên"
+    "uploadDate": "Ngày tải lên",
+    "selfService": "Tự phục vụ",
+    "pageSubtitle": "Yêu cầu giấy chứng nhận và theo dõi lịch sử cấp",
+    "certStatus": {
+      "REQUESTED": "Đã yêu cầu",
+      "APPROVED": "Đã duyệt",
+      "ISSUED": "Đã cấp",
+      "REJECTED": "Đã từ chối"
+    },
+    "certType": {
+      "EMPLOYMENT_CERT": "Giấy xác nhận công tác",
+      "CAREER_CERT": "Giấy xác nhận kinh nghiệm",
+      "INCOME_CERT": "Giấy xác nhận thu nhập"
+    },
+    "docType": {
+      "CONTRACT": "Hợp đồng lao động",
+      "ID_CARD": "Chứng minh thư",
+      "CERTIFICATE": "Giấy chứng nhận",
+      "RESUME": "Sơ yếu lý lịch",
+      "HANDOVER": "Tài liệu bàn giao",
+      "OTHER": "Khác"
+    }
   },
   "myOffboarding": {
     "assignedTo": "[TODO:vi] 담당",
@@ -4320,7 +4342,9 @@
         "phone": "Điện thoại",
         "skills": "[TODO:vi] 보유 스킬"
       },
-      "visibilitySettings": "Cài đặt hiển thị"
+      "visibilitySettings": "Cài đặt hiển thị",
+      "selfService": "Tự phục vụ",
+      "tabsLabel": "Mục hồ sơ"
     },
     "profileDesc": "Xem and edit your personal information.",
     "profileTitle": "My Profile",
@@ -4426,7 +4450,11 @@
     "typeOnboarding": "Onboarding",
     "typePayroll": "Lương",
     "typePerformance": "Hiệu suất",
-    "viewAll": "View All"
+    "viewAll": "View All",
+    "chipSummaryLabel": "Tóm tắt công việc",
+    "chipPending": "Đang xử lý",
+    "chipOverdue": "Quá hạn",
+    "chipDueSoon": "Sắp đến hạn"
   },
   "myTraining": {
     "action": {

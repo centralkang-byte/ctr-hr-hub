@@ -3,17 +3,21 @@
 import { useTranslations } from 'next-intl'
 
 import { useState, useEffect, useCallback } from 'react'
-import { apiClient } from '@/lib/api'
 import {
-  Gift, Plus, Loader2, AlertTriangle, CheckCircle2, XCircle, Clock,
-  ChevronRight, Upload, FileText,
+  Gift, Plus, AlertTriangle, CheckCircle2, XCircle, Clock,
+  ChevronRight, Upload, FileText, BarChart3,
 } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
+import { StatusBadge } from '@/components/ui/StatusBadge'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
+import { apiClient } from '@/lib/api'
+import { BUTTON_VARIANTS } from '@/lib/styles'
+import { useSubmitGuard } from '@/hooks/useSubmitGuard'
+import { toast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { BUTTON_VARIANTS, MODAL_STYLES } from '@/lib/styles'
-import { EmptyState } from '@/components/ui/EmptyState'
-import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
 
 // ─── 타입 ─────────────────────────────────────────────────
@@ -95,8 +99,8 @@ function ClaimModal({ plans, onClose, onSubmit }: {
     setProofFiles((prev) => [...prev, ...paths])
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault()
     if (!selectedPlanId) { setError(t('validation.selectPlan')); return }
     if (!claimAmount || Number(claimAmount) <= 0) { setError(t('validation.enterAmount')); return }
     if (selectedPlan?.requiresProof && proofFiles.length === 0) {
@@ -126,133 +130,114 @@ function ClaimModal({ plans, onClose, onSubmit }: {
   const { guardedSubmit } = useSubmitGuard(handleSubmit)
 
   return (
-    <div className={MODAL_STYLES.container}>
-      <div className={`${MODAL_STYLES.content.md}`}>
-        <div className="flex items-center justify-between p-5 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">{t('applyBenefit')}</h2>
-          <button onClick={onClose} className="text-muted-foreground hover:text-muted-foreground text-xl leading-none">✕</button>
+    <WdDrawer
+      open
+      onClose={onClose}
+      eyebrow={t('breadcrumb')}
+      title={t('applyBenefit')}
+      closeDisabled={submitting}
+      primary={{ label: submitting ? tCommon('loading') : t('applyAction'), onClick: () => void guardedSubmit(), disabled: submitting }}
+      secondary={{ label: tCommon('cancel'), onClick: onClose, disabled: submitting }}
+    >
+      <form onSubmit={(e) => { e.preventDefault(); void guardedSubmit() }} className="flex flex-col gap-4">
+      {error && (
+        <div className="flex items-center gap-2 p-3 bg-destructive/10 rounded-lg text-sm text-destructive">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
+          {error}
         </div>
+      )}
 
-        <form onSubmit={guardedSubmit} className="p-5 space-y-4">
-          {error && (
-            <div className="flex items-center gap-2 p-3 bg-destructive/10 rounded-lg text-sm text-destructive">
-              <AlertTriangle className="w-4 h-4 shrink-0" />
-              {error}
-            </div>
-          )}
+      <WdField label={t('form.planLabel')} required htmlFor="bc-plan">
+        <select
+          id="bc-plan"
+          value={selectedPlanId}
+          onChange={(e) => setSelectedPlanId(e.target.value)}
+          className="w-full px-3 py-2 border border-border-strong rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
+        >
+          <option value="">{t('form.selectPlanPlaceholder')}</option>
+          {plans.map((p) => (
+            <option key={p.id} value={p.id}>
+              [{CATEGORY_LABELS[p.category] ?? p.category}] {p.name}
+              {p.maxAmount ? ` (${t('form.max')} ${formatCurrency(p.maxAmount, p.currency)})` : ''}
+            </option>
+          ))}
+        </select>
+        {selectedPlan && (
+          <p className="text-xs text-muted-foreground mt-1">
+            {selectedPlan.benefitType === 'fixed_amount' ? t('form.fixedAmount') : t('form.reimbursement')}
+            {selectedPlan.requiresProof && ` · ${t('form.proofRequired')}`}
+          </p>
+        )}
+      </WdField>
 
-          <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">{t('form.planLabel')} *</label>
-            <select
-              value={selectedPlanId}
-              onChange={(e) => setSelectedPlanId(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
-            >
-              <option value="">{t('form.selectPlanPlaceholder')}</option>
-              {plans.map((p) => (
-                <option key={p.id} value={p.id}>
-                  [{CATEGORY_LABELS[p.category] ?? p.category}] {p.name}
-                  {p.maxAmount ? ` (${t('form.max')} ${formatCurrency(p.maxAmount, p.currency)})` : ''}
-                </option>
-              ))}
-            </select>
-            {selectedPlan && (
-              <p className="text-xs text-muted-foreground mt-1">
-                {selectedPlan.benefitType === 'fixed_amount' ? t('form.fixedAmount') : t('form.reimbursement')}
-                {selectedPlan.requiresProof && ` · ${t('form.proofRequired')}`}
-              </p>
-            )}
-          </div>
+      <WdField label={t('form.claimAmount')} required htmlFor="bc-amount">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">{selectedPlan?.currency === 'USD' ? '$' : '₩'}</span>
+          <input
+            id="bc-amount"
+            type="number"
+            value={claimAmount}
+            onChange={(e) => setClaimAmount(e.target.value)}
+            readOnly={selectedPlan?.benefitType === 'fixed_amount'}
+            placeholder="0"
+            className="flex-1 px-3 py-2 border border-border-strong rounded-lg text-sm focus:ring-2 focus:ring-primary/10 read-only:bg-background"
+          />
+        </div>
+        {selectedPlan?.maxAmount && (
+          <p className="text-xs text-muted-foreground mt-1">
+            {t('form.limit')}: {formatCurrency(selectedPlan.maxAmount, selectedPlan.currency)}
+          </p>
+        )}
+      </WdField>
 
-          <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">{t('form.claimAmount')} *</label>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{selectedPlan?.currency === 'USD' ? '$' : '₩'}</span>
-              <input
-                type="number"
-                value={claimAmount}
-                onChange={(e) => setClaimAmount(e.target.value)}
-                readOnly={selectedPlan?.benefitType === 'fixed_amount'}
-                placeholder="0"
-                className="flex-1 px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 read-only:bg-background"
-              />
-            </div>
-            {selectedPlan?.maxAmount && (
-              <p className="text-xs text-muted-foreground mt-1">
-                {t('form.limit')}: {formatCurrency(selectedPlan.maxAmount, selectedPlan.currency)}
-              </p>
-            )}
-          </div>
+      <WdField label={t('form.eventDate')} htmlFor="bc-event-date">
+        <input
+          id="bc-event-date"
+          type="date"
+          value={eventDate}
+          onChange={(e) => setEventDate(e.target.value)}
+          className="w-full px-3 py-2 border border-border-strong rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
+        />
+      </WdField>
 
-          <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">{t('form.eventDate')}</label>
-            <input
-              type="date"
-              value={eventDate}
-              onChange={(e) => setEventDate(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
-            />
-          </div>
+      <WdField label={t('form.eventDetail')} htmlFor="bc-event-detail">
+        <input
+          id="bc-event-detail"
+          type="text"
+          value={eventDetail}
+          onChange={(e) => setEventDetail(e.target.value)}
+          placeholder={t('form.eventDetailPlaceholder')}
+          className="w-full px-3 py-2 border border-border-strong rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
+        />
+      </WdField>
 
-          <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">{t('form.eventDetail')}</label>
-            <input
-              type="text"
-              value={eventDetail}
-              onChange={(e) => setEventDetail(e.target.value)}
-              placeholder={t('form.eventDetailPlaceholder')}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
-            />
-          </div>
-
-          <div>
-            <label className="text-sm font-medium text-foreground mb-1 block">
-              {t('form.proofDocuments')} {selectedPlan?.requiresProof && <span className="text-red-500">*</span>}
-            </label>
-            <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-border rounded-lg cursor-pointer hover:bg-background text-sm text-muted-foreground">
-              <Upload className="w-4 h-4" />
-              {t('form.attachFile')}
-              <input type="file" multiple onChange={handleFileChange} className="hidden" />
-            </label>
-            {proofFiles.length > 0 && (
-              <div className="mt-2 space-y-1">
-                {proofFiles.map((f, i) => (
-                  <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <FileText className="w-3 h-3" />
-                    {f.split('/').pop()}
-                    <button
-                      type="button"
-                      onClick={() => setProofFiles((prev) => prev.filter((_, j) => j !== i))}
-                      className="text-red-500 hover:underline ml-auto"
-                    >
-                      {tCommon('delete')}
-                    </button>
-                  </div>
-                ))}
+      <WdField label={t('form.proofDocuments')} required={selectedPlan?.requiresProof} htmlFor="bc-proof">
+        <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-border-strong rounded-lg cursor-pointer hover:bg-background text-sm text-muted-foreground">
+          <Upload className="w-4 h-4" />
+          {t('form.attachFile')}
+          <input id="bc-proof" type="file" multiple onChange={handleFileChange} className="hidden" />
+        </label>
+        {proofFiles.length > 0 && (
+          <div className="mt-2 space-y-1">
+            {proofFiles.map((f, i) => (
+              <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
+                <FileText className="w-3 h-3" />
+                {f.split('/').pop()}
+                <button
+                  type="button"
+                  onClick={() => setProofFiles((prev) => prev.filter((_, j) => j !== i))}
+                  className="text-destructive hover:underline ml-auto"
+                >
+                  {tCommon('delete')}
+                </button>
               </div>
-            )}
+            ))}
           </div>
-        </form>
-
-        <div className="flex justify-end gap-3 p-5 border-t border-border">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 bg-card border border-border hover:bg-background text-foreground rounded-lg text-sm font-medium"
-          >
-            {tCommon('cancel')}
-          </button>
-          <button
-            onClick={(e) => { e.preventDefault(); void handleSubmit(e as unknown as React.FormEvent) }}
-            disabled={submitting}
-            className={`px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2`}
-          >
-            {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-            {submitting ? tCommon('loading') : t('applyAction')}
-          </button>
-        </div>
-      </div>
-    </div>
+        )}
+      </WdField>
+        <button type="submit" className="hidden" aria-hidden tabIndex={-1} />
+      </form>
+    </WdDrawer>
   )
 }
 
@@ -262,12 +247,12 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
   const t = useTranslations('myBenefits')
   const tCommon = useTranslations('common')
 
-  const STATUS_LABELS: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-    pending: { label: t('status.pending'), color: 'bg-amber-500/15 text-amber-700 border-amber-300', icon: <Clock className="w-3 h-3" /> },
-    approved: { label: t('status.approved'), color: 'bg-emerald-500/15 text-emerald-700 border-emerald-200', icon: <CheckCircle2 className="w-3 h-3" /> },
-    rejected: { label: t('status.rejected'), color: 'bg-destructive/10 text-destructive border-destructive/20', icon: <XCircle className="w-3 h-3" /> },
-    paid: { label: t('status.paid'), color: 'bg-primary/10 text-primary/90 border-primary/20', icon: <CheckCircle2 className="w-3 h-3" /> },
-    cancelled: { label: t('status.cancelled'), color: 'bg-background text-muted-foreground border-border', icon: null },
+  const STATUS_LABELS: Record<string, { label: string; icon: React.ReactNode }> = {
+    pending: { label: t('status.pending'), icon: <Clock className="w-3 h-3" /> },
+    approved: { label: t('status.approved'), icon: <CheckCircle2 className="w-3 h-3" /> },
+    rejected: { label: t('status.rejected'), icon: <XCircle className="w-3 h-3" /> },
+    paid: { label: t('status.paid'), icon: <CheckCircle2 className="w-3 h-3" /> },
+    cancelled: { label: t('status.cancelled'), icon: null },
   }
 
   const [plans, setPlans] = useState<BenefitPlan[]>([])
@@ -296,6 +281,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
       setClaims(raw.data ?? [])
     } catch {
       setError(t('loadError'))
+      toast({ title: t('loadError'), variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -305,8 +291,16 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-7 w-40" />
+          </div>
+          <Skeleton className="h-9 w-28" />
+        </div>
+        <Skeleton className="h-40 w-full rounded-2xl" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
       </div>
     )
   }
@@ -328,15 +322,18 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-4 bg-destructive/10 rounded-xl text-sm text-destructive">
+        <div className="flex items-center gap-2 p-4 bg-destructive/10 rounded-2xl text-sm text-destructive">
           <AlertTriangle className="w-4 h-4" />
           {error}
         </div>
       )}
 
       {summary.length > 0 && (
-        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <h2 className="text-base font-semibold text-foreground mb-4">📊 {year}{tCommon('unit.year')} {t('usageSummary')}</h2>
+        <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
+          <h2 className="flex items-center gap-2 text-base font-semibold text-foreground mb-4">
+            <BarChart3 className="w-4 h-4 text-muted-foreground" />
+            {year}{tCommon('unit.year')} {t('usageSummary')}
+          </h2>
           <div className="space-y-4">
             {summary.map((item) => {
               const total = item.maxAmount ?? 0
@@ -352,15 +349,22 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
                     </span>
                   </div>
                   {total > 0 && (
-                    <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                    <div
+                      className="w-full bg-muted rounded-full h-2 overflow-hidden"
+                      role="progressbar"
+                      aria-valuenow={usedPct}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-label={`${item.planName} ${t('usageSummary')}: ${usedPct}%`}
+                    >
                       <div className="h-full flex">
                         <div className="bg-primary transition-all" style={{ width: `${usedPct}%` }} />
-                        <div className="bg-amber-300 transition-all" style={{ width: `${pendingPct}%` }} />
+                        <div className="bg-warning-bright transition-all" style={{ width: `${pendingPct}%` }} />
                       </div>
                     </div>
                   )}
                   {item.pending > 0 && (
-                    <p className="text-xs text-amber-700 mt-1">
+                    <p className="text-xs text-ctr-warning mt-1">
                       {t('pendingAmount')}: {formatCurrency(item.pending, item.currency)}
                     </p>
                   )}
@@ -371,7 +375,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
         </div>
       )}
 
-      <div className="bg-card rounded-xl border border-border">
+      <div className="bg-card rounded-2xl border border-border">
         <div className="p-5 border-b border-border">
           <h2 className="text-base font-semibold text-foreground">{t('claimHistory')}</h2>
         </div>
@@ -385,7 +389,7 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
         ) : (
           <div className="divide-y divide-border">
             {claims.map((claim) => {
-              const s = STATUS_LABELS[claim.status] ?? { label: claim.status, color: '', icon: null }
+              const s = STATUS_LABELS[claim.status] ?? { label: claim.status, icon: null }
               return (
                 <div key={claim.id} className="flex items-center gap-4 px-5 py-4 hover:bg-background">
                   <div className="flex-1 min-w-0">
@@ -403,10 +407,10 @@ export function MyBenefitsClient({ user }: { user: SessionUser }) {
                     <p className="text-sm font-semibold text-foreground">
                       {formatCurrency(claim.claimAmount, claim.benefitPlan.currency)}
                     </p>
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border mt-1 ${s.color}`}>
+                    <StatusBadge status={claim.status} className="mt-1 gap-1">
                       {s.icon}
                       {s.label}
-                    </span>
+                    </StatusBadge>
                   </div>
                   <ChevronRight className="w-4 h-4 text-border" />
                 </div>

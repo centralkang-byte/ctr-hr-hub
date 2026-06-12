@@ -3994,14 +3994,36 @@
       "certificates": "证明书",
       "contracts": "合同",
       "other": "其他",
-      "payslips": "工资单"
+      "payslips": "工资单",
+      "documents": "文档"
     },
     "toast": {
       "requestSuccess": "[TODO:zh] 증명서 신청 완료",
       "requestSuccessDesc": "[TODO:zh] HR 담당자 승인 후 발급됩니다."
     },
     "upload": "上传文档",
-    "uploadDate": "上传日期"
+    "uploadDate": "上传日期",
+    "selfService": "自助服务",
+    "pageSubtitle": "申请证明并查看发放记录",
+    "certStatus": {
+      "REQUESTED": "已申请",
+      "APPROVED": "已批准",
+      "ISSUED": "已发放",
+      "REJECTED": "已驳回"
+    },
+    "certType": {
+      "EMPLOYMENT_CERT": "在职证明",
+      "CAREER_CERT": "经历证明",
+      "INCOME_CERT": "收入证明"
+    },
+    "docType": {
+      "CONTRACT": "劳动合同",
+      "ID_CARD": "身份证",
+      "CERTIFICATE": "证明",
+      "RESUME": "简历",
+      "HANDOVER": "交接文件",
+      "OTHER": "其他"
+    }
   },
   "myOffboarding": {
     "assignedTo": "[TODO:zh] 담당",
@@ -4320,7 +4342,9 @@
         "phone": "电话",
         "skills": "[TODO:zh] 보유 스킬"
       },
-      "visibilitySettings": "可见性设置"
+      "visibilitySettings": "可见性设置",
+      "selfService": "自助服务",
+      "tabsLabel": "个人资料"
     },
     "profileDesc": "查看 and edit your personal information.",
     "profileTitle": "My Profile",
@@ -4426,7 +4450,11 @@
     "typeOnboarding": "Onboarding",
     "typePayroll": "薪资",
     "typePerformance": "绩效",
-    "viewAll": "View All"
+    "viewAll": "View All",
+    "chipSummaryLabel": "任务摘要",
+    "chipPending": "进行中",
+    "chipOverdue": "已逾期",
+    "chipDueSoon": "即将到期"
   },
   "myTraining": {
     "action": {

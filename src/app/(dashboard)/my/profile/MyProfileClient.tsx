@@ -1,21 +1,23 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
-
-import { useTranslations } from 'next-intl'
-
 import { useState, useCallback, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   User, Briefcase, DollarSign, FileText, Camera, Pencil,
   Edit3, Save, X, Globe, Building, AlertCircle,
   Calendar, Clock, Award
 } from 'lucide-react'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { Badge } from '@/components/ui/badge'
+import { WdStatStrip } from '@/components/shared/WdStatStrip'
+import { WdDrawer, WdField, WdRow } from '@/components/shared/WdDrawer'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
-import type { SessionUser } from '@/types'
-import { CARD_STYLES, BUTTON_SIZES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
+import { CARD_STYLES, BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 import { extractPrimaryAssignment } from '@/lib/employee/extract-primary-assignment'
 import { formatDate } from '@/lib/format/date'
+import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
+import type { SessionUser } from '@/types'
 import { ProfileChangeRequestDialog, ChangeRequestHistory } from '@/components/employees/ProfileChangeRequestDialog'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -135,11 +137,11 @@ const DOC_TYPE_KEYS: Record<string, string> = {
   RESUME: 'RESUME', HANDOVER: 'HANDOVER', OTHER: 'OTHER',
 }
 
-const VISIBILITY_BADGE_COLORS: Record<string, string> = {
-  public: 'bg-emerald-500/15 text-emerald-700',
-  team: 'bg-primary/15 text-primary/90',
-  manager: 'bg-amber-500/15 text-amber-700',
-  private: 'bg-muted text-muted-foreground',
+const VISIBILITY_BADGE_VARIANT: Record<string, 'success' | 'info' | 'warning' | 'neutral'> = {
+  public: 'success',
+  team: 'info',
+  manager: 'warning',
+  private: 'neutral',
 }
 
 // ─── Main Component ─────────────────────────────────────────
@@ -165,6 +167,11 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
   }, [t])
 
   const [activeTab, setActiveTab] = useState<TabId>('overview')
+  const tabNav = useArrowKeyNavigation(
+    TAB_IDS.length,
+    TAB_IDS.indexOf(activeTab),
+    (i) => setActiveTab(TAB_IDS[i]),
+  )
   const [ext, setExt] = useState<ProfileExtension>(
     employee.profileExtension ?? { bio: null, skills: [], languages: null, certifications: null, pronouns: null, timezone: null, avatarPath: null }
   )
@@ -179,6 +186,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
   const [newSkill, setNewSkill] = useState('')
   const [showEcForm, setShowEcForm] = useState(false)
   const [ecForm, setEcForm] = useState({ name: '', relationship: '', phone: '', isPrimary: false })
+  const [ecSubmitting, setEcSubmitting] = useState(false)
 
   // Sub-states for Compensation
   const [showCompensation, setShowCompensation] = useState(false)
@@ -214,16 +222,22 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
 
   // ── Emergency contact ──
   const addEmergencyContact = useCallback(async () => {
-    const created = await apiClient.post<EmergencyContact>('/api/v1/employees/me/emergency-contacts', ecForm)
-    if (created.data) {
-      setEmergencyContacts((prev) => {
-        const base = ecForm.isPrimary ? prev.map((c) => ({ ...c, isPrimary: false })) : prev
-        return [...base, created.data!]
-      })
-      setEcForm({ name: '', relationship: '', phone: '', isPrimary: false })
-      setShowEcForm(false)
+    if (ecSubmitting) return
+    setEcSubmitting(true)
+    try {
+      const created = await apiClient.post<EmergencyContact>('/api/v1/employees/me/emergency-contacts', ecForm)
+      if (created.data) {
+        setEmergencyContacts((prev) => {
+          const base = ecForm.isPrimary ? prev.map((c) => ({ ...c, isPrimary: false })) : prev
+          return [...base, created.data!]
+        })
+        setEcForm({ name: '', relationship: '', phone: '', isPrimary: false })
+        setShowEcForm(false)
+      }
+    } finally {
+      setEcSubmitting(false)
     }
-  }, [ecForm])
+  }, [ecForm, ecSubmitting])
 
   const deleteEmergencyContact = useCallback(async (id: string) => {
     await apiClient.delete(`/api/v1/employees/me/emergency-contacts/${id}`)
@@ -254,12 +268,9 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
       {/* Header Profile Card */}
-      <div className={`${CARD_STYLES.padded} flex items-start gap-6 relative overflow-hidden`}>
-        {/* Decorative background shape */}
-        <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-        
+      <div className={`${CARD_STYLES.padded} border border-border flex items-start gap-6 relative overflow-hidden`}>
         <div className="relative shrink-0">
-          <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-primary to-primary-dim flex items-center justify-center text-white text-3xl font-bold shadow-md">
+          <div className="w-24 h-24 rounded-2xl bg-primary flex items-center justify-center text-white text-3xl font-bold">
             {employee.name.slice(0, 1)}
           </div>
           <button
@@ -284,9 +295,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
               </p>
             </div>
             <div className="text-right">
-              <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary-dim">
-                {t('profile.statusActive')}
-              </span>
+              <Badge variant="success">{t('profile.statusActive')}</Badge>
             </div>
           </div>
           <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
@@ -298,13 +307,22 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
       </div>
 
       {/* Modern Tabs */}
-      <div className="flex space-x-1 bg-muted p-1 rounded-xl">
-        {TAB_IDS.map((tabId) => {
+      <div
+        role="tablist"
+        aria-label={t('profile.tabsLabel')}
+        onKeyDown={tabNav.onKeyDown}
+        className="flex space-x-1 bg-muted p-1 rounded-xl"
+      >
+        {TAB_IDS.map((tabId, i) => {
           const isActive = activeTab === tabId
           const Icon = TAB_ICONS[tabId]
           return (
             <button
               key={tabId}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              {...tabNav.itemProps(i)}
               onClick={() => setActiveTab(tabId)}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all ${
                 isActive
@@ -331,51 +349,38 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
             const langCount = Array.isArray(ext.languages) ? ext.languages.length : 0
 
             return (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div className={CARD_STYLES.padded}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/5 text-primary">
-                      <Building className="h-4 w-4" />
-                    </div>
-                    <span className="text-xs text-muted-foreground">{t('atGlance.team')}</span>
-                  </div>
-                  <p className="text-sm font-semibold text-foreground truncate">{primary?.department?.name ?? '-'}</p>
-                  <p className="text-xs text-muted-foreground truncate">{primary?.jobGrade?.name ?? '-'}</p>
-                </div>
-
-                <div className={CARD_STYLES.padded}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-tertiary-container/10 text-tertiary">
-                      <Calendar className="h-4 w-4" />
-                    </div>
-                    <span className="text-xs text-muted-foreground">{t('atGlance.tenure')}</span>
-                  </div>
-                  <p className="text-sm font-semibold text-foreground">{tenure}{t('atGlance.years')}</p>
-                  <p className="text-xs text-muted-foreground">{formatDate(employee.hireDate)} {t('atGlance.joined')}</p>
-                </div>
-
-                <div className={CARD_STYLES.padded}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600">
-                      <Award className="h-4 w-4" />
-                    </div>
-                    <span className="text-xs text-muted-foreground">{t('atGlance.certLang')}</span>
-                  </div>
-                  <p className="text-sm font-semibold text-foreground">{t('atGlance.certCount', { count: certCount })}</p>
-                  <p className="text-xs text-muted-foreground">{t('atGlance.langCount', { count: langCount })}</p>
-                </div>
-
-                <div className={CARD_STYLES.padded}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-wt-4/10 text-wt-4">
-                      <Clock className="h-4 w-4" />
-                    </div>
-                    <span className="text-xs text-muted-foreground">{t('atGlance.skills')}</span>
-                  </div>
-                  <p className="text-sm font-semibold text-foreground">{ext.skills.length}{t('atGlance.skillCount')}</p>
-                  <p className="text-xs text-muted-foreground">{ext.skills.slice(0, 2).join(', ') || '-'}</p>
-                </div>
-              </div>
+              <WdStatStrip
+                items={[
+                  {
+                    label: t('atGlance.team'),
+                    value: primary?.department?.name ?? '-',
+                    icon: Building,
+                    tone: 'info',
+                    foot: primary?.jobGrade?.name ?? '-',
+                  },
+                  {
+                    label: t('atGlance.tenure'),
+                    value: `${tenure}${t('atGlance.years')}`,
+                    icon: Calendar,
+                    tone: 'success',
+                    foot: `${formatDate(employee.hireDate)} ${t('atGlance.joined')}`,
+                  },
+                  {
+                    label: t('atGlance.certLang'),
+                    value: t('atGlance.certCount', { count: certCount }),
+                    icon: Award,
+                    tone: 'warning',
+                    foot: t('atGlance.langCount', { count: langCount }),
+                  },
+                  {
+                    label: t('atGlance.skills'),
+                    value: `${ext.skills.length}${t('atGlance.skillCount')}`,
+                    icon: Clock,
+                    tone: 'default',
+                    foot: ext.skills.slice(0, 2).join(', ') || '-',
+                  },
+                ]}
+              />
             )
           })()}
 
@@ -401,7 +406,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                       <div className="flex items-center gap-2">
                         <p className="text-sm text-foreground font-medium">{value}</p>
                         {fieldKey && hasPendingRequest(fieldKey) && (
-                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/15 text-amber-700">{t('profile.pending')}</span>
+                          <Badge variant="warning">{t('profile.pending')}</Badge>
                         )}
                       </div>
                       {fieldKey && (
@@ -492,7 +497,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
             <div className={`${CARD_STYLES.kpi} shadow-sm border border-border`}>
               <div className="flex items-center justify-between border-b border-border pb-3 mb-3">
                 <h2 className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-                  <AlertCircle className="w-4 h-4 text-amber-500" />
+                  <AlertCircle className="w-4 h-4 text-ctr-warning" />
                   {t('profile.emergencyContact')}
                 </h2>
                 <button onClick={() => setShowEcForm(true)} className="text-xs text-primary hover:underline font-medium">{t('profile.addAction')}</button>
@@ -506,7 +511,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                     <div key={c.id} className="group relative pr-6">
                       <div className="flex items-center gap-2 mb-0.5">
                         <p className="text-sm font-medium text-foreground">{c.name}</p>
-                        {c.isPrimary && <span className="text-[10px] bg-amber-500/15 text-amber-700 px-1.5 py-0.5 rounded-sm">{t('profile.primary')}</span>}
+                        {c.isPrimary && <Badge variant="warning">{t('profile.primary')}</Badge>}
                       </div>
                       <p className="text-xs text-muted-foreground">{c.relationship} · {c.phone}</p>
                       <button onClick={() => deleteEmergencyContact(c.id)} className="absolute right-0 top-1/2 -translate-y-1/2 text-border hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity p-1">
@@ -540,11 +545,9 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
                   <div key={field} className="flex items-center justify-between">
                     <p className="text-xs text-muted-foreground">{label}</p>
                     <div className="flex items-center gap-1.5">
-                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${VISIBILITY_BADGE_COLORS[(visibility as any)[field]] ?? VISIBILITY_BADGE_COLORS.private}`}>
-                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                      <Badge variant={VISIBILITY_BADGE_VARIANT[(visibility as unknown as Record<string, string>)[field]] ?? 'neutral'}>
                         {visibilityLabel((visibility as unknown as Record<string, string>)[field])}
-                      </span>
+                      </Badge>
                       <select
                         value={(visibility as any)[field] /* eslint-disable-line @typescript-eslint/no-explicit-any */}
                         onChange={(e) => saveVisibility(field as keyof ProfileVisibility, e.target.value)}
@@ -571,7 +574,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
           {employee.employeeHistories.length === 0 ? (
             <EmptyState title={t('profile.emptyCareerTitle')} description={t('profile.emptyCareerDesc')} />
           ) : (
-            <div className="space-y-8 relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-primary/10 before:via-primary/20 before:to-transparent">
+            <div className="space-y-8 relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-border">
               {employee.employeeHistories.map((hist) => (
                 <div key={hist.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                   <div className="flex items-center justify-center w-8 h-8 rounded-full border-4 border-white bg-primary text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm relative z-10 mx-auto">
@@ -602,45 +605,43 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
       {/* ── Tab: Compensation (보상 및 급여) ── */}
       {activeTab === 'compensation' && (
         <div className="space-y-6">
-          <div className={`${CARD_STYLES.padded} bg-gradient-to-br from-foreground to-foreground/80 text-white border-none shadow-lg relative overflow-hidden`}>
-            {/* Decals */}
-            <DollarSign className="absolute -right-10 -bottom-10 w-48 h-48 text-white/5 pointer-events-none" />
-            
-            <div className="flex justify-between items-start relative z-10">
+          <div className={`${CARD_STYLES.padded} border border-border`}>
+            <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm text-white/70 font-medium mb-1 flex items-center gap-1.5">
+                <p className="text-sm text-muted-foreground font-medium mb-1 flex items-center gap-1.5">
                   {t('profile.currentSalary')}
                 </p>
                 <div className="flex items-baseline gap-3">
                   {showCompensation ? (
-                    <h2 className="text-3xl font-bold tracking-tight">
+                    <h2 className="text-3xl font-bold tracking-tight text-foreground tabular-nums">
                       {employee.compensationHistories[0] ? formatCurrency(employee.compensationHistories[0].newBaseSalary, employee.compensationHistories[0].currency) : t('profile.noRecord')}
                     </h2>
                   ) : (
-                    <h2 className="text-3xl font-bold text-white/40 tracking-widest mt-1">
+                    <h2 className="text-3xl font-bold text-muted-foreground/50 tracking-widest mt-1">
                       ••••••••
                     </h2>
                   )}
                   {showCompensation && employee.compensationHistories[0]?.currency && (
-                    <span className="text-sm font-medium text-white/60">{employee.compensationHistories[0].currency}</span>
+                    <span className="text-sm font-medium text-muted-foreground">{employee.compensationHistories[0].currency}</span>
                   )}
                 </div>
               </div>
-              <button 
+              <button
+                type="button"
                 onClick={() => setShowCompensation(!showCompensation)}
-                className="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border border-white/10 flex items-center gap-1.5 backdrop-blur-sm"
+                className="border border-border-strong bg-card text-foreground px-3 py-1.5 rounded-lg text-sm font-medium transition-colors hover:bg-muted flex items-center gap-1.5"
               >
                 {showCompensation ? t('profile.hideSalary') : t('profile.showSalary')}
               </button>
             </div>
-            <div className="mt-8 pt-4 border-t border-white/10 flex gap-6 text-sm relative z-10">
+            <div className="mt-8 pt-4 border-t border-border flex gap-6 text-sm">
               <div>
-                <p className="text-white/50 text-xs mb-0.5">{t('profile.lastUpdated')}</p>
-                <p className="font-medium">{formatDate(employee.compensationHistories[0]?.effectiveDate)}</p>
+                <p className="text-muted-foreground text-xs mb-0.5">{t('profile.lastUpdated')}</p>
+                <p className="font-medium text-foreground">{formatDate(employee.compensationHistories[0]?.effectiveDate)}</p>
               </div>
               <div>
-                <p className="text-white/50 text-xs mb-0.5">{t('profile.currency')}</p>
-                <p className="font-medium">{employee.compensationHistories[0]?.currency ?? 'KRW'}</p>
+                <p className="text-muted-foreground text-xs mb-0.5">{t('profile.currency')}</p>
+                <p className="font-medium text-foreground">{employee.compensationHistories[0]?.currency ?? 'KRW'}</p>
               </div>
             </div>
           </div>
@@ -715,50 +716,51 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
         </div>
       )}
 
-      {/* ── Modal: Emergency Contact ── */}
-      {showEcForm && (
-        <div className={MODAL_STYLES.container}>
-          <div className="bg-card rounded-xl shadow-lg w-full max-w-md p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-foreground">{t('profile.addEmergencyContact')}</h3>
-              <button onClick={() => setShowEcForm(false)} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
-            </div>
-            <div className="space-y-3">
-              {(
-                [
-                  { label: t('profile.ecField.name'), key: 'name', placeholder: t('profile.ecPlaceholder.name') },
-                  { label: t('profile.ecField.relationship'), key: 'relationship', placeholder: t('profile.ecPlaceholder.relationship') },
-                  { label: t('profile.ecField.phone'), key: 'phone', placeholder: t('profile.ecPlaceholder.phone') },
-                ] as const
-              ).map(({ label, key, placeholder }) => (
-                <div key={key}>
-                  <label className="text-sm font-medium text-foreground block mb-1">{label}</label>
-                  <input
-                    value={ecForm[key as keyof typeof ecForm] as string}
-                    onChange={(e) => setEcForm((prev) => ({ ...prev, [key]: e.target.value }))}
-                    placeholder={placeholder}
-                    className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  />
-                </div>
-              ))}
-              <label className="flex items-center gap-2 text-sm text-foreground pt-2 cursor-pointer">
-                <input type="checkbox" checked={ecForm.isPrimary} onChange={(e) => setEcForm((prev) => ({ ...prev, isPrimary: e.target.checked }))} className="w-4 h-4 rounded border-border text-primary cursor-pointer" />
-                {t('profile.setPrimary')}
-              </label>
-            </div>
-            <div className="flex gap-2 pt-4 border-t border-border">
-              <button onClick={addEmergencyContact} className={`flex-1 ${BUTTON_SIZES.md} ${BUTTON_VARIANTS.primary}`}>
-                {tCommon('save')}
-              </button>
-              <button onClick={() => setShowEcForm(false)} className={`flex-1 border border-border text-muted-foreground rounded-xl text-sm font-medium hover:bg-muted py-2 motion-safe:transition-all`}>
-                {tCommon('cancel')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── Drawer: Emergency Contact ── */}
+      <WdDrawer
+        open={showEcForm}
+        onClose={() => setShowEcForm(false)}
+        eyebrow={t('profile.selfService')}
+        title={t('profile.addEmergencyContact')}
+        closeDisabled={ecSubmitting}
+        primary={{ label: tCommon('save'), onClick: addEmergencyContact, disabled: ecSubmitting }}
+        secondary={{ label: tCommon('cancel'), onClick: () => setShowEcForm(false), disabled: ecSubmitting }}
+      >
+        <form onSubmit={(e) => { e.preventDefault(); void addEmergencyContact() }} className="flex flex-col gap-4">
+        {(
+          [
+            { label: t('profile.ecField.name'), key: 'name', id: 'ec-name', placeholder: t('profile.ecPlaceholder.name') },
+            { label: t('profile.ecField.relationship'), key: 'relationship', id: 'ec-relationship', placeholder: t('profile.ecPlaceholder.relationship') },
+            { label: t('profile.ecField.phone'), key: 'phone', id: 'ec-phone', placeholder: t('profile.ecPlaceholder.phone') },
+          ] as const
+        ).map(({ label, key, id, placeholder }) => (
+          <WdField key={key} label={label} htmlFor={id}>
+            <input
+              id={id}
+              value={ecForm[key as keyof typeof ecForm] as string}
+              onChange={(e) => setEcForm((prev) => ({ ...prev, [key]: e.target.value }))}
+              placeholder={placeholder}
+              className="w-full px-3 py-2 border border-border-strong rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            />
+          </WdField>
+        ))}
+        <WdRow>
+          <label htmlFor="ec-primary" className="flex items-center gap-2 text-sm text-foreground cursor-pointer">
+            <input
+              id="ec-primary"
+              type="checkbox"
+              checked={ecForm.isPrimary}
+              onChange={(e) => setEcForm((prev) => ({ ...prev, isPrimary: e.target.checked }))}
+              className="w-4 h-4 rounded border-border-strong text-primary cursor-pointer"
+            />
+            {t('profile.setPrimary')}
+          </label>
+        </WdRow>
+          <button type="submit" className="hidden" aria-hidden tabIndex={-1} />
+        </form>
+      </WdDrawer>
 
-      {/* ── Modal: Change Request ── */}
+      {/* ── Drawer: Change Request ── */}
       {/* Change Request Dialog (AR-2: isolated form state) */}
       <ProfileChangeRequestDialog
         open={changeReqField !== null}

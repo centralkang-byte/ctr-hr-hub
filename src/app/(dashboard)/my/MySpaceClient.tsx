@@ -1,17 +1,17 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-import { EmptyState } from '@/components/ui/EmptyState'
-
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import {
   User, CalendarDays, BookOpen, Briefcase, Bell, Clock,
-  ChevronRight, Target, FileText
+  ChevronRight, Target, FileText, Award
 } from 'lucide-react'
-import type { SessionUser } from '@/types'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { WdStatStrip } from '@/components/shared/WdStatStrip'
 import { CARD_STYLES } from '@/lib/styles'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 import { extractPrimaryAssignment } from '@/lib/employee/extract-primary-assignment'
+import type { SessionUser } from '@/types'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -65,11 +65,11 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
   const annualLeave = leaveBalances.find((l) => l.policy.leaveType === 'ANNUAL')
 
   const QUICK_LINKS = [
-    { label: t('quickLink.myProfile'), href: '/my/profile', icon: User, color: 'bg-primary/10 text-primary/90' },
-    { label: t('quickLink.leaveRequest'), href: '/leave', icon: CalendarDays, color: 'bg-primary/15 text-primary/90' },
-    { label: t('quickLink.myPerformance'), href: '/performance', icon: Target, color: 'bg-amber-500/15 text-amber-700' },
+    { label: t('quickLink.myProfile'), href: '/my/profile', icon: User, color: 'bg-primary/10 text-primary' },
+    { label: t('quickLink.leaveRequest'), href: '/leave', icon: CalendarDays, color: 'bg-primary/15 text-primary' },
+    { label: t('quickLink.myPerformance'), href: '/performance', icon: Target, color: 'bg-warning-bright/15 text-ctr-warning' },
     { label: t('quickLink.trainingApply'), href: '/my/training', icon: BookOpen, color: 'bg-destructive/10 text-destructive' },
-    { label: t('quickLink.internalJob'), href: '/my/internal-jobs', icon: Briefcase, color: 'bg-tertiary-container/10 text-tertiary' },
+    { label: t('quickLink.internalJob'), href: '/my/internal-jobs', icon: Briefcase, color: 'bg-tertiary/10 text-tertiary' },
     { label: t('quickLink.yearEnd'), href: '/my/year-end', icon: FileText, color: 'bg-wd-orange/10 text-wd-orange' },
   ]
 
@@ -82,7 +82,7 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
       </div>
 
       {/* Profile Summary */}
-      <div className={`${CARD_STYLES.kpi} flex items-center justify-between`}>
+      <div className={`${CARD_STYLES.kpi} border border-border flex items-center justify-between`}>
         <EmployeeCell
           size="lg"
           employee={{
@@ -107,31 +107,35 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
       </div>
 
       {/* KPI Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-muted-foreground mb-1">{t('kpi.leaveRemaining')}</p>
-          <p className="text-2xl font-bold text-foreground">
-            {annualLeave ? (Number(annualLeave.grantedDays) - Number(annualLeave.usedDays)).toFixed(1) : '-'}
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">{t('unitDay')}</p>
-        </div>
-        <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-muted-foreground mb-1">{t('kpi.leaveUsed')}</p>
-          <p className="text-2xl font-bold text-foreground">
-            {annualLeave ? Number(annualLeave.usedDays).toFixed(1) : '-'}
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">{t('unitDay')}</p>
-        </div>
-        <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-muted-foreground mb-1">{t('kpi.pendingRequests')}</p>
-          <p className="text-2xl font-bold text-foreground">{pendingChangeRequests}</p>
-          <p className="text-xs text-muted-foreground mt-1">{t('unitCase')}</p>
-        </div>
-        <div className={CARD_STYLES.padded}>
-          <p className="text-xs text-muted-foreground mb-1">{t('kpi.tenure')}</p>
-          <p className="text-lg font-bold text-foreground">{getYearsOfService(employee.hireDate)}</p>
-        </div>
-      </div>
+      <WdStatStrip
+        items={[
+          {
+            label: t('kpi.leaveRemaining'),
+            value: annualLeave ? (Number(annualLeave.grantedDays) - Number(annualLeave.usedDays)).toFixed(1) : '-',
+            unit: t('unitDay'),
+            icon: CalendarDays,
+            tone: 'info',
+          },
+          {
+            label: t('kpi.leaveUsed'),
+            value: annualLeave ? Number(annualLeave.usedDays).toFixed(1) : '-',
+            unit: t('unitDay'),
+            icon: Clock,
+          },
+          {
+            label: t('kpi.pendingRequests'),
+            value: pendingChangeRequests,
+            unit: t('unitCase'),
+            icon: Bell,
+            tone: pendingChangeRequests > 0 ? 'warning' : 'default',
+          },
+          {
+            label: t('kpi.tenure'),
+            value: getYearsOfService(employee.hireDate),
+            icon: Award,
+          },
+        ]}
+      />
 
       {/* Quick Links */}
       <div>
@@ -141,7 +145,7 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
             <Link
               key={link.href}
               href={link.href}
-              className={`${CARD_STYLES.kpi} flex items-center gap-3 hover:border-primary hover:shadow-sm transition-all`}
+              className={`${CARD_STYLES.kpi} border border-border flex items-center gap-3 hover:border-primary hover:shadow-sm transition-all`}
             >
               <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${link.color}`}>
                 <link.icon className="w-5 h-5" />
@@ -155,7 +159,7 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
 
       {/* Leave Balances */}
       {leaveBalances.length > 0 && (
-        <div className={CARD_STYLES.padded}>
+        <div className={`${CARD_STYLES.padded} border border-border`}>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-primary" />
@@ -186,7 +190,7 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
       )}
 
       {/* Notifications placeholder */}
-      <div className={CARD_STYLES.padded}>
+      <div className={`${CARD_STYLES.padded} border border-border`}>
         <div className="flex items-center gap-2 mb-3">
           <Bell className="w-4 h-4 text-primary" />
           <h2 className="text-base font-semibold text-foreground">{t('recentNotifications')}</h2>
