@@ -152,13 +152,6 @@ export function HrAdminHomeV2({ user }: Props) {
       title: t('worklet.employees.title'),
       subtitle: t('worklet.employees.subtitle', { total: totalEmployees, newHires }),
       href: '/employees',
-      inline: [
-        {
-          tone: newHires > 0 ? 'neutral' : 'neutral',
-          toneLabel: t('worklet.inline.neutral'),
-          text: t('worklet.employees.inline1', { count: newHires }),
-        },
-      ],
     },
     {
       id: 'recruitment',
@@ -181,26 +174,6 @@ export function HrAdminHomeV2({ user }: Props) {
           })
         : t('worklet.attendance.subtitleEmpty'),
       href: '/attendance',
-      inline: attendanceToday
-        ? [
-            {
-              tone: attendanceToday.absent > 0 ? 'danger' : 'neutral',
-              toneLabel:
-                attendanceToday.absent > 0
-                  ? t('worklet.inline.danger')
-                  : t('worklet.inline.neutral'),
-              text: t('worklet.attendance.inline1', { absent: attendanceToday.absent }),
-            },
-            {
-              tone: attendanceToday.late > 0 ? 'warn' : 'neutral',
-              toneLabel:
-                attendanceToday.late > 0
-                  ? t('worklet.inline.warn')
-                  : t('worklet.inline.neutral'),
-              text: t('worklet.attendance.inline2', { late: attendanceToday.late }),
-            },
-          ]
-        : undefined,
     },
     {
       id: 'leave',
@@ -210,16 +183,6 @@ export function HrAdminHomeV2({ user }: Props) {
       subtitle: t('worklet.leave.subtitle', { pending: pendingLeaves }),
       href: '/leave',
       count: pendingLeaves > 0 ? pendingLeaves : undefined,
-      inline:
-        urgentCount > 0
-          ? [
-              {
-                tone: 'danger',
-                toneLabel: t('worklet.inline.danger'),
-                text: t('worklet.leave.inline1', { count: urgentCount }),
-              },
-            ]
-          : undefined,
     },
     {
       id: 'performance',
