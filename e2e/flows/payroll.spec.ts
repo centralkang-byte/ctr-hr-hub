@@ -103,6 +103,25 @@ test.describe('Payroll: HR_ADMIN', () => {
     await waitForPageReady(page)
   })
 
+  // Wave 1: 상태 필터 탭 = Radix Tabs 세그먼트 (all/submitted/hr_review/confirmed 4탭 고정,
+  // statusFilter 제어 + API 재조회). 탭 클릭 시 aria-selected 이동 + 테이블 단일 렌더 가드.
+  test('year-end status filter tabs switch', async ({ page }) => {
+    await assertPageLoads(page, '/payroll/year-end')
+    await waitForLoading(page)
+
+    const tabs = page.getByRole('tab')
+    await expect(tabs).toHaveCount(4, { timeout: 15000 })
+
+    const submittedTab = page.getByRole('tab', { name: /제출완료|Submitted/ })
+    await expect(async () => {
+      await submittedTab.click()
+      await expect(submittedTab).toHaveAttribute('aria-selected', 'true', { timeout: 2000 })
+    }).toPass({ timeout: 15000 })
+
+    // 필터형 탭 — 패널 복제 없이 테이블은 1개만 렌더 (빈 상태여도 table 골격은 존재)
+    await expect(page.locator('main table')).toHaveCount(1)
+  })
+
   test('global payroll page loads', async ({ page }) => {
     await assertPageLoads(page, '/payroll/global')
     await waitForPageReady(page)
@@ -111,6 +130,26 @@ test.describe('Payroll: HR_ADMIN', () => {
   test('import page loads', async ({ page }) => {
     await assertPageLoads(page, '/payroll/import')
     await waitForPageReady(page)
+  })
+
+  // Wave 1: upload/mapping/history 패널형 탭 = Radix Tabs + TabsContent.
+  // history 탭 활성화 시 이력 fetch가 발화해 테이블(또는 빈 상태)이 패널에 렌더되는지 가드.
+  test('import tabs switch panels and history fetch fires', async ({ page }) => {
+    await assertPageLoads(page, '/payroll/import')
+    await waitForLoading(page)
+
+    const tabs = page.getByRole('tab')
+    await expect(tabs).toHaveCount(3, { timeout: 15000 })
+
+    const historyTab = page.getByRole('tab', { name: /업로드 이력|Upload History/ })
+    await expect(async () => {
+      await historyTab.click()
+      await expect(historyTab).toHaveAttribute('aria-selected', 'true', { timeout: 2000 })
+    }).toPass({ timeout: 15000 })
+
+    // 활성 패널에 이력 테이블 헤더 또는 빈 상태가 렌더 (fetch 흐름 보존 가드)
+    const activePanel = page.locator('[role="tabpanel"][data-state="active"]')
+    await expect(activePanel.getByText(/업로드 이력이 없습니다|업로드일|Upload Date|No upload history/).first()).toBeVisible({ timeout: 10000 })
   })
 })
 

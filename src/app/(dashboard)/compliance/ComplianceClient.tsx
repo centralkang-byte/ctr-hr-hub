@@ -112,21 +112,21 @@ export default function ComplianceClient({ user: _user }: { user: SessionUser })
       description: t('ru.description'),
       href: '/compliance?tab=country&region=ru',
       icon: FileText,
-      flag: '🇷🇺',
+      code: 'RU',
     },
     {
       title: t('cn.title'),
       description: t('cn.description'),
       href: '/compliance?tab=country&region=cn',
       icon: Scale,
-      flag: '🇨🇳',
+      code: 'CN',
     },
     {
       title: t('kr.title'),
       description: t('kr.description'),
       href: '/compliance?tab=country&region=kr',
       icon: ClipboardCheck,
-      flag: '🇰🇷',
+      code: 'KR',
     },
   ]
 
@@ -191,7 +191,9 @@ export default function ComplianceClient({ user: _user }: { user: SessionUser })
               className={`${CARD_STYLES.kpi} hover:transition-shadow group`}
             >
               <div className="flex items-center gap-3 mb-3">
-                <span className="text-2xl">{card.flag}</span>
+                <span className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-xs font-semibold tabular-nums text-muted-foreground">
+                  {card.code}
+                </span>
                 <h3 className="text-sm font-semibold text-foreground">{card.title}</h3>
               </div>
               <p className="text-xs text-muted-foreground mb-3">{card.description}</p>

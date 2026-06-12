@@ -17,8 +17,11 @@ import {
 } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-import { BUTTON_SIZES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES } from '@/lib/styles'
+import { BUTTON_SIZES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES, TYPOGRAPHY } from '@/lib/styles'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { formatDate } from '@/lib/format/date'
@@ -135,9 +138,10 @@ function SettlementDetailModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-muted text-muted-foreground"
+            aria-label={tCommon('close')}
+            className={cn(BUTTON_VARIANTS.ghost, 'p-2 rounded-lg')}
           >
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
 
@@ -152,7 +156,7 @@ function SettlementDetailModal({
               </span>
             )}
             {settlement.confirmedAt && (
-              <span className="text-xs text-emerald-600">
+              <span className="text-xs text-[#006b39]">
                 {t('yearEndHR.confirmedDate')} {formatDate(settlement.confirmedAt)}
               </span>
             )}
@@ -172,7 +176,7 @@ function SettlementDetailModal({
               ].map((row) => (
                 <div key={row.label} className="flex items-center justify-between px-4 py-2.5">
                   <span className="text-sm text-muted-foreground">{row.label}</span>
-                  <span className="text-sm font-medium text-foreground">
+                  <span className={cn('text-sm font-medium text-foreground', TYPOGRAPHY.mono)}>
                     {formatKRW(row.value, locale)}
                   </span>
                 </div>
@@ -180,21 +184,19 @@ function SettlementDetailModal({
             </div>
           </div>
 
-          {/* Final Settlement */}
+          {/* Final Settlement — ALL-4 시맨틱 토큰 (success=tertiary 계열·warning=D17 bg/text 분리) */}
           <div
-            className={`rounded-xl p-5 text-center ${
-              isRefund
-                ? 'bg-emerald-500/15 border border-emerald-200'
-                : 'bg-amber-500/15 border border-amber-300'
+            className={`rounded-xl p-5 text-center border border-border ${
+              isRefund ? 'bg-tertiary/10' : 'bg-warning-bright/15'
             }`}
           >
             <p
-              className={`text-sm font-semibold mb-1 ${isRefund ? 'text-emerald-700' : 'text-amber-700'}`}
+              className={`text-sm font-semibold mb-1 ${isRefund ? 'text-[#006b39]' : 'text-ctr-warning'}`}
             >
               {isRefund ? t('yearEndHR.refundAmount') : t('yearEndHR.additionalPayment')}
             </p>
             <p
-              className={`text-3xl font-bold ${isRefund ? 'text-emerald-600' : 'text-amber-600'}`}
+              className={cn('text-3xl font-bold', TYPOGRAPHY.mono, isRefund ? 'text-[#006b39]' : 'text-ctr-warning')}
             >
               {formatKRW(Math.abs(finalNum), locale)}
             </p>
@@ -205,7 +207,7 @@ function SettlementDetailModal({
 
           {/* Receipt status */}
           {settlement.withholdingReceipt && (
-            <div className="flex items-center gap-2 text-sm text-emerald-600">
+            <div className="flex items-center gap-2 text-sm text-[#006b39]">
               <CheckCircle2 className="h-4 w-4" />
               <span>
                 {t('yearEndHR.withholdingIssued')} ({formatDate(settlement.withholdingReceipt.issuedAt)})
@@ -219,7 +221,7 @@ function SettlementDetailModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm text-muted-foreground hover:bg-muted rounded-lg"
+            className={cn(BUTTON_VARIANTS.ghost, BUTTON_SIZES.md, 'inline-flex items-center')}
           >
             {tCommon('close')}
           </button>
@@ -229,9 +231,9 @@ function SettlementDetailModal({
                 type="button"
                 onClick={() => onIssueReceipt(settlement.id)}
                 disabled={issuingReceipt}
-                className="flex items-center gap-2 px-4 py-2 text-sm bg-card border border-border hover:bg-background text-foreground rounded-lg disabled:opacity-50"
+                className={cn(BUTTON_VARIANTS.secondary, BUTTON_SIZES.md, 'inline-flex items-center gap-2 disabled:opacity-50')}
               >
-                <Download className="h-4 w-4" />
+                <Download className="h-4 w-4" aria-hidden="true" />
                 {issuingReceipt ? t('yearEndHR.issuing') : t('yearEndHR.issueReceipt')}
               </button>
             )}
@@ -240,9 +242,9 @@ function SettlementDetailModal({
                 type="button"
                 onClick={() => onConfirm(settlement.id)}
                 disabled={confirming}
-                className={`flex items-center gap-2 px-4 py-2 text-sm ${BUTTON_VARIANTS.primary} rounded-lg disabled:opacity-50`}
+                className={cn(BUTTON_VARIANTS.primary, BUTTON_SIZES.md, 'inline-flex items-center gap-2 disabled:opacity-50')}
               >
-                <CheckCircle2 className="h-4 w-4" />
+                <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
                 {confirming ? tCommon('processing') : t('yearEndHR.confirm')}
               </button>
             )}
@@ -443,21 +445,24 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
   ]
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
+    <div className="mx-auto max-w-7xl space-y-4 p-4">
+      {/* ── Header (proto .page-h: 56px 아이콘 타일 + pageTitle + greet-sub) ── */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <FileText className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold text-foreground">
-            {t('yearEndHR.pageTitle', { year })}
-          </h1>
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[14px] bg-accent text-primary">
+            <FileText className="h-[26px] w-[26px]" aria-hidden="true" />
+          </div>
+          <div>
+            <h1 className={TYPOGRAPHY.pageTitle}>{t('yearEndHR.pageTitle', { year })}</h1>
+            <p className="mt-1 text-[13px] text-muted-foreground">{t('yearEndHR.pageSubtitle')}</p>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Year selector */}
           <select
             value={year}
             onChange={(e) => setYear(parseInt(e.target.value, 10))}
-            className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary outline-none"
+            className="px-3 py-2 border border-border-strong bg-card rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary outline-none"
           >
             {YEAR_OPTIONS.map((y) => (
               <option key={y} value={y}>
@@ -472,9 +477,9 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
               type="button"
               onClick={handleBulkConfirmAll}
               disabled={bulkConfirming}
-              className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} text-sm font-medium rounded-lg disabled:opacity-50`}
+              className={cn(BUTTON_VARIANTS.primary, BUTTON_SIZES.md, 'inline-flex items-center gap-1.5 font-semibold disabled:opacity-50')}
             >
-              <CheckCircle2 className="h-4 w-4" />
+              <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
               {bulkConfirming
                 ? t('processing')
                 : t('yearEndHR.bulkConfirm', { count: confirmableCount })}
@@ -483,46 +488,55 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
         </div>
       </div>
 
-      {/* Error banner */}
+      {/* Error banner — D17 bg/text 분리 (ALL-4) */}
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
-          <AlertCircle className="h-4 w-4 flex-shrink-0" />
+        <div className="flex items-center gap-2 p-3 bg-alert-red/10 border border-alert-red/20 rounded-lg text-sm text-destructive">
+          <AlertCircle className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
           <span>{error}</span>
           <button
             type="button"
             onClick={() => setError(null)}
-            className="ml-auto p-1 hover:bg-red-200 rounded"
+            aria-label={tCommon('close')}
+            className="ml-auto p-1 hover:bg-alert-red/20 rounded"
           >
-            <X className="h-3 w-3" />
+            <X className="h-3 w-3" aria-hidden="true" />
           </button>
         </div>
       )}
 
-      {/* Progress Overview Cards */}
+      {/* Progress Overview Cards — 6카드 유지 (ALL-5: WdStatStrip 미적용), 토큰 정합만 (YE-3) */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {[
+          // 시맨틱 tone = STATUS_MAP 정합 (in_progress·submitted=info, hr_review=warning, confirmed=success)
           { key: 'not_started', label: t('kr_kebafb8ec'), icon: Users, color: 'text-muted-foreground' },
-          { key: 'in_progress', label: t('inProgress'), icon: Clock, color: 'text-amber-700' },
-          { key: 'submitted', label: t('submitted'), icon: Send, color: 'text-primary/90' },
-          { key: 'hr_review', label: t('hrReviewing'), icon: Eye, color: 'text-orange-700' },
-          { key: 'confirmed', label: t('confirmed'), icon: CheckCircle2, color: 'text-emerald-600' },
+          { key: 'in_progress', label: t('inProgress'), icon: Clock, color: 'text-primary' },
+          { key: 'submitted', label: t('submitted'), icon: Send, color: 'text-primary' },
+          { key: 'hr_review', label: t('hrReviewing'), icon: Eye, color: 'text-ctr-warning' },
+          { key: 'confirmed', label: t('confirmed'), icon: CheckCircle2, color: 'text-[#006b39]' },
         ].map(({ key, label, icon: Icon, color }) => (
-          <div key={key} className="bg-card rounded-xl shadow-sm border border-border p-6">
-            <div className={`flex items-center gap-1.5 text-xs ${color} mb-1`}>
-              <Icon className="h-3.5 w-3.5" />
+          <div key={key} className="bg-card rounded-2xl shadow-sm border border-border p-4">
+            <div className={cn('flex items-center gap-1.5 text-xs font-medium mb-1', color)}>
+              <Icon className="h-3.5 w-3.5" aria-hidden="true" />
               <span>{label}</span>
             </div>
-            <p className="text-2xl font-bold text-foreground">
+            <p className={TYPOGRAPHY.stat}>
               {summary[key as keyof StatusSummary]}
             </p>
           </div>
         ))}
 
         {/* Progress bar card */}
-        <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-          <p className="text-xs text-muted-foreground mb-1">{t('all_kec9984eb')}</p>
-          <p className="text-2xl font-bold text-primary">{completionPct}%</p>
-          <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
+        <div className="bg-card rounded-2xl shadow-sm border border-border p-4">
+          <p className={cn(TYPOGRAPHY.label, 'mb-1')}>{t('all_kec9984eb')}</p>
+          <p className={cn(TYPOGRAPHY.stat, 'text-primary')}>{completionPct}%</p>
+          <div
+            role="progressbar"
+            aria-valuenow={completionPct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={t('all_kec9984eb')}
+            className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden"
+          >
             <div
               className="h-full bg-primary rounded-full transition-all duration-500"
               style={{ width: `${completionPct}%` }}
@@ -531,34 +545,28 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
         </div>
       </div>
 
-      {/* Status filter tabs */}
-      <div className="flex border-b border-border">
-        {STATUS_TABS.map((tab) => (
-          <button
-            key={tab.key}
-            type="button"
-            onClick={() => setStatusFilter(tab.key)}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-              statusFilter === tab.key
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {tab.label}
-            {tab.count > 0 && (
-              <span
-                className={`text-xs px-1.5 py-0.5 rounded-full ${
-                  statusFilter === tab.key
-                    ? 'bg-primary/10 text-primary'
-                    : 'bg-muted text-muted-foreground'
-                }`}
-              >
-                {tab.count}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
+      {/* Status filter tabs — 필터형 (YE-1): Radix Tabs + TAB_STYLES, 테이블 단일 렌더 (패널 복제 없음).
+          statusFilter는 fetchSettlements 재조회 의존성 — setter 외 흐름 무변경 */}
+      <Tabs value={statusFilter} onValueChange={setStatusFilter}>
+        <TabsList aria-label={tCommon('filterAllStatuses')}>
+          {STATUS_TABS.map((tab) => (
+            <TabsTrigger key={tab.key} value={tab.key} className="gap-1.5">
+              {tab.label}
+              {tab.count > 0 && (
+                <span
+                  className={`text-xs px-1.5 py-0.5 rounded-full tabular-nums ${
+                    statusFilter === tab.key
+                      ? 'bg-primary/10 text-primary'
+                      : 'bg-muted text-muted-foreground'
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              )}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
       {/* Table */}
       <div className={TABLE_STYLES.wrapper}>
@@ -596,15 +604,18 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
-                  {t('kr_keb8db0ec_kebb688eb_keca491')}
-                </td>
-              </tr>
+              // 로딩 = skeleton (ALL-3: 로딩은 EmptyState 금지)
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i}>
+                  <td colSpan={8} className="px-4 py-3">
+                    <Skeleton className="h-4 w-full" />
+                  </td>
+                </tr>
+              ))
             ) : filteredSettlements.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">
-                  {t('kr_ked95b4eb_keca1b0ea_yearend_ke')}
+                <td colSpan={8}>
+                  <EmptyState icon={FileText} title={t('kr_ked95b4eb_keca1b0ea_yearend_ke')} sub="" />
                 </td>
               </tr>
             ) : (
@@ -634,12 +645,12 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                       </div>
                     </td>
                     <td className={TABLE_STYLES.cell}>{s.department}</td>
-                    <td className={cn(TABLE_STYLES.cell, "text-foreground font-medium")}>
+                    <td className={cn(TABLE_STYLES.cell, 'text-foreground font-medium', TYPOGRAPHY.mono)}>
                       {formatKRW(s.totalSalary, locale)}
                     </td>
                     <td className={TABLE_STYLES.cell}>
                       <span
-                        className={cn("font-semibold", isRefund ? 'text-emerald-600' : 'text-amber-600')}
+                        className={cn('font-semibold', TYPOGRAPHY.mono, isRefund ? 'text-[#006b39]' : 'text-ctr-warning')}
                       >
                         {isRefund ? '+' : '-'} {formatKRW(Math.abs(finalNum), locale)}
                       </span>
@@ -655,9 +666,9 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                         <button
                           type="button"
                           onClick={() => setSelectedSettlement(s)}
-                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-muted-foreground hover:bg-muted rounded-lg"
+                          className={cn(BUTTON_VARIANTS.ghost, 'flex items-center gap-1 px-2.5 py-1.5 text-xs rounded-lg')}
                         >
-                          <Eye className="h-3.5 w-3.5" />
+                          <Eye className="h-3.5 w-3.5" aria-hidden="true" />
                           {t('kr_keab280ed')}
                         </button>
                         {(s.status === 'submitted' || s.status === 'hr_review') && (
@@ -676,9 +687,9 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
                             type="button"
                             onClick={() => handleIssueReceipt(s.id)}
                             disabled={issuingReceipt}
-                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-primary/90 bg-primary/15 hover:bg-primary/15 rounded-lg disabled:opacity-50"
+                            className={cn(BUTTON_VARIANTS.secondary, BUTTON_SIZES.sm, 'inline-flex items-center gap-1 disabled:opacity-50')}
                           >
-                            <Download className="h-3.5 w-3.5" />
+                            <Download className="h-3.5 w-3.5" aria-hidden="true" />
                             {t('kr_kec9881ec')}
                           </button>
                         )}
@@ -693,9 +704,10 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
         </table>
       </div>
 
-      {/* Bulk action bar */}
+      {/* Bulk action bar — 현행 바 유지 (YE-8: 공유 BulkActionBar 미채택, sticky/토큰 정합만).
+          탭 전환 후 선택 유지(숨은 행 포함) = 기존 동작 그대로 보존 */}
       {selectedIds.size > 0 && (
-        <div className="mt-4 px-4 py-3 border border-border rounded-lg bg-muted/50 flex items-center justify-between">
+        <div className="sticky bottom-4 z-10 flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 shadow-lg">
           <span className="text-sm text-muted-foreground">
             {t('yearEndHR.selectedCount', { count: selectedIds.size })}
           </span>
@@ -703,9 +715,9 @@ export default function YearEndHRClient({user, defaultYear }: YearEndHRClientPro
             type="button"
             onClick={handleBulkConfirm}
             disabled={bulkConfirming}
-            className={`flex items-center gap-2 px-4 py-2 text-sm ${BUTTON_VARIANTS.primary} rounded-lg disabled:opacity-50`}
+            className={cn(BUTTON_VARIANTS.primary, BUTTON_SIZES.md, 'inline-flex items-center gap-2 disabled:opacity-50')}
           >
-            <CheckCircle2 className="h-4 w-4" />
+            <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
             {bulkConfirming ? tCommon('processing') : t('yearEndHR.confirmSelected')}
           </button>
         </div>

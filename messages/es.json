@@ -6103,6 +6103,7 @@
       "tabHistory": "Historial de carga",
       "tabMapping": "Configuración de mapeo",
       "tabUpload": "Carga de archivo",
+      "tabsLabel": "Pestañas de carga de nómina internacional",
       "uploadComplete": "Carga completada",
       "uploadFailed": "Error de carga",
       "uploadStart": "Iniciar carga",
@@ -6778,6 +6779,7 @@
     "yearEndHR": {
       "additionalPayment": "Pago adicional",
       "bulkConfirm": "Confirmación masiva",
+      "pageSubtitle": "Revise y confirme las liquidaciones fiscales de fin de año de los empleados",
       "bulkConfirmTitle": "Confirmar acción masiva",
       "calculatedTax": "⑦ Impuesto calculado",
       "colDepartment": "Departamento",

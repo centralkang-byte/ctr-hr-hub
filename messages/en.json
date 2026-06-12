@@ -6103,6 +6103,7 @@
       "tabHistory": "Upload History",
       "tabMapping": "Column Mapping",
       "tabUpload": "File Upload",
+      "tabsLabel": "Payroll import tabs",
       "uploadComplete": "Upload Complete",
       "uploadFailed": "Upload Failed",
       "uploadStart": "Start Upload",
@@ -6778,6 +6779,7 @@
     "yearEndHR": {
       "additionalPayment": "Additional Payment",
       "bulkConfirm": "Bulk Confirm",
+      "pageSubtitle": "Review and confirm employee year-end tax settlements",
       "bulkConfirmTitle": "Confirm Bulk Action",
       "calculatedTax": "⑦ Calculated Tax",
       "colDepartment": "Department",

@@ -4,16 +4,20 @@ import { useTranslations, useLocale } from 'next-intl'
 
 import { useState, useEffect, useCallback } from 'react'
 import {
-  Globe, ChevronLeft, ChevronRight,   AlertTriangle, RefreshCw, Settings, Upload
+  Globe, ChevronLeft, ChevronRight, AlertTriangle, RefreshCw, Settings, Upload,
+  Wallet, Users, TrendingUp, Building2,
 } from 'lucide-react'
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts'
 import Link from 'next/link'
+import { Badge } from '@/components/ui/badge'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { WdStatStrip } from '@/components/shared/WdStatStrip'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
-import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
+import { TABLE_STYLES, CHART_THEME, TYPOGRAPHY, BUTTON_VARIANTS, BUTTON_SIZES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 
 interface CompanyStat {
@@ -49,7 +53,7 @@ interface GlobalData {
 }
 
 const CHART_COLORS = [...CHART_THEME.colors]
-const FLAG: Record<string, string> = { 'CTR': '🇰🇷', 'CTR-CN': '🇨🇳', 'CTR-US': '🇺🇸', 'CTR-VN': '🇻🇳', 'CTR-EU': '🇵🇱', 'CTR-RU': '🇷🇺' }
+// GL-1: 국기 이모지 맵 제거 — 법인 코드 font-mono 텍스트로 표기 (S287 SIM-3 패턴)
 
 // fmt, fmtBillion은 컴포넌트 내부에서 t()를 사용하도록 이동
 
@@ -69,14 +73,18 @@ export default function GlobalPayrollClient({ user: _user }: { user: SessionUser
   const [month, setMonth] = useState(now.getMonth() + 1)
   const [data, setData] = useState<GlobalData | null>(null)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
 
   const fetchData = useCallback(async () => {
     setLoading(true)
+    setError(false)
     try {
       const res = await apiClient.get<GlobalData>(`/api/v1/payroll/global?year=${year}&month=${month}`)
       setData(res.data)
     } catch {
+      // GL-5: fetch 실패 → 에러 상태 (본문 대신 EmptyState + 재시도)
       setData(null)
+      setError(true)
     } finally {
       setLoading(false)
     }
@@ -115,51 +123,57 @@ export default function GlobalPayrollClient({ user: _user }: { user: SessionUser
   })) ?? []
 
   return (
-    <div className="p-4">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+    <div className="mx-auto max-w-7xl space-y-4 p-4">
+      {/* ── Header (GL-3: proto .page-h — 56px 아이콘 타일 + pageTitle + 13px sub) ── */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center">
-            <Globe className="w-5 h-5 text-primary" />
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[14px] bg-accent text-primary">
+            <Globe className="h-[26px] w-[26px]" aria-hidden="true" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{t('globalPage.title')}</h1>
-            <p className="text-sm text-muted-foreground">{t('globalPage.subtitle')}</p>
+            <h1 className={TYPOGRAPHY.pageTitle}>{t('globalPage.title')}</h1>
+            <p className="mt-1 text-[13px] text-muted-foreground">{t('globalPage.subtitle')}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/payroll/import"
-            className="flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background"
+            className={cn(BUTTON_VARIANTS.secondary, BUTTON_SIZES.md, 'inline-flex items-center gap-1.5')}
           >
-            <Upload className="w-4 h-4" /> {t('globalPage.uploadPayroll')}
+            <Upload className="w-4 h-4" aria-hidden="true" /> {t('globalPage.uploadPayroll')}
           </Link>
           <Link
             href="/settings/exchange-rates"
-            className="flex items-center gap-1.5 px-3 py-1.5 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background"
+            className={cn(BUTTON_VARIANTS.secondary, BUTTON_SIZES.md, 'inline-flex items-center gap-1.5')}
           >
-            <Settings className="w-4 h-4" /> {t('globalPage.exchangeSettings')}
+            <Settings className="w-4 h-4" aria-hidden="true" /> {t('globalPage.exchangeSettings')}
           </Link>
-          <button onClick={fetchData} className="p-2 hover:bg-muted rounded-lg">
-            <RefreshCw className={`w-4 h-4 text-muted-foreground ${loading ? 'animate-spin' : ''}`} />
+          <button
+            type="button"
+            onClick={fetchData}
+            aria-label={tCommon('refresh')}
+            className={cn(BUTTON_VARIANTS.ghost, 'rounded-lg p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring')}
+          >
+            <RefreshCw className={cn('h-4 w-4', loading && 'animate-spin')} aria-hidden="true" />
           </button>
         </div>
       </div>
 
       {/* Month Nav */}
-      <div className="flex items-center gap-4 mb-6">
-        <button onClick={prevMonth} className="p-2 hover:bg-muted rounded-lg">
-          <ChevronLeft className="w-5 h-5 text-muted-foreground" />
+      <div className="flex items-center gap-4">
+        <button type="button" onClick={prevMonth} aria-label={t('dashboard.prevMonth')} className="p-2 hover:bg-muted rounded-lg">
+          <ChevronLeft className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
         </button>
         <div className="text-lg font-semibold text-foreground min-w-[120px] text-center">
           {new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long' }).format(new Date(year, month - 1))}
         </div>
-        <button onClick={nextMonth} className="p-2 hover:bg-muted rounded-lg">
-          <ChevronRight className="w-5 h-5 text-muted-foreground" />
+        <button type="button" onClick={nextMonth} aria-label={t('dashboard.nextMonth')} className="p-2 hover:bg-muted rounded-lg">
+          <ChevronRight className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
         </button>
         {data && !data.hasExchangeRates && (
-          <div className="flex items-center gap-1.5 text-sm text-amber-700 bg-amber-500/15 px-3 py-1.5 rounded-lg">
-            <AlertTriangle className="w-4 h-4" />
+          // GL-6: 환율 경고 — ALL-4 warning 토큰 (D17 bg/text 분리)
+          <div className="flex items-center gap-1.5 text-sm text-ctr-warning bg-warning-bright/15 px-3 py-1.5 rounded-lg">
+            <AlertTriangle className="w-4 h-4" aria-hidden="true" />
             {t('globalPage.exchangeWarning')}
             <Link href="/settings/exchange-rates" className="underline ml-1">{t('globalPage.exchangeSettings')}</Link>
           </div>
@@ -172,43 +186,60 @@ export default function GlobalPayrollClient({ user: _user }: { user: SessionUser
         </div>
       )}
 
+      {/* GL-5: fetch 에러 — 본문 대신 EmptyState + 재시도 */}
+      {!loading && error && (
+        <EmptyState
+          icon={AlertTriangle}
+          title={t('loadFailed')}
+          sub={tCommon('errorDesc')}
+          action={{ label: tCommon('retry'), onClick: () => { void fetchData() } }}
+          standalone
+        />
+      )}
+
       {!loading && data && (
         <>
-          {/* KPI Cards */}
-          <div className="grid grid-cols-4 gap-4 mb-6">
-            <div className="bg-card rounded-xl shadow-sm border border-border p-4">
-              <p className="text-xs text-muted-foreground mb-1">{t('globalPage.totalPayrollKRW')}</p>
-              <p className="text-3xl font-bold text-foreground">₩{fmtBillion(data.totalKRW)}</p>
-              <p className="text-xs text-muted-foreground mt-1">{t('globalPage.manWonUnit')} {fmt(Math.round(data.totalKRW / 10000))}</p>
-            </div>
-            <div className="bg-card rounded-xl shadow-sm border border-border p-4">
-              <p className="text-xs text-muted-foreground mb-1">{t('globalPage.totalHeadcount')}</p>
-              <p className="text-3xl font-bold text-foreground">{t('globalPage.headcountSuffix', { count: data.totalHeadcount.toLocaleString() })}</p>
-              <p className="text-xs text-muted-foreground mt-1">{t('globalPage.companiesCount', { count: data.companies.filter(c => c.hasData).length })}</p>
-            </div>
-            <div className="bg-card rounded-xl shadow-sm border border-border p-4">
-              <p className="text-xs text-muted-foreground mb-1">{t('globalPage.avgPayPerPerson')}</p>
-              <p className="text-3xl font-bold text-foreground">
-                ₩{data.totalHeadcount > 0 ? fmtBillion(data.totalKRW / data.totalHeadcount) : '—'}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">{t('globalPage.companyAvg')}</p>
-            </div>
-            <div className="bg-card rounded-xl shadow-sm border border-border p-4">
-              <p className="text-xs text-muted-foreground mb-1">{t('globalPage.companiesWithData')}</p>
-              <p className="text-3xl font-bold text-foreground">
-                {data.companies.filter(c => c.hasData).length} / {data.companies.length}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">{t('globalPage.companiesCompleted', { count: data.companies.filter(c => c.hasData).length })}</p>
-            </div>
-          </div>
+          {/* KPI — GL-4: proto .wd-stat-strip (정확히 4개 실수치, 의미별 tone) */}
+          <WdStatStrip
+            items={[
+              {
+                label: t('globalPage.totalPayrollKRW'),
+                value: `₩${fmtBillion(data.totalKRW)}`,
+                icon: Wallet,
+                tone: 'info',
+                foot: `${fmt(Math.round(data.totalKRW / 10000))} ${t('globalPage.manWonUnit')}`,
+              },
+              {
+                label: t('globalPage.totalHeadcount'),
+                value: t('globalPage.headcountSuffix', { count: data.totalHeadcount.toLocaleString() }),
+                icon: Users,
+                foot: t('globalPage.companiesCount', { count: data.companies.filter(c => c.hasData).length }),
+              },
+              {
+                label: t('globalPage.avgPayPerPerson'),
+                value: data.totalHeadcount > 0 ? `₩${fmtBillion(data.totalKRW / data.totalHeadcount)}` : '—',
+                icon: TrendingUp,
+                foot: t('globalPage.companyAvg'),
+              },
+              {
+                label: t('globalPage.companiesWithData'),
+                value: `${data.companies.filter(c => c.hasData).length} / ${data.companies.length}`,
+                icon: Building2,
+                tone: data.companies.filter(c => c.hasData).length === data.companies.length ? 'success' : 'warning',
+                foot: t('globalPage.companiesCompleted', { count: data.companies.filter(c => c.hasData).length }),
+              },
+            ]}
+          />
 
           {/* Charts Row 1 */}
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-2 gap-4">
             {/* Bar: 법인별 총지급 */}
             <div className="bg-card rounded-xl shadow-sm border border-border p-4">
               <h3 className="text-sm font-semibold text-foreground mb-4">{t('globalPage.companyPayrollTotal')}</h3>
               {barData.length === 0 ? (
-                <div className="h-52 flex items-center justify-center text-sm text-muted-foreground">{t('globalPage.noData')}</div>
+                <div className="h-52 flex items-center justify-center">
+                  <EmptyState size="sm" title={t('globalPage.noData')} sub="" />
+                </div>
               ) : (
                 <ResponsiveContainer width="100%" height={210}>
                   <BarChart data={barData} margin={{ top: 0, right: 16, bottom: 0, left: 0 }}>
@@ -228,7 +259,9 @@ export default function GlobalPayrollClient({ user: _user }: { user: SessionUser
             <div className="bg-card rounded-xl shadow-sm border border-border p-4">
               <h3 className="text-sm font-semibold text-foreground mb-4">{t('globalPage.companyPayrollShare')}</h3>
               {pieData.length === 0 ? (
-                <div className="h-52 flex items-center justify-center text-sm text-muted-foreground">{t('globalPage.noData')}</div>
+                <div className="h-52 flex items-center justify-center">
+                  <EmptyState size="sm" title={t('globalPage.noData')} sub="" />
+                </div>
               ) : (
                 <ResponsiveContainer width="100%" height={210}>
                   <PieChart>
@@ -253,7 +286,7 @@ export default function GlobalPayrollClient({ user: _user }: { user: SessionUser
           </div>
 
           {/* Charts Row 2 */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-2 gap-4">
             {/* Line: 월별 트렌드 */}
             <div className="bg-card rounded-xl shadow-sm border border-border p-4">
               <h3 className="text-sm font-semibold text-foreground mb-4">{t('globalPage.trendTitle')}</h3>
@@ -273,7 +306,9 @@ export default function GlobalPayrollClient({ user: _user }: { user: SessionUser
             <div className="bg-card rounded-xl shadow-sm border border-border p-4">
               <h3 className="text-sm font-semibold text-foreground mb-4">{t('globalPage.avgPayPerPersonChart')}</h3>
               {headcountData.length === 0 ? (
-                <div className="h-52 flex items-center justify-center text-sm text-muted-foreground">{t('globalPage.noData')}</div>
+                <div className="h-52 flex items-center justify-center">
+                  <EmptyState size="sm" title={t('globalPage.noData')} sub="" />
+                </div>
               ) : (
                 <ResponsiveContainer width="100%" height={210}>
                   <BarChart data={headcountData} layout="vertical" margin={{ top: 0, right: 16, bottom: 0, left: 24 }}>
@@ -315,12 +350,10 @@ export default function GlobalPayrollClient({ user: _user }: { user: SessionUser
                   {data.companies.map(co => (
                     <tr key={co.companyId} className={TABLE_STYLES.row}>
                       <td className={TABLE_STYLES.cell}>
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg">{FLAG[co.companyCode] ?? '🏢'}</span>
-                          <div>
-                            <div className="font-medium text-foreground">{co.companyCode}</div>
-                            <div className="text-xs text-muted-foreground">{co.companyName}</div>
-                          </div>
+                        {/* GL-1: 국기 이모지 → 법인 코드 font-mono 텍스트 */}
+                        <div>
+                          <div className="font-mono tabular-nums font-medium text-foreground">{co.companyCode}</div>
+                          <div className="text-xs text-muted-foreground">{co.companyName}</div>
                         </div>
                       </td>
                       <td className={cn(TABLE_STYLES.cell, "font-mono tabular-nums text-muted-foreground")}>{co.currency}</td>
@@ -340,10 +373,11 @@ export default function GlobalPayrollClient({ user: _user }: { user: SessionUser
                         {co.avgPerHeadKRW > 0 ? `₩${fmtBillion(co.avgPerHeadKRW)}` : '—'}
                       </td>
                       <td className={cn(TABLE_STYLES.cell, "text-center")}>
+                        {/* GL-2: raw emerald → Badge 시맨틱 토큰 */}
                         {co.hasData ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-emerald-500/15 text-emerald-700">{t('globalPage.aggregated')}</span>
+                          <Badge variant="success">{t('globalPage.aggregated')}</Badge>
                         ) : (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-muted text-muted-foreground">{t('globalPage.notStarted')}</span>
+                          <Badge variant="neutral">{t('globalPage.notStarted')}</Badge>
                         )}
                       </td>
                     </tr>
