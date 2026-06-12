@@ -7,6 +7,7 @@ import { toast } from '@/hooks/use-toast'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Award, Target, TrendingUp, CheckCircle2, Clock, Info, ArrowLeft, Shield } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { GRADE_CONFIG } from '@/lib/styles/performance'
 import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import type { SessionUser } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
@@ -69,17 +70,6 @@ interface PeerResult {
         reviewerName: string; overallComment: string | null; submittedAt: string | null
         scoreChallenge: number; scoreTrust: number; scoreResponsibility: number; scoreRespect: number
     }>
-}
-
-// ─── Grade display config ─────────────────────────────────
-
-const GRADE_STYLE: Record<string, { bg: string; text: string; labelKey: string }> = {
-    EXCEEDS_PLUS: { bg: 'bg-primary/10', text: 'text-primary/90', labelKey: 'grade.exceedsPlus' },
-    EXCEEDS: { bg: 'bg-primary/10', text: 'text-primary', labelKey: 'grade.exceeds' },
-    MEETS_PLUS: { bg: 'bg-emerald-500/15', text: 'text-emerald-700', labelKey: 'grade.meetsPlus' },
-    MEETS: { bg: 'bg-primary/10', text: 'text-tertiary', labelKey: 'grade.meets' },
-    BELOW: { bg: 'bg-amber-500/15', text: 'text-amber-800', labelKey: 'grade.below' },
-    BELOW_MINUS: { bg: 'bg-destructive/5', text: 'text-destructive', labelKey: 'grade.belowMinus' },
 }
 
 // ─── Component ────────────────────────────────────────────
@@ -207,7 +197,7 @@ export default function MyResultClient({user }: {
         )
     }
 
-    const grade = result?.finalGradeEnum ? GRADE_STYLE[result.finalGradeEnum] : null
+    const grade = result?.finalGradeEnum ? GRADE_CONFIG[result.finalGradeEnum] : null
     const isAcknowledged = !!result?.acknowledgedAt
     const daysLeft = result?.acknowledgeDeadline ? Math.ceil((new Date(result.acknowledgeDeadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : null
 
@@ -221,6 +211,7 @@ export default function MyResultClient({user }: {
                         <p className="mt-1 text-sm text-muted-foreground">{t('kr_kec84b1ea_evaluation_keab2b0ea')}</p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
+                        aria-label={t('kr_kec84b1ea_evaluation_keab2b0ea')}
                         className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
                         {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
@@ -252,8 +243,8 @@ export default function MyResultClient({user }: {
                         <div className="mb-6 rounded-xl border border-border bg-card p-8 text-center">
                             <p className="mb-3 text-sm text-muted-foreground">{t('kr_kecb59cec_keb93b1ea')}</p>
                             {grade ? (
-                                <div className={`mx-auto inline-flex rounded-xl px-8 py-4 ${grade.bg}`}>
-                                    <span className={`text-2xl font-bold ${grade.text}`}>{t(grade.labelKey)}</span>
+                                <div className={`mx-auto inline-flex rounded-xl px-8 py-4 ${grade.className}`}>
+                                    <span className="text-2xl font-bold">{t(grade.labelKey)}</span>
                                 </div>
                             ) : (
                                 <p className="text-lg text-muted-foreground">{t('kr_keb93b1ea_kebafb8ec')}</p>
@@ -355,18 +346,18 @@ export default function MyResultClient({user }: {
                         <div className="rounded-xl border border-border bg-card p-5">
                             <h2 className="mb-3 text-base font-semibold text-foreground">{t('kr_keab2b0ea_confirm')}</h2>
                             {isAcknowledged ? (
-                                <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-500/15 p-4">
-                                    <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-                                    <span className="text-sm font-medium text-emerald-700">
+                                <div className="flex items-center gap-2 rounded-lg border border-tertiary/40 bg-tertiary/10 p-4">
+                                    <CheckCircle2 className="h-5 w-5 text-[#006b39]" />
+                                    <span className="text-sm font-medium text-[#006b39]">
                                         {t('myResult.acknowledgedAt', { date: result.acknowledgedAt?.slice(0, 10) ?? '' })}
                                     </span>
                                 </div>
                             ) : (
                                 <>
                                     {daysLeft !== null && (
-                                        <div className="mb-3 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-500/15 p-3">
-                                            <Clock className="h-4 w-4 text-amber-600" />
-                                            <span className="text-xs text-amber-800">
+                                        <div className="mb-3 flex items-center gap-2 rounded-lg border border-warning-bright/40 bg-warning-bright/15 p-3">
+                                            <Clock className="h-4 w-4 text-ctr-warning" />
+                                            <span className="text-xs text-ctr-warning">
                                                 {t('myResult.autoConfirmWarning', { deadline: result.acknowledgeDeadline?.slice(0, 10) ?? '', days: Math.max(daysLeft, 0) })}
                                             </span>
                                         </div>

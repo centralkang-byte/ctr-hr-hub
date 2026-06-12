@@ -135,11 +135,9 @@
 | `/performance/cycles` | table | 평가 주기 목록 | 생성, 상태 전환 |
 | `/performance/cycles/[id]` | detail | 평가 주기 상세 (7-state pipeline) | 단계 진행 |
 | `/performance/manager-eval` | form | 매니저 평가 | 저장, 제출 |
-| `/performance/manager-evaluation` | form | 매니저 평가 (대체) | 저장, 제출 |
 | `/performance/self-eval` | form | 자기 평가 | 저장, 제출 |
 | `/performance/my-goals` | table | 나의 목표 | 등록, 제출 |
 | `/performance/my-checkins` | table | 나의 체크인 | 기록 |
-| `/performance/my-evaluation` | form | 나의 평가 | 자기평가 제출 |
 | `/performance/my-peer-review` | table | 나의 동료 평가 | 평가 제출 |
 | `/performance/my-result` | detail | 나의 성과 결과 (data masking) | 확인 |
 | `/performance/peer-review` | table | 동료 평가 관리 | — |

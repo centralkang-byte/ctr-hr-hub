@@ -10,6 +10,8 @@ import { toast } from '@/hooks/use-toast'
 import { CARD_STYLES, BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 import { STATUS_VARIANT } from '@/lib/styles/status'
 import { cn } from '@/lib/utils'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { TAB_STYLES } from '@/lib/styles/tab'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
 import type { SessionUser } from '@/types'
@@ -120,30 +122,31 @@ export default function PeerReviewClient({ user: _user }: { user: SessionUser })
       </div>
 
       {/* Cycle Selector + Tabs */}
-      <div className="flex items-center justify-between">
-        <div className="flex border-b border-border">
-          {TABS.map((tab_) => (
-            <button key={tab_.key} onClick={() => setTab(tab_.key)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 ${tab === tab_.key ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>
-              <tab_.icon className="w-4 h-4" />
-              {tab_.label}
-            </button>
-          ))}
+      <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
+        <div className="flex items-center justify-between">
+          <TabsList aria-label={t('peerReviewTitle')}>
+            {TABS.map((tab_) => (
+              <TabsTrigger key={tab_.key} value={tab_.key}>
+                <tab_.icon className={TAB_STYLES.icon} />
+                {tab_.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <select value={selectedCycleId} onChange={(e) => setSelectedCycleId(e.target.value)}
+            className="px-3 py-2 border border-border rounded-lg text-sm">
+            {cycles.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
         </div>
-        <select value={selectedCycleId} onChange={(e) => setSelectedCycleId(e.target.value)}
-          className="px-3 py-2 border border-border rounded-lg text-sm">
-          {cycles.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
-      </div>
 
-      {loading ? (
-        <TableSkeleton rows={5} cols={5} />
-      ) : error ? (
-        <div className="text-center text-sm text-destructive py-8">{error} <button onClick={fetchData} className="underline ml-2">{tCommon('retry')}</button></div>
-      ) : tab === 'my-reviews' ? (
-        /* My Reviews Tab */
+      {/* My Reviews Tab */}
+      <TabsContent value="my-reviews" className="mt-6">
+        {loading ? (
+          <TableSkeleton rows={5} cols={5} />
+        ) : error ? (
+          <div className="text-center text-sm text-destructive py-8">{error} <button onClick={fetchData} className="underline ml-2">{tCommon('retry')}</button></div>
+        ) : (
         <div className="space-y-4">
           {myReviews.length === 0 ? (
             <EmptyState
@@ -180,16 +183,26 @@ export default function PeerReviewClient({ user: _user }: { user: SessionUser })
             ))
           )}
         </div>
-      ) : tab === 'setup' ? (
-        /* Setup Tab */
+        )}
+      </TabsContent>
+
+      {/* Setup Tab */}
+      <TabsContent value="setup" className="mt-6">
         <div className="text-center py-10">
           <button onClick={() => router.push(`/performance/peer-review/${selectedCycleId}/setup`)}
             className={`px-6 py-3 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium`}>
             {t('openSetup')}
           </button>
         </div>
-      ) : (
-        /* Results Tab */
+      </TabsContent>
+
+      {/* Results Tab */}
+      <TabsContent value="results" className="mt-6">
+        {loading ? (
+          <TableSkeleton rows={5} cols={5} />
+        ) : error ? (
+          <div className="text-center text-sm text-destructive py-8">{error} <button onClick={fetchData} className="underline ml-2">{tCommon('retry')}</button></div>
+        ) : (
         teamResults && (
           <div className="space-y-4">
             {/* KPIs */}
@@ -250,7 +263,9 @@ export default function PeerReviewClient({ user: _user }: { user: SessionUser })
             </div>
           </div>
         )
-      )}
+        )}
+      </TabsContent>
+      </Tabs>
     </div>
   )
 }

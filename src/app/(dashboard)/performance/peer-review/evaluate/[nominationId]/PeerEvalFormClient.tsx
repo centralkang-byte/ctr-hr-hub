@@ -83,7 +83,7 @@ export default function PeerEvalFormClient({ user: _user, nominationId }: { user
         <h1 className="text-2xl font-bold text-foreground">{t('peerReview_kec9e91ec')}</h1>
       </div>
 
-      <div className="bg-primary/15 rounded-xl border border-primary/20 p-4 text-sm text-primary/90">
+      <div className="bg-primary/15 rounded-xl border border-primary/20 p-4 text-sm text-primary">
         {t('peerReview_keb8a94_kec9db5eb_keca791ea_kec8694ec_keab1b4ec_ked94bceb_kebb680ed')}
       </div>
 
@@ -120,7 +120,7 @@ export default function PeerEvalFormClient({ user: _user, nominationId }: { user
 
       {/* Comment */}
       <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-        <h3 className="text-sm font-semibold text-foreground mb-2">{t('kr_keca285ed_kecbd94eb')} <span className="text-red-500">*</span></h3>
+        <h3 className="text-sm font-semibold text-foreground mb-2">{t('kr_keca285ed_kecbd94eb')} <span className="text-destructive">*</span></h3>
         <p className="text-xs text-muted-foreground mb-3">{t('kr_keb8f99eb_keab095ec_kebb09cec_')}</p>
         <textarea
           value={comment}

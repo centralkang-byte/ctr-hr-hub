@@ -389,7 +389,7 @@ export default function QuarterlyReviewDetailClient({ user, reviewId }: Props) {
 
       {/* Action Footer */}
       {(canEditEmployee || canEditManager || canReopen) && (
-        <div className="flex items-center gap-3 justify-end sticky bottom-4 bg-card/80 backdrop-blur-sm rounded-2xl p-4 shadow-md">
+        <div className="flex items-center gap-3 justify-end sticky bottom-4 bg-card rounded-2xl p-4 shadow-md">
           {(canEditEmployee || canEditManager) && (
             <>
               <Button variant="outline" onClick={handleSave} disabled={saving}>

@@ -43,9 +43,9 @@ function Stars({ value, onChange, disabled }: { value: number; onChange: (v: num
     return (
         <div className="flex items-center gap-0.5">
             {[1, 2, 3, 4, 5].map((i) => (
-                <button key={i} disabled={disabled} onClick={() => onChange(i)}
+                <button key={i} type="button" disabled={disabled} onClick={() => onChange(i)}
                     className={`transition-transform ${disabled ? 'cursor-not-allowed' : 'hover:scale-110'}`}>
-                    <Star className={`h-5 w-5 ${i <= value ? 'fill-amber-500 text-amber-500' : 'text-muted-foreground/40'}`} />
+                    <Star className={`h-5 w-5 ${i <= value ? 'fill-wd-orange text-wd-orange' : 'text-muted-foreground/40'}`} />
                 </button>
             ))}
             <span className="ml-2 text-sm font-medium text-muted-foreground">{value}/5</span>
@@ -272,9 +272,9 @@ export default function MyPeerReviewClient({user: _user }: {
 
                         <div className="p-6 space-y-6">
                             {/* Anonymity notice */}
-                            <div className="flex items-start gap-2 rounded-lg border border-blue-100 bg-primary/5 p-3">
-                                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
-                                <p className="text-xs text-blue-800">
+                            <div className="flex items-start gap-2 rounded-lg border border-primary/20 bg-primary/10 p-3">
+                                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                                <p className="text-xs text-primary">
                                     {t('evaluation_keb8a94_kec9db5eb_kecb298eb_keba7a4eb_ked8f89ea_ked9995ec_kec8898_kec9e88ec')}
                                 </p>
                             </div>

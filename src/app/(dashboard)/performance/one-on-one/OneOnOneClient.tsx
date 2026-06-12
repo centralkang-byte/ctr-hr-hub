@@ -13,6 +13,8 @@ import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { CARD_STYLES, BUTTON_VARIANTS, MODAL_STYLES, TABLE_STYLES, CHART_THEME } from '@/lib/styles'
 import { cn } from '@/lib/utils'
+import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
+import { Badge } from '@/components/ui/badge'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 
@@ -65,6 +67,8 @@ const MEETING_TYPE_LABELS: Record<string, string> = {
   DEVELOPMENT: 'oneOnOne_typeDevelopment',
 }
 
+const STATUS_FILTER_VALUES = ['ALL', 'SCHEDULED', 'COMPLETED'] as const
+
 // ─── Component ───────────────────────────────────────────
 
 export default function OneOnOneClient({ user }: { user: SessionUser }) {
@@ -80,6 +84,13 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
   const [loading, setLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
+
+  // 방향키 내비게이션 + roving tabindex (statusFilter 세그먼트 컨트롤). 선택은 기존 onClick 유지.
+  const statusNav = useArrowKeyNavigation(
+    STATUS_FILTER_VALUES.length,
+    STATUS_FILTER_VALUES.findIndex((v) => v === statusFilter),
+    (i) => setStatusFilter(STATUS_FILTER_VALUES[i]),
+  )
 
   // Create form state
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
@@ -167,11 +178,15 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
         )}
       </div>
 
-      {/* Status Filter Tabs */}
-      <div className="flex border-b border-border">
-        {['ALL', 'SCHEDULED', 'COMPLETED'].map((s) => (
+      {/* Status Filter */}
+      <div role="radiogroup" aria-label={t('status')} className="flex border-b border-border" onKeyDown={statusNav.onKeyDown}>
+        {STATUS_FILTER_VALUES.map((s, i) => (
           <button
             key={s}
+            type="button"
+            role="radio"
+            aria-checked={statusFilter === s}
+            {...statusNav.itemProps(i)}
             onClick={() => setStatusFilter(s)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
               statusFilter === s
@@ -207,9 +222,9 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                             <p className="text-xs text-muted-foreground">
                               {new Date(m.scheduledAt).toLocaleDateString(locale)} {new Date(m.scheduledAt).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
                               {' · '}
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary/90">
+                              <Badge variant="info">
                                 {MEETING_TYPE_LABELS[m.meetingType] ? t(MEETING_TYPE_LABELS[m.meetingType]) : m.meetingType}
-                              </span>
+                              </Badge>
                             </p>
                           }
                         />
@@ -217,7 +232,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                       {isManager && (
                         <button
                           onClick={() => router.push(`/performance/one-on-one/${m.id}`)}
-                          className="text-sm font-medium text-primary hover:text-primary/90"
+                          className="text-sm font-medium text-primary hover:text-primary"
                         >
                           {t('kr_keab8b0eb')}
                         </button>
@@ -236,7 +251,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
           {(statusFilter === 'ALL' || statusFilter === 'COMPLETED') && completed.length > 0 && (
             <div>
               <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600" /> {t('complete_keb909c_1_1')}
+                <CheckCircle2 className="w-5 h-5 text-[#006b39]" /> {t('complete_keb909c_1_1')}
               </h2>
               <div className={TABLE_STYLES.wrapper}>
                 <table className={TABLE_STYLES.table}>
@@ -268,16 +283,16 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                             {new Date(m.completedAt ?? m.scheduledAt).toLocaleDateString(locale)}
                           </td>
                           <td className={TABLE_STYLES.cell}>
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-background text-muted-foreground border border-border">
+                            <Badge variant="neutral">
                               {MEETING_TYPE_LABELS[m.meetingType] ? t(MEETING_TYPE_LABELS[m.meetingType]) : m.meetingType}
-                            </span>
+                            </Badge>
                           </td>
                           {isManager && (
                             <td className={TABLE_STYLES.cell}>
                               {pendingActions > 0 ? (
-                                <span className="text-red-500 font-medium">{t('oneOnOne_pendingCount', { count: pendingActions })}</span>
+                                <span className="text-destructive font-medium">{t('oneOnOne_pendingCount', { count: pendingActions })}</span>
                               ) : (
-                                <span className="text-emerald-600">{t('kr_0keab1b4')}</span>
+                                <span className="text-[#006b39]">{t('kr_0keab1b4')}</span>
                               )}
                             </td>
                           )}
@@ -311,8 +326,8 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={chartData}>
                           <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
-                          <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#666' }} />
-                          <YAxis tick={{ fontSize: 12, fill: '#666' }} allowDecimals={false} />
+                          <XAxis dataKey="month" tick={CHART_THEME.axis.tick} />
+                          <YAxis tick={CHART_THEME.axis.tick} allowDecimals={false} />
                           <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
                           {dashboard.teamMembers.map((member, i) => (
                             <Bar key={member.employeeId} dataKey={member.name} fill={chartColors[i % chartColors.length]} radius={[4, 4, 0, 0]} />
@@ -322,7 +337,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                     </div>
                     {/* Overdue warning */}
                     {dashboard.teamMembers.filter((m) => m.overdue).length > 0 && (
-                      <div className="mt-3 flex items-center gap-2 text-sm text-red-500">
+                      <div className="mt-3 flex items-center gap-2 text-sm text-destructive">
                         <AlertTriangle className="w-4 h-4" />
                         <span>
                           {t('oneOnOne_overdueWarning')}:{' '}
@@ -338,7 +353,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
               {dashboard.pendingActionItems.length > 0 && (
                 <div>
                   <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-amber-500" /> {t('kr_kebafb8ec_kec95a1ec_kec9584ec')}
+                    <Clock className="w-5 h-5 text-ctr-warning" /> {t('kr_kebafb8ec_kec95a1ec_kec9584ec')}
                   </h2>
                   <div className={`${CARD_STYLES.kpi} space-y-2`}>
                     {dashboard.pendingActionItems.map((a, i) => (

@@ -441,7 +441,7 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
                             onClick={() => setCompetencyGrade(g.code)}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
                               competencyGrade === g.code
-                                ? 'bg-primary/90 text-white border-primary/90'
+                                ? 'bg-primary text-white border-primary'
                                 : 'bg-card text-foreground border-border hover:bg-background'
                             }`}
                           >
@@ -457,8 +457,8 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
               {/* 종합 등급 표시 — overallGradeEnabled=true일 때 */}
               {evalSettings?.overallGradeEnabled && performanceGrade && (
                 <div className="rounded-xl border border-primary/20 bg-tertiary-container/10 p-4">
-                  <p className="text-sm font-semibold text-primary/90">{t('kr_keca285ed_keb93b1ea_kec9e90eb_')}</p>
-                  <p className="text-xs text-emerald-700 mt-1">
+                  <p className="text-sm font-semibold text-primary">{t('kr_keca285ed_keb93b1ea_kec9e90eb_')}</p>
+                  <p className="text-xs text-[#006b39] mt-1">
                     {t('managerEval.mboWeightGrade', { weight: evalSettings.mboWeight, grade: performanceGrade })}
                     {evalSettings.methodology === 'MBO_BEI' && competencyGrade
                       ? ` + ${t('managerEval.beiWeightGrade', { weight: evalSettings.beiWeight, grade: competencyGrade })}`
@@ -477,7 +477,7 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
                   <button
                     onClick={handleAiSuggest}
                     disabled={aiLoading}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/15 text-primary/90 hover:bg-primary/15 transition-colors disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/15 text-primary hover:bg-primary/15 transition-colors disabled:opacity-50"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
                     {aiLoading ? t('aiGenerating') : t('managerEval.aiSuggest')}
@@ -498,7 +498,7 @@ export default function ManagerEvalClient({ user: _user }: { user: SessionUser }
                   onClick={() => setShowAiDraft(true)}
                   disabled={!currentEvaluationId}
                   title={!currentEvaluationId ? t('managerEval.saveFirstForAi') : undefined}
-                  className="flex items-center gap-1.5 px-3 py-2 border border-primary/20 bg-primary/15 text-primary/90 rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary/15 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-2 border border-primary/20 bg-primary/15 text-primary rounded-lg text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary/15 transition-colors"
                 >
                   <Sparkles className="w-4 h-4" />
                   {t('kr_ai_draft_kec839dec')}

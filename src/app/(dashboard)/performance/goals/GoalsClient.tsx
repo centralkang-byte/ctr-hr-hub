@@ -8,20 +8,12 @@ import { Plus, Pencil, Trash2, TrendingUp, FileEdit, History } from 'lucide-reac
 import { apiClient } from '@/lib/api'
 import type { SessionUser, MboGoal } from '@/types'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { toast } from '@/hooks/use-toast'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ProposeRevisionDialog } from '@/components/performance/goals/ProposeRevisionDialog'
 import { RevisionHistorySheet } from '@/components/performance/goals/RevisionHistorySheet'
 
-
-// ─── Status config ────────────────────────────────────────
-
-const STATUS_STYLES: Record<string, string> = {
-  DRAFT: 'bg-muted text-muted-foreground',
-  PENDING_APPROVAL: 'bg-amber-500/10 text-amber-700',
-  APPROVED: 'bg-primary/10 text-tertiary',
-  REJECTED: 'bg-destructive/5 text-destructive',
-}
 
 // ─── Types ────────────────────────────────────────────────
 
@@ -226,11 +218,9 @@ export default function GoalsClient({
                         <h3 className="text-base font-semibold text-foreground">
                           {goal.title}
                         </h3>
-                        <span
-                          className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[goal.status] ?? 'bg-muted text-muted-foreground'}`}
-                        >
+                        <StatusBadge status={goal.status}>
                           {t(`goalStatusLabels.${goal.status}` as Parameters<typeof t>[0])}
-                        </span>
+                        </StatusBadge>
                       </div>
                       {goal.description && (
                         <p className="text-sm text-muted-foreground line-clamp-2">
@@ -387,12 +377,12 @@ export default function GoalsClient({
             <div className="text-sm">
               <span className="text-muted-foreground">{t('weightSum')}</span>
               <span
-                className={`font-bold ${totalWeight === 100 ? 'text-tertiary' : 'text-destructive'}`}
+                className={`font-bold ${totalWeight === 100 ? 'text-[#006b39]' : 'text-destructive'}`}
               >
                 {totalWeight}%
               </span>
               {totalWeight !== 100 && (
-                <span className="ml-2 text-xs text-red-500">
+                <span className="ml-2 text-xs text-destructive">
                   {t('weightMustBe100')}
                 </span>
               )}
@@ -400,7 +390,7 @@ export default function GoalsClient({
             <button
               onClick={handleSubmitAll}
               disabled={!canSubmit || submitting}
-              className="rounded-lg bg-destructive/50 px-5 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40 transition-opacity"
+              className="rounded-lg bg-warm px-5 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40 transition-opacity"
             >
               {submitting ? t('submittingAll') : t('submitAll')}
             </button>

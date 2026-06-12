@@ -113,7 +113,7 @@ export default function PeerReviewResultsClient({ user: _user, cycleId }: { user
           </div>
         </div>
         <button onClick={handleAiSummary} disabled={aiLoading}
-          className="flex items-center gap-2 px-4 py-2 border border-primary/20 text-primary/90 rounded-lg text-sm font-medium hover:bg-primary/15 disabled:opacity-50">
+          className="flex items-center gap-2 px-4 py-2 border border-primary/20 text-primary rounded-lg text-sm font-medium hover:bg-primary/15 disabled:opacity-50">
           <Sparkles className="w-4 h-4" />
           {aiLoading ? t('aiAnalyzing') : t('peerReviewResults.aiSummary')}
         </button>
@@ -145,9 +145,9 @@ export default function PeerReviewResultsClient({ user: _user, cycleId }: { user
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={radarData}>
-                  <PolarGrid stroke="#E8E8E8" />
-                  <PolarAngleAxis dataKey="competency" tick={{ fontSize: 11, fill: '#555' }} />
-                  <PolarRadiusAxis angle={30} domain={[0, 5]} tick={{ fontSize: 10, fill: '#999' }} />
+                  <PolarGrid stroke={CHART_THEME.grid.stroke} />
+                  <PolarAngleAxis dataKey="competency" tick={CHART_THEME.axis.tick} />
+                  <PolarRadiusAxis angle={30} domain={[0, 5]} tick={CHART_THEME.axis.tick} />
                   <Radar name={t('peerReviewResults.radarScore')} dataKey="score" stroke={CHART_THEME.colors[3]} fill={CHART_THEME.colors[3]} fillOpacity={0.3} />
                 </RadarChart>
               </ResponsiveContainer>
@@ -160,26 +160,26 @@ export default function PeerReviewResultsClient({ user: _user, cycleId }: { user
       {aiSummary && (
         <div className="bg-primary/15 rounded-xl border border-primary/20 p-5 space-y-3">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-primary/90" />
-            <span className="text-sm font-semibold text-primary/90">{t('kr_ai_keca285ed_analytics')}</span>
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-semibold text-primary">{t('kr_ai_keca285ed_analytics')}</span>
           </div>
           <p className="text-sm text-foreground">{aiSummary.summary}</p>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <h4 className="text-xs font-medium text-emerald-600 mb-2">{t('kr_keab095ec')}</h4>
+              <h4 className="text-xs font-medium text-[#006b39] mb-2">{t('kr_keab095ec')}</h4>
               <ul className="space-y-1">{aiSummary.strengths.map((s, i) => (
                 <li key={i} className="text-xs text-foreground">• {s}</li>
               ))}</ul>
             </div>
             <div>
-              <h4 className="text-xs font-medium text-amber-700 mb-2">{t('kr_keab09ceb_kec9881ec')}</h4>
+              <h4 className="text-xs font-medium text-ctr-warning mb-2">{t('kr_keab09ceb_kec9881ec')}</h4>
               <ul className="space-y-1">{aiSummary.development_areas.map((d, i) => (
                 <li key={i} className="text-xs text-foreground">• {d}</li>
               ))}</ul>
             </div>
           </div>
           <div className="border-t border-primary/20 pt-2">
-            <h4 className="text-xs font-medium text-primary/90 mb-1">{t('kr_kecbd94ec_keca09cec')}</h4>
+            <h4 className="text-xs font-medium text-primary mb-1">{t('kr_kecbd94ec_keca09cec')}</h4>
             <p className="text-xs text-foreground">{aiSummary.coaching_suggestion}</p>
           </div>
         </div>

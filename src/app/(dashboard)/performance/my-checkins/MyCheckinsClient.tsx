@@ -96,8 +96,8 @@ export default function MyCheckinsClient({user: _user }: {
     if (!isCheckInPeriod) {
         return (
             <div className="flex min-h-[60vh] items-center justify-center p-6">
-                <div className="mx-auto max-w-md rounded-2xl bg-amber-500/10 p-6 text-center">
-                    <ClipboardCheck className="mx-auto mb-4 h-12 w-12 text-amber-600" />
+                <div className="mx-auto max-w-md rounded-2xl bg-warning-bright/15 p-6 text-center">
+                    <ClipboardCheck className="mx-auto mb-4 h-12 w-12 text-ctr-warning" />
                     <h2 className="mb-2 text-lg font-semibold text-foreground">{t('checkinDeprecation')}</h2>
                     <p className="mb-4 text-sm text-muted-foreground">{t('checkinDeprecationDesc')}</p>
                     <Link href="/performance/my-quarterly-review">
@@ -137,13 +137,13 @@ export default function MyCheckinsClient({user: _user }: {
 
                 {/* Status banner */}
                 {checkinStatus && (
-                    <div className={`mb-6 rounded-xl border p-4 ${allComplete ? 'border-emerald-200 bg-emerald-500/15' : isMandatory ? 'border-amber-200 bg-amber-500/15' : 'border-border bg-card'}`}>
+                    <div className={`mb-6 rounded-2xl border p-4 ${allComplete ? 'border-tertiary/40 bg-tertiary/10' : isMandatory ? 'border-ctr-warning/40 bg-warning-bright/15' : 'border-border bg-card'}`}>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 {allComplete ? (
-                                    <><CheckCircle2 className="h-5 w-5 text-emerald-600" /><span className="font-medium text-emerald-700">{t('kr_kecb2b4ed_complete')}</span></>
+                                    <><CheckCircle2 className="h-5 w-5 text-[#006b39]" /><span className="font-medium text-[#006b39]">{t('kr_kecb2b4ed_complete')}</span></>
                                 ) : (
-                                    <><Clock className="h-5 w-5 text-amber-600" /><span className="font-medium text-amber-800">{isMandatory ? t('checkin.mandatoryInProgress') : t('checkin.recommendedInProgress')}</span></>
+                                    <><Clock className="h-5 w-5 text-ctr-warning" /><span className="font-medium text-ctr-warning">{isMandatory ? t('checkin.mandatoryInProgress') : t('checkin.recommendedInProgress')}</span></>
                                 )}
                             </div>
                             {checkinStatus.deadline && (
@@ -155,7 +155,7 @@ export default function MyCheckinsClient({user: _user }: {
 
                 {/* Error */}
                 {error && (
-                    <div className="mb-4 rounded-lg border border-destructive/15 bg-destructive/5 p-3 text-sm text-destructive">
+                    <div className="mb-4 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
                         {error} <button onClick={fetchData} className="ml-2 font-medium underline">{tCommon('retry')}</button>
                     </div>
                 )}
@@ -182,13 +182,13 @@ export default function MyCheckinsClient({user: _user }: {
                                         <div key={i} className="flex items-center justify-between px-5 py-4">
                                             <div className="flex items-center gap-3">
                                                 {c.done ? (
-                                                    <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                                                    <CheckCircle2 className="h-5 w-5 text-[#006b39]" />
                                                 ) : (
                                                     <Circle className="h-5 w-5 text-muted-foreground" />
                                                 )}
-                                                <span className={`text-sm font-medium ${c.done ? 'text-emerald-700' : 'text-foreground'}`}>{c.label}</span>
+                                                <span className={`text-sm font-medium ${c.done ? 'text-[#006b39]' : 'text-foreground'}`}>{c.label}</span>
                                             </div>
-                                            <span className={`text-sm ${c.done ? 'text-emerald-600' : 'text-muted-foreground'}`}>{c.detail}</span>
+                                            <span className={`text-sm ${c.done ? 'text-[#006b39]' : 'text-muted-foreground'}`}>{c.detail}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -214,7 +214,14 @@ export default function MyCheckinsClient({user: _user }: {
                                                 <span className="text-sm font-medium text-primary">{Number(goal.achievementScore ?? 0)}%</span>
                                             </div>
                                             {/* Progress bar */}
-                                            <div className="mb-3 h-2 rounded-full bg-border">
+                                            <div
+                                                className="mb-3 h-2 rounded-full bg-border"
+                                                role="progressbar"
+                                                aria-valuenow={Math.min(Number(goal.achievementScore ?? 0), 100)}
+                                                aria-valuemin={0}
+                                                aria-valuemax={100}
+                                                aria-label={`${goal.title}: ${Math.min(Number(goal.achievementScore ?? 0), 100)}%`}
+                                            >
                                                 <div className="h-2 rounded-full bg-primary transition-all" style={{ width: `${Math.min(Number(goal.achievementScore ?? 0), 100)}%` }} />
                                             </div>
                                             {/* Inline edit (only during CHECK_IN) */}

@@ -5,12 +5,14 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Heart, ThumbsUp, Search, Send, Sparkles } from 'lucide-react'
+import { Heart, ThumbsUp, Search, Send, Sparkles, ArrowRight } from 'lucide-react'
 import { PieChart, Pie, Cell, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { BUTTON_VARIANTS, MODAL_STYLES, CHART_THEME } from '@/lib/styles'
+import { RECOGNITION_VALUE_CONFIG } from '@/lib/styles/performance'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 
 
@@ -43,13 +45,6 @@ interface Employee {
 }
 
 // ─── Constants ───────────────────────────────────────────
-
-const VALUE_CONFIG: Record<string, { labelKey: string; dotClass: string; bgDefault: string; borderDefault: string; textDefault: string; bgActive: string; textActive: string }> = {
-  CHALLENGE: { labelKey: 'recognition_valueChallenge', dotClass: 'bg-destructive', bgDefault: 'bg-destructive/5', borderDefault: 'border-destructive/20', textDefault: 'text-red-500', bgActive: 'bg-destructive/50', textActive: 'text-white' },
-  TRUST: { labelKey: 'recognition_valueTrust', dotClass: 'bg-tertiary', bgDefault: 'bg-primary/10', borderDefault: 'border-green-300', textDefault: 'text-primary', bgActive: 'bg-primary', textActive: 'text-white' },
-  RESPONSIBILITY: { labelKey: 'recognition_valueResponsibility', dotClass: 'bg-amber-500', bgDefault: 'bg-amber-500/10', borderDefault: 'border-amber-200', textDefault: 'text-amber-500', bgActive: 'bg-amber-500/100', textActive: 'text-white' },
-  RESPECT: { labelKey: 'recognition_valueRespect', dotClass: 'bg-primary', bgDefault: 'bg-primary/5', borderDefault: 'border-primary/20', textDefault: 'text-blue-500', bgActive: 'bg-primary/50', textActive: 'text-white' },
-}
 
 const VALUE_LABELS: Record<string, string> = { CHALLENGE: 'Challenge', TRUST: 'Trust', RESPONSIBILITY: 'Responsibility', RESPECT: 'Respect' }
 const LOCAL_CHART_COLORS = [CHART_THEME.colors[4], CHART_THEME.colors[0], CHART_THEME.colors[3], CHART_THEME.colors[1]]
@@ -175,27 +170,12 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'feed' | 'stats')}>
       <div className="flex items-center justify-between">
-        <div className="flex border-b border-border">
-          <button
-            onClick={() => setActiveTab('feed')}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
-              activeTab === 'feed' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {t('kr_ked94bceb')}
-          </button>
-          {isAdmin && (
-            <button
-              onClick={() => setActiveTab('stats')}
-              className={`px-4 py-2.5 text-sm font-medium border-b-2 ${
-                activeTab === 'stats' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {t('statistics')}
-            </button>
-          )}
-        </div>
+        <TabsList aria-label={t('kr_ked94bceb')}>
+          <TabsTrigger value="feed">{t('kr_ked94bceb')}</TabsTrigger>
+          {isAdmin && <TabsTrigger value="stats">{t('statistics')}</TabsTrigger>}
+        </TabsList>
         {activeTab === 'feed' && (
           <select
             value={valueFilter}
@@ -203,15 +183,15 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
             className="px-3 py-2 border border-border rounded-lg text-sm"
           >
             <option value="">{tCommon('all')}</option>
-            {Object.entries(VALUE_CONFIG).map(([key, config]) => (
-              <option key={key} value={key}>● {t(config.labelKey)}</option>
+            {Object.entries(RECOGNITION_VALUE_CONFIG).map(([key, config]) => (
+              <option key={key} value={key}>{t(config.labelKey)}</option>
             ))}
           </select>
         )}
       </div>
 
       {/* Feed Tab */}
-      {activeTab === 'feed' && (
+      <TabsContent value="feed">
         <div className="space-y-4">
           {loading ? (
             <div className="text-center py-12 text-muted-foreground">{tCommon('loading')}</div>
@@ -223,13 +203,13 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
           ) : (
             <>
               {feed.map((item) => {
-                const config = VALUE_CONFIG[item.coreValue]
+                const config = RECOGNITION_VALUE_CONFIG[item.coreValue]
                 return (
-                  <div key={item.id} className="bg-card rounded-xl shadow-sm border border-border p-6">
+                  <div key={item.id} className="bg-card rounded-2xl shadow-sm border border-border p-6">
                     <div className="flex items-center gap-2 mb-3">
                       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                       <EmployeeCell size="sm" employee={item.sender as any} />
-                      <span className="text-muted-foreground">→</span>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                       <EmployeeCell size="sm" employee={item.receiver as any} />
                     </div>
@@ -273,20 +253,21 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
             </>
           )}
         </div>
-      )}
+      </TabsContent>
 
       {/* Stats Tab */}
-      {activeTab === 'stats' && stats && (
+      <TabsContent value="stats">
+        {stats && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Value Distribution */}
-            <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+            <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
               <h3 className="text-base font-semibold text-foreground mb-4">{t('kr_ked95b5ec_kebb684ed')}</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={stats.valueDistribution.map((v) => ({ name: VALUE_CONFIG[v.value]?.labelKey ? t(VALUE_CONFIG[v.value].labelKey) : v.value, value: v.count }))}
+                      data={stats.valueDistribution.map((v) => ({ name: RECOGNITION_VALUE_CONFIG[v.value]?.labelKey ? t(RECOGNITION_VALUE_CONFIG[v.value].labelKey) : v.value, value: v.count }))}
                       dataKey="value"
                       nameKey="name"
                       cx="50%"
@@ -306,7 +287,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
             </div>
 
             {/* Department Activity */}
-            <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+            <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
               <h3 className="text-base font-semibold text-foreground mb-4">{t('department_kebb384_ked999cec')}</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -325,7 +306,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
           </div>
 
           {/* Monthly Trend */}
-          <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+          <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
             <h3 className="text-base font-semibold text-foreground mb-4">{t('month_kebb384_kecb694ec')}</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -342,9 +323,9 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
 
           {/* Rankings */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+            <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
               <h3 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-500" /> Top Recognizers
+                <Sparkles className="w-4 h-4 text-ctr-warning" /> Top Recognizers
               </h3>
               <div className="space-y-2">
                 {stats.topRecognizers.map((r, i) => (
@@ -359,9 +340,9 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
               </div>
             </div>
 
-            <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+            <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
               <h3 className="text-base font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Heart className="w-4 h-4 text-red-500" /> Top Recognized
+                <Heart className="w-4 h-4 text-destructive" /> Top Recognized
               </h3>
               <div className="space-y-2">
                 {stats.topRecognized.map((r, i) => (
@@ -377,12 +358,14 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
             </div>
           </div>
         </div>
-      )}
+        )}
+      </TabsContent>
+      </Tabs>
 
       {/* Create Modal */}
       {showCreateModal && (
         <div className={MODAL_STYLES.container}>
-          <div className="bg-card rounded-xl shadow-lg w-full max-w-md">
+          <div className="bg-card rounded-2xl shadow-lg w-full max-w-md">
             <div className="p-6 border-b border-border">
               <h3 className="text-lg font-semibold text-foreground">{t('kr_kecb9adec_kebb3b4eb')}</h3>
             </div>
@@ -395,7 +378,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
                     <span className="text-sm text-foreground">
                       {selectedReceiver.name} ({selectedReceiver.employeeNo})
                     </span>
-                    <button onClick={() => { setSelectedReceiver(null); setSearchQuery('') }} className="text-xs text-muted-foreground hover:text-red-500">{t('kr_kebb380ea')}</button>
+                    <button onClick={() => { setSelectedReceiver(null); setSearchQuery('') }} className="text-xs text-muted-foreground hover:text-destructive">{t('kr_kebb380ea')}</button>
                   </div>
                 ) : (
                   <div className="relative">
@@ -429,7 +412,7 @@ export default function RecognitionClient({ user }: { user: SessionUser }) {
               <div>
                 <label className="text-sm font-medium text-foreground mb-2 block">{t('kr_ctr_ked95b5ec_kec84a0ed_requir')}</label>
                 <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(VALUE_CONFIG).map(([key, config]) => (
+                  {Object.entries(RECOGNITION_VALUE_CONFIG).map(([key, config]) => (
                     <button
                       key={key}
                       onClick={() => setSelectedValue(key)}

@@ -20,6 +20,7 @@ import {
   type DragStartEvent,
 } from '@dnd-kit/core'
 import { cn } from '@/lib/utils'
+import { NINE_BOX_CONFIG, READINESS_CONFIG } from '@/lib/styles/performance'
 import { blockCodeToNum } from '../hooks/useBatchAdjustmentState'
 import type { PendingChange } from '../hooks/useBatchAdjustmentState'
 
@@ -53,18 +54,6 @@ interface Props {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const BLOCK_LABELS: Record<number, { label: string; color: string }> = {
-  1: { label: '1A', color: 'bg-destructive/10 text-destructive' },
-  2: { label: '2A', color: 'bg-amber-500/15 text-amber-700' },
-  3: { label: '3A', color: 'bg-emerald-500/15 text-emerald-700' },
-  4: { label: '1B', color: 'bg-amber-500/15 text-amber-700' },
-  5: { label: '2B', color: 'bg-primary/10 text-primary/90' },
-  6: { label: '3B', color: 'bg-emerald-500/15 text-emerald-700' },
-  7: { label: '1C', color: 'bg-primary/15 text-primary/90' },
-  8: { label: '2C', color: 'bg-emerald-500/15 text-emerald-700' },
-  9: { label: '3C', color: 'bg-primary/10 text-primary/90' },
-}
-
 // rows = competency (high to low), cols = performance (low to high)
 const GRID_LAYOUT = [
   [7, 8, 9],
@@ -88,7 +77,7 @@ function DroppableBlock({
   onSelectAll: () => void
 }) {
   const { isOver, setNodeRef } = useDroppable({ id: `block-${blockNum}` })
-  const blockInfo = BLOCK_LABELS[blockNum]
+  const blockInfo = NINE_BOX_CONFIG[blockNum]
 
   return (
     <div
@@ -100,7 +89,7 @@ function DroppableBlock({
       )}
     >
       <div className="flex items-center justify-between mb-1">
-        <span className={cn('text-xs font-bold px-1.5 py-0.5 rounded-full', blockInfo?.color ?? '')}>
+        <span className={cn('text-xs font-bold px-1.5 py-0.5 rounded-full', blockInfo?.className ?? '')}>
           {blockInfo?.label ?? blockNum}
         </span>
         <div className="flex items-center gap-1">
@@ -109,6 +98,7 @@ function DroppableBlock({
               onClick={onSelectAll}
               className="text-[10px] text-muted-foreground hover:text-primary transition-colors"
               title="전체 선택"
+              aria-label="전체 선택"
             >
               all
             </button>
@@ -189,9 +179,9 @@ function EmployeeChip({
       >
         {ev.employee.name}
       </span>
-      {readiness === 'READY_NOW' && <span className="flex-shrink-0 w-2 h-2 rounded-full bg-emerald-500" />}
-      {readiness === 'READY_1_2_YEARS' && <span className="flex-shrink-0 w-2 h-2 rounded-full bg-amber-500" />}
-      {readiness === 'READY_3_PLUS_YEARS' && <span className="flex-shrink-0 w-2 h-2 rounded-full bg-destructive" />}
+      {readiness === 'READY_NOW' && <span className={cn('flex-shrink-0 w-2 h-2 rounded-full', READINESS_CONFIG.READY_NOW.dotClass)} />}
+      {readiness === 'READY_1_2_YEARS' && <span className={cn('flex-shrink-0 w-2 h-2 rounded-full', READINESS_CONFIG.READY_1_2_YEARS.dotClass)} />}
+      {readiness === 'READY_3_PLUS_YEARS' && <span className={cn('flex-shrink-0 w-2 h-2 rounded-full', READINESS_CONFIG.READY_3_PLUS_YEARS.dotClass)} />}
     </div>
   )
 }

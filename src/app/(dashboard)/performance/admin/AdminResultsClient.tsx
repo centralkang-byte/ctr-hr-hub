@@ -195,7 +195,7 @@ export default function AdminResultsClient({ user: _user }: { user: SessionUser 
                 <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{r.finalResult.performanceScore?.toFixed(1) ?? '-'}</td>
                 <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{r.finalResult.competencyScore?.toFixed(1) ?? '-'}</td>
                 <td className={cn(TABLE_STYLES.cell, "text-center")}>
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.finalResult.calibrated ? 'bg-primary/15 text-primary/90' : 'bg-primary/10 text-primary/90'}`}>
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${r.finalResult.calibrated ? 'bg-primary/15 text-primary' : 'bg-primary/10 text-primary'}`}>
                     {r.finalResult.emsBlock ?? '-'}
                   </span>
                 </td>
@@ -232,7 +232,7 @@ export default function AdminResultsClient({ user: _user }: { user: SessionUser 
           {cycles.find((c) => c.id === selectedCycleId)?.status === 'CALIBRATION' && (
             <button
               onClick={handleFinalize}
-              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2 bg-warm hover:brightness-95 text-white rounded-lg text-sm font-medium"
             >
               <Lock className="w-4 h-4" />
               {t('kr_kec84b1ea_confirmed')}

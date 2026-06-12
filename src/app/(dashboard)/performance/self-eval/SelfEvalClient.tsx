@@ -1,6 +1,5 @@
 'use client'
 
-import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 
 import { useCallback, useEffect, useState } from 'react'
@@ -240,17 +239,17 @@ export default function SelfEvalClient({
           onChange={(e) => setSelectedCycleId(e.target.value)}
           className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
         >
-          {!cycles?.length && <EmptyState />}
-              {cycles?.map((c) => (
+          {!cycles?.length && <option value="" disabled>{t('emptyCycles')}</option>}
+          {cycles?.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </select>
       </div>
 
       {isSubmitted && (
-        <div className="flex items-center gap-2 p-4 rounded-xl border border-emerald-200 bg-emerald-500/15">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-          <span className="text-sm font-medium text-emerald-700">{t('selfEval_keab080_keca09cec')}</span>
+        <div className="flex items-center gap-2 p-4 rounded-xl border border-tertiary/30 bg-tertiary/10">
+          <CheckCircle2 className="w-5 h-5 text-[#006b39]" />
+          <span className="text-sm font-medium text-[#006b39]">{t('selfEval_keab080_keca09cec')}</span>
         </div>
       )}
 
@@ -355,7 +354,7 @@ export default function SelfEvalClient({
             <button
               onClick={handleAiSuggest}
               disabled={aiLoading}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/15 text-primary/90 hover:bg-primary/15 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/15 text-primary hover:bg-primary/15 transition-colors disabled:opacity-50"
             >
               <Sparkles className="w-3.5 h-3.5" />
               {aiLoading ? t('aiGenerating') : t('managerEval.aiSuggest')}

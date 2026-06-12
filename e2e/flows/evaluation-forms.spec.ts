@@ -28,15 +28,6 @@ test.describe('Eval Forms: EMPLOYEE self-evaluation', () => {
     await expect(page.locator('main')).toBeVisible()
   })
 
-  test('can access my-evaluation page', async ({ page }) => {
-    await assertPageLoads(page, '/performance/my-evaluation')
-    await waitForPageReady(page)
-    await waitForLoading(page)
-
-    await expect(page.locator('text=페이지를 불러올 수 없습니다')).not.toBeVisible()
-    await expect(page.locator('main')).toBeVisible()
-  })
-
   test('can access my-goals page', async ({ page }) => {
     await assertPageLoads(page, '/performance/my-goals')
     await waitForPageReady(page)
@@ -109,15 +100,6 @@ test.describe('Eval Forms: MANAGER team views', () => {
 
   test('can access team-results page', async ({ page }) => {
     await assertPageLoads(page, '/performance/team-results')
-    await waitForPageReady(page)
-    await waitForLoading(page)
-
-    await expect(page.locator('text=페이지를 불러올 수 없습니다')).not.toBeVisible()
-    await expect(page.locator('main')).toBeVisible()
-  })
-
-  test('can access manager-evaluation page', async ({ page }) => {
-    await assertPageLoads(page, '/performance/manager-evaluation')
     await waitForPageReady(page)
     await waitForLoading(page)
 

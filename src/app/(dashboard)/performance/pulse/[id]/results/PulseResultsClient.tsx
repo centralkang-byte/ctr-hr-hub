@@ -93,7 +93,7 @@ export default function PulseResultsClient({ user: _user, id }: { user: SessionU
           </div>
         </div>
         <button onClick={handleAiAnalysis} disabled={aiLoading}
-          className="flex items-center gap-2 px-4 py-2 border border-primary/20 text-primary/90 rounded-lg text-sm font-medium hover:bg-primary/15 disabled:opacity-50">
+          className="flex items-center gap-2 px-4 py-2 border border-primary/20 text-primary rounded-lg text-sm font-medium hover:bg-primary/10 disabled:opacity-50">
           <Sparkles className="w-4 h-4" />
           {aiLoading ? t('aiAnalyzing') : t('pulse.aiInsight')}
         </button>
@@ -101,15 +101,15 @@ export default function PulseResultsClient({ user: _user, id }: { user: SessionU
 
       {/* AI Analysis */}
       {aiAnalysis && (
-        <div className="bg-primary/15 rounded-xl border border-primary/20 p-5 space-y-3">
+        <div className="bg-primary/10 rounded-2xl border border-primary/20 p-5 space-y-3">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-primary/90" />
-            <span className="text-sm font-semibold text-primary/90">{t('kr_ai_analytics_keab2b0ea')}</span>
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-semibold text-primary">{t('kr_ai_analytics_keab2b0ea')}</span>
           </div>
           <p className="text-sm text-foreground">{aiAnalysis.overall_sentiment}</p>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <h4 className="text-xs font-medium text-primary/90 mb-2">{t('kr_ked95b5ec_kec9db8ec')}</h4>
+              <h4 className="text-xs font-medium text-primary mb-2">{t('kr_ked95b5ec_kec9db8ec')}</h4>
               <ul className="space-y-1">{aiAnalysis.key_insights.map((ins, i) => (
                 <li key={i} className="text-xs text-foreground">• {ins}</li>
               ))}</ul>
@@ -121,7 +121,7 @@ export default function PulseResultsClient({ user: _user, id }: { user: SessionU
               ))}</ul>
             </div>
             <div>
-              <h4 className="text-xs font-medium text-emerald-600 mb-2">{t('kr_keab09cec_keca09cec')}</h4>
+              <h4 className="text-xs font-medium text-[#006b39] mb-2">{t('kr_keab09cec_keca09cec')}</h4>
               <ul className="space-y-1">{aiAnalysis.recommendations.map((r, i) => (
                 <li key={i} className="text-xs text-foreground">• {r}</li>
               ))}</ul>
@@ -136,7 +136,7 @@ export default function PulseResultsClient({ user: _user, id }: { user: SessionU
       {/* Question Results */}
       <div className="space-y-6">
         {results.questionResults.map((q, i) => (
-          <div key={q.questionId} className="bg-card rounded-xl shadow-sm border border-border p-6">
+          <div key={q.questionId} className="bg-card rounded-2xl shadow-sm border border-border p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <span className="text-xs text-muted-foreground font-medium">Q{i + 1}</span>
@@ -148,7 +148,7 @@ export default function PulseResultsClient({ user: _user, id }: { user: SessionU
             {q.questionType === 'LIKERT' && q.distribution && (
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl font-bold text-foreground">{q.average}</span>
+                  <span className="text-2xl font-bold text-foreground tabular-nums">{q.average}</span>
                   <span className="text-sm text-muted-foreground">/ 5.0</span>
                 </div>
                 <div className="h-48">
@@ -158,8 +158,8 @@ export default function PulseResultsClient({ user: _user, id }: { user: SessionU
                       count: q.distribution![String(v)] ?? 0,
                     }))}>
                       <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
-                      <XAxis dataKey="label" tick={{ fontSize: 12, fill: '#666' }} />
-                      <YAxis tick={{ fontSize: 12, fill: '#666' }} />
+                      <XAxis dataKey="label" tick={CHART_THEME.axis.tick} />
+                      <YAxis tick={CHART_THEME.axis.tick} />
                       <Tooltip contentStyle={CHART_THEME.tooltip.contentStyle} labelStyle={CHART_THEME.tooltip.labelStyle} />
                       <Bar dataKey="count" fill={CHART_THEME.colors[3]} radius={[4, 4, 0, 0]} />
                     </BarChart>

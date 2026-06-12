@@ -9,6 +9,7 @@ import { Target, TrendingUp, Award } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { cn } from '@/lib/utils'
 
 // ─── Types ────────────────────────────────────────────────
@@ -39,6 +40,15 @@ interface MyResult {
 }
 
 const SCORE_LABELS = ['', 'score.veryLacking', 'score.lacking', 'score.average', 'score.excellent', 'score.outstanding']
+
+// 평가 status enum → performance 네임스페이스 기존 라벨 키 (신규 키 0)
+const EVAL_STATUS_LABEL_KEY: Record<string, string> = {
+  SUBMITTED: 'submitted',
+  DRAFT: 'draft',
+  NOT_STARTED: 'notStarted',
+  IN_PROGRESS: 'inProgress',
+  COMPLETED: 'completed',
+}
 
 // ─── Component ────────────────────────────────────────────
 
@@ -92,6 +102,7 @@ export default function ResultsClient({
         <select
           value={selectedCycleId}
           onChange={(e) => setSelectedCycleId(e.target.value)}
+          aria-label={t('results.title')}
           className="px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
         >
           {!cycles?.length && <EmptyState />}
@@ -121,7 +132,7 @@ export default function ResultsClient({
             {final?.emsBlock ?? '-'}
           </p>
           {final?.calibrated && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/15 text-primary/90 mt-1">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary mt-1">
               {t('calibration_kebb098ec')}
             </span>
           )}
@@ -153,7 +164,11 @@ export default function ResultsClient({
                     <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.selfEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-primary")}>{result.selfEvaluation.emsBlock ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cell, "text-center")}>
-                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-700">{result.selfEvaluation.status}</span>
+                      <StatusBadge status={result.selfEvaluation.status}>
+                        {EVAL_STATUS_LABEL_KEY[result.selfEvaluation.status]
+                          ? t(EVAL_STATUS_LABEL_KEY[result.selfEvaluation.status] as Parameters<typeof t>[0])
+                          : result.selfEvaluation.status}
+                      </StatusBadge>
                     </td>
                   </tr>
                 )}
@@ -164,7 +179,11 @@ export default function ResultsClient({
                     <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{result.managerEvaluation.competencyScore?.toFixed(1) ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-primary")}>{result.managerEvaluation.emsBlock ?? '-'}</td>
                     <td className={cn(TABLE_STYLES.cell, "text-center")}>
-                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-700">{result.managerEvaluation.status}</span>
+                      <StatusBadge status={result.managerEvaluation.status}>
+                        {EVAL_STATUS_LABEL_KEY[result.managerEvaluation.status]
+                          ? t(EVAL_STATUS_LABEL_KEY[result.managerEvaluation.status] as Parameters<typeof t>[0])
+                          : result.managerEvaluation.status}
+                      </StatusBadge>
                     </td>
                   </tr>
                 )}

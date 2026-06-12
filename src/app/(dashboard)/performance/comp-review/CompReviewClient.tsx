@@ -12,6 +12,7 @@ import { getGradeLabel } from '@/lib/performance/data-masking'
 import PayBandChart from '@/components/compensation/PayBandChart'
 import type { SessionUser } from '@/types'
 import { TABLE_STYLES } from '@/lib/styles'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
@@ -50,13 +51,14 @@ const MeritRowComponent = memo(function MeritRowComponent({
     row: MeritRow; onUpdate: (employeeId: string, appliedPct: number, reason: string) => void
 }) {
     const t = useTranslations('performance')
+    const tCommon = useTranslations('common')
     const [localPct, setLocalPct] = useState(row.appliedPct)
     const [localReason, setLocalReason] = useState(row.exceptionReason)
     const isOutOfRange = localPct < row.recommendedPct * 0.5 || localPct > row.recommendedPct * 1.5
     const newSalary = Math.round(row.currentSalary * (1 + localPct / 100))
 
     return (
-        <tr className={cn(TABLE_STYLES.row, row.isException || isOutOfRange ? 'bg-amber-500/15/30' : '')}>
+        <tr className={cn(TABLE_STYLES.row, row.isException || isOutOfRange ? 'bg-warning-bright/15' : '')}>
             <td className={TABLE_STYLES.cell}>{row.name}</td>
             <td className={TABLE_STYLES.cellMuted}>{row.department}</td>
             <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{getGradeLabel(row.gradeEnum)}</td>
@@ -68,15 +70,15 @@ const MeritRowComponent = memo(function MeritRowComponent({
                     <input type="number" step={0.5} min={0} max={30} value={localPct}
                         onChange={(e) => setLocalPct(Number(e.target.value))}
                         onBlur={() => onUpdate(row.employeeId, localPct, localReason)}
-                        className={`w-16 rounded-lg border px-2 py-1 text-sm text-center focus:outline-none ${isOutOfRange ? 'border-red-500 bg-destructive/5' : 'border-border focus:border-primary'}`} />
+                        className={`w-16 rounded-lg border px-2 py-1 text-sm text-center focus:outline-none ${isOutOfRange ? 'border-destructive bg-destructive/5' : 'border-border focus:border-primary'}`} />
                     <span className="text-xs text-muted-foreground">%</span>
-                    {isOutOfRange && <AlertTriangle className="h-3.5 w-3.5 text-red-500" />}
+                    {isOutOfRange && <AlertTriangle className="h-3.5 w-3.5 text-destructive" />}
                 </div>
                 {isOutOfRange && (
-                    <input type="text" placeholder={'placeholderExceptionReasonRequired'} value={localReason}
+                    <input type="text" placeholder={tCommon('placeholderExceptionReasonRequired')} value={localReason}
                         onChange={(e) => setLocalReason(e.target.value)}
                         onBlur={() => onUpdate(row.employeeId, localPct, localReason)}
-                        className="mt-1 w-full rounded-lg border border-amber-200 px-2 py-1 text-xs focus:border-primary focus:outline-none" />
+                        className="mt-1 w-full rounded-lg border border-warning-bright/40 px-2 py-1 text-xs focus:border-primary focus:outline-none" />
                 )}
             </td>
             <td className={cn(TABLE_STYLES.cellRight, "font-medium text-foreground")}>
@@ -246,6 +248,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                         <p className="mt-1 text-sm text-muted-foreground">{t('kr_kec84b1ea_keb93b1ea_keab8b0eb_')}</p>
                     </div>
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
+                        aria-label={t('kr_kebb3b4ec_keb8c80ec_compensati')}
                         className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
                         {!cycles?.length && <EmptyState />}
               {cycles?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -253,14 +256,12 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                 </div>
 
                 {/* Tabs */}
-                <div className="mb-6 flex border-b border-border">
-                    {([['dashboard', t('compReview.dashboardTab')], ['table', t('compReview.adjustTable')], ['exceptions', t('compReview.exceptionsTab', { count: exceptionRows.length })]] as const).map(([key, label]) => (
-                        <button key={key} onClick={() => setTab(key as TabKey)}
-                            className={`px-5 py-3 text-sm font-medium border-b-2 ${tab === key ? 'border-primary text-primary' : 'border-transparent text-muted-foreground'}`}>
-                            {label}
-                        </button>
-                    ))}
-                </div>
+                <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
+                <TabsList aria-label={t('kr_kebb3b4ec_keb8c80ec_compensati')} className="mb-6">
+                    <TabsTrigger value="dashboard">{t('compReview.dashboardTab')}</TabsTrigger>
+                    <TabsTrigger value="table">{t('compReview.adjustTable')}</TabsTrigger>
+                    <TabsTrigger value="exceptions">{t('compReview.exceptionsTab', { count: exceptionRows.length })}</TabsTrigger>
+                </TabsList>
 
                 {error && (
                     <div className="mb-4 rounded-lg border border-destructive/15 bg-destructive/5 p-3 text-sm text-destructive">
@@ -280,7 +281,8 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                 ) : (
                     <>
                         {/* Dashboard Tab */}
-                        {tab === 'dashboard' && stats && (
+                        <TabsContent value="dashboard">
+                        {stats && (
                             <div className="space-y-6">
                                 {/* KPI Cards */}
                                 <div className="grid grid-cols-4 gap-4">
@@ -298,7 +300,7 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                                     </div>
                                     <div className="rounded-xl border border-border bg-card p-5">
                                         <div className="flex items-center gap-2 text-xs text-muted-foreground"><AlertTriangle className="h-3.5 w-3.5" /> {t('kr_kec9888ec_keab1b4ec')}</div>
-                                        <p className={`mt-2 text-2xl font-bold ${stats.exceptionCount > 0 ? 'text-red-500' : 'text-foreground'}`}>
+                                        <p className={`mt-2 text-2xl font-bold ${stats.exceptionCount > 0 ? 'text-destructive' : 'text-foreground'}`}>
                                             {t('compReview.caseCount', { count: stats.exceptionCount })}
                                         </p>
                                     </div>
@@ -318,9 +320,10 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                                 </div>
                             </div>
                         )}
+                        </TabsContent>
 
                         {/* Table Tab */}
-                        {tab === 'table' && (
+                        <TabsContent value="table">
                             <div className="space-y-4">
                                 <div className={TABLE_STYLES.wrapper}>
                                     <div className="overflow-x-auto">
@@ -364,44 +367,45 @@ export default function CompReviewClient({user }: { user: SessionUser }) {
                                     </div>
                                 )}
                             </div>
-                        )}
+                        </TabsContent>
 
                         {/* Exceptions Tab */}
-                        {tab === 'exceptions' && (
+                        <TabsContent value="exceptions">
                             <div className={TABLE_STYLES.wrapper}>
                                 {exceptionRows.length === 0 ? (
                                     <div className="p-12 text-center text-sm text-muted-foreground">{t('kr_kec9888ec_keab1b4ec_kec9786ec')}</div>
                                 ) : (
                                     <table className={TABLE_STYLES.table}>
                                         <thead>
-                                            <tr className={cn(TABLE_STYLES.header, "bg-amber-500/15")}>
-                                                <th className={cn(TABLE_STYLES.headerCell, "text-amber-800")}>{t('name')}</th>
-                                                <th className={cn(TABLE_STYLES.headerCell, "text-amber-800")}>{t('department')}</th>
-                                                <th className={cn(TABLE_STYLES.headerCell, "text-amber-800 text-center")}>{t('kr_keb93b1ea')}</th>
-                                                <th className={cn(TABLE_STYLES.headerCell, "text-amber-800 text-center")}>{t('kr_kecb694ec')}</th>
-                                                <th className={cn(TABLE_STYLES.headerCell, "text-amber-800 text-center")}>{t('kr_keca081ec')}</th>
-                                                <th className={cn(TABLE_STYLES.headerCell, "text-amber-800")}>{t('kr_kec82acec')}</th>
+                                            <tr className={cn(TABLE_STYLES.header, "bg-warning-bright/15")}>
+                                                <th className={cn(TABLE_STYLES.headerCell, "text-ctr-warning")}>{t('name')}</th>
+                                                <th className={cn(TABLE_STYLES.headerCell, "text-ctr-warning")}>{t('department')}</th>
+                                                <th className={cn(TABLE_STYLES.headerCell, "text-ctr-warning text-center")}>{t('kr_keb93b1ea')}</th>
+                                                <th className={cn(TABLE_STYLES.headerCell, "text-ctr-warning text-center")}>{t('kr_kecb694ec')}</th>
+                                                <th className={cn(TABLE_STYLES.headerCell, "text-ctr-warning text-center")}>{t('kr_keca081ec')}</th>
+                                                <th className={cn(TABLE_STYLES.headerCell, "text-ctr-warning")}>{t('kr_kec82acec')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {exceptionRows.map((row) => (
-                                                <tr key={row.employeeId} className={cn(TABLE_STYLES.row, "bg-amber-500/15/20")}>
+                                                <tr key={row.employeeId} className={cn(TABLE_STYLES.row, "bg-warning-bright/10")}>
                                                     <td className={TABLE_STYLES.cell}>{row.name}</td>
                                                     <td className={TABLE_STYLES.cellMuted}>{row.department}</td>
                                                     <td className={cn(TABLE_STYLES.cell, "text-center font-medium")}>{getGradeLabel(row.gradeEnum)}</td>
                                                     <td className={cn(TABLE_STYLES.cellMuted, "text-center")}>{fmtPct(row.recommendedPct)}</td>
-                                                    <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-red-500")}>{fmtPct(row.appliedPct)}</td>
-                                                    <td className={cn(TABLE_STYLES.cell, "text-amber-800")}>{row.exceptionReason || t('compReview.noReason')}</td>
+                                                    <td className={cn(TABLE_STYLES.cell, "text-center font-medium text-destructive")}>{fmtPct(row.appliedPct)}</td>
+                                                    <td className={cn(TABLE_STYLES.cell, "text-ctr-warning")}>{row.exceptionReason || t('compReview.noReason')}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
                                     </table>
                                 )}
                             </div>
-                        )}
+                        </TabsContent>
                       <ConfirmDialog {...dialogProps} />
       </>
                 )}
+                </Tabs>
             </div>
         </div>
     )
