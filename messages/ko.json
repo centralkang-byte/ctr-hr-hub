@@ -3460,7 +3460,8 @@
     "retirement": "정년 퇴직",
     "contractEnd": "계약 만료",
     "dashboard": {
-      "allCompanies": "전체 법인"
+      "allCompanies": "전체 법인",
+      "toggleTasks": "작업 목록 펼치기"
     },
     "detail": "퇴직 상세",
     "checklistItem": "체크리스트 항목",
@@ -3653,7 +3654,10 @@
     "detailedReason": "상세 사유",
     "detailedReasonPlaceholder": "상세 퇴직 사유를 입력해 주세요",
     "isConfidential": "비공개",
-    "isConfidentialDesc": "이 면담 내용은 비공개로 처리됩니다"
+    "isConfidentialDesc": "이 면담 내용은 비공개로 처리됩니다",
+    "progressAriaLabel": "진행률: {total}개 중 {completed}개 완료",
+    "offboardingTabs": "퇴직 처리 탭",
+    "rateStars": "{n}점"
   },
   "salary": {
     "title": "보상 관리",
@@ -4067,8 +4071,12 @@
       "checkinCount": "감정 체크인 {count}회 기록됨",
       "required": "필수",
       "start": "시작",
-      "skip": "건너뛰기"
-    }
+      "skip": "건너뛰기",
+      "signOff": "사인오프",
+      "weekLabel": "{week}주차"
+    },
+    "progressAria": "온보딩 진행률: {total}개 중 {completed}개 작업 완료",
+    "planTypeFilter": "플랜 유형 필터"
   },
   "org": {
     "title": "조직 관리",

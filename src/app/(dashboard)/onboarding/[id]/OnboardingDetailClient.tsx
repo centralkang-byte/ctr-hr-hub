@@ -15,6 +15,9 @@ import { useRouter } from 'next/navigation'
 import {
     AlertTriangle, CheckCircle2, Circle, Clock, Loader2,
     Lock, Play, Smile, SkipForward, ArrowLeft,
+    PenLine, Sparkles, User, Ban,
+    Laugh, Meh, Frown, Angry,
+    type LucideIcon,
 } from 'lucide-react'
 import {
     Dialog, DialogContent, DialogDescription, DialogFooter,
@@ -211,8 +214,8 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
         <div className="space-y-6 p-6">
             {/* Header */}
             <div className="flex items-center gap-3">
-                <button onClick={() => router.push('/onboarding')} className="rounded-lg p-2 text-muted-foreground hover:bg-muted">
-                    <ArrowLeft className="h-5 w-5" />
+                <button type="button" aria-label={tCommon('back')} onClick={() => router.push('/onboarding')} className="rounded-lg p-2 text-muted-foreground hover:bg-muted">
+                    <ArrowLeft className="h-5 w-5" aria-hidden />
                 </button>
                 <PageHeader title={t('detail.headerTitle', { name: data.employee.name })} description={`${data.employee.department ?? ''} · ${data.employee.position ?? ''}`} />
                 <span className={`ml-auto rounded-full px-3 py-1 text-xs font-semibold ${data.status === 'COMPLETED' ? 'bg-tertiary-container/20 text-tertiary' : data.status === 'IN_PROGRESS' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
@@ -228,9 +231,9 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     <div className="rounded-xl border border-border bg-card p-5">
                         <div className="mb-4 flex items-center justify-center">
                             <div className="relative h-28 w-28">
-                                <svg className="h-28 w-28 -rotate-90" viewBox="0 0 100 100">
-                                    <circle cx="50" cy="50" r="42" fill="none" stroke="#F0F0F3" strokeWidth="8" />
-                                    <circle cx="50" cy="50" r="42" fill="none" stroke="#004964" strokeWidth="8" strokeLinecap="round"
+                                <svg className="h-28 w-28 -rotate-90" viewBox="0 0 100 100" role="img" aria-label={`${data.progress.done}/${data.progress.total}`}>
+                                    <circle cx="50" cy="50" r="42" fill="none" stroke="hsl(var(--border))" strokeWidth="8" />
+                                    <circle cx="50" cy="50" r="42" fill="none" stroke="hsl(var(--primary))" strokeWidth="8" strokeLinecap="round"
                                         strokeDasharray={`${data.progress.percentage * 2.64} 264`} />
                                 </svg>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -245,7 +248,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                 <div className="text-[10px] text-muted-foreground">{t('inProgress')}</div>
                             </div>
                             <div className="rounded-lg bg-destructive/5 px-2 py-1.5">
-                                <div className="text-sm font-bold text-red-500">{data.progress.blocked}</div>
+                                <div className="text-sm font-bold text-destructive">{data.progress.blocked}</div>
                                 <div className="text-[10px] text-muted-foreground">{t('blockedStatus')}</div>
                             </div>
                             <div className="rounded-lg bg-muted px-2 py-1.5">
@@ -270,10 +273,16 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     {/* Sign-off Section */}
                     {data.status !== 'COMPLETED' && (
                         <div className={`rounded-xl border p-5 ${data.signOffEligibility.eligible ? 'border-primary bg-primary/10' : 'border-border bg-card'}`}>
-                            <h3 className="mb-2 text-sm font-semibold text-foreground">🖊️ Sign-off</h3>
+                            <h3 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-foreground">
+                                <PenLine className="h-4 w-4 text-foreground" aria-hidden />
+                                {t('detail.signOff')}
+                            </h3>
                             {data.signOffEligibility.eligible ? (
                                 <>
-                                    <p className="mb-3 text-xs text-tertiary">✅ {t('detail.allRequiredDone')}</p>
+                                    <p className="mb-3 flex items-center gap-1 text-xs text-tertiary">
+                                        <CheckCircle2 className="h-3.5 w-3.5 text-tertiary" aria-hidden />
+                                        {t('detail.allRequiredDone')}
+                                    </p>
                                     {canSignOff && (
                                         <button onClick={() => setSignOffDialog(true)} disabled={actionLoading === 'sign-off'}
                                             className="w-full rounded-lg bg-warm px-4 py-2.5 text-sm font-semibold text-white hover:brightness-95 disabled:opacity-50">
@@ -289,7 +298,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                     {data.signOffEligibility.remainingTasks.length > 0 && (
                                         <ul className="space-y-1">
                                             {data.signOffEligibility.remainingTasks.slice(0, 3).map((t, i) => (
-                                                <li key={i} className="text-xs text-red-500">• {t}</li>
+                                                <li key={i} className="text-xs text-destructive">• {t}</li>
                                             ))}
                                             {data.signOffEligibility.remainingTasks.length > 3 && (
                                                 <li className="text-xs text-muted-foreground">... +{data.signOffEligibility.remainingTasks.length - 3}</li>
@@ -302,8 +311,11 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     )}
 
                     {data.status === 'COMPLETED' && data.signOff.signedOffBy && (
-                        <div className="rounded-xl border border-green-100 bg-tertiary-container/10 p-5">
-                            <h3 className="mb-2 text-sm font-semibold text-tertiary">✅ {t('detail.onboardingComplete')}</h3>
+                        <div className="rounded-xl border border-border bg-tertiary-container/10 p-5">
+                            <h3 className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-tertiary">
+                                <CheckCircle2 className="h-4 w-4 text-tertiary" aria-hidden />
+                                {t('detail.onboardingComplete')}
+                            </h3>
                             <InfoRow label={t('detail.approver')} value={data.signOff.signedOffBy.name} />
                             <InfoRow label={t('detail.approvedDate')} value={data.signOff.signedOffAt ? new Date(data.signOff.signedOffAt).toLocaleDateString(locale) : '-'} />
                             {data.signOff.note && <InfoRow label={t('detail.comment')} value={data.signOff.note} />}
@@ -340,7 +352,11 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                             <h3 className="text-sm font-semibold text-foreground">{milestoneLabels[milestone]}</h3>
                                             <div className="flex items-center gap-2">
                                                 <span className="text-xs text-muted-foreground">{done}/{tasks.length}</span>
-                                                <div className="h-1.5 w-20 overflow-hidden rounded-full bg-border">
+                                                <div className="h-1.5 w-20 overflow-hidden rounded-full bg-border"
+                                                    role="progressbar"
+                                                    aria-valuenow={tasks.length > 0 ? Math.round((done / tasks.length) * 100) : 0}
+                                                    aria-valuemin={0} aria-valuemax={100}
+                                                    aria-label={`${done}/${tasks.length}`}>
                                                     <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${tasks.length > 0 ? (done / tasks.length) * 100 : 0}%` }} />
                                                 </div>
                                             </div>
@@ -387,19 +403,20 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                                         <div key={c.id} className="rounded-xl border border-border bg-card p-5">
                                             <div className="mb-2 flex items-center justify-between">
                                                 <span className="text-sm font-semibold text-foreground">
-                                                    {c.milestone ? milestoneLabels[c.milestone] ?? c.milestone : `Week ${c.checkinWeek}`}
+                                                    {c.milestone ? milestoneLabels[c.milestone] ?? c.milestone : t('detail.weekLabel', { week: c.checkinWeek })}
                                                 </span>
                                                 <span className="text-xs text-muted-foreground">{new Date(c.submittedAt).toLocaleDateString(locale)}</span>
                                             </div>
                                             <div className="grid grid-cols-3 gap-3">
-                                                <EmotionCell label={t('mood')} value={c.mood} emoji={moodEmoji(c.mood)} />
-                                                <EmotionCell label={t('detail.energy')} value={String(c.energy)} emoji={numEmoji(c.energy)} />
-                                                <EmotionCell label={t('detail.belonging')} value={String(c.belonging)} emoji={numEmoji(c.belonging)} />
+                                                <EmotionCell label={t('mood')} value={c.mood} icon={moodEmoji(c.mood)} />
+                                                <EmotionCell label={t('detail.energy')} value={String(c.energy)} icon={numEmoji(c.energy)} />
+                                                <EmotionCell label={t('detail.belonging')} value={String(c.belonging)} icon={numEmoji(c.belonging)} />
                                             </div>
                                             {c.comment && <p className="mt-3 text-sm text-muted-foreground">{c.comment}</p>}
                                             {c.aiSummary && (
-                                                <div className="mt-2 rounded-lg bg-primary/10 p-3 text-xs text-primary">
-                                                    🤖 {t('aiSummary')}: {c.aiSummary}
+                                                <div className="mt-2 flex items-start gap-1.5 rounded-lg bg-primary/10 p-3 text-xs text-primary">
+                                                    <Sparkles className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" aria-hidden />
+                                                    <span>{t('aiSummary')}: {c.aiSummary}</span>
                                                 </div>
                                             )}
                                         </div>
@@ -418,8 +435,8 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                             ) : (
                                 <div className="space-y-3">
                                     {data.blockedHistory.map((b, i) => (
-                                        <div key={i} className="flex items-start gap-3 rounded-lg border border-destructive/15 bg-destructive/5 p-3">
-                                            <Lock className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
+                                        <div key={i} className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-3">
+                                            <Lock className="mt-0.5 h-4 w-4 flex-shrink-0 text-destructive" aria-hidden />
                                             <div>
                                                 <p className="text-sm font-medium text-foreground">{b.taskTitle}</p>
                                                 <p className="text-xs text-muted-foreground">{t('detail.reason')}: {b.reason}</p>
@@ -450,7 +467,7 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                         {tCommon('cancel')}
                         </button>
                         <button onClick={blockTask} disabled={!blockReason.trim() || !!actionLoading}
-                            className="rounded-lg bg-destructive/50 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 disabled:opacity-50">
+                            className="rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-white hover:brightness-95 disabled:opacity-50">
                             {t('detail.block')}
                         </button>
                     </DialogFooter>
@@ -466,7 +483,10 @@ export default function OnboardingDetailClient({ user, onboardingId }: { user: S
                     </DialogHeader>
                     <div className="space-y-3">
                         <div className="rounded-lg bg-primary/10 p-3">
-                            <p className="text-sm text-primary">✅ {t('detail.requiredTaskProgress', { done: data.signOffEligibility.requiredDone, total: data.signOffEligibility.requiredTotal })}</p>
+                            <p className="flex items-center gap-1.5 text-sm text-primary">
+                                <CheckCircle2 className="h-4 w-4 flex-shrink-0" aria-hidden />
+                                {t('detail.requiredTaskProgress', { done: data.signOffEligibility.requiredDone, total: data.signOffEligibility.requiredTotal })}
+                            </p>
                             <p className="text-xs text-muted-foreground mt-1">{t('detail.checkinCount', { count: data.checkins.length })}</p>
                         </div>
                         <Textarea placeholder={tCommon('enterComment')} value={signOffNote} onChange={(e) => setSignOffNote(e.target.value)} rows={3} />
@@ -506,19 +526,25 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
     const tCommon = useTranslations('common')
     const t = useTranslations('onboarding')
     const locale = useLocale()
+    const ASSIGNEE_LABELS: Record<string, string> = {
+        EMPLOYEE: t('assigneeEmployee'),
+        MANAGER: t('assigneeManager'),
+        HR: t('assigneeHr'),
+        BUDDY: t('assigneeBuddy'),
+    }
     const isAssignee = task.assigneeId === user.employeeId
     const canAct = isAssignee || isHrAdmin
     const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'DONE' && task.status !== 'SKIPPED'
     const isLoading = actionLoading === task.id
 
     return (
-        <div className={`flex items-start gap-3 px-5 py-3 ${task.status === 'BLOCKED' ? 'border-l-4 border-l-[#EF4444] bg-destructive/5' : ''}`}>
+        <div className={`flex items-start gap-3 px-5 py-3 ${task.status === 'BLOCKED' ? 'bg-destructive/5 ring-1 ring-destructive/15' : ''}`}>
             <div className="mt-0.5 flex-shrink-0">
-                {task.status === 'DONE' ? <CheckCircle2 className="h-5 w-5 text-green-500" /> :
-                    task.status === 'IN_PROGRESS' ? <Play className="h-5 w-5 text-primary" /> :
-                        task.status === 'BLOCKED' ? <Lock className="h-5 w-5 text-red-500" /> :
-                            task.status === 'SKIPPED' ? <SkipForward className="h-5 w-5 text-muted-foreground" /> :
-                                <Circle className="h-5 w-5 text-muted-foreground/40" />}
+                {task.status === 'DONE' ? <CheckCircle2 className="h-5 w-5 text-tertiary" aria-hidden /> :
+                    task.status === 'IN_PROGRESS' ? <Play className="h-5 w-5 text-primary" aria-hidden /> :
+                        task.status === 'BLOCKED' ? <Lock className="h-5 w-5 text-destructive" aria-hidden /> :
+                            task.status === 'SKIPPED' ? <SkipForward className="h-5 w-5 text-muted-foreground" aria-hidden /> :
+                                <Circle className="h-5 w-5 text-muted-foreground/40" aria-hidden />}
             </div>
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
@@ -530,19 +556,25 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
                 </div>
                 {task.task.description && <p className="mt-0.5 text-xs text-muted-foreground">{task.task.description}</p>}
                 <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                    {task.assignee && <span>👤 {task.assignee.name}</span>}
-                    <span className="rounded bg-muted px-1.5 py-0.5 text-[10px]">{task.task.assigneeType}</span>
+                    {task.assignee && (
+                        <span className="inline-flex items-center gap-1">
+                            <User className="h-3 w-3" aria-hidden />
+                            {task.assignee.name}
+                        </span>
+                    )}
+                    <span className="rounded bg-muted px-1.5 py-0.5 text-[10px]">{ASSIGNEE_LABELS[task.task.assigneeType] ?? task.task.assigneeType}</span>
                     {task.dueDate && (
-                        <span className={isOverdue ? 'font-medium text-red-500' : ''}>
-                            <Clock className="mr-0.5 inline h-3 w-3" />
+                        <span className={isOverdue ? 'font-medium text-destructive' : ''}>
+                            <Clock className="mr-0.5 inline h-3 w-3" aria-hidden />
                             {new Date(task.dueDate).toLocaleDateString(locale)}
                             {isOverdue && ` (${t('delayed')})`}
                         </span>
                     )}
                 </div>
                 {task.status === 'BLOCKED' && task.blockedReason && (
-                    <div className="mt-1.5 rounded bg-destructive/10 px-2 py-1 text-xs text-destructive">
-                        🚫 {task.blockedReason}
+                    <div className="mt-1.5 flex items-center gap-1 rounded bg-destructive/10 px-2 py-1 text-xs text-destructive">
+                        <Ban className="h-3 w-3 flex-shrink-0" aria-hidden />
+                        {task.blockedReason}
                     </div>
                 )}
             </div>
@@ -557,19 +589,19 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
                     )}
                     {(task.status === 'PENDING' || task.status === 'IN_PROGRESS') && (
                         <button onClick={() => onStatusChange(task.id, 'DONE')} disabled={isLoading}
-                            className="rounded-lg bg-tertiary-container/100 px-2 py-1 text-xs text-white hover:bg-green-600 disabled:opacity-50">
+                            className="rounded-lg bg-warm px-2 py-1 text-xs text-white hover:brightness-95 disabled:opacity-50">
                             {t('completed')}
                         </button>
                     )}
                     {(task.status === 'PENDING' || task.status === 'IN_PROGRESS') && (
                         <button onClick={() => onBlock(task.id, task.task.title)} disabled={isLoading}
-                            className="rounded-lg border border-red-500 px-2 py-1 text-xs text-red-500 hover:bg-destructive/5 disabled:opacity-50">
+                            className="rounded-lg border border-destructive px-2 py-1 text-xs text-destructive hover:bg-destructive/5 disabled:opacity-50">
                             {t('detail.block')}
                         </button>
                     )}
                     {task.status === 'BLOCKED' && (
                         <button onClick={() => onUnblock(task.id)} disabled={isLoading}
-                            className="rounded-lg border border-amber-500 px-2 py-1 text-xs text-amber-500 hover:bg-amber-500/10 disabled:opacity-50">
+                            className="rounded-lg border border-warning-bright px-2 py-1 text-xs text-ctr-warning hover:bg-warning-bright/15 disabled:opacity-50">
                             {t('unblock')}
                         </button>
                     )}
@@ -585,10 +617,10 @@ function TaskRow({ task, user, isHrAdmin, actionLoading, onStatusChange, onBlock
     )
 }
 
-function EmotionCell({ label, value, emoji }: { label: string; value: string; emoji: string }) {
+function EmotionCell({ label, value, icon: Icon }: { label: string; value: string; icon: LucideIcon }) {
     return (
         <div className="rounded-lg bg-muted p-3 text-center">
-            <div className="text-2xl">{emoji}</div>
+            <Icon className="mx-auto h-6 w-6 text-foreground" aria-hidden />
             <div className="mt-1 text-xs text-muted-foreground">{label}</div>
             <div className="text-sm font-semibold text-foreground">{value}</div>
         </div>
@@ -597,7 +629,7 @@ function EmotionCell({ label, value, emoji }: { label: string; value: string; em
 
 function MetricBar({ label, value }: { label: string; value: number }) {
     const height = Math.max(10, (value / 5) * 80)
-    const color = value >= 4 ? '#22C55E' : value >= 3 ? '#004964' : value >= 2 ? '#F59E0B' : '#EF4444'
+    const color = value >= 4 ? '#008b4e' : value >= 3 ? '#004964' : value >= 2 ? '#d0901e' : '#d73337'
     return (
         <div className="flex flex-col items-center">
             <div className="w-3 rounded-t" style={{ height, backgroundColor: color }} />
@@ -617,20 +649,20 @@ function moodToNum(mood: string): number {
     }
 }
 
-function moodEmoji(mood: string): string {
+function moodEmoji(mood: string): LucideIcon {
     switch (mood) {
-        case 'GREAT': return '😄'
-        case 'GOOD': return '🙂'
-        case 'NEUTRAL': return '😐'
-        case 'STRUGGLING': return '😟'
-        case 'BAD': return '😞'
-        default: return '😐'
+        case 'GREAT': return Laugh
+        case 'GOOD': return Smile
+        case 'NEUTRAL': return Meh
+        case 'STRUGGLING': return Frown
+        case 'BAD': return Angry
+        default: return Meh
     }
 }
 
-function numEmoji(n: number): string {
-    if (n >= 4) return '😄'
-    if (n >= 3) return '🙂'
-    if (n >= 2) return '😐'
-    return '😞'
+function numEmoji(n: number): LucideIcon {
+    if (n >= 4) return Laugh
+    if (n >= 3) return Smile
+    if (n >= 2) return Meh
+    return Frown
 }

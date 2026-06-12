@@ -89,9 +89,9 @@ function TaskRow({ task, isActive, onComplete, processing }: TaskRowProps) {
   })
 
   let rowBg = 'bg-card border-border'
-  if (isDone)    rowBg = 'bg-tertiary-container/10 border-emerald-100'
-  if (isActive)  rowBg = 'bg-primary/10 border-primary/20 border-l-4 border-l-[#004964]'
-  if (task.isOverdue && !isDone) rowBg = 'bg-destructive/5 border-destructive/20'
+  if (isDone)    rowBg = 'bg-tertiary-container/10 border-tertiary/20'
+  if (isActive)  rowBg = 'bg-primary/10 border-primary/20 ring-1 ring-primary/20'
+  if (task.isOverdue && !isDone) rowBg = 'bg-destructive/10 border-destructive/20'
 
   return (
     <div className={`rounded-xl border p-4 transition-colors ${rowBg}`}>
@@ -113,7 +113,7 @@ function TaskRow({ task, isActive, onComplete, processing }: TaskRowProps) {
               {task.title}
             </p>
             {task.isOverdue && !isDone && (
-              <Badge className="h-4 bg-destructive/50 px-1.5 text-[10px] text-white">{t('overdue')}</Badge>
+              <Badge variant="error" className="h-4 px-1.5 text-[10px]">{t('overdue')}</Badge>
             )}
             {!task.isRequired && (
               <Badge variant="outline" className="h-4 px-1.5 text-[10px] text-muted-foreground">{t('optional')}</Badge>
@@ -133,7 +133,7 @@ function TaskRow({ task, isActive, onComplete, processing }: TaskRowProps) {
                 {t('completedOn')}: {new Date(task.completedAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}
               </span>
             ) : (
-              <span className={task.isOverdue ? 'text-red-500' : ''}>
+              <span className={task.isOverdue ? 'text-destructive' : ''}>
                 {t('dueDate')}: {dueDateStr}
               </span>
             )}
@@ -168,8 +168,8 @@ function DDayBadge({ dDay }: { dDay: number }) {
   const isImminent = dDay >= 0 && dDay <= 7
 
   let bgColor = 'bg-primary/10 text-primary'
-  if (isOver)     bgColor = 'bg-destructive/5 text-red-500'
-  if (isImminent) bgColor = 'bg-amber-500/15 text-amber-700'
+  if (isOver)     bgColor = 'bg-destructive/10 text-destructive'
+  if (isImminent) bgColor = 'bg-warning-bright/15 text-ctr-warning'
 
   const label = isOver ? `D+${Math.abs(dDay)}` : dDay === 0 ? 'D-Day' : `D-${dDay}`
 
@@ -251,15 +251,13 @@ export function MyOffboardingClient() {
 
   if (noProcess || !data) {
     return (
-      <Card className="border-border shadow-none">
-        <CardContent className="flex flex-col items-center py-16 text-center">
-          <Info className="mb-3 h-10 w-10 text-muted-foreground opacity-60" />
-          <EmptyState />
-          <p className="mt-2 max-w-xs text-xs text-muted-foreground">
-            {t('emptyDesc')}
-          </p>
-        </CardContent>
-      </Card>
+      <EmptyState
+        icon={Info}
+        title={t('empty.title')}
+        sub={t('empty.description')}
+        standalone
+        size="lg"
+      />
     )
   }
 
@@ -295,7 +293,14 @@ export function MyOffboardingClient() {
               {t('progressCount', { done: data.completed, total: data.total })}
             </span>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-border">
+          <div
+            className="h-2 w-full overflow-hidden rounded-full bg-border"
+            role="progressbar"
+            aria-valuenow={data.progress}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={t('overallProgress')}
+          >
             <div
               className="h-2 rounded-full bg-primary transition-all duration-500"
               style={{ width: `${data.progress}%` }}

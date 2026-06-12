@@ -5173,7 +5173,8 @@
     "createChecklist": "Create Checklist",
     "createNewChecklist": "Create New Checklist",
     "dashboard": {
-      "allCompanies": "All Companies"
+      "allCompanies": "All Companies",
+      "toggleTasks": "Toggle task list"
     },
     "dashboardDescription": "Monitor offboarding progress and manage tasks.",
     "dashboardTitle": "Offboarding Status",
@@ -5336,7 +5337,10 @@
     "wouldRecommend": "Would Recommend",
     "wouldRecommendNa": "N/A",
     "wouldRecommendNo": "No",
-    "wouldRecommendYes": "Yes"
+    "wouldRecommendYes": "Yes",
+    "progressAriaLabel": "Progress: {completed} of {total} tasks complete",
+    "offboardingTabs": "Offboarding tabs",
+    "rateStars": "{n} stars"
   },
   "onboarding": {
     "actions": "Actions",
@@ -5436,7 +5440,9 @@
       "requiredTaskProgress": "{done}/{total} required tasks completed",
       "signOffDesc": "Complete {name}'s onboarding.",
       "skip": "Skip",
-      "start": "Start"
+      "start": "Start",
+      "signOff": "Sign-off",
+      "weekLabel": "Week {week}"
     },
     "dueDaysAfter": "Due (days after hire)",
     "editTemplate": "Edit Template",
@@ -5562,7 +5568,9 @@
     "weeklyCheckinCompleted": "This week's check-in is complete.",
     "welcomeKit": "Welcome Kit",
     "welcomeMessage": "Welcome to CTR HR Hub, {name}!",
-    "welcomeSubMessage": "Complete the onboarding checklist below to get started."
+    "welcomeSubMessage": "Complete the onboarding checklist below to get started.",
+    "progressAria": "Onboarding progress: {completed} of {total} tasks completed",
+    "planTypeFilter": "Plan type filter"
   },
   "org": {
     "addChange": "Add Change",

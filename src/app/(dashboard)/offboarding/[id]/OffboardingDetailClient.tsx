@@ -149,7 +149,7 @@ const ASSIGNEE_COLORS: Record<string, string> = {
   MANAGER: 'bg-primary/10 text-primary',
   HR: 'bg-tertiary-container/20 text-tertiary',
   IT: 'bg-wt-4/15 text-wt-4',
-  FINANCE: 'bg-orange-500/15 text-orange-700',
+  FINANCE: 'bg-warning-bright/15 text-ctr-warning',
 }
 
 // ─── Component ──────────────────────────────────────────────
@@ -431,7 +431,14 @@ export function OffboardingDetailClient({
               </Badge>
             </div>
           </div>
-          <div className="w-full bg-muted rounded-full h-2.5">
+          <div
+            className="w-full bg-muted rounded-full h-2.5"
+            role="progressbar"
+            aria-valuenow={completedCount}
+            aria-valuemin={0}
+            aria-valuemax={totalCount}
+            aria-label={t('progressCount', { completed: completedCount, total: totalCount })}
+          >
             <div
               className="bg-ctr-primary h-2.5 rounded-full transition-all"
               style={{
@@ -498,7 +505,7 @@ export function OffboardingDetailClient({
 
       {/* ─── Tabs ─── */}
       <Tabs defaultValue="tasks">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-3" aria-label={t('offboardingTabs')}>
           <TabsTrigger value="tasks" className="flex items-center gap-1.5">
             <ClipboardList className="h-4 w-4" />
             {t('taskListTitle')}
@@ -666,9 +673,16 @@ export function OffboardingDetailClient({
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
                         <span>{t('handoverProgress', { done: handoverDone, total: handoverTasks.length })}</span>
-                        <div className="flex-1 bg-muted rounded-full h-1.5">
+                        <div
+                          className="flex-1 bg-muted rounded-full h-1.5"
+                          role="progressbar"
+                          aria-valuenow={handoverDone}
+                          aria-valuemin={0}
+                          aria-valuemax={handoverTasks.length}
+                          aria-label={t('handoverProgress', { done: handoverDone, total: handoverTasks.length })}
+                        >
                           <div
-                            className="bg-emerald-500 h-1.5 rounded-full transition-all"
+                            className="bg-tertiary h-1.5 rounded-full transition-all"
                             style={{ width: `${handoverTasks.length > 0 ? (handoverDone / handoverTasks.length) * 100 : 0}%` }}
                           />
                         </div>
@@ -677,12 +691,12 @@ export function OffboardingDetailClient({
                         <div
                           key={tsk.id}
                           className={`flex items-center justify-between rounded-xl px-4 py-3 ${
-                            tsk.status === 'DONE' ? 'bg-emerald-500/5' : 'bg-muted/50'
+                            tsk.status === 'DONE' ? 'bg-tertiary/10' : 'bg-muted/50'
                           }`}
                         >
                           <div className="flex items-center gap-3">
                             <CheckCircle2
-                              className={`h-4 w-4 ${tsk.status === 'DONE' ? 'text-emerald-600' : 'text-muted-foreground/40'}`}
+                              className={`h-4 w-4 ${tsk.status === 'DONE' ? 'text-tertiary' : 'text-muted-foreground/40'}`}
                             />
                             <span className={`text-sm ${tsk.status === 'DONE' ? 'line-through text-muted-foreground' : ''}`}>
                               {tsk.title}
@@ -779,7 +793,7 @@ export function OffboardingDetailClient({
                           key={n}
                           className={`h-5 w-5 ${
                             n <= interview.satisfactionScore
-                              ? 'fill-yellow-400 text-yellow-400'
+                              ? 'fill-warning-bright text-warning-bright'
                               : 'text-border'
                           }`}
                         />
@@ -809,7 +823,7 @@ export function OffboardingDetailClient({
                               {[1, 2, 3, 4, 5].map((n) => (
                                 <Star
                                   key={n}
-                                  className={`h-4 w-4 ${n <= score ? 'fill-yellow-400 text-yellow-400' : 'text-border'}`}
+                                  className={`h-4 w-4 ${n <= score ? 'fill-warning-bright text-warning-bright' : 'text-border'}`}
                                 />
                               ))}
                             </div>
@@ -907,7 +921,7 @@ export function OffboardingDetailClient({
                                 key={idx}
                                 className="text-sm flex items-start gap-2"
                               >
-                                <span className="text-ctr-accent mt-0.5">
+                                <span className="text-info mt-0.5" aria-hidden="true">
                                   &bull;
                                 </span>
                                 {issue}
@@ -931,7 +945,7 @@ export function OffboardingDetailClient({
                           <Label className="text-xs text-muted-foreground">
                             {t('actionNeeded')}
                           </Label>
-                          <p className="mt-1 text-sm font-medium text-ctr-accent">
+                          <p className="mt-1 text-sm font-medium text-info">
                             {aiSummary.action_needed}
                           </p>
                         </div>
@@ -955,7 +969,7 @@ export function OffboardingDetailClient({
               </CardHeader>
               <CardContent className="space-y-5">
                 {formError && (
-                  <div className="rounded-md bg-destructive/5 p-3 text-sm text-destructive">
+                  <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
                     {formError}
                   </div>
                 )}
@@ -1010,12 +1024,14 @@ export function OffboardingDetailClient({
                         key={n}
                         type="button"
                         onClick={() => setFormScore(n)}
+                        aria-label={t('rateStars', { n })}
                         className="p-0.5 rounded hover:bg-muted transition-colors"
                       >
                         <Star
+                          aria-hidden="true"
                           className={`h-7 w-7 ${
                             n <= formScore
-                              ? 'fill-yellow-400 text-yellow-400'
+                              ? 'fill-warning-bright text-warning-bright'
                               : 'text-border'
                           }`}
                         />
@@ -1048,12 +1064,14 @@ export function OffboardingDetailClient({
                             onClick={() =>
                               setFormSatisfactionDetail((prev) => ({ ...prev, [key]: n }))
                             }
+                            aria-label={t('rateStars', { n })}
                             className="p-0.5 rounded hover:bg-muted transition-colors"
                           >
                             <Star
+                              aria-hidden="true"
                               className={`h-5 w-5 ${
                                 n <= formSatisfactionDetail[key]
-                                  ? 'fill-yellow-400 text-yellow-400'
+                                  ? 'fill-warning-bright text-warning-bright'
                                   : 'text-border'
                               }`}
                             />
@@ -1108,7 +1126,7 @@ export function OffboardingDetailClient({
                 </div>
 
                 <Button
-                  className="w-full bg-ctr-primary hover:bg-ctr-primary/90"
+                  className="w-full bg-warm hover:brightness-95 text-white"
                   disabled={formSubmitting}
                   onClick={handleInterviewSubmit}
                 >
@@ -1145,7 +1163,7 @@ function GateItem({
           : 'bg-warning-bright/15 text-ctr-warning'
       } ${onToggle ? 'cursor-pointer hover:opacity-80' : 'cursor-default'}`}
     >
-      <CheckCircle2 className={`h-3.5 w-3.5 ${done ? 'text-emerald-600' : 'text-amber-500'}`} />
+      <CheckCircle2 className={`h-3.5 w-3.5 ${done ? 'text-tertiary' : 'text-ctr-warning'}`} />
       {label}
     </button>
   )
