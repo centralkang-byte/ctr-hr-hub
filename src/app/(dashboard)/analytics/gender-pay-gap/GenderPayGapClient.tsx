@@ -121,14 +121,14 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
     new Intl.NumberFormat(undefined, { style: 'currency', currency: 'KRW', maximumFractionDigits: 0 }).format(amount)
 
   const getGapColor = (gap: number) => {
-    if (Math.abs(gap) <= 5) return 'text-emerald-600'
-    if (Math.abs(gap) <= 15) return 'text-amber-600'
+    if (Math.abs(gap) <= 5) return 'text-[#006b39]'
+    if (Math.abs(gap) <= 15) return 'text-ctr-warning'
     return 'text-destructive'
   }
 
   const getGapBadge = (gap: number) => {
-    if (Math.abs(gap) <= 5) return 'bg-emerald-500/15 text-emerald-700 border-emerald-200'
-    if (Math.abs(gap) <= 15) return 'bg-amber-500/15 text-amber-700 border-amber-300'
+    if (Math.abs(gap) <= 5) return 'bg-tertiary/10 text-[#006b39] border-tertiary/30'
+    if (Math.abs(gap) <= 15) return 'bg-warning-bright/15 text-ctr-warning border-warning-bright/30'
     return 'bg-destructive/10 text-destructive border-destructive/20'
   }
 
@@ -194,7 +194,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
             <Card className="">
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 mb-1">
-                  <Users className="w-4 h-4 text-pink-400" />
+                  <Users className="w-4 h-4 text-wd-orange" />
                   <p className="text-xs text-muted-foreground">{t('femaleCount')}</p>
                 </div>
                 <p className="text-3xl font-bold text-foreground">{data.summary.totalFemale}</p>
@@ -212,15 +212,15 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                 <p className="text-2xl font-bold text-foreground">{formatCurrency(data.summary.overallFemaleAvg)}</p>
               </CardContent>
             </Card>
-            <Card className={Math.abs(data.summary.overallGapPercent) > 15 ? 'bg-destructive/5' : Math.abs(data.summary.overallGapPercent) > 5 ? 'bg-amber-500/5' : 'bg-emerald-500/5'}>
+            <Card className={Math.abs(data.summary.overallGapPercent) > 15 ? 'bg-destructive/5' : Math.abs(data.summary.overallGapPercent) > 5 ? 'bg-warning-bright/5' : 'bg-tertiary/5'}>
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 mb-1">
                   {Math.abs(data.summary.overallGapPercent) > 15 ? (
                     <AlertTriangle className="w-4 h-4 text-destructive" />
                   ) : data.summary.overallGapPercent > 0 ? (
-                    <TrendingDown className="w-4 h-4 text-amber-500" />
+                    <TrendingDown className="w-4 h-4 text-ctr-warning" />
                   ) : (
-                    <TrendingUp className="w-4 h-4 text-emerald-600" />
+                    <TrendingUp className="w-4 h-4 text-[#006b39]" />
                   )}
                   <p className="text-xs text-muted-foreground">{t('overallGap')}</p>
                 </div>
@@ -285,10 +285,10 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-xs text-pink-500 w-4">F</span>
+                                  <span className="text-xs text-wd-orange-ink w-4">F</span>
                                   <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
                                     <div
-                                      className="h-full bg-pink-400 rounded-full"
+                                      className="h-full bg-wd-orange rounded-full"
                                       style={{ width: `${femaleWidth}%` }}
                                     />
                                   </div>
@@ -342,7 +342,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                               <td className={TABLE_STYLES.cell}>
                                 {diff !== '-' && (
                                   <div className="flex justify-center">
-                                    <span className={Number(diff) > 0 ? 'text-destructive' : 'text-emerald-600'}>
+                                    <span className={Number(diff) > 0 ? 'text-destructive' : 'text-[#006b39]'}>
                                       {Number(diff) > 0 ? '+' : ''}{diff}%p
                                     </span>
                                   </div>

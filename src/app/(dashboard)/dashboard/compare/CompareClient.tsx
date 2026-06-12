@@ -301,7 +301,7 @@ export function CompareClient() {
                   <YAxis
                     dataKey="company"
                     type="category"
-                    tick={{ fontSize: 12, fill: '#334155' }}
+                    tick={{ fontSize: 12, fill: CHART_THEME.axis.label.fill }}
                     width={55}
                   />
                   <Tooltip

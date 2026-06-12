@@ -269,12 +269,12 @@ export function DashboardClient({ user: _user }: Props) {
                   className={cn(
                     'flex items-center gap-3 p-3 rounded-xl transition-colors',
                     alert.severity === 'HIGH' && 'bg-destructive/5 hover:bg-destructive/10',
-                    alert.severity === 'MEDIUM' && 'bg-amber-500/10/50 hover:bg-amber-500/10/80 dark:bg-amber-950/20 dark:hover:bg-amber-950/30',
+                    alert.severity === 'MEDIUM' && 'bg-warning-bright/10 hover:bg-warning-bright/15',
                     alert.severity !== 'HIGH' && alert.severity !== 'MEDIUM' && 'bg-primary/5 hover:bg-primary/10',
                   )}
                 >
                   <AlertTriangle
-                    className={cn('h-4 w-4', alert.severity === 'HIGH' ? 'text-destructive' : 'text-amber-500')}
+                    className={cn('h-4 w-4', alert.severity === 'HIGH' ? 'text-destructive' : 'text-ctr-warning')}
                   />
                   <div>
                     <p className="text-sm font-medium text-foreground">{alert.type}</p>
