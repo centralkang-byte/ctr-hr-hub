@@ -71,7 +71,7 @@ export default function TurnoverClient({ user: _user }: { user: SessionUser }) {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <KpiCard {...kpis.monthlyTurnoverRate} icon={TrendingDown} tooltip={t('turnover.tooltips.monthlyRate')} />
         <KpiCard {...kpis.annualCumulativeRate} icon={Calendar} tooltip={t('turnover.tooltips.annualRate')} />
-        <div className={`${Number(kpis.regrettableTurnoverRate.value) > 5 ? 'ring-2 ring-red-200 rounded-xl' : ''}`}>
+        <div className={`${Number(kpis.regrettableTurnoverRate.value) > 5 ? 'ring-2 ring-destructive/30 rounded-xl' : ''}`}>
           <KpiCard {...kpis.regrettableTurnoverRate} icon={AlertTriangle} tooltip={t('turnover.tooltips.regrettableRate')} />
         </div>
         <KpiCard {...kpis.avgTenureAtExit} icon={Clock} tooltip={t('turnover.tooltips.avgTenure')} />
@@ -183,7 +183,7 @@ export default function TurnoverClient({ user: _user }: { user: SessionUser }) {
                         <div className="flex items-center justify-end gap-2">
                           <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                             <div
-                              className={`h-full rounded-full ${emp.level === 'HIGH' ? 'bg-destructive/50' : emp.level === 'MEDIUM' ? 'bg-amber-500/100' : 'bg-emerald-500/100'}`}
+                              className={`h-full rounded-full ${emp.level === 'HIGH' ? 'bg-destructive' : emp.level === 'MEDIUM' ? 'bg-warning-bright' : 'bg-tertiary'}`}
                               style={{ width: `${emp.score}%` }}
                             />
                           </div>
@@ -269,7 +269,7 @@ export default function TurnoverClient({ user: _user }: { user: SessionUser }) {
               <p className="text-xs text-muted-foreground mb-2">{t('turnover.exitInterview.wouldRejoin')}</p>
               <div className="relative w-24 h-24">
                 <svg viewBox="0 0 36 36" className="w-24 h-24">
-                  <path d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#E5E7EB" strokeWidth="3" />
+                  <path d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke={CHART_THEME.grid.stroke} strokeWidth="3" />
                   <path d="M18 2.0845a 15.9155 15.9155 0 0 1 0 31.831a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke={CHART_THEME.colors[0]} strokeWidth="3"
                     strokeDasharray={`${exitInterviewStats.wouldRejoinRate || 0} ${100 - (exitInterviewStats.wouldRejoinRate || 0)}`} />
                 </svg>
@@ -284,7 +284,7 @@ export default function TurnoverClient({ user: _user }: { user: SessionUser }) {
                 <div key={s.period} className="flex items-center gap-2 py-1">
                   <span className="text-sm text-foreground">{s.period}</span>
                   <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-red-400 via-amber-400 to-emerald-400 rounded-full" style={{ width: `${(s.score / 5) * 100}%` }} />
+                    <div className="h-full bg-primary rounded-full" style={{ width: `${(s.score / 5) * 100}%` }} />
                   </div>
                   <span className="text-xs text-muted-foreground">{s.score}/5</span>
                 </div>
@@ -293,8 +293,8 @@ export default function TurnoverClient({ user: _user }: { user: SessionUser }) {
           </div>
         )}
         {exitInterviewStats.insufficientDepartments && exitInterviewStats.insufficientDepartments.length > 0 && (
-          <div className="mt-3 p-2 bg-amber-500/10 rounded-lg">
-            <p className="text-xs text-amber-700">
+          <div className="mt-3 p-2 bg-warning-bright/15 rounded-lg">
+            <p className="text-xs text-ctr-warning">
               {t('turnover.exitInterview.insufficientDepts', { departments: exitInterviewStats.insufficientDepartments.join(', ') })}
             </p>
           </div>
