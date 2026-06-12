@@ -285,7 +285,7 @@ export function GenderPayGapClient({ user: _user }: { user: SessionUser }) {
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-xs text-wd-orange w-4">F</span>
+                                  <span className="text-xs text-wd-orange-ink w-4">F</span>
                                   <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
                                     <div
                                       className="h-full bg-wd-orange rounded-full"
