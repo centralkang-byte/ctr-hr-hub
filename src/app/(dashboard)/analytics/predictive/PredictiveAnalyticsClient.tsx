@@ -99,10 +99,10 @@ const TABS = [
 type TabKey = (typeof TABS)[number]['key']
 
 const RISK_CONFIG: Record<RiskLevel, { labelKey: string; bg: string; text: string; border: string }> = {
-  low:      { labelKey: 'predictive.riskLevels.low', bg: 'bg-emerald-500/15', text: 'text-emerald-700', border: 'border-emerald-200' },
-  medium:   { labelKey: 'predictive.riskLevels.medium', bg: 'bg-amber-500/15', text: 'text-amber-700', border: 'border-amber-300' },
-  high:     { labelKey: 'predictive.riskLevels.high', bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20' },
-  critical: { labelKey: 'predictive.riskLevels.critical', bg: 'bg-orange-500/10', text: 'text-orange-700', border: 'border-orange-200' },
+  low:      { labelKey: 'predictive.riskLevels.low', bg: 'bg-tertiary/10', text: 'text-[#006b39]', border: 'border-tertiary/30' },
+  medium:   { labelKey: 'predictive.riskLevels.medium', bg: 'bg-warning-bright/15', text: 'text-ctr-warning', border: 'border-warning-bright/30' },
+  high:     { labelKey: 'predictive.riskLevels.high', bg: 'bg-wd-orange-soft', text: 'text-wd-orange-ink', border: 'border-wd-orange/30' },
+  critical: { labelKey: 'predictive.riskLevels.critical', bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/20' },
 }
 
 
@@ -163,7 +163,7 @@ function SummaryCards({
       value: highTurnover,
       unit: t('predictive.summary.persons'),
       color: RISK_COLORS.high,
-      bg: '#FEE2E2',
+      bg: 'bg-destructive/10',
     },
     {
       icon: Zap,
@@ -171,7 +171,7 @@ function SummaryCards({
       value: highBurnout,
       unit: t('predictive.summary.persons'),
       color: RISK_COLORS.medium,
-      bg: '#FEF3C7',
+      bg: 'bg-warning-bright/15',
     },
     {
       icon: Shield,
@@ -179,7 +179,7 @@ function SummaryCards({
       value: criticalTeams,
       unit: t('predictive.summary.teams'),
       color: CHART_THEME.colors[3],
-      bg: '#EDE9FE',
+      bg: 'bg-warning-bright/15',
     },
     {
       icon: Users,
@@ -187,7 +187,7 @@ function SummaryCards({
       value: turnoverData.length,
       unit: t('predictive.summary.persons'),
       color: RISK_COLORS.low,
-      bg: '#D1FAE5',
+      bg: 'bg-tertiary/10',
     },
   ]
 
@@ -196,7 +196,7 @@ function SummaryCards({
       {cards.map((c) => (
         <div key={c.label} className="bg-card rounded-xl shadow-sm border border-border p-6">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: c.bg }}>
+            <div className={cn('w-9 h-9 rounded-lg flex items-center justify-center', c.bg)}>
               <c.icon className="w-5 h-5" style={{ color: c.color }} />
             </div>
             <p className="text-xs text-muted-foreground">{c.label}</p>
@@ -477,7 +477,7 @@ function TeamHealthTab({ data }: { data: TeamHealthRow[] }) {
                 </div>
               ))}
             {data.filter((d) => ['high', 'critical'].includes(d.latestScore?.riskLevel ?? '')).length === 0 && (
-              <p className="text-sm text-emerald-600 text-center py-8">{t('predictive.teamHealth.allHealthy')}</p>
+              <p className="text-sm text-[#006b39] text-center py-8">{t('predictive.teamHealth.allHealthy')}</p>
             )}
           </div>
         </div>
@@ -609,7 +609,7 @@ function WorkforceTab({
                     <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>{dept}</td>
                     <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>{stats.total}</td>
                     <td className={cn(TABLE_STYLES.cell, 'text-destructive')}>{stats.turnoverHigh}</td>
-                    <td className={cn(TABLE_STYLES.cell, 'text-amber-700')}>{stats.burnoutHigh}</td>
+                    <td className={cn(TABLE_STYLES.cell, 'text-ctr-warning')}>{stats.burnoutHigh}</td>
                     <td className={TABLE_STYLES.cell}>
                       <div className="flex items-center gap-2">
                         <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
@@ -701,7 +701,7 @@ export default function PredictiveAnalyticsClient() {
       {/* 액션 버튼 */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-amber-700" />
+          <AlertTriangle className="w-4 h-4 text-ctr-warning" />
           <span className="text-sm text-muted-foreground">{t('predictive.hrAdminOnly')}</span>
         </div>
         <div className="flex items-center gap-3">

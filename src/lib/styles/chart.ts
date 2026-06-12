@@ -87,5 +87,6 @@ export const HEATMAP_COLORS = {
     'rgba(208,144,30,0.2)', 'rgba(208,144,30,0.4)',
     'rgba(215,51,55,0.2)', 'rgba(215,51,55,0.4)',
   ] as const,
+  empty: '#F1F5F9', // 데이터 0 셀 (cool-gray, CHART_COLORS.grid 정합)
   text: { low: '#008b4e', mid: '#b45309', high: '#d73337' },
 } as const

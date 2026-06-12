@@ -109,7 +109,7 @@ export default function AttendanceClient({ user: _user }: { user: SessionUser })
                     const cell = charts.weekdayPattern.find((p) => p.day === day && p.hour === hour)
                     const count = cell?.count || 0
                     const intensity = count / maxCount
-                    const bgColor = count === 0 ? '#F3F4F6'
+                    const bgColor = count === 0 ? HEATMAP_COLORS.empty
                       : intensity < 0.3 ? HEATMAP_COLORS.scale[0]
                       : intensity < 0.6 ? HEATMAP_COLORS.scale[2]
                       : intensity < 0.8 ? HEATMAP_COLORS.scale[4]

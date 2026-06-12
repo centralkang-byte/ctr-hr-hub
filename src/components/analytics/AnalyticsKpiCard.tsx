@@ -19,16 +19,16 @@ interface AnalyticsKpiCardProps {
 
 const colorMap = {
   default: 'border-border',
-  success: 'border-emerald-200',
-  warning: 'border-amber-300',
+  success: 'border-tertiary/30',
+  warning: 'border-warning-bright/30',
   danger: 'border-destructive/20',
   info: 'border-primary/20',
 }
 
 const iconBgMap = {
   default: 'bg-muted text-muted-foreground',
-  success: 'bg-emerald-500/15 text-emerald-600',
-  warning: 'bg-amber-500/15 text-amber-600',
+  success: 'bg-tertiary/10 text-[#006b39]',
+  warning: 'bg-warning-bright/15 text-ctr-warning',
   danger: 'bg-destructive/10 text-destructive',
   info: 'bg-primary/10 text-primary',
 }
@@ -54,7 +54,7 @@ export function AnalyticsKpiCard({
             <p
               className={cn(
                 'mt-1 text-xs font-medium',
-                change.value > 0 ? 'text-emerald-600' : change.value < 0 ? 'text-destructive' : 'text-muted-foreground',
+                change.value > 0 ? 'text-[#006b39]' : change.value < 0 ? 'text-destructive' : 'text-muted-foreground',
               )}
             >
               {change.value > 0 ? '\u2191' : change.value < 0 ? '\u2193' : ''}
