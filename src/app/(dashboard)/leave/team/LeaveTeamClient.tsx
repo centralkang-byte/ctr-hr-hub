@@ -26,7 +26,8 @@ import { apiClient } from '@/lib/api'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { SessionUser } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
-import { STATUS_VARIANT } from '@/lib/styles/status'
+import { StatusBadge } from '@/components/ui/StatusBadge'
+import type { StatusCategory } from '@/lib/styles/status'
 import { formatDateShort } from '@/lib/format/date'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -73,11 +74,11 @@ const LEAVE_TYPE_LABEL_KEYS: Record<string, string> = {
   MENSTRUAL: 'menstrual',
 }
 
-const STATUS_BADGE: Record<string, string> = {
-  PENDING: STATUS_VARIANT.warning,
-  APPROVED: STATUS_VARIANT.success,
-  REJECTED: STATUS_VARIANT.error,
-  CANCELLED: STATUS_VARIANT.neutral,
+const STATUS_CATEGORY: Record<string, StatusCategory> = {
+  PENDING: 'warning',
+  APPROVED: 'success',
+  REJECTED: 'error',
+  CANCELLED: 'neutral',
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -292,7 +293,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
             title={t('team.noRequests')}
             description={t('team.noRequestsDesc')}
           />
-          <div className="bg-card border border-border rounded-xl divide-y divide-border">
+          <div className="bg-card border border-border rounded-2xl divide-y divide-border">
             {members.map((member) => (
               <div key={member.employeeId} className="flex items-center justify-between px-4 py-3">
                 <span className="text-sm font-medium text-foreground">{member.name}</span>
@@ -303,7 +304,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
         </div>
       ) : (
         members.map((member) => (
-          <div key={member.employeeId} className="bg-card border border-border rounded-xl p-6">
+          <div key={member.employeeId} className="bg-card border border-border rounded-2xl p-6">
             <h3 className="text-base font-bold text-foreground tracking-[-0.02em] mb-4">{member.name}</h3>
                 <div className="space-y-3">
                   {member.requests.map((req) => {
@@ -319,11 +320,11 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                     )
 
                     const rowBorderBg = optimisticStatus === 'APPROVED'
-                      ? 'border-emerald-200 bg-emerald-500/15/30'
+                      ? 'border-ctr-success/30 bg-ctr-success/10'
                       : optimisticStatus === 'REJECTED'
-                      ? 'border-destructive/20 bg-destructive/10/30'
+                      ? 'border-destructive/20 bg-destructive/10'
                       : isPending
-                      ? 'border-orange-200 bg-orange-500/10/30'
+                      ? 'border-ctr-warning/30 bg-warning-bright/15'
                       : 'border-border'
 
                     return (
@@ -341,20 +342,16 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border border-border text-muted-foreground">
                               {LEAVE_TYPE_LABEL_KEYS[req.leaveType] ? t(LEAVE_TYPE_LABEL_KEYS[req.leaveType]) : req.leaveType}
                             </span>
-                            <span
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                                STATUS_BADGE[displayStatus] ?? STATUS_VARIANT.neutral
-                              }`}
-                            >
+                            <StatusBadge status={displayStatus} variant={STATUS_CATEGORY[displayStatus]}>
                               {STATUS_LABEL_KEYS[displayStatus] ? t(STATUS_LABEL_KEYS[displayStatus]) : displayStatus}
-                            </span>
+                            </StatusBadge>
                           </div>
                           <div className="flex items-center gap-3">
                             <span className="text-xs text-muted-foreground">
                               {t('team.dayCount', { days: req.days })}
                             </span>
                             {isPending && absenceCount > 0 && (
-                              <span className="text-xs text-amber-500 font-medium">
+                              <span className="text-xs text-ctr-warning font-medium">
                                 {t('team.teamAbsence', { count: absenceCount })}
                               </span>
                             )}
@@ -371,7 +368,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                               {t('team.approve')}
                             </button>
                             <button
-                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-red-500 text-red-500 hover:bg-destructive/5 flex items-center motion-safe:transition-all"
+                              className="h-8 px-3 text-sm font-semibold rounded-lg border border-destructive text-destructive hover:bg-destructive/5 flex items-center motion-safe:transition-all"
                               onClick={() => openRejectDialog(req.id)}
                             >
                               <X className="mr-1 h-4 w-4" />
