@@ -2185,6 +2185,8 @@ model Attendance {
   // 1일 1레코드 정책 (S276 — 중복 출근 차단, 실측 기존 중복 0건)
   @@unique([employeeId, workDate])
   @@index([employeeId, workDate])
+  // 전사 근태 집계(추세·주간 admin) company-scoped range scan 가속 (PR-4)
+  @@index([companyId, workDate])
   @@map("attendances")
 }
 
@@ -2280,6 +2282,8 @@ model LeaveRequest {
   leaveTypeDef LeaveTypeDef? @relation(fields: [leaveTypeDefId], references: [id])
 
   @@index([employeeId, status])
+  // 전사 추세(월별 승인 휴가 건수) company-scoped 집계 가속 (PR-4)
+  @@index([companyId, status, startDate])
   @@map("leave_requests")
 }
 
