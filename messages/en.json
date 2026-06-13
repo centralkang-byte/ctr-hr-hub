@@ -985,7 +985,18 @@
     "workCompleted": "Work Completed",
     "workDate": "Work Date",
     "workHours": "Work Hours",
-    "workType": "Work Type"
+    "workType": "Work Type",
+    "weekly": {
+      "todayTab": "Today",
+      "weekTab": "Weekly grid",
+      "prevWeek": "Prev week",
+      "thisWeek": "This week",
+      "nextWeek": "Next week",
+      "weekTotal": "Week total",
+      "loadMore": "Load more",
+      "member": "Member",
+      "pageScopedNote": "Current page only"
+    }
   },
   "auth": {
     "brandSlogan": "Central to your safe mobility",
