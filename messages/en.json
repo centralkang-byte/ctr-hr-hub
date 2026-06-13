@@ -995,7 +995,31 @@
       "weekTotal": "Week total",
       "loadMore": "Load more",
       "member": "Member",
-      "pageScopedNote": "Current page only"
+      "pageScopedNote": "Current page only",
+      "trendTab": "Trends"
+    },
+    "trend": {
+      "deptTitle": "Attendance by department",
+      "deptSub": "Last 30 days",
+      "department": "Department",
+      "lateCount": "Late (count)",
+      "absentCount": "Absent (count)",
+      "avgClockIn": "Avg in",
+      "avgClockOut": "Avg out",
+      "avgOvertime": "Avg OT",
+      "cohortNote": "Only departments with 5+ members are shown",
+      "arrivalTitle": "Arrival time distribution",
+      "arrivalSub": "Last 30 days",
+      "countUnit": "people",
+      "beforeBucket": "Earlier",
+      "afterBucket": "Later",
+      "refBefore": "Before start time",
+      "refAfter": "After start time",
+      "typeTitle": "Attendance type trend",
+      "typeSub": "Last 6 months",
+      "leaveRequests": "Leave requests",
+      "shiftNote": "Averages and the reference line are hidden for shift-based companies",
+      "currentRosterNote": "Based on current department"
     }
   },
   "auth": {

@@ -1103,7 +1103,31 @@
       "weekTotal": "주간 합계",
       "loadMore": "더 보기",
       "member": "구성원",
-      "pageScopedNote": "현재 페이지 기준"
+      "pageScopedNote": "현재 페이지 기준",
+      "trendTab": "추세"
+    },
+    "trend": {
+      "deptTitle": "부서별 근태 비교",
+      "deptSub": "최근 30일",
+      "department": "부서",
+      "lateCount": "지각 (회)",
+      "absentCount": "결근 (회)",
+      "avgClockIn": "평균 출근",
+      "avgClockOut": "평균 퇴근",
+      "avgOvertime": "평균 OT",
+      "cohortNote": "5인 이상 부서만 표시돼요",
+      "arrivalTitle": "출근 시각 분포",
+      "arrivalSub": "최근 30일",
+      "countUnit": "명",
+      "beforeBucket": "이전",
+      "afterBucket": "이후",
+      "refBefore": "기준시각 이전",
+      "refAfter": "기준시각 이후",
+      "typeTitle": "근태 유형 추이",
+      "typeSub": "최근 6개월",
+      "leaveRequests": "휴가 신청 (건)",
+      "shiftNote": "교대제 법인은 평균 출퇴근·기준선을 표시하지 않아요",
+      "currentRosterNote": "현재 소속 기준"
     }
   },
   "leave": {

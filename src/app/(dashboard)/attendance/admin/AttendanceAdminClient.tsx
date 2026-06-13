@@ -32,6 +32,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { SessionUser } from '@/types'
 import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 import { WeeklyAttendanceGrid } from './WeeklyAttendanceGrid'
+import { AttendanceTrendsTab } from './AttendanceTrendsTab'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -294,6 +295,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
         <TabsList aria-label={t('adminAttendance')}>
           <TabsTrigger value="today">{t('weekly.todayTab')}</TabsTrigger>
           <TabsTrigger value="week">{t('weekly.weekTab')}</TabsTrigger>
+          <TabsTrigger value="trend">{t('weekly.trendTab')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="today" className="space-y-4">
@@ -407,6 +409,10 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
 
         <TabsContent value="week">
           <WeeklyAttendanceGrid />
+        </TabsContent>
+
+        <TabsContent value="trend">
+          <AttendanceTrendsTab />
         </TabsContent>
       </Tabs>
 

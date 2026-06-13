@@ -995,7 +995,31 @@
       "weekTotal": "Tổng tuần",
       "loadMore": "Tải thêm",
       "member": "Thành viên",
-      "pageScopedNote": "Chỉ trang hiện tại"
+      "pageScopedNote": "Chỉ trang hiện tại",
+      "trendTab": "Xu hướng"
+    },
+    "trend": {
+      "deptTitle": "So sánh chuyên cần theo phòng ban",
+      "deptSub": "30 ngày gần nhất",
+      "department": "Phòng ban",
+      "lateCount": "Đi muộn (lần)",
+      "absentCount": "Vắng mặt (lần)",
+      "avgClockIn": "Giờ vào TB",
+      "avgClockOut": "Giờ ra TB",
+      "avgOvertime": "Tăng ca TB",
+      "cohortNote": "Chỉ hiển thị phòng ban có từ 5 người trở lên",
+      "arrivalTitle": "Phân bố giờ đến",
+      "arrivalSub": "30 ngày gần nhất",
+      "countUnit": "người",
+      "beforeBucket": "Sớm hơn",
+      "afterBucket": "Muộn hơn",
+      "refBefore": "Trước giờ bắt đầu",
+      "refAfter": "Sau giờ bắt đầu",
+      "typeTitle": "Xu hướng loại chuyên cần",
+      "typeSub": "6 tháng gần nhất",
+      "leaveRequests": "Đơn xin nghỉ",
+      "shiftNote": "Ẩn giá trị trung bình và đường chuẩn với công ty làm theo ca",
+      "currentRosterNote": "Theo phòng ban hiện tại"
     }
   },
   "auth": {
