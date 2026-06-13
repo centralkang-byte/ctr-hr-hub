@@ -3617,7 +3617,8 @@
         "relatedDocs": "Documentos relacionados",
         "selectType": "Seleccionar tipo",
         "startDate": "Fecha de inicio",
-        "title": "Solicitud de licencia de ausencia"
+        "title": "Solicitud de licencia de ausencia",
+        "proofBeforeApproval": "Comprobante requerido antes de aprobar"
       },
       "return": {
         "leavePeriod": "Período de licencia",
@@ -3681,7 +3682,10 @@
       "returnRequested": "Se ha solicitado el retorno",
       "typeAndStartRequired": "El tipo de licencia y la fecha de inicio son obligatorios"
     },
-    "totalCount": "Total {count} entradas"
+    "totalCount": "Total {count} entradas",
+    "badge": {
+      "proofMissing": "Falta comprobante"
+    }
   },
   "menu": {
     "adjustments": "Adjustments",

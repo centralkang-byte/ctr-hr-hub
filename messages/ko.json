@@ -11159,7 +11159,8 @@
         "startDate": "시작일",
         "expectedEndDate": "예상 복귀일",
         "reason": "사유",
-        "reasonPlaceholder": "휴직 사유를 입력하세요"
+        "reasonPlaceholder": "휴직 사유를 입력하세요",
+        "proofBeforeApproval": "승인 전 증빙 제출 필요"
       },
       "action": {
         "approveTitle": "휴직 승인",
@@ -11184,6 +11185,9 @@
         "returnNotes": "복직 메모",
         "returnNotesPlaceholder": "복직 관련 메모 (선택)"
       }
+    },
+    "badge": {
+      "proofMissing": "증빙 미제출"
     }
   },
   "delegation": {

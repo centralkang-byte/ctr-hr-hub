@@ -39,8 +39,9 @@ interface LoaRecord {
   requestedAt: string
   approvedAt: string | null
   rejectionReason: string | null
+  proofFileUrl: string | null
   employee: { id: string; name: string; nameEn: string | null; employeeNo: string }
-  type: { id: string; code: string; name: string; nameEn: string | null; category: string }
+  type: { id: string; code: string; name: string; nameEn: string | null; category: string; requiresProof: boolean }
   approver: { id: string; name: string } | null
 }
 
@@ -392,6 +393,12 @@ export function LoaClient({ user }: Props) {
                       )}>
                         {r.type.category === 'STATUTORY' ? t('category.statutory') : t('category.contractual')}
                       </span>
+                      {r.type.requiresProof && !r.proofFileUrl && r.status === 'REQUESTED' && (
+                        <span className="inline-flex items-center gap-0.5 rounded-full bg-warning-bright/15 px-1.5 py-0.5 text-[10px] font-medium text-ctr-warning">
+                          <FileText className="h-2.5 w-2.5" aria-hidden="true" />
+                          {t('badge.proofMissing')}
+                        </span>
+                      )}
                     </div>
                   </td>
                   <td className={TABLE_STYLES.cell}>
@@ -511,9 +518,9 @@ export function LoaClient({ user }: Props) {
                 const selected = loaTypes.find(lt => lt.id === requestForm.typeId)
                 if (selected?.requiresProof) {
                   return (
-                    <p className="mt-1 text-xs text-orange-600 flex items-center gap-1">
+                    <p className="mt-1 text-xs text-ctr-warning flex items-center gap-1">
                       <FileText className="h-3 w-3" />
-                      {t('dialog.request.proofRequired')}: {selected.proofDescription ?? t('dialog.request.relatedDocs')}
+                      {t('dialog.request.proofBeforeApproval')}: {selected.proofDescription ?? t('dialog.request.relatedDocs')}
                     </p>
                   )
                 }

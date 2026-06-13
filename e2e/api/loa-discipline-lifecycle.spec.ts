@@ -257,6 +257,73 @@ test.describe('LOA Records: Reject + Cancel Paths', () => {
 })
 
 // ═══════════════════════════════════════════════════════════
+// LOA RECORDS: requiresProof submit/approve gate (S301)
+// 신청은 허용 · 승인 단계에서 proofFileUrl 강제 (CEO 결정)
+// ═══════════════════════════════════════════════════════════
+
+test.describe('LOA Records: requiresProof submit/approve gate', () => {
+  test.describe.configure({ mode: 'serial' })
+  test.use({ storageState: authFile('HR_ADMIN') })
+
+  let proofTypeId = ''
+  let employeeId = ''
+  let noProofRecordId = ''
+  let withProofRecordId = ''
+
+  test.beforeAll(async ({ request }) => {
+    const api = new ApiClient(request)
+    const typeRes = await f.createLoaType(api, {
+      ...f.buildLoaType('PROOF'),
+      requiresProof: true,
+      proofDescription: '의료 진단서',
+    })
+    assertOk(typeRes, 'create requiresProof LOA type')
+    proofTypeId = (typeRes.data as Record<string, unknown>).id as string
+    // approve는 assignment를 건드리지 않으므로(activate만 fence) 공유 시드 직원 사용 OK
+    const seed = await resolveSeedData(request)
+    employeeId = seed.employeeId
+  })
+
+  test('POST requiresProof type WITHOUT proof → REQUESTED (신청 단계 비차단)', async ({ request }) => {
+    const api = new ApiClient(request)
+    const res = await f.createLoaRecord(api, f.buildLoaRecord(employeeId, proofTypeId))
+    assertOk(res, 'submit requiresProof without proof')
+    const d = res.data as Record<string, unknown>
+    expect(d.status).toBe('REQUESTED')
+    noProofRecordId = d.id as string
+  })
+
+  test('PATCH {action:approve} without proof → 400 (승인 단계 강제)', async ({ request }) => {
+    const api = new ApiClient(request)
+    const res = await f.patchLoaAction(api, noProofRecordId, 'approve')
+    assertError(res, 400, 'approve blocked without proof')
+  })
+
+  test('POST requiresProof type WITH proof → REQUESTED', async ({ request }) => {
+    const api = new ApiClient(request)
+    const res = await f.createLoaRecord(api, {
+      ...f.buildLoaRecord(employeeId, proofTypeId),
+      proofFileUrl: 'https://example.com/proof.pdf',
+    })
+    assertOk(res, 'submit requiresProof with proof')
+    withProofRecordId = (res.data as Record<string, unknown>).id as string
+  })
+
+  test('PATCH {action:approve} with proof → APPROVED', async ({ request }) => {
+    const api = new ApiClient(request)
+    const res = await f.patchLoaAction(api, withProofRecordId, 'approve')
+    assertOk(res, 'approve with proof')
+    expect((res.data as Record<string, unknown>).status).toBe('APPROVED')
+  })
+
+  test.afterAll(async ({ request }) => {
+    const api = new ApiClient(request)
+    if (noProofRecordId) await f.patchLoaAction(api, noProofRecordId, 'cancel').catch(() => {})
+    if (withProofRecordId) await f.patchLoaAction(api, withProofRecordId, 'cancel').catch(() => {})
+  })
+})
+
+// ═══════════════════════════════════════════════════════════
 // LOA RBAC: EMPLOYEE Blocked
 // ═══════════════════════════════════════════════════════════
 

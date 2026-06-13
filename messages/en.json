@@ -3617,7 +3617,8 @@
         "relatedDocs": "Related Documents",
         "selectType": "Select Type",
         "startDate": "Start Date",
-        "title": "Leave of Absence Request"
+        "title": "Leave of Absence Request",
+        "proofBeforeApproval": "Proof required before approval"
       },
       "return": {
         "leavePeriod": "Leave Period",
@@ -3681,7 +3682,10 @@
       "returnRequested": "Return has been requested",
       "typeAndStartRequired": "Leave type and start date are required"
     },
-    "totalCount": "Total {count} entries"
+    "totalCount": "Total {count} entries",
+    "badge": {
+      "proofMissing": "Proof missing"
+    }
   },
   "menu": {
     "adjustments": "Adjustments",
