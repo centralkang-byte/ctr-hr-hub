@@ -7,8 +7,9 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Check, X, CalendarOff } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { toast } from '@/hooks/use-toast'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -113,6 +114,59 @@ function getTeamAbsenceCount(
   return count
 }
 
+// ─── Calendar (month Gantt) helpers ──────────────────────────
+
+// 선택 월(YYYY-MM)의 1일~말일 Date 배열
+function getMonthDays(month: string): Date[] {
+  const [y, m] = month.split('-').map(Number)
+  if (!y || !m) return []
+  const count = new Date(y, m, 0).getDate() // 해당 월의 일수
+  return Array.from({ length: count }, (_, i) => new Date(y, m - 1, i + 1))
+}
+
+// 휴가 기간을 월 그리드 내 위치(%)로 — 월 경계로 clamp, 월과 안 겹치면 null
+function getBarMetrics(
+  startDate: string,
+  endDate: string,
+  days: Date[],
+): { leftPct: number; widthPct: number } | null {
+  if (days.length === 0) return null
+  const monthStart = days[0]
+  const monthEnd = days[days.length - 1]
+  const s = new Date(startDate)
+  const e = new Date(endDate)
+  if (e < monthStart || s > monthEnd) return null
+  const startIdx = s < monthStart ? 0 : s.getDate() - 1
+  const endIdx = e > monthEnd ? days.length - 1 : e.getDate() - 1
+  return {
+    leftPct: (startIdx / days.length) * 100,
+    widthPct: ((endIdx - startIdx + 1) / days.length) * 100,
+  }
+}
+
+// 바 색: 승인 대기 우선, 그 외 유형별 (design.md 토큰)
+function leaveBarClass(status: string, leaveType: string): string {
+  if (status === 'PENDING') return 'bg-warning-bright text-foreground'
+  switch (leaveType) {
+    case 'SICK':
+    case 'MENSTRUAL':
+      return 'bg-destructive text-white'
+    case 'MATERNITY':
+    case 'PATERNITY':
+    case 'FAMILY_CARE':
+    case 'BEREAVEMENT':
+    case 'WEDDING':
+    case 'SPECIAL':
+      return 'bg-wt-4 text-white'
+    default: // ANNUAL · COMPENSATORY 등
+      return 'bg-primary text-white'
+  }
+}
+
+function isWeekendDate(d: Date): boolean {
+  return d.getDay() === 0 || d.getDay() === 6
+}
+
 // ─── Component ──────────────────────────────────────────────
 
 export function LeaveTeamClient({ user }: { user: SessionUser }) {
@@ -120,6 +174,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
 
   const t = useTranslations('leave')
   const tc = useTranslations('common')
+  const locale = useLocale()
 
   const [month, setMonth] = useState(getCurrentMonth)
   const [data, setData] = useState<TeamLeaveData | null>(null)
@@ -253,6 +308,7 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
   }
 
   const members = data?.members ?? []
+  const days = getMonthDays(month)
   const hasPending = members.some((m) =>
     m.requests.some((r) => r.status === 'PENDING'),
   )
@@ -303,7 +359,79 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
           </div>
         </div>
       ) : (
-        members.map((member) => (
+        <>
+          {/* ─── 팀 휴가 캘린더 (월 Gantt — 프로토 팀 캘린더 adopt) ─── */}
+          <div className="overflow-x-auto rounded-2xl border border-border bg-card">
+            <div className="min-w-[720px]">
+              {/* 헤더: (구성원) + 날짜 그리드 */}
+              <div className="flex border-b border-border bg-muted/30">
+                <div className="w-36 shrink-0 px-4 py-2" aria-hidden="true" />
+                <div
+                  className="grid flex-1"
+                  style={{ gridTemplateColumns: `repeat(${days.length}, minmax(0, 1fr))` }}
+                >
+                  {days.map((d, i) => (
+                    <div key={i} className={cn('py-1 text-center', isWeekendDate(d) && 'bg-muted/50')}>
+                      <span className="block text-[10px] text-muted-foreground">
+                        {new Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format(d)}
+                      </span>
+                      <span className="block text-[11px] tabular-nums text-foreground">{d.getDate()}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* 멤버별 트랙 + 휴가 바 */}
+              {members.map((member) => (
+                <div key={member.employeeId} className="flex items-center border-b border-border last:border-0">
+                  <div className="w-36 shrink-0 truncate px-4 py-2 text-sm font-medium text-foreground">
+                    {member.name}
+                  </div>
+                  <div
+                    className="relative grid h-9 flex-1"
+                    style={{ gridTemplateColumns: `repeat(${days.length}, minmax(0, 1fr))` }}
+                  >
+                    {days.map((d, i) => (
+                      <div
+                        key={i}
+                        className={cn('border-r border-border/40 last:border-r-0', isWeekendDate(d) && 'bg-muted/30')}
+                      />
+                    ))}
+                    {member.requests.map((req) => {
+                      const pos = getBarMetrics(req.startDate, req.endDate, days)
+                      if (!pos) return null
+                      const label = LEAVE_TYPE_LABEL_KEYS[req.leaveType]
+                        ? t(LEAVE_TYPE_LABEL_KEYS[req.leaveType])
+                        : req.leaveType
+                      return (
+                        <div
+                          key={req.id}
+                          className={cn(
+                            'absolute top-1.5 flex h-6 items-center overflow-hidden rounded px-1.5 text-[10px] font-medium leading-none',
+                            leaveBarClass(req.status, req.leaveType),
+                          )}
+                          style={{ left: `${pos.leftPct}%`, width: `${pos.widthPct}%` }}
+                          title={`${member.name} · ${label} · ${t('team.dayCount', { days: req.days })}`}
+                        >
+                          <span className="truncate">{label}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 범례 */}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-primary" />{t('annual')}</span>
+            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-destructive" />{t('sick')}</span>
+            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-wt-4" />{t('special')}</span>
+            <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm bg-warning-bright" />{t('pending')}</span>
+          </div>
+
+          {/* ─── 요청 목록 (keep-live: 승인·반려 플로우 보존) ─── */}
+          {members.map((member) => (
           <div key={member.employeeId} className="bg-card border border-border rounded-2xl p-6">
             <h3 className="text-base font-bold text-foreground tracking-[-0.02em] mb-4">{member.name}</h3>
                 <div className="space-y-3">
@@ -381,7 +509,8 @@ export function LeaveTeamClient({ user }: { user: SessionUser }) {
                   })}
                 </div>
           </div>
-        ))
+        ))}
+        </>
       )}
 
       {/* ─── Reject Dialog ─── */}
