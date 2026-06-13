@@ -3617,7 +3617,8 @@
         "relatedDocs": "Tài liệu liên quan",
         "selectType": "Chọn loại",
         "startDate": "Ngày bắt đầu",
-        "title": "Yêu cầu nghỉ phép dài hạn"
+        "title": "Yêu cầu nghỉ phép dài hạn",
+        "proofBeforeApproval": "Cần chứng từ trước khi phê duyệt"
       },
       "return": {
         "leavePeriod": "Kỳ nghỉ phép",
@@ -3681,7 +3682,10 @@
       "returnRequested": "Đã gửi yêu cầu quay lại",
       "typeAndStartRequired": "Loại nghỉ phép và ngày bắt đầu là bắt buộc"
     },
-    "totalCount": "Tổng {count} mục"
+    "totalCount": "Tổng {count} mục",
+    "badge": {
+      "proofMissing": "Thiếu chứng từ"
+    }
   },
   "menu": {
     "adjustments": "Adjustments",

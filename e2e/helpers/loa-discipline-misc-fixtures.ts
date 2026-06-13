@@ -181,7 +181,10 @@ export function listLoaTypes(c: ApiClient, params?: Record<string, string>): Pro
   return c.get(LOA_TYPES, params)
 }
 
-export function createLoaType(c: ApiClient, data: ReturnType<typeof buildLoaType>): Promise<ApiResult> {
+export function createLoaType(
+  c: ApiClient,
+  data: ReturnType<typeof buildLoaType> & Record<string, unknown>,
+): Promise<ApiResult> {
   return c.post(LOA_TYPES, data)
 }
 
@@ -205,7 +208,10 @@ export function listLoaRecords(c: ApiClient, params?: Record<string, string>): P
   return c.get(LOA, params)
 }
 
-export function createLoaRecord(c: ApiClient, data: ReturnType<typeof buildLoaRecord>): Promise<ApiResult> {
+export function createLoaRecord(
+  c: ApiClient,
+  data: ReturnType<typeof buildLoaRecord> & Record<string, unknown>,
+): Promise<ApiResult> {
   return c.post(LOA, data)
 }
 

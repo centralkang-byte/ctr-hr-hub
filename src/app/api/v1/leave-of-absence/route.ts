@@ -38,7 +38,7 @@ export const GET = withPermission(
         where,
         include: {
           employee: { select: { id: true, name: true, nameEn: true, employeeNo: true } },
-          type: { select: { id: true, code: true, name: true, nameEn: true, category: true } },
+          type: { select: { id: true, code: true, name: true, nameEn: true, category: true, requiresProof: true } },
           approver: { select: { id: true, name: true } },
         },
         orderBy: { requestedAt: 'desc' },
@@ -81,10 +81,9 @@ export const POST = withPermission(
       })
       if (!employee) throw badRequest('직원을 찾을 수 없습니다.')
 
-      // 증빙 필수 체크
-      if (loaType.requiresProof && !proofFileUrl) {
-        throw badRequest(`이 휴직 유형은 증빙 서류가 필수입니다. (${loaType.proofDescription ?? '증빙 서류'})`)
-      }
+      // 증빙 필수 유형: 신청 단계에서는 막지 않고(증빙 서류는 신청 후 첨부 가능),
+      // 승인 단계(PATCH approve)에서 proofFileUrl 유무를 강제한다 (S301 CEO 결정).
+      // 첨부 업로드 파이프라인은 별도(PR-5/6) — 그 전까지 증빙 필수 유형은 승인만 보류된다.
 
       // 분할 사용 시 시퀀스 계산
       let splitSequence = 1

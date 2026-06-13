@@ -3617,7 +3617,8 @@
         "relatedDocs": "相关文件",
         "selectType": "选择类型",
         "startDate": "开始日期",
-        "title": "休职申请"
+        "title": "休职申请",
+        "proofBeforeApproval": "批准前需提交证明"
       },
       "return": {
         "leavePeriod": "休职期间",
@@ -3681,7 +3682,10 @@
       "returnRequested": "已提交复职申请",
       "typeAndStartRequired": "休职类型和开始日期为必填项"
     },
-    "totalCount": "共{count}条"
+    "totalCount": "共{count}条",
+    "badge": {
+      "proofMissing": "缺少证明"
+    }
   },
   "menu": {
     "adjustments": "Adjustments",

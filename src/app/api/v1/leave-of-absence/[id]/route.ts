@@ -110,6 +110,13 @@ type RecordWithType = Awaited<ReturnType<typeof prisma.leaveOfAbsence.findFirst>
 async function handleApprove(id: string, record: RecordWithType, user: SessionUser) {
   assertTransition(record.status, 'APPROVED')
 
+  // 증빙 필수 유형은 증빙 서류(proofFileUrl)가 있어야 승인 가능 (S301 CEO 결정 — 신청은 허용·승인 단계 강제)
+  if (record.type.requiresProof && !record.proofFileUrl) {
+    throw badRequest(
+      `증빙 서류가 제출되어야 승인할 수 있습니다. (${record.type.proofDescription ?? '증빙 서류'})`,
+    )
+  }
+
   return prisma.leaveOfAbsence.update({
     where: { id },
     data: {
