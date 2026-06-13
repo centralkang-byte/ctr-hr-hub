@@ -28,8 +28,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { SessionUser } from '@/types'
 import { useSubmitGuard } from '@/hooks/useSubmitGuard'
+import { WeeklyAttendanceGrid } from './WeeklyAttendanceGrid'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -288,53 +290,60 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
     <div className="space-y-4">
       <PageHeader title={t('adminAttendance')} />
 
+      <Tabs defaultValue="today" className="space-y-4">
+        <TabsList aria-label={t('adminAttendance')}>
+          <TabsTrigger value="today">{t('weekly.todayTab')}</TabsTrigger>
+          <TabsTrigger value="week">{t('weekly.weekTab')}</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="today" className="space-y-4">
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-2xl p-4">
           <p className="text-xs text-muted-foreground font-medium mb-2">{t('totalEmployees')}</p>
           <p className={TYPOGRAPHY.stat}><AnimatedNumber value={kpi?.totalEmployees ?? 0} /></p>
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-2xl p-4">
           <p className="text-xs text-muted-foreground font-medium mb-2">{t('clockIn')}</p>
           <p className={TYPOGRAPHY.stat}><AnimatedNumber value={kpi?.presentCount ?? 0} /></p>
           <span className="text-xs font-semibold text-primary">{presentPct}%</span>
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-2xl p-4">
           <p className="text-xs text-muted-foreground font-medium mb-2">{t('late')}</p>
-          <p className={`text-3xl font-bold tabular-nums ${(kpi?.lateCount ?? 0) > 0 ? 'text-red-500' : 'text-foreground'}`}><AnimatedNumber value={kpi?.lateCount ?? 0} /></p>
+          <p className={`text-3xl font-bold tabular-nums ${(kpi?.lateCount ?? 0) > 0 ? 'text-destructive' : 'text-foreground'}`}><AnimatedNumber value={kpi?.lateCount ?? 0} /></p>
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-4">
+        <div className="bg-card border border-border rounded-2xl p-4">
           <p className="text-xs text-muted-foreground font-medium mb-2">{t('absent')}</p>
-          <p className={`text-3xl font-bold tabular-nums ${(kpi?.absentCount ?? 0) > 0 ? 'text-red-500' : 'text-foreground'}`}><AnimatedNumber value={kpi?.absentCount ?? 0} /></p>
+          <p className={`text-3xl font-bold tabular-nums ${(kpi?.absentCount ?? 0) > 0 ? 'text-destructive' : 'text-foreground'}`}><AnimatedNumber value={kpi?.absentCount ?? 0} /></p>
         </div>
       </div>
 
       {/* Average work hours */}
-      <div className="bg-card border border-border rounded-xl p-4">
+      <div className="bg-card border border-border rounded-2xl p-4">
         <p className="text-xs text-muted-foreground font-medium mb-2">{t('averageWorkHours')}</p>
         <p className={TYPOGRAPHY.stat}>{kpi ? formatMinutes(kpi.avgTotalMinutes) : '—'}</p>
       </div>
 
       {/* 52시간 모니터링 위젯 */}
       {alerts.length > 0 && (
-        <div className="rounded-xl border border-destructive/20 bg-card overflow-hidden">
+        <div className="rounded-2xl border border-destructive/20 bg-card overflow-hidden">
           <div className="flex items-center justify-between px-5 py-3 bg-destructive/5 border-b border-destructive/20">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-red-500" />
+              <AlertTriangle className="h-4 w-4 text-destructive" />
               <span className="text-sm font-semibold text-destructive">
                 {t('weeklyHourAlert', { count: alerts.length })}
               </span>
             </div>
             <div className="flex items-center gap-3 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-amber-500/100 inline-block" />
+                <span className="h-2 w-2 rounded-full bg-ctr-warning inline-block" />
                 {t('cautionCount', { count: alerts.filter((a) => a.alertLevel === 'caution').length })}
               </span>
               <span className="flex items-center gap-1">
-                <span className="h-2 w-2 rounded-full bg-orange-500/100 inline-block" />
+                <span className="h-2 w-2 rounded-full bg-wd-orange inline-block" />
                 {t('warningCount', { count: alerts.filter((a) => a.alertLevel === 'warning').length })}
               </span>
               <span className="flex items-center gap-1">
@@ -369,7 +378,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
                 <button
                   onClick={() => { void handleResolveAlert(alert.id) }}
                   disabled={resolvingId === alert.id}
-                  className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 disabled:opacity-50"
+                  className="flex items-center gap-1 text-xs text-ctr-success hover:text-ctr-success/80 disabled:opacity-50"
                 >
                   {resolvingId === alert.id ? (
                     <XCircle className="h-4 w-4" />
@@ -393,6 +402,13 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
         onRowClick={(row) => handleRowClick(row as unknown as AnomalyRecord)}
         emptyMessage={tc('noData')}
       />
+
+        </TabsContent>
+
+        <TabsContent value="week">
+          <WeeklyAttendanceGrid />
+        </TabsContent>
+      </Tabs>
 
       {/* Correction drawer (WdDrawer 카나리 — 입력 폼 표준 컨테이너) */}
       <WdDrawer

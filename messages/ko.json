@@ -1093,7 +1093,18 @@
     "warningCount": "경고: {count}",
     "blockedCount": "차단: {count}",
     "hoursPerWeek": "{hours}h / 주",
-    "release": "해제"
+    "release": "해제",
+    "weekly": {
+      "todayTab": "오늘 현황",
+      "weekTab": "주간 그리드",
+      "prevWeek": "지난 주",
+      "thisWeek": "이번 주",
+      "nextWeek": "다음 주",
+      "weekTotal": "주간 합계",
+      "loadMore": "더 보기",
+      "member": "구성원",
+      "pageScopedNote": "현재 페이지 기준"
+    }
   },
   "leave": {
     "title": "휴가 관리",
