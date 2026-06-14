@@ -4309,7 +4309,11 @@
         "MARKET_ADJUSTMENT": "市场调整",
         "PROMOTION": "晋升",
         "RESIGN": "离职",
-        "TRANSFER": "调动"
+        "TRANSFER": "调动",
+        "REORGANIZATION": "组织调整",
+        "STATUS_CHANGE": "在职状态变更",
+        "CONTRACT_CHANGE": "合同变更",
+        "COMPANY_TRANSFER": "法人调动"
       },
       "col": {
         "amount": "金额",
@@ -4411,7 +4415,15 @@
         "overtime": "加班",
         "daysUnit": "天",
         "hoursUnit": "小时",
-        "empty": "本月暂无考勤记录"
+        "empty": "本月暂无考勤记录",
+        "heatmapTitle": "本月考勤",
+        "legend": {
+          "NORMAL": "正常",
+          "LATE": "迟到",
+          "EARLY_OUT": "早退",
+          "ABSENT": "缺勤",
+          "NONE": "无记录"
+        }
       },
       "leaveTab": {
         "annualRemaining": "剩余年假",
@@ -4426,8 +4438,21 @@
         "latestGrade": "最近评级",
         "totalScore": "综合得分",
         "mboScore": "MBO 得分",
-        "empty": "暂无已公布的评估结果"
-      }
+        "empty": "暂无已公布的评估结果",
+        "evalHistory": "评估履历",
+        "evaluator": "评估人 {name}",
+        "mboHistory": "MBO 达成履历",
+        "mboCol": {
+          "cycle": "周期",
+          "goals": "目标数",
+          "achievement": "达成分数",
+          "keyGoals": "主要目标"
+        },
+        "goalsCount": "{count}个",
+        "recognitions": "收到的表扬",
+        "praisedYou": "{name} 表扬了您"
+      },
+      "jobHistoryTitle": "任职履历"
     },
     "profileDesc": "查看 and edit your personal information.",
     "profileTitle": "My Profile",

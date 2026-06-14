@@ -22,6 +22,7 @@ import { ProfileChangeRequestDialog, ChangeRequestHistory } from '@/components/e
 import { ProfileAttendanceTab } from './ProfileAttendanceTab'
 import { ProfileLeaveTab } from './ProfileLeaveTab'
 import { ProfilePerformanceTab } from './ProfilePerformanceTab'
+import { ProfileJobHistoryTab } from './ProfileJobHistoryTab'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -61,16 +62,6 @@ interface ProfileVisibility {
   skills: string
 }
 
-interface EmployeeHistory {
-  id: string
-  changeType: string
-  effectiveDate: string | Date
-  toDept: { name: string } | null
-  toGrade: { name: string } | null
-  toCompany: { name: string } | null
-  createdAt: string | Date
-}
-
 interface CompensationHistory {
   id: string
   changeType: string
@@ -101,7 +92,6 @@ interface EmployeeData {
   profileExtension: ProfileExtension | null
   emergencyContacts: EmergencyContact[]
   profileVisibility: ProfileVisibility | null
-  employeeHistories: EmployeeHistory[]
   compensationHistories: CompensationHistory[]
   employeeDocuments: EmployeeDocument[]
 }
@@ -597,38 +587,10 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
         </div>
       )}
 
-      {/* ── Tab: Career (직무 및 발령 이력) ── */}
-      {activeTab === 'career' && (
-        <div className={CARD_STYLES.padded}>
-          <h2 className="text-lg font-semibold text-foreground mb-6">{t('profile.careerTimeline')}</h2>
-          {employee.employeeHistories.length === 0 ? (
-            <EmptyState title={t('profile.emptyCareerTitle')} description={t('profile.emptyCareerDesc')} />
-          ) : (
-            <div className="space-y-8 relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-border">
-              {employee.employeeHistories.map((hist) => (
-                <div key={hist.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full border-4 border-white bg-primary text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm relative z-10 mx-auto">
-                    {hist.changeType === 'HIRE' ? <User className="w-3 h-3" /> : <Briefcase className="w-3 h-3" />}
-                  </div>
-                  
-                  <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] p-4 rounded-xl border border-border bg-card shadow-sm hover:border-primary/30 transition-colors">
-                    <div className="flex items-center justify-between mb-2">
-                       <span className="text-xs font-semibold text-primary/90 bg-primary/10 px-2 py-0.5 rounded-md">
-                         {translateChangeType(hist.changeType)}
-                       </span>
-                       <span className="text-xs text-muted-foreground font-medium">{formatDate(hist.effectiveDate)}</span>
-                    </div>
-                    <h3 className="text-sm font-bold text-foreground mb-1">
-                      {hist.toDept?.name ?? t('profile.noDept')} · {hist.toGrade?.name ?? t('profile.noGrade')}
-                    </h3>
-                    <p className="text-xs text-muted-foreground">
-                      {hist.toCompany?.name ?? (extractPrimaryAssignment(employee.assignments as unknown as Record<string, unknown>[]) as Assignment | undefined)?.company?.name ?? 'CTR Group'}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+      {/* ── Tab: Career (직무 발령 이력) — 전체 이력 lazy fetch ── */}
+      {activatedTabs.has('career') && (
+        <div hidden={activeTab !== 'career'}>
+          <ProfileJobHistoryTab employeeId={employee.id} />
         </div>
       )}
 
@@ -763,7 +725,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
       {/* ── Tab: Performance (성과 요약) ── */}
       {activatedTabs.has('performance') && (
         <div hidden={activeTab !== 'performance'}>
-          <ProfilePerformanceTab />
+          <ProfilePerformanceTab employeeId={employee.id} />
         </div>
       )}
 
