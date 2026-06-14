@@ -19,6 +19,9 @@ import { formatDate } from '@/lib/format/date'
 import { useArrowKeyNavigation } from '@/hooks/useArrowKeyNavigation'
 import type { SessionUser } from '@/types'
 import { ProfileChangeRequestDialog, ChangeRequestHistory } from '@/components/employees/ProfileChangeRequestDialog'
+import { ProfileAttendanceTab } from './ProfileAttendanceTab'
+import { ProfileLeaveTab } from './ProfileLeaveTab'
+import { ProfilePerformanceTab } from './ProfilePerformanceTab'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -111,8 +114,8 @@ interface MyProfileClientProps {
 
 // ─── Constants ──────────────────────────────────────────────
 
-const TAB_IDS = ['overview', 'career', 'compensation', 'documents'] as const
-const TAB_ICONS = { overview: User, career: Briefcase, compensation: DollarSign, documents: FileText } as const
+const TAB_IDS = ['overview', 'career', 'compensation', 'documents', 'attendance', 'leave', 'performance'] as const
+const TAB_ICONS = { overview: User, career: Briefcase, compensation: DollarSign, documents: FileText, attendance: Clock, leave: Calendar, performance: Award } as const
 
 type TabId = (typeof TAB_IDS)[number]
 
@@ -172,6 +175,11 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
     TAB_IDS.indexOf(activeTab),
     (i) => setActiveTab(TAB_IDS[i]),
   )
+  // 요약 탭(근태/휴가/성과)은 최초 활성화 시 1회만 mount → fetch-once, 재진입 시 캐시 유지
+  const [activatedTabs, setActivatedTabs] = useState<Set<TabId>>(() => new Set<TabId>(['overview']))
+  useEffect(() => {
+    setActivatedTabs((prev) => (prev.has(activeTab) ? prev : new Set(prev).add(activeTab)))
+  }, [activeTab])
   const [ext, setExt] = useState<ProfileExtension>(
     employee.profileExtension ?? { bio: null, skills: [], languages: null, certifications: null, pronouns: null, timezone: null, avatarPath: null }
   )
@@ -267,51 +275,73 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
-      {/* Header Profile Card */}
-      <div className={`${CARD_STYLES.padded} border border-border flex items-start gap-6 relative overflow-hidden`}>
-        <div className="relative shrink-0">
-          <div className="w-24 h-24 rounded-2xl bg-primary flex items-center justify-center text-white text-3xl font-bold">
-            {employee.name.slice(0, 1)}
-          </div>
-          <button
-            onClick={() => toast({ title: t('profile.avatarComingSoonTitle'), description: t('profile.avatarComingSoonDesc') })}
-            className="absolute -bottom-2 -right-2 w-8 h-8 bg-card border border-border rounded-full flex items-center justify-center shadow-sm hover:bg-background text-muted-foreground hover:text-primary transition-colors"
-          >
-            <Camera className="w-4 h-4" />
-          </button>
-        </div>
-        <div className="flex-1">
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                {employee.name}
-                {employee.nameEn && <span className="text-sm font-normal text-muted-foreground">({employee.nameEn})</span>}
-              </h1>
-              <p className="text-primary font-medium mt-1">
-                {[asgn?.title?.name, asgn?.position?.titleKo].filter(Boolean).join(' · ') || (asgn?.jobGrade?.name ?? '-')}
-              </p>
-              <p className="text-sm text-muted-foreground mt-0.5">
-                {[asgn?.company?.name, division, asgn?.department?.name].filter(Boolean).join(' · ')}
-              </p>
+      {/* Worker Banner (navy) — proto .wd-worker-banner */}
+      <section
+        aria-label={employee.name}
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-primary-dim p-6 text-white"
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-10 -top-12 h-44 w-44 rounded-full bg-wd-orange/25 blur-2xl"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)',
+            backgroundSize: '22px 22px',
+          }}
+        />
+        <div className="relative flex items-start gap-5">
+          <div className="relative shrink-0">
+            <div className="w-[70px] h-[70px] rounded-2xl bg-white/20 ring-2 ring-white/30 flex items-center justify-center text-2xl font-semibold text-white">
+              {employee.name.slice(0, 1)}
             </div>
-            <div className="text-right">
-              <Badge variant="success">{t('profile.statusActive')}</Badge>
+            <button
+              type="button"
+              onClick={() => toast({ title: t('profile.avatarComingSoonTitle'), description: t('profile.avatarComingSoonDesc') })}
+              aria-label={t('profile.avatarComingSoonTitle')}
+              className="absolute -bottom-2 -right-2 w-7 h-7 bg-white text-primary-dim rounded-full flex items-center justify-center shadow-sm hover:brightness-95 transition-[filter]"
+            >
+              <Camera className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h1 className="text-[22px] font-semibold tracking-tight flex flex-wrap items-center gap-2">
+                  {employee.name}
+                  {employee.nameEn && <span className="text-xs font-normal font-mono text-white/70">{employee.nameEn}</span>}
+                </h1>
+                <p className="mt-1 text-sm text-white/90 flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <span className="font-semibold">
+                    {[asgn?.title?.name, asgn?.position?.titleKo].filter(Boolean).join(' · ') || (asgn?.jobGrade?.name ?? '-')}
+                  </span>
+                  {([asgn?.company?.name, division, asgn?.department?.name].filter(Boolean) as string[]).map((x, idx) => (
+                    <span key={idx} className="text-white/75">· {x}</span>
+                  ))}
+                </p>
+              </div>
+              <span className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-1 text-xs font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-tertiary" aria-hidden="true" />
+                {t('profile.statusActive')}
+              </span>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-white/80">
+              <span className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" /> {asgn?.jobGrade?.name ?? '-'}</span>
+              <span className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" /> {employee.employeeNo}</span>
+              <span className="flex items-center gap-1.5"><Globe className="w-3.5 h-3.5" /> {employee.email}</span>
             </div>
           </div>
-          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5"><Building className="w-4 h-4 text-muted-foreground" /> {asgn?.jobGrade?.name ?? '-'}</span>
-            <span className="flex items-center gap-1.5"><User className="w-4 h-4 text-muted-foreground" /> {employee.employeeNo}</span>
-            <span className="flex items-center gap-1.5"><Globe className="w-4 h-4 text-muted-foreground" /> {employee.email}</span>
-          </div>
         </div>
-      </div>
+      </section>
 
       {/* Modern Tabs */}
       <div
         role="tablist"
         aria-label={t('profile.tabsLabel')}
         onKeyDown={tabNav.onKeyDown}
-        className="flex space-x-1 bg-muted p-1 rounded-xl"
+        className="flex space-x-1 bg-muted p-1 rounded-xl overflow-x-auto"
       >
         {TAB_IDS.map((tabId, i) => {
           const isActive = activeTab === tabId
@@ -324,7 +354,7 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
               aria-selected={isActive}
               {...tabNav.itemProps(i)}
               onClick={() => setActiveTab(tabId)}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all ${
+              className={`flex-1 shrink-0 min-w-[88px] whitespace-nowrap flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all ${
                 isActive
                   ? 'bg-card text-primary/90 shadow-sm'
                   : 'text-muted-foreground hover:text-foreground hover:bg-border/50'
@@ -713,6 +743,27 @@ export function MyProfileClient({ user: _user, employee, division }: MyProfileCl
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── Tab: Attendance (근태 요약) ── 활성화 후 mount 유지(fetch-once) ── */}
+      {activatedTabs.has('attendance') && (
+        <div hidden={activeTab !== 'attendance'}>
+          <ProfileAttendanceTab />
+        </div>
+      )}
+
+      {/* ── Tab: Leave (휴가 요약) ── */}
+      {activatedTabs.has('leave') && (
+        <div hidden={activeTab !== 'leave'}>
+          <ProfileLeaveTab />
+        </div>
+      )}
+
+      {/* ── Tab: Performance (성과 요약) ── */}
+      {activatedTabs.has('performance') && (
+        <div hidden={activeTab !== 'performance'}>
+          <ProfilePerformanceTab />
         </div>
       )}
 

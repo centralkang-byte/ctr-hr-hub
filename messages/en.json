@@ -4377,7 +4377,10 @@
         "career": "Career & History",
         "compensation": "Compensation",
         "documents": "Documents",
-        "overview": "Overview"
+        "overview": "Overview",
+        "attendance": "Attendance",
+        "leave": "Leave",
+        "performance": "Performance"
       },
       "visibility": {
         "manager": "Manager Only",
@@ -4395,7 +4398,36 @@
       },
       "visibilitySettings": "Visibility Settings",
       "selfService": "Self-service",
-      "tabsLabel": "Profile sections"
+      "tabsLabel": "Profile sections",
+      "summary": {
+        "loadError": "Couldn't load",
+        "retry": "Retry",
+        "viewDetail": "View detail"
+      },
+      "attendanceTab": {
+        "thisMonth": "As of {month}",
+        "workedDays": "Days worked",
+        "workHours": "Work hours",
+        "overtime": "Overtime",
+        "daysUnit": "days",
+        "hoursUnit": "hrs",
+        "empty": "No attendance records this month"
+      },
+      "leaveTab": {
+        "annualRemaining": "Annual leave left",
+        "used": "Used",
+        "usageRate": "Usage rate",
+        "ofTotal": "of {total} total",
+        "byType": "Leave by type",
+        "daysUnit": "d",
+        "empty": "No leave balance"
+      },
+      "performanceTab": {
+        "latestGrade": "Latest grade",
+        "totalScore": "Total score",
+        "mboScore": "MBO score",
+        "empty": "No published results yet"
+      }
     },
     "profileDesc": "View and edit your personal information.",
     "profileTitle": "My Profile",

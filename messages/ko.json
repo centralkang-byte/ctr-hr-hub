@@ -10113,7 +10113,10 @@
         "overview": "개요",
         "career": "직무 및 이력",
         "compensation": "보상 및 급여",
-        "documents": "문서"
+        "documents": "문서",
+        "attendance": "근태",
+        "leave": "휴가",
+        "performance": "성과"
       },
       "visibility": {
         "public": "전체 공개",
@@ -10202,7 +10205,36 @@
       "avatarComingSoonTitle": "준비 중",
       "avatarComingSoonDesc": "아바타 업로드는 곧 지원됩니다.",
       "selfService": "셀프 서비스",
-      "tabsLabel": "프로필 탭"
+      "tabsLabel": "프로필 탭",
+      "summary": {
+        "loadError": "불러오지 못했어요",
+        "retry": "다시 시도",
+        "viewDetail": "자세히 보기"
+      },
+      "attendanceTab": {
+        "thisMonth": "{month} 기준",
+        "workedDays": "근무일수",
+        "workHours": "근무시간",
+        "overtime": "초과근무",
+        "daysUnit": "일",
+        "hoursUnit": "시간",
+        "empty": "이번 달 근태 기록이 없어요"
+      },
+      "leaveTab": {
+        "annualRemaining": "잔여 연차",
+        "used": "사용",
+        "usageRate": "사용률",
+        "ofTotal": "총 {total}일",
+        "byType": "휴가 종류별 잔여",
+        "daysUnit": "일",
+        "empty": "휴가 잔액 정보가 없어요"
+      },
+      "performanceTab": {
+        "latestGrade": "최근 등급",
+        "totalScore": "종합 점수",
+        "mboScore": "MBO 점수",
+        "empty": "공개된 평가 결과가 아직 없어요"
+      }
     },
     "leave": {
       "title": "휴가 관리",

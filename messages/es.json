@@ -4377,7 +4377,10 @@
         "career": "Carrera e Historial",
         "compensation": "Compensación",
         "documents": "Documentos",
-        "overview": "Resumen"
+        "overview": "Resumen",
+        "attendance": "Asistencia",
+        "leave": "Permisos",
+        "performance": "Desempeño"
       },
       "visibility": {
         "manager": "Solo Gerente",
@@ -4395,7 +4398,36 @@
       },
       "visibilitySettings": "Configuración de Visibilidad",
       "selfService": "Autoservicio",
-      "tabsLabel": "Secciones del perfil"
+      "tabsLabel": "Secciones del perfil",
+      "summary": {
+        "loadError": "No se pudo cargar",
+        "retry": "Reintentar",
+        "viewDetail": "Ver detalle"
+      },
+      "attendanceTab": {
+        "thisMonth": "Al {month}",
+        "workedDays": "Días trabajados",
+        "workHours": "Horas trabajadas",
+        "overtime": "Horas extra",
+        "daysUnit": "días",
+        "hoursUnit": "h",
+        "empty": "Sin registros de asistencia este mes"
+      },
+      "leaveTab": {
+        "annualRemaining": "Vacaciones restantes",
+        "used": "Usado",
+        "usageRate": "Tasa de uso",
+        "ofTotal": "de {total} total",
+        "byType": "Saldo por tipo",
+        "daysUnit": "d",
+        "empty": "Sin saldo de permisos"
+      },
+      "performanceTab": {
+        "latestGrade": "Última calificación",
+        "totalScore": "Puntuación total",
+        "mboScore": "Puntuación MBO",
+        "empty": "Aún no hay resultados publicados"
+      }
     },
     "profileDesc": "Ver and edit your personal information.",
     "profileTitle": "My Profile",
