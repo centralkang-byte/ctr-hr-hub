@@ -23,6 +23,10 @@ const PRIVILEGED_VIEWER_ROLES = new Set(['SUPER_ADMIN', 'HR_ADMIN', 'EXECUTIVE']
  *     POST(withAuth)로 임의 직원이 자기 자신을 managerId로 하는 체크인 1:1을
  *     위조할 수 있어 권한 escalation 경로가 된다 (Codex Gate2 P1).
  * 전임 매니저는 활성 보고라인에서 빠지므로 자동 배제된다.
+ *
+ * 방향: target의 **primary** 발령 position이 보고하는 상위 position을, user가
+ * **primary 또는 secondary** 활성 발령으로 보유하면 매니저(getDirectReportIds와 동일
+ * 규칙 — 매니저가 팀장직을 secondary로 겸직하는 케이스 인정; manager 측 isPrimary 강제 금지).
  */
 async function isReportingLineManager(
     userEmployeeId: string,
@@ -35,11 +39,12 @@ async function isReportingLineManager(
     const reportsToPositionId = target?.position?.reportsToPositionId
     if (!reportsToPositionId) return false
 
+    // manager 측은 primary+secondary 모두 인정 (endDate:null 활성만). isPrimary 강제 시
+    // 팀장직을 secondary로 보유한 정당한 매니저가 403 (Codex Gate2 P1 회귀).
     const managerAssignment = await prisma.employeeAssignment.findFirst({
         where: {
             employeeId: userEmployeeId,
             positionId: reportsToPositionId,
-            isPrimary: true,
             endDate: null,
         },
         select: { id: true },
