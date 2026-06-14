@@ -64,7 +64,7 @@ export const GET = withPermission(
             // reviewer 로스터 포함) 조회 허용. (cross-company는 위 verifyCrossCompanyAccess가 처리)
             if (
                 employeeAssignment.companyId === user.companyId &&
-                !(await canViewEmployeePerformance(user, employeeId, cycleId))
+                !(await canViewEmployeePerformance(user, employeeId))
             ) {
                 throw forbidden('본인 또는 담당자만 조회할 수 있습니다.')
             }

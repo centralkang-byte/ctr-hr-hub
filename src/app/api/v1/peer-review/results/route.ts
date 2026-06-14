@@ -38,7 +38,7 @@ export const GET = withPermission(
 
     // 뷰어 권한 판정 — 동료평가는 반익명. determineViewerRole은 무관한 직원에게도
     // 'EMPLOYEE' fallback을 부여하므로 아래 IDOR 게이트로 타인 조회를 차단한다.
-    const isManager = await isCurrentManagerOf(user.employeeId, employeeId, cycleId)
+    const isManager = await isCurrentManagerOf(user.employeeId, employeeId)
     const viewerRole = determineViewerRole(user.employeeId, employeeId, user.role, isManager)
 
     // IDOR 게이트 — 본인·담당 매니저·HR/임원만. (perm VIEW는 EMPLOYEE도 보유)

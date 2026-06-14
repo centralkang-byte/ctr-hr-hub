@@ -54,7 +54,7 @@ export const GET = withPermission(
             // 둘 다 불충족인 전임 매니저는 EMPLOYEE fallback → 아래 IDOR 게이트에서 403.
             // HR_ADMIN/EXECUTIVE/SUPER_ADMIN은 determineViewerRole로 우회(피플세션·캘리브레이션 감독 경로 보존).
             // 판정 로직 SSOT = isCurrentManagerOf (읽기·쓰기 게이트 drift 방지).
-            const isManager = await isCurrentManagerOf(user.employeeId, employeeId, cycleId)
+            const isManager = await isCurrentManagerOf(user.employeeId, employeeId)
 
             const viewerRole = determineViewerRole(
                 user.employeeId,

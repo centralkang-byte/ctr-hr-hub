@@ -39,7 +39,7 @@ export const GET = withPermission(
     if (
       !isPrivileged &&
       !isEvaluator &&
-      !(await isCurrentManagerOf(user.employeeId, evaluation.employeeId, evaluation.cycleId))
+      !(await isCurrentManagerOf(user.employeeId, evaluation.employeeId))
     ) {
       throw forbidden('평가 초안 조회 권한이 없습니다.')
     }

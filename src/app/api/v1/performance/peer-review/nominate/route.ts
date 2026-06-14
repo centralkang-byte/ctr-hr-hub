@@ -69,7 +69,7 @@ export const POST = withPermission(
             // 해당 cycle 1:1)로 한정 — 전임 매니저의 동료평가 지정(쓰기) 권한을 차단.
             const isHR = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
             if (!isHR) {
-                const isManager = await isCurrentManagerOf(user.employeeId, employeeId, cycleId)
+                const isManager = await isCurrentManagerOf(user.employeeId, employeeId)
                 if (!isManager) {
                     throw forbidden('해당 직원의 담당 매니저 또는 HR 관리자만 동료평가 대상을 지정할 수 있습니다.')
                 }

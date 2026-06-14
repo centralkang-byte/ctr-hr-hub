@@ -30,7 +30,7 @@ export const GET = withPermission(
 
     // IDOR 게이트 — 타인의 협업 추천(협업그래프·가중치) 열람 차단.
     // 본인·현재 담당 매니저·HR/임원/SUPER만 허용.
-    if (!(await canViewEmployeePerformance(user, employeeId, cycleId))) {
+    if (!(await canViewEmployeePerformance(user, employeeId))) {
       throw forbidden('본인 또는 담당자만 조회할 수 있습니다.')
     }
 

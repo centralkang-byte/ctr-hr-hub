@@ -25,7 +25,6 @@ export const GET = withPermission(
                 where: { id: reviewId, companyId: user.companyId },
                 select: {
                     id: true,
-                    cycleId: true,
                     overdueFlags: true,
                     status: true,
                     employee: {
@@ -40,7 +39,7 @@ export const GET = withPermission(
             // 담당 매니저(현 보고라인/해당 cycle 1:1)·HR/임원/SUPER만 조회 허용.
             const isPrivileged =
                 user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN' || user.role === 'EXECUTIVE'
-            if (!isPrivileged && !(await isCurrentManagerOf(user.employeeId, review.employee.id, review.cycleId))) {
+            if (!isPrivileged && !(await isCurrentManagerOf(user.employeeId, review.employee.id))) {
                 throw forbidden('담당 매니저 또는 인사담당자만 조회할 수 있습니다.')
             }
 
