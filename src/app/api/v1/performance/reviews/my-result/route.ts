@@ -49,7 +49,7 @@ export const GET = withPermission(
                     isAutoAcknowledged: true,
                     status: true,
                     cycle: {
-                        select: { name: true, year: true, half: true, mboWeight: true, beiWeight: true },
+                        select: { name: true, year: true, half: true, mboWeight: true, beiWeight: true, status: true },
                     },
                     // originalGrade: NOT selected (Data Masking)
                     // overdueFlags: NOT selected
@@ -58,6 +58,15 @@ export const GET = withPermission(
             })
 
             if (!review) throw badRequest('성과 리뷰를 찾을 수 없습니다.')
+
+            // 결과 공개 게이트 — per-review notifiedAt 신뢰 (단조: 통보(bulk-notify) 시 1회 set, 이후 불변).
+            // cycle status 기반(isResultPublishedForRole)은 (a) CLOSED인데 미통보 직원이 등급 조기 열람,
+            // (b) FINALIZED 통보분 누락, (c) 통보 후 COMP_COMPLETED 도달 시 영구 비공개 회귀 — 모두 발생(Codex Gate2 P1).
+            // notifiedAt은 통보 시점부터 영구 가시라 3가지를 동시 해결한다.
+            // not-found와 동일 메시지 → 미공개 리뷰 존재 미노출 + 두 클라이언트 모두 graceful empty.
+            if (!review.notifiedAt) {
+                throw badRequest('성과 리뷰를 찾을 수 없습니다.')
+            }
 
             // Calculate acknowledge deadline (168h from notification)
             let acknowledgeDeadline: Date | null = null

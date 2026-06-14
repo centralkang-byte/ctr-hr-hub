@@ -13,6 +13,7 @@ import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { generateEvaluationDraft } from '@/lib/claude'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { isCurrentManagerOf } from '@/lib/performance/peer-access'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/performance/evaluations/[id]/ai-draft ───
@@ -29,6 +30,19 @@ export const GET = withPermission(
       where: { id, companyId: user.companyId },
     })
     if (!evaluation) throw notFound('평가를 찾을 수 없습니다.')
+
+    // AI 초안(추천 등급 포함)은 평가자/매니저 내부 산물 — 임의 evaluation id로 타인 초안을
+    // 읽던 IDOR 차단. 평가자·해당 직원의 현재 담당 매니저·HR/임원/SUPER만 허용(POST 게이트 정합).
+    const isPrivileged =
+      user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN' || user.role === 'EXECUTIVE'
+    const isEvaluator = evaluation.evaluatorId === user.employeeId
+    if (
+      !isPrivileged &&
+      !isEvaluator &&
+      !(await isCurrentManagerOf(user.employeeId, evaluation.employeeId))
+    ) {
+      throw forbidden('평가 초안 조회 권한이 없습니다.')
+    }
 
     const draft = await prisma.aiEvaluationDraft.findFirst({
       where: { evaluationId: id, companyId: user.companyId },

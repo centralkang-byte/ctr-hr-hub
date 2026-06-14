@@ -3,8 +3,8 @@
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — My Profile · Performance Summary Tab
 // 본인 최근 (공개된) 평가 결과 요약.
-// cycle 게이팅은 MyResultClient와 동일: getAllowedStatuses('result', half).
-// 미공개(DRAFT 등) cycle의 매니저 평가가 새지 않도록 공개 cycle만 조회.
+// cycle 게이팅은 MyResultClient와 동일: isResultPublished(서버 notifiedAt 단조)만으로 판정.
+// 미통보 cycle의 매니저 평가가 새지 않도록 통보된 cycle만 조회.
 // 다주기 평가이력·MBO 이력·받은 칭찬은 후속.
 // ═══════════════════════════════════════════════════════════
 
@@ -18,7 +18,6 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { KpiCardsSkeleton } from '@/components/shared/PageSkeleton'
 import { apiClient } from '@/lib/api'
 import { AppError } from '@/lib/errors'
-import { getAllowedStatuses } from '@/lib/performance/pipeline'
 
 // ─── Types ──────────────────────────────────────────────────
 interface CycleOption {
@@ -49,12 +48,9 @@ export function ProfilePerformanceTab() {
       setLoading(true)
       setError(false)
       const cyclesRes = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
-      // 결과 열람 허용 = 결과 열람 단계(CLOSED 이후) AND 결과 공개(isResultPublished).
-      // EMPLOYEE에게 COMP_REVIEW 등은 status=CLOSED·isResultPublished=false로 마스킹되므로
-      // status만으로는 미공개 결과가 새어나갈 수 있음 (pipeline.ts 'result' 주석 참조).
-      const allowed = (cyclesRes.data ?? []).filter(
-        (c) => c.isResultPublished === true && getAllowedStatuses('result', c.half ?? 'H2').includes(c.status),
-      )
+      // 결과 열람 허용 = isResultPublished (서버: 본인 PerformanceReview.notifiedAt 단조)만으로 판정.
+      // status 결합 시 통보 후 cycle이 CALIBRATION/COMP_*로 진행되면 결과가 사라지는 회귀(서버 게이트와 불일치).
+      const allowed = (cyclesRes.data ?? []).filter((c) => c.isResultPublished === true)
       if (allowed.length === 0) {
         setReview(null)
         return

@@ -7,10 +7,11 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
+import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withAuth } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
+import { isCurrentManagerOf } from '@/lib/performance/peer-access'
 import type { SessionUser } from '@/types'
 
 const createSchema = z.object({
@@ -45,6 +46,20 @@ export const POST = withAuth(
 
             if (!['ACTIVE', 'CHECK_IN'].includes(cycle.status)) {
                 throw badRequest('현재 사이클 상태에서는 체크인을 생성할 수 없습니다.')
+            }
+
+            // 관계 검증 — 체크인 위조 방지.
+            // MANAGER 체크인: 대상의 현재 담당 매니저 또는 HR/임원/SUPER만. (임의 직원의 매니저
+            //   체크인을 위조해 대상 PerformanceReview 상태(GOAL_SETTING→SELF_EVAL)를 진행시키던 결함 차단)
+            // EMPLOYEE 체크인: 본인 것만 (타인 employeeId 거부).
+            const isPrivileged =
+                user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN' || user.role === 'EXECUTIVE'
+            if (type === 'MANAGER') {
+                if (!isPrivileged && !(await isCurrentManagerOf(user.employeeId, targetEmployeeId))) {
+                    throw forbidden('해당 직원의 담당 매니저만 매니저 체크인을 생성할 수 있습니다.')
+                }
+            } else if (parsed.data.employeeId && parsed.data.employeeId !== user.employeeId) {
+                throw forbidden('본인 체크인만 생성할 수 있습니다.')
             }
 
             // Determine manager/employee IDs

@@ -9,11 +9,12 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound, handlePrismaError } from '@/lib/errors'
+import { badRequest, forbidden, notFound, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import { verifyCrossCompanyAccess } from '@/lib/api/cross-company-access'
+import { canViewEmployeePerformance } from '@/lib/performance/peer-access'
 import type { SessionUser } from '@/types'
 
 const querySchema = z.object({
@@ -57,6 +58,15 @@ export const GET = withPermission(
                     employeeId,
                 )
                 if (!allowed) throw notFound('직원 발령 정보를 찾을 수 없습니다.')
+            }
+
+            // 같은 법인 대상 IDOR 게이트 — 본인·현재 담당 매니저·HR/임원/SUPER만 지명 후보(이미 지명된
+            // reviewer 로스터 포함) 조회 허용. (cross-company는 위 verifyCrossCompanyAccess가 처리)
+            if (
+                employeeAssignment.companyId === user.companyId &&
+                !(await canViewEmployeePerformance(user, employeeId))
+            ) {
+                throw forbidden('본인 또는 담당자만 조회할 수 있습니다.')
             }
 
             // B-3f: Include dotted line manager as automatic peer review candidate

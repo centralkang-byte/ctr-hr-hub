@@ -149,6 +149,19 @@ export function maskCycleForEmployee<T extends CycleForMasking>(
     return { ...cycle, isResultPublished: cycle.status === 'CLOSED' || cycle.status === 'COMP_COMPLETED' }
 }
 
+// ─── Result Publication Gate (role-aware) ───────────────
+// SSOT for "are results released to the subject for this cycle status?".
+// Mirrors the per-role logic in GET /api/v1/performance/cycles so the client
+// dropdown filter (isResultPublished) and the my-result server gate never drift.
+//   - EMPLOYEE: only genuinely-CLOSED (COMP_REVIEW/COMP_COMPLETED stay hidden — see maskCycleForEmployee)
+//   - HR_ADMIN / EXECUTIVE / MANAGER: CLOSED or COMP_COMPLETED (not masked)
+// Fail-closed: unknown/blank status → false (no premature exposure).
+export function isResultPublishedForRole(status: string, role: string): boolean {
+    return role === 'EMPLOYEE'
+        ? maskCycleForEmployee({ status }).isResultPublished
+        : status === 'CLOSED' || status === 'COMP_COMPLETED'
+}
+
 // ─── Grade Label Mapping ────────────────────────────────
 
 // Settings-connected: grade labels per company (defaults below)

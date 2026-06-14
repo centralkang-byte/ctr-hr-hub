@@ -19,9 +19,16 @@ import { getCrossCompanyReadFilter } from '@/lib/api/cross-company-access'
  * 처리한다 (validate-requisition-approver.ts, requisitions/route.ts myApprovals).
  */
 export async function getDirectReportIds(managerId: string): Promise<string[]> {
+  // "현재 활성" = effectiveDate<=now AND (endDate==null OR endDate>now) — assignments.ts SSOT 패턴.
+  // 예약 조직개편 시 createAssignment가 현 발령 endDate를 미래로, 신 발령 effectiveDate를 미래로 두므로
+  // endDate:null 단독이면 (a) 미래 매니저가 미래 팀원을 조기 포함 (b) 현 발령(미래 endDate)이 사라짐 —
+  // 권한 게이트(nominations·check-in 팀스코프)가 본 helper를 쓰므로 양쪽 다 오류 (Codex Gate2 P1).
+  const now = new Date()
+  const activeNow = { effectiveDate: { lte: now }, OR: [{ endDate: null }, { endDate: { gt: now } }] }
+
   // Collect ALL active positions held by this manager (primary + secondary)
   const managerAsgns = await prisma.employeeAssignment.findMany({
-    where: { employeeId: managerId, endDate: null },
+    where: { employeeId: managerId, ...activeNow },
     select: { positionId: true },
   })
 
@@ -35,7 +42,7 @@ export async function getDirectReportIds(managerId: string): Promise<string[]> {
     where: {
       position: { reportsToPositionId: { in: positionIds } },
       isPrimary: true,
-      endDate: null,
+      ...activeNow,
     },
     select: { employeeId: true },
   })

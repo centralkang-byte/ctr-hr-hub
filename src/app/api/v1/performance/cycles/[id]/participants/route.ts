@@ -7,9 +7,9 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiPaginated, buildPagination } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
+import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
+import { MODULE, ACTION, ROLE, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
@@ -18,11 +18,21 @@ const querySchema = z.object({
     limit: z.coerce.number().int().positive().max(200).default(DEFAULT_PAGE_SIZE),
 })
 
+// 전 직원의 originalGrade/finalGrade/overdueFlags(캘리브레이션 산물)를 반환하는
+// HR/관리자 로스터 뷰 — perm(VIEW)만으론 EMPLOYEE도 통과해 회사 전체 등급이 유출된다.
+// 등급은 매니저에게도 임의 직원 분을 노출하면 안 되므로 HR/임원/SUPER로 한정.
+const HR_UP: Set<string> = new Set([ROLE.SUPER_ADMIN, ROLE.HR_ADMIN, ROLE.EXECUTIVE])
+
 // ─── GET /api/v1/performance/cycles/:id/participants ───────
 // Returns employees targeted by cycle + their PerformanceReview status
 
 export const GET = withPermission(
     async (req: NextRequest, context: { params: Promise<Record<string, string>> }, user: SessionUser) => {
+        // 권한 게이트 — 등급 포함 로스터는 HR/임원/SUPER만. (perm VIEW는 EMPLOYEE도 보유)
+        if (!HR_UP.has(user.role as string)) {
+            throw forbidden('인사 담당자 이상만 조회할 수 있습니다.')
+        }
+
         const { id: cycleId } = await context.params
         const params = Object.fromEntries(req.nextUrl.searchParams.entries())
         const parsed = querySchema.safeParse(params)

@@ -72,12 +72,21 @@ export const GET = withPermission(
       prisma.performanceCycle.count({ where }),
     ])
 
-    // EMPLOYEE: 보상 단계 마스킹 (COMP_REVIEW/COMP_COMPLETED → CLOSED + isResultPublished)
-    const maskedCycles = user.role === 'EMPLOYEE'
-      ? cycles.map(maskCycleForEmployee)
-      : cycles.map(c => ({ ...c, isResultPublished: c.status === 'CLOSED' || c.status === 'COMP_COMPLETED' }))
+    // 본인 결과 공개 = 본인 PerformanceReview.notifiedAt(단조) — 역할 무관(MANAGER/HR/EXEC도 my-result로
+    // 본인 결과 조회), my-result·peer-review/results 서버 게이트와 동일 신호. status-only면 통보된 결과가
+    // 후속 단계(CALIBRATION/COMP_*)서 드롭다운에서 사라지는 회귀 발생(Codex Gate2 P1).
+    // EMPLOYEE에 한해 status 마스킹(COMP_* → CLOSED 표시) 추가 적용.
+    const reviews = await prisma.performanceReview.findMany({
+      where: { employeeId: user.employeeId, companyId, cycleId: { in: cycles.map((c) => c.id) } },
+      select: { cycleId: true, notifiedAt: true },
+    })
+    const notified = new Map(reviews.map((r) => [r.cycleId, r.notifiedAt != null]))
+    const resultCycles = cycles.map((c) => {
+      const base = user.role === 'EMPLOYEE' ? maskCycleForEmployee(c) : c
+      return { ...base, isResultPublished: notified.get(c.id) ?? false }
+    })
 
-    return apiPaginated(maskedCycles, buildPagination(page, limit, total))
+    return apiPaginated(resultCycles, buildPagination(page, limit, total))
   },
   perm(MODULE.PERFORMANCE, ACTION.VIEW),
 )

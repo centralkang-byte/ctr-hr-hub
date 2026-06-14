@@ -8,10 +8,18 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
 import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
+import { forbidden } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { EMPLOYEE_MINIMAL_SELECT, toMinimalEmployee } from '@/lib/employee-utils'
+import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
+
+// 지명 목록은 reviewer(nominee) 실명·PII와 reviewer↔대상 매핑을 담는 관리용 뷰.
+// perm(VIEW)만으론 EMPLOYEE도 통과해 동료평가 반익명성이 깨지므로 매니저 이상으로 한정하고,
+// MANAGER는 직속 보고 대상으로 스코프(cross-team 매핑 누출 차단). HR/임원/SUPER만 전사.
+const MANAGER_UP: Set<string> = new Set([ROLE.SUPER_ADMIN, ROLE.HR_ADMIN, ROLE.EXECUTIVE, ROLE.MANAGER])
+const HR_UP: Set<string> = new Set([ROLE.SUPER_ADMIN, ROLE.HR_ADMIN, ROLE.EXECUTIVE])
 
 // ─── Schemas ──────────────────────────────────────────────
 
@@ -35,16 +43,34 @@ const createSchema = z.object({
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
+    if (!MANAGER_UP.has(user.role as string)) {
+      throw forbidden('매니저 이상만 조회할 수 있습니다.')
+    }
+
     const params = Object.fromEntries(req.nextUrl.searchParams.entries())
     const parsed = listSchema.safeParse(params)
     if (!parsed.success) throw badRequest('잘못된 파라미터입니다.', { issues: parsed.error.issues })
 
     const { cycleId, employeeId, status, page, size } = parsed.data
 
+    // MANAGER는 직속 보고 대상으로 스코프 — 회사 전체 reviewer↔대상 매핑 cross-team 누출 차단.
+    let reportIds: string[] | null = null
+    if (!HR_UP.has(user.role as string)) {
+      reportIds = await getDirectReportIds(user.employeeId)
+      if (employeeId && !reportIds.includes(employeeId)) {
+        return apiPaginated([], buildPagination(page, size, 0))
+      }
+    }
+    const employeeWhere = employeeId
+      ? { employeeId }
+      : reportIds
+        ? { employeeId: { in: reportIds } }
+        : {}
+
     const where = {
       cycleId,
       cycle: { companyId: user.companyId },
-      ...(employeeId ? { employeeId } : {}),
+      ...employeeWhere,
       ...(status ? { status } : {}),
     }
 

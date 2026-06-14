@@ -11,10 +11,11 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
+import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { determineViewerRole, maskPeerReviews } from '@/lib/performance/data-masking'
+import { isCurrentManagerOf } from '@/lib/performance/peer-access'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
@@ -43,18 +44,31 @@ export const GET = withPermission(
 
             if (!cycle) throw badRequest('사이클을 찾을 수 없습니다.')
 
-            // Determine viewer role
-            const isManager = await prisma.oneOnOne.findFirst({
-                where: { managerId: user.employeeId, employeeId },
-                select: { id: true },
-            })
+            // 현재 담당 매니저 판정 — 전임 매니저 영구 권한 결함 차단.
+            // 과거 1:1 기록 1건 존재만으로 MANAGER 뷰어가 되던 문제(cycle·현재관계·상태 조건 부재)를
+            // "현재 담당" 2-경로(OR)로 한정한다:
+            //   (1) 활성 보고라인 — Position.reportsToPositionId(endDate:null) 기준 직속 매니저.
+            //       isDirectManager는 offboarding 격리와 동일한 manager-of-record SSOT.
+            //   (2) 해당 cycle 스코프 CFR — 이번 평가 주기에 연결된 1:1(OneOnOne.cycleId === cycleId).
+            //       OneOnOne엔 endDate/active 개념이 없어 cycleId로 시간 범위를 한정(과거 주기·무관 주기 1:1 불인정).
+            // 둘 다 불충족인 전임 매니저는 EMPLOYEE fallback → 아래 IDOR 게이트에서 403.
+            // HR_ADMIN/EXECUTIVE/SUPER_ADMIN은 determineViewerRole로 우회(피플세션·캘리브레이션 감독 경로 보존).
+            // 판정 로직 SSOT = isCurrentManagerOf (읽기·쓰기 게이트 drift 방지).
+            const isManager = await isCurrentManagerOf(user.employeeId, employeeId)
 
             const viewerRole = determineViewerRole(
                 user.employeeId,
                 employeeId,
                 user.role,
-                !!isManager,
+                isManager,
             )
+
+            // 권한 게이트(IDOR 방지) — 본인·담당 매니저·HR/임원만 조회 가능.
+            // determineViewerRole은 무관한 직원에게도 fallback 'EMPLOYEE'를 부여하므로(타인 익명 동료점수 열람 가능),
+            // viewerRole==='EMPLOYEE'면 본인 여부를 명시 확인해 타 직원 조회를 차단한다.
+            if (viewerRole === 'EMPLOYEE' && user.employeeId !== employeeId) {
+                throw forbidden('본인 또는 담당자만 조회할 수 있습니다.')
+            }
 
             // GEMINI FIX #1: Anti-Deduction Attack prevention
             // Employee cannot see partial results during EVAL_OPEN
@@ -79,6 +93,20 @@ export const GET = withPermission(
                 completedNominations < totalNominations
             ) {
                 throw badRequest('동료 평가가 진행 중입니다. 모든 평가 완료 후 확인하실 수 있습니다.')
+            }
+
+            // 결과 공개 게이트 — 본인(EMPLOYEE)은 본인 PerformanceReview.notifiedAt(단조: 통보 시 1회
+            // set, 이후 불변) 이후에만 동료 점수 열람. cycle status 기반은 CLOSED-미통보 조기노출 +
+            // 통보 후 COMP_COMPLETED 영구 비공개 회귀가 있어 per-review notifiedAt을 신뢰한다(Codex Gate2 P1).
+            // 매니저/HR은 viewerRole로 구분돼 영향 없음 (피플세션·캘리브레이션 감독 경로 보존).
+            if (viewerRole === 'EMPLOYEE') {
+                const subjectReview = await prisma.performanceReview.findFirst({
+                    where: { cycleId, employeeId, companyId: user.companyId },
+                    select: { notifiedAt: true },
+                })
+                if (!subjectReview?.notifiedAt) {
+                    throw badRequest('성과 결과가 아직 공개되지 않았습니다.')
+                }
             }
 
             // Fetch answers
