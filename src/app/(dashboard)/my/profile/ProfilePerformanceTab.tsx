@@ -58,9 +58,11 @@ interface Props {
 }
 
 // ─── Helpers ────────────────────────────────────────────────
-// 최신 cycle = year DESC, half DESC (H2 > H1; null 후순위)
+// 최신 cycle = year DESC, half DESC (H2 > H1; null 후순위), cycleId 타이브레이크(결정적)
 const byLatest = (a: HistoryItem, b: HistoryItem): number =>
-  b.year - a.year || (b.half ?? '').localeCompare(a.half ?? '')
+  b.year - a.year ||
+  (b.half ?? '').localeCompare(a.half ?? '') ||
+  b.cycleId.localeCompare(a.cycleId)
 
 // ─── Component ──────────────────────────────────────────────
 export function ProfilePerformanceTab({ employeeId }: Props) {
@@ -74,12 +76,14 @@ export function ProfilePerformanceTab({ employeeId }: Props) {
     try {
       setLoading(true)
       setError(false)
-      const [historyRes, recogRes] = await Promise.all([
+      // 성과 이력이 주 신호 — 실패 시 에러. 칭찬은 보조라 독립 degrade(실패해도 빈 피드).
+      const [historyRes, recogRes] = await Promise.allSettled([
         apiClient.get<HistoryItem[]>('/api/v1/performance/reviews/my-history'),
         apiClient.get<RecognitionSummary>(`/api/v1/cfr/recognitions/employee/${employeeId}`),
       ])
-      setHistory((historyRes.data ?? []).slice().sort(byLatest))
-      setRecognitions(recogRes.data?.recent ?? [])
+      if (historyRes.status === 'rejected') throw historyRes.reason
+      setHistory((historyRes.value.data ?? []).slice().sort(byLatest))
+      setRecognitions(recogRes.status === 'fulfilled' ? (recogRes.value.data?.recent ?? []) : [])
     } catch {
       setError(true)
     } finally {
