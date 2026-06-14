@@ -4508,6 +4508,12 @@
     "chipDueSoon": "即将到期"
   },
   "myTraining": {
+    "quarterGoal": {
+      "title": "本季度学习目标",
+      "targetLabel": "目标学时",
+      "value": "{completed} / {target} 小时",
+      "recommendNote": "建议每季度学习 {target} 小时，请优先申请必修课程。"
+    },
     "category": {
       "compliance": "合规",
       "technical": "技术",

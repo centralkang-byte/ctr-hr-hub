@@ -117,7 +117,8 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
   const [savedAssessments, setSavedAssessments] = useState<Record<string, AssessmentItem>>({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [showRadar, setShowRadar] = useState(false)
+  // 프로토 정합: 역량 레이더 기본 노출 (토글 버튼은 유지 — 사용자가 접을 수 있음)
+  const [showRadar, setShowRadar] = useState(true)
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['all']))
 
   // 기존 평가 로드

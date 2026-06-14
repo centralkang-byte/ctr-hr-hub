@@ -102,6 +102,26 @@ export const GET = withAuth(
       orderBy: { expiresAt: 'asc' },
     })
 
+    // 5-b. 이번 분기 이수 시간 (프로토 "이번 분기 학습 목표" 카드용)
+    //  - take 제한 없는 전용 집계(completedHistory는 take:20이라 합계에 부정확)
+    //  - 분기 시작 = 현재 분기 1일 UTC 자정. (느슨한 학습 권장 지표라 UTC 분기 경계 허용)
+    const now = new Date()
+    const quarterStartMonth = Math.floor(now.getUTCMonth() / 3) * 3
+    const quarterStart = new Date(Date.UTC(now.getUTCFullYear(), quarterStartMonth, 1))
+    const nextQuarterStart = new Date(Date.UTC(now.getUTCFullYear(), quarterStartMonth + 3, 1))
+    const quarterCompleted = await prisma.trainingEnrollment.findMany({
+      where: {
+        employeeId,
+        status: 'ENROLLMENT_COMPLETED',
+        completedAt: { gte: quarterStart, lt: nextQuarterStart },
+      },
+      select: { course: { select: { durationHours: true } } },
+    })
+    const quarterCompletedHours = quarterCompleted.reduce(
+      (sum, e) => sum + (e.course.durationHours ? Number(e.course.durationHours) : 0),
+      0,
+    )
+
     // 5. 스킬 갭 추천 (간소화 — competencyId 리스트만)
     const assessments = await prisma.employeeSkillAssessment.findMany({
       where: { employeeId },
@@ -175,6 +195,7 @@ export const GET = withAuth(
         expiresAt: e.expiresAt,
         course: e.course,
       })),
+      quarterCompletedHours,
     })
   },
 )

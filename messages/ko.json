@@ -10915,6 +10915,12 @@
     }
   },
   "myTraining": {
+    "quarterGoal": {
+      "title": "이번 분기 학습 목표",
+      "targetLabel": "목표 이수 시간",
+      "value": "{completed} / {target}시간",
+      "recommendNote": "분기당 {target}시간 학습이 권장돼요. 필수 과정을 우선 신청하세요."
+    },
     "category": {
       "compliance": "법정",
       "technical": "기술",

@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 
 import { useState, useEffect, useCallback } from 'react'
-import { BookOpen, CheckCircle2, AlertTriangle, Sparkles } from 'lucide-react'
+import { BookOpen, CheckCircle2, AlertTriangle, Sparkles, Target } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { WdStatStrip } from '@/components/shared/WdStatStrip'
@@ -72,7 +72,13 @@ type MyTrainingData = {
   recommended: RecommendedCourse[]
   history: HistoryItem[]
   expiringSoon: ExpiringSoonItem[]
+  quarterCompletedHours: number
 }
+
+// ─── Constants ───────────────────────────────────────────
+
+// 프로토 "이번 분기 학습 목표" 권장 이수 시간 (분기당 40시간)
+const QUARTER_TARGET_HOURS = 40
 
 const CATEGORY_KEYS: Record<string, string> = {
   COMPLIANCE: 'category.compliance',
@@ -181,7 +187,9 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
     )
   }
 
-  const { requiredPending = [], jobRequired = [], recommended = [], history = [], expiringSoon = [] } = data ?? {}
+  const { requiredPending = [], jobRequired = [], recommended = [], history = [], expiringSoon = [], quarterCompletedHours = 0 } = data ?? {}
+  // 분기 학습목표 진행률 — bar width는 0..100 clamp, 표시 수치는 실제값 유지
+  const quarterPct = Math.max(0, Math.min(100, Math.round((quarterCompletedHours / QUARTER_TARGET_HOURS) * 100)))
 
   return (
     <div className="p-6 space-y-6">
@@ -223,6 +231,31 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
           { label: t('kpi.completed'), value: history.length, icon: CheckCircle2, tone: 'success' },
         ]}
       />
+
+      {/* ─── 이번 분기 학습 목표 (프로토 정합) ─── */}
+      <div className={CARD_STYLES.padded}>
+        <div className="flex items-center gap-2 mb-3">
+          <Target className="h-4 w-4 text-primary" />
+          <h2 className="text-base font-semibold text-foreground">{t('quarterGoal.title')}</h2>
+        </div>
+        <p className="text-xs text-muted-foreground mb-1">{t('quarterGoal.targetLabel')}</p>
+        <p className="text-3xl font-semibold text-foreground tabular-nums">
+          {t('quarterGoal.value', { completed: quarterCompletedHours, target: QUARTER_TARGET_HOURS })}
+        </p>
+        <div
+          className="mt-3 h-2 bg-muted rounded-full overflow-hidden"
+          role="progressbar"
+          aria-valuenow={quarterPct}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={t('quarterGoal.title')}
+        >
+          <div className="h-full bg-primary rounded-full" style={{ width: `${quarterPct}%` }} />
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          {t('quarterGoal.recommendNote', { target: QUARTER_TARGET_HOURS })}
+        </p>
+      </div>
 
       {/* ─── 진행 중인 필수 교육 ─── */}
       {requiredPending.length > 0 && (

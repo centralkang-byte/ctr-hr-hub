@@ -4508,6 +4508,12 @@
     "chipDueSoon": "Due soon"
   },
   "myTraining": {
+    "quarterGoal": {
+      "title": "This Quarter's Learning Goal",
+      "targetLabel": "Target Hours",
+      "value": "{completed} / {target}h",
+      "recommendNote": "We recommend {target} hours of learning per quarter. Prioritize required courses first."
+    },
     "category": {
       "compliance": "Compliance",
       "technical": "Technical",

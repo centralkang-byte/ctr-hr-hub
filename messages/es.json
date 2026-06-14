@@ -4508,6 +4508,12 @@
     "chipDueSoon": "Próximo a vencer"
   },
   "myTraining": {
+    "quarterGoal": {
+      "title": "Meta de aprendizaje de este trimestre",
+      "targetLabel": "Horas objetivo",
+      "value": "{completed} / {target} h",
+      "recommendNote": "Se recomiendan {target} horas de aprendizaje por trimestre. Prioriza primero los cursos obligatorios."
+    },
     "category": {
       "compliance": "Cumplimiento",
       "technical": "Técnicas",
