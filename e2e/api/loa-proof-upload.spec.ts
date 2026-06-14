@@ -8,7 +8,7 @@
 import { test, expect, request as pwRequest } from '@playwright/test'
 import { ApiClient, assertOk, assertError } from '../helpers/api-client'
 import { authFile } from '../helpers/auth'
-import { resolveSeedData } from '../helpers/test-data'
+import { resolveSeedData, resolveEmployeeId, TEST_ACCOUNTS } from '../helpers/test-data'
 import * as f from '../helpers/loa-discipline-misc-fixtures'
 
 const LOA = '/api/v1/leave-of-absence'
@@ -101,8 +101,11 @@ test.describe('LoA proof — MANAGER', () => {
 
   test('매니저 본인 신청은 허용(leave:update)', async ({ request }) => {
     const api = new ApiClient(request)
-    const { employeeId } = await resolveSeedData(request)
-    const res = await api.post(LOA, { ...f.buildLoaRecord(employeeId, plainTypeId) })
+    // self 판정은 "신청 대상 == 호출자 본인"이다. resolveSeedData 는 고정 시드 직원
+    // (이민준)을 돌려주므로 매니저(박준혁) 본인이 아니다 → 대리신청으로 403 처리됨.
+    // 매니저 자신의 employeeId 를 직접 해소해 본인 신청 경로를 검증한다.
+    const selfId = await resolveEmployeeId(request, TEST_ACCOUNTS.MANAGER.name)
+    const res = await api.post(LOA, { ...f.buildLoaRecord(selfId, plainTypeId) })
     assertOk(res, 'manager self-request')
   })
 })
