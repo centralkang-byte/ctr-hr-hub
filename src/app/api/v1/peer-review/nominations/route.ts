@@ -8,10 +8,16 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
 import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
+import { forbidden } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { EMPLOYEE_MINIMAL_SELECT, toMinimalEmployee } from '@/lib/employee-utils'
 import type { SessionUser } from '@/types'
+
+// 지명 목록은 reviewer(nominee) 실명·PII와 reviewer↔대상 매핑을 담는 관리용 뷰.
+// perm(VIEW)만으론 EMPLOYEE도 통과해 동료평가 반익명성이 깨지고 회사 전체 매핑이
+// 유출되므로(employeeId 생략 시 전사 덤프) 매니저 이상으로 한정. (HR 셋업 화면 전용)
+const MANAGER_UP: Set<string> = new Set([ROLE.SUPER_ADMIN, ROLE.HR_ADMIN, ROLE.EXECUTIVE, ROLE.MANAGER])
 
 // ─── Schemas ──────────────────────────────────────────────
 
@@ -35,6 +41,10 @@ const createSchema = z.object({
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
+    if (!MANAGER_UP.has(user.role as string)) {
+      throw forbidden('매니저 이상만 조회할 수 있습니다.')
+    }
+
     const params = Object.fromEntries(req.nextUrl.searchParams.entries())
     const parsed = listSchema.safeParse(params)
     if (!parsed.success) throw badRequest('잘못된 파라미터입니다.', { issues: parsed.error.issues })

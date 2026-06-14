@@ -15,7 +15,7 @@ import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { determineViewerRole, maskPeerReviews, isResultPublishedForRole } from '@/lib/performance/data-masking'
-import { isDirectManager } from '@/lib/auth/manager-check'
+import { isCurrentManagerOf } from '@/lib/performance/peer-access'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
@@ -53,13 +53,8 @@ export const GET = withPermission(
             //       OneOnOne엔 endDate/active 개념이 없어 cycleId로 시간 범위를 한정(과거 주기·무관 주기 1:1 불인정).
             // 둘 다 불충족인 전임 매니저는 EMPLOYEE fallback → 아래 IDOR 게이트에서 403.
             // HR_ADMIN/EXECUTIVE/SUPER_ADMIN은 determineViewerRole로 우회(피플세션·캘리브레이션 감독 경로 보존).
-            const [isReportingLineManager, cycleScopedCfrCount] = await Promise.all([
-                isDirectManager(user.employeeId, employeeId),
-                prisma.oneOnOne.count({
-                    where: { managerId: user.employeeId, employeeId, cycleId },
-                }),
-            ])
-            const isManager = isReportingLineManager || cycleScopedCfrCount > 0
+            // 판정 로직 SSOT = isCurrentManagerOf (읽기·쓰기 게이트 drift 방지).
+            const isManager = await isCurrentManagerOf(user.employeeId, employeeId, cycleId)
 
             const viewerRole = determineViewerRole(
                 user.employeeId,

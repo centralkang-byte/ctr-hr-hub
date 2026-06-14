@@ -6,10 +6,11 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { notFound, handlePrismaError } from '@/lib/errors'
+import { notFound, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { formatOverdueBadge } from '@/lib/performance/pipeline'
+import { isCurrentManagerOf } from '@/lib/performance/peer-access'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/performance/reviews/:reviewId/overdue ───
@@ -24,6 +25,7 @@ export const GET = withPermission(
                 where: { id: reviewId, companyId: user.companyId },
                 select: {
                     id: true,
+                    cycleId: true,
                     overdueFlags: true,
                     status: true,
                     employee: {
@@ -33,6 +35,14 @@ export const GET = withPermission(
             })
 
             if (!review) throw notFound('평가 리뷰를 찾을 수 없습니다.')
+
+            // overdueFlags는 매니저/HR 산물 — data-masking이 본인에게도 숨긴다.
+            // 담당 매니저(현 보고라인/해당 cycle 1:1)·HR/임원/SUPER만 조회 허용.
+            const isPrivileged =
+                user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN' || user.role === 'EXECUTIVE'
+            if (!isPrivileged && !(await isCurrentManagerOf(user.employeeId, review.employee.id, review.cycleId))) {
+                throw forbidden('담당 매니저 또는 인사담당자만 조회할 수 있습니다.')
+            }
 
             const flags = (review.overdueFlags as string[]) || []
 

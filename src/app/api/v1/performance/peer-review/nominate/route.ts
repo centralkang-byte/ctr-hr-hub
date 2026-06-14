@@ -7,11 +7,12 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
+import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
+import { isCurrentManagerOf } from '@/lib/performance/peer-access'
 import type { SessionUser } from '@/types'
 
 const nominateSchema = z.object({
@@ -63,16 +64,14 @@ export const POST = withPermission(
                 throw badRequest(`최대 ${cycle.peerReviewMaxCount}명까지 지정할 수 있습니다.`)
             }
 
-            // 3. Validate authority (manager, HR_ADMIN, or delegated)
+            // 3. Validate authority (현재 담당 매니저 or HR_ADMIN)
+            // 과거 1:1 1건만으로 통과하던 stale 게이트를 활성 관계(현 보고라인 또는
+            // 해당 cycle 1:1)로 한정 — 전임 매니저의 동료평가 지정(쓰기) 권한을 차단.
             const isHR = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
             if (!isHR) {
-                // Check if user manages this employee via 1:1 or performance review
-                const isManager = await prisma.oneOnOne.findFirst({
-                    where: { managerId: user.employeeId, employeeId },
-                    select: { id: true },
-                })
+                const isManager = await isCurrentManagerOf(user.employeeId, employeeId, cycleId)
                 if (!isManager) {
-                    throw badRequest('해당 직원의 매니저 또는 HR 관리자만 동료평가 대상을 지정할 수 있습니다.')
+                    throw forbidden('해당 직원의 담당 매니저 또는 HR 관리자만 동료평가 대상을 지정할 수 있습니다.')
                 }
             }
 

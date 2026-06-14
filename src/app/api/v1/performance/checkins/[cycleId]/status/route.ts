@@ -9,6 +9,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { getDirectReportIds } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
 
 // ─── Manager+ only roles ────────────────────────────────
@@ -33,9 +34,28 @@ export const GET = withPermission(
 
             if (!cycle) throw badRequest('사이클을 찾을 수 없습니다.')
 
-            // Get all reviews for cycle
+            // 팀 스코프 — MANAGER는 직속 보고라인만(cross-team 체크인/overdue 누출 차단).
+            // HR/임원/SUPER는 전사 뷰 유지(의도).
+            const isPrivileged =
+                user.role === ROLE.SUPER_ADMIN || user.role === ROLE.HR_ADMIN || user.role === ROLE.EXECUTIVE
+            let reportFilter: Record<string, unknown> = {}
+            if (!isPrivileged) {
+                const reportIds = await getDirectReportIds(user.employeeId)
+                if (reportIds.length === 0) {
+                    return apiSuccess({
+                        totalParticipants: 0,
+                        completedCount: 0,
+                        overdueCount: 0,
+                        checkInDeadline: cycle.checkInDeadline,
+                        employees: [],
+                    })
+                }
+                reportFilter = { employeeId: { in: reportIds } }
+            }
+
+            // Get reviews for cycle (company-scoped + team-scoped for MANAGER)
             const reviews = await prisma.performanceReview.findMany({
-                where: { cycleId },
+                where: { cycleId, companyId: cycle.companyId, ...reportFilter },
                 select: {
                     employeeId: true,
                     status: true,
