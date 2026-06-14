@@ -9,6 +9,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { parseDateOnly, formatToTz } from '@/lib/timezone'
+import { getAttendanceRate, type RateTrendMonth, type RateMeta } from './rate'
 
 const DEFAULT_TIMEZONE = 'Asia/Seoul'
 const DEFAULT_WORK_START = '08:30'
@@ -29,6 +30,11 @@ export interface DeptTrendRow {
   avgClockIn: string | null // "HH:mm" 회사 현지
   avgClockOut: string | null
   avgOvertimeHours: number | null
+  // 출근율 (PR-4b, 30일 혼합 — 직군 공식; null=미산출/억제, rate-point 계약)
+  attendanceRate: number | null // %
+  attendanceRateDenom: number | null
+  attendanceRateCohort: number
+  attendanceRateSuppressed: boolean
 }
 
 export interface ArrivalBucket {
@@ -60,6 +66,9 @@ export interface AttendanceTrends {
     buckets: ArrivalBucket[]
   }
   typeTrend: TypeTrendRow[]
+  // 출근율 (PR-4b)
+  rateTrend: RateTrendMonth[] // 12개월 직군별 2선
+  rateMeta: RateMeta
 }
 
 // ─── Pure helpers (단위 테스트 대상) ─────────────────────────
@@ -158,6 +167,9 @@ export async function getAttendanceTrends(companyId: string, now: Date): Promise
   const trendStart = parseDateOnly(trendStartStr)
   const trendEnd = parseDateOnly(trendEndStr)
 
+  // PR-4b 출근율 엔진 — 운영지표 쿼리와 병렬
+  const ratePromise = getAttendanceRate(companyId, now)
+
   const [deptRows, arrivalRows, typeRows, leaveRows] = await Promise.all([
     // ── A) 부서별 30일 ── DISTINCT ON(LATERAL LIMIT 1)으로 직원당 active-primary 1건 (행 배증 방지, Codex r2-4)
     prisma.$queryRaw<Array<{
@@ -239,29 +251,46 @@ export async function getAttendanceTrends(companyId: string, now: Date): Promise
       ORDER BY month`,
   ])
 
-  // ── A 조립: cohort 게이트 (부서 + 지표별 기여자 >= COHORT_MIN) ──
-  const departments: DeptTrendRow[] = deptRows
-    .filter((r) => Number(r.employee_count) >= COHORT_MIN)
-    .map((r) => ({
-      departmentId: r.department_id,
-      departmentName: r.department_name,
-      employeeCount: Number(r.employee_count),
-      lateCount: Number(r.late_count),
-      absentCount: Number(r.absent_count),
-      // 교대제 법인은 평균 출퇴근 무의미(야간 wrap) → null. 비교대도 지표별 기여자 5+ 일 때만.
-      avgClockIn:
-        shiftEnabled || Number(r.in_contributors) < COHORT_MIN
-          ? null
-          : secondsToHHmm(r.avg_in_sec == null ? null : Number(r.avg_in_sec)),
-      avgClockOut:
-        shiftEnabled || Number(r.out_contributors) < COHORT_MIN
-          ? null
-          : secondsToHHmm(r.avg_out_sec == null ? null : Number(r.avg_out_sec)),
-      avgOvertimeHours:
-        Number(r.ot_contributors) < COHORT_MIN || r.avg_ot_min == null
-          ? null
-          : Math.round((Number(r.avg_ot_min) / 60) * 10) / 10,
-    }))
+  // ── A 조립: 부서 universe = roster ∪ attendance (저출근 부서도 유지, Codex r1-P1-4) ──
+  // employeeCount = roster headcount(우선) → 운영지표는 attendance 행에서 LEFT-merge(없으면 0/null).
+  // 부서 표시 cohort 게이트(개인 추론 차단)는 유지(headcount ≥ COHORT_MIN). 출근율 억제는 별도(rate-point).
+  const rate = await ratePromise
+  const attByDept = new Map(deptRows.map((r) => [r.department_id, r]))
+  const deptIds = new Set<string>([...rate.rosterDepts.keys(), ...deptRows.map((r) => r.department_id)])
+  const departments: DeptTrendRow[] = [...deptIds]
+    .map((deptId): DeptTrendRow | null => {
+      const att = attByDept.get(deptId)
+      const rosterDept = rate.rosterDepts.get(deptId)
+      const employeeCount = rosterDept ? rosterDept.rosterCount : Number(att?.employee_count ?? 0)
+      if (employeeCount < COHORT_MIN) return null
+      const ratePoint = rate.deptRates.get(deptId)
+      return {
+        departmentId: deptId,
+        departmentName: rosterDept?.departmentName ?? att?.department_name ?? '—',
+        employeeCount,
+        lateCount: att ? Number(att.late_count) : 0,
+        absentCount: att ? Number(att.absent_count) : 0,
+        // 교대제 법인은 평균 출퇴근 무의미(야간 wrap) → null. 비교대도 지표별 기여자 5+ 일 때만.
+        avgClockIn:
+          att && !shiftEnabled && Number(att.in_contributors) >= COHORT_MIN
+            ? secondsToHHmm(att.avg_in_sec == null ? null : Number(att.avg_in_sec))
+            : null,
+        avgClockOut:
+          att && !shiftEnabled && Number(att.out_contributors) >= COHORT_MIN
+            ? secondsToHHmm(att.avg_out_sec == null ? null : Number(att.avg_out_sec))
+            : null,
+        avgOvertimeHours:
+          att && Number(att.ot_contributors) >= COHORT_MIN && att.avg_ot_min != null
+            ? Math.round((Number(att.avg_ot_min) / 60) * 10) / 10
+            : null,
+        attendanceRate: ratePoint?.rate ?? null,
+        attendanceRateDenom: ratePoint?.denom ?? null,
+        attendanceRateCohort: ratePoint?.cohort ?? 0,
+        attendanceRateSuppressed: ratePoint?.suppressed ?? false,
+      }
+    })
+    .filter((d): d is DeptTrendRow => d !== null)
+    .sort((a, b) => a.departmentName.localeCompare(b.departmentName))
 
   // ── B 조립: 버킷 맵 → 표시 버킷 ──
   const rawByBucket = new Map<number, number>()
@@ -300,5 +329,7 @@ export async function getAttendanceTrends(companyId: string, now: Date): Promise
       buckets,
     },
     typeTrend,
+    rateTrend: rate.rateTrend,
+    rateMeta: rate.rateMeta,
   }
 }

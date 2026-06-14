@@ -1019,7 +1019,18 @@
       "typeSub": "Últimos 6 meses",
       "leaveRequests": "Solicitudes de ausencia",
       "shiftNote": "Los promedios y la línea de referencia se ocultan para empresas con turnos",
-      "currentRosterNote": "Según el departamento actual"
+      "currentRosterNote": "Según el departamento actual",
+      "rateColumn": "Tasa de asistencia",
+      "rateTitle": "Tendencia de asistencia",
+      "rateSub": "Últimos 12 meses · plantilla actual",
+      "management": "Oficina/Gestión",
+      "production": "Producción",
+      "sampleLow": "Muestra baja",
+      "rateMixNote": "La tasa del departamento combina, ponderada, la política de cada categoría (exenta/estricta)",
+      "rateBasis": "Según la plantilla actual (histórico)",
+      "rateUnsupported": "La tasa de asistencia no se calcula para empresas con turnos o semana no estándar",
+      "unclassified": "{count} sin clasificar",
+      "anomaly": "{count} anomalías de datos"
     }
   },
   "auth": {

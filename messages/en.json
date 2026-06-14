@@ -1019,7 +1019,18 @@
       "typeSub": "Last 6 months",
       "leaveRequests": "Leave requests",
       "shiftNote": "Averages and the reference line are hidden for shift-based companies",
-      "currentRosterNote": "Based on current department"
+      "currentRosterNote": "Based on current department",
+      "rateColumn": "Attendance rate",
+      "rateTitle": "Attendance rate trend",
+      "rateSub": "Last 12 months · current roster",
+      "management": "Office group",
+      "production": "Production",
+      "sampleLow": "Low sample",
+      "rateMixNote": "Department rate is a weighted blend of each job class's policy (excused/strict)",
+      "rateBasis": "Based on current roster (historical)",
+      "rateUnsupported": "Attendance rate is not computed for shift or non-standard-week companies",
+      "unclassified": "{count} unclassified",
+      "anomaly": "{count} data anomalies"
     }
   },
   "auth": {

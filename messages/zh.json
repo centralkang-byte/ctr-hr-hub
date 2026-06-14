@@ -1019,7 +1019,18 @@
       "typeSub": "最近6个月",
       "leaveRequests": "休假申请（件）",
       "shiftNote": "轮班制法人不显示平均与基准线",
-      "currentRosterNote": "按当前所属部门"
+      "currentRosterNote": "按当前所属部门",
+      "rateColumn": "出勤率",
+      "rateTitle": "出勤率趋势",
+      "rateSub": "近12个月 · 现有在职人员",
+      "management": "管理职群",
+      "production": "生产职",
+      "sampleLow": "样本不足",
+      "rateMixNote": "部门出勤率为各职群政策（豁免·严格）的加权混合值",
+      "rateBasis": "基于现有在职人员的历史记录",
+      "rateUnsupported": "轮班制·非标准工时法人不计算出勤率",
+      "unclassified": "未分类 {count} 人",
+      "anomaly": "数据异常 {count} 件"
     }
   },
   "auth": {

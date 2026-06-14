@@ -1019,7 +1019,18 @@
       "typeSub": "6 tháng gần nhất",
       "leaveRequests": "Đơn xin nghỉ",
       "shiftNote": "Ẩn giá trị trung bình và đường chuẩn với công ty làm theo ca",
-      "currentRosterNote": "Theo phòng ban hiện tại"
+      "currentRosterNote": "Theo phòng ban hiện tại",
+      "rateColumn": "Tỷ lệ đi làm",
+      "rateTitle": "Xu hướng tỷ lệ đi làm",
+      "rateSub": "12 tháng gần nhất · nhân sự hiện tại",
+      "management": "Khối văn phòng",
+      "production": "Sản xuất",
+      "sampleLow": "Mẫu ít",
+      "rateMixNote": "Tỷ lệ phòng ban là giá trị kết hợp có trọng số theo chính sách từng nhóm chức danh (miễn trừ/nghiêm ngặt)",
+      "rateBasis": "Dựa trên nhân sự hiện tại (lịch sử)",
+      "rateUnsupported": "Không tính tỷ lệ đi làm cho công ty làm theo ca hoặc tuần làm việc không tiêu chuẩn",
+      "unclassified": "{count} chưa phân loại",
+      "anomaly": "{count} bất thường dữ liệu"
     }
   },
   "auth": {

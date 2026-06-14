@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — Attendance Trends API Tests (PR-4)
+// CTR HR Hub — Attendance Trends API Tests (PR-4 + PR-4b 출근율)
 // GET /api/v1/attendance/admin/trends — HR 전용, 멀티테넌트, cohort 억제
-// 출근율%는 PR-4b 별도 — 여기엔 운영지표(부서·히스토그램·유형추이)만.
+// PR-4b 추가: 출근율%(부서 칸 30일 + 12개월 직군 2선) rate-point 계약·표본억제·미지원 가드.
 // ═══════════════════════════════════════════════════════════
 
 import { test, expect } from '@playwright/test'
@@ -23,6 +23,10 @@ interface TrendsShape {
     avgClockIn: string | null
     avgClockOut: string | null
     avgOvertimeHours: number | null
+    attendanceRate: number | null
+    attendanceRateDenom: number | null
+    attendanceRateCohort: number
+    attendanceRateSuppressed: boolean
   }>
   arrival: {
     workStartTime: string | null
@@ -37,6 +41,42 @@ interface TrendsShape {
     absent: number
     leaveRequests: number
   }>
+  rateTrend: Array<{
+    month: string
+    management: RatePoint
+    production: RatePoint
+  }>
+  rateMeta: {
+    supported: boolean
+    reason: 'SHIFT' | 'NON_STANDARD_WEEK' | null
+    cohortMin: number
+    rosterCount: number
+    unclassifiedCount: number
+    anomalyCount: number
+    classMix: { management: number; production: number }
+    basisNote: string
+  }
+}
+
+interface RatePoint {
+  rate: number | null
+  denom: number | null
+  cohort: number
+  suppressed: boolean
+}
+
+/** rate-point 계약 검증: rate≠null ⇒ denom≠null·0..100; suppressed ⇒ rate=null; cohort≥0 정수 */
+function assertRatePoint(p: RatePoint): void {
+  expect(p.cohort).toBeGreaterThanOrEqual(0)
+  expect(Number.isInteger(p.cohort)).toBe(true)
+  expect(typeof p.suppressed).toBe('boolean')
+  if (p.rate != null) {
+    expect(p.denom).not.toBeNull()
+    expect(p.rate).toBeGreaterThanOrEqual(0)
+    expect(p.rate).toBeLessThanOrEqual(100)
+    expect(p.suppressed).toBe(false)
+  }
+  if (p.suppressed) expect(p.rate).toBeNull()
 }
 
 test.describe('Attendance Trends API', () => {
@@ -107,6 +147,58 @@ test.describe('Attendance Trends API', () => {
       // 오름차순 정렬
       const months = d.typeTrend.map((m) => m.month)
       expect([...months].sort()).toEqual(months)
+    })
+
+    // ─── PR-4b: 출근율 ─────────────────────────────────────
+    test('rate: rateTrend = 12 zero-filled months, two series, rate-point 계약', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminTrends(api)
+      assertOk(res, 'rateTrend')
+      const d = res.data as TrendsShape
+      expect(d.rateTrend).toHaveLength(12)
+      const months = d.rateTrend.map((m) => m.month)
+      expect([...months].sort()).toEqual(months) // 오름차순
+      const nowMonth = new Date(Date.now() + 9 * 3600_000).toISOString().slice(0, 7)
+      for (const m of d.rateTrend) {
+        expect(m.month).toMatch(/^\d{4}-\d{2}$/)
+        expect(m.month <= nowMonth).toBe(true) // 미래 월 없음
+        assertRatePoint(m.management)
+        assertRatePoint(m.production)
+      }
+    })
+
+    test('rate: rateMeta shape (supported·classMix·counts)', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminTrends(api)
+      assertOk(res, 'rateMeta')
+      const { rateMeta: meta } = res.data as TrendsShape
+      expect(typeof meta.supported).toBe('boolean')
+      expect(meta.cohortMin).toBe(5)
+      expect(meta.rosterCount).toBeGreaterThanOrEqual(0)
+      expect(meta.unclassifiedCount).toBeGreaterThanOrEqual(0)
+      expect(meta.anomalyCount).toBeGreaterThanOrEqual(0)
+      expect(meta.classMix.management + meta.classMix.production).toBe(meta.rosterCount)
+      // 미지원이면 추세 point 전부 null·미억제 (고정 tuple)
+      if (!meta.supported) {
+        for (const m of (res.data as TrendsShape).rateTrend) {
+          expect(m.management.rate).toBeNull()
+          expect(m.production.rate).toBeNull()
+        }
+      }
+    })
+
+    test('rate: dept 출근율 rate-point 계약 준수', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminTrends(api)
+      assertOk(res, 'dept rate')
+      for (const dept of (res.data as TrendsShape).departments) {
+        assertRatePoint({
+          rate: dept.attendanceRate,
+          denom: dept.attendanceRateDenom,
+          cohort: dept.attendanceRateCohort,
+          suppressed: dept.attendanceRateSuppressed,
+        })
+      }
     })
 
     test('HR cannot scope to another company (companyId param ignored)', async ({ request }) => {
