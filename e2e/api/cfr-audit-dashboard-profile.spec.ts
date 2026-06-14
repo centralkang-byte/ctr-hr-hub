@@ -219,6 +219,33 @@ test.describe('CFR Recognitions: EMPLOYEE', () => {
     // Employee has PERFORMANCE.VIEW; invalid UUID → 404 not 403
     expect([200, 404]).toContain(res.status)
   })
+
+  // ─── IDOR self-scope guard (recognitions/employee/[id]) ──────
+  // A plain EMPLOYEE must NOT read a colleague's recognition summary
+  // (breakdown + received message bodies) by passing an arbitrary id.
+
+  test('GET /cfr/recognitions/employee/[colleague] → 403 (IDOR guard)', async ({ request }) => {
+    const api = new ApiClient(request)
+    // Deterministic self id from the NextAuth session (always present for an authed user).
+    const session = await api.get('/api/auth/session')
+    const selfId = (session.body.user as { employeeId?: string } | undefined)?.employeeId
+    expect(selfId, 'session must expose self employeeId').toBeTruthy()
+    // A colleague distinct from self (seed has multiple employees in the caller's company).
+    const list = await api.get<{ id: string }[]>('/api/v1/employees', { page: '1', limit: '10' })
+    const otherId = (list.data ?? []).map((e) => e.id).find((id) => id && id !== selfId)
+    expect(otherId, 'seed must provide a colleague distinct from the caller').toBeTruthy()
+    const res = await f.getEmployeeRecognitions(api, otherId!)
+    assertError(res, 403, 'employee must not read another employee recognition summary')
+  })
+
+  test('GET /cfr/recognitions/employee/[self] → 200 (own summary allowed)', async ({ request }) => {
+    const api = new ApiClient(request)
+    const session = await api.get('/api/auth/session')
+    const selfId = (session.body.user as { employeeId?: string } | undefined)?.employeeId
+    expect(selfId, 'session must expose self employeeId').toBeTruthy()
+    const res = await f.getEmployeeRecognitions(api, selfId!)
+    assertOk(res, 'employee can read own recognition summary')
+  })
 })
 
 // ═══════════════════════════════════════════════════════════
