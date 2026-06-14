@@ -25,6 +25,7 @@ import {
   getWeeklySummary,
   getMonthlyAttendance,
   getAdminAttendance,
+  getAdminWeekly,
   getTeamAttendance,
   getAttendanceDetail,
   correctAttendance,
@@ -334,6 +335,113 @@ test.describe('Attendance Core API', () => {
         }),
       )
       assertError(res, 403, 'employee correction block')
+    })
+  })
+
+  // ─── Weekly matrix (직원 × 7일 + 휴가 오버레이) ───────────────
+
+  test.describe('HR_ADMIN: Weekly attendance matrix', () => {
+    test.use({ storageState: authFile('HR_ADMIN') })
+
+    test('GET /attendance/admin/weekly returns 7-day matrix', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminWeekly(api)
+      assertOk(res, 'admin weekly')
+      const d = res.data as { weekStart: string; days: string[]; rows: unknown[]; nextCursor: string | null }
+      expect(d.days).toHaveLength(7)
+      expect(d.weekStart).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+      expect(d.days[0]).toBe(d.weekStart)
+      expect(Array.isArray(d.rows)).toBe(true)
+    })
+
+    test('?start= normalizes to that week Monday (7 consecutive days)', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminWeekly(api, { start: '2026-05-13' })
+      assertOk(res, 'admin weekly start')
+      const d = res.data as { weekStart: string; days: string[] }
+      const [y, m, dd] = d.weekStart.split('-').map(Number)
+      expect(new Date(Date.UTC(y, m - 1, dd)).getUTCDay()).toBe(1) // 월요일 정렬
+      expect(d.days).toHaveLength(7)
+      expect(d.days[0]).toBe(d.weekStart)
+      expect(d.days).toContain('2026-05-13')
+    })
+
+    test('row cells expose attendance|null + leave|null over 7 days', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminWeekly(api, { limit: '3' })
+      assertOk(res, 'weekly cells')
+      const d = res.data as { rows: Array<{ cells: Array<{ date: string; attendance: unknown; leave: unknown }> }> }
+      if (d.rows.length > 0) {
+        const cells = d.rows[0].cells
+        expect(cells).toHaveLength(7)
+        for (const c of cells) {
+          expect(c.date).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+          expect(c.attendance === null || typeof c.attendance === 'object').toBe(true)
+          expect(c.leave === null || typeof c.leave === 'object').toBe(true)
+        }
+      }
+    })
+
+    test('cursor pagination advances without overlap', async ({ request }) => {
+      const api = new ApiClient(request)
+      const p1 = await getAdminWeekly(api, { limit: '1' })
+      assertOk(p1, 'weekly page1')
+      const d1 = p1.data as { rows: Array<{ employeeId: string }>; nextCursor: string | null }
+      if (d1.nextCursor && d1.rows[0]) {
+        const p2 = await getAdminWeekly(api, { limit: '1', cursor: d1.nextCursor })
+        assertOk(p2, 'weekly page2')
+        const d2 = p2.data as { rows: Array<{ employeeId: string }> }
+        if (d2.rows[0]) expect(d2.rows[0].employeeId).not.toBe(d1.rows[0].employeeId)
+      }
+    })
+
+    test('?start=invalid → 400', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminWeekly(api, { start: '05-13-2026' })
+      assertError(res, 400, 'invalid start')
+    })
+
+    test('?start=2026-02-31 (non-calendar date) → 400', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminWeekly(api, { start: '2026-02-31' })
+      assertError(res, 400, 'non-calendar date')
+    })
+
+    test('?cursor=non-uuid → 400 (no 500)', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminWeekly(api, { cursor: 'not-a-uuid' })
+      assertError(res, 400, 'invalid cursor')
+    })
+  })
+
+  test.describe('SUPER_ADMIN: Weekly cross-company', () => {
+    test.use({ storageState: authFile('SUPER_ADMIN') })
+
+    test('GET /attendance/admin/weekly?companyId returns 200', async ({ request }) => {
+      const api = new ApiClient(request)
+      const seed = await resolveSeedData(request)
+      const res = await getAdminWeekly(api, { companyId: seed.companyId })
+      assertOk(res, 'super weekly cross-company')
+    })
+  })
+
+  test.describe('MANAGER: Weekly matrix denied', () => {
+    test.use({ storageState: authFile('MANAGER') })
+
+    test('GET /attendance/admin/weekly → 403', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminWeekly(api)
+      assertError(res, 403, 'manager weekly denied')
+    })
+  })
+
+  test.describe('EMPLOYEE: Weekly matrix denied', () => {
+    test.use({ storageState: authFile('EMPLOYEE') })
+
+    test('GET /attendance/admin/weekly → 403', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminWeekly(api)
+      assertError(res, 403, 'employee weekly denied')
     })
   })
 })

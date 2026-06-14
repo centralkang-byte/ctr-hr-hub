@@ -715,21 +715,22 @@ export function LoaClient({ user }: Props) {
 
 // ─── KPI Card ────────────────────────────────────────────
 
-const COLOR_MAP: Record<string, { border: string; icon: string }> = {
-  yellow: { border: 'border-l-yellow-400', icon: 'text-yellow-500' },
-  orange: { border: 'border-l-orange-400', icon: 'text-orange-500' },
-  purple: { border: 'border-l-wt-4', icon: 'text-wt-4' },
-  green: { border: 'border-l-green-400', icon: 'text-green-500' },
+// 아이콘 틴트로 카테고리 구분 (좌측 색 보더 = 금지 패턴 → 제거, design.md)
+const ICON_TINT: Record<string, string> = {
+  yellow: 'text-ctr-warning',
+  orange: 'text-wd-orange',
+  purple: 'text-wt-4',
+  green: 'text-ctr-success',
 }
 
 function KpiCard({ icon: Icon, label, value, color }: {
   icon: typeof Clock; label: string; value: number; color: string
 }) {
-  const c = COLOR_MAP[color] ?? COLOR_MAP.yellow
+  const iconColor = ICON_TINT[color] ?? ICON_TINT.yellow
   return (
-    <div className={cn('rounded-lg border border-border border-l-4 bg-card p-4', c.border)}>
+    <div className="rounded-2xl border border-border bg-card p-4">
       <div className="flex items-center gap-2 mb-1">
-        <Icon className={cn('h-4 w-4', c.icon)} />
+        <Icon className={cn('h-4 w-4', iconColor)} />
         <p className="text-xs text-muted-foreground font-medium">{label}</p>
       </div>
       <p className="text-2xl font-bold text-foreground">{value}</p>
