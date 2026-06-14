@@ -4309,7 +4309,11 @@
         "MARKET_ADJUSTMENT": "Market Adjustment",
         "PROMOTION": "Promotion",
         "RESIGN": "Resignation",
-        "TRANSFER": "Transfer"
+        "TRANSFER": "Transfer",
+        "REORGANIZATION": "Reorganization",
+        "STATUS_CHANGE": "Status Change",
+        "CONTRACT_CHANGE": "Contract Change",
+        "COMPANY_TRANSFER": "Company Transfer"
       },
       "col": {
         "amount": "Amount",
@@ -4411,7 +4415,15 @@
         "overtime": "Overtime",
         "daysUnit": "days",
         "hoursUnit": "hrs",
-        "empty": "No attendance records this month"
+        "empty": "No attendance records this month",
+        "heatmapTitle": "This Month’s Attendance",
+        "legend": {
+          "NORMAL": "Normal",
+          "LATE": "Late",
+          "EARLY_OUT": "Early Leave",
+          "ABSENT": "Absent",
+          "NONE": "No Record"
+        }
       },
       "leaveTab": {
         "annualRemaining": "Annual leave left",
@@ -4426,8 +4438,21 @@
         "latestGrade": "Latest grade",
         "totalScore": "Total score",
         "mboScore": "MBO score",
-        "empty": "No published results yet"
-      }
+        "empty": "No published results yet",
+        "evalHistory": "Evaluation History",
+        "evaluator": "Evaluator {name}",
+        "mboHistory": "MBO Achievement History",
+        "mboCol": {
+          "cycle": "Cycle",
+          "goals": "Goals",
+          "achievement": "Score",
+          "keyGoals": "Key Goals"
+        },
+        "goalsCount": "{count}",
+        "recognitions": "Recognitions Received",
+        "praisedYou": "{name} recognized you"
+      },
+      "jobHistoryTitle": "Assignment History"
     },
     "profileDesc": "View and edit your personal information.",
     "profileTitle": "My Profile",

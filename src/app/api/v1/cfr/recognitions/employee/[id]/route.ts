@@ -48,11 +48,11 @@ export const GET = withPermission(
       count: v._count.id,
     }))
 
-    // Recent recognitions (last 5)
+    // Recent recognitions (last 6 — profile feed "최근 6건")
     const recentRecognitions = await prisma.recognition.findMany({
       where: { receiverId: employeeId, companyId: user.companyId },
       orderBy: { createdAt: 'desc' },
-      take: 5,
+      take: 6,
       include: {
         sender: { select: { name: true } },
       },

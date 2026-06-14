@@ -1,45 +1,74 @@
 'use client'
 
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — My Profile · Performance Summary Tab
-// 본인 최근 (공개된) 평가 결과 요약.
-// cycle 게이팅은 MyResultClient와 동일: isResultPublished(서버 notifiedAt 단조)만으로 판정.
-// 미통보 cycle의 매니저 평가가 새지 않도록 통보된 cycle만 조회.
-// 다주기 평가이력·MBO 이력·받은 칭찬은 후속.
+// CTR HR Hub — My Profile · Performance Tab (rich-fidelity)
+// 본인 (공개된) 평가 결과: 최신 KPI + 다주기 평가이력(평가자·코멘트) +
+//   MBO 가중 달성점수 이력 + 받은 칭찬 피드.
+// 공개 게이트: 서버(my-history)가 notifiedAt!=null cycle만 반환 →
+//   미통보 cycle의 평가/코멘트는 절대 내려오지 않음. status 결합 없음.
+// achievementScore는 0–5 평가점수(% 아님) — "/5"로 표기.
 // ═══════════════════════════════════════════════════════════
 
 // ─── Imports ────────────────────────────────────────────────
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
-import { Award, Star, Target, ArrowRight } from 'lucide-react'
+import { Award, Star, Target, ArrowRight, Heart } from 'lucide-react'
 import { WdStatStrip } from '@/components/shared/WdStatStrip'
+import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { KpiCardsSkeleton } from '@/components/shared/PageSkeleton'
 import { apiClient } from '@/lib/api'
-import { AppError } from '@/lib/errors'
+import { CARD_STYLES, TABLE_STYLES } from '@/lib/styles'
+import { formatDate } from '@/lib/format/date'
 
 // ─── Types ──────────────────────────────────────────────────
-interface CycleOption {
-  id: string
-  name: string
-  status: string
+interface HistoryItem {
+  cycleId: string
+  cycleName: string
+  year: number
   half: string | null
-  isResultPublished: boolean
-}
-
-interface ReviewSummary {
+  label: string
+  mboScore: number | null
+  beiScore: number | null
+  totalScore: number | null
   finalGrade: string | null
   finalGradeLabel: string | null
-  totalScore: number | null
-  mboScore: number | null
-  cycleName: string
+  evaluatorName: string | null
+  comment: string | null
+  mboGoalCount: number
+  mboAchievement: number | null
+  mboKeyGoals: string[]
 }
 
+interface RecognitionItem {
+  senderName: string
+  coreValue: string
+  message: string
+  createdAt: string
+}
+
+interface RecognitionSummary {
+  receivedCount: number
+  recent: RecognitionItem[]
+}
+
+interface Props {
+  employeeId: string
+}
+
+// ─── Helpers ────────────────────────────────────────────────
+// 최신 cycle = year DESC, half DESC (H2 > H1; null 후순위), cycleId 타이브레이크(결정적)
+const byLatest = (a: HistoryItem, b: HistoryItem): number =>
+  b.year - a.year ||
+  (b.half ?? '').localeCompare(a.half ?? '') ||
+  b.cycleId.localeCompare(a.cycleId)
+
 // ─── Component ──────────────────────────────────────────────
-export function ProfilePerformanceTab() {
+export function ProfilePerformanceTab({ employeeId }: Props) {
   const t = useTranslations('mySpace')
-  const [review, setReview] = useState<ReviewSummary | null>(null)
+  const [history, setHistory] = useState<HistoryItem[]>([])
+  const [recognitions, setRecognitions] = useState<RecognitionItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
@@ -47,34 +76,20 @@ export function ProfilePerformanceTab() {
     try {
       setLoading(true)
       setError(false)
-      const cyclesRes = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
-      // 결과 열람 허용 = isResultPublished (서버: 본인 PerformanceReview.notifiedAt 단조)만으로 판정.
-      // status 결합 시 통보 후 cycle이 CALIBRATION/COMP_*로 진행되면 결과가 사라지는 회귀(서버 게이트와 불일치).
-      const allowed = (cyclesRes.data ?? []).filter((c) => c.isResultPublished === true)
-      if (allowed.length === 0) {
-        setReview(null)
-        return
-      }
-      const cycle = allowed[0] // cycles는 year desc 정렬 → 최신
-      // 해당 cycle 리뷰 없음 = 400(badRequest) → empty. 그 외(403/500 등)는 error로 전파(재시도 가능).
-      let r: (ReviewSummary & { cycleName?: string }) | null = null
-      try {
-        const resultRes = await apiClient.get<{ review: ReviewSummary | null }>(
-          '/api/v1/performance/reviews/my-result',
-          { cycleId: cycle.id },
-        )
-        r = resultRes?.data?.review ?? null
-      } catch (e) {
-        if (e instanceof AppError && e.statusCode === 400) r = null
-        else throw e
-      }
-      setReview(r ? { ...r, cycleName: r.cycleName ?? cycle.name } : null)
+      // 성과 이력이 주 신호 — 실패 시 에러. 칭찬은 보조라 독립 degrade(실패해도 빈 피드).
+      const [historyRes, recogRes] = await Promise.allSettled([
+        apiClient.get<HistoryItem[]>('/api/v1/performance/reviews/my-history'),
+        apiClient.get<RecognitionSummary>(`/api/v1/cfr/recognitions/employee/${employeeId}`),
+      ])
+      if (historyRes.status === 'rejected') throw historyRes.reason
+      setHistory((historyRes.value.data ?? []).slice().sort(byLatest))
+      setRecognitions(recogRes.status === 'fulfilled' ? (recogRes.value.data?.recent ?? []) : [])
     } catch {
       setError(true)
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [employeeId])
 
   useEffect(() => { load() }, [load])
 
@@ -89,41 +104,152 @@ export function ProfilePerformanceTab() {
     )
   }
 
-  if (!review) {
+  const latest = history[0] ?? null
+  const mboRows = history.filter((h) => h.mboGoalCount > 0)
+  const hasAnything = history.length > 0 || recognitions.length > 0
+
+  if (!hasAnything) {
     return <EmptyState icon={Award} title={t('profile.performanceTab.empty')} />
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">{review.cycleName}</p>
-        <Link href="/performance/my-result" className="flex items-center gap-1 text-sm text-primary hover:underline">
-          {t('profile.summary.viewDetail')} <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
-      </div>
+      {/* ── 최신 결과 KPI ── */}
+      {latest && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">{latest.cycleName}</p>
+            <Link href="/performance/my-result" className="flex items-center gap-1 text-sm text-primary hover:underline">
+              {t('profile.summary.viewDetail')} <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+          <WdStatStrip
+            items={[
+              {
+                label: t('profile.performanceTab.latestGrade'),
+                value: latest.finalGradeLabel ?? latest.finalGrade ?? '-',
+                icon: Award,
+                tone: 'success',
+              },
+              {
+                label: t('profile.performanceTab.totalScore'),
+                value: latest.totalScore != null ? latest.totalScore.toFixed(1) : '-',
+                icon: Star,
+                tone: 'info',
+              },
+              {
+                label: t('profile.performanceTab.mboScore'),
+                value: latest.mboScore != null ? latest.mboScore.toFixed(1) : '-',
+                icon: Target,
+                tone: 'default',
+              },
+            ]}
+          />
+        </div>
+      )}
 
-      <WdStatStrip
-        items={[
-          {
-            label: t('profile.performanceTab.latestGrade'),
-            value: review.finalGradeLabel ?? review.finalGrade ?? '-',
-            icon: Award,
-            tone: 'success',
-          },
-          {
-            label: t('profile.performanceTab.totalScore'),
-            value: review.totalScore != null ? review.totalScore.toFixed(1) : '-',
-            icon: Star,
-            tone: 'info',
-          },
-          {
-            label: t('profile.performanceTab.mboScore'),
-            value: review.mboScore != null ? review.mboScore.toFixed(1) : '-',
-            icon: Target,
-            tone: 'default',
-          },
-        ]}
-      />
+      {/* ── 평가 이력 (다주기) ── */}
+      {history.length > 0 && (
+        <section aria-labelledby="perf-history-title" className={CARD_STYLES.padded}>
+          <h2 id="perf-history-title" className="text-base font-semibold text-foreground mb-4">
+            {t('profile.performanceTab.evalHistory')}
+          </h2>
+          <div role="list" className="space-y-3">
+            {history.map((h) => (
+              <article key={h.cycleId} role="listitem" className="flex items-start gap-4 rounded-xl border border-border bg-card p-4">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-base font-bold text-primary">
+                  {h.finalGrade ?? '-'}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="text-sm font-semibold text-foreground">{h.label}</p>
+                    {h.totalScore != null && (
+                      <span className="text-xs text-muted-foreground tabular-nums">
+                        {t('profile.performanceTab.totalScore')} {h.totalScore.toFixed(1)}
+                      </span>
+                    )}
+                  </div>
+                  {h.evaluatorName && (
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      {t('profile.performanceTab.evaluator', { name: h.evaluatorName })}
+                    </p>
+                  )}
+                  {h.comment && (
+                    <p className="mt-1.5 text-sm italic text-muted-foreground">&ldquo;{h.comment}&rdquo;</p>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ── MBO 달성 이력 ── */}
+      {mboRows.length > 0 && (
+        <section aria-labelledby="perf-mbo-title" className={CARD_STYLES.padded}>
+          <h2 id="perf-mbo-title" className="text-base font-semibold text-foreground mb-4">
+            {t('profile.performanceTab.mboHistory')}
+          </h2>
+          <div className={TABLE_STYLES.wrapper}>
+            <table className={TABLE_STYLES.table}>
+              <thead>
+                <tr className={TABLE_STYLES.header}>
+                  <th className={TABLE_STYLES.headerCell}>{t('profile.performanceTab.mboCol.cycle')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('profile.performanceTab.mboCol.goals')}</th>
+                  <th className={`${TABLE_STYLES.headerCell} text-right`}>{t('profile.performanceTab.mboCol.achievement')}</th>
+                  <th className={TABLE_STYLES.headerCell}>{t('profile.performanceTab.mboCol.keyGoals')}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {mboRows.map((h) => (
+                  <tr key={h.cycleId} className={TABLE_STYLES.row}>
+                    <td className={`${TABLE_STYLES.cell} font-medium text-foreground`}>{h.label}</td>
+                    <td className={`${TABLE_STYLES.cell} tabular-nums`}>
+                      {t('profile.performanceTab.goalsCount', { count: h.mboGoalCount })}
+                    </td>
+                    <td className={`${TABLE_STYLES.cell} text-right tabular-nums font-medium text-foreground`}>
+                      {h.mboAchievement != null ? `${h.mboAchievement.toFixed(1)} / 5.0` : '-'}
+                    </td>
+                    <td className={`${TABLE_STYLES.cell} text-muted-foreground`}>
+                      {h.mboKeyGoals.length > 0 ? h.mboKeyGoals.join(' · ') : '-'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {/* ── 받은 칭찬 ── */}
+      {recognitions.length > 0 && (
+        <section aria-labelledby="perf-recognitions-title" className={CARD_STYLES.padded}>
+          <h2 id="perf-recognitions-title" className="text-base font-semibold text-foreground mb-4">
+            {t('profile.performanceTab.recognitions')}
+          </h2>
+          <div role="list" className="space-y-3">
+            {recognitions.map((r, i) => (
+              <article key={i} role="listitem" className="flex items-start gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-wd-orange-soft text-wd-orange-ink">
+                  <Heart className="h-4 w-4" aria-hidden="true" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-foreground">
+                    {t('profile.performanceTab.praisedYou', { name: r.senderName })}
+                  </p>
+                  {r.message && (
+                    <p className="mt-0.5 text-sm italic text-muted-foreground">&ldquo;{r.message}&rdquo;</p>
+                  )}
+                </div>
+                <div className="flex shrink-0 flex-col items-end gap-1">
+                  {r.coreValue && <Badge variant="accent">{r.coreValue}</Badge>}
+                  <span className="text-[11px] text-muted-foreground tabular-nums">{formatDate(r.createdAt)}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   )
 }

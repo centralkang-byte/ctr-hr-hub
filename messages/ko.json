@@ -10131,7 +10131,11 @@
         "DEMOTION": "강등",
         "ANNUAL_INCREASE": "정규 인상",
         "MARKET_ADJUSTMENT": "시장 조정",
-        "RESIGN": "퇴사"
+        "RESIGN": "퇴사",
+        "REORGANIZATION": "조직 개편",
+        "STATUS_CHANGE": "재직 상태 변경",
+        "CONTRACT_CHANGE": "계약 변경",
+        "COMPANY_TRANSFER": "법인 이동"
       },
       "docType": {
         "CONTRACT": "계약서",
@@ -10169,6 +10173,7 @@
         "skills": "보유 스킬"
       },
       "careerTimeline": "사내 발령 타임라인",
+      "jobHistoryTitle": "직무 발령 이력",
       "emptyCareerTitle": "이력 없음",
       "emptyCareerDesc": "등록된 인사 발령 기록이 없습니다.",
       "noDept": "부서 미지정",
@@ -10218,7 +10223,15 @@
         "overtime": "초과근무",
         "daysUnit": "일",
         "hoursUnit": "시간",
-        "empty": "이번 달 근태 기록이 없어요"
+        "empty": "이번 달 근태 기록이 없어요",
+        "heatmapTitle": "이번 달 근태",
+        "legend": {
+          "NORMAL": "정상",
+          "LATE": "지각",
+          "EARLY_OUT": "조퇴",
+          "ABSENT": "결근",
+          "NONE": "기록 없음"
+        }
       },
       "leaveTab": {
         "annualRemaining": "잔여 연차",
@@ -10233,7 +10246,19 @@
         "latestGrade": "최근 등급",
         "totalScore": "종합 점수",
         "mboScore": "MBO 점수",
-        "empty": "공개된 평가 결과가 아직 없어요"
+        "empty": "공개된 평가 결과가 아직 없어요",
+        "evalHistory": "평가 이력",
+        "evaluator": "평가자 {name}",
+        "mboHistory": "MBO 달성 이력",
+        "mboCol": {
+          "cycle": "사이클",
+          "goals": "목표 수",
+          "achievement": "달성 점수",
+          "keyGoals": "주요 목표"
+        },
+        "goalsCount": "{count}개",
+        "recognitions": "받은 칭찬",
+        "praisedYou": "{name} 님이 칭찬했어요"
       }
     },
     "leave": {

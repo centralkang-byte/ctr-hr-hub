@@ -4309,7 +4309,11 @@
         "MARKET_ADJUSTMENT": "Ajuste de Mercado",
         "PROMOTION": "Promoción",
         "RESIGN": "Renuncia",
-        "TRANSFER": "Traslado"
+        "TRANSFER": "Traslado",
+        "REORGANIZATION": "Reorganización",
+        "STATUS_CHANGE": "Cambio de estado",
+        "CONTRACT_CHANGE": "Cambio de contrato",
+        "COMPANY_TRANSFER": "Transferencia de empresa"
       },
       "col": {
         "amount": "Monto",
@@ -4411,7 +4415,15 @@
         "overtime": "Horas extra",
         "daysUnit": "días",
         "hoursUnit": "h",
-        "empty": "Sin registros de asistencia este mes"
+        "empty": "Sin registros de asistencia este mes",
+        "heatmapTitle": "Asistencia de este mes",
+        "legend": {
+          "NORMAL": "Normal",
+          "LATE": "Tarde",
+          "EARLY_OUT": "Salida anticipada",
+          "ABSENT": "Ausente",
+          "NONE": "Sin registro"
+        }
       },
       "leaveTab": {
         "annualRemaining": "Vacaciones restantes",
@@ -4426,8 +4438,21 @@
         "latestGrade": "Última calificación",
         "totalScore": "Puntuación total",
         "mboScore": "Puntuación MBO",
-        "empty": "Aún no hay resultados publicados"
-      }
+        "empty": "Aún no hay resultados publicados",
+        "evalHistory": "Historial de evaluaciones",
+        "evaluator": "Evaluador {name}",
+        "mboHistory": "Historial de logros MBO",
+        "mboCol": {
+          "cycle": "Ciclo",
+          "goals": "Objetivos",
+          "achievement": "Puntuación",
+          "keyGoals": "Objetivos clave"
+        },
+        "goalsCount": "{count}",
+        "recognitions": "Reconocimientos recibidos",
+        "praisedYou": "{name} te reconoció"
+      },
+      "jobHistoryTitle": "Historial de asignaciones"
     },
     "profileDesc": "Ver and edit your personal information.",
     "profileTitle": "My Profile",

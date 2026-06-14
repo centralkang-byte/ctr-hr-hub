@@ -58,15 +58,7 @@ export default async function MyProfilePage() {
         profileExtension: true,
         emergencyContacts: { orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }] },
         profileVisibility: true,
-        employeeHistories: {
-          orderBy: { effectiveDate: 'desc' },
-          take: 10,
-          include: {
-            toDept: { select: { name: true } },
-            toGrade: { select: { name: true } },
-            toCompany: { select: { name: true } },
-          }
-        },
+        // 직무 발령 이력은 career 탭에서 /api/v1/employees/[id]/history 로 lazy fetch (전체 이력)
         compensationHistories: {
           orderBy: { effectiveDate: 'desc' },
           take: 5,
@@ -123,8 +115,6 @@ export default async function MyProfilePage() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (employee as any).profileVisibility = null;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (employee as any).employeeHistories = [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (employee as any).compensationHistories = [];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (employee as any).employeeDocuments = [];
@@ -148,12 +138,6 @@ export default async function MyProfilePage() {
     ...employee,
     hireDate:  employee.hireDate?.toISOString() ?? new Date().toISOString(),
     birthDate: employee.birthDate?.toISOString() ?? null,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    employeeHistories: employee.employeeHistories?.map((h: any) => ({
-      ...h,
-      effectiveDate: h.effectiveDate?.toISOString() ?? new Date().toISOString(),
-      createdAt: h.createdAt?.toISOString() ?? new Date().toISOString(),
-    })) ?? [],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     compensationHistories: employee.compensationHistories?.map((h: any) => ({
       ...h,

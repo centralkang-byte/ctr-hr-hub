@@ -29,8 +29,13 @@ export const GET = withPermission(
     })
     if (!employee) throw notFound('직원을 찾을 수 없습니다.')
 
+    // 멀티테넌트: 비-SUPER는 자기 법인 발령만. 전출 직원의 이전 법인 발령
+    // (부서·직급·승인자 등 타 테넌트 조직 데이터) 노출 차단. SUPER는 그룹 전체.
     const assignments = await prisma.employeeAssignment.findMany({
-      where: { employeeId: id },
+      where: {
+        employeeId: id,
+        ...(user.role === 'SUPER_ADMIN' ? {} : { companyId: user.companyId }),
+      },
       include: {
         company:     { select: { id: true, name: true } },
         department:  { select: { id: true, name: true } },

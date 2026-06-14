@@ -4309,7 +4309,11 @@
         "MARKET_ADJUSTMENT": "Điều chỉnh thị trường",
         "PROMOTION": "Thăng chức",
         "RESIGN": "Từ chức",
-        "TRANSFER": "Chuyển đổi"
+        "TRANSFER": "Chuyển đổi",
+        "REORGANIZATION": "Tái cơ cấu",
+        "STATUS_CHANGE": "Thay đổi trạng thái",
+        "CONTRACT_CHANGE": "Thay đổi hợp đồng",
+        "COMPANY_TRANSFER": "Chuyển pháp nhân"
       },
       "col": {
         "amount": "Số tiền",
@@ -4411,7 +4415,15 @@
         "overtime": "Tăng ca",
         "daysUnit": "ngày",
         "hoursUnit": "giờ",
-        "empty": "Chưa có dữ liệu chấm công tháng này"
+        "empty": "Chưa có dữ liệu chấm công tháng này",
+        "heatmapTitle": "Chuyên cần tháng này",
+        "legend": {
+          "NORMAL": "Bình thường",
+          "LATE": "Đi muộn",
+          "EARLY_OUT": "Về sớm",
+          "ABSENT": "Vắng mặt",
+          "NONE": "Không có dữ liệu"
+        }
       },
       "leaveTab": {
         "annualRemaining": "Phép năm còn lại",
@@ -4426,8 +4438,21 @@
         "latestGrade": "Hạng gần nhất",
         "totalScore": "Điểm tổng",
         "mboScore": "Điểm MBO",
-        "empty": "Chưa có kết quả được công bố"
-      }
+        "empty": "Chưa có kết quả được công bố",
+        "evalHistory": "Lịch sử đánh giá",
+        "evaluator": "Người đánh giá {name}",
+        "mboHistory": "Lịch sử đạt MBO",
+        "mboCol": {
+          "cycle": "Chu kỳ",
+          "goals": "Số mục tiêu",
+          "achievement": "Điểm đạt",
+          "keyGoals": "Mục tiêu chính"
+        },
+        "goalsCount": "{count}",
+        "recognitions": "Lời khen nhận được",
+        "praisedYou": "{name} đã khen bạn"
+      },
+      "jobHistoryTitle": "Lịch sử bổ nhiệm"
     },
     "profileDesc": "Xem and edit your personal information.",
     "profileTitle": "My Profile",
