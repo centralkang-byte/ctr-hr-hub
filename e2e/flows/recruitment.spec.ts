@@ -17,8 +17,10 @@ test.describe('Recruitment', () => {
     await waitForLoading(page)
 
     await expect(page.locator('h1').first()).toBeVisible({ timeout: 8000 })
-    await expect(page.locator('table').first()).toBeVisible({ timeout: 8000 })
-    await expect(page.locator('thead').first()).toBeVisible({ timeout: 5000 })
+    // S312: 맨 테이블 → KPI 스트립(Pattern A) + 3탭 + 공고 카드 그리드로 전환.
+    await expect(page.locator('[role="tablist"]').first()).toBeVisible({ timeout: 8000 })
+    await expect(page.locator('[role="tab"]')).toHaveCount(3, { timeout: 8000 })
+    await expect(page.locator('section[aria-labelledby^="wdstat-"]').first()).toBeVisible({ timeout: 8000 })
 
     const newButton = page.locator('button').filter({ hasText: /등록|New|Register/i }).first()
     await expect(newButton).toBeVisible({ timeout: 5000 })

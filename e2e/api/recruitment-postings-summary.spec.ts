@@ -130,7 +130,7 @@ test.describe('recruitment summary — 멀티테넌트 스코프', () => {
 test.describe('recruitment postings — per-job funnel', () => {
   test.use({ storageState: authFile('HR_ADMIN') })
 
-  test('각 공고 funnel{applied,screen,interview,offer} + applied == _count.applications', async ({ request }) => {
+  test('각 공고 funnel{applied,screen,interview,offer} + 각 버킷 <= applied (단일 스냅샷 일관)', async ({ request }) => {
     const api = new ApiClient(request)
     const res = await api.get<PostingItem[]>(POSTINGS, { page: '1', limit: '20' })
     assertOk(res, 'postings list')
