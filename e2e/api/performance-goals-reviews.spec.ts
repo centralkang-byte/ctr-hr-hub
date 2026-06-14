@@ -464,8 +464,9 @@ test.describe('Results & Reviews: EMPLOYEE', () => {
     test.skip(!seedCycleId, 'no seed cycle found')
     const client = new ApiClient(request)
     const result = await pf.getMyReviewResult(client, { cycleId: seedCycleId! })
-    // May return 200 with data or 404 if no review exists yet
-    if (result.status === 404) {
+    // 200(통보된 결과) / 400(미통보 — publication 게이트: review.notifiedAt=null) / 404(리뷰 없음) 모두 유효.
+    // 결과 공개는 본인 PerformanceReview.notifiedAt(단조) 이후에만 — performance-result-publication.spec.ts가 양성 검증.
+    if (result.status === 404 || result.status === 400) {
       expect(result.ok).toBe(false)
     } else {
       assertOk(result, 'my review result')
