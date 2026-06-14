@@ -8,7 +8,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Award, Target, TrendingUp, CheckCircle2, Clock, Info, ArrowLeft, Shield } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { GRADE_CONFIG } from '@/lib/styles/performance'
-import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import type { SessionUser } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 import dynamic from 'next/dynamic'
@@ -82,7 +81,6 @@ export default function MyResultClient({user }: {
 
     const [cycles, setCycles] = useState<CycleOption[]>([])
     const [selectedCycleId, setSelectedCycleId] = useState('')
-    const [cycleStatus, setCycleStatus] = useState('')
     const [result, setResult] = useState<ReviewResult | null>(null)
     const [peerResult, setPeerResult] = useState<PeerResult | null>(null)
     const [loading, setLoading] = useState(true)
@@ -102,7 +100,6 @@ export default function MyResultClient({user }: {
                 setCycles(resultCycles)
                 if (resultCycles.length > 0) {
                     setSelectedCycleId(resultCycles[0].id)
-                    setCycleStatus(resultCycles[0].status)
                 }
             } catch { setError(t('cycleListLoadFailed')) }
         }
@@ -152,8 +149,6 @@ export default function MyResultClient({user }: {
 
     function handleCycleChange(id: string) {
         setSelectedCycleId(id)
-        const c = cycles.find((c) => c.id === id)
-        if (c) setCycleStatus(c.status)
     }
 
     async function handleAcknowledge() {
@@ -168,10 +163,11 @@ export default function MyResultClient({user }: {
         }})
     }
 
-    // Route guard
-    const selectedHalf = cycles.find(c => c.id === selectedCycleId)?.half ?? 'H2'
-    const allowedStatuses = getAllowedStatuses('result', selectedHalf)
-    const isBlocked = cycleStatus !== '' && !allowedStatuses.includes(cycleStatus)
+    // Route guard — 선택 cycle이 공개(isResultPublished = 본인 PerformanceReview.notifiedAt 단조)
+    // 되지 않았으면 차단. status 가드(getAllowedStatuses)는 FINALIZED/CALIBRATION 등 통보 가능 단계를
+    // 누락해 통보된 결과를 막던 회귀가 있어 isResultPublished 단일 신호로 통일(드롭다운 필터와 동일).
+    const selectedCycle = cycles.find(c => c.id === selectedCycleId)
+    const isBlocked = selectedCycleId !== '' && !!selectedCycle && selectedCycle.isResultPublished !== true
 
     if (isBlocked) {
         return (
