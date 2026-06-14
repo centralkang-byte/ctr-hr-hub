@@ -94,4 +94,16 @@ test.describe('Result publication gate: per-review notifiedAt', () => {
     expect(res.status, 'notified result must remain visible post-notification').toBe(200)
     await emp.dispose()
   })
+
+  // 드롭다운(cycles)의 isResultPublished도 notifiedAt과 일치해야 한다 — 통보된 cycle이 CALIBRATION으로
+  // 진행돼도 목록에 남아 사용자가 선택할 수 있어야 함(status-only면 사라지는 회귀; 직전 test가 CALIBRATION 진행).
+  test('5. cycles dropdown isResultPublished follows notifiedAt (visible at CALIBRATION)', async () => {
+    const emp = await ctx('EMPLOYEE')
+    const res = await new ApiClient(emp).get('/api/v1/performance/cycles', { page: '1', limit: '100' })
+    const list = (res.data ?? []) as Array<{ id: string; isResultPublished?: boolean }>
+    const c = list.find((x) => x.id === cycleId)
+    expect(c, 'test cycle must appear in list').toBeTruthy()
+    expect(c?.isResultPublished, 'notified cycle must stay published in dropdown post-notification').toBe(true)
+    await emp.dispose()
+  })
 })

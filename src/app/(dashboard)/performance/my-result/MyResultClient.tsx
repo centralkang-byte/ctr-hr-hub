@@ -95,12 +95,10 @@ export default function MyResultClient({user }: {
         async function load() {
             try {
                 const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
-                // 결과 열람 허용 = 결과 열람 단계(CLOSED 이후) AND 결과 공개(isResultPublished).
-                // EMPLOYEE에게 COMP_REVIEW 등은 status=CLOSED·isResultPublished=false로 마스킹되므로
-                // status만으로는 미공개 결과가 새어나갈 수 있음 (pipeline.ts 'result' 주석 참조).
-                const resultCycles = res.data.filter(
-                    (c) => c.isResultPublished === true && getAllowedStatuses('result', c.half ?? 'H2').includes(c.status),
-                )
+                // 결과 열람 허용 = isResultPublished (서버: 본인 PerformanceReview.notifiedAt 단조)만으로 판정.
+                // status를 추가 결합하면 통보 후 cycle이 CALIBRATION/COMP_*로 진행될 때 결과가 목록에서
+                // 사라지는 회귀가 발생(서버 게이트와 불일치) — isResultPublished가 단일 권위 신호다.
+                const resultCycles = res.data.filter((c) => c.isResultPublished === true)
                 setCycles(resultCycles)
                 if (resultCycles.length > 0) {
                     setSelectedCycleId(resultCycles[0].id)

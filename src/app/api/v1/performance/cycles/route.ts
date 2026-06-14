@@ -72,14 +72,27 @@ export const GET = withPermission(
       prisma.performanceCycle.count({ where }),
     ])
 
-    // EMPLOYEE: 보상 단계 마스킹 (COMP_REVIEW/COMP_COMPLETED → CLOSED + isResultPublished).
-    // 비-EMPLOYEE는 마스킹 없이 isResultPublished만 부여 — publication 정의는 isResultPublishedForRole(SSOT)로 단일화
-    // (my-result 서버 게이트와 동일 함수 → 드롭다운 필터와 게이트가 절대 diverge하지 않음).
-    const maskedCycles = user.role === 'EMPLOYEE'
-      ? cycles.map(maskCycleForEmployee)
-      : cycles.map(c => ({ ...c, isResultPublished: isResultPublishedForRole(c.status, user.role) }))
+    // EMPLOYEE: 결과 공개 = 본인 PerformanceReview.notifiedAt(단조) — my-result·peer-review/results
+    // 서버 게이트와 동일 신호. status 마스킹(COMP_* → CLOSED 표시)은 유지하되 isResultPublished는
+    // notifiedAt으로 판정해 통보 후 후속 단계(CALIBRATION/COMP_*)에서도 드롭다운과 게이트가 일치하도록 한다
+    // (status-only면 통보된 결과가 후속 단계서 목록에서 사라지는 회귀 — Codex Gate2 P1).
+    // 비-EMPLOYEE는 status 기반(isResultPublishedForRole).
+    let resultCycles
+    if (user.role === 'EMPLOYEE') {
+      const reviews = await prisma.performanceReview.findMany({
+        where: { employeeId: user.employeeId, companyId, cycleId: { in: cycles.map((c) => c.id) } },
+        select: { cycleId: true, notifiedAt: true },
+      })
+      const notified = new Map(reviews.map((r) => [r.cycleId, r.notifiedAt != null]))
+      resultCycles = cycles.map((c) => ({
+        ...maskCycleForEmployee(c),
+        isResultPublished: notified.get(c.id) ?? false,
+      }))
+    } else {
+      resultCycles = cycles.map((c) => ({ ...c, isResultPublished: isResultPublishedForRole(c.status, user.role) }))
+    }
 
-    return apiPaginated(maskedCycles, buildPagination(page, limit, total))
+    return apiPaginated(resultCycles, buildPagination(page, limit, total))
   },
   perm(MODULE.PERFORMANCE, ACTION.VIEW),
 )
