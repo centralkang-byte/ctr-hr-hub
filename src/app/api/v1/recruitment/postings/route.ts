@@ -10,17 +10,9 @@ import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withAuth, withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
+import { POSTINGS_READ_ROLES, bucketStages } from '@/lib/recruitment/access'
 import type { SessionUser } from '@/types'
-
-// Route-local role allowlist for listing job postings.
-// Module-wide recruitment:read was too broad (dashboard/talent-pool/costs etc.);
-// list + detail views are opened to MANAGER explicitly.
-// EXECUTIVE intentionally excluded — seed only granted *_export, not recruitment:read.
-const POSTINGS_READ_ROLES: ReadonlyArray<SessionUser['role']> = [
-  ROLE.SUPER_ADMIN,
-  ROLE.HR_ADMIN,
-  ROLE.MANAGER,
-]
+import type { ApplicationStage } from '@/generated/prisma/enums'
 
 // ─── Validation Schemas ──────────────────────────────────
 
@@ -103,11 +95,33 @@ export const GET = withAuth(
       prisma.jobPosting.count({ where }),
     ])
 
-    // Convert Decimal fields to number
+    // Per-posting 현재 단계 분포(스냅샷). 페이지 단건 groupBy로 N+1 회피.
+    // companyFilter + deletedAt 관계 술어 재적용 = tenant 방어 심층화(이미 회사-범위인
+    // pageIds 에만 의존하지 않음) + race-safe.
+    const pageIds = items.map((item) => item.id)
+    const funnelByPosting = new Map<string, Partial<Record<ApplicationStage, number>>>()
+    if (pageIds.length > 0) {
+      const stageGroups = await prisma.application.groupBy({
+        by: ['postingId', 'stage'],
+        where: {
+          postingId: { in: pageIds },
+          posting: { ...companyFilter, deletedAt: null },
+        },
+        _count: { _all: true },
+      })
+      for (const g of stageGroups) {
+        const map = funnelByPosting.get(g.postingId) ?? {}
+        map[g.stage] = g._count._all
+        funnelByPosting.set(g.postingId, map)
+      }
+    }
+
+    // Convert Decimal fields to number + attach funnel
     const serialized = items.map((item) => ({
       ...item,
       salaryRangeMin: item.salaryRangeMin ? Number(item.salaryRangeMin) : null,
       salaryRangeMax: item.salaryRangeMax ? Number(item.salaryRangeMax) : null,
+      funnel: bucketStages(funnelByPosting.get(item.id) ?? {}),
     }))
 
     return apiPaginated(serialized, buildPagination(page, limit, total))
