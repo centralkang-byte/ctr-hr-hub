@@ -32,8 +32,11 @@ async function isReportingLineManager(
     userEmployeeId: string,
     targetEmployeeId: string,
 ): Promise<boolean> {
+    // effectiveDate<=now: 미래 발령(예약 조직개편, endDate:null)을 현재 발령으로
+    // 오인해 미래 매니저에게 즉시 권한을 주지 않도록 양측 모두 적용 (Codex Gate2 P1).
+    const now = new Date()
     const target = await prisma.employeeAssignment.findFirst({
-        where: { employeeId: targetEmployeeId, isPrimary: true, endDate: null },
+        where: { employeeId: targetEmployeeId, isPrimary: true, endDate: null, effectiveDate: { lte: now } },
         select: { position: { select: { reportsToPositionId: true } } },
     })
     const reportsToPositionId = target?.position?.reportsToPositionId
@@ -46,6 +49,7 @@ async function isReportingLineManager(
             employeeId: userEmployeeId,
             positionId: reportsToPositionId,
             endDate: null,
+            effectiveDate: { lte: now },
         },
         select: { id: true },
     })
