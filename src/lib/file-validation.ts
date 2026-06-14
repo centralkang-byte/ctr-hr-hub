@@ -113,6 +113,14 @@ export function validateFileSize(
   return { valid: true }
 }
 
+// ─── Get Size Limit ──────────────────────────────────────
+// Byte cap for a content type — used by presigned POST content-length-range
+// to enforce the limit at S3 ingestion (the presigned PUT path cannot).
+
+export function getFileSizeLimit(contentType: string): number {
+  return FILE_SIZE_LIMITS[contentType] ?? DEFAULT_SIZE_LIMIT
+}
+
 // ─── Validate Magic Bytes ────────────────────────────────
 
 export function validateMagicBytes(
