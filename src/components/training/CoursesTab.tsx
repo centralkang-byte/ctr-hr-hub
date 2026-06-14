@@ -6,13 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
+import { WdDrawer, WdField, WdRow } from '@/components/shared/WdDrawer'
 import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import type { PaginationInfo } from '@/types'
@@ -41,6 +35,8 @@ const CATEGORY_LABELS: Record<string, string> = {
   ONBOARDING_TRAINING: '온보딩',
   OTHER: '기타',
 }
+
+const INPUT_CLS = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus:outline-none'
 
 // ─── Component ───────────────────────────────────────────
 
@@ -236,91 +232,53 @@ export default function CoursesTab() {
         rowKey={(row) => row.id}
       />
 
-      {/* ─── Create/Edit Dialog ─── */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{editingCourse ? '교육과정 수정' : '교육과정 추가'}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">과정명 *</label>
-              <input
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
-                value={form.title}
-                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">설명</label>
-              <textarea
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
-                rows={3}
-                value={form.description}
-                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">분류 *</label>
-                <select
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm"
-                  value={form.category}
-                  onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                >
-                  {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
-                    <option key={k} value={k}>{v}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">교육시간 (h)</label>
-                <input
-                  type="number"
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm"
-                  value={form.durationHours}
-                  onChange={(e) => setForm((f) => ({ ...f, durationHours: e.target.value }))}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">교육 제공자</label>
-                <input
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm"
-                  value={form.provider}
-                  onChange={(e) => setForm((f) => ({ ...f, provider: e.target.value }))}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">외부 URL</label>
-                <input
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm"
-                  value={form.externalUrl}
-                  onChange={(e) => setForm((f) => ({ ...f, externalUrl: e.target.value }))}
-                  placeholder="https://..."
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="isMandatory"
-                className="w-4 h-4 rounded border-border text-primary"
-                checked={form.isMandatory}
-                onChange={(e) => setForm((f) => ({ ...f, isMandatory: e.target.checked }))}
-              />
-              <label htmlFor="isMandatory" className="text-sm text-foreground">필수 교육</label>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>취소</Button>
-            <Button onClick={handleSave} disabled={saving || !form.title}>
-              {saving ? '저장 중...' : editingCourse ? '수정' : '생성'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* ─── Create/Edit Drawer (입력 폼 표준 = WdDrawer, 우측 슬라이드) ─── */}
+      <WdDrawer
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        title={editingCourse ? '교육과정 수정' : '교육과정 추가'}
+        closeDisabled={saving}
+        secondary={{ label: '취소', onClick: () => setDialogOpen(false), disabled: saving }}
+        primary={{ label: saving ? '저장 중...' : editingCourse ? '수정' : '생성', onClick: handleSave, disabled: saving || !form.title }}
+      >
+        <WdField label="과정명" required htmlFor="course-title">
+          <input id="course-title" className={INPUT_CLS} value={form.title}
+            onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} />
+        </WdField>
+        <WdField label="설명" htmlFor="course-description">
+          <textarea id="course-description" className={`${INPUT_CLS} resize-none`} rows={3} value={form.description}
+            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
+        </WdField>
+        <WdRow>
+          <WdField label="분류" required htmlFor="course-category">
+            <select id="course-category" className={INPUT_CLS} value={form.category}
+              onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}>
+              {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
+                <option key={k} value={k}>{v}</option>
+              ))}
+            </select>
+          </WdField>
+          <WdField label="교육시간 (h)" htmlFor="course-duration">
+            <input id="course-duration" type="number" className={INPUT_CLS} value={form.durationHours}
+              onChange={(e) => setForm((f) => ({ ...f, durationHours: e.target.value }))} />
+          </WdField>
+        </WdRow>
+        <WdRow>
+          <WdField label="교육 제공자" htmlFor="course-provider">
+            <input id="course-provider" className={INPUT_CLS} value={form.provider}
+              onChange={(e) => setForm((f) => ({ ...f, provider: e.target.value }))} />
+          </WdField>
+          <WdField label="외부 URL" htmlFor="course-url">
+            <input id="course-url" className={INPUT_CLS} value={form.externalUrl}
+              onChange={(e) => setForm((f) => ({ ...f, externalUrl: e.target.value }))} placeholder="https://..." />
+          </WdField>
+        </WdRow>
+        <div className="flex items-center gap-2">
+          <input type="checkbox" id="isMandatory" className="h-4 w-4 rounded border-border text-primary"
+            checked={form.isMandatory} onChange={(e) => setForm((f) => ({ ...f, isMandatory: e.target.checked }))} />
+          <label htmlFor="isMandatory" className="text-sm text-foreground">필수 교육</label>
+        </div>
+      </WdDrawer>
     </div>
       <ConfirmDialog {...dialogProps} />
       </>

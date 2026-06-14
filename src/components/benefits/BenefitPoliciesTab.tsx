@@ -6,19 +6,15 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
+import { WdDrawer, WdField, WdRow } from '@/components/shared/WdDrawer'
 import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import type { PaginationInfo } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ───────────────────────────────────────────────
+
+const INPUT_CLS = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus:outline-none'
 
 type PolicyRow = {
   id: string
@@ -244,86 +240,53 @@ export default function BenefitPoliciesTab() {
         rowKey={(row) => row.id}
       />
 
-      {/* ─── Create/Edit Dialog ─── */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{editingPolicy ? '정책 수정' : '정책 추가'}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">정책명 *</label>
-              <input
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
-                value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">분류 *</label>
-                <select
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm"
-                  value={form.category}
-                  onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                >
-                  {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
-                    <option key={k} value={k}>{v}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">지급주기 *</label>
-                <select
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm"
-                  value={form.frequency}
-                  onChange={(e) => setForm((f) => ({ ...f, frequency: e.target.value }))}
-                >
-                  {Object.entries(FREQUENCY_LABELS).map(([k, v]) => (
-                    <option key={k} value={k}>{v}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">금액</label>
-                <input
-                  type="number"
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm"
-                  value={form.amount}
-                  onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
-                  placeholder="0"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">통화</label>
-                <input
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm"
-                  value={form.currency}
-                  onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="isTaxable"
-                className="w-4 h-4 rounded border-border text-primary"
-                checked={form.isTaxable}
-                onChange={(e) => setForm((f) => ({ ...f, isTaxable: e.target.checked }))}
-              />
-              <label htmlFor="isTaxable" className="text-sm text-foreground">과세 항목</label>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>취소</Button>
-            <Button onClick={handleSave} disabled={saving || !form.name}>
-              {saving ? '저장 중...' : editingPolicy ? '수정' : '생성'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* ─── Create/Edit Drawer (입력 폼 표준 = WdDrawer, 우측 슬라이드) ─── */}
+      <WdDrawer
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        title={editingPolicy ? '정책 수정' : '정책 추가'}
+        closeDisabled={saving}
+        secondary={{ label: '취소', onClick: () => setDialogOpen(false), disabled: saving }}
+        primary={{ label: saving ? '저장 중...' : editingPolicy ? '수정' : '생성', onClick: handleSave, disabled: saving || !form.name }}
+      >
+        <WdField label="정책명" required htmlFor="policy-name">
+          <input id="policy-name" className={INPUT_CLS} value={form.name}
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
+        </WdField>
+        <WdRow>
+          <WdField label="분류" required htmlFor="policy-category">
+            <select id="policy-category" className={INPUT_CLS} value={form.category}
+              onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}>
+              {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
+                <option key={k} value={k}>{v}</option>
+              ))}
+            </select>
+          </WdField>
+          <WdField label="지급주기" required htmlFor="policy-frequency">
+            <select id="policy-frequency" className={INPUT_CLS} value={form.frequency}
+              onChange={(e) => setForm((f) => ({ ...f, frequency: e.target.value }))}>
+              {Object.entries(FREQUENCY_LABELS).map(([k, v]) => (
+                <option key={k} value={k}>{v}</option>
+              ))}
+            </select>
+          </WdField>
+        </WdRow>
+        <WdRow>
+          <WdField label="금액" htmlFor="policy-amount">
+            <input id="policy-amount" type="number" className={INPUT_CLS} value={form.amount}
+              onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))} placeholder="0" />
+          </WdField>
+          <WdField label="통화" htmlFor="policy-currency">
+            <input id="policy-currency" className={INPUT_CLS} value={form.currency}
+              onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))} />
+          </WdField>
+        </WdRow>
+        <div className="flex items-center gap-2">
+          <input type="checkbox" id="isTaxable" className="h-4 w-4 rounded border-border text-primary"
+            checked={form.isTaxable} onChange={(e) => setForm((f) => ({ ...f, isTaxable: e.target.checked }))} />
+          <label htmlFor="isTaxable" className="text-sm text-foreground">과세 항목</label>
+        </div>
+      </WdDrawer>
     </div>
       <ConfirmDialog {...dialogProps} />
       </>
