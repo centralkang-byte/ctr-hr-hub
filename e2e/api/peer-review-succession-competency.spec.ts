@@ -4,11 +4,13 @@
 // Peer Review Nominations + EMPLOYEE Submit Flow
 // ═══════════════════════════════════════════════════════════
 
-import { test, expect } from '@playwright/test'
+import { test, expect, request as playwrightRequest } from '@playwright/test'
+import type { APIRequestContext } from '@playwright/test'
 import { ApiClient, assertOk, assertError } from '../helpers/api-client'
 import { authFile } from '../helpers/auth'
 import { resolveSeedData } from '../helpers/test-data'
-import { createTestCycle, advanceTo } from '../helpers/eval-fixtures'
+import { createTestCycle, advanceTo, cleanupTestCycle } from '../helpers/eval-fixtures'
+import { dbQuery, closeDb } from '../helpers/db'
 import * as f from '../helpers/p10-fixtures'
 
 // ═══════════════════════════════════════════════════════════
@@ -507,5 +509,134 @@ test.describe('Extras: HR_ADMIN', () => {
     const api = new ApiClient(request)
     const res = await f.listBenefitClaims(api, { view: 'all' })
     assertOk(res, 'all benefit claims')
+  })
+})
+
+// ═══════════════════════════════════════════════════════════
+// Section H: Peer Review Results — Viewer Authorization Gate
+// GET /api/v1/performance/peer-review/results/[employeeId]
+//
+// Semi-anonymous 동료평가 결과의 역할별 접근 게이트 회귀 커버리지.
+// reviewer 실명은 현재 담당 매니저·HR·임원에게만 노출되어야 하고,
+// 본인은 결과 공개(CLOSED) 이후에만, 무관한 직원/전임 매니저는 차단되어야 한다.
+//   1. 무관한 EMPLOYEE                       → 403 (IDOR fallback)
+//   2. 본인 EMPLOYEE, 미공개(CALIBRATION)     → 400 (publication gate)
+//   3. 전임 매니저(과거 1:1만, 현재 비담당)    → 403 (활성 관계 한정 — 이번 수정 대상)
+//   4. 현재 담당(보고라인) 매니저              → 200
+//   5. HR_ADMIN                               → 200
+// ═══════════════════════════════════════════════════════════
+
+test.describe('Peer Review Results: viewer authorization gate', () => {
+  test.describe.configure({ mode: 'serial' })
+
+  const BASE = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3002'
+  const resultsPath = (id: string) => `/api/v1/performance/peer-review/results/${id}`
+
+  let cycleId = ''
+  let employeeId = ''       // 이민준 (EMPLOYEE_A) — 결과 조회 대상
+  let staleOneOnOneId = ''  // 전임 매니저(김서연→이민준) 과거 1:1 픽스처 id
+
+  // storageState 기반 컨텍스트 (global-setup이 사전 발급한 role 세션)
+  async function roleContext(role: Parameters<typeof authFile>[0]): Promise<APIRequestContext> {
+    return playwrightRequest.newContext({ baseURL: BASE, storageState: authFile(role) })
+  }
+
+  // 임의 이메일 dev 로그인 — authFile에 없는 manager2(=김서연) 세션 확보용.
+  // dev/test credentials provider는 이메일-only (csrf → callback/credentials).
+  async function loginContext(email: string): Promise<APIRequestContext> {
+    const ctx = await playwrightRequest.newContext({ baseURL: BASE })
+    const csrf = (await (await ctx.get('/api/auth/csrf')).json()) as { csrfToken: string }
+    await ctx.post('/api/auth/callback/credentials', {
+      form: { email, csrfToken: csrf.csrfToken, callbackUrl: '/home', json: 'true' },
+    })
+    return ctx
+  }
+
+  test.beforeAll(async () => {
+    const hr = await roleContext('HR_ADMIN')
+    const seed = await resolveSeedData(hr)
+    employeeId = seed.employeeId
+    expect(employeeId, 'employeeId(이민준) must resolve from seed').toBeTruthy()
+
+    // CALIBRATION(미공개)까지 진행하려면 H2 주기 필요 (DRAFT→…→CLOSED→CALIBRATION).
+    cycleId = await createTestCycle(hr, {
+      name: `E2E PeerResultsAuth ${Date.now()}`,
+      year: 2096,
+      half: 'H2',
+    })
+    await advanceTo(hr, cycleId, 'CALIBRATION')
+    await hr.dispose()
+
+    // 전임 매니저 시나리오: 김서연(manager2)→이민준 과거 1:1 1건을 DB에 직접 INSERT.
+    // cycle_id=NULL → 이 주기와 무관(=비활성 관계). 비담당 매니저는 API로 1:1을
+    // 생성할 수 없으므로(권한 차단) 픽스처를 직접 심는다 (helpers/db.ts).
+    const rows = await dbQuery<{ id: string }>(
+      `INSERT INTO one_on_ones (id, employee_id, manager_id, scheduled_at, status, company_id)
+       VALUES (
+         gen_random_uuid()::text,
+         (SELECT id FROM employees WHERE email = 'employee-a@ctr.co.kr' LIMIT 1),
+         (SELECT id FROM employees WHERE email = 'manager2@ctr.co.kr' LIMIT 1),
+         now() - interval '400 days',
+         'COMPLETED'::"OneOnOneStatus",
+         (SELECT company_id FROM employee_assignments
+            WHERE employee_id = (SELECT id FROM employees WHERE email = 'manager2@ctr.co.kr' LIMIT 1)
+              AND is_primary = true AND end_date IS NULL
+            LIMIT 1)
+       )
+       RETURNING id`,
+    )
+    staleOneOnOneId = rows[0]?.id ?? ''
+    expect(staleOneOnOneId, 'stale 1:1 fixture(김서연→이민준) must be created').toBeTruthy()
+  })
+
+  test.afterAll(async () => {
+    if (staleOneOnOneId) {
+      await dbQuery('DELETE FROM one_on_ones WHERE id = $1', [staleOneOnOneId])
+    }
+    if (cycleId) {
+      const hr = await roleContext('HR_ADMIN')
+      await cleanupTestCycle(hr, cycleId).catch(() => {})
+      await hr.dispose()
+    }
+    await closeDb()
+  })
+
+  test('1. unrelated EMPLOYEE → 403 (IDOR fallback)', async () => {
+    const ctx = await roleContext('EMPLOYEE_C') // 송현우 — 이민준과 무관
+    const res = await new ApiClient(ctx).get(resultsPath(employeeId), { cycleId })
+    assertError(res, 403, 'unrelated employee must be forbidden')
+    await ctx.dispose()
+  })
+
+  test('2. self EMPLOYEE on unpublished CALIBRATION cycle → 400', async () => {
+    const ctx = await roleContext('EMPLOYEE') // 이민준 본인
+    const res = await new ApiClient(ctx).get(resultsPath(employeeId), { cycleId })
+    assertError(res, 400, 'self view blocked until result publication')
+    await ctx.dispose()
+  })
+
+  test('3. former manager (past 1:1 only, no current relationship) → 403', async () => {
+    const ctx = await loginContext('manager2@ctr.co.kr') // 김서연 — 이민준의 전임 매니저
+    // dev 세션 성립 확인 — 로그인 실패 시 401과 403을 혼동하지 않도록 분리 검증.
+    const session = (await (await ctx.get('/api/auth/session')).json()) as { user?: unknown }
+    expect(session?.user, 'manager2 dev session must be established').toBeTruthy()
+
+    const res = await new ApiClient(ctx).get(resultsPath(employeeId), { cycleId })
+    assertError(res, 403, 'former manager must not view peer-review results')
+    await ctx.dispose()
+  })
+
+  test('4. current line manager → 200', async () => {
+    const ctx = await roleContext('MANAGER') // 박준혁 — 이민준의 현재 담당 매니저
+    const res = await new ApiClient(ctx).get(resultsPath(employeeId), { cycleId })
+    assertOk(res, 'current line manager can view results')
+    await ctx.dispose()
+  })
+
+  test('5. HR_ADMIN → 200', async () => {
+    const ctx = await roleContext('HR_ADMIN')
+    const res = await new ApiClient(ctx).get(resultsPath(employeeId), { cycleId })
+    assertOk(res, 'HR_ADMIN can view results')
+    await ctx.dispose()
   })
 })

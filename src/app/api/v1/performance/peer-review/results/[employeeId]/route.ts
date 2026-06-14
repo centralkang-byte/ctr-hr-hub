@@ -15,6 +15,7 @@ import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { determineViewerRole, maskPeerReviews, isResultPublishedForRole } from '@/lib/performance/data-masking'
+import { isDirectManager } from '@/lib/auth/manager-check'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
@@ -43,17 +44,28 @@ export const GET = withPermission(
 
             if (!cycle) throw badRequest('사이클을 찾을 수 없습니다.')
 
-            // Determine viewer role
-            const isManager = await prisma.oneOnOne.findFirst({
-                where: { managerId: user.employeeId, employeeId },
-                select: { id: true },
-            })
+            // 현재 담당 매니저 판정 — 전임 매니저 영구 권한 결함 차단.
+            // 과거 1:1 기록 1건 존재만으로 MANAGER 뷰어가 되던 문제(cycle·현재관계·상태 조건 부재)를
+            // "현재 담당" 2-경로(OR)로 한정한다:
+            //   (1) 활성 보고라인 — Position.reportsToPositionId(endDate:null) 기준 직속 매니저.
+            //       isDirectManager는 offboarding 격리와 동일한 manager-of-record SSOT.
+            //   (2) 해당 cycle 스코프 CFR — 이번 평가 주기에 연결된 1:1(OneOnOne.cycleId === cycleId).
+            //       OneOnOne엔 endDate/active 개념이 없어 cycleId로 시간 범위를 한정(과거 주기·무관 주기 1:1 불인정).
+            // 둘 다 불충족인 전임 매니저는 EMPLOYEE fallback → 아래 IDOR 게이트에서 403.
+            // HR_ADMIN/EXECUTIVE/SUPER_ADMIN은 determineViewerRole로 우회(피플세션·캘리브레이션 감독 경로 보존).
+            const [isReportingLineManager, cycleScopedCfrCount] = await Promise.all([
+                isDirectManager(user.employeeId, employeeId),
+                prisma.oneOnOne.count({
+                    where: { managerId: user.employeeId, employeeId, cycleId },
+                }),
+            ])
+            const isManager = isReportingLineManager || cycleScopedCfrCount > 0
 
             const viewerRole = determineViewerRole(
                 user.employeeId,
                 employeeId,
                 user.role,
-                !!isManager,
+                isManager,
             )
 
             // 권한 게이트(IDOR 방지) — 본인·담당 매니저·HR/임원만 조회 가능.
