@@ -26,6 +26,7 @@ import {
   getMonthlyAttendance,
   getAdminAttendance,
   getAdminWeekly,
+  getAdminRoster,
   getTeamAttendance,
   getAttendanceDetail,
   correctAttendance,
@@ -442,6 +443,116 @@ test.describe('Attendance Core API', () => {
       const api = new ApiClient(request)
       const res = await getAdminWeekly(api)
       assertError(res, 403, 'employee weekly denied')
+    })
+  })
+
+  // ─── Roster (today list) ─────────────────────────────────────
+  test.describe('HR_ADMIN: Today roster', () => {
+    test.use({ storageState: authFile('HR_ADMIN') })
+
+    test('GET /attendance/admin/roster returns date + rows + nextCursor', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminRoster(api)
+      assertOk(res, 'admin roster')
+      const d = res.data as { date: string; rows: unknown[]; nextCursor: string | null }
+      expect(d.date).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+      expect(Array.isArray(d.rows)).toBe(true)
+      expect(d.nextCursor === null || typeof d.nextCursor === 'string').toBe(true)
+    })
+
+    test('row exposes attendance|null + leaves[] (multi-fact)', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminRoster(api, { limit: '5' })
+      assertOk(res, 'roster rows')
+      const d = res.data as {
+        rows: Array<{ employeeId: string; name: string; attendance: unknown; leaves: unknown[] }>
+      }
+      for (const row of d.rows) {
+        expect(typeof row.employeeId).toBe('string')
+        expect(row.attendance === null || typeof row.attendance === 'object').toBe(true)
+        expect(Array.isArray(row.leaves)).toBe(true) // 단일 객체 아님 — AM/PM 반차 다중 표현
+      }
+    })
+
+    test('cursor pagination advances without overlap', async ({ request }) => {
+      const api = new ApiClient(request)
+      const p1 = await getAdminRoster(api, { limit: '1' })
+      assertOk(p1, 'roster page1')
+      const d1 = p1.data as { rows: Array<{ employeeId: string }>; nextCursor: string | null }
+      if (d1.nextCursor && d1.rows[0]) {
+        const p2 = await getAdminRoster(api, { limit: '1', cursor: d1.nextCursor })
+        assertOk(p2, 'roster page2')
+        const d2 = p2.data as { rows: Array<{ employeeId: string }> }
+        if (d2.rows[0]) expect(d2.rows[0].employeeId).not.toBe(d1.rows[0].employeeId)
+      }
+    })
+
+    test('?date=invalid → 400', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminRoster(api, { date: '06-14-2026' })
+      assertError(res, 400, 'invalid date')
+    })
+
+    test('?date=2026-02-31 (non-calendar) → 400', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminRoster(api, { date: '2026-02-31' })
+      assertError(res, 400, 'non-calendar date')
+    })
+
+    test('?date=future → 400', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminRoster(api, { date: '2099-01-01' })
+      assertError(res, 400, 'future date rejected')
+    })
+
+    test('?cursor=non-uuid → 400 (no 500)', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminRoster(api, { cursor: 'not-a-uuid' })
+      assertError(res, 400, 'invalid cursor')
+    })
+
+    test('?cursor=unknown/foreign employee UUID → 400 (ownership gate)', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminRoster(api, { cursor: '00000000-0000-4000-8000-000000000000' })
+      assertError(res, 400, 'cursor not in company set')
+    })
+
+    test('HR passing another companyId is ignored (resolveCompanyId forces own) → 200', async ({ request }) => {
+      const api = new ApiClient(request)
+      // 비-SUPER는 companyId 파라미터 무시 — 자기 법인 roster 반환(타 법인 누출 없음)
+      const res = await getAdminRoster(api, { companyId: '00000000-0000-4000-8000-000000000000' })
+      assertOk(res, 'hr foreign companyId ignored')
+    })
+  })
+
+  test.describe('SUPER_ADMIN: Roster cross-company', () => {
+    test.use({ storageState: authFile('SUPER_ADMIN') })
+
+    test('GET /attendance/admin/roster?companyId returns 200', async ({ request }) => {
+      const api = new ApiClient(request)
+      const seed = await resolveSeedData(request)
+      const res = await getAdminRoster(api, { companyId: seed.companyId })
+      assertOk(res, 'super roster cross-company')
+    })
+  })
+
+  test.describe('MANAGER: Roster denied', () => {
+    test.use({ storageState: authFile('MANAGER') })
+
+    test('GET /attendance/admin/roster → 403', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminRoster(api)
+      assertError(res, 403, 'manager roster denied')
+    })
+  })
+
+  test.describe('EMPLOYEE: Roster denied', () => {
+    test.use({ storageState: authFile('EMPLOYEE') })
+
+    test('GET /attendance/admin/roster → 403', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await getAdminRoster(api)
+      assertError(res, 403, 'employee roster denied')
     })
   })
 })

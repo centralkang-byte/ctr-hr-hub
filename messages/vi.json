@@ -986,6 +986,14 @@
     "workDate": "Work Date",
     "workHours": "Work Hours",
     "workType": "Work Type",
+    "roster": {
+      "title": "Danh sách chấm công",
+      "countToday": "{count} nhân viên · Hôm nay",
+      "notClockedIn": "Chưa chấm công",
+      "halfDay": "Nửa ngày",
+      "empty": "Không có nhân viên",
+      "loadFailed": "Không tải được danh sách"
+    },
     "weekly": {
       "todayTab": "Hôm nay",
       "weekTab": "Lưới tuần",

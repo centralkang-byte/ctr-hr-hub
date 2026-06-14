@@ -33,6 +33,7 @@ import type { SessionUser } from '@/types'
 import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 import { WeeklyAttendanceGrid } from './WeeklyAttendanceGrid'
 import { AttendanceTrendsTab } from './AttendanceTrendsTab'
+import { TodayRosterList } from './TodayRosterList'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -404,6 +405,9 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
         onRowClick={(row) => handleRowClick(row as unknown as AnomalyRecord)}
         emptyMessage={tc('noData')}
       />
+
+      {/* 전 직원 명단 (이상치 테이블과 보완 — 전원 + 당일 근태 + 휴가 오버레이) */}
+      <TodayRosterList />
 
         </TabsContent>
 

@@ -986,6 +986,14 @@
     "workDate": "Work Date",
     "workHours": "Work Hours",
     "workType": "Work Type",
+    "roster": {
+      "title": "员工考勤",
+      "countToday": "{count}人 · 今天",
+      "notClockedIn": "未打卡",
+      "halfDay": "半天",
+      "empty": "暂无员工",
+      "loadFailed": "无法加载考勤名单"
+    },
     "weekly": {
       "todayTab": "今日",
       "weekTab": "周网格",

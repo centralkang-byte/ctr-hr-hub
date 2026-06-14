@@ -986,6 +986,14 @@
     "workDate": "Work Date",
     "workHours": "Work Hours",
     "workType": "Work Type",
+    "roster": {
+      "title": "Roster",
+      "countToday": "{count} employees · Today",
+      "notClockedIn": "Not clocked in",
+      "halfDay": "Half day",
+      "empty": "No employees",
+      "loadFailed": "Failed to load roster"
+    },
     "weekly": {
       "todayTab": "Today",
       "weekTab": "Weekly grid",

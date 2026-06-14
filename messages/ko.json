@@ -1094,6 +1094,14 @@
     "blockedCount": "차단: {count}",
     "hoursPerWeek": "{hours}h / 주",
     "release": "해제",
+    "roster": {
+      "title": "직원별 근태",
+      "countToday": "{count}명 · 오늘",
+      "notClockedIn": "미출근",
+      "halfDay": "반차",
+      "empty": "직원이 없습니다",
+      "loadFailed": "근태 명단을 불러오지 못했습니다"
+    },
     "weekly": {
       "todayTab": "오늘 현황",
       "weekTab": "주간 그리드",

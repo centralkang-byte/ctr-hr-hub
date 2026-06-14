@@ -986,6 +986,14 @@
     "workDate": "Work Date",
     "workHours": "Work Hours",
     "workType": "Work Type",
+    "roster": {
+      "title": "Lista de asistencia",
+      "countToday": "{count} empleados · Hoy",
+      "notClockedIn": "Sin fichar",
+      "halfDay": "Medio día",
+      "empty": "Sin empleados",
+      "loadFailed": "No se pudo cargar la lista"
+    },
     "weekly": {
       "todayTab": "Hoy",
       "weekTab": "Cuadrícula semanal",
