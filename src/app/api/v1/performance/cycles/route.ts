@@ -12,7 +12,7 @@ import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import type { CycleStatus, CycleHalf } from '@/generated/prisma/client'
-import { maskCycleForEmployee, isResultPublishedForRole } from '@/lib/performance/data-masking'
+import { maskCycleForEmployee } from '@/lib/performance/data-masking'
 
 // ─── Schemas ──────────────────────────────────────────────
 
@@ -72,25 +72,19 @@ export const GET = withPermission(
       prisma.performanceCycle.count({ where }),
     ])
 
-    // EMPLOYEE: 결과 공개 = 본인 PerformanceReview.notifiedAt(단조) — my-result·peer-review/results
-    // 서버 게이트와 동일 신호. status 마스킹(COMP_* → CLOSED 표시)은 유지하되 isResultPublished는
-    // notifiedAt으로 판정해 통보 후 후속 단계(CALIBRATION/COMP_*)에서도 드롭다운과 게이트가 일치하도록 한다
-    // (status-only면 통보된 결과가 후속 단계서 목록에서 사라지는 회귀 — Codex Gate2 P1).
-    // 비-EMPLOYEE는 status 기반(isResultPublishedForRole).
-    let resultCycles
-    if (user.role === 'EMPLOYEE') {
-      const reviews = await prisma.performanceReview.findMany({
-        where: { employeeId: user.employeeId, companyId, cycleId: { in: cycles.map((c) => c.id) } },
-        select: { cycleId: true, notifiedAt: true },
-      })
-      const notified = new Map(reviews.map((r) => [r.cycleId, r.notifiedAt != null]))
-      resultCycles = cycles.map((c) => ({
-        ...maskCycleForEmployee(c),
-        isResultPublished: notified.get(c.id) ?? false,
-      }))
-    } else {
-      resultCycles = cycles.map((c) => ({ ...c, isResultPublished: isResultPublishedForRole(c.status, user.role) }))
-    }
+    // 본인 결과 공개 = 본인 PerformanceReview.notifiedAt(단조) — 역할 무관(MANAGER/HR/EXEC도 my-result로
+    // 본인 결과 조회), my-result·peer-review/results 서버 게이트와 동일 신호. status-only면 통보된 결과가
+    // 후속 단계(CALIBRATION/COMP_*)서 드롭다운에서 사라지는 회귀 발생(Codex Gate2 P1).
+    // EMPLOYEE에 한해 status 마스킹(COMP_* → CLOSED 표시) 추가 적용.
+    const reviews = await prisma.performanceReview.findMany({
+      where: { employeeId: user.employeeId, companyId, cycleId: { in: cycles.map((c) => c.id) } },
+      select: { cycleId: true, notifiedAt: true },
+    })
+    const notified = new Map(reviews.map((r) => [r.cycleId, r.notifiedAt != null]))
+    const resultCycles = cycles.map((c) => {
+      const base = user.role === 'EMPLOYEE' ? maskCycleForEmployee(c) : c
+      return { ...base, isResultPublished: notified.get(c.id) ?? false }
+    })
 
     return apiPaginated(resultCycles, buildPagination(page, limit, total))
   },
