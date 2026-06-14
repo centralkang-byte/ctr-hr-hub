@@ -985,7 +985,18 @@
     "workCompleted": "Work Completed",
     "workDate": "Work Date",
     "workHours": "Work Hours",
-    "workType": "Work Type"
+    "workType": "Work Type",
+    "weekly": {
+      "todayTab": "今日",
+      "weekTab": "周网格",
+      "prevWeek": "上周",
+      "thisWeek": "本周",
+      "nextWeek": "下周",
+      "weekTotal": "周合计",
+      "loadMore": "加载更多",
+      "member": "成员",
+      "pageScopedNote": "仅当前页"
+    }
   },
   "auth": {
     "brandSlogan": "Central to your safe mobility",

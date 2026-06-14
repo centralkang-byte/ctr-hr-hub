@@ -985,7 +985,18 @@
     "workCompleted": "Work Completed",
     "workDate": "Work Date",
     "workHours": "Work Hours",
-    "workType": "Work Type"
+    "workType": "Work Type",
+    "weekly": {
+      "todayTab": "Hôm nay",
+      "weekTab": "Lưới tuần",
+      "prevWeek": "Tuần trước",
+      "thisWeek": "Tuần này",
+      "nextWeek": "Tuần sau",
+      "weekTotal": "Tổng tuần",
+      "loadMore": "Tải thêm",
+      "member": "Thành viên",
+      "pageScopedNote": "Chỉ trang hiện tại"
+    }
   },
   "auth": {
     "brandSlogan": "Central to your safe mobility",
