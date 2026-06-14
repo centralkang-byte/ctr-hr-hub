@@ -4377,7 +4377,10 @@
         "career": "Nghề nghiệp & Lịch sử",
         "compensation": "Lương thưởng",
         "documents": "Tài liệu",
-        "overview": "Tổng quan"
+        "overview": "Tổng quan",
+        "attendance": "Chấm công",
+        "leave": "Nghỉ phép",
+        "performance": "Hiệu suất"
       },
       "visibility": {
         "manager": "Chỉ quản lý",
@@ -4395,7 +4398,36 @@
       },
       "visibilitySettings": "Cài đặt hiển thị",
       "selfService": "Tự phục vụ",
-      "tabsLabel": "Mục hồ sơ"
+      "tabsLabel": "Mục hồ sơ",
+      "summary": {
+        "loadError": "Không tải được",
+        "retry": "Thử lại",
+        "viewDetail": "Xem chi tiết"
+      },
+      "attendanceTab": {
+        "thisMonth": "Tính đến {month}",
+        "workedDays": "Ngày làm việc",
+        "workHours": "Giờ làm",
+        "overtime": "Tăng ca",
+        "daysUnit": "ngày",
+        "hoursUnit": "giờ",
+        "empty": "Chưa có dữ liệu chấm công tháng này"
+      },
+      "leaveTab": {
+        "annualRemaining": "Phép năm còn lại",
+        "used": "Đã dùng",
+        "usageRate": "Tỷ lệ dùng",
+        "ofTotal": "trên tổng {total}",
+        "byType": "Số dư theo loại phép",
+        "daysUnit": "ngày",
+        "empty": "Chưa có số dư nghỉ phép"
+      },
+      "performanceTab": {
+        "latestGrade": "Hạng gần nhất",
+        "totalScore": "Điểm tổng",
+        "mboScore": "Điểm MBO",
+        "empty": "Chưa có kết quả được công bố"
+      }
     },
     "profileDesc": "Xem and edit your personal information.",
     "profileTitle": "My Profile",

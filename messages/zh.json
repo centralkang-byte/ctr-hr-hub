@@ -4377,7 +4377,10 @@
         "career": "职务与经历",
         "compensation": "薪酬",
         "documents": "文档",
-        "overview": "概览"
+        "overview": "概览",
+        "attendance": "考勤",
+        "leave": "休假",
+        "performance": "绩效"
       },
       "visibility": {
         "manager": "仅经理",
@@ -4395,7 +4398,36 @@
       },
       "visibilitySettings": "可见性设置",
       "selfService": "自助服务",
-      "tabsLabel": "个人资料"
+      "tabsLabel": "个人资料",
+      "summary": {
+        "loadError": "加载失败",
+        "retry": "重试",
+        "viewDetail": "查看详情"
+      },
+      "attendanceTab": {
+        "thisMonth": "截至 {month}",
+        "workedDays": "出勤天数",
+        "workHours": "工作时长",
+        "overtime": "加班",
+        "daysUnit": "天",
+        "hoursUnit": "小时",
+        "empty": "本月暂无考勤记录"
+      },
+      "leaveTab": {
+        "annualRemaining": "剩余年假",
+        "used": "已用",
+        "usageRate": "使用率",
+        "ofTotal": "共 {total} 天",
+        "byType": "各类休假余额",
+        "daysUnit": "天",
+        "empty": "暂无休假余额"
+      },
+      "performanceTab": {
+        "latestGrade": "最近评级",
+        "totalScore": "综合得分",
+        "mboScore": "MBO 得分",
+        "empty": "暂无已公布的评估结果"
+      }
     },
     "profileDesc": "查看 and edit your personal information.",
     "profileTitle": "My Profile",
