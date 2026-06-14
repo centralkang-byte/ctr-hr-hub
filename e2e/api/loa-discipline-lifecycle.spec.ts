@@ -260,13 +260,21 @@ test.describe('LOA Records: Reject + Cancel Paths', () => {
 // LOA RBAC: EMPLOYEE Blocked
 // ═══════════════════════════════════════════════════════════
 
-test.describe('LOA RBAC: EMPLOYEE Blocked', () => {
+test.describe('LOA RBAC: EMPLOYEE (본인 조회 허용 · 대리·승인 차단)', () => {
   test.use({ storageState: authFile('EMPLOYEE') })
 
-  test('GET /leave-of-absence → 403', async ({ request }) => {
+  // PR-5: 휴직 조회는 leave:read 로 완화되고, 비관리자는 본인(employeeId=self)
+  // 으로 강제 스코프된다(route.ts GET). EMPLOYEE 는 200 으로 "본인 기록만" 조회
+  // 가능해야 하며, 타인 기록이 섞여 나오면 안 된다(누출 차단).
+  test('GET /leave-of-absence → 200, 본인 기록만 (self-scoped)', async ({ request }) => {
     const api = new ApiClient(request)
+    const { employeeId: selfId } = await resolveSeedData(request)
     const res = await f.listLoaRecords(api)
-    assertError(res, 403, 'EMPLOYEE LOA list')
+    assertOk(res, 'EMPLOYEE LOA list (self-scoped)')
+    const rows = (res.data as Array<{ employeeId?: string }>) ?? []
+    for (const row of rows) {
+      expect(row.employeeId, 'EMPLOYEE 휴직 조회는 본인 기록만 반환해야 함').toBe(selfId)
+    }
   })
 
   test('POST /leave-of-absence → 403', async ({ request }) => {

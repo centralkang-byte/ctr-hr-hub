@@ -19,11 +19,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { FileUpload } from '@/components/shared/FileUpload'
 import { TABLE_STYLES } from '@/lib/styles'
 import { formatDateLocale } from '@/lib/format/date'
 import { toast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 import { ROLE } from '@/lib/constants'
+import { LOA_PROOF_ACCEPT } from '@/lib/upload/proof-upload'
 import type { SessionUser } from '@/types'
 
 interface Props { user: SessionUser }
@@ -84,6 +86,7 @@ export function LoaClient({ user }: Props) {
   const [requestOpen, setRequestOpen] = useState(false)
   const [requestForm, setRequestForm] = useState({
     employeeId: '', typeId: '', startDate: '', expectedEndDate: '', reason: '',
+    proofUploadId: '', proofFilename: '',
   })
   const [requestLoading, setRequestLoading] = useState(false)
 
@@ -155,6 +158,7 @@ export function LoaClient({ user }: Props) {
         startDate: requestForm.startDate,
         expectedEndDate: requestForm.expectedEndDate || undefined,
         reason: requestForm.reason || undefined,
+        proofUploadId: requestForm.proofUploadId || undefined,
       }
       const res = await fetch('/api/v1/leave-of-absence', {
         method: 'POST',
@@ -164,7 +168,7 @@ export function LoaClient({ user }: Props) {
       if (res.ok) {
         toast({ title: t('toast.requestSubmitted') })
         setRequestOpen(false)
-        setRequestForm({ employeeId: '', typeId: '', startDate: '', expectedEndDate: '', reason: '' })
+        setRequestForm({ employeeId: '', typeId: '', startDate: '', expectedEndDate: '', reason: '', proofUploadId: '', proofFilename: '' })
         fetchRecords()
       } else {
         const err = await res.json()
@@ -509,15 +513,30 @@ export function LoaClient({ user }: Props) {
               </Select>
               {(() => {
                 const selected = loaTypes.find(lt => lt.id === requestForm.typeId)
-                if (selected?.requiresProof) {
-                  return (
-                    <p className="mt-1 text-xs text-orange-600 flex items-center gap-1">
+                if (!selected?.requiresProof) return null
+                return (
+                  <div className="mt-2 space-y-2">
+                    <p className="text-xs text-ctr-warning flex items-center gap-1">
                       <FileText className="h-3 w-3" />
                       {t('dialog.request.proofRequired')}: {selected.proofDescription ?? t('dialog.request.relatedDocs')}
                     </p>
-                  )
-                }
-                return null
+                    <FileUpload
+                      presignEndpoint="/api/v1/leave-of-absence/proof/presigned"
+                      accept={LOA_PROOF_ACCEPT}
+                      maxSizeMB={20}
+                      value={requestForm.proofFilename || null}
+                      onUploaded={(uploadId, filename) =>
+                        setRequestForm(f => ({ ...f, proofUploadId: uploadId, proofFilename: filename }))
+                      }
+                      onRemove={() => setRequestForm(f => ({ ...f, proofUploadId: '', proofFilename: '' }))}
+                      label={t('dialog.request.attachProof')}
+                      hint={t('dialog.request.proofHint')}
+                      uploadingLabel={t('dialog.request.uploading')}
+                      changeLabel={t('dialog.request.changeFile')}
+                      removeLabel={t('dialog.request.removeFile')}
+                    />
+                  </div>
+                )
               })()}
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -540,7 +559,14 @@ export function LoaClient({ user }: Props) {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setRequestOpen(false)}>{t('button.cancel')}</Button>
-            <Button onClick={handleRequest} disabled={requestLoading}>
+            <Button
+              onClick={handleRequest}
+              disabled={
+                requestLoading ||
+                (!!loaTypes.find(lt => lt.id === requestForm.typeId)?.requiresProof &&
+                  !requestForm.proofUploadId)
+              }
+            >
               {requestLoading ? t('button.processing') : t('button.submit')}
             </Button>
           </DialogFooter>

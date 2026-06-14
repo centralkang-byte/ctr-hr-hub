@@ -6746,6 +6746,33 @@ model LeaveOfAbsence {
 }
 
 // ================================================================
+// File upload record — presigned 발급 시 PENDING 생성, 도메인 엔티티(휴직 증빙 등)
+// 연결 시 단일 소비(CONSUMED). 멀티테넌트 스코프는 항상 세션(user)에서 강제하며
+// companyId/uploaderEmployeeId 는 soft FK (관계 미설정 — 중앙 모델 비침습).
+// ================================================================
+model FileUpload {
+  id                 String    @id @default(uuid())
+  companyId          String    @map("company_id")
+  uploaderEmployeeId String    @map("uploader_employee_id")
+  purpose            String // 'LOA_PROOF' (향후: BENEFIT_CLAIM, YEAR_END 등)
+  s3Key              String    @map("s3_key")
+  filename           String
+  contentType        String    @map("content_type")
+  declaredSize       Int?      @map("declared_size") // presign 시 클라이언트 신고 크기 (참고용)
+  actualSize         Int?      @map("actual_size") // 예약 — 추후 업로드 크기 감사용 (현재 미사용)
+  status             String    @default("PENDING") // PENDING → CONSUMED | EXPIRED
+  expiresAt          DateTime  @map("expires_at")
+  consumedAt         DateTime? @map("consumed_at")
+  consumedByType     String?   @map("consumed_by_type") // 'LEAVE_OF_ABSENCE'
+  consumedById       String?   @map("consumed_by_id")
+  createdAt          DateTime  @default(now()) @map("created_at")
+
+  @@index([companyId, uploaderEmployeeId, status])
+  @@index([status, expiresAt])
+  @@map("file_uploads")
+}
+
+// ================================================================
 // Stage C: Resident Registration Number (주민등록번호) — 1:1 분리 모델
 // Employee 의 일반 쿼리(`include` 미명시)에 노출되지 않도록 별도 테이블.
 // src/lib/pii/rrn 헬퍼로 암호화 후 numberEncrypted 에 저장, 마스킹은 numberMasked.
