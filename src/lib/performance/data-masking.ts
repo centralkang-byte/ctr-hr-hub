@@ -87,7 +87,7 @@ export interface PeerReviewForMasking {
  *
  * GEMINI FIX #3: Prevents reviewer identification by position/timing.
  */
-export function deterministicShuffle<T>(arr: T[], seed: string): T[] {
+function deterministicShuffle<T>(arr: T[], seed: string): T[] {
     const result = [...arr]
     let hash = 0
     for (let i = 0; i < seed.length; i++) {
