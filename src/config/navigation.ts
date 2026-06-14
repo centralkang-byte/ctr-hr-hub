@@ -221,31 +221,16 @@ export const NAVIGATION: NavSection[] = [
         conditional: 'year-end',
       },
       // ── 성장 ──────────────────────────────────────────
+      // 평가/성장 허브 (프로토 PerfGrowthWrapper): 목표·분기 리뷰·자기평가 통합.
+      // 분기 리뷰(/performance/my-quarterly-review)·스킬 자기평가(/my/skills)는 허브 탭으로 데모션 —
+      // 루트는 존속(직접 URL·딥링크 유효), rail 에서만 내림.
       {
         key: 'my-goals',
-        labelKey: 'nav.mySpace.goals',
-        label: '목표/평가',
-        href: '/performance',
+        labelKey: 'nav.mySpace.growthHub',
+        label: '평가/성장',
+        href: '/performance/growth',
         icon: Target,
         module: MODULE.PERFORMANCE,
-        subGroup: 'growth',
-      },
-      {
-        key: 'my-quarterly-review',
-        labelKey: 'nav.mySpace.quarterlyReview',
-        label: '분기 리뷰',
-        href: '/performance/my-quarterly-review',
-        icon: ClipboardCheck,
-        module: MODULE.PERFORMANCE,
-        subGroup: 'growth',
-      },
-      {
-        key: 'my-skills',
-        labelKey: 'nav.mySpace.skills',
-        label: '스킬 자기평가',
-        href: '/my/skills',
-        icon: Sparkles,
-        module: MODULE.EMPLOYEES,
         subGroup: 'growth',
       },
       {
