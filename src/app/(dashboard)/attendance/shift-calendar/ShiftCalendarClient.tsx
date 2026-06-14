@@ -305,21 +305,21 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
 
       {/* ─── KPI Cards ─── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-card border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-2xl p-6">
           <p className="text-xs text-muted-foreground font-medium mb-2">{t('assignedCount')}</p>
           <p className={TYPOGRAPHY.stat}><AnimatedNumber value={totalEmployees} /></p>
         </div>
-        <div className="bg-card border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-2xl p-6">
           <p className="text-xs text-muted-foreground font-medium mb-2">{t('scheduledCount')}</p>
           <p className="text-3xl font-bold tabular-nums text-primary"><AnimatedNumber value={totalScheduled} /></p>
         </div>
-        <div className="bg-card border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-2xl p-6">
           <p className="text-xs text-muted-foreground font-medium mb-2">{t('completedCount')}</p>
-          <p className="text-3xl font-bold tabular-nums text-emerald-600"><AnimatedNumber value={totalWorked} /></p>
+          <p className="text-3xl font-bold tabular-nums text-ctr-success"><AnimatedNumber value={totalWorked} /></p>
         </div>
-        <div className="bg-card border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-2xl p-6">
           <p className="text-xs text-muted-foreground font-medium mb-2">{t('changeRequestCount')}</p>
-          <p className="text-3xl font-bold tabular-nums text-amber-500"><AnimatedNumber value={pendingSwaps} /></p>
+          <p className="text-3xl font-bold tabular-nums text-ctr-warning"><AnimatedNumber value={pendingSwaps} /></p>
         </div>
       </div>
 
@@ -584,7 +584,7 @@ export function ShiftCalendarClient({ user }: { user: SessionUser }) {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
-              <ArrowRightLeft className="h-5 w-5 text-orange-500" />
+              <ArrowRightLeft className="h-5 w-5 text-wd-orange" />
               {t('changeRequests', { count: changeRequests.length })}
             </CardTitle>
           </CardHeader>

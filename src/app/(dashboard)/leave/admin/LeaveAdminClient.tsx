@@ -36,7 +36,7 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { WdStatStrip } from '@/components/shared/WdStatStrip'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
-import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
+import { TABLE_STYLES, CHART_THEME, CHART_COLORS } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import type { SessionUser } from '@/types'
 import {
@@ -349,10 +349,10 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                 <BarChart layout="vertical" data={deptUsage} margin={{ left: 8, right: 24 }}>
                   <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
                   <XAxis type="number" domain={[0, 100]} tickFormatter={(v: number) => `${v}%`} fontSize={11} />
-                  <YAxis type="category" dataKey="department" width={100} fontSize={11} tick={{ fill: '#1C1D21' }} />
+                  <YAxis type="category" dataKey="department" width={100} fontSize={11} tick={{ fill: CHART_THEME.axis.tick.fill }} />
                   <Tooltip
                     formatter={(value) => [`${value ?? 0}%`, t('admin.usageRateLabel')]}
-                    contentStyle={{ borderRadius: 8, border: '1px solid #E8EBFF', fontSize: 12 }}
+                    contentStyle={CHART_THEME.tooltip.contentStyle}
                   />
                   <Bar dataKey="usageRate" radius={[0, 4, 4, 0]} maxBarSize={24}>
                     {deptUsage.map((_, i) => (
@@ -380,11 +380,11 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={distribution} margin={{ bottom: 8 }}>
                   <CartesianGrid stroke={CHART_THEME.grid.stroke} strokeDasharray={CHART_THEME.grid.strokeDasharray} />
-                  <XAxis dataKey="range" fontSize={11} tick={{ fill: '#1C1D21' }} />
+                  <XAxis dataKey="range" fontSize={11} tick={{ fill: CHART_THEME.axis.tick.fill }} />
                   <YAxis fontSize={11} allowDecimals={false} />
                   <Tooltip
                     formatter={(value) => [`${value ?? 0}`, t('admin.headcountLabel')]}
-                    contentStyle={{ borderRadius: 8, border: '1px solid #E8EBFF', fontSize: 12 }}
+                    contentStyle={CHART_THEME.tooltip.contentStyle}
                   />
                   <Bar dataKey="count" fill={CHART_THEME.colors[1]} radius={[4, 4, 0, 0]} maxBarSize={40} />
                 </BarChart>
@@ -399,17 +399,13 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-emerald-500" />
+              <TrendingUp className="h-4 w-4 text-ctr-success" />
               <CardTitle className="text-sm font-bold text-foreground">{t('admin.burndownForecast')}</CardTitle>
             </div>
             {yearEndProjection && (
               <Badge
-                variant="outline"
-                className={`text-xs ${
-                  yearEndProjection.unusedRate > 30
-                    ? 'border-red-500 text-red-500 bg-destructive/5'
-                    : 'border-emerald-500 text-emerald-500 bg-tertiary-container/10'
-                }`}
+                variant={yearEndProjection.unusedRate > 30 ? 'error' : 'success'}
+                className="text-xs"
               >
                 {t('admin.yearEndUnused', { rate: yearEndProjection.unusedRate.toFixed(1) })}
               </Badge>
@@ -431,7 +427,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                 <YAxis fontSize={11} />
                 <Tooltip
                   labelFormatter={(v) => t('admin.monthSuffix', { month: String(v).split('-')[1] })}
-                  contentStyle={{ borderRadius: 8, border: '1px solid #E8EBFF', fontSize: 12 }}
+                  contentStyle={CHART_THEME.tooltip.contentStyle}
                 />
                 <Legend iconType="circle" iconSize={8} />
                 <Line
@@ -439,14 +435,14 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                   dataKey="actual"
                   stroke={CHART_THEME.colors[0]}
                   strokeWidth={2.5}
-                  dot={{ r: 4, fill: '#004964' }}
+                  dot={{ r: 4, fill: CHART_THEME.colors[0] }}
                   name={t('admin.actualUsage')}
                   connectNulls={false}
                 />
                 <Line
                   type="monotone"
                   dataKey="projected"
-                  stroke="#8181A5"
+                  stroke={CHART_COLORS.neutral}
                   strokeWidth={2}
                   strokeDasharray="6 3"
                   dot={false}
@@ -463,8 +459,8 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
         <Card className="bg-card border-destructive/20">
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-red-500" />
-              <CardTitle className="text-sm font-bold text-red-500">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+              <CardTitle className="text-sm font-bold text-destructive">
                 {t('admin.negativeTable')} ({t('admin.personSuffix', { count: negativeEmps.length })})
               </CardTitle>
             </div>
@@ -488,7 +484,7 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                       <tr key={emp.employeeId} className={TABLE_STYLES.row}>
                         <td className={cn(TABLE_STYLES.cell, "font-medium text-foreground")}>{emp.name}</td>
                         <td className={cn(TABLE_STYLES.cell, "text-muted-foreground")}>{emp.department}</td>
-                        <td className={cn(TABLE_STYLES.cell, "text-right font-semibold text-red-500")}>
+                        <td className={cn(TABLE_STYLES.cell, "text-right font-semibold text-destructive")}>
                           {t('admin.daysSuffix', { days: emp.negativeDays.toFixed(1) })}
                         </td>
                         <td className={cn(TABLE_STYLES.cell, "text-right text-muted-foreground")}>
@@ -496,12 +492,8 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
                         </td>
                         <td className={cn(TABLE_STYLES.cell, "text-center")}>
                           <Badge
-                            variant="outline"
-                            className={`text-[10px] ${
-                              atLimit
-                                ? 'border-red-500 text-red-500 bg-destructive/5'
-                                : 'border-amber-500 text-amber-500 bg-amber-500/10'
-                            }`}
+                            variant={atLimit ? 'error' : 'warning'}
+                            className="text-[10px]"
                           >
                             {atLimit ? t('admin.limitReached') : t('admin.withinLimit')}
                           </Badge>

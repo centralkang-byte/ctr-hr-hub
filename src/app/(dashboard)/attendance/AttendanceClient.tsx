@@ -338,7 +338,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
       />
 
       {/* ─── Section 1: Today Card ─── */}
-      <div className="bg-card border border-border rounded-xl p-6">
+      <div className="bg-card border border-border rounded-2xl p-6">
         <h3 className="flex items-center gap-2 text-base font-bold text-foreground tracking-[-0.02em] mb-4">
           <Clock className="h-5 w-5 text-primary" />
           {t('todaySummary')}
@@ -379,7 +379,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
               </p>
               <Button
                 size="lg"
-                className="h-14 w-48 text-lg font-semibold bg-destructive/50 hover:bg-red-700 text-white"
+                className="h-14 w-48 text-lg font-semibold bg-destructive hover:brightness-95 text-white"
                 onClick={handleClockOut}
                 disabled={clockLoading}
               >
@@ -407,7 +407,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
                 </span>
               </div>
               {(today?.overtimeMinutes ?? 0) > 0 && (
-                <p className="text-sm text-orange-500 font-semibold">
+                <p className="text-sm text-wd-orange-ink font-semibold">
                   {t('overtimeHours')}: {formatMinutesToHM(today?.overtimeMinutes)}
                 </p>
               )}
@@ -416,7 +416,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
       </div>
 
       {/* ─── Section 2: Weekly Summary ─── */}
-      <div className="bg-card border border-border rounded-xl p-6">
+      <div className="bg-card border border-border rounded-2xl p-6">
         <h3 className="text-base font-bold text-foreground tracking-[-0.02em] mb-4">{t('weeklySummary')}</h3>
           {weekly ? (
             <div className="space-y-3">
@@ -462,7 +462,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
                 </div>
                 <div className="text-sm">
                   <span className="text-muted-foreground">{t('overtimeHours')}: </span>
-                  <span className="font-semibold text-orange-500">
+                  <span className="font-semibold text-wd-orange-ink">
                     {formatMinutesToHM(weekly.totalOvertimeMinutes)}
                   </span>
                 </div>
@@ -492,7 +492,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
 
       {/* ─── Section 3: Status Badges ─── */}
       {today && (
-        <div className="bg-card border border-border rounded-xl p-6">
+        <div className="bg-card border border-border rounded-2xl p-6">
           <div className="flex flex-wrap items-center gap-3">
             {/* Attendance status badge */}
             <div className="flex items-center gap-2">
