@@ -15,7 +15,7 @@ import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { AUTO_ACKNOWLEDGE_HOURS } from '@/lib/performance/pipeline'
-import { getGradeLabel, isResultPublishedForRole } from '@/lib/performance/data-masking'
+import { getGradeLabel } from '@/lib/performance/data-masking'
 import type { SessionUser } from '@/types'
 
 const querySchema = z.object({
@@ -59,10 +59,12 @@ export const GET = withPermission(
 
             if (!review) throw badRequest('성과 리뷰를 찾을 수 없습니다.')
 
-            // 결과 공개 게이트 (defense-in-depth) — 클라 드롭다운 필터(isResultPublished)와 동일 계약.
-            // 미공개(CALIBRATION/COMP_REVIEW 등) cycle은 직접 API 호출로도 등급·점수가 새지 않도록 차단.
-            // not-found와 동일 메시지 → 미공개 리뷰의 존재 여부 미노출 + 두 클라이언트 모두 graceful empty 처리.
-            if (!isResultPublishedForRole(review.cycle.status, user.role)) {
+            // 결과 공개 게이트 — per-review notifiedAt 신뢰 (단조: 통보(bulk-notify) 시 1회 set, 이후 불변).
+            // cycle status 기반(isResultPublishedForRole)은 (a) CLOSED인데 미통보 직원이 등급 조기 열람,
+            // (b) FINALIZED 통보분 누락, (c) 통보 후 COMP_COMPLETED 도달 시 영구 비공개 회귀 — 모두 발생(Codex Gate2 P1).
+            // notifiedAt은 통보 시점부터 영구 가시라 3가지를 동시 해결한다.
+            // not-found와 동일 메시지 → 미공개 리뷰 존재 미노출 + 두 클라이언트 모두 graceful empty.
+            if (!review.notifiedAt) {
                 throw badRequest('성과 리뷰를 찾을 수 없습니다.')
             }
 

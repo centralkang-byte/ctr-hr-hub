@@ -14,7 +14,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
-import { determineViewerRole, maskPeerReviews, isResultPublishedForRole } from '@/lib/performance/data-masking'
+import { determineViewerRole, maskPeerReviews } from '@/lib/performance/data-masking'
 import { isCurrentManagerOf } from '@/lib/performance/peer-access'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
@@ -95,12 +95,18 @@ export const GET = withPermission(
                 throw badRequest('동료 평가가 진행 중입니다. 모든 평가 완료 후 확인하실 수 있습니다.')
             }
 
-            // 결과 공개 게이트 — 본인(EMPLOYEE) 동료평가 결과는 등급 publication과 동일하게
-            // 결과 통보(CLOSED) 이후에만 노출. CALIBRATION/COMP_REVIEW 등 미공개 단계에서
-            // 직접 API 호출로 동료 점수가 새지 않도록 차단 (클라 UI는 cycle 필터로 이미 차단).
+            // 결과 공개 게이트 — 본인(EMPLOYEE)은 본인 PerformanceReview.notifiedAt(단조: 통보 시 1회
+            // set, 이후 불변) 이후에만 동료 점수 열람. cycle status 기반은 CLOSED-미통보 조기노출 +
+            // 통보 후 COMP_COMPLETED 영구 비공개 회귀가 있어 per-review notifiedAt을 신뢰한다(Codex Gate2 P1).
             // 매니저/HR은 viewerRole로 구분돼 영향 없음 (피플세션·캘리브레이션 감독 경로 보존).
-            if (viewerRole === 'EMPLOYEE' && !isResultPublishedForRole(cycle.status, 'EMPLOYEE')) {
-                throw badRequest('성과 결과가 아직 공개되지 않았습니다.')
+            if (viewerRole === 'EMPLOYEE') {
+                const subjectReview = await prisma.performanceReview.findFirst({
+                    where: { cycleId, employeeId, companyId: user.companyId },
+                    select: { notifiedAt: true },
+                })
+                if (!subjectReview?.notifiedAt) {
+                    throw badRequest('성과 결과가 아직 공개되지 않았습니다.')
+                }
             }
 
             // Fetch answers
