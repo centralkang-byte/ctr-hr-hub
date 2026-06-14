@@ -995,7 +995,31 @@
       "weekTotal": "周合计",
       "loadMore": "加载更多",
       "member": "成员",
-      "pageScopedNote": "仅当前页"
+      "pageScopedNote": "仅当前页",
+      "trendTab": "趋势"
+    },
+    "trend": {
+      "deptTitle": "各部门考勤对比",
+      "deptSub": "最近30天",
+      "department": "部门",
+      "lateCount": "迟到（次）",
+      "absentCount": "缺勤（次）",
+      "avgClockIn": "平均上班",
+      "avgClockOut": "平均下班",
+      "avgOvertime": "平均加班",
+      "cohortNote": "仅显示5人及以上的部门",
+      "arrivalTitle": "上班时间分布",
+      "arrivalSub": "最近30天",
+      "countUnit": "人",
+      "beforeBucket": "更早",
+      "afterBucket": "更晚",
+      "refBefore": "标准时间前",
+      "refAfter": "标准时间后",
+      "typeTitle": "考勤类型趋势",
+      "typeSub": "最近6个月",
+      "leaveRequests": "休假申请（件）",
+      "shiftNote": "轮班制法人不显示平均与基准线",
+      "currentRosterNote": "按当前所属部门"
     }
   },
   "auth": {

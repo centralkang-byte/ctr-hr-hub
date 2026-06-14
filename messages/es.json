@@ -995,7 +995,31 @@
       "weekTotal": "Total semanal",
       "loadMore": "Cargar más",
       "member": "Miembro",
-      "pageScopedNote": "Solo página actual"
+      "pageScopedNote": "Solo página actual",
+      "trendTab": "Tendencias"
+    },
+    "trend": {
+      "deptTitle": "Asistencia por departamento",
+      "deptSub": "Últimos 30 días",
+      "department": "Departamento",
+      "lateCount": "Tardanzas (n.º)",
+      "absentCount": "Ausencias (n.º)",
+      "avgClockIn": "Entrada media",
+      "avgClockOut": "Salida media",
+      "avgOvertime": "Horas extra medias",
+      "cohortNote": "Solo se muestran departamentos con 5 o más miembros",
+      "arrivalTitle": "Distribución de hora de entrada",
+      "arrivalSub": "Últimos 30 días",
+      "countUnit": "personas",
+      "beforeBucket": "Antes",
+      "afterBucket": "Después",
+      "refBefore": "Antes de la hora de inicio",
+      "refAfter": "Después de la hora de inicio",
+      "typeTitle": "Tendencia por tipo de asistencia",
+      "typeSub": "Últimos 6 meses",
+      "leaveRequests": "Solicitudes de ausencia",
+      "shiftNote": "Los promedios y la línea de referencia se ocultan para empresas con turnos",
+      "currentRosterNote": "Según el departamento actual"
     }
   },
   "auth": {
