@@ -32,24 +32,26 @@ async function isReportingLineManager(
     userEmployeeId: string,
     targetEmployeeId: string,
 ): Promise<boolean> {
-    // effectiveDate<=now: 미래 발령(예약 조직개편, endDate:null)을 현재 발령으로
-    // 오인해 미래 매니저에게 즉시 권한을 주지 않도록 양측 모두 적용 (Codex Gate2 P1).
+    // "현재 활성" = effectiveDate<=now AND (endDate==null OR endDate>now) — assignments.ts SSOT 패턴.
+    // 예약 조직개편 시 현 발령 endDate가 미래로 설정되므로 endDate:null 단독이면 미래 발령 조기 포함 +
+    // 현 발령 누락이 동시에 발생 (Codex Gate2 P1).
     const now = new Date()
+    const activeNow = { effectiveDate: { lte: now }, OR: [{ endDate: null }, { endDate: { gt: now } }] }
+
     const target = await prisma.employeeAssignment.findFirst({
-        where: { employeeId: targetEmployeeId, isPrimary: true, endDate: null, effectiveDate: { lte: now } },
+        where: { employeeId: targetEmployeeId, isPrimary: true, ...activeNow },
         select: { position: { select: { reportsToPositionId: true } } },
     })
     const reportsToPositionId = target?.position?.reportsToPositionId
     if (!reportsToPositionId) return false
 
-    // manager 측은 primary+secondary 모두 인정 (endDate:null 활성만). isPrimary 강제 시
-    // 팀장직을 secondary로 보유한 정당한 매니저가 403 (Codex Gate2 P1 회귀).
+    // manager 측은 primary+secondary 모두 인정 (isPrimary 강제 시 팀장직을 secondary로 보유한
+    // 정당한 매니저가 403 — Codex Gate2 P1 회귀).
     const managerAssignment = await prisma.employeeAssignment.findFirst({
         where: {
             employeeId: userEmployeeId,
             positionId: reportsToPositionId,
-            endDate: null,
-            effectiveDate: { lte: now },
+            ...activeNow,
         },
         select: { id: true },
     })
