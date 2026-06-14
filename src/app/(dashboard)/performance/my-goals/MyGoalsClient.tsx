@@ -10,6 +10,8 @@ import { apiClient } from '@/lib/api'
 import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import { STATUS_VARIANT } from '@/lib/styles/status'
 import type { SessionUser } from '@/types'
+import type { EmbeddedChildProps } from '@/lib/performance/growth-hub'
+import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
@@ -88,8 +90,8 @@ function GoalModal({ initial, onSave, onClose, saving, t }: {
 
 // ─── Main Component ───────────────────────────────────────
 
-export default function MyGoalsClient({user: _user }: {
-  user: SessionUser }) {
+export default function MyGoalsClient({ user: _user, embedded = false, onPrimaryActionChange }: {
+  user: SessionUser } & EmbeddedChildProps) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
   const { confirm, dialogProps } = useConfirmDialog()
@@ -140,6 +142,20 @@ export default function MyGoalsClient({user: _user }: {
     const isViewOnly = !['ACTIVE'].includes(cycleStatus)
     const isBlocked = !allowedStatuses.includes(cycleStatus) && cycleStatus !== ''
 
+    // ─── 허브 헤더 1차 액션 등록 (embedded) — hooks 규칙상 조기 return 위에 위치
+    const openNewGoal = useCallback(() => setModal({ mode: 'add' }), [])
+    useEffect(() => {
+        if (!onPrimaryActionChange) return
+        onPrimaryActionChange({
+            labelKey: 'action.newGoal',
+            icon: Plus,
+            enabled: !isViewOnly && !isBlocked,
+            visible: !isBlocked,
+            run: openNewGoal,
+        })
+        return () => onPrimaryActionChange(null)
+    }, [onPrimaryActionChange, isViewOnly, isBlocked, openNewGoal])
+
     // ─── Handlers
     async function handleSave(form: GoalForm) {
         setSaving(true)
@@ -186,7 +202,7 @@ export default function MyGoalsClient({user: _user }: {
     // ─── Route guard
     if (isBlocked) {
         return (
-            <div className="flex min-h-[60vh] items-center justify-center p-6">
+            <div className={cn('flex items-center justify-center', embedded ? 'py-12' : 'min-h-[60vh] p-6')}>
                 <div className="text-center">
                     <Target className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                     <h2 className="mb-2 text-lg font-semibold text-foreground">{t('goals_settings_keab8b0ea_kec9584eb')}</h2>
@@ -197,14 +213,16 @@ export default function MyGoalsClient({user: _user }: {
     }
 
     return (
-        <div className="min-h-screen bg-muted p-6">
-            <div className="mx-auto max-w-4xl">
+        <div className={cn(embedded ? '' : 'min-h-screen bg-muted p-6')}>
+            <div className={cn(embedded ? '' : 'mx-auto max-w-4xl')}>
                 {/* Header */}
-                <div className="mb-6 flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-foreground">{t('myGoals_my_goals')}</h1>
-                        <p className="mt-1 text-sm text-muted-foreground">{t('kr_mbo_kebaaa9ed_kec84a4ec_keab48')}</p>
-                    </div>
+                <div className={cn('mb-6 flex items-center', embedded ? 'justify-end' : 'justify-between')}>
+                    {!embedded && (
+                        <div>
+                            <h1 className="text-2xl font-bold text-foreground">{t('myGoals_my_goals')}</h1>
+                            <p className="mt-1 text-sm text-muted-foreground">{t('kr_mbo_kebaaa9ed_kec84a4ec_keab48')}</p>
+                        </div>
+                    )}
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
                         className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
                         {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -225,8 +243,8 @@ export default function MyGoalsClient({user: _user }: {
                         )}
                     </div>
                     <div className="flex gap-2">
-                        {!isViewOnly && (
-                            <button onClick={() => setModal({ mode: 'add' })}
+                        {!isViewOnly && !embedded && (
+                            <button onClick={openNewGoal}
                                 className="inline-flex items-center gap-2 rounded-lg bg-warm px-4 py-2 text-sm font-medium text-white hover:brightness-95 transition-colors">
                                 <Plus className="h-4 w-4" /> {t('goals_add')}
                             </button>
@@ -256,8 +274,8 @@ export default function MyGoalsClient({user: _user }: {
                     <div className="rounded-xl border border-border bg-card p-16 text-center">
                         <Target className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                         <p className="mb-2 text-muted-foreground">{t('kr_kec9584ec_keb93b1eb_kebaaa9ed_')}</p>
-                        {!isViewOnly && (
-                            <button onClick={() => setModal({ mode: 'add' })}
+                        {!isViewOnly && !embedded && (
+                            <button onClick={openNewGoal}
                                 className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
                                 <Plus className="h-4 w-4" /> {t('kr_kecb2ab_kebb288ec_goals_kecb69')}
                             </button>

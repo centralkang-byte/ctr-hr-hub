@@ -4196,7 +4196,10 @@
       "technical": "Técnicas"
     },
     "title": "[TODO:es] 나의 역량 자기평가",
-    "toastSubmitted": "[TODO:es] 자기평가가 제출되었습니다."
+    "toastSubmitted": "[TODO:es] 자기평가가 제출되었습니다.",
+    "loadFailed": "Error al cargar",
+    "saveFailed": "Error al guardar",
+    "toastSaved": "Guardado"
   },
   "mySpace": {
     "applyBenefit": "Apply for Benefit",
@@ -4779,7 +4782,8 @@
       "selfEval": "Autoevaluación",
       "skills": "Autoevaluación de competencias",
       "training": "Mi formación",
-      "yearEnd": "Liquidación anual"
+      "yearEnd": "Liquidación anual",
+      "growthHub": "Evaluación/Crecimiento"
     },
     "payroll": {
       "adjustments": "수동 Adjustment",
@@ -8535,7 +8539,29 @@
     "yearColumn": "Year",
     "yearLabel": "Year",
     "yearUnit": "{year}",
-    "years": "year"
+    "years": "year",
+    "growth": {
+      "title": "Evaluación / Crecimiento",
+      "subtitle": "Gestiona objetivos, revisiones trimestrales y autoevaluaciones en un solo lugar.",
+      "tabsAriaLabel": "Pestañas de evaluación y crecimiento",
+      "tab": {
+        "goals": "Objetivos",
+        "quarterly": "Revisión trimestral",
+        "skills": "Autoevaluación"
+      },
+      "action": {
+        "newGoal": "Nuevo objetivo",
+        "writeReview": "Escribir revisión",
+        "saveSelfEval": "Guardar autoevaluación"
+      },
+      "kpi": {
+        "cycle": "Ciclo actual",
+        "goalsInProgress": "Objetivos en curso",
+        "evalDeadline": "Fecha límite de evaluación",
+        "ddayToday": "Vence hoy",
+        "ariaLabel": "Resumen de evaluación y crecimiento"
+      }
+    }
   },
   "preHire": {
     "affiliation": "Afiliación:",

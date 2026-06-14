@@ -4196,7 +4196,10 @@
       "technical": "技术"
     },
     "title": "[TODO:zh] 나의 역량 자기평가",
-    "toastSubmitted": "[TODO:zh] 자기평가가 제출되었습니다."
+    "toastSubmitted": "[TODO:zh] 자기평가가 제출되었습니다.",
+    "loadFailed": "加载失败",
+    "saveFailed": "保存失败",
+    "toastSaved": "已保存"
   },
   "mySpace": {
     "applyBenefit": "Apply for Benefit",
@@ -4779,7 +4782,8 @@
       "selfEval": "自我评估",
       "skills": "能力自评",
       "training": "我的培训",
-      "yearEnd": "年终结算"
+      "yearEnd": "年终结算",
+      "growthHub": "评估/成长"
     },
     "payroll": {
       "adjustments": "수동 Adjustment",
@@ -8536,7 +8540,29 @@
     "yearColumn": "Year",
     "yearLabel": "Year",
     "yearUnit": "{year}",
-    "years": "year"
+    "years": "year",
+    "growth": {
+      "title": "评估 / 成长",
+      "subtitle": "在一处管理目标、季度回顾和能力自评。",
+      "tabsAriaLabel": "评估与成长标签",
+      "tab": {
+        "goals": "目标",
+        "quarterly": "季度回顾",
+        "skills": "自评"
+      },
+      "action": {
+        "newGoal": "新目标",
+        "writeReview": "撰写回顾",
+        "saveSelfEval": "保存自评"
+      },
+      "kpi": {
+        "cycle": "当前周期",
+        "goalsInProgress": "进行中的目标",
+        "evalDeadline": "评估截止",
+        "ddayToday": "今天截止",
+        "ariaLabel": "评估与成长摘要"
+      }
+    }
   },
   "preHire": {
     "affiliation": "所属:",

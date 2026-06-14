@@ -2847,6 +2847,28 @@
       "charCount": "{count}자",
       "submitting": "제출 중...",
       "submit": "평가 제출"
+    },
+    "growth": {
+      "title": "평가 / 성장",
+      "subtitle": "목표 관리·분기 리뷰·역량 자기평가를 한 곳에서 진행해요.",
+      "tabsAriaLabel": "평가/성장 탭",
+      "tab": {
+        "goals": "목표",
+        "quarterly": "분기 리뷰",
+        "skills": "자기평가"
+      },
+      "action": {
+        "newGoal": "새 목표",
+        "writeReview": "리뷰 작성",
+        "saveSelfEval": "자기평가 저장"
+      },
+      "kpi": {
+        "cycle": "진행 사이클",
+        "goalsInProgress": "진행 중 목표",
+        "evalDeadline": "평가 마감",
+        "ddayToday": "오늘 마감",
+        "ariaLabel": "평가/성장 요약"
+      }
     }
   },
   "recruitment": {
@@ -8930,7 +8952,8 @@
       "notificationSettings": "알림 설정",
       "directory": "구성원 검색",
       "orgChart": "조직도",
-      "quarterlyReview": "분기 리뷰"
+      "quarterlyReview": "분기 리뷰",
+      "growthHub": "평가/성장"
     },
     "team": {
       "label": "팀 관리",
@@ -11162,7 +11185,10 @@
     "gapAhead": "+{gap}",
     "toastSubmitted": "자기평가가 제출되었습니다.",
     "saveDraft": "임시저장",
-    "submit": "제출"
+    "submit": "제출",
+    "loadFailed": "로드 실패",
+    "saveFailed": "저장 실패",
+    "toastSaved": "저장되었습니다"
   },
   "myOffboarding": {
     "pageTitle": "퇴직 절차",

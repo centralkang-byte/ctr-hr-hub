@@ -4196,7 +4196,10 @@
       "technical": "Technical"
     },
     "title": "[TODO:en] 나의 역량 자기평가",
-    "toastSubmitted": "[TODO:en] 자기평가가 제출되었습니다."
+    "toastSubmitted": "[TODO:en] 자기평가가 제출되었습니다.",
+    "loadFailed": "Load failed",
+    "saveFailed": "Save failed",
+    "toastSaved": "Saved"
   },
   "mySpace": {
     "applyBenefit": "Apply for Benefit",
@@ -4779,7 +4782,8 @@
       "selfEval": "Self Evaluation",
       "skills": "Skills Self-Assessment",
       "training": "My Training",
-      "yearEnd": "Year-End Settlement"
+      "yearEnd": "Year-End Settlement",
+      "growthHub": "Evaluation/Growth"
     },
     "payroll": {
       "adjustments": "수동 Adjustment",
@@ -8535,7 +8539,29 @@
     "yearColumn": "Year",
     "yearLabel": "Year",
     "yearUnit": "{year}",
-    "years": "year"
+    "years": "year",
+    "growth": {
+      "title": "Evaluation / Growth",
+      "subtitle": "Manage goals, quarterly reviews, and self-assessments in one place.",
+      "tabsAriaLabel": "Evaluation and growth tabs",
+      "tab": {
+        "goals": "Goals",
+        "quarterly": "Quarterly Review",
+        "skills": "Self-Assessment"
+      },
+      "action": {
+        "newGoal": "New Goal",
+        "writeReview": "Write Review",
+        "saveSelfEval": "Save Self-Assessment"
+      },
+      "kpi": {
+        "cycle": "Current Cycle",
+        "goalsInProgress": "Goals in Progress",
+        "evalDeadline": "Eval Deadline",
+        "ddayToday": "Due Today",
+        "ariaLabel": "Evaluation and growth summary"
+      }
+    }
   },
   "preHire": {
     "affiliation": "Affiliation:",

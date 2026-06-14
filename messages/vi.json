@@ -4196,7 +4196,10 @@
       "technical": "Kỹ thuật"
     },
     "title": "[TODO:vi] 나의 역량 자기평가",
-    "toastSubmitted": "[TODO:vi] 자기평가가 제출되었습니다."
+    "toastSubmitted": "[TODO:vi] 자기평가가 제출되었습니다.",
+    "loadFailed": "Tải thất bại",
+    "saveFailed": "Lưu thất bại",
+    "toastSaved": "Đã lưu"
   },
   "mySpace": {
     "applyBenefit": "Apply for Benefit",
@@ -4779,7 +4782,8 @@
       "selfEval": "Tự đánh giá",
       "skills": "Tự đánh giá năng lực",
       "training": "Đào tạo của tôi",
-      "yearEnd": "Quyết toán cuối năm"
+      "yearEnd": "Quyết toán cuối năm",
+      "growthHub": "Đánh giá/Phát triển"
     },
     "payroll": {
       "adjustments": "수동 Adjustment",
@@ -8535,7 +8539,29 @@
     "yearColumn": "Year",
     "yearLabel": "Year",
     "yearUnit": "{year}",
-    "years": "year"
+    "years": "year",
+    "growth": {
+      "title": "Đánh giá / Phát triển",
+      "subtitle": "Quản lý mục tiêu, đánh giá quý và tự đánh giá năng lực ở một nơi.",
+      "tabsAriaLabel": "Tab đánh giá và phát triển",
+      "tab": {
+        "goals": "Mục tiêu",
+        "quarterly": "Đánh giá quý",
+        "skills": "Tự đánh giá"
+      },
+      "action": {
+        "newGoal": "Mục tiêu mới",
+        "writeReview": "Viết đánh giá",
+        "saveSelfEval": "Lưu tự đánh giá"
+      },
+      "kpi": {
+        "cycle": "Chu kỳ hiện tại",
+        "goalsInProgress": "Mục tiêu đang thực hiện",
+        "evalDeadline": "Hạn đánh giá",
+        "ddayToday": "Hạn hôm nay",
+        "ariaLabel": "Tóm tắt đánh giá và phát triển"
+      }
+    }
   },
   "preHire": {
     "affiliation": "Trực thuộc:",
