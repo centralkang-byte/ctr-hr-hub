@@ -12,7 +12,7 @@ import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import type { CycleStatus, CycleHalf } from '@/generated/prisma/client'
-import { maskCycleForEmployee } from '@/lib/performance/data-masking'
+import { maskCycleForEmployee, isResultPublishedForRole } from '@/lib/performance/data-masking'
 
 // ─── Schemas ──────────────────────────────────────────────
 
@@ -72,10 +72,12 @@ export const GET = withPermission(
       prisma.performanceCycle.count({ where }),
     ])
 
-    // EMPLOYEE: 보상 단계 마스킹 (COMP_REVIEW/COMP_COMPLETED → CLOSED + isResultPublished)
+    // EMPLOYEE: 보상 단계 마스킹 (COMP_REVIEW/COMP_COMPLETED → CLOSED + isResultPublished).
+    // 비-EMPLOYEE는 마스킹 없이 isResultPublished만 부여 — publication 정의는 isResultPublishedForRole(SSOT)로 단일화
+    // (my-result 서버 게이트와 동일 함수 → 드롭다운 필터와 게이트가 절대 diverge하지 않음).
     const maskedCycles = user.role === 'EMPLOYEE'
       ? cycles.map(maskCycleForEmployee)
-      : cycles.map(c => ({ ...c, isResultPublished: c.status === 'CLOSED' || c.status === 'COMP_COMPLETED' }))
+      : cycles.map(c => ({ ...c, isResultPublished: isResultPublishedForRole(c.status, user.role) }))
 
     return apiPaginated(maskedCycles, buildPagination(page, limit, total))
   },

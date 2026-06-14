@@ -3,6 +3,7 @@ import {
   determineViewerRole,
   maskPerformanceReview,
   maskCycleForEmployee,
+  isResultPublishedForRole,
   getGradeLabel,
 } from '@/lib/performance/data-masking'
 
@@ -101,6 +102,51 @@ describe('maskCycleForEmployee', () => {
     const result = maskCycleForEmployee({ status: 'CLOSED' })
     expect(result.status).toBe('CLOSED')
     expect(result.isResultPublished).toBe(true)
+  })
+
+  // CALIBRATION/FINALIZED come BEFORE result notification (results not yet published).
+  // getAllowedStatuses('result') still admits CALIBRATION, so isResultPublished must gate it.
+  it('should keep CALIBRATION as-is with isResultPublished=false', () => {
+    const result = maskCycleForEmployee({ status: 'CALIBRATION' })
+    expect(result.status).toBe('CALIBRATION')
+    expect(result.isResultPublished).toBe(false)
+  })
+
+  it('should keep FINALIZED as-is with isResultPublished=false', () => {
+    const result = maskCycleForEmployee({ status: 'FINALIZED' })
+    expect(result.isResultPublished).toBe(false)
+  })
+})
+
+// ─── isResultPublishedForRole (server gate SSOT) ───────────
+
+describe('isResultPublishedForRole', () => {
+  // EMPLOYEE: only genuinely-CLOSED is published; comp stages stay hidden.
+  it('should publish only CLOSED for EMPLOYEE', () => {
+    expect(isResultPublishedForRole('CLOSED', 'EMPLOYEE')).toBe(true)
+    expect(isResultPublishedForRole('CALIBRATION', 'EMPLOYEE')).toBe(false)
+    expect(isResultPublishedForRole('COMP_REVIEW', 'EMPLOYEE')).toBe(false)
+    expect(isResultPublishedForRole('COMP_COMPLETED', 'EMPLOYEE')).toBe(false)
+    expect(isResultPublishedForRole('EVAL_OPEN', 'EMPLOYEE')).toBe(false)
+  })
+
+  // Privileged self-view mirrors the non-employee branch of GET /cycles.
+  it('should publish CLOSED and COMP_COMPLETED for non-EMPLOYEE roles', () => {
+    for (const role of ['HR_ADMIN', 'EXECUTIVE', 'MANAGER', 'SUPER_ADMIN']) {
+      expect(isResultPublishedForRole('CLOSED', role)).toBe(true)
+      expect(isResultPublishedForRole('COMP_COMPLETED', role)).toBe(true)
+      expect(isResultPublishedForRole('CALIBRATION', role)).toBe(false)
+      expect(isResultPublishedForRole('COMP_REVIEW', role)).toBe(false)
+    }
+  })
+
+  // Fail-closed: missing/blank status (e.g. select omission) must never expose results.
+  it('should fail closed for unknown/blank/undefined status', () => {
+    expect(isResultPublishedForRole('', 'EMPLOYEE')).toBe(false)
+    expect(isResultPublishedForRole('', 'HR_ADMIN')).toBe(false)
+    // undefined cannot occur via the typed select, but the gate must still fail closed.
+    expect(isResultPublishedForRole(undefined as unknown as string, 'EMPLOYEE')).toBe(false)
+    expect(isResultPublishedForRole(undefined as unknown as string, 'HR_ADMIN')).toBe(false)
   })
 })
 

@@ -15,7 +15,7 @@ import { badRequest, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { AUTO_ACKNOWLEDGE_HOURS } from '@/lib/performance/pipeline'
-import { getGradeLabel } from '@/lib/performance/data-masking'
+import { getGradeLabel, isResultPublishedForRole } from '@/lib/performance/data-masking'
 import type { SessionUser } from '@/types'
 
 const querySchema = z.object({
@@ -49,7 +49,7 @@ export const GET = withPermission(
                     isAutoAcknowledged: true,
                     status: true,
                     cycle: {
-                        select: { name: true, year: true, half: true, mboWeight: true, beiWeight: true },
+                        select: { name: true, year: true, half: true, mboWeight: true, beiWeight: true, status: true },
                     },
                     // originalGrade: NOT selected (Data Masking)
                     // overdueFlags: NOT selected
@@ -58,6 +58,13 @@ export const GET = withPermission(
             })
 
             if (!review) throw badRequest('성과 리뷰를 찾을 수 없습니다.')
+
+            // 결과 공개 게이트 (defense-in-depth) — 클라 드롭다운 필터(isResultPublished)와 동일 계약.
+            // 미공개(CALIBRATION/COMP_REVIEW 등) cycle은 직접 API 호출로도 등급·점수가 새지 않도록 차단.
+            // not-found와 동일 메시지 → 미공개 리뷰의 존재 여부 미노출 + 두 클라이언트 모두 graceful empty 처리.
+            if (!isResultPublishedForRole(review.cycle.status, user.role)) {
+                throw badRequest('성과 리뷰를 찾을 수 없습니다.')
+            }
 
             // Calculate acknowledge deadline (168h from notification)
             let acknowledgeDeadline: Date | null = null

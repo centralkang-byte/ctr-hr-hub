@@ -11,10 +11,10 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
+import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
-import { determineViewerRole, maskPeerReviews } from '@/lib/performance/data-masking'
+import { determineViewerRole, maskPeerReviews, isResultPublishedForRole } from '@/lib/performance/data-masking'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
@@ -56,6 +56,13 @@ export const GET = withPermission(
                 !!isManager,
             )
 
+            // 권한 게이트(IDOR 방지) — 본인·담당 매니저·HR/임원만 조회 가능.
+            // determineViewerRole은 무관한 직원에게도 fallback 'EMPLOYEE'를 부여하므로(타인 익명 동료점수 열람 가능),
+            // viewerRole==='EMPLOYEE'면 본인 여부를 명시 확인해 타 직원 조회를 차단한다.
+            if (viewerRole === 'EMPLOYEE' && user.employeeId !== employeeId) {
+                throw forbidden('본인 또는 담당자만 조회할 수 있습니다.')
+            }
+
             // GEMINI FIX #1: Anti-Deduction Attack prevention
             // Employee cannot see partial results during EVAL_OPEN
             const totalNominations = await prisma.peerReviewNomination.count({
@@ -79,6 +86,14 @@ export const GET = withPermission(
                 completedNominations < totalNominations
             ) {
                 throw badRequest('동료 평가가 진행 중입니다. 모든 평가 완료 후 확인하실 수 있습니다.')
+            }
+
+            // 결과 공개 게이트 — 본인(EMPLOYEE) 동료평가 결과는 등급 publication과 동일하게
+            // 결과 통보(CLOSED) 이후에만 노출. CALIBRATION/COMP_REVIEW 등 미공개 단계에서
+            // 직접 API 호출로 동료 점수가 새지 않도록 차단 (클라 UI는 cycle 필터로 이미 차단).
+            // 매니저/HR은 viewerRole로 구분돼 영향 없음 (피플세션·캘리브레이션 감독 경로 보존).
+            if (viewerRole === 'EMPLOYEE' && !isResultPublishedForRole(cycle.status, 'EMPLOYEE')) {
+                throw badRequest('성과 결과가 아직 공개되지 않았습니다.')
             }
 
             // Fetch answers

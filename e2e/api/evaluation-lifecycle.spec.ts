@@ -116,6 +116,21 @@ test.describe('Evaluation Lifecycle: Full State Machine', () => {
     expect(res.status()).toBeLessThan(500)
   })
 
+  // ── Test 4c: CALIBRATION must NOT leak unpublished grades to EMPLOYEE ──
+  // Publication gate: at CALIBRATION (before result notification) the subject's
+  // grades/scores are not yet released. A direct my-result call must be blocked
+  // (same 400 as not-found) — never a 200 carrying finalGrade/totalScore.
+
+  test('4c. CALIBRATION: EMPLOYEE my-result blocked (unpublished)', async () => {
+    const empRequest = await playwrightRequest.newContext({
+      baseURL: 'http://localhost:3002',
+      storageState: authFile('EMPLOYEE'),
+    })
+    const res = await empRequest.get(`/api/v1/performance/reviews/my-result?cycleId=${cycleId}`)
+    expect(res.status()).toBe(400)
+    await empRequest.dispose()
+  })
+
   // ── Test 5: CALIBRATION → COMP_REVIEW ─────────────────────
 
   test('5. Advance: CALIBRATION → COMP_REVIEW', async ({ request }) => {

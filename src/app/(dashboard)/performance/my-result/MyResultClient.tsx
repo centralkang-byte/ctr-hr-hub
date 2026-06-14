@@ -17,7 +17,7 @@ const GrowthJourneyChart = dynamic(() => import('@/components/performance/Growth
 
 // ─── Types ────────────────────────────────────────────────
 
-interface CycleOption { id: string; name: string; status: string; half: string }
+interface CycleOption { id: string; name: string; status: string; half: string; isResultPublished: boolean }
 
 // API 응답(`/performance/reviews/my-result`)은 { review, mboGoals } 중첩 형태.
 // fetchResult에서 이 평탄 형태로 매핑한다 (필드 contract = route.ts).
@@ -95,7 +95,12 @@ export default function MyResultClient({user }: {
         async function load() {
             try {
                 const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
-                const resultCycles = res.data.filter((c) => getAllowedStatuses('result', c.half ?? 'H2').includes(c.status))
+                // 결과 열람 허용 = 결과 열람 단계(CLOSED 이후) AND 결과 공개(isResultPublished).
+                // EMPLOYEE에게 COMP_REVIEW 등은 status=CLOSED·isResultPublished=false로 마스킹되므로
+                // status만으로는 미공개 결과가 새어나갈 수 있음 (pipeline.ts 'result' 주석 참조).
+                const resultCycles = res.data.filter(
+                    (c) => c.isResultPublished === true && getAllowedStatuses('result', c.half ?? 'H2').includes(c.status),
+                )
                 setCycles(resultCycles)
                 if (resultCycles.length > 0) {
                     setSelectedCycleId(resultCycles[0].id)
