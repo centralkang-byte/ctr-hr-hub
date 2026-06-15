@@ -6,13 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
+import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
 import PlanDetailDialog from '@/components/succession/PlanDetailDialog'
 import { apiClient } from '@/lib/api'
 import { STATUS_VARIANT } from '@/lib/styles/status'
@@ -21,6 +15,8 @@ import type { PaginationInfo } from '@/types'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ───────────────────────────────────────────────
+
+const INPUT_CLS = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus:outline-none'
 
 type PlanRow = {
   id: string
@@ -204,51 +200,32 @@ export default function PlansTab() {
         rowKey={(row) => row.id}
       />
 
-      {/* ─── Create Dialog ─── */}
-      <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>핵심직책 등록</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">직책명 *</label>
-              <input
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
-                value={form.positionTitle}
-                onChange={(e) => setForm((f) => ({ ...f, positionTitle: e.target.value }))}
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">중요도 *</label>
-              <select
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm"
-                value={form.criticality}
-                onChange={(e) => setForm((f) => ({ ...f, criticality: e.target.value }))}
-              >
-                {Object.entries(CRITICALITY_BADGE).map(([k, v]) => (
-                  <option key={k} value={k}>{v.label}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">비고</label>
-              <textarea
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm"
-                rows={3}
-                value={form.notes}
-                onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>취소</Button>
-            <Button onClick={handleCreate} disabled={saving || !form.positionTitle}>
-              {saving ? '등록 중...' : '등록'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* ─── Create Drawer (입력 폼 표준 = WdDrawer, 우측 슬라이드) ─── */}
+      <WdDrawer
+        open={createDialogOpen}
+        onClose={() => setCreateDialogOpen(false)}
+        title="핵심직책 등록"
+        closeDisabled={saving}
+        secondary={{ label: '취소', onClick: () => setCreateDialogOpen(false), disabled: saving }}
+        primary={{ label: saving ? '등록 중...' : '등록', onClick: handleCreate, disabled: saving || !form.positionTitle }}
+      >
+        <WdField label="직책명" required htmlFor="plan-position">
+          <input id="plan-position" className={INPUT_CLS} value={form.positionTitle}
+            onChange={(e) => setForm((f) => ({ ...f, positionTitle: e.target.value }))} />
+        </WdField>
+        <WdField label="중요도" required htmlFor="plan-criticality">
+          <select id="plan-criticality" className={INPUT_CLS} value={form.criticality}
+            onChange={(e) => setForm((f) => ({ ...f, criticality: e.target.value }))}>
+            {Object.entries(CRITICALITY_BADGE).map(([k, v]) => (
+              <option key={k} value={k}>{v.label}</option>
+            ))}
+          </select>
+        </WdField>
+        <WdField label="비고" htmlFor="plan-notes">
+          <textarea id="plan-notes" className={`${INPUT_CLS} resize-none`} rows={3} value={form.notes}
+            onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} />
+        </WdField>
+      </WdDrawer>
 
       {/* ─── Detail Dialog ─── */}
       {detailPlanId && (

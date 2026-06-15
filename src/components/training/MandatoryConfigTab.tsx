@@ -8,19 +8,15 @@ import { useState, useEffect, useCallback } from 'react'
 import { Plus, Pencil, Trash2, Play, BarChart3 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
+import { WdDrawer, WdField, WdRow } from '@/components/shared/WdDrawer'
 import { apiClient } from '@/lib/api'
 import { TABLE_STYLES } from '@/lib/styles'
 import { useToast } from '@/hooks/use-toast'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ───────────────────────────────────────────────
+
+const INPUT_CLS = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus:outline-none'
 
 type CourseOption = { id: string; title: string; code?: string | null }
 
@@ -363,84 +359,58 @@ export default function MandatoryConfigTab() {
         )}
       </section>
 
-      {/* ─── 설정 다이얼로그 ─── */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>{editingConfig ? '의무교육 설정 수정' : '의무교육 설정 추가'}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">교육과정 *</label>
-              <select
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm"
-                value={form.courseId}
-                onChange={(e) => setForm((f) => ({ ...f, courseId: e.target.value }))}
-              >
-                <option value="">선택...</option>
-                {courseOptions.map((c) => (
-                  <option key={c.id} value={c.id}>{c.title}</option>
-                ))}
-              </select>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">대상 *</label>
-                <select
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm"
-                  value={form.targetGroup}
-                  onChange={(e) => setForm((f) => ({ ...f, targetGroup: e.target.value }))}
-                >
-                  {Object.entries(TARGET_GROUP_LABELS).map(([k, v]) => (
-                    <option key={k} value={k}>{v}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">주기 *</label>
-                <select
-                  className="w-full px-3 py-2 border border-border rounded-lg text-sm"
-                  value={form.frequency}
-                  onChange={(e) => setForm((f) => ({ ...f, frequency: e.target.value }))}
-                >
-                  {Object.entries(FREQUENCY_LABELS).map(([k, v]) => (
-                    <option key={k} value={k}>{v}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">마감월</label>
-              <select
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm"
-                value={form.deadlineMonth}
-                onChange={(e) => setForm((f) => ({ ...f, deadlineMonth: e.target.value }))}
-              >
-                <option value="">없음</option>
-                {MONTH_LABELS.map((m, i) => (
-                  <option key={i + 1} value={i + 1}>{m}</option>
-                ))}
-              </select>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="isActiveConfig"
-                className="w-4 h-4 rounded border-border text-primary"
-                checked={!form.deletedAt}
-                onChange={(e) => setForm((f) => ({ ...f, deletedAt: e.target.checked ? null : new Date().toISOString() }))}
-              />
-              <label htmlFor="isActiveConfig" className="text-sm text-foreground">활성화</label>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>취소</Button>
-            <Button onClick={handleSave} disabled={saving || !form.courseId}>
-              {saving ? '저장 중...' : editingConfig ? '수정' : '생성'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* ─── 설정 드로어 (입력 폼 표준 = WdDrawer, 우측 슬라이드) ─── */}
+      <WdDrawer
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        title={editingConfig ? '의무교육 설정 수정' : '의무교육 설정 추가'}
+        closeDisabled={saving}
+        secondary={{ label: '취소', onClick: () => setDialogOpen(false), disabled: saving }}
+        primary={{ label: saving ? '저장 중...' : editingConfig ? '수정' : '생성', onClick: handleSave, disabled: saving || !form.courseId }}
+      >
+        <WdField label="교육과정" required htmlFor="mc-course">
+          <select id="mc-course" className={INPUT_CLS} value={form.courseId}
+            onChange={(e) => setForm((f) => ({ ...f, courseId: e.target.value }))}>
+            <option value="">선택...</option>
+            {courseOptions.map((c) => (
+              <option key={c.id} value={c.id}>{c.title}</option>
+            ))}
+          </select>
+        </WdField>
+        <WdRow>
+          <WdField label="대상" required htmlFor="mc-target">
+            <select id="mc-target" className={INPUT_CLS} value={form.targetGroup}
+              onChange={(e) => setForm((f) => ({ ...f, targetGroup: e.target.value }))}>
+              {Object.entries(TARGET_GROUP_LABELS).map(([k, v]) => (
+                <option key={k} value={k}>{v}</option>
+              ))}
+            </select>
+          </WdField>
+          <WdField label="주기" required htmlFor="mc-frequency">
+            <select id="mc-frequency" className={INPUT_CLS} value={form.frequency}
+              onChange={(e) => setForm((f) => ({ ...f, frequency: e.target.value }))}>
+              {Object.entries(FREQUENCY_LABELS).map(([k, v]) => (
+                <option key={k} value={k}>{v}</option>
+              ))}
+            </select>
+          </WdField>
+        </WdRow>
+        <WdField label="마감월" htmlFor="mc-deadline">
+          <select id="mc-deadline" className={INPUT_CLS} value={form.deadlineMonth}
+            onChange={(e) => setForm((f) => ({ ...f, deadlineMonth: e.target.value }))}>
+            <option value="">없음</option>
+            {MONTH_LABELS.map((m, i) => (
+              <option key={i + 1} value={i + 1}>{m}</option>
+            ))}
+          </select>
+        </WdField>
+        <div className="flex items-center gap-2">
+          <input type="checkbox" id="isActiveConfig" className="h-4 w-4 rounded border-border text-primary"
+            checked={!form.deletedAt}
+            onChange={(e) => setForm((f) => ({ ...f, deletedAt: e.target.checked ? null : new Date().toISOString() }))} />
+          <label htmlFor="isActiveConfig" className="text-sm text-foreground">활성화</label>
+        </div>
+      </WdDrawer>
     </div>
       <ConfirmDialog {...dialogProps} />
       </>
