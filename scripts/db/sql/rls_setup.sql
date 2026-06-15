@@ -2,7 +2,17 @@
 -- CTR HR Hub — Row-Level Security Setup
 -- Phase Q-5e: Database-level tenant isolation
 -- ============================================================
--- This migration enables RLS on Priority 1 tables only.
+-- STATUS (2026-06-10): Deferred manual SQL artifact — NOT a Prisma
+-- migration. Relocated from prisma/migrations/rls_setup/migration.sql
+-- so `prisma migrate dev`/`deploy` no longer pick it up as a pending
+-- migration. Never applied to any environment; RLS re-apply is
+-- deferred post-launch (CEO decision, 2026-06 S268).
+--
+-- DO NOT APPLY AS-IS: two KNOWN-BROKEN column references are marked
+-- inline below (payroll_items, payslips policies). Fix + re-review in
+-- the RLS re-apply track before any use.
+--
+-- This script enables RLS on Priority 1 tables only.
 -- P2/P3 tables will be migrated incrementally.
 --
 -- Architecture:
@@ -10,10 +20,6 @@
 --   - app.current_user_role:  SET LOCAL by Prisma before each query set
 --   - app.current_employee_id: SET LOCAL for employee-scoped tables
 --   - SUPER_ADMIN: bypasses all policies (unrestricted access)
---
--- How to apply:
---   OPTION A: prisma/supabase db push / SQL Editor paste
---   OPTION B: npx prisma migrate dev --name rls_setup (if DDL tracked)
 -- ============================================================
 
 -- ─── Step 1: Helper Functions ─────────────────────────────────
@@ -89,6 +95,9 @@ CREATE POLICY "rls_hr_payroll_items" ON "payroll_items"
     current_user_role() IN ('HR_ADMIN', 'MANAGER')
     AND EXISTS (
       SELECT 1 FROM payroll_runs pr
+      -- KNOWN-BROKEN: payroll_items has no payroll_run_id column — actual column
+      -- is run_id (PayrollItem.runId @map("run_id")). Fix belongs to the deferred
+      -- RLS re-apply track; do not apply this file as-is.
       WHERE pr.id = payroll_items.payroll_run_id
         AND pr.company_id = current_company_id()
     )
@@ -106,6 +115,9 @@ CREATE POLICY "rls_hr_payslips" ON "payslips"
     current_user_role() IN ('HR_ADMIN', 'MANAGER')
     AND EXISTS (
       SELECT 1 FROM payroll_runs pr
+      -- KNOWN-BROKEN: payslips has no payroll_run_id column — payslips carries
+      -- payroll_item_id and company_id directly (join via payroll_items.run_id,
+      -- or use payslips.company_id). Fix belongs to the deferred RLS re-apply track.
       WHERE pr.id = payslips.payroll_run_id
         AND pr.company_id = current_company_id()
     )
