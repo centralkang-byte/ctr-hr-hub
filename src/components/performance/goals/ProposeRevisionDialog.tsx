@@ -7,9 +7,7 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { FileEdit } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 
@@ -135,23 +133,26 @@ export function ProposeRevisionDialog({ open, onOpenChange, goals, quarterlyRevi
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <FileEdit className="h-5 w-5 text-primary" />
-            {isBatch ? t('proposeBatch') : t('proposeRevision')}
-          </DialogTitle>
-          <DialogDescription>{t('proposeRevisionDesc')}</DialogDescription>
-        </DialogHeader>
+    <WdDrawer
+      open={open}
+      onClose={() => onOpenChange(false)}
+      title={isBatch ? t('proposeBatch') : t('proposeRevision')}
+      closeDisabled={submitting}
+      secondary={{ label: tc('cancel'), onClick: () => onOpenChange(false), disabled: submitting }}
+      primary={{
+        label: submitting ? tc('saving') : t('proposeRevision'),
+        onClick: handleSubmit,
+        disabled: submitting || !reason.trim() || !anyChanges,
+      }}
+    >
+      <p className="text-sm text-muted-foreground">{t('proposeRevisionDesc')}</p>
 
-        <div className="space-y-4">
-          {goals.map((goal, idx) => {
-            const rev = revisions[idx]
-            if (!rev) return null
+      {goals.map((goal, idx) => {
+        const rev = revisions[idx]
+        if (!rev) return null
 
-            return (
-              <div key={goal.id} className="rounded-2xl bg-card p-4">
+        return (
+          <div key={goal.id} className="rounded-2xl bg-card p-4">
                 <h4 className="mb-3 text-sm font-semibold text-foreground">{goal.title}</h4>
 
                 {/* Title */}
@@ -224,31 +225,17 @@ export function ProposeRevisionDialog({ open, onOpenChange, goals, quarterlyRevi
             )
           })}
 
-          {/* Reason */}
-          <div>
-            <label className="mb-1 block text-sm font-medium text-foreground">
-              {t('revisionReason')} <span className="text-destructive">*</span>
-            </label>
-            <textarea
-              rows={3}
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              placeholder={t('revisionReason')}
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
-            />
-          </div>
-
-          {/* Actions */}
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>
-              {tc('cancel')}
-            </Button>
-            <Button onClick={handleSubmit} disabled={submitting || !reason.trim() || !anyChanges}>
-              {submitting ? tc('saving') : t('proposeRevision')}
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+      {/* Reason */}
+      <WdField label={t('revisionReason')} required htmlFor="revision-reason">
+        <textarea
+          id="revision-reason"
+          rows={3}
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          placeholder={t('revisionReason')}
+          className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+        />
+      </WdField>
+    </WdDrawer>
   )
 }

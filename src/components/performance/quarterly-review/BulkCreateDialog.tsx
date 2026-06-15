@@ -4,17 +4,9 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
 import { Loader2 } from 'lucide-react'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -62,50 +54,44 @@ export default function BulkCreateDialog({ open, onOpenChange, onSuccess }: Prop
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{t('bulkCreate.title')}</DialogTitle>
-          <DialogDescription>{t('bulkCreate.description')}</DialogDescription>
-        </DialogHeader>
+    <WdDrawer
+      open={open}
+      onClose={() => onOpenChange(false)}
+      title={t('bulkCreate.title')}
+      closeDisabled={creating}
+      secondary={{ label: tc('cancel'), onClick: () => onOpenChange(false), disabled: creating }}
+      primary={{
+        label: t('bulkCreate.create'),
+        onClick: handleCreate,
+        disabled: creating,
+        icon: creating ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined,
+      }}
+    >
+      <p className="text-sm text-muted-foreground">{t('bulkCreate.description')}</p>
 
-        <div className="space-y-4 py-4">
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">{t('bulkCreate.yearLabel')}</label>
-            <Input
-              type="number"
-              value={year}
-              onChange={(e) => setYear(parseInt(e.target.value) || CURRENT_YEAR)}
-              min={2020}
-              max={2100}
-            />
-          </div>
+      <WdField label={t('bulkCreate.yearLabel')} htmlFor="bulk-create-year">
+        <Input
+          id="bulk-create-year"
+          type="number"
+          value={year}
+          onChange={(e) => setYear(parseInt(e.target.value) || CURRENT_YEAR)}
+          min={2020}
+          max={2100}
+        />
+      </WdField>
 
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">{t('bulkCreate.quarterLabel')}</label>
-            <Select value={quarter} onValueChange={setQuarter}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {QUARTERS.map((q) => (
-                  <SelectItem key={q} value={q}>{t(`quarter.${q}`)}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={creating}>
-            {tc('cancel')}
-          </Button>
-          <Button onClick={handleCreate} disabled={creating}>
-            {creating && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
-            {t('bulkCreate.create')}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      <WdField label={t('bulkCreate.quarterLabel')} htmlFor="bulk-create-quarter">
+        <Select value={quarter} onValueChange={setQuarter}>
+          <SelectTrigger id="bulk-create-quarter">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {QUARTERS.map((q) => (
+              <SelectItem key={q} value={q}>{t(`quarter.${q}`)}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </WdField>
+    </WdDrawer>
   )
 }
