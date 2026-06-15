@@ -102,7 +102,7 @@ const ASSIGNEE_COLORS: Record<string, string> = {
   MANAGER: 'bg-primary/10 text-primary/90',
   HR: 'bg-tertiary-container/20 text-tertiary',
   IT: 'bg-wt-4/10 text-wt-4',
-  FINANCE: 'bg-orange-500/15 text-orange-700',
+  FINANCE: 'bg-warning-bright/15 text-ctr-warning',
 }
 
 const LIMIT_OPTIONS = [10, 20, 50]
@@ -239,9 +239,16 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
         const pct = total > 0 ? (completed / total) * 100 : 0
         return (
           <div className="flex items-center gap-2">
-            <div className="flex-1 bg-border rounded-full h-2">
+            <div
+              className="flex-1 bg-border rounded-full h-2"
+              role="progressbar"
+              aria-valuenow={Math.round(pct)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={t('progressAriaLabel', { completed, total })}
+            >
               <div
-                className="bg-ctr-primary h-2 rounded-full transition-all"
+                className="bg-primary h-2 rounded-full transition-all"
                 style={{ width: `${pct}%` }}
               />
             </div>
@@ -251,7 +258,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
           </div>
         )
       },
-    [],
+    [t],
   )
 
   // ─── D-day badge renderer ───
@@ -261,7 +268,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
         return (
           <div className="flex items-center gap-1.5">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75" />
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-destructive/50" />
             </span>
             <span className="text-sm font-semibold text-destructive">D-{Math.max(daysUntil, 0)}</span>
@@ -271,8 +278,8 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
       if (isD7) {
         return (
           <div className="flex items-center gap-1.5">
-            <span className="inline-flex rounded-full h-2.5 w-2.5 bg-yellow-500/100" />
-            <span className="text-sm font-medium text-amber-700">D-{daysUntil}</span>
+            <span className="inline-flex rounded-full h-2.5 w-2.5 bg-warning-bright" />
+            <span className="text-sm font-medium text-ctr-warning">D-{daysUntil}</span>
           </div>
         )
       }
@@ -404,7 +411,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                         row.isD3
                           ? 'bg-destructive/10'
                           : row.isD7
-                            ? 'bg-yellow-500/10'
+                            ? 'bg-warning-bright/15'
                             : ''
                       }
                     >
@@ -413,6 +420,8 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                           variant="ghost"
                           size="sm"
                           className="h-6 w-6 p-0"
+                          aria-label={t('dashboard.toggleTasks')}
+                          aria-expanded={expandedId === row.id}
                           onClick={() =>
                             setExpandedId(expandedId === row.id ? null : row.id)
                           }
@@ -473,7 +482,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                         ) : row.isD7 ? (
                           <Badge
                             variant="outline"
-                            className="border-yellow-500 text-amber-700"
+                            className="border-warning-bright text-ctr-warning"
                           >
                             <AlertTriangle className="mr-1 h-3 w-3" />
                             {t('caution')}
@@ -481,7 +490,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                         ) : (
                           <Badge
                             variant="outline"
-                            className="border-green-500 text-tertiary"
+                            className="border-tertiary text-[#006b39]"
                           >
                             {t('normalStatus')}
                           </Badge>
@@ -492,7 +501,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
                           <Button
                             size="sm"
                             variant="outline"
-                            className="text-xs text-destructive border-red-300 hover:bg-destructive/10"
+                            className="text-xs text-destructive border-destructive/40 hover:bg-destructive/10"
                             onClick={() => setCancelTarget(row)}
                           >
                             {t('cancelOffboarding')}
@@ -639,7 +648,7 @@ export function OffboardingDashboardClient({ user, companies = [] }: Offboarding
             <Button
               onClick={handleCancel}
               disabled={cancelLoading}
-              className="bg-ctr-accent hover:bg-ctr-accent/90 text-white"
+              className="bg-destructive hover:brightness-95 text-white"
             >
               {cancelLoading ? t('processing') : t('cancelOffboardingConfirm')}
             </Button>

@@ -5296,7 +5296,8 @@
     "createChecklist": "Create Checklist",
     "createNewChecklist": "Create New Checklist",
     "dashboard": {
-      "allCompanies": "전체 법인"
+      "allCompanies": "전체 법인",
+      "toggleTasks": "Bật/tắt danh sách công việc"
     },
     "dashboardDescription": "Monitor offboarding progress and manage tasks.",
     "dashboardTitle": "Offboarding Status",
@@ -5459,7 +5460,10 @@
     "wouldRecommend": "Would Recommend",
     "wouldRecommendNa": "N/A",
     "wouldRecommendNo": "No",
-    "wouldRecommendYes": "Yes"
+    "wouldRecommendYes": "Yes",
+    "progressAriaLabel": "Tiến độ: {completed}/{total} công việc hoàn thành",
+    "offboardingTabs": "Tab xử lý nghỉ việc",
+    "rateStars": "{n} sao"
   },
   "onboarding": {
     "actions": "Actions",
@@ -5559,7 +5563,9 @@
       "requiredTaskProgress": "Đã hoàn thành {done}/{total} nhiệm vụ bắt buộc",
       "signOffDesc": "Hoàn tất onboarding của {name}.",
       "skip": "Bỏ qua",
-      "start": "Bắt đầu"
+      "start": "Bắt đầu",
+      "signOff": "Phê duyệt",
+      "weekLabel": "Tuần {week}"
     },
     "dueDaysAfter": "Due (days after hire)",
     "editTemplate": "Edit Template",
@@ -5685,7 +5691,9 @@
     "weeklyCheckinCompleted": "This week's check-in is complete.",
     "welcomeKit": "Welcome Kit",
     "welcomeMessage": "Welcome to CTR HR Hub, {name}!",
-    "welcomeSubMessage": "Complete the onboarding checklist below to get started."
+    "welcomeSubMessage": "Complete the onboarding checklist below to get started.",
+    "progressAria": "Tiến độ nhập môn: {completed}/{total} công việc hoàn thành",
+    "planTypeFilter": "Bộ lọc loại kế hoạch"
   },
   "org": {
     "addChange": "Thêm Change",
