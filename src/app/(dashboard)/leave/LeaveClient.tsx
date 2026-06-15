@@ -667,9 +667,9 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                     <span
                       className={`text-sm font-semibold ${
                         projectedRemaining < 0
-                          ? 'text-red-500'
+                          ? 'text-destructive'
                           : projectedRemaining <= 3
-                          ? 'text-amber-500'
+                          ? 'text-ctr-warning'
                           : 'text-primary'
                       }`}
                     >
@@ -678,7 +678,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                   )}
                 </div>
                 {projectedRemaining !== null && projectedRemaining < 0 && (
-                  <p className="mt-1 text-xs text-red-500">{t('balancePreview.insufficientWarning')}</p>
+                  <p className="mt-1 text-xs text-destructive">{t('balancePreview.insufficientWarning')}</p>
                 )}
               </div>
             )}
