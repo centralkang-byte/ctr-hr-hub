@@ -21,7 +21,6 @@ export type {
   Attendance,
   AttendanceTerminal,
   LeavePolicy,
-  EmployeeLeaveBalance,
   LeaveRequest,
   Holiday,
   JobPosting,

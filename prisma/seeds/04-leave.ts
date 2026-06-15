@@ -4,7 +4,7 @@
 //
 // Creates:
 //   1. LeavePolicy (CTR: annual/sick/special; CTR-CN: annual/sick)
-//   2. EmployeeLeaveBalance (2025 + 2026 per employee per policy)
+//   2. LeaveYearBalance (2025 + 2026 per employee per leave type — SSOT)
 //   3. LeaveRequest (페르소나별 패턴, mixed statuses)
 // ================================================================
 
@@ -242,9 +242,42 @@ export async function seedLeave(prisma: PrismaClient): Promise<void> {
   })
   const krApproverId = hrManager?.id ?? null
 
-  // ── 4. Upsert EmployeeLeaveBalance ───────────────────────
-  console.log('📌 Seeding leave balances (2025 + 2026)...')
-  let balCount = 0
+  // ── 4. Seed LeaveYearBalance (SSOT) ───────────────────────
+  // PR4: 레거시 EmployeeLeaveBalance 이중테이블 퇴출 — 신 SSOT(LeaveYearBalance)에 직접 기록.
+  // (구: 레거시 upsert → re-read → mirror 2단계. 신: LeaveTypeDef.code 기반 직접 upsert)
+  console.log('📌 Seeding leave balances (2025 + 2026) → LeaveYearBalance...')
+  let yearBalCount = 0
+
+  // LeaveTypeDef lookup cache (companyId:code → id). 35-statutory 이후 실행 시 존재.
+  const typeDefCache: Record<string, string | null> = {}
+  async function findTypeDefId(companyId: string, code: string): Promise<string | null> {
+    const key = `${companyId}:${code}`
+    if (typeDefCache[key] !== undefined) return typeDefCache[key]
+    const td = await prisma.leaveTypeDef.findFirst({
+      where: { companyId, code },
+      select: { id: true },
+    })
+    typeDefCache[key] = td?.id ?? null
+    return typeDefCache[key]
+  }
+
+  // 직접 LeaveYearBalance upsert (entitled=granted, used=used, 나머지 0). TypeDef 미존재 시 skip.
+  async function seedYearBalance(
+    employeeId: string, companyId: string, code: string, year: number,
+    entitled: number, used: number,
+  ): Promise<void> {
+    const leaveTypeDefId = await findTypeDefId(companyId, code)
+    if (!leaveTypeDefId) return
+    await prisma.leaveYearBalance.upsert({
+      where: { employeeId_leaveTypeDefId_year: { employeeId, leaveTypeDefId, year } },
+      update: { used, pending: 0 },
+      create: {
+        employeeId, leaveTypeDefId, year,
+        entitled, used, pending: 0, carriedOver: 0, adjusted: 0,
+      },
+    })
+    yearBalCount++
+  }
 
   // KR employees
   for (const asgn of krAssignments) {
@@ -252,48 +285,16 @@ export async function seedLeave(prisma: PrismaClient): Promise<void> {
     const persona = KR_PERSONA_MAP[empNo] ?? 'P1'
     const profile = KR_LEAVE_PROFILE[persona] ?? KR_LEAVE_PROFILE['P1']
 
-    // Annual balance
     for (const year of [2025, 2026]) {
       // Granted days: KR labor law — 1st year 11 days, 2nd year+ 15
       const hireYear = asgn.employee.hireDate.getFullYear()
       const tenureYears = year - hireYear
       const granted = tenureYears >= 1 ? 15 : 11
-
       // Approximate used days based on persona profile (half for 6-month window)
       const usedApprox = Math.round((profile.annualMin + profile.annualMax) / 2)
 
-      await prisma.employeeLeaveBalance.upsert({
-        where: { employeeId_policyId_year: { employeeId: asgn.employeeId, policyId: policyMap['KR-ANNUAL'], year } },
-        update: {},
-        create: {
-          id:           deterministicUUID('leavebal', `${empNo}:KR-ANNUAL:${year}`),
-          employeeId:   asgn.employeeId,
-          policyId:     policyMap['KR-ANNUAL'],
-          year,
-          grantedDays:  granted,
-          usedDays:     Math.min(usedApprox, granted),
-          pendingDays:  0,
-          carryOverDays:0,
-        },
-      })
-      balCount++
-
-      // Sick balance
-      await prisma.employeeLeaveBalance.upsert({
-        where: { employeeId_policyId_year: { employeeId: asgn.employeeId, policyId: policyMap['KR-SICK'], year } },
-        update: {},
-        create: {
-          id:           deterministicUUID('leavebal', `${empNo}:KR-SICK:${year}`),
-          employeeId:   asgn.employeeId,
-          policyId:     policyMap['KR-SICK'],
-          year,
-          grantedDays:  5,
-          usedDays:     Math.min(profile.sickMax, 5),
-          pendingDays:  0,
-          carryOverDays:0,
-        },
-      })
-      balCount++
+      await seedYearBalance(asgn.employeeId, krId, 'annual', year, granted, Math.min(usedApprox, granted))
+      await seedYearBalance(asgn.employeeId, krId, 'sick', year, 5, Math.min(profile.sickMax, 5))
     }
   }
 
@@ -309,111 +310,13 @@ export async function seedLeave(prisma: PrismaClient): Promise<void> {
       // CN: <1yr → no annual; 1-10yr → 5 days; 10-20yr → 10 days
       const granted = tenureYears < 1 ? 0 : tenureYears < 10 ? 5 : 10
 
-      await prisma.employeeLeaveBalance.upsert({
-        where: { employeeId_policyId_year: { employeeId: asgn.employeeId, policyId: policyMap['CN-ANNUAL'], year } },
-        update: {},
-        create: {
-          id:           deterministicUUID('leavebal', `${empNo}:CN-ANNUAL:${year}`),
-          employeeId:   asgn.employeeId,
-          policyId:     policyMap['CN-ANNUAL'],
-          year,
-          grantedDays:  granted,
-          usedDays:     Math.min(Math.round((profile.annualMin + profile.annualMax) / 2), Math.max(granted, 1)),
-          pendingDays:  0,
-          carryOverDays:0,
-        },
-      })
-      balCount++
-
-      await prisma.employeeLeaveBalance.upsert({
-        where: { employeeId_policyId_year: { employeeId: asgn.employeeId, policyId: policyMap['CN-SICK'], year } },
-        update: {},
-        create: {
-          id:           deterministicUUID('leavebal', `${empNo}:CN-SICK:${year}`),
-          employeeId:   asgn.employeeId,
-          policyId:     policyMap['CN-SICK'],
-          year,
-          grantedDays:  7,
-          usedDays:     profile.sickMax,
-          pendingDays:  0,
-          carryOverDays:0,
-        },
-      })
-      balCount++
+      await seedYearBalance(asgn.employeeId, cnId, 'annual', year, granted,
+        Math.min(Math.round((profile.annualMin + profile.annualMax) / 2), Math.max(granted, 1)))
+      await seedYearBalance(asgn.employeeId, cnId, 'sick', year, 7, profile.sickMax)
     }
   }
 
-  console.log(`  ✅ ${balCount} leave balance records`)
-
-  // ── 4b. Mirror to LeaveYearBalance (Phase 6) ──────────────
-  // LeaveTypeDef가 존재하면 LeaveYearBalance도 생성 (35-statutory 이후 실행 시)
-  console.log('📌 Mirroring to LeaveYearBalance (if LeaveTypeDefs exist)...')
-  let yearBalCount = 0
-
-  const CODE_MAP: Record<string, string> = {
-    'KR-ANNUAL': 'annual', 'KR-SICK': 'sick',
-    'CN-ANNUAL': 'annual', 'CN-SICK': 'sick',
-  }
-  const COMPANY_MAP: Record<string, string> = {
-    'KR-ANNUAL': krId, 'KR-SICK': krId,
-    'CN-ANNUAL': cnId, 'CN-SICK': cnId,
-  }
-
-  // LeaveTypeDef lookup cache
-  const typeDefCache: Record<string, string | null> = {}
-  async function findTypeDefId(policyCode: string): Promise<string | null> {
-    if (typeDefCache[policyCode] !== undefined) return typeDefCache[policyCode]
-    const code = CODE_MAP[policyCode]
-    const companyId = COMPANY_MAP[policyCode]
-    if (!code || !companyId) { typeDefCache[policyCode] = null; return null }
-    const td = await prisma.leaveTypeDef.findFirst({
-      where: { companyId, code },
-      select: { id: true },
-    })
-    typeDefCache[policyCode] = td?.id ?? null
-    return typeDefCache[policyCode]
-  }
-
-  // Re-read balances and mirror to LeaveYearBalance
-  for (const asgn of [...krAssignments, ...cnAssignments]) {
-    const empBalances = await prisma.employeeLeaveBalance.findMany({
-      where: { employeeId: asgn.employeeId },
-      include: { policy: { select: { leaveType: true, companyId: true } } },
-    })
-    for (const bal of empBalances) {
-      const pCode = bal.policy.companyId === krId
-        ? `KR-${bal.policy.leaveType}`
-        : `CN-${bal.policy.leaveType}`
-      const typeDefId = await findTypeDefId(pCode)
-      if (!typeDefId) continue
-
-      await prisma.leaveYearBalance.upsert({
-        where: {
-          employeeId_leaveTypeDefId_year: {
-            employeeId: bal.employeeId,
-            leaveTypeDefId: typeDefId,
-            year: bal.year,
-          },
-        },
-        update: {
-          used: Number(bal.usedDays),
-          pending: Number(bal.pendingDays),
-        },
-        create: {
-          employeeId: bal.employeeId,
-          leaveTypeDefId: typeDefId,
-          year: bal.year,
-          entitled: Number(bal.grantedDays),
-          used: Number(bal.usedDays),
-          pending: Number(bal.pendingDays),
-          carriedOver: Number(bal.carryOverDays),
-          adjusted: 0,
-        },
-      })
-      yearBalCount++
-    }
-  }
-  console.log(`  ✅ ${yearBalCount} LeaveYearBalance records (mirrored)`)
+  console.log(`  ✅ ${yearBalCount} LeaveYearBalance records`)
 
   // ── 5. Create LeaveRequests ───────────────────────────────
   console.log('📌 Seeding leave requests...')
@@ -576,7 +479,7 @@ export async function seedLeave(prisma: PrismaClient): Promise<void> {
 
   // ── Summary ──────────────────────────────────────────────
   const totalReq  = await prisma.leaveRequest.count()
-  const totalBal  = await prisma.employeeLeaveBalance.count()
+  const totalBal  = await prisma.leaveYearBalance.count()
   const totalPol  = await prisma.leavePolicy.count()
 
   console.log('\n======================================')

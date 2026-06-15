@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // Fix 4-4: Supplementary Seed Data
 // - [P2-18] Crossboarding global templates (DEPARTURE + ARRIVAL)
-// - [P2-7]  Employee-A EmployeeLeaveBalance for 2026
+// - [P2-7]  Employee-A LeaveYearBalance (annual) for 2026
 // - [P2-33] CFR Settings (cfr-config + one-on-one-config)
 //
 // ★ Standalone script — do NOT run seed.ts master
@@ -84,76 +84,49 @@ async function main() {
     console.log('  ✅ Crossboarding ARRIVAL template already exists')
   }
 
-  // ── [P2-7] Employee-A EmployeeLeaveBalance ──────────────────
+  // ── [P2-7] Employee-A LeaveYearBalance (annual) ─────────────
+  // PR4: 레거시 EmployeeLeaveBalance 경로 제거 — 신 SSOT(LeaveYearBalance)만 기록.
   const eaSso = await prisma.ssoIdentity.findFirst({
     where: { email: 'employee-a@ctr.co.kr' },
     select: { employeeId: true },
   })
 
   if (eaSso?.employeeId) {
-    // Find a leave policy for CTR
     const krCompany = await prisma.company.findFirst({
       where: { code: 'CTR' },
       select: { id: true },
     })
 
     if (krCompany) {
-      const policy = await prisma.leavePolicy.findFirst({
-        where: { companyId: krCompany.id, deletedAt: null },
+      const annualTypeDef = await prisma.leaveTypeDef.findFirst({
+        where: { companyId: krCompany.id, code: 'annual' },
         select: { id: true },
       })
 
-      if (policy) {
-        await prisma.employeeLeaveBalance.upsert({
+      if (annualTypeDef) {
+        await prisma.leaveYearBalance.upsert({
           where: {
-            employeeId_policyId_year: {
-              employeeId: eaSso.employeeId,
-              policyId: policy.id,
-              year: 2026,
-            },
-          },
-          update: { grantedDays: 15 },
-          create: {
-            employeeId: eaSso.employeeId,
-            policyId: policy.id,
-            year: 2026,
-            grantedDays: 15,
-            usedDays: 0,
-            pendingDays: 0,
-            carryOverDays: 0,
-          },
-        })
-
-        // Phase 6: Mirror to LeaveYearBalance
-        const annualTypeDef = await prisma.leaveTypeDef.findFirst({
-          where: { companyId: krCompany.id, code: 'annual' },
-          select: { id: true },
-        })
-        if (annualTypeDef) {
-          await prisma.leaveYearBalance.upsert({
-            where: {
-              employeeId_leaveTypeDefId_year: {
-                employeeId: eaSso.employeeId,
-                leaveTypeDefId: annualTypeDef.id,
-                year: 2026,
-              },
-            },
-            update: { entitled: 15 },
-            create: {
+            employeeId_leaveTypeDefId_year: {
               employeeId: eaSso.employeeId,
               leaveTypeDefId: annualTypeDef.id,
               year: 2026,
-              entitled: 15,
-              used: 0,
-              pending: 0,
-              carriedOver: 0,
-              adjusted: 0,
             },
-          })
-        }
+          },
+          update: { entitled: 15 },
+          create: {
+            employeeId: eaSso.employeeId,
+            leaveTypeDefId: annualTypeDef.id,
+            year: 2026,
+            entitled: 15,
+            used: 0,
+            pending: 0,
+            carriedOver: 0,
+            adjusted: 0,
+          },
+        })
         console.log('  ✅ Employee-A (이민준) leave balance for 2026 created')
       } else {
-        console.warn('  ⚠️ No active LeavePolicy found for CTR-KR')
+        console.warn('  ⚠️ No annual LeaveTypeDef found for CTR — skipping Employee-A balance')
       }
     }
   } else {

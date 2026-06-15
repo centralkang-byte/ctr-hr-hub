@@ -265,30 +265,7 @@ CREATE POLICY "rls_employee_own_leave_requests" ON "leave_requests"
     AND employee_id = current_employee_id()
   );
 
--- employee_leave_balances
-ALTER TABLE "employee_leave_balances" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "employee_leave_balances" FORCE ROW LEVEL SECURITY;
-
-CREATE POLICY "rls_super_admin_leave_balances" ON "employee_leave_balances"
-  FOR ALL USING (current_user_role() = 'SUPER_ADMIN');
-
-CREATE POLICY "rls_hr_leave_balances" ON "employee_leave_balances"
-  FOR ALL USING (
-    current_user_role() IN ('HR_ADMIN', 'MANAGER')
-    AND EXISTS (
-      SELECT 1 FROM employees e
-      JOIN employee_assignments ea ON ea.employee_id = e.id
-        AND ea.is_primary = true AND ea.end_date IS NULL
-      WHERE e.id = employee_leave_balances.employee_id
-        AND ea.company_id = current_company_id()
-    )
-  );
-
-CREATE POLICY "rls_employee_own_leave_balances" ON "employee_leave_balances"
-  FOR SELECT USING (
-    current_user_role() = 'EMPLOYEE'
-    AND employee_id = current_employee_id()
-  );
+-- (PR4) employee_leave_balances RLS 제거 — 테이블 DROP. 신 SSOT = leave_year_balances.
 
 -- compensation_history (P1 salary data)
 ALTER TABLE "compensation_history" ENABLE ROW LEVEL SECURITY;
