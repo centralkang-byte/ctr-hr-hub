@@ -5,10 +5,9 @@ import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
 import MySkillsClient from './MySkillsClient'
 import type { SessionUser } from '@/types'
-import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { loadSelfAssessmentProps } from '@/lib/skills/load-self-assessment-props'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export default async function MySkillsPage() {
@@ -16,47 +15,14 @@ export default async function MySkillsPage() {
   if (!session?.user) redirect('/login')
   const user = session.user as SessionUser
 
-  const [competencies, employee] = await Promise.all([
-    prisma.competency.findMany({
-      where: { deletedAt: null },
-      include: {
-        category: { select: { id: true, name: true, code: true } },
-        levels: { orderBy: { level: 'asc' } },
-      },
-      orderBy: [{ category: { displayOrder: 'asc' } }, { displayOrder: 'asc' }],
-    }),
-    prisma.employee.findUnique({
-      where: { id: user.employeeId },
-      include: {
-        assignments: {
-          where: { isPrimary: true, endDate: null },
-          take: 1,
-          include: { jobGrade: { select: { code: true, name: true } } },
-        },
-      },
-    }),
-  ])
-
-  const primary = extractPrimaryAssignment(employee?.assignments ?? [])
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const grade = (primary as any)?.jobGrade?.code ?? ''
-
-  // 역량 요건 (기대 수준)
-  const requirements = await prisma.competencyRequirement.findMany({
-    where: {
-      OR: [{ companyId: user.companyId }, { companyId: null }],
-      jobLevelCode: grade || undefined,
-    },
-    select: { competencyId: true, expectedLevel: true },
-  })
-  const reqMap = Object.fromEntries(requirements.map((r) => [r.competencyId, r.expectedLevel]))
+  const { competencies, requirementMap, grade } = await loadSelfAssessmentProps(user)
 
   return (
     <Suspense fallback={<ListPageSkeleton />}>
       <MySkillsClient
         user={user}
         competencies={competencies}
-        requirementMap={reqMap}
+        requirementMap={requirementMap}
         grade={grade}
       />
     </Suspense>

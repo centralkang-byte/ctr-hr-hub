@@ -6,13 +6,15 @@ import { toast } from '@/hooks/use-toast'
 // CTR HR Hub — 나의 역량 자기평가 Client (B8-3)
 // ═══════════════════════════════════════════════════════════
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { apiClient } from '@/lib/api'
 import {
   ChevronDown, ChevronUp, CheckCircle2,   Radar, Save, Send, BookOpen,
 } from 'lucide-react'
 import { BUTTON_VARIANTS, CHART_THEME } from '@/lib/styles'
+import { cn } from '@/lib/utils'
 import type { SessionUser } from '@/types'
+import type { EmbeddedChildProps } from '@/lib/performance/growth-hub'
 import {
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar as RechartsRadar,
   ResponsiveContainer, Legend, Tooltip,
@@ -35,7 +37,7 @@ type AssessmentItem = {
   selfComment: string
 }
 
-type Props = {
+type Props = EmbeddedChildProps & {
   user: SessionUser
   competencies: Competency[]
   requirementMap: Record<string, number>
@@ -100,7 +102,7 @@ function LevelSelector({
 
 // ── 메인 컴포넌트 ─────────────────────────────────────────
 
-export default function MySkillsClient({user: _user, competencies, requirementMap, grade: _grade }: Props) {
+export default function MySkillsClient({ user: _user, competencies, requirementMap, grade: _grade, embedded = false, onPrimaryActionChange }: Props) {
   const t = useTranslations('mySkills')
   const tCommon = useTranslations('common')
 
@@ -116,14 +118,19 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
   const [assessments, setAssessments] = useState<Record<string, AssessmentItem>>({})
   const [savedAssessments, setSavedAssessments] = useState<Record<string, AssessmentItem>>({})
   const [loading, setLoading] = useState(true)
+  const [loadFailed, setLoadFailed] = useState(false)
   const [saving, setSaving] = useState(false)
   // 프로토 정합: 역량 레이더 기본 노출 (토글 버튼은 유지 — 사용자가 접을 수 있음)
   const [showRadar, setShowRadar] = useState(true)
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['all']))
+  // 기간 전환 시 늦게 도착한 이전 응답이 새 상태를 덮어쓰지 않도록 (Codex P2-9)
+  const reqIdRef = useRef(0)
 
   // 기존 평가 로드
   const loadAssessments = useCallback(async () => {
+    const reqId = ++reqIdRef.current
     setLoading(true)
+    setLoadFailed(false)
     try {
       const data = await apiClient.get<{
         id: string
@@ -131,6 +138,7 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
         selfLevel: number | null
         selfComment: string | null
       }[]>(`/api/v1/skills/assessments?period=${period}`)
+      if (reqId !== reqIdRef.current) return // stale 응답 폐기
 
       const map: Record<string, AssessmentItem> = {}
       if (Array.isArray(data)) {
@@ -145,12 +153,18 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
       }
       setAssessments({ ...map })
       setSavedAssessments({ ...map })
-    } catch {
-      // 에러 무시
+    } catch (err) {
+      if (reqId !== reqIdRef.current) return
+      setLoadFailed(true)
+      toast({
+        title: t('loadFailed'),
+        description: err instanceof Error ? err.message : tCommon('retry'),
+        variant: 'destructive',
+      })
     } finally {
-      setLoading(false)
+      if (reqId === reqIdRef.current) setLoading(false)
     }
-  }, [period])
+  }, [period, t, tCommon])
 
   useEffect(() => {
     void loadAssessments()
@@ -164,27 +178,33 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
     return acc
   }, {})
 
-  // 자기평가 저장 (임시)
-  const handleSave = async (submit = false) => {
+  // 자기평가 저장 — 제출/임시/허브저장 모두 동일 upsert (백엔드에 제출-잠금 상태 없음).
+  // successKey 로 성공 토스트만 구분 (제출되었습니다 vs 저장되었습니다).
+  const handleSave = useCallback(async (successKey?: 'toastSubmitted' | 'toastSaved') => {
+    const items = Object.entries(assessments).map(([competencyId, a]) => ({
+      competencyId,
+      selfLevel: a.selfLevel,
+      selfComment: a.selfComment,
+    }))
+    if (items.length === 0) return
     setSaving(true)
     try {
-      const items = Object.entries(assessments).map(([competencyId, a]) => ({
-        competencyId,
-        selfLevel: a.selfLevel,
-        selfComment: a.selfComment,
-      }))
-      if (items.length === 0) return
-
       await apiClient.post('/api/v1/skills/assessments', {
         assessmentPeriod: period,
         items,
       })
       setSavedAssessments({ ...assessments })
-      if (submit) toast({ title: t('toastSubmitted') })
+      if (successKey) toast({ title: t(successKey) })
+    } catch (err) {
+      toast({
+        title: t('saveFailed'),
+        description: err instanceof Error ? err.message : tCommon('retry'),
+        variant: 'destructive',
+      })
     } finally {
       setSaving(false)
     }
-  }
+  }, [assessments, period, t, tCommon])
 
   // 레이더 차트 데이터 (최대 8개 역량)
   const radarData = competencies.slice(0, 8).map((c) => {
@@ -202,16 +222,32 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
 
   const isDirty = JSON.stringify(assessments) !== JSON.stringify(savedAssessments)
 
+  // ─── 허브 헤더 1차 액션: 자기평가 저장 (제출-잠금 없음 → "저장"). load 실패/미완료 시 비활성(빈 폼 위 저장 차단)
+  useEffect(() => {
+    if (!onPrimaryActionChange) return
+    onPrimaryActionChange({
+      labelKey: 'action.saveSelfEval',
+      icon: Save,
+      enabled: !loading && !loadFailed && completedCount > 0,
+      visible: true,
+      pending: saving,
+      run: () => { void handleSave('toastSaved') },
+    })
+    return () => onPrimaryActionChange(null)
+  }, [onPrimaryActionChange, loading, loadFailed, completedCount, saving, handleSave])
+
   return (
-    <div className="p-6 space-y-6">
-      {/* 헤더 */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {t('description')}
-          </p>
-        </div>
+    <div className={cn(embedded ? 'space-y-6' : 'p-6 space-y-6')}>
+      {/* 헤더 (embedded 시 허브가 제공) */}
+      <div className={cn('flex items-center', embedded ? 'justify-end' : 'justify-between')}>
+        {!embedded && (
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              {t('description')}
+            </p>
+          </div>
+        )}
         <div className="flex items-center gap-3">
           <select
             value={period}
@@ -403,25 +439,27 @@ export default function MySkillsClient({user: _user, competencies, requirementMa
         </div>
       )}
 
-      {/* 액션 버튼 */}
-      <div className="flex justify-end gap-3 sticky bottom-6">
-        <button
-          onClick={() => handleSave(false)}
-          disabled={saving || !isDirty}
-          className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background disabled:opacity-50"
-        >
-          <Save className="w-4 h-4" />
-          {t('saveDraft')}
-        </button>
-        <button
-          onClick={() => handleSave(true)}
-          disabled={saving || completedCount === 0}
-          className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
-        >
-          <Send className="w-4 h-4" />
-          {t('submit')} ({completedCount}/{totalCount})
-        </button>
-      </div>
+      {/* 액션 버튼 (embedded 시 허브 헤더가 저장 제공 → 자체 액션바 숨김) */}
+      {!embedded && (
+        <div className="flex justify-end gap-3 sticky bottom-6">
+          <button
+            onClick={() => handleSave('toastSaved')}
+            disabled={saving || !isDirty}
+            className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-background disabled:opacity-50"
+          >
+            <Save className="w-4 h-4" />
+            {t('saveDraft')}
+          </button>
+          <button
+            onClick={() => handleSave('toastSubmitted')}
+            disabled={saving || completedCount === 0}
+            className={`flex items-center gap-2 px-4 py-2 ${BUTTON_VARIANTS.primary} rounded-lg text-sm font-medium disabled:opacity-50`}
+          >
+            <Send className="w-4 h-4" />
+            {t('submit')} ({completedCount}/{totalCount})
+          </button>
+        </div>
+      )}
     </div>
   )
 }

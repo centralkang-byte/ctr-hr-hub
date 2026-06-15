@@ -6,9 +6,10 @@ import { useTranslations } from 'next-intl'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
+import type { EmbeddedChildProps } from '@/lib/performance/growth-hub'
 import { Card } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Loader2, ArrowRight } from 'lucide-react'
+import { Loader2, ArrowRight, FileText } from 'lucide-react'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -23,13 +24,17 @@ interface ReviewItem {
   employeeSubmittedAt: string | null
   managerSubmittedAt: string | null
   updatedAt: string
+  employee: { id: string; name: string }
   manager: { id: string; name: string } | null
   _count: { goalProgress: number }
 }
 
-interface Props {
+interface Props extends EmbeddedChildProps {
   user: SessionUser
 }
+
+// 직원 본인이 작성/수정 가능한 분기 리뷰 상태 (quarterly-reviews/[id] canEditEmployee 와 정합)
+const EMPLOYEE_EDITABLE_STATUSES = ['DRAFT', 'IN_PROGRESS']
 
 // ─── Constants ──────────────────────────────────────────────
 
@@ -39,7 +44,7 @@ const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'] as const
 
 // ─── Component ──────────────────────────────────────────────
 
-export default function MyQuarterlyReviewClient({ user: _user }: Props) {
+export default function MyQuarterlyReviewClient({ user, embedded = false, onPrimaryActionChange }: Props) {
   const t = useTranslations('performance.quarterlyReview')
   const tc = useTranslations('common')
   const router = useRouter()
@@ -77,15 +82,58 @@ export default function MyQuarterlyReviewClient({ user: _user }: Props) {
     fetchReviews()
   }, [fetchReviews])
 
+  // ─── 허브 헤더 1차 액션: 본인 편집가능 리뷰 "열기" (직원 self-create 불가 → 생성 아님).
+  // 화면 연도/분기 필터와 분리한 별도 조회 — 다른 연도에 편집가능 리뷰가 있어도 CTA 유지 (Codex P1-2).
+  const [writableId, setWritableId] = useState<string | null>(null)
+  useEffect(() => {
+    if (!onPrimaryActionChange) return
+    let cancelled = false
+    void (async () => {
+      try {
+        const res = await apiClient.getList<ReviewItem>(
+          '/api/v1/performance/quarterly-reviews',
+          { limit: 50 },
+        )
+        if (cancelled) return
+        const w = res.data.find(
+          (r) => r.employee.id === user.employeeId && EMPLOYEE_EDITABLE_STATUSES.includes(r.status),
+        )
+        setWritableId(w?.id ?? null)
+      } catch {
+        if (!cancelled) setWritableId(null) // CTA 숨김으로 안전하게 degrade (목록 fetch 가 토스트 처리)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [onPrimaryActionChange, user.employeeId])
+
+  const openWritableReview = useCallback(() => {
+    if (writableId) router.push(`/performance/quarterly-reviews/${writableId}`)
+  }, [writableId, router])
+  useEffect(() => {
+    if (!onPrimaryActionChange) return
+    onPrimaryActionChange({
+      labelKey: 'action.writeReview',
+      icon: FileText,
+      enabled: !!writableId,
+      visible: !!writableId,
+      run: openWritableReview,
+    })
+    return () => onPrimaryActionChange(null)
+  }, [onPrimaryActionChange, writableId, openWritableReview])
+
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{t('myTitle')}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t('description')}</p>
+      {/* Header (embedded 시 허브가 제공) */}
+      {!embedded && (
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">{t('myTitle')}</h1>
+            <p className="text-sm text-muted-foreground mt-1">{t('description')}</p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Filters */}
       <div className="flex gap-3">

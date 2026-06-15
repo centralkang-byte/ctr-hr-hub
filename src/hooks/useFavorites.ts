@@ -34,6 +34,8 @@ const DEPRECATED_NAV_KEYS = new Set([
   'manager-eval',            // 팀 관리 → 성과 허브로 흡수
   'leave-admin',             // 인사 관리 → leave-loa-admin으로 통합
   'loa-admin',               // 인사 관리 → leave-loa-admin으로 통합
+  'my-quarterly-review',     // 나의 공간 → 평가/성장 허브 탭으로 흡수
+  'my-skills',               // 나의 공간 → 평가/성장 허브 탭으로 흡수
 ])
 
 function readFromStorage(): string[] {

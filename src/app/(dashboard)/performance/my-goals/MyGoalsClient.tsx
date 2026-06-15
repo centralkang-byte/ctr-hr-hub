@@ -5,11 +5,14 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { toast } from '@/hooks/use-toast'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Plus, Pencil, Trash2, Lock, AlertTriangle, Target, X } from 'lucide-react'
+import { Plus, Pencil, Trash2, Lock, AlertTriangle, Target } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { getAllowedStatuses } from '@/lib/performance/pipeline'
 import { STATUS_VARIANT } from '@/lib/styles/status'
 import type { SessionUser } from '@/types'
+import type { EmbeddedChildProps } from '@/lib/performance/growth-hub'
+import { cn } from '@/lib/utils'
+import { WdDrawer, WdField, WdRow } from '@/components/shared/WdDrawer'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 // ─── Types ────────────────────────────────────────────────
@@ -28,68 +31,63 @@ const STATUS_BADGE: Record<string, { labelKey: string; cls: string }> = {
     REJECTED: { labelKey: 'myGoals.statusRejected', cls: STATUS_VARIANT.error },
 }
 
-// ─── Goal Modal ───────────────────────────────────────────
+// ─── Goal Drawer (입력 폼 표준 컨테이너 = WdDrawer, DESIGN.md §5.4) ─────
 
 interface GoalForm { title: string; description: string; kpiMetrics: string; weight: number; targetDate: string }
 
-function GoalModal({ initial, onSave, onClose, saving, t }: {
-    initial?: GoalForm; onSave: (f: GoalForm) => void; onClose: () => void; saving: boolean; t: (key: string) => string
+const EMPTY_GOAL: GoalForm = { title: '', description: '', kpiMetrics: '', weight: 20, targetDate: '' }
+const GOAL_INPUT_CLS = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus:outline-none'
+
+function GoalModal({ open, initial, onSave, onClose, saving, t }: {
+    open: boolean; initial?: GoalForm; onSave: (f: GoalForm) => void; onClose: () => void; saving: boolean; t: (key: string) => string
 }) {
-    const [form, setForm] = useState<GoalForm>(initial ?? { title: '', description: '', kpiMetrics: '', weight: 20, targetDate: '' })
+    const [form, setForm] = useState<GoalForm>(EMPTY_GOAL)
+    // 열릴 때 initial(추가=빈값 / 수정=기존값)로 리셋
+    useEffect(() => { if (open) setForm(initial ?? EMPTY_GOAL) }, [open, initial])
     const set = (k: keyof GoalForm, v: string | number) => setForm((p) => ({ ...p, [k]: v }))
+    const valid = Boolean(form.title && form.description && form.targetDate)
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30" onClick={onClose}>
-            <div className="w-full max-w-lg rounded-xl bg-card p-6" onClick={(e) => e.stopPropagation()}>
-                <div className="mb-5 flex items-center justify-between">
-                    <h3 className="text-lg font-bold text-foreground">{initial ? t('myGoals.editGoal') : t('myGoals.addGoal')}</h3>
-                    <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
-                </div>
-                <div className="space-y-4">
-                    <div>
-                        <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.titleLabel')} <span className="text-destructive">*</span></label>
-                        <input value={form.title} onChange={(e) => set('title', e.target.value)} maxLength={100}
-                            className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" placeholder={t('myGoals.titlePlaceholder')} />
-                    </div>
-                    <div>
-                        <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.descLabel')} <span className="text-destructive">*</span></label>
-                        <textarea value={form.description} onChange={(e) => set('description', e.target.value)} rows={3} maxLength={500}
-                            className="w-full resize-none rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" placeholder={t('myGoals.descPlaceholder')} />
-                    </div>
-                    <div>
-                        <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.kpiLabel')}</label>
-                        <input value={form.kpiMetrics} onChange={(e) => set('kpiMetrics', e.target.value)}
-                            className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" placeholder={t('myGoals.kpiPlaceholder')} />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.weightLabel')} <span className="text-destructive">*</span></label>
-                            <input type="number" min={5} max={100} step={5} value={form.weight} onChange={(e) => set('weight', Math.max(5, Math.min(100, Number(e.target.value))))}
-                                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" />
-                        </div>
-                        <div>
-                            <label className="mb-1 block text-sm font-medium text-foreground">{t('myGoals.deadlineLabel')} <span className="text-destructive">*</span></label>
-                            <input type="date" value={form.targetDate} onChange={(e) => set('targetDate', e.target.value)}
-                                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none" />
-                        </div>
-                    </div>
-                </div>
-                <div className="mt-6 flex justify-end gap-3">
-                    <button onClick={onClose} className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground">{t('myGoals.cancel')}</button>
-                    <button onClick={() => onSave(form)} disabled={!form.title || !form.description || !form.targetDate || saving}
-                        className="rounded-lg bg-warm px-4 py-2 text-sm font-medium text-white disabled:opacity-40">
-                        {saving ? t('myGoals.loading') : t('myGoals.save')}
-                    </button>
-                </div>
+        <WdDrawer
+            open={open}
+            onClose={onClose}
+            title={initial ? t('myGoals.editGoal') : t('myGoals.addGoal')}
+            closeDisabled={saving}
+            secondary={{ label: t('myGoals.cancel'), onClick: onClose, disabled: saving }}
+            primary={{ label: saving ? t('myGoals.loading') : t('myGoals.save'), onClick: () => onSave(form), disabled: !valid || saving }}
+        >
+            <div className="space-y-4">
+                <WdField label={t('myGoals.titleLabel')} required htmlFor="goal-title">
+                    <input id="goal-title" value={form.title} onChange={(e) => set('title', e.target.value)} maxLength={100}
+                        className={GOAL_INPUT_CLS} placeholder={t('myGoals.titlePlaceholder')} />
+                </WdField>
+                <WdField label={t('myGoals.descLabel')} required htmlFor="goal-description">
+                    <textarea id="goal-description" value={form.description} onChange={(e) => set('description', e.target.value)} rows={3} maxLength={500}
+                        className={`${GOAL_INPUT_CLS} resize-none`} placeholder={t('myGoals.descPlaceholder')} />
+                </WdField>
+                <WdField label={t('myGoals.kpiLabel')} htmlFor="goal-kpi">
+                    <input id="goal-kpi" value={form.kpiMetrics} onChange={(e) => set('kpiMetrics', e.target.value)}
+                        className={GOAL_INPUT_CLS} placeholder={t('myGoals.kpiPlaceholder')} />
+                </WdField>
+                <WdRow>
+                    <WdField label={t('myGoals.weightLabel')} required htmlFor="goal-weight">
+                        <input id="goal-weight" type="number" min={5} max={100} step={5} value={form.weight}
+                            onChange={(e) => set('weight', Math.max(5, Math.min(100, Number(e.target.value))))} className={GOAL_INPUT_CLS} />
+                    </WdField>
+                    <WdField label={t('myGoals.deadlineLabel')} required htmlFor="goal-deadline">
+                        <input id="goal-deadline" type="date" value={form.targetDate} onChange={(e) => set('targetDate', e.target.value)}
+                            className={GOAL_INPUT_CLS} />
+                    </WdField>
+                </WdRow>
             </div>
-        </div>
+        </WdDrawer>
     )
 }
 
 // ─── Main Component ───────────────────────────────────────
 
-export default function MyGoalsClient({user: _user }: {
-  user: SessionUser }) {
+export default function MyGoalsClient({ user: _user, embedded = false, onPrimaryActionChange }: {
+  user: SessionUser } & EmbeddedChildProps) {
   const tCommon = useTranslations('common')
   const t = useTranslations('performance')
   const { confirm, dialogProps } = useConfirmDialog()
@@ -111,8 +109,12 @@ export default function MyGoalsClient({user: _user }: {
                 const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
                 setCycles(res.data)
                 if (res.data.length > 0) {
-                    setSelectedCycleId(res.data[0].id)
-                    setCycleStatus(res.data[0].status)
+                    // 기본 선택 = ACTIVE 사이클 우선(없으면 첫 번째). cycles API 정렬이
+                    // year/createdAt desc 라 최신 비-ACTIVE 사이클이 앞설 수 있어, 목표를
+                    // 실제로 생성/수정 가능한 ACTIVE 사이클로 랜딩시켜 헤더 액션이 활성화되게 함.
+                    const preferred = res.data.find((c) => c.status === 'ACTIVE') ?? res.data[0]
+                    setSelectedCycleId(preferred.id)
+                    setCycleStatus(preferred.status)
                 }
             } catch { setError(t('cycleListLoadFailed')) }
         }
@@ -139,6 +141,20 @@ export default function MyGoalsClient({user: _user }: {
     const allowedStatuses = getAllowedStatuses('goals', selectedHalf)
     const isViewOnly = !['ACTIVE'].includes(cycleStatus)
     const isBlocked = !allowedStatuses.includes(cycleStatus) && cycleStatus !== ''
+
+    // ─── 허브 헤더 1차 액션 등록 (embedded) — hooks 규칙상 조기 return 위에 위치
+    const openNewGoal = useCallback(() => setModal({ mode: 'add' }), [])
+    useEffect(() => {
+        if (!onPrimaryActionChange) return
+        onPrimaryActionChange({
+            labelKey: 'action.newGoal',
+            icon: Plus,
+            enabled: !isViewOnly && !isBlocked,
+            visible: !isBlocked,
+            run: openNewGoal,
+        })
+        return () => onPrimaryActionChange(null)
+    }, [onPrimaryActionChange, isViewOnly, isBlocked, openNewGoal])
 
     // ─── Handlers
     async function handleSave(form: GoalForm) {
@@ -186,7 +202,7 @@ export default function MyGoalsClient({user: _user }: {
     // ─── Route guard
     if (isBlocked) {
         return (
-            <div className="flex min-h-[60vh] items-center justify-center p-6">
+            <div className={cn('flex items-center justify-center', embedded ? 'py-12' : 'min-h-[60vh] p-6')}>
                 <div className="text-center">
                     <Target className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                     <h2 className="mb-2 text-lg font-semibold text-foreground">{t('goals_settings_keab8b0ea_kec9584eb')}</h2>
@@ -197,14 +213,16 @@ export default function MyGoalsClient({user: _user }: {
     }
 
     return (
-        <div className="min-h-screen bg-muted p-6">
-            <div className="mx-auto max-w-4xl">
+        <div className={cn(embedded ? '' : 'min-h-screen bg-muted p-6')}>
+            <div className={cn(embedded ? '' : 'mx-auto max-w-4xl')}>
                 {/* Header */}
-                <div className="mb-6 flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-foreground">{t('myGoals_my_goals')}</h1>
-                        <p className="mt-1 text-sm text-muted-foreground">{t('kr_mbo_kebaaa9ed_kec84a4ec_keab48')}</p>
-                    </div>
+                <div className={cn('mb-6 flex items-center', embedded ? 'justify-end' : 'justify-between')}>
+                    {!embedded && (
+                        <div>
+                            <h1 className="text-2xl font-bold text-foreground">{t('myGoals_my_goals')}</h1>
+                            <p className="mt-1 text-sm text-muted-foreground">{t('kr_mbo_kebaaa9ed_kec84a4ec_keab48')}</p>
+                        </div>
+                    )}
                     <select value={selectedCycleId} onChange={(e) => handleCycleChange(e.target.value)}
                         className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
                         {cycles.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -225,8 +243,8 @@ export default function MyGoalsClient({user: _user }: {
                         )}
                     </div>
                     <div className="flex gap-2">
-                        {!isViewOnly && (
-                            <button onClick={() => setModal({ mode: 'add' })}
+                        {!isViewOnly && !embedded && (
+                            <button onClick={openNewGoal}
                                 className="inline-flex items-center gap-2 rounded-lg bg-warm px-4 py-2 text-sm font-medium text-white hover:brightness-95 transition-colors">
                                 <Plus className="h-4 w-4" /> {t('goals_add')}
                             </button>
@@ -256,8 +274,8 @@ export default function MyGoalsClient({user: _user }: {
                     <div className="rounded-xl border border-border bg-card p-16 text-center">
                         <Target className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                         <p className="mb-2 text-muted-foreground">{t('kr_kec9584ec_keb93b1eb_kebaaa9ed_')}</p>
-                        {!isViewOnly && (
-                            <button onClick={() => setModal({ mode: 'add' })}
+                        {!isViewOnly && !embedded && (
+                            <button onClick={openNewGoal}
                                 className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
                                 <Plus className="h-4 w-4" /> {t('kr_kecb2ab_kebb288ec_goals_kecb69')}
                             </button>
@@ -347,8 +365,8 @@ export default function MyGoalsClient({user: _user }: {
                 )}
             </div>
 
-            {/* Modal */}
-            {modal && <GoalModal initial={modal.initial} onSave={handleSave} onClose={() => setModal(null)} saving={saving} t={(key: string) => t(key as Parameters<typeof t>[0])} />}
+            {/* 입력 드로어 (우측 슬라이드 — 입력 폼 표준 컨테이너) */}
+            <GoalModal open={!!modal} initial={modal?.initial} onSave={handleSave} onClose={() => setModal(null)} saving={saving} t={(key: string) => t(key as Parameters<typeof t>[0])} />
         <ConfirmDialog {...dialogProps} />
         </div>
     )
