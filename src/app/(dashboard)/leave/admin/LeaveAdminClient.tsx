@@ -23,17 +23,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { WdStatStrip } from '@/components/shared/WdStatStrip'
+import { WdDrawer, WdField, WdRow } from '@/components/shared/WdDrawer'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
 import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
@@ -517,54 +510,44 @@ export function LeaveAdminClient({ user }: { user: SessionUser }) {
       )}
       </>}
 
-      {/* ═══ Bulk Grant Dialog ═══ */}
-      <Dialog open={bulkDialogOpen} onOpenChange={setBulkDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{t('admin.bulk.title')}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="space-y-2">
-              <Label>{t('admin.bulk.policy')}</Label>
-              <Select value={bulkForm.policyId} onValueChange={(v) => setBulkForm((f) => ({ ...f, policyId: v }))}>
-                <SelectTrigger><SelectValue placeholder={tc('selectPlaceholder')} /></SelectTrigger>
-                <SelectContent>
-                  {policies.map((p) => (<SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>{t('admin.bulk.department')}</Label>
-              <Select value={bulkForm.departmentId} onValueChange={(v) => setBulkForm((f) => ({ ...f, departmentId: v }))}>
-                <SelectTrigger><SelectValue placeholder={tc('selectPlaceholder')} /></SelectTrigger>
-                <SelectContent>
-                  {departments.map((d) => (<SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>{t('admin.bulk.year')}</Label>
-                <Input type="number" value={bulkForm.year} onChange={(e) => setBulkForm((f) => ({ ...f, year: e.target.value }))} min={2024} max={currentYear + 1} />
-              </div>
-              <div className="space-y-2">
-                <Label>{t('admin.bulk.days')}</Label>
-                <Input type="number" value={bulkForm.days} onChange={(e) => setBulkForm((f) => ({ ...f, days: e.target.value }))} min={0} step={0.5} placeholder={t('admin.bulk.daysPlaceholder')} />
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setBulkDialogOpen(false)}>{tc('cancel')}</Button>
-            <Button
-              onClick={handleBulkGrant}
-              disabled={bulkLoading || !bulkForm.policyId || !bulkForm.departmentId || !bulkForm.days}
-              className="bg-warm hover:brightness-95 text-white"
-            >
-              {bulkLoading ? t('admin.bulk.processing') : t('admin.bulkGrant')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* ═══ Bulk Grant Drawer ═══ */}
+      <WdDrawer
+        open={bulkDialogOpen}
+        onClose={() => setBulkDialogOpen(false)}
+        title={t('admin.bulk.title')}
+        closeDisabled={bulkLoading}
+        secondary={{ label: tc('cancel'), onClick: () => setBulkDialogOpen(false), disabled: bulkLoading }}
+        primary={{
+          label: bulkLoading ? t('admin.bulk.processing') : t('admin.bulkGrant'),
+          onClick: handleBulkGrant,
+          disabled: bulkLoading || !bulkForm.policyId || !bulkForm.departmentId || !bulkForm.days,
+        }}
+      >
+        <WdField label={t('admin.bulk.policy')} htmlFor="bulk-policy">
+          <Select value={bulkForm.policyId} onValueChange={(v) => setBulkForm((f) => ({ ...f, policyId: v }))}>
+            <SelectTrigger id="bulk-policy"><SelectValue placeholder={tc('selectPlaceholder')} /></SelectTrigger>
+            <SelectContent>
+              {policies.map((p) => (<SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>))}
+            </SelectContent>
+          </Select>
+        </WdField>
+        <WdField label={t('admin.bulk.department')} htmlFor="bulk-department">
+          <Select value={bulkForm.departmentId} onValueChange={(v) => setBulkForm((f) => ({ ...f, departmentId: v }))}>
+            <SelectTrigger id="bulk-department"><SelectValue placeholder={tc('selectPlaceholder')} /></SelectTrigger>
+            <SelectContent>
+              {departments.map((d) => (<SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>))}
+            </SelectContent>
+          </Select>
+        </WdField>
+        <WdRow>
+          <WdField label={t('admin.bulk.year')} htmlFor="bulk-year">
+            <Input id="bulk-year" type="number" value={bulkForm.year} onChange={(e) => setBulkForm((f) => ({ ...f, year: e.target.value }))} min={2024} max={currentYear + 1} />
+          </WdField>
+          <WdField label={t('admin.bulk.days')} htmlFor="bulk-days">
+            <Input id="bulk-days" type="number" value={bulkForm.days} onChange={(e) => setBulkForm((f) => ({ ...f, days: e.target.value }))} min={0} step={0.5} placeholder={t('admin.bulk.daysPlaceholder')} />
+          </WdField>
+        </WdRow>
+      </WdDrawer>
     </div>
   )
 }

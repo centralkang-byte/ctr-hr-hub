@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { FileUpload } from '@/components/shared/FileUpload'
+import { WdDrawer, WdField, WdRow } from '@/components/shared/WdDrawer'
 import { TABLE_STYLES } from '@/lib/styles'
 import { formatDateLocale } from '@/lib/format/date'
 import { toast } from '@/hooks/use-toast'
@@ -484,94 +485,83 @@ export function LoaClient({ user }: Props) {
         </div>
       )}
 
-      {/* 신청 다이얼로그 */}
-      <Dialog open={requestOpen} onOpenChange={setRequestOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{t('dialog.request.title')}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            {isHrAdmin && (
-              <div>
-                <label className="text-sm font-medium text-foreground">{t('dialog.request.employeeId')}</label>
-                <Input placeholder={t('dialog.request.employeeIdPlaceholder')} value={requestForm.employeeId}
-                  onChange={e => setRequestForm(f => ({ ...f, employeeId: e.target.value }))} />
+      {/* 신청 드로어 */}
+      <WdDrawer
+        open={requestOpen}
+        onClose={() => setRequestOpen(false)}
+        title={t('dialog.request.title')}
+        closeDisabled={requestLoading}
+        secondary={{ label: t('button.cancel'), onClick: () => setRequestOpen(false), disabled: requestLoading }}
+        primary={{
+          label: requestLoading ? t('button.processing') : t('button.submit'),
+          onClick: handleRequest,
+          disabled:
+            requestLoading ||
+            (!!loaTypes.find(lt => lt.id === requestForm.typeId)?.requiresProof &&
+              !requestForm.proofUploadId),
+        }}
+      >
+        {isHrAdmin && (
+          <WdField label={t('dialog.request.employeeId')} htmlFor="loa-employee-id">
+            <Input id="loa-employee-id" placeholder={t('dialog.request.employeeIdPlaceholder')} value={requestForm.employeeId}
+              onChange={e => setRequestForm(f => ({ ...f, employeeId: e.target.value }))} />
+          </WdField>
+        )}
+        <WdField label={t('dialog.request.loaType')} htmlFor="loa-type">
+          <Select value={requestForm.typeId} onValueChange={v => setRequestForm(f => ({ ...f, typeId: v }))}>
+            <SelectTrigger id="loa-type"><SelectValue placeholder={t('dialog.request.selectType')} /></SelectTrigger>
+            <SelectContent>
+              {loaTypes.map(lt => (
+                <SelectItem key={lt.id} value={lt.id}>
+                  {lt.name} ({lt.category === 'STATUTORY' ? t('category.statutory') : t('category.contractual')})
+                  {lt.maxDurationDays ? ` · ${t('dialog.request.maxDays', { days: lt.maxDurationDays })}` : ''}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {(() => {
+            const selected = loaTypes.find(lt => lt.id === requestForm.typeId)
+            if (!selected?.requiresProof) return null
+            return (
+              <div className="mt-2 space-y-2">
+                <p className="text-xs text-ctr-warning flex items-center gap-1">
+                  <FileText className="h-3 w-3" />
+                  {t('dialog.request.proofRequired')}: {selected.proofDescription ?? t('dialog.request.relatedDocs')}
+                </p>
+                <FileUpload
+                  presignEndpoint="/api/v1/leave-of-absence/proof/presigned"
+                  accept={LOA_PROOF_ACCEPT}
+                  maxSizeMB={20}
+                  value={requestForm.proofFilename || null}
+                  onUploaded={(uploadId, filename) =>
+                    setRequestForm(f => ({ ...f, proofUploadId: uploadId, proofFilename: filename }))
+                  }
+                  onRemove={() => setRequestForm(f => ({ ...f, proofUploadId: '', proofFilename: '' }))}
+                  label={t('dialog.request.attachProof')}
+                  hint={t('dialog.request.proofHint')}
+                  uploadingLabel={t('dialog.request.uploading')}
+                  changeLabel={t('dialog.request.changeFile')}
+                  removeLabel={t('dialog.request.removeFile')}
+                />
               </div>
-            )}
-            <div>
-              <label className="text-sm font-medium text-foreground">{t('dialog.request.loaType')}</label>
-              <Select value={requestForm.typeId} onValueChange={v => setRequestForm(f => ({ ...f, typeId: v }))}>
-                <SelectTrigger><SelectValue placeholder={t('dialog.request.selectType')} /></SelectTrigger>
-                <SelectContent>
-                  {loaTypes.map(lt => (
-                    <SelectItem key={lt.id} value={lt.id}>
-                      {lt.name} ({lt.category === 'STATUTORY' ? t('category.statutory') : t('category.contractual')})
-                      {lt.maxDurationDays ? ` · ${t('dialog.request.maxDays', { days: lt.maxDurationDays })}` : ''}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {(() => {
-                const selected = loaTypes.find(lt => lt.id === requestForm.typeId)
-                if (!selected?.requiresProof) return null
-                return (
-                  <div className="mt-2 space-y-2">
-                    <p className="text-xs text-ctr-warning flex items-center gap-1">
-                      <FileText className="h-3 w-3" />
-                      {t('dialog.request.proofRequired')}: {selected.proofDescription ?? t('dialog.request.relatedDocs')}
-                    </p>
-                    <FileUpload
-                      presignEndpoint="/api/v1/leave-of-absence/proof/presigned"
-                      accept={LOA_PROOF_ACCEPT}
-                      maxSizeMB={20}
-                      value={requestForm.proofFilename || null}
-                      onUploaded={(uploadId, filename) =>
-                        setRequestForm(f => ({ ...f, proofUploadId: uploadId, proofFilename: filename }))
-                      }
-                      onRemove={() => setRequestForm(f => ({ ...f, proofUploadId: '', proofFilename: '' }))}
-                      label={t('dialog.request.attachProof')}
-                      hint={t('dialog.request.proofHint')}
-                      uploadingLabel={t('dialog.request.uploading')}
-                      changeLabel={t('dialog.request.changeFile')}
-                      removeLabel={t('dialog.request.removeFile')}
-                    />
-                  </div>
-                )
-              })()}
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-sm font-medium text-foreground">{t('dialog.request.startDate')}</label>
-                <Input type="date" value={requestForm.startDate}
-                  onChange={e => setRequestForm(f => ({ ...f, startDate: e.target.value }))} />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-foreground">{t('dialog.request.expectedEndDate')}</label>
-                <Input type="date" value={requestForm.expectedEndDate}
-                  onChange={e => setRequestForm(f => ({ ...f, expectedEndDate: e.target.value }))} />
-              </div>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground">{t('dialog.request.reason')}</label>
-              <Textarea placeholder={t('dialog.request.reasonPlaceholder')} value={requestForm.reason}
-                onChange={e => setRequestForm(f => ({ ...f, reason: e.target.value }))} rows={3} />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setRequestOpen(false)}>{t('button.cancel')}</Button>
-            <Button
-              onClick={handleRequest}
-              disabled={
-                requestLoading ||
-                (!!loaTypes.find(lt => lt.id === requestForm.typeId)?.requiresProof &&
-                  !requestForm.proofUploadId)
-              }
-            >
-              {requestLoading ? t('button.processing') : t('button.submit')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            )
+          })()}
+        </WdField>
+        <WdRow>
+          <WdField label={t('dialog.request.startDate')} htmlFor="loa-start-date">
+            <Input id="loa-start-date" type="date" value={requestForm.startDate}
+              onChange={e => setRequestForm(f => ({ ...f, startDate: e.target.value }))} />
+          </WdField>
+          <WdField label={t('dialog.request.expectedEndDate')} htmlFor="loa-end-date">
+            <Input id="loa-end-date" type="date" value={requestForm.expectedEndDate}
+              onChange={e => setRequestForm(f => ({ ...f, expectedEndDate: e.target.value }))} />
+          </WdField>
+        </WdRow>
+        <WdField label={t('dialog.request.reason')} htmlFor="loa-reason">
+          <Textarea id="loa-reason" placeholder={t('dialog.request.reasonPlaceholder')} value={requestForm.reason}
+            onChange={e => setRequestForm(f => ({ ...f, reason: e.target.value }))} rows={3} />
+        </WdField>
+      </WdDrawer>
 
       {/* 승인/거부 다이얼로그 */}
       <Dialog open={actionOpen} onOpenChange={setActionOpen}>
@@ -613,102 +603,95 @@ export function LoaClient({ user }: Props) {
         </DialogContent>
       </Dialog>
 
-      {/* 복직 신청 다이얼로그 (직원) */}
-      <Dialog open={returnOpen} onOpenChange={setReturnOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t('dialog.return.title')}</DialogTitle>
-          </DialogHeader>
-          {returnTarget && (
-            <div className="space-y-4 py-2">
-              <div className="rounded-lg bg-background p-3 space-y-1">
-                <p className="text-sm font-medium">{returnTarget.type.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {t('dialog.return.leavePeriod')}: {formatDateLocale(returnTarget.startDate)} ~ {formatDateLocale(returnTarget.expectedEndDate)}
-                </p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-foreground">{t('dialog.return.notesLabel')}</label>
-                <p className="text-xs text-muted-foreground mb-1">{t('dialog.return.notesDescription')}</p>
-                <Textarea
-                  placeholder={t('dialog.return.notesPlaceholder')}
-                  value={returnNotes}
-                  onChange={e => setReturnNotes(e.target.value)}
-                  rows={3}
-                />
-              </div>
+      {/* 복직 신청 드로어 (직원) */}
+      <WdDrawer
+        open={returnOpen}
+        onClose={() => { setReturnOpen(false); setReturnNotes('') }}
+        title={t('dialog.return.title')}
+        closeDisabled={returnLoading}
+        secondary={{ label: t('button.cancel'), onClick: () => { setReturnOpen(false); setReturnNotes('') }, disabled: returnLoading }}
+        primary={{
+          label: returnLoading ? t('button.processing') : t('button.requestReturn'),
+          onClick: handleReturnSubmit,
+          disabled: returnLoading,
+        }}
+      >
+        {returnTarget && (
+          <>
+            <div className="rounded-lg bg-background p-3 space-y-1">
+              <p className="text-sm font-medium">{returnTarget.type.name}</p>
+              <p className="text-sm text-muted-foreground">
+                {t('dialog.return.leavePeriod')}: {formatDateLocale(returnTarget.startDate)} ~ {formatDateLocale(returnTarget.expectedEndDate)}
+              </p>
             </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => { setReturnOpen(false); setReturnNotes('') }}>{t('button.cancel')}</Button>
-            <Button onClick={handleReturnSubmit} disabled={returnLoading}>
-              {returnLoading ? t('button.processing') : t('button.requestReturn')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <WdField label={t('dialog.return.notesLabel')} htmlFor="loa-return-notes" help={t('dialog.return.notesDescription')}>
+              <Textarea
+                id="loa-return-notes"
+                placeholder={t('dialog.return.notesPlaceholder')}
+                value={returnNotes}
+                onChange={e => setReturnNotes(e.target.value)}
+                rows={3}
+              />
+            </WdField>
+          </>
+        )}
+      </WdDrawer>
 
-      {/* 복직 완료 다이얼로그 (HR) */}
-      <Dialog open={completeOpen} onOpenChange={setCompleteOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t('dialog.complete.title')}</DialogTitle>
-          </DialogHeader>
-          {completeTarget && (
-            <div className="space-y-4 py-2">
-              <div className="rounded-lg bg-background p-3 space-y-1">
-                <p className="text-sm font-medium">{completeTarget.employee.name} ({completeTarget.employee.employeeNo})</p>
-                <p className="text-sm text-muted-foreground">{completeTarget.type.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {t('dialog.return.leavePeriod')}: {formatDateLocale(completeTarget.startDate)} ~ {formatDateLocale(completeTarget.expectedEndDate)}
-                </p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-foreground">{t('dialog.complete.actualEndDate')}</label>
-                <Input
-                  type="date"
-                  value={completeForm.actualEndDate}
-                  onChange={e => setCompleteForm(f => ({ ...f, actualEndDate: e.target.value }))}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-foreground">{t('dialog.complete.returnPosition')}</label>
-                <Select
-                  value={completeForm.returnPositionId}
-                  onValueChange={v => setCompleteForm(f => ({ ...f, returnPositionId: v === '__none__' ? '' : v }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('dialog.complete.keepCurrentPosition')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="__none__">{t('dialog.complete.keepCurrentPosition')}</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground mt-1">{t('dialog.complete.positionChangeNote')}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-foreground">{t('dialog.complete.returnNotes')}</label>
-                <Textarea
-                  placeholder={t('dialog.complete.returnNotesPlaceholder')}
-                  value={completeForm.returnNotes}
-                  onChange={e => setCompleteForm(f => ({ ...f, returnNotes: e.target.value }))}
-                  rows={2}
-                />
-              </div>
+      {/* 복직 완료 드로어 (HR) */}
+      <WdDrawer
+        open={completeOpen}
+        onClose={() => setCompleteOpen(false)}
+        title={t('dialog.complete.title')}
+        closeDisabled={completeLoading}
+        secondary={{ label: t('button.cancel'), onClick: () => setCompleteOpen(false), disabled: completeLoading }}
+        primary={{
+          label: completeLoading ? t('button.processing') : t('button.completeReturn'),
+          onClick: handleCompleteSubmit,
+          disabled: completeLoading,
+        }}
+      >
+        {completeTarget && (
+          <>
+            <div className="rounded-lg bg-background p-3 space-y-1">
+              <p className="text-sm font-medium">{completeTarget.employee.name} ({completeTarget.employee.employeeNo})</p>
+              <p className="text-sm text-muted-foreground">{completeTarget.type.name}</p>
+              <p className="text-sm text-muted-foreground">
+                {t('dialog.return.leavePeriod')}: {formatDateLocale(completeTarget.startDate)} ~ {formatDateLocale(completeTarget.expectedEndDate)}
+              </p>
             </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCompleteOpen(false)}>{t('button.cancel')}</Button>
-            <Button
-              onClick={handleCompleteSubmit}
-              disabled={completeLoading}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              {completeLoading ? t('button.processing') : t('button.completeReturn')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <WdField label={t('dialog.complete.actualEndDate')} htmlFor="loa-actual-end">
+              <Input
+                id="loa-actual-end"
+                type="date"
+                value={completeForm.actualEndDate}
+                onChange={e => setCompleteForm(f => ({ ...f, actualEndDate: e.target.value }))}
+              />
+            </WdField>
+            <WdField label={t('dialog.complete.returnPosition')} htmlFor="loa-return-position" help={t('dialog.complete.positionChangeNote')}>
+              <Select
+                value={completeForm.returnPositionId}
+                onValueChange={v => setCompleteForm(f => ({ ...f, returnPositionId: v === '__none__' ? '' : v }))}
+              >
+                <SelectTrigger id="loa-return-position">
+                  <SelectValue placeholder={t('dialog.complete.keepCurrentPosition')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">{t('dialog.complete.keepCurrentPosition')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </WdField>
+            <WdField label={t('dialog.complete.returnNotes')} htmlFor="loa-complete-notes">
+              <Textarea
+                id="loa-complete-notes"
+                placeholder={t('dialog.complete.returnNotesPlaceholder')}
+                value={completeForm.returnNotes}
+                onChange={e => setCompleteForm(f => ({ ...f, returnNotes: e.target.value }))}
+                rows={2}
+              />
+            </WdField>
+          </>
+        )}
+      </WdDrawer>
     </div>
   )
 }
