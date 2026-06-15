@@ -6,12 +6,11 @@ import { useState } from 'react'
 import { format, differenceInDays } from 'date-fns'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { WdDrawer, WdField, WdRow } from '@/components/shared/WdDrawer'
 import { apiClient } from '@/lib/api'
 import type { Permission } from '@/types'
 import { useSubmitGuard } from '@/hooks/useSubmitGuard'
@@ -93,7 +92,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
     await loadContracts()
   }
 
-  const { guardedSubmit, isSubmitting: _isSubmitting } = useSubmitGuard(handleSubmit)
+  const { guardedSubmit, isSubmitting } = useSubmitGuard(handleSubmit)
 
   const isExpiringSoon = (endDate: string | null) => {
     if (!endDate) return false
@@ -110,74 +109,13 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">{t('contractHistory')}</h2>
         {canWrite && (
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="bg-ctr-primary hover:bg-ctr-primary/90">
-                + {t('newContract')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{t('newContractRegistration')}</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="space-y-1">
-                  <Label>{t('contractType')}</Label>
-                  <Select
-                    value={form.contractType}
-                    onValueChange={(v) => setForm((f) => ({ ...f, contractType: v }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.entries(CONTRACT_TYPE_LABELS).map(([k, v]) => (
-                        <SelectItem key={k} value={k}>{v}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <Label>{t('contractStartDate')}</Label>
-                    <Input
-                      type="date"
-                      value={form.startDate}
-                      onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label>{t('contractEndDateOptional')}</Label>
-                    <Input
-                      type="date"
-                      value={form.endDate}
-                      onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))}
-                    />
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <Label>{t('salaryAmountOptional')}</Label>
-                  <Input
-                    type="number"
-                    placeholder="0"
-                    value={form.salaryAmount}
-                    onChange={(e) => setForm((f) => ({ ...f, salaryAmount: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label>{tc('memo')}</Label>
-                  <Textarea
-                    value={form.notes}
-                    onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-                    rows={3}
-                  />
-                </div>
-                <Button onClick={guardedSubmit} className="w-full bg-ctr-primary">
-                  {tc('create')}
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button
+            size="sm"
+            className="bg-ctr-primary hover:bg-ctr-primary/90"
+            onClick={() => setOpen(true)}
+          >
+            + {t('newContract')}
+          </Button>
         )}
       </div>
 
@@ -240,6 +178,68 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
             )}
           </TableBody>
         </Table>
+      )}
+
+      {canWrite && (
+        <WdDrawer
+          open={open}
+          onClose={() => setOpen(false)}
+          title={t('newContractRegistration')}
+          closeDisabled={isSubmitting}
+          secondary={{ label: tc('cancel'), onClick: () => setOpen(false), disabled: isSubmitting }}
+          primary={{ label: tc('create'), onClick: guardedSubmit, disabled: isSubmitting }}
+        >
+          <WdField label={t('contractType')} htmlFor="contract-type">
+            <Select
+              value={form.contractType}
+              onValueChange={(v) => setForm((f) => ({ ...f, contractType: v }))}
+            >
+              <SelectTrigger id="contract-type">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(CONTRACT_TYPE_LABELS).map(([k, v]) => (
+                  <SelectItem key={k} value={k}>{v}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </WdField>
+          <WdRow>
+            <WdField label={t('contractStartDate')} htmlFor="contract-start">
+              <Input
+                id="contract-start"
+                type="date"
+                value={form.startDate}
+                onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
+              />
+            </WdField>
+            <WdField label={t('contractEndDateOptional')} htmlFor="contract-end">
+              <Input
+                id="contract-end"
+                type="date"
+                value={form.endDate}
+                onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))}
+              />
+            </WdField>
+          </WdRow>
+          <WdField label={t('salaryAmountOptional')} htmlFor="contract-salary">
+            <Input
+              id="contract-salary"
+              type="number"
+              placeholder="0"
+              value={form.salaryAmount}
+              onChange={(e) => setForm((f) => ({ ...f, salaryAmount: e.target.value }))}
+            />
+          </WdField>
+          <WdField label={tc('memo')} htmlFor="contract-notes">
+            <Textarea
+              id="contract-notes"
+              value={form.notes}
+              onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+              rows={3}
+            />
+          </WdField>
+        </WdDrawer>
       )}
     </div>
   )
