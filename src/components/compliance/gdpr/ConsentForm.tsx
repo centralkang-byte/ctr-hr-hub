@@ -2,14 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
+
+const INPUT_CLS = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus:outline-none'
 
 interface Employee {
   id: string
@@ -84,97 +79,68 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{t('gdpr.consentForm')}</DialogTitle>
-        </DialogHeader>
+    <WdDrawer
+      open={open}
+      onClose={onClose}
+      title={t('gdpr.consentForm')}
+      closeDisabled={saving}
+      secondary={{ label: tc('cancel'), onClick: onClose, disabled: saving }}
+      primary={{ label: saving ? tc('loading') : tc('save'), onClick: handleSubmit, disabled: saving }}
+    >
+      <WdField label={tc('name')} required htmlFor="consent-employee">
+        <select
+          id="consent-employee"
+          className={INPUT_CLS}
+          value={form.employee_id}
+          onChange={(e) => handleChange('employee_id', e.target.value)}
+        >
+          <option value="">{tc('selectPlaceholder')}</option>
+          {employees.map((emp) => (
+            <option key={emp.id} value={emp.id}>
+              {emp.name} ({emp.employee_no})
+            </option>
+          ))}
+        </select>
+      </WdField>
 
-        <div className="space-y-4 py-2">
-          {/* Employee Selector */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              {tc('name')} <span className="text-red-500">*</span>
-            </label>
-            <select
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
-              value={form.employee_id}
-              onChange={(e) => handleChange('employee_id', e.target.value)}
-            >
-              <option value="">{tc('selectPlaceholder')}</option>
-              {employees.map((emp) => (
-                <option key={emp.id} value={emp.id}>
-                  {emp.name} ({emp.employee_no})
-                </option>
-              ))}
-            </select>
-          </div>
+      <WdField label={t('gdpr.purpose')} required htmlFor="consent-purpose">
+        <select
+          id="consent-purpose"
+          className={INPUT_CLS}
+          value={form.purpose}
+          onChange={(e) => handleChange('purpose', e.target.value)}
+        >
+          <option value="">{tc('selectPlaceholder')}</option>
+          {PURPOSE_OPTIONS.map((p) => (
+            <option key={p} value={p}>
+              {p}
+            </option>
+          ))}
+        </select>
+      </WdField>
 
-          {/* Purpose */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              {t('gdpr.purpose')} <span className="text-red-500">*</span>
-            </label>
-            <select
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
-              value={form.purpose}
-              onChange={(e) => handleChange('purpose', e.target.value)}
-            >
-              <option value="">{tc('selectPlaceholder')}</option>
-              {PURPOSE_OPTIONS.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
-          </div>
+      <WdField label={t('gdpr.legalBasis')} required htmlFor="consent-legal-basis">
+        <textarea
+          id="consent-legal-basis"
+          className={`${INPUT_CLS} resize-none`}
+          rows={3}
+          placeholder="e.g., Art. 6(1)(b) – Contractual necessity"
+          value={form.legal_basis}
+          onChange={(e) => handleChange('legal_basis', e.target.value)}
+        />
+      </WdField>
 
-          {/* Legal Basis */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              {t('gdpr.legalBasis')} <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none"
-              rows={3}
-              placeholder="e.g., Art. 6(1)(b) – Contractual necessity"
-              value={form.legal_basis}
-              onChange={(e) => handleChange('legal_basis', e.target.value)}
-            />
-          </div>
+      <WdField label={t('gdpr.expiresAt')} htmlFor="consent-expires-at">
+        <input
+          id="consent-expires-at"
+          type="date"
+          className={INPUT_CLS}
+          value={form.expires_at}
+          onChange={(e) => handleChange('expires_at', e.target.value)}
+        />
+      </WdField>
 
-          {/* Expires At */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              {t('gdpr.expiresAt')}
-            </label>
-            <input
-              type="date"
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
-              value={form.expires_at}
-              onChange={(e) => handleChange('expires_at', e.target.value)}
-            />
-          </div>
-
-          {error && <p className="text-sm text-destructive">{error}</p>}
-        </div>
-
-        <DialogFooter className="gap-2">
-          <button
-            onClick={onClose}
-            className="bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm"
-          >
-            {tc('cancel')}
-          </button>
-          <button
-            onClick={handleSubmit}
-            disabled={saving}
-            className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50`}
-          >
-            {saving ? tc('loading') : tc('save')}
-          </button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      {error && <p className="text-sm text-destructive">{error}</p>}
+    </WdDrawer>
   )
 }

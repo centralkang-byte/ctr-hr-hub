@@ -5,15 +5,10 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState } from 'react'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
+import { WdDrawer, WdField, WdRow } from '@/components/shared/WdDrawer'
 import { apiClient } from '@/lib/api'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+
+const INPUT_CLS = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus:outline-none'
 
 interface KedoDocument {
   id: string
@@ -54,8 +49,12 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async () => {
+    // WdDrawer primary는 form submit이 아니므로 native required가 강제되지 않음 → 명시적 검증
+    if ((!editing && !form.employeeId.trim()) || !form.title.trim()) {
+      setError('필수 항목이 누락되었습니다.')
+      return
+    }
     setSaving(true)
     setError(null)
 
@@ -81,142 +80,118 @@ export default function KedoDocumentForm({ document, onClose, onSuccess }: Props
   }
 
   return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{editing ? 'KEDO 문서 수정' : 'KEDO 문서 생성'}</DialogTitle>
-        </DialogHeader>
+    <WdDrawer
+      open
+      onClose={onClose}
+      title={editing ? 'KEDO 문서 수정' : 'KEDO 문서 생성'}
+      closeDisabled={saving}
+      secondary={{ label: '취소', onClick: onClose, disabled: saving }}
+      primary={{ label: saving ? '저장 중...' : editing ? '수정' : '생성', onClick: handleSubmit, disabled: saving }}
+    >
+      {/* Employee ID (only when creating) */}
+      {!editing && (
+        <WdField label="직원 ID" required htmlFor="kedo-employee-id">
+          <input
+            id="kedo-employee-id"
+            type="text"
+            name="employeeId"
+            value={form.employeeId}
+            onChange={handleChange}
+            required
+            placeholder={'직원 UUID 입력'}
+            className={INPUT_CLS}
+          />
+        </WdField>
+      )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Employee ID (only when creating) */}
-          {!editing && (
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-1">
-                직원 ID <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="employeeId"
-                value={form.employeeId}
-                onChange={handleChange}
-                required
-                placeholder={'직원 UUID 입력'}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
-              />
-            </div>
-          )}
+      {editing && (
+        <div className="p-3 bg-background rounded-lg">
+          <p className="text-sm font-medium text-foreground">{document.employee.name}</p>
+          <p className="text-xs text-muted-foreground">{document.employee.employeeNo}</p>
+        </div>
+      )}
 
-          {editing && (
-            <div className="p-3 bg-background rounded-lg">
-              <p className="text-sm font-medium text-foreground">{document.employee.name}</p>
-              <p className="text-xs text-muted-foreground">{document.employee.employeeNo}</p>
-            </div>
-          )}
+      {/* Document Type */}
+      <WdField label="문서 유형" required htmlFor="kedo-document-type">
+        <select
+          id="kedo-document-type"
+          name="documentType"
+          value={form.documentType}
+          onChange={handleChange}
+          required
+          disabled={editing}
+          className={INPUT_CLS}
+        >
+          <option value="EMPLOYMENT_CONTRACT">근로계약서</option>
+          <option value="SUPPLEMENTARY_AGREEMENT">부속합의서</option>
+          <option value="TRANSFER_ORDER">이동명령</option>
+          <option value="VACATION_ORDER">휴가명령</option>
+          <option value="DISMISSAL_ORDER">해고명령</option>
+          <option value="SALARY_CHANGE">급여변경</option>
+          <option value="DISCIPLINARY_ORDER">징계명령</option>
+        </select>
+      </WdField>
 
-          {/* Document Type */}
-          <div>
-            <label className="text-sm font-medium text-foreground block mb-1">
-              문서 유형 <span className="text-red-500">*</span>
-            </label>
-            <select
-              name="documentType"
-              value={form.documentType}
-              onChange={handleChange}
-              required
-              disabled={editing}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 disabled:bg-background"
-            >
-              <option value="EMPLOYMENT_CONTRACT">근로계약서</option>
-              <option value="SUPPLEMENTARY_AGREEMENT">부속합의서</option>
-              <option value="TRANSFER_ORDER">이동명령</option>
-              <option value="VACATION_ORDER">휴가명령</option>
-              <option value="DISMISSAL_ORDER">해고명령</option>
-              <option value="SALARY_CHANGE">급여변경</option>
-              <option value="DISCIPLINARY_ORDER">징계명령</option>
-            </select>
-          </div>
+      {/* Title */}
+      <WdField label="제목" required htmlFor="kedo-title">
+        <input
+          id="kedo-title"
+          type="text"
+          name="title"
+          value={form.title}
+          onChange={handleChange}
+          required
+          placeholder={'문서 제목'}
+          className={INPUT_CLS}
+        />
+      </WdField>
 
-          {/* Title */}
-          <div>
-            <label className="text-sm font-medium text-foreground block mb-1">
-              제목 <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="title"
-              value={form.title}
-              onChange={handleChange}
-              required
-              placeholder={'문서 제목'}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
-            />
-          </div>
+      {/* Signature Level & Expires At */}
+      <WdRow>
+        <WdField label="서명 수준" htmlFor="kedo-signature-level">
+          <select
+            id="kedo-signature-level"
+            name="signatureLevel"
+            value={form.signatureLevel}
+            onChange={handleChange}
+            className={INPUT_CLS}
+          >
+            <option value="PEP">PEP (간이)</option>
+            <option value="UNEP">УНЭП (강화 비인증)</option>
+            <option value="UKEP">УКЭП (강화 인증)</option>
+          </select>
+        </WdField>
+        <WdField label="만료일" htmlFor="kedo-expires-at">
+          <input
+            id="kedo-expires-at"
+            type="date"
+            name="expiresAt"
+            value={form.expiresAt}
+            onChange={handleChange}
+            className={INPUT_CLS}
+          />
+        </WdField>
+      </WdRow>
 
-          {/* Signature Level & Expires At */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-1">서명 수준</label>
-              <select
-                name="signatureLevel"
-                value={form.signatureLevel}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
-              >
-                <option value="PEP">PEP (간이)</option>
-                <option value="UNEP">УНЭП (강화 비인증)</option>
-                <option value="UKEP">УКЭП (강화 인증)</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-1">만료일</label>
-              <input
-                type="date"
-                name="expiresAt"
-                value={form.expiresAt}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
-              />
-            </div>
-          </div>
+      {/* Content */}
+      <WdField label="문서 내용" htmlFor="kedo-content">
+        <textarea
+          id="kedo-content"
+          name="content"
+          value={form.content}
+          onChange={handleChange}
+          rows={4}
+          placeholder={'문서 내용 (선택)'}
+          className={`${INPUT_CLS} resize-none`}
+        />
+      </WdField>
 
-          {/* Content */}
-          <div>
-            <label className="text-sm font-medium text-foreground block mb-1">문서 내용</label>
-            <textarea
-              name="content"
-              value={form.content}
-              onChange={handleChange}
-              rows={4}
-              placeholder={'문서 내용 (선택)'}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground resize-none"
-            />
-          </div>
-
-          {/* Error */}
-          {error && (
-            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
-              {error}
-            </div>
-          )}
-
-          <DialogFooter>
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm"
-            >
-              취소
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50`}
-            >
-              {saving ? '저장 중...' : editing ? '수정' : '생성'}
-            </button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+      {/* Error */}
+      {error && (
+        <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
+          {error}
+        </div>
+      )}
+    </WdDrawer>
   )
 }

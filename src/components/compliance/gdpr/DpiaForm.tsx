@@ -2,14 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
+
+const INPUT_CLS = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus:outline-none'
 
 interface Dpia {
   id: string
@@ -106,126 +101,96 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>
-            {isEdit ? tc('edit') : tc('create')} — {t('gdpr.dpia')}
-          </DialogTitle>
-        </DialogHeader>
+    <WdDrawer
+      open={open}
+      onClose={onClose}
+      title={`${isEdit ? tc('edit') : tc('create')} — ${t('gdpr.dpia')}`}
+      closeDisabled={saving}
+      secondary={{ label: tc('cancel'), onClick: onClose, disabled: saving }}
+      primary={{ label: saving ? tc('loading') : tc('save'), onClick: handleSubmit, disabled: saving }}
+    >
+      <WdField label={`${tc('name')} / Title`} required htmlFor="dpia-title">
+        <input
+          id="dpia-title"
+          type="text"
+          className={INPUT_CLS}
+          placeholder="e.g., Employee Biometric Attendance System DPIA"
+          value={form.title}
+          onChange={(e) => handleChange('title', e.target.value)}
+        />
+      </WdField>
 
-        <div className="space-y-4 py-2 max-h-[60vh] overflow-y-auto pr-1">
-          {/* Title */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              {tc('name')} / Title <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
-              placeholder="e.g., Employee Biometric Attendance System DPIA"
-              value={form.title}
-              onChange={(e) => handleChange('title', e.target.value)}
-            />
-          </div>
+      <WdField label={tc('description')} htmlFor="dpia-description">
+        <textarea
+          id="dpia-description"
+          className={`${INPUT_CLS} resize-none`}
+          rows={3}
+          placeholder="Describe the data processing activity..."
+          value={form.description}
+          onChange={(e) => handleChange('description', e.target.value)}
+        />
+      </WdField>
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">{tc('description')}</label>
-            <textarea
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none"
-              rows={3}
-              placeholder="Describe the data processing activity..."
-              value={form.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-            />
-          </div>
+      <WdField label={t('gdpr.processingScope')} required htmlFor="dpia-processing-scope">
+        <textarea
+          id="dpia-processing-scope"
+          className={`${INPUT_CLS} resize-none`}
+          rows={4}
+          placeholder="Describe what personal data is processed, how, and by whom..."
+          value={form.processing_scope}
+          onChange={(e) => handleChange('processing_scope', e.target.value)}
+        />
+      </WdField>
 
-          {/* Processing Scope */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              {t('gdpr.processingScope')} <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none"
-              rows={4}
-              placeholder="Describe what personal data is processed, how, and by whom..."
-              value={form.processing_scope}
-              onChange={(e) => handleChange('processing_scope', e.target.value)}
-            />
-          </div>
-
-          {/* Risk Level */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">{t('gdpr.riskLevel')}</label>
-            <div className="grid grid-cols-4 gap-2">
-              {RISK_LEVELS.map((rl) => (
-                <button
-                  key={rl.value}
-                  type="button"
-                  onClick={() => handleChange('risk_level', rl.value)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
-                    form.risk_level === rl.value
-                      ? rl.value === 'low' ? 'bg-emerald-600 text-white border-emerald-600'
-                      : rl.value === 'medium' ? 'bg-amber-500/100 text-white border-amber-500'
-                      : rl.value === 'high' ? 'bg-orange-500/100 text-white border-orange-500'
-                      : 'bg-red-600 text-white border-red-600'
-                      : 'bg-card text-muted-foreground border-border hover:bg-background'
-                  }`}
-                >
-                  {rl.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Mitigations */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">{t('gdpr.mitigations')}</label>
-            <textarea
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none"
-              rows={4}
-              placeholder="Describe risk mitigation measures..."
-              value={form.mitigations}
-              onChange={(e) => handleChange('mitigations', e.target.value)}
-            />
-          </div>
-
-          {/* Status */}
-          {isEdit && (
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">{tc('status')}</label>
-              <select
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
-                value={form.status}
-                onChange={(e) => handleChange('status', e.target.value)}
-              >
-                {STATUS_OPTIONS.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {error && <p className="text-sm text-destructive">{error}</p>}
+      <WdField label={t('gdpr.riskLevel')}>
+        <div role="group" aria-label={t('gdpr.riskLevel')} className="grid grid-cols-4 gap-2">
+          {RISK_LEVELS.map((rl) => (
+            <button
+              key={rl.value}
+              type="button"
+              onClick={() => handleChange('risk_level', rl.value)}
+              className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                form.risk_level === rl.value
+                  ? rl.value === 'low' ? 'bg-emerald-600 text-white border-emerald-600'
+                  : rl.value === 'medium' ? 'bg-amber-500/100 text-white border-amber-500'
+                  : rl.value === 'high' ? 'bg-orange-500/100 text-white border-orange-500'
+                  : 'bg-red-600 text-white border-red-600'
+                  : 'bg-card text-muted-foreground border-border hover:bg-background'
+              }`}
+            >
+              {rl.label}
+            </button>
+          ))}
         </div>
+      </WdField>
 
-        <DialogFooter className="gap-2">
-          <button
-            onClick={onClose}
-            className="bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm"
+      <WdField label={t('gdpr.mitigations')} htmlFor="dpia-mitigations">
+        <textarea
+          id="dpia-mitigations"
+          className={`${INPUT_CLS} resize-none`}
+          rows={4}
+          placeholder="Describe risk mitigation measures..."
+          value={form.mitigations}
+          onChange={(e) => handleChange('mitigations', e.target.value)}
+        />
+      </WdField>
+
+      {isEdit && (
+        <WdField label={tc('status')} htmlFor="dpia-status">
+          <select
+            id="dpia-status"
+            className={INPUT_CLS}
+            value={form.status}
+            onChange={(e) => handleChange('status', e.target.value)}
           >
-            {tc('cancel')}
-          </button>
-          <button
-            onClick={handleSubmit}
-            disabled={saving}
-            className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50`}
-          >
-            {saving ? tc('loading') : tc('save')}
-          </button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s.value} value={s.value}>{s.label}</option>
+            ))}
+          </select>
+        </WdField>
+      )}
+
+      {error && <p className="text-sm text-destructive">{error}</p>}
+    </WdDrawer>
   )
 }

@@ -6,14 +6,10 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState } from 'react'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import { X, BookOpen } from 'lucide-react'
+import { WdDrawer, WdField, WdRow } from '@/components/shared/WdDrawer'
+import { X } from 'lucide-react'
+
+const INPUT_CLS = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus:outline-none'
 
 interface MandatoryTrainingFormProps {
   defaultYear: number
@@ -89,9 +85,7 @@ export default function MandatoryTrainingForm({
     setError(null)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
+  const handleSubmit = async () => {
     if (!form.trainingType) {
       setError('교육 유형을 선택해주세요.')
       return
@@ -102,6 +96,11 @@ export default function MandatoryTrainingForm({
     }
     if (!form.dueDate) {
       setError('마감일을 입력해주세요.')
+      return
+    }
+    // WdDrawer primary는 form submit이 아니므로 native min/max가 강제되지 않음 → 명시적 검증
+    if (!Number.isInteger(form.requiredHours) || form.requiredHours < 1 || form.requiredHours > 40) {
+      setError('교육 시간은 1~40 사이의 정수여야 합니다.')
       return
     }
 
@@ -129,135 +128,101 @@ export default function MandatoryTrainingForm({
   }
 
   return (
-    <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
-              <BookOpen className="w-4 h-4 text-primary" />
-            </div>
-            <DialogTitle>법정의무교육 추가</DialogTitle>
-          </div>
-        </DialogHeader>
+    <WdDrawer
+      open
+      onClose={onClose}
+      title="법정의무교육 추가"
+      closeDisabled={submitting}
+      secondary={{ label: '취소', onClick: onClose, disabled: submitting }}
+      primary={{ label: submitting ? '등록 중...' : '교육 추가', onClick: handleSubmit, disabled: submitting }}
+    >
+      {/* Training Type */}
+      <WdField label="교육 유형" required htmlFor="mandtrain-training-type">
+        <select
+          id="mandtrain-training-type"
+          className={INPUT_CLS}
+          value={form.trainingType}
+          onChange={(e) => handleChange('trainingType', e.target.value)}
+        >
+          <option value="">교육 유형 선택</option>
+          {TRAINING_TYPES.map((t) => (
+            <option key={t.value} value={t.value}>
+              {t.label}
+            </option>
+          ))}
+        </select>
+      </WdField>
 
-        <form onSubmit={handleSubmit} className="space-y-4 mt-2">
-          {/* Training Type */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              교육 유형 <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={form.trainingType}
-              onChange={(e) => handleChange('trainingType', e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
-            >
-              <option value="">교육 유형 선택</option>
-              {TRAINING_TYPES.map((t) => (
-                <option key={t.value} value={t.value}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-          </div>
+      {/* Course Selector */}
+      <WdField label="과정" required htmlFor="mandtrain-course">
+        <select
+          id="mandtrain-course"
+          className={INPUT_CLS}
+          value={form.courseId}
+          onChange={(e) => handleChange('courseId', e.target.value)}
+          disabled={!form.trainingType}
+        >
+          <option value="">
+            {form.trainingType ? '과정 선택' : '교육 유형을 먼저 선택하세요'}
+          </option>
+          {courseOptions.map((c) => (
+            <option key={c.value} value={c.value}>
+              {c.label}
+            </option>
+          ))}
+        </select>
+      </WdField>
 
-          {/* Course Selector */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              과정 <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={form.courseId}
-              onChange={(e) => handleChange('courseId', e.target.value)}
-              disabled={!form.trainingType}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10 disabled:bg-background disabled:text-muted-foreground"
-            >
-              <option value="">
-                {form.trainingType ? '과정 선택' : '교육 유형을 먼저 선택하세요'}
+      {/* Year + Due Date */}
+      <WdRow>
+        <WdField label="대상 연도" required htmlFor="mandtrain-year">
+          <select
+            id="mandtrain-year"
+            className={INPUT_CLS}
+            value={form.year}
+            onChange={(e) => handleChange('year', Number(e.target.value))}
+          >
+            {[defaultYear + 1, defaultYear, defaultYear - 1].map((y) => (
+              <option key={y} value={y}>
+                {y}년
               </option>
-              {courseOptions.map((c) => (
-                <option key={c.value} value={c.value}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
-          </div>
+            ))}
+          </select>
+        </WdField>
 
-          {/* Year + Due Date */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                대상 연도 <span className="text-red-500">*</span>
-              </label>
-              <select
-                value={form.year}
-                onChange={(e) => handleChange('year', Number(e.target.value))}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
-              >
-                {[defaultYear + 1, defaultYear, defaultYear - 1].map((y) => (
-                  <option key={y} value={y}>
-                    {y}년
-                  </option>
-                ))}
-              </select>
-            </div>
+        <WdField label="이수 마감일" required htmlFor="mandtrain-due-date">
+          <input
+            id="mandtrain-due-date"
+            type="date"
+            className={INPUT_CLS}
+            value={form.dueDate}
+            onChange={(e) => handleChange('dueDate', e.target.value)}
+          />
+        </WdField>
+      </WdRow>
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                이수 마감일 <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                value={form.dueDate}
-                onChange={(e) => handleChange('dueDate', e.target.value)}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
-              />
-            </div>
-          </div>
+      {/* Required Hours */}
+      <WdField label="필수 이수시간 (시간)" htmlFor="mandtrain-required-hours">
+        <input
+          id="mandtrain-required-hours"
+          type="number"
+          min={1}
+          max={40}
+          className={INPUT_CLS}
+          value={form.requiredHours}
+          onChange={(e) => handleChange('requiredHours', Number(e.target.value))}
+          placeholder="1"
+        />
+        <p className="text-xs text-muted-foreground mt-1">법정 최소 이수시간을 입력하세요.</p>
+      </WdField>
 
-          {/* Required Hours */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              필수 이수시간 (시간)
-            </label>
-            <input
-              type="number"
-              min={1}
-              max={40}
-              value={form.requiredHours}
-              onChange={(e) => handleChange('requiredHours', Number(e.target.value))}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/10"
-              placeholder="1"
-            />
-            <p className="text-xs text-muted-foreground mt-1">법정 최소 이수시간을 입력하세요.</p>
-          </div>
-
-          {/* Error */}
-          {error && (
-            <div className="flex items-center gap-2 px-3 py-2.5 bg-destructive/10 border border-destructive/20 rounded-lg">
-              <X className="w-4 h-4 text-red-500 flex-shrink-0" />
-              <p className="text-sm text-destructive">{error}</p>
-            </div>
-          )}
-
-          <DialogFooter className="pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-background disabled:opacity-50 transition-colors"
-            >
-              취소
-            </button>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-warm hover:brightness-95 rounded-lg disabled:opacity-50 transition-colors"
-            >
-              {submitting ? '등록 중...' : '교육 추가'}
-            </button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+      {/* Error */}
+      {error && (
+        <div className="flex items-center gap-2 px-3 py-2.5 bg-destructive/10 border border-destructive/20 rounded-lg">
+          <X className="w-4 h-4 text-red-500 flex-shrink-0" />
+          <p className="text-sm text-destructive">{error}</p>
+        </div>
+      )}
+    </WdDrawer>
   )
 }
