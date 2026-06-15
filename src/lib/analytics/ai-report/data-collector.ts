@@ -56,6 +56,12 @@ export interface ReportDataPayload {
   }
 }
 
+// 멀티테넌트 격리: companyId 컬럼이 없는 모델(EmployeeLeaveBalance·Employee)을 employee
+// 활성 primary 발령 관계로 법인 스코프. companyId=null(SUPER) → 전사. (PR2: stale→live·ON_LEAVE)
+function activeAssignmentWhere(companyId: string) {
+  return { assignments: { some: { companyId, isPrimary: true, endDate: null, status: 'ACTIVE' } } }
+}
+
 export async function collectReportData(
   companyId: string | null,
   period: string
@@ -153,9 +159,12 @@ export async function collectReportData(
       },
       select: { overtimeMinutes: true },
     }),
-    // 11. Leave balances
+    // 11. Leave balances — 법인 스코프(멀티테넌트 누출 차단; companyId 컬럼 부재 → employee 관계)
     prisma.employeeLeaveBalance.findMany({
-      where: { year: currentYear },
+      where: {
+        year: currentYear,
+        ...(companyId ? { employee: activeAssignmentWhere(companyId) } : {}),
+      },
       select: { grantedDays: true, usedDays: true },
     }),
     // 12. Active onboardings
@@ -268,11 +277,20 @@ export async function collectReportData(
 
   // ── Prediction data (call internal logic) ──
   // Simplified summary — actual counts from prediction APIs
+  // 법인 스코프(멀티테넌트 누출 차단): 위험인원 카운트도 동일 법인 활성 직원으로 격리
   const highRiskEmps = await prisma.employee.count({
-    where: { deletedAt: null, attritionRiskScore: { gte: 70 } },
+    where: {
+      deletedAt: null,
+      attritionRiskScore: { gte: 70 },
+      ...(companyId ? activeAssignmentWhere(companyId) : {}),
+    },
   })
   const mediumRiskEmps = await prisma.employee.count({
-    where: { deletedAt: null, attritionRiskScore: { gte: 40, lt: 70 } },
+    where: {
+      deletedAt: null,
+      attritionRiskScore: { gte: 40, lt: 70 },
+      ...(companyId ? activeAssignmentWhere(companyId) : {}),
+    },
   })
 
   return {
