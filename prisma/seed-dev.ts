@@ -702,25 +702,29 @@ async function seedLeavePolicies(
 
   // KR 직원 연차 잔여량 (2026년)
   const annualPolicyId = krPolicyMap['ANNUAL']
+  // → LeaveYearBalance (SSOT; PR4 레거시 EmployeeLeaveBalance 퇴출). annual def는 본 seed(35-statutory) 선행 생성.
+  const krAnnualDefId = (await prisma.leaveTypeDef.findFirst({
+    where: { companyId: krId, code: 'annual' }, select: { id: true },
+  }))?.id
   const krEmpNos = Object.keys(krEmpMap)
   let balCount = 0
   for (let i = 0; i < krEmpNos.length; i++) {
+    if (!krAnnualDefId) break
     const empId = krEmpMap[krEmpNos[i]]
     const usedDays = Math.floor(pseudoRandom(i * 7 + 1) * 8) // 0~7일 사용
     const grantedDays = 15
-    const balId = deterministicUUID('lbal-kr', `${empId}:${annualPolicyId}:2026`)
-    await prisma.employeeLeaveBalance.upsert({
-      where: { employeeId_policyId_year: { employeeId: empId, policyId: annualPolicyId, year: 2026 } },
-      update: { usedDays, grantedDays },
+    await prisma.leaveYearBalance.upsert({
+      where: { employeeId_leaveTypeDefId_year: { employeeId: empId, leaveTypeDefId: krAnnualDefId, year: 2026 } },
+      update: { used: usedDays, entitled: grantedDays },
       create: {
-        id: balId,
         employeeId: empId,
-        policyId: annualPolicyId,
+        leaveTypeDefId: krAnnualDefId,
         year: 2026,
-        grantedDays,
-        usedDays,
-        pendingDays: 0,
-        carryOverDays: Math.floor(pseudoRandom(i * 3) * 5),
+        entitled: grantedDays,
+        used: usedDays,
+        pending: 0,
+        carriedOver: Math.floor(pseudoRandom(i * 3) * 5),
+        adjusted: 0,
       },
     })
     balCount++
@@ -728,23 +732,26 @@ async function seedLeavePolicies(
 
   // CN 직원 연차 잔여량
   const cnAnnualId = cnPolicyMap['ANNUAL']
+  const cnAnnualDefId = (await prisma.leaveTypeDef.findFirst({
+    where: { companyId: cnId, code: 'annual' }, select: { id: true },
+  }))?.id
   const cnEmpNos = Object.keys(cnEmpMap)
   for (let i = 0; i < cnEmpNos.length; i++) {
+    if (!cnAnnualDefId) break
     const empId = cnEmpMap[cnEmpNos[i]]
     const usedDays = Math.floor(pseudoRandom(i * 11 + 3) * 6)
-    const balId = deterministicUUID('lbal-cn', `${empId}:${cnAnnualId}:2026`)
-    await prisma.employeeLeaveBalance.upsert({
-      where: { employeeId_policyId_year: { employeeId: empId, policyId: cnAnnualId, year: 2026 } },
-      update: { usedDays, grantedDays: 10 },
+    await prisma.leaveYearBalance.upsert({
+      where: { employeeId_leaveTypeDefId_year: { employeeId: empId, leaveTypeDefId: cnAnnualDefId, year: 2026 } },
+      update: { used: usedDays, entitled: 10 },
       create: {
-        id: balId,
         employeeId: empId,
-        policyId: cnAnnualId,
+        leaveTypeDefId: cnAnnualDefId,
         year: 2026,
-        grantedDays: 10,
-        usedDays,
-        pendingDays: 0,
-        carryOverDays: 0,
+        entitled: 10,
+        used: usedDays,
+        pending: 0,
+        carriedOver: 0,
+        adjusted: 0,
       },
     })
   }

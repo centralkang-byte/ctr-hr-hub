@@ -72,50 +72,32 @@ export async function seedLeaveEnhancement(prisma: PrismaClient) {
   const now = new Date()
   const year = now.getFullYear()
 
-  // 4. Create test balances with negative values (simulate overuse)
-  // Employee 0: -1.5 days (within limit of -3.0)
-  const balance0 = await prisma.employeeLeaveBalance.upsert({
-    where: {
-      employeeId_policyId_year: {
-        employeeId: employees[0].id,
-        policyId: leavePolicy.id,
-        year,
-      },
-    },
-    update: { grantedDays: 15, usedDays: 16.5 },
-    create: {
-      employeeId: employees[0].id,
-      policyId: leavePolicy.id,
-      year,
-      grantedDays: 15,
-      usedDays: 16.5, // -1.5 negative
-      pendingDays: 0,
-      carryOverDays: 0,
-    },
+  // 4. Create test balances with negative values (simulate overuse) → LeaveYearBalance (SSOT; PR4 레거시 퇴출)
+  // remaining = entitled - used. used > entitled → 음수 잔액 (overuse) 픽스처.
+  const annualDef = await prisma.leaveTypeDef.findFirst({
+    where: { companyId: company.id, code: 'annual' },
+    select: { id: true },
   })
-
-  // Employee 1: -3.0 days (at limit)
-  const balance1 = await prisma.employeeLeaveBalance.upsert({
-    where: {
-      employeeId_policyId_year: {
-        employeeId: employees[1].id,
-        policyId: leavePolicy.id,
-        year,
-      },
-    },
-    update: { grantedDays: 15, usedDays: 18 },
-    create: {
-      employeeId: employees[1].id,
-      policyId: leavePolicy.id,
-      year,
-      grantedDays: 15,
-      usedDays: 18, // -3.0 negative (at limit)
-      pendingDays: 0,
-      carryOverDays: 0,
-    },
-  })
-
-  console.log('    ✅ Negative balance test data: 2 employees')
+  if (annualDef) {
+    // Employee 0: -1.5 days (within limit of -3.0); Employee 1: -3.0 days (at limit)
+    const negFixtures = [
+      { employeeId: employees[0].id, used: 16.5 },
+      { employeeId: employees[1].id, used: 18 },
+    ]
+    for (const fx of negFixtures) {
+      await prisma.leaveYearBalance.upsert({
+        where: { employeeId_leaveTypeDefId_year: { employeeId: fx.employeeId, leaveTypeDefId: annualDef.id, year } },
+        update: { entitled: 15, used: fx.used },
+        create: {
+          employeeId: fx.employeeId, leaveTypeDefId: annualDef.id, year,
+          entitled: 15, used: fx.used, pending: 0, carriedOver: 0, adjusted: 0,
+        },
+      })
+    }
+    console.log('    ✅ Negative balance test data: 2 employees')
+  } else {
+    console.log('    ⚠️ No annual LeaveTypeDef — skipping negative balance fixtures')
+  }
 
   // 5. Create APPROVED leave starting tomorrow (cancel-before-start testable)
   const tomorrow = new Date(now)

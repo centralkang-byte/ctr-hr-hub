@@ -56,10 +56,13 @@ async function main() {
   console.error('\n── Category ①: Value Range ──')
 
   await runQuery('1.1', '① Value Range', 'Leave balance out of range (>30 or <0)',
-    `SELECT id, employee_id, granted_days, used_days,
-            (granted_days - used_days) as balance
-     FROM employee_leave_balances
-     WHERE (granted_days - used_days) > 30 OR (granted_days - used_days) < 0`)
+    `SELECT lyb.id, lyb.employee_id,
+            (lyb.entitled + lyb.carried_over + lyb.adjusted) AS granted_days,
+            (lyb.used + lyb.pending) AS used_days,
+            (lyb.entitled + lyb.carried_over + lyb.adjusted - lyb.used - lyb.pending) AS balance
+     FROM leave_year_balances lyb
+     WHERE (lyb.entitled + lyb.carried_over + lyb.adjusted - lyb.used - lyb.pending) > 30
+        OR (lyb.entitled + lyb.carried_over + lyb.adjusted - lyb.used - lyb.pending) < 0`)
 
   await runQuery('1.2', '① Value Range', 'PayrollItem base salary out of range',
     `SELECT pi.id, pi.employee_id, pi.base_salary, pi.currency
@@ -311,17 +314,22 @@ async function main() {
   // ═══════════════════════════════════════════
   console.error('\n── Category ⑥: Calculations ──')
 
-  await runQuery('6.1', '⑥ Calculations', 'Leave balance: used_days vs approved leave mismatch',
-    `SELECT lb.employee_id, lb.policy_id, lb.year, lb.used_days as stored_used,
-            COALESCE(SUM(lr.days), 0) as calculated_used,
-            ABS(lb.used_days - COALESCE(SUM(lr.days), 0)) as diff
-     FROM employee_leave_balances lb
-     LEFT JOIN leave_requests lr ON lr.employee_id = lb.employee_id
-       AND lr.policy_id = lb.policy_id
-       AND lr.status = 'APPROVED'
-       AND EXTRACT(YEAR FROM lr.start_date) = lb.year
-     GROUP BY lb.employee_id, lb.policy_id, lb.year, lb.used_days
-     HAVING ABS(lb.used_days - COALESCE(SUM(lr.days), 0)) > 0.5`)
+  // PR4: leave_year_balances는 leave_type_def_id 키(레거시 policy_id 부재)라 policy 단위 조인 불가
+  // → 직원·연도 단위 집계로 stored(used 합) vs approved 요청 일수 합 정합 검증.
+  await runQuery('6.1', '⑥ Calculations', 'Leave balance: used vs approved leave mismatch (per employee/year)',
+    `SELECT lb.employee_id, lb.year,
+            SUM(lb.used) AS stored_used,
+            COALESCE(req.calculated_used, 0) AS calculated_used,
+            ABS(SUM(lb.used) - COALESCE(req.calculated_used, 0)) AS diff
+     FROM leave_year_balances lb
+     LEFT JOIN (
+       SELECT employee_id, EXTRACT(YEAR FROM start_date)::int AS yr, SUM(days) AS calculated_used
+       FROM leave_requests
+       WHERE status = 'APPROVED'
+       GROUP BY employee_id, EXTRACT(YEAR FROM start_date)
+     ) req ON req.employee_id = lb.employee_id AND req.yr = lb.year
+     GROUP BY lb.employee_id, lb.year, req.calculated_used
+     HAVING ABS(SUM(lb.used) - COALESCE(req.calculated_used, 0)) > 0.5`)
 
   await runQuery('6.2', '⑥ Calculations', 'Payroll net != gross - deductions',
     `SELECT id, employee_id, gross_pay, deductions, net_pay,

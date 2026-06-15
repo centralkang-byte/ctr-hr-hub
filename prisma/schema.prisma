@@ -1400,7 +1400,6 @@ model Employee {
   // Attendance & Leave
   employeeSchedules     EmployeeSchedule[]
   attendances           Attendance[]
-  employeeLeaveBalances EmployeeLeaveBalance[]
   leaveRequests         LeaveRequest[]         @relation("LeaveRequester")
   leaveApprovals        LeaveRequest[]         @relation("LeaveApprover")
 
@@ -2227,30 +2226,12 @@ model LeavePolicy {
   deletedAt        DateTime? @map("deleted_at")
 
   company               Company                @relation(fields: [companyId], references: [id])
-  employeeLeaveBalances EmployeeLeaveBalance[]
   leaveRequests         LeaveRequest[]
 
   @@map("leave_policies")
 }
 
-model EmployeeLeaveBalance {
-  id            String   @id @default(uuid())
-  employeeId    String   @map("employee_id")
-  policyId      String   @map("policy_id")
-  year          Int
-  grantedDays   Decimal  @map("granted_days")
-  usedDays      Decimal  @default(0) @map("used_days")
-  pendingDays   Decimal  @default(0) @map("pending_days")
-  carryOverDays Decimal  @default(0) @map("carry_over_days")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-
-  employee Employee    @relation(fields: [employeeId], references: [id])
-  policy   LeavePolicy @relation(fields: [policyId], references: [id])
-
-  @@unique([employeeId, policyId, year])
-  @@map("employee_leave_balances")
-}
+// (PR4) 레거시 휴가 잔액 이중테이블 모델 제거 — 신 SSOT = LeaveYearBalance.
 
 model LeaveRequest {
   id              String             @id @default(uuid())

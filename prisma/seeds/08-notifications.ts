@@ -432,7 +432,7 @@ export async function seedNotifications(prisma: PrismaClient): Promise<void> {
   const totalEmps    = await prisma.employee.count()
   const totalAtt     = await prisma.attendance.count()
   const totalLeave   = await prisma.leaveRequest.count()
-  const totalBal     = await prisma.employeeLeaveBalance.count()
+  const totalBal     = await prisma.leaveYearBalance.count()
   const totalGoals   = await prisma.mboGoal.count()
   const totalEvals   = await prisma.performanceEvaluation.count()
   const totalPayroll = await prisma.payrollItem.count()
