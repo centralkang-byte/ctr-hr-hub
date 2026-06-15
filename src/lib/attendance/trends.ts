@@ -4,11 +4,13 @@
 // 출근율%(분모 eligibility)는 PR-4b 분리 — 여기엔 운영지표만.
 //   A) 부서별 30일 비교  B) 출근시각 분포 30일  C) 근태유형 추이 6개월
 // 멀티테넌트: 모든 쿼리 company_id 필터 + 부서 JOIN은 동일 법인 active-primary 1건.
-// TZ: clock_in/out 은 UTC 저장 timestamp → (… AT TIME ZONE 'UTC') AT TIME ZONE $tz (Codex r2-1).
+// TZ: clock_in/out·work_date·start_date 등 naive timestamp 는 저장 instant 충실 복원 위해
+//     (… AT TIME ZONE 'UTC') AT TIME ZONE $tz 로 현지 달력일/시각 변환 (rate.ts localDate SSOT 정합).
+//     bare ::date / date_trunc(work_date) 는 KST자정-시드 행에서 하루 어긋남 (rate.ts 와 윈도우 불일치).
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
-import { parseDateOnly, formatToTz } from '@/lib/timezone'
+import { formatToTz } from '@/lib/timezone'
 import { getAttendanceRate, type RateTrendMonth, type RateMeta } from './rate'
 
 const DEFAULT_TIMEZONE = 'Asia/Seoul'
@@ -157,15 +159,12 @@ export async function getAttendanceTrends(companyId: string, now: Date): Promise
   const workStartTime = setting?.workStartTime ?? DEFAULT_WORK_START
   const localDateStr = formatToTz(now, timezone, 'yyyy-MM-dd')
 
-  // 윈도우 (회사 현지 date-only → UTC 자정 Date 로 바인딩)
+  // 윈도우 (회사 현지 date-only 문자열 → SQL 에서 ::date/::timestamp 캐스팅).
+  // 행 필터는 인덱스 보존 raw instant prefilter(±1d) + localDate(현지 달력일) residual 병용.
   const deptEndStr = addDaysStr(localDateStr, 1) // 오늘 포함 (exclusive 상한)
   const deptStartStr = addDaysStr(localDateStr, -(WINDOW_DAYS - 1))
   const trendStartStr = firstDayMonthsAgo(localDateStr, TREND_MONTHS - 1)
   const trendEndStr = firstDayMonthsAgo(localDateStr, -1) // 다음 달 1일 — 미래 월 제외 (Codex Gate2 P1-1)
-  const deptStart = parseDateOnly(deptStartStr)
-  const deptEnd = parseDateOnly(deptEndStr)
-  const trendStart = parseDateOnly(trendStartStr)
-  const trendEnd = parseDateOnly(trendEndStr)
 
   // PR-4b 출근율 엔진 — 운영지표 쿼리와 병렬
   const ratePromise = getAttendanceRate(companyId, now)
@@ -213,7 +212,10 @@ export async function getAttendanceTrends(companyId: string, now: Date): Promise
       ) ea ON true
       JOIN departments d ON d.id = ea.department_id AND d.company_id = ${companyId}
       WHERE a.company_id = ${companyId}
-        AND a.work_date >= ${deptStart} AND a.work_date < ${deptEnd}
+        AND a.work_date >= ${deptStartStr}::timestamp - interval '1 day'
+        AND a.work_date <  ${deptEndStr}::timestamp + interval '1 day'
+        AND ((a.work_date AT TIME ZONE 'UTC') AT TIME ZONE ${timezone})::date >= ${deptStartStr}::date
+        AND ((a.work_date AT TIME ZONE 'UTC') AT TIME ZONE ${timezone})::date <  ${deptEndStr}::date
       GROUP BY d.id, d.name
       ORDER BY d.name`,
     // ── B) 출근시각 분포 30일 ── 15분 버킷
@@ -223,30 +225,39 @@ export async function getAttendanceTrends(companyId: string, now: Date): Promise
         COUNT(*)::int AS cnt
       FROM attendances a
       WHERE a.company_id = ${companyId}
-        AND a.work_date >= ${deptStart} AND a.work_date < ${deptEnd}
+        AND a.work_date >= ${deptStartStr}::timestamp - interval '1 day'
+        AND a.work_date <  ${deptEndStr}::timestamp + interval '1 day'
+        AND ((a.work_date AT TIME ZONE 'UTC') AT TIME ZONE ${timezone})::date >= ${deptStartStr}::date
+        AND ((a.work_date AT TIME ZONE 'UTC') AT TIME ZONE ${timezone})::date <  ${deptEndStr}::date
         AND a.clock_in IS NOT NULL
       GROUP BY bucket
       ORDER BY bucket`,
-    // ── C) 근태유형 월별 카운트 6개월 ── work_date 는 UTC 자정 date-only → tz 변환 불요
+    // ── C) 근태유형 월별 카운트 6개월 ── work_date 현지 달력일 = localDate (KST자정-시드 off-by-one 해소)
     prisma.$queryRaw<Array<{ month: string; status: string; cnt: number }>>`
       SELECT
-        to_char(date_trunc('month', a.work_date), 'YYYY-MM') AS month,
+        to_char(date_trunc('month', (a.work_date AT TIME ZONE 'UTC') AT TIME ZONE ${timezone}), 'YYYY-MM') AS month,
         a.status::text AS status,
         COUNT(*)::int AS cnt
       FROM attendances a
       WHERE a.company_id = ${companyId}
-        AND a.work_date >= ${trendStart} AND a.work_date < ${trendEnd}
+        AND a.work_date >= ${trendStartStr}::timestamp - interval '1 day'
+        AND a.work_date <  ${trendEndStr}::timestamp + interval '1 day'
+        AND ((a.work_date AT TIME ZONE 'UTC') AT TIME ZONE ${timezone})::date >= ${trendStartStr}::date
+        AND ((a.work_date AT TIME ZONE 'UTC') AT TIME ZONE ${timezone})::date <  ${trendEndStr}::date
       GROUP BY month, a.status
       ORDER BY month`,
-    // ── C) 휴가 월별 승인건수 (startDate 월 귀속 — 일배분 회피, Codex r2-3)
+    // ── C) 휴가 월별 승인건수 (startDate 월 귀속 — 일배분 회피, Codex r2-3) — localDate 정합
     prisma.$queryRaw<Array<{ month: string; cnt: number }>>`
       SELECT
-        to_char(date_trunc('month', lr.start_date), 'YYYY-MM') AS month,
+        to_char(date_trunc('month', (lr.start_date AT TIME ZONE 'UTC') AT TIME ZONE ${timezone}), 'YYYY-MM') AS month,
         COUNT(*)::int AS cnt
       FROM leave_requests lr
       WHERE lr.company_id = ${companyId}
         AND lr.status = 'APPROVED'
-        AND lr.start_date >= ${trendStart} AND lr.start_date < ${trendEnd}
+        AND lr.start_date >= ${trendStartStr}::timestamp - interval '1 day'
+        AND lr.start_date <  ${trendEndStr}::timestamp + interval '1 day'
+        AND ((lr.start_date AT TIME ZONE 'UTC') AT TIME ZONE ${timezone})::date >= ${trendStartStr}::date
+        AND ((lr.start_date AT TIME ZONE 'UTC') AT TIME ZONE ${timezone})::date <  ${trendEndStr}::date
       GROUP BY month
       ORDER BY month`,
   ])
