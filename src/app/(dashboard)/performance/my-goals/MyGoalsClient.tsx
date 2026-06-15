@@ -109,8 +109,12 @@ export default function MyGoalsClient({ user: _user, embedded = false, onPrimary
                 const res = await apiClient.getList<CycleOption>('/api/v1/performance/cycles', { page: 1, limit: 100 })
                 setCycles(res.data)
                 if (res.data.length > 0) {
-                    setSelectedCycleId(res.data[0].id)
-                    setCycleStatus(res.data[0].status)
+                    // 기본 선택 = ACTIVE 사이클 우선(없으면 첫 번째). cycles API 정렬이
+                    // year/createdAt desc 라 최신 비-ACTIVE 사이클이 앞설 수 있어, 목표를
+                    // 실제로 생성/수정 가능한 ACTIVE 사이클로 랜딩시켜 헤더 액션이 활성화되게 함.
+                    const preferred = res.data.find((c) => c.status === 'ACTIVE') ?? res.data[0]
+                    setSelectedCycleId(preferred.id)
+                    setCycleStatus(preferred.status)
                 }
             } catch { setError(t('cycleListLoadFailed')) }
         }
