@@ -56,17 +56,16 @@ test.describe('Employees BulkActionBar — HR_ADMIN 선택 내보내기', () => 
     })
     await expect(exportBtn).toBeVisible()
 
-    // 선택 내보내기 → /export?ids= 요청 (선택→export 배선 검증, 회사스코프 AND)
-    const [request] = await Promise.all([
-      page.waitForRequest(
-        (r) =>
-          r.url().includes('/api/v1/employees/export') &&
-          r.url().includes('ids='),
-        { timeout: 10000 },
-      ),
+    // 선택 내보내기 → /export?ids= 다운로드 (선택→export 배선 검증, 회사스코프 AND)
+    // 구현은 <a download href=.../export?ids=> 클릭 → 브라우저 다운로드.
+    // Playwright는 이를 'download' 이벤트로 surface (request 이벤트로는 안 잡힘) →
+    // waitForRequest 가 아니라 waitForEvent('download') 로 검증.
+    const [download] = await Promise.all([
+      page.waitForEvent('download', { timeout: 10000 }),
       exportBtn.click(),
     ])
-    expect(request.url()).toContain('ids=')
+    expect(download.url()).toContain('/api/v1/employees/export')
+    expect(download.url()).toContain('ids=')
 
     // 선택 해제 → 바 소멸 (⑦ 상태 갱신)
     const clearBtn = bar.getByRole('button', {
