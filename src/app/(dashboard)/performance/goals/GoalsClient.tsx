@@ -399,20 +399,25 @@ export default function GoalsClient({
       </div>
     <ConfirmDialog {...dialogProps} />
 
-    {/* Goal Revision Dialog */}
-    <ProposeRevisionDialog
-      open={revisionDialogGoals.length > 0}
-      onOpenChange={(open) => { if (!open) setRevisionDialogGoals([]) }}
-      goals={revisionDialogGoals.map((g) => ({
-        id: g.id,
-        title: g.title,
-        description: g.description,
-        weight: Number(g.weight),
-        targetMetric: g.targetMetric,
-        targetValue: g.targetValue,
-      }))}
-      onSuccess={fetchGoals}
-    />
+    {/* Goal Revision Dialog — 조건부 마운트로 매 오픈마다 새로 마운트.
+        ProposeRevisionDialog의 revisions state는 useState 지연 초기화로 goals를
+        캡처하므로, 항상 마운트하면 첫 빈 goals([])가 고정돼 목표 카드가 안 뜸.
+        (바로 아래 RevisionHistorySheet와 동일 패턴) */}
+    {revisionDialogGoals.length > 0 && (
+      <ProposeRevisionDialog
+        open={revisionDialogGoals.length > 0}
+        onOpenChange={(open) => { if (!open) setRevisionDialogGoals([]) }}
+        goals={revisionDialogGoals.map((g) => ({
+          id: g.id,
+          title: g.title,
+          description: g.description,
+          weight: Number(g.weight),
+          targetMetric: g.targetMetric,
+          targetValue: g.targetValue,
+        }))}
+        onSuccess={fetchGoals}
+      />
+    )}
 
     {/* Revision History Sheet */}
     {revisionHistoryGoal && (
