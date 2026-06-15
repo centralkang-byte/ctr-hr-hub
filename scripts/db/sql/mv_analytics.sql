@@ -135,13 +135,6 @@ WITH weekly_ot AS (
     GROUP BY employee_id, DATE_TRUNC('week', clock_in)
   ) w GROUP BY employee_id
 ),
-leave_unused AS (
-  SELECT employee_id,
-    COALESCE(SUM(granted_days - used_days - pending_days), 0) AS unused_days
-  FROM employee_leave_balances
-  WHERE year = EXTRACT(YEAR FROM CURRENT_DATE)
-  GROUP BY employee_id
-),
 last_oo AS (
   SELECT employee_id,
     EXTRACT(DAY FROM NOW() - MAX(completed_at))::INT AS days_since
@@ -155,15 +148,21 @@ SELECT
   d.name AS department,
   jc.code AS job_category_code,
   COALESCE(wo.high_weeks, 0) AS consecutive_high_weeks,
+  -- 표시용 잔여 = 연차 가용분 - 사용 - 신청중 (utilization.ts leaveRemaining 정합, annual-only)
   COALESCE(lu.unused_days, 0) AS unused_days,
   COALESCE(lo.days_since, 999) AS days_since_last_one_on_one,
+  -- 휴가 차원(번아웃 신호) = 연중 경과 대비 절반 미만 페이스로 연차 사용("쟁여두기").
+  -- pace-relative: 연초 오탐 차단(절대 임계 45일은 다중정책 합산기 잔재 — annual-only 도달불가).
+  -- 계수 0.5 = 조정 여지. available<=0(연차행 無/0) → false.
   (CASE
     WHEN (COALESCE(wo.high_weeks, 0) >= 4)::INT
-       + (COALESCE(lu.unused_days, 0) >= 45)::INT
+       + (lu.available_days > 0
+          AND lu.used_days < lu.available_days * 0.5 * (EXTRACT(DOY FROM CURRENT_DATE)::numeric / 365.0))::INT
        + (COALESCE(lo.days_since, 999) >= 30)::INT >= 2
     THEN true ELSE false END) AS is_burnout_warning,
   (COALESCE(wo.high_weeks, 0) >= 4
-    AND COALESCE(lu.unused_days, 0) >= 45
+    AND (lu.available_days > 0
+         AND lu.used_days < lu.available_days * 0.5 * (EXTRACT(DOY FROM CURRENT_DATE)::numeric / 365.0))
     AND COALESCE(lo.days_since, 999) >= 30) AS is_burnout_critical
 FROM employees e
 JOIN employee_assignments ea
@@ -173,7 +172,22 @@ JOIN employee_assignments ea
 JOIN departments d ON ea.department_id = d.id
 JOIN job_categories jc ON ea.job_category_id = jc.id
 LEFT JOIN weekly_ot wo ON wo.employee_id = e.id
-LEFT JOIN leave_unused lu ON lu.employee_id = e.id
+-- 연차 잔여/가용분 (PR3: 레거시 employee_leave_balances → leave_year_balances SSOT).
+-- annual-only(code='annual') + 회사 스코프(자사 def OR 글로벌, 타사 제외=전출자 누출 차단).
+LEFT JOIN LATERAL (
+  SELECT
+    COALESCE(SUM(lyb.entitled + lyb.carried_over + lyb.adjusted - lyb.used - lyb.pending), 0) AS unused_days,
+    -- 분모 = 가용분, per-balance floor(<=0 → 0; utilization.ts leaveAvailable 정합)
+    COALESCE(SUM(GREATEST(lyb.entitled + lyb.carried_over + lyb.adjusted, 0)), 0) AS available_days,
+    COALESCE(SUM(lyb.used), 0) AS used_days
+  FROM leave_year_balances lyb
+  JOIN leave_type_defs ltd
+    ON ltd.id = lyb.leave_type_def_id
+    AND ltd.code = 'annual'
+    AND (ltd.company_id = ea.company_id OR ltd.company_id IS NULL)
+  WHERE lyb.employee_id = e.id
+    AND lyb.year = EXTRACT(YEAR FROM CURRENT_DATE)
+) lu ON true
 LEFT JOIN last_oo lo ON lo.employee_id = e.id
 WHERE ea.status = 'ACTIVE' AND e.deleted_at IS NULL;
 
@@ -229,12 +243,17 @@ LEFT JOIN LATERAL (
   WHERE a.employee_id = e.id
     AND a.work_date >= CURRENT_DATE - INTERVAL '28 days'
 ) att_summary ON true
--- Leave balance current year
+-- Leave balance current year (PR3: 레거시 employee_leave_balances → leave_year_balances SSOT).
+-- annual-only + 회사 스코프(자사 def OR 글로벌, 타사 제외=전출자 누출 차단). 표시용 잔여 = leaveRemaining.
 LEFT JOIN LATERAL (
-  SELECT COALESCE(SUM(granted_days - used_days - pending_days), 0) AS unused_days
-  FROM employee_leave_balances elb
-  WHERE elb.employee_id = e.id
-    AND elb.year = EXTRACT(YEAR FROM CURRENT_DATE)
+  SELECT COALESCE(SUM(lyb.entitled + lyb.carried_over + lyb.adjusted - lyb.used - lyb.pending), 0) AS unused_days
+  FROM leave_year_balances lyb
+  JOIN leave_type_defs ltd
+    ON ltd.id = lyb.leave_type_def_id
+    AND ltd.code = 'annual'
+    AND (ltd.company_id = ea.company_id OR ltd.company_id IS NULL)
+  WHERE lyb.employee_id = e.id
+    AND lyb.year = EXTRACT(YEAR FROM CURRENT_DATE)
 ) lb ON true
 -- Recent 1:1
 LEFT JOIN LATERAL (
