@@ -5,15 +5,10 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useState } from 'react'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
+import { WdDrawer, WdField, WdRow } from '@/components/shared/WdDrawer'
 import { apiClient } from '@/lib/api'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+
+const INPUT_CLS = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus:outline-none'
 
 interface MilitaryRegistration {
   id: string
@@ -71,8 +66,13 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault()
+    // WdDrawer primary는 form submit이 아니므로 native required가 강제되지 않음 → 명시적 검증
+    if (!editing && !form.employeeId.trim()) {
+      setError('필수 항목이 누락되었습니다.')
+      return
+    }
     setSaving(true)
     setError(null)
 
@@ -109,183 +109,161 @@ export default function MilitaryRegistrationForm({ registration, onClose, onSucc
   }
 
   return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>
-            {editing ? '군복무 기록 수정' : '군복무 기록 등록'}
-          </DialogTitle>
-        </DialogHeader>
+    <WdDrawer
+      open
+      onClose={onClose}
+      title={editing ? '군복무 기록 수정' : '군복무 기록 등록'}
+      closeDisabled={saving}
+      secondary={{ label: '취소', onClick: onClose, disabled: saving }}
+      primary={{
+        label: saving ? '저장 중...' : editing ? '수정' : '등록',
+        onClick: handleSubmit,
+        disabled: saving,
+      }}
+    >
+      {/* Employee ID (only when creating) */}
+      {!editing && (
+        <WdField label="직원 ID" required htmlFor="military-employee-id">
+          <input
+            id="military-employee-id"
+            type="text"
+            name="employeeId"
+            value={form.employeeId}
+            onChange={handleChange}
+            required
+            placeholder={'직원 UUID 입력'}
+            className={INPUT_CLS}
+          />
+        </WdField>
+      )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Employee ID (only when creating) */}
-          {!editing && (
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-1">
-                직원 ID <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="employeeId"
-                value={form.employeeId}
-                onChange={handleChange}
-                required
-                placeholder={'직원 UUID 입력'}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
-              />
-            </div>
-          )}
+      {/* Show current employee info when editing */}
+      {editing && (
+        <div className="p-3 bg-background rounded-lg">
+          <p className="text-sm font-medium text-foreground">{registration.employee.name}</p>
+          <p className="text-xs text-muted-foreground">
+            {registration.employee.employeeNo} · {registration.employee.department?.name ?? '-'}
+          </p>
+        </div>
+      )}
 
-          {/* Show current employee info when editing */}
-          {editing && (
-            <div className="p-3 bg-background rounded-lg">
-              <p className="text-sm font-medium text-foreground">{registration.employee.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {registration.employee.employeeNo} · {registration.employee.department?.name ?? '-'}
-              </p>
-            </div>
-          )}
+      {/* Category & Fitness */}
+      <WdRow>
+        <WdField label="복무 구분" required htmlFor="military-category">
+          <select
+            id="military-category"
+            name="category"
+            value={form.category}
+            onChange={handleChange}
+            required
+            className={INPUT_CLS}
+          >
+            <option value="OFFICER">장교</option>
+            <option value="SOLDIER">병사</option>
+            <option value="RESERVIST">예비역</option>
+            <option value="EXEMPT">면제</option>
+          </select>
+        </WdField>
+        <WdField label="적합도" required htmlFor="military-fitness-category">
+          <select
+            id="military-fitness-category"
+            name="fitnessCategory"
+            value={form.fitnessCategory}
+            onChange={handleChange}
+            required
+            className={INPUT_CLS}
+          >
+            <option value="FIT_A">적합 A</option>
+            <option value="FIT_B">적합 B</option>
+            <option value="FIT_C">적합 C</option>
+            <option value="FIT_D">적합 D</option>
+            <option value="UNFIT">부적합</option>
+          </select>
+        </WdField>
+      </WdRow>
 
-          {/* Category */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-1">
-                복무 구분 <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="category"
-                value={form.category}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
-              >
-                <option value="OFFICER">장교</option>
-                <option value="SOLDIER">병사</option>
-                <option value="RESERVIST">예비역</option>
-                <option value="EXEMPT">면제</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-1">
-                적합도 <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="fitnessCategory"
-                value={form.fitnessCategory}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
-              >
-                <option value="FIT_A">적합 A</option>
-                <option value="FIT_B">적합 B</option>
-                <option value="FIT_C">적합 C</option>
-                <option value="FIT_D">적합 D</option>
-                <option value="UNFIT">부적합</option>
-              </select>
-            </div>
-          </div>
+      {/* Rank & Specialty */}
+      <WdRow>
+        <WdField label="계급" htmlFor="military-rank">
+          <input
+            id="military-rank"
+            type="text"
+            name="rank"
+            value={form.rank}
+            onChange={handleChange}
+            placeholder="예: 상사"
+            className={INPUT_CLS}
+          />
+        </WdField>
+        <WdField label="군사특기" htmlFor="military-specialty-code">
+          <input
+            id="military-specialty-code"
+            type="text"
+            name="specialtyCode"
+            value={form.specialtyCode}
+            onChange={handleChange}
+            placeholder="예: 106A"
+            className={INPUT_CLS}
+          />
+        </WdField>
+      </WdRow>
 
-          {/* Rank & Specialty */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-1">계급</label>
-              <input
-                type="text"
-                name="rank"
-                value={form.rank}
-                onChange={handleChange}
-                placeholder="예: 상사"
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-1">군사특기</label>
-              <input
-                type="text"
-                name="specialtyCode"
-                value={form.specialtyCode}
-                onChange={handleChange}
-                placeholder="예: 106A"
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
-              />
-            </div>
-          </div>
+      {/* Military Office */}
+      <WdField label="군사기관" htmlFor="military-office">
+        <input
+          id="military-office"
+          type="text"
+          name="militaryOffice"
+          value={form.militaryOffice}
+          onChange={handleChange}
+          placeholder="담당 군사기관명"
+          className={INPUT_CLS}
+        />
+      </WdField>
 
-          {/* Military Office */}
-          <div>
-            <label className="text-sm font-medium text-foreground block mb-1">군사기관</label>
-            <input
-              type="text"
-              name="militaryOffice"
-              value={form.militaryOffice}
-              onChange={handleChange}
-              placeholder="담당 군사기관명"
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground"
-            />
-          </div>
+      {/* Dates */}
+      <WdRow>
+        <WdField label="등록일" htmlFor="military-registration-date">
+          <input
+            id="military-registration-date"
+            type="date"
+            name="registrationDate"
+            value={form.registrationDate}
+            onChange={handleChange}
+            className={INPUT_CLS}
+          />
+        </WdField>
+        <WdField label="해제일" htmlFor="military-deregistration-date">
+          <input
+            id="military-deregistration-date"
+            type="date"
+            name="deregistrationDate"
+            value={form.deregistrationDate}
+            onChange={handleChange}
+            className={INPUT_CLS}
+          />
+        </WdField>
+      </WdRow>
 
-          {/* Dates */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-1">등록일</label>
-              <input
-                type="date"
-                name="registrationDate"
-                value={form.registrationDate}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground block mb-1">해제일</label>
-              <input
-                type="date"
-                name="deregistrationDate"
-                value={form.deregistrationDate}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10"
-              />
-            </div>
-          </div>
+      {/* Notes */}
+      <WdField label="비고" htmlFor="military-notes">
+        <textarea
+          id="military-notes"
+          name="notes"
+          value={form.notes}
+          onChange={handleChange}
+          rows={3}
+          placeholder={'추가 메모'}
+          className={`${INPUT_CLS} resize-none`}
+        />
+      </WdField>
 
-          {/* Notes */}
-          <div>
-            <label className="text-sm font-medium text-foreground block mb-1">비고</label>
-            <textarea
-              name="notes"
-              value={form.notes}
-              onChange={handleChange}
-              rows={3}
-              placeholder={'추가 메모'}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 placeholder:text-muted-foreground resize-none"
-            />
-          </div>
-
-          {/* Error */}
-          {error && (
-            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
-              {error}
-            </div>
-          )}
-
-          <DialogFooter>
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm"
-            >
-              취소
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50`}
-            >
-              {saving ? '저장 중...' : editing ? '수정' : '등록'}
-            </button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+      {/* Error */}
+      {error && (
+        <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
+          {error}
+        </div>
+      )}
+    </WdDrawer>
   )
 }

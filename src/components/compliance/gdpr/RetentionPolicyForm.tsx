@@ -2,14 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
+
+const INPUT_CLS = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus:outline-none'
 
 interface RetentionPolicy {
   id: string
@@ -104,110 +99,87 @@ export default function RetentionPolicyForm({ open, policy, onClose, onSaved }: 
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>
-            {isEdit ? tc('edit') : tc('create')} — {t('gdpr.retention')}
-          </DialogTitle>
-        </DialogHeader>
+    <WdDrawer
+      open={open}
+      onClose={onClose}
+      title={`${isEdit ? tc('edit') : tc('create')} — ${t('gdpr.retention')}`}
+      closeDisabled={saving}
+      secondary={{ label: tc('cancel'), onClick: onClose, disabled: saving }}
+      primary={{ label: saving ? tc('loading') : tc('save'), onClick: handleSubmit, disabled: saving }}
+    >
+      {/* Category */}
+      <WdField label={tc('category')} required htmlFor="retention-category">
+        <select
+          id="retention-category"
+          className={INPUT_CLS}
+          value={form.category}
+          onChange={(e) => handleChange('category', e.target.value)}
+        >
+          <option value="">{tc('selectPlaceholder')}</option>
+          {DATA_CATEGORIES.map((cat) => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
+      </WdField>
 
-        <div className="space-y-4 py-2">
-          {/* Category */}
+      {/* Retention Months */}
+      <WdField label={t('gdpr.retentionMonths')} required htmlFor="retention-months">
+        <input
+          id="retention-months"
+          type="number"
+          min={1}
+          max={600}
+          className={INPUT_CLS}
+          value={form.retention_months}
+          onChange={(e) => handleChange('retention_months', parseInt(e.target.value) || 0)}
+        />
+        <p className="text-xs text-muted-foreground mt-1">e.g., 36 = 3 years, 84 = 7 years</p>
+      </WdField>
+
+      {/* Description */}
+      <WdField label={tc('description')} htmlFor="retention-description">
+        <textarea
+          id="retention-description"
+          className={`${INPUT_CLS} resize-none`}
+          rows={3}
+          placeholder="Policy description and legal basis..."
+          value={form.description}
+          onChange={(e) => handleChange('description', e.target.value)}
+        />
+      </WdField>
+
+      {/* Toggles */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between p-3 bg-background rounded-lg">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              {tc('category')} <span className="text-red-500">*</span>
-            </label>
-            <select
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
-              value={form.category}
-              onChange={(e) => handleChange('category', e.target.value)}
-            >
-              <option value="">{tc('selectPlaceholder')}</option>
-              {DATA_CATEGORIES.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
+            <p className="text-sm font-medium text-foreground">{t('gdpr.autoDelete')}</p>
+            <p className="text-xs text-muted-foreground">Automatically delete data after retention period</p>
           </div>
-
-          {/* Retention Months */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              {t('gdpr.retentionMonths')} <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              min={1}
-              max={600}
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
-              value={form.retention_months}
-              onChange={(e) => handleChange('retention_months', parseInt(e.target.value) || 0)}
-            />
-            <p className="text-xs text-muted-foreground mt-1">e.g., 36 = 3 years, 84 = 7 years</p>
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">{tc('description')}</label>
-            <textarea
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none"
-              rows={3}
-              placeholder="Policy description and legal basis..."
-              value={form.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-            />
-          </div>
-
-          {/* Toggles */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-background rounded-lg">
-              <div>
-                <p className="text-sm font-medium text-foreground">{t('gdpr.autoDelete')}</p>
-                <p className="text-xs text-muted-foreground">Automatically delete data after retention period</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleChange('auto_delete', !form.auto_delete)}
-                className={`relative w-10 h-5 rounded-full transition-colors ${form.auto_delete ? 'bg-primary' : 'bg-border'}`}
-              >
-                <span className={`absolute top-0.5 w-4 h-4 bg-card rounded-full shadow transition-transform ${form.auto_delete ? 'translate-x-5' : 'translate-x-0.5'}`} />
-              </button>
-            </div>
-
-            <div className="flex items-center justify-between p-3 bg-background rounded-lg">
-              <div>
-                <p className="text-sm font-medium text-foreground">{t('gdpr.anonymize')}</p>
-                <p className="text-xs text-muted-foreground">Anonymize instead of deleting</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleChange('anonymize', !form.anonymize)}
-                className={`relative w-10 h-5 rounded-full transition-colors ${form.anonymize ? 'bg-primary' : 'bg-border'}`}
-              >
-                <span className={`absolute top-0.5 w-4 h-4 bg-card rounded-full shadow transition-transform ${form.anonymize ? 'translate-x-5' : 'translate-x-0.5'}`} />
-              </button>
-            </div>
-          </div>
-
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          <button
+            type="button"
+            onClick={() => handleChange('auto_delete', !form.auto_delete)}
+            className={`relative w-10 h-5 rounded-full transition-colors ${form.auto_delete ? 'bg-primary' : 'bg-border'}`}
+          >
+            <span className={`absolute top-0.5 w-4 h-4 bg-card rounded-full shadow transition-transform ${form.auto_delete ? 'translate-x-5' : 'translate-x-0.5'}`} />
+          </button>
         </div>
 
-        <DialogFooter className="gap-2">
+        <div className="flex items-center justify-between p-3 bg-background rounded-lg">
+          <div>
+            <p className="text-sm font-medium text-foreground">{t('gdpr.anonymize')}</p>
+            <p className="text-xs text-muted-foreground">Anonymize instead of deleting</p>
+          </div>
           <button
-            onClick={onClose}
-            className="bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm"
+            type="button"
+            onClick={() => handleChange('anonymize', !form.anonymize)}
+            className={`relative w-10 h-5 rounded-full transition-colors ${form.anonymize ? 'bg-primary' : 'bg-border'}`}
           >
-            {tc('cancel')}
+            <span className={`absolute top-0.5 w-4 h-4 bg-card rounded-full shadow transition-transform ${form.anonymize ? 'translate-x-5' : 'translate-x-0.5'}`} />
           </button>
-          <button
-            onClick={handleSubmit}
-            disabled={saving}
-            className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50`}
-          >
-            {saving ? tc('loading') : tc('save')}
-          </button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </div>
+
+      {error && <p className="text-sm text-destructive">{error}</p>}
+    </WdDrawer>
   )
 }

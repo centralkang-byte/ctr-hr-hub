@@ -2,14 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import { BUTTON_VARIANTS } from '@/lib/styles'
+import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
+
+const INPUT_CLS = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus:outline-none'
 
 interface Employee {
   id: string
@@ -120,127 +115,102 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>
-            {isEdit ? tc('edit') : tc('new')} — {t('gdpr.requests')}
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-4 py-2">
-          {/* Employee — only for new */}
-          {!isEdit && (
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                {tc('name')} <span className="text-red-500">*</span>
-              </label>
-              <select
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
-                value={form.employee_id}
-                onChange={(e) => handleChange('employee_id', e.target.value)}
-              >
-                <option value="">{tc('selectPlaceholder')}</option>
-                {employees.map((emp) => (
-                  <option key={emp.id} value={emp.id}>
-                    {emp.name} ({emp.employee_no})
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {/* Request Type */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              {t('gdpr.requestType')} <span className="text-red-500">*</span>
-            </label>
-            <select
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
-              value={form.request_type}
-              onChange={(e) => handleChange('request_type', e.target.value)}
-            >
-              <option value="">{tc('selectPlaceholder')}</option>
-              {REQUEST_TYPES.map((rt) => (
-                <option key={rt.value} value={rt.value}>{rt.label}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">
-              {tc('description')} <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none"
-              rows={3}
-              placeholder="Describe the data subject request..."
-              value={form.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-            />
-          </div>
-
-          {/* Deadline */}
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1">{t('gdpr.deadline')}</label>
-            <input
-              type="date"
-              className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
-              value={form.deadline}
-              onChange={(e) => handleChange('deadline', e.target.value)}
-            />
-          </div>
-
-          {/* Status — only for edit */}
-          {isEdit && (
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">{tc('status')}</label>
-              <select
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary"
-                value={form.status}
-                onChange={(e) => handleChange('status', e.target.value)}
-              >
-                {STATUS_OPTIONS.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {/* Response Note — only for edit */}
-          {isEdit && (
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">{t('gdpr.responseNote')}</label>
-              <textarea
-                className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary/10 focus:border-primary resize-none"
-                rows={3}
-                placeholder="Response or resolution notes..."
-                value={form.response_note}
-                onChange={(e) => handleChange('response_note', e.target.value)}
-              />
-            </div>
-          )}
-
-          {error && <p className="text-sm text-destructive">{error}</p>}
-        </div>
-
-        <DialogFooter className="gap-2">
-          <button
-            onClick={onClose}
-            className="bg-card border border-border hover:bg-background text-foreground px-4 py-2 rounded-lg font-medium text-sm"
+    <WdDrawer
+      open={open}
+      onClose={onClose}
+      title={`${isEdit ? tc('edit') : tc('new')} — ${t('gdpr.requests')}`}
+      closeDisabled={saving}
+      secondary={{ label: tc('cancel'), onClick: onClose, disabled: saving }}
+      primary={{ label: saving ? tc('loading') : tc('save'), onClick: handleSubmit, disabled: saving }}
+    >
+      {/* Employee — only for new */}
+      {!isEdit && (
+        <WdField label={tc('name')} required htmlFor="datareq-employee">
+          <select
+            id="datareq-employee"
+            className={INPUT_CLS}
+            value={form.employee_id}
+            onChange={(e) => handleChange('employee_id', e.target.value)}
           >
-            {tc('cancel')}
-          </button>
-          <button
-            onClick={handleSubmit}
-            disabled={saving}
-            className={`${BUTTON_VARIANTS.primary} px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50`}
+            <option value="">{tc('selectPlaceholder')}</option>
+            {employees.map((emp) => (
+              <option key={emp.id} value={emp.id}>
+                {emp.name} ({emp.employee_no})
+              </option>
+            ))}
+          </select>
+        </WdField>
+      )}
+
+      {/* Request Type */}
+      <WdField label={t('gdpr.requestType')} required htmlFor="datareq-request-type">
+        <select
+          id="datareq-request-type"
+          className={INPUT_CLS}
+          value={form.request_type}
+          onChange={(e) => handleChange('request_type', e.target.value)}
+        >
+          <option value="">{tc('selectPlaceholder')}</option>
+          {REQUEST_TYPES.map((rt) => (
+            <option key={rt.value} value={rt.value}>{rt.label}</option>
+          ))}
+        </select>
+      </WdField>
+
+      {/* Description */}
+      <WdField label={tc('description')} required htmlFor="datareq-description">
+        <textarea
+          id="datareq-description"
+          className={`${INPUT_CLS} resize-none`}
+          rows={3}
+          placeholder="Describe the data subject request..."
+          value={form.description}
+          onChange={(e) => handleChange('description', e.target.value)}
+        />
+      </WdField>
+
+      {/* Deadline */}
+      <WdField label={t('gdpr.deadline')} htmlFor="datareq-deadline">
+        <input
+          id="datareq-deadline"
+          type="date"
+          className={INPUT_CLS}
+          value={form.deadline}
+          onChange={(e) => handleChange('deadline', e.target.value)}
+        />
+      </WdField>
+
+      {/* Status — only for edit */}
+      {isEdit && (
+        <WdField label={tc('status')} htmlFor="datareq-status">
+          <select
+            id="datareq-status"
+            className={INPUT_CLS}
+            value={form.status}
+            onChange={(e) => handleChange('status', e.target.value)}
           >
-            {saving ? tc('loading') : tc('save')}
-          </button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s.value} value={s.value}>{s.label}</option>
+            ))}
+          </select>
+        </WdField>
+      )}
+
+      {/* Response Note — only for edit */}
+      {isEdit && (
+        <WdField label={t('gdpr.responseNote')} htmlFor="datareq-response-note">
+          <textarea
+            id="datareq-response-note"
+            className={`${INPUT_CLS} resize-none`}
+            rows={3}
+            placeholder="Response or resolution notes..."
+            value={form.response_note}
+            onChange={(e) => handleChange('response_note', e.target.value)}
+          />
+        </WdField>
+      )}
+
+      {error && <p className="text-sm text-destructive">{error}</p>}
+    </WdDrawer>
   )
 }

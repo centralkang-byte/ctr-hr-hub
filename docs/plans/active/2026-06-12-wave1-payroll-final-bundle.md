@@ -3,6 +3,7 @@
 > 세션: S289 (2026-06-12) · 스택 base = `design/wave1-payroll-ia` (#158) → 새 브랜치 `design/wave1-payroll-final`
 > 원칙: 프로토 = 픽셀 SSOT · **기능 절대 보존** · **백엔드 절대 보존**(API/prisma/lib/middleware 무수정)
 > residual(#157) 18줄이 "별 세션"으로 빼둔 묶음 + 캠페인 메모리 "payroll 마지막 묶음" = 이 PR로 Wave 1 급여 종결.
+> **modal→WdDrawer 합류 (CEO 2026-06-15)**: payroll 잔여 입력폼 Dialog→WdDrawer 전환은 단독 스윕(#199로 종료)이 아니라 **이 플랜이 소유**한다 — `bank-transfers/BankTransfersClient`·`close-attendance/CloseAttendanceClient`. (`approve`/`review`/`SaveScenarioDialog` = confirm류 Dialog 유지.) 전환 시 `<form onSubmit>` native 검증(required/min/max/step/url) → JS 가드 복원 필수 ([[hrhub-wddrawer-form-validation-regression]]). SSOT 표 = `2026-06-10-modal-to-drawer-migration.md`.
 
 ## 감사 출처·신뢰도 (S289)
 
