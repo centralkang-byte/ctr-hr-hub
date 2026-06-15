@@ -31,9 +31,12 @@ interface EmployeeData {
 
 interface LeaveBalance {
   id: string
-  grantedDays: unknown
-  usedDays: unknown
-  policy: { name: string; leaveType: string }
+  entitled: number
+  used: number
+  carriedOver: number
+  adjusted: number
+  pending: number
+  leaveTypeDef: { name: string; code: string }
 }
 
 interface MySpaceClientProps {
@@ -62,7 +65,12 @@ function getYearsOfService(hireDate: Date): string {
 export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }: MySpaceClientProps) {
   const t = useTranslations('mySpace')
   const asgn = extractPrimaryAssignment(employee.assignments as unknown as Record<string, unknown>[]) as Assignment | undefined
-  const annualLeave = leaveBalances.find((l) => l.policy.leaveType === 'ANNUAL')
+  // 신 SSOT(LeaveYearBalance)에서 연차 = leaveTypeDef.code 'annual' (휴가 도메인 canonical: offboarding/me·nudge)
+  const annualLeave = leaveBalances.find((l) => l.leaveTypeDef.code === 'annual')
+  // 잔여 = 부여+이월+조정 - 사용 - 대기 ( /api/v1/leave/balances SSOT 계산식과 동일 )
+  const annualRemaining = annualLeave
+    ? annualLeave.entitled + annualLeave.carriedOver + annualLeave.adjusted - annualLeave.used - annualLeave.pending
+    : null
 
   const QUICK_LINKS = [
     { label: t('quickLink.myProfile'), href: '/my/profile', icon: User, color: 'bg-primary/10 text-primary' },
@@ -111,14 +119,14 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
         items={[
           {
             label: t('kpi.leaveRemaining'),
-            value: annualLeave ? (Number(annualLeave.grantedDays) - Number(annualLeave.usedDays)).toFixed(1) : '-',
+            value: annualRemaining !== null ? annualRemaining.toFixed(1) : '-',
             unit: t('unitDay'),
             icon: CalendarDays,
             tone: 'info',
           },
           {
             label: t('kpi.leaveUsed'),
-            value: annualLeave ? Number(annualLeave.usedDays).toFixed(1) : '-',
+            value: annualLeave ? annualLeave.used.toFixed(1) : '-',
             unit: t('unitDay'),
             icon: Clock,
           },
@@ -169,18 +177,18 @@ export function MySpaceClient({ employee, leaveBalances, pendingChangeRequests }
           </div>
           <div className="space-y-2">
             {leaveBalances.slice(0, 5).map((lb) => {
-              const granted = Number(lb.grantedDays)
-              const used = Number(lb.usedDays)
-              const remaining = granted - used
-              const pct = granted > 0 ? Math.round((used / granted) * 100) : 0
+              const total = lb.entitled + lb.carriedOver + lb.adjusted
+              const remaining = total - lb.used - lb.pending
+              // bar width는 0..100 clamp (adjusted 음수·초과사용 시 범위 이탈 방지) — 표시 수치는 실제값 유지
+              const pct = total > 0 ? Math.min(100, Math.max(0, Math.round((lb.used / total) * 100))) : 0
               return (
                 <div key={lb.id} className="flex items-center gap-3">
-                  <p className="text-sm text-foreground w-28 shrink-0">{lb.policy.name}</p>
+                  <p className="text-sm text-foreground w-28 shrink-0">{lb.leaveTypeDef.name}</p>
                   <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                     <div className="h-full bg-primary rounded-full" style={{ width: `${pct}%` }} />
                   </div>
                   <p className="text-sm text-muted-foreground w-16 text-right shrink-0">
-                    {remaining.toFixed(1)} / {granted.toFixed(1)}{t('unitDay')}
+                    {remaining.toFixed(1)} / {total.toFixed(1)}{t('unitDay')}
                   </p>
                 </div>
               )

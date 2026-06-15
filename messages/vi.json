@@ -4566,6 +4566,12 @@
     "chipDueSoon": "Sắp đến hạn"
   },
   "myTraining": {
+    "quarterGoal": {
+      "title": "Mục tiêu học tập quý này",
+      "targetLabel": "Số giờ mục tiêu",
+      "value": "{completed} / {target} giờ",
+      "recommendNote": "Khuyến nghị {target} giờ học mỗi quý. Ưu tiên đăng ký các khóa bắt buộc."
+    },
     "category": {
       "compliance": "Tuân thủ",
       "technical": "Kỹ thuật",
