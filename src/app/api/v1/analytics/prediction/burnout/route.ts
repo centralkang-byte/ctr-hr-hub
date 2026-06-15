@@ -13,12 +13,14 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { detectBurnout } from '@/lib/analytics/burnout-detection'
 import type { SessionUser } from '@/types'
 import { resolveCompanyFilter } from '@/lib/api/companyFilter'
+import { annualBalanceWhere, leaveAvailable, leaveUtilizationRate } from '@/lib/leave/utilization'
 
 export const GET = withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
     try {
       const searchParams = new URL(req.url).searchParams
       const companyFilter = resolveCompanyFilter(user, searchParams.get('companyId'))
+      const leaveCompanyId = companyFilter.companyId ?? null // SUPER 통합뷰=null → 전사 annual
       const departmentId = searchParams.get('departmentId') || undefined
       const now = new Date()
       const currentYear = now.getFullYear()
@@ -79,16 +81,16 @@ export const GET = withPermission(
         weeklyOvertimeByEmp.set(empId, weeks)
       }
 
-      // 3. Batch-fetch leave balances
-      const leaveBalances = await prisma.employeeLeaveBalance.findMany({
-        where: { employeeId: { in: empIds }, year: currentYear },
-        select: { employeeId: true, grantedDays: true, usedDays: true },
+      // 3. Batch-fetch leave balances (SSOT: LeaveYearBalance, annual-only, 가용분, 회사 스코프)
+      const leaveBalances = await prisma.leaveYearBalance.findMany({
+        where: { employeeId: { in: empIds }, year: currentYear, ...annualBalanceWhere(leaveCompanyId) },
+        select: { employeeId: true, entitled: true, used: true, carriedOver: true, adjusted: true },
       })
-      const leaveByEmp = new Map<string, { granted: number; used: number }>()
+      const leaveByEmp = new Map<string, { available: number; used: number }>()
       for (const b of leaveBalances) {
-        const curr = leaveByEmp.get(b.employeeId) || { granted: 0, used: 0 }
-        curr.granted += Number(b.grantedDays)
-        curr.used += Number(b.usedDays)
+        const curr = leaveByEmp.get(b.employeeId) || { available: 0, used: 0 }
+        curr.available += leaveAvailable(b)
+        curr.used += b.used
         leaveByEmp.set(b.employeeId, curr)
       }
 
@@ -115,7 +117,8 @@ export const GET = withPermission(
       const results = activeEmployees.map((ae) => {
         const empId = ae.employeeId
         const leave = leaveByEmp.get(empId)
-        const leaveUsageRate = leave && leave.granted > 0 ? leave.used / leave.granted : 0
+        // 가용분 0/연차 부여 없음 → 사용률 N/A: '연차 미사용' 조건 비발동(1)로 false-positive 회피
+        const leaveUsageRate = leave ? (leaveUtilizationRate(leave.used, leave.available) ?? 1) : 1
         const empReviews = reviewsByEmp.get(empId) || []
 
         const burnoutResult = detectBurnout({

@@ -6,6 +6,7 @@
 import { prisma } from '@/lib/prisma'
 import { subMonths } from 'date-fns'
 import { getAnalyticsThresholdsSettings } from '@/lib/settings/get-setting'
+import { annualBalanceWhere, leaveAvailable, leaveUtilizationRate } from '@/lib/leave/utilization'
 
 export interface TeamHealthMetric {
   metric: string
@@ -115,21 +116,24 @@ async function calcTeamTurnoverRate(departmentId: string): Promise<TeamHealthMet
   }
 }
 
-// 3. 팀 연차 사용률
-async function calcTeamLeaveUsage(memberIds: string[]): Promise<TeamHealthMetric> {
+// 3. 팀 연차 사용률 (SSOT: LeaveYearBalance, annual-only, 가용분 분모, 회사 스코프)
+async function calcTeamLeaveUsage(memberIds: string[], companyId: string): Promise<TeamHealthMetric> {
   if (memberIds.length === 0)
     return { metric: '팀 연차 사용률', score: 0, rawData: null, available: false }
   try {
     const currentYear = new Date().getFullYear()
-    const balances = await prisma.employeeLeaveBalance.findMany({
-      where: { employeeId: { in: memberIds }, year: currentYear },
+    const balances = await prisma.leaveYearBalance.findMany({
+      where: { employeeId: { in: memberIds }, year: currentYear, ...annualBalanceWhere(companyId) },
+      select: { entitled: true, used: true, carriedOver: true, adjusted: true },
     })
     if (balances.length === 0)
       return { metric: '팀 연차 사용률', score: 0, rawData: null, available: false }
 
-    const totalGranted = balances.reduce((s, b) => s + Number(b.grantedDays), 0)
-    const totalUsed = balances.reduce((s, b) => s + Number(b.usedDays), 0)
-    const usageRate = totalGranted > 0 ? totalUsed / totalGranted : 0
+    const totalAvailable = balances.reduce((s, b) => s + leaveAvailable(b), 0)
+    const totalUsed = balances.reduce((s, b) => s + b.used, 0)
+    const usageRate = leaveUtilizationRate(totalUsed, totalAvailable)
+    if (usageRate === null)
+      return { metric: '팀 연차 사용률', score: 0, rawData: null, available: false }
 
     // 낮은 사용률 = 높은 위험
     const score = usageRate < 0.2 ? 85 : usageRate < 0.4 ? 55 : usageRate < 0.6 ? 25 : 0
@@ -137,7 +141,7 @@ async function calcTeamLeaveUsage(memberIds: string[]): Promise<TeamHealthMetric
     return {
       metric: '팀 연차 사용률',
       score,
-      rawData: { totalGranted, totalUsed, usageRate: Math.round(usageRate * 100) },
+      rawData: { totalAvailable, totalUsed, usageRate: Math.round(usageRate * 100) },
       available: true,
     }
   } catch {
@@ -227,7 +231,7 @@ async function calcTeamExitSatisfaction(departmentId: string): Promise<TeamHealt
 
 export async function calculateTeamHealth(
   departmentId: string,
-  _companyId: string
+  companyId: string
 ): Promise<TeamHealthResult> {
   const memberIds = await getTeamMembers(departmentId)
 
@@ -235,7 +239,7 @@ export async function calculateTeamHealth(
     await Promise.all([
       calcTeamAvgSentiment(memberIds),
       calcTeamTurnoverRate(departmentId),
-      calcTeamLeaveUsage(memberIds),
+      calcTeamLeaveUsage(memberIds, companyId),
       calcTeamOvertimeVariance(memberIds),
       calcTeamExitSatisfaction(departmentId),
     ])
@@ -253,7 +257,7 @@ export async function calculateTeamHealth(
   )
 
   // Load configurable score boundaries from SYSTEM/analytics-thresholds (S-Fix-5)
-  const analyticsSettings = await getAnalyticsThresholdsSettings(_companyId)
+  const analyticsSettings = await getAnalyticsThresholdsSettings(companyId)
   const { criticalScore, highScore, mediumScore } = analyticsSettings.teamHealth
 
   const riskLevel =

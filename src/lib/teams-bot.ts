@@ -8,6 +8,7 @@ import { env } from '@/lib/env'
 import { prisma } from '@/lib/prisma'
 import { serverT } from '@/lib/server-i18n'
 import type { Locale } from '@/i18n/config'
+import { leaveAvailable, leaveRemaining } from '@/lib/leave/utilization'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -125,9 +126,22 @@ async function handleLeaveBalance(
 ): Promise<BotResponse> {
   const t = (key: string, params?: Record<string, string | number>) => serverT(locale, key, params)
 
-  const balances = await prisma.employeeLeaveBalance.findMany({
-    where: { employeeId },
-    include: { policy: { select: { name: true } } },
+  // 본인 활성 법인 — 전출자 타법인 def 잔여행 제외 (회사 스코프)
+  const activeAssignment = await prisma.employeeAssignment.findFirst({
+    where: { employeeId, isPrimary: true, endDate: null, status: 'ACTIVE' },
+    select: { companyId: true },
+  })
+  const companyId = activeAssignment?.companyId ?? null
+
+  // SSOT: LeaveYearBalance (레거시 EmployeeLeaveBalance는 Phase6 이후 미기록 → stale 표시 버그였음).
+  // 전 휴가유형 잔여 표시(잔액 조회 명령이므로 annual-only 아님), 당해 연도.
+  const balances = await prisma.leaveYearBalance.findMany({
+    where: {
+      employeeId,
+      year: new Date().getFullYear(),
+      ...(companyId ? { leaveTypeDef: { OR: [{ companyId }, { companyId: null }] } } : {}),
+    },
+    include: { leaveTypeDef: { select: { name: true } } },
   })
 
   if (balances.length === 0) {
@@ -136,10 +150,9 @@ async function handleLeaveBalance(
 
   const lines: string[] = []
   for (const b of balances) {
-    const granted = Number(b.grantedDays)
-    const used = Number(b.usedDays)
-    const remaining = granted - used
-    lines.push(await t('teams.bot.leaveBalance.item', { name: b.policy.name, remaining, granted, used }))
+    const available = leaveAvailable(b)
+    const remaining = leaveRemaining(b)
+    lines.push(await t('teams.bot.leaveBalance.item', { name: b.leaveTypeDef.name, remaining, granted: available, used: b.used }))
   }
 
   return {

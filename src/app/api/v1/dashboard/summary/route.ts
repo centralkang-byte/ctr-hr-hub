@@ -5,6 +5,7 @@ import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
+import { annualBalanceWhere, leaveAvailable, leaveUtilizationRate } from '@/lib/leave/utilization'
 
 function activeAssignmentWhere(companyId: string | null) {
   return companyId
@@ -117,37 +118,34 @@ async function countHighRiskEmployees(companyId: string | null) {
 }
 
 async function calcAvgLeaveUsage(companyId: string | null, year: number) {
+  // SSOT: LeaveYearBalance · annual-only · 분모 가용분(entitled+이월+조정) · 직원별 rate 평균.
+  // 가용분<=0 행은 제외(0% 위장 금지). 레거시 EmployeeLeaveBalance 폴백 제거(PR2).
   try {
     const balances = await prisma.leaveYearBalance.findMany({
       where: {
         year,
         ...(companyId ? { employee: activeAssignmentWhere(companyId) } : {}),
-        entitled: { gt: 0 },
+        ...annualBalanceWhere(companyId),
       },
-      select: { entitled: true, used: true },
+      select: { employeeId: true, entitled: true, used: true, carriedOver: true, adjusted: true },
     })
-    if (balances.length === 0) return null
-    const avgUsage =
-      balances.reduce((sum, b) => sum + (b.entitled > 0 ? b.used / b.entitled : 0), 0) /
-      balances.length
+    // 직원별 합산(글로벌+법인 annual def 중복 가중 방지) → 직원별 rate → 평균
+    const byEmp = new Map<string, { available: number; used: number }>()
+    for (const b of balances) {
+      const cur = byEmp.get(b.employeeId) ?? { available: 0, used: 0 }
+      cur.available += leaveAvailable(b)
+      cur.used += b.used
+      byEmp.set(b.employeeId, cur)
+    }
+    const rates = Array.from(byEmp.values())
+      .map((v) => leaveUtilizationRate(v.used, v.available))
+      .filter((r): r is number => r !== null)
+    if (rates.length === 0) return null
+    const avgUsage = rates.reduce((sum, r) => sum + r, 0) / rates.length
     return { rate: Math.round(avgUsage * 1000) / 10 }
   } catch {
-    try {
-      const balances = await prisma.employeeLeaveBalance.findMany({
-        where: companyId ? { employee: activeAssignmentWhere(companyId) } : {},
-        select: { grantedDays: true, usedDays: true },
-      })
-      if (balances.length === 0) return null
-      const avgUsage =
-        balances.reduce((sum, b) => {
-          const granted = Number(b.grantedDays)
-          const used = Number(b.usedDays)
-          return sum + (granted > 0 ? used / granted : 0)
-        }, 0) / balances.length
-      return { rate: Math.round(avgUsage * 1000) / 10 }
-    } catch {
-      return null
-    }
+    // SSOT 쿼리 실패 → 해당 KPI만 null(0% 위장·전체 응답 실패 금지)
+    return null
   }
 }
 

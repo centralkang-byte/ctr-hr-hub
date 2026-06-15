@@ -13,11 +13,11 @@ import { parseAnalyticsParams, generateMonthRange, toYearMonth } from '@/lib/ana
 import type { AttendanceResponse } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
 import { resolveCompanyFilter } from '@/lib/api/companyFilter'
+import { annualBalanceWhere, leaveAvailable, leaveUtilizationRate } from '@/lib/leave/utilization'
 
-// 멀티테넌트 격리: 레거시 EmployeeLeaveBalance 는 companyId 컬럼이 없어 employee 활성
-// primary 발령 관계로 법인 스코프 (dashboard/summary 동일 패턴). companyId=null → SUPER 통합뷰.
-// 주: 본 PR 은 cross-tenant 누출 차단(보안)만 — stale 레거시 → LeaveYearBalance 마이그레이션·
-// ON_LEAVE 포함 등 사용률 의미 정합은 후속 PR2.
+// 멀티테넌트 격리: LeaveYearBalance 는 companyId 컬럼이 없어 employee 활성 primary 발령 관계로
+// 법인 스코프 (글로벌 annual def 공유 → 이 employee 스코프가 테넌트 격리의 핵심). companyId=null → SUPER 통합뷰.
+// 사용률 = annual-only · 분모 가용분(entitled+이월+조정) — SSOT @/lib/leave/utilization (PR2 레거시 퇴출).
 function activeAssignmentWhere(companyId: string) {
   return { assignments: { some: { companyId, isPrimary: true, endDate: null, status: 'ACTIVE' } } }
 }
@@ -38,20 +38,23 @@ export const GET = withPermission(
         },
         select: { workDate: true, overtimeMinutes: true, totalMinutes: true, clockIn: true },
       }),
-      // Leave balances for usage rate — 법인 스코프(멀티테넌트 누출 차단; companyId 컬럼 부재 → employee 관계)
-      prisma.employeeLeaveBalance.findMany({
+      // Leave balances for usage rate — SSOT LeaveYearBalance · annual-only · 법인 스코프
+      // (employee 활성발령 + annual def[자사+글로벌] 교차; 글로벌 def 공유라 employee 스코프 필수)
+      prisma.leaveYearBalance.findMany({
         where: {
           year: currentYear,
           ...(companyId ? { employee: activeAssignmentWhere(companyId) } : {}),
+          ...annualBalanceWhere(companyId),
         },
-        select: { grantedDays: true, usedDays: true, employeeId: true },
+        select: { entitled: true, used: true, carriedOver: true, adjusted: true, employeeId: true },
       }),
     ])
 
-    // KPI: Leave usage rate (from F-3 approach)
-    const totalGranted = leaveBalances.reduce((sum, b) => sum + Number(b.grantedDays), 0)
-    const totalUsed = leaveBalances.reduce((sum, b) => sum + Number(b.usedDays), 0)
-    const leaveUsageRate = totalGranted > 0 ? Math.round((totalUsed / totalGranted) * 1000) / 10 : 0
+    // KPI: Leave usage rate — 분모 가용분(entitled+이월+조정), annual-only
+    const totalAvailable = leaveBalances.reduce((sum, b) => sum + leaveAvailable(b), 0)
+    const totalUsed = leaveBalances.reduce((sum, b) => sum + b.used, 0)
+    const usageRate = leaveUtilizationRate(totalUsed, totalAvailable)
+    const leaveUsageRate = usageRate === null ? 0 : Math.round(usageRate * 1000) / 10
 
     // KPI: Weekly overtime violations (52h = 3120 min)
     // Group by employee+week and check violations
@@ -72,15 +75,15 @@ export const GET = withPermission(
     // KPI: Negative balance count — 직원 단위 distinct (정책별 row 합산 후 used>granted).
     // KPI 단위가 '명'이므로 row 수가 아닌 직원 수. 위 법인-스코프 leaveBalances 재사용
     // (별도 unscoped raw SQL 제거 → cross-tenant 누출 차단).
-    const balByEmp = new Map<string, { granted: number; used: number }>()
+    const balByEmp = new Map<string, { available: number; used: number }>()
     for (const b of leaveBalances) {
-      const cur = balByEmp.get(b.employeeId) ?? { granted: 0, used: 0 }
-      cur.granted += Number(b.grantedDays)
-      cur.used += Number(b.usedDays)
+      const cur = balByEmp.get(b.employeeId) ?? { available: 0, used: 0 }
+      cur.available += leaveAvailable(b)
+      cur.used += b.used
       balByEmp.set(b.employeeId, cur)
     }
     let negBalCount = 0
-    for (const v of balByEmp.values()) if (v.used > v.granted) negBalCount++
+    for (const v of balByEmp.values()) if (v.used > v.available) negBalCount++
 
     // Chart: Overtime trend
     const months = generateMonthRange(params.startDate, params.endDate)
