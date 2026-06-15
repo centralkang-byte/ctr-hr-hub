@@ -592,6 +592,7 @@
     "contractPermanent": "정규직",
     "contractProbation": "수습",
     "contractSequence": "계약 #{number}호",
+    "contractSequenceHeader": "계약 회차",
     "contractSequenceSuffix": "호",
     "contractStartDate": "계약 시작일",
     "contractType": "계약 유형",

@@ -2201,6 +2201,7 @@
     "contractPermanent": "正式员工",
     "contractProbation": "Probation",
     "contractSequence": "Contract #{number}",
+    "contractSequenceHeader": "Seq.",
     "contractSequenceSuffix": "No.",
     "contractStartDate": "Contract 开始 日期",
     "contractType": "Contract 类型",

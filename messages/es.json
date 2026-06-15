@@ -2201,6 +2201,7 @@
     "contractPermanent": "Empleado de planta",
     "contractProbation": "Probation",
     "contractSequence": "Contract #{number}",
+    "contractSequenceHeader": "Seq.",
     "contractSequenceSuffix": "No.",
     "contractStartDate": "Contract Inicio Fecha",
     "contractType": "Contract Tipo",

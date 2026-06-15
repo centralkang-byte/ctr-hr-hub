@@ -2201,6 +2201,7 @@
     "contractPermanent": "Permanent",
     "contractProbation": "Probation",
     "contractSequence": "Contract #{number}",
+    "contractSequenceHeader": "Seq.",
     "contractSequenceSuffix": "No.",
     "contractStartDate": "Contract Start Date",
     "contractType": "Contract Type",
