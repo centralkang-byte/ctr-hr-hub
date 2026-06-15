@@ -509,6 +509,17 @@ export const GET = withPermission(
 export const POST = withPermission(
   async (req: NextRequest, _ctx, user) => {
     const body = await req.json()
+
+    // FX(전사 환율 집계 = 본질 cross-company)는 SUPER 전용 — 스키마 검증 전에 모드 자체 차단
+    // (비-SUPER는 바디 유효성과 무관하게 403; 허용된 모드만 이후 처리)
+    if (
+      body && typeof body === 'object' &&
+      (body as { mode?: string }).mode === 'FX' &&
+      user.role !== 'SUPER_ADMIN'
+    ) {
+      return apiError(forbidden('전사 환율 시뮬레이션은 최고관리자만 조회할 수 있습니다.'))
+    }
+
     const parsed = simulateBodySchema.safeParse(body)
 
     if (!parsed.success) {
@@ -793,11 +804,7 @@ export const POST = withPermission(
         })
 
       } else if (input.mode === 'FX') {
-        // ── FX mode ─────────────────────────────────────
-        // 전사 환율 노출 집계(전 법인 급여 합산)는 본질적으로 cross-company → SUPER 전용.
-        if (user.role !== 'SUPER_ADMIN') {
-          return apiError(forbidden('전사 환율 시뮬레이션은 최고관리자만 조회할 수 있습니다.'))
-        }
+        // ── FX mode ───────────────────────────────────── (SUPER 전용 — 위 early-gate에서 차단)
         const { parameters } = input
         const { rateOverrides } = parameters
 
