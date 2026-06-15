@@ -6,6 +6,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { convertToKRW, formatCurrency } from '@/lib/analytics/currency'
+import { annualBalanceWhere, leaveAvailable, leaveUtilizationRate } from '@/lib/leave/utilization'
 
 export interface ReportDataPayload {
   period: string
@@ -56,8 +57,8 @@ export interface ReportDataPayload {
   }
 }
 
-// 멀티테넌트 격리: companyId 컬럼이 없는 모델(EmployeeLeaveBalance·Employee)을 employee
-// 활성 primary 발령 관계로 법인 스코프. companyId=null(SUPER) → 전사. (PR2: stale→live·ON_LEAVE)
+// 멀티테넌트 격리: companyId 컬럼이 없는 모델(LeaveYearBalance·Employee)을 employee 활성 primary
+// 발령 관계로 법인 스코프 (글로벌 annual def 공유 → 이 employee 스코프가 격리 핵심). companyId=null(SUPER) → 전사.
 function activeAssignmentWhere(companyId: string) {
   return { assignments: { some: { companyId, isPrimary: true, endDate: null, status: 'ACTIVE' } } }
 }
@@ -159,13 +160,14 @@ export async function collectReportData(
       },
       select: { overtimeMinutes: true },
     }),
-    // 11. Leave balances — 법인 스코프(멀티테넌트 누출 차단; companyId 컬럼 부재 → employee 관계)
-    prisma.employeeLeaveBalance.findMany({
+    // 11. Leave balances — SSOT LeaveYearBalance · annual-only · 법인 스코프(employee 발령 + annual def)
+    prisma.leaveYearBalance.findMany({
       where: {
         year: currentYear,
         ...(companyId ? { employee: activeAssignmentWhere(companyId) } : {}),
+        ...annualBalanceWhere(companyId),
       },
-      select: { grantedDays: true, usedDays: true },
+      select: { entitled: true, used: true, carriedOver: true, adjusted: true },
     }),
     // 12. Active onboardings
     prisma.employeeOnboarding.count({
@@ -257,14 +259,15 @@ export async function collectReportData(
     : 0
   const weeklyViolations = overtimeData.filter((a) => (a.overtimeMinutes || 0) > 720).length // >12h/day
 
-  // Leave usage
-  let totalGranted = 0
+  // Leave usage — 분모 가용분(entitled+이월+조정), annual-only
+  let totalAvailable = 0
   let totalUsed = 0
   for (const b of leaveBalances) {
-    totalGranted += Number(b.grantedDays)
-    totalUsed += Number(b.usedDays)
+    totalAvailable += leaveAvailable(b)
+    totalUsed += b.used
   }
-  const leaveUsageRate = totalGranted > 0 ? Math.round((totalUsed / totalGranted) * 1000) / 10 : 0
+  const leaveUsageRateValue = leaveUtilizationRate(totalUsed, totalAvailable)
+  const leaveUsageRate = leaveUsageRateValue === null ? 0 : Math.round(leaveUsageRateValue * 1000) / 10
 
   // Grade distribution
   const grades = gradeDistribution.map((g) => ({

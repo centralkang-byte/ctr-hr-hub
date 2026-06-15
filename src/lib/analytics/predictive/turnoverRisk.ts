@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma'
 import { subWeeks, subMonths, differenceInMonths } from 'date-fns'
 import { sendNotification } from '@/lib/notifications'
 import { getAnalyticsThresholdsSettings } from '@/lib/settings/get-setting'
+import { annualBalanceWhere, leaveAvailable, leaveUtilizationRate } from '@/lib/leave/utilization'
 
 // ─── 타입 정의 ─────────────────────────────────────────────
 
@@ -81,25 +82,32 @@ async function calcOvertimeSignal(employeeId: string, weight: number): Promise<S
   }
 }
 
-// 2. 연차 미사용 (B6-2 EmployeeLeaveBalance)
-async function calcLeaveUsageSignal(employeeId: string, weight: number): Promise<SignalResult> {
+// 2. 연차 미사용 (SSOT: LeaveYearBalance, annual-only, 가용분 분모, 회사 스코프)
+async function calcLeaveUsageSignal(
+  employeeId: string,
+  companyId: string,
+  weight: number,
+): Promise<SignalResult> {
   try {
     const currentYear = new Date().getFullYear()
-    const balances = await prisma.employeeLeaveBalance.findMany({
-      where: { employeeId, year: currentYear },
+    const balances = await prisma.leaveYearBalance.findMany({
+      where: { employeeId, year: currentYear, ...annualBalanceWhere(companyId) },
+      select: { entitled: true, used: true, carriedOver: true, adjusted: true },
     })
     if (balances.length === 0) return { signal: '연차 미사용', weight, score: 0, rawData: null, available: false }
 
-    const totalGranted = balances.reduce((sum, b) => sum + Number(b.grantedDays), 0)
-    const totalUsed = balances.reduce((sum, b) => sum + Number(b.usedDays), 0)
-    const usageRate = totalGranted > 0 ? totalUsed / totalGranted : 1
+    const totalAvailable = balances.reduce((sum, b) => sum + leaveAvailable(b), 0)
+    const totalUsed = balances.reduce((sum, b) => sum + b.used, 0)
+    const usageRate = leaveUtilizationRate(totalUsed, totalAvailable)
+    // 가용분 0(연차 def 존재하나 부여 0 등) → 신호 제외(데이터 부재 취급, 0% 위장 금지)
+    if (usageRate === null) return { signal: '연차 미사용', weight, score: 0, rawData: null, available: false }
 
     const score = usageRate < 0.2 ? 90 : usageRate < 0.3 ? 70 : usageRate < 0.5 ? 40 : 0
     return {
       signal: '연차 미사용',
       weight,
       score,
-      rawData: { totalGranted, totalUsed, usageRate: Math.round(usageRate * 100) },
+      rawData: { totalAvailable, totalUsed, usageRate: Math.round(usageRate * 100) },
       available: true,
     }
   } catch {
@@ -365,7 +373,7 @@ export async function calculateTurnoverRisk(
 
   const signals = await Promise.all([
     calcOvertimeSignal(employeeId, weights.overtime),
-    calcLeaveUsageSignal(employeeId, weights.leave_usage),
+    calcLeaveUsageSignal(employeeId, companyId, weights.leave_usage),
     calcSentimentSignal(employeeId, weights.sentiment),
     calcSalaryBandSignal(employeeId, weights.salary_band),
     calcPromotionStagnationSignal(employeeId, weights.promotion_stagnation),

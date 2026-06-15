@@ -11,6 +11,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { subWeeks, subMonths, differenceInDays } from 'date-fns'
+import { annualBalanceWhere, leaveAvailable, leaveUtilizationRate } from '@/lib/leave/utilization'
 
 export interface BurnoutIndicator {
   indicator: string
@@ -102,26 +103,35 @@ async function calcOvertimeIntensity(employeeId: string, weight: number): Promis
   }
 }
 
-// 2. 연차 미사용률
-async function calcLeaveNonUsage(employeeId: string, weight: number): Promise<BurnoutIndicator> {
+// 2. 연차 미사용률 (SSOT: LeaveYearBalance, annual-only, 가용분 분모, 회사 스코프)
+async function calcLeaveNonUsage(
+  employeeId: string,
+  companyId: string,
+  weight: number,
+): Promise<BurnoutIndicator> {
   try {
     const currentYear = new Date().getFullYear()
-    const balances = await prisma.employeeLeaveBalance.findMany({
-      where: { employeeId, year: currentYear },
+    const balances = await prisma.leaveYearBalance.findMany({
+      where: { employeeId, year: currentYear, ...annualBalanceWhere(companyId) },
+      select: { entitled: true, used: true, carriedOver: true, adjusted: true },
     })
     if (balances.length === 0)
       return { indicator: '연차 미사용률', weight, score: 0, rawData: null, available: false }
 
-    const totalGranted = balances.reduce((sum, b) => sum + Number(b.grantedDays), 0)
-    const totalUsed = balances.reduce((sum, b) => sum + Number(b.usedDays), 0)
-    const nonUsageRate = totalGranted > 0 ? 1 - totalUsed / totalGranted : 0
+    const totalAvailable = balances.reduce((sum, b) => sum + leaveAvailable(b), 0)
+    const totalUsed = balances.reduce((sum, b) => sum + b.used, 0)
+    const usageRate = leaveUtilizationRate(totalUsed, totalAvailable)
+    // 가용분 0(연차 def 존재하나 부여 0 등) → 지표 제외(데이터 부재 취급, 0% 위장 금지)
+    if (usageRate === null)
+      return { indicator: '연차 미사용률', weight, score: 0, rawData: null, available: false }
+    const nonUsageRate = 1 - usageRate
 
     const score = nonUsageRate > 0.8 ? 90 : nonUsageRate > 0.6 ? 65 : nonUsageRate > 0.4 ? 35 : 0
     return {
       indicator: '연차 미사용률',
       weight,
       score,
-      rawData: { totalGranted, totalUsed, nonUsageRate: Math.round(nonUsageRate * 100) },
+      rawData: { totalAvailable, totalUsed, nonUsageRate: Math.round(nonUsageRate * 100) },
       available: true,
     }
   } catch {
@@ -250,7 +260,7 @@ export async function calculateBurnoutScore(
 
   const indicators = await Promise.all([
     calcOvertimeIntensity(employeeId, weights.overtime_intensity),
-    calcLeaveNonUsage(employeeId, weights.leave_non_usage),
+    calcLeaveNonUsage(employeeId, companyId, weights.leave_non_usage),
     calcSentimentTrend(employeeId, weights.sentiment_trend),
     calcConsecutiveWorkDays(employeeId, weights.consecutive_work),
     calcNightHolidayFrequency(employeeId, weights.night_holiday_freq),

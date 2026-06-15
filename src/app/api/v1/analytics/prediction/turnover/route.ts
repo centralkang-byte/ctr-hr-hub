@@ -14,12 +14,14 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { calculateTurnoverRisk } from '@/lib/analytics/turnover-prediction'
 import type { SessionUser } from '@/types'
 import { resolveCompanyFilter } from '@/lib/api/companyFilter'
+import { annualBalanceWhere, leaveAvailable, leaveUtilizationRate } from '@/lib/leave/utilization'
 
 export const GET = withCache(withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
     try {
       const searchParams = new URL(req.url).searchParams
       const companyFilter = resolveCompanyFilter(user, searchParams.get('companyId'))
+      const leaveCompanyId = companyFilter.companyId ?? null // SUPER 통합뷰=null → 전사 annual
       const departmentId = searchParams.get('departmentId') || undefined
       const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100)
       const now = new Date()
@@ -98,16 +100,16 @@ export const GET = withCache(withPermission(
         overtimeByEmp.get(a.employeeId)!.push(a.overtimeMinutes || 0)
       }
 
-      // 5. Batch-fetch leave balances (current year)
-      const leaveBalances = await prisma.employeeLeaveBalance.findMany({
-        where: { employeeId: { in: empIds }, year: currentYear },
-        select: { employeeId: true, grantedDays: true, usedDays: true },
+      // 5. Batch-fetch leave balances (SSOT: LeaveYearBalance, annual-only, 가용분, 회사 스코프)
+      const leaveBalances = await prisma.leaveYearBalance.findMany({
+        where: { employeeId: { in: empIds }, year: currentYear, ...annualBalanceWhere(leaveCompanyId) },
+        select: { employeeId: true, entitled: true, used: true, carriedOver: true, adjusted: true },
       })
-      const leaveByEmp = new Map<string, { granted: number; used: number }>()
+      const leaveByEmp = new Map<string, { available: number; used: number }>()
       for (const b of leaveBalances) {
-        const curr = leaveByEmp.get(b.employeeId) || { granted: 0, used: 0 }
-        curr.granted += Number(b.grantedDays)
-        curr.used += Number(b.usedDays)
+        const curr = leaveByEmp.get(b.employeeId) || { available: 0, used: 0 }
+        curr.available += leaveAvailable(b)
+        curr.used += b.used
         leaveByEmp.set(b.employeeId, curr)
       }
 
@@ -138,9 +140,9 @@ export const GET = withCache(withPermission(
         ))
         const avgWeeklyOvertime = (totalOtMinutes / 60) / weeksInRange
 
-        // Leave usage rate
+        // Leave usage rate (가용분 0/연차 부여 없음 → N/A: '연차 미사용' factor 비발동(1))
         const leave = leaveByEmp.get(empId)
-        const leaveUsageRate = leave && leave.granted > 0 ? leave.used / leave.granted : 0
+        const leaveUsageRate = leave ? (leaveUtilizationRate(leave.used, leave.available) ?? 1) : 1
 
         // Tenure years
         const tenureYears = (now.getTime() - new Date(emp.hireDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000)

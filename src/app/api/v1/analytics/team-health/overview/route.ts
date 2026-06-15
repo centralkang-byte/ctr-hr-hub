@@ -12,6 +12,7 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { TeamHealthResponse } from '@/lib/analytics/types'
 import type { SessionUser } from '@/types'
+import { annualBalanceWhere, leaveAvailable, leaveUtilizationRate } from '@/lib/leave/utilization'
 
 function getScoreLevel(score: number): 'HEALTHY' | 'CAUTION' | 'WARNING' | 'CRITICAL' {
   if (score >= 80) return 'HEALTHY'
@@ -59,10 +60,11 @@ export const GET = withPermission(
 
     const positionIds = directReportPositions.map((p) => p.id)
 
-    // Find employees in those positions
+    // Find employees in those positions — 법인 스코프(법인간 보고선 FK 시 타법인 멤버 누출 차단)
     const memberAssignments = await prisma.employeeAssignment.findMany({
       where: {
         positionId: { in: positionIds },
+        companyId: managerAssignment.companyId,
         isPrimary: true, endDate: null, status: 'ACTIVE',
       },
       select: {
@@ -97,9 +99,9 @@ export const GET = withPermission(
         where: { employeeId: { in: memberIds }, workDate: { gte: oneMonthAgo } },
         select: { employeeId: true, overtimeMinutes: true, totalMinutes: true },
       }),
-      prisma.employeeLeaveBalance.findMany({
-        where: { employeeId: { in: memberIds }, year: currentYear },
-        select: { employeeId: true, grantedDays: true, usedDays: true },
+      prisma.leaveYearBalance.findMany({
+        where: { employeeId: { in: memberIds }, year: currentYear, ...annualBalanceWhere(managerAssignment.companyId) },
+        select: { employeeId: true, entitled: true, used: true, carriedOver: true, adjusted: true },
       }),
       prisma.performanceReview.findMany({
         where: { employeeId: { in: memberIds } },
@@ -115,11 +117,11 @@ export const GET = withPermission(
       overtimeByEmp.set(a.employeeId, current + (a.overtimeMinutes || 0))
     }
 
-    const leaveByEmp = new Map<string, { granted: number; used: number }>()
+    const leaveByEmp = new Map<string, { available: number; used: number }>()
     for (const b of leaveBalances) {
-      const curr = leaveByEmp.get(b.employeeId) || { granted: 0, used: 0 }
-      curr.granted += Number(b.grantedDays)
-      curr.used += Number(b.usedDays)
+      const curr = leaveByEmp.get(b.employeeId) || { available: 0, used: 0 }
+      curr.available += leaveAvailable(b)
+      curr.used += b.used
       leaveByEmp.set(b.employeeId, curr)
     }
 
@@ -136,8 +138,9 @@ export const GET = withPermission(
       const weeklyOvertime = Math.round((weeklyOvertimeMin / 60) * 10) / 10
 
       const leave = leaveByEmp.get(ma.employeeId)
-      const leaveUsageRate = leave && leave.granted > 0
-        ? Math.round((leave.used / leave.granted) * 100) : 0
+      // 가용분 0/연차 부여 없음 → 0% (레거시 표시 동작 보존)
+      const leaveRate = leave ? leaveUtilizationRate(leave.used, leave.available) : null
+      const leaveUsageRate = leaveRate === null ? 0 : Math.round(leaveRate * 100)
 
       const grade = gradeByEmp.get(ma.employeeId) || '-'
 
