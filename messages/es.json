@@ -2325,6 +2325,11 @@
     "lastWorkingDate": "Last Working Fecha",
     "list": "Employee List",
     "listBulkMovement": "Movimiento masivo",
+    "bulkSelectedCount": "{count} seleccionados",
+    "bulkExportSelected": "Exportar selección",
+    "bulkClearSelection": "Borrar selección",
+    "bulkSelectAll": "Seleccionar todo",
+    "bulkSelectRow": "Seleccionar {name}",
     "listDescription": "Manage and view all employee information",
     "listLoadError": "Error al cargar información del empleado.",
     "listQuickPanelCompany": "Entidad",
@@ -2515,7 +2520,12 @@
     "workPermit": "Work Permit",
     "workPermitRegistration": "Work Permit Registration",
     "workPermits": "Work Permits",
-    "workPermitsTitle": "Work Permits & Visas"
+    "workPermitsTitle": "Work Permits & Visas",
+    "detailBackToList": "Empleados",
+    "detailDivision": "División",
+    "detailWorkLocation": "Lugar de trabajo",
+    "detailTenureLabel": "Antigüedad",
+    "detailPayBand": "Banda salarial"
   },
   "employees": {
     "emptyDesc": "Register a new employee.",
@@ -8561,6 +8571,22 @@
         "ddayToday": "Vence hoy",
         "ariaLabel": "Resumen de evaluación y crecimiento"
       }
+    },
+    "profileTab": {
+      "loadError": "No se pudieron cargar los datos de desempeño.",
+      "recognitionLoadError": "No se pudieron cargar los reconocimientos.",
+      "retry": "Reintentar",
+      "empty": "Aún no hay datos de desempeño.",
+      "recentGrade": "Última calificación",
+      "mboAverage": "Logro medio de MBO",
+      "noScoredGoals": "Sin datos",
+      "goalsCount": "{count} objetivos",
+      "receivedRecognition": "Reconocimientos recibidos",
+      "recognitionPeriod": "Total",
+      "unitCount": "",
+      "recentEval": "Última evaluación",
+      "noRecognition": "Aún no hay reconocimientos.",
+      "recognitionFrom": "{name} dio un reconocimiento"
     }
   },
   "preHire": {

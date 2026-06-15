@@ -2325,6 +2325,11 @@
     "lastWorkingDate": "Last Working 日期",
     "list": "Employee List",
     "listBulkMovement": "批量调动",
+    "bulkSelectedCount": "已选 {count} 项",
+    "bulkExportSelected": "导出所选",
+    "bulkClearSelection": "取消选择",
+    "bulkSelectAll": "全选",
+    "bulkSelectRow": "选择 {name}",
     "listDescription": "Manage and view all employee information",
     "listLoadError": "无法加载员工信息。",
     "listQuickPanelCompany": "法人",
@@ -2515,7 +2520,12 @@
     "workPermit": "Work Permit",
     "workPermitRegistration": "Work Permit Registration",
     "workPermits": "Work Permits",
-    "workPermitsTitle": "Work Permits & Visas"
+    "workPermitsTitle": "Work Permits & Visas",
+    "detailBackToList": "员工管理",
+    "detailDivision": "本部",
+    "detailWorkLocation": "工作地点",
+    "detailTenureLabel": "在职年限",
+    "detailPayBand": "薪资区间"
   },
   "employees": {
     "emptyDesc": "Register a new employee.",
@@ -8562,6 +8572,22 @@
         "ddayToday": "今天截止",
         "ariaLabel": "评估与成长摘要"
       }
+    },
+    "profileTab": {
+      "loadError": "无法加载绩效信息。",
+      "recognitionLoadError": "无法加载收到的表彰。",
+      "retry": "重试",
+      "empty": "暂无绩效信息。",
+      "recentGrade": "最近等级",
+      "mboAverage": "MBO平均达成",
+      "noScoredGoals": "无数据",
+      "goalsCount": "{count}个目标",
+      "receivedRecognition": "收到的表彰",
+      "recognitionPeriod": "累计",
+      "unitCount": "次",
+      "recentEval": "最近评价",
+      "noRecognition": "暂无收到的表彰。",
+      "recognitionFrom": "{name} 给予了表彰"
     }
   },
   "preHire": {

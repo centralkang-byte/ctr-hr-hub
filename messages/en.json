@@ -2325,6 +2325,11 @@
     "lastWorkingDate": "Last Working Date",
     "list": "Employee List",
     "listBulkMovement": "Bulk Movement",
+    "bulkSelectedCount": "{count} selected",
+    "bulkExportSelected": "Export selected",
+    "bulkClearSelection": "Clear selection",
+    "bulkSelectAll": "Select all",
+    "bulkSelectRow": "Select {name}",
     "listDescription": "Manage and view all employee information",
     "listLoadError": "Failed to load employee info.",
     "listQuickPanelCompany": "Company",
@@ -2515,7 +2520,12 @@
     "workPermit": "Work Permit",
     "workPermitRegistration": "Work Permit Registration",
     "workPermits": "Work Permits",
-    "workPermitsTitle": "Work Permits & Visas"
+    "workPermitsTitle": "Work Permits & Visas",
+    "detailBackToList": "Employees",
+    "detailDivision": "Division",
+    "detailWorkLocation": "Work location",
+    "detailTenureLabel": "Tenure",
+    "detailPayBand": "Pay band"
   },
   "employees": {
     "emptyDesc": "Register a new employee.",
@@ -8561,6 +8571,22 @@
         "ddayToday": "Due Today",
         "ariaLabel": "Evaluation and growth summary"
       }
+    },
+    "profileTab": {
+      "loadError": "Couldn't load performance data.",
+      "recognitionLoadError": "Couldn't load recognitions.",
+      "retry": "Retry",
+      "empty": "No performance data yet.",
+      "recentGrade": "Latest grade",
+      "mboAverage": "Avg. MBO achievement",
+      "noScoredGoals": "No data",
+      "goalsCount": "{count} goals",
+      "receivedRecognition": "Recognitions received",
+      "recognitionPeriod": "All time",
+      "unitCount": "",
+      "recentEval": "Latest evaluation",
+      "noRecognition": "No recognitions yet.",
+      "recognitionFrom": "{name} gave recognition"
     }
   },
   "preHire": {

@@ -60,3 +60,25 @@ export const employeeSearchSchema = searchSchema.extend({
 })
 
 export type EmployeeSearchInput = z.infer<typeof employeeSearchSchema>
+
+// ================================================================
+// Employee Export Schema (search filters + 선택 행 ids)
+// 목록 API 계약은 건드리지 않고, export 라우트에서만 ids 허용.
+// ids: 콤마구분 UUID 목록 (선택 내보내기). 회사 스코프와 AND 결합됨.
+// ================================================================
+export const employeeExportSchema = employeeSearchSchema.extend({
+  ids: z
+    .string()
+    .optional()
+    .transform((v) =>
+      v
+        ? v
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
+            .slice(0, 500)
+        : undefined,
+    ),
+})
+
+export type EmployeeExportInput = z.infer<typeof employeeExportSchema>
