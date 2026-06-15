@@ -125,7 +125,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t('contractSequence')}</TableHead>
+              <TableHead>{t('contractSequenceHeader')}</TableHead>
               <TableHead>{tc('type')}</TableHead>
               <TableHead>{tc('startDate')}</TableHead>
               <TableHead>{tc('endDate')}</TableHead>

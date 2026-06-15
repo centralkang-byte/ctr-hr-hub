@@ -2201,6 +2201,7 @@
     "contractPermanent": "Nhân viên chính thức",
     "contractProbation": "Probation",
     "contractSequence": "Contract #{number}",
+    "contractSequenceHeader": "Seq.",
     "contractSequenceSuffix": "No.",
     "contractStartDate": "Contract Bắt đầu Ngày",
     "contractType": "Contract Loại",
