@@ -68,6 +68,13 @@ export function getAdminTrends(
   return client.get(`${API}/attendance/admin/trends`, params)
 }
 
+export function getAdminRoster(
+  client: ApiClient,
+  params?: Record<string, string>,
+): Promise<ApiResult> {
+  return client.get(`${API}/attendance/admin/roster`, params)
+}
+
 export function getTeamAttendance(client: ApiClient): Promise<ApiResult> {
   return client.get(`${API}/attendance/team`)
 }
