@@ -9,8 +9,8 @@ import { prisma } from '@/lib/prisma'
 import { withPermission } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess, apiError } from '@/lib/api'
-import { badRequest } from '@/lib/errors'
-import { resolveCompanyId } from '@/lib/api/companyFilter'
+import { badRequest, forbidden } from '@/lib/errors'
+import { resolveCompanyId, resolveCompanyFilter } from '@/lib/api/companyFilter'
 import { z } from 'zod'
 import { calculateDeductionsByCountry } from '@/lib/payroll/globalDeductions'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
@@ -203,20 +203,31 @@ interface EmployeeData {
   currentBonusAmount: number
 }
 
-async function fetchEmployeeData(employeeIds: string[]): Promise<EmployeeData[]> {
+// companyId 지정 시(비-SUPER) 해당 법인 활성 primary 발령 직원만 — 공격자 제공 employeeId의
+// cross-tenant 조회 차단(SINGLE·DIFFERENTIAL·BULK-SELECTED 공통 진입점). companyId=null(SUPER) → 무제한.
+async function fetchEmployeeData(
+  employeeIds: string[],
+  companyId?: string | null,
+): Promise<EmployeeData[]> {
   if (employeeIds.length === 0) return []
+  const now = new Date()
+  // 활성 발령 조건: effectiveDate<=now 포함 — 미래발령으로 cross-tenant 우회 차단(S265 클래스)
+  const activeAt = { isPrimary: true, endDate: null, status: 'ACTIVE', effectiveDate: { lte: now } } as const
 
   const employees = await prisma.employee.findMany({
     where: {
       id: { in: employeeIds },
       deletedAt: null,
+      ...(companyId ? { assignments: { some: { companyId, ...activeAt } } } : {}),
     },
     select: {
       id: true,
       name: true,
       employeeNo: true,
       assignments: {
-        where: { isPrimary: true, endDate: null },
+        // 반환 발령도 스코프 회사로 고정 — 검증≠반환 불일치(잘못된 회사코드→공제 오산) 차단
+        where: { ...activeAt, ...(companyId ? { companyId } : {}) },
+        orderBy: { effectiveDate: 'desc' },
         take: 1,
         select: {
           companyId: true,
@@ -229,9 +240,13 @@ async function fetchEmployeeData(employeeIds: string[]): Promise<EmployeeData[]>
     },
   })
 
+  // 스코프 통과한 직원만 후속 조회 (타법인 comp/contract/payroll fetch 방지)
+  const scopedIds = employees.map((e) => e.id)
+  if (scopedIds.length === 0) return []
+
   // Latest compensation history for each employee
   const compensations = await prisma.compensationHistory.findMany({
-    where: { employeeId: { in: employeeIds } },
+    where: { employeeId: { in: scopedIds }, ...(companyId ? { companyId } : {}) },
     orderBy: { effectiveDate: 'desc' },
     distinct: ['employeeId'],
     select: { employeeId: true, newBaseSalary: true },
@@ -241,10 +256,10 @@ async function fetchEmployeeData(employeeIds: string[]): Promise<EmployeeData[]>
   )
 
   // Fallback: latest contract salary for employees without compensation history
-  const missingIds = employeeIds.filter((id) => !salaryMap.has(id))
+  const missingIds = scopedIds.filter((id) => !salaryMap.has(id))
   if (missingIds.length > 0) {
     const contracts = await prisma.contractHistory.findMany({
-      where: { employeeId: { in: missingIds }, salaryAmount: { not: null } },
+      where: { employeeId: { in: missingIds }, salaryAmount: { not: null }, ...(companyId ? { companyId } : {}) },
       orderBy: { startDate: 'desc' },
       distinct: ['employeeId'],
       select: { employeeId: true, salaryAmount: true },
@@ -256,7 +271,7 @@ async function fetchEmployeeData(employeeIds: string[]): Promise<EmployeeData[]>
 
   // Latest payroll items for current earnings breakdown
   const latestPayrollItems = await prisma.payrollItem.findMany({
-    where: { employeeId: { in: employeeIds } },
+    where: { employeeId: { in: scopedIds }, ...(companyId ? { run: { companyId } } : {}) },
     orderBy: { createdAt: 'desc' },
     distinct: ['employeeId'],
     select: {
@@ -468,10 +483,20 @@ function buildSummary(
 // ─── Route handlers ────────────────────────────────────────
 
 export const GET = withPermission(
-  async (req: NextRequest) => {
-    const employeeId = new URL(req.url).searchParams.get('employeeId')
+  async (req: NextRequest, _ctx, user) => {
+    const { searchParams } = new URL(req.url)
+    const employeeId = searchParams.get('employeeId')
+    // 멀티테넌트: PayrollSimulation엔 companyId 컬럼 없음 → 직원 활성 primary 발령 회사로 스코프.
+    // 비-SUPER는 본인 법인 시뮬만, SUPER(companyId=null)는 통합뷰.
+    const companyId = resolveCompanyFilter(user, searchParams.get('companyId')).companyId ?? null
     const simulations = await prisma.payrollSimulation.findMany({
-      where: employeeId ? { employeeId } : undefined,
+      where: {
+        ...(employeeId ? { employeeId } : {}),
+        // effectiveDate<=now 포함 — 미래발령으로 타법인 시뮬 이력 우회 차단
+        ...(companyId
+          ? { employee: { assignments: { some: { companyId, isPrimary: true, endDate: null, status: 'ACTIVE', effectiveDate: { lte: new Date() } } } } }
+          : {}),
+      },
       include: { employee: { select: { name: true, employeeNo: true } } },
       orderBy: { createdAt: 'desc' },
       take: 20,
@@ -484,6 +509,17 @@ export const GET = withPermission(
 export const POST = withPermission(
   async (req: NextRequest, _ctx, user) => {
     const body = await req.json()
+
+    // FX(전사 환율 집계 = 본질 cross-company)는 SUPER 전용 — 스키마 검증 전에 모드 자체 차단
+    // (비-SUPER는 바디 유효성과 무관하게 403; 허용된 모드만 이후 처리)
+    if (
+      body && typeof body === 'object' &&
+      (body as { mode?: string }).mode === 'FX' &&
+      user.role !== 'SUPER_ADMIN'
+    ) {
+      return apiError(forbidden('전사 환율 시뮬레이션은 최고관리자만 조회할 수 있습니다.'))
+    }
+
     const parsed = simulateBodySchema.safeParse(body)
 
     if (!parsed.success) {
@@ -494,10 +530,13 @@ export const POST = withPermission(
 
     const input = parsed.data
 
+    // 멀티테넌트 진입점 스코프: 비-SUPER는 본인 법인 직원만 시뮬, SUPER(null)는 무제한.
+    const callerScope = resolveCompanyFilter(user, null).companyId ?? null
+
     try {
       if (input.mode === 'SINGLE') {
         // ── SINGLE mode ───────────────────────────────
-        const empData = await fetchEmployeeData([input.employeeId])
+        const empData = await fetchEmployeeData([input.employeeId], callerScope)
 
         if (empData.length === 0) {
           return apiError(badRequest('직원을 찾을 수 없습니다.'))
@@ -513,7 +552,9 @@ export const POST = withPermission(
       } else if (input.mode === 'DIFFERENTIAL') {
         // ── DIFFERENTIAL mode ─────────────────────────
         const { parameters } = input
-        const { companyId, rates, capAtBandMax } = parameters
+        const { rates, capAtBandMax } = parameters
+        // 멀티테넌트: 비-SUPER는 body companyId 무시하고 본인 법인 강제, SUPER만 지정 가능
+        const companyId = resolveCompanyId(user, parameters.companyId)
 
         // 1. 대상 직원 조회 (해당 법인의 활성 직원)
         const assignments = await prisma.employeeAssignment.findMany({
@@ -527,7 +568,8 @@ export const POST = withPermission(
           return apiError(badRequest('대상 직원이 없습니다.'))
         }
 
-        const empDataList = await fetchEmployeeData(employeeIds)
+        // resolved 타겟 회사로 데이터 고정 (SUPER가 회사 지정 시에도 전사 혼입 방지)
+        const empDataList = await fetchEmployeeData(employeeIds, companyId)
 
         // 2. 해당 법인 SalaryBand 조회 (Band Violation 검증용)
         const salaryBands = await prisma.salaryBand.findMany({
@@ -622,7 +664,9 @@ export const POST = withPermission(
       } else if (input.mode === 'HIRING') {
         // ── HIRING mode ─────────────────────────────────
         const { parameters } = input
-        const { companyId, hires, includeRecruitmentCosts } = parameters
+        const { hires, includeRecruitmentCosts } = parameters
+        // 멀티테넌트: 비-SUPER는 body companyId 무시하고 본인 법인 강제 (현 raw 쿼리는 dead지만 ORM 조회 방어)
+        const companyId = resolveCompanyId(user, parameters.companyId)
 
         // 1. 법인 조회
         const company = await prisma.company.findUnique({
@@ -760,7 +804,7 @@ export const POST = withPermission(
         })
 
       } else if (input.mode === 'FX') {
-        // ── FX mode ─────────────────────────────────────
+        // ── FX mode ───────────────────────────────────── (SUPER 전용 — 위 early-gate에서 차단)
         const { parameters } = input
         const { rateOverrides } = parameters
 
@@ -917,6 +961,9 @@ export const POST = withPermission(
 
         // Resolve target employee IDs
         let employeeIds: string[] = []
+        // SELECTED: 공격자 employeeIds → 호출자 법인 스코프(SUPER=null=선택 자유).
+        // 회사/부서 타겟: resolved 회사로 데이터 고정(SUPER 회사지정 시 전사 혼입 방지).
+        let bulkScope: string | null = callerScope
 
         if (target.type === 'SELECTED' && target.employeeIds?.length) {
           employeeIds = target.employeeIds
@@ -924,6 +971,7 @@ export const POST = withPermission(
           const companyId = target.companyId
             ? resolveCompanyId(user, target.companyId)
             : user.companyId
+          bulkScope = companyId
 
           const assignmentWhere: Record<string, unknown> = {
             isPrimary: true,
@@ -949,7 +997,7 @@ export const POST = withPermission(
           return apiError(badRequest('대상 직원이 없습니다.'))
         }
 
-        const empDataList = await fetchEmployeeData(employeeIds)
+        const empDataList = await fetchEmployeeData(employeeIds, bulkScope)
         const results = empDataList.map((emp) =>
           simulateEmployee(emp, {
             baseSalaryAdjustRate: parameters.baseSalaryAdjustRate,
