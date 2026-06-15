@@ -7,17 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -25,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
 import { apiClient } from '@/lib/api'
 import { ROLE } from '@/lib/constants'
 import { toast } from '@/hooks/use-toast'
@@ -245,177 +236,153 @@ export default function AddConcurrentDialog({
   // ─── Render ──────────────────────────────────────────────
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px]">
-        <DialogHeader>
-          <DialogTitle>{t('concurrentAddTitle')}</DialogTitle>
-          <DialogDescription>
-            {t('concurrentAddDescription')}
-          </DialogDescription>
-        </DialogHeader>
+    <WdDrawer
+      open={open}
+      onClose={() => onOpenChange(false)}
+      title={t('concurrentAddTitle')}
+      closeDisabled={submitting}
+      secondary={{ label: t('cancel'), onClick: () => onOpenChange(false), disabled: submitting }}
+      primary={{
+        label: submitting ? t('processing') : tc('add'),
+        onClick: handleSubmit,
+        disabled: submitting,
+      }}
+    >
+      <p className="text-sm text-muted-foreground">{t('concurrentAddDescription')}</p>
 
-        <div className="grid gap-4 py-4">
-          {/* 법인 */}
-          <div className="grid gap-2">
-            <Label htmlFor="company">{t('concurrentCompanyLabel')}</Label>
-            {isHrAdmin ? (
-              <Input
-                id="company"
-                value={
-                  companies.find((c) => c.id === userCompanyId)
-                    ? getLabel(companies.find((c) => c.id === userCompanyId)!)
-                    : userCompanyId
-                }
-                disabled
-              />
-            ) : (
-              <Select value={companyId || '__NONE__'} onValueChange={handleCompanyChange}>
-                <SelectTrigger id="company">
-                  <SelectValue placeholder={t('concurrentSelectCompany')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
-                  {companies.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {getLabel(c)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          </div>
+      {/* 법인 */}
+      <WdField label={t('concurrentCompanyLabel')} htmlFor="company">
+        {isHrAdmin ? (
+          <Input
+            id="company"
+            value={
+              companies.find((c) => c.id === userCompanyId)
+                ? getLabel(companies.find((c) => c.id === userCompanyId)!)
+                : userCompanyId
+            }
+            disabled
+          />
+        ) : (
+          <Select value={companyId || '__NONE__'} onValueChange={handleCompanyChange}>
+            <SelectTrigger id="company">
+              <SelectValue placeholder={t('concurrentSelectCompany')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
+              {companies.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {getLabel(c)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      </WdField>
 
-          {/* 부서 */}
-          <div className="grid gap-2">
-            <Label htmlFor="department">{t('concurrentDepartment')}</Label>
-            <Select
-              value={departmentId || '__NONE__'}
-              onValueChange={(v) => {
-                const resolved = v === '__NONE__' ? '' : v
-                setDepartmentId(resolved)
-                setPositionId('')
-              }}
-              disabled={!companyId}
-            >
-              <SelectTrigger id="department">
-                <SelectValue placeholder={t('concurrentSelectDepartment')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
-                {departments.map((d) => (
-                  <SelectItem key={d.id} value={d.id}>
-                    {getLabel(d)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+      {/* 부서 */}
+      <WdField label={t('concurrentDepartment')} htmlFor="department">
+        <Select
+          value={departmentId || '__NONE__'}
+          onValueChange={(v) => {
+            const resolved = v === '__NONE__' ? '' : v
+            setDepartmentId(resolved)
+            setPositionId('')
+          }}
+          disabled={!companyId}
+        >
+          <SelectTrigger id="department">
+            <SelectValue placeholder={t('concurrentSelectDepartment')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
+            {departments.map((d) => (
+              <SelectItem key={d.id} value={d.id}>
+                {getLabel(d)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </WdField>
 
-          {/* 직급 */}
-          <div className="grid gap-2">
-            <Label htmlFor="jobGrade">{t('concurrentGrade')}</Label>
-            <Select
-              value={jobGradeId || '__NONE__'}
-              onValueChange={(v) => setJobGradeId(v === '__NONE__' ? '' : v)}
-            >
-              <SelectTrigger id="jobGrade">
-                <SelectValue placeholder={t('concurrentSelectGrade')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
-                {jobGrades.map((g) => (
-                  <SelectItem key={g.id} value={g.id}>
-                    {getLabel(g)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+      {/* 직급 */}
+      <WdField label={t('concurrentGrade')} htmlFor="jobGrade">
+        <Select
+          value={jobGradeId || '__NONE__'}
+          onValueChange={(v) => setJobGradeId(v === '__NONE__' ? '' : v)}
+        >
+          <SelectTrigger id="jobGrade">
+            <SelectValue placeholder={t('concurrentSelectGrade')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
+            {jobGrades.map((g) => (
+              <SelectItem key={g.id} value={g.id}>
+                {getLabel(g)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </WdField>
 
-          {/* 직책/Position */}
-          <div className="grid gap-2">
-            <Label htmlFor="position">{t('concurrentPosition')}</Label>
-            <Select
-              value={positionId || '__NONE__'}
-              onValueChange={(v) => setPositionId(v === '__NONE__' ? '' : v)}
-              disabled={!companyId}
-            >
-              <SelectTrigger id="position">
-                <SelectValue placeholder={t('concurrentSelectPosition')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
-                {positions.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {getLabel(p)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+      {/* 직책/Position */}
+      <WdField label={t('concurrentPosition')} htmlFor="position">
+        <Select
+          value={positionId || '__NONE__'}
+          onValueChange={(v) => setPositionId(v === '__NONE__' ? '' : v)}
+          disabled={!companyId}
+        >
+          <SelectTrigger id="position">
+            <SelectValue placeholder={t('concurrentSelectPosition')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__NONE__">{t('noSelection')}</SelectItem>
+            {positions.map((p) => (
+              <SelectItem key={p.id} value={p.id}>
+                {getLabel(p)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </WdField>
 
-          {/* 고용형태 */}
-          <div className="grid gap-2">
-            <Label htmlFor="employmentType">{t('concurrentEmploymentType')}</Label>
-            <Select value={employmentType} onValueChange={setEmploymentType}>
-              <SelectTrigger id="employmentType">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {EMPLOYMENT_TYPES.map((et) => (
-                  <SelectItem key={et.value} value={et.value}>
-                    {t(et.labelKey)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+      {/* 고용형태 */}
+      <WdField label={t('concurrentEmploymentType')} htmlFor="employmentType">
+        <Select value={employmentType} onValueChange={setEmploymentType}>
+          <SelectTrigger id="employmentType">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {EMPLOYMENT_TYPES.map((et) => (
+              <SelectItem key={et.value} value={et.value}>
+                {t(et.labelKey)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </WdField>
 
-          {/* 발효일 */}
-          <div className="grid gap-2">
-            <Label htmlFor="effectiveDate">{t('concurrentEffectiveDate')}</Label>
-            <Input
-              id="effectiveDate"
-              type="date"
-              value={effectiveDate}
-              onChange={(e) => setEffectiveDate(e.target.value)}
-            />
-          </div>
+      {/* 발효일 */}
+      <WdField label={t('concurrentEffectiveDate')} htmlFor="effectiveDate">
+        <Input
+          id="effectiveDate"
+          type="date"
+          value={effectiveDate}
+          onChange={(e) => setEffectiveDate(e.target.value)}
+        />
+      </WdField>
 
-          {/* 사유 */}
-          <div className="grid gap-2">
-            <Label htmlFor="reason">{t('concurrentReason')}</Label>
-            <Input
-              id="reason"
-              placeholder={t('concurrentReasonPlaceholder')}
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-            />
-          </div>
+      {/* 사유 */}
+      <WdField label={t('concurrentReason')} htmlFor="reason">
+        <Input
+          id="reason"
+          placeholder={t('concurrentReasonPlaceholder')}
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+        />
+      </WdField>
 
-          {/* Error */}
-          {error && (
-            <p className="text-sm text-destructive">{error}</p>
-          )}
-        </div>
-
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={submitting}
-          >
-            {t('cancel')}
-          </Button>
-          <Button
-            className="bg-ctr-primary hover:bg-ctr-primary/90"
-            onClick={handleSubmit}
-            disabled={submitting}
-          >
-            {submitting ? t('processing') : tc('add')}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      {/* Error */}
+      {error && <p className="text-sm text-destructive">{error}</p>}
+    </WdDrawer>
   )
 }
