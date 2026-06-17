@@ -18,9 +18,6 @@
 // ═══════════════════════════════════════════════════════════
 
 import { eventBus } from './event-bus'
-import { leaveApprovedHandler } from './handlers/leave-approved.handler'
-import { leaveRejectedHandler } from './handlers/leave-rejected.handler'
-import { leaveCancelledHandler } from './handlers/leave-cancelled.handler'
 import { payrollCalculatedHandler } from './handlers/payroll-calculated.handler'
 import { payrollApprovedHandler } from './handlers/payroll-approved.handler'
 import { payrollAttendanceClosedHandler } from './handlers/payroll-attendance-closed.handler'
@@ -59,9 +56,9 @@ export function bootstrapEventHandlers(): void {
   eventBus.clearAll()
 
   // ── Leave Events ────────────────────────────────────────
-  eventBus.subscribe(leaveApprovedHandler)
-  eventBus.subscribe(leaveRejectedHandler)
-  eventBus.subscribe(leaveCancelledHandler)
+  // 휴가 잔액 차감/복구는 라우트(create/approve/reject/cancel)가 단일 SSOT.
+  // 과거 leave-{approved,rejected,cancelled} 핸들러는 publisher 0개 데드코드 +
+  // 연도 단일행 미반영 잠재버그였어 제거함 (S322). 재도입 금지.
 
   // ── Payroll Events ───────────────────────────────────────
   eventBus.subscribe(payrollCalculatedHandler)

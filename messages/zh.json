@@ -11626,6 +11626,7 @@
     "actions": {
       "recorded": "[TODO:zh] Action has been recorded.",
       "leaveNotFound": "[TODO:zh] Leave request not found.",
+      "leaveInsufficientBalance": "[TODO:zh] Insufficient leave balance to approve.",
       "alreadyProcessed": "[TODO:zh] This request has already been processed. (Status: {status})",
       "leaveApproved": "[TODO:zh] Leave has been approved.",
       "leaveRejected": "[TODO:zh] Leave has been rejected.",

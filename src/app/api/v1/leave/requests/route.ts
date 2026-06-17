@@ -23,6 +23,7 @@ import { calculateLeaveDays } from '@/lib/leave/calculateLeaveDays'
 import { fetchCompanyHolidays } from '@/lib/leave/fetchHolidays'
 import { resolveLeaveTypeDefId } from '@/lib/leave/resolveLeaveTypeDefId'
 import { leaveTypeUsesBalance, resolveEventLeaveDays } from '@/lib/leave/eventBasedLeave'
+import { getLeaveBalanceYear } from '@/lib/leave/leaveBalanceYear'
 import type { SessionUser } from '@/types'
 
 // ─── GET: My leave requests ──────────────────────────────
@@ -248,6 +249,18 @@ export const POST = withPermission(
     }
 
     const result = await prisma.$transaction(async (tx) => {
+      // 0. 동시 신청 직렬화 — 같은 잔액 행을 FOR UPDATE로 잠가 read-then-update 경합 차단
+      //    (두 신청이 같은 used/pending을 읽고 둘 다 통과해 pending을 초과 hold하는 것 방지)
+      if (usesBalance && resolvedLeaveTypeDefId) {
+        await tx.$queryRaw`
+          SELECT id FROM leave_year_balances
+          WHERE employee_id = ${user.employeeId}
+            AND leave_type_def_id = ${resolvedLeaveTypeDefId}
+            AND year = ${getLeaveBalanceYear(startDate)}
+          FOR UPDATE
+        `
+      }
+
       // 1. Read balance INSIDE transaction — 적립형만 (이벤트형은 잔액 row 없음)
       const balance =
         usesBalance && resolvedLeaveTypeDefId
@@ -255,7 +268,8 @@ export const POST = withPermission(
               where: {
                 employeeId: user.employeeId,
                 leaveTypeDefId: resolvedLeaveTypeDefId,
-                year: new Date().getFullYear(),
+                // 잔액은 시작일의 연도 행에 hold/차감 — approve/reject/cancel과 일관 (SSOT)
+                year: getLeaveBalanceYear(startDate),
               },
             })
           : null

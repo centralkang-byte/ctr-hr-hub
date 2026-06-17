@@ -11619,6 +11619,7 @@
     "actions": {
       "recorded": "액션이 기록되었습니다.",
       "leaveNotFound": "휴가 요청을 찾을 수 없습니다.",
+      "leaveInsufficientBalance": "잔여 휴가일이 부족하여 승인할 수 없습니다.",
       "alreadyProcessed": "이미 처리된 요청입니다. (상태: {status})",
       "leaveApproved": "휴가가 승인되었습니다.",
       "leaveRejected": "휴가가 반려되었습니다.",

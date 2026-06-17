@@ -11625,6 +11625,7 @@
     "actions": {
       "recorded": "Action has been recorded.",
       "leaveNotFound": "Leave request not found.",
+      "leaveInsufficientBalance": "Insufficient leave balance to approve.",
       "alreadyProcessed": "This request has already been processed. (Status: {status})",
       "leaveApproved": "Leave has been approved.",
       "leaveRejected": "Leave has been rejected.",
