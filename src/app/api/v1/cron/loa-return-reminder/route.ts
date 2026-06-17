@@ -1,8 +1,9 @@
-// CRON: secured by CRON_SECRET header, not user session
+// CRON: secured by CRON_SECRET (x-cron-secret OR Vercel-native Bearer)
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — POST /api/v1/cron/loa-return-reminder
+// CTR HR Hub — GET + POST /api/v1/cron/loa-return-reminder
 // 복직 예정일 알림 (7일/3일/1일 전 직원 + HR Admin)
 // Schedule: 0 0 * * * (UTC 00:00 = KST 09:00)
+// Vercel 네이티브 cron은 GET으로 호출하므로 GET·POST 둘 다 export.
 // ═══════════════════════════════════════════════════════════
 
 import { type NextRequest } from 'next/server'
@@ -18,7 +19,7 @@ const THRESHOLDS = [
   { days: 1 },
 ]
 
-export async function POST(req: NextRequest) {
+async function handle(req: NextRequest) {
   if (!verifyCronSecret(req)) return apiError(unauthorized('인증 실패'))
 
   const now = new Date()
@@ -108,3 +109,6 @@ export async function POST(req: NextRequest) {
 
   return apiSuccess({ sent: sentCount })
 }
+
+export const POST = handle
+export const GET = handle

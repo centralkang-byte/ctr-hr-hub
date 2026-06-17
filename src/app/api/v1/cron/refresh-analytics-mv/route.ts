@@ -29,18 +29,9 @@ const MVS = [
   'mv_compa_ratio_distribution',
 ] as const
 
-// 기존 SSOT(verifyCronSecret = x-cron-secret) 재사용 + Vercel native cron의
-// `Authorization: Bearer ${CRON_SECRET}` 추가 수용. 공유 헬퍼는 무수정(타 3
-// 라우트 영향 회피), Bearer 경로만 로컬 보강.
-function isCronAuthorized(req: NextRequest): boolean {
-  if (verifyCronSecret(req)) return true
-  const expected = process.env.CRON_SECRET
-  if (!expected) return false
-  return req.headers.get('authorization') === `Bearer ${expected}`
-}
-
 async function handle(req: NextRequest) {
-  if (!isCronAuthorized(req)) return apiError(unauthorized('인증 실패'))
+  // verifyCronSecret(SSOT)이 x-cron-secret + Vercel-native Bearer 둘 다 수용.
+  if (!verifyCronSecret(req)) return apiError(unauthorized('인증 실패'))
 
   const refreshed: string[] = []
   const skipped: { mv: string; reason: string }[] = []

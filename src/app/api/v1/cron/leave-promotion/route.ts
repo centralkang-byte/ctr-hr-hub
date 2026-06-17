@@ -70,17 +70,6 @@ async function resolveAnnualConfig(
   return config
 }
 
-// Vercel Cron 은 GET + `Authorization: Bearer $CRON_SECRET` 를 발송하고,
-// 기존 스케줄러(pg_cron net.http_post)는 POST + `x-cron-secret` 를 발송한다.
-// 법정 §61 cron 이 트리거 경로와 무관하게 동작하도록 양쪽을 모두 수용한다.
-// (공유 verifyCronSecret 및 타 cron 라우트는 변경하지 않음 — 이 라우트 한정)
-function isAuthorizedCron(req: NextRequest): boolean {
-  if (verifyCronSecret(req)) return true
-  const expected = process.env.CRON_SECRET
-  if (!expected) return false
-  return req.headers.get('authorization') === `Bearer ${expected}`
-}
-
 export async function GET(req: NextRequest) {
   return handleLeavePromotion(req)
 }
@@ -90,7 +79,8 @@ export async function POST(req: NextRequest) {
 }
 
 async function handleLeavePromotion(req: NextRequest) {
-  if (!isAuthorizedCron(req)) return apiError(unauthorized('인증 실패'))
+  // verifyCronSecret(SSOT)이 x-cron-secret + Vercel-native Bearer 둘 다 수용.
+  if (!verifyCronSecret(req)) return apiError(unauthorized('인증 실패'))
 
   const now = new Date()
   // KST 달력일 기준 (Vercel UTC 실행이 한국 로컬 날짜를 시프트하지 않도록)

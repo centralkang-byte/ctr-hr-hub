@@ -67,6 +67,12 @@ const PUBLIC_PATHS = [
   // DB attendance_terminals.apiSecret 검증)을 라우트에서 수행. 세션 강제 시 모든
   // 단말기 트래픽이 401로 차단돼 기능 자체가 불통 (S276 e2e가 노출, #128 carve-out 선례)
   '/api/v1/terminals/clock',
+  // Cron 엔드포인트 — 외부 스케줄러(Vercel 네이티브 cron·Supabase pg_cron)는 NextAuth
+  // 세션이 없고 verifyCronSecret(x-cron-secret OR `Authorization: Bearer ${CRON_SECRET}`)로
+  // 라우트에서 자체 인증한다. 세션 강제 시 세션 없는 cron 트래픽이 전부 401로 차단돼
+  // 라우트에 닿지조차 못함 (cron 5종 영구 무동작의 근본 원인). terminals/clock 과 동일 선례.
+  // ⚠ 안전 전제: /api/v1/cron/ 하위 전 라우트가 verifyCronSecret 를 호출해야 함.
+  '/api/v1/cron',
 ]
 
 function isPublicPath(pathname: string): boolean {
