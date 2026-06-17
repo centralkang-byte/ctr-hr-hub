@@ -1,7 +1,8 @@
 // CRON: secured by CRON_SECRET header, not user session
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — POST /api/v1/cron/eval-reminder
+// CTR HR Hub — GET|POST /api/v1/cron/eval-reminder
 // 평가 미이행 리마인더 (D-7/D-3/D-day)
+// Vercel 네이티브 cron 은 GET 으로 호출 → GET/POST 동일 핸들러 노출.
 // ═══════════════════════════════════════════════════════════
 
 import { type NextRequest } from 'next/server'
@@ -13,7 +14,7 @@ import { unauthorized } from '@/lib/errors'
 
 const REMINDER_DAYS = [7, 3, 0] // D-7, D-3, D-day
 
-export async function POST(req: NextRequest) {
+async function handle(req: NextRequest) {
   if (!verifyCronSecret(req)) return apiError(unauthorized('인증 실패'))
 
   const now = new Date()
@@ -235,3 +236,6 @@ export async function POST(req: NextRequest) {
 
   return apiSuccess({ cyclesChecked: cycles.length, remindersSent: sentCount })
 }
+
+export const POST = handle
+export const GET = handle
