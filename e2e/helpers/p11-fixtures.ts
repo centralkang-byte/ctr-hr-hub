@@ -261,6 +261,29 @@ export async function cronGetWrongSecret(request: APIRequestContext, path: strin
   return parseApiResponse(res)
 }
 
+/**
+ * Execute a cron GET request with Vercel-native `Authorization: Bearer ${CRON_SECRET}`.
+ * Verifies the verifyCronSecret SSOT accepts the Vercel cron auth path.
+ */
+export async function cronGetBearer(request: APIRequestContext, path: string) {
+  const secret = process.env.CRON_SECRET || 'test-cron-secret'
+  const res = await request.get(path, {
+    headers: { authorization: `Bearer ${secret}` },
+  })
+  return parseApiResponse(res)
+}
+
+/**
+ * Execute a cron POST request with Vercel-native `Authorization: Bearer ${CRON_SECRET}`.
+ */
+export async function cronPostBearer(request: APIRequestContext, path: string) {
+  const secret = process.env.CRON_SECRET || 'test-cron-secret'
+  const res = await request.post(path, {
+    headers: { authorization: `Bearer ${secret}` },
+  })
+  return parseApiResponse(res)
+}
+
 // ═══════════════════════════════════════════════════════════
 // CRON PATH EXPORTS
 // ═══════════════════════════════════════════════════════════

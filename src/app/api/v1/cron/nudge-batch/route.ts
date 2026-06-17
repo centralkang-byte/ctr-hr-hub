@@ -1,9 +1,10 @@
-// CRON: secured by CRON_SECRET header, not user session
+// CRON: secured by CRON_SECRET (x-cron-secret OR Vercel-native Bearer)
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — POST /api/v1/cron/nudge-batch
+// CTR HR Hub — GET + POST /api/v1/cron/nudge-batch
 // 일일 Nudge 배치 — 전 법인 매니저에 대해 nudge 룰 평가
 //
 // 스케줄: 0 1 * * * (UTC 01:00 = KST 10:00)
+// Vercel 네이티브 cron은 GET으로 호출하므로 GET·POST 둘 다 export.
 // check-nudges.ts는 PROTECTED — 수정하지 않고 호출만 함
 // oncePer24h 가드가 중복 발송 방지
 // ═══════════════════════════════════════════════════════════
@@ -15,7 +16,7 @@ import { checkNudgesForUser } from '@/lib/nudge/check-nudges'
 import { apiSuccess, apiError } from '@/lib/api'
 import { unauthorized } from '@/lib/errors'
 
-export async function POST(req: NextRequest) {
+async function handle(req: NextRequest) {
   if (!verifyCronSecret(req)) return apiError(unauthorized('인증 실패'))
 
   let companiesChecked = 0
@@ -66,3 +67,6 @@ export async function POST(req: NextRequest) {
 
   return apiSuccess({ companiesChecked, managersChecked, nudgesSent })
 }
+
+export const POST = handle
+export const GET = handle
