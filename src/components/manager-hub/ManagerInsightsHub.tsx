@@ -8,7 +8,7 @@
 // 헤더 액션: 팀 공지(알림 발송)·1:1 예약(WdDrawer).
 // ═══════════════════════════════════════════════════════════
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Users,
   AlertTriangle,
@@ -46,6 +46,7 @@ import { apiClient } from '@/lib/api'
 import { useToast } from '@/hooks/use-toast'
 import { DottedLineReportsCard } from '@/components/manager-hub/DottedLineReportsCard'
 import { TeamMembersTab, type ManagerHubMember } from '@/components/manager-hub/TeamMembersTab'
+import { TeamActivityTab, type ManagerHubActivity } from '@/components/manager-hub/TeamActivityTab'
 import { OneOnOneScheduleDrawer } from '@/components/manager-hub/OneOnOneScheduleDrawer'
 import { TeamAnnounceDrawer } from '@/components/manager-hub/TeamAnnounceDrawer'
 import type { SessionUser } from '@/types'
@@ -107,6 +108,9 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [performance, setPerformance] = useState<Performance | null>(null)
   const [members, setMembers] = useState<ManagerHubMember[]>([])
+  const [activity, setActivity] = useState<ManagerHubActivity | null>(null)
+  const [activityLoading, setActivityLoading] = useState(false)
+  const [activityLoaded, setActivityLoaded] = useState(false)
   const [loading, setLoading] = useState(true)
   const [membersLoading, setMembersLoading] = useState(true)
   const [tab, setTab] = useState('overview')
@@ -146,6 +150,29 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
       .finally(() => setMembersLoading(false))
   }, [toast])
 
+  // 활동 탭은 무거우니 첫 진입 시 지연 로드 (open 안 하면 호출 안 함).
+  // seq ref = 최신 요청만 상태에 반영(예약 후 갱신과 최초 로드 경합 시 stale 덮어쓰기 방지).
+  // activityLoaded 는 성공 시에만 true → 실패하면 재진입으로 재시도 가능.
+  const activitySeqRef = useRef(0)
+  const loadActivity = useCallback(() => {
+    const seq = ++activitySeqRef.current
+    setActivityLoading(true)
+    apiClient
+      .get<ManagerHubActivity>('/api/v1/manager-hub/activity')
+      .then((r) => {
+        if (seq !== activitySeqRef.current) return
+        setActivity(r.data)
+        setActivityLoaded(true)
+      })
+      .catch(() => {
+        if (seq !== activitySeqRef.current) return
+        toast({ title: '활동 로드 실패', variant: 'destructive' })
+      })
+      .finally(() => {
+        if (seq === activitySeqRef.current) setActivityLoading(false)
+      })
+  }, [toast])
+
   useEffect(() => {
     loadCore()
     loadMembers()
@@ -159,6 +186,9 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
   const afterScheduled = () => {
     loadCore()
     loadMembers()
+    // 활동 탭이 이미 열렸거나(loaded) 최초 로드 중(loading)이면 갱신 —
+    // loadActivity 가 seq 를 올려 진행 중이던 stale 요청을 폐기시킴(예약 직후 경합 차단).
+    if (activityLoaded || activityLoading) loadActivity()
   }
 
   // AI 추천 — summary 임계 기반 클라 파생 (기존 동작 보존, 개요·AI 탭 공용)
@@ -237,7 +267,13 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
         }
       />
 
-      <Tabs value={tab} onValueChange={setTab}>
+      <Tabs
+        value={tab}
+        onValueChange={(v) => {
+          setTab(v)
+          if (v === 'activity' && !activityLoaded && !activityLoading) loadActivity()
+        }}
+      >
         <TabsList aria-label="매니저 허브 탭">
           <TabsTrigger value="overview">
             <LayoutGrid className="mr-1.5 h-4 w-4" />
@@ -442,17 +478,16 @@ export function ManagerInsightsHub({ user: _user }: ManagerInsightsHubProps) {
           <DottedLineReportsCard />
         </TabsContent>
 
-        {/* ── 1:1 · 활동 (PR-2 준비중) ── */}
+        {/* ── 1:1 · 활동 ── */}
         <TabsContent value="activity" className="mt-4">
-          <Card>
-            <CardContent className="py-16 text-center">
-              <Inbox className="mx-auto h-8 w-8 text-muted-foreground/50" />
-              <p className="mt-3 text-sm font-medium text-foreground">1:1 · 활동 탭은 준비 중이에요</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                다가오는 1:1 · 보낸 칭찬 · 팀 주간일정 · 위임 현황이 곧 추가됩니다.
-              </p>
-            </CardContent>
-          </Card>
+          <TeamActivityTab
+            data={activity}
+            loading={activityLoading}
+            onSchedule={() => {
+              setScheduleFor(undefined)
+              setScheduleOpen(true)
+            }}
+          />
         </TabsContent>
 
         {/* ── 성과 ── */}
