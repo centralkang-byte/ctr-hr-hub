@@ -161,15 +161,17 @@ async function getRecruitTTR(companyId: string | null) {
   })
 }
 
-async function getTalentPool(_companyId: string | null) {
+async function getTalentPool(companyId: string | null) {
   try {
     const now = new Date()
     const thirtyDaysLater = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
-    // TalentPoolEntry does not have companyId — filter is omitted
+    // 멀티테넌트: companyId 직접 스코프(비-SUPER), null=SUPER 전사. (다른 위젯 집계와 동일 패턴)
+    const scope = companyId ? { companyId } : {}
     const [active, expiringSoon] = await Promise.all([
-      prisma.talentPoolEntry.count({ where: { status: 'active' } }),
+      prisma.talentPoolEntry.count({ where: { ...scope, status: 'active' } }),
       prisma.talentPoolEntry.count({
         where: {
+          ...scope,
           status: 'active',
           expiresAt: { lte: thirtyDaysLater, gte: now },
         },
