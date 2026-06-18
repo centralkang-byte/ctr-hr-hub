@@ -8,6 +8,14 @@ import { serverT } from '@/lib/server-i18n'
 import type { Locale } from '@/i18n/config'
 import { resolveLeaveTypeDefId } from '@/lib/leave/resolveLeaveTypeDefId'
 import { leaveTypeUsesBalance } from '@/lib/leave/eventBasedLeave'
+import { getLeaveBalanceYear } from '@/lib/leave/leaveBalanceYear'
+
+// 트랜잭션 내부에서 사용자 메시지를 들고 롤백하기 위한 sentinel
+class LeaveActionAbort extends Error {
+  constructor(public messageKey: string, public params?: Record<string, string | number>) {
+    super(messageKey)
+  }
+}
 
 interface CardActionInput {
   cardType: string
@@ -78,38 +86,58 @@ async function handleLeaveApproval(
 
   const newStatus = action === 'approve' ? 'APPROVED' : 'REJECTED'
 
-  // 잔여일 갱신 — SSOT = LeaveYearBalance (레거시 EmployeeLeaveBalance 미사용; 웹 approve route와 정합).
-  // 적립형만. 승인은 상태 변경 전에 차감 — 잔액 행이 없으면(0행) 승인 거부(웹 approve와 일관).
+  // 잔여일 갱신 — SSOT = LeaveYearBalance (웹 approve/reject route와 정합).
+  // 적립형만. 잔액 행은 시작일의 연도 단일 행 (getLeaveBalanceYear).
   // 웹 신청이 pending을 올려두므로 승인=used+days·pending-days, 반려=pending-days(복구).
+  // 상태 전이(claim) + 잔액 변경을 단일 트랜잭션으로 묶어 동시/이중 승인 이중차감 차단
+  // (claim의 status='PENDING' 조건이 직렬화하고, 잔액 행 없으면 throw로 전체 롤백).
   const leaveTypeDefId = request.leaveTypeDefId ?? (await resolveLeaveTypeDefId(request.policyId))
   const usesBalance = !!leaveTypeDefId && (await leaveTypeUsesBalance(leaveTypeDefId))
   const days = Number(request.days)
-  const year = new Date(request.startDate).getFullYear()
+  const year = getLeaveBalanceYear(request.startDate)
 
-  if (newStatus === 'APPROVED' && usesBalance) {
-    const affected = await prisma.$executeRaw`
-      UPDATE leave_year_balances
-      SET used = used + ${days}, pending = GREATEST(pending - ${days}, 0), updated_at = NOW()
-      WHERE employee_id = ${request.employeeId} AND leave_type_def_id = ${leaveTypeDefId} AND year = ${year}`
-    if (affected === 0) {
-      return { success: false, message: await t('teams.actions.leaveNotFound') }
+  try {
+    await prisma.$transaction(async (tx) => {
+      const claim = await tx.leaveRequest.updateMany({
+        where: { id: requestId, status: 'PENDING' },
+        data: {
+          status: newStatus,
+          approvedById: approverId,
+          approvedAt: new Date(),
+        },
+      })
+      if (claim.count === 0) {
+        throw new LeaveActionAbort('teams.actions.alreadyProcessed', { status: newStatus })
+      }
+
+      if (usesBalance && newStatus === 'APPROVED') {
+        // 웹 approve route와 동일한 상한 가드 — Teams만 잔액 상한을 우회하지 않도록
+        const rows = await tx.$queryRaw<Array<{ id: string }>>`
+          UPDATE leave_year_balances
+          SET used = used + ${days}, pending = GREATEST(pending - ${days}, 0), updated_at = NOW()
+          WHERE employee_id = ${request.employeeId} AND leave_type_def_id = ${leaveTypeDefId} AND year = ${year}
+            AND (used + ${days}) <= (entitled + carried_over + adjusted)
+          RETURNING id`
+        if (rows.length === 0) {
+          const exists = await tx.leaveYearBalance.findFirst({
+            where: { employeeId: request.employeeId, leaveTypeDefId, year },
+          })
+          throw new LeaveActionAbort(
+            exists ? 'teams.actions.leaveInsufficientBalance' : 'teams.actions.leaveNotFound',
+          )
+        }
+      } else if (usesBalance && newStatus === 'REJECTED') {
+        await tx.$executeRaw`
+          UPDATE leave_year_balances
+          SET pending = GREATEST(pending - ${days}, 0), updated_at = NOW()
+          WHERE employee_id = ${request.employeeId} AND leave_type_def_id = ${leaveTypeDefId} AND year = ${year}`
+      }
+    })
+  } catch (e) {
+    if (e instanceof LeaveActionAbort) {
+      return { success: false, message: await t(e.messageKey, e.params) }
     }
-  }
-
-  await prisma.leaveRequest.update({
-    where: { id: requestId },
-    data: {
-      status: newStatus,
-      approvedById: approverId,
-      approvedAt: new Date(),
-    },
-  })
-
-  if (newStatus === 'REJECTED' && usesBalance) {
-    await prisma.$executeRaw`
-      UPDATE leave_year_balances
-      SET pending = GREATEST(pending - ${days}, 0), updated_at = NOW()
-      WHERE employee_id = ${request.employeeId} AND leave_type_def_id = ${leaveTypeDefId} AND year = ${year}`
+    throw e
   }
 
   return {

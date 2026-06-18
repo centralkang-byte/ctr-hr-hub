@@ -16,6 +16,7 @@ import { checkDelegation } from '@/lib/delegation/resolve-delegatee'
 import { invalidateMultiple, CACHE_STRATEGY } from '@/lib/cache'
 import { resolveLeaveTypeDefId } from '@/lib/leave/resolveLeaveTypeDefId'
 import { leaveTypeUsesBalance } from '@/lib/leave/eventBasedLeave'
+import { getLeaveBalanceYear } from '@/lib/leave/leaveBalanceYear'
 import type { SessionUser } from '@/types'
 
 const rejectionSchema = z.object({
@@ -81,11 +82,12 @@ export const PUT = withPermission(
     let updatedBalance: Awaited<ReturnType<typeof prisma.leaveYearBalance.findUnique>> = null
 
     if (usesBalance) {
+      // 잔액 복구는 시작일의 연도 행 (approve/create와 일관 — SSOT)
       const balance = await prisma.leaveYearBalance.findFirst({
         where: {
           employeeId: request.employeeId,
           leaveTypeDefId,
-          year: new Date(request.startDate).getFullYear(),
+          year: getLeaveBalanceYear(request.startDate),
         },
       })
 
@@ -93,18 +95,22 @@ export const PUT = withPermission(
         throw badRequest('해당 휴가 유형의 잔여일 정보를 찾을 수 없습니다.')
       }
 
-      // Transaction: reject request + restore pending (direct, not via event)
+      // Transaction: claim(PENDING→REJECTED) + restore pending (direct, not via event)
       updated = await prisma.$transaction(async (tx) => {
-        const rejected = await tx.leaveRequest.update({
-          where: { id },
+        // Claim — status 조건이 동시/이중 반려를 직렬화 (pending 이중 복구 방지)
+        const claim = await tx.leaveRequest.updateMany({
+          where: { id, status: 'PENDING', companyId: user.companyId },
           data: {
             status:          'REJECTED',
             rejectionReason: parsed.data.rejectionReason,
-            approvedById:      request.approvedById ?? user.employeeId,
+            approvedById:    request.approvedById ?? user.employeeId,
             approvedAt:      new Date(),
-            delegatedById:     delegatedById,
+            delegatedById:   delegatedById,
           },
         })
+        if (claim.count === 0) {
+          throw badRequest('이미 처리된 휴가 신청입니다.')
+        }
 
         // Restore pending (used unchanged for rejection)
         await tx.leaveYearBalance.update({
@@ -112,6 +118,10 @@ export const PUT = withPermission(
           data: { pending: { decrement: days } },
         })
 
+        const rejected = await tx.leaveRequest.findUnique({ where: { id } })
+        if (!rejected) {
+          throw notFound('휴가 신청을 찾을 수 없습니다.')
+        }
         return rejected
       })
 

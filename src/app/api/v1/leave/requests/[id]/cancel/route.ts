@@ -19,6 +19,7 @@ import { invalidateMultiple, CACHE_STRATEGY } from '@/lib/cache'
 import { calculateLeaveDays } from '@/lib/leave/calculateLeaveDays'
 import { fetchCompanyHolidays } from '@/lib/leave/fetchHolidays'
 import { resolveLeaveTypeDefId } from '@/lib/leave/resolveLeaveTypeDefId'
+import { getLeaveBalanceYear } from '@/lib/leave/leaveBalanceYear'
 import type { CountingMethod } from '@/lib/leave/calculateLeaveDays'
 import type { SessionUser } from '@/types'
 
@@ -69,14 +70,18 @@ export const PUT = withPermission(
 
       // PENDING → no used change, only pending decrement
       const updated = await prisma.$transaction(async (tx) => {
-        const cancelled = await tx.leaveRequest.update({
-          where: { id },
+        // Claim — status 조건이 동시/이중 취소를 직렬화 (pending 이중 복구 방지)
+        const claim = await tx.leaveRequest.updateMany({
+          where: { id, status: 'PENDING' },
           data: {
             status: 'CANCELLED',
             cancelledById: user.employeeId,
             cancelNote: cancelReason,
           },
         })
+        if (claim.count === 0) {
+          throw badRequest('이미 처리된 휴가 신청입니다.')
+        }
 
         // Restore pending
         const balance = await findBalance(tx, request)
@@ -87,6 +92,10 @@ export const PUT = withPermission(
           })
         }
 
+        const cancelled = await tx.leaveRequest.findUnique({ where: { id } })
+        if (!cancelled) {
+          throw notFound('휴가 신청을 찾을 수 없습니다.')
+        }
         return cancelled
       })
 
@@ -111,14 +120,18 @@ export const PUT = withPermission(
       const daysToRestore = Number(request.days)
 
       const updated = await prisma.$transaction(async (tx) => {
-        const cancelled = await tx.leaveRequest.update({
-          where: { id },
+        // Claim — status 조건이 동시/이중 취소를 직렬화 (used 이중 복구 방지)
+        const claim = await tx.leaveRequest.updateMany({
+          where: { id, status: 'APPROVED' },
           data: {
             status: 'CANCELLED',
             cancelledById: user.employeeId,
             cancelNote: cancelReason ?? `시작 전 취소: ${daysToRestore}일 전액 복구`,
           },
         })
+        if (claim.count === 0) {
+          throw badRequest('이미 처리된 휴가 신청입니다.')
+        }
 
         // Restore full used
         const balance = await findBalance(tx, request)
@@ -129,6 +142,10 @@ export const PUT = withPermission(
           })
         }
 
+        const cancelled = await tx.leaveRequest.findUnique({ where: { id } })
+        if (!cancelled) {
+          throw notFound('휴가 신청을 찾을 수 없습니다.')
+        }
         return cancelled
       })
 
@@ -190,14 +207,18 @@ export const PUT = withPermission(
       const unusedDays = Math.max(totalDays - actualUsed, 0)
 
       const updated = await prisma.$transaction(async (tx) => {
-        const cancelled = await tx.leaveRequest.update({
-          where: { id },
+        // Claim — status 조건이 동시/이중 취소를 직렬화 (used 이중 복구 방지)
+        const claim = await tx.leaveRequest.updateMany({
+          where: { id, status: 'APPROVED' },
           data: {
             status: 'CANCELLED',
             cancelledById: user.employeeId,
             cancelNote: cancelReason ?? `시작 후 취소: ${actualUsed}일 사용, ${unusedDays}일 복구`,
           },
         })
+        if (claim.count === 0) {
+          throw badRequest('이미 처리된 휴가 신청입니다.')
+        }
 
         // Partial restore: only unused portion
         if (unusedDays > 0) {
@@ -210,6 +231,10 @@ export const PUT = withPermission(
           }
         }
 
+        const cancelled = await tx.leaveRequest.findUnique({ where: { id } })
+        if (!cancelled) {
+          throw notFound('휴가 신청을 찾을 수 없습니다.')
+        }
         return cancelled
       })
 
@@ -236,7 +261,7 @@ type TxPrisma = Parameters<Parameters<typeof prisma.$transaction>[0]>[0]
 
 async function findBalance(
   tx: TxPrisma,
-  request: { employeeId: string; policyId: string; leaveTypeDefId: string | null; startDate: Date; endDate: Date },
+  request: { employeeId: string; policyId: string; leaveTypeDefId: string | null; startDate: Date },
 ) {
   // leaveTypeDefId 결정 (직접 또는 policyId 경유)
   const leaveTypeDefId = request.leaveTypeDefId
@@ -244,28 +269,14 @@ async function findBalance(
 
   if (!leaveTypeDefId) return null
 
-  const startYear = new Date(request.startDate).getFullYear()
-  const endYear = new Date(request.endDate).getFullYear()
-
-  let balance = await tx.leaveYearBalance.findFirst({
+  // 잔액은 시작일의 연도 행 단일 (approve/create/reject와 일관 — SSOT)
+  return tx.leaveYearBalance.findFirst({
     where: {
       employeeId: request.employeeId,
       leaveTypeDefId,
-      year: startYear,
+      year: getLeaveBalanceYear(request.startDate),
     },
   })
-
-  if (!balance && endYear !== startYear) {
-    balance = await tx.leaveYearBalance.findFirst({
-      where: {
-        employeeId: request.employeeId,
-        leaveTypeDefId,
-        year: endYear,
-      },
-    })
-  }
-
-  return balance
 }
 
 async function auditCancel(
