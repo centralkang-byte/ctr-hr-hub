@@ -92,7 +92,7 @@ export default function TalentPoolClient({user: _user }: {
   const handleStatusChange = async (id: string, status: string) => {
     setUpdatingId(id)
     try {
-      await apiClient.put(`/api/v1/recruitment/talent-pool/${id}`, { status })
+      await apiClient.patch(`/api/v1/recruitment/talent-pool/${id}`, { status })
       setItems((prev) =>
         prev.map((item) => item.id === id ? { ...item, status } : item),
       )
