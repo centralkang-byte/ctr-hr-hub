@@ -29,6 +29,19 @@ const REVIVED = [
   { name: 'apply-scheduled-comp', path: CRON_PATHS.SCHED_COMP },
 ] as const
 
+// S323: vercel.json 에 누락돼 스케줄 부재로 침묵하던 4개 cron 을 등록.
+//   auto-acknowledge / overdue-check 는 이미 GET 보유(등록만 필요, POST 미export),
+//   eval-reminder / org-snapshot 은 POST 전용이라 GET 핸들러 신설
+//   (Vercel 네이티브 cron 은 GET 호출 → 미신설 시 405 로 영구 미실행).
+// postSupported = 양 메서드 export 여부. GET-only 라우트에 POST→200 을 단언하면
+// 405 로 실패하므로 POST 케이스는 dual-export 라우트에만 적용한다.
+const NEWLY_REGISTERED = [
+  { name: 'auto-acknowledge', path: CRON_PATHS.AUTO_ACK, postSupported: false },
+  { name: 'overdue-check', path: CRON_PATHS.OVERDUE, postSupported: false },
+  { name: 'eval-reminder', path: CRON_PATHS.EVAL_REMINDER, postSupported: true },
+  { name: 'org-snapshot', path: CRON_PATHS.ORG_SNAPSHOT, postSupported: true },
+] as const
+
 test.describe('Cron Vercel-native auth: revived routes (GET + Bearer)', () => {
   test.use({ storageState: authFile('SUPER_ADMIN') })
 
@@ -53,6 +66,52 @@ test.describe('Cron Vercel-native auth: revived routes (GET + Bearer)', () => {
       assertOk(res, `${route.name} POST Bearer`)
     })
   }
+})
+
+test.describe('Cron Vercel-native auth: newly-registered routes (S323)', () => {
+  test.use({ storageState: authFile('SUPER_ADMIN') })
+
+  for (const route of NEWLY_REGISTERED) {
+    test(`GET ${route.name} + Bearer -> 200`, async ({ request }) => {
+      const res = await cronGetBearer(request, route.path)
+      assertOk(res, `${route.name} GET Bearer`)
+    })
+
+    test(`GET ${route.name} + x-cron-secret -> 200`, async ({ request }) => {
+      const res = await cronGet(request, route.path)
+      assertOk(res, `${route.name} GET x-cron-secret`)
+    })
+
+    test(`GET ${route.name} no auth -> 401 (fail-closed)`, async ({ request }) => {
+      const res = await cronGetNoSecret(request, route.path)
+      assertError(res, 401, `${route.name} GET no secret`)
+    })
+
+    // GET-only 라우트(auto-acknowledge/overdue-check)는 POST 미export → 405.
+    // POST→200 은 dual-export 라우트에만 단언한다.
+    if (route.postSupported) {
+      test(`POST ${route.name} + Bearer -> 200`, async ({ request }) => {
+        const res = await cronPostBearer(request, route.path)
+        assertOk(res, `${route.name} POST Bearer`)
+      })
+    }
+  }
+})
+
+// 핵심 회귀: POST 전용이던 eval-reminder/org-snapshot 의 신설 GET 핸들러가
+// 세션 없이(= Vercel cron 실제 조건) Bearer 로 닿는지 직접 고정한다.
+test.describe('Cron Vercel-native auth: newly-added GET handlers, session-less', () => {
+  test.use({ storageState: { cookies: [], origins: [] } })
+
+  test('GET eval-reminder + Bearer, no session -> 200 (new GET handler)', async ({ request }) => {
+    const res = await cronGetBearer(request, CRON_PATHS.EVAL_REMINDER)
+    assertOk(res, 'session-less eval-reminder GET Bearer')
+  })
+
+  test('GET org-snapshot + Bearer, no session -> 200 (new GET handler)', async ({ request }) => {
+    const res = await cronGetBearer(request, CRON_PATHS.ORG_SNAPSHOT)
+    assertOk(res, 'session-less org-snapshot GET Bearer')
+  })
 })
 
 // ── 핵심 회귀 가드: 세션 없이(= Vercel cron 실제 조건) 동작해야 함 ──

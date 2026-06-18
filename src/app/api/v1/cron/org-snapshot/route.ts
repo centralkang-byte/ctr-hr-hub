@@ -1,7 +1,8 @@
 // CRON: secured by CRON_SECRET header, not user session
 // ═══════════════════════════════════════════════════════════
-// CTR HR Hub — POST /api/v1/cron/org-snapshot
+// CTR HR Hub — GET|POST /api/v1/cron/org-snapshot
 // 월별 조직도 스냅샷 (모든 활성 Company)
+// Vercel 네이티브 cron 은 GET 으로 호출 → GET/POST 동일 핸들러 노출.
 // ═══════════════════════════════════════════════════════════
 
 import { type NextRequest } from 'next/server'
@@ -11,7 +12,7 @@ import { buildOrgSnapshot } from '@/lib/org-snapshot-builder'
 import { apiSuccess, apiError } from '@/lib/api'
 import { unauthorized } from '@/lib/errors'
 
-export async function POST(req: NextRequest) {
+async function handle(req: NextRequest) {
   if (!verifyCronSecret(req)) return apiError(unauthorized('인증 실패'))
 
   const companies = await prisma.company.findMany({
@@ -36,3 +37,6 @@ export async function POST(req: NextRequest) {
     results,
   })
 }
+
+export const POST = handle
+export const GET = handle
