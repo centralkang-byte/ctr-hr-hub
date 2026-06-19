@@ -8,22 +8,32 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
   async (
     _req: NextRequest,
     { params }: { params: Promise<Record<string, string>> },
-    _user: SessionUser,
+    user: SessionUser,
   ) => {
     const { id } = await params
 
+    // 멀티테넌트: Applicant 엔 회사가 없어 지원→공고로 스코프. 비-SUPER 는 자사 지원이력이 있는 후보만,
+    // 그 후보의 타 법인 application/talentPool 이벤트는 중첩 필터로 제외. SUPER 는 전사.
+    const isSuper = user.role === ROLE.SUPER_ADMIN
+    const companyMatch = isSuper
+      ? {}
+      : { applications: { some: { posting: { companyId: user.companyId } } } }
+    const appWhere = isSuper ? undefined : { posting: { companyId: user.companyId } }
+    const poolWhere = isSuper ? undefined : { companyId: user.companyId }
+
     // applicantId 기준으로 조회 (id는 applicant.id)
-    const applicant = await prisma.applicant.findUnique({
-      where: { id },
+    const applicant = await prisma.applicant.findFirst({
+      where: { id, ...companyMatch },
       include: {
         applications: {
+          where: appWhere,
           orderBy: { appliedAt: 'asc' },
           include: {
             posting: {
@@ -45,6 +55,7 @@ export const GET = withPermission(
           },
         },
         talentPoolEntries: {
+          where: poolWhere,
           orderBy: { createdAt: 'asc' },
           select: {
             id: true,

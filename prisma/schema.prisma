@@ -864,6 +864,7 @@ model Company {
   holidays               Holiday[]
   designatedLeaveDays    DesignatedLeaveDay[]
   jobPostings            JobPosting[]
+  talentPoolEntries      TalentPoolEntry[]
   competencyLibrary      CompetencyLibrary[]
   competencyRequirements CompetencyRequirement[]
   performanceCycles      PerformanceCycle[]
@@ -5812,6 +5813,10 @@ model RequisitionApproval {
 // ─── Talent Pool ─────────────────────────────────────────────────
 model TalentPoolEntry {
   id              String      @id @default(uuid())
+  // 멀티테넌트 앵커. Phase 1 nullable(롤링 배포 중 구 writer가 NULL 기록) → 배포 후 Phase 2 NOT NULL.
+  // 비정규화 컬럼: Applicant·TalentPoolEntry 자체엔 회사가 없어(지원→공고 경유) 수동 등록·다법인 후보 스코핑 불가 → 직접 anchor.
+  companyId       String?     @map("company_id")
+  company         Company?    @relation(fields: [companyId], references: [id])
   applicantId     String      @map("applicant_id")
   applicant       Applicant   @relation(fields: [applicantId], references: [id])
   sourcePostingId String?     @map("source_posting_id") // 어떤 공고에서 왔는지
@@ -5825,6 +5830,7 @@ model TalentPoolEntry {
   createdAt       DateTime    @default(now()) @map("created_at")
   updatedAt       DateTime    @updatedAt @map("updated_at")
 
+  @@index([companyId])
   @@index([applicantId])
   @@index([status])
   @@index([expiresAt])

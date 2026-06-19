@@ -67,6 +67,11 @@ export const POST = withAuth(
       ? {}
       : { applications: { some: { posting: { companyId: user.companyId } } } }
 
+    // 중첩 _count·최근 application 도 회사 스코프(타 법인 지원 건수·날짜 노출 차단). SUPER 는 전체({}).
+    const appCompanyWhere = user.role === ROLE.SUPER_ADMIN
+      ? {}
+      : { posting: { companyId: user.companyId } }
+
     // ── Tier 1: 이메일 정확 매칭 (score = 1.0) ─────────────────
     const emailMatch = await prisma.applicant.findFirst({
       where: { email, ...companyFilter },
@@ -75,8 +80,9 @@ export const POST = withAuth(
         name: true,
         email: true,
         phone: true,
-        _count: { select: { applications: true } },
+        _count: { select: { applications: { where: appCompanyWhere } } },
         applications: {
+          where: appCompanyWhere,
           orderBy: { appliedAt: 'desc' },
           take: 1,
           select: { appliedAt: true },
@@ -111,8 +117,9 @@ export const POST = withAuth(
           name: true,
           email: true,
           phone: true,
-          _count: { select: { applications: true } },
+          _count: { select: { applications: { where: appCompanyWhere } } },
           applications: {
+            where: appCompanyWhere,
             orderBy: { appliedAt: 'desc' },
             take: 1,
             select: { appliedAt: true },
@@ -153,8 +160,9 @@ export const POST = withAuth(
             name: true,
             email: true,
             phone: true,
-            _count: { select: { applications: true } },
+            _count: { select: { applications: { where: appCompanyWhere } } },
             applications: {
+              where: appCompanyWhere,
               orderBy: { appliedAt: 'desc' },
               take: 1,
               select: { appliedAt: true },
