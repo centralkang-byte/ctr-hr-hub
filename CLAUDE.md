@@ -44,7 +44,7 @@ For non-trivial features or architecture changes:
 | Auth | NextAuth — Azure AD SSO + Credentials (dev) |
 | UI | Radix UI + Tailwind CSS + shadcn/ui (`cn()`) |
 | Forms | React Hook Form + Zod |
-| i18n | next-intl — 5 locales × 69+ namespaces |
+| i18n | next-intl — 5 locales × 69 namespaces |
 | Cache | Redis (ioredis) + SWR |
 | AI | Anthropic SDK (Claude) + OpenAI embeddings (raw fetch, `openai` npm 패키지 없음 — `OPENAI_API_KEY` 필요) |
 
@@ -98,7 +98,7 @@ Dev login: `NEXT_PUBLIC_SHOW_TEST_ACCOUNTS=true`
 
 ## DO NOT TOUCH
 
-**파일 잠금 SSOT = 코드 내 `// PROTECTED` 헤더** (~43개 파일). 헤더가 있는 파일은 아키텍처 리뷰 없이 수정 금지. 아래는 헤더를 못 다는 대상(디렉터리·glob·데이터)만 명시:
+**파일 잠금 SSOT = 코드 내 `// PROTECTED` 헤더** (~39개 파일). 헤더가 있는 파일은 아키텍처 리뷰 없이 수정 금지. 아래는 헤더를 못 다는 대상(디렉터리·glob·데이터)만 명시:
 
 > **강제 = PreToolUse 훅** (`.claude/hooks/protected-guard.sh`): 동결 IA·`// PROTECTED` 헤더·`prisma/migrations/*` 편집을 **기본 차단**(무관한 작업 중 우발 수정 방지 — 영구 금지 아님). 의도적 수정이 이번 세션 과제면 `/unlock-protected <path>` → 편집 → 다음 세션 자동 재잠금(즉시 재잠금 `/lock-protected`). 훅 범위 밖: `messages/*.json`(append-only)·`seed.ts`(헤더 없음) — 종전대로 주의.
 
