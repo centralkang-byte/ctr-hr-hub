@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { TableSkeleton } from '@/components/ui/LoadingSkeleton'
-// import { toast } from '@/hooks/use-toast'
+import { toast } from '@/hooks/use-toast'
 // ═══════════════════════════════════════════════════════════
 // CTR HR Hub — 팀원 역량 평가 Client (매니저용) (B8-3)
 // ═══════════════════════════════════════════════════════════
@@ -57,7 +57,7 @@ function getGapBadge(gap: number | null) {
   return <span className="px-1.5 py-0.5 rounded-full text-xs bg-primary/10 text-primary">초과 +{Math.abs(gap)}</span>
 }
 
-export default function TeamSkillsClient({user: _user }: {
+export default function TeamSkillsClient({ user }: {
   user: SessionUser }) {
   const tCommon = useTranslations('common')
   const t = useTranslations('skills')
@@ -75,10 +75,12 @@ export default function TeamSkillsClient({user: _user }: {
   const loadTeamData = useCallback(async () => {
     setLoading(true)
     try {
+      // companyId 명시 전달 — SUPER 는 미지정 시 전 법인 무제한 로스터가 되므로 자사 기본
+      // (비-SUPER 는 서버가 자사 강제라 무해)
       const res = await apiClient.get<{
         teamMembers: TeamMember[]
         competencies: Competency[]
-      }>(`/api/v1/skills/team-assessments?period=${period}`)
+      }>(`/api/v1/skills/team-assessments?period=${period}&companyId=${user.companyId}`)
       setTeamData(res.data)
       setCurrentMemberIndex(0)
       setEvalItems({})
@@ -87,7 +89,7 @@ export default function TeamSkillsClient({user: _user }: {
     } finally {
       setLoading(false)
     }
-  }, [period])
+  }, [period, user.companyId])
 
   useEffect(() => {
     void loadTeamData()
@@ -124,6 +126,13 @@ export default function TeamSkillsClient({user: _user }: {
         items,
       })
       setSavedMembers((prev) => new Set([...prev, currentMember.id]))
+    } catch (err) {
+      // 권한 없음(EXECUTIVE 등)·서버 오류가 무반응으로 삼켜지지 않도록 명시 피드백
+      toast({
+        title: '저장 실패',
+        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        variant: 'destructive',
+      })
     } finally {
       setSaving(false)
     }

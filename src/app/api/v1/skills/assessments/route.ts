@@ -8,12 +8,13 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, handlePrismaError } from '@/lib/errors'
+import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { z } from 'zod'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { canReadEmployeeSkills, activePrimaryAssignmentWhere } from '@/lib/skills/skill-access'
 
 const selfAssessmentSchema = z.object({
   competencyId: z.string().uuid(),
@@ -39,11 +40,13 @@ export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
     const period = searchParams.get('period') ?? 'latest'
-    const employeeId = searchParams.get('employeeId') ?? user.employeeId
+    const targetId = searchParams.get('employeeId') ?? user.employeeId ?? ''
 
-    // HR_ADMIN / SUPER_ADMIN / MANAGER 는 타인 조회 가능
-    const canViewOthers = ['HR_ADMIN', 'SUPER_ADMIN', 'MANAGER'].includes(user.role)
-    const targetId = canViewOthers ? employeeId : user.employeeId
+    // IDOR/cross-tenant 방어: 본인 외 조회는 자사(또는 SUPER 전사) 스코프 검증.
+    // EmployeeSkillAssessment에 companyId가 없어 대상의 활성 primary 발령 회사로 판정.
+    if (targetId !== user.employeeId && !(await canReadEmployeeSkills(user, targetId))) {
+      throw forbidden('해당 직원의 역량 정보를 조회할 권한이 없습니다.')
+    }
 
     const assessments = await prisma.employeeSkillAssessment.findMany({
       where: {
@@ -69,7 +72,7 @@ export const GET = withPermission(
       where: { id: targetId },
       include: {
         assignments: {
-          where: { isPrimary: true, endDate: null },
+          where: activePrimaryAssignmentWhere(),
           take: 1,
           include: { jobGrade: true },
         },
@@ -78,10 +81,17 @@ export const GET = withPermission(
     const primary = extractPrimaryAssignment(employee?.assignments ?? [])
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const gradeCode = (primary as any)?.jobGrade?.code ?? null
+    // 기대수준 오버레이는 대상 직원의 회사 요건을 사용 (SUPER 타사 조회 시 actor 회사 혼입 방지,
+    // Codex Gate1 P1). 활성 발령 부재 시(전환기 등) actor 회사로 대체하지 않고 글로벌 요건만.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const targetCompanyId = (primary as any)?.companyId as string | undefined
 
     const requirements = await prisma.competencyRequirement.findMany({
       where: {
-        OR: [{ companyId: user.companyId }, { companyId: null }],
+        OR: [
+          ...(targetCompanyId ? [{ companyId: targetCompanyId }] : []),
+          { companyId: null },
+        ],
         ...(gradeCode ? { jobLevelCode: gradeCode } : {}),
       },
       select: { competencyId: true, expectedLevel: true, jobLevelCode: true },

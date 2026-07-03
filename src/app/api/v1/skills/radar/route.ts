@@ -7,25 +7,29 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
+import { forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { canReadEmployeeSkills, activePrimaryAssignmentWhere } from '@/lib/skills/skill-access'
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
     const period = searchParams.get('period') ?? 'latest'
-    const canViewOthers = ['HR_ADMIN', 'SUPER_ADMIN', 'MANAGER'].includes(user.role)
-    const employeeId = canViewOthers
-      ? (searchParams.get('employeeId') ?? user.employeeId)
-      : user.employeeId
+    const employeeId = searchParams.get('employeeId') ?? user.employeeId ?? ''
+
+    // IDOR/cross-tenant 방어: 본인 외 조회는 자사(또는 SUPER 전사) 스코프 검증.
+    if (employeeId !== user.employeeId && !(await canReadEmployeeSkills(user, employeeId))) {
+      throw forbidden('해당 직원의 역량 정보를 조회할 권한이 없습니다.')
+    }
 
     const employee = await prisma.employee.findUnique({
       where: { id: employeeId },
       include: {
         assignments: {
-          where: { isPrimary: true, endDate: null },
+          where: activePrimaryAssignmentWhere(),
           take: 1,
           include: { jobGrade: { select: { code: true, name: true } } },
         },
@@ -48,11 +52,18 @@ export const GET = withPermission(
     const primary = extractPrimaryAssignment(employee?.assignments ?? [])
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const grade = (primary as any)?.jobGrade?.code ?? ''
+    // 기대수준 오버레이는 대상 직원의 회사 요건 사용 (SUPER 타사 조회 시 actor 회사 혼입 방지,
+    // Codex Gate1 P1). 활성 발령 부재 시(전환기 등) actor 회사로 대체하지 않고 글로벌 요건만.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const targetCompanyId = (primary as any)?.companyId as string | undefined
 
     // 역량 요건
     const requirements = await prisma.competencyRequirement.findMany({
       where: {
-        OR: [{ companyId: user.companyId }, { companyId: null }],
+        OR: [
+          ...(targetCompanyId ? [{ companyId: targetCompanyId }] : []),
+          { companyId: null },
+        ],
         jobLevelCode: grade || undefined,
       },
       include: {
