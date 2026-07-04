@@ -262,21 +262,25 @@ export default function SkillMatrixClient({user: _user,
 
   const loadData = useCallback(async () => {
     setLoading(true)
-    try {
-      const params = new URLSearchParams({ period })
-      if (deptId !== 'all') params.set('departmentId', deptId)
+    const params = new URLSearchParams({ period })
+    if (deptId !== 'all') params.set('departmentId', deptId)
 
-      const [matrix, report] = await Promise.all([
-        apiClient.get<MatrixData>(`/api/v1/skills/matrix?${params.toString()}`),
-        apiClient.get<GapReportData>(`/api/v1/skills/gap-report?period=${period}`),
-      ])
-      setMatrixData(matrix.data)
-      setGapReport(report.data)
-    } catch (err) {
-      toast({ title: t('toast.loadFailed'), description: err instanceof Error ? err.message : t('toast.retryMessage'), variant: 'destructive' })
-    } finally {
-      setLoading(false)
+    // allSettled: 한쪽(예: gap-report) 실패가 매트릭스까지 통째로 죽이지 않도록 분리
+    const [matrixRes, reportRes] = await Promise.allSettled([
+      apiClient.get<MatrixData>(`/api/v1/skills/matrix?${params.toString()}`),
+      apiClient.get<GapReportData>(`/api/v1/skills/gap-report?period=${period}`),
+    ])
+    setMatrixData(matrixRes.status === 'fulfilled' ? matrixRes.value.data : null)
+    setGapReport(reportRes.status === 'fulfilled' ? reportRes.value.data : null)
+
+    const failed = [matrixRes, reportRes].find(
+      (r): r is PromiseRejectedResult => r.status === 'rejected',
+    )
+    if (failed) {
+      const reason: unknown = failed.reason
+      toast({ title: t('toast.loadFailed'), description: reason instanceof Error ? reason.message : t('toast.retryMessage'), variant: 'destructive' })
     }
+    setLoading(false)
   }, [period, deptId])
 
   useEffect(() => { void loadData() }, [loadData])
@@ -594,6 +598,10 @@ export default function SkillMatrixClient({user: _user,
                   </div>
                 </div>
               )}
+
+              {/* 로드 실패 폴백 — 실패한 데이터의 탭만 빈 상태 (성공한 탭은 정상 렌더) */}
+              {((activeTab === 'matrix' && !matrixData) ||
+                (activeTab !== 'matrix' && !gapReport)) && <EmptyState />}
             </>
           )}
         </div>

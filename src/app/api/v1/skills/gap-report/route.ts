@@ -15,6 +15,10 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { resolveCompanyId } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import {
+  activePrimaryAssignmentWhere,
+  SKILL_ROSTER_VIEW_ROLES,
+} from '@/lib/skills/skill-access'
 
 const gapReportCreateSchema = z.object({
   companyId: z.string().uuid().optional(),
@@ -25,20 +29,28 @@ const gapReportCreateSchema = z.object({
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
+    // 자사 집계라도 페이지 열람 대상(SUPER/HR/EXEC/MANAGER)과 정렬 — EMPLOYEES.VIEW 는
+    // EMPLOYEE 도 보유하므로 핸들러 게이트 필수. 노출 범위는 matrix(직원별 상세)의
+    // 부분집합(부서/법인 평균)이라 동일 role 집합이 안전 (matrix GET 정합)
+    if (!SKILL_ROSTER_VIEW_ROLES.includes(user.role)) {
+      throw forbidden('스킬 갭 리포트는 매니저 이상만 볼 수 있습니다.')
+    }
+
     const { searchParams } = new URL(req.url)
     const period = searchParams.get('period') ?? 'latest'
     const companyId = resolveCompanyId(user, searchParams.get('companyId'))
 
-    // 법인의 모든 직원 + 역량 평가
+    // 법인의 모든 직원 + 역량 평가 — 발령 창은 matrix GET 과 동일 SSOT
+    // (endDate:null 단독은 예약 전출/미래 발령 오포함 — KPI·매트릭스 모집단 불일치 방지)
     const employees = await prisma.employee.findMany({
       where: {
         assignments: {
-          some: { isPrimary: true, endDate: null, companyId },
+          some: { ...activePrimaryAssignmentWhere(), companyId },
         },
       },
       include: {
         assignments: {
-          where: { isPrimary: true, endDate: null },
+          where: activePrimaryAssignmentWhere(),
           take: 1,
           include: {
             jobGrade: { select: { code: true, name: true } },
@@ -158,7 +170,7 @@ export const GET = withPermission(
       departmentMatrix,
     })
   },
-  perm(MODULE.EMPLOYEES, ACTION.APPROVE),
+  perm(MODULE.EMPLOYEES, ACTION.VIEW),
 )
 
 // POST: 리포트 스냅샷 저장
