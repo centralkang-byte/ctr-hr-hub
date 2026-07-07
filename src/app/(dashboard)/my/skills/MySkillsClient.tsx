@@ -132,13 +132,15 @@ export default function MySkillsClient({ user: _user, competencies, requirementM
     setLoading(true)
     setLoadFailed(false)
     try {
-      const data = await apiClient.get<{
+      const res = await apiClient.get<{
         id: string
         competencyId: string
         selfLevel: number | null
         selfComment: string | null
       }[]>(`/api/v1/skills/assessments?period=${period}`)
       if (reqId !== reqIdRef.current) return // stale 응답 폐기
+
+      const data = res.data
 
       const map: Record<string, AssessmentItem> = {}
       if (Array.isArray(data)) {
