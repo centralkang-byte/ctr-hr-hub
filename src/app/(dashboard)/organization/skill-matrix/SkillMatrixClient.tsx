@@ -31,10 +31,13 @@ type MatrixScore = {
 }
 
 type MatrixEmployee = {
-  employeeId: string
-  employeeName: string
-  grade: string
-  department: string
+  employee: {
+    id: string
+    name: string
+    grade: string
+    gradeLabel: string
+    department: { id: string; name: string } | null
+  }
   scores: MatrixScore[]
 }
 
@@ -79,10 +82,24 @@ type GapReportData = {
   departmentMatrix: DeptMatrixRow[]
 }
 
+type RadarGapItem = {
+  competencyId: string
+  name: string
+  expectedLevel: number
+  actualLevel: number
+  gap: number | null
+}
+
 type RadarData = {
-  radarData: { subject: string; actual: number; expected: number; fullMark: number }[]
-  summary: { criticalGaps: number; strengths: number; overallProgress: number }
-  employee: { name: string; grade: string }
+  radarData: {
+    competencyId: string
+    name: string
+    expectedLevel: number
+    actualLevel: number
+    gap: number | null
+  }[]
+  summary: { criticalGaps: RadarGapItem[]; strengths: RadarGapItem[]; overallProgress: number }
+  employee: { id: string; name: string; grade: string } | null
 }
 
 // ── 헬퍼 ──────────────────────────────────────────────────
@@ -166,7 +183,7 @@ function RadarModal({
         <div className="flex items-center justify-between p-5 border-b border-border">
           <div>
             <h2 className="text-lg font-semibold text-foreground">
-              {t('radar.title', { name: data?.employee.name ?? t('radar.employee') })}
+              {t('radar.title', { name: data?.employee?.name ?? t('radar.employee') })}
             </h2>
             {data?.employee && (
               <p className="text-sm text-muted-foreground">{data.employee.grade} · {period}</p>
@@ -192,8 +209,8 @@ function RadarModal({
               {/* KPI 요약 */}
               <div className="grid grid-cols-3 gap-3 mb-4">
                 {[
-                  { label: t('radar.criticalGaps'), value: data.summary.criticalGaps, color: 'text-destructive' },
-                  { label: t('radar.strengths'), value: data.summary.strengths, color: 'text-emerald-700' },
+                  { label: t('radar.criticalGaps'), value: data.summary.criticalGaps.length, color: 'text-destructive' },
+                  { label: t('radar.strengths'), value: data.summary.strengths.length, color: 'text-emerald-700' },
                   { label: t('radar.achievementRate'), value: `${data.summary.overallProgress}%`, color: 'text-primary' },
                 ].map((k) => (
                   <div key={k.label} className="bg-background rounded-lg p-3 text-center">
@@ -207,11 +224,11 @@ function RadarModal({
               <ResponsiveContainer width="100%" height={280}>
                 <RadarChart data={data.radarData}>
                   <PolarGrid stroke="#E8E8E8" />
-                  <PolarAngleAxis dataKey="subject" tick={{ fontSize: 11, fill: '#555' }} />
+                  <PolarAngleAxis dataKey="name" tick={{ fontSize: 11, fill: '#555' }} />
                   <PolarRadiusAxis angle={90} domain={[0, 5]} tick={{ fontSize: 10, fill: '#999' }} />
                   <Radar
                     name={t('radar.expectedLevel')}
-                    dataKey="expected"
+                    dataKey="expectedLevel"
                     stroke="#E8E8E8"
                     fill="#E8E8E8"
                     fillOpacity={0.2}
@@ -219,7 +236,7 @@ function RadarModal({
                   />
                   <Radar
                     name={t('radar.currentLevel')}
-                    dataKey="actual"
+                    dataKey="actualLevel"
                     stroke={CHART_THEME.colors[3]}
                     fill={CHART_THEME.colors[3]}
                     fillOpacity={0.3}
@@ -420,14 +437,14 @@ export default function SkillMatrixClient({user: _user,
                         </thead>
                         <tbody>
                           {matrixData.matrix.map((emp) => (
-                            <tr key={emp.employeeId} className={TABLE_STYLES.row}>
+                            <tr key={emp.employee.id} className={TABLE_STYLES.row}>
                               <td className="px-3 py-2 border border-border whitespace-nowrap">
                                 <button
-                                  onClick={() => setRadarTarget(emp.employeeId)}
+                                  onClick={() => setRadarTarget(emp.employee.id)}
                                   className="text-left hover:text-primary transition-colors"
                                 >
-                                  <p className="font-medium text-foreground">{emp.employeeName}</p>
-                                  <p className="text-muted-foreground">{emp.grade} · {emp.department}</p>
+                                  <p className="font-medium text-foreground">{emp.employee.name}</p>
+                                  <p className="text-muted-foreground">{emp.employee.grade} · {emp.employee.department?.name ?? '–'}</p>
                                 </button>
                               </td>
                               {emp.scores.map((s) => (
@@ -436,7 +453,7 @@ export default function SkillMatrixClient({user: _user,
                                   className="border border-border p-0"
                                 >
                                   <button
-                                    onClick={() => setRadarTarget(emp.employeeId)}
+                                    onClick={() => setRadarTarget(emp.employee.id)}
                                     title={
                                       s.status === 'unassessed'
                                         ? t('gap.unassessed')
