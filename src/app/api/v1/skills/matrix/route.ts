@@ -7,14 +7,25 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
+import { forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { resolveCompanyId } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import {
+  activePrimaryAssignmentWhere,
+  SKILL_ROSTER_VIEW_ROLES,
+} from '@/lib/skills/skill-access'
 
 export const GET = withPermission(
   async (req: NextRequest, _context, user: SessionUser) => {
+    // 자사 전 직원의 평가 레벨(self/manager/final)을 반환하는 로스터형 화면 —
+    // EMPLOYEES.VIEW 는 EMPLOYEE 도 보유하므로 핸들러 게이트 필수 (team-assessments GET 정합)
+    if (!SKILL_ROSTER_VIEW_ROLES.includes(user.role)) {
+      throw forbidden('스킬 매트릭스는 매니저 이상만 볼 수 있습니다.')
+    }
+
     const { searchParams } = new URL(req.url)
     const period = searchParams.get('period') ?? 'latest'
     const departmentId = searchParams.get('departmentId')
@@ -26,8 +37,7 @@ export const GET = withPermission(
       where: {
         assignments: {
           some: {
-            isPrimary: true,
-            endDate: null,
+            ...activePrimaryAssignmentWhere(),
             companyId,
             ...(departmentId ? { departmentId } : {}),
           },
@@ -35,7 +45,7 @@ export const GET = withPermission(
       },
       include: {
         assignments: {
-          where: { isPrimary: true, endDate: null },
+          where: activePrimaryAssignmentWhere(),
           take: 1,
           include: {
             jobGrade: { select: { code: true, name: true } },
