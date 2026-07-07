@@ -35,6 +35,7 @@ const ASSESS = '/api/v1/skills/assessments'
 const RADAR = '/api/v1/skills/radar'
 const TEAM = '/api/v1/skills/team-assessments'
 const MATRIX = '/api/v1/skills/matrix'
+const GAP_REPORT = '/api/v1/skills/gap-report'
 const PERIOD = 'e2e-skill-test'
 
 interface TeamRes {
@@ -190,6 +191,28 @@ test.describe('skills cross-tenant + IDOR isolation', () => {
     const { ctx, api } = await clientFor('HR_ADMIN')
     const res = await api.get(MATRIX)
     assertOk(res, 'HR 은 자사 스킬 매트릭스 조회 가능')
+    await ctx.dispose()
+  })
+
+  // ── gap-report 게이트 = matrix 정합 (MANAGER/EXEC 403 → 페이지 전체 공백 선재버그 회귀 가드) ──
+  test('MANAGER → skills/gap-report 200 (matrix 와 동일 role 집합)', async () => {
+    const { ctx, api } = await clientFor('MANAGER')
+    const res = await api.get(GAP_REPORT)
+    assertOk(res, 'MANAGER 는 자사 스킬 갭 리포트 조회 가능 (스킬 매트릭스 페이지 필수 데이터)')
+    await ctx.dispose()
+  })
+
+  test('EXECUTIVE → skills/gap-report 200 (matrix 와 동일 role 집합)', async () => {
+    const { ctx, api } = await clientFor('EXECUTIVE')
+    const res = await api.get(GAP_REPORT)
+    assertOk(res, 'EXECUTIVE 는 자사 스킬 갭 리포트 조회 가능 (스킬 매트릭스 페이지 필수 데이터)')
+    await ctx.dispose()
+  })
+
+  test('EMPLOYEE → skills/gap-report 403 (로스터형 게이트)', async () => {
+    const { ctx, api } = await clientFor('EMPLOYEE')
+    const res = await api.get(GAP_REPORT)
+    assertError(res, 403, 'EMPLOYEE 는 스킬 갭 리포트 조회 불가')
     await ctx.dispose()
   })
 
