@@ -136,7 +136,7 @@ export function HrAdminHomeV2({ user }: Props) {
   const quickActions: QuickAction[] = [
     { id: 'employee-new', icon: UserPlus, label: t('quick.employeeNew'), href: '/employees/new' },
     { id: 'payroll', icon: Wallet, label: t('quick.payroll'), href: '/payroll' },
-    { id: 'analytics', icon: BarChart3, label: t('quick.analytics'), href: '/analytics' },
+    { id: 'analytics', icon: BarChart3, label: t('quick.analytics'), href: '/dashboard' },
     { id: 'job-new', icon: Briefcase, label: t('quick.jobNew'), href: '/recruitment/new' },
     { id: 'onboarding', icon: ClipboardList, label: t('quick.onboarding'), href: '/onboarding' },
   ]
@@ -220,7 +220,7 @@ export function HrAdminHomeV2({ user }: Props) {
       tone: 'wt-8',
       title: t('worklet.analytics.title'),
       subtitle: t('worklet.analytics.subtitle', { rate: turnoverRate }),
-      href: '/analytics',
+      href: '/dashboard',
     },
   ]
 

@@ -612,7 +612,7 @@ export const NAVIGATION: NavSection[] = [
         key: 'executive-summary',
         labelKey: 'nav.insights.executiveSummary',
         label: 'Executive Summary',
-        href: '/analytics',
+        href: '/dashboard',
         icon: LayoutDashboard,
         module: MODULE.ANALYTICS,
       },
