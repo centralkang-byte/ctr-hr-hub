@@ -158,7 +158,7 @@ export function ExecutiveHomeV2({ user }: Props) {
         return {
           title: t('hero.focusStable'),
           description: t('hero.focusStableDesc'),
-          cta: { label: t('hero.cta.dashboard'), href: '/analytics' },
+          cta: { label: t('hero.cta.dashboard'), href: '/dashboard' },
           illustration: 'celebration' as const,
         }
     }

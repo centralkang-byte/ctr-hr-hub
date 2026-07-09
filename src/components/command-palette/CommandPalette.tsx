@@ -62,7 +62,7 @@ const MENU_ITEMS: MenuResult[] = [
   { id: 'menu-training', label: '교육 관리', href: '/training' },
   { id: 'menu-benefits', label: '복리후생', href: '/benefits' },
   { id: 'menu-succession', label: '승계 계획', href: '/talent/succession' },
-  { id: 'menu-analytics', label: '분석 대시보드', href: '/analytics' },
+  { id: 'menu-analytics', label: '분석 대시보드', href: '/dashboard' },
   { id: 'menu-predictive', label: 'HR 예측 애널리틱스', href: '/analytics/predictive' },
   { id: 'menu-discipline', label: '징계·포상', href: '/discipline' },
   { id: 'menu-manager-hub', label: '매니저 허브', href: '/manager-hub' },
