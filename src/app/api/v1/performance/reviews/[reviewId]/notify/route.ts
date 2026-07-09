@@ -17,7 +17,8 @@ import { AUTO_ACKNOWLEDGE_HOURS } from '@/lib/performance/pipeline'
 import type { SessionUser } from '@/types'
 
 // ─── POST /api/v1/performance/reviews/:reviewId/notify ───
-// Manager sends results to employee
+// HR notifies the employee of their finalized result.
+// Gated by performance:manage (ACTION.APPROVE) → HR_ADMIN / SUPER_ADMIN only.
 
 export const POST = withPermission(
     async (req: NextRequest, context: { params: Promise<Record<string, string>> }, user: SessionUser) => {
@@ -36,14 +37,6 @@ export const POST = withPermission(
             // Validate cycle is FINALIZED or CLOSED
             if (!['FINALIZED', 'CLOSED'].includes(review.cycle.status)) {
                 throw badRequest('결과 확정(FINALIZED) 단계 이후에만 결과를 통보할 수 있습니다.')
-            }
-
-            // HR admin can always notify; otherwise check if user is a manager-level role
-            const isHR = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
-            if (!isHR) {
-                // Check via OneOnOne records or leave approval chain as proxy for manager relationship
-                // For safety, allow any authorized user with APPROVE permission
-                // (permission check already done by withPermission)
             }
 
             if (review.notifiedAt) {
