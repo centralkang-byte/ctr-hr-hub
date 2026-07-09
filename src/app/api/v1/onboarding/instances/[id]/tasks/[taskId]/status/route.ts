@@ -93,5 +93,6 @@ export const PUT = withPermission(
 
         return apiSuccess(result)
     },
-    perm(MODULE.ONBOARDING, ACTION.APPROVE),
+    // ⑥-C: VIEW 게이트 — 실제 인가는 위 내부 가드(직속매니저/담당자 + 동일법인)가 담당 (MANAGER는 manage 미보유)
+    perm(MODULE.ONBOARDING, ACTION.VIEW),
 )

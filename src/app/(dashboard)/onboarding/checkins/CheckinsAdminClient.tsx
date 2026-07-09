@@ -22,6 +22,7 @@ import { formatDateLocale } from '@/lib/format/date'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { apiClient } from '@/lib/api'
+import { ROLE } from '@/lib/constants'
 import type { SessionUser, PaginationInfo, OnboardingCheckin } from '@/types'
 import { CHART_THEME } from '@/lib/styles'
 
@@ -79,8 +80,10 @@ const TREND_BADGE: Record<string, { labelKey: string; className: string }> = {
 
 // ─── Component ──────────────────────────────────────────────
 
-export function CheckinsAdminClient({ user: _user }: CheckinsAdminClientProps) {
+export function CheckinsAdminClient({ user }: CheckinsAdminClientProps) {
   const t = useTranslations('onboarding')
+  // ⑥-C: AI 요약 라우트는 HR 전용(onboarding_manage) — MANAGER 에겐 버튼 숨김 (403 죽은 버튼 방지)
+  const isHrAdmin = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
 
   const [checkins, setCheckins] = useState<CheckinRow[]>([])
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)
@@ -303,14 +306,16 @@ export function CheckinsAdminClient({ user: _user }: CheckinsAdminClientProps) {
               <h3 className="text-base font-bold text-foreground tracking-[-0.02em]">
                 {selectedEmployeeName} - {t('checkinTrend')}
               </h3>
-              <button
-                onClick={requestAiSummary}
-                disabled={loadingAi || employeeCheckins.length === 0}
-                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg border border-border text-muted-foreground hover:bg-muted disabled:opacity-50 transition-colors"
-              >
-                <Sparkles className="h-4 w-4" />
-                {loadingAi ? t('aiAnalyzing') : t('aiSummary')}
-              </button>
+              {isHrAdmin && (
+                <button
+                  onClick={requestAiSummary}
+                  disabled={loadingAi || employeeCheckins.length === 0}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg border border-border text-muted-foreground hover:bg-muted disabled:opacity-50 transition-colors"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  {loadingAi ? t('aiAnalyzing') : t('aiSummary')}
+                </button>
+              )}
             </div>
             <div>
               {loadingDetail ? (

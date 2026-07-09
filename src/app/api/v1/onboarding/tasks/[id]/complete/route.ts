@@ -21,19 +21,31 @@ export const PUT = withAuth(async (_req: NextRequest, ctx, user) => {
       employeeOnboarding: {
         include: { tasks: { include: { task: true } } },
       },
-      task: { select: { category: true } },   // category 추가 (이벤트 payload용)
+      task: { select: { category: true, assigneeType: true, isSignOffTask: true } },   // category=이벤트, assigneeType/isSignOffTask=가드
     },
   })
   if (!task) throw notFound('태스크를 찾을 수 없습니다.')
 
-  // Codex F3 + 멀티테넌트: 본인 온보딩 또는 동일 법인 HR만 완료 가능 (HR 타법인 차단)
+  // Codex F3 + 멀티테넌트: 동일 법인 HR, 또는 "본인에게 배정된" 태스크만 완료 가능 (HR 타법인 차단)
+  // ⑥-C Codex G1 P1: 종전 isOwner(온보딩 당사자)만으로는 당사자가 HR/MANAGER/BUDDY 배정 태스크까지
+  // 완료 처리 가능 → 필수 태스크 전체 DONE 시 온보딩 자체가 COMPLETED 되는 우회 경로였음.
+  // 배정 기준 = task.assigneeId, 미해석(null) 태스크는 assigneeType=EMPLOYEE 인 경우만 당사자 허용.
   const onboarding = task.employeeOnboarding
   const isOwner = onboarding.employeeId === user.employeeId
+  const isAssignee =
+    task.assigneeId != null
+      ? task.assigneeId === user.employeeId
+      : isOwner && task.task?.assigneeType === 'EMPLOYEE'
   const isHr = [ROLE.HR_ADMIN, ROLE.SUPER_ADMIN].includes(user.role as never)
   const onboardingCompanyId = await resolveOnboardingCompanyId({ companyId: onboarding.companyId, employeeId: onboarding.employeeId })
   const sameCompany = onboardingCompanyId != null && onboardingCompanyId === user.companyId
-  if (user.role !== ROLE.SUPER_ADMIN && (!sameCompany || (!isOwner && !isHr))) {
-    throw forbidden('본인의 온보딩 태스크만 완료할 수 있습니다.')
+  if (user.role !== ROLE.SUPER_ADMIN && (!sameCompany || (!isAssignee && !isHr))) {
+    throw forbidden('본인에게 배정된 온보딩 태스크만 완료할 수 있습니다.')
+  }
+  // ⑥-C Codex G2 P1: sign-off 태스크는 정식 sign-off 경로(POST instances/[id]/sign-off)만 —
+  // generic complete 로 signOffBy/At 기록 없이 완료 전환되는 우회 차단 (HR 도 동일)
+  if (task.task?.isSignOffTask) {
+    throw forbidden('사인오프 태스크는 온보딩 사인오프 절차로만 완료할 수 있습니다.')
   }
 
   // ── State transition validation ──

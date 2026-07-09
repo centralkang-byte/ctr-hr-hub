@@ -58,5 +58,6 @@ export const POST = withPermission(
 
         return apiSuccess(updated)
     },
-    perm(MODULE.ONBOARDING, ACTION.APPROVE),
+    // ⑥-C: VIEW 게이트 — 실제 인가는 위 내부 가드(담당자/HR + 동일법인)가 담당
+    perm(MODULE.ONBOARDING, ACTION.VIEW),
 )
