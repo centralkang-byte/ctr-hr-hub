@@ -11158,7 +11158,22 @@
     "blockedAlert": "52시간 초과 차단 알림",
     "blockedAlertDesc": "52시간 초과 시 출근 차단",
     "expirationWarning": "연차 소멸 경고",
-    "expirationWarningDesc": "연차 소멸 전 알림 시점"
+    "expirationWarningDesc": "연차 소멸 전 알림 시점",
+    "hubActions": {
+      "changeHistory": "Lịch sử thay đổi",
+      "backup": "Sao lưu cài đặt",
+      "exportDone": "Đã tải xuống bản sao lưu cài đặt",
+      "exportFailed": "Sao lưu cài đặt thất bại"
+    },
+    "recentChanges": {
+      "title": "Thay đổi gần đây",
+      "subtitle": "Xem trước nhật ký kiểm tra — chỉ các thay đổi được ghi lại",
+      "viewAll": "Xem tất cả",
+      "loadFailed": "Không thể tải các thay đổi gần đây",
+      "empty": "Chưa có thay đổi cài đặt nào được ghi lại",
+      "systemActor": "Quản trị hệ thống",
+      "globalScope": "Toàn công ty"
+    }
   },
   "shift": {
     "allGroups": "Tất cả nhóm",

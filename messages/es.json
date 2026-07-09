@@ -11158,7 +11158,22 @@
     "blockedAlert": "52시간 초과 차단 알림",
     "blockedAlertDesc": "52시간 초과 시 출근 차단",
     "expirationWarning": "연차 소멸 경고",
-    "expirationWarningDesc": "연차 소멸 전 알림 시점"
+    "expirationWarningDesc": "연차 소멸 전 알림 시점",
+    "hubActions": {
+      "changeHistory": "Historial de cambios",
+      "backup": "Copia de seguridad",
+      "exportDone": "Copia de seguridad descargada",
+      "exportFailed": "Error en la copia de seguridad"
+    },
+    "recentChanges": {
+      "title": "Cambios recientes",
+      "subtitle": "Vista previa del registro de auditoría — solo cambios registrados",
+      "viewAll": "Ver todo",
+      "loadFailed": "No se pudieron cargar los cambios recientes",
+      "empty": "No hay cambios de configuración registrados",
+      "systemActor": "Administrador del sistema",
+      "globalScope": "Global"
+    }
   },
   "shift": {
     "allGroups": "Todos los grupos",

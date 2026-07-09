@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils'
 import { SETTINGS_CATEGORIES } from '@/components/settings/settings-config'
 import type { SettingsCategoryConfig, SettingsTab } from '@/components/settings/settings-config'
 import { SettingsCategoryCard } from '@/components/settings/SettingsCategoryCard'
+import { SettingsRecentChanges } from '@/components/settings/SettingsRecentChanges'
 import { EmptyState } from '@/components/ui/EmptyState'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -185,11 +186,14 @@ export function SettingsHubClient() {
         )
       ) : (
         /* Card grid — default view */
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {SETTINGS_CATEGORIES.map((config) => (
-            <SettingsCategoryCard key={config.key} config={config} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {SETTINGS_CATEGORIES.map((config) => (
+              <SettingsCategoryCard key={config.key} config={config} />
+            ))}
+          </div>
+          <SettingsRecentChanges />
+        </>
       )}
     </>
   )

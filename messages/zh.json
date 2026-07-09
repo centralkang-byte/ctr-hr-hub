@@ -11159,7 +11159,22 @@
     "blockedAlert": "52시간 초과 차단 알림",
     "blockedAlertDesc": "52시간 초과 시 출근 차단",
     "expirationWarning": "연차 소멸 경고",
-    "expirationWarningDesc": "연차 소멸 전 알림 시점"
+    "expirationWarningDesc": "연차 소멸 전 알림 시점",
+    "hubActions": {
+      "changeHistory": "变更历史",
+      "backup": "设置备份",
+      "exportDone": "设置备份已下载",
+      "exportFailed": "设置备份失败"
+    },
+    "recentChanges": {
+      "title": "最近变更",
+      "subtitle": "审计日志预览 — 仅显示已记录的变更",
+      "viewAll": "查看全部",
+      "loadFailed": "无法加载最近变更",
+      "empty": "暂无已记录的设置变更",
+      "systemActor": "系统管理员",
+      "globalScope": "全公司"
+    }
   },
   "shift": {
     "allGroups": "全部班组",

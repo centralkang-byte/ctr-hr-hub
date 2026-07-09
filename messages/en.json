@@ -11158,7 +11158,22 @@
     "blockedAlert": "52-hour overtime block alert",
     "blockedAlertDesc": "Block clock-in when exceeding 52 hours",
     "expirationWarning": "Leave expiration warning",
-    "expirationWarningDesc": "Notification timing before leave expiration"
+    "expirationWarningDesc": "Notification timing before leave expiration",
+    "hubActions": {
+      "changeHistory": "Change history",
+      "backup": "Backup settings",
+      "exportDone": "Settings backup downloaded",
+      "exportFailed": "Settings backup failed"
+    },
+    "recentChanges": {
+      "title": "Recent changes",
+      "subtitle": "Audit log preview — recorded changes only",
+      "viewAll": "View all",
+      "loadFailed": "Failed to load recent changes",
+      "empty": "No recorded settings changes",
+      "systemActor": "System admin",
+      "globalScope": "Global"
+    }
   },
   "shift": {
     "allGroups": "All Groups",

@@ -6,6 +6,7 @@ import { authOptions } from '@/lib/auth'
 import { Settings } from 'lucide-react'
 import { SETTINGS_CATEGORIES } from '@/components/settings/settings-config'
 import { SettingsHubClient } from './SettingsHubClient'
+import { SettingsHubActions } from '@/components/settings/SettingsHubActions'
 import { ListPageSkeleton } from '@/components/shared/PageSkeleton'
 
 export const dynamic = 'force-dynamic'
@@ -30,12 +31,13 @@ export default async function SettingsHubPage() {
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
             <Settings className="h-5 w-5 text-primary" />
           </div>
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold text-foreground">{t('pageTitle')}</h1>
             <p className="text-sm text-muted-foreground">
               {t('pageDescription', { count: totalTabs })}
             </p>
           </div>
+          <SettingsHubActions />
         </div>
 
         {/* Client part: search + cards */}
