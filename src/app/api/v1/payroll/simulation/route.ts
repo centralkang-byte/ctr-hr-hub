@@ -751,18 +751,18 @@ export const POST = withPermission(
         // 4. 현재 Baseline: DB SUM() 쿼리 (AD-1 경량화)
         const baseline = await prisma.$queryRaw<Array<{ monthly_gross: bigint; headcount: bigint }>>`
           SELECT
-            COALESCE(SUM(ch."newBaseSalary" / 12), 0) AS monthly_gross,
-            COUNT(DISTINCT ea."employeeId") AS headcount
-          FROM "EmployeeAssignment" ea
+            COALESCE(SUM(ch.new_base_salary / 12), 0) AS monthly_gross,
+            COUNT(DISTINCT ea.employee_id) AS headcount
+          FROM employee_assignments ea
           JOIN LATERAL (
-            SELECT "newBaseSalary" FROM "CompensationHistory"
-            WHERE "employeeId" = ea."employeeId"
-            ORDER BY "effectiveDate" DESC LIMIT 1
+            SELECT new_base_salary FROM compensation_history
+            WHERE employee_id = ea.employee_id
+            ORDER BY effective_date DESC LIMIT 1
           ) ch ON true
-          WHERE ea."companyId" = ${companyId}::uuid
-            AND ea."isPrimary" = true
-            AND ea."endDate" IS NULL
-            AND ea."status" = 'ACTIVE'
+          WHERE ea.company_id = ${companyId}
+            AND ea.is_primary = true
+            AND ea.end_date IS NULL
+            AND ea.status = 'ACTIVE'
         `
         const currentMonthlyGross = Number(baseline[0]?.monthly_gross ?? 0)
         const currentHeadcount = Number(baseline[0]?.headcount ?? 0)
@@ -848,22 +848,22 @@ export const POST = withPermission(
           currency: string; monthly_gross: bigint; headcount: bigint
         }>>`
           SELECT
-            c."id" AS company_id, c."code" AS company_code,
-            c."name" AS company_name, c."currency" AS currency,
-            COALESCE(SUM(ch."newBaseSalary" / 12), 0) AS monthly_gross,
-            COUNT(DISTINCT ea."employeeId") AS headcount
-          FROM "Company" c
-          JOIN "EmployeeAssignment" ea ON ea."companyId" = c."id"
+            c.id AS company_id, c.code AS company_code,
+            c.name AS company_name, c.currency AS currency,
+            COALESCE(SUM(ch.new_base_salary / 12), 0) AS monthly_gross,
+            COUNT(DISTINCT ea.employee_id) AS headcount
+          FROM companies c
+          JOIN employee_assignments ea ON ea.company_id = c.id
           JOIN LATERAL (
-            SELECT "newBaseSalary" FROM "CompensationHistory"
-            WHERE "employeeId" = ea."employeeId"
-            ORDER BY "effectiveDate" DESC LIMIT 1
+            SELECT new_base_salary FROM compensation_history
+            WHERE employee_id = ea.employee_id
+            ORDER BY effective_date DESC LIMIT 1
           ) ch ON true
-          WHERE ea."isPrimary" = true
-            AND ea."endDate" IS NULL
-            AND ea."status" = 'ACTIVE'
-            AND c."deletedAt" IS NULL
-          GROUP BY c."id", c."code", c."name", c."currency"
+          WHERE ea.is_primary = true
+            AND ea.end_date IS NULL
+            AND ea.status = 'ACTIVE'
+            AND c.deleted_at IS NULL
+          GROUP BY c.id, c.code, c.name, c.currency
         `
 
         let domesticMonthlyKRW = 0
