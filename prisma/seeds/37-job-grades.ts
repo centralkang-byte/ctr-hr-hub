@@ -13,7 +13,7 @@ import { PrismaClient } from '../../src/generated/prisma/client'
 
 // Korean grade system — Session 45 확정: L1/L2/E1/S1 4단계
 // 향후 L1~L5 + E2 + S2 확장 가능 (Settings에서 법인별 추가/삭제)
-const KOREAN_GRADES = [
+export const KOREAN_GRADES = [
   { code: 'E1', name: '경영리더', nameEn: 'Executive Leader', rankOrder: 1, gradeType: 'EXECUTIVE', minPromotionYears: null },
   { code: 'S1', name: '전문리더', nameEn: 'Specialist Leader', rankOrder: 2, gradeType: 'SPECIALIST', minPromotionYears: null },
   { code: 'L2', name: '책임매니저', nameEn: 'Senior Manager', rankOrder: 3, gradeType: 'STAFF', minPromotionYears: 4 },
@@ -21,13 +21,13 @@ const KOREAN_GRADES = [
 ]
 
 // Domestic Korean companies
-const DOMESTIC_COMPANIES = ['CTR-HOLD', 'CTR', 'CTR-MOB', 'CTR-ECO', 'CTR-ROB', 'CTR-ENR', 'CTR-FML']
+export const DOMESTIC_COMPANIES = ['CTR-HOLD', 'CTR', 'CTR-MOB', 'CTR-ECO', 'CTR-ROB', 'CTR-ENR', 'CTR-FML']
 
 // Overseas companies
-const OVERSEAS_COMPANIES = ['CTR-CN', 'CTR-US', 'CTR-VN', 'CTR-RU', 'CTR-EU']
+export const OVERSEAS_COMPANIES = ['CTR-CN', 'CTR-US', 'CTR-VN', 'CTR-RU', 'CTR-EU']
 
 // Overseas grade system — L1~L5 + S1 + E1 (7단계, title은 법인별 추후 정의)
-const OVERSEAS_GRADES = [
+export const OVERSEAS_GRADES = [
   { code: 'E1', name: 'Executive', nameEn: 'Executive', rankOrder: 1, gradeType: 'EXECUTIVE', minPromotionYears: null },
   { code: 'S1', name: 'Specialist', nameEn: 'Specialist', rankOrder: 2, gradeType: 'SPECIALIST', minPromotionYears: null },
   { code: 'L5', name: 'Senior Manager', nameEn: 'Senior Manager', rankOrder: 3, gradeType: 'STAFF', minPromotionYears: 5 },
