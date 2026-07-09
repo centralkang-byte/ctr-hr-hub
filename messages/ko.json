@@ -8161,7 +8161,22 @@
     "blockedAlert": "52시간 초과 차단 알림",
     "blockedAlertDesc": "52시간 초과 시 출근 차단",
     "expirationWarning": "연차 소멸 경고",
-    "expirationWarningDesc": "연차 소멸 전 알림 시점"
+    "expirationWarningDesc": "연차 소멸 전 알림 시점",
+    "hubActions": {
+      "changeHistory": "변경 이력",
+      "backup": "설정 백업",
+      "exportDone": "설정 백업 파일이 다운로드되었습니다",
+      "exportFailed": "설정 백업 실패"
+    },
+    "recentChanges": {
+      "title": "최근 변경",
+      "subtitle": "감사 로그 미리보기 — 기록된 변경만 표시",
+      "viewAll": "전체 보기",
+      "loadFailed": "최근 변경 내역을 불러오지 못했습니다",
+      "empty": "기록된 설정 변경이 없습니다",
+      "systemActor": "시스템 관리자",
+      "globalScope": "전사 공통"
+    }
   },
   "ai": {
     "generated": "AI 생성",
