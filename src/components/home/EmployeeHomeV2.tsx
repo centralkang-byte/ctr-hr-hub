@@ -293,7 +293,7 @@ export function EmployeeHomeV2({ user }: Props) {
                 item={myOnboarding}
                 title={t('tracker.onboarding.title')}
                 subtitle={trackerSubtitle('tracker.onboarding.subtitle', myOnboarding.progress, myOnboarding.daysUntilStart)}
-                href="/my/tasks"
+                href="/onboarding/me"
                 hrefLabel={t('tracker.onboarding.cta')}
                 accentIcon={Target}
               />

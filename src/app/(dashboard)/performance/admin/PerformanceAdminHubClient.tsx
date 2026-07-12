@@ -17,15 +17,16 @@ import PerformanceClient from '../PerformanceClient'
 import GoalsClient from '../goals/GoalsClient'
 import AdminResultsClient from './AdminResultsClient'
 import PeerReviewClient from '../peer-review/PeerReviewClient'
+import QuarterlyReviewAdminClient from '../quarterly-reviews/QuarterlyReviewAdminClient'
 
 // ─── Types ──────────────────────────────────────────────────
 
-type PerformanceAdminTab = 'overview' | 'goals' | 'results' | 'peer-review'
+type PerformanceAdminTab = 'overview' | 'goals' | 'results' | 'peer-review' | 'quarterly'
 
 // ─── Constants ──────────────────────────────────────────────
 
 const VALID_TABS = new Set<PerformanceAdminTab>([
-  'overview', 'goals', 'results', 'peer-review',
+  'overview', 'goals', 'results', 'peer-review', 'quarterly',
 ])
 
 function resolveDefaultTab(searchParamTab: string | null): PerformanceAdminTab {
@@ -80,6 +81,8 @@ export function PerformanceAdminHubClient({ user, defaultTab }: Props) {
             { value: 'goals',       label: tabLabel('goals', '목표 관리') },
             { value: 'results',     label: tabLabel('results', '성과 결과') },
             { value: 'peer-review', label: tabLabel('peerReview', '동료 평가') },
+            // Wave1 IA 데모션 2: 분기 리뷰(admin) rail → 허브 탭 (2026-06-12 제안 확정)
+            { value: 'quarterly',   label: tabLabel('quarterlyReview', '분기 리뷰') },
           ].map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value}>
               {tab.label}
@@ -92,6 +95,7 @@ export function PerformanceAdminHubClient({ user, defaultTab }: Props) {
         <TabsContent value="goals"><GoalsClient user={user} /></TabsContent>
         <TabsContent value="results"><AdminResultsClient user={user} /></TabsContent>
         <TabsContent value="peer-review"><PeerReviewClient user={user} /></TabsContent>
+        <TabsContent value="quarterly"><QuarterlyReviewAdminClient user={user} /></TabsContent>
       </Tabs>
     </div>
   )
