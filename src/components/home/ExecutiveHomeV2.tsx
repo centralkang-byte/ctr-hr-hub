@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { DashboardHomeShell, HomeGrid, HomeSection, HomeStack } from './shell/DashboardHomeShell'
 import { HeroCard } from './primitives/HeroCard'
+import { ddayKeyAndDays } from './primitives/dday'
 import { StatCard } from './primitives/StatCard'
 import { ListCard } from './primitives/ListCard'
 import { EmptyState } from './primitives/EmptyState'
@@ -89,6 +90,10 @@ function sparkTrendDirection(data: number[]): 'up' | 'down' | 'flat' {
 
 export function ExecutiveHomeV2({ user }: Props) {
   const t = useTranslations('home.executive.v2')
+  const listRowSecondary = (baseKey: string, progress: number, days: number | null | undefined) => {
+    const dday = ddayKeyAndDays(baseKey, days)
+    return t(dday.key, { progress, days: dday.days })
+  }
   const timeOfDay = useTimeOfDay()
   const [summary, setSummary] = useState<ExecSummaryWithLists | null>(null)
   const [loading, setLoading] = useState(true)
@@ -251,10 +256,7 @@ export function ExecutiveHomeV2({ user }: Props) {
             renderItem={(item) => ({
               id: item.employeeId,
               primary: item.name,
-              secondary: t('list.offboardingRow', {
-                progress: item.progress,
-                days: item.daysUntilStart ?? 0,
-              }),
+              secondary: listRowSecondary('list.offboardingRow', item.progress, item.daysUntilStart),
               statusDot: listItemStatusForOffboarding(item.daysUntilStart),
               statusLabel: t(
                 `list.offboardingStatus.${listItemStatusForOffboarding(item.daysUntilStart)}`,

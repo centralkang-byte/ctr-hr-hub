@@ -129,12 +129,14 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
   )
 
   const STATUS_LABELS: Record<string, string> = {
+    NOT_STARTED: t('notStarted'),
     IN_PROGRESS: t('inProgress'),
     COMPLETED: t('completed'),
   }
 
   const FILTER_OPTIONS = [
     { value: '__ALL__', label: t('filterAll') },
+    { value: 'NOT_STARTED', label: t('filterNotStarted') },
     { value: 'IN_PROGRESS', label: t('filterInProgress') },
     { value: 'COMPLETED', label: t('filterCompleted') },
     { value: 'DELAYED', label: t('filterDelayed') },
@@ -143,13 +145,15 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
   // ─── Fetch ───
   const fetchData = useCallback(() => {
     setLoading(true)
-    const params: Record<string, string | number> = { page, limit }
-    if (filter !== '__ALL__' && filter !== 'DELAYED') {
+    // DELAYED: isDelayed 가 서버 계산 파생값이라 status 파라미터로 못 거름 —
+    // 1페이지 대용량(200건)으로 당겨 클라이언트 필터 후 페이지네이션 재계산
+    // (서버 pagination 을 그대로 쓰면 지연 건이 뒤 페이지에만 있을 때 빈 화면, Codex G2)
+    const isDelayedFilter = filter === 'DELAYED'
+    const params: Record<string, string | number> = isDelayedFilter
+      ? { page: 1, limit: 200 }
+      : { page, limit }
+    if (filter !== '__ALL__' && !isDelayedFilter) {
       params.status = filter
-    }
-    // DELAYED: fetch IN_PROGRESS and filter client-side
-    if (filter === 'DELAYED') {
-      params.status = 'IN_PROGRESS'
     }
     if (planType) params.planType = planType
     if (companyIdFilter) params.companyId = companyIdFilter
@@ -157,11 +161,14 @@ export function OnboardingDashboardClient({ user, companies = [] }: OnboardingDa
     apiClient
       .getList<OnboardingRow>('/api/v1/onboarding/dashboard', params)
       .then((res) => {
-        let rows = res.data
-        if (filter === 'DELAYED') {
-          rows = rows.filter((r) => r.isDelayed)
+        if (isDelayedFilter) {
+          // 완료 건 제외 (종전 IN_PROGRESS-only 조회와 동일 의미 보존)
+          const rows = res.data.filter((r) => r.isDelayed && r.status !== 'COMPLETED')
+          setData(rows)
+          setPagination({ page: 1, limit: 200, total: rows.length, totalPages: 1 })
+          return
         }
-        setData(rows)
+        setData(res.data)
         setPagination(res.pagination)
       })
       .catch(() => setData([]))

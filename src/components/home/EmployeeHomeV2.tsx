@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils'
 import { ELEVATION, MOTION, TYPOGRAPHY } from '@/lib/styles'
 import { DashboardHomeShell, HomeGrid, HomeSection, HomeStack } from './shell/DashboardHomeShell'
 import { HeroCard } from './primitives/HeroCard'
+import { ddayKeyAndDays } from './primitives/dday'
 import { StatCard } from './primitives/StatCard'
 import { InsightStrip } from './primitives/InsightStrip'
 import { DashboardErrorBanner } from './DashboardErrorBanner'
@@ -126,6 +127,10 @@ function quarterlyReviewLabelKey(status: string | null | undefined): string {
 
 export function EmployeeHomeV2({ user }: Props) {
   const t = useTranslations('home.employee.v2')
+  const trackerSubtitle = (baseKey: string, progress: number, days: number | null | undefined) => {
+    const dday = ddayKeyAndDays(baseKey, days)
+    return t(dday.key, { progress, days: dday.days })
+  }
   const timeOfDay = useTimeOfDay()
   const [summary, setSummary] = useState<EmployeeSummary | null>(null)
   const [loading, setLoading] = useState(true)
@@ -168,15 +173,15 @@ export function EmployeeHomeV2({ user }: Props) {
   // Hero focus resolution
   const heroFocus = (() => {
     switch (focusKind) {
-      case 'offboarding':
+      case 'offboarding': {
+        const dday = ddayKeyAndDays('hero.focusOffboarding', myOffboarding?.daysUntilStart)
         return {
-          title: t('hero.focusOffboarding', {
-            days: myOffboarding?.daysUntilStart ?? 0,
-          }),
+          title: t(dday.key, { days: dday.days }),
           description: t('hero.focusOffboardingDesc'),
           cta: { label: t('hero.cta.checklist'), href: '/my/offboarding' },
           illustration: 'focus' as const,
         }
+      }
       case 'onboarding':
         return {
           title: t('hero.focusOnboarding', { progress: myOnboarding?.progress ?? 0 }),
@@ -287,10 +292,7 @@ export function EmployeeHomeV2({ user }: Props) {
                 kind="onboarding"
                 item={myOnboarding}
                 title={t('tracker.onboarding.title')}
-                subtitle={t('tracker.onboarding.subtitle', {
-                  progress: myOnboarding.progress,
-                  days: myOnboarding.daysUntilStart ?? 0,
-                })}
+                subtitle={trackerSubtitle('tracker.onboarding.subtitle', myOnboarding.progress, myOnboarding.daysUntilStart)}
                 href="/my/tasks"
                 hrefLabel={t('tracker.onboarding.cta')}
                 accentIcon={Target}
@@ -301,10 +303,7 @@ export function EmployeeHomeV2({ user }: Props) {
                 kind="offboarding"
                 item={myOffboarding}
                 title={t('tracker.offboarding.title')}
-                subtitle={t('tracker.offboarding.subtitle', {
-                  progress: myOffboarding.progress,
-                  days: myOffboarding.daysUntilStart ?? 0,
-                })}
+                subtitle={trackerSubtitle('tracker.offboarding.subtitle', myOffboarding.progress, myOffboarding.daysUntilStart)}
                 href="/my/offboarding"
                 hrefLabel={t('tracker.offboarding.cta')}
                 accentIcon={Calendar}
