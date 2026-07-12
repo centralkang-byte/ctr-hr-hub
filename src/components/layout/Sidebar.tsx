@@ -115,7 +115,8 @@ export function Sidebar({ user, onSignOut, countryCode, mode = 'desktop', onItem
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          'flex flex-col bg-[#fafafe] dark:bg-card text-foreground transition-all duration-300',
+          // 프로토 workday .sb: white bg + 1px border-right (styles.css:641)
+          'flex flex-col bg-card border-r border-border text-foreground transition-all duration-300',
           isDrawer
             ? 'h-full w-full'
             : 'h-screen',
@@ -398,9 +399,11 @@ function ExpandedNavItem({
         href={item.href}
         onClick={onItemClick}
         className={cn(
-          'flex flex-1 items-center gap-3 rounded-lg px-3 py-1.5 text-sm transition-colors',
+          'flex flex-1 items-center gap-3 rounded-lg px-3 py-[7px] text-[13px] transition-colors',
+          // 프로토 workday .sb-item[aria-current=page]: accent-soft bg + accent-ink text
+          // (구 violet 그라데이션 + white 잔재 제거 — Wave 0 픽셀 SSOT 정합)
           isActive
-            ? 'bg-gradient-to-r from-primary to-primary-dim text-white font-semibold shadow-[0_2px_8px_rgba(99,102,241,0.25)]'
+            ? 'bg-primary-container/40 text-primary font-semibold'
             : 'text-muted-foreground hover:bg-muted hover:text-foreground',
         )}
       >
@@ -484,7 +487,7 @@ function CollapsedNavItem({ item, pathname, getLabel }: CollapsedNavItemProps) {
           href={item.href}
           className={cn(
             'flex h-10 w-10 items-center justify-center rounded-lg transition-colors',
-            isActive ? 'bg-gradient-to-br from-primary to-primary-dim text-white shadow-sm' : 'text-muted-foreground hover:bg-muted',
+            isActive ? 'bg-primary-container/40 text-primary' : 'text-muted-foreground hover:bg-muted',
           )}
         >
           <item.icon className="h-[18px] w-[18px]" />
