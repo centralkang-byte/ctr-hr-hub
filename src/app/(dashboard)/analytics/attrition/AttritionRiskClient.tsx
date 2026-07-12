@@ -100,7 +100,9 @@ function parseFactors(
 // AttritionRiskClient
 // ═════════════════════════════════════════════════════════
 
-export default function AttritionRiskClient({ user: _user }: { user: SessionUser }) {
+export default function AttritionRiskClient({ user }: { user: SessionUser }) {
+  // 재계산은 HR 전용 (analytics 폴백 VIEW 한정 — S335); 비-HR에겐 버튼 숨김
+  const canRecalculate = user.role === 'HR_ADMIN' || user.role === 'SUPER_ADMIN'
   const t = useTranslations('analytics.attritionPage')
 
   const { toast } = useToast()
@@ -193,18 +195,20 @@ export default function AttritionRiskClient({ user: _user }: { user: SessionUser
           <nav className="text-xs text-muted-foreground mb-1">{t('breadcrumb')}</nav>
           <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
         </div>
-        <Button
-          variant="outline"
-          onClick={handleRecalculate}
-          disabled={recalculating}
-        >
-          {recalculating ? (
-            <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
-          ) : (
-            <RefreshCw className="mr-1.5 h-4 w-4" />
-          )}
-          {t('recalculate')}
-        </Button>
+        {canRecalculate && (
+          <Button
+            variant="outline"
+            onClick={handleRecalculate}
+            disabled={recalculating}
+          >
+            {recalculating ? (
+              <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-1.5 h-4 w-4" />
+            )}
+            {t('recalculate')}
+          </Button>
+        )}
       </div>
 
       {/* ─── KPI 카드 ─── */}

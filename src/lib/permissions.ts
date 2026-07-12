@@ -8,7 +8,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { forbidden, unauthorized } from '@/lib/errors'
 import { apiError } from '@/lib/api'
-import { ROLE, MODULE } from '@/lib/constants'
+import { ROLE, MODULE, ACTION } from '@/lib/constants'
 import {
   queryContextAls,
   type QueryContextStore,
@@ -24,13 +24,18 @@ export function hasPermission(
   // SUPER_ADMIN bypasses all permission checks
   if (user.role === ROLE.SUPER_ADMIN) return true
 
-  // Fallback for missing DB seed permissions
-  // RBAC spec: MANAGER_UP (MANAGER, EXECUTIVE, HR_ADMIN) can access analytics
-  if (
-    (user.role === ROLE.HR_ADMIN || user.role === ROLE.EXECUTIVE || user.role === ROLE.MANAGER) &&
-    permission.module === MODULE.ANALYTICS
-  ) {
-    return true
+  // Fallback for missing DB seed permissions — analytics 모듈은 seed에 없어 DB 권한이 항상 부재
+  // RBAC spec: HR_ADMIN = 전체 액션(배치 계산 포함), MANAGER/EXECUTIVE = 읽기(VIEW)만.
+  // MANAGER/EXECUTIVE까지 쓰기·배치 액션을 폴백하면 HR 전용 계산 라우트
+  // (analytics/calculate 등)가 열림 (런칭 감사 P1, S335)
+  if (permission.module === MODULE.ANALYTICS) {
+    if (user.role === ROLE.HR_ADMIN) return true
+    if (
+      (user.role === ROLE.EXECUTIVE || user.role === ROLE.MANAGER) &&
+      permission.action === ACTION.VIEW
+    ) {
+      return true
+    }
   }
 
   return user.permissions.some(

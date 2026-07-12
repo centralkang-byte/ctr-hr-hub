@@ -8,7 +8,7 @@ import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, forbidden, notFound } from '@/lib/errors'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { calculateTurnoverRisk } from '@/lib/analytics/predictive/turnoverRisk'
 import { calculateBurnoutScore } from '@/lib/analytics/predictive/burnout'
 import type { SessionUser } from '@/types'
@@ -18,7 +18,12 @@ export const GET = withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
     const { searchParams } = new URL(req.url)
     const employeeId = searchParams.get('employeeId') || searchParams.get('employee_id') || ''
+    // VIEW 게이트 라우트지만 recalculate=true 분기는 점수를 생성(mutation)하므로
+    // HR 이상만 허용 (런칭 감사 후속 — Codex G1 발견, S335)
     const recalculate = searchParams.get('recalculate') === 'true'
+    if (recalculate && user.role !== ROLE.HR_ADMIN && user.role !== ROLE.SUPER_ADMIN) {
+      throw forbidden('재계산은 HR 관리자만 실행할 수 있습니다.')
+    }
 
     if (!employeeId) throw badRequest('employee_id required')
 
