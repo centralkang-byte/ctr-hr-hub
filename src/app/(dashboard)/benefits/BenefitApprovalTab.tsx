@@ -70,6 +70,23 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
 
   useEffect(() => { void load() }, [load])
 
+  // 증빙 열람: presigned 다운로드 URL 발급 후 새 탭 (index 기반 매칭 — 동명 파일 안전)
+  const handleOpenProof = async (claimId: string, index: number) => {
+    try {
+      const res = await apiClient.get<{ files: { index: number; filename: string; url: string }[] }>(
+        `/api/v1/benefit-claims/${claimId}/proof`,
+      )
+      const file = res.data?.files.find((f) => f.index === index)
+      if (!file) {
+        setError('증빙 파일을 찾을 수 없습니다. (레거시 데이터이거나 업로드 누락)')
+        return
+      }
+      window.open(file.url, '_blank', 'noopener,noreferrer')
+    } catch (err: unknown) {
+      setError((err as { message?: string })?.message ?? '증빙 열람 중 오류가 발생했습니다.')
+    }
+  }
+
   const handleAction = async (action: 'approve' | 'reject') => {
     if (!selected) return
     if (action === 'reject' && !rejectedReason.trim()) {
@@ -200,10 +217,15 @@ export function BenefitApprovalTab({ user, view }: { user: SessionUser; view: 'p
                   <p className="text-xs text-muted-foreground mb-2">증빙 서류</p>
                   <div className="space-y-1">
                     {selected.proofPaths.map((path, i) => (
-                      <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => void handleOpenProof(selected.id, i)}
+                        className="flex items-center gap-2 text-sm text-primary hover:underline"
+                      >
                         <FileText className="w-4 h-4 text-primary" />
                         {path.split('/').pop()}
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>

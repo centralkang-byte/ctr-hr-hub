@@ -4001,7 +4001,8 @@
     "validation": {
       "attachProof": "Vui lòng đính kèm tài liệu chứng minh.",
       "enterAmount": "Vui lòng nhập số tiền đăng ký.",
-      "selectPlan": "Vui lòng chọn chương trình phúc lợi."
+      "selectPlan": "Vui lòng chọn chương trình phúc lợi.",
+      "uploadInProgress": "Đang tải lên chứng từ. Vui lòng gửi sau khi hoàn tất."
     }
   },
   "myDocuments": {

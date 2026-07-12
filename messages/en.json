@@ -4001,7 +4001,8 @@
     "validation": {
       "attachProof": "Please attach supporting documents.",
       "enterAmount": "Please enter a claim amount.",
-      "selectPlan": "Please select a benefit plan."
+      "selectPlan": "Please select a benefit plan.",
+      "uploadInProgress": "Proof upload in progress. Please submit after it completes."
     }
   },
   "myDocuments": {

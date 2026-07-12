@@ -4001,7 +4001,8 @@
     "validation": {
       "attachProof": "Adjunte los documentos de respaldo.",
       "enterAmount": "Ingrese el monto de la solicitud.",
-      "selectPlan": "Seleccione un plan de beneficio."
+      "selectPlan": "Seleccione un plan de beneficio.",
+      "uploadInProgress": "La carga del comprobante está en curso. Envíe después de que se complete."
     }
   },
   "myDocuments": {

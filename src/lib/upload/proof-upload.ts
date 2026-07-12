@@ -6,6 +6,9 @@
 /** FileUpload.purpose 값 (휴직 증빙) */
 export const LOA_PROOF_PURPOSE = 'LOA_PROOF'
 
+/** FileUpload.purpose 값 (복리후생 청구 증빙) */
+export const BENEFIT_PROOF_PURPOSE = 'BENEFIT_PROOF'
+
 /** presigned POST 만료 (초) — 짧게 유지해 재사용/덮어쓰기 창을 최소화 */
 export const PROOF_UPLOAD_EXPIRY_SECONDS = 300
 
@@ -23,6 +26,37 @@ export const LOA_PROOF_ACCEPT = '.pdf,.jpg,.jpeg,.png,.webp'
 /** 증빙 허용 형식인지 (서버/클라이언트 공통) */
 export function isAllowedProofContentType(contentType: string): boolean {
   return LOA_PROOF_CONTENT_TYPES.includes(contentType)
+}
+
+// ─── Benefit final-key parsing (pure) ────────────────────
+// 청구 생성 시 서버가 만드는 불변 사본 키: {companyId}/benefit-proof-final/{uploadId}/{filename}
+// 다운로드 라우트는 이 파스 결과를 FileUpload 레코드와 등치 대조해야 함 —
+// 레거시 proofPaths(자유 문자열 시절)에 위조 final-형태 키가 있을 수 있어 regex만으론 불충분.
+
+export interface BenefitFinalKeyParts {
+  companyId: string
+  uploadId: string
+  filename: string
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+
+export function parseBenefitFinalKey(key: string): BenefitFinalKeyParts | null {
+  const parts = key.split('/')
+  if (parts.length !== 4) return null
+  const [companyId, marker, uploadId, filename] = parts
+  if (marker !== 'benefit-proof-final') return null
+  if (!UUID_RE.test(companyId) || !UUID_RE.test(uploadId)) return null
+  if (!filename) return null
+  return { companyId, uploadId, filename }
+}
+
+/** 파스된 키가 서버 기록(FileUpload)과 정확히 일치하는지 — 재구성 등치 비교 */
+export function isServerIssuedBenefitFinalKey(
+  key: string,
+  fu: { id: string; companyId: string; filename: string },
+): boolean {
+  return key === `${fu.companyId}/benefit-proof-final/${fu.id}/${fu.filename}`
 }
 
 // ─── Filename Sanitization (pure) ────────────────────────

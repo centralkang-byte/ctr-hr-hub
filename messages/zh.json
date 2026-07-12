@@ -4001,7 +4001,8 @@
     "validation": {
       "attachProof": "请附加证明文件。",
       "enterAmount": "请输入申请金额。",
-      "selectPlan": "请选择福利项目。"
+      "selectPlan": "请选择福利项目。",
+      "uploadInProgress": "凭证上传中，请在完成后提交。"
     }
   },
   "myDocuments": {
