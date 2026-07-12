@@ -48,6 +48,19 @@ export const POST = withPermission(
     const parsed = gdprConsentCreateSchema.safeParse(body)
     if (!parsed.success) throw badRequest('Invalid request data', { issues: parsed.error.issues })
 
+    // 멀티테넌트: 대상 직원이 본인 법인의 활성 primary 발령인지 검증 (임의 employeeId 차단)
+    const owned = await prisma.employeeAssignment.findFirst({
+      where: {
+        employeeId: parsed.data.employeeId,
+        companyId: user.companyId,
+        isPrimary: true,
+        endDate: null,
+        effectiveDate: { lte: new Date() },
+      },
+      select: { id: true },
+    })
+    if (!owned) throw badRequest('본인 법인 재직 직원이 아닙니다.')
+
     try {
       const consent = await prisma.gdprConsent.create({
         data: {
