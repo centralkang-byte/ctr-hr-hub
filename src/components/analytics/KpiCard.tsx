@@ -14,6 +14,8 @@ interface KpiCardProps {
   unit?: string
   change?: number
   changeLabel?: string
+  /** change 수치의 단위가 value의 unit과 다를 때 (예: 통화 KPI의 % 증감) */
+  changeUnit?: string
   severity?: 'positive' | 'negative' | 'neutral'
   icon?: LucideIcon
   tooltip?: string
@@ -26,7 +28,7 @@ interface KpiCardProps {
 // ─── Component ──────────────────────────────────────────────
 
 export function KpiCard({
-  label, value, unit, change, changeLabel,
+  label, value, unit, change, changeLabel, changeUnit,
   severity = 'neutral', icon: Icon, tooltip, sparkline,
   onClick, variant = 'default', className,
 }: KpiCardProps) {
@@ -122,7 +124,7 @@ export function KpiCard({
           {change !== undefined && (
             <div className={cn('flex items-center gap-1 mt-1.5 text-xs', changeColor)}>
               <ChangeIcon className="h-3 w-3" />
-              <span>{change > 0 ? '+' : ''}{change}{unit === '%' ? 'p' : unit || ''}</span>
+              <span>{change > 0 ? '+' : ''}{change}{changeUnit ?? (unit === '%' ? 'p' : unit || '')}</span>
               {changeLabel && (
                 <span className={isHero ? 'text-white/50' : 'text-muted-foreground/60'}>
                   ({changeLabel})

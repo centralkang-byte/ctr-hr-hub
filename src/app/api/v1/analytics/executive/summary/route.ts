@@ -378,7 +378,7 @@ export const GET = withCache(withPermission(
         avgTenureYears: { label: '평균 근속', value: Math.round(avgTenure * 10) / 10, unit: '년', severity: 'neutral' },
         monthlyLaborCost: {
           label: '월 인건비', value: formatCurrency(totalLaborCostKRW, 'KRW'), unit: '',
-          change: laborCostChange, changeLabel: '전월 대비',
+          change: laborCostChange, changeLabel: '전월 대비', changeUnit: '%',
           severity: laborCostChange > 0 ? 'negative' : 'positive',
         },
         recruitmentPipeline: {

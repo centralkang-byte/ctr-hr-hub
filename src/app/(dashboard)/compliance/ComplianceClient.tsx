@@ -78,7 +78,7 @@ export default function ComplianceClient({ user: _user }: { user: SessionUser })
   const navCards = [
     {
       title: t('gdpr.title'),
-      description: 'GDPR compliance management — consents, requests, DPIA',
+      description: t('gdpr.hubDesc'),
       href: '/compliance?tab=data-protection&section=consents',
       icon: Shield,
       color: 'bg-emerald-500/15 text-emerald-600',
@@ -182,7 +182,7 @@ export default function ComplianceClient({ user: _user }: { user: SessionUser })
 
       {/* Country-specific Compliance */}
       <div>
-        <h2 className="text-lg font-semibold text-foreground mb-3">Country-specific Compliance</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-3">{t('countrySpecific')}</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {countryCards.map((card) => (
             <Link

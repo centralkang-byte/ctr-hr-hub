@@ -1751,7 +1751,12 @@
       "target": "目标",
       "title": "GDPR / 隐私保护",
       "topActors": "主要访问者",
-      "totalAccess": "总访问次数"
+      "totalAccess": "总访问次数",
+      "statusExpired": "已过期",
+      "deadlineAutoNote": "处理期限将根据受理日期自动计算。",
+      "hubDesc": "同意管理 · 数据主体请求 · DPIA",
+      "highRiskAlert": "{count} 项高风险 DPIA 需要关注。",
+      "highRiskAlertDesc": "请检查严重及高风险评估是否已落实缓解措施。"
     },
     "hours": "小时",
     "hub": {
@@ -1835,7 +1840,8 @@
       "SIP_PENDING": "待处理",
       "SIP_REJECTED": "已拒绝"
     },
-    "title": "合规管理"
+    "title": "合规管理",
+    "countrySpecific": "各国合规"
   },
   "contractRules": {
     "applied": "Applied",
@@ -3974,7 +3980,9 @@
       "family": "礼金",
       "financial": "金融",
       "health": "健康",
-      "lifestyle": "生活"
+      "lifestyle": "生活",
+      "other": "其他",
+      "transport": "交通"
     },
     "claimHistory": "申请记录",
     "emptyDesc": "您还没有福利申请记录。",

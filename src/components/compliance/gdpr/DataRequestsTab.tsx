@@ -1,70 +1,73 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus, Eye, Clock } from 'lucide-react'
 import DataRequestForm from './DataRequestForm'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
+import { apiClient } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
 
-interface DataRequest {
+export interface DataRequest {
   id: string
-  employee_name: string
-  employee_no: string
-  request_type: string
-  status: 'pending' | 'in_progress' | 'completed' | 'rejected'
-  description: string
-  deadline: string | null
-  completed_at: string | null
-  response_note: string | null
-  created_at: string
+  employee: { id: string; name: string; employeeNo: string }
+  requestType: string
+  status: 'GDPR_PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'REJECTED' | 'EXPIRED'
+  description: string | null
+  deadline: string
+  completedAt: string | null
+  responseNote: string | null
+  createdAt: string
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    pending: 'bg-amber-500/15 text-amber-700 border border-amber-300',
-    in_progress: 'bg-primary/10 text-primary/90 border border-primary/20',
-    completed: 'bg-emerald-500/15 text-emerald-700 border border-emerald-200',
-    rejected: 'bg-destructive/10 text-destructive border border-destructive/20',
-  }
-  return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? map.pending}`}>
-      {status.replace('_', ' ')}
-    </span>
-  )
-}
-
-const REQUEST_TYPE_LABELS: Record<string, string> = {
-  ACCESS: 'Right to Access',
-  ERASURE: 'Right to Erasure',
-  PORTABILITY: 'Data Portability',
-  RECTIFICATION: 'Rectification',
-  RESTRICTION: 'Restriction',
-  OBJECTION: 'Objection',
-}
+const EDITABLE_STATUSES = new Set(['GDPR_PENDING', 'IN_PROGRESS'])
 
 export default function DataRequestsTab() {
   const t = useTranslations('compliance')
   const tc = useTranslations('common')
+
+  const STATUS_LABELS: Record<string, string> = {
+    GDPR_PENDING: t('gdpr.statusPending'),
+    IN_PROGRESS: t('gdpr.statusInProgress'),
+    COMPLETED: t('gdpr.statusCompleted'),
+    REJECTED: t('gdpr.statusRejected'),
+    EXPIRED: t('gdpr.statusExpired'),
+  }
+
+  const REQUEST_TYPE_LABELS: Record<string, string> = {
+    ACCESS: t('gdpr.requestAccess'),
+    ERASURE: t('gdpr.requestErasure'),
+    PORTABILITY: t('gdpr.requestPortability'),
+    RECTIFICATION: t('gdpr.requestRectification'),
+    RESTRICTION: t('gdpr.requestRestriction'),
+    OBJECTION: t('gdpr.requestObjection'),
+  }
 
   const [requests, setRequests] = useState<DataRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [selected, setSelected] = useState<DataRequest | null>(null)
 
-  const fetchRequests = () => {
-    setLoading(true)
-    fetch('/api/v1/compliance/gdpr/requests?page=1&limit=20')
-      .then((res) => res.json())
-      .then((json) => {
-        setRequests(json.data ?? [])
-        setLoading(false)
+  const fetchRequests = useCallback(async () => {
+    try {
+      setLoading(true)
+      const res = await apiClient.getList<DataRequest>('/api/v1/compliance/gdpr/requests', { page: 1, limit: 20 })
+      setRequests(res.data ?? [])
+    } catch (err) {
+      toast({
+        title: tc('loadFailed'),
+        description: err instanceof Error ? err.message : undefined,
+        variant: 'destructive',
       })
-      .catch(() => setLoading(false))
-  }
+    } finally {
+      setLoading(false)
+    }
+  }, [tc])
 
   useEffect(() => {
-    fetchRequests()
-  }, [])
+    void fetchRequests()
+  }, [fetchRequests])
 
   const isOverdue = (deadline: string | null) => {
     if (!deadline) return false
@@ -106,19 +109,19 @@ export default function DataRequestsTab() {
                 {requests.map((r) => (
                   <tr key={r.id} className={TABLE_STYLES.row}>
                     <td className="px-4 py-3 text-sm">
-                      <div className="font-medium text-foreground">{r.employee_name}</div>
-                      <div className="text-xs text-muted-foreground">{r.employee_no}</div>
+                      <div className="font-medium text-foreground">{r.employee.name}</div>
+                      <div className="text-xs text-muted-foreground">{r.employee.employeeNo}</div>
                     </td>
                     <td className="px-4 py-3 text-sm text-foreground">
-                      {REQUEST_TYPE_LABELS[r.request_type] ?? r.request_type}
+                      {REQUEST_TYPE_LABELS[r.requestType] ?? r.requestType}
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      <StatusBadge status={r.status} />
+                      <StatusBadge status={r.status}>{STATUS_LABELS[r.status] ?? r.status}</StatusBadge>
                     </td>
                     <td className="px-4 py-3 text-sm">
                       {r.deadline ? (
-                        <span className={`flex items-center gap-1 ${isOverdue(r.deadline) && r.status !== 'completed' ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
-                          {isOverdue(r.deadline) && r.status !== 'completed' ? (
+                        <span className={`flex items-center gap-1 ${isOverdue(r.deadline) && r.status !== 'COMPLETED' ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
+                          {isOverdue(r.deadline) && r.status !== 'COMPLETED' ? (
                             <Clock className="w-3.5 h-3.5" />
                           ) : null}
                           {new Date(r.deadline).toLocaleDateString()}
@@ -126,7 +129,7 @@ export default function DataRequestsTab() {
                       ) : '-'}
                     </td>
                     <td className="px-4 py-3 text-sm text-muted-foreground">
-                      {new Date(r.created_at).toLocaleDateString()}
+                      {new Date(r.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <button
@@ -134,7 +137,7 @@ export default function DataRequestsTab() {
                         className="inline-flex items-center gap-1 text-primary hover:text-primary/90 text-sm font-medium"
                       >
                         <Eye className="w-4 h-4" />
-                        {r.status === 'pending' || r.status === 'in_progress' ? tc('edit') : tc('view')}
+                        {EDITABLE_STATUSES.has(r.status) ? tc('edit') : tc('view')}
                       </button>
                     </td>
                   </tr>
@@ -152,7 +155,7 @@ export default function DataRequestsTab() {
           onClose={() => setShowForm(false)}
           onSaved={() => {
             setShowForm(false)
-            fetchRequests()
+            void fetchRequests()
           }}
         />
       )}

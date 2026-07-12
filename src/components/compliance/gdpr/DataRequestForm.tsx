@@ -3,24 +3,15 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
+import { apiClient } from '@/lib/api'
+import type { DataRequest } from './DataRequestsTab'
 
 const INPUT_CLS = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus:outline-none'
 
 interface Employee {
   id: string
   name: string
-  employee_no: string
-}
-
-interface DataRequest {
-  id: string
-  employee_name: string
-  employee_no: string
-  request_type: string
-  status: string
-  description: string
-  deadline: string | null
-  response_note: string | null
+  employeeNo: string
 }
 
 interface DataRequestFormProps {
@@ -44,45 +35,44 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
   ]
 
   const STATUS_OPTIONS = [
-    { value: 'pending', label: t('gdpr.statusPending') },
-    { value: 'in_progress', label: t('gdpr.statusInProgress') },
-    { value: 'completed', label: t('gdpr.statusCompleted') },
-    { value: 'rejected', label: t('gdpr.statusRejected') },
+    { value: 'GDPR_PENDING', label: t('gdpr.statusPending') },
+    { value: 'IN_PROGRESS', label: t('gdpr.statusInProgress') },
+    { value: 'COMPLETED', label: t('gdpr.statusCompleted') },
+    { value: 'REJECTED', label: t('gdpr.statusRejected') },
+    { value: 'EXPIRED', label: t('gdpr.statusExpired') },
   ]
 
   const isEdit = Boolean(request)
 
   const [employees, setEmployees] = useState<Employee[]>([])
   const [form, setForm] = useState({
-    employee_id: '',
-    request_type: '',
+    employeeId: '',
+    requestType: '',
     description: '',
-    deadline: '',
-    status: 'pending',
-    response_note: '',
+    status: 'GDPR_PENDING',
+    responseNote: '',
   })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
     if (open && !isEdit) {
-      fetch('/api/v1/employees?page=1&limit=100')
-        .then((res) => res.json())
-        .then((json) => setEmployees(json.data ?? []))
-        .catch(() => {})
+      apiClient.getList<Employee>('/api/v1/employees', { page: 1, limit: 100 })
+        .then((res) => setEmployees(res.data ?? []))
+        .catch(() => setEmployees([]))
     }
     if (request) {
       setForm({
-        employee_id: '',
-        request_type: request.request_type ?? '',
+        employeeId: '',
+        requestType: request.requestType ?? '',
         description: request.description ?? '',
-        deadline: request.deadline ? request.deadline.split('T')[0] : '',
-        status: request.status ?? 'pending',
-        response_note: request.response_note ?? '',
+        status: request.status ?? 'GDPR_PENDING',
+        responseNote: request.responseNote ?? '',
       })
     } else {
-      setForm({ employee_id: '', request_type: '', description: '', deadline: '', status: 'pending', response_note: '' })
+      setForm({ employeeId: '', requestType: '', description: '', status: 'GDPR_PENDING', responseNote: '' })
     }
+    setError('')
   }, [open, request, isEdit])
 
   const handleChange = (field: string, value: string) => {
@@ -90,25 +80,28 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
   }
 
   const handleSubmit = async () => {
-    if (!isEdit && !form.employee_id) { setError(tc('required')); return }
-    if (!form.request_type || !form.description) { setError(tc('required')); return }
+    if (!isEdit && !form.employeeId) { setError(tc('required')); return }
+    if (!isEdit && !form.requestType) { setError(tc('required')); return }
 
     setSaving(true)
     setError('')
     try {
-      const url = isEdit
-        ? `/api/v1/compliance/gdpr/requests/${request!.id}`
-        : '/api/v1/compliance/gdpr/requests'
-      const method = isEdit ? 'PATCH' : 'POST'
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      })
-      if (!res.ok) throw new Error('Failed')
+      if (isEdit) {
+        // responseNote는 비운 채 저장하면 기존 메모를 지워야 하므로 빈 문자열도 항상 전송
+        await apiClient.put(`/api/v1/compliance/gdpr/requests/${request!.id}`, {
+          status: form.status,
+          responseNote: form.responseNote,
+        })
+      } else {
+        await apiClient.post('/api/v1/compliance/gdpr/requests', {
+          employeeId: form.employeeId,
+          requestType: form.requestType,
+          ...(form.description ? { description: form.description } : {}),
+        })
+      }
       onSaved()
-    } catch {
-      setError(tc('error'))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : tc('error'))
     } finally {
       setSaving(false)
     }
@@ -121,7 +114,7 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
       title={`${isEdit ? tc('edit') : tc('new')} — ${t('gdpr.requests')}`}
       closeDisabled={saving}
       secondary={{ label: tc('cancel'), onClick: onClose, disabled: saving }}
-      primary={{ label: saving ? tc('loading') : tc('save'), onClick: handleSubmit, disabled: saving }}
+      primary={{ label: saving ? tc('loading') : tc('save'), onClick: () => void handleSubmit(), disabled: saving }}
     >
       {/* Employee — only for new */}
       {!isEdit && (
@@ -129,13 +122,13 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
           <select
             id="datareq-employee"
             className={INPUT_CLS}
-            value={form.employee_id}
-            onChange={(e) => handleChange('employee_id', e.target.value)}
+            value={form.employeeId}
+            onChange={(e) => handleChange('employeeId', e.target.value)}
           >
             <option value="">{tc('selectPlaceholder')}</option>
             {employees.map((emp) => (
               <option key={emp.id} value={emp.id}>
-                {emp.name} ({emp.employee_no})
+                {emp.name} ({emp.employeeNo})
               </option>
             ))}
           </select>
@@ -147,8 +140,9 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
         <select
           id="datareq-request-type"
           className={INPUT_CLS}
-          value={form.request_type}
-          onChange={(e) => handleChange('request_type', e.target.value)}
+          value={form.requestType}
+          onChange={(e) => handleChange('requestType', e.target.value)}
+          disabled={isEdit}
         >
           <option value="">{tc('selectPlaceholder')}</option>
           {REQUEST_TYPES.map((rt) => (
@@ -157,28 +151,32 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
         </select>
       </WdField>
 
-      {/* Description */}
-      <WdField label={tc('description')} required htmlFor="datareq-description">
+      {/* Description — only editable on create */}
+      <WdField label={tc('description')} htmlFor="datareq-description">
         <textarea
           id="datareq-description"
           className={`${INPUT_CLS} resize-none`}
           rows={3}
-          placeholder="Describe the data subject request..."
           value={form.description}
           onChange={(e) => handleChange('description', e.target.value)}
+          readOnly={isEdit}
         />
       </WdField>
 
-      {/* Deadline */}
-      <WdField label={t('gdpr.deadline')} htmlFor="datareq-deadline">
-        <input
-          id="datareq-deadline"
-          type="date"
-          className={INPUT_CLS}
-          value={form.deadline}
-          onChange={(e) => handleChange('deadline', e.target.value)}
-        />
-      </WdField>
+      {/* Deadline: 서버가 접수일 기준 자동 산정 — 생성 시 안내, 수정 시 read-only 표시 */}
+      {isEdit ? (
+        <WdField label={t('gdpr.deadline')} htmlFor="datareq-deadline">
+          <input
+            id="datareq-deadline"
+            type="text"
+            className={`${INPUT_CLS} read-only:bg-background`}
+            value={request?.deadline ? new Date(request.deadline).toLocaleDateString() : '-'}
+            readOnly
+          />
+        </WdField>
+      ) : (
+        <p className="text-xs text-muted-foreground">{t('gdpr.deadlineAutoNote')}</p>
+      )}
 
       {/* Status — only for edit */}
       {isEdit && (
@@ -203,9 +201,8 @@ export default function DataRequestForm({ open, request, onClose, onSaved }: Dat
             id="datareq-response-note"
             className={`${INPUT_CLS} resize-none`}
             rows={3}
-            placeholder="Response or resolution notes..."
-            value={form.response_note}
-            onChange={(e) => handleChange('response_note', e.target.value)}
+            value={form.responseNote}
+            onChange={(e) => handleChange('responseNote', e.target.value)}
           />
         </WdField>
       )}
