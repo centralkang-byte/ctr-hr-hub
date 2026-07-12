@@ -3984,7 +3984,12 @@
       "planOnboarding": "온보딩",
       "planOffboarding": "오프보딩",
       "planCrossboardingDeparture": "전출",
-      "planCrossboardingArrival": "전입"
+      "planCrossboardingArrival": "전입",
+      "moodGreat": "아주 좋음",
+      "moodGood": "좋음",
+      "moodNeutral": "보통",
+      "moodStruggling": "힘듦",
+      "moodBad": "나쁨"
     },
     "myOnboarding": "내 온보딩",
     "checklist": "체크리스트",
@@ -4203,7 +4208,9 @@
       "weekLabel": "{week}주차"
     },
     "progressAria": "온보딩 진행률: {total}개 중 {completed}개 작업 완료",
-    "planTypeFilter": "플랜 유형 필터"
+    "planTypeFilter": "플랜 유형 필터",
+    "notStarted": "시작 전",
+    "filterNotStarted": "시작 전"
   },
   "org": {
     "title": "조직 관리",
@@ -9502,7 +9509,8 @@
             "writeReview": "자기 평가 작성",
             "leaveRequest": "휴가 신청",
             "myPage": "마이 페이지"
-          }
+          },
+          "focusOffboardingOverdue": "퇴직 D+{days} — 체크리스트를 확인하세요"
         },
         "stat": {
           "annualRemaining": "잔여 연차",
@@ -9526,12 +9534,14 @@
           "onboarding": {
             "title": "내 온보딩 진행",
             "subtitle": "진행률 {progress}% · D-{days}",
-            "cta": "체크리스트 열기"
+            "cta": "체크리스트 열기",
+            "subtitleOverdue": "진행률 {progress}% · D+{days}"
           },
           "offboarding": {
             "title": "내 오프보딩 진행",
             "subtitle": "진행률 {progress}% · D-{days}",
-            "cta": "인수인계 열기"
+            "cta": "인수인계 열기",
+            "subtitleOverdue": "진행률 {progress}% · D+{days}"
           }
         },
         "insight": {
@@ -9641,7 +9651,9 @@
           "action": {
             "edit": "편집",
             "doc": "문서 열기"
-          }
+          },
+          "onboardingRowOverdue": "진행률 {progress}% · D+{days}",
+          "offboardingRowOverdue": "진행률 {progress}% · D+{days}"
         },
         "empty": {
           "onboarding": {
@@ -9770,7 +9782,9 @@
           "action": {
             "edit": "편집",
             "doc": "문서 열기"
-          }
+          },
+          "onboardingRowOverdue": "진행률 {progress}% · D+{days}",
+          "offboardingRowOverdue": "진행률 {progress}% · D+{days}"
         },
         "empty": {
           "onboarding": {
@@ -9968,7 +9982,8 @@
             "success": "여유",
             "warning": "임박",
             "error": "연체"
-          }
+          },
+          "offboardingRowOverdue": "진행률 {progress}% · D+{days}"
         },
         "empty": {
           "offboarding": {

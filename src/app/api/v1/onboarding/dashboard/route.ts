@@ -35,8 +35,10 @@ export const GET = withPermission(
       ...(status
         ? { status }
         : {
+            // NOT_STARTED 포함 — 시작이 지연된 인스턴스가 "전체"에서 비가시가 되면
+            // 개입이 가장 필요한 케이스가 숨는다 (Phase 2 QA S336)
             status: {
-              in: ['IN_PROGRESS', 'COMPLETED'] as OnboardingProgressStatus[],
+              in: ['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED'] as OnboardingProgressStatus[],
             },
           }),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -96,13 +98,32 @@ export const GET = withPermission(
       const totalTasks = ob.tasks.length
       const completed = ob.tasks.filter((t) => t.status === 'DONE').length
       const now = new Date()
-      const isDelayed = ob.tasks.some((t) => {
-        if (t.status === 'DONE') return false
-        const dueDate = ob.startedAt
-          ? new Date(ob.startedAt.getTime() + t.task.dueDaysAfter * 86400000)
-          : null
-        return dueDate ? dueDate < now : false
-      })
+      // NOT_STARTED 지연: 기준일(온보딩=입사일, 오프보딩=최종근무일)이 지났는데 미시작
+      // — startedAt 이 null 이라 task 기반 판정이 항상 false 가 되는 사각 (Phase 2 QA S336)
+      // crossboarding 은 기준일 컬럼이 없어 판정 제외. 날짜 컬럼은 UTC 자정으로 저장되므로
+      // 오늘(UTC 자정) 이전인 경우만 지연 처리 — 기준일 당일은 정상 (Codex G2)
+      const todayUtcMidnight = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+      )
+      const notStartedBaseDate =
+        ob.planType === 'ONBOARDING'
+          ? ob.employee.hireDate
+          : ob.planType === 'OFFBOARDING'
+            ? ob.lastWorkingDate
+            : null
+      const notStartedOverdue =
+        ob.status === 'NOT_STARTED' &&
+        notStartedBaseDate != null &&
+        notStartedBaseDate < todayUtcMidnight
+      const isDelayed =
+        notStartedOverdue ||
+        ob.tasks.some((t) => {
+          if (t.status === 'DONE') return false
+          const dueDate = ob.startedAt
+            ? new Date(ob.startedAt.getTime() + t.task.dueDaysAfter * 86400000)
+            : null
+          return dueDate ? dueDate < now : false
+        })
       const emotionPulse = checkinMap[ob.employeeId] ?? null
       return { ...ob, progress: { total: totalTasks, completed }, isDelayed, emotionPulse }
     })

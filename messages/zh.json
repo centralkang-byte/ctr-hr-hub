@@ -2729,7 +2729,8 @@
             "writeReview": "编写自评",
             "leaveRequest": "请假",
             "myPage": "我的"
-          }
+          },
+          "focusOffboardingOverdue": "离职已过 D+{days} — 请查看清单"
         },
         "stat": {
           "annualRemaining": "剩余年假",
@@ -2753,12 +2754,14 @@
           "onboarding": {
             "title": "我的入职",
             "subtitle": "{progress}% · D-{days}",
-            "cta": "打开清单"
+            "cta": "打开清单",
+            "subtitleOverdue": "{progress}% · D+{days}"
           },
           "offboarding": {
             "title": "我的离职",
             "subtitle": "{progress}% · D-{days}",
-            "cta": "打开交接"
+            "cta": "打开交接",
+            "subtitleOverdue": "{progress}% · D+{days}"
           }
         },
         "insight": {
@@ -2845,7 +2848,8 @@
             "success": "宽裕",
             "warning": "临近",
             "error": "逾期"
-          }
+          },
+          "offboardingRowOverdue": "{progress}% · D+{days}"
         },
         "empty": {
           "offboarding": {
@@ -2972,7 +2976,9 @@
           "action": {
             "edit": "编辑",
             "doc": "打开文档"
-          }
+          },
+          "onboardingRowOverdue": "{progress}% · D+{days}",
+          "offboardingRowOverdue": "{progress}% · D+{days}"
         },
         "empty": {
           "onboarding": {
@@ -3209,7 +3215,9 @@
           "action": {
             "edit": "编辑",
             "doc": "打开文档"
-          }
+          },
+          "onboardingRowOverdue": "{progress}% · D+{days}",
+          "offboardingRowOverdue": "{progress}% · D+{days}"
         },
         "empty": {
           "onboarding": {
@@ -5547,7 +5555,12 @@
       "planOnboarding": "入职",
       "planOffboarding": "离职",
       "planCrossboardingDeparture": "调出",
-      "planCrossboardingArrival": "调入"
+      "planCrossboardingArrival": "调入",
+      "moodGreat": "非常好",
+      "moodGood": "良好",
+      "moodNeutral": "一般",
+      "moodStruggling": "有困难",
+      "moodBad": "不好"
     },
     "dashboardDescription": "Monitor onboarding progress for new hires.",
     "dashboardTitle": "Onboarding Status",
@@ -5714,7 +5727,9 @@
     "welcomeMessage": "Welcome to CTR HR Hub, {name}!",
     "welcomeSubMessage": "Complete the onboarding checklist below to get started.",
     "progressAria": "入职进度：{total} 项任务中已完成 {completed} 项",
-    "planTypeFilter": "计划类型筛选"
+    "planTypeFilter": "计划类型筛选",
+    "notStarted": "未开始",
+    "filterNotStarted": "未开始"
   },
   "org": {
     "addChange": "添加 Change",

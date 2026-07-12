@@ -2729,7 +2729,8 @@
             "writeReview": "Viết đánh giá",
             "leaveRequest": "Xin nghỉ",
             "myPage": "Trang của tôi"
-          }
+          },
+          "focusOffboardingOverdue": "Đã quá ngày nghỉ việc D+{days} — kiểm tra danh sách"
         },
         "stat": {
           "annualRemaining": "Ngày nghỉ còn lại",
@@ -2753,12 +2754,14 @@
           "onboarding": {
             "title": "Onboarding của tôi",
             "subtitle": "{progress}% · D-{days}",
-            "cta": "Mở danh sách"
+            "cta": "Mở danh sách",
+            "subtitleOverdue": "{progress}% · D+{days}"
           },
           "offboarding": {
             "title": "Offboarding của tôi",
             "subtitle": "{progress}% · D-{days}",
-            "cta": "Mở bàn giao"
+            "cta": "Mở bàn giao",
+            "subtitleOverdue": "{progress}% · D+{days}"
           }
         },
         "insight": {
@@ -2845,7 +2848,8 @@
             "success": "Ổn",
             "warning": "Sắp",
             "error": "Quá hạn"
-          }
+          },
+          "offboardingRowOverdue": "{progress}% · D+{days}"
         },
         "empty": {
           "offboarding": {
@@ -2972,7 +2976,9 @@
           "action": {
             "edit": "Sửa",
             "doc": "Mở tài liệu"
-          }
+          },
+          "onboardingRowOverdue": "{progress}% · D+{days}",
+          "offboardingRowOverdue": "{progress}% · D+{days}"
         },
         "empty": {
           "onboarding": {
@@ -3209,7 +3215,9 @@
           "action": {
             "edit": "Chỉnh sửa",
             "doc": "Mở tài liệu"
-          }
+          },
+          "onboardingRowOverdue": "{progress}% · D+{days}",
+          "offboardingRowOverdue": "{progress}% · D+{days}"
         },
         "empty": {
           "onboarding": {
@@ -5546,7 +5554,12 @@
       "planOnboarding": "Nhập môn",
       "planOffboarding": "Nghỉ việc",
       "planCrossboardingDeparture": "Chuyển đi",
-      "planCrossboardingArrival": "Chuyển đến"
+      "planCrossboardingArrival": "Chuyển đến",
+      "moodGreat": "Rất tốt",
+      "moodGood": "Tốt",
+      "moodNeutral": "Bình thường",
+      "moodStruggling": "Gặp khó khăn",
+      "moodBad": "Không tốt"
     },
     "dashboardDescription": "Monitor onboarding progress for new hires.",
     "dashboardTitle": "Onboarding Status",
@@ -5713,7 +5726,9 @@
     "welcomeMessage": "Welcome to CTR HR Hub, {name}!",
     "welcomeSubMessage": "Complete the onboarding checklist below to get started.",
     "progressAria": "Tiến độ nhập môn: {completed}/{total} công việc hoàn thành",
-    "planTypeFilter": "Bộ lọc loại kế hoạch"
+    "planTypeFilter": "Bộ lọc loại kế hoạch",
+    "notStarted": "Chưa bắt đầu",
+    "filterNotStarted": "Chưa bắt đầu"
   },
   "org": {
     "addChange": "Thêm Change",

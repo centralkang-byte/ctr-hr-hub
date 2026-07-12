@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import { DashboardHomeShell, HomeGrid, HomeSection, HomeStack } from './shell/DashboardHomeShell'
 import { HeroCard } from './primitives/HeroCard'
+import { ddayKeyAndDays } from './primitives/dday'
 import { StatCard } from './primitives/StatCard'
 import { ListCard } from './primitives/ListCard'
 import { EmptyState } from './primitives/EmptyState'
@@ -83,6 +84,10 @@ function listItemStatusForOffboarding(daysUntilStart: number | null | undefined)
 
 export function ManagerHomeV2({ user }: Props) {
   const t = useTranslations('home.manager.v2')
+  const listRowSecondary = (baseKey: string, progress: number, days: number | null | undefined) => {
+    const dday = ddayKeyAndDays(baseKey, days)
+    return t(dday.key, { progress, days: dday.days })
+  }
   const timeOfDay = useTimeOfDay()
   const [summary, setSummary] = useState<ManagerSummary | null>(null)
   const [loading, setLoading] = useState(true)
@@ -272,10 +277,7 @@ export function ManagerHomeV2({ user }: Props) {
             renderItem={(item) => ({
               id: item.employeeId,
               primary: item.department ? `${item.name} — ${item.department}` : item.name,
-              secondary: t('list.onboardingRow', {
-                progress: item.progress,
-                days: item.daysUntilStart ?? 0,
-              }),
+              secondary: listRowSecondary('list.onboardingRow', item.progress, item.daysUntilStart),
               statusDot: listItemStatusForOnboarding(item.progress),
               statusLabel: t(`list.onboardingStatus.${listItemStatusForOnboarding(item.progress)}`),
               // TODO: href requires onboardingId from API (employeeId won't work). Non-clickable for now.
@@ -301,10 +303,7 @@ export function ManagerHomeV2({ user }: Props) {
             renderItem={(item) => ({
               id: item.employeeId,
               primary: item.name,
-              secondary: t('list.offboardingRow', {
-                progress: item.progress,
-                days: item.daysUntilStart ?? 0,
-              }),
+              secondary: listRowSecondary('list.offboardingRow', item.progress, item.daysUntilStart),
               statusDot: listItemStatusForOffboarding(item.daysUntilStart),
               statusLabel: t(`list.offboardingStatus.${listItemStatusForOffboarding(item.daysUntilStart)}`),
               // TODO: href requires offboardingId from API (employeeId won't work). Non-clickable for now.

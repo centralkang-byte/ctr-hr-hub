@@ -27,6 +27,7 @@ import {
 } from 'lucide-react'
 import { DashboardHomeShell, HomeGrid, HomeSection } from './shell/DashboardHomeShell'
 import { WorkdayHero } from './primitives/WorkdayHero'
+import { ddayKeyAndDays } from './primitives/dday'
 import { WorkletGrid, type WorkletTile } from './primitives/WorkletGrid'
 import { ApprovalPreview } from './primitives/ApprovalPreview'
 import { QuickActionsRow, type QuickAction } from './primitives/QuickActionsRow'
@@ -67,6 +68,10 @@ function listItemStatusForOffboarding(
 
 export function HrAdminHomeV2({ user }: Props) {
   const t = useTranslations('home.hrAdmin.v2')
+  const listRowSecondary = (baseKey: string, progress: number, days: number | null | undefined) => {
+    const dday = ddayKeyAndDays(baseKey, days)
+    return t(dday.key, { progress, days: dday.days })
+  }
   const locale = useLocale()
   const timeOfDay = useTimeOfDay()
   const [summary, setSummary] = useState<HrAdminSummary | null>(null)
@@ -407,10 +412,7 @@ export function HrAdminHomeV2({ user }: Props) {
             renderItem={(item) => ({
               id: item.employeeId,
               primary: item.department ? `${item.name} — ${item.department}` : item.name,
-              secondary: t('list.onboardingRow', {
-                progress: item.progress,
-                days: item.daysUntilStart ?? 0,
-              }),
+              secondary: listRowSecondary('list.onboardingRow', item.progress, item.daysUntilStart),
               statusDot: listItemStatusForOnboarding(item.progress),
               statusLabel: t(`list.onboardingStatus.${listItemStatusForOnboarding(item.progress)}`),
               href: `/onboarding/${item.recordId}`,
@@ -436,10 +438,7 @@ export function HrAdminHomeV2({ user }: Props) {
             renderItem={(item) => ({
               id: item.employeeId,
               primary: item.name,
-              secondary: t('list.offboardingRow', {
-                progress: item.progress,
-                days: item.daysUntilStart ?? 0,
-              }),
+              secondary: listRowSecondary('list.offboardingRow', item.progress, item.daysUntilStart),
               statusDot: listItemStatusForOffboarding(item.daysUntilStart),
               statusLabel: t(
                 `list.offboardingStatus.${listItemStatusForOffboarding(item.daysUntilStart)}`,

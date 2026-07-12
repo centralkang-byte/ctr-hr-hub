@@ -91,8 +91,8 @@ export function WdLeaveBalanceCard({ balances, loading }: WdLeaveBalanceCardProp
           id: b.id,
           label: b.leaveTypeDef?.name ?? b.policy?.name ?? '-',
           value: remaining,
-          unit: `/ ${total} ${t('fullDay')}`,
-          caption: `${t('usedDays')} ${b.used}${t('fullDay')} / ${t('pendingDays')} ${b.pending}${t('fullDay')}`,
+          unit: `/ ${total}${t('dayUnit')}`,
+          caption: `${t('usedDays')} ${b.used}${t('dayUnit')} / ${t('pendingDays')} ${b.pending}${t('dayUnit')}`,
           progress: { ratio: usedRatio, tone: remainingRatioToTone(remaining, total) },
         }
       }),

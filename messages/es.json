@@ -2729,7 +2729,8 @@
             "writeReview": "Escribir",
             "leaveRequest": "Solicitar",
             "myPage": "Mi página"
-          }
+          },
+          "focusOffboardingOverdue": "D+{days} desde la salida — revisa tu lista"
         },
         "stat": {
           "annualRemaining": "Vacaciones restantes",
@@ -2753,12 +2754,14 @@
           "onboarding": {
             "title": "Mi incorporación",
             "subtitle": "{progress}% · D-{days}",
-            "cta": "Abrir lista"
+            "cta": "Abrir lista",
+            "subtitleOverdue": "{progress}% · D+{days}"
           },
           "offboarding": {
             "title": "Mi desvinculación",
             "subtitle": "{progress}% · D-{days}",
-            "cta": "Abrir entrega"
+            "cta": "Abrir entrega",
+            "subtitleOverdue": "{progress}% · D+{days}"
           }
         },
         "insight": {
@@ -2845,7 +2848,8 @@
             "success": "Con margen",
             "warning": "Próximo",
             "error": "Vencido"
-          }
+          },
+          "offboardingRowOverdue": "{progress}% · D+{days}"
         },
         "empty": {
           "offboarding": {
@@ -2972,7 +2976,9 @@
           "action": {
             "edit": "Editar",
             "doc": "Abrir documento"
-          }
+          },
+          "onboardingRowOverdue": "{progress}% · D+{days}",
+          "offboardingRowOverdue": "{progress}% · D+{days}"
         },
         "empty": {
           "onboarding": {
@@ -3209,7 +3215,9 @@
           "action": {
             "edit": "Editar",
             "doc": "Abrir documento"
-          }
+          },
+          "onboardingRowOverdue": "{progress}% · D+{days}",
+          "offboardingRowOverdue": "{progress}% · D+{days}"
         },
         "empty": {
           "onboarding": {
@@ -5546,7 +5554,12 @@
       "planOnboarding": "Incorporación",
       "planOffboarding": "Desvinculación",
       "planCrossboardingDeparture": "Transferencia (Salida)",
-      "planCrossboardingArrival": "Transferencia (Llegada)"
+      "planCrossboardingArrival": "Transferencia (Llegada)",
+      "moodGreat": "Excelente",
+      "moodGood": "Bien",
+      "moodNeutral": "Neutral",
+      "moodStruggling": "Con dificultades",
+      "moodBad": "Mal"
     },
     "dashboardDescription": "Monitor onboarding progress for new hires.",
     "dashboardTitle": "Onboarding Status",
@@ -5713,7 +5726,9 @@
     "welcomeMessage": "Welcome to CTR HR Hub, {name}!",
     "welcomeSubMessage": "Complete the onboarding checklist below to get started.",
     "progressAria": "Progreso de incorporación: {completed} de {total} tareas completadas",
-    "planTypeFilter": "Filtro de tipo de plan"
+    "planTypeFilter": "Filtro de tipo de plan",
+    "notStarted": "No iniciado",
+    "filterNotStarted": "No iniciado"
   },
   "org": {
     "addChange": "Agregar Change",
