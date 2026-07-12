@@ -3,6 +3,7 @@
   "buildCommand": "npm run build",
   "installCommand": "npm install",
   "outputDirectory": ".next",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ':(exclude)docs/**' ':(exclude)*.md' ':(exclude).claude/**' ':(exclude).codex/**' ':(exclude)_design-reference/**' ':(exclude)e2e/**'",
   "crons": [
     { "path": "/api/v1/cron/nudge-batch", "schedule": "0 1 * * *" },
     { "path": "/api/v1/cron/loa-return-reminder", "schedule": "0 0 * * *" },
