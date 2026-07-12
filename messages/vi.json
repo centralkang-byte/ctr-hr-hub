@@ -1039,7 +1039,9 @@
       "rateUnsupported": "Không tính tỷ lệ đi làm cho công ty làm theo ca hoặc tuần làm việc không tiêu chuẩn",
       "unclassified": "{count} chưa phân loại",
       "anomaly": "{count} bất thường dữ liệu"
-    }
+    },
+    "nonWorkingDay": "Ngày nghỉ",
+    "anomalySection": "Bất thường chấm công"
   },
   "auth": {
     "brandSlogan": "Central to your safe mobility",
@@ -6205,7 +6207,8 @@
       "publishNone": "Không có đợt lương sẵn sàng phát hành",
       "publishMultiple": "Chọn theo công ty trong pipeline",
       "prevMonth": "Tháng trước",
-      "nextMonth": "Tháng sau"
+      "nextMonth": "Tháng sau",
+      "cycleNotStarted": "Chu kỳ tháng này chưa bắt đầu"
     },
     "days": "day(s)",
     "deductions": "Deductions",

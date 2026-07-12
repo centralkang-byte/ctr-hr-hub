@@ -361,6 +361,7 @@ export default function OneOnOneClient({ user }: { user: SessionUser }) {
                         <div className="w-4 h-4 rounded border border-border" />
                         <span className="text-sm text-foreground font-medium">{a.employeeName}:</span>
                         <span className="text-sm text-muted-foreground">&quot;{a.item}&quot;</span>
+                        {/* dueDate는 서버가 date-only(YYYY-MM-DD)로 정규화 — Date 파싱 시 브라우저 tz로 하루 밀릴 수 있어 그대로 표시 */}
                         {a.dueDate && (
                           <span className="text-xs text-muted-foreground ml-auto">({t('oneOnOne_dueDate')}: {a.dueDate})</span>
                         )}

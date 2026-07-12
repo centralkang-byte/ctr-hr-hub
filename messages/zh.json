@@ -1039,7 +1039,9 @@
       "rateUnsupported": "轮班制·非标准工时法人不计算出勤率",
       "unclassified": "未分类 {count} 人",
       "anomaly": "数据异常 {count} 件"
-    }
+    },
+    "nonWorkingDay": "休息日",
+    "anomalySection": "考勤异常"
   },
   "auth": {
     "brandSlogan": "Central to your safe mobility",
@@ -6206,7 +6208,8 @@
       "publishNone": "没有可发放的工资批次",
       "publishMultiple": "请在流水线中按法人选择",
       "prevMonth": "上个月",
-      "nextMonth": "下个月"
+      "nextMonth": "下个月",
+      "cycleNotStarted": "本月周期尚未开始"
     },
     "days": "day(s)",
     "deductions": "Deductions",

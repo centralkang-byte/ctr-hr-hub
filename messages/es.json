@@ -1039,7 +1039,9 @@
       "rateUnsupported": "La tasa de asistencia no se calcula para empresas con turnos o semana no estándar",
       "unclassified": "{count} sin clasificar",
       "anomaly": "{count} anomalías de datos"
-    }
+    },
+    "nonWorkingDay": "Día no laborable",
+    "anomalySection": "Anomalías de asistencia"
   },
   "auth": {
     "brandSlogan": "Central to your safe mobility",
@@ -6205,7 +6207,8 @@
       "publishNone": "No hay ejecuciones listas para publicar",
       "publishMultiple": "Elija por empresa en el pipeline",
       "prevMonth": "Mes anterior",
-      "nextMonth": "Mes siguiente"
+      "nextMonth": "Mes siguiente",
+      "cycleNotStarted": "El ciclo de este mes no ha comenzado"
     },
     "days": "day(s)",
     "deductions": "Deductions",

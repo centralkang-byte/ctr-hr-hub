@@ -211,7 +211,10 @@ export default function PayrollDashboardClient({ user: _user }: Props) {
                 label: t('dashboard.totalNetPay'),
                 value: fmt(data.summary.totalNetPay),
                 icon: Wallet,
-                foot: data.summary.prevTotalNet > 0
+                // 이번 달 사이클 미시작(합계 0)이면 "-100%"가 노이즈라 전월 대비 대신 미시작 안내
+                foot: data.summary.totalNetPay <= 0
+                  ? t('dashboard.cycleNotStarted')
+                  : data.summary.prevTotalNet > 0
                   ? (
                     <span className={data.summary.momChangePercent >= 0 ? 'font-semibold text-[#006b39]' : 'font-semibold text-destructive'}>
                       {t('dashboard.momChange', { pct: `${data.summary.momChangePercent > 0 ? '+' : ''}${data.summary.momChangePercent}` })}

@@ -669,7 +669,12 @@ export default function PayrollSimulationClient({ user: _user, companies, depart
                   minSalary={salaryBandData.min}
                   midSalary={salaryBandData.mid}
                   maxSalary={salaryBandData.max}
-                  comparisonSalary={result.employees[0]?.simulated?.baseSalary}
+                  // simulated.baseSalary는 월 단위 — 밴드 축(연봉)에 맞춰 x12 (라우트 band violation 체크와 동일 규칙)
+                  comparisonSalary={
+                    result.employees[0]?.simulated
+                      ? result.employees[0].simulated.baseSalary * 12
+                      : undefined
+                  }
                 />
               </div>
             )}

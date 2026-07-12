@@ -43,6 +43,8 @@ interface AttendanceKpi {
   lateCount: number
   absentCount: number
   avgTotalMinutes: number
+  /** false = 주말·공휴일 (결근 집계 무의미) */
+  isWorkday?: boolean
 }
 
 interface AnomalyRecord {
@@ -320,7 +322,14 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
 
         <div className="bg-card border border-border rounded-2xl p-4">
           <p className="text-xs text-muted-foreground font-medium mb-2">{t('absent')}</p>
-          <p className={`text-3xl font-bold tabular-nums ${(kpi?.absentCount ?? 0) > 0 ? 'text-destructive' : 'text-foreground'}`}><AnimatedNumber value={kpi?.absentCount ?? 0} /></p>
+          {kpi && kpi.isWorkday === false ? (
+            <>
+              <p className="text-3xl font-bold tabular-nums text-foreground">—</p>
+              <span className="text-xs text-muted-foreground">{t('nonWorkingDay')}</span>
+            </>
+          ) : (
+            <p className={`text-3xl font-bold tabular-nums ${(kpi?.absentCount ?? 0) > 0 ? 'text-destructive' : 'text-foreground'}`}><AnimatedNumber value={kpi?.absentCount ?? 0} /></p>
+          )}
         </div>
       </div>
 
@@ -397,6 +406,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
       )}
 
       {/* Anomaly table */}
+      <h2 className="text-sm font-semibold text-foreground mt-2">{t('anomalySection')}</h2>
       <DataTable
         columns={columns as unknown as DataTableColumn<Record<string, unknown>>[]}
         data={anomalies as unknown as Record<string, unknown>[]}

@@ -9,7 +9,7 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
-import { parseDateOnly } from '@/lib/timezone'
+import { parseDateOnly, formatToTz } from '@/lib/timezone'
 import { resolveDayContext } from '@/lib/attendance/judgeStatus'
 import type { SessionUser } from '@/types'
 
@@ -36,10 +36,34 @@ export const GET = withPermission(
     if (dateParam && !/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
       throw badRequest('date는 YYYY-MM-DD 형식이어야 합니다.')
     }
-    const dateStr =
-      dateParam ?? (await resolveDayContext(companyId, new Date())).localDateStr
+    const dayCtx = await resolveDayContext(companyId, new Date())
+    const dateStr = dateParam ?? dayCtx.localDateStr
     const targetDate = parseDateOnly(dateStr)
     const nextDay = new Date(targetDate.getTime() + 24 * 60 * 60 * 1000)
+
+    // 근무일 여부 — 주말·공휴일이면 "결근" 집계가 무의미하므로 FE 표기 분기용으로 내려줌.
+    // Holiday.date는 법인 현지자정 naive 저장이라 exact equality 대신 tz 변환 문자열로 비교
+    const dow = targetDate.getUTCDay()
+    let isWorkday = dow !== 0 && dow !== 6
+    if (isWorkday) {
+      const holidayCandidates = await prisma.holiday.findMany({
+        where: {
+          companyId,
+          date: {
+            gte: new Date(targetDate.getTime() - 24 * 60 * 60 * 1000),
+            lte: nextDay,
+          },
+        },
+        select: { date: true },
+      })
+      // 저장 관행이 이중(UTC자정 vs 현지자정-as-UTC — [[hrhub-attendance-naive-timestamp-tz]])이라
+      // 두 해석 중 하나라도 대상 날짜와 일치하면 공휴일로 판정
+      isWorkday = !holidayCandidates.some(
+        (h) =>
+          formatToTz(h.date, dayCtx.timezone, 'yyyy-MM-dd') === dateStr ||
+          h.date.toISOString().slice(0, 10) === dateStr,
+      )
+    }
 
     // 3. Total employees count
     const totalEmployees = await prisma.employee.count({
@@ -108,6 +132,7 @@ export const GET = withPermission(
         lateCount,
         absentCount,
         avgTotalMinutes: Math.round(avgMinutes),
+        isWorkday,
       },
       anomalies: anomalyList,
     })
