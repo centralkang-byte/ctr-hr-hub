@@ -54,6 +54,8 @@ interface PayslipItem {
 
 interface PayrollMeClientProps {
   user: SessionUser
+  /** 연말정산 셀프서비스 진입 노출 (KR + 1~3월 — 서버에서 판정, 종전 rail 조건 보존) */
+  showYearEnd?: boolean
 }
 
 // ─── Helpers ────────────────────────────────────────────────
@@ -91,7 +93,7 @@ function MoMDelta({ current, previous, sameLabel }: { current: number; previous:
 // ─── Component ──────────────────────────────────────────────
 
 export default function PayrollMeClient({
- user: _user }: PayrollMeClientProps) {
+ user: _user, showYearEnd = false }: PayrollMeClientProps) {
   const t = useTranslations('payrollMe')
   const tn = useTranslations('nav')
   const locale = useLocale()
@@ -194,16 +196,18 @@ export default function PayrollMeClient({
 
         <div className="flex items-center gap-2">
           {/* Wave1 IA 데모션 4: 연말정산(self) rail → 급여명세서 허브 진입 (2026-06-12 제안 확정) */}
-          <Link
-            href="/my/year-end"
-            className={cn(
-              'inline-flex items-center justify-center font-medium',
-              BUTTON_VARIANTS.secondary,
-              BUTTON_SIZES.sm,
-            )}
-          >
-            {tn('mySpace.yearEnd')}
-          </Link>
+          {showYearEnd && (
+            <Link
+              href="/my/year-end"
+              className={cn(
+                'inline-flex items-center justify-center font-medium',
+                BUTTON_VARIANTS.secondary,
+                BUTTON_SIZES.sm,
+              )}
+            >
+              {tn('mySpace.yearEnd')}
+            </Link>
+          )}
           {years.length > 0 && (
             <Select value={yearFilter} onValueChange={setYearFilter}>
               <SelectTrigger className="w-[120px]" aria-label={t('yearFilterAria')}>

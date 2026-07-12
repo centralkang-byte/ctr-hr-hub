@@ -71,9 +71,6 @@ import { ROLE_GROUPS } from '@/lib/rbac/rbac-spec'
 // My Space 내 시각적 서브그룹 (구분선 + 레이블)
 export type SubGroup = 'work' | 'time-off' | 'pay' | 'growth' | 'etc'
 
-// 조건부 표시 아이템 (useNavigation에서 런타임 필터링)
-export type ConditionalItem = 'onboarding' | 'offboarding' | 'year-end'
-
 export interface NavItem {
   key: string
   labelKey: string
@@ -86,7 +83,6 @@ export interface NavItem {
   children?: NavItem[]
   countryFilter?: string[]
   subGroup?: SubGroup
-  conditional?: ConditionalItem
 }
 
 export interface NavSection {
