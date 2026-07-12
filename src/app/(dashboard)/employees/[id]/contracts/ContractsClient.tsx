@@ -2,7 +2,7 @@
 
 import { EmptyState } from '@/components/ui/EmptyState'
 
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { format, differenceInDays } from 'date-fns'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { WdDrawer, WdField, WdRow } from '@/components/shared/WdDrawer'
 import { apiClient } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
 import type { Permission } from '@/types'
 import { useSubmitGuard } from '@/hooks/useSubmitGuard'
 
@@ -55,7 +56,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
   }
 
   const [contracts, setContracts] = useState<ContractHistory[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState({
     contractType: 'PERMANENT',
@@ -67,7 +68,7 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
 
   const canWrite = permissions.some((p) => p.module === 'employees' && (p.action === 'create' || p.action === 'update'))
 
-  const loadContracts = async () => {
+  const loadContracts = useCallback(async () => {
     setLoading(true)
     try {
       const res = await apiClient.getList<ContractHistory>(
@@ -75,10 +76,18 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
         {},
       )
       setContracts(res.data)
+    } catch (err) {
+      toast({
+        title: '계약 이력 로드 실패',
+        description: err instanceof Error ? err.message : '다시 시도해 주세요.',
+        variant: 'destructive',
+      })
     } finally {
       setLoading(false)
     }
-  }
+  }, [employeeId])
+
+  useEffect(() => { loadContracts() }, [loadContracts])
 
   const handleSubmit = async () => {
     await apiClient.post(`/api/v1/employees/${employeeId}/contracts`, {
@@ -97,11 +106,6 @@ export default function ContractsClient({ employeeId, permissions }: Props) {
   const isExpiringSoon = (endDate: string | null) => {
     if (!endDate) return false
     return differenceInDays(new Date(endDate), new Date()) <= 30
-  }
-
-  // 컴포넌트 마운트 시 로드
-  if (!loading && contracts.length === 0) {
-    loadContracts()
   }
 
   return (

@@ -669,7 +669,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">
                     {t('balancePreview.currentRemaining')}{' '}
-                    <strong className="text-foreground">{selectedRemaining}{t('fullDay')}</strong>
+                    <strong className="text-foreground">{selectedRemaining}{t('dayUnit')}</strong>
                   </span>
                   {requestedDaysNum > 0 && projectedRemaining !== null && (
                     <span
@@ -681,7 +681,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
                           : 'text-primary'
                       }`}
                     >
-                      {t('balancePreview.requestAmount', { amount: requestedDaysNum, unit: t('fullDay'), remaining: projectedRemaining })}
+                      {t('balancePreview.requestAmount', { amount: requestedDaysNum, unit: t('dayUnit'), remaining: projectedRemaining })}
                     </span>
                   )}
                 </div>
