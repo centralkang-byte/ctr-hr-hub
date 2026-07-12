@@ -19,6 +19,12 @@ export const GET = withPermission(
   async (_req: NextRequest, ctx, user: SessionUser) => {
     const { id } = await ctx.params
 
+    // ⑥-C PR-2 (Codex G2 R2): 퇴직 면담은 HR 전용 — DB 조회 전에 닫아 403/404 차이로
+    // 회사 내 오프보딩 ID 존재 여부가 새는 것(existence leak)까지 차단
+    if (user.role !== 'SUPER_ADMIN' && user.role !== 'HR_ADMIN') {
+      throw forbidden('퇴직 면담은 HR 관리자만 열람할 수 있습니다.')
+    }
+
     const offboarding = await prisma.employeeOffboarding.findFirst({
       where: {
         id,
@@ -28,26 +34,20 @@ export const GET = withPermission(
     })
     if (!offboarding) throw notFound('퇴직 기록을 찾을 수 없습니다.')
 
+    // E-2 isolation (HR 엣지 케이스 — HR이 당사자의 직속매니저이거나 당사자 본인인 경우도 차단)
+    if (await isDirectManager(user.employeeId, offboarding.employeeId)) {
+      throw forbidden('퇴직 면담 원본은 직속 매니저에게 공개되지 않습니다.')
+    }
+    if (user.employeeId === offboarding.employeeId) {
+      throw forbidden('제출된 퇴직 면담은 열람이 불가합니다.')
+    }
+
     const interview = await prisma.exitInterview.findFirst({
       where: { employeeOffboardingId: id },
       include: { interviewer: { select: { id: true, name: true } } },
     })
 
     if (!interview) return apiSuccess(null)
-
-    // E-2: Isolation enforcement
-    // MANAGER: blocked from seeing exit interview raw data
-    if (await isDirectManager(user.employeeId, offboarding.employeeId)) {
-      throw forbidden('퇴직 면담 원본은 직속 매니저에게 공개되지 않습니다.')
-    }
-    // Employee themselves: blocked from reading submitted interview
-    if (user.employeeId === offboarding.employeeId) {
-      throw forbidden('제출된 퇴직 면담은 열람이 불가합니다.')
-    }
-    // Only HR_ADMIN and SUPER_ADMIN reach here
-    if (user.role !== 'SUPER_ADMIN' && user.role !== 'HR_ADMIN') {
-      throw forbidden('퇴직 면담은 HR 관리자만 열람할 수 있습니다.')
-    }
 
     return apiSuccess(interview)
   },

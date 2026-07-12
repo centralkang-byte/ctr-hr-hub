@@ -583,7 +583,9 @@ export function OffboardingDetailClient({
                       </TableCell>
                       {isInProgress && (
                         <TableCell>
-                          {(tsk.status === 'PENDING' || tsk.status === 'IN_PROGRESS') && (
+                          {/* ⑥-C PR-2: MANAGER는 자기 담당(MANAGER형) 태스크만 완료 가능 (API 가드 미러) */}
+                          {(isHrOrSuperAdmin || tsk.assigneeType === 'MANAGER') &&
+                            (tsk.status === 'PENDING' || tsk.status === 'IN_PROGRESS') && (
                             <Button
                               size="sm"
                               variant="outline"
@@ -959,6 +961,12 @@ export function OffboardingDetailClient({
                 </CardContent>
               </Card>
             </div>
+          ) : !isHrOrSuperAdmin ? (
+            /* ⑥-C PR-2: 퇴직 면담은 HR 전용 — 매니저에겐 격리 안내만 (API 가드 미러) */
+            <EmptyState
+              title={t('interviewHrOnlyTitle')}
+              description={t('interviewHrOnlyDesc')}
+            />
           ) : (
             <Card>
               <CardHeader>

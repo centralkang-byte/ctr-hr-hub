@@ -5477,7 +5477,9 @@
     "wouldRecommendYes": "Yes",
     "progressAriaLabel": "Tiến độ: {completed}/{total} công việc hoàn thành",
     "offboardingTabs": "Tab xử lý nghỉ việc",
-    "rateStars": "{n} sao"
+    "rateStars": "{n} sao",
+    "interviewHrOnlyTitle": "Phỏng vấn thôi việc chỉ dành cho HR",
+    "interviewHrOnlyDesc": "Hồ sơ phỏng vấn thôi việc không hiển thị cho quản lý trực tiếp. Vui lòng liên hệ HR."
   },
   "onboarding": {
     "actions": "Actions",

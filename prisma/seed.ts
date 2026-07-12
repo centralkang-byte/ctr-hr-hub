@@ -158,6 +158,9 @@ function buildRolePermissions(): Record<string, PermKey[]> {
     // ⑥-C PR-1: 온보딩 참여 — read만 부여. 참여 라우트(sign-off/task-status)는 VIEW 게이트 + 내부
     // 직속매니저/담당자 가드, 목록/대시보드/체크인은 라우트에서 직속부하 스코프 강제 (manage 미부여)
     'onboarding_read',
+    // ⑥-C PR-2: 오프보딩 참여 — read만 부여. 참여 라우트(tasks/status)는 VIEW 게이트 + 내부
+    // 직속매니저+MANAGER형 태스크 가드, 목록/대시보드는 라우트에서 직속부하 스코프 강제 (manage 미부여)
+    'offboarding_read',
   ]
 
   // EMPLOYEE: self scoped (payroll_read for /payroll/me, org_read for /org chart view)

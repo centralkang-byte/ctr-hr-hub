@@ -16,20 +16,15 @@ export const GET = withPermission(
         const p = Object.fromEntries(req.nextUrl.searchParams)
         const departmentId = p.departmentId
         const companyId = user.role === ROLE.SUPER_ADMIN ? (p.companyId ?? undefined) : user.companyId
-        const minCount = Number(p.minCount ?? 5)
-
-        // Permission: MANAGER can only see own department's stats
+        // ⑥-C PR-2 (Codex G2 P1): 퇴직 면담 통계는 HR 전용 — 대시보드 analytics null 정책·
+        // /offboarding/exit-interviews 페이지 HR_UP ACL 과 정합. (종전 매니저 부서 분기는
+        // MANAGER 가 perm 게이트를 못 넘던 시절의 dead code — offboarding_read 부여로 도달
+        // 가능해지면서 minCount 조작 등 익명화 우회 여지가 생겨 폐쇄)
         const isHrOrSuperAdmin = user.role === ROLE.SUPER_ADMIN || user.role === 'HR_ADMIN'
         if (!isHrOrSuperAdmin) {
-            // Manager — must specify department and must match their own
-            const userAssignment = await prisma.employeeAssignment.findFirst({
-                where: { employeeId: user.employeeId, isPrimary: true, endDate: null },
-                select: { departmentId: true },
-            })
-            if (!departmentId || departmentId !== userAssignment?.departmentId) {
-                throw forbidden('자신의 부서 통계만 조회할 수 있습니다.')
-            }
+            throw forbidden('퇴직 면담 통계는 HR 관리자만 조회할 수 있습니다.')
         }
+        const minCount = Number(p.minCount ?? 5)
 
         // Build where clause for exit interviews
         // We need to filter by department via employee → assignment → department

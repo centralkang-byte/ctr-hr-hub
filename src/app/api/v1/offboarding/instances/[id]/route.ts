@@ -11,7 +11,7 @@ import { notFound, forbidden, badRequest, handlePrismaError } from '@/lib/errors
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
-import { isDirectManager } from '@/lib/auth/manager-check'
+import { getActiveTeamMemberIds, OFFBOARDING_TEAM_STATUSES } from '@/lib/employee/direct-reports'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 
@@ -73,7 +73,12 @@ export const GET = withPermission(
         // ─── Access control ───────────────────────────────
         const isOwnOffboarding = user.employeeId === offboarding.employeeId
         const isHrOrSuperAdmin = user.role === ROLE.SUPER_ADMIN || user.role === 'HR_ADMIN'
-        const isManager = await isDirectManager(user.employeeId, offboarding.employeeId)
+        // ⑥-C PR-2: 매니저 판정을 목록/대시보드와 동일한 active-team 스코프로 통일 (PR-1 G2-③ 미러).
+        // isDirectManager는 endDate:null 전제라 통보기간 endDate=LWD 선기입 케이스를 놓침.
+        const isManager = !isOwnOffboarding && !isHrOrSuperAdmin
+            ? (await getActiveTeamMemberIds(user.employeeId, user.companyId, OFFBOARDING_TEAM_STATUSES))
+                .includes(offboarding.employeeId)
+            : false
 
         if (!isOwnOffboarding && !isHrOrSuperAdmin && !isManager) {
             throw forbidden('이 오프보딩 정보에 접근할 권한이 없습니다.')
@@ -115,8 +120,9 @@ export const GET = withPermission(
             companyCode: assignment?.company?.code ?? '—',
             countryCode: assignment?.company?.countryCode ?? 'KR',
             resignType: offboarding.resignType,
-            resignReasonCode: offboarding.resignReasonCode,
-            resignReasonDetail: offboarding.resignReasonDetail,
+            // ⑥-C PR-2: 사유 상세·재고용 불가는 HR 전용 (매니저/본인 뷰 마스킹)
+            resignReasonCode: isHrOrSuperAdmin ? offboarding.resignReasonCode : null,
+            resignReasonDetail: isHrOrSuperAdmin ? offboarding.resignReasonDetail : null,
             lastWorkingDate: offboarding.lastWorkingDate,
             daysRemaining,
             status: offboarding.status,
@@ -154,8 +160,8 @@ export const GET = withPermission(
             isExitInterviewCompleted: offboarding.isExitInterviewCompleted,
             isSeveranceCalculated: offboarding.isSeveranceCalculated,
             isItAccountDeactivated: offboarding.isItAccountDeactivated,
-            isDoNotRehire: offboarding.isDoNotRehire,
-            doNotRehireReason: offboarding.doNotRehireReason,
+            isDoNotRehire: isHrOrSuperAdmin ? offboarding.isDoNotRehire : null,
+            doNotRehireReason: isHrOrSuperAdmin ? offboarding.doNotRehireReason : null,
             startedAt: offboarding.startedAt,
             completedAt: offboarding.completedAt,
         })
