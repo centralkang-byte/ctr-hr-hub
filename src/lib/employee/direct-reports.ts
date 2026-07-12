@@ -52,6 +52,39 @@ export async function getDirectReportIds(managerId: string): Promise<string[]> {
 }
 
 /**
+ * 직속부하 중 "현재 자사 primary 발령 보유자"만 남기는 재필터 (⑥-C).
+ * getDirectReportIds 는 발령 status 를 안 거르므로(날짜창만), 퇴직/전출/타법인을
+ * 여기서 배제해야 한다 (manager-hub members/announce/activity 와 동일 의미론).
+ * statuses 기본값에 PROBATION 포함 — 온보딩 대상(신입/인턴)의 발령 status 가
+ * PROBATION 이라 ACTIVE-only 면 온보딩 스코프가 통째로 비게 된다.
+ */
+export async function getActiveTeamMemberIds(
+  managerId: string,
+  companyId: string,
+  statuses: string[] = ['ACTIVE', 'ON_LEAVE', 'PROBATION'],
+): Promise<string[]> {
+  const directIds = await getDirectReportIds(managerId)
+  if (directIds.length === 0) return []
+  const now = new Date()
+  const rows = await prisma.employee.findMany({
+    where: {
+      id: { in: directIds },
+      assignments: {
+        some: {
+          companyId,
+          isPrimary: true,
+          status: { in: statuses },
+          effectiveDate: { lte: now },
+          OR: [{ endDate: null }, { endDate: { gt: now } }],
+        },
+      },
+    },
+    select: { id: true },
+  })
+  return rows.map((r) => r.id)
+}
+
+/**
  * Canonical "모든 팀원" resolver — direct reports + cross-company dotted-line.
  * Used by home/summary and manager-hub/summary to ensure both routes see the
  * identical team scope. Without this helper, home/summary missed cross-company

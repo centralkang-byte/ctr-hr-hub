@@ -7,7 +7,8 @@
 import { prisma } from '@/lib/prisma'
 import { apiPaginated, buildPagination } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { getActiveTeamMemberIds } from '@/lib/employee/direct-reports'
 import { calculateProgress, getCurrentMilestone } from '@/lib/onboarding/milestone-helpers'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
@@ -23,11 +24,18 @@ export const GET = withPermission(
         const companyId = user.role === 'SUPER_ADMIN' ? requestedCompanyId : user.companyId
         const statusFilter = url.searchParams.get('status') ?? undefined
 
+        // ⑥-C: MANAGER 는 직속부하(현재 자사 primary 발령)만 — 법인 전체 노출 차단
+        const teamIds =
+            user.role === ROLE.MANAGER
+                ? await getActiveTeamMemberIds(user.employeeId ?? '', user.companyId)
+                : null
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const where: any = { // eslint-disable-line @typescript-eslint/no-explicit-any -- Prisma where clause dynamic type
             planType: 'ONBOARDING',
             ...(companyId ? { companyId } : {}),
             ...(statusFilter ? { status: statusFilter } : {}),
+            ...(teamIds ? { employeeId: { in: teamIds } } : {}),
         }
 
         const [total, instances] = await Promise.all([

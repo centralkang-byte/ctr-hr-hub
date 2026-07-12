@@ -379,21 +379,27 @@ test.describe('Onboarding Self-Service: EMPLOYEE', () => {
   })
 })
 
-// ─── MANAGER: RBAC Blocked (Codex Gate 1) ──────────────
+// ─── MANAGER: 직속부하 스코프 (⑥-C PR-1) ──────────────
+// onboarding_read 부여로 목록/대시보드는 200 — 단 직속부하(활성 자사 primary 발령)만.
+// 템플릿은 HR 설정 전용으로 role 가드 유지 (Codex G2 P1).
 
-test.describe('Onboarding: MANAGER RBAC Blocked', () => {
+test.describe('Onboarding: MANAGER team-scoped access', () => {
   test.use({ storageState: authFile('MANAGER') })
 
-  test('GET /instances returns 403', async ({ request }) => {
+  test('GET /instances returns 200 scoped to direct reports', async ({ request }) => {
     const client = new ApiClient(request)
     const result = await f.listOnboardingInstances(client)
-    assertError(result, 403, 'MANAGER instances blocked')
+    assertOk(result, 'MANAGER instances scoped')
+    // 박준혁 직속부하 = 이민준·정다은 — 그 외 직원 인스턴스가 보이면 스코프 누출
+    const items = (result.data ?? []) as Array<Record<string, unknown>>
+    const allowed = ['이민준', '정다은']
+    for (const item of items) expect(allowed).toContain(item.employeeName)
   })
 
-  test('GET /dashboard returns 403', async ({ request }) => {
+  test('GET /dashboard returns 200 (team-scoped)', async ({ request }) => {
     const client = new ApiClient(request)
     const result = await f.getOnboardingDashboard(client)
-    assertError(result, 403, 'MANAGER dashboard blocked')
+    assertOk(result, 'MANAGER dashboard scoped')
   })
 
   test('GET /templates returns 403', async ({ request }) => {

@@ -9,7 +9,8 @@ import { prisma } from '@/lib/prisma'
 import { Prisma } from '@/generated/prisma/client'
 import { apiPaginated, buildPagination } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { getActiveTeamMemberIds } from '@/lib/employee/direct-reports'
 import type { SessionUser, OnboardingProgressStatus } from '@/types'
 
 export const GET = withPermission(
@@ -23,7 +24,14 @@ export const GET = withPermission(
     const companyId =
       user.role === 'SUPER_ADMIN' ? (p.companyId ?? undefined) : user.companyId
 
+    // ⑥-C: MANAGER 는 직속부하(현재 자사 primary 발령)만 — 법인 전체 노출 차단
+    const teamIds =
+      user.role === ROLE.MANAGER
+        ? await getActiveTeamMemberIds(user.employeeId ?? '', user.companyId)
+        : null
+
     const where: Prisma.EmployeeOnboardingWhereInput = {
+      ...(teamIds ? { employeeId: { in: teamIds } } : {}),
       ...(status
         ? { status }
         : {
@@ -72,7 +80,11 @@ export const GET = withPermission(
     const latestCheckins =
       employeeIds.length > 0
         ? await prisma.onboardingCheckin.findMany({
-            where: { employeeId: { in: employeeIds } },
+            // Codex G1 P1: 전출/과거 체크인 혼입 방지 — 비-SUPER 는 자사 체크인만
+            where: {
+              employeeId: { in: employeeIds },
+              ...(user.role !== ROLE.SUPER_ADMIN ? { companyId: user.companyId } : {}),
+            },
             orderBy: { submittedAt: 'desc' },
             distinct: ['employeeId'],
             select: { employeeId: true, mood: true, energy: true, belonging: true, submittedAt: true },
