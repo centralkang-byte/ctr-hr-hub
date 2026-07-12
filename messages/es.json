@@ -4803,7 +4803,8 @@
       "skills": "Autoevaluación de competencias",
       "training": "Mi formación",
       "yearEnd": "Liquidación anual",
-      "growthHub": "Evaluación/Crecimiento"
+      "growthHub": "Evaluación/Crecimiento",
+      "leaveLoa": "Vacaciones/Excedencia"
     },
     "payroll": {
       "adjustments": "수동 Adjustment",

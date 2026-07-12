@@ -9003,7 +9003,8 @@
       "directory": "구성원 검색",
       "orgChart": "조직도",
       "quarterlyReview": "분기 리뷰",
-      "growthHub": "평가/성장"
+      "growthHub": "평가/성장",
+      "leaveLoa": "휴가/휴직"
     },
     "team": {
       "label": "팀 관리",

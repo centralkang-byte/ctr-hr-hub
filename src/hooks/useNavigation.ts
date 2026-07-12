@@ -30,48 +30,6 @@ function canAccessModule(user: SessionUser, module: string): boolean {
   )
 }
 
-// ─── Conditional item visibility ────────────────────────────
-// conditional 필드가 있는 아이템의 런타임 노출 여부 결정.
-// 조건 평가 실패(데이터 없음) 시 true(항상 표시) fallback.
-
-function shouldShowConditional(
-  user: SessionUser,
-  conditionalType: 'onboarding' | 'offboarding' | 'year-end',
-  countryCode?: string | null,
-): boolean {
-  const today = new Date()
-
-  switch (conditionalType) {
-    case 'year-end': {
-      // KR 법인 + 1~3월에만 표시
-      if (countryCode && countryCode !== 'KR') return false
-      const month = today.getMonth() + 1 // 1-indexed
-      return month >= 1 && month <= 3
-    }
-
-    case 'onboarding': {
-      // hireDate 기준 입사 90일 이내에만 표시
-      // hireDate가 없으면 safe fallback: 항상 표시
-      const hireDateStr = (user as { hireDate?: string | Date }).hireDate
-      if (!hireDateStr) return true
-      const hireDate = new Date(hireDateStr)
-      const ninetyDaysAfter = new Date(hireDate.getTime() + 90 * 24 * 60 * 60 * 1000)
-      return today <= ninetyDaysAfter
-    }
-
-    case 'offboarding': {
-      // 퇴직 절차 진행 중인 경우에만 표시
-      // offboardingStatus가 없으면 safe fallback: 항상 표시
-      const offboardingStatus = (user as { offboardingStatus?: string | null }).offboardingStatus
-      if (offboardingStatus === undefined) return true
-      return offboardingStatus !== null
-    }
-
-    default:
-      return true
-  }
-}
-
 // ─── Hook ───────────────────────────────────────────────────
 
 interface UseNavigationOptions {
@@ -107,10 +65,8 @@ export function useNavigation({
               if (!item.countryFilter.includes(countryCode)) return false
             }
 
-            // Conditional visibility (onboarding / offboarding / year-end)
-            if (item.conditional) {
-              return shouldShowConditional(user, item.conditional, countryCode)
-            }
+            // (Wave1 IA: conditional 아이템 전부 rail 데모션 — 조건부 노출은
+            // 각 허브/홈 트래커가 담당. year-end 조건 SSOT = lib/payroll/year-end-visibility)
 
             return true
           })

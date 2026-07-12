@@ -4803,7 +4803,8 @@
       "skills": "Skills Self-Assessment",
       "training": "My Training",
       "yearEnd": "Year-End Settlement",
-      "growthHub": "Evaluation/Growth"
+      "growthHub": "Evaluation/Growth",
+      "leaveLoa": "Leave / LOA"
     },
     "payroll": {
       "adjustments": "수동 Adjustment",

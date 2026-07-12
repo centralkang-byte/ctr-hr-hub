@@ -12,6 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Plus, Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 import { toast } from '@/hooks/use-toast'
 
 import type { SessionUser, PaginationInfo } from '@/types'
@@ -106,6 +107,7 @@ export function LeaveClient({ user }: { user: SessionUser }) {
   const t = useTranslations('leave')
   const tc = useTranslations('common')
   const te = useTranslations('employee')
+  const tn = useTranslations('nav')
 
   // ─── Form schema (needs t for validation messages) ───
   const requestSchema = z.object({
@@ -551,10 +553,16 @@ export function LeaveClient({ user }: { user: SessionUser }) {
         title={t('request')}
         description={t('balance')}
         actions={
-          <Button onClick={openRequestDialog}>
-            <Plus className="mr-1 h-4 w-4" />
-            {t('request')}
-          </Button>
+          <>
+            {/* Wave1 IA merge: rail 휴가/휴직 단일화 — 휴직 진입은 허브에서 (2026-06-12 제안 확정) */}
+            <Button variant="outline" asChild>
+              <Link href="/leave-of-absence">{tn('mySpace.loa')}</Link>
+            </Button>
+            <Button onClick={openRequestDialog}>
+              <Plus className="mr-1 h-4 w-4" />
+              {t('request')}
+            </Button>
+          </>
         }
       />
 
