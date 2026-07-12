@@ -108,8 +108,8 @@ export default function DataRetentionTabContent() {
                       )}
                     </td>
                     <td className="px-4 py-3 text-sm text-foreground">
-                      {p.retentionMonths} mo
-                      <span className="text-xs text-muted-foreground ml-1">({Math.round(p.retentionMonths / 12 * 10) / 10} yr)</span>
+                      {p.retentionMonths}{tc('unitMonth')}
+                      <span className="text-xs text-muted-foreground ml-1">({Math.round(p.retentionMonths / 12 * 10) / 10}{tc('unitYear')})</span>
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${p.autoDelete ? 'bg-emerald-500/15 text-emerald-700' : 'bg-background text-muted-foreground'}`}>

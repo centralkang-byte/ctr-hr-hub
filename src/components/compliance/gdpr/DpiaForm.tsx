@@ -3,18 +3,10 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
+import { apiClient } from '@/lib/api'
+import type { Dpia } from './DpiaTabContent'
 
 const INPUT_CLS = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus:outline-none'
-
-interface Dpia {
-  id: string
-  title: string
-  description: string
-  processing_scope: string
-  risk_level: 'low' | 'medium' | 'high' | 'critical'
-  mitigations: string
-  status: string
-}
 
 interface DpiaFormProps {
   open: boolean
@@ -28,17 +20,17 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
   const tc = useTranslations('common')
 
   const RISK_LEVELS = [
-    { value: 'low', label: t('gdpr.riskLow') },
-    { value: 'medium', label: t('gdpr.riskMedium') },
-    { value: 'high', label: t('gdpr.riskHigh') },
-    { value: 'critical', label: t('gdpr.riskCritical') },
+    { value: 'LOW', label: t('gdpr.riskLow') },
+    { value: 'MEDIUM', label: t('gdpr.riskMedium') },
+    { value: 'HIGH', label: t('gdpr.riskHigh') },
+    { value: 'CRITICAL', label: t('gdpr.riskCritical') },
   ]
 
   const STATUS_OPTIONS = [
-    { value: 'draft', label: t('gdpr.statusDraft') },
-    { value: 'in_review', label: t('gdpr.statusInReview') },
-    { value: 'approved', label: t('gdpr.statusApproved') },
-    { value: 'rejected', label: t('gdpr.statusRejected') },
+    { value: 'DPIA_DRAFT', label: t('gdpr.statusDraft') },
+    { value: 'IN_REVIEW', label: t('gdpr.statusInReview') },
+    { value: 'APPROVED', label: t('gdpr.statusApproved') },
+    { value: 'REJECTED', label: t('gdpr.statusRejected') },
   ]
 
   const isEdit = Boolean(dpia)
@@ -46,10 +38,10 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
   const [form, setForm] = useState({
     title: '',
     description: '',
-    processing_scope: '',
-    risk_level: 'medium',
+    processingScope: '',
+    riskLevel: 'MEDIUM',
     mitigations: '',
-    status: 'draft',
+    status: 'DPIA_DRAFT',
   })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -59,13 +51,13 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
       setForm({
         title: dpia.title ?? '',
         description: dpia.description ?? '',
-        processing_scope: dpia.processing_scope ?? '',
-        risk_level: dpia.risk_level ?? 'medium',
+        processingScope: dpia.processingScope ?? '',
+        riskLevel: dpia.riskLevel ?? 'MEDIUM',
         mitigations: dpia.mitigations ?? '',
-        status: dpia.status ?? 'draft',
+        status: dpia.status ?? 'DPIA_DRAFT',
       })
     } else {
-      setForm({ title: '', description: '', processing_scope: '', risk_level: 'medium', mitigations: '', status: 'draft' })
+      setForm({ title: '', description: '', processingScope: '', riskLevel: 'MEDIUM', mitigations: '', status: 'DPIA_DRAFT' })
     }
     setError('')
   }, [open, dpia])
@@ -75,26 +67,35 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
   }
 
   const handleSubmit = async () => {
-    if (!form.title || !form.processing_scope) {
+    if (!form.title || !form.processingScope) {
       setError(tc('required'))
       return
     }
     setSaving(true)
     setError('')
     try {
-      const url = isEdit
-        ? `/api/v1/compliance/gdpr/dpia/${dpia!.id}`
-        : '/api/v1/compliance/gdpr/dpia'
-      const method = isEdit ? 'PATCH' : 'POST'
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      })
-      if (!res.ok) throw new Error('Failed')
+      if (isEdit) {
+        // 수정 시엔 비운 optional 필드(설명·완화조치)도 항상 전송해 기존 값을 지울 수 있게 함
+        await apiClient.put(`/api/v1/compliance/gdpr/dpia/${dpia!.id}`, {
+          title: form.title,
+          description: form.description,
+          processingScope: form.processingScope,
+          riskLevel: form.riskLevel,
+          mitigations: form.mitigations,
+          status: form.status,
+        })
+      } else {
+        await apiClient.post('/api/v1/compliance/gdpr/dpia', {
+          title: form.title,
+          ...(form.description ? { description: form.description } : {}),
+          processingScope: form.processingScope,
+          riskLevel: form.riskLevel,
+          ...(form.mitigations ? { mitigations: form.mitigations } : {}),
+        })
+      }
       onSaved()
-    } catch {
-      setError(tc('error'))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : tc('error'))
     } finally {
       setSaving(false)
     }
@@ -107,14 +108,13 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
       title={`${isEdit ? tc('edit') : tc('create')} — ${t('gdpr.dpia')}`}
       closeDisabled={saving}
       secondary={{ label: tc('cancel'), onClick: onClose, disabled: saving }}
-      primary={{ label: saving ? tc('loading') : tc('save'), onClick: handleSubmit, disabled: saving }}
+      primary={{ label: saving ? tc('loading') : tc('save'), onClick: () => void handleSubmit(), disabled: saving }}
     >
-      <WdField label={`${tc('name')} / Title`} required htmlFor="dpia-title">
+      <WdField label={tc('title')} required htmlFor="dpia-title">
         <input
           id="dpia-title"
           type="text"
           className={INPUT_CLS}
-          placeholder="e.g., Employee Biometric Attendance System DPIA"
           value={form.title}
           onChange={(e) => handleChange('title', e.target.value)}
         />
@@ -125,7 +125,6 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
           id="dpia-description"
           className={`${INPUT_CLS} resize-none`}
           rows={3}
-          placeholder="Describe the data processing activity..."
           value={form.description}
           onChange={(e) => handleChange('description', e.target.value)}
         />
@@ -136,9 +135,8 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
           id="dpia-processing-scope"
           className={`${INPUT_CLS} resize-none`}
           rows={4}
-          placeholder="Describe what personal data is processed, how, and by whom..."
-          value={form.processing_scope}
-          onChange={(e) => handleChange('processing_scope', e.target.value)}
+          value={form.processingScope}
+          onChange={(e) => handleChange('processingScope', e.target.value)}
         />
       </WdField>
 
@@ -148,12 +146,12 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
             <button
               key={rl.value}
               type="button"
-              onClick={() => handleChange('risk_level', rl.value)}
+              onClick={() => handleChange('riskLevel', rl.value)}
               className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
-                form.risk_level === rl.value
-                  ? rl.value === 'low' ? 'bg-emerald-600 text-white border-emerald-600'
-                  : rl.value === 'medium' ? 'bg-amber-500/100 text-white border-amber-500'
-                  : rl.value === 'high' ? 'bg-orange-500/100 text-white border-orange-500'
+                form.riskLevel === rl.value
+                  ? rl.value === 'LOW' ? 'bg-emerald-600 text-white border-emerald-600'
+                  : rl.value === 'MEDIUM' ? 'bg-amber-500/100 text-white border-amber-500'
+                  : rl.value === 'HIGH' ? 'bg-orange-500/100 text-white border-orange-500'
                   : 'bg-red-600 text-white border-red-600'
                   : 'bg-card text-muted-foreground border-border hover:bg-background'
               }`}
@@ -169,7 +167,6 @@ export default function DpiaForm({ open, dpia, onClose, onSaved }: DpiaFormProps
           id="dpia-mitigations"
           className={`${INPUT_CLS} resize-none`}
           rows={4}
-          placeholder="Describe risk mitigation measures..."
           value={form.mitigations}
           onChange={(e) => handleChange('mitigations', e.target.value)}
         />

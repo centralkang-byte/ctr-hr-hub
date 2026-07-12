@@ -73,8 +73,10 @@ function ClaimModal({ plans, onClose, onSubmit }: {
   const t = useTranslations('myBenefits')
   const tCommon = useTranslations('common')
 
+  // DB에 소문자·대문자 카테고리가 혼재 (KR 시드=소문자, 해외 법인=대문자) — 소문자로 정규화해 조회
   const CATEGORY_LABELS: Record<string, string> = {
     family: t('category.family'), health: t('category.health'), education: t('category.education'), lifestyle: t('category.lifestyle'), financial: t('category.financial'),
+    other: t('category.other'), transport: t('category.transport'),
   }
 
   const [selectedPlanId, setSelectedPlanId] = useState('')
@@ -173,7 +175,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
           <option value="">{t('form.selectPlanPlaceholder')}</option>
           {plans.map((p) => (
             <option key={p.id} value={p.id}>
-              [{CATEGORY_LABELS[p.category] ?? p.category}] {p.name}
+              [{CATEGORY_LABELS[p.category.toLowerCase()] ?? p.category}] {p.name}
               {p.maxAmount ? ` (${t('form.max')} ${formatCurrency(p.maxAmount, p.currency)})` : ''}
             </option>
           ))}

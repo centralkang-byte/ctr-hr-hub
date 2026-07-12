@@ -1,74 +1,75 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { Plus, Pencil, Eye } from 'lucide-react'
 import DpiaForm from './DpiaForm'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
+import { apiClient } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
 
-interface Dpia {
+export interface Dpia {
   id: string
   title: string
-  description: string
-  processing_scope: string
-  risk_level: 'low' | 'medium' | 'high' | 'critical'
-  mitigations: string
-  status: string
-  created_at: string
-  updated_at: string
+  description: string | null
+  processingScope: string | null
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' | null
+  mitigations: string | null
+  status: 'DPIA_DRAFT' | 'IN_REVIEW' | 'APPROVED' | 'REJECTED'
+  createdAt: string
+  updatedAt: string
 }
 
-function RiskBadge({ level }: { level: string }) {
-  const map: Record<string, string> = {
-    low: 'bg-emerald-500/15 text-emerald-700 border border-emerald-200',
-    medium: 'bg-amber-500/15 text-amber-700 border border-amber-300',
-    high: 'bg-orange-500/10 text-orange-700 border border-orange-200',
-    critical: 'bg-destructive/10 text-destructive border border-destructive/20',
-  }
-  return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[level] ?? map.medium}`}>
-      {level}
-    </span>
-  )
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    draft: 'bg-background text-muted-foreground border border-border',
-    in_review: 'bg-amber-500/15 text-amber-700 border border-amber-300',
-    approved: 'bg-emerald-500/15 text-emerald-700 border border-emerald-200',
-    rejected: 'bg-destructive/10 text-destructive border border-destructive/20',
-  }
-  return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? map.draft}`}>
-      {status.replace('_', ' ')}
-    </span>
-  )
-}
+const EDITABLE_STATUSES = new Set(['DPIA_DRAFT', 'IN_REVIEW'])
 
 export default function DpiaTabContent() {
   const t = useTranslations('compliance')
   const tc = useTranslations('common')
+
+  const RISK_LABELS: Record<string, string> = {
+    LOW: t('gdpr.riskLow'),
+    MEDIUM: t('gdpr.riskMedium'),
+    HIGH: t('gdpr.riskHigh'),
+    CRITICAL: t('gdpr.riskCritical'),
+  }
+  const RISK_VARIANTS: Record<string, 'success' | 'warning' | 'error'> = {
+    LOW: 'success',
+    MEDIUM: 'warning',
+    HIGH: 'warning',
+    CRITICAL: 'error',
+  }
+  const STATUS_LABELS: Record<string, string> = {
+    DPIA_DRAFT: t('gdpr.statusDraft'),
+    IN_REVIEW: t('gdpr.statusInReview'),
+    APPROVED: t('gdpr.statusApproved'),
+    REJECTED: t('gdpr.statusRejected'),
+  }
 
   const [dpias, setDpias] = useState<Dpia[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [selected, setSelected] = useState<Dpia | null>(null)
 
-  const fetchDpias = () => {
-    setLoading(true)
-    fetch('/api/v1/compliance/gdpr/dpia?page=1&limit=20')
-      .then((res) => res.json())
-      .then((json) => {
-        setDpias(json.data ?? [])
-        setLoading(false)
+  const fetchDpias = useCallback(async () => {
+    try {
+      setLoading(true)
+      const res = await apiClient.getList<Dpia>('/api/v1/compliance/gdpr/dpia', { page: 1, limit: 20 })
+      setDpias(res.data ?? [])
+    } catch (err) {
+      toast({
+        title: tc('loadFailed'),
+        description: err instanceof Error ? err.message : undefined,
+        variant: 'destructive',
       })
-      .catch(() => setLoading(false))
-  }
+    } finally {
+      setLoading(false)
+    }
+  }, [tc])
 
   useEffect(() => {
-    fetchDpias()
-  }, [])
+    void fetchDpias()
+  }, [fetchDpias])
 
   return (
     <div className="space-y-4">
@@ -93,7 +94,7 @@ export default function DpiaTabContent() {
             <table className={TABLE_STYLES.table}>
               <thead>
                 <tr className={TABLE_STYLES.header}>
-                  <th className={TABLE_STYLES.headerCell}>Title</th>
+                  <th className={TABLE_STYLES.headerCell}>{tc('title')}</th>
                   <th className={TABLE_STYLES.headerCell}>{t('gdpr.riskLevel')}</th>
                   <th className={TABLE_STYLES.headerCell}>{tc('status')}</th>
                   <th className={TABLE_STYLES.headerCell}>{tc('updatedAt')}</th>
@@ -110,22 +111,26 @@ export default function DpiaTabContent() {
                       )}
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      <RiskBadge level={d.risk_level} />
+                      {d.riskLevel ? (
+                        <StatusBadge variant={RISK_VARIANTS[d.riskLevel] ?? 'warning'}>
+                          {RISK_LABELS[d.riskLevel] ?? d.riskLevel}
+                        </StatusBadge>
+                      ) : '-'}
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      <StatusBadge status={d.status} />
+                      <StatusBadge status={d.status}>{STATUS_LABELS[d.status] ?? d.status}</StatusBadge>
                     </td>
                     <td className="px-4 py-3 text-sm text-muted-foreground">
-                      {new Date(d.updated_at).toLocaleDateString()}
+                      {new Date(d.updatedAt).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => { setSelected(d); setShowForm(true) }}
                           className="text-muted-foreground hover:text-primary"
-                          title={d.status === 'draft' || d.status === 'in_review' ? tc('edit') : tc('view')}
+                          title={EDITABLE_STATUSES.has(d.status) ? tc('edit') : tc('view')}
                         >
-                          {d.status === 'draft' || d.status === 'in_review' ? (
+                          {EDITABLE_STATUSES.has(d.status) ? (
                             <Pencil className="w-4 h-4" />
                           ) : (
                             <Eye className="w-4 h-4" />
@@ -146,7 +151,7 @@ export default function DpiaTabContent() {
           open={showForm}
           dpia={selected}
           onClose={() => setShowForm(false)}
-          onSaved={() => { setShowForm(false); fetchDpias() }}
+          onSaved={() => { setShowForm(false); void fetchDpias() }}
         />
       )}
     </div>

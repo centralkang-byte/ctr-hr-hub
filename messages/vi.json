@@ -1751,7 +1751,12 @@
       "target": "Đối tượng",
       "title": "GDPR / Bảo vệ quyền riêng tư",
       "topActors": "Người truy cập nhiều nhất",
-      "totalAccess": "Tổng số truy cập"
+      "totalAccess": "Tổng số truy cập",
+      "statusExpired": "Đã hết hạn",
+      "deadlineAutoNote": "Thời hạn xử lý được tính tự động từ ngày tiếp nhận.",
+      "hubDesc": "Quản lý đồng ý · yêu cầu chủ thể dữ liệu · DPIA",
+      "highRiskAlert": "{count} DPIA rủi ro cao cần được chú ý.",
+      "highRiskAlertDesc": "Hãy rà soát và đảm bảo đã có biện pháp giảm thiểu cho các đánh giá rủi ro nghiêm trọng và cao."
     },
     "hours": "Giờ",
     "hub": {
@@ -1835,7 +1840,8 @@
       "SIP_PENDING": "Đang chờ",
       "SIP_REJECTED": "Đã từ chối"
     },
-    "title": "Tuân thủ"
+    "title": "Tuân thủ",
+    "countrySpecific": "Tuân thủ theo quốc gia"
   },
   "contractRules": {
     "applied": "Applied",
@@ -3974,7 +3980,9 @@
       "family": "Sự kiện gia đình",
       "financial": "Tài chính",
       "health": "Sức khỏe",
-      "lifestyle": "Đời sống"
+      "lifestyle": "Đời sống",
+      "other": "Khác",
+      "transport": "Đi lại"
     },
     "claimHistory": "Lịch sử đăng ký",
     "emptyDesc": "Bạn chưa có yêu cầu phúc lợi nào.",

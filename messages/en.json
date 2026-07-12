@@ -1751,7 +1751,12 @@
       "target": "Target",
       "title": "GDPR / Privacy Protection",
       "topActors": "Top Accessors",
-      "totalAccess": "Total Accesses"
+      "totalAccess": "Total Accesses",
+      "statusExpired": "Expired",
+      "deadlineAutoNote": "The deadline is calculated automatically from the submission date.",
+      "hubDesc": "Consents · data subject requests · DPIA",
+      "highRiskAlert": "{count} high-risk DPIA(s) require attention.",
+      "highRiskAlertDesc": "Review and ensure mitigations are in place for critical and high risk assessments."
     },
     "hours": "Hours",
     "hub": {
@@ -1835,7 +1840,8 @@
       "SIP_PENDING": "Pending",
       "SIP_REJECTED": "Rejected"
     },
-    "title": "Compliance"
+    "title": "Compliance",
+    "countrySpecific": "Country-specific Compliance"
   },
   "contractRules": {
     "applied": "Applied",
@@ -3974,7 +3980,9 @@
       "family": "Family Events",
       "financial": "Financial",
       "health": "Health",
-      "lifestyle": "Lifestyle"
+      "lifestyle": "Lifestyle",
+      "other": "Other",
+      "transport": "Transport"
     },
     "claimHistory": "Claim History",
     "emptyDesc": "You have no benefit claims yet.",

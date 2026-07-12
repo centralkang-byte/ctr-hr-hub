@@ -8866,7 +8866,12 @@
       "requestPortability": "이동권",
       "requestRectification": "정정권",
       "requestRestriction": "처리 제한권",
-      "requestObjection": "반대권"
+      "requestObjection": "반대권",
+      "statusExpired": "만료됨",
+      "deadlineAutoNote": "처리 기한은 접수일 기준으로 자동 산정돼요.",
+      "hubDesc": "동의 관리 · 정보주체 요청 · DPIA",
+      "highRiskAlert": "고위험 DPIA {count}건이 확인이 필요해요.",
+      "highRiskAlertDesc": "위험도 심각·높음 평가의 완화 조치가 마련됐는지 검토해 주세요."
     },
     "ru": {
       "title": "러시아 컴플라이언스",
@@ -8967,7 +8972,8 @@
         "dataProtection": "데이터 보호",
         "country": "국가별"
       }
-    }
+    },
+    "countrySpecific": "국가별 컴플라이언스"
   },
   "nav": {
     "home": {
@@ -10760,7 +10766,9 @@
       "health": "건강",
       "education": "교육",
       "lifestyle": "생활",
-      "financial": "금융"
+      "financial": "금융",
+      "other": "기타",
+      "transport": "교통"
     },
     "form": {
       "planLabel": "복리후생 항목",

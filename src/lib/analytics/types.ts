@@ -9,6 +9,8 @@ export interface KpiCard {
   unit?: string
   change?: number
   changeLabel?: string
+  /** change 수치의 단위가 value의 unit과 다를 때 (예: 통화 KPI의 % 증감) */
+  changeUnit?: string
   severity?: 'positive' | 'negative' | 'neutral'
 }
 
