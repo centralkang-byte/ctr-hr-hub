@@ -1158,7 +1158,9 @@
       "rateUnsupported": "교대제·비표준 근무 법인은 출근율을 산출하지 않아요",
       "unclassified": "직군 미분류 {count}명",
       "anomaly": "데이터 이상 {count}건"
-    }
+    },
+    "nonWorkingDay": "휴무일",
+    "anomalySection": "이상 근태"
   },
   "leave": {
     "title": "휴가 관리",
@@ -4992,7 +4994,8 @@
       "publishNone": "배포 가능한 실행이 없어요",
       "publishMultiple": "파이프라인에서 법인별 선택",
       "prevMonth": "이전 달",
-      "nextMonth": "다음 달"
+      "nextMonth": "다음 달",
+      "cycleNotStarted": "이번 달 사이클 미시작"
     },
     "reviewPage": {
       "severityError": "위험",

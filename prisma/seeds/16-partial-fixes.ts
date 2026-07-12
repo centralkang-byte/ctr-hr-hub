@@ -402,8 +402,9 @@ export async function seedPartialFixes(prisma: PrismaClient): Promise<void> {
                     notes: isCompleted
                         ? `논의 완료. 다음 미팅 전 ${['목표 업데이트', '액션 플랜 작성', '주간 보고서 공유'][i % 3]} 필요.`
                         : null,
+                    // 런타임 계약(OneOnOneDetailClient)과 동일한 형태: { item, assignee, completed }
                     actionItems: isCompleted
-                        ? [{ task: '액션 아이템 #1', owner: '직원', dueDate: daysFromNow(7).toISOString() }]
+                        ? [{ item: '액션 아이템 #1', assignee: 'EMPLOYEE', completed: false, dueDate: daysFromNow(7).toISOString() }]
                         : undefined,
                 },
             })

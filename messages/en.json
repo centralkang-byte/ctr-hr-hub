@@ -1039,7 +1039,9 @@
       "rateUnsupported": "Attendance rate is not computed for shift or non-standard-week companies",
       "unclassified": "{count} unclassified",
       "anomaly": "{count} data anomalies"
-    }
+    },
+    "nonWorkingDay": "Non-working day",
+    "anomalySection": "Attendance anomalies"
   },
   "auth": {
     "brandSlogan": "Central to your safe mobility",
@@ -6205,7 +6207,8 @@
       "publishNone": "No run ready to publish",
       "publishMultiple": "Choose per company in the pipeline",
       "prevMonth": "Previous month",
-      "nextMonth": "Next month"
+      "nextMonth": "Next month",
+      "cycleNotStarted": "Cycle not started this month"
     },
     "days": "day(s)",
     "deductions": "Deductions",

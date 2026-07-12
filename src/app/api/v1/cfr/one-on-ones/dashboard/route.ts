@@ -97,15 +97,18 @@ export const GET = withAuth(
       where: {
         managerId: user.employeeId,
         companyId: user.companyId,
+        // 현 직속부하로 스코프 — 과거 팀원의 이름 붙은 액션이 노출되지 않게 (팀 통계 쿼리와 동일 기준)
+        employeeId: { in: memberIds },
         status: 'COMPLETED',
         actionItems: { not: null as unknown as undefined },
       },
-      select: { employeeId: true, actionItems: true },
+      select: { employeeId: true, actionItems: true, employee: { select: { name: true } } },
       orderBy: { completedAt: 'desc' },
       take: 50,
     })
 
-    type ActionItem = { item: string; assignee: string; dueDate?: string; completed: boolean }
+    // 레거시 시드 형태({task, owner})가 남아 있을 수 있어 item/task 둘 다 수용, 내용 없는 항목은 제외
+    type ActionItem = { item?: string; task?: string; assignee?: string; dueDate?: string; completed?: boolean }
     const pendingActions: { employeeName: string; item: string; dueDate: string }[] = []
     const memberMap = new Map(teamMembers.map((m) => [m.id, m.name]))
 
@@ -113,11 +116,15 @@ export const GET = withAuth(
       const items = m.actionItems as ActionItem[] | null
       if (!items) continue
       for (const ai of items) {
+        const text = typeof ai.item === 'string' && ai.item.trim()
+          ? ai.item
+          : typeof ai.task === 'string' && ai.task.trim() ? ai.task : null
+        if (!text) continue
         if (!ai.completed) {
           pendingActions.push({
-            employeeName: memberMap.get(m.employeeId) ?? '',
-            item: ai.item,
-            dueDate: ai.dueDate ?? '',
+            employeeName: m.employee?.name ?? memberMap.get(m.employeeId) ?? '',
+            item: text,
+            dueDate: typeof ai.dueDate === 'string' && ai.dueDate.trim() ? ai.dueDate.slice(0, 10) : '',
           })
         }
       }
