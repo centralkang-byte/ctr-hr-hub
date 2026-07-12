@@ -5477,7 +5477,9 @@
     "wouldRecommendYes": "Yes",
     "progressAriaLabel": "Progress: {completed} of {total} tasks complete",
     "offboardingTabs": "Offboarding tabs",
-    "rateStars": "{n} stars"
+    "rateStars": "{n} stars",
+    "interviewHrOnlyTitle": "Exit interview is HR-only",
+    "interviewHrOnlyDesc": "Exit interview records are not visible to direct managers. Please contact HR for inquiries."
   },
   "onboarding": {
     "actions": "Actions",

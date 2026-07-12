@@ -12,6 +12,8 @@ import { MODULE, ACTION } from '@/lib/constants'
 import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { getActiveTeamMemberIds, OFFBOARDING_TEAM_STATUSES } from '@/lib/employee/direct-reports'
+import { ROLE } from '@/lib/constants'
 
 export const GET = withPermission(
     async (req: NextRequest, _ctx, user: SessionUser) => {
@@ -21,11 +23,18 @@ export const GET = withPermission(
         const statusFilter = p.status as 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | undefined
         const resignTypeFilter = p.resignType as string | undefined
 
+        // ⑥-C PR-2: MANAGER(비-HR/비-SUPER)는 직속부하 오프보딩만 (RESIGNED 포함 — 통보기간 발령 상태)
+        const isHrOrSuper = user.role === ROLE.SUPER_ADMIN || user.role === ROLE.HR_ADMIN
+        const teamIds = isHrOrSuper
+            ? null
+            : await getActiveTeamMemberIds(user.employeeId, user.companyId, OFFBOARDING_TEAM_STATUSES)
+
         const where: Prisma.EmployeeOffboardingWhereInput = {
             ...(statusFilter ? { status: statusFilter } : { status: { in: ['IN_PROGRESS', 'COMPLETED'] } }),
             ...(resignTypeFilter ? { resignType: resignTypeFilter as 'VOLUNTARY' | 'INVOLUNTARY' | 'RETIREMENT' | 'CONTRACT_END' } : {}),
             // 테넌트 스코핑 = EmployeeOffboarding.companyId 직접 (active-assignment 조인은 완료 시 탈락 — "완료" 탭 0건 버그)
             ...resolveCompanyFilter(user, p.companyId ?? null),
+            ...(teamIds !== null ? { employeeId: { in: teamIds } } : {}),
         }
 
         const [total, offboardings] = await Promise.all([

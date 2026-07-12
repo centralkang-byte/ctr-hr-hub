@@ -5478,7 +5478,9 @@
     "wouldRecommendYes": "Yes",
     "progressAriaLabel": "进度：{total} 项任务中已完成 {completed} 项",
     "offboardingTabs": "离职处理标签",
-    "rateStars": "{n} 星"
+    "rateStars": "{n} 星",
+    "interviewHrOnlyTitle": "离职面谈仅限HR",
+    "interviewHrOnlyDesc": "离职面谈记录不对直属经理开放。如有疑问请联系HR。"
   },
   "onboarding": {
     "actions": "Actions",

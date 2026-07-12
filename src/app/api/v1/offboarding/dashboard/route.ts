@@ -12,6 +12,8 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 import type { SessionUser } from '@/types'
+import { getActiveTeamMemberIds, OFFBOARDING_TEAM_STATUSES } from '@/lib/employee/direct-reports'
+import { ROLE } from '@/lib/constants'
 
 export const GET = withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
@@ -22,6 +24,12 @@ export const GET = withPermission(
     // 테넌트 스코핑 = EmployeeOffboarding.companyId 직접 (active-assignment 조인은 완료 시 탈락 — "완료" 탭 0건 버그)
     const companyFilter = resolveCompanyFilter(user, p.companyId ?? null)
 
+    // ⑥-C PR-2: MANAGER(비-HR/비-SUPER)는 직속부하 오프보딩만 — 모든 집계의 단일 base 필터 (Codex G1-5)
+    const isHrOrSuper = user.role === ROLE.SUPER_ADMIN || user.role === ROLE.HR_ADMIN
+    const teamScope: Prisma.EmployeeOffboardingWhereInput = isHrOrSuper
+      ? {}
+      : { employeeId: { in: await getActiveTeamMemberIds(user.employeeId, user.companyId, OFFBOARDING_TEAM_STATUSES) } }
+
     const where: Prisma.EmployeeOffboardingWhereInput = {
       ...(status
         ? { status }
@@ -31,6 +39,7 @@ export const GET = withPermission(
           },
         }),
       ...companyFilter,
+      ...teamScope,
     }
 
     const include = {
@@ -93,6 +102,23 @@ export const GET = withPermission(
     // ── Analytics: 퇴직 원인 분석 + 트렌드 ────────────────
     // ExitInterview·EmployeeOffboarding 모두 companyId 직접 보유 — historical-assignment 조인 제거
     const companyWhere = companyFilter
+
+    // ⑥-C PR-2: analytics 블록은 HR/SUPER 전용 — exit interview 파생 지표(사유·만족도)는
+    // 매니저 비공개 정책([id]/exit-interview 가드와 일관) + 회사 전체 재직기간/트렌드 유출 방지.
+    if (!isHrOrSuper) {
+      const { NextResponse } = await import('next/server')
+      return NextResponse.json({
+        data: enriched,
+        pagination: buildPagination(page, limit, total),
+        summary: {
+          totalBlocked,
+          totalUrgent,
+          exitInterviewPending,
+          resignTypeBreakdown,
+        },
+        analytics: null,
+      })
+    }
 
     // 이직 원인 분석 (ExitInterview.primaryReason groupBy)
     const exitReasonGroups = await prisma.exitInterview.groupBy({

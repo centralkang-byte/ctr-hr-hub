@@ -6,7 +6,7 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound } from '@/lib/errors'
+import { badRequest, forbidden, notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
@@ -38,6 +38,10 @@ async function getChecklistOrThrow(id: string, user: SessionUser) {
 
 export const GET = withPermission(
   async (_req: NextRequest, ctx, user: SessionUser) => {
+    // ⑥-C PR-2: 체크리스트(템플릿) 조회는 HR 설정 화면 전용 — MANAGER 의 offboarding_read 로 열리지 않게 role 가드
+    if (user.role !== 'HR_ADMIN' && user.role !== 'SUPER_ADMIN') {
+      throw forbidden('오프보딩 체크리스트는 HR 관리자만 조회할 수 있습니다.')
+    }
     const { id } = await ctx.params
     await getChecklistOrThrow(id, user)
 

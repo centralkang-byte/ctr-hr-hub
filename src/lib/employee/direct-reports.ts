@@ -58,6 +58,16 @@ export async function getDirectReportIds(managerId: string): Promise<string[]> {
  * statuses 기본값에 PROBATION 포함 — 온보딩 대상(신입/인턴)의 발령 status 가
  * PROBATION 이라 ACTIVE-only 면 온보딩 스코프가 통째로 비게 된다.
  */
+/**
+ * ⑥-C PR-2: 오프보딩 스코프용 발령 status 집합.
+ * 통보기간 중 발령 status 가 RESIGNED/TERMINATED 로 먼저 바뀌어도(endDate=LWD 미래)
+ * 매니저 오프보딩 참여가 끊기지 않도록 포함. 날짜창(endDate null/미래)은 그대로라
+ * "퇴사 완료 후 영구 스코프" 확장은 아님 (Codex G1-4).
+ */
+export const OFFBOARDING_TEAM_STATUSES = [
+  'ACTIVE', 'ON_LEAVE', 'PROBATION', 'RESIGNED', 'TERMINATED',
+]
+
 export async function getActiveTeamMemberIds(
   managerId: string,
   companyId: string,

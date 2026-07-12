@@ -5477,7 +5477,9 @@
     "wouldRecommendYes": "Yes",
     "progressAriaLabel": "Progreso: {completed} de {total} tareas completadas",
     "offboardingTabs": "Pestañas de baja",
-    "rateStars": "{n} estrellas"
+    "rateStars": "{n} estrellas",
+    "interviewHrOnlyTitle": "La entrevista de salida es solo para RR. HH.",
+    "interviewHrOnlyDesc": "Los registros de la entrevista de salida no son visibles para los gerentes directos. Contacte a RR. HH."
   },
   "onboarding": {
     "actions": "Actions",

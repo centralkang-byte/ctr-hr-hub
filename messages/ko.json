@@ -3782,7 +3782,9 @@
     "isConfidentialDesc": "이 면담 내용은 비공개로 처리됩니다",
     "progressAriaLabel": "진행률: {total}개 중 {completed}개 완료",
     "offboardingTabs": "퇴직 처리 탭",
-    "rateStars": "{n}점"
+    "rateStars": "{n}점",
+    "interviewHrOnlyTitle": "퇴직 면담은 HR 전용입니다",
+    "interviewHrOnlyDesc": "퇴직 면담 원본은 직속 매니저에게 공개되지 않습니다. 문의는 HR에 연락해 주세요."
   },
   "salary": {
     "title": "보상 관리",

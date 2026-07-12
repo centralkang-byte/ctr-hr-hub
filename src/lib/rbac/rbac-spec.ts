@@ -53,6 +53,8 @@ export const ROUTE_ACL: readonly RouteRule[] = [
   // ⑥-C PR-1: MANAGER 직속부하 온보딩 참여 — API는 라우트별 perm + 직속부하 스코프 가드
   { prefix: '/onboarding', allowedRoles: ROLE_GROUPS.MANAGER_ONLY },
   { prefix: '/offboarding/exit-interviews', allowedRoles: ROLE_GROUPS.HR_UP },
+  // ⑥-C PR-2: MANAGER 직속부하 오프보딩 참여 — API는 라우트별 perm + 직속부하 스코프 가드
+  { prefix: '/offboarding', allowedRoles: ROLE_GROUPS.MANAGER_ONLY },
   { prefix: '/discipline', allowedRoles: ROLE_GROUPS.HR_UP },
   // Recruitment (section 5)
   // Requisitions: dept_head/direct_manager 결재자 진입 허용 (Session 202 follow-up).

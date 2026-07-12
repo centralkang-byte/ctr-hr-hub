@@ -237,7 +237,8 @@ test.describe('Exit Interview Privacy: MANAGER blocked', () => {
 
   test('MANAGER GET /[id]/exit-interview returns 403', async ({ request }) => {
     const client = new ApiClient(request)
-    // Use a fake ID — the permission check runs before ID validation
+    // ⑥-C PR-2 (Codex G2 R2): HR 전용 role 가드가 DB 조회보다 앞 — fake/실존 무관 일괄 403
+    // (403/404 차이로 오프보딩 ID 존재 여부가 새는 existence leak 차단)
     const result = await f.getExitInterview(
       client,
       '00000000-0000-4000-a000-000000000000',
@@ -616,5 +617,63 @@ test.describe('Training RBAC: EMPLOYEE Boundaries', () => {
       configId: '00000000-0000-4000-a000-000000000000',
     })
     assertError(result, 403, 'EMPLOYEE trigger enroll')
+  })
+})
+
+// ─── MANAGER: 직속부하 스코프 (⑥-C PR-2) ──────────────
+// offboarding_read 부여로 목록/대시보드는 200 — 단 직속부하 오프보딩만.
+// 체크리스트(템플릿)·퇴직 서류는 HR 전용 role 가드 유지.
+
+test.describe('Offboarding: MANAGER team-scoped access', () => {
+  test.use({ storageState: authFile('MANAGER') })
+
+  test('GET /instances returns 200 scoped to direct reports', async ({ request }) => {
+    const client = new ApiClient(request)
+    const result = await f.listOffboardingInstances(client)
+    assertOk(result, 'MANAGER offboarding instances scoped')
+    // 박준혁 직속부하 = 이민준·정다은 — 그 외 직원 인스턴스가 보이면 스코프 누출
+    const items = (result.data ?? []) as Array<Record<string, unknown>>
+    const allowed = ['이민준', '정다은']
+    for (const item of items) expect(allowed).toContain(item.employeeName)
+  })
+
+  test('GET /dashboard returns 200 (team-scoped, analytics null)', async ({ request }) => {
+    const client = new ApiClient(request)
+    const result = await f.getOffboardingDashboard(client)
+    assertOk(result, 'MANAGER offboarding dashboard scoped')
+    const body = result.body as Record<string, unknown> | undefined
+    if (body && 'analytics' in body) expect(body.analytics).toBeNull()
+  })
+
+  test('GET /checklists returns 403 (HR template guard)', async ({ request }) => {
+    const client = new ApiClient(request)
+    const result = await f.listChecklists(client)
+    assertError(result, 403, 'MANAGER offboarding checklists blocked')
+  })
+
+  test('GET /instances/[fakeId]/documents returns 403 (HR docs guard)', async ({ request }) => {
+    const client = new ApiClient(request)
+    const result = await f.listOffboardingDocuments(
+      client,
+      '00000000-0000-4000-a000-000000000000',
+    )
+    assertError(result, 403, 'MANAGER offboarding documents blocked')
+  })
+
+  test('GET /exit-interviews/statistics returns 403 (HR-only)', async ({ request }) => {
+    const client = new ApiClient(request)
+    const result = await f.getExitInterviewStatistics(client)
+    assertError(result, 403, 'MANAGER exit interview statistics blocked')
+  })
+
+  test('GET /[realId]/exit-interview returns 403 even for direct report (Codex G2 P1)', async ({ request }) => {
+    const client = new ApiClient(request)
+    // 직속부하의 실존 오프보딩 — 면담 유무와 무관하게 403 이어야 함 (200 null 우회 회귀 가드)
+    const list = await f.listOffboardingInstances(client, { limit: '1' })
+    assertOk(list, 'MANAGER instances for real-id probe')
+    const first = ((list.data ?? []) as Array<Record<string, unknown>>)[0]
+    test.skip(!first, 'No direct-report offboarding instance in seed')
+    const result = await f.getExitInterview(client, first.id as string)
+    assertError(result, 403, 'MANAGER real-id exit interview blocked')
   })
 })
