@@ -8,9 +8,12 @@ import { EmptyState } from '@/components/ui/EmptyState'
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useTranslations, useLocale } from 'next-intl'
 import { AnimatedNumber } from '@/components/ui/AnimatedNumber'
 import { AlertTriangle, CheckCircle2, Loader2, XCircle } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { BUTTON_VARIANTS, BUTTON_SIZES } from '@/lib/styles'
 import { TYPOGRAPHY } from '@/lib/styles/typography'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { apiClient } from '@/lib/api'
@@ -123,6 +126,7 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
   const t = useTranslations('attendance')
   const tc = useTranslations('common')
   const te = useTranslations('employee')
+  const tm = useTranslations('menu')
   const locale = useLocale()
 
   const STATUS_LABELS: Record<string, string> = {
@@ -292,7 +296,34 @@ export function AttendanceAdminClient({ user }: { user: SessionUser }) {
 
   return (
     <div className="space-y-4">
-      <PageHeader title={t('adminAttendance')} />
+      {/* S339 고아 라우트 배선: 교대 화면 2종은 rail 미노출 — 근태 관리가 유일 진입점 */}
+      <PageHeader
+        title={t('adminAttendance')}
+        actions={
+          <div className="flex items-center gap-2">
+            <Link
+              href="/attendance/shift-calendar"
+              className={cn(
+                'inline-flex items-center justify-center font-medium',
+                BUTTON_VARIANTS.secondary,
+                BUTTON_SIZES.sm,
+              )}
+            >
+              {tm('shift-calendar')}
+            </Link>
+            <Link
+              href="/attendance/shift-roster"
+              className={cn(
+                'inline-flex items-center justify-center font-medium',
+                BUTTON_VARIANTS.secondary,
+                BUTTON_SIZES.sm,
+              )}
+            >
+              {tm('shift-roster')}
+            </Link>
+          </div>
+        }
+      />
 
       <Tabs defaultValue="today" className="space-y-4">
         <TabsList aria-label={t('adminAttendance')}>

@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 // ═══════════════════════════════════════════════════════════
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { format } from 'date-fns'
@@ -33,7 +34,8 @@ import {
 import { apiClient } from '@/lib/api'
 import { PageHeader } from '@/components/shared/PageHeader'
 import type { SessionUser } from '@/types'
-import { TABLE_STYLES, CHART_THEME } from '@/lib/styles'
+import { cn } from '@/lib/utils'
+import { TABLE_STYLES, CHART_THEME, BUTTON_VARIANTS, BUTTON_SIZES } from '@/lib/styles'
 import { RECRUITMENT_STAGE_COLORS } from '@/lib/styles/chart'
 
 // ─── Types ──────────────────────────────────────────────────
@@ -204,6 +206,7 @@ export function RecruitmentDashboardClient(_props: {
 }) {
   const router = useRouter()
   const t = useTranslations('recruitment')
+  const tm = useTranslations('menu')
   const [data, setData] = useState<DashboardData | null>(null)
   const [vacancySummary, setVacancySummary] = useState<VacancySummary | null>(null)
   const [vacancyByCompany, setVacancyByCompany] = useState<VacancyByCompany[]>([])
@@ -302,9 +305,22 @@ export function RecruitmentDashboardClient(_props: {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      {/* S339 고아 라우트 배선: 비용 분석은 rail 미노출 — 채용 대시보드가 유일 진입점 */}
       <PageHeader
         title={t('dashboardTitle')}
         description={t('dashboardDescription')}
+        actions={
+          <Link
+            href="/recruitment/cost-analysis"
+            className={cn(
+              'inline-flex items-center justify-center font-medium',
+              BUTTON_VARIANTS.secondary,
+              BUTTON_SIZES.sm,
+            )}
+          >
+            {tm('cost-analysis')}
+          </Link>
+        }
       />
 
       {/* KPI Cards */}

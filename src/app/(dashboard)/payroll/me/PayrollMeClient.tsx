@@ -96,6 +96,7 @@ export default function PayrollMeClient({
  user: _user, showYearEnd = false }: PayrollMeClientProps) {
   const t = useTranslations('payrollMe')
   const tn = useTranslations('nav')
+  const tr = useTranslations('totalRewards')
   const locale = useLocale()
   const router = useRouter()
   const [items, setItems] = useState<PayslipItem[]>([])
@@ -195,6 +196,17 @@ export default function PayrollMeClient({
         </div>
 
         <div className="flex items-center gap-2">
+          {/* S339 고아 라우트 배선: 총 보상 명세는 rail 미노출 — 급여명세서 허브가 유일 진입점 */}
+          <Link
+            href="/my/total-rewards"
+            className={cn(
+              'inline-flex items-center justify-center font-medium',
+              BUTTON_VARIANTS.secondary,
+              BUTTON_SIZES.sm,
+            )}
+          >
+            {tr('title')}
+          </Link>
           {/* Wave1 IA 데모션 4: 연말정산(self) rail → 급여명세서 허브 진입 (2026-06-12 제안 확정) */}
           {showYearEnd && (
             <Link
