@@ -10761,7 +10761,8 @@
     "validation": {
       "selectPlan": "복리후생 항목을 선택해 주세요.",
       "enterAmount": "신청 금액을 입력해 주세요.",
-      "attachProof": "증빙 서류를 첨부해 주세요."
+      "attachProof": "증빙 서류를 첨부해 주세요.",
+      "uploadInProgress": "증빙 업로드가 진행 중입니다. 완료 후 제출해 주세요."
     }
   },
   "yearEnd": {

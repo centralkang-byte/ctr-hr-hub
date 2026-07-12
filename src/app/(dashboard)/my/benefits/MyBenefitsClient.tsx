@@ -14,6 +14,8 @@ import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
 import { apiClient } from '@/lib/api'
 import { BUTTON_VARIANTS } from '@/lib/styles'
 import { useSubmitGuard } from '@/hooks/useSubmitGuard'
+import { useFileUpload } from '@/hooks/useFileUpload'
+import { LOA_PROOF_ACCEPT } from '@/lib/upload/proof-upload'
 import { toast } from '@/hooks/use-toast'
 import type { SessionUser } from '@/types'
 import { format } from 'date-fns'
@@ -79,9 +81,12 @@ function ClaimModal({ plans, onClose, onSubmit }: {
   const [claimAmount, setClaimAmount] = useState('')
   const [eventDate, setEventDate] = useState('')
   const [eventDetail, setEventDetail] = useState('')
-  const [proofFiles, setProofFiles] = useState<string[]>([])
+  const [proofFiles, setProofFiles] = useState<{ uploadId: string; filename: string }[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { upload, uploading } = useFileUpload({
+    presignEndpoint: '/api/v1/benefit-claims/proof/presigned',
+  })
 
   const selectedPlan = plans.find((p) => p.id === selectedPlanId)
 
@@ -93,14 +98,25 @@ function ClaimModal({ plans, onClose, onSubmit }: {
     }
   }, [selectedPlan])
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 실제 S3 presigned 업로드 — 성공한 파일의 uploadId 만 제출 본문에 포함 (#183 SSOT)
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? [])
-    const paths = files.map((f) => `benefit-claims/${Date.now()}-${f.name}`)
-    setProofFiles((prev) => [...prev, ...paths])
+    e.target.value = '' // 같은 파일 재선택 허용
+    setError(null)
+    for (const file of files) {
+      try {
+        const result = await upload(file)
+        setProofFiles((prev) => [...prev, result])
+      } catch (err) {
+        setError(err instanceof Error ? err.message : t('errorDesc'))
+        break
+      }
+    }
   }
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault()
+    if (uploading) { setError(t('validation.uploadInProgress')); return }
     if (!selectedPlanId) { setError(t('validation.selectPlan')); return }
     if (!claimAmount || Number(claimAmount) <= 0) { setError(t('validation.enterAmount')); return }
     if (selectedPlan?.requiresProof && proofFiles.length === 0) {
@@ -115,7 +131,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
         claimAmount: Number(claimAmount),
         eventDate: eventDate || undefined,
         eventDetail: eventDetail || undefined,
-        proofPaths: proofFiles,
+        proofUploadIds: proofFiles.map((f) => f.uploadId),
       })
       onSubmit()
       onClose()
@@ -136,7 +152,7 @@ function ClaimModal({ plans, onClose, onSubmit }: {
       eyebrow={t('breadcrumb')}
       title={t('applyBenefit')}
       closeDisabled={submitting}
-      primary={{ label: submitting ? tCommon('loading') : t('applyAction'), onClick: () => void guardedSubmit(), disabled: submitting }}
+      primary={{ label: submitting ? tCommon('loading') : t('applyAction'), onClick: () => void guardedSubmit(), disabled: submitting || uploading }}
       secondary={{ label: tCommon('cancel'), onClick: onClose, disabled: submitting }}
     >
       <form onSubmit={(e) => { e.preventDefault(); void guardedSubmit() }} className="flex flex-col gap-4">
@@ -214,15 +230,23 @@ function ClaimModal({ plans, onClose, onSubmit }: {
       <WdField label={t('form.proofDocuments')} required={selectedPlan?.requiresProof} htmlFor="bc-proof">
         <label className="flex items-center gap-2 px-3 py-2 border border-dashed border-border-strong rounded-lg cursor-pointer hover:bg-background text-sm text-muted-foreground">
           <Upload className="w-4 h-4" />
-          {t('form.attachFile')}
-          <input id="bc-proof" type="file" multiple onChange={handleFileChange} className="hidden" />
+          {uploading ? tCommon('loading') : t('form.attachFile')}
+          <input
+            id="bc-proof"
+            type="file"
+            multiple
+            accept={LOA_PROOF_ACCEPT}
+            disabled={uploading}
+            onChange={(e) => void handleFileChange(e)}
+            className="hidden"
+          />
         </label>
         {proofFiles.length > 0 && (
           <div className="mt-2 space-y-1">
             {proofFiles.map((f, i) => (
               <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
                 <FileText className="w-3 h-3" />
-                {f.split('/').pop()}
+                {f.filename}
                 <button
                   type="button"
                   onClick={() => setProofFiles((prev) => prev.filter((_, j) => j !== i))}
