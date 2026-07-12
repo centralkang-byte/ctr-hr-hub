@@ -472,7 +472,7 @@ CROSSBOARDING_DEPARTURE                CROSSBOARDING_ARRIVAL
 
 ### 6.1 직원 — 내 온보딩·오프보딩 화면
 
-위치: `내 정보 → 온보딩` 또는 `내 정보 → 오프보딩`
+위치: `나의 공간 → 나의 업무` — 온보딩 태스크 (`/my/tasks`) · 오프보딩은 `/my/offboarding`
 
 - **현재 단계**: 진행 중인 마일스톤·작업 카드
 - **체크리스트**: 카테고리별 작업 목록 + 진척
@@ -482,7 +482,7 @@ CROSSBOARDING_DEPARTURE                CROSSBOARDING_ARRIVAL
 
 ### 6.2 매니저 — 팀원 온보딩·오프보딩
 
-위치: `매니저 허브 → 온보딩` / `오프보딩`
+위치: `팀 관리 → 팀 온보딩` (`/onboarding`)
 
 - 직속 부하 진행 상황 한눈에 보기
 - 미완료 작업 표시 (담당이 매니저인 작업)
@@ -491,7 +491,7 @@ CROSSBOARDING_DEPARTURE                CROSSBOARDING_ARRIVAL
 
 ### 6.3 인사담당자 — 온보딩·오프보딩 관리
 
-위치: `온보딩` / `오프보딩` 메인
+위치: `인사 관리 → 온보딩/오프보딩` (`/onboarding`)
 
 탭 구조:
 1. **대시보드** — 진행 중 인스턴스 + 임박 마감 + 미완료 알림
