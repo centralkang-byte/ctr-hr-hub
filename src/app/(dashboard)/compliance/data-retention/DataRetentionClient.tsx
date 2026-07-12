@@ -9,16 +9,19 @@ import RetentionPolicyForm from '@/components/compliance/gdpr/RetentionPolicyFor
 import { BUTTON_VARIANTS,  TABLE_STYLES } from '@/lib/styles'
 import { cn } from '@/lib/utils'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import { toast } from '@/hooks/use-toast'
+import { formatDate } from '@/lib/format/date'
+import { RETENTION_CATEGORY_LABELS, readApiError } from '@/components/compliance/gdpr/gdpr-labels'
 import type { SessionUser } from '@/types'
 
 interface RetentionPolicy {
   id: string
   category: string
-  retention_months: number
-  description: string
-  auto_delete: boolean
+  retentionMonths: number
+  description: string | null
+  autoDelete: boolean
   anonymize: boolean
-  last_run_at: string | null
+  lastRunAt: string | null
 }
 
 export default function DataRetentionClient({ user: _user }: { user: SessionUser }) {
@@ -33,13 +36,14 @@ export default function DataRetentionClient({ user: _user }: { user: SessionUser
 
   const fetchPolicies = () => {
     setLoading(true)
-    fetch('/api/v1/compliance/gdpr/retention-policies?page=1&limit=50')
-      .then((res) => res.json())
-      .then((json) => {
-        setPolicies(json.data ?? [])
-        setLoading(false)
+    fetch('/api/v1/compliance/gdpr/retention?page=1&limit=50')
+      .then((res) => {
+        if (!res.ok) throw new Error(String(res.status))
+        return res.json()
       })
-      .catch(() => setLoading(false))
+      .then((json) => setPolicies(json.data ?? []))
+      .catch(() => toast({ title: tc('loadFailed'), variant: 'destructive' }))
+      .finally(() => setLoading(false))
   }
 
   useEffect(() => {
@@ -48,14 +52,20 @@ export default function DataRetentionClient({ user: _user }: { user: SessionUser
 
   const handleRunPolicy = (id: string) => {
     confirm({ title: tc('confirmAction'), onConfirm: async () => {
-      await fetch(`/api/v1/compliance/gdpr/retention-policies/${id}/run`, { method: 'POST' })
+      const res = await fetch('/api/v1/compliance/gdpr/retention/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ policyId: id }),
+      })
+      if (!res.ok) toast({ title: await readApiError(res, tc('error')), variant: 'destructive' })
       fetchPolicies()
     }})
   }
 
   const handleDelete = (id: string) => {
     confirm({ title: tc('confirmDelete'), onConfirm: async () => {
-      await fetch(`/api/v1/compliance/gdpr/retention-policies/${id}`, { method: 'DELETE' })
+      const res = await fetch(`/api/v1/compliance/gdpr/retention/${id}`, { method: 'DELETE' })
+      if (!res.ok) toast({ title: await readApiError(res, tc('error')), variant: 'destructive' })
       fetchPolicies()
     }})
   }
@@ -90,7 +100,7 @@ export default function DataRetentionClient({ user: _user }: { user: SessionUser
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-muted-foreground mb-1">{t('gdpr.autoDelete')} Enabled</p>
-          <p className="text-3xl font-bold text-foreground">{policies.filter((p) => p.auto_delete).length}</p>
+          <p className="text-3xl font-bold text-foreground">{policies.filter((p) => p.autoDelete).length}</p>
         </div>
         <div className="bg-card rounded-xl shadow-sm border border-border p-6">
           <p className="text-xs text-muted-foreground mb-1">{t('gdpr.anonymize')} Enabled</p>
@@ -122,23 +132,23 @@ export default function DataRetentionClient({ user: _user }: { user: SessionUser
                 {!policies?.length && <EmptyState />}
               {policies?.map((p) => (
                   <tr key={p.id} className={TABLE_STYLES.row}>
-                    <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>{p.category}</td>
+                    <td className={cn(TABLE_STYLES.cell, 'font-medium text-foreground')}>{RETENTION_CATEGORY_LABELS[p.category] ?? p.category}</td>
                     <td className={cn(TABLE_STYLES.cell, 'text-foreground')}>
-                      {p.retention_months} mo
+                      {p.retentionMonths} mo
                       <span className="text-xs text-muted-foreground ml-1">
-                        ({Math.round((p.retention_months / 12) * 10) / 10} yr)
+                        ({Math.round((p.retentionMonths / 12) * 10) / 10} yr)
                       </span>
                     </td>
                     <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground max-w-[200px] truncate')}>{p.description || '-'}</td>
                     <td className={TABLE_STYLES.cell}>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          p.auto_delete
+                          p.autoDelete
                             ? 'bg-emerald-500/15 text-emerald-700 border border-emerald-200'
                             : 'bg-background text-muted-foreground border border-border'
                         }`}
                       >
-                        {p.auto_delete ? tc('yes') : tc('no')}
+                        {p.autoDelete ? tc('yes') : tc('no')}
                       </span>
                     </td>
                     <td className={TABLE_STYLES.cell}>
@@ -153,7 +163,7 @@ export default function DataRetentionClient({ user: _user }: { user: SessionUser
                       </span>
                     </td>
                     <td className={cn(TABLE_STYLES.cell, 'text-muted-foreground')}>
-                      {p.last_run_at ? new Date(p.last_run_at).toLocaleDateString() : '-'}
+                      {formatDate(p.lastRunAt)}
                     </td>
                     <td className={TABLE_STYLES.cell}>
                       <div className="flex items-center gap-2">

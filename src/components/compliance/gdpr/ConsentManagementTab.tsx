@@ -6,28 +6,30 @@ import { Plus, ShieldCheck, XCircle } from 'lucide-react'
 import ConsentForm from './ConsentForm'
 import { BUTTON_VARIANTS, TABLE_STYLES } from '@/lib/styles'
 import { ConfirmDialog, useConfirmDialog } from '@/components/ui/confirm-dialog'
+import { toast } from '@/hooks/use-toast'
+import { formatDate } from '@/lib/format/date'
+import { CONSENT_PURPOSE_LABELS, readApiError } from './gdpr-labels'
 
 interface Consent {
   id: string
-  employee_name: string
-  employee_no: string
   purpose: string
-  legal_basis: string
-  status: 'active' | 'revoked' | 'expired'
-  consented_at: string | null
-  revoked_at: string | null
-  expires_at: string | null
+  legalBasis: string | null
+  status: 'ACTIVE' | 'REVOKED' | 'EXPIRED'
+  consentedAt: string | null
+  revokedAt: string | null
+  expiresAt: string | null
+  employee: { id: string; name: string; employeeNo: string | null }
 }
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    active: 'bg-emerald-500/15 text-emerald-700 border border-emerald-200',
-    revoked: 'bg-destructive/10 text-destructive border border-destructive/20',
-    expired: 'bg-background text-muted-foreground border border-border',
-    pending: 'bg-amber-500/15 text-amber-700 border border-amber-300',
+    ACTIVE: 'bg-emerald-500/15 text-emerald-700 border border-emerald-200',
+    REVOKED: 'bg-destructive/10 text-destructive border border-destructive/20',
+    EXPIRED: 'bg-background text-muted-foreground border border-border',
   }
+  const fallback = 'bg-amber-500/15 text-amber-700 border border-amber-300'
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? map.pending}`}>
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${map[status] ?? fallback}`}>
       {status}
     </span>
   )
@@ -45,12 +47,13 @@ export default function ConsentManagementTab() {
   const fetchConsents = () => {
     setLoading(true)
     fetch('/api/v1/compliance/gdpr/consents?page=1&limit=20')
-      .then((res) => res.json())
-      .then((json) => {
-        setConsents(json.data ?? [])
-        setLoading(false)
+      .then((res) => {
+        if (!res.ok) throw new Error(String(res.status))
+        return res.json()
       })
-      .catch(() => setLoading(false))
+      .then((json) => setConsents(json.data ?? []))
+      .catch(() => toast({ title: tc('loadFailed'), variant: 'destructive' }))
+      .finally(() => setLoading(false))
   }
 
   useEffect(() => {
@@ -59,11 +62,8 @@ export default function ConsentManagementTab() {
 
   const handleRevoke = (id: string) => {
     confirm({ title: tc('confirmAction'), onConfirm: async () => {
-      await fetch(`/api/v1/compliance/gdpr/consents/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'revoked' }),
-      })
+      const res = await fetch(`/api/v1/compliance/gdpr/consents/${id}/revoke`, { method: 'POST' })
+      if (!res.ok) toast({ title: await readApiError(res, tc('error')), variant: 'destructive' })
       fetchConsents()
     }})
   }
@@ -104,22 +104,22 @@ export default function ConsentManagementTab() {
                 {consents.map((c) => (
                   <tr key={c.id} className={TABLE_STYLES.row}>
                     <td className="px-4 py-3 text-sm">
-                      <div className="font-medium text-foreground">{c.employee_name}</div>
-                      <div className="text-xs text-muted-foreground">{c.employee_no}</div>
+                      <div className="font-medium text-foreground">{c.employee.name}</div>
+                      <div className="text-xs text-muted-foreground">{c.employee.employeeNo ?? '-'}</div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-foreground">{c.purpose}</td>
-                    <td className="px-4 py-3 text-sm text-muted-foreground max-w-[200px] truncate">{c.legal_basis}</td>
+                    <td className="px-4 py-3 text-sm text-foreground">{CONSENT_PURPOSE_LABELS[c.purpose] ?? c.purpose}</td>
+                    <td className="px-4 py-3 text-sm text-muted-foreground max-w-[200px] truncate">{c.legalBasis ?? '-'}</td>
                     <td className="px-4 py-3 text-sm">
                       <StatusBadge status={c.status} />
                     </td>
                     <td className="px-4 py-3 text-sm text-muted-foreground">
-                      {c.consented_at ? new Date(c.consented_at).toLocaleDateString() : '-'}
+                      {formatDate(c.consentedAt)}
                     </td>
                     <td className="px-4 py-3 text-sm text-muted-foreground">
-                      {c.expires_at ? new Date(c.expires_at).toLocaleDateString() : '-'}
+                      {formatDate(c.expiresAt)}
                     </td>
                     <td className="px-4 py-3 text-sm">
-                      {c.status === 'active' && (
+                      {c.status === 'ACTIVE' && (
                         <button
                           onClick={() => handleRevoke(c.id)}
                           className="inline-flex items-center gap-1 text-destructive hover:text-destructive text-sm font-medium"
@@ -128,7 +128,7 @@ export default function ConsentManagementTab() {
                           {t('gdpr.revokeConsent')}
                         </button>
                       )}
-                      {c.status !== 'active' && (
+                      {c.status !== 'ACTIVE' && (
                         <span className="text-muted-foreground text-xs flex items-center gap-1">
                           <ShieldCheck className="w-3.5 h-3.5" />
                           {c.status}

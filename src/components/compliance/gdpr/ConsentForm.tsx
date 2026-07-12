@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { WdDrawer, WdField } from '@/components/shared/WdDrawer'
+import { CONSENT_PURPOSES, CONSENT_PURPOSE_LABELS, readApiError } from './gdpr-labels'
 
 const INPUT_CLS = 'w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus-visible:ring-2 focus-visible:ring-ring focus:outline-none'
 
 interface Employee {
   id: string
   name: string
-  employee_no: string
+  employeeNo: string | null
 }
 
 interface ConsentFormProps {
@@ -18,16 +19,7 @@ interface ConsentFormProps {
   onSaved: () => void
 }
 
-const PURPOSE_OPTIONS = [
-  'Employment Contract',
-  'Payroll Processing',
-  'Performance Management',
-  'Health & Safety',
-  'Marketing Communications',
-  'Third-party Data Sharing',
-  'CCTV Monitoring',
-  'Biometric Data',
-]
+
 
 export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps) {
   const t = useTranslations('compliance')
@@ -35,10 +27,10 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
 
   const [employees, setEmployees] = useState<Employee[]>([])
   const [form, setForm] = useState({
-    employee_id: '',
+    employeeId: '',
     purpose: '',
-    legal_basis: '',
-    expires_at: '',
+    legalBasis: '',
+    expiresAt: '',
   })
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -57,7 +49,7 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
   }
 
   const handleSubmit = async () => {
-    if (!form.employee_id || !form.purpose || !form.legal_basis) {
+    if (!form.employeeId || !form.purpose || !form.legalBasis) {
       setError(tc('required'))
       return
     }
@@ -67,9 +59,18 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
       const res = await fetch('/api/v1/compliance/gdpr/consents', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          employeeId: form.employeeId,
+          purpose: form.purpose,
+          legalBasis: form.legalBasis,
+          // date input(YYYY-MM-DD) → zod datetime 요구라 ISO 로 변환, 미입력 시 생략
+          ...(form.expiresAt ? { expiresAt: new Date(form.expiresAt).toISOString() } : {}),
+        }),
       })
-      if (!res.ok) throw new Error('Failed')
+      if (!res.ok) {
+        setError(await readApiError(res, tc('error')))
+        return
+      }
       onSaved()
     } catch {
       setError(tc('error'))
@@ -91,13 +92,13 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
         <select
           id="consent-employee"
           className={INPUT_CLS}
-          value={form.employee_id}
-          onChange={(e) => handleChange('employee_id', e.target.value)}
+          value={form.employeeId}
+          onChange={(e) => handleChange('employeeId', e.target.value)}
         >
           <option value="">{tc('selectPlaceholder')}</option>
           {employees.map((emp) => (
             <option key={emp.id} value={emp.id}>
-              {emp.name} ({emp.employee_no})
+              {emp.name} ({emp.employeeNo ?? '-'})
             </option>
           ))}
         </select>
@@ -111,9 +112,9 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
           onChange={(e) => handleChange('purpose', e.target.value)}
         >
           <option value="">{tc('selectPlaceholder')}</option>
-          {PURPOSE_OPTIONS.map((p) => (
+          {CONSENT_PURPOSES.map((p) => (
             <option key={p} value={p}>
-              {p}
+              {CONSENT_PURPOSE_LABELS[p]}
             </option>
           ))}
         </select>
@@ -125,8 +126,8 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
           className={`${INPUT_CLS} resize-none`}
           rows={3}
           placeholder="e.g., Art. 6(1)(b) – Contractual necessity"
-          value={form.legal_basis}
-          onChange={(e) => handleChange('legal_basis', e.target.value)}
+          value={form.legalBasis}
+          onChange={(e) => handleChange('legalBasis', e.target.value)}
         />
       </WdField>
 
@@ -135,8 +136,8 @@ export default function ConsentForm({ open, onClose, onSaved }: ConsentFormProps
           id="consent-expires-at"
           type="date"
           className={INPUT_CLS}
-          value={form.expires_at}
-          onChange={(e) => handleChange('expires_at', e.target.value)}
+          value={form.expiresAt}
+          onChange={(e) => handleChange('expiresAt', e.target.value)}
         />
       </WdField>
 
