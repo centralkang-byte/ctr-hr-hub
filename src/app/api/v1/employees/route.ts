@@ -102,6 +102,9 @@ export const GET = withPermission(
           phone: true,
           employeeNo: true,
           hireDate: true,
+          probationStatus: true,
+          probationEndDate: true,
+          contractEndDate: true,
           assignments: {
             where: { isPrimary: true, endDate: null },
             take: 1,
@@ -142,7 +145,12 @@ export const GET = withPermission(
     const isPrivileged = user.role === ROLE.SUPER_ADMIN || user.role === ROLE.HR_ADMIN
     const sanitized = isPrivileged
       ? mapped
-      : maskSensitiveFields(mapped, user.role, user.employeeId ?? undefined)
+      : maskSensitiveFields(
+          // 수습/계약 라이프사이클은 HR 전용 정보 — 비특권 role엔 미노출
+          mapped.map(({ probationStatus: _p, probationEndDate: _pe, contractEndDate: _ce, ...rest }) => rest),
+          user.role,
+          user.employeeId ?? undefined,
+        )
 
     return apiPaginated(sanitized, buildPagination(page, limit, total))
   },

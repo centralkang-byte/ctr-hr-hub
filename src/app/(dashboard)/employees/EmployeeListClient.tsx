@@ -22,6 +22,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import { Badge } from '@/components/ui/badge'
+import { deriveProbationBadge, deriveContractBadge } from '@/lib/employees/lifecycle'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { WdStatusChips } from '@/components/shared/WdStatusChips'
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable'
@@ -49,6 +51,10 @@ type EmployeeRow = {
   jobGrade: { id: string; name: string } | null
   title: { id: string; name: string } | null
   jobCategory: { id: string; name: string } | null
+  // 수습/계약 라이프사이클 (HR_UP 응답에만 포함)
+  probationStatus?: string | null
+  probationEndDate?: string | null
+  contractEndDate?: string | null
 }
 
 type EmployeeDetail = EmployeeRow & {
@@ -274,6 +280,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
     ON_LEAVE: t('statusOnLeave'),
     RESIGNED: t('statusResigned'),
     TERMINATED: t('statusTerminated'),
+    PROBATION: t('statusProbation'),
   }), [t])
 
   // ─── Filter state ───
@@ -480,11 +487,28 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
     {
       key: 'status',
       header: t('status'),
-      render: (row) => (
-        <StatusBadge status={row.status}>
-          {STATUS_LABELS[row.status] ?? row.status}
-        </StatusBadge>
-      ),
+      render: (row) => {
+        const now = new Date()
+        const probation = deriveProbationBadge(row.probationEndDate, row.probationStatus, now)
+        const contract = deriveContractBadge(row.contractEndDate, now)
+        return (
+          <div className="flex flex-wrap items-center gap-1">
+            <StatusBadge status={row.status}>
+              {STATUS_LABELS[row.status] ?? row.status}
+            </StatusBadge>
+            {probation && (
+              <Badge variant={probation.variant}>
+                {t(`lifecycle.${probation.labelKey}`, { days: Math.abs(probation.daysLeft) })}
+              </Badge>
+            )}
+            {contract && (
+              <Badge variant={contract.variant}>
+                {t(`lifecycle.${contract.labelKey}`, { days: Math.abs(contract.daysLeft) })}
+              </Badge>
+            )}
+          </div>
+        )
+      },
     },
   ], [t, EMPLOYMENT_TYPE_LABELS, STATUS_LABELS, selectedId])
 

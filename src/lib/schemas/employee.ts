@@ -21,7 +21,7 @@ export const employeeCreateSchema = z.object({
   // Optional fields
   titleId: z.string().uuid('Invalid title ID').optional().nullable(),
   positionId: z.string().uuid('Invalid position ID').optional().nullable(),
-  nameEn: z.string().max(100).optional(),
+  nameEn: z.string().max(100).optional().nullable(),
   managerId: z.string().uuid().optional().nullable(),
   birthDate: z.string().date().optional().nullable(),
   gender: z.string().max(20).optional().nullable(),

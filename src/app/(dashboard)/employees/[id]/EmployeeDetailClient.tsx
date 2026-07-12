@@ -34,6 +34,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { StatusBadge } from '@/components/ui/StatusBadge'
+import { Badge } from '@/components/ui/badge'
+import { deriveProbationBadge, deriveContractBadge } from '@/lib/employees/lifecycle'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
@@ -80,6 +82,11 @@ type EmployeeDetail = {
   jobCategory: { id: string; name: string } | null
   position: { id: string; titleKo: string; titleEn: string | null; code: string } | null
   workLocation: { country: string; city: string | null; name: string } | null
+  // 수습/계약 라이프사이클
+  probationStatus?: string | null
+  probationEndDate?: Date | string | null
+  contractStartDate?: Date | string | null
+  contractEndDate?: Date | string | null
   manager: {
     id: string
     name: string
@@ -436,6 +443,46 @@ export function EmployeeDetailClient({
             <InfoRow label={t('hireDate')} value={formatDate(employee.hireDate)} />
             <InfoRow label={t('detailTenureLabel')} value={tenureText} />
             <InfoRow label={t('resignDate')} value={formatDate(employee.resignDate)} />
+            {(() => {
+              // 수습/계약 라이프사이클 — 값이 있을 때만 표시 (HR_UP 응답 한정)
+              const now = new Date()
+              const probation = deriveProbationBadge(employee.probationEndDate ?? null, employee.probationStatus ?? null, now)
+              const contract = deriveContractBadge(employee.contractEndDate ?? null, now)
+              return (
+                <>
+                  {employee.probationEndDate && (
+                    <InfoRow
+                      label={t('lifecycle.probationEndDate')}
+                      value={
+                        <span className="flex flex-wrap items-center gap-1.5">
+                          {formatDate(employee.probationEndDate)}
+                          {probation && (
+                            <Badge variant={probation.variant}>
+                              {t(`lifecycle.${probation.labelKey}`, { days: Math.abs(probation.daysLeft) })}
+                            </Badge>
+                          )}
+                        </span>
+                      }
+                    />
+                  )}
+                  {employee.contractEndDate && (
+                    <InfoRow
+                      label={t('lifecycle.contractEndDate')}
+                      value={
+                        <span className="flex flex-wrap items-center gap-1.5">
+                          {formatDate(employee.contractEndDate)}
+                          {contract && (
+                            <Badge variant={contract.variant}>
+                              {t(`lifecycle.${contract.labelKey}`, { days: Math.abs(contract.daysLeft) })}
+                            </Badge>
+                          )}
+                        </span>
+                      }
+                    />
+                  )}
+                </>
+              )
+            })()}
           </dl>
         </div>
       </div>

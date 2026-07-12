@@ -2533,7 +2533,16 @@
     "detailDivision": "División",
     "detailWorkLocation": "Lugar de trabajo",
     "detailTenureLabel": "Antigüedad",
-    "detailPayBand": "Banda salarial"
+    "detailPayBand": "Banda salarial",
+    "statusProbation": "Prueba",
+    "lifecycle": {
+      "probationEndDate": "Fin de prueba",
+      "contractEndDate": "Fin de contrato",
+      "probationInProgress": "Prueba · D-{days}",
+      "probationOverdue": "Prueba vencida hace {days} días",
+      "contractExpiringSoon": "Contrato vence en {days} días",
+      "contractExpired": "Contrato vencido hace {days} días"
+    }
   },
   "employees": {
     "emptyDesc": "Register a new employee.",

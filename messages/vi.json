@@ -2533,7 +2533,16 @@
     "detailDivision": "Bộ phận",
     "detailWorkLocation": "Nơi làm việc",
     "detailTenureLabel": "Thâm niên",
-    "detailPayBand": "Dải lương"
+    "detailPayBand": "Dải lương",
+    "statusProbation": "Thử việc",
+    "lifecycle": {
+      "probationEndDate": "Kết thúc thử việc",
+      "contractEndDate": "Hết hạn hợp đồng",
+      "probationInProgress": "Thử việc · còn {days} ngày",
+      "probationOverdue": "Quá hạn thử việc {days} ngày",
+      "contractExpiringSoon": "Hợp đồng hết hạn sau {days} ngày",
+      "contractExpired": "Hợp đồng đã hết hạn {days} ngày"
+    }
   },
   "employees": {
     "emptyDesc": "Register a new employee.",

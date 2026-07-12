@@ -948,7 +948,16 @@
     "detailDivision": "본부",
     "detailWorkLocation": "근무지",
     "detailTenureLabel": "근속",
-    "detailPayBand": "급여 밴드"
+    "detailPayBand": "급여 밴드",
+    "statusProbation": "수습",
+    "lifecycle": {
+      "probationEndDate": "수습 종료일",
+      "contractEndDate": "계약 만료일",
+      "probationInProgress": "수습 중 · D-{days}",
+      "probationOverdue": "수습 만료 {days}일 경과",
+      "contractExpiringSoon": "계약 만료 D-{days}",
+      "contractExpired": "계약 만료 {days}일 경과"
+    }
   },
   "attendance": {
     "title": "근태 관리",

@@ -2533,7 +2533,16 @@
     "detailDivision": "本部",
     "detailWorkLocation": "工作地点",
     "detailTenureLabel": "在职年限",
-    "detailPayBand": "薪资区间"
+    "detailPayBand": "薪资区间",
+    "statusProbation": "试用期",
+    "lifecycle": {
+      "probationEndDate": "试用期结束日",
+      "contractEndDate": "合同到期日",
+      "probationInProgress": "试用期 · 剩{days}天",
+      "probationOverdue": "试用期已过{days}天未处理",
+      "contractExpiringSoon": "合同{days}天后到期",
+      "contractExpired": "合同已到期{days}天"
+    }
   },
   "employees": {
     "emptyDesc": "Register a new employee.",

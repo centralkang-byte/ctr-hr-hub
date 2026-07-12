@@ -75,8 +75,14 @@ export const GET = withPermission(
     // Flatten primary assignment into top-level fields for frontend compatibility
     // EmployeeDetail expects { department, jobGrade, jobCategory, status, employmentType } at root level
     const a = extractPrimaryAssignment(employee.assignments)
+    // 수습/계약 라이프사이클은 HR 전용 — 비특권 role엔 응답에서 제거
+    const isHrPrivileged = user.role === 'SUPER_ADMIN' || user.role === 'HR_ADMIN'
+    const lifecycleStrip = isHrPrivileged
+      ? {}
+      : { probationStatus: null, probationStartDate: null, probationEndDate: null, contractStartDate: null, contractEndDate: null }
     const mappedEmployee = {
       ...employee,
+      ...lifecycleStrip,
       department: a?.department ?? null,
       jobGrade: a?.jobGrade ?? null,
       jobCategory: a?.jobCategory ?? null,

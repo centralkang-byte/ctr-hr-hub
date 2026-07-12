@@ -116,8 +116,15 @@ export default async function EmployeeDetailPage({
   const division = getDivisionName(primaryAssignment?.department ?? null)
   const canViewGradeFlag = canViewGradeUtil(user.role, user.employeeId, id, managerId)
 
+  // 수습/계약 라이프사이클은 HR 전용 — 비특권 role엔 서버에서 제거
+  const isHrPrivileged = user.role === ROLE.SUPER_ADMIN || user.role === ROLE.HR_ADMIN
+  const lifecycleStrip = isHrPrivileged
+    ? {}
+    : { probationStatus: null, probationStartDate: null, probationEndDate: null, contractStartDate: null, contractEndDate: null }
+
   const employee = {
     ...rawEmployee,
+    ...lifecycleStrip,
     companyId: primaryAssignment?.companyId ?? '',
     company: primaryAssignment?.company ?? null,
     department: primaryAssignment?.department ?? null,

@@ -2533,7 +2533,16 @@
     "detailDivision": "Division",
     "detailWorkLocation": "Work location",
     "detailTenureLabel": "Tenure",
-    "detailPayBand": "Pay band"
+    "detailPayBand": "Pay band",
+    "statusProbation": "Probation",
+    "lifecycle": {
+      "probationEndDate": "Probation End",
+      "contractEndDate": "Contract End",
+      "probationInProgress": "Probation · D-{days}",
+      "probationOverdue": "Probation overdue by {days}d",
+      "contractExpiringSoon": "Contract expires in {days}d",
+      "contractExpired": "Contract expired {days}d ago"
+    }
   },
   "employees": {
     "emptyDesc": "Register a new employee.",
