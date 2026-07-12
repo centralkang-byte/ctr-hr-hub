@@ -41,7 +41,6 @@ import {
 //   Monitor,
   Scale,
   Sparkles,
-  AlertTriangle,
   TrendingDown,
   Briefcase,
   LayoutDashboard,
@@ -58,13 +57,10 @@ import {
   LayoutGrid,
   ListChecks,
 //   Smile,
-  Lock,
   Layers,
   Globe,
   Calculator,
 //   Upload,
-  LogOut,
-  BedDouble,
   type LucideIcon,
 } from 'lucide-react'
 import { MODULE } from '@/lib/constants'
@@ -171,21 +167,14 @@ export const NAVIGATION: NavSection[] = [
         module: MODULE.ATTENDANCE,
         subGroup: 'time-off',
       },
+      // Wave1 IA merge (2026-06-12 제안 확정): 휴가+휴직 단일 진입 — 휴직은 /leave 허브
+      // 헤더에서 진입. /leave-of-absence 루트는 존속(딥링크 유효), rail 에서만 병합.
       {
         key: 'my-leave',
-        labelKey: 'nav.mySpace.leave',
-        label: '휴가 신청',
+        labelKey: 'nav.mySpace.leaveLoa',
+        label: '휴가/휴직',
         href: '/leave',
         icon: CalendarDays,
-        module: MODULE.LEAVE,
-        subGroup: 'time-off',
-      },
-      {
-        key: 'my-loa',
-        labelKey: 'nav.mySpace.loa',
-        label: '휴직 신청',
-        href: '/leave-of-absence',
-        icon: BedDouble,
         module: MODULE.LEAVE,
         subGroup: 'time-off',
       },
@@ -208,18 +197,8 @@ export const NAVIGATION: NavSection[] = [
         module: MODULE.BENEFITS,
         subGroup: 'pay',
       },
-      {
-        key: 'my-year-end',
-        labelKey: 'nav.mySpace.yearEnd',
-        label: '연말 정산',
-        href: '/my/year-end',
-        icon: FileText,
-        module: MODULE.PAYROLL,
-        countryFilter: ['KR'],
-        badge: 'new' as const,
-        subGroup: 'pay',
-        conditional: 'year-end',
-      },
+      // Wave1 IA 데모션 4 (2026-06-12 제안 확정): 연말정산(self)은 급여명세서(/payroll/me)
+      // 허브 헤더에서 진입 — 루트(/my/year-end) 존속, rail 에서만 내림.
       // ── 성장 ──────────────────────────────────────────
       // 평가/성장 허브 (프로토 PerfGrowthWrapper): 목표·분기 리뷰·자기평가 통합.
       // 분기 리뷰(/performance/my-quarterly-review)·스킬 자기평가(/my/skills)는 허브 탭으로 데모션 —
@@ -271,27 +250,8 @@ export const NAVIGATION: NavSection[] = [
         module: MODULE.EMPLOYEES,
         subGroup: 'etc',
       },
-      // ── 조건부 (런타임 필터) ───────────────────────────
-      {
-        key: 'my-onboarding',
-        labelKey: 'nav.mySpace.myOnboarding',
-        label: '나의 온보딩',
-        href: '/onboarding/me',
-        icon: UserCheck,
-        module: MODULE.ONBOARDING,
-        subGroup: 'etc',
-        conditional: 'onboarding',
-      },
-      {
-        key: 'my-offboarding',
-        labelKey: 'nav.mySpace.myOffboarding',
-        label: '나의 퇴직처리',
-        href: '/my/offboarding',
-        icon: LogOut,
-        module: MODULE.EMPLOYEES,
-        subGroup: 'etc',
-        conditional: 'offboarding',
-      },
+      // Wave1 IA 데모션 4 (2026-06-12 제안 확정): 나의 온보딩/퇴직처리는 홈 트래커 카드
+      // (활성 플로우 시 노출)에서 진입 — 루트(/onboarding/me·/my/offboarding) 존속, rail 에서만 내림.
     ],
   },
 
@@ -416,6 +376,15 @@ export const NAVIGATION: NavSection[] = [
         icon: Gavel,
         module: MODULE.DISCIPLINE,
       },
+      // Wave1 IA move (2026-06-12 제안 확정): 컴플라이언스 설정 → 인사 관리
+      {
+        key: 'compliance-hub',
+        labelKey: 'nav.compliance.hub',
+        label: '컴플라이언스',
+        href: '/compliance',
+        icon: Shield,
+        module: MODULE.COMPLIANCE,
+      },
     ],
   },
 
@@ -499,14 +468,8 @@ export const NAVIGATION: NavSection[] = [
         icon: Target,
         module: MODULE.PERFORMANCE,
       },
-      {
-        key: 'quarterly-reviews',
-        labelKey: 'nav.performance.quarterlyReview',
-        label: '분기 리뷰',
-        href: '/performance/quarterly-reviews',
-        icon: ClipboardCheck,
-        module: MODULE.PERFORMANCE,
-      },
+      // Wave1 IA 데모션 2 (2026-06-12 제안 확정): 분기 리뷰(admin)는 성과 관리 허브
+      // (/performance/admin?tab=quarterly) 탭으로 — 루트 존속, rail 에서만 내림.
       {
         key: 'calibration',
         labelKey: 'nav.performance.calibration',
@@ -558,15 +521,8 @@ export const NAVIGATION: NavSection[] = [
         icon: LayoutDashboard,
         module: MODULE.PAYROLL,
       },
-      {
-        key: 'payroll-close-attendance',
-        labelKey: 'nav.payroll.closeAttendance',
-        label: '근태 마감',
-        href: '/payroll/close-attendance',
-        icon: Lock,
-        module: MODULE.PAYROLL,
-        badge: 'new' as const,
-      },
+      // Wave1 IA 데모션 3 (2026-06-12 제안 확정): 근태 마감·이상 검토는 급여 대시보드
+      // (/payroll) run-flow 버튼으로 — 루트 존속, rail 에서만 내림.
       {
         key: 'payroll-adjustments',
         labelKey: 'nav.payroll.adjustments',
@@ -575,14 +531,6 @@ export const NAVIGATION: NavSection[] = [
         icon: Layers,
         module: MODULE.PAYROLL,
         badge: 'new' as const,
-      },
-      {
-        key: 'payroll-review',
-        labelKey: 'nav.payroll.anomalyReview',
-        label: '이상 검토',
-        href: '/payroll/anomalies',
-        icon: AlertTriangle,
-        module: MODULE.PAYROLL,
       },
       {
         key: 'payroll-global',
@@ -697,7 +645,7 @@ export const NAVIGATION: NavSection[] = [
   },
 
   // ══ 9. SETTINGS (설정) — HR_ADMIN+ ═══════════════════
-  // 컴플라이언스: 독립 섹션 → Settings 하위로 이동 (아이템 1개짜리 섹션 제거)
+  // Wave1 IA move (2026-06-12 제안 확정): 컴플라이언스 → 인사 관리 그룹으로 이동
   {
     key: 'settings',
     labelKey: 'nav.settings.label',
@@ -705,14 +653,6 @@ export const NAVIGATION: NavSection[] = [
     icon: Settings,
     visibleTo: HR_UP,
     items: [
-      {
-        key: 'compliance-hub',
-        labelKey: 'nav.compliance.hub',
-        label: '컴플라이언스',
-        href: '/compliance',
-        icon: Shield,
-        module: MODULE.COMPLIANCE,
-      },
       {
         key: 'settings-hub',
         labelKey: 'nav.settings.hub',
