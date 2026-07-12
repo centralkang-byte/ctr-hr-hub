@@ -13,7 +13,7 @@ import type { Permission, SessionUser } from '@/types'
 // ─── Self-service routes (ALL_ROLES, bypass module permission) ──
 // middleware.ts에서 ALL_ROLES로 허용된 /*/me 라우트들.
 // 모듈 권한 없어도 사이드바에 표시 (예: MANAGER → /payroll/me)
-const SELF_SERVICE_PATHS = ['/payroll/me', '/onboarding/me']
+const SELF_SERVICE_PATHS = ['/payroll/me', '/onboarding/me', '/my/training']
 
 // ─── Permission check ────────────────────────────────────────
 

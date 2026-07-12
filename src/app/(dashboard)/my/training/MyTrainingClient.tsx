@@ -136,10 +136,7 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
   const handleEnroll = async (courseId: string) => {
     setEnrollingId(courseId)
     try {
-      await apiClient.post('/api/v1/training/enrollments', {
-        courseId,
-        source: 'manual',
-      })
+      await apiClient.post('/api/v1/training/my/enrollments', { courseId })
       toast({ title: tCommon('created') })
       fetchData()
     } catch {
@@ -151,10 +148,10 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
 
   const handleStartCourse = async (enrollmentId: string) => {
     try {
-      await apiClient.patch(`/api/v1/training/enrollments/${enrollmentId}`, {
+      await apiClient.put(`/api/v1/training/my/enrollments/${enrollmentId}`, {
         status: 'IN_PROGRESS',
       })
-      toast({ title: tCommon('completed') })
+      toast({ title: tCommon('saved') })
       fetchData()
     } catch {
       toast({ title: tCommon('saveFailed'), variant: 'destructive' })
@@ -163,9 +160,8 @@ export default function MyTrainingClient({ user: _user }: { user: SessionUser })
 
   const handleComplete = async (enrollmentId: string) => {
     try {
-      await apiClient.patch(`/api/v1/training/enrollments/${enrollmentId}`, {
+      await apiClient.put(`/api/v1/training/my/enrollments/${enrollmentId}`, {
         status: 'ENROLLMENT_COMPLETED',
-        completedAt: new Date().toISOString(),
       })
       toast({ title: tCommon('completed') })
       fetchData()

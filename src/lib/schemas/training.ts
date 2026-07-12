@@ -54,3 +54,13 @@ export const trainingEnrollmentUpdateSchema = z.object({
   score: z.number().min(0).max(100).optional(),
   completedAt: z.string().datetime().optional(),
 })
+
+// ─── Self-Service (My Training) ─────────────────────────
+
+export const trainingSelfEnrollSchema = z.object({
+  courseId: z.string().uuid(),
+})
+
+export const trainingSelfStatusSchema = z.object({
+  status: z.enum(['IN_PROGRESS', 'ENROLLMENT_COMPLETED']),
+})
