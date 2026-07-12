@@ -9,7 +9,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 // ═══════════════════════════════════════════════════════════
 
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import {
   Plus, Search, Filter, ChevronRight, Clock, CheckCircle2,
   XCircle, FileText, Building2, Circle,
@@ -81,7 +81,11 @@ export default function RequisitionListClient({ user, canViewAll, canCreate }: P
   const [loading, setLoading] = useState(true)
   // canViewAll=false (dept_head/direct_manager 결재자)면 'my' 탭 강제 — 'all'/'pending'은
   // API에서 recruitment_view 권한 필요 → 403. 'my'는 myApprovals 서버 필터로 빈/매칭 결과만.
-  const [tab, setTab] = useState<'all' | 'my' | 'pending'>(canViewAll ? 'all' : 'my')
+  // ?tab=my 딥링크 지원 (결재함 배너 → HR도 '나의 결재' 탭 착지, S335)
+  const urlTab = useSearchParams().get('tab')
+  const [tab, setTab] = useState<'all' | 'my' | 'pending'>(
+    urlTab === 'my' || urlTab === 'pending' ? urlTab : canViewAll ? 'all' : 'my',
+  )
   const [search, setSearch] = useState('')
   const [approveTarget, setApproveTarget] = useState<Requisition | null>(null)
 

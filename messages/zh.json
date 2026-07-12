@@ -4584,7 +4584,8 @@
     "chipSummaryLabel": "任务摘要",
     "chipPending": "进行中",
     "chipOverdue": "已逾期",
-    "chipDueSoon": "即将到期"
+    "chipDueSoon": "即将到期",
+    "requisitionApprovals": "{count} 个招聘申请待审批"
   },
   "myTraining": {
     "quarterGoal": {
@@ -4825,7 +4826,8 @@
       "internalJobs": "内部招聘",
       "label": "招聘",
       "posts": "Job Postings",
-      "talentPool": "Talent Pool"
+      "talentPool": "Talent Pool",
+      "requisitions": "招聘申请"
     },
     "settings": {
       "auditLogs": "审计日志",
@@ -4905,7 +4907,8 @@
       "oneOnOne": "1:1会议",
       "results": "团队绩效",
       "skills": "团队能力评估",
-      "time": "团队考勤/假期"
+      "time": "团队考勤/假期",
+      "onboarding": "团队入职"
     }
   },
   "notification": {

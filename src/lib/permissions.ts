@@ -8,7 +8,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { forbidden, unauthorized } from '@/lib/errors'
 import { apiError } from '@/lib/api'
-import { ROLE, MODULE } from '@/lib/constants'
+import { ROLE, MODULE, ACTION } from '@/lib/constants'
 import {
   queryContextAls,
   type QueryContextStore,
@@ -26,9 +26,12 @@ export function hasPermission(
 
   // Fallback for missing DB seed permissions
   // RBAC spec: MANAGER_UP (MANAGER, EXECUTIVE, HR_ADMIN) can access analytics
+  // — 읽기(VIEW)에 한정. CREATE/APPROVE 등 쓰기·배치 액션까지 폴백하면 HR 전용
+  // 계산 라우트(analytics/calculate 등)가 열림 (런칭 감사 P1, S335)
   if (
     (user.role === ROLE.HR_ADMIN || user.role === ROLE.EXECUTIVE || user.role === ROLE.MANAGER) &&
-    permission.module === MODULE.ANALYTICS
+    permission.module === MODULE.ANALYTICS &&
+    permission.action === ACTION.VIEW
   ) {
     return true
   }

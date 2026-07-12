@@ -4584,7 +4584,8 @@
     "chipSummaryLabel": "Task summary",
     "chipPending": "In progress",
     "chipOverdue": "Overdue",
-    "chipDueSoon": "Due soon"
+    "chipDueSoon": "Due soon",
+    "requisitionApprovals": "{count} requisition approval(s) pending"
   },
   "myTraining": {
     "quarterGoal": {
@@ -4825,7 +4826,8 @@
       "internalJobs": "Internal Jobs",
       "label": "Recruitment",
       "posts": "Job Postings",
-      "talentPool": "Talent Pool"
+      "talentPool": "Talent Pool",
+      "requisitions": "Requisitions"
     },
     "settings": {
       "auditLogs": "Audit Logs",
@@ -4904,7 +4906,8 @@
       "oneOnOne": "1:1 Meetings",
       "results": "Team Results",
       "skills": "Team Skills",
-      "time": "Team Time & Leave"
+      "time": "Team Time & Leave",
+      "onboarding": "Team Onboarding"
     }
   },
   "notification": {

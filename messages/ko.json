@@ -9008,7 +9008,8 @@
       "oneOnOne": "1:1 미팅",
       "skills": "팀원 역량 평가",
       "delegation": "업무 위임",
-      "time": "팀 근태/휴가"
+      "time": "팀 근태/휴가",
+      "onboarding": "팀 온보딩"
     },
     "hrMgmt": {
       "label": "인사 관리",
@@ -9048,7 +9049,8 @@
       "dashboard": "채용 대시보드",
       "board": "칸반 보드",
       "talentPool": "인재 풀",
-      "internalJobs": "사내 채용"
+      "internalJobs": "사내 채용",
+      "requisitions": "채용 요청"
     },
     "performance": {
       "label": "성과/보상",
@@ -9279,7 +9281,8 @@
     "chipSummaryLabel": "할 일 요약",
     "chipPending": "진행 중",
     "chipOverdue": "기한 지남",
-    "chipDueSoon": "마감 임박"
+    "chipDueSoon": "마감 임박",
+    "requisitionApprovals": "채용 요청 결재 {count}건이 기다리고 있어요"
   },
   "employees": {
     "pageTitle": "직원 관리",

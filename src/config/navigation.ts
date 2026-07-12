@@ -321,6 +321,17 @@ export const NAVIGATION: NavSection[] = [
         module: MODULE.ATTENDANCE,
       },
       {
+        // 런칭 감사 P1: PR #222가 백엔드 접근을 열었으나 nav 진입점이 HR_UP 그룹에만
+        // 있어 MANAGER가 도달 불가했음. HR_ADMIN은 인사 관리 그룹과 중복 노출됨
+        // (per-item role 필터 부재 — 의도적 수용, S335 Codex G1 P2).
+        key: 'team-onboarding',
+        labelKey: 'nav.team.onboarding',
+        label: '팀 온보딩',
+        href: '/onboarding',
+        icon: ClipboardCheck,
+        module: MODULE.ONBOARDING,
+      },
+      {
         key: 'team-goals-performance',
         labelKey: 'nav.team.goalsPerformance',
         label: '팀 목표/성과',
@@ -423,6 +434,16 @@ export const NAVIGATION: NavSection[] = [
         label: '채용 공고',
         href: '/recruitment',
         icon: Briefcase,
+        module: MODULE.RECRUITMENT,
+      },
+      {
+        // 런칭 감사 P1: 채용 요청(requisition) 승인 워크플로 nav 진입점 부재.
+        // 비-HR 결재자(부서장 등)는 /my/tasks 결재함 배너로 진입 (S335).
+        key: 'recruitment-requisitions',
+        labelKey: 'nav.recruitment.requisitions',
+        label: '채용 요청',
+        href: '/recruitment/requisitions',
+        icon: FileText,
         module: MODULE.RECRUITMENT,
       },
       {

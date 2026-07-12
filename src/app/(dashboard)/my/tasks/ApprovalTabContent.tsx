@@ -8,9 +8,12 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 import {
     ChevronDown,
+    ChevronRight,
     ChevronUp,
+    FileText,
     Loader2,
     Inbox,
     CheckSquare,
@@ -64,6 +67,10 @@ export function ApprovalTabContent({ user }: Props) {
     const [rejectTarget, setRejectTarget] = useState<UnifiedTask | null>(null)
     const [showBulkConfirm, setShowBulkConfirm] = useState(false)
 
+    // 채용 요청 결재 대기 건수 — unified-tasks 에 미편입된 requisition 승인의
+    // 딥링크 표면 (결재 자격 판정은 기존 myApprovals 서버 필터 SSOT 재사용, S335)
+    const [requisitionCount, setRequisitionCount] = useState(0)
+
     // AbortController for tab switching
     const abortRef = useRef<AbortController | null>(null)
 
@@ -114,6 +121,17 @@ export function ApprovalTabContent({ user }: Props) {
             }
         }
     }, [moduleFilter, t, toast])
+
+    useEffect(() => {
+        // 실패해도 결재함 본체와 무관 — 배너만 생략 (count 0 유지)
+        apiClient
+            .get<unknown>('/api/v1/recruitment/requisitions?myApprovals=true&status=pending&limit=1')
+            .then((res) => {
+                const total = (res as unknown as { pagination?: { total?: number } }).pagination?.total ?? 0
+                setRequisitionCount(total)
+            })
+            .catch(() => {})
+    }, [])
 
     useEffect(() => {
         void fetchTasks()
@@ -250,6 +268,20 @@ export function ApprovalTabContent({ user }: Props) {
 
     return (
         <div className="relative space-y-4 pb-20">
+            {/* 채용 요청 결재 딥링크 배너 */}
+            {requisitionCount > 0 && (
+                <Link
+                    href="/recruitment/requisitions?tab=my"
+                    className="flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3 text-sm shadow-sm hover:bg-muted/50"
+                >
+                    <span className="flex items-center gap-2 text-foreground">
+                        <FileText className="h-4 w-4 text-primary" />
+                        {t('requisitionApprovals', { count: requisitionCount })}
+                    </span>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </Link>
+            )}
+
             {/* Module filter tabs */}
             <div className="flex flex-wrap items-center gap-1.5 overflow-x-auto">
                 {FILTER_TABS.map(tab => {
