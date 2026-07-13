@@ -948,7 +948,11 @@
     "detailDivision": "본부",
     "detailWorkLocation": "근무지",
     "detailTenureLabel": "근속",
-    "detailPayBand": "급여 밴드"
+    "detailPayBand": "급여 밴드",
+    "statusProbation": "수습",
+    "contractExpiredBadge": "계약 만료 경과",
+    "contractExpiringBadge": "계약 만료 D-{days}",
+    "probationBadge": "수습 (~{date})"
   },
   "attendance": {
     "title": "근태 관리",
@@ -9794,7 +9798,13 @@
             "doc": "문서 열기"
           },
           "onboardingRowOverdue": "진행률 {progress}% · D+{days}",
-          "offboardingRowOverdue": "진행률 {progress}% · D+{days}"
+          "offboardingRowOverdue": "진행률 {progress}% · D+{days}",
+          "expiringContracts": "계약 만료 임박 (30일)",
+          "expiringRow": "{date} 만료 · D-{days}",
+          "expiringStatus": {
+            "warning": "임박",
+            "error": "긴급"
+          }
         },
         "empty": {
           "onboarding": {
@@ -9804,6 +9814,10 @@
           "offboarding": {
             "title": "예정된 오프보딩이 없어요",
             "desc": "안정적인 조직 구성입니다."
+          },
+          "expiring": {
+            "title": "만료 임박 계약 없음",
+            "desc": "30일 내 만료 예정 계약이 없어요."
           }
         },
         "insight": {

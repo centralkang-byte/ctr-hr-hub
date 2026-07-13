@@ -52,7 +52,8 @@ export const employeeSearchSchema = searchSchema.extend({
   departmentId: z.string().uuid().optional(),
   jobGradeId: z.string().uuid().optional(),
   jobCategoryId: z.string().uuid().optional(),
-  status: z.enum(['ACTIVE', 'ON_LEAVE', 'RESIGNED', 'TERMINATED']).optional(),
+  // PROBATION은 Prisma EmployeeStatus enum엔 없지만 EmployeeAssignment.status(TEXT)의 실사용 값
+  status: z.enum(['ACTIVE', 'PROBATION', 'ON_LEAVE', 'RESIGNED', 'TERMINATED']).optional(),
   employmentType: z.enum(['FULL_TIME', 'CONTRACT', 'DISPATCH', 'INTERN']).optional(),
   contractType: z.enum(['FULL_TIME', 'CONTRACT', 'DISPATCH', 'INTERN']).optional(),
   hireDateFrom: z.string().date().optional(),

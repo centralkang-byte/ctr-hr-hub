@@ -2533,7 +2533,11 @@
     "detailDivision": "Division",
     "detailWorkLocation": "Work location",
     "detailTenureLabel": "Tenure",
-    "detailPayBand": "Pay band"
+    "detailPayBand": "Pay band",
+    "statusProbation": "Probation",
+    "contractExpiredBadge": "Contract expired",
+    "contractExpiringBadge": "Contract expires D-{days}",
+    "probationBadge": "Probation (until {date})"
   },
   "employees": {
     "emptyDesc": "Register a new employee.",
@@ -2986,7 +2990,13 @@
             "doc": "Open doc"
           },
           "onboardingRowOverdue": "{progress}% · D+{days}",
-          "offboardingRowOverdue": "{progress}% · D+{days}"
+          "offboardingRowOverdue": "{progress}% · D+{days}",
+          "expiringContracts": "Contracts expiring (30d)",
+          "expiringRow": "Expires {date} · D-{days}",
+          "expiringStatus": {
+            "warning": "Soon",
+            "error": "Urgent"
+          }
         },
         "empty": {
           "onboarding": {
@@ -2996,6 +3006,10 @@
           "offboarding": {
             "title": "No scheduled offboarding",
             "desc": "Stable organization."
+          },
+          "expiring": {
+            "title": "No expiring contracts",
+            "desc": "No contracts expire within 30 days."
           }
         },
         "insight": {

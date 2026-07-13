@@ -2533,7 +2533,11 @@
     "detailDivision": "División",
     "detailWorkLocation": "Lugar de trabajo",
     "detailTenureLabel": "Antigüedad",
-    "detailPayBand": "Banda salarial"
+    "detailPayBand": "Banda salarial",
+    "statusProbation": "Período de prueba",
+    "contractExpiredBadge": "Contrato vencido",
+    "contractExpiringBadge": "Contrato vence D-{days}",
+    "probationBadge": "Prueba (hasta {date})"
   },
   "employees": {
     "emptyDesc": "Register a new employee.",
@@ -2986,7 +2990,13 @@
             "doc": "Abrir documento"
           },
           "onboardingRowOverdue": "{progress}% · D+{days}",
-          "offboardingRowOverdue": "{progress}% · D+{days}"
+          "offboardingRowOverdue": "{progress}% · D+{days}",
+          "expiringContracts": "Contratos por vencer (30d)",
+          "expiringRow": "Vence {date} · D-{days}",
+          "expiringStatus": {
+            "warning": "Pronto",
+            "error": "Urgente"
+          }
         },
         "empty": {
           "onboarding": {
@@ -2996,6 +3006,10 @@
           "offboarding": {
             "title": "Sin desvinculaciones programadas",
             "desc": "Organización estable."
+          },
+          "expiring": {
+            "title": "Sin contratos por vencer",
+            "desc": "Ningún contrato vence en 30 días."
           }
         },
         "insight": {

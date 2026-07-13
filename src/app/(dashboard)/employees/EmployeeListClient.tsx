@@ -137,6 +137,7 @@ function EmployeeQuickPanel({
     (
       {
         ACTIVE: t('statusActive'),
+        PROBATION: t('statusProbation'),
         ON_LEAVE: t('statusOnLeave'),
         RESIGNED: t('statusResigned'),
         TERMINATED: t('statusTerminated'),
@@ -271,6 +272,7 @@ export function EmployeeListClient({ user }: EmployeeListClientProps) {
 
   const STATUS_LABELS: Record<string, string> = useMemo(() => ({
     ACTIVE: t('statusActive'),
+    PROBATION: t('statusProbation'),
     ON_LEAVE: t('statusOnLeave'),
     RESIGNED: t('statusResigned'),
     TERMINATED: t('statusTerminated'),

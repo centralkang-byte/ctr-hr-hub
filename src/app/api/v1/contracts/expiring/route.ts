@@ -6,7 +6,7 @@ import { type NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest } from '@/lib/errors'
+import { badRequest, forbidden } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import type { SessionUser } from '@/types'
@@ -26,6 +26,11 @@ export const GET = withPermission(
     _context: { params: Promise<Record<string, string>> },
     user: SessionUser,
   ) => {
+    // 전사 계약만료 명단은 HR 권한자 전용 — EMPLOYEES VIEW(전 롤 보유)로는 과다 노출
+    if (user.role !== 'SUPER_ADMIN' && user.role !== 'HR_ADMIN') {
+      throw forbidden('접근 권한이 없습니다.')
+    }
+
     const rawParams = Object.fromEntries(req.nextUrl.searchParams.entries())
     const parsed = expiringQuerySchema.safeParse(rawParams)
     if (!parsed.success) {
@@ -66,7 +71,7 @@ export const GET = withPermission(
         contractStartDate: true,
         contractEndDate: true,
         assignments: {
-          where: { isPrimary: true, endDate: null },
+          where: { ...assignmentCompanyFilter, isPrimary: true, endDate: null },
           take: 1,
           select: {
             companyId: true,

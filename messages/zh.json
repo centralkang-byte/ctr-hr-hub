@@ -2533,7 +2533,11 @@
     "detailDivision": "本部",
     "detailWorkLocation": "工作地点",
     "detailTenureLabel": "在职年限",
-    "detailPayBand": "薪资区间"
+    "detailPayBand": "薪资区间",
+    "statusProbation": "试用期",
+    "contractExpiredBadge": "合同已过期",
+    "contractExpiringBadge": "合同到期 D-{days}",
+    "probationBadge": "试用期 (至 {date})"
   },
   "employees": {
     "emptyDesc": "Register a new employee.",
@@ -2986,7 +2990,13 @@
             "doc": "打开文档"
           },
           "onboardingRowOverdue": "{progress}% · D+{days}",
-          "offboardingRowOverdue": "{progress}% · D+{days}"
+          "offboardingRowOverdue": "{progress}% · D+{days}",
+          "expiringContracts": "合同即将到期 (30天)",
+          "expiringRow": "{date} 到期 · D-{days}",
+          "expiringStatus": {
+            "warning": "临近",
+            "error": "紧急"
+          }
         },
         "empty": {
           "onboarding": {
@@ -2996,6 +3006,10 @@
           "offboarding": {
             "title": "暂无计划的离职",
             "desc": "组织结构稳定。"
+          },
+          "expiring": {
+            "title": "没有即将到期的合同",
+            "desc": "30天内没有到期的合同。"
           }
         },
         "insight": {

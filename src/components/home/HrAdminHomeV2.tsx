@@ -47,6 +47,14 @@ interface Props {
   user: SessionUser
 }
 
+interface ExpiringContract {
+  id: string
+  name: string
+  employeeNo: string
+  contractEndDate: string
+  assignments: { department: { id: string; name: string } | null }[]
+}
+
 // ─── Helpers ────────────────────────────────────────────────
 
 function listItemStatusForOnboarding(progress: number): 'success' | 'warning' | 'error' {
@@ -77,6 +85,7 @@ export function HrAdminHomeV2({ user }: Props) {
   const [summary, setSummary] = useState<HrAdminSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [expiringContracts, setExpiringContracts] = useState<ExpiringContract[]>([])
 
   const fetchSummary = useCallback(async () => {
     setError(false)
@@ -99,6 +108,22 @@ export function HrAdminHomeV2({ user }: Props) {
   useEffect(() => {
     void fetchSummary()
   }, [fetchSummary])
+
+  // 계약 만료 임박 (30일) — 실패해도 홈 전체를 막지 않음 (UAT P1 #3)
+  useEffect(() => {
+    let cancelled = false
+    apiClient
+      .get<ExpiringContract[]>('/api/v1/contracts/expiring', { days: 30 })
+      .then((res) => {
+        if (!cancelled) setExpiringContracts(res.data ?? [])
+      })
+      .catch(() => {
+        if (!cancelled) setExpiringContracts([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   // ── Derived ────────────────────────────────────────────
   const totalEmployees = summary?.totalEmployees ?? 0
@@ -450,6 +475,44 @@ export function HrAdminHomeV2({ user }: Props) {
                 icon={CheckCircle2}
                 title={t('empty.offboarding.title')}
                 description={t('empty.offboarding.desc')}
+                tone="success"
+              />
+            }
+          />
+          <ListCard
+            title={t('list.expiringContracts')}
+            items={expiringContracts}
+            maxRows={5}
+            viewAllHref="/employees"
+            viewAllLabel={t('list.viewAll')}
+            renderItem={(item) => {
+              const days = Math.max(
+                0,
+                Math.ceil((new Date(item.contractEndDate).getTime() - Date.now()) / 86_400_000),
+              )
+              const dept = item.assignments[0]?.department?.name
+              const status: 'warning' | 'error' = days <= 7 ? 'error' : 'warning'
+              return {
+                id: item.id,
+                primary: dept ? `${item.name} — ${dept}` : item.name,
+                secondary: t('list.expiringRow', {
+                  date: new Intl.DateTimeFormat(locale, {
+                    month: 'short',
+                    day: 'numeric',
+                    timeZone: 'Asia/Seoul',
+                  }).format(new Date(item.contractEndDate)),
+                  days,
+                }),
+                statusDot: status,
+                statusLabel: t(`list.expiringStatus.${status}`),
+                href: `/employees/${item.id}`,
+              }
+            }}
+            emptyState={
+              <EmptyState
+                icon={FileText}
+                title={t('empty.expiring.title')}
+                description={t('empty.expiring.desc')}
                 tone="success"
               />
             }

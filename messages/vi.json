@@ -2533,7 +2533,11 @@
     "detailDivision": "Bộ phận",
     "detailWorkLocation": "Nơi làm việc",
     "detailTenureLabel": "Thâm niên",
-    "detailPayBand": "Dải lương"
+    "detailPayBand": "Dải lương",
+    "statusProbation": "Thử việc",
+    "contractExpiredBadge": "Hợp đồng đã hết hạn",
+    "contractExpiringBadge": "Hợp đồng hết hạn D-{days}",
+    "probationBadge": "Thử việc (đến {date})"
   },
   "employees": {
     "emptyDesc": "Register a new employee.",
@@ -2986,7 +2990,13 @@
             "doc": "Mở tài liệu"
           },
           "onboardingRowOverdue": "{progress}% · D+{days}",
-          "offboardingRowOverdue": "{progress}% · D+{days}"
+          "offboardingRowOverdue": "{progress}% · D+{days}",
+          "expiringContracts": "Hợp đồng sắp hết hạn (30 ngày)",
+          "expiringRow": "Hết hạn {date} · D-{days}",
+          "expiringStatus": {
+            "warning": "Sắp",
+            "error": "Khẩn"
+          }
         },
         "empty": {
           "onboarding": {
@@ -2996,6 +3006,10 @@
           "offboarding": {
             "title": "Không có offboarding dự kiến",
             "desc": "Tổ chức ổn định."
+          },
+          "expiring": {
+            "title": "Không có hợp đồng sắp hết hạn",
+            "desc": "Không có hợp đồng hết hạn trong 30 ngày."
           }
         },
         "insight": {

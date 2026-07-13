@@ -9,10 +9,12 @@ import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import {
+  AlertCircle,
   ArrowUpDown,
   Building2,
   Check,
   Clock,
+  FileText,
   Info,
   TrendingUp,
   User,
@@ -39,6 +41,8 @@ import { Separator } from '@/components/ui/separator'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
 import PayBandChart from '@/components/compensation/PayBandChart'
 import { EmployeeWorkerBanner } from '@/components/employees/EmployeeWorkerBanner'
+import { Badge } from '@/components/ui/badge'
+import ContractsClient from './contracts/ContractsClient'
 import { PerformanceTab } from '@/components/employees/tabs/PerformanceTab'
 import {
   Dialog,
@@ -71,6 +75,8 @@ type EmployeeDetail = {
   resignDate: Date | null
   employmentType: string
   status: string
+  contractEndDate?: Date | string | null
+  probationEndDate?: Date | string | null
   locale: string | null
   timezone: string | null
   company: { id: string; name: string } | null
@@ -155,6 +161,7 @@ export function EmployeeDetailClient({
 
   const STATUS_LABELS: Record<string, string> = {
     ACTIVE: t('statusActive'),
+    PROBATION: t('statusProbation'),
     ON_LEAVE: t('statusOnLeave'),
     RESIGNED: t('statusResigned'),
     TERMINATED: t('statusTerminated'),
@@ -444,6 +451,15 @@ export function EmployeeDetailClient({
 
   // ─── Render ─────────────────────────────────────────────────
 
+  // 계약/수습 라이프사이클 배지 (HR 권한자 전용 — UAT P1 #3)
+  const isEmployed = employee.status !== 'RESIGNED' && employee.status !== 'TERMINATED'
+  const contractDaysLeft = employee.contractEndDate
+    ? Math.ceil((new Date(employee.contractEndDate).getTime() - Date.now()) / 86_400_000)
+    : null
+  const showContractExpired = isHrAdmin && isEmployed && contractDaysLeft !== null && contractDaysLeft < 0
+  const showContractExpiring = isHrAdmin && isEmployed && contractDaysLeft !== null && contractDaysLeft >= 0 && contractDaysLeft <= 30
+  const showProbation = isHrAdmin && employee.status === 'PROBATION' && !!employee.probationEndDate
+
   return (
     <div className="mx-auto max-w-[1440px] space-y-6 p-5 md:p-6">
       {/* ─── Worker Banner (페이지 헤더 — DESIGN_RULES §5 시그니처) ─── */}
@@ -463,6 +479,29 @@ export function EmployeeDetailClient({
         onBack={() => router.push('/employees')}
         onEdit={() => setEditing(true)}
       />
+
+      {/* ─── 계약/수습 라이프사이클 경고 (HR 전용) ─── */}
+      {(showContractExpired || showContractExpiring || showProbation) && (
+        <div className="flex flex-wrap items-center gap-2">
+          {showContractExpired && (
+            <Badge variant="error">
+              <AlertCircle className="mr-1 h-3 w-3" aria-hidden="true" />
+              {t('contractExpiredBadge')}
+            </Badge>
+          )}
+          {showContractExpiring && (
+            <Badge variant="warning">
+              <AlertCircle className="mr-1 h-3 w-3" aria-hidden="true" />
+              {t('contractExpiringBadge', { days: contractDaysLeft })}
+            </Badge>
+          )}
+          {showProbation && (
+            <Badge variant="warning">
+              {t('probationBadge', { date: formatDate(employee.probationEndDate ?? null) })}
+            </Badge>
+          )}
+        </div>
+      )}
 
       <Tabs defaultValue="profile">
         <TabsList className="mb-4 w-full justify-start overflow-x-auto">
@@ -492,6 +531,12 @@ export function EmployeeDetailClient({
             <TrendingUp className="mr-1.5 h-4 w-4" />
             {t('detailTabPerformance')}
           </TabsTrigger>
+          {isHrAdmin && (
+            <TabsTrigger value="contracts">
+              <FileText className="mr-1.5 h-4 w-4" />
+              {t('contractHistory')}
+            </TabsTrigger>
+          )}
         </TabsList>
 
         {/* Tab 1: 프로필 */}
@@ -601,6 +646,15 @@ export function EmployeeDetailClient({
         <TabsContent value="performance">
           <PerformanceTab employeeId={employee.id} />
         </TabsContent>
+
+        {/* Tab 7: 계약 이력 (HR 전용 — UAT P1 #3 진입 동선) */}
+        {isHrAdmin && (
+          <TabsContent value="contracts">
+            <div className="rounded-xl border border-border bg-card p-6">
+              <ContractsClient employeeId={employee.id} permissions={user.permissions ?? []} />
+            </div>
+          </TabsContent>
+        )}
       </Tabs>
 
       {/* ─── Offboarding action (HR_ADMIN + ACTIVE) ─── */}
