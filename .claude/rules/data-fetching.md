@@ -50,7 +50,7 @@ useEffect(() => { fetchData() }, [fetchData])
 export const GET = withPermission(
   async (req, _context, user) => {
     const { searchParams } = new URL(req.url)
-    const companyId = resolveCompanyId(user, searchParams)
+    const companyId = resolveCompanyId(user, searchParams.get('companyId'))
     // ... query
     return apiSuccess(data)
   },
