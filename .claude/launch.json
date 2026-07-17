@@ -9,6 +9,12 @@
       "autoPort": true
     },
     {
+      "name": "dev-3012",
+      "runtimeExecutable": "/bin/zsh",
+      "runtimeArgs": ["-lc", "PATH=/opt/homebrew/bin:$PATH npx next dev --port 3012"],
+      "port": 3012
+    },
+    {
       "name": "dev-preview",
       "runtimeExecutable": "/bin/zsh",
       "runtimeArgs": ["-lc", "PATH=/opt/homebrew/bin:$PATH HOME_PREVIEW=true npm run dev"],
