@@ -175,7 +175,8 @@ function buildRolePermissions(): Record<string, PermKey[]> {
     'employees_read', 'performance_read',
     // P0 dogfood: 전사 근태/휴가/급여 조회
     'attendance_read', 'leave_read', 'payroll_read',
-    ...modules.map(m => `${m}_export` as PermKey),
+    // 승계 데이터는 CEO 결정에 따라 HR_ADMIN/SUPER_ADMIN 전용.
+    ...modules.filter(m => m !== 'succession').map(m => `${m}_export` as PermKey),
   ]
 
   return {

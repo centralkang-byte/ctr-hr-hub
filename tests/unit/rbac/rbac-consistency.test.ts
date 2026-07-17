@@ -78,6 +78,36 @@ describe('RBAC SSOT (rbac-spec.ts)', () => {
     expect(rule!.allowedRoles).toContain(ROLE.EXECUTIVE)
   })
 
+  it('/analytics/gender-pay-gap is restricted to HR_UP', () => {
+    const rule = findRouteRule('/analytics/gender-pay-gap')
+    expect(rule?.prefix).toBe('/analytics/gender-pay-gap')
+    expect(rule?.allowedRoles).toEqual(ROLE_GROUPS.HR_UP)
+    expect(rule?.allowedRoles).not.toContain(ROLE.MANAGER)
+    expect(rule?.allowedRoles).not.toContain(ROLE.EXECUTIVE)
+  })
+
+  it('/api/v1/analytics/gender-pay-gap and export are restricted to HR_UP', () => {
+    for (const path of [
+      '/api/v1/analytics/gender-pay-gap',
+      '/api/v1/analytics/gender-pay-gap/export',
+    ]) {
+      const rule = findRouteRule(path)
+      expect(rule?.prefix).toBe('/api/v1/analytics/gender-pay-gap')
+      expect(rule?.allowedRoles).toEqual(ROLE_GROUPS.HR_UP)
+    }
+  })
+
+  it('succession pages and APIs are restricted to HR_UP', () => {
+    for (const path of [
+      '/succession',
+      '/talent/succession',
+      '/api/v1/succession/plans',
+    ]) {
+      const rule = findRouteRule(path)
+      expect(rule?.allowedRoles).toEqual(ROLE_GROUPS.HR_UP)
+    }
+  })
+
   it('/settings is restricted to HR_UP', () => {
     const rule = findRouteRule('/settings')
     expect(rule).not.toBeNull()
@@ -111,6 +141,16 @@ describe('RBAC SSOT (rbac-spec.ts)', () => {
     const onboardingMeIdx = ROUTE_ACL.findIndex(r => r.prefix === '/onboarding/me')
     const onboardingIdx = ROUTE_ACL.findIndex(r => r.prefix === '/onboarding')
     expect(onboardingMeIdx).toBeLessThan(onboardingIdx)
+  })
+
+  it('sensitive analytics prefix comes before the broad analytics prefix', () => {
+    const pageSpecific = ROUTE_ACL.findIndex(r => r.prefix === '/analytics/gender-pay-gap')
+    const pageBroad = ROUTE_ACL.findIndex(r => r.prefix === '/analytics')
+    const apiSpecific = ROUTE_ACL.findIndex(r => r.prefix === '/api/v1/analytics/gender-pay-gap')
+    const apiBroad = ROUTE_ACL.findIndex(r => r.prefix === '/api/v1/analytics')
+
+    expect(pageSpecific).toBeLessThan(pageBroad)
+    expect(apiSpecific).toBeLessThan(apiBroad)
   })
 
   // recruitment/requisitions: /new(HR_UP) → /requisitions(ALL_ROLES) → /recruitment(HR_UP).

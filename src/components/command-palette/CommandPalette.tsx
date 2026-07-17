@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useSession } from 'next-auth/react'
 import {
   LayoutDashboard,
   Clock,
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react'
 import { useRecentPages } from '@/hooks/useRecentPages'
 import { EmployeeCell } from '@/components/common/EmployeeCell'
+import { findRouteRule } from '@/lib/rbac/rbac-spec'
 
 // ─── OS Detection (client-only) ─────────────────────────────────────────────
 
@@ -91,6 +93,7 @@ function fuzzyMatch(text: string, query: string): boolean {
 export function CommandPalette() {
   const router = useRouter()
   const t = useTranslations('commandPalette')
+  const { data: session } = useSession()
   const { recentPages } = useRecentPages()
 
   const [open, setOpen] = useState(false)
@@ -160,11 +163,28 @@ export function CommandPalette() {
   }, [debouncedQuery])
 
   // ─── Derived result lists ─────────────────────────────────────────────────
+  const canAccessPath = useCallback((href: string) => {
+    const pathname = href.split(/[?#]/, 1)[0]
+    const rule = findRouteRule(pathname)
+    if (!rule) return true
+
+    const role = session?.user?.role
+    return Boolean(role && rule.allowedRoles.includes(role))
+  }, [session?.user?.role])
+
+  const accessibleRecentPages = useMemo(
+    () => recentPages.filter((page) => canAccessPath(page.path)),
+    [canAccessPath, recentPages],
+  )
+
   const filteredMenus = useMemo<MenuResult[]>(
     () => debouncedQuery
-      ? MENU_ITEMS.filter((item) => fuzzyMatch(item.label, debouncedQuery)).slice(0, 5)
+      ? MENU_ITEMS
+          .filter((item) => canAccessPath(item.href))
+          .filter((item) => fuzzyMatch(item.label, debouncedQuery))
+          .slice(0, 5)
       : [],
-    [debouncedQuery],
+    [canAccessPath, debouncedQuery],
   )
 
   // Flat list for keyboard navigation
@@ -176,8 +196,8 @@ export function CommandPalette() {
         ...employeeResults.map((e) => ({ id: `emp-${e.id}`, href: `/employees/${e.id}` })),
         ...filteredMenus.map((m) => ({ id: m.id, href: m.href })),
       ]
-      : recentPages.map((p) => ({ id: `recent-${p.path}`, href: p.path })),
-    [debouncedQuery, employeeResults, filteredMenus, recentPages],
+      : accessibleRecentPages.map((p) => ({ id: `recent-${p.path}`, href: p.path })),
+    [accessibleRecentPages, debouncedQuery, employeeResults, filteredMenus],
   )
 
   // ─── Navigation helper ────────────────────────────────────────────────────
@@ -217,7 +237,7 @@ export function CommandPalette() {
   const hasResults =
     debouncedQuery
       ? employeeResults.length > 0 || filteredMenus.length > 0
-      : recentPages.length > 0
+      : accessibleRecentPages.length > 0
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
@@ -254,9 +274,9 @@ export function CommandPalette() {
         <div className="max-h-[420px] overflow-y-auto py-2">
 
           {/* ── No-query state: Recent pages ── */}
-          {!debouncedQuery && recentPages.length > 0 && (
+          {!debouncedQuery && accessibleRecentPages.length > 0 && (
             <ResultGroup label={t('recentPages')}>
-              {recentPages.map((page, idx) => (
+              {accessibleRecentPages.map((page, idx) => (
                 <button
                   key={`recent-${page.path}`}
                   type="button"
@@ -278,7 +298,7 @@ export function CommandPalette() {
           )}
 
           {/* ── No-query, no recent: empty tip ── */}
-          {!debouncedQuery && recentPages.length === 0 && (
+          {!debouncedQuery && accessibleRecentPages.length === 0 && (
             <div className="px-4 py-6 text-center">
               <Hash className="mx-auto mb-2 h-5 w-5 text-muted-foreground/70" />
               <p className="text-sm text-muted-foreground">직원 이름, 메뉴를 검색하세요</p>

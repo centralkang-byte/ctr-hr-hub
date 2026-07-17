@@ -41,9 +41,12 @@ async function main() {
   
   const rolePerms: Record<string, string[]> = {
     HR_ADMIN: missingModules.flatMap(m => actions.map(a => `${m}_${a}`)),
-    MANAGER: ['training_read','training_create','pulse_read','succession_read'],
+    MANAGER: ['training_read','training_create','pulse_read'],
     EMPLOYEE: ['training_read','training_create','pulse_read','pulse_create'],
-    EXECUTIVE: [...missingModules.map(m => `${m}_read`), ...missingModules.map(m => `${m}_export`)],
+    EXECUTIVE: [
+      ...missingModules.filter(m => m !== 'succession').map(m => `${m}_read`),
+      ...missingModules.filter(m => m !== 'succession').map(m => `${m}_export`),
+    ],
   }
   
   for (const [roleName, perms] of Object.entries(rolePerms)) {

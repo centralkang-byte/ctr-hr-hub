@@ -8,17 +8,51 @@
 
 import { test, expect } from '@playwright/test'
 import { authFile } from '../helpers/auth'
-import { parseApiResponse, assertOk } from '../helpers/api-client'
+import { ApiClient, parseApiResponse, assertOk } from '../helpers/api-client'
 import { resolveSeedData } from '../helpers/test-data'
+import * as successionFixtures from '../helpers/p10-fixtures'
 
 test.describe('Employee insights/recognition — SUPER 전사조회 + 비-SUPER 격리', () => {
+  test.describe.configure({ mode: 'serial' })
   test.use({ storageState: authFile('SUPER_ADMIN') })
 
   // 이민준(CTR) — SUPER(CTR-HOLD)에게는 타 법인 직원
   let employeeId: string
+  let planId = ''
+  let candidateId = ''
   test.beforeAll(async ({ request }) => {
     const seed = await resolveSeedData(request)
     employeeId = seed.employeeId
+
+    // Give the QA employee a temporary succession entry. This guarantees that
+    // every non-HR null assertion fails against the pre-fix leaking route.
+    const api = new ApiClient(request)
+    const planResult = await successionFixtures.createPlan(
+      api,
+      successionFixtures.buildSuccessionPlan(seed.departmentId),
+    )
+    assertOk(planResult, 'create insights succession fixture plan')
+    planId = (planResult.data as { id: string }).id
+
+    const candidateResult = await successionFixtures.addCandidate(
+      api,
+      planId,
+      successionFixtures.buildSuccessionCandidate(employeeId),
+    )
+    assertOk(candidateResult, 'create insights succession fixture candidate')
+    candidateId = (candidateResult.data as { id: string }).id
+  })
+
+  test.afterAll(async ({ request }) => {
+    const api = new ApiClient(request)
+    if (candidateId) {
+      const candidateResult = await successionFixtures.deleteCandidate(api, candidateId)
+      assertOk(candidateResult, 'delete insights succession fixture candidate')
+    }
+    if (planId) {
+      const planResult = await successionFixtures.deletePlan(api, planId)
+      assertOk(planResult, 'delete insights succession fixture plan')
+    }
   })
 
   test('SUPER: 타 법인 직원 insights = 200 (전사조회)', async ({ request }) => {
@@ -28,6 +62,35 @@ test.describe('Employee insights/recognition — SUPER 전사조회 + 비-SUPER 
     expect(result.data).toHaveProperty('goals')
     expect(result.data).toHaveProperty('employee')
   })
+
+  test('SUPER: 승계 후보 직원 insights에는 승계 정보가 존재', async ({ request }) => {
+    const res = await request.get(`/api/v1/employees/${employeeId}/insights`)
+    const result = await parseApiResponse<{
+      successionEntry: {
+        readiness: string
+        notes: string | null
+        plan: { positionTitle: string }
+      } | null
+    }>(res)
+    assertOk(result, 'SUPER succession candidate insights')
+    expect(result.data.successionEntry).not.toBeNull()
+    expect(result.data.successionEntry?.readiness).toBeTruthy()
+    expect(result.data.successionEntry?.plan.positionTitle).toBeTruthy()
+  })
+
+  for (const role of ['EMPLOYEE', 'MANAGER', 'EXECUTIVE'] as const) {
+    test(`${role}: 직원 insights에 승계 정보 미노출`, async ({ playwright }) => {
+      const context = await playwright.request.newContext({ storageState: authFile(role) })
+      try {
+        const res = await context.get(`/api/v1/employees/${employeeId}/insights`)
+        const result = await parseApiResponse<{ successionEntry: unknown }>(res)
+        assertOk(result, `${role} employee insights`)
+        expect(result.data.successionEntry).toBeNull()
+      } finally {
+        await context.dispose()
+      }
+    })
+  }
 
   test('SUPER: 타 법인 직원 recognitions = 200 (전사조회)', async ({ request }) => {
     const res = await request.get(`/api/v1/cfr/recognitions/employee/${employeeId}`)

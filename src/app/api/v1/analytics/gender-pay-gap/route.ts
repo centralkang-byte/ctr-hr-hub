@@ -6,9 +6,10 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { withPermission, perm } from '@/lib/permissions'
+import { withAuth, withPermission, perm } from '@/lib/permissions'
 import { withCache, CACHE_STRATEGY } from '@/lib/cache'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { forbidden } from '@/lib/errors'
 import { genderPayGapQuerySchema } from '@/lib/schemas/gender-pay-gap'
 import type { SessionUser } from '@/types'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
@@ -51,10 +52,17 @@ function gapPercent(maleAvg: number, femaleAvg: number): number {
   return ((maleAvg - femaleAvg) / maleAvg) * 100
 }
 
+function requireHrRole(user: SessionUser): void {
+  if (user.role !== ROLE.HR_ADMIN && user.role !== ROLE.SUPER_ADMIN) {
+    throw forbidden('성별 임금 격차는 HR 관리자만 조회할 수 있습니다.')
+  }
+}
+
 // ─── GET Handler ─────────────────────────────────────────
 
-export const GET = withCache(withPermission(
+const cachedGET = withCache(withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
+    requireHrRole(user)
     const { searchParams } = new URL(req.url)
     const { groupBy, year } = genderPayGapQuerySchema.parse({
       groupBy: searchParams.get('groupBy') ?? undefined,
@@ -298,3 +306,10 @@ export const GET = withCache(withPermission(
   },
   perm(MODULE.ANALYTICS, ACTION.VIEW),
 ), CACHE_STRATEGY.ANALYTICS, 'user')
+
+// Authorization must run before cache lookup. Otherwise a pre-deploy MANAGER or
+// EXECUTIVE cache entry could bypass the inner permission and role checks on HIT.
+export const GET = withAuth(async (req, context, user) => {
+  requireHrRole(user)
+  return cachedGET(req, context)
+})

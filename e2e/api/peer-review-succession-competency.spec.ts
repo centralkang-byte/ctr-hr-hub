@@ -261,6 +261,24 @@ test.describe('Succession RBAC: EMPLOYEE Blocked', () => {
   })
 })
 
+for (const role of ['MANAGER', 'EXECUTIVE'] as const) {
+  test.describe(`Succession RBAC: ${role} Blocked`, () => {
+    test.use({ storageState: authFile(role) })
+
+    test('GET /succession/plans → 403', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await f.listPlans(api)
+      assertError(res, 403, `${role} blocked from succession plans`)
+    })
+
+    test('GET /succession/dashboard → 403', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await f.getSuccessionDashboard(api)
+      assertError(res, 403, `${role} blocked from succession dashboard`)
+    })
+  })
+}
+
 // ═══════════════════════════════════════════════════════════
 // Section E: Peer Review Nominations — HR_ADMIN
 // ═══════════════════════════════════════════════════════════

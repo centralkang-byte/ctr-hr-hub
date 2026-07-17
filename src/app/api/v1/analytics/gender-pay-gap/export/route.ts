@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { forbidden } from '@/lib/errors'
 import { withRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { genderPayGapQuerySchema } from '@/lib/schemas/gender-pay-gap'
 import type { SessionUser } from '@/types'
@@ -31,10 +32,17 @@ function escapeCsvField(value: string): string {
   return value
 }
 
+function requireHrRole(user: SessionUser): void {
+  if (user.role !== ROLE.HR_ADMIN && user.role !== ROLE.SUPER_ADMIN) {
+    throw forbidden('성별 임금 격차는 HR 관리자만 내보낼 수 있습니다.')
+  }
+}
+
 // ─── GET Handler ─────────────────────────────────────────
 
 export const GET = withRateLimit(withPermission(
   async (req: NextRequest, _ctx, user: SessionUser) => {
+    requireHrRole(user)
     const { searchParams } = new URL(req.url)
     const { groupBy, year } = genderPayGapQuerySchema.parse({
       groupBy: searchParams.get('groupBy') ?? undefined,

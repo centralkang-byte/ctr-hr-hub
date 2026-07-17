@@ -157,6 +157,25 @@ test.describe('Analytics Performance: EMPLOYEE Blocked', () => {
   })
 })
 
+for (const role of ['MANAGER', 'EXECUTIVE'] as const) {
+  test.describe(`Gender Pay Gap: ${role} Blocked`, () => {
+    test.use({ storageState: authFile(role) })
+
+    test('GET /analytics/gender-pay-gap → 403', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await f.getGenderPayGap(api)
+      assertError(res, 403, `${role} blocked from gender pay gap`)
+    })
+
+    test('GET /analytics/gender-pay-gap/export → 403', async ({ request }) => {
+      const api = new ApiClient(request)
+      const res = await f.getGenderPayGapExport(api)
+      expect(res.status, `${role} blocked from gender pay gap export`).toBe(403)
+      expect(res.ok).toBe(false)
+    })
+  })
+}
+
 // ═══════════════════════════════════════════════════════════
 // Section D: Analytics AI Report — HR_ADMIN
 // ═══════════════════════════════════════════════════════════

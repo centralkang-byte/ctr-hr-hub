@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { notFound } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
 import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 
@@ -90,17 +90,21 @@ export const GET = withPermission(
       },
     })
 
-    // 4. Succession readiness
-    // 생성된 Prisma 클라이언트 기준 필드: readiness, developmentAreas, notes, plan
-    const successionEntry = await prisma.successionCandidate.findFirst({
-      where: { employeeId: id },
-      orderBy: { createdAt: 'desc' },
-      select: {
-        readiness: true,
-        notes: true,
-        plan: { select: { positionTitle: true } },
-      },
-    })
+    // 4. Succession readiness — CEO decision: HR_ADMIN/SUPER_ADMIN only.
+    // Non-HR requests skip the query entirely so readiness and notes cannot leak
+    // through the broader EMPLOYEES:VIEW permission used by this endpoint.
+    const isHr = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
+    const successionEntry = isHr
+      ? await prisma.successionCandidate.findFirst({
+          where: { employeeId: id },
+          orderBy: { createdAt: 'desc' },
+          select: {
+            readiness: true,
+            notes: true,
+            plan: { select: { positionTitle: true } },
+          },
+        })
+      : null
 
     return apiSuccess({
       employee: { id: employee.id, name: employee.name },

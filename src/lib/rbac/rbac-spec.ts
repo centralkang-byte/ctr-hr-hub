@@ -65,6 +65,7 @@ export const ROUTE_ACL: readonly RouteRule[] = [
   { prefix: '/recruitment/requisitions', allowedRoles: ROLE_GROUPS.ALL_ROLES },
   { prefix: '/recruitment', allowedRoles: ROLE_GROUPS.HR_UP },
   { prefix: '/talent', allowedRoles: ROLE_GROUPS.HR_UP },
+  { prefix: '/succession', allowedRoles: ROLE_GROUPS.HR_UP },
   // Performance & Compensation admin (section 6)
   { prefix: '/performance/admin', allowedRoles: ROLE_GROUPS.HR_UP },
   { prefix: '/performance/goals', allowedRoles: ROLE_GROUPS.MANAGER_UP },
@@ -85,6 +86,7 @@ export const ROUTE_ACL: readonly RouteRule[] = [
   { prefix: '/performance/one-on-one', allowedRoles: ROLE_GROUPS.MANAGER_UP },
   { prefix: '/delegation', allowedRoles: ROLE_GROUPS.MANAGER_UP },
   // Insights (section 8)
+  { prefix: '/analytics/gender-pay-gap', allowedRoles: ROLE_GROUPS.HR_UP },
   { prefix: '/analytics', allowedRoles: ROLE_GROUPS.MANAGER_UP },
 
   // ── API routes mirroring page ACL ────────────────────
@@ -114,7 +116,9 @@ export const ROUTE_ACL: readonly RouteRule[] = [
   //   - POST/PATCH/DELETE: HR_UP via withPermission
   { prefix: '/api/v1/recruitment/requisitions', allowedRoles: ROLE_GROUPS.ALL_ROLES },
   { prefix: '/api/v1/recruitment', allowedRoles: ROLE_GROUPS.HR_UP },
+  { prefix: '/api/v1/succession', allowedRoles: ROLE_GROUPS.HR_UP },
   { prefix: '/api/v1/year-end/hr', allowedRoles: ROLE_GROUPS.HR_UP },
+  { prefix: '/api/v1/analytics/gender-pay-gap', allowedRoles: ROLE_GROUPS.HR_UP },
   { prefix: '/api/v1/analytics', allowedRoles: ROLE_GROUPS.MANAGER_UP },
 ]
 
