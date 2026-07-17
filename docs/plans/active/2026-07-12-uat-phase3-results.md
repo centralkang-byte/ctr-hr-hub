@@ -43,17 +43,17 @@
 
 ## BLOCK / 미실행 (잔여)
 
-- **시드 노화**: 지각왕·과로자 이상감지, 52시간 경고 — 최근 30일 데이터 필요 (시드 갱신 후 재검)
+- ~~**시드 노화**: 지각왕·과로자 이상감지, 52시간 경고~~ — **✅ 재검 PASS (2026-07-13, S341)**. `scripts/refresh-uat-aging-seed.ts` 신설(재실행 가능)로 지각왕 최근 평일 LATE 8건 + 과로자 이번 주 60h + WorkHourAlert(blocked) 재생성 → `/attendance/admin`에서 이상 근태(지각왕 지각)·52시간 초과 경고(과로자 차단 60.0h) UI 표시 확인. 부수 발견: 원 시드(49-edge-case-personas)는 workDate를 KST 자정(=전날 15:00Z)으로 저장해 정본 규약(현지 달력일의 UTC 자정 = parseDateOnly)과 어긋나 일자 뷰에 안 걸리는 잠복 결함 — 갱신 스크립트는 정본 규약 사용.
 - **로컬 S3 자격증명 부재**: 병가 증빙·복리후생 증빙·휴직 증빙 업로드 최종 완결 (presign 배선은 확인) — 프리뷰/prod에서 재검
 - **모바일 GPS 펀치** — 모바일 환경 필요
 - 급여 실행 생성→승인→명세서 파이프라인 실주행(시트 급여 2~12) — 5월 시나리오가 시드 의존이라 별도 세션 권장
 - 성과 사이클(활성 사이클 0), 결재 고급 케이스(위임·race·multi-role), 지정연차·경조사·연말갱신, 엣지케이스 시트 후반부
-- 배전적(EDGE-013) CTR 스코프 미노출 — SUPER 교차확인 필요
+- ~~배전적(EDGE-013) CTR 스코프 미노출 — SUPER 교차확인 필요~~ — **✅ 재검 PASS (2026-07-13, S341)**: SUPER로 `employees/[id]/history` 조회 시 CTR-CN 현 발령 + CTR(주) 과거 발령(2020-06-01~2023-12-31) 모두 노출. S311 tenant 스코프의 SUPER 예외 정상 동작 — CTR HR에게 미노출은 의도된 스코핑.
 
 ## 재확인 필요
 
-- `/analytics` 진입 시 `/dashboard`로 리다이렉트 후 main 비어 있음 (직접 하위 라우트는 전부 정상)
-- 이민준 온보딩 tracker 잔존(D+39, e2e 잔재) — 시드 정리 대상
+- ~~`/analytics` 진입 시 `/dashboard`로 리다이렉트 후 main 비어 있음~~ — **✅ 기각 (2026-07-13, S341)**: 재검 시 Executive Dashboard 완전 렌더(KPI·필터·경고 배너). S338 관측은 첫 프레임/hydration 타이밍의 헤드리스 아티팩트로 판정 (KPI 카운트업 0 표시도 동일 rAF 클래스 — [[hrhub-headless-preview-verification-traps]]).
+- ~~이민준 온보딩 tracker 잔존(D+39, e2e 잔재)~~ — **✅ 삭제 완료 (2026-07-13, S341)**: EmployeeOnboarding `2c4bd65e…` + 하위 task 7건 삭제.
 
 ## 데이터 정리 상태
 

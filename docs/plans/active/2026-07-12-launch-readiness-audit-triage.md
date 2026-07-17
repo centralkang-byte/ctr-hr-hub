@@ -113,3 +113,21 @@
 
 Phase 2 (design QA) / Phase 3 (UAT scenario walkthrough) of the campaign follow after or in
 parallel with fixes — see session log.
+
+## CEO 결정 (2026-07-13, S341)
+
+대기 중이던 4건 전부 확정:
+
+1. **직원 출퇴근 수정요청 동선 (UAT P1 후보 #5)** = **기능 구현**. 직원 셀프 수정요청 →
+   HR 승인 플로우 신규 구현 (테스트북 출퇴근 12·13 정합 + 모바일 출퇴근 확대 계획과 정렬).
+   별도 플랜 + Codex Gate 1 후 착수.
+2. **승계/인재풀 공개 범위** = **HR_ADMIN + SUPER_ADMIN 전용**. 실측: 이미 사실상 일치
+   (`/talent/*` = HR_UP 미들웨어, succession API 전부 `perm(SUCCESSION,*)` = HR/SUPER만 보유,
+   EXECUTIVE는 export만). 잔여 작업: ① 고아 페이지 `/succession`이 rbac-spec에 prefix 없음 →
+   아무 로그인 사용자나 페이지 도달(데이터는 API 403이라 안 새나 IA 구멍) — HR_UP rule 1줄
+   ② S339 인재풀 라벨 충돌(nav '인재 풀' → href `/talent/succession`) 정리.
+3. **성별임금격차 리포트** = **HR_ADMIN + SUPER_ADMIN 전용**. 실측: 현재 MANAGER·EXECUTIVE도
+   접근 가능(`/analytics` MANAGER_UP rule + permissions.ts ANALYTICS 폴백 VIEW) + nav 진입점
+   없는 고아 라우트. 작업: rbac-spec `/analytics/gender-pay-gap` HR_UP rule(순서: `/analytics`
+   앞) + API 2본(route/export) role 게이트 + HR nav 노출 배선.
+4. **docs/HR/ 스크린샷 89장(35MB)** = **삭제 완료** (S341 — 내용은 테스트북 v2/v3에 기반영).
