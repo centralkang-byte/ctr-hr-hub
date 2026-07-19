@@ -10,6 +10,7 @@ import { prisma } from '@/lib/prisma'
 import { MODULE, ACTION } from '@/lib/constants'
 import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { badRequest, handlePrismaError, isAppError } from '@/lib/errors'
+import { lockActivePositionReferences } from '@/lib/employee/assignment-master-lifecycle'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
@@ -70,20 +71,26 @@ export const POST = withPermission(
     const targetCompanyId = resolveCompanyId(user, companyId)
 
     try {
-      const position = await prisma.position.create({
-        data: {
-          titleKo: titleKo.trim(),
-          titleEn: titleEn?.trim() ?? titleKo.trim(),
-          code: code.trim(),
+      const position = await prisma.$transaction(async (tx) => {
+        await lockActivePositionReferences(tx, {
           companyId: targetCompanyId,
-          ...(reportsToPositionId ? { reportsToPositionId } : {}),
-          ...(jobGradeId ? { jobGradeId } : {}),
-        },
-        select: {
-          id: true, titleKo: true, titleEn: true, code: true, companyId: true,
-          reportsTo: { select: { id: true, titleKo: true } },
-          jobGrade: { select: { id: true, name: true } },
-        },
+          positionIds: [reportsToPositionId],
+        })
+        return tx.position.create({
+          data: {
+            titleKo: titleKo.trim(),
+            titleEn: titleEn?.trim() ?? titleKo.trim(),
+            code: code.trim(),
+            companyId: targetCompanyId,
+            ...(reportsToPositionId ? { reportsToPositionId } : {}),
+            ...(jobGradeId ? { jobGradeId } : {}),
+          },
+          select: {
+            id: true, titleKo: true, titleEn: true, code: true, companyId: true,
+            reportsTo: { select: { id: true, titleKo: true } },
+            jobGrade: { select: { id: true, name: true } },
+          },
+        })
       })
       return apiSuccess(position, 201)
     } catch (error) {

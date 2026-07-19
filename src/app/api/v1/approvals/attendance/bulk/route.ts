@@ -7,31 +7,64 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest } from '@/lib/errors'
-import { withPermission, perm } from '@/lib/permissions'
+import { badRequest, forbidden } from '@/lib/errors'
+import { hasPermission, withAuth, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { z } from 'zod'
 import type { SessionUser } from '@/types'
+import { getCorrectionReviewerScope } from '@/lib/attendance/correction-roles'
 
 const bulkSchema = z.object({
   ids: z.array(z.string().uuid()).min(1).max(100),
   action: z.enum(['APPROVE', 'REJECT']),
   comment: z.string().max(500).optional(),
-})
+}).strict()
 
-export const POST = withPermission(
+export const POST = withAuth(
   async (req: NextRequest, _context, user: SessionUser) => {
-    const body = await req.json()
+    let body: unknown
+    try {
+      body = await req.json()
+    } catch {
+      throw badRequest('요청 본문이 올바른 JSON 형식이 아닙니다.')
+    }
     const parsed = bulkSchema.safeParse(body)
     if (!parsed.success) throw badRequest(parsed.error.issues.map((e) => e.message).join(', '))
-    const { ids, action, comment } = parsed.data
+    const { action, comment } = parsed.data
+    const ids = [...new Set(parsed.data.ids)]
 
     const now = new Date()
     const results: { id: string; status: 'processed' | 'skipped'; reason?: string }[] = []
+    const { isGlobalSuper } = await getCorrectionReviewerScope(
+      prisma,
+      user.employeeId,
+      now,
+    )
+    const canDecideLeave = hasPermission(user, perm(MODULE.LEAVE, ACTION.UPDATE))
+    const canDecideAttendance = hasPermission(
+      user,
+      perm(MODULE.ATTENDANCE, ACTION.APPROVE),
+    )
+    if (!canDecideLeave && !canDecideAttendance) {
+      throw forbidden('승인 요청을 처리할 권한이 없습니다.')
+    }
+    const actorScope = {
+      ...(isGlobalSuper ? {} : { companyId: user.companyId }),
+      steps: { some: { approverId: user.employeeId, status: 'pending' } },
+    }
 
     // 모든 요청 조회
     const requests = await prisma.attendanceApprovalRequest.findMany({
-      where: { id: { in: ids }, status: 'pending' },
+      where: {
+        id: { in: ids },
+        status: 'pending',
+        OR: [
+          ...(canDecideLeave ? [{ requestType: 'leave', ...actorScope }] : []),
+          ...(canDecideAttendance
+            ? [{ requestType: { in: ['overtime', 'shift_change'] }, ...actorScope }]
+            : []),
+        ],
+      },
       include: { steps: { orderBy: { stepOrder: 'asc' } } },
     })
 
@@ -45,6 +78,13 @@ export const POST = withPermission(
 
     // 각 요청 처리
     for (const approvalReq of requests) {
+      const canDecideType = approvalReq.requestType === 'leave'
+        ? canDecideLeave
+        : ['overtime', 'shift_change'].includes(approvalReq.requestType) && canDecideAttendance
+      if (!canDecideType) {
+        results.push({ id: approvalReq.id, status: 'skipped', reason: '승인 권한 없음' })
+        continue
+      }
       const currentStep = approvalReq.steps.find(
         (s) => s.stepOrder === approvalReq.currentStep && s.status === 'pending'
       )
@@ -116,5 +156,4 @@ export const POST = withPermission(
 
     return apiSuccess({ processed, skipped, results })
   },
-  perm(MODULE.LEAVE, ACTION.UPDATE),
 )

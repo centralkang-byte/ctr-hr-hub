@@ -13,10 +13,16 @@ import {
   employeeSearchSchema,
   employeeCreateSchema,
 } from '@/lib/schemas/employee'
-import { createAssignment } from '@/lib/assignments'
 import { eventBus, DOMAIN_EVENTS } from '@/lib/events'
 import { maskSensitiveFields } from '@/lib/masking'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import {
+  acquirePrimaryAssignmentDepartmentLocks,
+  acquirePrimaryAssignmentEmployeeLocks,
+  readPrimaryAssignmentTimeline,
+  revalidatePrimaryAssignmentDepartments,
+  revalidatePrimaryAssignmentMasterData,
+} from '@/lib/employee/primary-assignment-writer'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/employees ────────────────────────────────
@@ -189,29 +195,55 @@ export const POST = withPermission(
         if (!pos) throw badRequest('positionId(직위)가 해당 법인에 속하지 않습니다.')
       }
 
-      const employee = await prisma.employee.create({
-        data: {
-          ...employeeFields,
-          hireDate: new Date(parsed.data.hireDate),
-          birthDate: parsed.data.birthDate ? new Date(parsed.data.birthDate) : null,
-          resignDate: parsed.data.resignDate ? new Date(parsed.data.resignDate) : null,
-        },
-      })
+      const employee = await prisma.$transaction(async (tx) => {
+        const departmentScopes = [{
+          companyId: empCompanyId,
+          departmentId: departmentId ?? null,
+        }]
+        await acquirePrimaryAssignmentDepartmentLocks(tx, departmentScopes)
+        await revalidatePrimaryAssignmentDepartments(tx, departmentScopes)
+        await revalidatePrimaryAssignmentMasterData(tx, {
+          companyId: empCompanyId,
+          jobGradeId,
+          titleId,
+          jobCategoryId,
+          positionId,
+        })
 
-      // Create the initial assignment with the assignment-scoped fields
-      await createAssignment({
-        employeeId: employee.id,
-        effectiveDate: employee.hireDate,
-        changeType: 'HIRE',
-        companyId: empCompanyId,
-        departmentId,
-        jobGradeId,
-        titleId: titleId ?? undefined,
-        positionId: positionId ?? undefined,
-        jobCategoryId,
-        employmentType,
-        status,
-        isPrimary: true,
+        const newEmployeeId = crypto.randomUUID()
+        await acquirePrimaryAssignmentEmployeeLocks(tx, [newEmployeeId])
+        const timeline = await readPrimaryAssignmentTimeline(tx, newEmployeeId)
+        if (timeline.length !== 0) {
+          throw badRequest('신규 직원에게 기존 주 발령이 존재합니다.')
+        }
+
+        const created = await tx.employee.create({
+          data: {
+            id: newEmployeeId,
+            ...employeeFields,
+            hireDate: new Date(parsed.data.hireDate),
+            birthDate: parsed.data.birthDate ? new Date(parsed.data.birthDate) : null,
+            resignDate: parsed.data.resignDate ? new Date(parsed.data.resignDate) : null,
+          },
+        })
+        await tx.employeeAssignment.create({
+          data: {
+            employeeId: created.id,
+            effectiveDate: created.hireDate,
+            endDate: null,
+            changeType: 'HIRE',
+            companyId: empCompanyId,
+            departmentId,
+            jobGradeId,
+            titleId: titleId ?? undefined,
+            positionId: positionId ?? undefined,
+            jobCategoryId,
+            employmentType,
+            status,
+            isPrimary: true,
+          },
+        })
+        return created
       })
 
       const { ip, userAgent } = extractRequestMeta(req.headers)

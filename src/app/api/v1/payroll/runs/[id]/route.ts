@@ -18,32 +18,43 @@ export const GET = withPermission(
       where: { id, ...resolveCompanyFilter(user, null) },
       include: {
         approver: { select: { id: true, name: true } },
-        payrollItems: {
-          include: {
-            employee: {
-              select: {
-                id: true,
-                name: true,
-                employeeNo: true,
-                assignments: {
-                  where: { isPrimary: true, endDate: null },
-                  take: 1,
-                  select: {
-                    department: { select: { id: true, name: true } },
-                    jobGrade: { select: { id: true, name: true } },
-                  },
-                },
-              },
-            },
-          },
-          orderBy: { employee: { name: 'asc' } },
-        },
       },
     })
 
     if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
 
-    return apiSuccess(run)
+    const payrollItems = await prisma.payrollItem.findMany({
+      where: { runId: id },
+      include: {
+        employee: {
+          select: {
+            id: true,
+            name: true,
+            employeeNo: true,
+            assignments: {
+              where: {
+                companyId: run.companyId,
+                isPrimary: true,
+                effectiveDate: { lte: run.periodEnd },
+                OR: [
+                  { endDate: null },
+                  { endDate: { gt: run.periodStart } },
+                ],
+              },
+              orderBy: { effectiveDate: 'desc' },
+              take: 1,
+              select: {
+                department: { select: { id: true, name: true } },
+                jobGrade: { select: { id: true, name: true } },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { employee: { name: 'asc' } },
+    })
+
+    return apiSuccess({ ...run, payrollItems })
   },
   perm(MODULE.PAYROLL, ACTION.VIEW),
 )

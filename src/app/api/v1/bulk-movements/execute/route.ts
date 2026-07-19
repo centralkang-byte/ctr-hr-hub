@@ -78,6 +78,7 @@ export const POST = withPermission(
         {
           actorEmployeeId: user.employeeId,
           companyId: user.companyId,
+          authorizedCompanyId: userCompanyId || undefined,
           ip: meta.ip,
           userAgent: meta.userAgent,
         },

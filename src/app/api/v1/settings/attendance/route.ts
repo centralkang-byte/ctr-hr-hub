@@ -13,6 +13,10 @@ import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { z } from 'zod'
 import type { SessionUser } from '@/types'
+import {
+  isSupportedAttendanceTimezone,
+  SUPPORTED_ATTENDANCE_TIMEZONES,
+} from '@/lib/timezone'
 
 // ─── Zod 스키마 ────────────────────────────────────────────
 
@@ -55,6 +59,9 @@ const attendanceSettingsUpdateSchema = z.object({
     .min(1)
     .max(64)
     .refine(isValidTimezone, { message: '유효한 IANA 타임존이 아닙니다.' })
+    .refine(isSupportedAttendanceTimezone, {
+      message: `지원하는 근태 타임존만 사용할 수 있습니다: ${SUPPORTED_ATTENDANCE_TIMEZONES.join(', ')}`,
+    })
     .optional(),
   // 기준 출퇴근 시간 — 지각/조퇴 판정 기준 (S276)
   workStartTime: z.string().regex(HHMM_RE).optional(),
@@ -76,9 +83,18 @@ export const GET = withPermission(
       const { searchParams } = new URL(req.url)
       const companyId = resolveCompanyId(user, searchParams.get('companyId'))
 
-      const setting = await prisma.attendanceSetting.findUnique({
-        where: { companyId },
-      })
+      const [setting, company] = await Promise.all([
+        prisma.attendanceSetting.findUnique({ where: { companyId } }),
+        prisma.company.findFirst({
+          where: { id: companyId, deletedAt: null },
+          select: { timezone: true },
+        }),
+      ])
+      if (!company) throw badRequest('법인 정보를 찾을 수 없습니다.')
+      const effectiveTimezone = setting?.timezone ?? company.timezone
+      if (!isSupportedAttendanceTimezone(effectiveTimezone)) {
+        throw badRequest('지원하지 않는 근태 타임존입니다.')
+      }
 
       // 글로벌 기본값 사용 또는 법인별 설정 반환
       const result = {
@@ -100,7 +116,7 @@ export const GET = withPermission(
         enableBlocking: setting?.enableBlocking ?? false,
         workStartTime: setting?.workStartTime ?? '08:30',
         workEndTime: setting?.workEndTime ?? '17:30',
-        timezone: setting?.timezone ?? 'Asia/Seoul',
+        timezone: effectiveTimezone,
         isCustom: !!setting,
       }
 
@@ -142,13 +158,25 @@ export const PUT = withPermission(
         }
       }
 
-      const existing = await prisma.attendanceSetting.findUnique({ where: { companyId } })
+      const [existing, company] = await Promise.all([
+        prisma.attendanceSetting.findUnique({ where: { companyId } }),
+        prisma.company.findFirst({
+          where: { id: companyId, deletedAt: null },
+          select: { timezone: true },
+        }),
+      ])
+      if (!company) throw badRequest('법인 정보를 찾을 수 없습니다.')
+      const timezone = data.timezone ?? existing?.timezone ?? company.timezone
+      if (!isSupportedAttendanceTimezone(timezone)) {
+        throw badRequest('지원하지 않는 근태 타임존입니다.')
+      }
 
       const setting = await prisma.attendanceSetting.upsert({
         where: { companyId },
         create: {
           companyId,
           ...data,
+          timezone,
         },
         update: {
           ...data,

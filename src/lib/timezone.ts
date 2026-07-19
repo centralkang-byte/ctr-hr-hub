@@ -14,6 +14,24 @@
 import { parseISO } from 'date-fns'
 import { formatInTimeZone, fromZonedTime } from 'date-fns-tz'
 
+export const SUPPORTED_ATTENDANCE_TIMEZONES = [
+  'Asia/Seoul',
+  'Asia/Shanghai',
+  'Europe/Moscow',
+  'America/Chicago',
+  'Asia/Ho_Chi_Minh',
+  'Europe/Warsaw',
+] as const
+
+export type SupportedAttendanceTimezone =
+  (typeof SUPPORTED_ATTENDANCE_TIMEZONES)[number]
+
+export function isSupportedAttendanceTimezone(
+  timezone: string,
+): timezone is SupportedAttendanceTimezone {
+  return (SUPPORTED_ATTENDANCE_TIMEZONES as readonly string[]).includes(timezone)
+}
+
 /**
  * Formats a date into a string according to the given timezone.
  *
@@ -56,6 +74,22 @@ export function getEndOfDayTz(date: Date | string, timezone: string): Date {
   const d = typeof date === 'string' ? parseISO(date) : date
   const localDateStr = formatInTimeZone(d, timezone, 'yyyy-MM-dd')
   return fromZonedTime(`${localDateStr}T23:59:59.999`, timezone)
+}
+
+function formatUtcDateOnly(date: Date): string {
+  if (Number.isNaN(date.getTime())) {
+    throw new RangeError('Invalid date-only value')
+  }
+
+  return date.toISOString().slice(0, 10)
+}
+
+/**
+ * Normalizes a serialized date-only DB value to UTC midnight without applying
+ * a timezone offset. The UTC calendar date is the business value.
+ */
+export function normalizeUtcDateOnly(date: Date): Date {
+  return parseDateOnly(formatUtcDateOnly(date))
 }
 
 /**

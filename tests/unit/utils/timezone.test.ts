@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { formatToTz, getStartOfDayTz, getEndOfDayTz, parseDateOnly } from '@/lib/timezone'
+import {
+  formatToTz,
+  getEndOfDayTz,
+  getStartOfDayTz,
+  normalizeUtcDateOnly,
+  parseDateOnly,
+} from '@/lib/timezone'
 
 // ─── formatToTz ─────────────────────────────────────────────
 
@@ -136,6 +142,29 @@ describe('getEndOfDayTz', () => {
     const diffMs = end.getTime() - start.getTime()
     // 23h 59m 59s 999ms = 86_399_999ms
     expect(diffMs).toBe(86_399_999)
+  })
+})
+
+// ─── UTC date-only normalization ───────────────────────────
+
+describe('normalizeUtcDateOnly', () => {
+  it('preserves a serialized UTC calendar date without a timezone shift', () => {
+    expect(
+      normalizeUtcDateOnly(new Date('2026-07-01T00:00:00.000Z')).toISOString(),
+    ).toBe('2026-07-01T00:00:00.000Z')
+  })
+
+  it('treats legacy end-of-day serialization as the same date-only value', () => {
+    const canonical = normalizeUtcDateOnly(new Date('2026-07-31T00:00:00.000Z'))
+    const legacy = normalizeUtcDateOnly(new Date('2026-07-31T23:59:59.999Z'))
+
+    expect(legacy).toEqual(canonical)
+  })
+
+  it('rejects invalid date-only values', () => {
+    expect(() => normalizeUtcDateOnly(new Date('invalid'))).toThrow(
+      'Invalid date-only value',
+    )
   })
 })
 

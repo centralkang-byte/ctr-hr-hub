@@ -9,13 +9,8 @@ import { apiSuccess } from '@/lib/api'
 import { badRequest, isAppError, handlePrismaError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
-import {
-  startOfMonth,
-  endOfMonth,
-  eachDayOfInterval,
-  format,
-} from 'date-fns'
 import type { SessionUser } from '@/types'
+import { resolveEffectiveAttendanceSettings } from '@/lib/attendance/timezone-resolver'
 
 // ─── GET — 월별 근태 데이터 ──────────────────────────────────
 
@@ -43,20 +38,14 @@ export const GET = withPermission(
         throw badRequest('유효하지 않은 년/월 값입니다.')
       }
 
-      const kstOffset = 9 * 60 * 60 * 1000
-
-      // 해당 월의 시작과 끝 (KST 기준)
-      const targetMonth = new Date(yearNum, monthNum - 1, 1) // KST local date
-      const monthStart = startOfMonth(targetMonth)
-      const monthEnd = endOfMonth(targetMonth)
-
-      // UTC로 변환하여 DB 쿼리
-      const queryStart = new Date(monthStart.getTime() - kstOffset)
-      const queryEnd = new Date(monthEnd.getTime() - kstOffset + 24 * 60 * 60 * 1000)
+      const queryStart = new Date(Date.UTC(yearNum, monthNum - 1, 1))
+      const queryEnd = new Date(Date.UTC(yearNum, monthNum, 1))
+      const { timezone } = await resolveEffectiveAttendanceSettings(prisma, user.companyId)
 
       const records = await prisma.attendance.findMany({
         where: {
           employeeId: user.employeeId,
+          companyId: user.companyId,
           workDate: {
             gte: queryStart,
             lt: queryEnd,
@@ -65,16 +54,41 @@ export const GET = withPermission(
         orderBy: { workDate: 'asc' },
       })
 
+      const corrections = records.length
+        ? await prisma.attendanceApprovalRequest.findMany({
+            where: {
+              companyId: user.companyId,
+              requesterId: user.employeeId,
+              requestType: 'attendance_correction',
+              referenceId: { in: records.map((record) => record.id) },
+            },
+            select: { id: true, referenceId: true, status: true, createdAt: true },
+            orderBy: { createdAt: 'desc' },
+          })
+        : []
+      const latestCorrectionByAttendance = new Map<
+        string,
+        { id: string; status: string }
+      >()
+      for (const correction of corrections) {
+        if (
+          correction.referenceId &&
+          !latestCorrectionByAttendance.has(correction.referenceId)
+        ) {
+          latestCorrectionByAttendance.set(correction.referenceId, correction)
+        }
+      }
+
       // 일별 데이터 매핑
-      const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd })
-      const days = daysInMonth.map((day) => {
-        const dateStr = format(day, 'yyyy-MM-dd')
-        const record = records.find(
-          (r) => format(new Date(r.workDate.getTime() + kstOffset), 'yyyy-MM-dd') === dateStr,
-        )
+      const dayCount = new Date(Date.UTC(yearNum, monthNum, 0)).getUTCDate()
+      const days = Array.from({ length: dayCount }, (_, index) => {
+        const dateStr = `${yearNum}-${String(monthNum).padStart(2, '0')}-${String(index + 1).padStart(2, '0')}`
+        const record = records.find((row) => row.workDate.toISOString().slice(0, 10) === dateStr)
+        const correction = record ? latestCorrectionByAttendance.get(record.id) : undefined
 
         return {
           date: dateStr,
+          id: record?.id ?? null,
           status: record?.status ?? null,
           clockIn: record?.clockIn?.toISOString() ?? null,
           clockOut: record?.clockOut?.toISOString() ?? null,
@@ -82,6 +96,7 @@ export const GET = withPermission(
           overtimeMinutes: record?.overtimeMinutes ?? 0,
           workType: record?.workType ?? null,
           note: record?.note ?? null,
+          correctionRequest: correction ?? null,
         }
       })
 
@@ -93,6 +108,7 @@ export const GET = withPermission(
       const result = {
         year: yearNum,
         month: monthNum,
+        timezone,
         days,
         summary: {
           workedDays,

@@ -32,7 +32,17 @@ export const GET = withRateLimit(withPermission(
                     employee: {
                         select: {
                             assignments: {
-                                where: { isPrimary: true, endDate: null }, take: 1,
+                                where: {
+                                    companyId: run.companyId,
+                                    isPrimary: true,
+                                    effectiveDate: { lte: run.periodEnd },
+                                    OR: [
+                                        { endDate: null },
+                                        { endDate: { gt: run.periodStart } },
+                                    ],
+                                },
+                                orderBy: { effectiveDate: 'desc' },
+                                take: 1,
                                 include: { department: { select: { name: true } } },
                             },
                         },

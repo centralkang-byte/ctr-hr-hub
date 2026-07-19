@@ -8,7 +8,7 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { format, startOfMonth, endOfMonth } from 'date-fns'
+import { format } from 'date-fns'
 import { Loader2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import {
@@ -67,16 +67,19 @@ export default function PayrollCreateDrawer({ open, onClose, onCreated, defaultY
     setLoading(true)
 
     const [year, month] = yearMonth.split('-').map(Number)
-    const periodDate = new Date(year, month - 1, 1)
+    const periodStart = new Date(Date.UTC(year, month - 1, 1))
+    // PayrollRun period fields are UTC date-only values; calculation expands
+    // these dates to company-local start/end instants on the server.
+    const periodEnd = new Date(Date.UTC(year, month, 0))
 
     try {
       await apiClient.post('/api/v1/payroll/runs', {
         name: name || `${yearMonth} ${t(RUN_TYPE_LABEL_KEYS[runType])}`,
         runType,
         yearMonth,
-        periodStart: startOfMonth(periodDate).toISOString(),
-        periodEnd: endOfMonth(periodDate).toISOString(),
-        payDate: payDate || undefined,
+        periodStart: periodStart.toISOString(),
+        periodEnd: periodEnd.toISOString(),
+        payDate: payDate ? `${payDate}T00:00:00.000Z` : undefined,
       })
       onClose()
       onCreated()

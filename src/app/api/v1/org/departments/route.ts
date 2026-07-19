@@ -11,6 +11,10 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import {
+  acquirePrimaryAssignmentDepartmentLocks,
+  revalidatePrimaryAssignmentDepartments,
+} from '@/lib/employee/primary-assignment-writer'
+import {
   departmentSearchSchema,
   departmentCreateSchema,
 } from '@/lib/schemas/org'
@@ -83,23 +87,41 @@ export const POST = withPermission(
     const effectiveCompanyId =
       user.role === 'SUPER_ADMIN' ? parsed.data.companyId : user.companyId
 
-    // Auto-calculate level from parent if not provided
-    let resolvedLevel = parsed.data.level
-    if (resolvedLevel === undefined) {
-      if (parsed.data.parentId) {
-        const parent = await prisma.department.findUnique({
-          where: { id: parsed.data.parentId },
-          select: { level: true },
-        })
-        resolvedLevel = parent ? parent.level + 1 : 1
-      } else {
-        resolvedLevel = 1  // top-level department
-      }
-    }
-
     try {
-      const department = await prisma.department.create({
-        data: { ...parsed.data, companyId: effectiveCompanyId, level: resolvedLevel },
+      const parentId = parsed.data.parentId ?? null
+      const department = await prisma.$transaction(async (tx) => {
+        const parentScope = [{ companyId: effectiveCompanyId, departmentId: parentId }]
+        await acquirePrimaryAssignmentDepartmentLocks(tx, parentScope)
+        await revalidatePrimaryAssignmentDepartments(tx, parentScope)
+
+        // Calculate from the parent re-read under the parent department lock.
+        let resolvedLevel = parsed.data.level
+        if (resolvedLevel === undefined) {
+          if (parentId) {
+            const parent = await tx.department.findFirst({
+              where: {
+                id: parentId,
+                companyId: effectiveCompanyId,
+                deletedAt: null,
+              },
+              select: { level: true },
+            })
+            if (!parent) {
+              throw badRequest('상위 부서를 찾을 수 없습니다.')
+            }
+            resolvedLevel = parent.level + 1
+          } else {
+            resolvedLevel = 1  // top-level department
+          }
+        }
+
+        return tx.department.create({
+          data: {
+            ...parsed.data,
+            companyId: effectiveCompanyId,
+            level: resolvedLevel,
+          },
+        })
       })
 
       const { ip, userAgent } = extractRequestMeta(req.headers)

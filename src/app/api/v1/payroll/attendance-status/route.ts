@@ -34,16 +34,15 @@ export const GET = withPermission(
         const firstDay = new Date(year, month - 1, 1)
         const lastDay = new Date(year, month, 0)
 
-        // 재직자 목록 (effectiveDate ≤ 말일, endDate null이거나 ≥ 첫날)
+        // 재직자 목록 (effectiveDate ≤ 말일, endDate null이거나 > 첫날)
         const employees = await prisma.employee.findMany({
             where: {
                 assignments: {
                     some: {
                         companyId,
                         isPrimary: true,
-                        status: 'ACTIVE',
                         effectiveDate: { lte: lastDay },
-                        OR: [{ endDate: null }, { endDate: { gte: firstDay } }],
+                        OR: [{ endDate: null }, { endDate: { gt: firstDay } }],
                     },
                 },
             },
@@ -56,6 +55,7 @@ export const GET = withPermission(
         // clockOut 완료된 근태가 하나 이상 있는 직원 = 확정
         const confirmedRecs = await prisma.attendance.findMany({
             where: {
+                companyId,
                 employeeId: { in: employeeIds },
                 workDate: { gte: firstDay, lte: lastDay },
                 clockOut: { not: null },
@@ -83,6 +83,7 @@ export const GET = withPermission(
         // 무급휴가 건수 (해당 월에 승인된 LeaveRequest 중 UNPAID 타입)
         const unpaidLeaveCount = await prisma.leaveRequest.count({
             where: {
+                companyId,
                 employeeId: { in: employeeIds },
                 status: 'APPROVED',
                 startDate: { lte: lastDay },

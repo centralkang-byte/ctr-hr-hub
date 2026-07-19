@@ -6,7 +6,7 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
-import { MODULE, ACTION } from '@/lib/constants'
+import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { notFound, forbidden } from '@/lib/errors'
 import { withRLS, buildRLSContext } from '@/lib/api/withRLS'
@@ -17,38 +17,82 @@ export const GET = withPermission(
   async (_req: NextRequest, context, user) => {
     const { id } = await context.params
 
-    // RLS: DB-level isolation + app-level companyId check kept as redundant guard
-    const { payslip, payrollItem } = await withRLS(buildRLSContext(user), async (tx) => {
-      const slip = await tx.payslip.findUnique({
-        where: { id },
-        include: {
-          employee: {
-            select: {
-              id: true, name: true, employeeNo: true,
-              assignments: {
-                where: { isPrimary: true, endDate: null },
-                take: 1,
-                include: {
-                  department: { select: { name: true } },
-                  jobGrade: { select: { name: true } },
-                },
+    const ownership = await prisma.payslip.findFirst({
+      where: {
+        id,
+        ...(user.role === ROLE.SUPER_ADMIN
+          ? {}
+          : user.role === ROLE.HR_ADMIN
+            ? {
+                OR: [
+                  { employeeId: user.employeeId },
+                  { companyId: user.companyId },
+                ],
+              }
+            : { employeeId: user.employeeId }),
+      },
+      select: { employeeId: true, companyId: true },
+    })
+    if (!ownership) throw notFound('급여명세서를 찾을 수 없습니다.')
+
+    const isOwnPayslip = ownership.employeeId === user.employeeId
+    const canAccessAsAdmin = user.role === ROLE.SUPER_ADMIN
+      || (user.role === ROLE.HR_ADMIN && ownership.companyId === user.companyId)
+    if (!isOwnPayslip && !canAccessAsAdmin) throw forbidden()
+
+    // 전적 전 기록도 조회할 수 있도록 RLS 회사 컨텍스트는 현재 소속이 아니라
+    // 접근 검사를 통과한 Payslip의 저장 법인으로 설정한다.
+    const { payslip, payrollItem } = await withRLS(
+      {
+        ...buildRLSContext(user),
+        companyId: ownership.companyId,
+      },
+      async (tx) => {
+        const storedSlip = await tx.payslip.findUnique({
+          where: { id },
+          include: {
+            employee: {
+              select: {
+                id: true, name: true, employeeNo: true,
               },
             },
           },
-        },
-      })
-      if (!slip) return { payslip: null, payrollItem: null }
+        })
+        if (!storedSlip) return { payslip: null, payrollItem: null }
 
-      const item = await tx.payrollItem.findUnique({ where: { id: slip.payrollItemId } })
-      return { payslip: slip, payrollItem: item }
-    })
+        const periodStart = new Date(Date.UTC(storedSlip.year, storedSlip.month - 1, 1))
+        const periodEnd = new Date(Date.UTC(storedSlip.year, storedSlip.month, 0))
+        const assignment = await tx.employeeAssignment.findFirst({
+          where: {
+            employeeId: storedSlip.employeeId,
+            companyId: storedSlip.companyId,
+            isPrimary: true,
+            effectiveDate: { lte: periodEnd },
+            OR: [
+              { endDate: null },
+              { endDate: { gt: periodStart } },
+            ],
+          },
+          orderBy: { effectiveDate: 'desc' },
+          include: {
+            department: { select: { name: true } },
+            jobGrade: { select: { name: true } },
+          },
+        })
+        const slip = {
+          ...storedSlip,
+          employee: {
+            ...storedSlip.employee,
+            assignments: assignment ? [assignment] : [],
+          },
+        }
 
-    if (!payslip) throw notFound('주여명세서를 찾을 수 없습니다.')
-    if (payslip.companyId !== user.companyId && user.role !== 'SUPER_ADMIN') throw forbidden()
+        const item = await tx.payrollItem.findUnique({ where: { id: slip.payrollItemId } })
+        return { payslip: slip, payrollItem: item }
+      },
+    )
 
-    const isOwnPayslip = payslip.employeeId === user.employeeId
-    const isHR = user.role === 'HR_ADMIN' || user.role === 'SUPER_ADMIN'
-    if (!isOwnPayslip && !isHR) throw forbidden()
+    if (!payslip) throw notFound('급여명세서를 찾을 수 없습니다.')
 
     // 본인 열람 시 자동으로 열람 표시 (최초 1회)
     if (isOwnPayslip && !payslip.isViewed) {
@@ -78,13 +122,12 @@ export const PATCH = withPermission(
 
     const payslip = await prisma.payslip.findUnique({ where: { id } })
     if (!payslip) throw notFound('급여명세서를 찾을 수 없습니다.')
-    // GET과 동일하게 SUPER_ADMIN은 전 법인 접근 허용 (carve-out 일관)
-    if (payslip.companyId !== user.companyId && user.role !== 'SUPER_ADMIN') throw forbidden()
 
-    // 본인 명세서만 열람 처리 (HR은 모두 가능)
+    // 본인은 전적 전후 본인 기록을, HR은 현재 법인의 기록을, SUPER는 전 법인 기록을 처리한다.
     const isOwnPayslip = payslip.employeeId === user.employeeId
-    const isHR = user.role === 'HR_ADMIN' || user.role === 'SUPER_ADMIN'
-    if (!isOwnPayslip && !isHR) throw forbidden()
+    const canAccessAsAdmin = user.role === ROLE.SUPER_ADMIN
+      || (user.role === ROLE.HR_ADMIN && payslip.companyId === user.companyId)
+    if (!isOwnPayslip && !canAccessAsAdmin) throw forbidden()
 
     const updated = await prisma.payslip.update({
       where: { id },

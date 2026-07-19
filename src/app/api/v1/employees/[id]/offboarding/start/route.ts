@@ -16,9 +16,16 @@ import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import { withRLS, buildRLSContext } from '@/lib/api/withRLS'
-import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import { getManagerIdByPosition } from '@/lib/employee/direct-reports'
 import { validateApprover } from '@/lib/approval/resolve-approval-flow'
+import { getTodayForTimezone } from '@/lib/assignments'
+import {
+  acquirePrimaryAssignmentEmployeeLocks,
+  casPrimaryAssignment,
+  getOpenPrimaryAssignment,
+  getPrimaryAssignmentAtDate,
+  readPrimaryAssignmentTimeline,
+} from '@/lib/employee/primary-assignment-writer'
 import type { SessionUser } from '@/types'
 import type { OffboardingTargetType } from '@/generated/prisma/enums'
 
@@ -113,8 +120,11 @@ export const POST = withPermission(
     //    ResignType and OffboardingTargetType share the same 4 values
     const targetType = resignType as OffboardingTargetType
 
-    const currentAssignment = extractPrimaryAssignment(employee.assignments)
+    const currentAssignment = employee.assignments[0] ?? null
     const employeeCompanyId = currentAssignment?.companyId ?? ''
+    const assignmentToday = currentAssignment
+      ? getTodayForTimezone(currentAssignment.company.timezone)
+      : null
 
     // 5. Find matching active checklist
     const checklist = await prisma.offboardingChecklist.findFirst({
@@ -142,6 +152,41 @@ export const POST = withPermission(
 
     // 7. Run transaction
     const result = await prisma.$transaction(async (tx) => {
+      await acquirePrimaryAssignmentEmployeeLocks(tx, [employeeId])
+      const timeline = await readPrimaryAssignmentTimeline(tx, employeeId)
+      const openAssignment = getOpenPrimaryAssignment(timeline)
+      const freshAssignment = assignmentToday
+        ? getPrimaryAssignmentAtDate(timeline, assignmentToday)
+        : null
+      if (!freshAssignment || freshAssignment.status !== 'ACTIVE') {
+        throw conflict('직원의 현재 주 발령 상태가 변경되었습니다.')
+      }
+      if (!openAssignment || openAssignment.id !== freshAssignment.id) {
+        throw conflict('예정된 미래 주 발령이 있어 퇴직 처리를 시작할 수 없습니다.')
+      }
+      if (freshAssignment.companyId !== employeeCompanyId) {
+        throw conflict('직원의 현재 소속 법인이 변경되었습니다. 다시 확인해 주세요.')
+      }
+      const freshExisting = await tx.employeeOffboarding.findFirst({
+        where: { employeeId, status: 'IN_PROGRESS' },
+        select: { id: true },
+      })
+      if (freshExisting) {
+        throw conflict(`이미 진행 중인 퇴직 프로세스가 있습니다. (ID: ${freshExisting.id})`)
+      }
+      const freshChecklist = await tx.offboardingChecklist.findFirst({
+        where: {
+          id: checklist.id,
+          companyId: employeeCompanyId,
+          targetType,
+          deletedAt: null,
+        },
+        include: {
+          offboardingTasks: { orderBy: { sortOrder: 'asc' } },
+        },
+      })
+      if (!freshChecklist) throw conflict('오프보딩 체크리스트가 변경되었습니다.')
+
       // a) Auto-cancel any active onboarding for this employee (Edge Case #1/#8)
       // One-directional: offboarding.start → cancel active onboarding. NOT the reverse.
       const activeOnboardings = await tx.employeeOnboarding.findMany({
@@ -176,10 +221,7 @@ export const POST = withPermission(
       })
 
       // Update status on the current assignment instead of employee directly
-      await tx.employeeAssignment.updateMany({
-        where: { employeeId, isPrimary: true, endDate: null },
-        data: { status: newStatus },
-      })
+      await casPrimaryAssignment(tx, freshAssignment, { status: newStatus })
 
       // b) Create EmployeeHistory
       await tx.employeeHistory.create({
@@ -196,7 +238,7 @@ export const POST = withPermission(
       const offboarding = await tx.employeeOffboarding.create({
         data: {
           employeeId,
-          checklistId: checklist.id,
+          checklistId: freshChecklist.id,
           // 소유 법인 = 시작 시점 primary assignment 법인 (전출과 무관하게 고정 — 테넌트 스코핑 SSOT)
           companyId: employeeCompanyId,
           resignType,
@@ -211,9 +253,9 @@ export const POST = withPermission(
 
       // d) Auto-create EmployeeOffboardingTask records with computed dueDates
       const lwdMs = new Date(lastWorkingDate).getTime()
-      if (checklist.offboardingTasks.length > 0) {
+      if (freshChecklist.offboardingTasks.length > 0) {
         await tx.employeeOffboardingTask.createMany({
-          data: checklist.offboardingTasks.map((task) => ({
+          data: freshChecklist.offboardingTasks.map((task) => ({
             employeeOffboardingId: offboarding.id,
             taskId: task.id,
             status: 'PENDING' as const,

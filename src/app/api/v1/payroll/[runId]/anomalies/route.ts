@@ -30,7 +30,13 @@ export const GET = withPermission(
         // 멀티테넌트 스코프: 비-SUPER는 본인 법인 run만 (타 법인 runId는 notFound)
         const run = await prisma.payrollRun.findFirst({
             where: { id: runId, ...(user.role !== ROLE.SUPER_ADMIN ? { companyId: user.companyId } : {}) },
-            select: { id: true, status: true, companyId: true },
+            select: {
+                id: true,
+                status: true,
+                companyId: true,
+                periodStart: true,
+                periodEnd: true,
+            },
         })
         if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
 
@@ -50,7 +56,16 @@ export const GET = withPermission(
                             name: true,
                             employeeNo: true,
                             assignments: {
-                                where: { isPrimary: true, endDate: null },
+                                where: {
+                                    companyId: run.companyId,
+                                    isPrimary: true,
+                                    effectiveDate: { lte: run.periodEnd },
+                                    OR: [
+                                        { endDate: null },
+                                        { endDate: { gt: run.periodStart } },
+                                    ],
+                                },
+                                orderBy: { effectiveDate: 'desc' },
                                 take: 1,
                                 include: {
                                     department: { select: { id: true, name: true } },

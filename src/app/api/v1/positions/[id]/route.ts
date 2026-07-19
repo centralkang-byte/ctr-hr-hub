@@ -8,7 +8,11 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
-import { badRequest, notFound, isAppError, handlePrismaError } from '@/lib/errors'
+import { notFound, isAppError, handlePrismaError } from '@/lib/errors'
+import {
+  lockActivePositionReferences,
+  softDeletePositionMaster,
+} from '@/lib/employee/assignment-master-lifecycle'
 import type { SessionUser } from '@/types'
 
 export const PUT = withPermission(
@@ -18,25 +22,33 @@ export const PUT = withPermission(
     const { titleKo, titleEn, code, reportsToPositionId, jobGradeId } = body as Record<string, string | undefined | null>
 
     try {
-      const existing = await prisma.position.findFirst({
-        where: { id, companyId: user.companyId },
-      })
-      if (!existing) throw notFound('직위를 찾을 수 없습니다.')
+      const updated = await prisma.$transaction(async (tx) => {
+        await lockActivePositionReferences(tx, {
+          companyId: user.companyId,
+          positionIds: [id, reportsToPositionId],
+          forUpdatePositionIds: [id],
+        })
 
-      const updated = await prisma.position.update({
-        where: { id },
-        data: {
-          ...(titleKo !== undefined && { titleKo: titleKo?.trim() ?? existing.titleKo }),
-          ...(titleEn !== undefined && { titleEn: titleEn?.trim() ?? existing.titleEn }),
-          ...(code !== undefined && { code: code?.trim() ?? existing.code }),
-          reportsToPositionId: reportsToPositionId ?? null,
-          jobGradeId: jobGradeId ?? null,
-        },
-        select: {
-          id: true, titleKo: true, titleEn: true, code: true, companyId: true,
-          reportsTo: { select: { id: true, titleKo: true } },
-          jobGrade: { select: { id: true, name: true } },
-        },
+        const existing = await tx.position.findFirst({
+          where: { id, companyId: user.companyId, deletedAt: null },
+        })
+        if (!existing) throw notFound('직위를 찾을 수 없습니다.')
+
+        return tx.position.update({
+          where: { id },
+          data: {
+            ...(titleKo !== undefined && { titleKo: titleKo?.trim() ?? existing.titleKo }),
+            ...(titleEn !== undefined && { titleEn: titleEn?.trim() ?? existing.titleEn }),
+            ...(code !== undefined && { code: code?.trim() ?? existing.code }),
+            reportsToPositionId: reportsToPositionId ?? null,
+            jobGradeId: jobGradeId ?? null,
+          },
+          select: {
+            id: true, titleKo: true, titleEn: true, code: true, companyId: true,
+            reportsTo: { select: { id: true, titleKo: true } },
+            jobGrade: { select: { id: true, name: true } },
+          },
+        })
       })
       return apiSuccess(updated)
     } catch (error) {
@@ -52,17 +64,10 @@ export const DELETE = withPermission(
     const { id } = await context.params
 
     try {
-      const existing = await prisma.position.findFirst({
-        where: { id, companyId: user.companyId },
+      await softDeletePositionMaster({
+        positionId: id,
+        companyId: user.companyId,
       })
-      if (!existing) throw notFound('직위를 찾을 수 없습니다.')
-
-      const activeCount = await prisma.employeeAssignment.count({
-        where: { positionId: id, endDate: null },
-      })
-      if (activeCount > 0) throw badRequest(`현재 ${activeCount}명이 배정된 직위는 삭제할 수 없습니다.`)
-
-      await prisma.position.delete({ where: { id } })
       return apiSuccess({ id })
     } catch (error) {
       if (isAppError(error)) throw error

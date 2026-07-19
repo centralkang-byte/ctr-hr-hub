@@ -10,9 +10,14 @@ import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { apiSuccess } from '@/lib/api'
 import { badRequest, notFound, forbidden } from '@/lib/errors'
-import { logAudit, extractRequestMeta } from '@/lib/audit'
+import { extractRequestMeta } from '@/lib/audit'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
+import {
+    readAdjustmentAggregate,
+    updatePayrollRunInPhase,
+    withLockedPayrollRunPhase,
+} from '@/lib/payroll/phase-writer-service'
 
 const createSchema = z.object({
     employeeId: z.string().min(1),
@@ -68,78 +73,84 @@ export const POST = withPermission(
         }
         const data = parsed.data
 
-        const run = await prisma.payrollRun.findUnique({ where: { id: runId } })
-        if (!run) throw notFound('급여 실행을 찾을 수 없습니다.')
+        const candidate = await prisma.payrollRun.findUnique({
+            where: { id: runId },
+            select: { id: true, companyId: true, yearMonth: true },
+        })
+        if (!candidate) throw notFound('급여 실행을 찾을 수 없습니다.')
         // 멀티테넌트 가드: SUPER_ADMIN 외에는 본인 법인 급여 실행에만 접근 가능
-        if (user.role !== ROLE.SUPER_ADMIN && run.companyId !== user.companyId) {
+        if (user.role !== ROLE.SUPER_ADMIN && candidate.companyId !== user.companyId) {
             throw forbidden('다른 법인의 급여 실행에 접근할 수 없습니다.')
         }
-        if (run.status !== 'ADJUSTMENT') {
-            throw badRequest(`ADJUSTMENT 상태에서만 조정을 추가할 수 있습니다. (현재: ${run.status})`)
-        }
+        const { ip, userAgent } = extractRequestMeta(req.headers)
+        const adjustment = await withLockedPayrollRunPhase({
+            candidate,
+            expectedStatus: 'ADJUSTMENT',
+            operation: 'payroll-adjustment-create',
+            statusError: (status) =>
+                `ADJUSTMENT 상태에서만 조정을 추가할 수 있습니다. (현재: ${status})`,
+            mutate: async (tx, run) => {
+                // A historical run owns its persisted roster. Current assignment
+                // membership must not block a legitimate adjustment after transfer.
+                const payrollItem = await tx.payrollItem.findFirst({
+                    where: { runId, employeeId: data.employeeId },
+                    select: { id: true },
+                })
+                if (!payrollItem) throw badRequest('해당 급여 실행의 정산 대상 직원이 아닙니다.')
 
-        const employee = await prisma.employee.findFirst({
-            where: {
-                id: data.employeeId,
-                assignments: { some: { companyId: run.companyId, isPrimary: true, endDate: null } },
+                const created = await tx.payrollAdjustment.create({
+                    data: {
+                        payrollRunId: runId,
+                        employeeId: data.employeeId,
+                        type: data.type,
+                        category: data.category,
+                        description: data.description,
+                        amount: data.amount,
+                        evidenceUrl: data.evidenceUrl,
+                        createdById: user.employeeId,
+                    },
+                    include: {
+                        employee: { select: { id: true, name: true, email: true } },
+                    },
+                })
+                await tx.payrollItem.updateMany({
+                    where: { runId, employeeId: data.employeeId },
+                    data: {
+                        isManuallyAdjusted: true,
+                        adjustmentReason: `${data.type}: ${data.description}`,
+                    },
+                })
+                const aggregate = await readAdjustmentAggregate(tx, runId)
+                await updatePayrollRunInPhase(tx, run, 'ADJUSTMENT', aggregate)
+                await tx.auditLog.create({
+                    data: {
+                        actorId: user.employeeId,
+                        action: 'PAYROLL_ADJUSTMENT_CREATE',
+                        resourceType: 'PayrollAdjustment',
+                        resourceId: created.id,
+                        companyId: run.companyId,
+                        changes: {
+                            runId,
+                            employeeId: data.employeeId,
+                            type: data.type,
+                            amount: data.amount,
+                        },
+                        ipAddress: ip ?? null,
+                        userAgent: userAgent ?? null,
+                    },
+                })
+                return created
             },
-        })
-        if (!employee) throw badRequest('해당 법인 소속 직원이 아닙니다.')
-
-        const adjustment = await prisma.$transaction(async (tx) => {
-            const adj = await tx.payrollAdjustment.create({
-                data: {
-                    payrollRunId: runId,
-                    employeeId: data.employeeId,
-                    type: data.type,
-                    category: data.category,
-                    description: data.description,
-                    amount: data.amount,
-                    evidenceUrl: data.evidenceUrl,
-                    createdById: user.employeeId,
-                },
-                include: { employee: { select: { id: true, name: true, email: true } } },
-            })
-
-            const allAdjs = await tx.payrollAdjustment.findMany({
-                where: { payrollRunId: runId },
-                select: { amount: true },
-            })
-            const adjustmentTotal = allAdjs.reduce((s, a) => s + Number(a.amount), 0)
-
-            await tx.payrollRun.update({
-                where: { id: runId },
-                data: { adjustmentCount: allAdjs.length, adjustmentTotal },
-            })
-
-            await tx.payrollItem.updateMany({
-                where: { runId, employeeId: data.employeeId },
-                data: { isManuallyAdjusted: true, adjustmentReason: `${data.type}: ${data.description}` },
-            })
-
-            return adj
         })
 
         void eventBus.publish(DOMAIN_EVENTS.PAYROLL_ADJUSTMENT_ADDED, {
-            ctx: { companyId: run.companyId, actorId: user.employeeId, occurredAt: new Date() },
+            ctx: { companyId: candidate.companyId, actorId: user.employeeId, occurredAt: new Date() },
             payrollRunId: runId,
-            companyId: run.companyId,
+            companyId: candidate.companyId,
             adjustmentId: adjustment.id,
             employeeId: data.employeeId,
             amount: data.amount,
             type: data.type,
-        })
-
-        const { ip, userAgent } = extractRequestMeta(req.headers)
-        logAudit({
-            actorId: user.employeeId,
-            action: 'PAYROLL_ADJUSTMENT_CREATE',
-            resourceType: 'PayrollAdjustment',
-            resourceId: adjustment.id,
-            companyId: run.companyId,
-            changes: { runId, employeeId: data.employeeId, type: data.type, amount: data.amount },
-            ip,
-            userAgent,
         })
 
         return apiSuccess(adjustment, 201)

@@ -10,6 +10,7 @@ import { badRequest, notFound, conflict } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { resolveCompanyId } from '@/lib/api/companyFilter'
+import { countCurrentOrFutureAssignmentMasterReferences } from '@/lib/employee/assignment-master-lifecycle'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
@@ -121,26 +122,38 @@ export const DELETE = withPermission(
     const id = searchParams.get('id')
     if (!id) throw badRequest('id 파라미터가 필요합니다.')
 
-    const title = await prisma.employeeTitle.findFirst({
-      where: { id, deletedAt: null },
-    })
-    if (!title) throw notFound('호칭을 찾을 수 없습니다.')
+    await prisma.$transaction(async (tx) => {
+      const [title] = await tx.$queryRaw<Array<{
+        id: string
+        companyId: string
+        deletedAt: Date | null
+      }>>`
+        SELECT id, company_id AS "companyId", deleted_at AS "deletedAt"
+        FROM employee_titles
+        WHERE id = ${id}
+        FOR UPDATE
+      `
+      if (!title || title.deletedAt) throw notFound('호칭을 찾을 수 없습니다.')
 
-    if (user.role !== 'SUPER_ADMIN' && title.companyId !== user.companyId) {
-      throw badRequest('다른 법인의 호칭은 삭제할 수 없습니다.')
-    }
+      if (user.role !== 'SUPER_ADMIN' && title.companyId !== user.companyId) {
+        throw badRequest('다른 법인의 호칭은 삭제할 수 없습니다.')
+      }
 
-    // FK 보호: 활성 assignment 확인
-    const activeAssignments = await prisma.employeeAssignment.count({
-      where: { titleId: id, endDate: null, status: 'ACTIVE' },
-    })
-    if (activeAssignments > 0) {
-      throw conflict(`이 호칭을 사용 중인 직원이 ${activeAssignments}명 있어 삭제할 수 없습니다.`)
-    }
+      // FK 보호: 현재 또는 예정 assignment 확인
+      const assignmentCount = await countCurrentOrFutureAssignmentMasterReferences(
+        tx,
+        title.companyId,
+        [{ titleId: id }],
+      )
+      if (assignmentCount > 0) {
+        throw conflict(`이 호칭을 현재 또는 예정 발령에서 사용 중인 직원이 ${assignmentCount}명 있어 삭제할 수 없습니다.`)
+      }
 
-    await prisma.employeeTitle.update({
-      where: { id },
-      data: { deletedAt: new Date() },
+      const deleted = await tx.employeeTitle.updateMany({
+        where: { id, deletedAt: null },
+        data: { deletedAt: new Date() },
+      })
+      if (deleted.count !== 1) throw notFound('호칭을 찾을 수 없습니다.')
     })
 
     return apiSuccess({ deleted: true })

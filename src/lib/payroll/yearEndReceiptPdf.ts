@@ -4,7 +4,19 @@
 // ═══════════════════════════════════════════════════════════
 
 import { prisma } from '@/lib/prisma'
-import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { conflict, notFound } from '@/lib/errors'
+import {
+  readYearEndOwner,
+  type YearEndOwnerDb,
+} from '@/lib/payroll/year-end-settlement-owner'
+import type { PrismaTx } from '@/lib/prisma-rls'
+
+type YearEndReceiptDb = YearEndOwnerDb & Pick<PrismaTx, 'yearEndSettlement'>
+
+interface YearEndReceiptPdfOptions {
+  expectedOwnerCompanyId?: string
+  db?: YearEndReceiptDb
+}
 
 function formatKRW(amount: bigint | number | string): string {
   const num = typeof amount === 'string' ? parseInt(amount, 10) : Number(amount)
@@ -27,9 +39,11 @@ function bigintToNum(v: bigint | number): number {
 
 export async function generateWithholdingReceiptPdf(
   settlementId: string,
+  options: YearEndReceiptPdfOptions = {},
 ): Promise<Buffer> {
+  const db = options.db ?? prisma
   // Fetch settlement with all details
-  const settlement = await prisma.yearEndSettlement.findUnique({
+  const settlement = await db.yearEndSettlement.findUnique({
     where: { id: settlementId },
     include: {
       employee: {
@@ -37,15 +51,6 @@ export async function generateWithholdingReceiptPdf(
           name: true,
           employeeNo: true,
           birthDate: true,
-          assignments: {
-            where: { isPrimary: true, endDate: null },
-            take: 1,
-            include: {
-              company: { select: { name: true } },
-              department: { select: { name: true } },
-              jobGrade: { select: { name: true } },
-            },
-          },
         },
       },
       dependents: { orderBy: { createdAt: 'asc' } },
@@ -54,12 +59,20 @@ export async function generateWithholdingReceiptPdf(
   })
 
   if (!settlement) {
-    throw new Error('정산 정보를 찾을 수 없습니다.')
+    throw notFound('정산 정보를 찾을 수 없습니다.')
   }
 
   const employee = settlement.employee
-  const assignment = extractPrimaryAssignment(employee.assignments ?? [])
-  const companyName = assignment?.company?.name ?? '-'
+  const owner = await readYearEndOwner(settlement.employeeId, settlement.year, db)
+  if (
+    !owner.resolved ||
+    (options.expectedOwnerCompanyId &&
+      owner.companyId !== options.expectedOwnerCompanyId)
+  ) {
+    throw conflict('정산 귀속 법인을 하나로 확정할 수 없습니다.')
+  }
+  const assignment = owner.assignment
+  const companyName = assignment.company.name
   const departmentName = assignment?.department?.name ?? '-'
   const jobGradeName = assignment?.jobGrade?.name ?? '-'
 

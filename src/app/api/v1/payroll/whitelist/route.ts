@@ -36,13 +36,25 @@ export const GET = withPermission(
                     select: {
                         id: true, name: true, employeeNo: true,
                         assignments: {
-                            where: { isPrimary: true, endDate: null },
-                            take: 1,
-                            include: { department: { select: { name: true } } },
+                            where: { isPrimary: true },
+                            orderBy: { effectiveDate: 'desc' },
+                            select: {
+                                companyId: true,
+                                effectiveDate: true,
+                                endDate: true,
+                                department: { select: { name: true } },
+                            },
                         },
                     },
                 },
-                payrollRun: { select: { yearMonth: true } },
+                payrollRun: {
+                    select: {
+                        yearMonth: true,
+                        companyId: true,
+                        periodStart: true,
+                        periodEnd: true,
+                    },
+                },
             },
             orderBy: { createdAt: 'desc' },
         })
@@ -56,7 +68,22 @@ export const GET = withPermission(
             return true
         })
 
-        const pageData = unique.slice((page - 1) * limit, page * limit)
+        const pageData = unique
+            .slice((page - 1) * limit, page * limit)
+            .map((row) => {
+                const assignment = row.employee.assignments.find((candidate) =>
+                    candidate.companyId === row.payrollRun.companyId &&
+                    candidate.effectiveDate <= row.payrollRun.periodEnd &&
+                    (candidate.endDate === null || candidate.endDate > row.payrollRun.periodStart),
+                )
+                return {
+                    ...row,
+                    employee: {
+                        ...row.employee,
+                        assignments: assignment ? [assignment] : [],
+                    },
+                }
+            })
 
         return apiSuccess({
             items: pageData,

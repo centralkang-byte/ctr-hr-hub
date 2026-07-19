@@ -9,8 +9,10 @@
 
 import { prisma } from '@/lib/prisma'
 import type { PayrollAnomaly, Prisma } from '@/generated/prisma/client'
+import type { PrismaTx } from '@/lib/prisma-rls'
 import { getPayrollSetting, getAttendanceSetting } from '@/lib/settings/get-setting'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { selectSalaryBand } from '@/lib/payroll/salary-band'
 
 // ─── 탐지 규칙 코드 ─────────────────────────────────────────
 
@@ -25,7 +27,7 @@ export const ANOMALY_RULES = {
 
 // ─── Settings 인터페이스 ─────────────────────────────────────
 
-interface AnomalyThresholdSettings {
+export interface AnomalyThresholdSettings {
     momChangePercent: number       // 전월 대비 변동 기준 (기본 30%)
     momMinAmount: number           // 전월 대비 최소 금액 차이 (기본 50,000원)
     bandTolerance: number          // 급여 밴드 허용 오차 (기본 3%)
@@ -39,6 +41,32 @@ const DEFAULT_THRESHOLDS: AnomalyThresholdSettings = {
     bandTolerance: 3,
     monthlyOtLimit: 52,
     prorateMinRatio: 20,
+}
+
+export async function resolveAnomalyThresholds(
+    companyId?: string,
+): Promise<AnomalyThresholdSettings> {
+    const settingsP = getPayrollSetting<AnomalyThresholdSettings>(
+        'anomaly-thresholds',
+        companyId,
+    )
+    const otSettingsP = getAttendanceSetting<{ weeklyCapHours: number }>(
+        'work-hour-limits',
+        companyId,
+    )
+    const [thresholdSettings, otSettings] = await Promise.all([settingsP, otSettingsP])
+    return {
+        momChangePercent:
+            thresholdSettings?.momChangePercent ?? DEFAULT_THRESHOLDS.momChangePercent,
+        momMinAmount: thresholdSettings?.momMinAmount ?? DEFAULT_THRESHOLDS.momMinAmount,
+        bandTolerance: thresholdSettings?.bandTolerance ?? DEFAULT_THRESHOLDS.bandTolerance,
+        monthlyOtLimit:
+            otSettings?.weeklyCapHours ??
+            thresholdSettings?.monthlyOtLimit ??
+            DEFAULT_THRESHOLDS.monthlyOtLimit,
+        prorateMinRatio:
+            thresholdSettings?.prorateMinRatio ?? DEFAULT_THRESHOLDS.prorateMinRatio,
+    }
 }
 
 // ─── 허용 오차 (이중 필터: 금액 + 비율) ─────────────────────
@@ -66,39 +94,44 @@ function isWithinTolerance(
  */
 export async function detectAnomalies(
     payrollRunId: string,
+    options: {
+        client?: PrismaTx
+        thresholds?: AnomalyThresholdSettings
+    } = {},
 ): Promise<PayrollAnomaly[]> {
-    // ── Fetch configurable thresholds from Settings ─────────────
-    const settingsP = getPayrollSetting<AnomalyThresholdSettings>('anomaly-thresholds')
-    const otSettingsP = getAttendanceSetting<{ weeklyCapHours: number }>('work-hour-limits')
-    const [thresholdSettings, otSettings] = await Promise.all([settingsP, otSettingsP])
-    const t: AnomalyThresholdSettings = {
-        momChangePercent: thresholdSettings?.momChangePercent ?? DEFAULT_THRESHOLDS.momChangePercent,
-        momMinAmount: thresholdSettings?.momMinAmount ?? DEFAULT_THRESHOLDS.momMinAmount,
-        bandTolerance: thresholdSettings?.bandTolerance ?? DEFAULT_THRESHOLDS.bandTolerance,
-        monthlyOtLimit: otSettings?.weeklyCapHours ?? thresholdSettings?.monthlyOtLimit ?? DEFAULT_THRESHOLDS.monthlyOtLimit,
-        prorateMinRatio: thresholdSettings?.prorateMinRatio ?? DEFAULT_THRESHOLDS.prorateMinRatio,
-    }
+    const client = options.client ?? prisma
 
-    // 1. 현재 PayrollRun + 모든 PayrollItem 조회
-    const currentRun = await prisma.payrollRun.findUniqueOrThrow({
+    // 1. PayrollRun + period-owned PayrollItems. Historical anomaly detection
+    // must not project an employee's current company or grade onto this run.
+    const currentRun = await client.payrollRun.findUniqueOrThrow({
         where: { id: payrollRunId },
+    })
+    const t = options.thresholds ?? (await resolveAnomalyThresholds(currentRun.companyId))
+    const currentItems = await client.payrollItem.findMany({
+        where: { runId: payrollRunId },
         include: {
-            payrollItems: {
-                include: {
-                    employee: {
-                        select: {
-                            id: true,
-                            name: true,
-                            hireDate: true,
-                            assignments: {
-                                where: { isPrimary: true, endDate: null },
-                                select: {
-                                    jobGradeId: true,
-                                    companyId: true,
-                                },
-                                take: 1,
-                            },
+            employee: {
+                select: {
+                    id: true,
+                    name: true,
+                    hireDate: true,
+                    assignments: {
+                        where: {
+                            companyId: currentRun.companyId,
+                            isPrimary: true,
+                            effectiveDate: { lte: currentRun.periodEnd },
+                            OR: [
+                                { endDate: null },
+                                { endDate: { gt: currentRun.periodStart } },
+                            ],
                         },
+                        orderBy: { effectiveDate: 'desc' },
+                        select: {
+                            jobGradeId: true,
+                            jobCategoryId: true,
+                            companyId: true,
+                        },
+                        take: 1,
                     },
                 },
             },
@@ -107,7 +140,7 @@ export async function detectAnomalies(
 
     // 2. 전월 PayrollRun + Items 조회 (비교용)
     const prevRun = currentRun.previousMonthRunId
-        ? await prisma.payrollRun.findUnique({
+        ? await client.payrollRun.findUnique({
             where: { id: currentRun.previousMonthRunId },
             include: { payrollItems: { select: { employeeId: true, grossPay: true, netPay: true } } },
         })
@@ -118,22 +151,23 @@ export async function detectAnomalies(
     )
 
     // 3. SalaryBand 조회 (밴드 초과 확인용)
-    const salaryBands = await prisma.salaryBand.findMany({
+    const salaryBands = await client.salaryBand.findMany({
         where: {
             companyId: currentRun.companyId,
-            effectiveTo: null, // 현재 유효한 밴드만
+            deletedAt: null,
+            effectiveFrom: { lte: currentRun.periodEnd },
+            OR: [
+                { effectiveTo: null },
+                { effectiveTo: { gt: currentRun.periodEnd } },
+            ],
         },
     })
 
     // 4. 화이트리스트된 직원+규칙 조합 조회
-    const whitelist = await prisma.payrollAnomaly.findMany({
+    const whitelist = await client.payrollAnomaly.findMany({
         where: {
             whitelisted: true,
-            employee: {
-                assignments: {
-                    some: { companyId: currentRun.companyId, isPrimary: true, endDate: null },
-                },
-            },
+            payrollRun: { companyId: currentRun.companyId },
         },
         select: { employeeId: true, ruleCode: true },
     })
@@ -141,7 +175,7 @@ export async function detectAnomalies(
     const whitelistSet = new Set(whitelist.map((w) => `${w.employeeId}:${w.ruleCode}`))
 
     // 5. 기존 이상 항목 삭제 (재생성)
-    await prisma.payrollAnomaly.deleteMany({
+    await client.payrollAnomaly.deleteMany({
         where: { payrollRunId },
     })
 
@@ -153,7 +187,7 @@ export async function detectAnomalies(
     const month = parseInt(monthStr, 10)
 
     // 6. 각 직원에 대해 규칙 적용
-    for (const item of currentRun.payrollItems) {
+    for (const item of currentItems) {
         const employeeId = item.employeeId
         const employee = item.employee
         const currentGross = Number(item.grossPay)
@@ -186,7 +220,11 @@ export async function detectAnomalies(
         // ── Rule 2: 급여 밴드 초과 ────────────────────────────────
         const ruleCode2 = ANOMALY_RULES.BAND_EXCEEDED
         if (assignment?.jobGradeId && !whitelistSet.has(`${employeeId}:${ruleCode2}`)) {
-            const band = salaryBands.find((b) => b.jobGradeId === assignment.jobGradeId)
+            const band = selectSalaryBand(
+                salaryBands,
+                assignment.jobGradeId,
+                assignment.jobCategoryId,
+            )
             if (band) {
                 const annualBase = currentBase * 12
                 const maxSalary = Number(band.maxSalary)
@@ -281,9 +319,10 @@ export async function detectAnomalies(
         const ruleCode6 = ANOMALY_RULES.LAST_PAYROLL
         if (!whitelistSet.has(`${employeeId}:${ruleCode6}`)) {
             // 잘 탐지하기 위해 퇴사 처리된 직원 확인
-            const isOffboarding = await prisma.employeeOffboarding.findFirst({
+            const isOffboarding = await client.employeeOffboarding.findFirst({
                 where: {
                     employeeId,
+                    companyId: currentRun.companyId,
                     status: { in: ['IN_PROGRESS', 'COMPLETED'] },
                     lastWorkingDate: {
                         gte: new Date(year, month - 1, 1),
@@ -309,13 +348,13 @@ export async function detectAnomalies(
 
     // 7. 이상 항목 일괄 생성
     if (anomaliesToCreate.length > 0) {
-        await prisma.payrollAnomaly.createMany({
+        await client.payrollAnomaly.createMany({
             data: anomaliesToCreate,
         })
     }
 
     // 8. 생성된 이상 항목 반환
-    const created = await prisma.payrollAnomaly.findMany({
+    const created = await client.payrollAnomaly.findMany({
         where: { payrollRunId },
         orderBy: [{ severity: 'asc' }, { createdAt: 'asc' }],
     })

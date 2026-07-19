@@ -65,8 +65,19 @@ export async function generateT2Report(companyId: string) {
 // Generates quarterly statistics for Federal Statistical Observation Form P-4
 
 export async function generateP4Report(companyId: string, year: number, quarter: number) {
-  const quarterStart = new Date(year, (quarter - 1) * 3, 1)
-  const quarterEnd = new Date(year, quarter * 3, 0, 23, 59, 59)
+  const quarterStart = new Date(Date.UTC(year, (quarter - 1) * 3, 1))
+  const quarterEndExclusive = new Date(Date.UTC(year, quarter * 3, 1))
+  const quarterEnd = new Date(quarterEndExclusive.getTime() - 1)
+
+  const assignmentFence = {
+    companyId,
+    isPrimary: true,
+    effectiveDate: { lt: quarterEndExclusive },
+    OR: [
+      { endDate: null },
+      { endDate: { gt: quarterStart } },
+    ],
+  }
 
   const employees = await prisma.employee.findMany({
     where: {
@@ -77,16 +88,13 @@ export async function generateP4Report(companyId: string, year: number, quarter:
       ],
       deletedAt: null,
       assignments: {
-        some: {
-          companyId,
-          isPrimary: true,
-          endDate: null,
-        },
+        some: assignmentFence,
       },
     },
     include: {
       assignments: {
-        where: { isPrimary: true, endDate: null },
+        where: assignmentFence,
+        orderBy: { effectiveDate: 'desc' },
         take: 1,
         include: {
           department: { select: { name: true } },
@@ -126,8 +134,19 @@ export async function generateP4Report(companyId: string, year: number, quarter:
 // Generates annual salary survey by job category for Rosstat Form 57-T
 
 export async function generate57TReport(companyId: string, year: number) {
-  const yearStart = new Date(year, 0, 1)
-  const yearEnd = new Date(year, 11, 31, 23, 59, 59)
+  const yearStart = new Date(Date.UTC(year, 0, 1))
+  const yearEndExclusive = new Date(Date.UTC(year + 1, 0, 1))
+  const yearEnd = new Date(yearEndExclusive.getTime() - 1)
+
+  const assignmentFence = {
+    companyId,
+    isPrimary: true,
+    effectiveDate: { lt: yearEndExclusive },
+    OR: [
+      { endDate: null },
+      { endDate: { gt: yearStart } },
+    ],
+  }
 
   const employees = await prisma.employee.findMany({
     where: {
@@ -138,16 +157,13 @@ export async function generate57TReport(companyId: string, year: number) {
       ],
       deletedAt: null,
       assignments: {
-        some: {
-          companyId,
-          isPrimary: true,
-          endDate: null,
-        },
+        some: assignmentFence,
       },
     },
     include: {
       assignments: {
-        where: { isPrimary: true, endDate: null },
+        where: assignmentFence,
+        orderBy: { effectiveDate: 'desc' },
         take: 1,
         include: {
           jobCategory: { select: { id: true, name: true, code: true } },

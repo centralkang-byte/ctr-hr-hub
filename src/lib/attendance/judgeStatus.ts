@@ -11,6 +11,10 @@ import { fromZonedTime } from 'date-fns-tz'
 import { prisma } from '@/lib/prisma'
 import { formatToTz, parseDateOnly } from '@/lib/timezone'
 import type { AttendanceStatus } from '@/generated/prisma/enums'
+import {
+  resolveEffectiveAttendanceSettings,
+  type AttendanceDb,
+} from '@/lib/attendance/timezone-resolver'
 
 export const DEFAULT_WORK_START = '08:30'
 export const DEFAULT_WORK_END = '17:30'
@@ -108,19 +112,20 @@ export interface DayContext {
  * 법인 기준의 "오늘" 컨텍스트 — 출퇴근 기록 조회·생성·shift 조회·판정이
  * 전부 이 한 가지 날짜 기준을 쓴다 (Codex r1-1: KST 하드코딩 제거).
  */
-export async function resolveDayContext(companyId: string, at: Date): Promise<DayContext> {
-  const setting = await prisma.attendanceSetting.findUnique({
-    where: { companyId },
-    select: { timezone: true, workStartTime: true, workEndTime: true },
-  })
-  const timezone = setting?.timezone ?? DEFAULT_TIMEZONE
+export async function resolveDayContext(
+  companyId: string,
+  at: Date,
+  db: AttendanceDb = prisma,
+): Promise<DayContext> {
+  const settings = await resolveEffectiveAttendanceSettings(db, companyId)
+  const timezone = settings.timezone
   const localDateStr = formatToTz(at, timezone, 'yyyy-MM-dd')
   return {
     timezone,
     localDateStr,
     workDate: parseDateOnly(localDateStr),
-    baseStartHHmm: setting?.workStartTime ?? DEFAULT_WORK_START,
-    baseEndHHmm: setting?.workEndTime ?? DEFAULT_WORK_END,
+    baseStartHHmm: settings.workStartTime,
+    baseEndHHmm: settings.workEndTime,
   }
 }
 
@@ -141,8 +146,8 @@ export async function resolveEffectiveSchedule(params: {
   workDate: Date
   baseStartHHmm: string
   baseEndHHmm: string
-}): Promise<EffectiveSchedule> {
-  const shift = await prisma.shiftSchedule.findFirst({
+}, db: AttendanceDb = prisma): Promise<EffectiveSchedule> {
+  const shift = await db.shiftSchedule.findFirst({
     where: {
       employeeId: params.employeeId,
       companyId: params.companyId,
@@ -167,19 +172,16 @@ export async function judgeStatusForAttendance(params: {
   clockIn: Date | null
   clockOut: Date | null
   previousStatus?: AttendanceStatus | null
-}): Promise<AttendanceStatus> {
-  const setting = await prisma.attendanceSetting.findUnique({
-    where: { companyId: params.companyId },
-    select: { timezone: true, workStartTime: true, workEndTime: true },
-  })
-  const timezone = setting?.timezone ?? DEFAULT_TIMEZONE
+}, db: AttendanceDb = prisma): Promise<AttendanceStatus> {
+  const settings = await resolveEffectiveAttendanceSettings(db, params.companyId)
+  const timezone = settings.timezone
   const schedule = await resolveEffectiveSchedule({
     companyId: params.companyId,
     employeeId: params.employeeId,
     workDate: params.workDate,
-    baseStartHHmm: setting?.workStartTime ?? DEFAULT_WORK_START,
-    baseEndHHmm: setting?.workEndTime ?? DEFAULT_WORK_END,
-  })
+    baseStartHHmm: settings.workStartTime,
+    baseEndHHmm: settings.workEndTime,
+  }, db)
   const { start, end } = scheduleInstants(
     workDateToDateStr(params.workDate),
     schedule.startHHmm,

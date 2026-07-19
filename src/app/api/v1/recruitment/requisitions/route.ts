@@ -8,6 +8,8 @@ import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
 import { badRequest, forbidden, handlePrismaError } from '@/lib/errors'
+import { resolveCompanyId } from '@/lib/api/companyFilter'
+import { lockActivePositionReferences } from '@/lib/employee/assignment-master-lifecycle'
 import { withAuth, withPermission, perm, hasPermission } from '@/lib/permissions'
 import { MODULE, ACTION, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
 import {
@@ -319,6 +321,7 @@ export const POST = withPermission(
       positionId,
       submitForApproval,
     } = parsed.data
+    const targetCompanyId = resolveCompanyId(user, companyId)
 
     try {
       // 채용 요청 번호 생성 (REQ-YYYYMM-NNN)
@@ -344,42 +347,48 @@ export const POST = withPermission(
       const status = submitForApproval ? 'pending' : 'draft'
       const currentStep = submitForApproval ? 1 : 0
 
-      const requisition = await prisma.requisition.create({
-        data: {
-          reqNumber,
-          companyId,
-          departmentId,
-          requesterId: user.employeeId,
-          positionId: positionId ?? null,
-          title,
-          headcount,
-          jobLevel: jobLevel ?? null,
-          employmentType,
-          justification,
-          requirements: requirements ?? null,
-          urgency,
-          targetDate: targetDate ? new Date(targetDate) : null,
-          status,
-          currentStep,
-          approvalFlowId: approvalFlow?.id ?? null,
-          // 결재 요청 시 승인 레코드 생성
-          ...(submitForApproval && approvalFlow
-            ? {
-                approvalRecords: {
-                  create: approvalFlow.steps.map((step) => ({
-                    stepOrder: step.stepOrder,
-                    approverRole: step.approverRole ?? 'hr_admin',
-                    status: 'pending',
-                  })),
-                },
-              }
-            : {}),
-        },
-        include: {
-          company: { select: { id: true, name: true } },
-          department: { select: { id: true, name: true } },
-          approvalRecords: { orderBy: { stepOrder: 'asc' } },
-        },
+      const requisition = await prisma.$transaction(async (tx) => {
+        await lockActivePositionReferences(tx, {
+          companyId: targetCompanyId,
+          positionIds: [positionId],
+        })
+        return tx.requisition.create({
+          data: {
+            reqNumber,
+            companyId: targetCompanyId,
+            departmentId,
+            requesterId: user.employeeId,
+            positionId: positionId ?? null,
+            title,
+            headcount,
+            jobLevel: jobLevel ?? null,
+            employmentType,
+            justification,
+            requirements: requirements ?? null,
+            urgency,
+            targetDate: targetDate ? new Date(targetDate) : null,
+            status,
+            currentStep,
+            approvalFlowId: approvalFlow?.id ?? null,
+            // 결재 요청 시 승인 레코드 생성
+            ...(submitForApproval && approvalFlow
+              ? {
+                  approvalRecords: {
+                    create: approvalFlow.steps.map((step) => ({
+                      stepOrder: step.stepOrder,
+                      approverRole: step.approverRole ?? 'hr_admin',
+                      status: 'pending',
+                    })),
+                  },
+                }
+              : {}),
+          },
+          include: {
+            company: { select: { id: true, name: true } },
+            department: { select: { id: true, name: true } },
+            approvalRecords: { orderBy: { stepOrder: 'asc' } },
+          },
+        })
       })
 
       return apiSuccess(requisition, 201)

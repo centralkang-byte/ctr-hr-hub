@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE, DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '@/lib/constants'
 import { apiPaginated, buildPagination } from '@/lib/api'
+import { resolveCompanyFilter } from '@/lib/api/companyFilter'
 import { z } from 'zod'
 
 const querySchema = z.object({
@@ -31,9 +32,7 @@ export const GET = withPermission(
     const isHR = user.role === ROLE.HR_ADMIN || user.role === ROLE.SUPER_ADMIN
     const { page, limit } = params
 
-    const where: Record<string, unknown> = {
-      companyId: user.companyId,
-    }
+    const where: Record<string, unknown> = {}
 
     if (params.year) where.year = params.year
     if (params.month) where.month = params.month
@@ -41,8 +40,9 @@ export const GET = withPermission(
     // 직원은 본인 명세서만 조회
     if (!isHR) {
       where.employeeId = user.employeeId
-    } else if (params.employeeId) {
-      where.employeeId = params.employeeId
+    } else {
+      Object.assign(where, resolveCompanyFilter(user, null))
+      if (params.employeeId) where.employeeId = params.employeeId
     }
 
     const [total, payslips] = await Promise.all([

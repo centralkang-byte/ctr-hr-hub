@@ -7,8 +7,9 @@
 // ═══════════════════════════════════════════════════════════
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useTranslations, useLocale } from 'next-intl'
-import { CheckCircle2, Clock, LogIn, LogOut } from 'lucide-react'
+import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { ArrowRight, CalendarDays, CheckCircle2, Clock, FilePenLine, LogIn, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -28,6 +29,11 @@ import {
   type WdMonthlyStatInput,
 } from '@/components/shared/WdMonthlyStatCard'
 import { aggregateMonthlyStats } from '@/lib/attendance/monthly-aggregate'
+import { formatToTz } from '@/lib/timezone'
+import {
+  AttendanceCorrectionDrawer,
+  type AttendanceCorrectionRecord,
+} from './AttendanceCorrectionDrawer'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -65,15 +71,42 @@ interface WeeklySummary {
 type ClockState = 'NOT_CLOCKED_IN' | 'WORKING' | 'COMPLETED'
 
 interface MonthlyApiDay {
+  id: string | null
   date: string
   status: string | null
+  clockIn: string | null
+  clockOut: string | null
+  totalMinutes: number
   overtimeMinutes: number
+  workType: string | null
+  note: string | null
+  correctionRequest: {
+    id: string
+    status: string
+  } | null
 }
 
-// AT-005 — monthly 라우트 전체 응답 (AT-004 MonthlyApiDay 불변, clockIn/Out·summary 가산)
 interface MonthlyApiResponse {
-  days: (MonthlyApiDay & { clockIn: string | null; clockOut: string | null })[]
-  summary: { workedDays: number; totalOvertimeMinutes: number }
+  year: number
+  month: number
+  timezone: string
+  days: MonthlyApiDay[]
+  summary: {
+    workedDays: number
+    totalMinutes: number
+    totalOvertimeMinutes: number
+  }
+}
+
+interface MonthlyAttendanceRecord extends MonthlyApiDay {
+  id: string
+}
+
+interface AttendanceClientProps {
+  user: SessionUser
+  companyTimezone: string
+  initialYear: number
+  initialMonth: number
 }
 
 // ─── Constants ──────────────────────────────────────────────
@@ -119,10 +152,9 @@ function formatMinutesToHM(minutes: number | null | undefined): string {
   return `${h}h ${m}m`
 }
 
-function formatTime(isoStr: string | null, locale: string = 'ko'): string {
+function formatTime(isoStr: string | null, timeZone: string): string {
   if (!isoStr) return '--:--'
-  const d = new Date(isoStr)
-  return new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(d)
+  return formatToTz(isoStr, timeZone, 'HH:mm')
 }
 
 function getElapsedSeconds(clockIn: string): number {
@@ -142,14 +174,22 @@ function getClockState(record: AttendanceRecord | null): ClockState {
   return 'COMPLETED'
 }
 
+function hasAttendanceRecord(day: MonthlyApiDay): day is MonthlyAttendanceRecord {
+  return typeof day.id === 'string' && day.id.length > 0
+}
+
 // ─── Component ──────────────────────────────────────────────
 
-export function AttendanceClient({ user }: { user: SessionUser }) {
+export function AttendanceClient({
+  user,
+  companyTimezone,
+  initialYear,
+  initialMonth,
+}: AttendanceClientProps) {
   void user
 
   const t = useTranslations('attendance')
   const tc = useTranslations('common')
-  const locale = useLocale()
 
   const DAY_LABELS = [
     t('dayMon'), t('dayTue'), t('dayWed'), t('dayThu'),
@@ -178,6 +218,10 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
   const [monthlyStats, setMonthlyStats] = useState<
     { stats: WdMonthlyStatInput; year: number; month: number } | null
   >(null)
+  const [monthlyRecords, setMonthlyRecords] = useState<MonthlyAttendanceRecord[]>([])
+  const [monthlyTimezone, setMonthlyTimezone] = useState(companyTimezone)
+  const [monthlyError, setMonthlyError] = useState(false)
+  const [correctionRecord, setCorrectionRecord] = useState<AttendanceCorrectionRecord | null>(null)
   const [loading, setLoading] = useState(true)
   const [clockLoading, setClockLoading] = useState(false)
   const [elapsed, setElapsed] = useState(0)
@@ -205,12 +249,12 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
   // AT-004 — 최근 월 근태 히트 그리드 (기존 monthly 라우트, 백엔드 0 변경)
   const fetchMonthly = useCallback(async () => {
     try {
-      const now = new Date()
-      const year = now.getFullYear()
-      const month = now.getMonth() + 1
       const res = await apiClient.get<MonthlyApiResponse>(
-        `/api/v1/attendance/monthly/${year}/${month}`,
+        `/api/v1/attendance/monthly/${initialYear}/${initialMonth}`,
       )
+      setMonthlyError(false)
+      setMonthlyTimezone(res.data.timezone)
+      setMonthlyRecords((res.data?.days ?? []).filter(hasAttendanceRecord).reverse())
       setMonthlyCells(
         (res.data?.days ?? []).map((d) => ({
           date: d.date,
@@ -221,14 +265,22 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
       const summary = res.data?.summary
       setMonthlyStats(
         summary
-          ? { stats: aggregateMonthlyStats(res.data.days ?? [], summary), year, month }
+          ? {
+              stats: aggregateMonthlyStats(res.data.days ?? [], summary),
+              year: initialYear,
+              month: initialMonth,
+            }
           : null,
       )
     } catch {
+      setMonthlyError(true)
+      setMonthlyTimezone(companyTimezone)
+      setMonthlyRecords([])
       setMonthlyCells([])
       setMonthlyStats(null)
+      toast({ title: t('loadFailed'), variant: 'destructive' })
     }
-  }, [])
+  }, [companyTimezone, initialMonth, initialYear, t])
 
   const fetchAll = useCallback(async () => {
     setLoading(true)
@@ -318,6 +370,17 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
   // ─── Derived state ───
   const clockState = getClockState(today)
 
+  const closeCorrectionDrawer = useCallback(() => {
+    setCorrectionRecord(null)
+  }, [])
+
+  const correctionStatusLabels: Record<string, string> = {
+    pending: t('statusPending'),
+    approved: t('statusApproved'),
+    rejected: t('statusRejected'),
+    cancelled: t('statusCancelled'),
+  }
+
   // ─── Loading skeleton ───
   if (loading) {
     return (
@@ -375,7 +438,7 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
                 {formatElapsedTime(elapsed)}
               </p>
               <p className="text-sm text-muted-foreground">
-                {t('clockIn')}: {formatTime(today?.clockIn ?? null, locale)}
+                {t('clockIn')}: {formatTime(today?.clockIn ?? null, companyTimezone)}
               </p>
               <Button
                 size="lg"
@@ -400,10 +463,10 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
               </p>
               <div className="flex gap-6 text-sm text-muted-foreground">
                 <span>
-                  {t('clockIn')}: {formatTime(today?.clockIn ?? null, locale)}
+                  {t('clockIn')}: {formatTime(today?.clockIn ?? null, companyTimezone)}
                 </span>
                 <span>
-                  {t('clockOut')}: {formatTime(today?.clockOut ?? null, locale)}
+                  {t('clockOut')}: {formatTime(today?.clockOut ?? null, companyTimezone)}
                 </span>
               </div>
               {(today?.overtimeMinutes ?? 0) > 0 && (
@@ -490,6 +553,132 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
         emptyState={<EmptyState />}
       />
 
+      {/* ─── Section 2c: 월간 실제 근태 기록 및 보정 신청 ─── */}
+      <section
+        aria-labelledby="monthly-attendance-records-title"
+        className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6"
+      >
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <h2
+              id="monthly-attendance-records-title"
+              className="flex items-center gap-2 text-base font-semibold text-foreground"
+            >
+              <CalendarDays className="h-5 w-5 text-primary" aria-hidden="true" />
+              {t('dailyRecord')}
+            </h2>
+            {monthlyTimezone ? (
+              <p className="mt-1 text-xs text-muted-foreground">{monthlyTimezone}</p>
+            ) : null}
+          </div>
+          <Button variant="ghost" size="sm" asChild className="min-h-11 md:min-h-8">
+            <Link href="/approvals/attendance?view=mine&requestType=attendance_correction">
+              {tc('history')}
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </Button>
+        </div>
+
+        {monthlyError ? (
+          <EmptyState
+            icon={CalendarDays}
+            title={t('loadFailed')}
+            sub={tc('retryDesc')}
+            size="sm"
+            action={{ label: tc('retry'), onClick: () => { void fetchMonthly() } }}
+          />
+        ) : monthlyRecords.length === 0 ? (
+          <EmptyState
+            icon={CalendarDays}
+            title={t('emptyTitle')}
+            sub={t('emptyDesc')}
+            size="sm"
+          />
+        ) : (
+          <ul className="divide-y divide-border" aria-label={t('dailyRecord')}>
+            {monthlyRecords.map((record) => {
+              const correctionStatus = record.correctionRequest?.status.toLowerCase()
+              const isPending = correctionStatus === 'pending'
+
+              return (
+                <li key={record.id} className="py-4 first:pt-0 last:pb-0">
+                  <article className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="min-w-0 space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-sm font-semibold text-foreground tabular-nums">
+                          {record.date}
+                        </p>
+                        {record.status ? (
+                          <StatusBadge
+                            status={record.status}
+                            variant={ATTENDANCE_VARIANT_OVERRIDES[record.status]}
+                          >
+                            {STATUS_LABELS[record.status] ?? record.status}
+                          </StatusBadge>
+                        ) : null}
+                        {correctionStatus ? (
+                          <StatusBadge status={correctionStatus.toUpperCase()}>
+                            {correctionStatusLabels[correctionStatus] ?? record.correctionRequest?.status}
+                          </StatusBadge>
+                        ) : null}
+                      </div>
+
+                      <dl className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
+                        <div className="flex items-center gap-1.5">
+                          <dt className="text-muted-foreground">{t('clockIn')}</dt>
+                          <dd className="font-medium text-foreground tabular-nums">
+                            {record.clockIn && monthlyTimezone
+                              ? formatToTz(record.clockIn, monthlyTimezone, 'HH:mm')
+                              : '--:--'}
+                          </dd>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <dt className="text-muted-foreground">{t('clockOut')}</dt>
+                          <dd className="font-medium text-foreground tabular-nums">
+                            {record.clockOut && monthlyTimezone
+                              ? formatToTz(record.clockOut, monthlyTimezone, 'HH:mm')
+                              : '--:--'}
+                          </dd>
+                        </div>
+                      </dl>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                      {isPending ? (
+                        <Button variant="outline" size="sm" asChild className="min-h-11 md:min-h-8">
+                          <Link href="/approvals/attendance?view=mine&requestType=attendance_correction">
+                            {t('myRequests')}
+                            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                          </Link>
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="min-h-11 md:min-h-8"
+                          disabled={!monthlyTimezone}
+                          onClick={() => {
+                            setCorrectionRecord({
+                              id: record.id,
+                              date: record.date,
+                              clockIn: record.clockIn,
+                              clockOut: record.clockOut,
+                            })
+                          }}
+                        >
+                          <FilePenLine className="h-4 w-4" aria-hidden="true" />
+                          {t('requestCorrection')}
+                        </Button>
+                      )}
+                    </div>
+                  </article>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </section>
+
       {/* ─── Section 3: Status Badges ─── */}
       {today && (
         <div className="bg-card border border-border rounded-2xl p-6">
@@ -512,6 +701,14 @@ export function AttendanceClient({ user }: { user: SessionUser }) {
           </div>
         </div>
       )}
+
+      <AttendanceCorrectionDrawer
+        open={Boolean(correctionRecord)}
+        record={correctionRecord}
+        timezone={monthlyTimezone}
+        onClose={closeCorrectionDrawer}
+        onSubmitted={fetchMonthly}
+      />
     </div>
   )
 }

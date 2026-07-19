@@ -16,6 +16,7 @@ import { apiSuccess } from '@/lib/api'
 import { resolveCompanyId } from '@/lib/api/companyFilter'
 import { z } from 'zod'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { selectSalaryBand } from '@/lib/payroll/salary-band'
 import type { SessionUser } from '@/types'
 
 const querySchema = z.object({
@@ -40,6 +41,9 @@ export const GET = withPermission(
     const { year, month } = querySchema.parse(params)
     const yearMonthStr = `${year}-${String(month).padStart(2, '0')}`
     const companyId = resolveCompanyId(user, searchParams.get('companyId'))
+    const periodStart = new Date(Date.UTC(year, month - 1, 1))
+    const nextPeriodStart = new Date(Date.UTC(year, month, 1))
+    const periodEnd = new Date(Date.UTC(year, month, 0))
 
     const anomalies: Anomaly[] = []
 
@@ -50,7 +54,16 @@ export const GET = withPermission(
         employee: {
           include: {
             assignments: {
-              where: { isPrimary: true, endDate: null },
+              where: {
+                companyId,
+                isPrimary: true,
+                effectiveDate: { lt: nextPeriodStart },
+                OR: [
+                  { endDate: null },
+                  { endDate: { gt: periodStart } },
+                ],
+              },
+              orderBy: { effectiveDate: 'desc' },
               take: 1,
               include: { jobGrade: true, company: true },
             },
@@ -69,16 +82,35 @@ export const GET = withPermission(
 
     // ── Rule 1: 직급별 급여 밴드 이탈 ─────────────────────
     const salaryBands = await prisma.salaryBand.findMany({
-      where: { deletedAt: null },
-      select: { jobGradeId: true, minSalary: true, maxSalary: true, currency: true },
+      where: {
+        companyId,
+        deletedAt: null,
+        effectiveFrom: { lte: periodEnd },
+        OR: [
+          { effectiveTo: null },
+          { effectiveTo: { gt: periodEnd } },
+        ],
+      },
+      select: {
+        id: true,
+        jobGradeId: true,
+        jobCategoryId: true,
+        effectiveFrom: true,
+        minSalary: true,
+        maxSalary: true,
+        currency: true,
+      },
     })
-    const bandMap = new Map(salaryBands.map(b => [b.jobGradeId, b]))
 
     const bandBreaches: Record<string, unknown>[] = []
     for (const item of payrollItems) {
       const assignment = extractPrimaryAssignment(item.employee.assignments)
       if (!assignment?.jobGradeId) continue
-      const band = bandMap.get(assignment.jobGradeId)
+      const band = selectSalaryBand(
+        salaryBands,
+        assignment.jobGradeId,
+        assignment.jobCategoryId,
+      )
       if (!band) continue
       const gross = Number(item.grossPay ?? 0)
       const minB = Number(band.minSalary)

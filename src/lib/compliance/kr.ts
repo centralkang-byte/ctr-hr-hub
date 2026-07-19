@@ -78,16 +78,21 @@ export async function getEmployeeWorkHours(companyId: string, weekStart: Date, p
   const weekEnd = new Date(weekStart)
   weekEnd.setDate(weekEnd.getDate() + 7)
 
+  const assignmentFence = {
+    companyId,
+    isPrimary: true,
+    effectiveDate: { lt: weekEnd },
+    OR: [
+      { endDate: null },
+      { endDate: { gt: weekStart } },
+    ],
+  }
+
   const employees = await prisma.employee.findMany({
     where: {
       deletedAt: null,
       assignments: {
-        some: {
-          companyId,
-          status: 'ACTIVE',
-          isPrimary: true,
-          endDate: null,
-        },
+        some: assignmentFence,
       },
     },
     select: {
@@ -95,7 +100,8 @@ export async function getEmployeeWorkHours(companyId: string, weekStart: Date, p
       name: true,
       employeeNo: true,
       assignments: {
-        where: { isPrimary: true, endDate: null },
+        where: assignmentFence,
+        orderBy: { effectiveDate: 'desc' },
         take: 1,
         select: { departmentId: true },
       },
@@ -108,12 +114,7 @@ export async function getEmployeeWorkHours(companyId: string, weekStart: Date, p
     where: {
       deletedAt: null,
       assignments: {
-        some: {
-          companyId,
-          status: 'ACTIVE',
-          isPrimary: true,
-          endDate: null,
-        },
+        some: assignmentFence,
       },
     },
   })

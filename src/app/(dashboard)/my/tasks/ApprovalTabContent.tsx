@@ -18,6 +18,7 @@ import {
     Inbox,
     CheckSquare,
     Square,
+    ClipboardList,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -49,6 +50,7 @@ type ModuleFilter = 'ALL' | 'LEAVE_APPROVAL' | 'PERFORMANCE_REVIEW' | 'PAYROLL_R
 
 export function ApprovalTabContent({ user }: Props) {
     const t = useTranslations('myTasks')
+    const ta = useTranslations('attendance')
     const { toast } = useToast()
     const isHrAdmin = user.role === 'HR_ADMIN' || user.role === 'SUPER_ADMIN'
 
@@ -70,6 +72,7 @@ export function ApprovalTabContent({ user }: Props) {
     // 채용 요청 결재 대기 건수 — unified-tasks 에 미편입된 requisition 승인의
     // 딥링크 표면 (결재 자격 판정은 기존 myApprovals 서버 필터 SSOT 재사용, S335)
     const [requisitionCount, setRequisitionCount] = useState(0)
+    const [attendanceCorrectionCount, setAttendanceCorrectionCount] = useState(0)
 
     // AbortController for tab switching
     const abortRef = useRef<AbortController | null>(null)
@@ -123,15 +126,36 @@ export function ApprovalTabContent({ user }: Props) {
     }, [moduleFilter, t, toast])
 
     useEffect(() => {
-        // 실패해도 결재함 본체와 무관 — 배너만 생략 (count 0 유지)
-        apiClient
-            .get<unknown>('/api/v1/recruitment/requisitions?myApprovals=true&status=pending&limit=1')
-            .then((res) => {
-                const total = (res as unknown as { pagination?: { total?: number } }).pagination?.total ?? 0
+        let active = true
+        // 실패해도 결재함 본체와 무관 — 해당 배너만 생략 (count 0 유지)
+        const requisitionRequest = apiClient.get<unknown>(
+            '/api/v1/recruitment/requisitions?myApprovals=true&status=pending&limit=1',
+        )
+        // Current DB roles are authoritative for correction review. Always ask
+        // the scoped endpoint so a newly active HR reviewer is not hidden by a
+        // session that is still pinned to another role; non-reviewers get 403
+        // and this optional banner remains omitted.
+        const correctionRequest = apiClient.get<unknown>('/api/v1/approvals/attendance', {
+            view: 'team',
+            requestType: 'attendance_correction',
+            status: 'pending',
+            limit: '1',
+        })
+
+        void Promise.allSettled([requisitionRequest, correctionRequest]).then(([requisition, correction]) => {
+            if (!active) return
+            if (requisition.status === 'fulfilled') {
+                const total = (requisition.value as unknown as { pagination?: { total?: number } }).pagination?.total ?? 0
                 setRequisitionCount(total)
-            })
-            .catch(() => {})
-    }, [])
+            }
+            if (correction.status === 'fulfilled' && correction.value) {
+                const total = (correction.value as unknown as { pagination?: { total?: number } }).pagination?.total ?? 0
+                setAttendanceCorrectionCount(total)
+            }
+        })
+
+        return () => { active = false }
+    }, [isHrAdmin])
 
     useEffect(() => {
         void fetchTasks()
@@ -268,6 +292,20 @@ export function ApprovalTabContent({ user }: Props) {
 
     return (
         <div className="relative space-y-4 pb-20">
+            {/* 근태수정 결재 딥링크 배너 */}
+            {attendanceCorrectionCount > 0 && (
+                <Link
+                    href="/approvals/attendance?view=team&requestType=attendance_correction&status=pending"
+                    className="flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3 text-sm shadow-sm hover:bg-muted/50"
+                >
+                    <span className="flex items-center gap-2 text-foreground">
+                        <ClipboardList className="h-4 w-4 text-primary" />
+                        {ta('typeAttendanceCorrection')} · {ta('totalCount', { count: attendanceCorrectionCount })}
+                    </span>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </Link>
+            )}
+
             {/* 채용 요청 결재 딥링크 배너 */}
             {requisitionCount > 0 && (
                 <Link

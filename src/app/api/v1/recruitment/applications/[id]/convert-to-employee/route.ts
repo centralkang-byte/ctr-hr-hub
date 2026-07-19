@@ -19,10 +19,19 @@ import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
 import { bootstrapEventHandlers } from '@/lib/events/bootstrap'
 import { mapRequisitionTypeToEmploymentType } from '@/lib/ats/employment-type-mapper'
+import {
+  acquirePrimaryAssignmentDepartmentLocks,
+  acquirePrimaryAssignmentEmployeeLocks,
+  readPrimaryAssignmentTimeline,
+  revalidatePrimaryAssignmentDepartments,
+  revalidatePrimaryAssignmentMasterData,
+} from '@/lib/employee/primary-assignment-writer'
 import type { PrismaTx } from '@/lib/prisma-rls'
 import type { SessionUser } from '@/types'
 
 bootstrapEventHandlers()
+
+const EMPLOYEE_NUMBER_REGISTRY_LOCK = 'employee-number:global-registry'
 
 // ─── Schema ───────────────────────────────────────────────
 
@@ -35,7 +44,7 @@ const convertSchema = z.object({
   positionId: z.string().uuid().optional(),     // 직위 (optional — 미입력 시 발령에서 배정)
   jobCategoryId: z.string().uuid().optional(),  // 미입력 시 공고에서 자동 설정
   buddyId: z.string().uuid().optional(),        // E-3: 온보딩 버디 지정
-  employmentType: z.enum(['FULL_TIME', 'CONTRACT', 'INTERN']).optional().default('FULL_TIME'),
+  employmentType: z.enum(['FULL_TIME', 'CONTRACT', 'INTERN']).optional(),
 })
 
 // ─── POST /api/v1/recruitment/applications/[id]/convert-to-employee ───
@@ -136,25 +145,95 @@ export const POST = withPermission(
     try {
       // B4: 모든 쓰기 작업을 단일 트랜잭션으로 묶어 원자성 보장
       const newEmployee = await prisma.$transaction(async (tx: PrismaTx) => {
-        // B4: Idempotency guard — 트랜잭션 내부에서 재확인 (concurrent request 방어)
-        const freshApp = await tx.application.findFirst({
-          where: { id, convertedEmployeeId: null },
-          select: { id: true },
+        const lockedApplication = await tx.$queryRaw<Array<{ id: string }>>`
+          SELECT id
+          FROM applications
+          WHERE id = ${id}
+          FOR UPDATE
+        `
+        if (lockedApplication.length !== 1) throw notFound('지원서를 찾을 수 없습니다.')
+        const freshApp = await tx.application.findUnique({
+          where: { id },
+          include: {
+            applicant: { select: { name: true, email: true } },
+            posting: {
+              select: {
+                companyId: true,
+                departmentId: true,
+                jobGradeId: true,
+                jobCategoryId: true,
+                employmentType: true,
+              },
+            },
+          },
         })
-        if (!freshApp) throw conflict('이미 전환 처리 중이거나 전환된 지원서입니다.')
+        if (
+          !freshApp ||
+          freshApp.stage !== 'HIRED' ||
+          freshApp.convertedEmployeeId !== null
+        ) {
+          throw conflict('이미 전환 처리 중이거나 전환된 지원서입니다.')
+        }
+
+        const freshTargetCompanyId = companyId
+          ?? freshApp.posting?.companyId
+          ?? user.companyId
+        const freshDepartmentId = departmentId ?? freshApp.posting?.departmentId
+        const freshJobGradeId = jobGradeId ?? freshApp.posting?.jobGradeId
+        const freshJobCategoryId = jobCategoryId ?? freshApp.posting?.jobCategoryId
+        const freshEmploymentType = employmentType
+          ?? mapRequisitionTypeToEmploymentType(freshApp.posting?.employmentType)
+        if (
+          freshTargetCompanyId !== targetCompanyId ||
+          freshDepartmentId !== resolvedDepartmentId ||
+          freshJobGradeId !== resolvedJobGradeId ||
+          freshJobCategoryId !== resolvedJobCategoryId ||
+          freshEmploymentType !== resolvedEmploymentType
+        ) {
+          throw conflict('지원서 또는 채용 공고의 소속 정보가 변경되었습니다.')
+        }
+        if (user.role !== 'SUPER_ADMIN' && freshTargetCompanyId !== user.companyId) {
+          throw notFound('접근 권한이 없습니다.')
+        }
+
+        // Employee.employeeNo is globally unique. Serialize both generated and
+        // caller-supplied numbers before department/employee locks so every
+        // recruitment conversion observes the same registry state.
+        await tx.$executeRaw`
+          SELECT pg_advisory_xact_lock(
+            hashtextextended(${EMPLOYEE_NUMBER_REGISTRY_LOCK}, 0)
+          )
+        `
+
+        const departmentScopes = [{
+          companyId: freshTargetCompanyId,
+          departmentId: freshDepartmentId,
+        }]
+        await acquirePrimaryAssignmentDepartmentLocks(tx, departmentScopes)
+        await revalidatePrimaryAssignmentDepartments(tx, departmentScopes)
+        await revalidatePrimaryAssignmentMasterData(tx, {
+          companyId: freshTargetCompanyId,
+          jobGradeId: freshJobGradeId,
+          jobCategoryId: freshJobCategoryId,
+          positionId,
+        })
+
+        const newEmployeeId = crypto.randomUUID()
+        await acquirePrimaryAssignmentEmployeeLocks(tx, [newEmployeeId])
+        const initialTimeline = await readPrimaryAssignmentTimeline(tx, newEmployeeId)
+        if (initialTimeline.length !== 0) {
+          throw conflict('신규 직원 ID에 기존 주 발령이 존재합니다.')
+        }
 
         // B4: 사번 생성을 트랜잭션 내부에서 수행 (race condition 방어)
         let generatedNo = employeeNo
         if (!generatedNo) {
-          generatedNo = await generateEmployeeNoTx(tx, targetCompanyId)
+          generatedNo = await generateEmployeeNoTx(tx)
         } else {
           // 사번 중복 체크
-          const existing = await tx.employee.findFirst({
-            where: {
-              employeeNo: generatedNo,
-              deletedAt: null,
-              assignments: { some: { companyId: targetCompanyId, isPrimary: true, endDate: null } },
-            },
+          const existing = await tx.employee.findUnique({
+            where: { employeeNo: generatedNo },
+            select: { id: true },
           })
           if (existing) throw conflict('이미 사용 중인 사번입니다.')
         }
@@ -162,8 +241,9 @@ export const POST = withPermission(
         // 1. Create employee record
         const emp = await tx.employee.create({
           data: {
-            name: application.applicant.name,
-            email: application.applicant.email,
+            id: newEmployeeId,
+            name: freshApp.applicant.name,
+            email: freshApp.applicant.email,
             employeeNo: generatedNo,
             hireDate: new Date(startDate),
           },
@@ -176,12 +256,12 @@ export const POST = withPermission(
             effectiveDate: new Date(startDate),
             endDate: null,
             changeType: 'HIRE',
-            companyId: targetCompanyId,
-            departmentId: resolvedDepartmentId,
-            jobGradeId: resolvedJobGradeId,
-            jobCategoryId: resolvedJobCategoryId,
+            companyId: freshTargetCompanyId,
+            departmentId: freshDepartmentId,
+            jobGradeId: freshJobGradeId,
+            jobCategoryId: freshJobCategoryId,
             positionId: positionId ?? null,
-            employmentType: resolvedEmploymentType,
+            employmentType: freshEmploymentType,
             status: 'ACTIVE',
             isPrimary: true,
           },
@@ -239,14 +319,13 @@ export const POST = withPermission(
 
 // ─── Helper ───────────────────────────────────────────────
 
-async function generateEmployeeNoTx(tx: PrismaTx, companyId: string): Promise<string> {
+async function generateEmployeeNoTx(tx: PrismaTx): Promise<string> {
   const year = new Date().getFullYear()
   const prefix = `EMP-${year}-`
 
   const last = await tx.employee.findFirst({
     where: {
       employeeNo: { startsWith: prefix },
-      assignments: { some: { companyId, isPrimary: true, endDate: null } },
     },
     orderBy: { employeeNo: 'desc' },
     select: { employeeNo: true },

@@ -6,11 +6,28 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess } from '@/lib/api'
-import { badRequest, notFound } from '@/lib/errors'
+import {
+  badRequest,
+  conflict,
+  handlePrismaError,
+  isAppError,
+  notFound,
+} from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import type { SessionUser } from '@/types'
-import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import {
+  acquirePrimaryAssignmentDepartmentLocks,
+  acquirePrimaryAssignmentEmployeeLocks,
+  assertPrimaryAssignmentReplacement,
+  assertPrimaryAssignmentSourceScopeLocked,
+  casPrimaryAssignment,
+  getOpenPrimaryAssignment,
+  readPrimaryAssignmentTimeline,
+  revalidatePrimaryAssignmentDepartments,
+  revalidatePrimaryAssignmentMasterData,
+  withPrimaryAssignmentRetry,
+} from '@/lib/employee/primary-assignment-writer'
 
 // ─── PUT /api/v1/entity-transfers/[id]/execute ───────────
 
@@ -63,123 +80,177 @@ export const PUT = withPermission(
     }
 
     try {
-      const result = await prisma.$transaction(async (tx) => {
-        // 1. Set status to TRANSFER_PROCESSING
-        await tx.entityTransfer.update({
+      const result = await withPrimaryAssignmentRetry(async () => {
+        const transferHint = await prisma.entityTransfer.findUnique({
           where: { id },
-          data: { status: 'TRANSFER_PROCESSING' },
+          select: {
+            employeeId: true,
+            toCompanyId: true,
+            newDepartmentId: true,
+          },
         })
-
-        const employee = transfer.employee
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const currentAsgn = extractPrimaryAssignment(employee.assignments ?? []) as Record<string, any>
-        const now = new Date()
-
-        // 2. Update employeeNo if changed
-        if (transfer.newEmployeeNo) {
-          await tx.employee.update({
-            where: { id: employee.id },
-            data: { employeeNo: transfer.newEmployeeNo },
-          })
-        }
-
-        // 3. Create new EmployeeAssignment for the target company
-        // First close the current primary assignment
-        await tx.employeeAssignment.updateMany({
-          where: { employeeId: employee.id, isPrimary: true, endDate: null },
-          data: { endDate: transfer.transferDate },
-        })
-        // Then create the new assignment for the target company
-        await tx.employeeAssignment.create({
-          data: {
-            employeeId: employee.id,
-            effectiveDate: transfer.transferDate,
-            endDate: null,
-            changeType: 'TRANSFER_CROSS_COMPANY',
-            companyId: transfer.toCompanyId,
-            departmentId: transfer.newDepartmentId ?? currentAsgn?.departmentId ?? null,
-            jobGradeId: transfer.newJobGradeId ?? currentAsgn?.jobGradeId ?? null,
-            jobCategoryId: currentAsgn?.jobCategoryId ?? null,
-            employmentType: currentAsgn?.employmentType ?? 'FULL_TIME',
-            contractType: currentAsgn?.contractType ?? null,
-            status: currentAsgn?.status ?? 'ACTIVE',
-            positionId: currentAsgn?.positionId ?? null,
+        if (!transferHint) throw notFound('전환 요청을 찾을 수 없습니다.')
+        const sourceHint = await prisma.employeeAssignment.findFirst({
+          where: {
+            employeeId: transferHint.employeeId,
             isPrimary: true,
-            reason: `Cross-company transfer from ${transfer.fromCompanyId} to ${transfer.toCompanyId}`,
-            approvedById: user.employeeId,
+            endDate: null,
           },
         })
-
-        // 4. Create EmployeeHistory record
-        await tx.employeeHistory.create({
-          data: {
-            employeeId: employee.id,
-            changeType: 'TRANSFER_CROSS_COMPANY',
-            fromCompanyId: transfer.fromCompanyId,
-            toCompanyId: transfer.toCompanyId,
-            fromDeptId: currentAsgn?.departmentId ?? null,
-            toDeptId: transfer.newDepartmentId ?? currentAsgn?.departmentId ?? null,
-            fromGradeId: currentAsgn?.jobGradeId ?? null,
-            toGradeId: transfer.newJobGradeId ?? currentAsgn?.jobGradeId ?? null,
-            effectiveDate: transfer.transferDate,
-            reason: `Cross-company transfer from ${transfer.fromCompanyId} to ${transfer.toCompanyId}`,
-            approvedById: user.employeeId,
+        if (!sourceHint) throw badRequest('직원의 현재 주 발령을 찾을 수 없습니다.')
+        const departmentScopes = [
+          { companyId: sourceHint.companyId, departmentId: sourceHint.departmentId },
+          {
+            companyId: transferHint.toCompanyId,
+            departmentId: transferHint.newDepartmentId,
           },
-        })
+        ]
 
-        // 4. Update each data log to DATA_MIGRATED
-        for (const log of transfer.dataLogs) {
-          try {
-            await tx.entityTransferDataLog.update({
-              where: { id: log.id },
-              data: {
-                status: 'DATA_MIGRATED',
-                migratedAt: now,
-              },
-            })
-          } catch (logError) {
-            // If any data log migration fails, mark it as DATA_FAILED
-            const errorMsg =
-              logError instanceof Error
-                ? logError.message
-                : '데이터 마이그레이션 실패'
-            await tx.entityTransferDataLog.update({
-              where: { id: log.id },
-              data: {
-                status: 'DATA_FAILED',
-                errorMsg,
-              },
+        return prisma.$transaction(async (tx) => {
+          const lockedTransfer = await tx.$queryRaw<Array<{ id: string }>>`
+            SELECT id
+            FROM entity_transfers
+            WHERE id = ${id}
+            FOR UPDATE
+          `
+          if (lockedTransfer.length !== 1) throw notFound('전환 요청을 찾을 수 없습니다.')
+
+          const freshTransfer = await tx.entityTransfer.findUnique({
+            where: { id },
+            include: { dataLogs: { orderBy: { id: 'asc' } } },
+          })
+          if (!freshTransfer) throw notFound('전환 요청을 찾을 수 없습니다.')
+          if (freshTransfer.status !== 'EXEC_APPROVED') {
+            throw conflict('전환 요청 상태가 변경되었습니다.')
+          }
+          const processing = await tx.entityTransfer.updateMany({
+            where: { id, status: 'EXEC_APPROVED' },
+            data: { status: 'TRANSFER_PROCESSING' },
+          })
+          if (processing.count !== 1) throw conflict('전환 요청 상태가 변경되었습니다.')
+
+          const lockedDepartmentKeys = await acquirePrimaryAssignmentDepartmentLocks(
+            tx,
+            departmentScopes,
+          )
+          await revalidatePrimaryAssignmentDepartments(tx, departmentScopes)
+          assertPrimaryAssignmentSourceScopeLocked(lockedDepartmentKeys, {
+            companyId: freshTransfer.toCompanyId,
+            departmentId: freshTransfer.newDepartmentId,
+          })
+          await revalidatePrimaryAssignmentMasterData(tx, {
+            companyId: freshTransfer.toCompanyId,
+            jobGradeId: freshTransfer.newJobGradeId,
+          })
+          await acquirePrimaryAssignmentEmployeeLocks(tx, [freshTransfer.employeeId])
+          const timeline = await readPrimaryAssignmentTimeline(tx, freshTransfer.employeeId)
+          const current = getOpenPrimaryAssignment(timeline)
+          if (!current) throw badRequest('직원의 현재 주 발령을 찾을 수 없습니다.')
+          assertPrimaryAssignmentSourceScopeLocked(lockedDepartmentKeys, current)
+          if (
+            current.id !== sourceHint.id ||
+            current.updatedAt.getTime() !== sourceHint.updatedAt.getTime()
+          ) {
+            throw conflict('직원의 주 발령 후보가 변경되었습니다.')
+          }
+          if (current.companyId !== freshTransfer.fromCompanyId) {
+            throw conflict('직원의 현재 소속이 전환 출발 법인과 일치하지 않습니다.')
+          }
+          assertPrimaryAssignmentReplacement({
+            timeline,
+            replacedAssignmentId: current.id,
+            closeDate: freshTransfer.transferDate,
+            nextEffectiveDate: freshTransfer.transferDate,
+          })
+
+          const now = new Date()
+          if (freshTransfer.newEmployeeNo) {
+            await tx.employee.update({
+              where: { id: freshTransfer.employeeId },
+              data: { employeeNo: freshTransfer.newEmployeeNo },
             })
           }
-        }
+          await casPrimaryAssignment(tx, current, { endDate: freshTransfer.transferDate })
+          await tx.employeeAssignment.create({
+            data: {
+              employeeId: freshTransfer.employeeId,
+              effectiveDate: freshTransfer.transferDate,
+              endDate: null,
+              changeType: 'TRANSFER_CROSS_COMPANY',
+              companyId: freshTransfer.toCompanyId,
+              departmentId: freshTransfer.newDepartmentId,
+              jobGradeId: freshTransfer.newJobGradeId,
+              jobCategoryId: null,
+              employmentType: current.employmentType,
+              contractType: current.contractType,
+              status: current.status,
+              positionId: null,
+              workLocationId: null,
+              isPrimary: true,
+              reason: `Cross-company transfer from ${freshTransfer.fromCompanyId} to ${freshTransfer.toCompanyId}`,
+              approvedById: user.employeeId,
+            },
+          })
 
-        // 5. Set status to TRANSFER_COMPLETED
-        const completed = await tx.entityTransfer.update({
-          where: { id },
-          data: {
-            status: 'TRANSFER_COMPLETED',
-            completedAt: now,
-          },
-          include: {
-            employee: {
-              select: {
-                id: true,
-                name: true,
-                employeeNo: true,
-                assignments: {
-                  where: { isPrimary: true, endDate: null },
-                  take: 1,
-                  select: { companyId: true, departmentId: true, jobGradeId: true },
+          await tx.employeeHistory.create({
+            data: {
+              employeeId: freshTransfer.employeeId,
+              changeType: 'TRANSFER_CROSS_COMPANY',
+              fromCompanyId: freshTransfer.fromCompanyId,
+              toCompanyId: freshTransfer.toCompanyId,
+              fromDeptId: current.departmentId,
+              toDeptId: freshTransfer.newDepartmentId,
+              fromGradeId: current.jobGradeId,
+              toGradeId: freshTransfer.newJobGradeId,
+              effectiveDate: freshTransfer.transferDate,
+              reason: `Cross-company transfer from ${freshTransfer.fromCompanyId} to ${freshTransfer.toCompanyId}`,
+              approvedById: user.employeeId,
+            },
+          })
+
+          for (const log of freshTransfer.dataLogs) {
+            try {
+              await tx.entityTransferDataLog.update({
+                where: { id: log.id },
+                data: { status: 'DATA_MIGRATED', migratedAt: now },
+              })
+            } catch (logError) {
+              const errorMsg = logError instanceof Error
+                ? logError.message
+                : '데이터 마이그레이션 실패'
+              await tx.entityTransferDataLog.update({
+                where: { id: log.id },
+                data: { status: 'DATA_FAILED', errorMsg },
+              })
+            }
+          }
+
+          const completed = await tx.entityTransfer.updateMany({
+            where: { id, status: 'TRANSFER_PROCESSING' },
+            data: { status: 'TRANSFER_COMPLETED', completedAt: now },
+          })
+          if (completed.count !== 1) throw conflict('전환 완료 상태가 변경되었습니다.')
+          return tx.entityTransfer.findUniqueOrThrow({
+            where: { id },
+            include: {
+              employee: {
+                select: {
+                  id: true,
+                  name: true,
+                  employeeNo: true,
+                  assignments: {
+                    where: { isPrimary: true, endDate: null },
+                    take: 1,
+                    select: { companyId: true, departmentId: true, jobGradeId: true },
+                  },
                 },
               },
+              fromCompany: { select: { id: true, name: true } },
+              toCompany: { select: { id: true, name: true } },
+              dataLogs: true,
             },
-            fromCompany: { select: { id: true, name: true } },
-            toCompany: { select: { id: true, name: true } },
-            dataLogs: true,
-          },
+          })
         })
-
-        return completed
       })
 
       // Check if any data logs failed
@@ -197,24 +268,10 @@ export const PUT = withPermission(
 
       return apiSuccess(result)
     } catch (error) {
-      // If the entire transaction fails, mark transfer as failed
-      // and update data logs with error info
-      const errorMsg =
-        error instanceof Error ? error.message : '전환 실행 중 오류 발생'
-
-      await prisma.entityTransfer
-        .update({
-          where: { id },
-          data: {
-            status: 'TRANSFER_CANCELLED',
-            cancellationReason: `실행 실패: ${errorMsg}`,
-          },
-        })
-        .catch(() => {
-          // Swallow error if cleanup update also fails
-        })
-
-      throw badRequest(`전환 실행 중 오류가 발생했습니다: ${errorMsg}`)
+      // The transaction already rolls TRANSFER_PROCESSING back to EXEC_APPROVED.
+      // Keep the approved request retryable; cancellation is an explicit workflow action.
+      if (isAppError(error)) throw error
+      throw handlePrismaError(error)
     }
   },
   perm(MODULE.EMPLOYEES, ACTION.APPROVE),

@@ -83,14 +83,14 @@ export const GET = withPermission(
     }
 
     // ── 직원 집합 술어: 날짜 D에 active였던 primary assignment (date-aware 역사 fence) ──
-    //    effectiveDate<=D(=당일 입사 포함) · endDate null|>=D(이후 퇴직자 포함, 미입사 제외).
+    //    effectiveDate<=D(=당일 입사 포함) · endDate null|>D(반개방 구간, 미입사 제외).
     //    @db.Date 컬럼 → parseDateOnly(UTC 자정) 경계. soft-deleted는 전역 정책상 제외.
     //    cursor 검증·페이지 쿼리에 동일 술어 재사용 (Gate1-R2 P2).
     const assignmentFence = {
       companyId,
       isPrimary: true,
       effectiveDate: { lte: D },
-      OR: [{ endDate: null }, { endDate: { gte: D } }],
+      OR: [{ endDate: null }, { endDate: { gt: D } }],
       ...(departmentId ? { departmentId } : {}),
     }
     const employeeWhere = {

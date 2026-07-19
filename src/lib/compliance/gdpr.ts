@@ -46,7 +46,14 @@ export async function enforceRetention(companyId: string, policyId: string) {
     case 'AUDIT_LOGS': {
       if (policy.autoDelete) {
         const result = await prisma.auditLog.deleteMany({
-          where: { companyId, createdAt: { lt: cutoffDate } },
+          where: {
+            companyId,
+            createdAt: { lt: cutoffDate },
+            // These rows are durable payroll state, not disposable audit history.
+            // Keep both created and consumed markers together to prevent a pending
+            // LOA settlement from disappearing or being applied twice.
+            resourceType: { not: 'LoaPayrollObligation' },
+          },
         })
         processed = result.count
       }

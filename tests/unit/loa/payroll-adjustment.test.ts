@@ -1,7 +1,9 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import {
   generateLoaMonthlyRanges,
   calculateLoaDeduction,
+  getEmployeeMonthlySalary,
+  isEditableLoaPayrollRun,
 } from '@/lib/loa/payroll-adjustment'
 import { getWeekdaysInMonth } from '@/lib/payroll/kr-tax'
 
@@ -166,5 +168,61 @@ describe('calculateLoaDeduction', () => {
       calculateLoaDeduction(3_000_000, 5, 22, 'INSURANCE', null),
     ]
     cases.forEach(result => expect(result).toBeLessThanOrEqual(0))
+  })
+})
+
+describe('getEmployeeMonthlySalary', () => {
+  it('scopes compensation history to the LOA company', async () => {
+    const findFirst = vi.fn().mockResolvedValue({ newBaseSalary: 48_000_000 })
+    const client = {
+      compensationHistory: { findFirst },
+    } as unknown as Parameters<typeof getEmployeeMonthlySalary>[3]
+    const asOfDate = utc(2026, 7, 1)
+
+    await expect(
+      getEmployeeMonthlySalary('employee-1', 'company-b', asOfDate, client),
+    ).resolves.toBe(4_000_000)
+    expect(findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          employeeId: 'employee-1',
+          companyId: 'company-b',
+          effectiveDate: { lte: asOfDate },
+        },
+      }),
+    )
+  })
+})
+
+describe('isEditableLoaPayrollRun', () => {
+  it('allows only an unclosed DRAFT or ADJUSTMENT MONTHLY run', () => {
+    expect(
+      isEditableLoaPayrollRun({
+        runType: 'MONTHLY',
+        status: 'DRAFT',
+        attendanceClosedAt: null,
+      }),
+    ).toBe(true)
+    expect(
+      isEditableLoaPayrollRun({
+        runType: 'MONTHLY',
+        status: 'ADJUSTMENT',
+        attendanceClosedAt: new Date(),
+      }),
+    ).toBe(true)
+  })
+
+  it.each([
+    { runType: 'MONTHLY', status: 'DRAFT', attendanceClosedAt: new Date() },
+    { runType: 'MONTHLY', status: 'ATTENDANCE_CLOSED', attendanceClosedAt: new Date() },
+    { runType: 'MONTHLY', status: 'CALCULATING', attendanceClosedAt: new Date() },
+    { runType: 'MONTHLY', status: 'REVIEW', attendanceClosedAt: new Date() },
+    { runType: 'MONTHLY', status: 'PENDING_APPROVAL', attendanceClosedAt: new Date() },
+    { runType: 'MONTHLY', status: 'APPROVED', attendanceClosedAt: new Date() },
+    { runType: 'MONTHLY', status: 'PAID', attendanceClosedAt: new Date() },
+    { runType: 'MONTHLY', status: 'CANCELLED', attendanceClosedAt: new Date() },
+    { runType: 'BONUS', status: 'DRAFT', attendanceClosedAt: null },
+  ] as const)('rejects immutable or non-MONTHLY run %#', (run) => {
+    expect(isEditableLoaPayrollRun(run)).toBe(false)
   })
 })

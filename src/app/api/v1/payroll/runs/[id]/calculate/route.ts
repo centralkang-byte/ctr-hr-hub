@@ -32,7 +32,11 @@ export const POST = withPermission(
       throw forbidden('해외법인은 로컬 시스템에서 급여를 처리합니다.')
     }
 
-    await calculatePayrollRun(id)
+    await calculatePayrollRun(id, {
+      mode: 'legacy',
+      authorizedCompanyId: run.companyId,
+      actorId: user.employeeId,
+    })
 
     const updated = await prisma.payrollRun.findUniqueOrThrow({
       where: { id },

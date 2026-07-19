@@ -531,8 +531,13 @@ test.describe('Payslips: Overseas (CTR-CN) blocked from payslip artifact', () =>
 
   test('GET /payroll/me/[runId]/pdf → 403 for overseas company', async ({ request }) => {
     const api = new ApiClient(request)
-    // Guard fires on company code BEFORE the item lookup → any runId yields 403.
-    const raw = await f.getMyPayslipPdf(api, '00000000-0000-4000-a000-000000000099')
+    const listRes = await f.getMyPayslips(api)
+    const items = listRes.data as Array<{ run: { id: string; paidAt: string | null } }> | undefined
+    const paid = items?.find((item) => item.run.paidAt !== null)
+    if (!paid) return test.skip()
+
+    // Ownership is resolved from the persisted run before applying the overseas guard.
+    const raw = await f.getMyPayslipPdf(api, paid.run.id)
     expect(raw.status, `overseas payslip PDF must be blocked (got ${raw.status})`).toBe(403)
   })
 
@@ -542,9 +547,8 @@ test.describe('Payslips: Overseas (CTR-CN) blocked from payslip artifact', () =>
     assertOk(res, 'overseas my payslips')
     const items = res.data as Array<{ payslipAvailable?: boolean; detail: unknown }>
     expect(Array.isArray(items)).toBe(true)
-    // CTR-CN QA account isn't in the payroll employee set, so the list may be empty.
-    // The data-independent guard is the 403 PDF test above; skip (visible) rather than
-    // pass vacuously when there's no overseas item to assert on.
+    // CTR-CN QA account isn't always in the payroll employee set, so the list may be empty.
+    // Skip visibly rather than pass vacuously when there is no overseas item to inspect.
     if (items.length === 0) return test.skip()
     for (const it of items) {
       expect(it.payslipAvailable, 'overseas item flagged unavailable').toBe(false)

@@ -65,7 +65,16 @@ export const GET = withPermission(
                     select: {
                         id: true, name: true, employeeNo: true, hireDate: true,
                         assignments: {
-                            where: { isPrimary: true, endDate: null },
+                            where: {
+                                companyId: run.companyId,
+                                isPrimary: true,
+                                effectiveDate: { lte: run.periodEnd },
+                                OR: [
+                                    { endDate: null },
+                                    { endDate: { gt: run.periodStart } },
+                                ],
+                            },
+                            orderBy: { effectiveDate: 'desc' },
                             take: 1,
                             include: {
                                 department: { select: { id: true, name: true } },
@@ -119,9 +128,9 @@ export const GET = withPermission(
         const unpaidLeaves = await prisma.leaveRequest.findMany({
             where: {
                 status: 'APPROVED',
+                companyId: run.companyId,
                 startDate: { lte: lastDay },
                 endDate: { gte: firstDay },
-                employee: { assignments: { some: { companyId: run.companyId, isPrimary: true } } },
             },
             select: { employeeId: true, days: true },
         })

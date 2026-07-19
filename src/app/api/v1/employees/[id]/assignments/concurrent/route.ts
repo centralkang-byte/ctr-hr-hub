@@ -9,6 +9,11 @@ import { notFound, forbidden, badRequest, conflict } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { fetchPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import {
+  acquirePrimaryAssignmentDepartmentLocks,
+  revalidatePrimaryAssignmentDepartments,
+  revalidatePrimaryAssignmentMasterData,
+} from '@/lib/employee/primary-assignment-writer'
 import type { SessionUser } from '@/types'
 
 export const POST = withPermission(
@@ -68,43 +73,54 @@ export const POST = withPermission(
       }
     }
 
-    // ── 6. Duplicate check ───────────────────────────────────
-    const existing = await prisma.employeeAssignment.findFirst({
-      where: {
-        employeeId,
+    // Secondary assignments stay outside the primary employee timeline lock,
+    // but share the target department lock with department deletion.
+    const assignment = await prisma.$transaction(async (tx) => {
+      const targetScope = [{ companyId, departmentId: departmentId ?? null }]
+      await acquirePrimaryAssignmentDepartmentLocks(tx, targetScope)
+      await revalidatePrimaryAssignmentDepartments(tx, targetScope)
+      await revalidatePrimaryAssignmentMasterData(tx, {
         companyId,
-        departmentId: departmentId ?? null,
-        positionId: positionId ?? null,
-        isPrimary: false,
-        endDate: null,
-      },
-    })
-    if (existing) {
-      throw conflict('동일한 법인/부서/직위의 활성 겸직이 이미 존재합니다.')
-    }
-
-    // ── 7. Create concurrent assignment ──────────────────────
-    const assignment = await prisma.employeeAssignment.create({
-      data: {
-        employeeId,
-        companyId,
-        departmentId,
         jobGradeId,
         positionId,
-        employmentType,
-        effectiveDate: new Date(effectiveDate),
-        reason,
-        isPrimary: false,
-        changeType: 'CONCURRENT',
-        status: 'ACTIVE',
-        approvedById: user.employeeId,
-      },
-      include: {
-        company: { select: { id: true, name: true } },
-        department: { select: { id: true, name: true } },
-        jobGrade: { select: { id: true, name: true, code: true } },
-        position: { select: { id: true, titleKo: true, titleEn: true } },
-      },
+      })
+
+      const existing = await tx.employeeAssignment.findFirst({
+        where: {
+          employeeId,
+          companyId,
+          departmentId: departmentId ?? null,
+          positionId: positionId ?? null,
+          isPrimary: false,
+          endDate: null,
+        },
+      })
+      if (existing) {
+        throw conflict('동일한 법인/부서/직위의 활성 겸직이 이미 존재합니다.')
+      }
+
+      return tx.employeeAssignment.create({
+        data: {
+          employeeId,
+          companyId,
+          departmentId,
+          jobGradeId,
+          positionId,
+          employmentType,
+          effectiveDate: new Date(effectiveDate),
+          reason,
+          isPrimary: false,
+          changeType: 'CONCURRENT',
+          status: 'ACTIVE',
+          approvedById: user.employeeId,
+        },
+        include: {
+          company: { select: { id: true, name: true } },
+          department: { select: { id: true, name: true } },
+          jobGrade: { select: { id: true, name: true, code: true } },
+          position: { select: { id: true, titleKo: true, titleEn: true } },
+        },
+      })
     })
 
     return apiSuccess(assignment, 201)

@@ -15,10 +15,40 @@ import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { sendNotification } from '@/lib/notifications'
 import { validateApprover } from '@/lib/approval/resolve-approval-flow'
+import { getTodayForTimezone } from '@/lib/assignments'
+import { parseDateOnly } from '@/lib/timezone'
+import {
+  acquirePrimaryAssignmentDepartmentLocks,
+  acquirePrimaryAssignmentEmployeeLocks,
+  assertPrimaryAssignmentSourceScopeLocked,
+  casPrimaryAssignment,
+  getPrimaryAssignmentAtDate,
+  readPrimaryAssignmentTimeline,
+  revalidatePrimaryAssignmentDepartments,
+  validatePrimaryAssignmentTimeline,
+  withPrimaryAssignmentRetry,
+} from '@/lib/employee/primary-assignment-writer'
 import type { SessionUser } from '@/types'
 
 const VALID_ACTIONS = ['CONVERT_FULLTIME', 'RENEW_CONTRACT', 'TERMINATE'] as const
 type ContractAction = (typeof VALID_ACTIONS)[number]
+
+function parseStrictDateOnly(value: string): Date {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    throw badRequest('newEndDate는 YYYY-MM-DD 형식이어야 합니다.')
+  }
+  const parsed = parseDateOnly(value)
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== value) {
+    throw badRequest('newEndDate가 올바른 날짜가 아닙니다.')
+  }
+  return parsed
+}
+
+function nextDate(value: Date): Date {
+  const next = new Date(value)
+  next.setUTCDate(next.getUTCDate() + 1)
+  return next
+}
 
 export const PUT = withPermission(
   async (req: NextRequest, context: { params: Promise<Record<string, string>> }, user: SessionUser) => {
@@ -80,63 +110,122 @@ export const PUT = withPermission(
     // ── action별 처리 ──
     const now = new Date()
 
-    if (action === 'CONVERT_FULLTIME') {
-      // 정규직 전환: employmentType → FULL_TIME, endDate → null
-      await prisma.employeeAssignment.update({
+    const convertedAssignment = await withPrimaryAssignmentRetry(async () => {
+      const assignmentHint = await prisma.employeeAssignment.findUnique({
         where: { id: assignment.id },
-        data: {
-          employmentType: 'FULL_TIME',
-          endDate: null,
-          changeType: 'CONTRACT_CHANGE',
-          approvedById: user.employeeId,
-          reason: body.comment ?? '계약직→정규직 전환',
-        },
+        select: { companyId: true, departmentId: true },
       })
-    } else if (action === 'RENEW_CONTRACT') {
-      // 계약 갱신: endDate 업데이트
-      await prisma.employeeAssignment.update({
-        where: { id: assignment.id },
-        data: {
-          endDate: new Date(body.newEndDate!),
-          changeType: 'CONTRACT_CHANGE',
-          approvedById: user.employeeId,
-          reason: body.comment ?? '계약 갱신',
-        },
-      })
-    } else {
-      // TERMINATE: 계약 종료
-      await prisma.employeeAssignment.update({
-        where: { id: assignment.id },
-        data: {
-          endDate: now,
-          status: 'COMPLETED',
-          changeType: 'CONTRACT_CHANGE',
-          approvedById: user.employeeId,
-          reason: body.comment ?? '계약 만료 종료',
-        },
-      })
-    }
+      if (!assignmentHint) throw badRequest('계약직 주 발령 상태가 변경되었습니다.')
+      const departmentScopes = [{
+        companyId: assignmentHint.companyId,
+        departmentId: assignmentHint.departmentId,
+      }]
 
-    // ── ContractHistory 기록 ──
-    const lastContract = await prisma.contractHistory.findFirst({
-      where: { employeeId, companyId: assignment.companyId },
-      orderBy: { contractNumber: 'desc' },
-      select: { contractNumber: true },
-    })
+      return prisma.$transaction(async (tx) => {
+        const lockedDepartmentKeys = await acquirePrimaryAssignmentDepartmentLocks(
+          tx,
+          departmentScopes,
+        )
+        await revalidatePrimaryAssignmentDepartments(tx, departmentScopes)
+        await acquirePrimaryAssignmentEmployeeLocks(tx, [employeeId])
+        const timeline = await readPrimaryAssignmentTimeline(tx, employeeId)
+        const freshAssignment = timeline.find((row) => row.id === assignment.id)
+        if (freshAssignment) {
+          assertPrimaryAssignmentSourceScopeLocked(
+            lockedDepartmentKeys,
+            freshAssignment,
+          )
+        }
+        if (
+          !freshAssignment ||
+          freshAssignment.employmentType !== 'CONTRACT' ||
+          freshAssignment.status !== 'ACTIVE' ||
+          freshAssignment.endDate === null ||
+          freshAssignment.companyId !== assignment.companyId
+        ) {
+          throw badRequest('계약직 주 발령 상태가 변경되었습니다.')
+        }
 
-    await prisma.contractHistory.create({
-      data: {
-        employeeId,
-        companyId: assignment.companyId,
-        contractNumber: (lastContract?.contractNumber ?? 0) + 1,
-        contractType: action === 'CONVERT_FULLTIME' ? 'PERMANENT' : 'FIXED_TERM',
-        startDate: now,
-        endDate: action === 'RENEW_CONTRACT' ? new Date(body.newEndDate!) : null,
-        autoConvertTriggered: false,
-        signedBy: user.employeeId,
-        signedAt: now,
-        notes: body.comment,
-      },
+        const company = await tx.company.findFirst({
+          where: { id: freshAssignment.companyId, deletedAt: null },
+          select: { timezone: true },
+        })
+        if (!company) throw notFound('법인 정보를 찾을 수 없습니다.')
+        const today = getTodayForTimezone(company.timezone)
+        const renewedEndDate = body.newEndDate
+          ? parseStrictDateOnly(body.newEndDate)
+          : null
+        const renewedAssignmentEnd = renewedEndDate ? nextDate(renewedEndDate) : null
+        const nextEndDate = action === 'CONVERT_FULLTIME'
+          ? null
+          : action === 'RENEW_CONTRACT'
+            ? renewedAssignmentEnd
+            : today
+        if (getPrimaryAssignmentAtDate(timeline, today)?.id !== freshAssignment.id) {
+          throw badRequest('현재 유효한 계약직 주 발령만 처리할 수 있습니다.')
+        }
+        if (
+          action === 'RENEW_CONTRACT' &&
+          renewedEndDate &&
+          renewedEndDate.getTime() <= today.getTime()
+        ) {
+          throw badRequest('계약 갱신 종료일은 오늘 이후여야 합니다.')
+        }
+        validatePrimaryAssignmentTimeline(
+          timeline.map((row) =>
+            row.id === freshAssignment.id ? { ...row, endDate: nextEndDate } : row,
+          ),
+        )
+
+        const reason = body.comment ?? (
+          action === 'CONVERT_FULLTIME'
+            ? '계약직→정규직 전환'
+            : action === 'RENEW_CONTRACT'
+              ? '계약 갱신'
+              : '계약 만료 종료'
+        )
+        await casPrimaryAssignment(tx, freshAssignment, {
+          endDate: nextEndDate,
+          changeType: 'CONTRACT_CHANGE',
+          ...(action === 'CONVERT_FULLTIME' ? { employmentType: 'FULL_TIME' } : {}),
+          ...(action === 'TERMINATE' ? { status: 'COMPLETED' } : {}),
+          approvedById: user.employeeId,
+          reason,
+        })
+        await tx.employee.update({
+          where: { id: employeeId },
+          data: {
+            contractEndDate: action === 'CONVERT_FULLTIME'
+              ? null
+              : action === 'RENEW_CONTRACT'
+                ? renewedEndDate
+                : today,
+          },
+        })
+
+        const lastContract = await tx.contractHistory.findFirst({
+          where: { employeeId, companyId: freshAssignment.companyId },
+          orderBy: { contractNumber: 'desc' },
+          select: { contractNumber: true },
+        })
+        await tx.contractHistory.create({
+          data: {
+            employeeId,
+            companyId: freshAssignment.companyId,
+            contractNumber: (lastContract?.contractNumber ?? 0) + 1,
+            contractType: action === 'CONVERT_FULLTIME' ? 'PERMANENT' : 'FIXED_TERM',
+            startDate: now,
+            endDate: action === 'RENEW_CONTRACT' ? renewedEndDate : null,
+            autoConvertTriggered: false,
+            signedBy: user.employeeId,
+            signedAt: now,
+            notes: body.comment,
+          },
+        })
+        return tx.employeeAssignment.findUniqueOrThrow({
+          where: { id: freshAssignment.id },
+        })
+      })
     })
 
     // ── 감사 로그 ──
@@ -145,7 +234,7 @@ export const PUT = withPermission(
       actorId: user.employeeId,
       action: 'employee.contract.convert',
       resourceType: 'EmployeeAssignment',
-      resourceId: assignment.id,
+      resourceId: convertedAssignment.id,
       companyId: user.companyId,
       changes: {
         action,
@@ -178,7 +267,7 @@ export const PUT = withPermission(
 
     return apiSuccess({
       employeeId,
-      assignmentId: assignment.id,
+      assignmentId: convertedAssignment.id,
       action,
       evaluatedBy: user.employeeId,
     })

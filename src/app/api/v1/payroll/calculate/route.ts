@@ -13,24 +13,7 @@ import { badRequest, notFound, forbidden } from '@/lib/errors'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { eventBus } from '@/lib/events/event-bus'
 import { DOMAIN_EVENTS } from '@/lib/events/types'
-import { calculatePayrollForEmployee } from '@/lib/payroll/calculator'
-import type { PayrollItemDetail } from '@/lib/payroll/types'
-
-const CONCURRENCY = 10
-
-async function processInBatches<T, R>(
-    items: T[],
-    concurrency: number,
-    fn: (item: T) => Promise<R>,
-): Promise<R[]> {
-    const results: R[] = []
-    for (let i = 0; i < items.length; i += concurrency) {
-        const batch = items.slice(i, i + concurrency)
-        const batchResults = await Promise.all(batch.map(fn))
-        results.push(...batchResults)
-    }
-    return results
-}
+import { calculatePayrollRun } from '@/lib/payroll/batch'
 
 const schema = z.object({
     payrollRunId: z.string().min(1),
@@ -62,175 +45,49 @@ export const POST = withPermission(
             throw forbidden('해외법인은 로컬 시스템에서 급여를 처리합니다.')
         }
 
-        // status → CALCULATING
-        await prisma.payrollRun.update({
-            where: { id: payrollRunId },
-            data: { status: 'CALCULATING' },
+        const result = await calculatePayrollRun(payrollRunId, {
+            mode: 'gp3',
+            authorizedCompanyId: run.companyId,
+            actorId: user.employeeId,
         })
 
-        try {
-            // 재직자 조회 (제외 직원 목록 적용)
-            const excludedIds = run.excludedEmployeeIds ?? []
-
-            const employees = await prisma.employee.findMany({
-                where: {
-                    id: { notIn: excludedIds },
-                    hireDate: { lte: run.periodEnd },
-                    assignments: {
-                        some: {
-                            companyId: run.companyId,
-                            status: 'ACTIVE',
-                            isPrimary: true,
-                            endDate: null,
-                        },
-                    },
-                },
-                select: { id: true },
-            })
-
-            // 전월 PayrollRun 조회
-            const [prevYearNum, prevMonthNum] = run.yearMonth.split('-').map(Number)
-            const prevDate = new Date(prevYearNum, prevMonthNum - 2, 1)
-            const prevYearMonth = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}`
-
-            const prevRun = await prisma.payrollRun.findFirst({
-                where: {
-                    companyId: run.companyId,
-                    yearMonth: prevYearMonth,
-                    runType: run.runType, // 동종 유형 전월 비교 (동월 복수 runType 공존 가능 — @@unique runType 차원)
-                    status: { not: 'CANCELLED' },
-                },
-                orderBy: { createdAt: 'desc' },
-            })
-
-            // 병렬 계산
-            const results = await processInBatches(
-                employees,
-                CONCURRENCY,
-                async (emp) => {
-                    const detail = await calculatePayrollForEmployee(
-                        emp.id,
-                        run.periodStart,
-                        run.periodEnd,
-                        run.companyId,
-                    )
-                    return { employeeId: emp.id, detail }
-                },
-            )
-
-            // PayrollItem upsert
-            let totalGross = 0
-            let totalDeductions = 0
-            let totalNet = 0
-
-            await prisma.$transaction(
-                results.map(({ employeeId, detail }: { employeeId: string; detail: PayrollItemDetail }) => {
-                    totalGross += detail.grossPay
-                    totalDeductions += detail.totalDeductions
-                    totalNet += detail.netPay
-
-                    return prisma.payrollItem.upsert({
-                        where: { id: `${payrollRunId}-${employeeId}` },
-                        create: {
-                            id: `${payrollRunId}-${employeeId}`,
-                            runId: payrollRunId,
-                            employeeId,
-                            baseSalary: detail.earnings.baseSalary,
-                            overtimePay: detail.earnings.overtimePay,
-                            bonus: detail.earnings.bonuses,
-                            allowances:
-                                detail.earnings.mealAllowance +
-                                detail.earnings.transportAllowance +
-                                detail.earnings.fixedOvertimeAllowance +
-                                detail.earnings.otherEarnings,
-                            grossPay: detail.grossPay,
-                            deductions: detail.totalDeductions,
-                            netPay: detail.netPay,
-                            currency: 'KRW',
-                            detail: JSON.parse(JSON.stringify(detail)),
-                        },
-                        update: {
-                            baseSalary: detail.earnings.baseSalary,
-                            overtimePay: detail.earnings.overtimePay,
-                            bonus: detail.earnings.bonuses,
-                            allowances:
-                                detail.earnings.mealAllowance +
-                                detail.earnings.transportAllowance +
-                                detail.earnings.fixedOvertimeAllowance +
-                                detail.earnings.otherEarnings,
-                            grossPay: detail.grossPay,
-                            deductions: detail.totalDeductions,
-                            netPay: detail.netPay,
-                            detail: JSON.parse(JSON.stringify(detail)),
-                            isManuallyAdjusted: false,
-                            adjustmentReason: null,
-                        },
-                    })
-                }),
-            )
-
-            // PayrollRun 총계 + status → ADJUSTMENT
-            const updated = await prisma.payrollRun.update({
-                where: { id: payrollRunId },
-                data: {
-                    totalGross,
-                    totalDeductions,
-                    totalNet,
-                    headcount: employees.length,
-                    status: 'ADJUSTMENT',
-                    previousMonthRunId: prevRun?.id ?? null,
-                },
-            })
-
-            // 이벤트 발행
-            void eventBus.publish(DOMAIN_EVENTS.PAYROLL_CALCULATED, {
-                ctx: {
-                    companyId: run.companyId,
-                    actorId: user.employeeId,
-                    occurredAt: new Date(),
-                },
-                runId: payrollRunId,
-                yearMonth: run.yearMonth,
-                headcount: employees.length,
-                totalGross,
-                totalNet,
-            })
-
-            const { ip, userAgent } = extractRequestMeta(req.headers)
-            logAudit({
-                actorId: user.employeeId,
-                action: 'PAYROLL_GP3_CALCULATE',
-                resourceType: 'PayrollRun',
-                resourceId: payrollRunId,
+        void eventBus.publish(DOMAIN_EVENTS.PAYROLL_CALCULATED, {
+            ctx: {
                 companyId: run.companyId,
-                changes: {
-                    yearMonth: run.yearMonth,
-                    headcount: employees.length,
-                    totalGross,
-                    totalNet,
-                },
-                ip,
-                userAgent,
-            })
+                actorId: user.employeeId,
+                occurredAt: new Date(),
+            },
+            runId: payrollRunId,
+            yearMonth: run.yearMonth,
+            headcount: result.summary.headcount,
+            totalGross: result.summary.totalGross,
+            totalNet: result.summary.totalNet,
+        })
 
-            return apiSuccess({
-                payrollRun: updated,
-                summary: {
-                    headcount: employees.length,
-                    totalGross,
-                    totalDeductions,
-                    totalNet,
-                    previousRunId: prevRun?.id ?? null,
-                },
-            }, 200)
-        } catch (error) {
-            // 실패 시 ATTENDANCE_CLOSED로 복귀
-            await prisma.payrollRun.update({
-                where: { id: payrollRunId },
-                data: { status: 'ATTENDANCE_CLOSED' },
-            })
-            throw error
-        }
+        const { ip, userAgent } = extractRequestMeta(req.headers)
+        logAudit({
+            actorId: user.employeeId,
+            action: 'PAYROLL_GP3_CALCULATE',
+            resourceType: 'PayrollRun',
+            resourceId: payrollRunId,
+            companyId: run.companyId,
+            changes: {
+                yearMonth: run.yearMonth,
+                headcount: result.summary.headcount,
+                totalGross: result.summary.totalGross,
+                totalNet: result.summary.totalNet,
+            },
+            ip,
+            userAgent,
+        })
+
+        return apiSuccess(
+            {
+                payrollRun: result.payrollRun,
+                summary: result.summary,
+            },
+            200,
+        )
     },
     perm(MODULE.PAYROLL, ACTION.UPDATE),
 )

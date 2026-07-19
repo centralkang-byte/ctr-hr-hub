@@ -5,22 +5,29 @@
 
 import { prisma } from '@/lib/prisma'
 import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { notFound } from '@/lib/errors'
 import { differenceInDays, subMonths, format, startOfMonth, endOfMonth } from 'date-fns'
 import { calculateIncomeTax } from './kr-tax'
 import {
   computeTrailingFourWeekAvgWeeklyHours,
   evaluateSeveranceEligibility,
 } from './severance-eligibility'
+import type { PrismaTx } from '@/lib/prisma-rls'
 import type { SeveranceDetail } from './types'
+
+export interface CalculateSeveranceDeps {
+  db?: typeof prisma | PrismaTx
+}
 
 export async function calculateSeverance(
   employeeId: string,
   terminationDate: Date,
-  // 정산 법인 (옵션) — 퇴사 완료 흐름은 assignment 마감 후 호출되므로 active-assignment
-  // 조회가 빈 결과('')가 됨. 호출측(complete-offboarding)이 tx 내부에서 확정한 법인을 전달.
-  // 미전달 시 기존 동작(재직자 active assignment) 유지 — payroll 견적 라우트 무영향.
+  // 정산 법인 (옵션) — offboarding completion passes its locked owner company.
+  // Other callers derive the company from the assignment effective on terminationDate.
   settlementCompanyId?: string,
+  deps: CalculateSeveranceDeps = {},
 ): Promise<SeveranceDetail> {
+  const db = deps.db ?? prisma
   // 4주 윈도 사전 필터 하한: helper 와 동일한 UTC day-start 기준으로 정규화
   // (비자정 terminationDate 에서 윈도 첫날 스케줄 누락 방지 — loose pre-filter)
   const termDayStartMs = Date.UTC(
@@ -30,14 +37,19 @@ export async function calculateSeverance(
   )
   const windowStart = new Date(termDayStartMs - 28 * 24 * 60 * 60 * 1000)
 
-  const employee = await prisma.employee.findUniqueOrThrow({
+  const employee = await db.employee.findUniqueOrThrow({
     where: { id: employeeId },
     select: {
       id: true,
       name: true,
       hireDate: true,
       assignments: {
-        where: { isPrimary: true, endDate: null },
+        where: {
+          isPrimary: true,
+          effectiveDate: { lte: terminationDate },
+          OR: [{ endDate: null }, { endDate: { gt: terminationDate } }],
+        },
+        orderBy: { effectiveDate: 'desc' },
         take: 1,
         select: { companyId: true },
       },
@@ -60,6 +72,9 @@ export async function calculateSeverance(
     },
   })
   const companyId = settlementCompanyId ?? (extractPrimaryAssignment(employee.assignments)?.companyId ?? '')
+  if (!companyId) {
+    throw notFound('퇴직일에 유효한 주 발령을 찾을 수 없습니다.')
+  }
 
   const tenureDays = differenceInDays(terminationDate, employee.hireDate)
   const tenureYears = tenureDays / 365
@@ -87,7 +102,7 @@ export async function calculateSeverance(
     const monthEnd = endOfMonth(monthDate)
 
     // PayrollItem에서 해당 월 데이터 조회
-    const payrollItem = await prisma.payrollItem.findFirst({
+    const payrollItem = await db.payrollItem.findFirst({
       where: {
         employeeId,
         run: {
@@ -111,7 +126,7 @@ export async function calculateSeverance(
       })
     } else {
       // PAID 기록이 없으면 CompensationHistory에서 추정
-      const comp = await prisma.compensationHistory.findFirst({
+      const comp = await db.compensationHistory.findFirst({
         where: {
           employeeId,
           companyId: companyId,
@@ -123,7 +138,7 @@ export async function calculateSeverance(
       const monthlySalary = comp ? Math.round(Number(comp.newBaseSalary) / 12) : 0
 
       // 해당 월 수당
-      const allowanceRecords = await prisma.allowanceRecord.findMany({
+      const allowanceRecords = await db.allowanceRecord.findMany({
         where: { employeeId, companyId: companyId, yearMonth },
       })
       const totalAllowance = allowanceRecords.reduce(
@@ -132,7 +147,7 @@ export async function calculateSeverance(
       )
 
       // 해당 월 초과근무
-      const attendances = await prisma.attendance.findMany({
+      const attendances = await db.attendance.findMany({
         where: {
           employeeId,
           companyId: companyId,

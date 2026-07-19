@@ -40,8 +40,13 @@ export const GET = withPermission(
     const { days, companyId } = parsed.data
 
     const now = new Date()
-    const futureDate = new Date()
-    futureDate.setDate(futureDate.getDate() + days)
+    const today = new Date(Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+    ))
+    const futureDate = new Date(today)
+    futureDate.setUTCDate(futureDate.getUTCDate() + days)
 
     // Company scope enforcement via assignments
     const assignmentCompanyFilter =
@@ -50,16 +55,24 @@ export const GET = withPermission(
           ? { companyId }
           : {}
         : { companyId: user.companyId }
+    const assignmentFence = {
+      ...assignmentCompanyFilter,
+      isPrimary: true,
+      employmentType: 'CONTRACT' as const,
+      status: 'ACTIVE' as const,
+      effectiveDate: { lte: today },
+      OR: [{ endDate: null }, { endDate: { gt: today } }],
+    }
 
     const employees = await prisma.employee.findMany({
       where: {
         deletedAt: null,
         contractEndDate: {
-          gte: now,
+          gte: today,
           lte: futureDate,
         },
         assignments: {
-          some: { ...assignmentCompanyFilter, isPrimary: true, endDate: null },
+          some: assignmentFence,
         },
       },
       select: {
@@ -71,7 +84,8 @@ export const GET = withPermission(
         contractStartDate: true,
         contractEndDate: true,
         assignments: {
-          where: { ...assignmentCompanyFilter, isPrimary: true, endDate: null },
+          where: assignmentFence,
+          orderBy: { effectiveDate: 'desc' },
           take: 1,
           select: {
             companyId: true,

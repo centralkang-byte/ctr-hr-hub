@@ -84,12 +84,14 @@ async function calcTeamTurnoverRate(departmentId: string): Promise<TeamHealthMet
   try {
     const twelveMonthsAgo = subMonths(new Date(), 12)
 
-    // 퇴직자 수
+    // Assignment endDate is an event timestamp here, not an active interval fence.
+    // Restrict it to actual terminal assignment states so transfers/LOA are not exits.
     const exits = await prisma.employeeAssignment.count({
       where: {
         departmentId,
         endDate: { gte: twelveMonthsAgo },
         isPrimary: true,
+        status: { in: ['RESIGNED', 'TERMINATED'] },
       },
     })
 

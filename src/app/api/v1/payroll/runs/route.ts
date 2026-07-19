@@ -8,11 +8,11 @@ import { prisma } from '@/lib/prisma'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
-import { badRequest, conflict, handlePrismaError } from '@/lib/errors'
-import { logAudit, extractRequestMeta } from '@/lib/audit'
+import { badRequest, handlePrismaError } from '@/lib/errors'
+import { extractRequestMeta } from '@/lib/audit'
 import { payrollRunListSchema, payrollRunCreateSchema } from '@/lib/schemas/payroll'
-import { injectLoaAdjustmentsForNewRun } from '@/lib/loa/payroll-adjustment'
 import { resolveCompanyFilter } from '@/lib/api/companyFilter'
+import { createPayrollRunWithInitialLoaChildren } from '@/lib/payroll/run-service'
 import type { Prisma } from '@/generated/prisma/client'
 
 export const GET = withPermission(
@@ -72,21 +72,13 @@ export const POST = withPermission(
     // 멀티테넌트 스코프 (CEO S285 결정): 목록/상세 read·기존 run write는 SUPER 전 법인이나,
     // run '생성'은 SUPER도 본인 법인 한정(타 법인 생성은 미개방 — 잘못된 법인 run 생성 위험 +
     // 생성 UI에 법인 선택기 없음). 비-SUPER는 당연히 본인 법인. 따라서 user.companyId 고정 유지.
-    // 중복 방지: 같은 회사·월·유형 급여 실행은 하나만 (재실행은 기존 실행 사용/마감 해제)
-    // status 무관(CANCELLED 포함)하게 차단 — DB @@unique([companyId, yearMonth, runType])와 정책 일치
-    const existing = await prisma.payrollRun.findFirst({
-      where: { companyId: user.companyId, yearMonth: data.yearMonth, runType: data.runType },
-      select: { id: true },
-    })
-    if (existing) {
-      throw conflict(`이미 ${data.yearMonth} 급여 실행이 존재합니다. 기존 실행을 사용하세요.`)
-    }
-
+    const { ip, userAgent } = extractRequestMeta(req.headers)
     let run
     try {
-      run = await prisma.payrollRun.create({
-        data: {
+      run = await createPayrollRunWithInitialLoaChildren({
+        input: {
           companyId: user.companyId,
+          actorId: user.employeeId,
           name: data.name,
           runType: data.runType,
           yearMonth: data.yearMonth,
@@ -94,30 +86,17 @@ export const POST = withPermission(
           periodEnd: new Date(data.periodEnd),
           payDate: data.payDate ? new Date(data.payDate) : null,
           currency: data.currency,
-          status: 'DRAFT',
+        },
+        audit: {
+          action: 'PAYROLL_RUN_CREATE',
+          changes: { name: data.name, runType: data.runType, yearMonth: data.yearMonth },
+          ip,
+          userAgent,
         },
       })
     } catch (e) {
-      // DB @@unique race 백업: 동시 요청으로 findFirst를 통과해도 P2002 → conflict
       throw handlePrismaError(e)
     }
-
-    // LOA Phase 3: PayrollRun 생성 시 ACTIVE LOA adjustment 자동 주입 (fire-and-forget)
-    injectLoaAdjustmentsForNewRun(run.id, user.companyId, data.yearMonth).catch((err) => {
-      console.error('[LOA Phase 3] PayrollRun 생성 시 LOA adjustment 자동 주입 실패:', err)
-    })
-
-    const { ip, userAgent } = extractRequestMeta(req.headers)
-    logAudit({
-      actorId: user.employeeId,
-      action: 'PAYROLL_RUN_CREATE',
-      resourceType: 'PayrollRun',
-      resourceId: run.id,
-      companyId: user.companyId,
-      changes: { name: data.name, runType: data.runType, yearMonth: data.yearMonth },
-      ip,
-      userAgent,
-    })
 
     return apiSuccess(run, 201)
   },

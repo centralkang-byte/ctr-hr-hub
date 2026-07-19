@@ -10,8 +10,23 @@ import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiError, buildPagination } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
+import { badRequest } from '@/lib/errors'
 import type { SessionUser } from '@/types'
-import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import {
+  getYearEndOwnershipWindow,
+  readYearEndOwners,
+} from '@/lib/payroll/year-end-settlement-owner'
+
+interface OwnerPageRow {
+  id: string
+  employeeId: string
+  ownerCompanyId: string
+}
+
+interface OwnerSummaryRow {
+  status: string
+  count: bigint
+}
 
 function serializeBigInt(obj: unknown): unknown {
   return JSON.parse(
@@ -28,6 +43,18 @@ export const GET = withPermission(
       const status = searchParams.get('status') ?? undefined
       const page = parseInt(searchParams.get('page') ?? '1', 10)
       const limit = parseInt(searchParams.get('limit') ?? '50', 10)
+      if (
+        !Number.isInteger(year) ||
+        year < 1900 ||
+        year > 2100 ||
+        !Number.isInteger(page) ||
+        page < 1 ||
+        !Number.isInteger(limit) ||
+        limit < 1 ||
+        limit > 200
+      ) {
+        throw badRequest('연도 또는 페이지네이션 파라미터가 올바르지 않습니다.')
+      }
 
       // Determine which companyId(s) to scope to
       let companyIdFilter: string | undefined
@@ -38,62 +65,137 @@ export const GET = withPermission(
         // HR_ADMIN can only see their own company
         companyIdFilter = user.companyId
       }
+      const { start, endExclusive } = getYearEndOwnershipWindow(year)
+      const companyScope = companyIdFilter ?? null
+      const statusScope = status ?? null
+      const offset = (page - 1) * limit
 
-      // Build employee filter based on assignments
-      const assignmentWhere = companyIdFilter
-        ? { assignments: { some: { companyId: companyIdFilter, isPrimary: true, endDate: null } } }
-        : {}
-
-      // Build settlement where clause
-      const settlementWhere: Record<string, unknown> = {
-        year,
-        employee: assignmentWhere,
-      }
-      if (status) {
-        settlementWhere.status = status
-      }
-
-      const [total, settlements] = await Promise.all([
-        prisma.yearEndSettlement.count({ where: settlementWhere }),
-        prisma.yearEndSettlement.findMany({
-          where: settlementWhere,
-          skip: (page - 1) * limit,
-          take: limit,
-          orderBy: [{ status: 'asc' }, { updatedAt: 'desc' }],
-          include: {
-            employee: {
-              select: {
-                id: true,
-                name: true,
-                employeeNo: true,
-                assignments: {
-                  where: { isPrimary: true, endDate: null },
-                  take: 1,
+      const { scopedOwners, total, settlements, summaryRaw } =
+        await prisma.$transaction(
+          async (tx) => {
+            const ownerPage = await tx.$queryRaw<OwnerPageRow[]>`
+              WITH resolved_owners AS (
+                SELECT
+                  settlement.id,
+                  settlement.employee_id,
+                  settlement.status,
+                  settlement.updated_at,
+                  MIN(assignment.company_id::text) AS owner_company_id
+                FROM year_end_settlements AS settlement
+                INNER JOIN employee_assignments AS assignment
+                  ON assignment.employee_id = settlement.employee_id
+                WHERE settlement.year = ${year}
+                  AND assignment.is_primary = true
+                  AND assignment.effective_date < ${endExclusive}
+                  AND (assignment.end_date IS NULL OR assignment.end_date > ${start})
+                  AND (
+                    assignment.end_date IS NULL
+                    OR assignment.end_date > assignment.effective_date
+                  )
+                GROUP BY
+                  settlement.id,
+                  settlement.employee_id,
+                  settlement.status,
+                  settlement.updated_at
+                HAVING COUNT(DISTINCT assignment.company_id) = 1
+              )
+              SELECT
+                id::text AS "id",
+                employee_id::text AS "employeeId",
+                owner_company_id AS "ownerCompanyId"
+              FROM resolved_owners
+              WHERE (${companyScope}::text IS NULL OR owner_company_id = ${companyScope})
+                AND (${statusScope}::text IS NULL OR status = ${statusScope})
+              ORDER BY status ASC, updated_at DESC, id ASC
+              OFFSET ${offset}
+              LIMIT ${limit}
+            `
+            const summaryRaw = await tx.$queryRaw<OwnerSummaryRow[]>`
+              WITH resolved_owners AS (
+                SELECT
+                  settlement.id,
+                  settlement.status,
+                  MIN(assignment.company_id::text) AS owner_company_id
+                FROM year_end_settlements AS settlement
+                INNER JOIN employee_assignments AS assignment
+                  ON assignment.employee_id = settlement.employee_id
+                WHERE settlement.year = ${year}
+                  AND assignment.is_primary = true
+                  AND assignment.effective_date < ${endExclusive}
+                  AND (assignment.end_date IS NULL OR assignment.end_date > ${start})
+                  AND (
+                    assignment.end_date IS NULL
+                    OR assignment.end_date > assignment.effective_date
+                  )
+                GROUP BY settlement.id, settlement.status
+                HAVING COUNT(DISTINCT assignment.company_id) = 1
+              )
+              SELECT status, COUNT(*)::bigint AS "count"
+              FROM resolved_owners
+              WHERE (${companyScope}::text IS NULL OR owner_company_id = ${companyScope})
+              GROUP BY status
+            `
+            const settlementById = new Map(
+              (
+                await tx.yearEndSettlement.findMany({
+                  where: { id: { in: ownerPage.map((row) => row.id) } },
                   include: {
-                    department: { select: { id: true, name: true } },
-                    company: { select: { id: true, name: true } },
+                    employee: {
+                      select: {
+                        id: true,
+                        name: true,
+                        employeeNo: true,
+                      },
+                    },
+                    withholdingReceipt: {
+                      select: { id: true, issuedAt: true, pdfPath: true },
+                    },
                   },
-                },
-              },
-            },
-            withholdingReceipt: {
-              select: { id: true, issuedAt: true, pdfPath: true },
-            },
-          },
-        }),
-      ])
+                })
+              ).map((settlement) => [settlement.id, settlement]),
+            )
+            const settlements = ownerPage.flatMap((row) => {
+              const settlement = settlementById.get(row.id)
+              return settlement ? [settlement] : []
+            })
+            const owners = await readYearEndOwners(
+              ownerPage.map((row) => row.employeeId),
+              year,
+              tx,
+            )
+            const scopedOwners = new Map(
+              ownerPage.flatMap((row) => {
+                const owner = owners.get(row.employeeId)
+                return owner?.resolved && owner.companyId === row.ownerCompanyId
+                  ? ([[row.employeeId, owner]] as const)
+                  : []
+              }),
+            )
+            const total = summaryRaw.reduce(
+              (sum, row) =>
+                status === undefined || row.status === status
+                  ? sum + Number(row.count)
+                  : sum,
+              0,
+            )
 
-      const data = settlements.map((s) => {
-        const assignment = extractPrimaryAssignment(s.employee.assignments ?? [])
-        return {
+            return { scopedOwners, total, settlements, summaryRaw }
+          },
+          { isolationLevel: 'RepeatableRead' },
+        )
+
+      const data = settlements.flatMap((s) => {
+        const owner = scopedOwners.get(s.employeeId)
+        if (!owner) return []
+
+        return [{
           id: s.id,
           employeeId: s.employeeId,
           employeeName: s.employee.name,
           employeeNo: s.employee.employeeNo,
-          department: assignment?.department?.name ?? '-',
-          company: assignment?.company?.name ?? '-',
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          companyId: (assignment as any)?.companyId ?? user.companyId,
+          department: owner.assignment.department?.name ?? '-',
+          company: owner.assignment.company.name,
+          companyId: owner.companyId,
           year: s.year,
           status: s.status,
           totalSalary: s.totalSalary.toString(),
@@ -112,19 +214,10 @@ export const GET = withPermission(
               }
             : null,
           updatedAt: s.updatedAt,
-        }
+        }]
       })
 
       // Also return summary counts grouped by status
-      const summaryRaw = await prisma.yearEndSettlement.groupBy({
-        by: ['status'],
-        where: {
-          year,
-          employee: assignmentWhere,
-        },
-        _count: { id: true },
-      })
-
       const summary: Record<string, number> = {
         not_started: 0,
         in_progress: 0,
@@ -134,7 +227,7 @@ export const GET = withPermission(
       }
       for (const row of summaryRaw) {
         if (row.status in summary) {
-          summary[row.status] = row._count.id
+          summary[row.status] = Number(row.count)
         }
       }
 

@@ -11,12 +11,52 @@ import { badRequest, conflict, forbidden, notFound, handlePrismaError } from '@/
 import { withAuth, hasPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { isRequisitionApproverAllowed } from '@/lib/approval/validate-requisition-approver'
+import { lockActivePositionReferences } from '@/lib/employee/assignment-master-lifecycle'
+import type { PrismaTx } from '@/lib/prisma-rls'
 import type { SessionUser } from '@/types'
 
 const approveSchema = z.object({
   action: z.enum(['approve', 'reject']),
   comment: z.string().optional(),
 })
+
+interface LockedRequisitionDecision {
+  id: string
+  companyId: string
+  positionId: string | null
+  status: string
+  currentStep: number
+}
+
+async function lockFreshRequisitionDecision(
+  tx: PrismaTx,
+  params: {
+    id: string
+    companyId: string
+    expectedCurrentStep: number
+  },
+): Promise<LockedRequisitionDecision | null> {
+  const [locked] = await tx.$queryRaw<LockedRequisitionDecision[]>`
+    SELECT
+      id,
+      company_id AS "companyId",
+      position_id AS "positionId",
+      status,
+      current_step AS "currentStep"
+    FROM requisitions
+    WHERE id = ${params.id}
+      AND company_id = ${params.companyId}
+    FOR UPDATE
+  `
+  if (
+    !locked ||
+    locked.status !== 'pending' ||
+    locked.currentStep !== params.expectedCurrentStep
+  ) {
+    return null
+  }
+  return locked
+}
 
 // Session 202: 권한 게이트는 isRequisitionApproverAllowed (per-step 검증)에 일임.
 // dept_head는 Department.headEmployeeId 기반이라 role 무관 (EMPLOYEE-role 부서장
@@ -90,6 +130,13 @@ export const POST = withAuth(
     try {
       if (action === 'reject') {
         const result = await prisma.$transaction(async (tx) => {
+          const lockedRequisition = await lockFreshRequisitionDecision(tx, {
+            id,
+            companyId: requisition.companyId,
+            expectedCurrentStep: requisition.currentStep,
+          })
+          if (!lockedRequisition) return { raceLost: true } as const
+
           const stepUpdate = await tx.requisitionApproval.updateMany({
             where: { id: currentRecord.id, status: 'pending' },
             data: {
@@ -117,6 +164,20 @@ export const POST = withAuth(
       const isLastStep = requisition.currentStep >= totalSteps
 
       const result = await prisma.$transaction(async (tx) => {
+        const lockedRequisition = await lockFreshRequisitionDecision(tx, {
+          id,
+          companyId: requisition.companyId,
+          expectedCurrentStep: requisition.currentStep,
+        })
+        if (!lockedRequisition) return { raceLost: true } as const
+
+        if (isLastStep && lockedRequisition.positionId) {
+          await lockActivePositionReferences(tx, {
+            companyId: lockedRequisition.companyId,
+            positionIds: [lockedRequisition.positionId],
+          })
+        }
+
         const stepUpdate = await tx.requisitionApproval.updateMany({
           where: { id: currentRecord.id, status: 'pending' },
           data: {
@@ -142,7 +203,7 @@ export const POST = withAuth(
           data: { status: 'approved' },
         })
 
-        let positionId = requisition.positionId
+        let positionId = lockedRequisition.positionId
         if (!positionId) {
           const newPos = await tx.position.create({
             data: {

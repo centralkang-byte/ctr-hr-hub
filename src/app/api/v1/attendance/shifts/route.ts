@@ -49,12 +49,19 @@ export const GET = withPermission(
 
       const companyId =
         user.role === ROLE.SUPER_ADMIN ? null : user.companyId
+      const assignmentOverlap = {
+        isPrimary: true,
+        effectiveDate: { lte: end },
+        OR: [{ endDate: null }, { endDate: { gt: start } }],
+        ...(companyId ? { companyId } : {}),
+      }
 
       // 1. Employees: prefer shift-group members; fall back to all company employees
       const groupMembers = await prisma.shiftGroupMember.findMany({
         where: {
           removedAt: null,
           shiftGroup: companyId ? { companyId } : undefined,
+          employee: { assignments: { some: assignmentOverlap } },
         },
         select: {
           employeeId: true,
@@ -66,7 +73,8 @@ export const GET = withPermission(
               employeeNo: true,
               photoUrl: true,
               assignments: {
-                where: { isPrimary: true, endDate: null },
+                where: assignmentOverlap,
+                orderBy: { effectiveDate: 'desc' },
                 take: 1,
                 select: { department: { select: { name: true } } },
               },
@@ -110,20 +118,15 @@ export const GET = withPermission(
       } else {
         // Fallback: all active employees in the company
         const empRows = await prisma.employee.findMany({
-          where: companyId
-            ? {
-                assignments: {
-                  some: { companyId, isPrimary: true, endDate: null },
-                },
-              }
-            : undefined,
+          where: { assignments: { some: assignmentOverlap } },
           select: {
             id: true,
             name: true,
             employeeNo: true,
             photoUrl: true,
             assignments: {
-              where: { isPrimary: true, endDate: null },
+              where: assignmentOverlap,
+              orderBy: { effectiveDate: 'desc' },
               take: 1,
               select: { department: { select: { name: true } } },
             },
@@ -209,15 +212,28 @@ export const POST = withPermission(
 
       const { employeeId, workDate, slotName, startTime, endTime, note } =
         parsed.data
+      const workDateObj = parseDateOnly(workDate)
 
-      // Resolve companyId from the employee's current assignment
+      // Resolve companyId from the employee's assignment on the schedule date
       const assignment = await prisma.employeeAssignment.findFirst({
-        where: { employeeId, isPrimary: true, endDate: null },
+        where: {
+          employeeId,
+          isPrimary: true,
+          effectiveDate: { lte: workDateObj },
+          OR: [
+            { endDate: null },
+            { endDate: { gt: workDateObj } },
+          ],
+          ...(user.role !== ROLE.SUPER_ADMIN
+            ? { companyId: user.companyId }
+            : {}),
+        },
+        orderBy: [{ effectiveDate: 'desc' }, { id: 'desc' }],
         select: { companyId: true },
       })
 
       if (!assignment) {
-        throw badRequest('해당 직원의 현재 발령 정보를 찾을 수 없습니다.')
+        throw badRequest('해당 직원의 대상 날짜 발령 정보를 찾을 수 없습니다.')
       }
 
       // RBAC check — non-SUPER_ADMIN can only manage own company
@@ -228,12 +244,14 @@ export const POST = withPermission(
         throw badRequest('다른 법인 직원의 근무를 수정할 수 없습니다.')
       }
 
-      const workDateObj = parseDateOnly(workDate)
-
       // 'off' → delete any existing schedule
       if (slotName === 'off') {
         await prisma.shiftSchedule.deleteMany({
-          where: { employeeId, workDate: workDateObj },
+          where: {
+            companyId: assignment.companyId,
+            employeeId,
+            workDate: workDateObj,
+          },
         })
         return apiSuccess({ action: 'deleted', employeeId, workDate })
       }
@@ -278,7 +296,10 @@ export const POST = withPermission(
       }
 
       const schedule = await prisma.shiftSchedule.upsert({
-        where: { employeeId_workDate: { employeeId, workDate: workDateObj } },
+        where: {
+          employeeId_workDate: { employeeId, workDate: workDateObj },
+          companyId: assignment.companyId,
+        },
         create: upsertData,
         update: {
           slotIndex: upsertData.slotIndex,

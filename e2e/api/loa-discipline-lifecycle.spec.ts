@@ -115,7 +115,10 @@ test.describe('LOA Records: HR_ADMIN State Machine', () => {
 
   test('POST /leave-of-absence creates REQUESTED record', async ({ request }) => {
     const api = new ApiClient(request)
-    const data = f.buildLoaRecord(employeeId, loaTypeId)
+    const data = {
+      ...f.buildLoaRecord(employeeId, loaTypeId),
+      startDate: new Date().toISOString().split('T')[0],
+    }
     const res = await f.createLoaRecord(api, data)
     assertOk(res, 'create LOA record')
     const d = res.data as Record<string, unknown>

@@ -10,71 +10,92 @@ import { prisma } from '@/lib/prisma'
 import { apiError } from '@/lib/api'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
-import { AppError } from '@/lib/errors'
+import { badRequest, conflict, forbidden, notFound } from '@/lib/errors'
 import { generateWithholdingReceiptPdf } from '@/lib/payroll/yearEndReceiptPdf'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import type { SessionUser } from '@/types'
-import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { readYearEndOwner } from '@/lib/payroll/year-end-settlement-owner'
+import { acquirePrimaryAssignmentEmployeeLocks } from '@/lib/employee/primary-assignment-writer'
 
 export const POST = withPermission(
   async (req: NextRequest, context, user: SessionUser) => {
     try {
       const { id } = await context.params
 
-      // Fetch the settlement
-      const settlement = await prisma.yearEndSettlement.findUnique({
+      const candidate = await prisma.yearEndSettlement.findUnique({
         where: { id },
-        include: {
-          employee: {
+        select: { employeeId: true, year: true },
+      })
+      if (!candidate) {
+        throw notFound('정산 정보를 찾을 수 없습니다.')
+      }
+
+      const { settlement, ownerCompanyId, pdfBuffer } = await prisma.$transaction(
+        async (tx) => {
+          await acquirePrimaryAssignmentEmployeeLocks(tx, [candidate.employeeId])
+          const locked = await tx.$queryRaw<Array<{ id: string }>>`
+            SELECT id::text AS "id"
+            FROM year_end_settlements
+            WHERE id = ${id}
+            FOR UPDATE
+          `
+          if (locked.length !== 1) throw notFound('정산 정보를 찾을 수 없습니다.')
+
+          const settlement = await tx.yearEndSettlement.findUnique({
+            where: { id },
             select: {
-              name: true,
-              assignments: {
-                where: { isPrimary: true, endDate: null },
-                take: 1,
-                select: { companyId: true },
-              },
+              id: true,
+              employeeId: true,
+              year: true,
+              status: true,
+              employee: { select: { name: true } },
             },
-          },
+          })
+          if (!settlement) throw notFound('정산 정보를 찾을 수 없습니다.')
+          if (
+            settlement.employeeId !== candidate.employeeId ||
+            settlement.year !== candidate.year
+          ) {
+            throw conflict('정산 대상 정보가 변경되었습니다. 다시 시도해 주세요.')
+          }
+
+          const owner = await readYearEndOwner(
+            settlement.employeeId,
+            settlement.year,
+            tx,
+          )
+          if (!owner.resolved) {
+            throw conflict('정산 귀속 법인을 하나로 확정할 수 없습니다.')
+          }
+          if (
+            user.role !== ROLE.SUPER_ADMIN &&
+            owner.companyId !== user.companyId
+          ) {
+            throw forbidden('해당 직원의 영수증을 발행할 권한이 없습니다.')
+          }
+          if (settlement.status !== 'confirmed') {
+            throw badRequest('확정된 정산만 원천징수영수증을 발행할 수 있습니다.')
+          }
+
+          const pdfBuffer = await generateWithholdingReceiptPdf(id, {
+            expectedOwnerCompanyId: owner.companyId,
+            db: tx,
+          })
+          const issuedAt = new Date()
+          await tx.withholdingReceipt.upsert({
+            where: { settlementId: id },
+            create: {
+              settlementId: id,
+              employeeId: settlement.employeeId,
+              year: settlement.year,
+              issuedAt,
+            },
+            update: { issuedAt },
+          })
+
+          return { settlement, ownerCompanyId: owner.companyId, pdfBuffer }
         },
-      })
-
-      if (!settlement) {
-        throw new AppError(404, 'NOT_FOUND', '정산 정보를 찾을 수 없습니다.')
-      }
-
-      // Company scope check
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const employeeCompanyId = (extractPrimaryAssignment(settlement.employee.assignments ?? []) as any)?.companyId as string | undefined
-      // fail-closed: 회사 미해결(활성 발령 없음) 시에도 비-SUPER는 차단 (타 법인 영수증 발행 우회 방지)
-      if (user.role !== ROLE.SUPER_ADMIN && employeeCompanyId !== user.companyId) {
-        throw new AppError(403, 'FORBIDDEN', '해당 직원의 영수증을 발행할 권한이 없습니다.')
-      }
-
-      // Only confirmed settlements can have receipts issued
-      if (settlement.status !== 'confirmed') {
-        throw new AppError(
-          400,
-          'BAD_REQUEST',
-          '확정된 정산만 원천징수영수증을 발행할 수 있습니다.',
-        )
-      }
-
-      // Generate the PDF (HTML as buffer)
-      const pdfBuffer = await generateWithholdingReceiptPdf(id)
-
-      // Upsert the WithholdingReceipt record
-      await prisma.withholdingReceipt.upsert({
-        where: { settlementId: id },
-        create: {
-          settlementId: id,
-          employeeId: settlement.employeeId,
-          year: settlement.year,
-          issuedAt: new Date(),
-        },
-        update: {
-          issuedAt: new Date(),
-        },
-      })
+      )
 
       // Audit log
       const { ip, userAgent } = extractRequestMeta(req.headers)
@@ -83,7 +104,7 @@ export const POST = withPermission(
         action: 'WITHHOLDING_RECEIPT_ISSUE',
         resourceType: 'WithholdingReceipt',
         resourceId: id,
-        companyId: user.companyId,
+        companyId: ownerCompanyId,
         changes: {
           employeeId: settlement.employeeId,
           employeeName: settlement.employee.name,

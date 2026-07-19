@@ -9,6 +9,11 @@ import { badRequest, conflict, notFound, handlePrismaError, isAppError } from '@
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
+import {
+  acquirePrimaryAssignmentDepartmentLocks,
+  revalidatePrimaryAssignmentDepartments,
+} from '@/lib/employee/primary-assignment-writer'
+import { softDeleteDepartment } from '@/lib/org/department-lifecycle'
 import { departmentUpdateSchema } from '@/lib/schemas/org'
 import type { SessionUser } from '@/types'
 
@@ -81,14 +86,49 @@ export const PUT = withPermission(
     // Pre-check: verify department exists within the user's company scope
     const existing = await prisma.department.findFirst({
       where: { id, deletedAt: null, ...companyFilter },
-      select: { id: true, companyId: true },
+      select: { id: true, companyId: true, parentId: true },
     })
     if (!existing) throw notFound('부서를 찾을 수 없습니다.')
 
     try {
-      const department = await prisma.department.update({
-        where: { id, companyId: existing.companyId },
-        data: parsed.data,
+      const nextParentId = parsed.data.parentId === undefined
+        ? existing.parentId
+        : parsed.data.parentId
+      const department = await prisma.$transaction(async (tx) => {
+        const scopes = [
+          { companyId: existing.companyId, departmentId: existing.id },
+          { companyId: existing.companyId, departmentId: existing.parentId },
+          { companyId: existing.companyId, departmentId: nextParentId ?? null },
+        ]
+        await acquirePrimaryAssignmentDepartmentLocks(tx, scopes)
+        await revalidatePrimaryAssignmentDepartments(tx, scopes)
+
+        const locked = await tx.department.findFirst({
+          where: {
+            id: existing.id,
+            companyId: existing.companyId,
+            deletedAt: null,
+          },
+          select: { id: true, parentId: true },
+        })
+        if (!locked) throw notFound('부서를 찾을 수 없습니다.')
+        if (locked.parentId !== existing.parentId) {
+          throw conflict('부서 소속이 변경되었습니다. 다시 시도해 주세요.')
+        }
+
+        const updated = await tx.department.updateMany({
+          where: {
+            id,
+            companyId: existing.companyId,
+            parentId: locked.parentId,
+            deletedAt: null,
+          },
+          data: parsed.data,
+        })
+        if (updated.count !== 1) {
+          throw conflict('부서가 다른 작업에서 변경되었습니다. 다시 시도해 주세요.')
+        }
+        return tx.department.findUniqueOrThrow({ where: { id } })
       })
 
       const { ip, userAgent } = extractRequestMeta(req.headers)
@@ -126,26 +166,15 @@ export const DELETE = withPermission(
 
     const existing = await prisma.department.findFirst({
       where: { id, deletedAt: null, ...companyFilter },
-      select: { id: true, companyId: true },
+      select: { id: true, companyId: true, parentId: true },
     })
     if (!existing) throw notFound('부서를 찾을 수 없습니다.')
 
-    // 하위 부서/현행 배정이 살아있으면 삭제 차단 (cascade/orphan 방지)
-    const [activeChildren, activeAssignments] = await Promise.all([
-      prisma.department.count({ where: { parentId: id, deletedAt: null } }),
-      prisma.employeeAssignment.count({ where: { departmentId: id, endDate: null } }),
-    ])
-    if (activeChildren > 0) {
-      throw conflict('하위 부서가 있는 부서는 삭제할 수 없습니다. 먼저 하위 부서를 이동하거나 삭제해 주세요.')
-    }
-    if (activeAssignments > 0) {
-      throw conflict('현재 소속 직원이 있는 부서는 삭제할 수 없습니다. 먼저 직원을 다른 부서로 이동해 주세요.')
-    }
-
     try {
-      await prisma.department.update({
-        where: { id, companyId: existing.companyId },
-        data: { deletedAt: new Date() },
+      await softDeleteDepartment({
+        id: existing.id,
+        companyId: existing.companyId,
+        expectedParentId: existing.parentId,
       })
 
       const { ip, userAgent } = extractRequestMeta(req.headers)

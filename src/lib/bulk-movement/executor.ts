@@ -6,6 +6,25 @@
 import { prisma } from '@/lib/prisma'
 import { parseDateOnly } from '@/lib/timezone'
 import { sendNotification } from '@/lib/notifications'
+import type { EmployeeAssignment } from '@/generated/prisma/client'
+import {
+  PRIMARY_ASSIGNMENT_RETRY_CODE,
+  acquirePrimaryAssignmentDepartmentLocks,
+  acquirePrimaryAssignmentEmployeeLocks,
+  assertPrimaryAssignmentReplacement,
+  assertPrimaryAssignmentSourceScopeLocked,
+  casPrimaryAssignment,
+  getOpenPrimaryAssignment,
+  getPrimaryAssignmentAtDate,
+  readPrimaryAssignmentTimeline,
+  revalidatePrimaryAssignmentDepartments,
+  revalidatePrimaryAssignmentMasterDataSet,
+  withPrimaryAssignmentRetry,
+  type PrimaryAssignmentDepartmentScope,
+  type PrimaryAssignmentMasterData,
+} from '@/lib/employee/primary-assignment-writer'
+import { AppError, badRequest } from '@/lib/errors'
+import { selectSalaryBand } from '@/lib/payroll/salary-band'
 import type { MovementType, ValidatedRow } from './types'
 
 // Prisma 7 interactive transaction client 타입
@@ -55,40 +74,47 @@ async function notifyHrAdminsForOffCycle(
   }
 }
 
-// ── 현재 active assignment 조회 (트랜잭션 내부용) ──────────
-async function getActiveAssignment(tx: TxClient, employeeId: string) {
-  return tx.employeeAssignment.findFirst({
-    where: {
-      employeeId,
-      isPrimary: true,
-      endDate: null,
-    },
-  })
+interface AssignmentContext {
+  current: EmployeeAssignment
+  timeline: EmployeeAssignment[]
 }
 
-// ── 현재 assignment 종료 ────────────────────────────────────
-async function closeAssignment(tx: TxClient, employeeId: string, endDate: Date) {
-  await tx.employeeAssignment.updateMany({
-    where: {
-      employeeId,
-      isPrimary: true,
-      endDate: null,
-    },
-    data: { endDate },
+interface OffCycleNotification {
+  companyId: string
+  employeeId: string
+  employeeName: string
+  reason: 'PROMOTION' | 'ROLE_CHANGE'
+}
+
+async function closeAssignment(
+  tx: TxClient,
+  context: AssignmentContext,
+  endDate: Date,
+  nextEffectiveDate: Date,
+) {
+  assertPrimaryAssignmentReplacement({
+    timeline: context.timeline,
+    replacedAssignmentId: context.current.id,
+    closeDate: endDate,
+    nextEffectiveDate,
   })
+  await casPrimaryAssignment(tx, context.current, { endDate })
 }
 
 // ── 부서 이동 (TRANSFER) ────────────────────────────────────
-async function executeTransfer(tx: TxClient, row: ValidatedRow) {
+async function executeTransfer(
+  tx: TxClient,
+  row: ValidatedRow,
+  context: AssignmentContext,
+) {
   const data = row.data as Record<string, string>
   const effectiveDate = parseDateOnly(data.effectiveDate)
-  const current = await getActiveAssignment(tx, row.employeeId)
-  if (!current) throw new Error(`[Row ${row.rowNum}] ${row.employeeName}: 활성 발령이 없습니다`)
+  const { current } = context
   if (current.effectiveDate >= effectiveDate) {
     throw new Error(`[Row ${row.rowNum}] ${row.employeeName}: 발령일이 현재 발령일 이전입니다`)
   }
 
-  await closeAssignment(tx, row.employeeId, effectiveDate)
+  await closeAssignment(tx, context, effectiveDate, effectiveDate)
 
   await tx.employeeAssignment.create({
     data: {
@@ -112,16 +138,20 @@ async function executeTransfer(tx: TxClient, row: ValidatedRow) {
 }
 
 // ── 승진 (PROMOTION) ───────────────────────────────────────
-async function executePromotion(tx: TxClient, row: ValidatedRow) {
+async function executePromotion(
+  tx: TxClient,
+  row: ValidatedRow,
+  context: AssignmentContext,
+  notifications: OffCycleNotification[],
+) {
   const data = row.data as Record<string, string>
   const effectiveDate = parseDateOnly(data.effectiveDate)
-  const current = await getActiveAssignment(tx, row.employeeId)
-  if (!current) throw new Error(`[Row ${row.rowNum}] ${row.employeeName}: 활성 발령이 없습니다`)
+  const { current } = context
   if (current.effectiveDate >= effectiveDate) {
     throw new Error(`[Row ${row.rowNum}] ${row.employeeName}: 발령일이 현재 발령일 이전입니다`)
   }
 
-  await closeAssignment(tx, row.employeeId, effectiveDate)
+  await closeAssignment(tx, context, effectiveDate, effectiveDate)
 
   await tx.employeeAssignment.create({
     data: {
@@ -143,21 +173,29 @@ async function executePromotion(tx: TxClient, row: ValidatedRow) {
     },
   })
 
-  // HR Admin에 비정기 보상 검토 알림 (fire-and-forget)
-  notifyHrAdminsForOffCycle(current.companyId, row.employeeId, row.employeeName, 'PROMOTION')
+  notifications.push({
+    companyId: current.companyId,
+    employeeId: row.employeeId,
+    employeeName: row.employeeName,
+    reason: 'PROMOTION',
+  })
 }
 
 // ── 법인 전환 (ENTITY TRANSFER / COMPANY_TRANSFER) ─────────
-async function executeEntityTransfer(tx: TxClient, row: ValidatedRow) {
+async function executeEntityTransfer(
+  tx: TxClient,
+  row: ValidatedRow,
+  context: AssignmentContext,
+  notifications: OffCycleNotification[],
+) {
   const data = row.data as Record<string, string>
   const effectiveDate = parseDateOnly(data.effectiveDate)
-  const current = await getActiveAssignment(tx, row.employeeId)
-  if (!current) throw new Error(`[Row ${row.rowNum}] ${row.employeeName}: 활성 발령이 없습니다`)
+  const { current } = context
   if (current.effectiveDate >= effectiveDate) {
     throw new Error(`[Row ${row.rowNum}] ${row.employeeName}: 발령일이 현재 발령일 이전입니다`)
   }
 
-  await closeAssignment(tx, row.employeeId, effectiveDate)
+  await closeAssignment(tx, context, effectiveDate, effectiveDate)
 
   await tx.employeeAssignment.create({
     data: {
@@ -181,26 +219,31 @@ async function executeEntityTransfer(tx: TxClient, row: ValidatedRow) {
     },
   })
 
-  // HR Admin에 비정기 보상 검토 알림 (fire-and-forget, 전입 법인 기준)
-  notifyHrAdminsForOffCycle(data.companyId, row.employeeId, row.employeeName, 'ROLE_CHANGE')
+  notifications.push({
+    companyId: data.companyId,
+    employeeId: row.employeeId,
+    employeeName: row.employeeName,
+    reason: 'ROLE_CHANGE',
+  })
 }
 
 // ── 퇴직 (TERMINATION) ────────────────────────────────────
-async function executeTermination(tx: TxClient, row: ValidatedRow) {
+async function executeTermination(
+  tx: TxClient,
+  row: ValidatedRow,
+  context: AssignmentContext,
+) {
   const data = row.data as Record<string, string>
   const lastWorkingDate = parseDateOnly(data.lastWorkingDate)
-  const current = await getActiveAssignment(tx, row.employeeId)
-  if (!current) throw new Error(`[Row ${row.rowNum}] ${row.employeeName}: 활성 발령이 없습니다`)
+  const { current } = context
   if (current.effectiveDate >= lastWorkingDate) {
     throw new Error(`[Row ${row.rowNum}] ${row.employeeName}: 퇴직일이 현재 발령일 이전입니다`)
   }
 
-  // 현재 발령 종료 (endDate = lastWorkingDate)
-  await closeAssignment(tx, row.employeeId, lastWorkingDate)
-
   // 새 발령: effectiveDate = lastWorkingDate + 1 day
   const newEffective = new Date(lastWorkingDate.getTime())
   newEffective.setUTCDate(newEffective.getUTCDate() + 1)
+  await closeAssignment(tx, context, newEffective, newEffective)
 
   // resignType에 따라 status 결정
   const resignType = data.resignType as string
@@ -258,18 +301,24 @@ async function executeTermination(tx: TxClient, row: ValidatedRow) {
 }
 
 // ── 보상 변경 (COMPENSATION) ──────────────────────────────
-async function executeCompensation(tx: TxClient, row: ValidatedRow) {
+async function executeCompensation(
+  tx: TxClient,
+  row: ValidatedRow,
+  current: EmployeeAssignment,
+) {
   const data = row.data as Record<string, string>
   const effectiveDate = parseDateOnly(data.effectiveDate)
-  const current = await getActiveAssignment(tx, row.employeeId)
-  if (!current) throw new Error(`[Row ${row.rowNum}] ${row.employeeName}: 활성 발령이 없습니다`)
 
   const newBaseSalary = parseFloat(data.newBaseSalary)
   const currency = data.currency ?? 'KRW'
 
   // 이전 보상 이력에서 현재 연봉 조회
   const latestComp = await tx.compensationHistory.findFirst({
-    where: { employeeId: row.employeeId },
+    where: {
+      employeeId: row.employeeId,
+      companyId: current.companyId,
+      effectiveDate: { lte: effectiveDate },
+    },
     orderBy: { effectiveDate: 'desc' },
   })
   const previousBaseSalary = latestComp
@@ -283,19 +332,35 @@ async function executeCompensation(tx: TxClient, row: ValidatedRow) {
   // SalaryBand 기준 예외 판단
   let isException = false
   if (current.jobGradeId) {
-    const band = await tx.salaryBand.findFirst({
+    const bands = await tx.salaryBand.findMany({
       where: {
         companyId: current.companyId,
         jobGradeId: current.jobGradeId,
         effectiveFrom: { lte: effectiveDate },
-        OR: [
-          { effectiveTo: null },
-          { effectiveTo: { gte: effectiveDate } },
+        AND: [
+          {
+            OR: [
+              { effectiveTo: null },
+              { effectiveTo: { gte: effectiveDate } },
+            ],
+          },
+          current.jobCategoryId === null
+            ? { jobCategoryId: null }
+            : {
+                OR: [
+                  { jobCategoryId: current.jobCategoryId },
+                  { jobCategoryId: null },
+                ],
+              },
         ],
         deletedAt: null,
       },
-      orderBy: { effectiveFrom: 'desc' },
     })
+    const band = selectSalaryBand(
+      bands,
+      current.jobGradeId,
+      current.jobCategoryId,
+    )
     if (band) {
       isException = newBaseSalary < Number(band.minSalary) || newBaseSalary > Number(band.maxSalary)
     }
@@ -324,6 +389,7 @@ async function executeCompensation(tx: TxClient, row: ValidatedRow) {
 export interface ExecuteAuditContext {
   actorEmployeeId: string
   companyId: string
+  authorizedCompanyId?: string
   ip?: string
   userAgent?: string
 }
@@ -335,71 +401,218 @@ export async function executeMovements(
   audit: ExecuteAuditContext,
 ) {
   const executionId = crypto.randomUUID()
-  let applied = 0
+  const duplicateEmployeeId = rows.find(
+    (row, index) => rows.findIndex((candidate) => candidate.employeeId === row.employeeId) !== index,
+  )?.employeeId
+  if (duplicateEmployeeId) {
+    throw badRequest('같은 직원에 대한 일괄 발령을 한 파일에서 중복 실행할 수 없습니다.')
+  }
 
-  await prisma.$transaction(
-    async (tx) => {
-      for (const row of rows) {
-        // Re-validation (Gemini Patch 3): 직원 존재 및 활성 발령 확인
-        const employee = await tx.employee.findUnique({
-          where: { id: row.employeeId },
-          select: { id: true, deletedAt: true },
-        })
-        if (!employee || employee.deletedAt) {
-          throw new Error(`[Row ${row.rowNum}] ${row.employeeName}: 직원을 찾을 수 없습니다`)
-        }
-
-        switch (type) {
-          case 'transfer':
-            await executeTransfer(tx, row)
-            break
-          case 'promotion':
-            await executePromotion(tx, row)
-            break
-          case 'entity-transfer':
-            await executeEntityTransfer(tx, row)
-            break
-          case 'termination':
-            await executeTermination(tx, row)
-            break
-          case 'compensation':
-            await executeCompensation(tx, row)
-            break
-          default:
-            throw new Error(`지원하지 않는 발령 유형: ${type}`)
-        }
-
-        applied++
-      }
-
-      // 감사 로그를 발령과 같은 트랜잭션에서 기록 — audit 실패 시 발령도 롤백 (원자성).
-      // 라우트 사후 fire-and-forget은 audit 유실 시 실행 이력이 사라짐 (S276 Codex r2-2)
-      await tx.auditLog.create({
-        data: {
-          actorId: audit.actorEmployeeId,
-          action: 'bulk_movement.execute',
-          resourceType: 'bulk_movement',
-          resourceId: executionId,
-          companyId: audit.companyId,
-          changes: {
-            movementType: type,
-            fileName,
-            totalRows: rows.length,
-            applied,
-            targets: rows.map((r) => ({
-              employeeId: r.employeeId,
-              employeeNo: r.employeeNo,
-              effectiveDate: (r.data.effectiveDate as string | undefined) ?? null,
-            })),
+  const usesAssignmentWriter = type !== 'compensation'
+  const runTransaction = async () => {
+    const sourceHints = usesAssignmentWriter
+      ? await prisma.employeeAssignment.findMany({
+          where: {
+            employeeId: { in: rows.map((row) => row.employeeId) },
+            isPrimary: true,
+            endDate: null,
           },
-          ipAddress: audit.ip ?? null,
-          userAgent: audit.userAgent ?? null,
-          sensitivityLevel: 'HIGH',
-        },
-      })
-    },
-    { timeout: 60_000 },
-  )
+        })
+      : []
+    const hintByEmployee = new Map(
+      sourceHints.map((assignment) => [assignment.employeeId, assignment]),
+    )
+    const departmentScopes: PrimaryAssignmentDepartmentScope[] = []
+    const masterDataScopes: PrimaryAssignmentMasterData[] = []
+    if (usesAssignmentWriter) {
+      for (const row of rows) {
+        const source = hintByEmployee.get(row.employeeId)
+        if (!source) {
+          throw badRequest(`[Row ${row.rowNum}] ${row.employeeName}: 활성 발령이 없습니다`)
+        }
+        const data = row.data as Record<string, string>
+        departmentScopes.push({
+          companyId: source.companyId,
+          departmentId: source.departmentId,
+        })
+        if (type === 'entity-transfer') {
+          departmentScopes.push({ companyId: data.companyId, departmentId: data.departmentId })
+          masterDataScopes.push({
+            companyId: data.companyId,
+            jobGradeId: data.jobGradeId ?? null,
+            jobCategoryId: null,
+            positionId: data.positionId ?? null,
+            workLocationId: data.workLocationId ?? null,
+          })
+        } else if (type === 'transfer') {
+          departmentScopes.push({ companyId: source.companyId, departmentId: data.departmentId })
+          masterDataScopes.push({
+            companyId: source.companyId,
+            jobGradeId: data.jobGradeId ?? source.jobGradeId,
+            jobCategoryId: data.jobCategoryId ?? source.jobCategoryId,
+            positionId: data.positionId ?? source.positionId,
+            workLocationId: data.workLocationId ?? source.workLocationId,
+          })
+        } else {
+          departmentScopes.push({
+            companyId: source.companyId,
+            departmentId: data.departmentId ?? source.departmentId,
+          })
+          masterDataScopes.push({
+            companyId: source.companyId,
+            jobGradeId: type === 'promotion' ? data.jobGradeId : source.jobGradeId,
+            jobCategoryId: data.jobCategoryId ?? source.jobCategoryId,
+            positionId: data.positionId ?? source.positionId,
+            workLocationId: data.workLocationId ?? source.workLocationId,
+          })
+        }
+      }
+    }
 
-  return { success: true, applied, executionId }
+    return prisma.$transaction(
+      async (tx) => {
+        const contexts = new Map<string, AssignmentContext>()
+        if (usesAssignmentWriter) {
+          const lockedDepartmentKeys = await acquirePrimaryAssignmentDepartmentLocks(
+            tx,
+            departmentScopes,
+          )
+          await revalidatePrimaryAssignmentDepartments(tx, departmentScopes)
+          await revalidatePrimaryAssignmentMasterDataSet(tx, masterDataScopes)
+          await acquirePrimaryAssignmentEmployeeLocks(
+            tx,
+            rows.map((row) => row.employeeId),
+          )
+          for (const row of rows) {
+            const timeline = await readPrimaryAssignmentTimeline(tx, row.employeeId)
+            const current = getOpenPrimaryAssignment(timeline)
+            if (!current) {
+              throw badRequest(`[Row ${row.rowNum}] ${row.employeeName}: 활성 발령이 없습니다`)
+            }
+            assertPrimaryAssignmentSourceScopeLocked(lockedDepartmentKeys, current)
+            const sourceHint = hintByEmployee.get(row.employeeId)
+            if (
+              !sourceHint ||
+              sourceHint.id !== current.id ||
+              sourceHint.updatedAt.getTime() !== current.updatedAt.getTime()
+            ) {
+              throw new AppError(
+                409,
+                PRIMARY_ASSIGNMENT_RETRY_CODE,
+                `[Row ${row.rowNum}] ${row.employeeName}: 주 발령 후보가 변경되었습니다.`,
+                { employeeId: row.employeeId },
+              )
+            }
+            contexts.set(row.employeeId, { current, timeline })
+          }
+        } else {
+          await acquirePrimaryAssignmentEmployeeLocks(
+            tx,
+            rows.map((row) => row.employeeId),
+          )
+          for (const row of rows) {
+            const timeline = await readPrimaryAssignmentTimeline(tx, row.employeeId)
+            const data = row.data as Record<string, string>
+            const effectiveDate = parseDateOnly(data.effectiveDate)
+            const current = getPrimaryAssignmentAtDate(timeline, effectiveDate)
+            if (!current) {
+              throw badRequest(
+                `[Row ${row.rowNum}] ${row.employeeName}: 보상 적용일의 주 발령이 없습니다`,
+              )
+            }
+            if (
+              audit.authorizedCompanyId &&
+              current.companyId !== audit.authorizedCompanyId
+            ) {
+              throw badRequest(
+                `[Row ${row.rowNum}] ${row.employeeName}: 보상 적용일의 소속 법인에 대한 권한이 없습니다`,
+              )
+            }
+            contexts.set(row.employeeId, { current, timeline })
+          }
+        }
+
+        let applied = 0
+        const notifications: OffCycleNotification[] = []
+        for (const row of rows) {
+          // Re-validation (Gemini Patch 3): 직원 존재 및 활성 발령 확인
+          const employee = await tx.employee.findUnique({
+            where: { id: row.employeeId },
+            select: { id: true, deletedAt: true },
+          })
+          if (!employee || employee.deletedAt) {
+            throw new Error(`[Row ${row.rowNum}] ${row.employeeName}: 직원을 찾을 수 없습니다`)
+          }
+
+          switch (type) {
+            case 'transfer':
+              await executeTransfer(tx, row, contexts.get(row.employeeId)!)
+              break
+            case 'promotion':
+              await executePromotion(tx, row, contexts.get(row.employeeId)!, notifications)
+              break
+            case 'entity-transfer':
+              await executeEntityTransfer(tx, row, contexts.get(row.employeeId)!, notifications)
+              break
+            case 'termination':
+              await executeTermination(tx, row, contexts.get(row.employeeId)!)
+              break
+            case 'compensation':
+              await executeCompensation(
+                tx,
+                row,
+                contexts.get(row.employeeId)!.current,
+              )
+              break
+            default:
+              throw new Error(`지원하지 않는 발령 유형: ${type}`)
+          }
+
+          applied += 1
+        }
+
+        // 감사 로그를 발령과 같은 트랜잭션에서 기록 — audit 실패 시 발령도 롤백 (원자성).
+        // 라우트 사후 fire-and-forget은 audit 유실 시 실행 이력이 사라짐 (S276 Codex r2-2)
+        await tx.auditLog.create({
+          data: {
+            actorId: audit.actorEmployeeId,
+            action: 'bulk_movement.execute',
+            resourceType: 'bulk_movement',
+            resourceId: executionId,
+            companyId: audit.companyId,
+            changes: {
+              movementType: type,
+              fileName,
+              totalRows: rows.length,
+              applied,
+              targets: rows.map((r) => ({
+                employeeId: r.employeeId,
+                employeeNo: r.employeeNo,
+                effectiveDate: (r.data.effectiveDate as string | undefined) ?? null,
+              })),
+            },
+            ipAddress: audit.ip ?? null,
+            userAgent: audit.userAgent ?? null,
+            sensitivityLevel: 'HIGH',
+          },
+        })
+        return { applied, notifications }
+      },
+      { timeout: 60_000 },
+    )
+  }
+
+  const result = usesAssignmentWriter
+    ? await withPrimaryAssignmentRetry(runTransaction)
+    : await runTransaction()
+  for (const notification of result.notifications) {
+    void notifyHrAdminsForOffCycle(
+      notification.companyId,
+      notification.employeeId,
+      notification.employeeName,
+      notification.reason,
+    )
+  }
+
+  return { success: true, applied: result.applied, executionId }
 }

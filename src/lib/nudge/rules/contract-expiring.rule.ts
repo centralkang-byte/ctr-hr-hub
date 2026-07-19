@@ -10,6 +10,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { addDays } from 'date-fns'
+import { getTodayForTimezone } from '@/lib/assignments'
 import type { NudgeRule, OverdueItem } from '../types'
 
 export const contractExpiringRule: NudgeRule = {
@@ -53,8 +54,13 @@ export const contractExpiringRule: NudgeRule = {
     companyId: string,
     assigneeId: string,
   ): Promise<OverdueItem[]> {
-    const now = new Date()
-    const lookAheadDate = addDays(now, 30)
+    const company = await prisma.company.findFirst({
+      where: { id: companyId, deletedAt: null },
+      select: { timezone: true },
+    })
+    if (!company) return []
+    const today = getTodayForTimezone(company.timezone)
+    const lookAheadDate = addDays(today, 30)
 
     const rows = await prisma.$queryRaw<Array<{
       asg_id: string
@@ -67,26 +73,32 @@ export const contractExpiringRule: NudgeRule = {
         ea.id AS asg_id,
         e.id AS emp_id,
         e.name AS emp_name,
-        ea.end_date AS end_date,
+        e.contract_end_date AS end_date,
         mgr_asg.employee_id AS manager_id
-      FROM employee_assignments ea
-      JOIN employees e ON e.id = ea.employee_id
+      FROM employees e
+      JOIN employee_assignments ea ON ea.employee_id = e.id
+        AND ea.company_id = ${companyId}
+        AND ea.is_primary = true
+        AND ea.effective_date <= ${today}
+        AND (ea.end_date IS NULL OR ea.end_date > ${today})
       JOIN positions p ON p.id = ea.position_id
       JOIN positions mgr_p ON mgr_p.id = p.reports_to_position_id
       JOIN employee_assignments mgr_asg ON mgr_asg.position_id = mgr_p.id
-        AND mgr_asg.is_primary = true AND mgr_asg.end_date IS NULL
-      WHERE ea.company_id = ${companyId}
-        AND ea.is_primary = true
+        AND mgr_asg.is_primary = true
+        AND mgr_asg.effective_date <= ${today}
+        AND (mgr_asg.end_date IS NULL OR mgr_asg.end_date > ${today})
+      WHERE e.deleted_at IS NULL
         AND ea.employment_type = 'CONTRACT'
-        AND ea.end_date >= ${now}
-        AND ea.end_date <= ${lookAheadDate}
+        AND ea.status = 'ACTIVE'
+        AND e.contract_end_date >= ${today}
+        AND e.contract_end_date <= ${lookAheadDate}
         AND mgr_asg.employee_id = ${assigneeId}
       LIMIT 50
     `
 
     return rows.map((r) => {
       const daysUntilEnd = Math.ceil(
-        (new Date(r.end_date).getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        (new Date(r.end_date).getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
       )
       return {
         sourceId:     r.asg_id,

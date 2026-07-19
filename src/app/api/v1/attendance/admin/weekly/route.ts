@@ -77,6 +77,8 @@ export const GET = withPermission(
     const weekStart = mondayOf(startParam ?? ctx.localDateStr)
     const days = Array.from({ length: WEEK_LENGTH }, (_, i) => addDaysUTC(weekStart, i))
     const weekEndExclusive = addDaysUTC(weekStart, WEEK_LENGTH)
+    const weekStartDate = parseDateOnly(weekStart)
+    const weekEndExclusiveDate = parseDateOnly(weekEndExclusive)
 
     const departmentId = searchParams.get('departmentId')
 
@@ -91,28 +93,29 @@ export const GET = withPermission(
       Math.max(1, Number.isFinite(limitRaw) ? Math.floor(limitRaw) : DEFAULT_LIMIT),
     )
 
-    // ── 1. 직원 페이지 (현 시점 active primary assignment · company[· dept]) ──
-    //    effectiveDate<=now: 미래 전적 assignment로 인한 조기 PII 노출 차단 (Gate2 P1)
+    // ── 1. 직원 페이지 (선택 주간과 겹치는 primary assignment · company[· dept]) ──
+    //    EmployeeAssignment는 [effectiveDate, endDate) 반개방 구간이다.
+    const assignmentFence = {
+      companyId,
+      isPrimary: true,
+      effectiveDate: { lt: weekEndExclusiveDate },
+      OR: [{ endDate: null }, { endDate: { gt: weekStartDate } }],
+      ...(departmentId ? { departmentId } : {}),
+    }
     const employees = await prisma.employee.findMany({
       where: {
         deletedAt: null,
         assignments: {
-          some: {
-            companyId,
-            isPrimary: true,
-            endDate: null,
-            effectiveDate: { lte: now },
-            ...(departmentId ? { departmentId } : {}),
-          },
+          some: assignmentFence,
         },
       },
       select: {
         id: true,
         name: true,
         employeeNo: true,
-        // 응답 부서명도 동일 법인·시점으로 한정 (Gate2 P1: 동시발령 시 타 법인 부서명 누출 방지)
+        // 응답 부서명도 동일 법인·주간으로 한정 (동시발령 시 타 법인 부서명 누출 방지)
         assignments: {
-          where: { companyId, isPrimary: true, endDate: null, effectiveDate: { lte: now } },
+          where: assignmentFence,
           orderBy: { effectiveDate: 'desc' },
           take: 1,
           select: { department: { select: { name: true } } },
@@ -135,7 +138,7 @@ export const GET = withPermission(
         where: {
           companyId,
           employeeId: { in: employeeIds },
-          workDate: { gte: parseDateOnly(weekStart), lt: parseDateOnly(weekEndExclusive) },
+          workDate: { gte: weekStartDate, lt: weekEndExclusiveDate },
         },
         select: {
           employeeId: true,
@@ -154,8 +157,8 @@ export const GET = withPermission(
           employeeId: { in: employeeIds },
           status: 'APPROVED',
           // 주 윈도우와 겹치는 승인 휴가: start < 주말(+1) AND end >= 주시작
-          startDate: { lt: parseDateOnly(weekEndExclusive) },
-          endDate: { gte: parseDateOnly(weekStart) },
+          startDate: { lt: weekEndExclusiveDate },
+          endDate: { gte: weekStartDate },
         },
         select: {
           employeeId: true,

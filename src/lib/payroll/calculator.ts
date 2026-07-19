@@ -5,7 +5,8 @@
 
 import { prisma } from '@/lib/prisma'
 import { getOvertimeRatesFromSettings } from '@/lib/labor/settings'
-import { getStartOfDayTz, getEndOfDayTz, parseDateOnly, formatToTz } from '@/lib/timezone'
+import { normalizeUtcDateOnly } from '@/lib/timezone'
+import type { ResolvedPayrollCalculationPeriod } from './period'
 import {
   calculateHourlyWage,
 //   calculateTotalDeductions,
@@ -19,20 +20,6 @@ import {
 } from './kr-tax'
 import type { AllowanceItem } from './kr-tax'
 import type { PayrollItemDetail, PayrollEarnings, PayrollOvertime } from './types'
-
-// ─── Company Timezone Resolution ────────────────────────
-
-/**
- * 법인의 AttendanceSetting.timezone을 조회하여 반환.
- * 설정 없으면 'Asia/Seoul' (한국 본사 기본값) 폴백.
- */
-async function resolveCompanyTimezone(companyId: string): Promise<string> {
-  const setting = await prisma.attendanceSetting.findUnique({
-    where: { companyId },
-    select: { timezone: true },
-  })
-  return setting?.timezone ?? 'Asia/Seoul'
-}
 
 // ─── Overtime Calculation ───────────────────────────────
 
@@ -81,29 +68,17 @@ function calculateOvertimePay(
 
 export async function calculatePayrollForEmployee(
   employeeId: string,
-  periodStart: Date,
-  periodEnd: Date,
   companyId: string,
+  period: ResolvedPayrollCalculationPeriod,
 ): Promise<PayrollItemDetail> {
-  // 0. 법인 타임존 해석 — 이후 모든 날짜 경계 계산에 사용
-  const timezone = await resolveCompanyTimezone(companyId)
-
-  // 타임존 기준 periodStart/periodEnd의 UTC 경계 계산
-  // workDate(Date형)는 회사 현지 날짜 기준으로 귀속되므로 UTC 경계 보정 필수
-  const periodStartTz = getStartOfDayTz(periodStart, timezone)
-  const periodEndTz = getEndOfDayTz(periodEnd, timezone)
-
-  // 타임존 안전한 연/월 추출 — 서버 로컬 tz 대신 회사 tz 기준
-  const year = parseInt(formatToTz(periodStart, timezone, 'yyyy'), 10)
-  const month = parseInt(formatToTz(periodStart, timezone, 'MM'), 10)
-  const yearMonth = formatToTz(periodStart, timezone, 'yyyy-MM')
+  const { periodStartDate, periodEndDate, year, month, yearMonth } = period
 
   // 1. 기본급: CompensationHistory 최신 레코드
   const latestComp = await prisma.compensationHistory.findFirst({
     where: {
       employeeId,
       companyId,
-      effectiveDate: { lte: periodEnd },
+      effectiveDate: { lte: periodEndDate },
     },
     orderBy: { effectiveDate: 'desc' },
   })
@@ -113,12 +88,12 @@ export async function calculatePayrollForEmployee(
 //   const hourlyWage = calculateHourlyWage(monthlySalary)
 
   // 2. 초과근무: Attendance 기간 내 overtimeMinutes 합산
-  // periodStartTz/periodEndTz: 회사 타임존 기준 월 경계 → UTC로 변환된 정확한 경계값
+  // workDate is a UTC-midnight date-only value, not a clock instant.
   const attendances = await prisma.attendance.findMany({
     where: {
       employeeId,
       companyId,
-      workDate: { gte: periodStartTz, lte: periodEndTz },
+      workDate: { gte: periodStartDate, lte: periodEndDate },
       overtimeMinutes: { gt: 0 },
     },
     select: {
@@ -155,7 +130,7 @@ export async function calculatePayrollForEmployee(
   // 2-1. OT rates from Settings (company override → global → hardcoded fallback)
   const otConfig = await getOvertimeRatesFromSettings(companyId, 'KR')
 
-  // 3. 수당: AllowanceRecord (해당 월) — yearMonth는 타임존 기준으로 상단에서 계산됨
+  // 3. 수당: AllowanceRecord (해당 월)
   const allowanceRecords = await prisma.allowanceRecord.findMany({
     where: {
       employeeId,
@@ -195,8 +170,8 @@ export async function calculatePayrollForEmployee(
         companyId,
         frequency: 'MONTHLY',
         deletedAt: null,
-        effectiveFrom: { lte: periodEnd },
-        OR: [{ effectiveTo: null }, { effectiveTo: { gte: periodStart } }],
+        effectiveFrom: { lte: periodEndDate },
+        OR: [{ effectiveTo: null }, { effectiveTo: { gte: periodStartDate } }],
       },
     },
     include: { policy: true },
@@ -216,7 +191,7 @@ export async function calculatePayrollForEmployee(
     }
   }
 
-  // 4. 비과세 한도 로드 — year/month는 타임존 기준으로 상단에서 계산됨
+  // 4. 비과세 한도 로드
   const nontaxableLimitRows = await prisma.nontaxableLimit.findMany({
     where: { year, deletedAt: null },
   })
@@ -239,9 +214,9 @@ export async function calculatePayrollForEmployee(
     select: { hireDate: true },
   })
 
-  // parseDateOnly: hireDate는 달력 날짜값 — 서버 로컬 tz 무시하고 UTC 자정으로 파싱
+  // hireDate is also a UTC-midnight date-only value.
   const hireDate = employee?.hireDate
-    ? parseDateOnly(formatToTz(employee.hireDate, timezone, 'yyyy-MM-dd'))
+    ? normalizeUtcDateOnly(employee.hireDate)
     : undefined
   const prorateResult = calculateProrated(monthlySalary, year, month, hireDate, undefined)
 
@@ -258,8 +233,8 @@ export async function calculatePayrollForEmployee(
       employeeId,
       companyId,
       status: 'APPROVED',
-      startDate: { lte: periodEndTz },
-      endDate: { gte: periodStartTz },
+      startDate: { lte: periodEndDate },
+      endDate: { gte: periodStartDate },
       policy: { isPaid: false },
     },
     select: { days: true },
@@ -278,7 +253,7 @@ export async function calculatePayrollForEmployee(
     where: {
       employeeId,
       companyId,
-      workDate: { gte: periodStartTz, lte: periodEndTz },
+      workDate: { gte: periodStartDate, lte: periodEndDate },
       status: 'ABSENT',
     },
     select: { workDate: true },
@@ -290,8 +265,8 @@ export async function calculatePayrollForEmployee(
       employeeId,
       companyId,
       status: 'APPROVED',
-      startDate: { lte: periodEndTz },
-      endDate: { gte: periodStartTz },
+      startDate: { lte: periodEndDate },
+      endDate: { gte: periodStartDate },
     },
     select: { startDate: true, endDate: true },
   })

@@ -1,7 +1,7 @@
 import { type NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { apiSuccess, apiPaginated, buildPagination } from '@/lib/api'
-import { badRequest, notFound, handlePrismaError, isAppError } from '@/lib/errors'
+import { badRequest, notFound, forbidden, handlePrismaError, isAppError } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
@@ -9,7 +9,13 @@ import {
   employeePayItemListSchema,
   employeePayItemCreateSchema,
 } from '@/lib/schemas/payroll'
-import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
+import { parseDateOnly } from '@/lib/timezone'
+import {
+  acquirePrimaryAssignmentEmployeeLocks,
+  getPrimaryAssignmentAtDate,
+  readPrimaryAssignmentTimeline,
+  withPrimaryAssignmentRetry,
+} from '@/lib/employee/primary-assignment-writer'
 import type { SessionUser } from '@/types'
 
 // ─── GET /api/v1/payroll/employees/[id]/pay-items ────────
@@ -33,7 +39,7 @@ export const GET = withPermission(
       where: {
         id: employeeId,
         ...(companyId
-          ? { assignments: { some: { companyId, isPrimary: true, endDate: null } } }
+          ? { assignments: { some: { companyId, isPrimary: true } } }
           : {}),
       },
       select: { id: true },
@@ -86,51 +92,94 @@ export const POST = withPermission(
       throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
     }
 
-    const postCompanyId = user.role === 'SUPER_ADMIN' ? undefined : user.companyId
-
-    // Verify employee exists and belongs to user's company
-    const employee = await prisma.employee.findFirst({
-      where: {
-        id: employeeId,
-        ...(postCompanyId
-          ? { assignments: { some: { companyId: postCompanyId, isPrimary: true, endDate: null } } }
-          : {}),
-      },
-      select: {
-        id: true,
-        assignments: {
-          where: { isPrimary: true, endDate: null },
-          take: 1,
-          select: { companyId: true },
-        },
-      },
-    })
-    if (!employee) throw notFound('직원을 찾을 수 없습니다.')
-    const empCompanyId = extractPrimaryAssignment(employee.assignments ?? [])?.companyId ?? user.companyId
+    const effectiveFrom = parseDateOnly(parsed.data.effectiveFrom)
+    const effectiveTo = parsed.data.effectiveTo
+      ? parseDateOnly(parsed.data.effectiveTo)
+      : null
+    if (effectiveTo && effectiveTo < effectiveFrom) {
+      throw badRequest('적용 종료일은 시작일보다 빠를 수 없습니다.')
+    }
 
     try {
-      const result = await prisma.employeePayItem.create({
-        data: {
-          employeeId,
-          companyId: empCompanyId,
-          itemType: parsed.data.itemType,
-          allowanceTypeId: parsed.data.allowanceTypeId,
-          deductionTypeId: parsed.data.deductionTypeId,
-          amount: parsed.data.amount,
-          currency: parsed.data.currency,
-          effectiveFrom: new Date(parsed.data.effectiveFrom),
-          effectiveTo: parsed.data.effectiveTo ? new Date(parsed.data.effectiveTo) : null,
-          note: parsed.data.note,
-        },
-        include: {
-          allowanceType: {
-            select: { id: true, code: true, name: true, category: true },
-          },
-          deductionType: {
-            select: { id: true, code: true, name: true, category: true },
-          },
-        },
-      })
+      const result = await withPrimaryAssignmentRetry(() =>
+        prisma.$transaction(async (tx) => {
+          // Serialize the ownership decision with every S345 assignment writer.
+          await acquirePrimaryAssignmentEmployeeLocks(tx, [employeeId])
+          const employee = await tx.employee.findUnique({
+            where: { id: employeeId },
+            select: { id: true },
+          })
+          if (!employee) throw notFound('직원을 찾을 수 없습니다.')
+
+          const timeline = await readPrimaryAssignmentTimeline(tx, employeeId)
+          const assignment = getPrimaryAssignmentAtDate(timeline, effectiveFrom)
+          if (!assignment) {
+            throw badRequest('적용 시작일에 유효한 주 발령을 찾을 수 없습니다.')
+          }
+          if (
+            assignment.endDate !== null &&
+            (effectiveTo === null || effectiveTo >= assignment.endDate)
+          ) {
+            throw badRequest('급여 항목 적용 기간은 하나의 법인 발령 기간 안에 있어야 합니다.')
+          }
+          if (user.role !== 'SUPER_ADMIN' && assignment.companyId !== user.companyId) {
+            throw forbidden('다른 법인 소속 급여 항목을 등록할 수 없습니다.')
+          }
+
+          const [allowanceType, deductionType] = await Promise.all([
+            parsed.data.allowanceTypeId
+              ? tx.payAllowanceType.findFirst({
+                  where: {
+                    id: parsed.data.allowanceTypeId,
+                    companyId: assignment.companyId,
+                    isActive: true,
+                    deletedAt: null,
+                  },
+                  select: { id: true },
+                })
+              : null,
+            parsed.data.deductionTypeId
+              ? tx.payDeductionType.findFirst({
+                  where: {
+                    id: parsed.data.deductionTypeId,
+                    companyId: assignment.companyId,
+                    deletedAt: null,
+                  },
+                  select: { id: true },
+                })
+              : null,
+          ])
+          if (parsed.data.itemType === 'ALLOWANCE' && !allowanceType) {
+            throw badRequest('해당 법인의 유효한 수당 항목이 아닙니다.')
+          }
+          if (parsed.data.itemType === 'DEDUCTION' && !deductionType) {
+            throw badRequest('해당 법인의 유효한 공제 항목이 아닙니다.')
+          }
+
+          return tx.employeePayItem.create({
+            data: {
+              employeeId,
+              companyId: assignment.companyId,
+              itemType: parsed.data.itemType,
+              allowanceTypeId: parsed.data.allowanceTypeId,
+              deductionTypeId: parsed.data.deductionTypeId,
+              amount: parsed.data.amount,
+              currency: parsed.data.currency,
+              effectiveFrom,
+              effectiveTo,
+              note: parsed.data.note,
+            },
+            include: {
+              allowanceType: {
+                select: { id: true, code: true, name: true, category: true },
+              },
+              deductionType: {
+                select: { id: true, code: true, name: true, category: true },
+              },
+            },
+          })
+        }),
+      )
 
       const { ip, userAgent } = extractRequestMeta(req.headers)
       logAudit({

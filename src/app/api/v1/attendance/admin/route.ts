@@ -70,7 +70,15 @@ export const GET = withPermission(
       where: {
         deletedAt: null,
         assignments: {
-          some: { companyId, isPrimary: true, endDate: null },
+          some: {
+            companyId,
+            isPrimary: true,
+            effectiveDate: { lte: targetDate },
+            OR: [
+              { endDate: null },
+              { endDate: { gt: targetDate } },
+            ],
+          },
         },
       },
     })
@@ -86,11 +94,6 @@ export const GET = withPermission(
           select: {
             name: true,
             employeeNo: true,
-            assignments: {
-              where: { isPrimary: true, endDate: null },
-              take: 1,
-              select: { departmentId: true },
-            },
           },
         },
       },

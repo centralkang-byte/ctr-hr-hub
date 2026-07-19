@@ -12,6 +12,7 @@ import { withAuth, withPermission, perm, hasPermission } from '@/lib/permissions
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION, ROLE } from '@/lib/constants'
 import { isRequisitionApproverAllowed } from '@/lib/approval/validate-requisition-approver'
+import { lockActivePositionReferences } from '@/lib/employee/assignment-master-lifecycle'
 import type { SessionUser } from '@/types'
 
 const updateSchema = z.object({
@@ -107,35 +108,59 @@ export const GET = withAuth(
 
 // ─── PATCH ──────────────────────────────────────────────────
 export const PATCH = withPermission(
-  async (req: NextRequest, { params }: { params: Promise<Record<string, string>> }, _user: SessionUser) => {
+  async (req: NextRequest, { params }: { params: Promise<Record<string, string>> }, user: SessionUser) => {
     const { id } = await params
     const body = await req.json()
     const parsed = updateSchema.safeParse(body)
     if (!parsed.success) throw badRequest(parsed.error.message)
 
-    const existing = await prisma.requisition.findUnique({ where: { id } })
+    const existing = await prisma.requisition.findFirst({
+      where: {
+        id,
+        ...(user.role === ROLE.SUPER_ADMIN ? {} : { companyId: user.companyId }),
+      },
+    })
     if (!existing) throw notFound('채용 요청을 찾을 수 없습니다.')
 
-    // draft 상태에서만 수정 가능
-    if (existing.status !== 'draft' && !parsed.data.status) {
-      throw badRequest('결재 중인 채용 요청은 수정할 수 없습니다.')
-    }
-
     try {
-      const updated = await prisma.requisition.update({
-        where: { id },
-        data: {
-          ...(parsed.data.title && { title: parsed.data.title }),
-          ...(parsed.data.headcount && { headcount: parsed.data.headcount }),
-          ...(parsed.data.jobLevel !== undefined && { jobLevel: parsed.data.jobLevel }),
-          ...(parsed.data.employmentType && { employmentType: parsed.data.employmentType }),
-          ...(parsed.data.justification && { justification: parsed.data.justification }),
-          ...(parsed.data.requirements !== undefined && { requirements: parsed.data.requirements }),
-          ...(parsed.data.urgency && { urgency: parsed.data.urgency }),
-          ...(parsed.data.targetDate && { targetDate: new Date(parsed.data.targetDate) }),
-          ...(parsed.data.positionId !== undefined && { positionId: parsed.data.positionId }),
-          ...(parsed.data.status && { status: parsed.data.status }),
-        },
+      const updated = await prisma.$transaction(async (tx) => {
+        const [locked] = await tx.$queryRaw<Array<{
+          id: string
+          companyId: string
+          status: string
+        }>>`
+          SELECT id, company_id AS "companyId", status
+          FROM requisitions
+          WHERE id = ${id}
+            AND company_id = ${existing.companyId}
+          FOR UPDATE
+        `
+        if (!locked) throw notFound('채용 요청을 찾을 수 없습니다.')
+
+        // draft 상태에서만 수정 가능
+        if (locked.status !== 'draft' && !parsed.data.status) {
+          throw badRequest('결재 중인 채용 요청은 수정할 수 없습니다.')
+        }
+
+        await lockActivePositionReferences(tx, {
+          companyId: locked.companyId,
+          positionIds: [parsed.data.positionId],
+        })
+        return tx.requisition.update({
+          where: { id },
+          data: {
+            ...(parsed.data.title && { title: parsed.data.title }),
+            ...(parsed.data.headcount && { headcount: parsed.data.headcount }),
+            ...(parsed.data.jobLevel !== undefined && { jobLevel: parsed.data.jobLevel }),
+            ...(parsed.data.employmentType && { employmentType: parsed.data.employmentType }),
+            ...(parsed.data.justification && { justification: parsed.data.justification }),
+            ...(parsed.data.requirements !== undefined && { requirements: parsed.data.requirements }),
+            ...(parsed.data.urgency && { urgency: parsed.data.urgency }),
+            ...(parsed.data.targetDate && { targetDate: new Date(parsed.data.targetDate) }),
+            ...(parsed.data.positionId !== undefined && { positionId: parsed.data.positionId }),
+            ...(parsed.data.status && { status: parsed.data.status }),
+          },
+        })
       })
       return apiSuccess(updated)
     } catch (err) {

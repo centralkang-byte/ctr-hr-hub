@@ -26,15 +26,17 @@ export const POST = withPermission(
 
     const { year, month } = parsed.data
     const companyId = user.companyId
-    const today = new Date()
+    const monthStart = new Date(Date.UTC(year, month - 1, 1))
+    const nextMonthStart = new Date(Date.UTC(year, month, 1))
+    const monthEnd = new Date(nextMonthStart.getTime() - 1)
 
-    // Load active configs for this company
+    // Load configs effective at the end of the requested contribution month.
     const configs = await prisma.socialInsuranceConfig.findMany({
       where: {
         companyId,
         deletedAt: null,
-        effectiveFrom: { lte: today },
-        OR: [{ effectiveTo: null }, { effectiveTo: { gte: today } }],
+        effectiveFrom: { lte: monthEnd },
+        OR: [{ effectiveTo: null }, { effectiveTo: { gte: monthEnd } }],
       },
     })
 
@@ -42,11 +44,17 @@ export const POST = withPermission(
       throw badRequest('활성화된 사회보험 설정이 없습니다. 먼저 요율을 등록해주세요.')
     }
 
-    // Load active employees with salary info
+    // Load employees whose primary assignment overlaps the requested month.
+    // EmployeeAssignment intervals are half-open: [effectiveDate, endDate).
     const employees = await prisma.employee.findMany({
       where: {
         assignments: {
-          some: { companyId, status: 'ACTIVE', isPrimary: true, endDate: null },
+          some: {
+            companyId,
+            isPrimary: true,
+            effectiveDate: { lt: nextMonthStart },
+            OR: [{ endDate: null }, { endDate: { gt: monthStart } }],
+          },
         },
       },
       select: {
@@ -54,6 +62,10 @@ export const POST = withPermission(
         name: true,
         employeeNo: true,
         compensationHistories: {
+          where: {
+            companyId,
+            effectiveDate: { lte: monthEnd },
+          },
           orderBy: { effectiveDate: 'desc' },
           take: 1,
           select: { newBaseSalary: true },

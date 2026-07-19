@@ -12,7 +12,7 @@ import { normaliseDetail } from '@/lib/payroll/normalise-detail'
 import { isDomesticCompanyCode } from '@/lib/constants'
 import { getRequestLocale } from '@/lib/server-i18n'
 
-// Self-service: query is hard-scoped to user.employeeId/companyId below, so
+// Self-service: query is hard-scoped to user.employeeId below, so
 // withAuth is correct — withPermission(payroll_read) wrongly blocked MANAGER.
 export const GET = withAuth(
   async (_req, context, user) => {
@@ -21,29 +21,11 @@ export const GET = withAuth(
     const pdfLocale = 'ko' as const
     const { runId } = await context.params
 
-    // 해외 법인 가드: 정본 급여명세서는 현지 시스템에서 발급된다(assignments.md "현지 시스템 +
-    // 데이터 동기화만"). HR Hub는 해외 직원에게 PDF 명세서를 생성하지 않는다. UI가 버튼을
-    // 숨겨도 이 엔드포인트가 권위 경계 — 직접 호출도 차단. fail-closed.
-    const company = await prisma.company.findUnique({
-      where: { id: user.companyId },
-      select: { code: true },
-    })
-    if (!isDomesticCompanyCode(company?.code)) {
-      if (!company) {
-        console.warn('[payroll/me/pdf] company not found; blocking payslip PDF (treated as overseas)', {
-          companyId: user.companyId,
-          employeeId: user.employeeId,
-        })
-      }
-      throw forbidden('급여명세서는 현지 시스템에서 발급됩니다.')
-    }
-
     const item = await prisma.payrollItem.findFirst({
       where: {
         employeeId: user.employeeId,
         run: {
           id: runId,
-          companyId: user.companyId,
           status: 'PAID',
         },
       },
@@ -52,24 +34,17 @@ export const GET = withAuth(
           select: {
             name: true,
             employeeNo: true,
-            assignments: {
-              where: { isPrimary: true, endDate: null },
-              take: 1,
-              select: {
-                department: { select: { name: true } },
-                jobGrade: { select: { name: true } },
-                company: { select: { name: true } },
-              },
-            },
           },
         },
         run: {
           select: {
+            companyId: true,
             name: true,
             yearMonth: true,
             periodStart: true,
             periodEnd: true,
             payDate: true,
+            company: { select: { code: true, name: true } },
           },
         },
       },
@@ -77,13 +52,45 @@ export const GET = withAuth(
 
     if (!item) throw notFound('급여명세서를 찾을 수 없습니다.')
 
+    // 해외 법인 가드: 현재 소속이 아니라 급여 실행에 저장된 법인 기준으로 판단한다.
+    // 정본 급여명세서는 현지 시스템에서 발급되므로 HR Hub PDF 생성을 차단한다.
+    if (!isDomesticCompanyCode(item.run.company.code)) {
+      throw forbidden('급여명세서는 현지 시스템에서 발급됩니다.')
+    }
+
+    // periodEnd는 inclusive business date이므로 급여 기간의 마지막 날을 포함해
+    // 겹치는 같은 법인의 Primary Assignment를 사용한다.
+    // 전적 후 현재 발령을 쓰면 과거 명세서의 법인/부서/직급이 왜곡된다.
+    const assignments = await prisma.employeeAssignment.findMany({
+      where: {
+        employeeId: item.employeeId,
+        companyId: item.run.companyId,
+        isPrimary: true,
+        effectiveDate: { lte: item.run.periodEnd },
+        OR: [
+          { endDate: null },
+          { endDate: { gt: item.run.periodStart } },
+        ],
+      },
+      orderBy: { effectiveDate: 'desc' },
+      take: 1,
+      select: {
+        isPrimary: true,
+        effectiveDate: true,
+        endDate: true,
+        department: { select: { name: true } },
+        jobGrade: { select: { name: true } },
+      },
+    })
+
     // Adapt the Prisma result to generatePayStubPdf's contract:
-    //  - department/jobGrade/company live under the primary assignment (Track B
-    //    convention), but the generator reads them flat off `employee`.
+    //  - department/jobGrade live under the payroll-period primary assignment,
+    //    while company comes from the persisted PayrollRun owner. The generator
+    //    reads all three flat off `employee`.
     //  - detail is stored raw (engine {earnings,insurance,tax} or legacy
     //    {components,deductions}); the generator expects the normalised shape.
     // Skipping either adaptation is what made this endpoint 500 for every role.
-    const primary = extractPrimaryAssignment(item.employee.assignments ?? [])
+    const primary = extractPrimaryAssignment(assignments)
     const pdfInput: PayrollItemWithRelations = {
       ...item,
       detail: normaliseDetail(item.detail, Number(item.grossPay), Number(item.netPay)),
@@ -92,7 +99,7 @@ export const GET = withAuth(
         employeeNo: item.employee.employeeNo,
         department: { name: primary?.department?.name ?? '-' },
         jobGrade: { name: primary?.jobGrade?.name ?? '-' },
-        company: { name: primary?.company?.name ?? '-' },
+        company: { name: item.run.company.name },
       },
     }
 

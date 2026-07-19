@@ -11,6 +11,28 @@ import { conflict } from '@/lib/errors'
 import { canDeductUnreturnedAsset, calculateDeductionAmount } from '@/lib/labor/asset-deduction'
 import { calculateSeverance } from '@/lib/payroll/severance'
 import { differenceInDays, startOfMonth } from 'date-fns'
+import {
+    acquirePrimaryAssignmentDepartmentLocks,
+    acquirePrimaryAssignmentEmployeeLocks,
+    assertPrimaryAssignmentSourceScopeLocked,
+    casPrimaryAssignment,
+    getOpenPrimaryAssignment,
+    getPrimaryAssignmentAtDate,
+    readPrimaryAssignmentTimeline,
+    revalidatePrimaryAssignmentDepartments,
+    validatePrimaryAssignmentTimeline,
+    withPrimaryAssignmentRetry,
+} from '@/lib/employee/primary-assignment-writer'
+
+function nextDate(date: Date): Date {
+    const result = new Date(Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+    ))
+    result.setUTCDate(result.getUTCDate() + 1)
+    return result
+}
 
 export interface SettlementItem {
     type: string
@@ -34,9 +56,38 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
     const assetDeductions: AssetDeductionResult[] = []
     const settlementItems: SettlementItem[] = []
 
-    // 정산 컨텍스트 — tx 내부에서 확정해 반환, Phase B(tx 외부)에서 재사용.
-    // assignment 마감(5b) 후 active-assignment 재조회 금지: compId='' → 퇴직금·최종급여 0 정산 버그.
-    const settlement = await prisma.$transaction(async (tx) => {
+    // Settlement and completion commit together. A calculation failure must leave
+    // the offboarding IN_PROGRESS so the caller can safely retry.
+    await withPrimaryAssignmentRetry(async () => {
+        assetDeductions.length = 0
+        settlementItems.length = 0
+        const offboardingHint = await prisma.employeeOffboarding.findUnique({
+            where: { id: offboardingId },
+            select: { employeeId: true },
+        })
+        if (!offboardingHint) throw new Error('Offboarding not found')
+        const sourceHint = await prisma.employeeAssignment.findFirst({
+            where: {
+                employeeId: offboardingHint.employeeId,
+                isPrimary: true,
+                endDate: null,
+            },
+        })
+        if (!sourceHint) throw conflict('마감할 현재 주 발령을 찾을 수 없습니다.')
+        const departmentScopes = [{
+            companyId: sourceHint.companyId,
+            departmentId: sourceHint.departmentId,
+        }]
+
+        return prisma.$transaction(async (tx) => {
+        const lockedOffboarding = await tx.$queryRaw<Array<{ id: string }>>`
+            SELECT id
+            FROM employee_offboarding
+            WHERE id = ${offboardingId}
+            FOR UPDATE
+        `
+        if (lockedOffboarding.length !== 1) throw new Error('Offboarding not found')
+
         // 1. Fetch offboarding with all tasks + assets
         const offboarding = await tx.employeeOffboarding.findUnique({
             where: { id: offboardingId },
@@ -53,6 +104,38 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
         })
 
         if (!offboarding) throw new Error('Offboarding not found')
+        if (offboarding.status !== 'IN_PROGRESS') {
+            throw conflict('오프보딩 상태가 변경되었습니다.')
+        }
+
+        const lockedDepartmentKeys = await acquirePrimaryAssignmentDepartmentLocks(
+            tx,
+            departmentScopes,
+        )
+        await revalidatePrimaryAssignmentDepartments(tx, departmentScopes)
+        await acquirePrimaryAssignmentEmployeeLocks(tx, [offboarding.employeeId])
+        const primaryTimeline = await readPrimaryAssignmentTimeline(tx, offboarding.employeeId)
+        const currentPrimaryAssignment = getOpenPrimaryAssignment(primaryTimeline)
+        if (!currentPrimaryAssignment) {
+            throw conflict('마감할 현재 주 발령을 찾을 수 없습니다.')
+        }
+        const assignmentAtLwd = getPrimaryAssignmentAtDate(
+            primaryTimeline,
+            offboarding.lastWorkingDate,
+        )
+        if (!assignmentAtLwd || assignmentAtLwd.id !== currentPrimaryAssignment.id) {
+            throw conflict('최종 근무일 이후의 예정 주 발령이 있어 오프보딩을 완료할 수 없습니다.')
+        }
+        assertPrimaryAssignmentSourceScopeLocked(
+            lockedDepartmentKeys,
+            currentPrimaryAssignment,
+        )
+        if (
+            currentPrimaryAssignment.id !== sourceHint.id ||
+            currentPrimaryAssignment.updatedAt.getTime() !== sourceHint.updatedAt.getTime()
+        ) {
+            throw conflict('마감할 주 발령 후보가 변경되었습니다.')
+        }
 
         // 2. Verify all required tasks are DONE
         const requiredTasks = offboarding.offboardingTasks.filter((t) => t.task.isRequired)
@@ -94,23 +177,19 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
         //     정산 무결성 invariant이지 권한 예외가 아님)
         const employeeId = offboarding.employeeId
         const lastWorkingDate = offboarding.lastWorkingDate
-        const assignmentAtLwd = await tx.employeeAssignment.findFirst({
-            where: {
-                employeeId,
-                isPrimary: true,
-                effectiveDate: { lte: lastWorkingDate },
-                OR: [{ endDate: null }, { endDate: { gte: lastWorkingDate } }],
-            },
-            orderBy: { effectiveDate: 'desc' },
-            select: { companyId: true, company: { select: { countryCode: true } } },
-        })
         if (offboarding.companyId && assignmentAtLwd && assignmentAtLwd.companyId !== offboarding.companyId) {
             throw conflict('오프보딩 시작 후 법인이 변경된 직원입니다. 오프보딩을 취소하고 현재 법인에서 재시작해 주세요.')
         }
         const settlementCompanyId = offboarding.companyId ?? assignmentAtLwd?.companyId ?? ''
 
         // 3. Handle unreturned assets
-        const countryCode = assignmentAtLwd?.company?.countryCode ?? 'KR'
+        const assignmentCompany = assignmentAtLwd
+            ? await tx.company.findUnique({
+                where: { id: assignmentAtLwd.companyId },
+                select: { countryCode: true },
+            })
+            : null
+        const countryCode = assignmentCompany?.countryCode ?? 'KR'
         const unreturnedAssets = offboarding.assetReturns.filter((a) => a.status === 'PENDING' || a.status === 'UNRETURNED')
 
         for (const asset of unreturnedAssets) {
@@ -222,22 +301,63 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
             note: '4대보험 상실신고 필요 (외부 처리)',
         })
 
+        // 4e. Severance and final salary are calculated before the terminal
+        // state/CAS in the same transaction. No committed-complete/failed-response split.
+        const severance = await calculateSeverance(
+            employeeId,
+            lastWorkingDate,
+            settlementCompanyId,
+            { db: tx },
+        )
+        settlementItems.push({
+            type: 'SEVERANCE',
+            amount: severance.isEligible ? severance.netSeverancePay : 0,
+            note: severance.isEligible
+                ? `퇴직금 ${severance.severancePay.toLocaleString()}원 (세후 ${severance.netSeverancePay.toLocaleString()}원, 재직 ${severance.tenureYears}년)`
+                : `퇴직금 미대상 — ${severance.ineligibleReason ?? `재직 ${severance.tenureDays}일 < 365일`}`,
+        })
+
+        const monthStart = startOfMonth(lastWorkingDate)
+        const workedDaysInMonth = differenceInDays(lastWorkingDate, monthStart) + 1
+        const daysInMonth = new Date(
+            lastWorkingDate.getFullYear(),
+            lastWorkingDate.getMonth() + 1,
+            0,
+        ).getDate()
+        const monthlySalary = annualSalary > 0 ? Math.round(annualSalary / 12) : 0
+        const proRataSalary = Math.round(
+            monthlySalary * (workedDaysInMonth / daysInMonth),
+        )
+        settlementItems.push({
+            type: 'FINAL_SALARY',
+            amount: proRataSalary,
+            note: `최종월 일할 급여: ${workedDaysInMonth}/${daysInMonth}일 × 월급 ${monthlySalary.toLocaleString()}원`,
+        })
+
         // 5. Update offboarding status to COMPLETED
-        await tx.employeeOffboarding.update({
-            where: { id: offboardingId },
+        const completed = await tx.employeeOffboarding.updateMany({
+            where: { id: offboardingId, status: 'IN_PROGRESS' },
             data: {
                 status: 'COMPLETED',
                 completedAt: new Date(),
             },
         })
+        if (completed.count !== 1) throw conflict('오프보딩 상태가 변경되었습니다.')
 
-        // 5b. Close the primary assignment — endDate=lastWorkingDate
+        // 5b. Close after the inclusive last working day: [start, LWD + 1 day).
         //     퇴사 완료 시 활성 assignment를 마감해야 active(endDate:null) 쿼리에서 제외됨.
         //     start route는 status(RESIGNED/TERMINATED)만 set하고 endDate는 열어둠 → 완료 시 마감.
         //     동일 where(isPrimary, endDate:null)로 start route와 정합.
-        await tx.employeeAssignment.updateMany({
-            where: { employeeId, isPrimary: true, endDate: null },
-            data: { endDate: lastWorkingDate },
+        const assignmentBoundary = nextDate(lastWorkingDate)
+        validatePrimaryAssignmentTimeline(
+            primaryTimeline.map((assignment) =>
+                assignment.id === currentPrimaryAssignment.id
+                    ? { ...assignment, endDate: assignmentBoundary }
+                    : assignment,
+            ),
+        )
+        await casPrimaryAssignment(tx, currentPrimaryAssignment, {
+            endDate: assignmentBoundary,
         })
 
         // 6. Mark all remaining PENDING/IN_PROGRESS tasks as SKIPPED (cleanup)
@@ -249,52 +369,8 @@ export async function executeOffboardingCompletion(offboardingId: string): Promi
             data: { status: 'SKIPPED' },
         })
 
-        return { settlementCompanyId, employeeId, lastWorkingDate }
+        }, { timeout: 60_000 })
     })
-
-    // Settlement Phase B — 퇴직금 + 최종 급여 (tx 외부, 전역 prisma 사용)
-    // ⚠️ calculateSeverance는 전역 prisma 인스턴스를 사용하므로 반드시 tx 밖에서 호출
-    //    정산 법인 = tx 내부(2d)에서 확정한 settlementCompanyId. 5b가 assignment를 마감했으므로
-    //    active-assignment 재조회는 금지 (compId='' → 퇴직금·최종급여 0 정산 버그였음).
-    {
-        const { settlementCompanyId, employeeId: empId, lastWorkingDate: lwDate } = settlement
-
-        // Severance (퇴직금)
-        try {
-            const severance = await calculateSeverance(empId, lwDate, settlementCompanyId)
-            settlementItems.push({
-                type: 'SEVERANCE',
-                amount: severance.isEligible ? severance.netSeverancePay : 0,
-                note: severance.isEligible
-                    ? `퇴직금 ${severance.severancePay.toLocaleString()}원 (세후 ${severance.netSeverancePay.toLocaleString()}원, 재직 ${severance.tenureYears}년)`
-                    : `퇴직금 미대상 — ${severance.ineligibleReason ?? `재직 ${severance.tenureDays}일 < 365일`}`,
-            })
-        } catch {
-            settlementItems.push({
-                type: 'SEVERANCE',
-                amount: 0,
-                note: '퇴직금 산출 불가 (급여 데이터 부족)',
-            })
-        }
-
-        // Final salary pro-rata (최종 급여 일할 계산)
-        const latestCompPhaseB = await prisma.compensationHistory.findFirst({
-            where: { employeeId: empId, companyId: settlementCompanyId, effectiveDate: { lte: lwDate } },
-            orderBy: { effectiveDate: 'desc' },
-        })
-        const annualSalaryB = latestCompPhaseB ? Number(latestCompPhaseB.newBaseSalary) : 0
-        const monthStart = startOfMonth(lwDate)
-        const workedDaysInMonth = differenceInDays(lwDate, monthStart) + 1
-        const daysInMonth = new Date(lwDate.getFullYear(), lwDate.getMonth() + 1, 0).getDate()
-        const monthlySalary = annualSalaryB > 0 ? Math.round(annualSalaryB / 12) : 0
-        const proRataSalary = Math.round(monthlySalary * (workedDaysInMonth / daysInMonth))
-
-        settlementItems.push({
-            type: 'FINAL_SALARY',
-            amount: proRataSalary,
-            note: `최종월 일할 급여: ${workedDaysInMonth}/${daysInMonth}일 × 월급 ${monthlySalary.toLocaleString()}원`,
-        })
-    }
 
     return {
         status: 'COMPLETED',

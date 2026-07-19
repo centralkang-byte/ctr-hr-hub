@@ -10,6 +10,7 @@ import { badRequest, notFound, conflict } from '@/lib/errors'
 import { withPermission, perm } from '@/lib/permissions'
 import { MODULE, ACTION } from '@/lib/constants'
 import { resolveCompanyId } from '@/lib/api/companyFilter'
+import { countCurrentOrFutureAssignmentMasterReferences } from '@/lib/employee/assignment-master-lifecycle'
 import type { SessionUser } from '@/types'
 
 export const GET = withPermission(
@@ -135,35 +136,46 @@ export const DELETE = withPermission(
     const id = searchParams.get('id')
     if (!id) throw badRequest('id 파라미터가 필요합니다.')
 
-    const grade = await prisma.jobGrade.findFirst({
-      where: { id, deletedAt: null },
-    })
-    if (!grade) throw notFound('직급을 찾을 수 없습니다.')
+    await prisma.$transaction(async (tx) => {
+      const [grade] = await tx.$queryRaw<Array<{
+        id: string
+        companyId: string
+        deletedAt: Date | null
+      }>>`
+        SELECT id, company_id AS "companyId", deleted_at AS "deletedAt"
+        FROM job_grades
+        WHERE id = ${id}
+        FOR UPDATE
+      `
+      if (!grade || grade.deletedAt) throw notFound('직급을 찾을 수 없습니다.')
 
-    if (user.role !== 'SUPER_ADMIN' && grade.companyId !== user.companyId) {
-      throw badRequest('다른 법인의 직급은 삭제할 수 없습니다.')
-    }
+      if (user.role !== 'SUPER_ADMIN' && grade.companyId !== user.companyId) {
+        throw badRequest('다른 법인의 직급은 삭제할 수 없습니다.')
+      }
 
-    // FK 보호: 활성 assignment 확인
-    const activeAssignments = await prisma.employeeAssignment.count({
-      where: { jobGradeId: id, endDate: null, status: 'ACTIVE' },
-    })
-    if (activeAssignments > 0) {
-      throw conflict(`이 직급을 사용 중인 직원이 ${activeAssignments}명 있어 삭제할 수 없습니다.`)
-    }
+      // FK 보호: 현재 또는 예정 assignment 확인
+      const assignmentCount = await countCurrentOrFutureAssignmentMasterReferences(
+        tx,
+        grade.companyId,
+        [{ jobGradeId: id }],
+      )
+      if (assignmentCount > 0) {
+        throw conflict(`이 직급을 현재 또는 예정 발령에서 사용 중인 직원이 ${assignmentCount}명 있어 삭제할 수 없습니다.`)
+      }
 
-    // FK 보호: 활성 SalaryBand 확인
-    const activeBands = await prisma.salaryBand.count({
-      where: { jobGradeId: id },
-    })
-    if (activeBands > 0) {
-      throw conflict(`이 직급에 연결된 급여 밴드가 ${activeBands}건 있어 삭제할 수 없습니다.`)
-    }
+      // FK 보호: 활성 SalaryBand 확인
+      const activeBands = await tx.salaryBand.count({
+        where: { jobGradeId: id },
+      })
+      if (activeBands > 0) {
+        throw conflict(`이 직급에 연결된 급여 밴드가 ${activeBands}건 있어 삭제할 수 없습니다.`)
+      }
 
-    // Soft delete
-    await prisma.jobGrade.update({
-      where: { id },
-      data: { deletedAt: new Date() },
+      const deleted = await tx.jobGrade.updateMany({
+        where: { id, deletedAt: null },
+        data: { deletedAt: new Date() },
+      })
+      if (deleted.count !== 1) throw notFound('직급을 찾을 수 없습니다.')
     })
 
     return apiSuccess({ deleted: true })

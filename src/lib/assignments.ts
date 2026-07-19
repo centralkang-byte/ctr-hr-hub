@@ -5,7 +5,25 @@
 
 import { prisma } from '@/lib/prisma'
 import { parseDateOnly, formatToTz } from '@/lib/timezone'
+import { conflict } from '@/lib/errors'
+import {
+  acquirePrimaryAssignmentDepartmentLocks,
+  acquirePrimaryAssignmentEmployeeLocks,
+  assertPrimaryAssignmentReplacement,
+  assertPrimaryAssignmentSourceScopeLocked,
+  casPrimaryAssignment,
+  getOpenPrimaryAssignment,
+  readPrimaryAssignmentTimeline,
+  revalidatePrimaryAssignmentDepartments,
+  revalidatePrimaryAssignmentMasterData,
+  withPrimaryAssignmentRetry,
+  type PrimaryAssignmentLockHooks,
+} from '@/lib/employee/primary-assignment-writer'
 import type { ChangeType, CreateAssignmentParams } from '@/types/assignment'
+
+export interface CreateAssignmentDeps extends PrimaryAssignmentLockHooks {
+  db?: typeof prisma
+}
 
 // ── 날짜 유틸: YYYY-MM-DD 문자열을 UTC 자정 Date로 안전하게 변환 ──
 // new Date('2026-03-05')는 YYYY-MM-DD에서 UTC 자정을 반환하지만,
@@ -84,7 +102,11 @@ export async function getAssignmentAtDate(
 }
 
 // ── 새 assignment 생성 (이전 레코드 자동 종료) ───────────────
-export async function createAssignment(params: CreateAssignmentParams) {
+export async function createAssignment(
+  params: CreateAssignmentParams,
+  deps: CreateAssignmentDeps = {},
+) {
+  const db = deps.db ?? prisma
   const {
     employeeId,
     effectiveDate,
@@ -108,51 +130,90 @@ export async function createAssignment(params: CreateAssignmentParams) {
   // new Date(string)은 datetime 문자열에서 로컬 타임존을 적용해 날짜가 어긋날 수 있음.
   const date = toCalendarDate(effectiveDate)
 
-  return prisma.$transaction(async (tx) => {
-    // 1. 기존 현재 primary assignment 종료
-    if (isPrimary) {
-      await tx.employeeAssignment.updateMany({
-        where: {
-          employeeId,
-          isPrimary: true,
-          endDate:   null,
-        },
-        data: {
-          endDate: date,
-        },
-      })
-    }
+  return withPrimaryAssignmentRetry(async () => {
+    // Candidate context only. The source is re-read after the advisory locks.
+    const sourceHint = isPrimary
+      ? await db.employeeAssignment.findFirst({
+          where: { employeeId, isPrimary: true, endDate: null },
+        })
+      : null
+    const departmentScopes = [
+      ...(sourceHint
+        ? [{ companyId: sourceHint.companyId, departmentId: sourceHint.departmentId }]
+        : []),
+      { companyId, departmentId: departmentId ?? null },
+    ]
 
-    // 2. 새 assignment 생성
-    return tx.employeeAssignment.create({
-      data: {
-        employeeId,
-        effectiveDate: date,
-        endDate:       null,
-        changeType,
+    return db.$transaction(async (tx) => {
+      const lockedDepartmentKeys = await acquirePrimaryAssignmentDepartmentLocks(
+        tx,
+        departmentScopes,
+        deps,
+      )
+      await revalidatePrimaryAssignmentDepartments(tx, departmentScopes)
+      await revalidatePrimaryAssignmentMasterData(tx, {
         companyId,
-        departmentId,
         jobGradeId,
         titleId,
         jobCategoryId,
-        employmentType,
-        contractType,
-        status,
         positionId,
-        isPrimary,
-        reason,
-        orderNumber,
-        approvedById,
-      },
-      include: {
-        company:     true,
-        department:  true,
-        jobGrade:    true,
-        title:       true,
-        jobCategory: true,
-      },
+      })
+
+      if (isPrimary) {
+        await acquirePrimaryAssignmentEmployeeLocks(tx, [employeeId], deps)
+        const timeline = await readPrimaryAssignmentTimeline(tx, employeeId, deps)
+        const current = getOpenPrimaryAssignment(timeline)
+        if (current) {
+          assertPrimaryAssignmentSourceScopeLocked(lockedDepartmentKeys, current)
+        }
+        if (
+          (sourceHint === null) !== (current === null) ||
+          (sourceHint && current && (
+            sourceHint.id !== current.id ||
+            sourceHint.updatedAt.getTime() !== current.updatedAt.getTime()
+          ))
+        ) {
+          throw conflict('주 발령 후보가 변경되었습니다. 요청 내용을 다시 확인해 주세요.')
+        }
+        assertPrimaryAssignmentReplacement({
+          timeline,
+          replacedAssignmentId: current?.id ?? null,
+          closeDate: current ? date : null,
+          nextEffectiveDate: date,
+        })
+        if (current) await casPrimaryAssignment(tx, current, { endDate: date })
+      }
+
+      return tx.employeeAssignment.create({
+        data: {
+          employeeId,
+          effectiveDate: date,
+          endDate:       null,
+          changeType,
+          companyId,
+          departmentId,
+          jobGradeId,
+          titleId,
+          jobCategoryId,
+          employmentType,
+          contractType,
+          status,
+          positionId,
+          isPrimary,
+          reason,
+          orderNumber,
+          approvedById,
+        },
+        include: {
+          company:     true,
+          department:  true,
+          jobGrade:    true,
+          title:       true,
+          jobCategory: true,
+        },
+      })
     })
-  })
+  }, { deps })
 }
 
 // ── 직원의 assignment 이력 조회 ──────────────────────────────

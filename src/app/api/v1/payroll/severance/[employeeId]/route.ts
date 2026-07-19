@@ -14,18 +14,6 @@ export const POST = withPermission(
   async (req, context, user) => {
     const { employeeId } = await context.params
 
-    // 멀티테넌트 가드: 비-SUPER는 본인 법인 직원만 (타 법인 직원 퇴직금 계산 차단)
-    const emp = await prisma.employee.findFirst({
-      where: {
-        id: employeeId,
-        ...(user.role !== ROLE.SUPER_ADMIN
-          ? { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
-          : {}),
-      },
-      select: { id: true },
-    })
-    if (!emp) throw notFound('직원을 찾을 수 없습니다.')
-
     let body: unknown
     try {
       body = await req.json()
@@ -43,8 +31,37 @@ export const POST = withPermission(
       throw badRequest('유효한 날짜 형식이 아닙니다.')
     }
 
+    // Multi-tenant scope follows the assignment effective on the requested
+    // termination date, not whichever assignment happens to be open today.
+    const emp = await prisma.employee.findFirst({
+      where: {
+        id: employeeId,
+        ...(user.role !== ROLE.SUPER_ADMIN
+          ? {
+              assignments: {
+                some: {
+                  companyId: user.companyId,
+                  isPrimary: true,
+                  effectiveDate: { lte: terminationDateObj },
+                  OR: [
+                    { endDate: null },
+                    { endDate: { gt: terminationDateObj } },
+                  ],
+                },
+              },
+            }
+          : {}),
+      },
+      select: { id: true },
+    })
+    if (!emp) throw notFound('직원을 찾을 수 없습니다.')
+
     try {
-      const result = await calculateSeverance(employeeId, terminationDateObj)
+      const result = await calculateSeverance(
+        employeeId,
+        terminationDateObj,
+        user.role === ROLE.SUPER_ADMIN ? undefined : user.companyId,
+      )
       return apiSuccess(result)
     } catch (err) {
       // findUniqueOrThrow → P2025 → notFound; other Prisma errors → handlePrismaError

@@ -3,6 +3,7 @@
 import { useTranslations, useLocale } from 'next-intl'
 
 import { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
     Calendar,
@@ -83,6 +84,7 @@ export default function CloseAttendanceClient({ user }: Props) {
     const [closing, setClosing] = useState<string | null>(null)
     const [reopening, setReopening] = useState<string | null>(null)
     const [calculating, setCalculating] = useState<string | null>(null)
+    const [pendingCorrectionConflict, setPendingCorrectionConflict] = useState(false)
     const [confirmModal, setConfirmModal] = useState<{
         companyId: string
         status: AttendanceStatus
@@ -104,6 +106,7 @@ export default function CloseAttendanceClient({ user }: Props) {
     }, [year, month, tCommon, t])
 
     useEffect(() => {
+        setPendingCorrectionConflict(false)
         setLoading(true)
         // 현재 사용자 소속 법인만 로드 (데모: 전체 로드)
         const companiesToLoad = [user.companyId].filter(Boolean)
@@ -121,10 +124,21 @@ export default function CloseAttendanceClient({ user }: Props) {
             if (res.ok) {
                 await fetchStatus(companyId)
                 setConfirmModal(null)
+                setPendingCorrectionConflict(false)
                 toast({ title: t('attendanceClosed') })
             } else {
-                const err = await res.json()
-                toast({ title: err.error?.message ?? tCommon('saveFailed'), variant: 'destructive' })
+                const err = await res.json() as {
+                    error?: { code?: string; message?: string }
+                }
+                if (
+                    res.status === 409 &&
+                    err.error?.code === 'ATTENDANCE_CORRECTION_PENDING'
+                ) {
+                    setConfirmModal(null)
+                    setPendingCorrectionConflict(true)
+                } else {
+                    toast({ title: err.error?.message ?? tCommon('saveFailed'), variant: 'destructive' })
+                }
             }
         } finally {
             setClosing(null)
@@ -228,6 +242,30 @@ export default function CloseAttendanceClient({ user }: Props) {
                     </button>
                 </div>
             </div>
+
+            {pendingCorrectionConflict && (
+                <div
+                    role="alert"
+                    className="flex flex-col gap-3 rounded-xl border border-warning-bright/30 bg-warning-bright/10 p-4 sm:flex-row sm:items-center"
+                >
+                    <AlertTriangle className="h-5 w-5 shrink-0 text-ctr-warning" aria-hidden="true" />
+                    <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-foreground">
+                            {t('closeAtt.pendingCorrectionsTitle')}
+                        </p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                            {t('closeAtt.pendingCorrectionsDescription', { yearMonth })}
+                        </p>
+                    </div>
+                    <Link
+                        href="/approvals/attendance?view=team&requestType=attendance_correction&status=pending"
+                        className={`${BUTTON_VARIANTS.secondary} ${BUTTON_SIZES.md} inline-flex shrink-0 items-center justify-center gap-1.5`}
+                    >
+                        {t('closeAtt.reviewPendingCorrections')}
+                        <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                    </Link>
+                </div>
+            )}
 
             {/* Company Cards */}
             <div className="space-y-4">

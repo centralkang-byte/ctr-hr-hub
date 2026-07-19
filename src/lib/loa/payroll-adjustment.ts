@@ -3,10 +3,36 @@
 // 휴직 급여 조정: 월별 분리, 차감 계산, 소급 정산
 // ═══════════════════════════════════════════════════════════
 
-import type { Prisma } from '@/generated/prisma/client'
+import type { PayrollRun, Prisma } from '@/generated/prisma/client'
+import { conflict } from '@/lib/errors'
 import { prisma } from '@/lib/prisma'
 import type { PrismaTx } from '@/lib/prisma-rls'
 import { getWeekdaysInMonth, getWeekdaysBetween } from '@/lib/payroll/kr-tax'
+
+const LOA_OBLIGATION_RESOURCE = 'LoaPayrollObligation'
+const LOA_OBLIGATION_CREATED = 'LOA_PAYROLL_OBLIGATION_CREATED'
+const LOA_OBLIGATION_CONSUMED = 'LOA_PAYROLL_OBLIGATION_CONSUMED'
+
+export type LoaPayrollObligationKind = 'BASE_DEDUCTION' | 'COMPENSATION'
+
+export interface LoaPayrollObligation {
+  idempotencyKey: string
+  kind: LoaPayrollObligationKind
+  companyId: string
+  loaId: string
+  employeeId: string
+  sourceYearMonth: string
+  amount: number
+  description: string
+}
+
+export interface LoaPayrollDeferredWarning {
+  kind: LoaPayrollObligationKind
+  sourceYearMonth: string
+  amount: number
+  reason: 'MISSING_MONTHLY_RUN' | 'LOCKED_MONTHLY_RUN'
+  idempotencyKey: string
+}
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -91,9 +117,14 @@ export function calculateLoaDeduction(
 /**
  * CompensationHistory에서 asOfDate 기준 최신 연봉 → 월급 환산
  */
-export async function getEmployeeMonthlySalary(employeeId: string, asOfDate: Date): Promise<number> {
-  const comp = await prisma.compensationHistory.findFirst({
-    where: { employeeId, effectiveDate: { lte: asOfDate } },
+export async function getEmployeeMonthlySalary(
+  employeeId: string,
+  companyId: string,
+  asOfDate: Date,
+  client: PrismaTx = prisma,
+): Promise<number> {
+  const comp = await client.compensationHistory.findFirst({
+    where: { employeeId, companyId, effectiveDate: { lte: asOfDate } },
     orderBy: { effectiveDate: 'desc' },
     select: { newBaseSalary: true },
   })
@@ -101,379 +132,547 @@ export async function getEmployeeMonthlySalary(employeeId: string, asOfDate: Dat
   return Math.round(Number(comp.newBaseSalary) / 12) // 연봉 → 월급
 }
 
-// ─── 공통 헬퍼: 월별 adjustment 생성 ─────────────────────────
-
 /**
- * 단일 월 범위에 대해 PayrollAdjustment 생성 (Issue #3: 코드 중복 제거).
- * createCrossMonthLoaAdjustments / reconcileLoaAdjustments 양쪽에서 재사용.
- *
- * Phase 6A: PrismaLike union (Prisma.TransactionClient | typeof prisma) caused
- * "Excessive stack depth" errors once the top-level client was extended via
- * $extends. PrismaTx (Omit<typeof prisma, $connect|$disconnect|$on|$transaction|$use|$extends>)
- * covers both call paths without the problematic union.
+ * Rebuilds PayrollRun adjustment aggregates from the committed child set.
+ * Call this in the same transaction as every adjustment mutation.
  */
-interface AdjustmentRangeOpts {
-  companyId: string
-  employeeId: string
-  loaId: string
-  loaTypeName: string
-  yearMonth: string
-  monthlySalary: number
-  loaDays: number
-  totalWorkdays: number
-  payType: string
-  payRate: number | null
-  userId: string
-  descSuffix?: string
+export async function recomputePayrollAdjustmentAggregates(
+  client: PrismaTx,
+  payrollRunId: string,
+): Promise<void> {
+  const aggregate = await client.payrollAdjustment.aggregate({
+    where: { payrollRunId },
+    _count: { _all: true },
+    _sum: { amount: true },
+  })
+
+  await client.payrollRun.update({
+    where: { id: payrollRunId },
+    data: {
+      adjustmentCount: aggregate._count._all,
+      adjustmentTotal: aggregate._sum.amount ?? 0,
+    },
+  })
 }
 
-async function createAdjustmentForRange(
-  client: PrismaTx,
-  opts: AdjustmentRangeOpts,
-): Promise<boolean> {
-  const payrollRun = await client.payrollRun.findFirst({
-    where: {
-      companyId: opts.companyId,
-      yearMonth: opts.yearMonth,
-      status: { notIn: ['PAID', 'CANCELLED'] },
-    },
-  })
-  if (!payrollRun) return false
-
-  // Issue #4: idempotent 체크 — 이미 해당 월에 adjustment가 존재하면 skip
-  const existing = await client.payrollAdjustment.findFirst({
-    where: { loaId: opts.loaId, loaYearMonth: opts.yearMonth },
-  })
-  if (existing) {
-    console.warn(`[LOA] idempotent skip: loaId=${opts.loaId}, yearMonth=${opts.yearMonth} — adjustment already exists`)
-    return false
+function parseLoaPayrollObligation(
+  changes: Prisma.JsonValue | null,
+): LoaPayrollObligation | null {
+  if (!changes || typeof changes !== 'object' || Array.isArray(changes)) return null
+  const value = changes as Record<string, Prisma.JsonValue>
+  if (
+    (value.kind !== 'BASE_DEDUCTION' && value.kind !== 'COMPENSATION') ||
+    typeof value.idempotencyKey !== 'string' ||
+    typeof value.companyId !== 'string' ||
+    typeof value.loaId !== 'string' ||
+    typeof value.employeeId !== 'string' ||
+    typeof value.sourceYearMonth !== 'string' ||
+    typeof value.amount !== 'number' ||
+    typeof value.description !== 'string'
+  ) {
+    return null
   }
+  return {
+    idempotencyKey: value.idempotencyKey,
+    kind: value.kind,
+    companyId: value.companyId,
+    loaId: value.loaId,
+    employeeId: value.employeeId,
+    sourceYearMonth: value.sourceYearMonth,
+    amount: value.amount,
+    description: value.description,
+  }
+}
 
-  const amount = calculateLoaDeduction(
-    opts.monthlySalary, opts.loaDays, opts.totalWorkdays, opts.payType, opts.payRate,
+function uniqueObligations(
+  obligations: readonly LoaPayrollObligation[],
+): LoaPayrollObligation[] {
+  const seen = new Set<string>()
+  return obligations.filter((obligation) => {
+    if (seen.has(obligation.idempotencyKey)) return false
+    seen.add(obligation.idempotencyKey)
+    return true
+  })
+}
+
+export async function getUnconsumedDeferredLoaObligationsForLoa(
+  client: PrismaTx,
+  companyId: string,
+  loaId: string,
+): Promise<LoaPayrollObligation[]> {
+  const createdRows = await client.auditLog.findMany({
+    where: {
+      companyId,
+      action: LOA_OBLIGATION_CREATED,
+      resourceType: LOA_OBLIGATION_RESOURCE,
+    },
+    select: { resourceId: true, changes: true, createdAt: true },
+    orderBy: { createdAt: 'asc' },
+  })
+  const obligations = uniqueObligations(
+    createdRows
+      .map((row) => parseLoaPayrollObligation(row.changes))
+      .filter(
+        (value): value is LoaPayrollObligation =>
+          value?.companyId === companyId && value.loaId === loaId,
+      ),
   )
+  if (obligations.length === 0) return []
 
-  const suffix = opts.descSuffix ? ` [${opts.descSuffix}]` : ''
-  await client.payrollAdjustment.create({
+  const consumedRows = await client.auditLog.findMany({
+    where: {
+      companyId,
+      action: LOA_OBLIGATION_CONSUMED,
+      resourceType: LOA_OBLIGATION_RESOURCE,
+      resourceId: { in: obligations.map((value) => value.idempotencyKey) },
+    },
+    select: { resourceId: true },
+  })
+  const consumedKeys = new Set(consumedRows.map((row) => row.resourceId))
+  return obligations.filter((value) => !consumedKeys.has(value.idempotencyKey))
+}
+
+async function resolveDeferredLoaObligation(
+  client: PrismaTx,
+  obligation: LoaPayrollObligation,
+  actorId: string,
+  reason: string,
+): Promise<void> {
+  const existing = await client.auditLog.findFirst({
+    where: {
+      companyId: obligation.companyId,
+      action: LOA_OBLIGATION_CONSUMED,
+      resourceType: LOA_OBLIGATION_RESOURCE,
+      resourceId: obligation.idempotencyKey,
+    },
+    select: { id: true },
+  })
+  if (existing) return
+
+  await client.auditLog.create({
     data: {
-      payrollRunId: payrollRun.id,
-      employeeId: opts.employeeId,
-      type: 'DEDUCTION',
-      category: 'LOA_PAY_ADJUSTMENT',
-      description: `[휴직 급여 조정] ${opts.loaTypeName} (${opts.payType}${opts.payRate ? `, ${opts.payRate}%` : ''}) — ${opts.yearMonth} 휴직 ${opts.loaDays}/${opts.totalWorkdays}일${suffix}`,
-      amount,
-      loaId: opts.loaId,
-      loaYearMonth: opts.yearMonth,
-      createdById: opts.userId,
+      actorId,
+      action: LOA_OBLIGATION_CONSUMED,
+      resourceType: LOA_OBLIGATION_RESOURCE,
+      resourceId: obligation.idempotencyKey,
+      companyId: obligation.companyId,
+      changes: { version: 1, reason },
+      sensitivityLevel: 'HIGH',
     },
   })
-  await client.payrollRun.update({
-    where: { id: payrollRun.id },
-    data: { adjustmentCount: { increment: 1 } },
+}
+
+/**
+ * AuditLog-backed durable obligation. Callers hold the company registry lock,
+ * which provides exactly-once creation despite AuditLog lacking a unique key.
+ */
+export async function persistDeferredLoaObligation(
+  client: PrismaTx,
+  obligation: LoaPayrollObligation,
+  actorId: string,
+): Promise<boolean> {
+  const existing = await client.auditLog.findFirst({
+    where: {
+      companyId: obligation.companyId,
+      action: LOA_OBLIGATION_CREATED,
+      resourceType: LOA_OBLIGATION_RESOURCE,
+      resourceId: obligation.idempotencyKey,
+    },
+    select: { id: true },
+  })
+  if (existing) return false
+
+  await client.auditLog.create({
+    data: {
+      actorId,
+      action: LOA_OBLIGATION_CREATED,
+      resourceType: LOA_OBLIGATION_RESOURCE,
+      resourceId: obligation.idempotencyKey,
+      companyId: obligation.companyId,
+      changes: { version: 1, ...obligation },
+      sensitivityLevel: 'HIGH',
+    },
   })
   return true
 }
 
-// ─── 함수 4: 월별 LOA 급여 조정 생성 ────────────────────────
-
 /**
- * LOA 활성화 시 월별 PayrollAdjustment 생성.
- * - expectedEndDate null → 단일 플레이스홀더 (amount=0, Phase 2 호환)
- * - expectedEndDate 있음 → 월별 범위별 차감액 계산 후 생성
+ * Consumes obligations eligible for a MONTHLY run. The caller must hold the
+ * registry lock, target period lock, and PayrollRun row lock (or be creating
+ * the run in that same locked transaction).
  */
-export async function createCrossMonthLoaAdjustments(
-  record: LoaRecord,
-  userId: string,
-): Promise<void> {
-  const startDate = new Date(record.startDate)
-  const payType = record.payType ?? record.type.payType ?? 'UNPAID'
-  const payRate = record.payRate ?? record.type.payRate
-
-  // expectedEndDate 없으면 단일 플레이스홀더 (Phase 2 backward compat)
-  if (!record.expectedEndDate) {
-    await createSingleMonthPlaceholder(record, startDate, payType, payRate, userId)
-    return
+export async function consumeDeferredLoaObligationsForRun(
+  client: PrismaTx,
+  params: {
+    run: Pick<
+      PayrollRun,
+      'id' | 'companyId' | 'yearMonth' | 'runType' | 'status' | 'attendanceClosedAt'
+    >
+    actorId: string
+    projectedStatus?: 'DRAFT' | 'ADJUSTMENT'
+    projectedAttendanceClosedAt?: Date | null
+  },
+): Promise<number> {
+  if (params.run.runType !== 'MONTHLY') return 0
+  const targetStatus = params.projectedStatus ?? params.run.status
+  const targetAttendanceClosedAt =
+    params.projectedAttendanceClosedAt === undefined
+      ? params.run.attendanceClosedAt
+      : params.projectedAttendanceClosedAt
+  if (
+    targetStatus !== 'ADJUSTMENT' &&
+    !(targetStatus === 'DRAFT' && targetAttendanceClosedAt === null)
+  ) {
+    return 0
   }
 
-  const endDate = new Date(record.expectedEndDate)
-  const ranges = generateLoaMonthlyRanges(startDate, endDate)
-  const monthlySalary = await getEmployeeMonthlySalary(record.employeeId, startDate)
-
-  for (const range of ranges) {
-    await createAdjustmentForRange(prisma, {
-      companyId: record.companyId,
-      employeeId: record.employeeId,
-      loaId: record.id,
-      loaTypeName: record.type.name,
-      yearMonth: range.yearMonth,
-      monthlySalary,
-      loaDays: range.loaDaysInMonth,
-      totalWorkdays: range.totalWorkdaysInMonth,
-      payType,
-      payRate,
-      userId,
-    })
-  }
-}
-
-/**
- * Phase 2 호환 플레이스홀더: amount=0, loaId/loaYearMonth 포함
- */
-async function createSingleMonthPlaceholder(
-  record: LoaRecord,
-  startDate: Date,
-  payType: string,
-  payRate: number | null,
-  userId: string,
-): Promise<void> {
-  const yearMonth = `${startDate.getUTCFullYear()}-${String(startDate.getUTCMonth() + 1).padStart(2, '0')}`
-
-  const payrollRun = await prisma.payrollRun.findFirst({
+  const createdRows = await client.auditLog.findMany({
     where: {
-      companyId: record.companyId,
-      yearMonth,
-      status: { notIn: ['PAID', 'CANCELLED'] },
+      companyId: params.run.companyId,
+      action: LOA_OBLIGATION_CREATED,
+      resourceType: LOA_OBLIGATION_RESOURCE,
     },
+    select: { resourceId: true, changes: true, createdAt: true },
+    orderBy: { createdAt: 'asc' },
   })
-  if (!payrollRun) return
+  const obligations = uniqueObligations(
+    createdRows
+      .map((row) => parseLoaPayrollObligation(row.changes))
+      .filter(
+        (value): value is LoaPayrollObligation =>
+          value?.companyId === params.run.companyId,
+      )
+      .filter((value) =>
+        value.kind === 'BASE_DEDUCTION'
+          ? value.sourceYearMonth === params.run.yearMonth
+          : value.sourceYearMonth < params.run.yearMonth,
+      ),
+  )
+  if (obligations.length === 0) return 0
 
-  // Issue #1: toLocaleDateString 타임존 의존 제거 → ISO 날짜 문자열 사용
-  const startStr = `${startDate.getUTCFullYear()}-${String(startDate.getUTCMonth() + 1).padStart(2, '0')}-${String(startDate.getUTCDate()).padStart(2, '0')}`
-  const endStr = '미정'
+  const consumedRows = await client.auditLog.findMany({
+    where: {
+      companyId: params.run.companyId,
+      action: LOA_OBLIGATION_CONSUMED,
+      resourceType: LOA_OBLIGATION_RESOURCE,
+      resourceId: { in: obligations.map((value) => value.idempotencyKey) },
+    },
+    select: { resourceId: true },
+  })
+  const consumedKeys = new Set(consumedRows.map((row) => row.resourceId))
 
-  await prisma.$transaction([
-    prisma.payrollAdjustment.create({
-      data: {
-        payrollRunId: payrollRun.id,
-        employeeId: record.employeeId,
-        type: 'DEDUCTION',
-        category: 'LOA_PAY_ADJUSTMENT',
-        description: `[휴직 급여 조정] ${record.type.name} (${payType}${payRate ? `, ${payRate}%` : ''}) — 휴직 기간: ${startStr} ~ ${endStr} — 이후 급여 차감/일할 계산 필수`,
-        amount: 0,
-        loaId: record.id,
-        loaYearMonth: yearMonth,
-        createdById: userId,
-      },
-    }),
-    prisma.payrollRun.update({
-      where: { id: payrollRun.id },
-      data: { adjustmentCount: { increment: 1 } },
-    }),
-  ])
-}
+  let consumedCount = 0
+  for (const obligation of obligations) {
+    if (consumedKeys.has(obligation.idempotencyKey)) continue
 
-// ─── 내부 타입: PayrollAdjustment + PayrollRun join ──────────
-
-type AdjWithRun = Prisma.PayrollAdjustmentGetPayload<{
-  include: { payrollRun: { select: { companyId: true; yearMonth: true; status: true } } }
-}>
-
-// ─── 함수 5: 복직 시 소급 정산 ──────────────────────────────
-
-/**
- * 복직(handleComplete) 시 호출. Prisma 트랜잭션 내에서 실행.
- *
- * - expectedEndDate 없었음 → 전체 기간 조정 새로 생성
- * - Case A (같은 날짜) → 변경 없음
- * - Case B (조기 복직) → 초과 월 취소/환불
- * - Case C (연장) → 추가 월 조정 생성
- * - 마지막 월 일수 변경 → 금액 재계산
- */
-export async function reconcileLoaAdjustments(
-  tx: PrismaTx,
-  record: LoaRecord,
-  actualEndDate: Date,
-  userId: string,
-): Promise<void> {
-  const startDate = new Date(record.startDate)
-  const payType = record.payType ?? record.type.payType ?? 'UNPAID'
-  const payRate = record.payRate ?? record.type.payRate
-  const monthlySalary = await getEmployeeMonthlySalary(record.employeeId, startDate)
-
-  const actualRanges = generateLoaMonthlyRanges(startDate, actualEndDate)
-  const actualYearMonths = new Set(actualRanges.map(r => r.yearMonth))
-
-  // expectedEndDate 없었으면: 기존 조정 전부 조회 후 실제 기간에 맞게 생성
-  if (!record.expectedEndDate) {
-    // 기존 플레이스홀더(amount=0) 삭제 또는 업데이트
-    const existing = await tx.payrollAdjustment.findMany({
-      where: { loaId: record.id },
-      include: { payrollRun: { select: { companyId: true, yearMonth: true, status: true } } },
+    const obligationTag = `[LOA obligation:${obligation.idempotencyKey}]`
+    const existing = await client.payrollAdjustment.findFirst({
+      where:
+        obligation.kind === 'BASE_DEDUCTION'
+          ? {
+              payrollRunId: params.run.id,
+              loaId: obligation.loaId,
+              loaYearMonth: obligation.sourceYearMonth,
+            }
+          : {
+              payrollRunId: params.run.id,
+              description: { contains: obligationTag },
+            },
+      select: { id: true },
     })
-
-    // Issue #5: guard clause로 반전 — 빈 if 블록 제거
-    // 기존 플레이스홀더 취소 (PAID 런이면 amount=0이므로 보정 불필요, 아니면 삭제)
-    for (const adj of existing) {
-      if (adj.payrollRun.status !== 'PAID') {
-        await tx.payrollAdjustment.delete({ where: { id: adj.id } })
-        await tx.payrollRun.update({
-          where: { id: adj.payrollRunId },
-          data: { adjustmentCount: { decrement: 1 } },
-        })
-      }
-    }
-
-    // Issue #3: 공통 헬퍼로 실제 기간에 맞게 새 조정 생성
-    for (const range of actualRanges) {
-      await createAdjustmentForRange(tx, {
-        companyId: record.companyId,
-        employeeId: record.employeeId,
-        loaId: record.id,
-        loaTypeName: record.type.name,
-        yearMonth: range.yearMonth,
-        monthlySalary,
-        loaDays: range.loaDaysInMonth,
-        totalWorkdays: range.totalWorkdaysInMonth,
-        payType,
-        payRate,
-        userId,
-        descSuffix: '복직 정산',
-      })
-    }
-    return
-  }
-
-  // expectedEndDate가 있는 경우
-  const expectedEndDate = new Date(record.expectedEndDate)
-  const expectedRanges = generateLoaMonthlyRanges(startDate, expectedEndDate)
-  const expectedYearMonths = new Set(expectedRanges.map(r => r.yearMonth))
-
-  // 기존 조정 전체 조회
-  const existingAdjs = await tx.payrollAdjustment.findMany({
-    where: { loaId: record.id },
-    include: { payrollRun: { select: { companyId: true, yearMonth: true, status: true } } },
-  })
-  // Issue #2: 중복 키 방어 — 같은 loaYearMonth가 2개 이상이면 경고 로깅
-  const adjByYearMonth = new Map<string | null, typeof existingAdjs[number]>()
-  for (const a of existingAdjs) {
-    if (adjByYearMonth.has(a.loaYearMonth)) {
-      console.warn(`[LOA] 중복 loaYearMonth 감지: loaId=${record.id}, yearMonth=${a.loaYearMonth}, adjId=${a.id} (기존 adjId=${adjByYearMonth.get(a.loaYearMonth)?.id})`)
-    }
-    adjByYearMonth.set(a.loaYearMonth, a)
-  }
-
-  // Case A: 같은 날짜 → 변경 없음
-  if (actualEndDate.getTime() === expectedEndDate.getTime()) return
-
-  // Case B: 조기 복직 — 실제 기간에 포함되지 않는 월 취소
-  for (const adj of existingAdjs) {
-    if (!adj.loaYearMonth) continue
-    if (actualYearMonths.has(adj.loaYearMonth)) continue
-
-    // 이 월은 더 이상 휴직 기간이 아님 → 취소
-    if (adj.payrollRun.status === 'PAID') {
-      // PAID 런 → 다음 런에 환불 보정
-      await createCorrectionInNextRun(tx, adj as AdjWithRun, record, userId)
-    } else {
-      // Open 런 → amount=0 + 취소 노트
-      await tx.payrollAdjustment.update({
-        where: { id: adj.id },
+    if (!existing) {
+      await client.payrollAdjustment.create({
         data: {
-          amount: 0,
-          description: `[조기복직 정산 — 취소] 원래: ${adj.description}`,
+          payrollRunId: params.run.id,
+          employeeId: obligation.employeeId,
+          type: obligation.kind === 'COMPENSATION' ? 'CORRECTION' : 'DEDUCTION',
+          category: 'LOA_PAY_ADJUSTMENT',
+          description: `${obligation.description} ${obligationTag}`,
+          amount: obligation.amount,
+          loaId: obligation.loaId,
+          loaYearMonth: obligation.sourceYearMonth,
+          createdById: params.actorId,
         },
       })
     }
-  }
-
-  // Case C: 연장 — 추가 월에 대한 조정 생성 (Issue #3: 공통 헬퍼 사용)
-  for (const range of actualRanges) {
-    if (expectedYearMonths.has(range.yearMonth)) continue
-
-    await createAdjustmentForRange(tx, {
-      companyId: record.companyId,
-      employeeId: record.employeeId,
-      loaId: record.id,
-      loaTypeName: record.type.name,
-      yearMonth: range.yearMonth,
-      monthlySalary,
-      loaDays: range.loaDaysInMonth,
-      totalWorkdays: range.totalWorkdaysInMonth,
-      payType,
-      payRate,
-      userId,
-      descSuffix: '연장 정산',
+    await client.auditLog.create({
+      data: {
+        actorId: params.actorId,
+        action: LOA_OBLIGATION_CONSUMED,
+        resourceType: LOA_OBLIGATION_RESOURCE,
+        resourceId: obligation.idempotencyKey,
+        companyId: params.run.companyId,
+        changes: {
+          version: 1,
+          payrollRunId: params.run.id,
+          targetYearMonth: params.run.yearMonth,
+        },
+        sensitivityLevel: 'HIGH',
+      },
     })
+    consumedKeys.add(obligation.idempotencyKey)
+    consumedCount++
   }
 
-  // 마지막 월 일수 변경 재계산 (실제 종료일이 예정 종료일과 같은 월이지만 다른 날인 경우)
-  const lastActualRange = actualRanges[actualRanges.length - 1]
-  const existingLastAdj = adjByYearMonth.get(lastActualRange?.yearMonth ?? '')
-
-  if (lastActualRange && existingLastAdj && actualYearMonths.has(lastActualRange.yearMonth)) {
-    const newAmount = calculateLoaDeduction(
-      monthlySalary, lastActualRange.loaDaysInMonth, lastActualRange.totalWorkdaysInMonth, payType, payRate,
-    )
-    const oldAmount = Number(existingLastAdj.amount)
-
-    if (newAmount !== oldAmount) {
-      if (existingLastAdj.payrollRun.status === 'PAID') {
-        // PAID → 차액만큼 보정
-        const diff = newAmount - oldAmount // 조기복직이면 양수(환불), 연장이면 음수(추가차감)
-        await createCorrectionInNextRun(tx, existingLastAdj as AdjWithRun, record, userId, diff)
-      } else {
-        await tx.payrollAdjustment.update({
-          where: { id: existingLastAdj.id },
-          data: {
-            amount: newAmount,
-            description: `[휴직 급여 조정] ${record.type.name} (${payType}) — ${lastActualRange.yearMonth} 휴직 ${lastActualRange.loaDaysInMonth}/${lastActualRange.totalWorkdaysInMonth}일 [정산 재계산]`,
-          },
-        })
-      }
-    }
+  if (consumedCount > 0) {
+    await recomputePayrollAdjustmentAggregates(client, params.run.id)
   }
+  return consumedCount
 }
 
-// ─── 함수 6: 보정 조정 생성 ─────────────────────────────────
+// ─── Locked LOA payroll reconciliation ───────────────────────
+
+export function isEditableLoaPayrollRun(
+  run: Pick<PayrollRun, 'runType' | 'status' | 'attendanceClosedAt'>,
+): boolean {
+  return (
+    run.runType === 'MONTHLY' &&
+    (run.status === 'ADJUSTMENT' ||
+      (run.status === 'DRAFT' && run.attendanceClosedAt === null))
+  )
+}
+
+export async function buildLoaDesiredAmounts(
+  client: PrismaTx,
+  record: LoaRecord,
+  endDate: Date,
+): Promise<Map<string, number>> {
+  const startDate = new Date(record.startDate)
+  const monthlySalary = await getEmployeeMonthlySalary(
+    record.employeeId,
+    record.companyId,
+    startDate,
+    client,
+  )
+  const payType = record.payType ?? record.type.payType ?? 'UNPAID'
+  const payRate = record.payRate ?? record.type.payRate
+  return new Map(
+    generateLoaMonthlyRanges(startDate, endDate).map((range) => [
+      range.yearMonth,
+      calculateLoaDeduction(
+        monthlySalary,
+        range.loaDaysInMonth,
+        range.totalWorkdaysInMonth,
+        payType,
+        payRate,
+      ),
+    ]),
+  )
+}
+
+function obligationKey(params: {
+  record: LoaRecord
+  kind: LoaPayrollObligationKind
+  sourceYearMonth: string
+  reconciliationKey: string
+  amount: number
+}): string {
+  const normalizedKey = params.reconciliationKey.replace(/[^a-zA-Z0-9:_-]/g, '-')
+  return [
+    'loa',
+    params.record.id,
+    params.kind.toLowerCase(),
+    params.sourceYearMonth,
+    normalizedKey,
+    String(params.amount),
+  ].join(':')
+}
+
+function settlementDescription(params: {
+  record: LoaRecord
+  sourceYearMonth: string
+  kind: LoaPayrollObligationKind
+  reconciliationKey: string
+}): string {
+  const label = params.kind === 'BASE_DEDUCTION' ? '휴직 급여 조정' : '휴직 소급 정산'
+  return `[${label}] ${params.record.type.name} — ${params.sourceYearMonth} (${params.reconciliationKey})`
+}
 
 /**
- * PAID 상태 런의 차감을 취소/보정하기 위해 다음 오픈 런에 CORRECTION 생성.
- *
- * CRITICAL: 원 차감이 음수(-3,000,000)이면 보정은 양수(+3,000,000).
- * diffAmount가 제공되면 해당 금액 사용, 없으면 전액 취소(부호 반전).
+ * The caller must hold registry -> sorted period -> LOA row -> PayrollRun row
+ * locks. Immutable runs remain untouched; their delta moves to the earliest
+ * later editable MONTHLY run or becomes a durable deferred obligation.
  */
-async function createCorrectionInNextRun(
-  tx: PrismaTx,
-  originalAdj: AdjWithRun,
-  record: LoaRecord,
-  userId: string,
-  diffAmount?: number,
-): Promise<void> {
-  // 전액 취소: 부호 반전 (e.g., -3M → +3M 환불)
-  // 부분 조정: diffAmount 직접 사용
-  const correctionAmount = diffAmount ?? -Number(originalAdj.amount)
-
-  const nextRun = await tx.payrollRun.findFirst({
-    where: {
-      companyId: originalAdj.payrollRun.companyId,
-      yearMonth: { gt: originalAdj.payrollRun.yearMonth },
-      status: { notIn: ['PAID', 'CANCELLED'] },
-    },
-    orderBy: { yearMonth: 'asc' },
+export async function reconcileLockedLoaPayroll(
+  client: PrismaTx,
+  params: {
+    record: LoaRecord
+    actorId: string
+    sourceYearMonths: readonly string[]
+    desiredAmounts: ReadonlyMap<string, number>
+    lockedRuns: readonly PayrollRun[]
+    reconciliationKey: string
+    createZeroBaseRows?: boolean
+  },
+): Promise<LoaPayrollDeferredWarning[]> {
+  const lockedRunById = new Map(params.lockedRuns.map((run) => [run.id, run]))
+  const sourceRunByMonth = new Map(
+    params.lockedRuns
+      .filter((run) => run.runType === 'MONTHLY')
+      .map((run) => [run.yearMonth, run]),
+  )
+  const existingAdjustments = await client.payrollAdjustment.findMany({
+    where: { loaId: params.record.id },
+    orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
   })
-
-  if (!nextRun) {
-    console.warn(`[LOA Phase 3] 미정산: LOA ${record.id}, ${originalAdj.loaYearMonth}, amount=${correctionAmount}`)
-    return
+  for (const adjustment of existingAdjustments) {
+    if (!lockedRunById.has(adjustment.payrollRunId)) {
+      throw conflict('휴직 급여 실행 잠금 범위가 변경되었습니다.')
+    }
   }
 
-  await tx.payrollAdjustment.create({
-    data: {
-      payrollRunId: nextRun.id,
-      employeeId: record.employeeId,
-      type: 'CORRECTION',
-      category: 'LOA_PAY_ADJUSTMENT',
-      description: `[휴직 소급 정산] ${record.type.name} — ${originalAdj.loaYearMonth} 분 보정 (원 차감: ${originalAdj.amount}원)`,
-      amount: correctionAmount,
-      loaId: record.id,
-      loaYearMonth: originalAdj.loaYearMonth,
-      createdById: userId,
-    },
-  })
-  await tx.payrollRun.update({
-    where: { id: nextRun.id },
-    data: { adjustmentCount: { increment: 1 } },
-  })
+  const obligations = await getUnconsumedDeferredLoaObligationsForLoa(
+    client,
+    params.record.companyId,
+    params.record.id,
+  )
+  const warnings: LoaPayrollDeferredWarning[] = []
+  const touchedRunIds = new Set<string>()
+  const sourceMonths = [...new Set([
+    ...params.sourceYearMonths,
+    ...params.desiredAmounts.keys(),
+    ...existingAdjustments.flatMap((value) =>
+      value.loaYearMonth ? [value.loaYearMonth] : [],
+    ),
+    ...obligations.map((value) => value.sourceYearMonth),
+  ])].sort()
+
+  for (const sourceYearMonth of sourceMonths) {
+    const desiredAmount = params.desiredAmounts.get(sourceYearMonth) ?? 0
+    const sourceRun = sourceRunByMonth.get(sourceYearMonth)
+    const sourceAdjustments = existingAdjustments.filter(
+      (value) => value.loaYearMonth === sourceYearMonth,
+    )
+    const mutableAdjustments = sourceAdjustments.filter((value) => {
+      const run = lockedRunById.get(value.payrollRunId)
+      return run ? isEditableLoaPayrollRun(run) : false
+    })
+    const mutableIds = new Set(mutableAdjustments.map((value) => value.id))
+    const fixedAmount = sourceAdjustments
+      .filter((value) => !mutableIds.has(value.id))
+      .reduce((sum, value) => sum + Number(value.amount), 0)
+
+    for (const obligation of obligations.filter(
+      (value) => value.sourceYearMonth === sourceYearMonth,
+    )) {
+      await resolveDeferredLoaObligation(
+        client,
+        obligation,
+        params.actorId,
+        `superseded:${params.reconciliationKey}`,
+      )
+    }
+
+    const remainingAmount = desiredAmount - fixedAmount
+    const editableSourceRun =
+      sourceRun && isEditableLoaPayrollRun(sourceRun) ? sourceRun : null
+    const laterEditableRun = params.lockedRuns
+      .filter(
+        (run) =>
+          run.runType === 'MONTHLY' &&
+          run.yearMonth > sourceYearMonth &&
+          isEditableLoaPayrollRun(run),
+      )
+      .sort((a, b) => a.yearMonth.localeCompare(b.yearMonth))[0]
+    const targetRun = editableSourceRun ?? (sourceRun ? laterEditableRun : null)
+    const preferredAdjustment = targetRun
+      ? mutableAdjustments.find((value) => value.payrollRunId === targetRun.id) ?? null
+      : null
+
+    for (const adjustment of mutableAdjustments) {
+      const isPreferred = preferredAdjustment?.id === adjustment.id
+      const nextAmount = isPreferred ? remainingAmount : 0
+      const targetIsSource =
+        lockedRunById.get(adjustment.payrollRunId)?.yearMonth === sourceYearMonth
+      await client.payrollAdjustment.update({
+        where: { id: adjustment.id },
+        data: {
+          amount: nextAmount,
+          type: targetIsSource ? 'DEDUCTION' : 'CORRECTION',
+          description: settlementDescription({
+            record: params.record,
+            sourceYearMonth,
+            kind: targetIsSource ? 'BASE_DEDUCTION' : 'COMPENSATION',
+            reconciliationKey: params.reconciliationKey,
+          }),
+        },
+      })
+      touchedRunIds.add(adjustment.payrollRunId)
+    }
+
+    if (
+      targetRun &&
+      !preferredAdjustment &&
+      (remainingAmount !== 0 ||
+        (params.createZeroBaseRows && targetRun.yearMonth === sourceYearMonth))
+    ) {
+      const targetIsSource = targetRun.yearMonth === sourceYearMonth
+      await client.payrollAdjustment.create({
+        data: {
+          payrollRunId: targetRun.id,
+          employeeId: params.record.employeeId,
+          type: targetIsSource ? 'DEDUCTION' : 'CORRECTION',
+          category: 'LOA_PAY_ADJUSTMENT',
+          description: settlementDescription({
+            record: params.record,
+            sourceYearMonth,
+            kind: targetIsSource ? 'BASE_DEDUCTION' : 'COMPENSATION',
+            reconciliationKey: params.reconciliationKey,
+          }),
+          amount: remainingAmount,
+          loaId: params.record.id,
+          loaYearMonth: sourceYearMonth,
+          createdById: params.actorId,
+        },
+      })
+      touchedRunIds.add(targetRun.id)
+    }
+
+    if (!targetRun && remainingAmount !== 0) {
+      const kind: LoaPayrollObligationKind = sourceRun
+        ? 'COMPENSATION'
+        : 'BASE_DEDUCTION'
+      const idempotencyKey = obligationKey({
+        record: params.record,
+        kind,
+        sourceYearMonth,
+        reconciliationKey: params.reconciliationKey,
+        amount: remainingAmount,
+      })
+      const description = settlementDescription({
+        record: params.record,
+        sourceYearMonth,
+        kind,
+        reconciliationKey: params.reconciliationKey,
+      })
+      await persistDeferredLoaObligation(
+        client,
+        {
+          idempotencyKey,
+          kind,
+          companyId: params.record.companyId,
+          loaId: params.record.id,
+          employeeId: params.record.employeeId,
+          sourceYearMonth,
+          amount: remainingAmount,
+          description,
+        },
+        params.actorId,
+      )
+      warnings.push({
+        kind,
+        sourceYearMonth,
+        amount: remainingAmount,
+        reason: sourceRun ? 'LOCKED_MONTHLY_RUN' : 'MISSING_MONTHLY_RUN',
+        idempotencyKey,
+      })
+    }
+  }
+
+  for (const runId of touchedRunIds) {
+    await recomputePayrollAdjustmentAggregates(client, runId)
+  }
+  return warnings
 }
 
 // ─── Helper: 새 PayrollRun에 LOA 조정 자동 주입 ─────────────
@@ -486,15 +685,33 @@ export async function injectLoaAdjustmentsForNewRun(
   runId: string,
   companyId: string,
   yearMonth: string,
+  actorId: string,
+  client: PrismaTx,
 ): Promise<number> {
   const [y, m] = yearMonth.split('-').map(Number)
   const monthStart = new Date(Date.UTC(y, m - 1, 1))
   const monthEnd = new Date(Date.UTC(y, m, 0))
 
-  const activeLoas = await prisma.leaveOfAbsence.findMany({
+  const run = await client.payrollRun.findFirst({
+    where: {
+      id: runId,
+      companyId,
+      yearMonth,
+      runType: 'MONTHLY',
+      status: 'DRAFT',
+      attendanceClosedAt: null,
+    },
+    select: { id: true },
+  })
+  if (!run) {
+    throw conflict('휴직 급여 조정은 편집 가능한 월 정기 급여 실행에서만 생성할 수 있습니다.')
+  }
+
+  const activeLoas = await client.leaveOfAbsence.findMany({
     where: {
       companyId,
-      status: 'ACTIVE',
+      deletedAt: null,
+      status: { in: ['ACTIVE', 'RETURN_REQUESTED'] },
       startDate: { lte: monthEnd },
       OR: [
         { expectedEndDate: null },
@@ -506,8 +723,12 @@ export async function injectLoaAdjustmentsForNewRun(
 
   // Issue #6: N+1 쿼리 제거 — LOA ID 목록으로 한 번에 조회
   const loaIds = activeLoas.map(l => l.id)
-  const existingAdjs = await prisma.payrollAdjustment.findMany({
-    where: { loaId: { in: loaIds }, loaYearMonth: yearMonth },
+  const existingAdjs = await client.payrollAdjustment.findMany({
+    where: {
+      payrollRunId: runId,
+      loaId: { in: loaIds },
+      loaYearMonth: yearMonth,
+    },
     select: { loaId: true },
   })
   const existingLoaIds = new Set(existingAdjs.map(a => a.loaId))
@@ -522,33 +743,33 @@ export async function injectLoaAdjustmentsForNewRun(
     const range = ranges.find(r => r.yearMonth === yearMonth)
     if (!range) continue
 
-    const monthlySalary = await getEmployeeMonthlySalary(loa.employeeId, new Date(loa.startDate))
+    const monthlySalary = await getEmployeeMonthlySalary(
+      loa.employeeId,
+      companyId,
+      new Date(loa.startDate),
+      client,
+    )
     const payType = loa.payType ?? loa.type.payType ?? 'UNPAID'
     const payRate = loa.payRate ?? loa.type.payRate
     const amount = calculateLoaDeduction(
       monthlySalary, range.loaDaysInMonth, range.totalWorkdaysInMonth, payType, payRate,
     )
 
-    await prisma.$transaction([
-      prisma.payrollAdjustment.create({
-        data: {
-          payrollRunId: runId,
-          employeeId: loa.employeeId,
-          type: 'DEDUCTION',
-          category: 'LOA_PAY_ADJUSTMENT',
-          description: `[휴직 급여 조정] ${loa.type.name} (${payType}) — ${yearMonth} 휴직 ${range.loaDaysInMonth}/${range.totalWorkdaysInMonth}일 [자동 주입]`,
-          amount,
-          loaId: loa.id,
-          loaYearMonth: yearMonth,
-          createdById: 'system',
-        },
-      }),
-      prisma.payrollRun.update({
-        where: { id: runId },
-        data: { adjustmentCount: { increment: 1 } },
-      }),
-    ])
+    await client.payrollAdjustment.create({
+      data: {
+        payrollRunId: runId,
+        employeeId: loa.employeeId,
+        type: 'DEDUCTION',
+        category: 'LOA_PAY_ADJUSTMENT',
+        description: `[휴직 급여 조정] ${loa.type.name} (${payType}) — ${yearMonth} 휴직 ${range.loaDaysInMonth}/${range.totalWorkdaysInMonth}일 [자동 주입]`,
+        amount,
+        loaId: loa.id,
+        loaYearMonth: yearMonth,
+        createdById: actorId,
+      },
+    })
     injectedCount++
   }
+  await recomputePayrollAdjustmentAggregates(client, runId)
   return injectedCount
 }

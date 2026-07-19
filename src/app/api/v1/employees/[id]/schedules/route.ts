@@ -6,7 +6,6 @@ import { withPermission, perm } from '@/lib/permissions'
 import { logAudit, extractRequestMeta } from '@/lib/audit'
 import { MODULE, ACTION } from '@/lib/constants'
 import { employeeScheduleAssignSchema } from '@/lib/schemas/shift'
-import { extractPrimaryAssignment } from '@/lib/employee/assignment-helpers'
 import type { SessionUser } from '@/types'
 
 // GET /api/v1/employees/[id]/schedules — Get employee's schedule assignments
@@ -28,7 +27,12 @@ export const GET = withPermission(
 
     // Get all schedule assignments
     const schedules = await prisma.employeeSchedule.findMany({
-      where: { employeeId: id },
+      where: {
+        employeeId: id,
+        ...(user.role !== 'SUPER_ADMIN'
+          ? { schedule: { companyId: user.companyId } }
+          : {}),
+      },
       include: { schedule: true },
       orderBy: { effectiveFrom: 'desc' },
     })
@@ -47,40 +51,47 @@ export const POST = withPermission(
     if (!parsed.success) throw badRequest('잘못된 요청 데이터입니다.', { issues: parsed.error.issues })
 
     try {
-      // 1. Verify employee exists
+      const effectiveFrom = new Date(parsed.data.effectiveFrom)
+      const effectiveTo = parsed.data.effectiveTo ? new Date(parsed.data.effectiveTo) : null
+
+      // 1. Resolve the schedule's tenant first. Non-SUPER users may only use
+      // schedules owned by their session company.
+      const schedule = await prisma.workSchedule.findFirst({
+        where: {
+          id: parsed.data.scheduleId,
+          ...(user.role !== 'SUPER_ADMIN' ? { companyId: user.companyId } : {}),
+        },
+      })
+      if (!schedule) throw notFound('근무일정을 찾을 수 없습니다.')
+
+      // 2. The same primary assignment must cover the requested schedule period.
+      // EmployeeAssignment intervals are half-open: [effectiveDate, endDate).
+      const assignmentFence = {
+        companyId: schedule.companyId,
+        isPrimary: true,
+        effectiveDate: { lte: effectiveFrom },
+        ...(effectiveTo
+          ? { OR: [{ endDate: null }, { endDate: { gt: effectiveTo } }] }
+          : { endDate: null }),
+      }
       const employee = await prisma.employee.findFirst({
         where: {
           id,
           deletedAt: null,
-          ...(user.role !== 'SUPER_ADMIN'
-            ? { assignments: { some: { companyId: user.companyId, isPrimary: true, endDate: null } } }
-            : {}),
+          assignments: { some: assignmentFence },
         },
-        select: {
-          id: true,
-          assignments: {
-            where: { isPrimary: true, endDate: null },
-            take: 1,
-            select: { companyId: true },
-          },
-        },
+        select: { id: true },
       })
-      if (!employee) throw notFound('직원을 찾을 수 없습니다.')
-
-      // 2. Verify schedule exists
-      const schedule = await prisma.workSchedule.findFirst({
-        where: { id: parsed.data.scheduleId },
-      })
-      if (!schedule) throw notFound('근무일정을 찾을 수 없습니다.')
+      if (!employee) throw notFound('해당 기간에 법인 소속인 직원을 찾을 수 없습니다.')
 
       // 3. Check for overlapping period
       const overlap = await prisma.employeeSchedule.findFirst({
         where: {
           employeeId: id,
-          effectiveFrom: { lte: parsed.data.effectiveTo ? new Date(parsed.data.effectiveTo) : new Date('9999-12-31') },
+          effectiveFrom: { lte: effectiveTo ?? new Date('9999-12-31') },
           OR: [
             { effectiveTo: null },
-            { effectiveTo: { gte: new Date(parsed.data.effectiveFrom) } },
+            { effectiveTo: { gte: effectiveFrom } },
           ],
         },
       })
@@ -92,8 +103,8 @@ export const POST = withPermission(
           employeeId: id,
           scheduleId: parsed.data.scheduleId,
           shiftGroup: parsed.data.shiftGroup,
-          effectiveFrom: new Date(parsed.data.effectiveFrom),
-          effectiveTo: parsed.data.effectiveTo ? new Date(parsed.data.effectiveTo) : null,
+          effectiveFrom,
+          effectiveTo,
         },
         include: { schedule: true },
       })
@@ -105,7 +116,7 @@ export const POST = withPermission(
         action: 'attendance.employee-schedule.assign',
         resourceType: 'employee_schedule',
         resourceId: assignment.id,
-        companyId: extractPrimaryAssignment(employee.assignments)?.companyId ?? '',
+        companyId: schedule.companyId,
         ip,
         userAgent,
       })
